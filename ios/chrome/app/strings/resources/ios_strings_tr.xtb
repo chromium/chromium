@@ -269,6 +269,7 @@
 <translation id="17906873777101817">Şifreleri ve geçiş anahtarlarını kaydetmeyi öner</translation>
 <translation id="1794893174442046596">Sekme grubu</translation>
 <translation id="1807893857950749072">Fiyat takibi bildirimlerine izin ver…</translation>
+<translation id="1808142805674973090">Modları değiştir</translation>
 <translation id="1809929083618343438">Bu işlem, seçilen bilgileri Chrome'dan kaldırır ancak Google Hesabınızdan silmez.</translation>
 <translation id="1810976980198522421">İptal</translation>
 <translation id="1815941218935345331">Şifre kodu</translation>
@@ -850,6 +851,7 @@
 <translation id="3779810277399252432">İnternet bağlantısı yok.</translation>
 <translation id="3782614601387961027">Uyarıyı kapat</translation>
 <translation id="3789841737615482174">Yükle</translation>
+<translation id="3793603310364129123">Daha az adım, daha hızlı bağlantılar</translation>
 <translation id="380329542618494757">Ad</translation>
 <translation id="3803696231112616155">Bu siteyi çevirmeyi öner</translation>
 <translation id="3810973564298564668">Yönet</translation>
@@ -1381,6 +1383,7 @@
 <translation id="5467163657366219870">Haritalar Önizlemeleri'ni devre dışı bırak</translation>
 <translation id="5474397204728336997">Aile şifreleri, yeni özelleştirmeler ve daha fazlası. Daha fazla bilgi için dokunun.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Şifre içe aktarılmadı}=1{{count} şifre içe aktarıldı}other{{count} şifre içe aktarıldı}}</translation>
+<translation id="5477188385487393357">Kopyalama ve yapıştırma işlemini atlayın</translation>
 <translation id="5478327362747197944">Bir web sayfasındaki tarihi tıklayarak doğrudan Takvim etkinlikleri oluşturun.</translation>
 <translation id="5482922178977937393">İlgi alanlarınıza dayalı olarak haberler, spor içerikleri ve daha fazlası ile ilgili bildirim almak ister misiniz?</translation>
 <translation id="5483838506518938965">Artık hazırsınız</translation>
@@ -1747,6 +1750,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6585618849026997638">Önemli gördüğünüz sayfalara yer işareti koyarak geri dönebilirsiniz.</translation>
 <translation id="6589001036857939353">Yinelenen kişileri birleştirme</translation>
 <translation id="659407965921887085">Bu kart, şu anda takip ettiğiniz ürünlerin web'deki fiyat düşüşlerini gösterir</translation>
+<translation id="6596324345367949437">Gemini, Gizli modda kullanılamaz</translation>
 <translation id="6596481460663245319">Resmi Google'la Ara</translation>
 <translation id="6601302169302852717">Resim, <ph name="USER_EMAIL" /> için Google Fotoğraflar'a kaydedildi</translation>
 <translation id="6602173570135186741">Otomatik doldurma ve şifreler</translation>

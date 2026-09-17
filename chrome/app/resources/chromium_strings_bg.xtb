@@ -147,6 +147,7 @@
 <translation id="2575822587468774919">Изберете каквото и да е, за да търсите с функцията за търсене на изображения</translation>
 <translation id="2576118232315942160">Влезте в Chromium, за да получите паролите си и др. на всичките си устройства</translation>
 <translation id="2587622539943955767">Сканирайте QR кода с телефона си, за да изтеглите Chromium и да влезете в профила си в Google.</translation>
+<translation id="2587885422541096572">за търсене с Chromium.</translation>
 <translation id="2592940277904433508">Продължаване на използването на Chromium</translation>
 <translation id="259935314519650377">Кеширането на изтеглената инсталационна програма не бе успешно. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -768,6 +769,7 @@
 <translation id="897581876605952338">Лого на Chromium Enterprise</translation>
 <translation id="8980139959902937527">Вземете безопасността на Google със себе си с приложението Chromium на устройството си <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Chromium не може да стартира, защото нещо се обърка при отварянето на потребителския ви профил. Рестартирайте Chromium.</translation>
+<translation id="8981886272598860786">за търсене с Chromium или персонализирайте в <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Управление на потребителските профили в Chromium</translation>
 <translation id="8993855408334954620">Използвайте клавиатурата си, за да се придвижвате между Gemini в Chromium и отворения раздел.</translation>
 <translation id="9018218886431812662">Инсталирането завърши</translation>

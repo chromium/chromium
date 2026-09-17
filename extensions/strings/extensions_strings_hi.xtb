@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">माता-पिता की अनुमति के लिए अनुरोध नहीं किया जा सका.</translation>
 <translation id="1803557475693955505">पेजभूमि पेज '<ph name="BACKGROUND_PAGE" />' को लोड नहीं कर सका.</translation>
 <translation id="1875387611427697908">इसे केवल <ph name="CHROME_WEB_STORE" /> से ही जोड़ा जा सकता है</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (एक्सटेंशन आईडी "<ph name="EXTENSION_ID" />") को कम भरोसे वाले एनवायरमेंट में, नीति के तहत इंस्टॉल नहीं किया जा सकता.</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" इंस्‍टॉल करने में असमर्थ क्‍योंकि "<ph name="IMPORT_NAME" />" द्वारा इसकी अनुमति नहीं है</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" जोड़ें?</translation>
 <translation id="2159915644201199628">इमेज को डीकोड नहीं किया जा सका: '<ph name="IMAGE_NAME" />'</translation>

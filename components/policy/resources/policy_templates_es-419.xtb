@@ -5576,6 +5576,7 @@ No tiene efecto si la habilitas, la dejas vacía o no la configuras.</translatio
 <translation id="4515404363392014383">Habilita la Navegación segura para las fuentes de confianza</translation>
 <translation id="4517327050150780380">Configuración de la función Ayúdame a leer</translation>
 <translation id="4518251772179446575">Preguntar siempre si un sitio quiere rastrear la ubicación física de los usuarios.</translation>
+<translation id="4521106598519506386">La inmovilización de las pestañas en segundo plano está habilitada</translation>
 <translation id="4521193243799782295">Durante el acceso, <ph name="PRODUCT_OS_NAME" /> podrá realizar la autenticación a través de un servidor (en línea) o con una contraseña en caché (sin conexión).
 
       Si se establece esta política con un valor de -1, no se aplicará la autenticación en línea y se permitirá que el usuario utilice la autenticación sin conexión hasta que un motivo distinto a esta política exija el acceso en línea. Si se establece la política con un valor de 0, siempre se requerirá el acceso en línea. Si se establece la política en cualquier otro valor, la política especificará el tiempo que debe transcurrir desde la autenticación en línea más reciente para que el usuario vuelva a estar obligado a usar la autenticación en línea la próxima vez que acceda.
@@ -8982,6 +8983,7 @@ Si inhabilitas la política o no la estableces, la búsqueda de CNAME determinar
 <translation id="6424486395812679373">Realiza las verificaciones de la Navegación segura en todos los archivos descargados</translation>
 <translation id="6426899507714989471">Inhabilitar la aceleración de gráficos</translation>
 <translation id="6431446111529802555">Europa.</translation>
+<translation id="6431778298276599807">Habilitar la inmovilización de pestañas en segundo plano</translation>
 <translation id="6433697627431665375">Impedir que se incluyan los datos de <ph name="PRODUCT_NAME" /> en las copias de seguridad</translation>
 <translation id="6436052172226685535">Comportamiento predeterminado de LBS</translation>
 <translation id="6438472072089952201">Cuando es posible, <ph name="PRODUCT_NAME" /> intenta actualizar algunas
@@ -11133,6 +11135,7 @@ Esta política puede anularse para orígenes específicos de apps web aisladas a
 <translation id="7696412993033202071">URLs de inicio de apps de autenticador externas</translation>
 <translation id="7696534428021833264">Habilitar la tarjeta de archivos de SharePoint y OneDrive de NTP</translation>
 <translation id="7699644797467448158">Borrar window.name cuando la navegación es de nivel superior, entre sitios y cambia BrowsingContextGroup.</translation>
+<translation id="7700606318567398251">No permitir el uso de <ph name="CHROME_DEVTOOLS_NAME" /></translation>
 <translation id="7701341006446125684">Establecer tamaño de caché de apps y extensiones (en bytes)</translation>
 <translation id="7701825382808690457">Usar el valor predeterminado para el acuerdo de claves poscuántico para WebRTC</translation>
 <translation id="7703041979684393741">No permitir la recopilación de registros de eventos de WebRTC de los servicios de Google</translation>

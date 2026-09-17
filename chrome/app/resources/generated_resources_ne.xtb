@@ -1341,6 +1341,7 @@
 <translation id="2026367923222947564">पूरा पेज</translation>
 <translation id="2026377162111110983">एरिया भ्वाइस</translation>
 <translation id="2028449514182362831">मोसन सेन्सरहरू प्रयोग गर्ने सुविधाहरूले काम गर्ने छैनन्</translation>
+<translation id="2029064269235798707">किबोर्डको सर्टकट चयन गर्नुहोस्</translation>
 <translation id="202918510990975568">सुरक्षा तथा साइन इन गर्ने प्रक्रिया कन्फिगर गर्न आफ्नो पासवर्ड हाल्नुहोस्</translation>
 <translation id="2030455719695904263">ट्र्याकप्याड</translation>
 <translation id="2030803782168502207">यो डिभाइसबाट सदस्यता हटाउनुहोस्</translation>
@@ -1432,6 +1433,7 @@
 <translation id="2111670510994270194">दायाँपट्टि नयाँ ट्याब</translation>
 <translation id="2111778868023567359">तपाईं फेरि यो पेजमा ट्याब समूहहरू देख्नु हुने छैन</translation>
 <translation id="2112554630428445878">स्वागत छ, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> एम.बि.</translation>
 <translation id="2113314491145966441">macOS बाट इम्पोर्ट गरिएका प्रमाणपत्रहरू हेर्नुहोस्</translation>
 <translation id="21133533946938348">ट्याबलाई पिन गर्नुहोस्</translation>
 <translation id="2113479184312716848">&amp;फाइल खोल्नुहोस्...</translation>
@@ -1984,6 +1986,7 @@
 <translation id="252513908494776481">यो ट्याबका बारेमा प्रश्न सोध्नुहोस्</translation>
 <translation id="2525746158911982776">सिस्टममा पर्याप्त खाली ठाउँ नभएकाले अपडेट गर्न सकिएन।</translation>
 <translation id="2525842906387880861">तपाईं फेरि यो पेजमा सुझावहरू देख्नु हुने छैन</translation>
+<translation id="2526346836766369775">नयाँ आइसोलेटेड &amp;ट्याब</translation>
 <translation id="2526590354069164005">डेस्कटप</translation>
 <translation id="2526619973349913024">अद्यावधिकको लागि जाँच गर्नुहोस्</translation>
 <translation id="2527167509808613699">कुनै पनि प्रकारको जडान</translation>
@@ -2269,6 +2272,7 @@
 <translation id="2740531572673183784">ठिक छ</translation>
 <translation id="2740876196999178364">यी पासकीहरू यस डिभाइसमा मात्र सेभ गरिएका छन्। तिनीहरू तपाईंको Google खातामा भने सेभ गरिएका छैनन्।</translation>
 <translation id="2741912629735277980">लग इन गर्ने स्क्रिनको डिस्प्ले UI</translation>
+<translation id="274229007420507506"><ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा गई सर्टकट परिवर्तन गर्नुहोस्</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> अहिले उपलब्ध छैन।</translation>
 <translation id="2743301740238894839">सुरु गर्नुहोस्</translation>
 <translation id="2743378970365831481">आफ्नो पासवर्ड Google पासवर्ड म्यानेजरमा सेभ गर्न लोकेसन बारमा रहेको पासवर्ड म्यानेजर आइकनमा क्लिक गर्नुहोस्</translation>
@@ -2619,6 +2623,7 @@
 <translation id="3001614333383288217">{COUNT,plural, =0{कुनै पनि की कस्टमाइज गरिएको छैन}=1{एउटा की कस्टमाइज गरिएको छ}other{{COUNT} वटा की कस्टमाइज गरिएका छन्}}</translation>
 <translation id="3002864108328203174">Gemini को पुछारको पाना आधा स्क्रिनमा खोलिएको छ।</translation>
 <translation id="3003144360685731741">रुचाइएका नेटवर्कहरू</translation>
+<translation id="3003152206838282768">Chrome मा तपाईंले Gemini एपलाई अह्राउनुभएको कार्य गरिँदै छ। थप अपडेटहरू प्राप्त गर्न Chrome मा हेर्नुहोस्</translation>
 <translation id="3003253259757197230">तपाईंले यसपछि खोल्न सक्ने साइट पूर्वानुमान गर्ने र तपाईंले हेरिरहनुभएको पेजसम्बन्धी थप जानकारी देखाउने प्रयोजनका लागि तपाईंले खोल्ने URL हरू Google मा पठाइन्छन्</translation>
 <translation id="3003623123441819449">CSS क्यास</translation>
 <translation id="3003967365858406397">तपाईंको <ph name="PHONE_NAME" /> ले कुनै निजी Wi-Fi जडान सिर्जना गर्दछ।</translation>
@@ -5065,6 +5070,7 @@
 <translation id="4864805589453749318">विद्यालयको खाता थप्न अनुमति दिन लागिरहनुभएको अभिभावक चयन गर्नुहोस्।</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (ब्लक गरिएको)</translation>
 <translation id="486505726797718946">मेमोरी सेभ गरियो</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Chrome मा Gemini एपमार्फत तपाईंको कार्य गरिँदै छ। थप अपडेटहरू प्राप्त गर्न Chrome मा हेर्नुहोस्</translation>
 <translation id="486635084936119914">डाउनलोडपछि निश्चित प्रकारका फाइलहरू स्वतः खोल्नुहोस्</translation>
 <translation id="4868284252360267853">हाल यो डायलगमा फोकस गरिएको छैन। यो डायलगमा फोकस गर्न Command-Shift-Option A थिच्नुहोस्।</translation>
 <translation id="4869170227080975044">ChromeOS नेटवर्कसम्बन्धी जानकारी रिड गर्ने</translation>
@@ -7694,6 +7700,7 @@
 <translation id="6916818963747321523">सबै एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="6917873303492266709">ट्याब समूह सेयर गर्न, तिनमा सामेल हुन र सहकार्य गर्न सेटिङ खोल्नुहोस् र "Chrome मा साइन इन गर्ने अनुमति दिनुहोस्" अन गर्नुहोस्</translation>
 <translation id="6919354101107095996">उक्त साइटमा साइन इन गर्ने प्रयास गर्नुहोस्। अनि फेरि डाउनलोड गर्नुहोस्</translation>
+<translation id="6919461818524183254">सर्टकट चयन गर्नुहोस्।</translation>
 <translation id="6919952941889172531">साथै यो Chrome प्रोफाइलका हकमा परिष्कृत Safe Browsing अन गर्ने हो?</translation>
 <translation id="6920989436227028121">नियमित ट्याबको रूपमा खोल्नुहोस्</translation>
 <translation id="6921104647315081813">क्रियाकलापहरू हटाउनुहोस्</translation>
@@ -8532,6 +8539,7 @@
 <translation id="7578137152457315135">फिंगरप्रिन्टका सेटिङ</translation>
 <translation id="7578692661782707876">कृपया आफ्नो पुष्टि कोड हाल्नुहोस्।</translation>
 <translation id="757941033127302446">साइन इन गरिएको</translation>
+<translation id="7580311608678791180">Windows को टास्क बारबाट खोल्नुहोस्</translation>
 <translation id="7581462281756524039">शुद्धिकरण उपकरण</translation>
 <translation id="7582582252461552277">यो नेटवर्कलाई रोज्नुहोस्</translation>
 <translation id="7582844466922312471">मोबाइल डाटा</translation>
@@ -8545,6 +8553,7 @@
 <translation id="7590883480672980941">इनपुटसम्बन्धी सेटिङ</translation>
 <translation id="7592060599656252486">केही</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (त्रुटि कोड <ph name="ERROR_CODE" />)।</translation>
+<translation id="7597816893408026784">Mac को मेनु बारबाट खोल्नुहोस्</translation>
 <translation id="7600054753482800821">&amp;साइटमा भएको कुरा खोज्ने सुविधा र सर्च इन्जिनहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7600218158048761260">खाताको यस प्रकारमा Google Drive अफ गरिएको छ।</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> कहिले पनि अनुवाद नगर्नुहोस्</translation>
@@ -9230,6 +9239,7 @@
 <translation id="8102139037507939978">system_logs.txt बाट व्यक्तिगत रूपमा पहिचान गर्न मिल्ने जानकारी हटाउनुहोस्।</translation>
 <translation id="810362914482827094">पासकी खोज्नुहोस्</translation>
 <translation id="8104088837833760645">eSIM प्रोफाइल डाउनलोड गर्नुहोस्</translation>
+<translation id="8104388155778519213">Google लेन्स प्रयोग गरी आफ्नो स्क्रिनमा भएका कुरा सेयर गर्नुहोस्</translation>
 <translation id="8104778744208707085">तपाईंले कारबाही गर्नु पर्ने हुन्छ</translation>
 <translation id="8105273883928376822">जारी राख्न कृपया साइन इन गर्नुहोस्।</translation>
 <translation id="8106114112474206597">माउसको कुनै बटन थिच्न “i” प्रयोग गर्नुहोस्</translation>

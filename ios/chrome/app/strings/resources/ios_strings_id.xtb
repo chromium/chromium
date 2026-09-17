@@ -269,6 +269,7 @@
 <translation id="17906873777101817">Tawarkan penyimpanan sandi &amp; kunci sandi</translation>
 <translation id="1794893174442046596">Grup tab</translation>
 <translation id="1807893857950749072">Izinkan notifikasi pemantauan harga…</translation>
+<translation id="1808142805674973090">Beralih mode</translation>
 <translation id="1809929083618343438">Tindakan ini akan menghapus info yang dipilih dari Chrome, tetapi tidak menghapus info ini dari Akun Google Anda.</translation>
 <translation id="1810976980198522421">Batal</translation>
 <translation id="1815941218935345331">Kode sandi</translation>
@@ -850,6 +851,7 @@
 <translation id="3779810277399252432">Tidak ada koneksi internet.</translation>
 <translation id="3782614601387961027">Tutup peringatan</translation>
 <translation id="3789841737615482174">Instal</translation>
+<translation id="3793603310364129123">Lebih sedikit langkah, link lebih cepat</translation>
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803696231112616155">Tawarkan untuk menerjemahkan situs ini</translation>
 <translation id="3810973564298564668">Kelola</translation>
@@ -1381,6 +1383,7 @@
 <translation id="5467163657366219870">Nonaktifkan Pratinjau Maps</translation>
 <translation id="5474397204728336997">Sandi keluarga, penyesuaian baru, dan lainnya. Ketuk untuk mempelajari lebih lanjut.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Tidak ada sandi yang diimpor}=1{{count} sandi diimpor}other{{count} sandi diimpor}}</translation>
+<translation id="5477188385487393357">Tak perlu lagi salin &amp; tempel</translation>
 <translation id="5478327362747197944">Buat acara Kalender secara langsung dengan mengklik tanggal di halaman web.</translation>
 <translation id="5482922178977937393">Ingin mendapatkan notifikasi untuk berita, olahraga, dan lainnya berdasarkan minat Anda?</translation>
 <translation id="5483838506518938965">Anda sudah siap</translation>
@@ -1747,6 +1750,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6585618849026997638">Anda dapat kembali ke halaman yang penting bagi Anda dengan menambahkan bookmark</translation>
 <translation id="6589001036857939353">Gabungkan duplikat</translation>
 <translation id="659407965921887085">Kartu ini menampilkan penurunan harga di seluruh web untuk produk yang saat ini Anda pantau</translation>
+<translation id="6596324345367949437">Gemini tidak tersedia dalam mode Samaran</translation>
 <translation id="6596481460663245319">Telusuri Gambar dengan Google</translation>
 <translation id="6601302169302852717">Gambar disimpan di Google Foto untuk <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Isi otomatis dan sandi</translation>

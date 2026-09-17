@@ -231,6 +231,7 @@
 <translation id="3112458742631356345">由於此檔案不是常見的下載項目，可能含有危險內容，因此 Chrome 已禁止下載</translation>
 <translation id="3119573284443908657">此封存檔案包含可能隱藏惡意軟件的其他檔案，因此 Chrome 已禁止下載</translation>
 <translation id="3124332159330678621">自訂 Chrome 以便為瀏覽器套用新風格</translation>
+<translation id="3125851611828811913">即使 Chrome 最小化，你亦能隨時隨地搜尋和提問。允許 Chrome 在背景執行。</translation>
 <translation id="3130333203120345554">新搜尋</translation>
 <translation id="3135560418014806498">新增 Chrome 設定檔</translation>
 <translation id="3137969841538672700">拖曳即可搜尋</translation>
@@ -387,6 +388,7 @@
 <translation id="4793679854893018356">瞭解 Chrome 如何保護使用者的網上安全</translation>
 <translation id="4799870290441980300">開啟額外功能，讓 Chrome 提供最強大的防護</translation>
 <translation id="4828579605166583682">Google Chrome 正嘗試更換現有密碼。如果允許，請輸入 Windows 密碼。</translation>
+<translation id="4836321460899997044">Chrome 設定檔</translation>
 <translation id="4842397268809523050">您的網域無法使用同步功能，因此 ChromeOS Flex 無法同步處理您的資料。</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chrome 中登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。</translation>
 <translation id="4855026984605187434">如要分享螢幕內容，請前往「系統設定」允許 Chrome 螢幕錄影</translation>
@@ -504,6 +506,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6014316319780893079">透過 <ph name="BEGIN_LINK" />Chrome 工具<ph name="END_LINK" />，你可安全瀏覽網絡，一切盡在掌握</translation>
 <translation id="6018578474045062808">透過手機的 Chrome 試用「Google 智能鏡頭」</translation>
 <translation id="6022659036123304283">自訂屬於您的 Chrome</translation>
+<translation id="6024930613143833266">隨時隨地使用 Chrome 搜尋</translation>
 <translation id="6025087594896450715">Google Chrome 將會在 <ph name="REMAINING_TIME" />後重新啟動</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="604424701295382420">已固定！你可以透過工具列嘅新按鈕用多次「Google 智能鏡頭」</translation>
@@ -557,6 +560,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6434035853014503219">感謝你選用 Chrome 作為預設瀏覽器！</translation>
 <translation id="6438015621983209660">透過手機的 Chrome 擴大「強化安全瀏覽」範圍</translation>
 <translation id="6442774133615368941">在 iOS 版 Chrome 應用程式中使用相機購物、翻譯及識別所見內容</translation>
+<translation id="6446105560007692480">即可使用 Chrome 搜尋，或在「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」中自訂</translation>
 <translation id="6448835208126432197">如要在 Chrome 版 Gemini 中選取部分畫面，請使用鍵盤快速鍵。</translation>
 <translation id="6473905796280459355">前往「關於 Chrome」頁面</translation>
 <translation id="6481963882741794338">連結 Chrome 和其他 Google 服務，用於個人化和其他用途</translation>
@@ -578,6 +582,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6612152958212564387">你的使用情況統計和當機報告不會傳送給 Google。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">將 Chrome 設定為預設瀏覽器，在所有裝置上同步更新密碼、書籤和記錄。</translation>
 <translation id="6631524303639368205">開啟上次瀏覽的內容：Chrome 已還原上個工作階段的分頁。如要關閉此功能，請前往</translation>
+<translation id="6632012506031284914">即可使用 Chrome 搜尋。</translation>
 <translation id="6632473616050862500">ChromeOS Flex 的開發全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />協助才得以面世。</translation>
 <translation id="6634299872736643004">此設定變更會在 Chrome 重新啟動後套用。</translation>
 <translation id="6660596345553328257">要登入 Chrome 嗎？</translation>
@@ -594,6 +599,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6750954913813541382">Chrome 會將您在瀏覽器中輸入的文字傳送至 Google，以修正拼字錯誤</translation>
 <translation id="6760235774835597023">使用 Chrome 的 V8 引擎加快網站速度，但 Chrome 防攻擊的能力會略為下降。此設定已開啟。</translation>
 <translation id="677276454032249905">仍要結束 Chrome 嗎？</translation>
+<translation id="6777654166489463890">查詢 Chrome 以外的內容，例如你已開啟的其他應用程式或檔案</translation>
 <translation id="6794858689789885890">在 Chrome 關閉後一律刪除裝置上的網站資料</translation>
 <translation id="6800285125190089494">在 iOS 版 Chrome 使用已儲存的密碼，加快登入網站的速度</translation>
 <translation id="6831043979455480757">翻譯</translation>
@@ -646,6 +652,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7285990705317078173">在手機下載 Chrome，追蹤價格並在任何網站降價時接收通知</translation>
 <translation id="7288567540154601580">分頁和擴充程式</translation>
 <translation id="7296210096911315575">重要的使用和安全資訊</translation>
+<translation id="7299899569525778554">從桌面搜尋</translation>
 <translation id="7302361266603927550">部分 Chrome 資料尚未儲存至 Google 帳戶。請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除此資料。</translation>
 <translation id="7306401458628386911">立即開始瀏覽：Chrome 現在可於 Windows 啟動時開啟。</translation>
 <translation id="7308322188646931570">Chrome 需要儲存空間的存取權才能下載檔案</translation>

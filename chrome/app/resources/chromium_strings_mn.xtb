@@ -149,6 +149,7 @@
 <translation id="2575822587468774919">Зурган хайлтаар хайхыг хүссэн зүйлээ сонгоно уу</translation>
 <translation id="2576118232315942160">Нууц үг болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chromium-д нэвтэрнэ үү</translation>
 <translation id="2587622539943955767">Chromium-г татаж, Google Бүртгэлдээ нэвтрэхийн тулд утсаараа QR кодыг скан хийнэ үү.</translation>
+<translation id="2587885422541096572">Chromium-р хайхын тулд.</translation>
 <translation id="2592940277904433508">Chromium-г үргэлжлүүлэн ашиглах</translation>
 <translation id="259935314519650377">Татсан суулгагчийг завсрын санах ойд хадгалж чадсангүй. Алдаа: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Систем</translation>
@@ -775,6 +776,7 @@
 <translation id="897581876605952338">Chromium Enterprise-н лого</translation>
 <translation id="8980139959902937527"><ph name="DEVICE_TYPE" /> дээрээ Chromium аппыг ашиглан Google-н аюулгүй байдлын онцлогуудыг явж байх зуураа аваарай</translation>
 <translation id="8981150672034878610">Таны профайлыг нээхэд ямар нэг алдаа гарсан тул Chromium-г эхлүүлэх боломжгүй. Chromium-г дахин эхлүүлж үзнэ үү.</translation>
+<translation id="8981886272598860786">Chromium-р хайх эсвэл <ph name="BEGIN_LINK" />Тохиргооноос<ph name="END_LINK" /> тусгайлан өөрчлөхийн тулд</translation>
 <translation id="8988036198400390003">Chromium-н профайлуудыг удирдах</translation>
 <translation id="8993855408334954620">Chromium дахь Gemini, нээлттэй табынхаа хооронд шилжихэд гараа ашиглана уу.</translation>
 <translation id="9018218886431812662">Суулгаж дууссан</translation>

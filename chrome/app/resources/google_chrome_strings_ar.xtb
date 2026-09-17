@@ -229,6 +229,7 @@
 <translation id="3112458742631356345">‏حَظَر Chrome عملية التنزيل هذه لأن الملف لا يتم تنزيله عادةً، وقد يكون خطيرًا.</translation>
 <translation id="3119573284443908657">‏حَظَر Chrome عملية التنزيل هذه لأنّ ملف الأرشيف يتضمّن ملفات أخرى قد تخفي برامج ضارة</translation>
 <translation id="3124332159330678621">‏يمكنك تخصيص Chrome لإضفاء مظهر جديد على المتصفِّح.</translation>
+<translation id="3125851611828811913">‏يمكنك البحث وطرح الأسئلة باستخدام Chrome من أي مكان، حتى إن كان مصغّرًا. ويسمح هذا الإعداد بتشغيل Chrome في الخلفية.</translation>
 <translation id="3130333203120345554">بحث جديد</translation>
 <translation id="3135560418014806498">‏إضافة ملف شخصي على Chrome</translation>
 <translation id="3137969841538672700">اسحب للبحث</translation>
@@ -386,6 +387,7 @@
 <translation id="4793679854893018356">‏كيف يحافظ Chrome على أمانك؟</translation>
 <translation id="4799870290441980300">‏يفعِّل هذا الخيار ميزات إضافية لتوفير أعلى مستويات الحماية في Chrome</translation>
 <translation id="4828579605166583682">‏يحاول Google Chrome استبدال كلمات المرور الحالية. للسماح بذلك، يُرجى كتابة كلمة المرور المستخدَمة في Windows.</translation>
+<translation id="4836321460899997044">‏الملف الشخصي على Chrome</translation>
 <translation id="4842397268809523050">‏تعذَّر على ChromeOS Flex مزامنة البيانات لأنّ ميزة المزامنة غير متاحة لنطاقك.</translation>
 <translation id="4851866215237571846">‏سبق أن تم تسجيل الدخول إلى حساب "<ph name="EXISTING_USER" />".  للحصول على تجربة تصفّح منفصلة، سجِّل الدخول إلى Chrome في ملفك الشخصي باستخدام العنوان <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">‏لمشاركة شاشتك، يجب السماح بتسجيل الشاشة في Chrome ضِمن "إعدادات النظام" (System Settings)</translation>
@@ -501,6 +503,7 @@
 <translation id="6014316319780893079">‏باستخدام <ph name="BEGIN_LINK" />أدوات من Chrome<ph name="END_LINK" />، يمكنك التصفُّح بأمان والتحكُّم بشكل كامل.</translation>
 <translation id="6018578474045062808">‏"عدسة Google" بانتظارك في Chrome على هاتفك</translation>
 <translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم</translation>
+<translation id="6024930613143833266">‏البحث باستخدام Chrome من أي مكان</translation>
 <translation id="6025087594896450715">‏ستتم إعادة تشغيل Google Chrome خلال <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="604424701295382420">‏تم تثبيت اللوحة. يمكنك الوصول إلى ميزة "عدسة Google" مرة أخرى من خلال الزر الجديد في شريط الأدوات</translation>
@@ -554,6 +557,7 @@
 <translation id="6434035853014503219">‏نشكرك على اختيار Chrome كمتصفِّح تلقائي.</translation>
 <translation id="6438015621983209660">‏بتنزيل Chrome، ستكون "الحماية المحّسنة للتصفح الآمن" متاحة على هاتفك أيضًا</translation>
 <translation id="6442774133615368941">‏باستخدام الكاميرا في تطبيق Chrome على iOS، يمكنك تسوّق ما يظهر لك أو ترجمته أو التعرّف عليه</translation>
+<translation id="6446105560007692480">‏للبحث باستخدام Chrome أو التخصيص من خلال <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" /></translation>
 <translation id="6448835208126432197">‏يمكنك استخدام اختصار لوحة المفاتيح لاختيار جزء من الشاشة في "Gemini في Chrome".</translation>
 <translation id="6473905796280459355">‏الانتقال إلى صفحة "لمحة عن Chrome"</translation>
 <translation id="6481963882741794338">‏ربط Chrome وخدمات Google الأخرى لأغراض تخصيص الخيارات وأغراض أخرى</translation>
@@ -575,6 +579,7 @@
 <translation id="6612152958212564387">‏لا يتم إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google. <ph name="BEGIN_LINK" />إدارة<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">‏للحصول على مزامنة مثالية لكلمات المرور والإشارات المرجعية والسجل على جميع الأجهزة، ما عليك سوى جعل Chrome المتصفح التلقائي.</translation>
 <translation id="6631524303639368205">‏المتابعة من حيث توقفت: استعاد Chrome علامات التبويب من جلستك الأخيرة. يمكنك إيقاف هذه الميزة في</translation>
+<translation id="6632012506031284914">‏للبحث باستخدام Chrome</translation>
 <translation id="6632473616050862500">‏أصبح نظام التشغيل ChromeOS Flex متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">‏سيتم تطبيق التغييرات في هذا الإعداد بعد إعادة تشغيل Chrome.</translation>
 <translation id="6660596345553328257">‏هل تريد تسجيل الدخول إلى Chrome؟</translation>
@@ -591,6 +596,7 @@
 <translation id="6750954913813541382">‏لإصلاح الأخطاء الإملائية، يرسِل Chrome النص الذي تكتبه في المتصفّح إلى Google.</translation>
 <translation id="6760235774835597023">‏يعمل هذا الإعداد على زيادة سرعة المواقع الإلكترونية باستخدام محرّك V8 في Chrome، مع تقليل قدرة Chrome على مقاومة الهجمات قليلاً. هذا الإعداد مفعَّل.</translation>
 <translation id="677276454032249905">‏هل تريد الخروج من Chrome على أي حال؟</translation>
+<translation id="6777654166489463890">‏يمكنك طرح أسئلة حول محتوى خارج Chrome، مثل تطبيق آخر أو ملف مفتوح</translation>
 <translation id="6794858689789885890">‏حذف بيانات الموقع الإلكتروني من جهازك دائمًا عند إغلاق Chrome</translation>
 <translation id="6800285125190089494">‏يمكنك تسجيل الدخول بشكل أسرع إلى المواقع الإلكترونية باستخدام كلمات المرور المحفوظة في Chrome على أجهزة iOS</translation>
 <translation id="6831043979455480757">ترجمة</translation>
@@ -643,6 +649,7 @@
 <translation id="7285990705317078173">‏يكفي تنزيل متصفِّح Chrome على هاتفك لتتبُّع الأسعار والحصول على تنبيهات عند انخفاضها على أي موقع إلكتروني</translation>
 <translation id="7288567540154601580">علامات التبويب والإضافات</translation>
 <translation id="7296210096911315575">معلومات مهمّة حول الأمان والاستخدام</translation>
+<translation id="7299899569525778554">البحث من خلال الكمبيوتر المكتبي</translation>
 <translation id="7302361266603927550">‏لم يتم حفظ بعض بيانات Chrome في حسابك على Google إلى الآن. يُرجى الانتظار بضع دقائق قبل تسجيل الخروج. إذا سجّلت الخروج الآن، فسيتم حذف هذه البيانات.</translation>
 <translation id="7306401458628386911">‏بدء التصفّح على الفور: يمكن الآن فتح Chrome تلقائيًا عند بدء تشغيل Windows.</translation>
 <translation id="7308322188646931570">‏يحتاج Chrome للوصول إلى مساحة التخزين لتنزيل الملفات.</translation>

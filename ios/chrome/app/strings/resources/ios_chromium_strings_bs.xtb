@@ -142,6 +142,7 @@ Pričekajte nekoliko minuta prije nego što promijenite račun. Ako promijenite 
 <translation id="3855938650519180865">Šta je novo u Chromiumu</translation>
 <translation id="3886689467633467988">Prijavite se na ovu web lokaciju i u Chromium da dobijete svoje oznake i još mnogo toga na svim svojim uređajima.</translation>
 <translation id="3949514465204582407">Savjet za Chromium: dobijte lozinke u bilo kojoj aplikaciji</translation>
+<translation id="3983298990898629929">Postavite Chromium kao zadani preglednik da otvarate linkove jednim dodirom</translation>
 <translation id="4005283307739974863">Otvara i pokreće sigurnosnu provjeru u Chromiumu.</translation>
 <translation id="4043291146360695975">Lozinke se pohranjuju u Upravitelju lozinki samo na ovom uređaju.</translation>
 <translation id="4046625794029820944">Prestanite kopirati URL-ove. Postavite Chromium kao zadani preglednik da direktno učitavate stranice.</translation>
@@ -273,6 +274,7 @@ Stvari za razmatranje:
 <translation id="6680609900732453726">Zadržite privatnost pregledanja pomoću autentifikacije uređaja prilikom zatvaranja Chromiuma</translation>
 <translation id="6696512128741076907">Postavite Chromium kao zadani preglednik da u trenu otvarate linkove iz drugih aplikacija.</translation>
 <translation id="6752854822223394465">Vaša organizacija postavlja Chromium...</translation>
+<translation id="6777348401413221846">Videozapis na cijelom zaslonu s uputama za postavljanje Chromiuma kao zadanog preglednika: otvorite postavke Chromiuma na iOS-u, dodirnite opciju Zadana aplikacija preglednika i odaberite Chromium.</translation>
 <translation id="6794054469102824109">Otvara igru Dinosaur u Chromiumu.</translation>
 <translation id="6820823224820483452">Chromium nije mogao provjeriti sve lozinke. Pokušajte ponovo sutra.</translation>
 <translation id="6830782797004194206">Brže se prijavite putem automatskog popunjavanja u Chromiumu</translation>
@@ -302,6 +304,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Vaša lozinka će se sačuvati u Upravitelj lozinki za račun <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Pristupni ključ će se sačuvati na Upravitelju lozinki za <ph name="USER_EMAIL" /></translation>
+<translation id="7453822113116681031">Postavite Chromium kao zadani preglednik da otvarate linkove jednim dodirom</translation>
 <translation id="7504829997542308412">Otvorite Chromium</translation>
 <translation id="7531461704633548377">Iz Chromiuma</translation>
 <translation id="7554983317097061001">Savjet za Chromium: premjestite Chromium na donju traku</translation>

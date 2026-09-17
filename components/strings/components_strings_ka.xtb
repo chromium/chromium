@@ -1518,6 +1518,8 @@
 <translation id="3577473026931028326">წარმოიქმნა შეფერხება. ცადეთ ხელახლა.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome შეგატყობინებთ, როცა ეს გვერდი მზად იქნება. &lt;a&gt;გაუქმება&lt;/a&gt;</translation>
+<translation id="3581499772329034229">ჩანართების ავტომატურად დამატება</translation>
+<translation id="3582670569275100909">გზავნილები</translation>
 <translation id="3582930987043644930">სახელის დამატება</translation>
 <translation id="3583757800736429874">&amp;და გადატანის მოძრაობა</translation>
 <translation id="3584299510153766161">ორმაგად გახვრეტა ქვემოთ</translation>
@@ -1593,6 +1595,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" />-<ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">იტვირთება…</translation>
 <translation id="3709599264800900598">თქვენ მიერ კოპირებული ტექსტი</translation>
+<translation id="3711223220609269738">ახალი იზოლირებული ჩანართი</translation>
 <translation id="3711430313228789376">Chrome ბრაუზერი ცდილობს პაროლების ჩვენებას</translation>
 <translation id="3711895659073496551">შეჩერება</translation>
 <translation id="3712004750972384495">მიმდინარეობს ეკრანის ჩანაწერის შენახვა</translation>
@@ -1611,6 +1614,7 @@
 <translation id="3727309136762649052">სახელთა სივრცე</translation>
 <translation id="3727850735097852673">Google პაროლების მმართველი macOS Keychain-თან რომ გამოიყენოთ, ხელახლა გაუშვით Chrome და დაუშვით წვდომა Keychain-ზე. ხელახლა გაშვების შემდეგ თქვენი ჩანართები თავიდან გაიხსნება.</translation>
 <translation id="3728173127485570463">Chrome ბრაუზერი აღარ მოგთხოვთ თითის ანაბეჭდს პაროლების ავტომატური შევსებისთვის</translation>
+<translation id="3729811201279509483">ჩანართების ხელით დამატება</translation>
 <translation id="3736564442532774454">Chrome ბრაუზერი ცდილობს, შეავსოს თქვენი სენსიტიური ინფორმაცია <ph name="APP_NAME" />-ზე.</translation>
 <translation id="3738166223076830879">თქვენს ბრაუზერს მართავს თქვენი ადმინისტრატორი.</translation>
 <translation id="3739842843727261045">ზევით აწეული ცერი ნიშნავს, რომ ეს შედეგები მოგეწონათ</translation>
@@ -2774,6 +2778,7 @@
 <translation id="5649053991847567735">ავტომატური ჩამოტვირთვები</translation>
 <translation id="5651323159439184939">ქაღალდის მიწოდება ჯაჭვური მოწყობილობით</translation>
 <translation id="5653681867130739344">პირადობის მოწმობის უსაფრთხოდ განახლება Google საფულეში</translation>
+<translation id="5653744563415531641">შეინახეთ თქვენი ინფორმაცია და უფრო სწრაფად შეასრულეთ ამოცანები, მაგალითად, შეავსეთ ფორმები Google პროდუქტებში. თქვენ შეგიძლიათ <ph name="MANAGE_WALLET_SETTINGS_LINK" /> ანგარიშისთვის <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ავარიულად გათიშვის ატვირთული ანგარიშის ID:</translation>
 <translation id="5654965123204121933">URL არ შეიცავს ჩანაცვლების საჭირო ფრაზას <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ელფოსტა</translation>
@@ -3220,6 +3225,7 @@
 <translation id="6410264514553301377">შეიყვანეთ <ph name="CREDIT_CARD" />-ის მოქმედების ვადა და CVC</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">მშობლის მიერ დადასტურების დიალოგი</translation>
+<translation id="6413532517183895572">თქვენი საფულის პარამეტრების მართვა</translation>
 <translation id="6415778972515849510">Chromium-ს შეუძლია დაგეხმაროთ თქვენი Google ანგარიშის დაცვასა და პაროლის შეცვლაში.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">დარწმუნდით, რომ ბიზნესის ან პერსონალური მნიშვნელოვანი მონაცემები ინახება გარე საცავში.</translation>
@@ -4007,6 +4013,7 @@
 <translation id="7758069387465995638">კავშირი შეიძლება ქსელის დაცვის ან ანტივირუსული პროგრამული უზრუნველყოფის მიერ იყოს დაბლოკილი.</translation>
 <translation id="7759147511335618829">MIDI-მოწყ. მართვა / გადაპროგრ.</translation>
 <translation id="7759809451544302770">არასავალდებულო</translation>
+<translation id="7760566304700414795">გზავნილი</translation>
 <translation id="776110834126722255">მოძველებული</translation>
 <translation id="7761159795823346334">გსურთ კამერაზე წვდომის დაშვება?</translation>
 <translation id="7761701407923456692">სერვერის სერტიფიკატი არ ემთხვევა URL-ს.</translation>
@@ -4352,6 +4359,7 @@
 <translation id="8371841335382565017">ტრანსლირებისთვის მოწყობილობათა სიის ჩვენება</translation>
 <translation id="8371889962595521444">მორგებული ძირეული სერტიფიკატები</translation>
 <translation id="8374636051559112948">ცვალებადი</translation>
+<translation id="8377507422902936905">შეკვეთები</translation>
 <translation id="837840316697671463">თუ ვერ პოულობთ ფაილს თქვენს მოწყობილობაში, მოიძიეთ ის <ph name="CLOUD_PROVIDER" />-ზე.</translation>
 <translation id="8378714024927312812">იმართება თქვენი ორგანიზაციის მიერ</translation>
 <translation id="8380941800586852976">სახიფათო</translation>

@@ -837,6 +837,8 @@
 <translation id="2384307209577226199">Korporativ defolt</translation>
 <translation id="2385809941344967209">Chrome'u Chrome ayarlarınızdan güncəlləyin</translation>
 <translation id="2386255080630008482">Serverin sertifikatı geri alındı.</translation>
+<translation id="2387424091060104123">Gemini tərəfindən təklif edildi · <ph name="SRC_LINK" />Mənbələrə baxın<ph name="END_SRC_LINK" />
+Bu təklifi Chrome-dan silə bilərsiniz. Orijinal mənbə silinməyəcək. <ph name="MANAGE_LINK" />Qabaqcıl avtodoldurmanı idarə edin<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Ətraflı izah edin</translation>
 <translation id="2392959068659972793">Heç bir dəyəri ayarlanmamış qaydaları göstərin</translation>
 <translation id="239429038616798445">Bu göndərmə üsulu əlçatan deyil. Başqa üsul seçin.</translation>
@@ -1515,6 +1517,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3577473026931028326">Xəta baş verdi. Yenidən cəhd edin.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome bu səhifə hazır olduqda bildiriş göndərəcək. &lt;a&gt;Ləğv edin&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Tabları avtomatik əlavə edin</translation>
 <translation id="3582930987043644930">Ad əlavə edin</translation>
 <translation id="3583757800736429874">Hərəkəti təkrarlayın</translation>
 <translation id="3584299510153766161">Altdan qoşa deşik açın</translation>
@@ -1589,6 +1592,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Yüklənir...</translation>
 <translation id="3709599264800900598">Kopyalanmış Mətn</translation>
+<translation id="3711223220609269738">Yeni izolə edilmiş tab</translation>
 <translation id="3711430313228789376">Chrome brauzeri parolları göstərməyə çalışır</translation>
 <translation id="3711895659073496551">Durdurun</translation>
 <translation id="3712004750972384495">Ekran qeydi yadda saxlanılır</translation>
@@ -1607,6 +1611,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3727309136762649052">Ad sahəsi</translation>
 <translation id="3727850735097852673">MacOS Keychain ilə Google Parol Meneceri istifadəsi üçün Chrome-u yenidən başladın və Keychain-ə giriş imkanı verin. Yenidən başladıldıqdan sonra tablar təkrar açılacaq.</translation>
 <translation id="3728173127485570463">Chrome brauzeri parolları avtomatik doldurmaq üçün barmaq izi tələb etməyəcək</translation>
+<translation id="3729811201279509483">Tabları manual olaraq əlavə edin</translation>
 <translation id="3736564442532774454">Chrome brauzeri <ph name="APP_NAME" /> tətbiqində həssas məlumatları doldurmağa çalışır.</translation>
 <translation id="3738166223076830879">Brauzeriniz administratorunuz tərəfindən idarə edilir.</translation>
 <translation id="3739842843727261045">"Baş barmaq yuxarı" bu nəticələri bəyəndiyinizi göstərir</translation>
@@ -2770,6 +2775,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5649053991847567735">Avtomatik endirmələr</translation>
 <translation id="5651323159439184939">Kağızın verilməsi mexanizmi</translation>
 <translation id="5653681867130739344">Kimlik kartını Google Pulqabıda təhlükəsiz şəkildə güncəlləyin</translation>
+<translation id="5653744563415531641">Məlumatlarınızı yadda saxlayın və Google məhsullarında formaları doldurmaq kimi işləri daha tez yerinə yetirin. <ph name="ACCOUNT" /> üçün aşağıdakı əməliyyatı edə bilərsiniz: <ph name="MANAGE_WALLET_SETTINGS_LINK" />.</translation>
 <translation id="5654927323611874862">Xəta Hesabatı ID'si yükləndi:</translation>
 <translation id="5654965123204121933">URL-də tələb olunan əvəzedici sətir <ph name="SEARCH_TERMS_REPLACEMENT" /> yoxdur: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-poçt</translation>
@@ -3216,6 +3222,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> üçün bitmə tarixi və CVC nömrəsini daxil edin</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Valideyn razılığı dialoqu</translation>
+<translation id="6413532517183895572">Pulqabı ayarlarınızı idarə edin</translation>
 <translation id="6415778972515849510">Chromium Google Hesabını qorumağa və parolu dəyişməyə kömək edir.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Vacib biznes və ya şəxsi məlumatların xarici qaydada saxlanıldığına əmin olun.</translation>

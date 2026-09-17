@@ -28,6 +28,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1757786065507923842">Isicelo semvume yomzali sihlulekile.</translation>
 <translation id="1803557475693955505">Ayikwazanga ukulayisha ikhasi elingemuva le-'<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="1875387611427697908">Lokhu kungangezwa kuphela kusukela ku-<ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (i-ID yesandiso "<ph name="EXTENSION_ID" />") ayikwazi ukufakwa ngenqubomgomo ezindaweni ezithenjwa kancane.</translation>
 <translation id="2131077480075264">Ayikwazi ukufaka i-"<ph name="APP_NAME" />" ngoba ayivunyelwe yi-"<ph name="IMPORT_NAME" />"</translation>
 <translation id="2150661552845026580">Engeza i-"<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Ayikwazanga ukukhipha ikhodi kusithombe: '<ph name="IMAGE_NAME" />'</translation>

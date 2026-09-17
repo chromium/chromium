@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Beiðni um heimild frá foreldri mistókst.</translation>
 <translation id="1803557475693955505">Ekki var hægt að hlaða bakgrunnssíðuna „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="1875387611427697908">Þessu er aðeins hægt að bæta við úr <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715">Ekki er hægt að setja <ph name="EXTENSION_NAME" /> (auðkenni viðbótar „<ph name="EXTENSION_ID" />“) upp í gegnum reglur í óöruggu umhverfi.</translation>
 <translation id="2131077480075264">Ekki er hægt að setja „<ph name="APP_NAME" />“ upp vegna þess að „<ph name="IMPORT_NAME" />“ leyfir það ekki</translation>
 <translation id="2150661552845026580">Bæta „<ph name="EXTENSION_NAME" />“ við?</translation>
 <translation id="2159915644201199628">Ekki var hægt að afkóða mynd: „<ph name="IMAGE_NAME" />“</translation>

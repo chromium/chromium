@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1184166532603925201">Quando sei in modalità Incognito, Chrome impedisce ai siti di utilizzare i cookie di terze parti</translation>
+<translation id="1365023215312302966">I siti non possono utilizzare i cookie di terze parti per personalizzare contenuti e annunci, né per monitorare le tue attività su altri siti</translation>
 <translation id="1569440020357229235">Quando sei in modalità Incognito, i siti non possono utilizzare i cookie di terze parti. Se un sito che si basa su questi cookie non funziona, puoi <ph name="BEGIN_LINK" />provare a concedere a quel sito l'accesso temporaneo ai cookie di terze parti<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
 <translation id="2183376768278472507">Se un sito non funziona come previsto, puoi provare a consentire i cookie di terze parti del sito specifico che stai visitando</translation>
 <translation id="2235344399760031203">I cookie di terze parti sono bloccati</translation>
+<translation id="2360633687155619995">I siti non possono utilizzare i cookie di terze parti per personalizzare contenuti e annunci, né per monitorare le tue attività su altri siti. Alcune funzionalità del sito potrebbero non funzionare come previsto.</translation>
 <translation id="2496115946829713659">I siti possono utilizzare i cookie di terze parti per personalizzare contenuti e annunci e conoscere le azioni che esegui su altri siti</translation>
 <translation id="3045333309254072201">Quando sei in modalità Incognito, i siti non possono utilizzare i cookie di terze parti. Se un sito che si basa su questi cookie non funziona, puoi <ph name="START_LINK" />provare a concedere a quel sito l'accesso temporaneo ai cookie di terze parti<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">I siti che si basano su cookie di terze parti dovrebbero funzionare come previsto</translation>

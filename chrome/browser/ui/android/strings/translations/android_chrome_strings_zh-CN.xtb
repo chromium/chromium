@@ -515,6 +515,7 @@
 <translation id="2996682533106928201">点按即可忽略</translation>
 <translation id="2996809686854298943">必须提供网址</translation>
 <translation id="3024215143424744261">已关闭阅读模式偏好设置</translation>
+<translation id="3024277805447899099">预览图片</translation>
 <translation id="3026955690410463085">包括链接</translation>
 <translation id="3027950907978057636">来自<ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">无预加载</translation>
@@ -787,6 +788,7 @@
 <translation id="4162867837470729563">分享选项列表已全屏打开。</translation>
 <translation id="4164642020717536140">快速且安全的网页浏览体验</translation>
 <translation id="4165077084524712774">更多工具</translation>
+<translation id="4169156312706405526">附加云端硬盘中的文件</translation>
 <translation id="4170577491341606575">正在获取您的数据\u2026</translation>
 <translation id="4172051516777682613">一律显示</translation>
 <translation id="4176838562184310003">Chrome 未正确关闭，可以尝试恢复您丢失的窗口和标签页。恢复后，部分窗口可能会最小化。</translation>
@@ -1030,6 +1032,7 @@
 <translation id="5040262127954254034">隐私权</translation>
 <translation id="504456571576643789">注意事项</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{已选择 <ph name="WINDOW_COUNT_ONE" /> 个窗口}other{已选择 <ph name="WINDOW_COUNT_NORMAL" /> 个窗口}}</translation>
+<translation id="5058506215037547387">预览页面</translation>
 <translation id="506254248375231072">没有任何标签页</translation>
 <translation id="5075939510584558547">直接保存，不加密</translation>
 <translation id="5078638979202084724">为所有标签页添加书签</translation>
@@ -1255,6 +1258,7 @@
 <translation id="604996488070107836">出现未知错误，未能下载 <ph name="FILE_NAME" />。</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="606985262342505139">标签页底部动作条已全屏打开</translation>
+<translation id="6070608977567243308">使用 Google 智能镜头识图购物</translation>
 <translation id="6071995715087444295">若要检查是否存在已泄露的密码，请登录您的 Google 账号</translation>
 <translation id="6078323886959318429">添加快捷方式</translation>
 <translation id="6085886413119427067">确定如何通过安全连接来连接到网站</translation>
@@ -1302,6 +1306,7 @@
 <translation id="6232535412751077445">如果您启用了“不跟踪”，您的浏览流量中将会包含一项请求。具体影响取决于网站是否会回应该请求以及如何解读该请求。
 
 例如：某些网站在收到该请求后，可能会向您展示相应的广告（这些广告并不是根据您访问过的其他网站而展示的）。许多网站仍会出于一些目的收集并使用您的浏览数据，例如，为了提高安全性，为了提供相关内容、广告和推荐内容，以及为了生成报告统计信息。</translation>
+<translation id="6235349850462976369">使用 Google 智能镜头翻译图片</translation>
 <translation id="623755660902014047">朗读模式</translation>
 <translation id="6246073558347462570">上下文弹窗</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>

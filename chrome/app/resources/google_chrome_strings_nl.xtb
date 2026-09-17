@@ -231,6 +231,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="3112458742631356345">Chrome heeft deze download geblokkeerd, omdat het bestand niet vaak wordt gedownload en misschien gevaarlijk is</translation>
 <translation id="3119573284443908657">Chrome heeft deze download geblokkeerd, omdat het archiefbestand andere bestanden bevat die misschien malware verbergen</translation>
 <translation id="3124332159330678621">Pas Chrome aan om je browser een nieuwe look te geven</translation>
+<translation id="3125851611828811913">Zoek en stel vragen vanaf elke locatie, zelfs als Chrome is geminimaliseerd. Hiermee kan Chrome op de achtergrond worden uitgevoerd.</translation>
 <translation id="3130333203120345554">Nieuwe zoekopdracht</translation>
 <translation id="3135560418014806498">Chrome-profiel toevoegen</translation>
 <translation id="3137969841538672700">Sleep om te zoeken</translation>
@@ -387,6 +388,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="4793679854893018356">Meer informatie over hoe Chrome je beschermt</translation>
 <translation id="4799870290441980300">Zet extra functies aan om de sterkste beveiliging van Chrome te bieden</translation>
 <translation id="4828579605166583682">Google Chrome probeert bestaande wachtwoorden te vervangen. Typ je Windows-wachtwoord om dit toe te staan.</translation>
+<translation id="4836321460899997044">Chrome-profiel</translation>
 <translation id="4842397268809523050">Chrome OS Flex kan je gegevens niet synchroniseren omdat synchronisatie niet beschikbaar is voor je domein.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> is al ingelogd.  Als je je browsegegevens gescheiden wilt houden, log je in Chrome in op je eigen profiel als <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Als je je scherm wilt delen, sta je schermopname voor Chrome toe in Systeeminstellingen</translation>
@@ -502,6 +504,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6014316319780893079">Met <ph name="BEGIN_LINK" />tools van Chrome<ph name="END_LINK" /> kun je beveiligd browsen en de controle behouden</translation>
 <translation id="6018578474045062808">Probeer Google Lens met Chrome op je telefoon</translation>
 <translation id="6022659036123304283">Personaliseer Chrome voor jou</translation>
+<translation id="6024930613143833266">Overal zoeken met Chrome</translation>
 <translation id="6025087594896450715">Google Chrome wordt over <ph name="REMAINING_TIME" /> opnieuw opgestart</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="604424701295382420">Vastgezet. Je krijgt weer toegang tot Google Lens via de nieuwe knop op de werkbalk</translation>
@@ -555,6 +558,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6434035853014503219">Bedankt dat je Chrome hebt gekozen als je standaardbrowser.</translation>
 <translation id="6438015621983209660">Gebruik de uitgebreide versie van Safe Browsing met Chrome op je telefoon</translation>
 <translation id="6442774133615368941">Winkel, vertaal en herken wat je ziet met je camera in de Chrome iOS-app</translation>
+<translation id="6446105560007692480">om te zoeken met Chrome of aan te passen in <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" /></translation>
 <translation id="6448835208126432197">Gebruik de sneltoets om een deel van het scherm te selecteren in Gemini in Chrome.</translation>
 <translation id="6473905796280459355">Naar de pagina Over Chrome</translation>
 <translation id="6481963882741794338">Koppel Chrome en andere Google-services voor personalisatie en andere doeleinden</translation>
@@ -576,6 +580,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6612152958212564387">Je stuurt geen gebruiksstatistieken en crashrapporten naar Google. <ph name="BEGIN_LINK" />Beheren<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Houd je wachtwoorden, bookmarks en geschiedenis perfect gesynchroniseerd op al je apparaten door Chrome in te stellen als je standaardbrowser.</translation>
 <translation id="6631524303639368205">Ga verder waar je gebleven was: Chrome heeft je tabbladen uit je vorige sessie hersteld. Je kunt dit uitzetten in</translation>
+<translation id="6632012506031284914">om te zoeken met Chrome.</translation>
 <translation id="6632473616050862500">Chrome OS Flex wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Wijzigingen in deze instelling worden toegepast zodra Chrome opnieuw wordt opgestart.</translation>
 <translation id="6660596345553328257">Inloggen bij Chrome?</translation>
@@ -592,6 +597,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6750954913813541382">Voor het verbeteren van spelfouten verzendt Chrome de tekst die je in de browser typt naar Google</translation>
 <translation id="6760235774835597023">Versnelt sites met de V8-engine van Chrome, maar maakt Chrome iets minder goed bestand tegen aanvallen. Deze instelling staat aan.</translation>
 <translation id="677276454032249905">Chrome toch sluiten?</translation>
+<translation id="6777654166489463890">Stel vragen over content buiten Chrome, zoals een andere app of een bestand dat je hebt geopend</translation>
 <translation id="6794858689789885890">Sitegegevens altijd verwijderen van je apparaat als je Chrome sluit</translation>
 <translation id="6800285125190089494">Log sneller in op sites met opgeslagen wachtwoorden voor Chrome op iOS</translation>
 <translation id="6831043979455480757">Vertalen</translation>
@@ -644,6 +650,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="7285990705317078173">Download Chrome op je telefoon om prijzen te volgen en meldingen te krijgen als de prijs daalt op een site</translation>
 <translation id="7288567540154601580">Tabbladen en extensies</translation>
 <translation id="7296210096911315575">Belangrijke informatie over gebruik en veiligheid</translation>
+<translation id="7299899569525778554">Zoeken vanaf desktop</translation>
 <translation id="7302361266603927550">Sommige van je Chrome-gegevens zijn nog niet opgeslagen in je Google-account. Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegevens verwijderd.</translation>
 <translation id="7306401458628386911">Begin meteen met browsen: Chrome kan nu worden gestart als Windows wordt opgestart.</translation>
 <translation id="7308322188646931570">Chrome heeft toegang tot de opslag nodig om bestanden te kunnen downloaden</translation>

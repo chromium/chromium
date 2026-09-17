@@ -148,6 +148,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2575822587468774919">Vyberte niečo na vyhľadávanie podľa obrázkov</translation>
 <translation id="2576118232315942160">Ak chcete mať heslá a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa do prehliadača Chromium</translation>
 <translation id="2587622539943955767">Naskenujte QR kód telefónom, stiahnite si Chromium a prihláste sa do svojho účtu Google.</translation>
+<translation id="2587885422541096572">na vyhľadávanie pomocou prehliadača Chromium.</translation>
 <translation id="2592940277904433508">Pokračovať v používaní prehliadača Chromium</translation>
 <translation id="259935314519650377">Stiahnutý inštalátor sa nepodarilo uložiť do vyrovnávacej pamäte. Chyba: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Systém</translation>
@@ -780,6 +781,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
 <translation id="8980139959902937527">Majte bezpečnosť Googlu k dispozícii kdekoľvek v aplikácii Chromium v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Chromium nie je možné spustiť, pretože pri otváraní profilu nastala chyba. Skúste Chromium reštartovať.</translation>
+<translation id="8981886272598860786">na vyhľadávanie pomocou prehliadača Chromium alebo prispôsobenie v <ph name="BEGIN_LINK" />Nastaveniach<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Spravovať profily prehliadača Chromium</translation>
 <translation id="8993855408334954620">Pomocou klávesnice môžete prechádzať medzi Gemini v prehliadači Chromium a otvorenou kartou.</translation>
 <translation id="9018218886431812662">Inštalácia bola dokončená</translation>

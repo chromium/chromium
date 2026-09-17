@@ -515,6 +515,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2996682533106928201">I-tap para i-dismiss</translation>
 <translation id="2996809686854298943">Kinakailangan ang URL</translation>
 <translation id="3024215143424744261">Nakasara ang mga preference sa Reading mode</translation>
+<translation id="3024277805447899099">I-preview ang larawan</translation>
 <translation id="3026955690410463085">Kasama ang link</translation>
 <translation id="3027950907978057636">Mula sa <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Walang pag-preload</translation>
@@ -1031,6 +1032,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="504456571576643789">Mga bagay na dapat isaalang-alang</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> Window ang Napili}one{<ph name="WINDOW_COUNT_NORMAL" /> Window ang Napili}other{<ph name="WINDOW_COUNT_NORMAL" /> na Window ang Napili}}</translation>
+<translation id="5058506215037547387">I-preview ang page</translation>
 <translation id="506254248375231072">Walang tab</translation>
 <translation id="5075939510584558547">I-save nang walang pag-encrypt</translation>
 <translation id="5078638979202084724">I-bookmark ang lahat ng mga tab</translation>
@@ -1256,6 +1258,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="604996488070107836">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa isang hindi alam na error.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="606985262342505139">Binuksan nang buo ang Bottom Sheet ng Tab</translation>
+<translation id="6070608977567243308">Bilhin gamit ang Google Lens</translation>
 <translation id="6071995715087444295">Para tingnan kung may mga nakompromisong password, mag-sign in sa iyong Google Account</translation>
 <translation id="6078323886959318429">Magdagdag ng shortcut</translation>
 <translation id="6085886413119427067">Tinutukoy kung paano kumonekta sa mga website sa secure na koneksyon</translation>
@@ -1303,6 +1306,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="6232535412751077445">Kapag na-enable mo ang “Huwag Subaybayan,” magsasama ng isang kahilingan sa trapiko ng iyong pagba-browse. Ang anumang magiging epekto ay dedepende sa pagtugon at pagbibigay-kahulugan ng website sa nabanggit na kahilingan.
 
 Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan ng pagpapakita sa iyo ng mga ad na hindi ibinatay sa iba pang nabisita mo nang website. Kokolektahin at gagamitin pa rin ng maraming website ang iyong data sa pag-browse - halimbawa, para mapahusay ang seguridad, makapagpakita ng content, mga ad, at rekomendasyon, at makabuo ng mga istatistika sa pag-uulat.</translation>
+<translation id="6235349850462976369">Isalin gamit ang Google Lens</translation>
 <translation id="623755660902014047">Reading mode</translation>
 <translation id="6246073558347462570">Popup window ng konteksto</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>

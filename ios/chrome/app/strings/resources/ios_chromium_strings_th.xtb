@@ -142,6 +142,7 @@
 <translation id="3855938650519180865">มีอะไรใหม่ใน Chromium</translation>
 <translation id="3886689467633467988">ลงชื่อเข้าใช้เว็บไซต์นี้และ Chromium เพื่อรับบุ๊กมาร์กและอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="3949514465204582407">เคล็ดลับสำหรับ Chromium: เรียกดูรหัสผ่านในแอปใดก็ได้</translation>
+<translation id="3983298990898629929">ตั้ง Chromium เป็นเบราว์เซอร์เริ่มต้นเพื่อเปิดลิงก์ด้วยการแตะเพียงครั้งเดียว</translation>
 <translation id="4005283307739974863">เปิดและเรียกใช้การตรวจสอบความปลอดภัยใน Chromium</translation>
 <translation id="4043291146360695975">รหัสผ่านจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="4046625794029820944">หยุดคัดลอก URL ตั้ง Chromium เป็นเบราว์เซอร์เริ่มต้นเพื่อโหลดหน้าเว็บโดยตรง</translation>
@@ -273,6 +274,7 @@
 <translation id="6680609900732453726">รักษาความเป็นส่วนตัวในการท่องเว็บด้วยการตรวจสอบสิทธิ์อุปกรณ์เมื่อคุณปิด Chromium</translation>
 <translation id="6696512128741076907">ตั้ง Chromium เป็นค่าเริ่มต้นเพื่อเปิดลิงก์จากแอปอื่นๆ ได้ทันที</translation>
 <translation id="6752854822223394465">องค์กรของคุณกำลังตั้งค่า Chromium...</translation>
+<translation id="6777348401413221846">วิดีโอแบบเต็มหน้าจอแสดงวิธีการตั้งค่า Chromium เป็นเบราว์เซอร์เริ่มต้น: เปิดการตั้งค่า Chromium ใน iOS แตะ "แอปเบราว์เซอร์เริ่มต้น" แล้วเลือก Chromium</translation>
 <translation id="6794054469102824109">เปิดเกมไดโนเสาร์ของ Chromium</translation>
 <translation id="6820823224820483452">Chromium ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้</translation>
 <translation id="6830782797004194206">ลงชื่อเข้าใช้ได้เร็วขึ้นด้วยฟีเจอร์ป้อนข้อความอัตโนมัติของ Chromium</translation>
@@ -302,6 +304,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">ระบบจะบันทึกรหัสผ่านไว้ในเครื่องมือจัดการรหัสผ่านสำหรับ <ph name="EMAIL" /></translation>
 <translation id="7434848749522628428">ระบบจะบันทึกพาสคีย์นี้ไว้ในเครื่องมือจัดการรหัสผ่านสำหรับ <ph name="USER_EMAIL" /></translation>
+<translation id="7453822113116681031">กำหนดให้ Chromium เป็นเบราว์เซอร์เริ่มต้นเพื่อเปิดลิงก์ด้วยการแตะเพียงครั้งเดียว</translation>
 <translation id="7504829997542308412">เปิด Chromium</translation>
 <translation id="7531461704633548377">จาก Chromium</translation>
 <translation id="7554983317097061001">เคล็ดลับสำหรับ Chromium: ย้าย Chromium ไปที่แถบแอป</translation>

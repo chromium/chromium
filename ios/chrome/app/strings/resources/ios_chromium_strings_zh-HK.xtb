@@ -142,6 +142,7 @@
 <translation id="3855938650519180865">Chromium 的新功能</translation>
 <translation id="3886689467633467988">登入此網站和 Chromium，即可在所有裝置上存取書籤及其他設定。</translation>
 <translation id="3949514465204582407">Chromium 提示：在任何應用程式中取得密碼</translation>
+<translation id="3983298990898629929">將 Chromium 設定為預設瀏覽器，輕按一下即可開啟連結</translation>
 <translation id="4005283307739974863">在 Chromium 中開啟並執行「安全檢查」。</translation>
 <translation id="4043291146360695975">密碼只會儲存至此裝置上的「密碼管理工具」。</translation>
 <translation id="4046625794029820944">將 Chromium 設定為預設瀏覽器，即可直接載入網頁，省卻複製網址的麻煩。</translation>
@@ -273,6 +274,7 @@
 <translation id="6680609900732453726">裝置驗證功能讓你在關閉 Chromium 時確保瀏覽資料保密</translation>
 <translation id="6696512128741076907">將 Chromium 設定為預設瀏覽器，即時開啟其他應用程式中的連結。</translation>
 <translation id="6752854822223394465">您的機構正在設定 Chromium…</translation>
+<translation id="6777348401413221846">全螢幕影片說明點樣將 Chromium 設定做預設瀏覽器：喺 iOS 度打開 Chromium 設定，㩒 [預設瀏覽器應用程式]，然後揀 [Chromium]。</translation>
 <translation id="6794054469102824109">開啟 Chromium 恐龍遊戲。</translation>
 <translation id="6820823224820483452">Chromium 無法檢查所有密碼。請明天再試。</translation>
 <translation id="6830782797004194206">使用 Chromium 自動填入功能快速登入</translation>
@@ -302,6 +304,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">系統會將密碼儲存在 <ph name="EMAIL" /> 的「密碼管理工具」。</translation>
 <translation id="7434848749522628428">此密鑰會儲存至 <ph name="USER_EMAIL" /> 的「密碼管理工具」</translation>
+<translation id="7453822113116681031">將 Chromium 設定為預設瀏覽器，輕按一下即可開啟連結</translation>
 <translation id="7504829997542308412">開啟 Chromium</translation>
 <translation id="7531461704633548377">來自 Chromium</translation>
 <translation id="7554983317097061001">Chromium 提示：將 Chromium 移至捷徑列</translation>

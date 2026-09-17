@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">অভিভাৱকৰ অনুমতিৰ অনুৰোধটো বিফল হৈছে।</translation>
 <translation id="1803557475693955505">নেপথ্যৰ পৃষ্ঠা ’<ph name="BACKGROUND_PAGE" />’ ল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="1875387611427697908">ইয়াক কেৱল <ph name="CHROME_WEB_STORE" />ৰ পৰাহে যোগ কৰিব পাৰি</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (এক্সটেনশ্বন আইডি "<ph name="EXTENSION_ID" />") কম বিশ্বাসযোগ্য পৰিৱেশত নীতি-অনুসৰি ইনষ্টল কৰিব নোৱাৰি।</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />"এ অনুমতি প্ৰদান নকৰাৰ বাবে "<ph name="APP_NAME" />" ইনষ্টল কৰিব পৰা নগ’ল</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" যোগ কৰিবনে?</translation>
 <translation id="2159915644201199628">ছবি ডিক’ড কৰিব পৰা নগ’ল: '<ph name="IMAGE_NAME" />'</translation>

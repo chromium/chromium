@@ -1518,6 +1518,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3577473026931028326">Jotain meni pieleen. Yritä uudelleen.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome ilmoittaa, kun tämä sivu on valmis. &lt;a&gt;Peru&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Lisää välilehdet automaattisesti</translation>
 <translation id="3582930987043644930">Lisää nimi</translation>
 <translation id="3583757800736429874">&amp;Toista siirto</translation>
 <translation id="3584299510153766161">Kaksi reikää alareunassa</translation>
@@ -1593,6 +1594,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Ladataan...</translation>
 <translation id="3709599264800900598">Kopioimasi teksti</translation>
+<translation id="3711223220609269738">Uusi eristetty välilehti</translation>
 <translation id="3711430313228789376">Chrome-selain yrittää näyttää salasanoja</translation>
 <translation id="3711895659073496551">Keskeytä</translation>
 <translation id="3712004750972384495">Tallennetaan näyttöä</translation>
@@ -1611,6 +1613,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3727309136762649052">Nimitila</translation>
 <translation id="3727850735097852673">Jos haluat käyttää Google Salasanoja macOS-avainnipun kanssa, käynnistä Chrome uudelleen ja salli pääsy avainnippuun. Välilehdet avataan uudelleen uudelleenkäynnistyksen jälkeen.</translation>
 <translation id="3728173127485570463">Chrome-selain ei enää vaadi sormenjälkeä salasanojen automaattiseen täyttöön</translation>
+<translation id="3729811201279509483">Lisää välilehtiä manuaalisesti</translation>
 <translation id="3736564442532774454">Chrome-selain yrittää täyttää arkaluontoisia tietoja: <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Järjestelmänvalvoja ylläpitää selaintasi.</translation>
 <translation id="3739842843727261045">Tykkään-painike lähettää palautetta ja kertoo, että tykkäät näistä tuloksista</translation>
@@ -2774,6 +2777,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5649053991847567735">Automaattiset lataukset</translation>
 <translation id="5651323159439184939">Rei'itetty syöte</translation>
 <translation id="5653681867130739344">Päivitä henkilötodistus turvallisesti Google Walletissa</translation>
+<translation id="5653744563415531641">Tallenna tietosi, niin voit hoitaa asioita nopeammin, esimerkiksi täyttää lomakkeita Googlen tuotteissa. Voit <ph name="MANAGE_WALLET_SETTINGS_LINK" />, joita <ph name="ACCOUNT" /> käyttää.</translation>
 <translation id="5654927323611874862">Lähetetyn virheraportin tunnus:</translation>
 <translation id="5654965123204121933">URL-osoite ei sisällä vaadittua korvaavaa merkkijonoa <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Sähköposti</translation>
@@ -3219,6 +3223,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6410264514553301377">Anna kortin <ph name="CREDIT_CARD" /> vanhentumispäivä ja CVC</translation>
 <translation id="6411107829285739505">A4 x 8</translation>
 <translation id="6412543105195503444">Vanhemman hyväksyntäikkuna</translation>
+<translation id="6413532517183895572">muuttaa Wallet-asetuksia</translation>
 <translation id="6415778972515849510">Chromium voi auttaa suojaamaan Google-tiliäsi ja vaihtamaan salasanasi.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Varmista, että kaikki tärkeä liiketoiminta- tai henkilökohtainen data on tallennettu ulkoisesti.</translation>

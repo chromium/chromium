@@ -515,6 +515,7 @@
 <translation id="2996682533106928201">ਖਾਰਜ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="2996809686854298943">URL ਲੁੜੀਂਦਾ</translation>
 <translation id="3024215143424744261">ਪੜ੍ਹਨ ਸੰਬੰਧੀ ਮੋਡ ਦੀਆਂ ਤਰਜੀਹਾਂ ਬੰਦ ਕੀਤੀਆਂ ਗਈਆਂ</translation>
+<translation id="3024277805447899099">ਚਿੱਤਰ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ</translation>
 <translation id="3026955690410463085">ਲਿੰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> ਤੋਂ</translation>
 <translation id="3029276696788198026">ਕੋਈ ਪ੍ਰੀਲੋਡਿੰਗ ਨਹੀਂ</translation>
@@ -787,6 +788,7 @@
 <translation id="4162867837470729563">ਸਾਂਝਾਕਰਨ ਵਿਕਲਪਾਂ ਦੀ ਸੂਚੀ ਪੂਰੀ ਸਕ੍ਰੀਨ 'ਤੇ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
 <translation id="4164642020717536140">ਤੇਜ਼ ਅਤੇ ਸੁਰੱਖਿਅਤ ਵੈੱਬ ਬ੍ਰਾਊਜ਼ਿੰਗ</translation>
 <translation id="4165077084524712774">ਹੋਰ ਟੂਲ</translation>
+<translation id="4169156312706405526">Drive ਤੋਂ ਫ਼ਾਈਲਾਂ ਨੱਥੀ ਕਰੋ</translation>
 <translation id="4170577491341606575">ਤੁਹਾਡਾ ਡਾਟਾ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ\u2026</translation>
 <translation id="4172051516777682613">ਹਮੇਸ਼ਾਂ ਦਿਖਾਓ</translation>
 <translation id="4176838562184310003">Chrome ਸਹੀ ਢੰਗ ਨਾਲ ਬੰਦ ਨਹੀਂ ਹੋਇਆ ਅਤੇ ਇਹ ਤੁਹਾਡੀਆਂ ਬੰਦ ਕੀਤੀਆਂ ਗਈਆਂ ਵਿੰਡੋਆਂ ਅਤੇ ਟੈਬਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦਾ ਹੈ। ਮੁੜ-ਬਹਾਲ ਕਰਨ 'ਤੇ ਕੁਝ ਵਿੰਡੋਆਂ ਨੂੰ ਛੋਟਾ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
@@ -1030,6 +1032,7 @@
 <translation id="5040262127954254034">ਪਰਦੇਦਾਰੀ</translation>
 <translation id="504456571576643789">ਵਿਚਾਰਨ ਵਾਲੀਆਂ ਚੀਜ਼ਾਂ</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> ਵਿੰਡੋ ਚੁਣੀ ਗਈ}one{<ph name="WINDOW_COUNT_NORMAL" /> ਵਿੰਡੋ ਚੁਣੀ ਗਈਆਂ}other{<ph name="WINDOW_COUNT_NORMAL" /> ਵਿੰਡੋਆਂ ਚੁਣੀਆਂ ਗਈਆਂ}}</translation>
+<translation id="5058506215037547387">ਪੰਨੇ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ</translation>
 <translation id="506254248375231072">ਕੋਈ ਟੈਬ ਨਹੀਂ</translation>
 <translation id="5075939510584558547">ਇਨਕ੍ਰਿਪਸ਼ਨ ਤੋਂ ਬਿਨਾਂ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5078638979202084724">ਸਾਰੀਆਂ ਟੈਬਾਂ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ</translation>

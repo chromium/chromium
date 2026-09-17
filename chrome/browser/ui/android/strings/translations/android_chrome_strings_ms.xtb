@@ -514,6 +514,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2996291259634659425">Buat ungkapan laluan</translation>
 <translation id="2996682533106928201">Ketik untuk mengetepikan</translation>
 <translation id="2996809686854298943">URL yang diperlukan</translation>
+<translation id="3007318536447999974">Untuk bercakap dengan Gemini, beri Gemini kebenaran untuk menggunakan mikrofon anda. Anda juga boleh mengurus pilihan ini dalam <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Pilihan mod membaca ditutup</translation>
 <translation id="3024277805447899099">Pratonton imej</translation>
 <translation id="3026955690410463085">Sertakan pautan</translation>
@@ -1815,7 +1816,9 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8058746566562539958">Buka dalam tab Chrome baharu</translation>
 <translation id="8062594758852531064">Pramuat lanjutan:</translation>
 <translation id="8063895661287329888">Gagal menambah penanda halaman.</translation>
+<translation id="8064081231614696741">Pilih folder lain</translation>
 <translation id="8066816452984416180">Tandai halaman ini dengan cepat. Untuk mengedit pintasan ini, sentuh dan tahan butang.</translation>
+<translation id="8068041627541121907">Gemini mahu menggunakan mikrofon anda</translation>
 <translation id="8072436850275034464">Anda boleh membuka semula tab yang telah anda tutup baru-baru ini dari mana-mana sahaja anda menggunakan Chrome</translation>
 <translation id="8073388330009372546">Buka imej dalam tab baharu</translation>
 <translation id="8076492880354921740">Tab</translation>

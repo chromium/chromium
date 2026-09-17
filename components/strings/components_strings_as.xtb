@@ -1427,6 +1427,7 @@
 <translation id="3432601291244612633">পৃষ্ঠাখন বন্ধ কৰক</translation>
 <translation id="3434025015623587566">Google Password Managerক অধিক এক্সেছৰ আৱশ্যক</translation>
 <translation id="343474037147570563">আপুনি আপল’ড বা সংলগ্ন কৰা ফাইলসমূহ বিশ্লেষণৰ বাবে Google Cloud বা তৃতীয় পক্ষলৈ পঠিওৱা হয়। উদাহৰণস্বৰূপে, সেইবিলাক সংবেদনশীল ডেটা বা মালৱেৰৰ বাবে স্কেন কৰা হ’ব পাৰে আৰু কোম্পানীৰ নীতিৰ ওপৰত ভিত্তি কৰি ষ্ট’ৰ কৰা হ’ব পাৰে আৰু প্ৰশাসকৰ বাবে দৃশ্যমান হ’ব পাৰে।</translation>
+<translation id="3435267628744367511">টেব সলনি নকৰাকৈ তথ্য বিচাৰিবলৈ আৰু পূৰ কৰিবলৈ যিকোনো ফৰ্মত Ctrl দুবাৰ টিপক</translation>
 <translation id="3435557549311968410">অবিৰত (Short)</translation>
 <translation id="3435738964857648380">সুৰক্ষা</translation>
 <translation id="3436125638121079308">এই থ্ৰেডটোত উন্নত সঁহাৰিৰ বাবে স্বয়ংক্ৰিয়ভাৱে প্ৰাসংগিক টেবসমূহ শ্বেয়াৰ কৰিব নেকি?</translation>
@@ -1514,6 +1515,7 @@
 <translation id="3577473026931028326">কিবা ভুল হ’ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">এই পৃষ্ঠাটো সাজু হ‘লে Chromeএ আপোনাক জনাব। &lt;a&gt;বাতিল কৰক&lt;/a&gt;</translation>
+<translation id="3581499772329034229">স্বয়ংক্ৰিয়ভাৱে টেব যোগ দিয়ক</translation>
 <translation id="3582930987043644930">নাম যোগ কৰক</translation>
 <translation id="3583757800736429874">&amp;স্থানান্তৰ কৰাটো ৰিডু কৰক</translation>
 <translation id="3584299510153766161">তলৰ অংশত দুবাৰ পাঞ্চ কৰক</translation>
@@ -1589,6 +1591,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">ল'ড হৈ আছে...</translation>
 <translation id="3709599264800900598">আপুনি প্ৰতিলিপি কৰা পাঠ</translation>
+<translation id="3711223220609269738">নতুন আইচ’লেটেড টেব</translation>
 <translation id="3711430313228789376">Chrome ব্ৰাউজাৰে পাছৱৰ্ড দেখুৱাবলৈ চেষ্টা কৰি আছে</translation>
 <translation id="3711895659073496551">নিলম্বন কৰক</translation>
 <translation id="3712004750972384495">স্ক্ৰীনৰ ৰেকৰ্ডিং ছেভ কৰি থকা হৈছে</translation>
@@ -1607,6 +1610,7 @@
 <translation id="3727309136762649052">নামৰ স্থান</translation>
 <translation id="3727850735097852673">macOS কীচেইনৰ জৰিয়তে Google Password Manager ব্যৱহাৰ কৰিবলৈ, Chrome পুনৰ লঞ্চ কৰক আৰু কীচেইন এক্সেছ কৰাৰ অনুমতি দিয়ক। পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ টেবসমূহ পুনৰ খোল খাব।</translation>
 <translation id="3728173127485570463">Chromeক পাছৱৰ্ডসমূহ স্বয়ংক্রিয়ভাৱে পূৰ কৰিবলৈ আপোনাৰ ফিংগাৰপ্ৰিণ্টৰ আৰু প্ৰয়োজন নাই</translation>
+<translation id="3729811201279509483">মেনুৱেলী টেব যোগ দিয়ক</translation>
 <translation id="3736564442532774454">Chrome ব্ৰাউজাৰে <ph name="APP_NAME" />ত আপোনাৰ সংবেদনশীল তথ্য পূৰ কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="3738166223076830879">আপোনাৰ প্ৰশাসকে আপোনাৰ ব্ৰাউজাৰটো পৰিচালনা কৰে।</translation>
 <translation id="3739842843727261045">থাম্বছ আপে আপুনি এই ফলাফলসমূহ লাইক কৰা বুলি মতামত দাখিল কৰে</translation>
@@ -2769,6 +2773,7 @@
 <translation id="5649053991847567735">স্বয়ংক্ৰিয়ভাৱে হোৱা ডাউনল’ড</translation>
 <translation id="5651323159439184939">ট্ৰেক্টৰ ফীড</translation>
 <translation id="5653681867130739344">Google Walletত পৰিচয় পত্ৰ সুৰক্ষিতভাৱে আপডে’ট কৰক</translation>
+<translation id="5653744563415531641">আপোনাৰ তথ্য ছেভ কৰক আৰু Googleৰ সমগ্ৰ প্ৰ’ডাক্টত ফৰ্ম পূৰ কৰাৰ দৰে কামবোৰ দ্ৰুততাৰে কৰক। আপুনি <ph name="ACCOUNT" />ৰ বাবে <ph name="MANAGE_WALLET_SETTINGS_LINK" /> কৰিব পাৰে।</translation>
 <translation id="5654927323611874862">আপল'ড কৰা ক্রেশ্ব ৰিপ'র্টৰ আইডি:</translation>
 <translation id="5654965123204121933">URLত প্ৰয়োজনীয় প্ৰতিস্থাপনৰ ষ্ট্ৰিং নাই <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ইমেইল</translation>
@@ -2892,6 +2897,7 @@
 <translation id="5884465125445718607">এনভেল’প চীনা #৬</translation>
 <translation id="5887400589839399685">কাৰ্ড ছেভ কৰা হ’ল</translation>
 <translation id="5887687176710214216">শেষবাৰ কালি চাইছিল</translation>
+<translation id="5887791684215121787">টেব সলনি নকৰাকৈ তথ্য বিচাৰিবলৈ আৰু পূৰ কৰিবলৈ যিকোনো ফৰ্মত ⌘ ⌘ টিপক</translation>
 <translation id="5889251770650310375">আপোনাৰ অন্য ডিভাইচসমূহৰ ইতিহাস পাবলৈ এইগৰাকী আপুনি বুলি সত্যাপন কৰক আৰু আপোনাৰ ইতিহাস আৰু টেব ছিংক কৰক। আপুনি যিকোনো সময়তে ছেটিঙত ছিংক কৰা বন্ধ কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="5895187275912066135">জাৰি কৰা তাৰিখ</translation>
@@ -3213,6 +3219,7 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />ৰ ম্যাদ উকলা তাৰিখ আৰু CVC দিয়ক</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">অভিভাৱকৰ অনুমোদন সম্পৰ্কীয় ডায়লগ</translation>
+<translation id="6413532517183895572">আপোনাৰ Walletৰ ছেটিং পৰিচালনা কৰক</translation>
 <translation id="6415778972515849510">Chromiumএ আপোনাৰ Google একাউণ্ট সুৰক্ষিত কৰাত আৰু আপোনৰ পাছৱৰ্ড সলনি কৰাত সহায় কৰিব পাৰে।</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">যিকোনো গুৰুত্বপূৰ্ণ ব্যৱসায় বা ব্যক্তিগত তথ্য বাহ্যিকভাৱে ষ্ট’ৰ কৰাটো নিশ্চিত কৰক।</translation>

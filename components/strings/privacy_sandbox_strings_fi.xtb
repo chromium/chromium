@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="1184166532603925201">Kun olet incognito-tilassa, Chrome estää sivustoja käyttämästä kolmannen osapuolen evästeitä</translation>
+<translation id="1365023215312302966">Sivustot voivat käyttää kolmannen osapuolen evästeitä personoidakseen sisältöä ja mainoksia sekä saadakseen tietoa toiminnoistasi muilla sivustoilla</translation>
 <translation id="1569440020357229235">Kun olet incognito-tilassa, sivustot eivät voi käyttää kolmannen osapuolen evästeitä. Jos näihin evästeisiin luottava sivusto ei toimi, voit <ph name="BEGIN_LINK" />kokeilla antaa sille väliaikaisen pääsyn kolmannen osapuolen evästeisiin<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Joidenkin sivustojen ominaisuudet eivät välttämättä toimi</translation>
 <translation id="2183376768278472507">Jos sivusto ei toimi odotetulla tavalla, voit kokeilla sallia kolmannen osapuolen evästeet tietyllä sivustolla</translation>
 <translation id="2235344399760031203">Kolmannen osapuolen evästeet on estetty</translation>
+<translation id="2360633687155619995">Sivustot voivat käyttää kolmannen osapuolen evästeitä personoidakseen sisältöä ja mainoksia sekä saadakseen tietoa toiminnoistasi muilla sivustoilla Jotkin sivuston ominaisuudet eivät välttämättä toimi odotetulla tavalla.</translation>
 <translation id="2496115946829713659">Sivustot voivat käyttää kolmannen osapuolen evästeitä personoidakseen sisältöä ja mainoksia sekä saadakseen tietoa toiminnoistasi muilla sivustoilla</translation>
 <translation id="3045333309254072201">Kun olet incognito-tilassa, sivustot eivät voi käyttää kolmannen osapuolen evästeitä. Jos näihin evästeisiin luottava sivusto ei toimi, voit <ph name="START_LINK" />kokeilla antaa sille väliaikaisen pääsyn kolmannen osapuolen evästeisiin<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Kolmannen osapuolen evästeisiin perustuvien sivustojen pitäisi toimia odotetusti</translation>

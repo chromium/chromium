@@ -1342,6 +1342,7 @@
 <translation id="2026367923222947564">ಪೂರ್ಣ ಪುಟ</translation>
 <translation id="2026377162111110983">ಪ್ರದೇಶದ ಧ್ವನಿ</translation>
 <translation id="2028449514182362831">ಮೋಷನ್ ಸೆನ್ಸರ್‌ಗಳು ಅಗತ್ಯವಿರುವ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ</translation>
+<translation id="2029064269235798707">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="202918510990975568">ಸುರಕ್ಷತೆಯನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಲು ಮತ್ತು ಸೈನ್-ಇನ್ ಮಾಡಲು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="2030455719695904263">ಟ್ರ್ಯಾಕ್‌ಪ್ಯಾಡ್</translation>
 <translation id="2030803782168502207">ಸಾಧನದಿಂದ ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್ ತೆಗೆದುಹಾಕಿ</translation>
@@ -1433,6 +1434,7 @@
 <translation id="2111670510994270194">ಬಲಭಾಗದಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
 <translation id="2111778868023567359">ಈ ಪುಟದಲ್ಲಿ ನೀವು ಪುನಃ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ನೋಡುವುದಿಲ್ಲ</translation>
 <translation id="2112554630428445878">ಸುಸ್ವಾಗತ, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">macOS ನಿಂದ ಇಂಪೋರ್ಟ್ ಮಾಡಲಾದ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="21133533946938348">ಪಿನ್ ಟ್ಯಾಬ್</translation>
 <translation id="2113479184312716848">&amp;ಫೈಲ್ ತೆರೆಯಿರಿ...</translation>
@@ -1988,6 +1990,7 @@
 <translation id="252513908494776481">ಈ ಟ್ಯಾಬ್ ಕುರಿತು ಕೇಳಿ</translation>
 <translation id="2525746158911982776">ಸಿಸ್ಟಂನಲ್ಲಿ ಸಾಕಷ್ಟು ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳವಿಲ್ಲದ ಕಾರಣ ಅಪ್‌ಡೇಟ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="2525842906387880861">ಈ ಪುಟದಲ್ಲಿ ನೀವು ಪುನಃ ಸಲಹೆಗಳನ್ನು ನೋಡುವುದಿಲ್ಲ</translation>
+<translation id="2526346836766369775">ಹೊಸ ಐಸೋಲೇಟೆಡ್ &amp;ಟ್ಯಾಬ್</translation>
 <translation id="2526590354069164005">ಡೆಸ್ಕ್‌ಟಾಪ್</translation>
 <translation id="2526619973349913024">ಅಪ್‌ಡೇಟ್‌ಗಾಗಿ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="2527167509808613699">ಯಾವುದೇ ರೀತಿಯ ಸಂಪರ್ಕ</translation>
@@ -2273,6 +2276,7 @@
 <translation id="2740531572673183784">ಸರಿ</translation>
 <translation id="2740876196999178364">ಈ ಪಾಸ್‌ಕೀಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿಲ್ಲ.</translation>
 <translation id="2741912629735277980">UI ಅನ್ನು ಲಾಗಿನ್ ಪರದೆಯಲ್ಲಿ ಪ್ರದರ್ಶಿಸಿ</translation>
+<translation id="274229007420507506"><ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಇದೀಗ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="2743301740238894839">ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="2743378970365831481">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು Google Password Manager ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲು, ಸ್ಥಳ ಪಟ್ಟಿಯಲ್ಲಿರುವ ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ ಐಕಾನ್</translation>
@@ -2622,6 +2626,7 @@
 <translation id="3001614333383288217">{COUNT,plural, =0{ಯಾವುದೇ ಕೀಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲಾಗಿಲ್ಲ}=1{1 ಕಸ್ಟಮೈಸ್ ಮಾಡಿದ ಕೀ}one{{COUNT} ಕಸ್ಟಮೈಸ್ ಮಾಡಿದ ಕೀಗಳು}other{{COUNT} ಕಸ್ಟಮೈಸ್ ಮಾಡಿದ ಕೀಗಳು}}</translation>
 <translation id="3002864108328203174">Gemini ಕೆಳಭಾಗದ ಶೀಟ್ ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="3003144360685731741">ಆದ್ಯತೆಯ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
+<translation id="3003152206838282768">Chrome ನಲ್ಲಿ ನಿಮ್ಮ Gemini ಆ್ಯಪ್ ಕಾರ್ಯದಲ್ಲಿ ಕೆಲಸ ಮಾಡಲಾಗುತ್ತಿದೆ. ಇನ್ನಷ್ಟು ಅಪ್‌ಡೇಟ್‌ಗಳಿಗಾಗಿ Chrome ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="3003253259757197230">ನೀವು ಮುಂದೆ ಯಾವ ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಬಹುದು ಎಂಬುದನ್ನು ಊಹಿಸಲು ಮತ್ತು ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟದ ಕುರಿತಾದ ಹೆಚ್ಚುವರಿ ಮಾಹಿತಿಯನ್ನು ನಿಮಗೆ ತೋರಿಸಲು ನೀವು ಭೇಟಿ ನೀಡುವ URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="3003623123441819449">CSS ಕ್ಯಾಷ್</translation>
 <translation id="3003967365858406397">ಖಾಸಗಿ ವೈ-ಫೈ ಸಂಪರ್ಕವನ್ನು ನಿಮ್ಮ <ph name="PHONE_NAME" /> ರಚಿಸುತ್ತದೆ.</translation>
@@ -5070,6 +5075,7 @@
 <translation id="4864805589453749318">ಶಾಲಾ ಖಾತೆಯನ್ನು ಸೇರಿಸಲು ಅನುಮತಿ ಒದಗಿಸುತ್ತಿರುವ ಪೋಷಕರನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ)</translation>
 <translation id="486505726797718946">ಮೆಮೊರಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Chrome ನಲ್ಲಿ ನಿಮ್ಮ Gemini ಆ್ಯಪ್ ಕಾರ್ಯದಲ್ಲಿ ಕೆಲಸ ಮಾಡಲಾಗುತ್ತಿದೆ. ಇನ್ನಷ್ಟು ಅಪ್‌ಡೇಟ್‌ಗಳಿಗಾಗಿ Chrome ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="486635084936119914">ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ನಂತರ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕೆಲವು ಫೈಲ್ ಪ್ರಕಾರಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4868284252360267853">ಈ ಡೈಲಾಗ್ ಅನ್ನು ಪ್ರಸ್ತುತ ಫೋಕಸ್ ಮಾಡಲಾಗಿಲ್ಲ. ಈ ಡೈಲಾಗ್ ಅನ್ನು ಫೋಕಸ್ ಮಾಡಲು Command-Shift-ಆಯ್ಕೆ A ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="4869170227080975044">ChromeOS ನೆಟ್‌ವರ್ಕ್ ಮಾಹಿತಿಯನ್ನು ಓದಿ</translation>
@@ -7703,6 +7709,7 @@
 <translation id="6916818963747321523">ಎಲ್ಲವನ್ನೂ ವಿಸ್ತರಿಸಿ</translation>
 <translation id="6917873303492266709">ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಲು, ಸೇರಿಕೊಳ್ಳಲು ಮತ್ತು ಕೊಲಾಬೊರೇಟ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು Chrome ಸೈನ್-ಇನ್ ಅನ್ನು ಅನುಮತಿಸಿ ಎಂಬುದನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="6919354101107095996">ಸೈಟ್‌ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ. ನಂತರ, ಪುನಃ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
+<translation id="6919461818524183254">ಶಾರ್ಟ್‌ಕಟ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6919952941889172531">ಈ Chrome ಪ್ರೊಫೈಲ್‌ಗಾಗಿ ವರ್ಧಿತ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಸಹ ಆನ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6920989436227028121">ದಿನನಿತ್ಯದ ಟ್ಯಾಬ್ ಅಂತೆ ತೆರೆಯಿರಿ</translation>
 <translation id="6921104647315081813">ಚಟುವಟಿಕೆಗಳನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
@@ -8542,6 +8549,7 @@
 <translation id="7578137152457315135">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="7578692661782707876">ನಿಮ್ಮ ದೃಢೀಕರಣದ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="757941033127302446">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="7580311608678791180">Windows ಟಾಸ್ಕ್ ಬಾರ್‌ನಿಂದ ತೆರೆಯಿರಿ</translation>
 <translation id="7581462281756524039">ಕ್ಲೀನಪ್ ಟೂಲ್</translation>
 <translation id="7582582252461552277">ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಆದ್ಯತೆ ನೀಡಿ</translation>
 <translation id="7582844466922312471">ಮೊಬೈಲ್ ಡೇಟಾ</translation>
@@ -8555,6 +8563,7 @@
 <translation id="7590883480672980941">ಇನ್‌ಪುಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="7592060599656252486">ಕೆಲವು</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (ದೋಷ ಕೋಡ್ <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Mac ಮೆನು ಬಾರ್‌ನಿಂದ ತೆರೆಯಿರಿ</translation>
 <translation id="7600054753482800821">&amp;ಹುಡುಕಾಟ ಎಂಜಿನ್‌ಗಳು ಮತ್ತು ಸೈಟ್ ಹುಡುಕಾಟವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="7600218158048761260">ಈ ಖಾತೆ ಪ್ರಕಾರಕ್ಕಾಗಿ Google Drive ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ಅನ್ನು ಎಂದಿಗೂ ಅನುವಾದಿಸಬೇಡ</translation>
@@ -9237,6 +9246,7 @@
 <translation id="8102139037507939978">system_logs.txt ನಿಂದ ವೈಯಕ್ತಿಕವಾಗಿ ಗುರುತಿಸಬಲ್ಲ ಮಾಹಿತಿಯನ್ನು ತೆಗೆದುಹಾಕಿ.</translation>
 <translation id="810362914482827094">ಪಾಸ್‌ಕೀಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="8104088837833760645">eSIM ಪ್ರೊಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
+<translation id="8104388155778519213">Google Lens ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಏನಿದೆ ಎಂಬುದನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="8104778744208707085">ನಿಮ್ಮ ಗಮನ ಬೇಕು</translation>
 <translation id="8105273883928376822">ಮುಂದುವರಿಸಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="8106114112474206597">ಮೌಸ್ ಬಟನ್ ಒತ್ತಲು “i” ಕೀಯನ್ನು ಬಳಸಿ</translation>

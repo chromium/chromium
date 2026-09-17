@@ -269,6 +269,7 @@
 <translation id="17906873777101817">Speichern von Passwörtern und Passkeys anbieten</translation>
 <translation id="1794893174442046596">Tabgruppe</translation>
 <translation id="1807893857950749072">Benachrichtigungen zum Preis-Tracking erlauben…</translation>
+<translation id="1808142805674973090">Modus wechseln</translation>
 <translation id="1809929083618343438">Dadurch werden ausgewählte Informationen aus Chrome entfernt, aber nicht aus deinem Google-Konto gelöscht.</translation>
 <translation id="1810976980198522421">Abbrechen</translation>
 <translation id="1815941218935345331">Sicherheitscode</translation>
@@ -850,6 +851,7 @@
 <translation id="3779810277399252432">Keine Internetverbindung</translation>
 <translation id="3782614601387961027">Warnung schließen</translation>
 <translation id="3789841737615482174">Installieren</translation>
+<translation id="3793603310364129123">Weniger Schritte, schnellere Links</translation>
 <translation id="380329542618494757">Name</translation>
 <translation id="3803696231112616155">Übersetzung für diese Seite anbieten</translation>
 <translation id="3810973564298564668">Verwalten</translation>
@@ -1381,6 +1383,7 @@
 <translation id="5467163657366219870">Maps-Vorabversion deaktivieren</translation>
 <translation id="5474397204728336997">Passwörter für Familienmitglieder, neue Anpassungsoptionen und mehr. Tippe, um weitere Informationen zu erhalten.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Kein Passwort importiert}=1{{count} Passwort importiert}other{{count} Passwörter importiert}}</translation>
+<translation id="5477188385487393357">Kein Kopieren und Einfügen mehr</translation>
 <translation id="5478327362747197944">Du kannst Kalendertermine durch Klicken auf ein Datum auf einer Webseite direkt erstellen.</translation>
 <translation id="5482922178977937393">Möchtest du auf deine Interessen abgestimmte Benachrichtigungen zu aktuellen Nachrichten, Sport und mehr erhalten?</translation>
 <translation id="5483838506518938965">Fertig!</translation>
@@ -1747,6 +1750,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6585618849026997638">Du kannst Lesezeichen setzen, damit du zu Seiten zurückfindest, die für dich interessant sind</translation>
 <translation id="6589001036857939353">Duplikate zusammenführen</translation>
 <translation id="659407965921887085">Auf dieser Karte siehst du Preissenkungen im Web für Produkte, die du derzeit beobachtest</translation>
+<translation id="6596324345367949437">Gemini ist im Inkognitomodus nicht verfügbar</translation>
 <translation id="6596481460663245319">Google-Suche anhand des Bildes</translation>
 <translation id="6601302169302852717">Bild für <ph name="USER_EMAIL" /> in Google Fotos gespeichert</translation>
 <translation id="6602173570135186741">Autofill und Passwörter</translation>

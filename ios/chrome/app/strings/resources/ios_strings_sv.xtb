@@ -269,6 +269,7 @@
 <translation id="17906873777101817">Erbjud att spara lösenord och nycklar</translation>
 <translation id="1794893174442046596">Flikgrupp</translation>
 <translation id="1807893857950749072">Tillåt aviseringar om prisbevakning …</translation>
+<translation id="1808142805674973090">Byt läge</translation>
 <translation id="1809929083618343438">Detta tar bort vald information från Chrome, men inte från Google-kontot.</translation>
 <translation id="1810976980198522421">Avbryt</translation>
 <translation id="1815941218935345331">Lösenord</translation>
@@ -850,6 +851,7 @@
 <translation id="3779810277399252432">Ingen internetanslutning.</translation>
 <translation id="3782614601387961027">Ignorera varning</translation>
 <translation id="3789841737615482174">Installera</translation>
+<translation id="3793603310364129123">Färre steg, snabbare länkar</translation>
 <translation id="380329542618494757">Namn</translation>
 <translation id="3803696231112616155">Erbjud översättning av webbplatsen</translation>
 <translation id="3810973564298564668">Hantera</translation>
@@ -1381,6 +1383,7 @@
 <translation id="5467163657366219870">Inaktivera förhandsgranskningar av Maps</translation>
 <translation id="5474397204728336997">Familjens lösenord, nya anpassningar med mera. Tryck för att läsa mer.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Inga lösenord har importerats}=1{{count} lösenord har importerats}other{{count} lösenord har importerats}}</translation>
+<translation id="5477188385487393357">Slipp kopiera och klistra in</translation>
 <translation id="5478327362747197944">Skapa kalenderhändelser direkt genom att klicka på ett datum på en webbsida.</translation>
 <translation id="5482922178977937393">Vill du få aviseringar om nyheter, sport och annat utifrån dina intressen?</translation>
 <translation id="5483838506518938965">Nu är det klart</translation>
@@ -1747,6 +1750,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6585618849026997638">Du kan återgå till en sida som är viktig för dig genom att lägga till ett bokmärke</translation>
 <translation id="6589001036857939353">Sammanfoga dubbletter</translation>
 <translation id="659407965921887085">Det här kortet visar prissänkningar på webben för produkter som du för närvarande bevakar</translation>
+<translation id="6596324345367949437">Gemini är inte tillgänglig i inkognitoläget</translation>
 <translation id="6596481460663245319">Sök med bild på Google</translation>
 <translation id="6601302169302852717">Bilden har sparats i Google Foto för <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Autofyll och lösenord</translation>

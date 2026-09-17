@@ -2719,6 +2719,19 @@ Si se le asigna el valor 2 (inhabilitada) a la política, no se permitirá la in
 <translation id="2702023190395322609">Habilitar recomendaciones de contenido multimedia</translation>
 <translation id="2702682139813393777">Forzar que los hosts de mensajería nativa de Windows se inicien mediante cmd.exe</translation>
 <translation id="270582584528242502">No mostrar un cuadro de diálogo de advertencia cuando el usuario intenta salir</translation>
+<translation id="2706209533052022524">Probador virtual es una función basada en IA que permite a los usuarios probarse virtualmente imágenes de ropa de la Web y que proporcionará información útil sobre compras en Gemini en Chrome, si Gemini en Chrome está habilitado.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser imágenes, entradas, resultados, fuentes y comentarios. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo imágenes, entradas, resultados, fuentes y comentarios). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Nota: La restricción de las mejoras del modelo (valor 1) solo se aplica cuando se activa Probador virtual mediante el flujo del navegador <ph name="CHROME" />. No se aplica cuando la función se usa mediante otros flujos.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />. Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.
+
+Probador virtual no está disponible en todos los países ni en todos los idiomas. Aunque se defina esta política, no se garantiza que la función se habilite, ya que sigue sujeta a disponibilidad. Para obtener más información sobre su lanzamiento, consulta las notas de la versión de Enterprise: https://support.google.com/chrome/a/answer/7679408?hl=es</translation>
 <translation id="2706708761587205154">Permitir imprimir solo con PIN</translation>
 <translation id="2707733461906745082">Separación de perfiles</translation>
 <translation id="2707873794476722903">La función Navegación segura está activa en modo estándar.</translation>
@@ -3638,6 +3651,7 @@ Si se inhabilita <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de Ou
       Nota: En los dispositivos administrados de <ph name="MS_AD_NAME" />, esta política admite una expansión de <ph name="MACHINE_NAME_VARIABLE" /> al nombre de máquina de <ph name="MS_AD_NAME" /> o una subcadena de este. Por ejemplo, si el nombre del equipo es <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> se sustituye por 4 caracteres después de la sexta posición; es decir, <ph name="MACHINE_NAME_PART_EXAMPLE" />. La posición se basa en cero.
 
       Esta política está obsoleta. Usa <ph name="PRINTERS_POLICY_NAME" /> en su lugar.</translation>
+<translation id="3296337890215573972">Inhabilitar Probador virtual.</translation>
 <translation id="3296560797994110772">Las combinaciones de teclas que usen la tecla de búsqueda se envían primero a la aplicación antes de que el sistema operativo los gestione.</translation>
 <translation id="3300441638895109781">Volver a cargar automáticamente el flujo de autenticación en ChromeOS</translation>
 <translation id="3300784749135986828">Habilita o inhabilita <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
@@ -5411,6 +5425,7 @@ Esta política no tendrá efecto si se habilita, se deja vacía o no se define.<
 <translation id="4515404363392014383">Habilitar Navegación segura en fuentes de confianza</translation>
 <translation id="4517327050150780380">Configuración de la función Ayúdame a leer</translation>
 <translation id="4518251772179446575">Preguntar siempre que un sitio quiera hacer un seguimiento de la ubicación física de los usuarios</translation>
+<translation id="4521106598519506386">La inmovilización de pestañas abiertas en segundo plano está habilitada</translation>
 <translation id="4521193243799782295">Durante el inicio de sesión, <ph name="PRODUCT_OS_NAME" /> puede realizar la autenticación a través de un servidor (con conexión) o una contraseña almacenada en caché (sin conexión).
 
       Si se le asigna el valor -1 a esta política, no se requerirá la autenticación online y se permitirá al usuario utilizar la autenticación sin conexión hasta que haya que iniciar sesión online por un motivo diferente a esta política. SI se le asigna el valor 0 a la política, el inicio de sesión online será siempre obligatorio. Si se le asigna cualquier otro valor a esta política, se especifica el plazo de tiempo (a partir de la última autenticación online) tras el que el usuario deberá autenticarse de nuevo cuando vuelva a iniciar sesión.
@@ -5521,6 +5536,7 @@ Para obtener información detallada sobre los patrones de URL válidos, consulta
 <translation id="4554651132977135445">Modo de procesamiento loopback de políticas del usuario</translation>
 <translation id="4554991346503872538">No ofrecer traducción nunca</translation>
 <translation id="4555850956567117258">Habilitar confirmación remota para el usuario</translation>
+<translation id="455594321531952386">Ajustes de Probador virtual.</translation>
 <translation id="4557134566541205630">URL de la página Nueva pestaña del proveedor de búsqueda predeterminado</translation>
 <translation id="4557484263538581790">Configuración de las integraciones del Modo IA de terceros en la barra de direcciones y en el cuadro de búsqueda de la página Nueva pestaña.</translation>
 <translation id="4558166110367609724">Omite los Términos del Servicio automáticamente y carga el navegador.</translation>
@@ -8067,6 +8083,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6106258663605167373">Inhabilitar el aviso de gestión en el pie de página de la NTP</translation>
+<translation id="6108531405177298087">Habilitar Probador virtual con mejora del modelo.</translation>
 <translation id="610892566190435199">Habilitar los informes sobre el estado de la energía del dispositivo</translation>
 <translation id="6111936128861357925">Permitir el juego del huevo de pascua de dinosaurio</translation>
 <translation id="6118226055960302400">Restaura el comportamiento permisivo.</translation>
@@ -8680,6 +8697,7 @@ Si se inhabilita esta política o no se define, se hará una consulta de CNAME p
 <translation id="6424486395812679373">Realizar comprobaciones de Navegación segura en todos los archivos descargados</translation>
 <translation id="6426899507714989471">Inhabilitar aceleración de gráficos</translation>
 <translation id="6431446111529802555">Europa.</translation>
+<translation id="6431778298276599807">Habilitar la inmovilización de pestañas abiertas en segundo plano</translation>
 <translation id="6433697627431665375">Impedir que se incluyan datos de <ph name="PRODUCT_NAME" /> en copias de seguridad</translation>
 <translation id="6436052172226685535">Comportamiento predeterminado para el LBS.</translation>
 <translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> intentará cambiar de HTTP a HTTPS algunos accesos a páginas cuando sea posible. Esta política se puede usar para inhabilitar este comportamiento. Si se le asigna el valor "true" o no se le asigna ningún valor, esta función se habilitará de forma predeterminada.
@@ -9887,6 +9905,7 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
       La configuración se descarga y se almacena en caché. Se volverá a descargar cada vez que se cambie la URL o el hash.
 
       Si se configura la política, los usuarios no podrán cambiarla. Si no se le asigna ningún valor, los usuarios pueden seguir utilizando en su configuración el contenedor de Crostini predeterminado (siempre que las políticas permitan el uso de Crostini).</translation>
+<translation id="7130092870893836308">Habilitar Probador virtual sin mejorar el modelo.</translation>
 <translation id="7132877481099023201">URLs a las que se concederá acceso a dispositivos de captura de vídeo sin confirmación</translation>
 <translation id="7134420220355750019">Cambia el botón principal del ratón al botón derecho.
 
@@ -10738,6 +10757,7 @@ Esta política se puede anular para orígenes de aplicaciones web aisladas espec
 <translation id="7696412993033202071">URLs externas de lanzamiento de aplicación de autenticación</translation>
 <translation id="7696534428021833264">Habilitar la tarjeta de archivo de SharePoint y OneDrive en la página Nueva pestaña</translation>
 <translation id="7699644797467448158">Borrar window.name cuando la navegación sea de nivel superior, entre sitios e intercambie BrowsingContextGroup.</translation>
+<translation id="7700606318567398251">No permitir el uso de <ph name="CHROME_DEVTOOLS_NAME" /></translation>
 <translation id="7701341006446125684">Establecer el tamaño de caché de aplicaciones y extensiones (en bytes)</translation>
 <translation id="7701825382808690457">Usar valor predeterminado del acuerdo de claves poscuántico para WebRTC</translation>
 <translation id="7703041979684393741">No permitir que se recojan registros de eventos WebRTC de los servicios de Google</translation>

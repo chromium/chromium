@@ -148,6 +148,7 @@
 <translation id="2575822587468774919">Паспрабуйце знайсці што-небудзь з дапамогай пошуку відарысаў</translation>
 <translation id="2576118232315942160">Каб выкарыстоўваць свае паролі і іншыя даныя на ўсіх сваіх прыладах, увайдзіце ў Chromium</translation>
 <translation id="2587622539943955767">Адсканіруйце QR-код з дапамогай тэлефона, спампуйце Chromium і ўвайдзіце ва Уліковы запіс Google.</translation>
+<translation id="2587885422541096572">для пошуку з дапамогай Chromium.</translation>
 <translation id="2592940277904433508">Працягнуць работу ў Chromium</translation>
 <translation id="259935314519650377">Не ўдалося кэшаваць спампаваны ўсталёўшчык. Памылка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Сістэма</translation>
@@ -339,6 +340,7 @@
 <translation id="4621240073146040695">Амаль гатова! Каб завяршыць абнаўленне, перазапусціце Chromium.</translation>
 <translation id="4625064703209785397">Функцыя паскарае працу з сайтамі дзякуючы апрацоўшчыку Chromium V8, але робіць Chromium крыху менш устойлівым да атак</translation>
 <translation id="4626321472657185181">Адкрыць Пошук у Chromium</translation>
+<translation id="4654639495249754755">Профіль Chromium</translation>
 <translation id="4665829708273112819">Увага! Chromium не можа забараніць пашырэнням весці запіс гісторыі прагляду сайтаў. Скасуйце выбар гэтай налады, каб адключыць дадзенае пашырэнне ў рэжыме інкогніта.</translation>
 <translation id="4673151026126227699">Калі вы абагульваеце справаздачы пра выкарыстанне браўзера Chromium, у іх уключаюцца URL-адрасы наведаных вамі старонак</translation>
 <translation id="4673710618874938871">Вы ўвайшлі як <ph name="USER_NAME" /> (падпіска). Адкрыць меню ўліковага запісу</translation>
@@ -471,6 +473,7 @@
 <translation id="6174920971222007286">Гэты файл можа быць небяспечным<ph name="LINE_BREAK" />Chromium можа праверыць спампоўку, калі вы ўведзяце пароль. Інфармацыя пра файл перадаецца ў Google Бяспечны прагляд, але змесціва файла і пароль застаюцца на прыладзе.</translation>
 <translation id="6182736845697986886">Выканаць усталяванне не ўдалося з-за ўнутранай памылкі сервера абнаўленняў.</translation>
 <translation id="6183079672144801177">Упэўніцеся, што вы ўвайшлі ў Chromium на прыладзе "<ph name="TARGET_DEVICE_NAME" />", а затым паспрабуйце ажыццявіць адпраўку яшчэ раз.</translation>
+<translation id="6192070012454216182">Пошук і магчымасць задаваць пытанні на любым экране прылады, нават калі браўзер Chromium згорнуты. Дазваляе Chromium працаваць у фонавым рэжыме.</translation>
 <translation id="6212496753309875659">На гэтым камп’ютары ўжо ўсталявана навейшая версія Chromium. Калі праграма не працуе, выдаліце Chromium і паўтарыце спробу.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Перазапуск Chromium адбудзецца зараз}=1{Chromium будзе перазапушчаны праз 1 секунду}one{Chromium будзе перазапушчаны праз # секунду}few{Chromium будзе перазапушчаны праз # секунды}many{Chromium будзе перазапушчаны праз # секунд}other{Chromium будзе перазапушчаны праз # секунды}}</translation>
 <translation id="6241367896540709610">Для спампоўвання файлаў браўзеру Chromium патрабуецца дазвол на доступ да сховішча</translation>
@@ -597,6 +600,7 @@
 <translation id="7288567540154601580">Укладкі і пашырэнні</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium рэкамендуе выдаліць яго}one{Chromium рэкамендуе выдаліць іх}few{Chromium рэкамендуе выдаліць іх}many{Chromium рэкамендуе выдаліць іх}other{Chromium рэкамендуе выдаліць іх}}</translation>
 <translation id="7296334833518879294">Каб абагуліць сістэмнае аўдыя, адкрыйце сістэмныя налады і дайце дазвол Chromium запісваць толькі сістэмнае аўдыя. Потым трэба будзе перазапусціць Chromium.</translation>
+<translation id="7299899569525778554">Пошук з працоўнага стала</translation>
 <translation id="731795002583552498">Ідзе абнаўленне Chromium</translation>
 <translation id="7318036098707714271">Файл параметраў пашкоджаны або няправільны.
 
@@ -652,6 +656,7 @@
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Зрабіце так, каб тыя, у каго ёсць доступ да вашага інтэрнэт-трафіка, не маглі ўбачыць, якія сайты вы наведваеце. Chromium выкарыстоўвае абароненае падключэнне для пошуку IP-адраса ў сістэме даменных імёнаў (DNS).</translation>
 <translation id="7810005234485217901">Для зручнага доступу можна замацаваць пошук відарысаў</translation>
+<translation id="7813626943009612327">Вы можаце задаваць пытанні пра змесціва па-за межамі Chromium, напрыклад пра іншую адкрытую праграму ці файл</translation>
 <translation id="7828527096541974699">Выберыце, што абагульваць з Chromium</translation>
 <translation id="7828947555739565424">Профіль Chromium з такім уліковым запісам ужо існуе на гэтай прыладзе</translation>
 <translation id="7845233973568007926">Дзякуй, што ўсталявалі <ph name="BUNDLE_NAME" />. Каб завяршыць усталяванне, перазапусціце камп’ютар.</translation>
@@ -742,6 +747,7 @@
 <translation id="8619360774459241877">Ідзе запуск Chromium...</translation>
 <translation id="8624541899164515475">Налады (адкрыюцца ў новай укладцы).</translation>
 <translation id="8648201657708811153">Google Chrome for Testing нельга зрабіць стандартным браўзерам.</translation>
+<translation id="8676101123715131330">Пошук з дапамогай Chromium на любым экране</translation>
 <translation id="8697124171261953979">Таксама вызначае, якая старонка паказваецца пры запуску Chromium або пошуку з амнібокса.</translation>
 <translation id="8704119203788522458">Гэта ваш Chromium</translation>
 <translation id="8712637175834984815">Зразумела</translation>
@@ -775,6 +781,7 @@
 <translation id="897581876605952338">Лагатып Chromium Enterprise</translation>
 <translation id="8980139959902937527">Доступ да бяспекі ад Google ў любым месцы дзякуючы праграме Chromium на прыладзе "<ph name="DEVICE_TYPE" />"</translation>
 <translation id="8981150672034878610">Не ўдалося запусціць Chromium: падчас адкрыцця профілю адбылася памылка. Паспрабуйце перазапусціць Chromium.</translation>
+<translation id="8981886272598860786">для пошуку з дапамогай Chromium або змянення ў <ph name="BEGIN_LINK" />Наладах<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Кіраваць профілямі Chromium</translation>
 <translation id="8993855408334954620">Перамяшчэнне паміж Gemini ў Chromium і адкрытай укладкай з дапамогай клавіятуры.</translation>
 <translation id="9018218886431812662">Усталяванне завершана</translation>

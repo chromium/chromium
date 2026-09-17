@@ -1429,6 +1429,7 @@
 <translation id="3432601291244612633">關閉頁面</translation>
 <translation id="3434025015623587566">「Google 密碼管理工具」需要更多存取權</translation>
 <translation id="343474037147570563">你上載或附加的檔案會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄檔案，檢查是否含有敏感資料或惡意軟件，亦可能會根據公司政策儲存這些檔案或向管理員顯示。</translation>
+<translation id="3435267628744367511">在任何表格中按兩下 Ctrl 鍵即可尋找並填入資料，無需切換分頁</translation>
 <translation id="3435557549311968410">連續 (短邊)</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3436125638121079308">要自動分享相關分頁，以在此訊息串中獲得更貼題的答覆嗎？</translation>
@@ -1516,6 +1517,7 @@
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /><ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome 將會在網頁準備好時通知您。&lt;a&gt;取消&lt;/a&gt;</translation>
+<translation id="3581499772329034229">自動新增分頁</translation>
 <translation id="3582930987043644930">新增名稱</translation>
 <translation id="3583757800736429874">重做移動(&amp;R)</translation>
 <translation id="3584299510153766161">雙孔 (底部)</translation>
@@ -1591,6 +1593,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">載入中…</translation>
 <translation id="3709599264800900598">您複製的文字</translation>
+<translation id="3711223220609269738">新隔離分頁</translation>
 <translation id="3711430313228789376">Chrome 瀏覽器正在嘗試顯示密碼</translation>
 <translation id="3711895659073496551">暫停</translation>
 <translation id="3712004750972384495">正在儲存螢幕錄影畫面</translation>
@@ -1609,6 +1612,7 @@
 <translation id="3727309136762649052">命名空間</translation>
 <translation id="3727850735097852673">如要透過「MacOS 鑰匙圈」使用「Google 密碼管理工具」，請重新啟動 Chrome 並允許存取「鑰匙圈」。重新啟動後，分頁將會重新開啟。</translation>
 <translation id="3728173127485570463">Chrome 瀏覽器不再需要你的指紋，就能自動填入密碼</translation>
+<translation id="3729811201279509483">手動新增分頁</translation>
 <translation id="3736564442532774454">Chrome 瀏覽器正嘗試在 <ph name="APP_NAME" /> 填入敏感資料。</translation>
 <translation id="3738166223076830879">您的瀏覽器由管理員管理。</translation>
 <translation id="3739842843727261045">㩒一下鍾意就可以俾正評</translation>
@@ -2772,6 +2776,7 @@
 <translation id="5649053991847567735">自動下載</translation>
 <translation id="5651323159439184939">連續送紙</translation>
 <translation id="5653681867130739344">安全地更新「Google 錢包」中的身分證</translation>
+<translation id="5653744563415531641">儲存資料可以提升操作效率，例如在不同 Google 產品中填寫表格。你可以為 <ph name="ACCOUNT" /> <ph name="MANAGE_WALLET_SETTINGS_LINK" />。</translation>
 <translation id="5654927323611874862">已上載的當機報告 ID：</translation>
 <translation id="5654965123204121933">網址未包含所需的替換字串「<ph name="SEARCH_TERMS_REPLACEMENT" />」：<ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">電郵</translation>
@@ -2895,6 +2900,7 @@
 <translation id="5884465125445718607">Chinese #6 信封</translation>
 <translation id="5887400589839399685">已儲存的付款卡</translation>
 <translation id="5887687176710214216">上次瀏覽日期：昨天</translation>
+<translation id="5887791684215121787">在任何表格中按 ⌘ ⌘ 即可尋找並填入資料，無需切換分頁</translation>
 <translation id="5889251770650310375">如要查看其他裝置上的記錄，請驗證你的身分並同步記錄和分頁。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5895187275912066135">發行日期</translation>
@@ -3217,6 +3223,7 @@
 <translation id="6410264514553301377">請輸入 <ph name="CREDIT_CARD" /> 的到期日和信用卡驗證碼 (CVC)</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">家長核准對話框</translation>
+<translation id="6413532517183895572">管理「錢包」設定</translation>
 <translation id="6415778972515849510">Chromium 可助您保護 Google 帳戶並變更密碼。</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">請務必將任何重要商家或個人資料儲存至外部位置。</translation>

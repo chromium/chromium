@@ -1430,6 +1430,7 @@
 <translation id="3432601291244612633">পৃষ্ঠা বন্ধ করুন</translation>
 <translation id="3434025015623587566">Google Password Manager-এর আরও বেশি অ্যাক্সেস প্রয়োজন</translation>
 <translation id="343474037147570563">আপনার আপলোড বা অ্যাটাচ করা ফাইল Google Cloud-এ বা থার্ড-পার্টির কাছে বিশ্লেষণ করার জন্য পাঠানো হয়। যেমন, সংবেদনশীল ব্যক্তিগত তথ্য বা ম্যালওয়্যার রয়েছে কিনা তা জানার জন্য সেগুলি স্ক্যান করা হতে পারে এবং কোম্পানির নীতির উপরে ভিত্তি করে সেভ করা হতে পারে ও আপনার অ্যাডমিনিস্ট্রেটর সেগুলি দেখতে পেতে পারেন।</translation>
+<translation id="3435267628744367511">ট্যাব পরিবর্তন না করেই তথ্য খুঁজে পেতে ও তা পূরণ করতে, যেকোনও ফর্মে Ctrl দুবার প্রেস করুন</translation>
 <translation id="3435557549311968410">কন্টিনিউআস (শর্ট)</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
 <translation id="3436125638121079308">এই থ্রেডে আরও ভালো উত্তরের জন্য প্রাসঙ্গিক ট্যাব অটোমেটিক শেয়ার করবেন?</translation>
@@ -1518,6 +1519,7 @@
 <translation id="3577473026931028326">কোনও সমস্যা হয়েছে। আবার চেষ্টা করুন।</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">এই পৃষ্ঠাটি প্রস্তুত হলে Chrome আপনাকে জানাবে। &lt;a&gt;বাতিল করুন&lt;/a&gt;</translation>
+<translation id="3581499772329034229">ট্যাব অটোমেটিক যোগ করুন</translation>
 <translation id="3582930987043644930">নাম যোগ করুন</translation>
 <translation id="3583757800736429874">&amp;সরানোর কাজটি আবার করুন</translation>
 <translation id="3584299510153766161">নিচে ডুয়াল পাঞ্চ</translation>
@@ -1593,6 +1595,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">লোড হচ্ছে...</translation>
 <translation id="3709599264800900598">আপনার কপি করা টেক্সট</translation>
+<translation id="3711223220609269738">নতুন আইসোলেটেড ট্যাব</translation>
 <translation id="3711430313228789376">Chrome ব্রাউজার পাসওয়ার্ড দেখানোর চেষ্টা করছে</translation>
 <translation id="3711895659073496551">সাসপেন্ড</translation>
 <translation id="3712004750972384495">স্ক্রিন রেকর্ডিং সেভ করা হচ্ছে</translation>
@@ -1611,6 +1614,7 @@
 <translation id="3727309136762649052">নেমস্পেস</translation>
 <translation id="3727850735097852673">MacOS Keychain-এর মাধ্যমে Password Manager ব্যবহার করতে, Chrome আবার লঞ্চ করুন ও Keychain অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে।</translation>
 <translation id="3728173127485570463">পাসওয়ার্ড অটোফিল করার জন্য Chrome ব্রাউজারকে আপনার ফিঙ্গারপ্রিন্ট আর ব্যবহার করতে হবে না</translation>
+<translation id="3729811201279509483">ট্যাব ম্যানুয়ালি যোগ করুন</translation>
 <translation id="3736564442532774454">Chrome ব্রাউজার <ph name="APP_NAME" />-এ আপনার সংবেদনশীল তথ্য পূরণ করার চেষ্টা করছে।</translation>
 <translation id="3738166223076830879">আপনার অ্যাডমিনিস্ট্রেটর ব্রাউজারটি ম্যানেজ করেন।</translation>
 <translation id="3739842843727261045">আপনি যে এইসব ফলাফল পছন্দ করেন, 'থাম্বস-আপ' আইকন সেই মতামত জমা দেয়</translation>
@@ -2774,6 +2778,7 @@
 <translation id="5649053991847567735">অটোমেটিক ডাউনলোডগুলি</translation>
 <translation id="5651323159439184939">ট্র্যাকটর ফিড</translation>
 <translation id="5653681867130739344">Google Wallet-এ আইডি কার্ডের তথ্য নিরাপদে আপডেট করুন</translation>
+<translation id="5653744563415531641">আপনার তথ্য সেভ করুন এবং Google প্রোডাক্ট জুড়ে ফর্ম পূরণ করার মতো কাজগুলি আরও দ্রুত সেরে ফেলুন। আপনি <ph name="ACCOUNT" />-এর জন্য <ph name="MANAGE_WALLET_SETTINGS_LINK" /> করতে পারবেন।</translation>
 <translation id="5654927323611874862">আপলোড করা ক্র্যাশ রিপোর্টের আইডি:</translation>
 <translation id="5654965123204121933">URL-এ প্রয়োজনীয় রিপ্লেসমেন্ট স্ট্রিং অন্তর্ভুক্ত করা হয় না <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ইমেল আইডি</translation>
@@ -2897,6 +2902,7 @@
 <translation id="5884465125445718607">এনভেলপ চিনা #৬</translation>
 <translation id="5887400589839399685">কার্ড সেভ করা হয়েছে</translation>
 <translation id="5887687176710214216">গতকাল শেষবার দেখা হয়েছে</translation>
+<translation id="5887791684215121787">ট্যাব পরিবর্তন না করেই তথ্য খুঁজে পেতে ও তা পূরণ করতে, যেকোনও ফর্মে ⌘ ⌘ প্রেস করুন</translation>
 <translation id="5889251770650310375">আপনার অন্যান্য ডিভাইস থেকে ইতিহাস পেতে, নিজের পরিচয় যাচাই এবং আপনার ইতিহাস ও ট্যাব সিঙ্ক করুন। সেটিংস থেকে আপনি যেকোনও সময় সিঙ্ক করা বন্ধ করতে পারবেন। আপনার ইতিহাসের ভিত্তিতে, Search ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
 <translation id="5895187275912066135">এই তারিখে ইস্যু করা</translation>
@@ -3218,6 +3224,7 @@
 <translation id="6410264514553301377">Enter the expiration date and CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">অভিভাবক অনুমতি সম্পর্কিত ডায়ালগ</translation>
+<translation id="6413532517183895572">আপনার Wallet সেটিংস ম্যানেজ করুন</translation>
 <translation id="6415778972515849510">আপনার পাসওয়ার্ড পরিবর্তন করে Google অ্যাকাউন্ট সুরক্ষিত রাখতে Chromium সাহায্য করতে পারবে।</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">কোনও গুরুত্বপূর্ণ ব্যবসা সম্পর্কিত বা ব্যক্তিগত ডেটা বাইরে সেভ করা হয়েছে কিনা ভালো করে দেখে নিন।</translation>

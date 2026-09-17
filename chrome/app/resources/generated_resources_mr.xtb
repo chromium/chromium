@@ -142,6 +142,7 @@
 <translation id="1090541560108055381">पेअर करण्यापूर्वी, हा कोड दोन्ही डिव्हाइसवर समान असल्याची खात्री करा</translation>
 <translation id="1093457606523402488">दृश्यमान नेटवर्क:</translation>
 <translation id="1093645050124056515">ctrl + alt + down arrow</translation>
+<translation id="1095398697303758108">वर्धित ऑटोफिलसाठी Ctrl दोनदा प्रेस करा</translation>
 <translation id="1095879482467973146">वेबवरील Google Password Manager</translation>
 <translation id="1097016918605049747">हे पेज भाषांतरित करता आले नाही</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> वरून कॉपी केलेली इमेज</translation>
@@ -5338,6 +5339,7 @@
 <translation id="5060419232449737386">कॅप्शन सेटिंग्ज</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{या फोल्डरमध्ये एक बुकमार्क आहे. तुम्हाला खात्री आहे की तुम्ही ते हटवू इच्छिता?}other{या फोल्डरमध्ये # बुकमार्क आहेत. तुम्हाला खात्री आहे की तुम्ही ते हटवू इच्छिता?}}</translation>
 <translation id="5061531353537614467">टुंड्रा</translation>
+<translation id="5061781067616989032">तुमचा स्वतःचा कीबोर्ड शॉर्टकट सेट करा</translation>
 <translation id="5062863364865466276">हालचाल</translation>
 <translation id="5063480226653192405">वापर</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> प्रोफाइल उघडा. ही प्रोफाइल तुमच्या संस्थेद्वारे व्यवस्थापित केली जाते.</translation>
@@ -7423,6 +7425,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6710213216561001401">मागील</translation>
 <translation id="6710394144992407503">तुम्ही वेब पेजवर मजकूर टाइप करता, तेव्हा शब्दलेखन एरर तपासा</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" /> पूर्वी</translation>
+<translation id="6711569175139833669">वर्धित ऑटोफिलसाठी ⌘ दोनदा प्रेस करा</translation>
 <translation id="6712943853047024245">तुम्ही <ph name="WEBSITE" /> साठी या वापरकर्ता नावासह आधीच पासवर्ड सेव्ह केला आहे</translation>
 <translation id="6713233729292711163">कार्य प्रोफाइल जोडा</translation>
 <translation id="6713441551032149301">फंक्शन की आणि सिस्टीममधील सर्वात वरच्या पंक्तीतील की यांदरम्यान बदलण्यासाठी लाँचर की धरून ठेवा</translation>
@@ -8580,6 +8583,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7602173054665172958">प्रिंट व्यवस्थापन</translation>
 <translation id="7602805861133750578">तुम्ही आता तुमचे टॅब गट, Gemini चॅट आणि AI मोड थ्रेड एकाच ठिकाणी व्यवस्थापित करू शकता. हे कधीही अनपिन करा.</translation>
 <translation id="7602868996817972616">Google ला या पेजबद्दल विचारा</translation>
+<translation id="7603583710244190070">तुमची संस्था या टॅबचे स्क्रीन शेअरिंग ब्लॉक करते</translation>
 <translation id="7603785829538808504">खाली सूचीबद्ध केलेल्या साइट कस्टम सेटिंग फॉलो करतात</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{एक पासवर्ड इंपोर्ट केला नाही}other{({NUM_PASSWORDS}) पासवर्ड इंपोर्ट केले नाहीत}}</translation>
 <translation id="7605163396341021431">या Chromebook वर Android अ‍ॅप्सना USB डिव्हाइसचे नियंत्रण द्या</translation>
@@ -8733,6 +8737,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7707108266051544351">या साइटला मोशन सेन्सर वापरण्यापासून ब्लॉक केले आहे.</translation>
 <translation id="7707922173985738739">मोबाइल डेटा वापरा</translation>
 <translation id="7709152031285164251">अयशस्वी - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7709839510451455295">वर्धित ऑटोफिलसाठी कस्टम शॉर्टकट साफ करा</translation>
 <translation id="7710568461918838723">कास्ट करा...</translation>
 <translation id="7711968363685835633">पर्सनलाइझ केलेली रूपांतरणे आणि सूचना, तसेच वापरकर्ता शब्दकोश बंद करा</translation>
 <translation id="7712739869553853093">प्रिंट पूर्वावलोकन डायलॉग</translation>
@@ -8772,6 +8777,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7742706086992565332">ठरावीक वेबसाइटवर तुम्ही किती झूम इन किंवा आउट करायचे ते सेट करू शकता</translation>
 <translation id="7742879569460013116">लिंक यांच्यासोबत शेअर करा</translation>
 <translation id="774377079771918250">कुठे सेव्ह करायचा ते निवडा</translation>
+<translation id="7743876437245989842">तुमची संस्था टॅबचे स्क्रीन शेअरिंग ब्लॉक करते</translation>
 <translation id="7744047395460924128">तुमचा प्रिंटिंग इतिहास पहा</translation>
 <translation id="7744192722284567281">डेटा भंग करत असल्याचे आढळले</translation>
 <translation id="7744649840067671761">असाइनमेंट सुरू करण्यासाठी नवीन स्विच किंवा कीबोर्ड की प्रेस करा.
@@ -9395,6 +9401,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8215129063232901118">तुमच्या <ph name="DEVICE_TYPE" /> वरून तुमच्या फोनच्या क्षमता अ‍ॅक्सेस करा</translation>
 <translation id="8217212468862726597">पॉइंटर हायलाइट करा</translation>
 <translation id="8217399928341212914">एकाधिक फाइलचे ऑटोमॅटिक डाउनलोड ब्लॉक करणे सुरू ठेवा</translation>
+<translation id="8218411859495801458">वर्धित ऑटोफिलसाठी कस्टम शॉर्टकट संपादित करा</translation>
 <translation id="8221358554841691213">मध्यम फोकसची शैली</translation>
 <translation id="8221942262855134126">पासवर्ड व्यवस्थापित करा</translation>
 <translation id="8222112516148944758">तुमचे टॅब गट तुमच्या सर्व डिव्हाइसवर आपोआप सेव्ह आणि अपडेट होतात</translation>
@@ -9778,6 +9785,7 @@ I feel - विटांची इमारत</translation>
 <translation id="851263357009351303"> <ph name="HOST" />  ना इमेज दर्शविण्यासाठी नेहमी परवानगी द्या </translation>
 <translation id="8513108775083588393">ऑटो-रोटेट</translation>
 <translation id="8513357934662532537"><ph name="USER_EMAIL" /> साठी <ph name="BRAND" /> वर पासवर्ड इंपोर्ट करण्यासाठी, CSV फाइल निवडा.</translation>
+<translation id="8514257511170433540">फॉर्म भरताना डीफॉल्ट कीबोर्ड शॉर्टकट वापरा</translation>
 <translation id="8514746246728959655">वेगळी सिक्युरिटी की वापरून पहा</translation>
 <translation id="8514828975162859845">केक पॉप</translation>
 <translation id="8514955299594277296">साइटना तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती देऊ नका (शिफारस केली जात नाही)</translation>
@@ -10769,6 +10777,7 @@ I feel - विटांची इमारत</translation>
 <translation id="973558314812359997">माउसचा आकार</translation>
 <translation id="973788791897303708">हा टॅब गट पूर्ण भरला आहे</translation>
 <translation id="97381968209917373"><ph name="CERT_NAME" /> सर्टिफिकेट हटवा</translation>
+<translation id="97570902379088759">तुमची संस्था <ph name="TAB_NAME" /> चे स्क्रीन शेअरिंग ब्लॉक करते</translation>
 <translation id="975893173032473675">भाषांतर करण्याची भाषा</translation>
 <translation id="976572010712028687">तुम्ही पालक असल्याची पडताळणी करा</translation>
 <translation id="977175416263153310">बुकमार्क अलिप्त विंडोमध्ये उघडा</translation>

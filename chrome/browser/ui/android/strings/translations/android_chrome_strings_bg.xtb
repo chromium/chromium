@@ -515,6 +515,7 @@
 <translation id="2996682533106928201">Докоснете, за да отхвърлите</translation>
 <translation id="2996809686854298943">Изисква се URL адрес</translation>
 <translation id="3024215143424744261">Листът с предпочитания за режима на четене е затворен</translation>
+<translation id="3024277805447899099">Визуализация на изображението</translation>
 <translation id="3026955690410463085">Включване на връзката</translation>
 <translation id="3027950907978057636">От <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Без предварително зареждане</translation>
@@ -1030,6 +1031,7 @@
 <translation id="5040262127954254034">Поверителност</translation>
 <translation id="504456571576643789">Имайте предвид следното</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Избран е <ph name="WINDOW_COUNT_ONE" /> прозорец}other{Избрани са <ph name="WINDOW_COUNT_NORMAL" /> прозореца}}</translation>
+<translation id="5058506215037547387">Визуализация на страницата</translation>
 <translation id="506254248375231072">Няма раздели</translation>
 <translation id="5075939510584558547">Запазване без шифроване</translation>
 <translation id="5078638979202084724">Запазване на отметки към всички раздели</translation>

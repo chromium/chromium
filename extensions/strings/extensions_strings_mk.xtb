@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Барањето дозвола од родител не успеа.</translation>
 <translation id="1803557475693955505">Не може да се вчита заднинската страница „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="1875387611427697908">Ова може да се додаде само од <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (ID на екстензија „<ph name="EXTENSION_ID" />“) не може да се инсталира преку правила во средини со ниско ниво на доверба.</translation>
 <translation id="2131077480075264">Не може да го инсталира „<ph name="APP_NAME" />“ бидејќи не е дозволено од „<ph name="IMPORT_NAME" />“</translation>
 <translation id="2150661552845026580">Додај „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2159915644201199628">Не може да се декодира сликата: „<ph name="IMAGE_NAME" />“</translation>

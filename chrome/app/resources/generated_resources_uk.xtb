@@ -1351,6 +1351,7 @@
 <translation id="2026367923222947564">На всю сторінку</translation>
 <translation id="2026377162111110983">Чіткіший голос</translation>
 <translation id="2028449514182362831">Функції, яким потрібні датчики руху, не працюватимуть</translation>
+<translation id="2029064269235798707">Вибрати комбінацію клавіш</translation>
 <translation id="202918510990975568">Введіть пароль, щоб налаштувати параметри безпеки та входу</translation>
 <translation id="2030455719695904263">Сенсорна панель</translation>
 <translation id="2030803782168502207">Вилучити підписку з пристрою</translation>
@@ -1442,6 +1443,7 @@
 <translation id="2111670510994270194">Нова вкладка праворуч</translation>
 <translation id="2111778868023567359">Ви більше не бачитимете групи вкладок на цій сторінці</translation>
 <translation id="2112554630428445878">Вітаємо, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> МБ</translation>
 <translation id="2113314491145966441">Переглянути сертифікати, імпортовані з macOS</translation>
 <translation id="21133533946938348">Закріпити вкладку</translation>
 <translation id="2113479184312716848">Відкрити &amp;файл...</translation>
@@ -1997,6 +1999,7 @@
 <translation id="252513908494776481">Поставте будь-які запитання про цю вкладку</translation>
 <translation id="2525746158911982776">Не вдалося виконати оновлення через брак місця в сховищі.</translation>
 <translation id="2525842906387880861">Ви більше не бачитимете пропозицій на цій сторінці</translation>
+<translation id="2526346836766369775">Нова ізольована &amp;вкладка</translation>
 <translation id="2526590354069164005">Google Desktop</translation>
 <translation id="2526619973349913024">Перевірити наявність оновлення</translation>
 <translation id="2527167509808613699">Будь-яке з’єднання</translation>
@@ -2282,6 +2285,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Ці ключі доступу зберігаються лише на цьому пристрої, а не у вашому обліковому записі Google.</translation>
 <translation id="2741912629735277980">Показувати інтерфейс на екрані входу</translation>
+<translation id="274229007420507506">Змінити комбінацію клавіш можна в <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" /></translation>
 <translation id="2742373789128106053">Сервіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />" зараз не доступний.</translation>
 <translation id="2743301740238894839">Почати</translation>
 <translation id="2743378970365831481">Щоб зберегти пароль у Google Менеджері паролів, натисніть значок Менеджера паролів в адресному рядку</translation>
@@ -2631,6 +2635,7 @@
 <translation id="3001614333383288217">{COUNT,plural, =0{Клавіші не налаштовано}=1{Налаштовано 1 клавішу}one{Налаштовано {COUNT} клавішу}few{Налаштовано {COUNT} клавіші}many{Налаштовано {COUNT} клавіш}other{Налаштовано {COUNT} клавіші}}</translation>
 <translation id="3002864108328203174">Нижній екран Gemini відкрито на половину висоти.</translation>
 <translation id="3003144360685731741">Рекомендовані мережі</translation>
+<translation id="3003152206838282768">Виконується завдання в додатку Gemini у Chrome. Перевірте наявність інших оновлень Chrome.</translation>
 <translation id="3003253259757197230">URL-адреси сторінок, які ви відвідуєте, надсилаються в Google, щоб ми могли показувати вам додаткову інформацію про них і передбачати, які сайти ви можете відвідати наступними</translation>
 <translation id="3003623123441819449">Кеш CSS</translation>
 <translation id="3003967365858406397">Пристрій <ph name="PHONE_NAME" /> створить приватне з’єднання Wi-Fi.</translation>
@@ -5079,6 +5084,7 @@
 <translation id="4864805589453749318">Вибери, хто з батьків дозволяє додати обліковий запис навчального закладу.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (заблоковано)</translation>
 <translation id="486505726797718946">Спогад збережено</translation>
+<translation id="4865526064010209178">Виконується завдання в додатку Gemini у Chrome ("<ph name="TASK_TITLE" />"). Перевірте наявність інших оновлень Chrome.</translation>
 <translation id="486635084936119914">Автоматично відкривати певні типи файлів після завантаження</translation>
 <translation id="4868284252360267853">Це вікно не виділено. Щоб виділити його, натисніть Command + Shift + Option + A.</translation>
 <translation id="4869170227080975044">Переглядати інформацію про мережу ChromeOS</translation>
@@ -7712,6 +7718,7 @@
 <translation id="6916818963747321523">Розгорнути все</translation>
 <translation id="6917873303492266709">Щоб ділитися групами вкладок, приєднуватися до них і працювати в них разом з іншими користувачами, відкрийте налаштування й увімкніть опцію "Дозволити вхід у Chrome"</translation>
 <translation id="6919354101107095996">Спробуйте ввійти на сайті, а потім – завантажити знову</translation>
+<translation id="6919461818524183254">Виберіть комбінацію клавіш</translation>
 <translation id="6919952941889172531">Увімкнути також Безпечний перегляд із розширеним захистом для цього профілю Chrome?</translation>
 <translation id="6920989436227028121">Відкрити як звичайну вкладку</translation>
 <translation id="6921104647315081813">Очистити історію</translation>
@@ -8550,6 +8557,7 @@
 <translation id="7578137152457315135">Налаштування відбитка</translation>
 <translation id="7578692661782707876">Введіть код підтвердження.</translation>
 <translation id="757941033127302446">Ви ввійшли</translation>
+<translation id="7580311608678791180">Відкрийте функцію з панелі завдань Windows</translation>
 <translation id="7581462281756524039">Інструмент очищення</translation>
 <translation id="7582582252461552277">Віддавати перевагу цій мережі</translation>
 <translation id="7582844466922312471">Мобільний Інтернет</translation>
@@ -8563,6 +8571,7 @@
 <translation id="7590883480672980941">Налаштування введення</translation>
 <translation id="7592060599656252486">Деякі розділові знаки</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (код помилки <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Відкрийте функцію з панелі меню Mac</translation>
 <translation id="7600054753482800821">&amp;Керувати пошуковими системами та пошуком на сайтах</translation>
 <translation id="7600218158048761260">Google Диск вимкнено для цього типу облікового запису.</translation>
 <translation id="7600965453749440009">Ніколи не перекладати з такої мови: <ph name="LANGUAGE" /></translation>
@@ -9248,6 +9257,7 @@
 <translation id="8102139037507939978">Вилучити ідентифікаційну інформацію з файлу system_logs.txt.</translation>
 <translation id="810362914482827094">Пошук ключів доступу</translation>
 <translation id="8104088837833760645">Завантажити профіль eSIM-карти</translation>
+<translation id="8104388155778519213">Показуйте свій екран за допомогою Google Об’єктива</translation>
 <translation id="8104778744208707085">Потрібна дія</translation>
 <translation id="8105273883928376822">Увійдіть, щоб продовжити</translation>
 <translation id="8106114112474206597">Щоб натиснути кнопку миші, натисніть клавішу "i"</translation>

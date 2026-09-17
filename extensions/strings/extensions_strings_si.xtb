@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">මාපිය අවසර ඉල්ලීම අසමත් විය.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' පසුබිම් පිටුව ලබාගත නොහැකි විය.</translation>
 <translation id="1875387611427697908">මෙය එක් කළ හැක්කේ <ph name="CHROME_WEB_STORE" /> වෙතින් පමණි</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (දිගු ID "<ph name="EXTENSION_ID" />") අඩු විශ්වාසනීයත්වයක් සහිත පරිසරයන්හි ප්‍රතිපත්ති මඟින් ස්ථාපනය කළ නොහැක.</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" මගින් ඉඩ නොලැබෙන බැවින්  "<ph name="APP_NAME" />" ස්ථාපනය නොවේ.</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" එක්කරන්නද?</translation>
 <translation id="2159915644201199628">අනුරුව විසංකේතනය කළ නොහැකි විය: '<ph name="IMAGE_NAME" />'</translation>

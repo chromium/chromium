@@ -229,6 +229,7 @@
 <translation id="3112458742631356345">এই ফাইলটি সাধারণত ডাউনলোড করা হয় না এবং এটি বিপজ্জনক হতে পারে, তাই Chrome এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>
 <translation id="3119573284443908657">Chrome এটি ডাউনলোড করা বন্ধ করে দিয়েছে কারণ আর্কাইভ করা ফাইলে অন্যান্য এমন ফাইল রয়েছে যেটি ম্যালওয়্যার গোপন করতে পারে</translation>
 <translation id="3124332159330678621">আপনার ব্রাউজারকে একটি নতুন চেহারা দিতে Chrome কাস্টমাইজ করুন</translation>
+<translation id="3125851611828811913">Chrome মিনিমাইজ করা থাকলেও, যেকোনও জায়গা থেকে সার্চ ও প্রশ্ন জিজ্ঞাসা করুন। Chrome-কে ব্যাকগ্রাউন্ডে রান করার অনুমতি দেয়।</translation>
 <translation id="3130333203120345554">নতুন সার্চ</translation>
 <translation id="3135560418014806498">Chrome প্রোফাইল যোগ করুন</translation>
 <translation id="3137969841538672700">সার্চ করতে টেনে আনুন</translation>
@@ -386,6 +387,7 @@
 <translation id="4793679854893018356">Chrome কীভাবে আপনাকে নিরাপদে রাখে তা জানুন</translation>
 <translation id="4799870290441980300">Chrome-এর সবচেয়ে শক্তিশালী সুরক্ষা প্রদান করতে অতিরিক্ত ফিচার চালু করে</translation>
 <translation id="4828579605166583682">Google Chrome, বর্তমানে থাকা পাসওয়ার্ড পরিবর্তনের চেষ্টা করছে। এটি করার অনুমতি দিতে, আপনার Windows-এর পাসওয়ার্ড টাইপ করুন।</translation>
+<translation id="4836321460899997044">Chrome প্রোফাইল</translation>
 <translation id="4842397268809523050">আপনার ডোমেনে সিঙ্ক করার সুবিধা উপলভ্য না থাকার জন্য ChromeOS Flex আপনার ডেটা সিঙ্ক পারেনি।</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন।  আপনি আলাদাভাবে ব্রাউজ করতে চাইলে, নিজের Chrome প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="4855026984605187434">আপনার স্ক্রিন শেয়ার করতে, সিস্টেম সেটিংস থেকে Chrome-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন</translation>
@@ -501,6 +503,7 @@
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome-এর টুল<ph name="END_LINK" /> দিয়ে আপনি নিরাপদে ব্রাউজ ও কন্ট্রোল করতে পারবেন</translation>
 <translation id="6018578474045062808">আপনার ফোনে Chrome-এর সাথে Google Lens ব্যবহার করে দেখুন</translation>
 <translation id="6022659036123304283">Chrome-কে আপনার করে নিন</translation>
+<translation id="6024930613143833266">যেকোনও জায়গা থেকে Chrome-এর সাহায্যে সার্চ করুন</translation>
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" />-এর মধ্যে রিস্টার্ট হবে</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="604424701295382420">পিন করা আছে! টুলবারে থাকা নতুন বোতাম থেকে আবার আপনি Google Lens অ্যাক্সেস করতে পারবেন</translation>
@@ -554,6 +557,7 @@
 <translation id="6434035853014503219">আপনার ডিফল্ট ব্রাউজার হিসেবে Chrome বেছে নেওয়ার জন্য ধন্যবাদ!</translation>
 <translation id="6438015621983209660">আপনার ফোনে Chrome-এর মাধ্যমে উন্নত Safe Browsing সুবিধা বাড়িয়ে নিন</translation>
 <translation id="6442774133615368941">Chrome iOS অ্যাপে আপনার ক্যামেরা ব্যবহার করে যা দেখেন তা কিনুন, অনুবাদ ও শনাক্ত করুন</translation>
+<translation id="6446105560007692480">Chrome ব্যবহার করে সার্চ করতে বা <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে কাস্টমাইজ করতে</translation>
 <translation id="6448835208126432197">Chrome-এ Gemini-তে স্ক্রিনের অংশ বেছে নিতে, কীবোর্ড শর্টকাট ব্যবহার করে।</translation>
 <translation id="6473905796280459355">'Chrome সম্পর্কে' পৃষ্ঠায় যান</translation>
 <translation id="6481963882741794338">পছন্দমতো অভিজ্ঞতা এবং অন্যান্য সুবিধা পেতে Google-এর সব পরিষেবাগুলি সাথে Chrome লিঙ্ক করুন</translation>
@@ -575,6 +579,7 @@
 <translation id="6612152958212564387">আপনি Google-এ ব্যবহারের পরিসংখ্যান ও ক্র্যাশ রিপোর্ট পাঠাচ্ছেন না। <ph name="BEGIN_LINK" />ম্যানেজ করুন<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Chrome-কে ডিফল্ট ব্রাউজার হিসেবে সেট করে আপনার সব ডিভাইস জুড়ে পাসওয়ার্ড, বুকমার্ক ও ইতিহাস সিঙ্ক করে রাখুন।</translation>
 <translation id="6631524303639368205">আপনি যেখান থেকে শেষ করেছিলেন সেখান থেকেই চালিয়ে যান: আপনার শেষ সেশন থেকে Chrome আপনার ট্যাব ফিরিয়ে এনেছে। আপনি এখানে এটি বন্ধ করতে পারবেন</translation>
+<translation id="6632012506031284914">Chrome ব্যবহার করে সার্চ করতে।</translation>
 <translation id="6632473616050862500">অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে ChromeOS Flex তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="6634299872736643004">একবার Chrome রিস্টার্ট হলে, এই সেটিংসে পরিবর্তনগুলি প্রয়োগ করা হবে।</translation>
 <translation id="6660596345553328257">Chrome-এ সাইন-ইন করবেন?</translation>
@@ -591,6 +596,7 @@
 <translation id="6750954913813541382">বানান ভুল ঠিক করতে, আপনি ব্রাউজারে যে টেক্সট লেখেন Chrome সেটি Google-এ পাঠায়</translation>
 <translation id="6760235774835597023">Chrome-এর ভি৮ ইঞ্জিন সাইটের স্পিড বাড়িয়ে দেয় কিন্তু Chrome-এর অ্যাটাক আটকানোর ক্ষমতা সামান্য কমে যায়। এই সেটিংসটি চালু করা আছে।</translation>
 <translation id="677276454032249905">তা স্বত্তেও Chrome বন্ধ করতে চান?</translation>
+<translation id="6777654166489463890">Chrome-এর বাইরের কন্টেন্ট সম্পর্কে জিজ্ঞাসা করুন, যেমন অন্য কোনও অ্যাপ বা আপনার খোলা ফাইল</translation>
 <translation id="6794858689789885890">Chrome বন্ধ করার সময় আপনার ডিভাইস থেকে সবসময় সাইট ডেটা মুছুন</translation>
 <translation id="6800285125190089494">iOS-এ Chrome-এর জন্য সেভ করা পাসওয়ার্ড ব্যবহার করে সাইটে আরও দ্রুত সাইন-ইন করুন</translation>
 <translation id="6831043979455480757">অনুবাদ</translation>
@@ -643,6 +649,7 @@
 <translation id="7285990705317078173">আপনার ফোনে Chrome ডাউনলোড করুন যাতে দাম ট্র্যাক করতে পারেন এবং কোনও সাইটে দাম কমলে সেই সম্পর্কিত সতর্কতা পান</translation>
 <translation id="7288567540154601580">ট্যাব ও এক্সটেনশন</translation>
 <translation id="7296210096911315575">ব্যবহার ও নিরাপত্তা সম্পর্কে গুরুত্বপূর্ণ তথ্য</translation>
+<translation id="7299899569525778554">ডেস্কটপ থেকে সার্চ করুন</translation>
 <translation id="7302361266603927550">আপনার Chrome ডেটার কিছুটা এখনও Google অ্যাকাউন্টে সেভ হয়নি। সাইন-আউট করার আগে কয়েক মিনিট অপেক্ষা করে দেখুন। আপনি এখনই সাইন-আউট করলে, এই ডেটা মুছে যাবে।</translation>
 <translation id="7306401458628386911">ইনস্ট্যান্ট ব্রাউজ করা শুরু করুন: Windows চালু হলেই Chrome এখন চালু হতে পারবে।</translation>
 <translation id="7308322188646931570">ফাইল ডাউনলোড করতে Chrome-এর স্টোরেজের অ্যাক্সেস প্রয়োজন</translation>

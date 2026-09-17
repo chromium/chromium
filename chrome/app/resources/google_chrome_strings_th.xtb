@@ -227,6 +227,7 @@
 <translation id="3112458742631356345">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์ไม่ได้มีการดาวน์โหลดกันโดยทั่วไปและอาจเป็นอันตราย</translation>
 <translation id="3119573284443908657">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์ที่เก็บถาวรมีไฟล์อื่นๆ ที่อาจซ่อนมัลแวร์ไว้</translation>
 <translation id="3124332159330678621">ปรับแต่ง Chrome เพื่อสร้างรูปลักษณ์ใหม่ๆ ให้เบราว์เซอร์</translation>
+<translation id="3125851611828811913">ค้นหาและถามคำถามได้จากทุกที่ แม้จะย่อ Chrome อยู่ อนุญาตให้ Chrome ทำงานในเบื้องหลัง</translation>
 <translation id="3130333203120345554">ค้นหาใหม่</translation>
 <translation id="3135560418014806498">เพิ่มโปรไฟล์ Chrome</translation>
 <translation id="3137969841538672700">ลากเพื่อค้นหา</translation>
@@ -383,6 +384,7 @@
 <translation id="4793679854893018356">ดูวิธีที่ Chrome ช่วยให้คุณปลอดภัย</translation>
 <translation id="4799870290441980300">เปิดฟีเจอร์เพิ่มเติมเพื่อให้การปกป้องที่เข้มงวดที่สุดของ Chrome</translation>
 <translation id="4828579605166583682">Google Chrome กำลังพยายามแทนที่รหัสผ่านที่มีอยู่ โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
+<translation id="4836321460899997044">โปรไฟล์ Chrome</translation>
 <translation id="4842397268809523050">Chrome OS Flex ซิงค์ข้อมูลไม่ได้เนื่องจากการซิงค์ใช้ไม่ได้กับโดเมนของคุณ</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้อยู่แล้ว  หากต้องการแยกการท่องเว็บไว้ต่างหาก ให้ลงชื่อเข้าใช้ Chrome ในโปรไฟล์ของคุณเองด้วย <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4855026984605187434">หากต้องการแชร์หน้าจอ ให้อนุญาตการบันทึกหน้าจอสำหรับ Chrome ใน "การตั้งค่าระบบ"</translation>
@@ -496,6 +498,7 @@
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />เครื่องมือจาก Chrome<ph name="END_LINK" /> ช่วยให้คุณท่องเว็บได้อย่างปลอดภัยและควบคุมได้ตามความต้องการ</translation>
 <translation id="6018578474045062808">ลองใช้ Google Lens กับ Chrome ในโทรศัพท์</translation>
 <translation id="6022659036123304283">ปรับเปลี่ยน Chrome ในแบบของคุณ</translation>
+<translation id="6024930613143833266">ค้นหาด้วย Chrome ได้จากทุกที่</translation>
 <translation id="6025087594896450715">Google Chrome จะรีสตาร์ทใน <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="604424701295382420">ปักหมุดแล้ว คุณเข้าถึง Google Lens ได้อีกครั้งจากปุ่มใหม่ในแถบเครื่องมือ</translation>
@@ -549,6 +552,7 @@
 <translation id="6434035853014503219">ขอขอบคุณที่เลือก Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="6438015621983209660">ขยายการใช้งาน Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นด้วย Chrome ในโทรศัพท์</translation>
 <translation id="6442774133615368941">เลือกซื้อ แปล และระบุสิ่งที่คุณเห็นโดยใช้กล้องในแอป Chrome สำหรับ iOS</translation>
+<translation id="6446105560007692480">เพื่อค้นหาด้วย Chrome หรือปรับแต่งใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="6448835208126432197">ใช้แป้นพิมพ์ลัดเพื่อเลือกส่วนหนึ่งของหน้าจอใน Gemini ใน Chrome</translation>
 <translation id="6473905796280459355">ไปที่หน้าเกี่ยวกับ Chrome</translation>
 <translation id="6481963882741794338">ลิงก์ Chrome กับบริการอื่นๆ ของ Google เพื่อการปรับเปลี่ยนในแบบของคุณและวัตถุประสงค์อื่นๆ</translation>
@@ -570,6 +574,7 @@
 <translation id="6612152958212564387">คุณไม่ได้ส่งสถิติการใช้งานและรายงานข้อขัดข้องไปยัง Google <ph name="BEGIN_LINK" />จัดการ<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">ซิงค์รหัสผ่าน บุ๊กมาร์ก และประวัติการเข้าชมในอุปกรณ์ต่างๆ ได้อย่างสมบูรณ์แบบโดยตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="6631524303639368205">ดำเนินการต่อจากที่ค้างไว้: Chrome ได้คืนค่าแท็บจากการเข้าชมล่าสุด คุณปิดตัวเลือกนี้ได้ใน</translation>
+<translation id="6632012506031284914">เพื่อค้นหาด้วย Chrome</translation>
 <translation id="6632473616050862500">Chrome OS Flex เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />เพิ่มเติม</translation>
 <translation id="6634299872736643004">การเปลี่ยนแปลงการตั้งค่านี้จะมีผลเมื่อ Chrome รีสตาร์ท</translation>
 <translation id="6660596345553328257">ลงชื่อเข้าใช้ Chrome ไหม</translation>
@@ -586,6 +591,7 @@
 <translation id="6750954913813541382">Chrome จะส่งข้อความที่คุณพิมพ์ในเบราว์เซอร์ไปยัง Google เพื่อแก้ไขข้อผิดพลาดของการสะกดคำ</translation>
 <translation id="6760235774835597023">เร่งความเร็วเว็บไซต์ด้วยเครื่องมือ V8 ของ Chrome แต่ทำให้ Chrome ต้านทานการโจมตีได้น้อยลงเล็กน้อย การตั้งค่านี้เปิดอยู่</translation>
 <translation id="677276454032249905">ออกจาก Chrome ใช่ไหม</translation>
+<translation id="6777654166489463890">ถามเกี่ยวกับเนื้อหานอก Chrome เช่น แอปหรือไฟล์อื่นที่คุณเปิดอยู่</translation>
 <translation id="6794858689789885890">ลบข้อมูลเว็บไซต์จากอุปกรณ์เสมอเมื่อปิด Chrome</translation>
 <translation id="6800285125190089494">ลงชื่อเข้าใช้เว็บไซต์ได้เร็วขึ้นโดยใช้รหัสผ่านที่บันทึกไว้สำหรับ Chrome บน iOS</translation>
 <translation id="6831043979455480757">แปลภาษา</translation>
@@ -638,6 +644,7 @@
 <translation id="7285990705317078173">ดาวน์โหลด Chrome ในโทรศัพท์เพื่อติดตามราคาและรับการแจ้งเตือนเมื่อราคาต่ำลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="7288567540154601580">แท็บและส่วนขยาย</translation>
 <translation id="7296210096911315575">ข้อมูลสำคัญเกี่ยวกับการใช้งานและความปลอดภัย</translation>
+<translation id="7299899569525778554">ค้นหาจากเดสก์ท็อป</translation>
 <translation id="7302361266603927550">ยังไม่ได้บันทึกข้อมูล Chrome บางอย่างของคุณลงในบัญชี Google โปรดรอสักครู่ก่อนออกจากระบบ หากคุณออกจากระบบตอนนี้ ระบบจะลบข้อมูลนี้</translation>
 <translation id="7306401458628386911">เริ่มท่องเว็บได้ทันที: ตอนนี้ระบบสามารถเปิด Chrome เมื่อ Windows เริ่มทำงานได้แล้ว</translation>
 <translation id="7308322188646931570">Chrome ต้องการสิทธิ์เข้าถึงพื้นที่เก็บข้อมูลเพื่อดาวน์โหลดไฟล์</translation>

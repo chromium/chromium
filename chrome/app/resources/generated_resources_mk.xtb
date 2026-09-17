@@ -1351,6 +1351,7 @@
 <translation id="2026367923222947564">Целосна страница</translation>
 <translation id="2026377162111110983">Глас на областа</translation>
 <translation id="2028449514182362831">Функциите на коишто им требаат сензорите за движење нема да работат</translation>
+<translation id="2029064269235798707">Изберете кратенка од тастатурата</translation>
 <translation id="202918510990975568">Внесете ја лозинката за да ги конфигурирате безбедноста и најавувањето</translation>
 <translation id="2030455719695904263">Подлога на допир</translation>
 <translation id="2030803782168502207">Отстранување на претплатата од уредот</translation>
@@ -1442,6 +1443,7 @@
 <translation id="2111670510994270194">Нова картичка надесно</translation>
 <translation id="2111778868023567359">Веќе нема да ја гледате „Групи картички“ на страницава</translation>
 <translation id="2112554630428445878">Добре дојдовте, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">Прегледајте ги увезените сертификати од macOS</translation>
 <translation id="21133533946938348">Прикачи картичка</translation>
 <translation id="2113479184312716848">Отвори &amp;датотека...</translation>
@@ -1997,6 +1999,7 @@
 <translation id="252513908494776481">Прашајте за картичкава</translation>
 <translation id="2525746158911982776">Ажурирањето не успеа бидејќи системот нема доволно простор за складирање.</translation>
 <translation id="2525842906387880861">Нема веќе да гледате предлози на страницава</translation>
+<translation id="2526346836766369775">Нова изолирана &amp;картичка</translation>
 <translation id="2526590354069164005">Десктоп</translation>
 <translation id="2526619973349913024">Провери за ажурирање</translation>
 <translation id="2527167509808613699">Секаков вид на поврзување</translation>
@@ -2282,6 +2285,7 @@
 <translation id="2740531572673183784">Во ред</translation>
 <translation id="2740876196999178364">Криптографскиве клучеви се зачувани на уредов. Не се зачувани во вашата сметка на Google.</translation>
 <translation id="2741912629735277980">Прикажи UI на екранот за најавување</translation>
+<translation id="274229007420507506">Променете ја кратенката во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" /></translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> не е достапен во моментов.</translation>
 <translation id="2743301740238894839">Започни</translation>
 <translation id="2743378970365831481">За да ја зачувате лозинката во Google Password Manager, кликнете ја иконата за Password Manager во лентата за локација</translation>
@@ -2631,6 +2635,7 @@
 <translation id="3001614333383288217">{COUNT,plural, =0{Нема приспособени копчиња}=1{1 приспособено копче}one{{COUNT} приспособено копче}other{{COUNT} приспособени копчиња}}</translation>
 <translation id="3002864108328203174">Долниот лист со Gemini е отворен на половина висина.</translation>
 <translation id="3003144360685731741">Претпочитани мрежи</translation>
+<translation id="3003152206838282768">Се работи на вашата задача во апликацијата Gemini во Chrome. Проверете во Chrome за новости за статусот на задачата</translation>
 <translation id="3003253259757197230">URL-адресите што ги отворате се испраќаат во Google за предвидување за тоа кои се следните сајтови што ќе ги отворите и прикажување дополнителни детали за страницата што сте ја отвориле.</translation>
 <translation id="3003623123441819449">CSS кеш</translation>
 <translation id="3003967365858406397">Вашиот <ph name="PHONE_NAME" /> ќе создаде приватна врска со Wi-Fi.</translation>
@@ -5080,6 +5085,7 @@
 <translation id="4864805589453749318">Изберете го родителот што дава дозвола за да додадете училишна сметка.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (блокирано)</translation>
 <translation id="486505726797718946">Споменот се зачуван</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Се работи на вашата задача во апликацијата Gemini во Chrome. Проверете во Chrome за новости за статусот на задачата</translation>
 <translation id="486635084936119914">Отворај одредени типови датотеки автоматски по преземањето</translation>
 <translation id="4868284252360267853">Дијалогов не е нагласен во моментов. Притиснете Command-Shift-Опција A за да го нагласите дијалогов.</translation>
 <translation id="4869170227080975044">да чита податоци за мрежа на ChromeOS</translation>
@@ -7713,6 +7719,7 @@
 <translation id="6916818963747321523">Прошири ги сите</translation>
 <translation id="6917873303492266709">За да споделувате, да се придружувате и да соработувате во групи картички, отворете ги поставките и вклучете „Дозволете најавување на Chrome“</translation>
 <translation id="6919354101107095996">Пробајте да се најавите на сајтот. Потоа, преземете пак</translation>
+<translation id="6919461818524183254">Избери кратенка</translation>
 <translation id="6919952941889172531">Да се вклучи и „Подобрено безбедно прелистување“ за профилов на Chrome?</translation>
 <translation id="6920989436227028121">Отвори како обична картичка</translation>
 <translation id="6921104647315081813">Избриши ги активностите</translation>
@@ -8551,6 +8558,7 @@
 <translation id="7578137152457315135">Поставки за отпечаток</translation>
 <translation id="7578692661782707876">Внесете го кодот за потврда.</translation>
 <translation id="757941033127302446">Најавена</translation>
+<translation id="7580311608678791180">Отворете од лентата со задачи на Windows</translation>
 <translation id="7581462281756524039">Алатка за чистење</translation>
 <translation id="7582582252461552277">Се претпочита оваа мрежа</translation>
 <translation id="7582844466922312471">Мобилен интернет</translation>
@@ -8564,6 +8572,7 @@
 <translation id="7590883480672980941">Поставки за внесување</translation>
 <translation id="7592060599656252486">Некои</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (код на грешка <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Отворете од лентата со менија на Mac</translation>
 <translation id="7600054753482800821">&amp;Управувајте со пребарувачи и пребарување сајтови</translation>
 <translation id="7600218158048761260">Google Drive е оневозможена за овој тип сметка.</translation>
 <translation id="7600965453749440009">Никогаш не преведувај <ph name="LANGUAGE" /></translation>
@@ -9249,6 +9258,7 @@
 <translation id="8102139037507939978">Отстрани ги податоците што откриваат идентитет од датотеката system_logs.txt.</translation>
 <translation id="810362914482827094">Пребарајте криптографски клучеви</translation>
 <translation id="8104088837833760645">Преземете профил на eSIM</translation>
+<translation id="8104388155778519213">Споделете го она што е на вашиот екран со Google Lens</translation>
 <translation id="8104778744208707085">Треба да проверите</translation>
 <translation id="8105273883928376822">Најавете се за да продолжите.</translation>
 <translation id="8106114112474206597">Користете „I“ за да притиснете копче на глувчето</translation>

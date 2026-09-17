@@ -1429,6 +1429,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3432601291244612633">Sayfayı kapat</translation>
 <translation id="3434025015623587566">Google Şifre Yöneticisi'nin daha fazla erişime ihtiyacı var</translation>
 <translation id="343474037147570563">Yüklediğiniz veya eklediğiniz dosyalar analiz amacıyla Google Cloud ve üçüncü taraflara gönderilir. Örneğin, hassas veriler veya kötü amaçlı yazılım içerip içermedikleri kontrol edilir ve şirket politikalarına bağlı olarak saklanıp yöneticiniz tarafından görülebilir.</translation>
+<translation id="3435267628744367511">Sekme değiştirmeden bilgileri bulup doldurmak için herhangi bir formda Ctrl tuşuna iki kez basın</translation>
 <translation id="3435557549311968410">Kesintisiz (Kısa)</translation>
 <translation id="3435738964857648380">Güvenlik</translation>
 <translation id="3436125638121079308">Bu sohbet dizisinde daha iyi yanıtlar almak için alakalı sekmeler otomatik olarak paylaşılsın mı?</translation>
@@ -1517,6 +1518,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3577473026931028326">Bir sorun oldu. Tekrar deneyin.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Bu sayfa hazır olduğunda Chrome tarafından bilgilendirileceksiniz. &lt;a&gt;İptal&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Sekmeleri otomatik olarak ekleme</translation>
 <translation id="3582930987043644930">Ad ekleyin</translation>
 <translation id="3583757800736429874">Taşımayı &amp;Yeniden Yap</translation>
 <translation id="3584299510153766161">Altta ikili delik</translation>
@@ -1592,6 +1594,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Yükleniyor...</translation>
 <translation id="3709599264800900598">Kopyalanan Metin</translation>
+<translation id="3711223220609269738">Yeni Yalıtılmış Sekme</translation>
 <translation id="3711430313228789376">Chrome tarayıcı, şifreleri göstermeye çalışıyor</translation>
 <translation id="3711895659073496551">Askıya al</translation>
 <translation id="3712004750972384495">Ekran kaydı kaydediliyor</translation>
@@ -1610,6 +1613,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3727309136762649052">Ad alanı</translation>
 <translation id="3727850735097852673">Google Şifre Yöneticisi'ni macOS Anahtar Zinciri ile kullanmak için Chrome'u yeniden başlatıp Anahtar Zinciri'ne erişim izni verin. Chrome yeniden başlatıldıktan sonra sekmeleriniz tekrar açılır.</translation>
 <translation id="3728173127485570463">Chrome tarayıcının şifreleri otomatik olarak doldurması için artık parmak iziniz gerekmeyecek</translation>
+<translation id="3729811201279509483">Sekmeleri manuel olarak ekleme</translation>
 <translation id="3736564442532774454">Chrome tarayıcı, <ph name="APP_NAME" /> adresinde hassas bilgilerinizi doldurmaya çalışıyor.</translation>
 <translation id="3738166223076830879">Tarayıcınız, kuruluşunuz tarafından yönetilmektedir.</translation>
 <translation id="3739842843727261045">Beğenme düğmesini tıkladığınızda bu sonuçların hoşunuza gittiğine dair geri bildirim gönderilir.</translation>
@@ -2773,6 +2777,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5649053991847567735">Otomatik indirmeler</translation>
 <translation id="5651323159439184939">Dişli Besleyici</translation>
 <translation id="5653681867130739344">Google Cüzdan'daki kimlik kartını güvenli bir şekilde güncelleyin</translation>
+<translation id="5653744563415531641">Google ürünlerinde form doldurma gibi işlemleri daha hızlı yapmak için bilgilerinizi kaydedin. <ph name="ACCOUNT" /> için şunları yapabilirsiniz: <ph name="MANAGE_WALLET_SETTINGS_LINK" />.</translation>
 <translation id="5654927323611874862">Yüklenen Kilitlenme Raporu Kimliği:</translation>
 <translation id="5654965123204121933">URL, <ph name="SEARCH_TERMS_REPLACEMENT" /> zorunlu değiştirme dizesini içermiyor: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-posta</translation>
@@ -2896,6 +2901,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5884465125445718607">Zarf Chinese #6</translation>
 <translation id="5887400589839399685">Kart kaydedildi</translation>
 <translation id="5887687176710214216">En son dün ziyaret edildi</translation>
+<translation id="5887791684215121787">Sekme değiştirmeden bilgileri bulup doldurmak için herhangi bir formda ⌘ ⌘ tuşlarına basın</translation>
 <translation id="5889251770650310375">Diğer cihazlarınızdaki geçmişinizi görmek için kimliğinizi doğrulayıp geçmişinizi ve sekmelerinizi senkronize edin. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="5895187275912066135">Verildiği Tarih</translation>
@@ -3218,6 +3224,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> numaralı kartın son kullanma tarihini ve CVC kodunu girin</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Ebeveyn onayı iletişim kutusu</translation>
+<translation id="6413532517183895572">Cüzdan ayarlarınızı yönetin</translation>
 <translation id="6415778972515849510">Chromium, Google Hesabınızı korumanıza ve şifrenizi değiştirmenize yardımcı olabilir.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Kritik iş veya kişisel verilerinizin harici olarak depolandığından emin olun.</translation>

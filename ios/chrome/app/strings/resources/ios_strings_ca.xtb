@@ -269,6 +269,7 @@
 <translation id="17906873777101817">Ofereix desar les contrasenyes i les claus d'accés</translation>
 <translation id="1794893174442046596">Grup de pestanyes</translation>
 <translation id="1807893857950749072">Permet les notificacions de seguiment de preus…</translation>
+<translation id="1808142805674973090">Canvia de mode</translation>
 <translation id="1809929083618343438">Se suprimirà la informació seleccionada de Chrome, però no se suprimirà del teu Compte de Google.</translation>
 <translation id="1810976980198522421">Cancel·la</translation>
 <translation id="1815941218935345331">Codi d'accés</translation>
@@ -850,6 +851,7 @@
 <translation id="3779810277399252432">No hi ha connexió a Internet.</translation>
 <translation id="3782614601387961027">Ignora l'advertiment</translation>
 <translation id="3789841737615482174">Instal·la</translation>
+<translation id="3793603310364129123">Menys passos, enllaços més ràpids</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803696231112616155">Proposa traduir aquest lloc web</translation>
 <translation id="3810973564298564668">Gestiona</translation>
@@ -1381,6 +1383,7 @@
 <translation id="5467163657366219870">Desactiva Previsualització de Maps</translation>
 <translation id="5474397204728336997">Contrasenyes de la família, noves personalitzacions i més. Toca per obtenir més informació.</translation>
 <translation id="5475793109165786685">{count,plural, =0{No s'ha importat cap contrasenya}=1{S'ha importat {count} contrasenya}other{S'han importat {count} contrasenyes}}</translation>
+<translation id="5477188385487393357">Omet la funció copia i enganxa</translation>
 <translation id="5478327362747197944">Crea esdeveniments del calendari directament fent clic en una data d'una pàgina web.</translation>
 <translation id="5482922178977937393">Vols rebre notificacions de notícies, esports i més temes segons els teus interessos?</translation>
 <translation id="5483838506518938965">Ja esteu a punt</translation>
@@ -1747,6 +1750,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6585618849026997638">Afegeix adreces d'interès per tornar a pàgines que consideris importants</translation>
 <translation id="6589001036857939353">Combina contactes duplicats</translation>
 <translation id="659407965921887085">Aquesta targeta mostra les baixades de preu que es produeixen al web en productes que estàs seguint</translation>
+<translation id="6596324345367949437">Gemini no està disponible en el mode d'incògnit</translation>
 <translation id="6596481460663245319">Cerca la imatge amb Google</translation>
 <translation id="6601302169302852717">La imatge de <ph name="USER_EMAIL" /> s'ha desat a Google Fotos</translation>
 <translation id="6602173570135186741">Emplenament automàtic i contrasenyes</translation>

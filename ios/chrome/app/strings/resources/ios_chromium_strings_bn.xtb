@@ -142,6 +142,7 @@
 <translation id="3855938650519180865">Chromium-এ নতুন কী কী রয়েছে</translation>
 <translation id="3886689467633467988">আপনার ডিভাইসে আপনার বুকমার্ক ও আরও অনেক কিছু পেতে এই সাইট ও Chromium-এ সাইন-ইন করুন।</translation>
 <translation id="3949514465204582407">Chromium সম্পর্কিত পরামর্শ: যেকোনও অ্যাপে আপনার পাসওয়ার্ড পান</translation>
+<translation id="3983298990898629929">একবার ট্যাপ করেই লিঙ্ক খুলতে, আপনার ডিফল্ট ব্রাউজার হিসেবে Chromium সেট করুন</translation>
 <translation id="4005283307739974863">Chromium-এ 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচার খুলে রান করায়।</translation>
 <translation id="4043291146360695975">শুধুমাত্র এই ডিভাইসের 'পাসওয়ার্ড ম্যানেজারে' পাসওয়ার্ড সেভ করা হয়।</translation>
 <translation id="4046625794029820944">URL কপি করার ঝামেলা এড়ান। সরাসরি পেজ লোড করতে Chromium-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করুন।</translation>
@@ -273,6 +274,7 @@
 <translation id="6680609900732453726">Chromium বন্ধ করার পরে ব্রাউজিং ব্যক্তিগত রাখতে ডিভাইস যাচাইকরণ ব্যবহার করুন</translation>
 <translation id="6696512128741076907">অন্যান্য অ্যাপ থেকে ঝটপট লিঙ্ক খুলতে ডিফল্ট ব্রাউজার হিসেবে Chromium সেট করুন।</translation>
 <translation id="6752854822223394465">আপনার সংস্থা Chromium সেট আপ করছে...</translation>
+<translation id="6777348401413221846">Chromium-কে কীভাবে ডিফল্ট ব্রাউজার হিসেবে সেট করবেন সেই সম্পর্কিত ফুল স্ক্রিন ভিডিও: iOS-এ Chromium সেটিংস খুলুন, "ডিফল্ট ব্রাউজার অ্যাপ" বিকল্পে ট্যাপ করুন এবং Chromium বেছে নিন।</translation>
 <translation id="6794054469102824109">Chromium ডাইনো গেম খোলে।</translation>
 <translation id="6820823224820483452">Chromium সব পাসওয়ার্ড চেক করতে পারেনি। আগামীকাল আবার চেষ্টা করে দেখুন।</translation>
 <translation id="6830782797004194206">Chromium অটোফিলের মাধ্যমে দ্রুত সাইন-ইন করুন</translation>
@@ -302,6 +304,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028"><ph name="EMAIL" />-এর জন্য পাসওয়ার্ড ম্যানেজারে আপনার পাসওয়ার্ড সেভ হয়ে যাবে।</translation>
 <translation id="7434848749522628428">এই পাসকী <ph name="USER_EMAIL" />-এর জন্য Password Manager-এ সেভ করা হবে</translation>
+<translation id="7453822113116681031">একবার ট্যাপ করেই লিঙ্ক খুলতে, Chromium আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করুন</translation>
 <translation id="7504829997542308412">Chromium খুলুন</translation>
 <translation id="7531461704633548377">Chromium থেকে</translation>
 <translation id="7554983317097061001">Chromium সম্পর্কিত পরামর্শ: ডকে Chromium সরান</translation>

@@ -515,6 +515,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2996682533106928201">Tryk for at lukke</translation>
 <translation id="2996809686854298943">En webadresse er påkrævet</translation>
 <translation id="3024215143424744261">Præferencer for læsetilstand er lukket</translation>
+<translation id="3024277805447899099">Forhåndsvisning af billede</translation>
 <translation id="3026955690410463085">Medtag link</translation>
 <translation id="3027950907978057636">Fra <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Ingen forudindlæsning</translation>
@@ -787,6 +788,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4162867837470729563">Listen over delingsindstillinger er åbnet i fuld højde.</translation>
 <translation id="4164642020717536140">Hurtig og sikker webbrowsing</translation>
 <translation id="4165077084524712774">Flere værktøjer</translation>
+<translation id="4169156312706405526">Vedhæft filer fra Drev</translation>
 <translation id="4170577491341606575">Henter dine data\u2026</translation>
 <translation id="4172051516777682613">Vis altid</translation>
 <translation id="4176838562184310003">Chrome blev ikke lukket korrekt og kan prøve at gendanne dine mistede vinduer og faner. Nogle vinduer kan være minimeret, når de gendannes.</translation>
@@ -1030,6 +1032,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5040262127954254034">Privatliv</translation>
 <translation id="504456571576643789">Vigtige oplysninger</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> vindue er valgt}one{<ph name="WINDOW_COUNT_NORMAL" /> vindue er valgt}other{<ph name="WINDOW_COUNT_NORMAL" /> vinduer er valgt}}</translation>
+<translation id="5058506215037547387">Se forhåndsvisning af side</translation>
 <translation id="506254248375231072">Der er ingen faner</translation>
 <translation id="5075939510584558547">Gem uden kryptering</translation>
 <translation id="5078638979202084724">Tilføj alle faner som bogmærker</translation>
@@ -1255,6 +1258,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="604996488070107836"><ph name="FILE_NAME" /> kunne ikke downloades, da der opstod en ukendt fejl.</translation>
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="606985262342505139">Feltet i bunden med faner er åbnet i fuld højde</translation>
+<translation id="6070608977567243308">Find produkter med Google Lens</translation>
 <translation id="6071995715087444295">Log ind på din Google-konto for at tjekke, om der er kompromitterede adgangskoder</translation>
 <translation id="6078323886959318429">Tilføj genvej</translation>
 <translation id="6085886413119427067">Bestemmer, hvordan der skal oprettes forbindelse til websites via en sikker forbindelse</translation>
@@ -1302,6 +1306,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="6232535412751077445">Aktivering af "Do Not Track" betyder, at en anmodning medtages i din browsertrafik. Effekten afhænger af, om et website reagerer på anmodningen, og hvordan anmodningen fortolkes.
 
 Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, som ikke er baseret på andre websites, du har besøgt. Mange websites vil fortsat indsamle og bruge browserdata til f.eks. at forbedre sikkerheden, til at levere indhold, annoncer og anbefalinger og til at generere rapporteringsstatistik.</translation>
+<translation id="6235349850462976369">Oversæt teksten på billedet med Google Lens</translation>
 <translation id="623755660902014047">Læsetilstand</translation>
 <translation id="6246073558347462570">Pop op-vindue med kontekst</translation>
 <translation id="6247557882553405851">Google Adgangs­ko­de­administrator</translation>

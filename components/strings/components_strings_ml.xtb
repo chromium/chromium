@@ -1517,6 +1517,7 @@
 <translation id="3577473026931028326">എന്തോ കുഴപ്പമുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">ഈ പേജ് തയ്യാറാകുമ്പോൾ, Chrome നിങ്ങളെ അറിയിക്കും. &lt;a&gt;റദ്ദാക്കുക&lt;/a&gt;</translation>
+<translation id="3581499772329034229">ടാബുകൾ സ്വയമേവ ചേർക്കുക</translation>
 <translation id="3582930987043644930">പേര് ചേർക്കുക</translation>
 <translation id="3583757800736429874">&amp;നീക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="3584299510153766161">താഴെ ഇരട്ട പഞ്ച് ചെയ്യുക</translation>
@@ -1592,6 +1593,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">ലോഡ്ചെയ്യുന്നു...</translation>
 <translation id="3709599264800900598">നിങ്ങൾ പകർത്തിയ ടെക്‌സ്‌റ്റ്</translation>
+<translation id="3711223220609269738">പുതിയ ഐസൊലേറ്റഡ് ടാബ്</translation>
 <translation id="3711430313228789376">പാസ്‌വേഡുകൾ കാണിക്കാൻ Chrome ബ്രൗസർ ശ്രമിക്കുന്നു</translation>
 <translation id="3711895659073496551">താൽക്കാലികമായി റദ്ദാക്കുക</translation>
 <translation id="3712004750972384495">സ്ക്രീൻ റെക്കോർഡിംഗ് സംരക്ഷിക്കുന്നു</translation>
@@ -1610,6 +1612,7 @@
 <translation id="3727309136762649052">നെയിംസ്പെയ്സ്</translation>
 <translation id="3727850735097852673">macOS Keychain-ന് ഒപ്പം Google Password Manager ഉപയോഗിക്കുന്നതിന്, Chrome വീണ്ടും ആരംഭിച്ച് Keychain ആക്‌സസ് അനുവദിക്കുക. വീണ്ടും ആരംഭിച്ചുകഴിഞ്ഞാൽ നിങ്ങളുടെ ടാബുകൾ വീണ്ടും തുറക്കും.</translation>
 <translation id="3728173127485570463">പാസ്‌വേഡുകൾ സ്വയമേവ പൂരിപ്പിക്കാൻ Chrome ബ്രൗസറിന് ഇനി നിങ്ങളുടെ ഫിംഗർപ്രിന്റ് ആവശ്യമില്ല</translation>
+<translation id="3729811201279509483">ടാബുകൾ നേരിട്ട് ചേർക്കുക</translation>
 <translation id="3736564442532774454"><ph name="APP_NAME" /> എന്നതിലെ നിങ്ങളുടെ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട വിവരങ്ങൾ പൂരിപ്പിക്കാൻ Chrome ബ്രൗസർ ശ്രമിക്കുന്നു.</translation>
 <translation id="3738166223076830879">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിൻ ആണ്.</translation>
 <translation id="3739842843727261045">തംബ്‌സ് അപ്പ് നൽകുന്നത് നിങ്ങൾക്ക് ഈ ഫലങ്ങൾ ഇഷ്ടമായെന്ന ഫീഡ്ബാക്ക് സമർപ്പിക്കുന്നു</translation>
@@ -2773,6 +2776,7 @@
 <translation id="5649053991847567735">യാന്ത്രിക ഡൗൺലോഡുകൾ</translation>
 <translation id="5651323159439184939">ട്രാക്‌റ്റർ ഫീഡ്</translation>
 <translation id="5653681867130739344">Google Wallet-ൽ ഐഡന്റിറ്റി കാർഡ് സുരക്ഷിതമായി അപ്ഡേറ്റ് ചെയ്യുക</translation>
+<translation id="5653744563415531641">Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഫോമുകൾ പൂരിപ്പിക്കുന്നത് പോലെ, നിങ്ങളുടെ വിവരങ്ങൾ സംരക്ഷിച്ച് കാര്യങ്ങൾ വേഗത്തിൽ പൂർത്തിയാക്കുക. <ph name="ACCOUNT" /> എന്നതിനായി നിങ്ങൾക്ക് <ph name="MANAGE_WALLET_SETTINGS_LINK" />.</translation>
 <translation id="5654927323611874862">അപ്‌ലോഡ് ചെയ്ത ക്രാഷ് റിപ്പോർട്ട് ഐഡി:</translation>
 <translation id="5654965123204121933">ആവശ്യമായ <ph name="SEARCH_TERMS_REPLACEMENT" /> എന്ന പകരം നൽകാനുള്ള സ്ട്രിംഗ് URL-ൽ ഇല്ല: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ഇമെയില്‍</translation>
@@ -3219,6 +3223,7 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />-ന്‍റെ കാലാവധി തീരുന്ന തീയതിയും CVC-യും നൽകുക</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">രക്ഷാകർതൃ അനുമതി ഡയലോഗ്</translation>
+<translation id="6413532517183895572">നിങ്ങളുടെ Wallet ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="6415778972515849510">നിങ്ങളുടെ Google Account പരിരക്ഷിക്കാനും പാസ്‌വേഡ് മാറ്റാനും Chromium സഹായിക്കും.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">പ്രധാനപ്പെട്ട ബിസിനസോ വ്യക്തിപരമായ ഡാറ്റയോ പുറത്താണ് സൂക്ഷിക്കുന്നതെന്ന് ഉറപ്പാക്കുക.</translation>

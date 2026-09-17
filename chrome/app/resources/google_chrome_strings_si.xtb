@@ -231,6 +231,7 @@
 <translation id="3112458742631356345">ගොනුව සාමාන්‍යයෙන් බාගත නොවන නිසා සහ එය භයානක විය හැකි නිසා Chrome මෙම බාගැනීම අවහිර කර ඇත</translation>
 <translation id="3119573284443908657">ලේඛනාරක්ෂිත ගොනුවේ අනිෂ්ට මෘදුකාංග සැඟවිය හැකි වෙනත් ගොනු ඇතුළත් නිසා Chrome මෙම බාගැනීම අවහිර කර ඇත</translation>
 <translation id="3124332159330678621">ඔබේ බ්‍රව්සරයට නව පෙනුමක් ලබා දීමට Chrome අභිරුචිකරණය කරන්න</translation>
+<translation id="3125851611828811913">Chrome අවම කර තිබුණත්, ඕනෑම තැනක සිට සොයන්න සහ ප්‍රශ්න අසන්න. පසුබිමේ Chrome ධාවනය කිරීමට ඉඩ දෙයි.</translation>
 <translation id="3130333203120345554">අලුත් සෙවීම</translation>
 <translation id="3135560418014806498">Chrome පැතිකඩ එක් කරන්න</translation>
 <translation id="3137969841538672700">සෙවීමට අදින්න</translation>
@@ -387,6 +388,7 @@
 <translation id="4793679854893018356">Chrome ඔබව සුරක්ෂිතව තබන ආකාරය ඉගෙන ගන්න</translation>
 <translation id="4799870290441980300">Chrome හි ශක්තිමත්ම ආරක්ෂාව සැපයීමට අතිරේක විශේෂාංග ක්‍රියාත්මක කරයි</translation>
 <translation id="4828579605166583682">Google Chrome දැනට පවතින මුරපද ප්‍රතිස්ථාපනය කිරීමට උත්සාහ කරයි. මෙයට ඉඩ දීමට ඔබේ Windows මුරපදය ටයිප් කරන්න.</translation>
+<translation id="4836321460899997044">Chrome පැතිකඩ</translation>
 <translation id="4842397268809523050">ඔබගේ වසම සඳහා සමමුහුර්තකරණය ලබා ගත නොහැකි නිසා ChromeOS Flex හට ඔබගේ දත්ත සමමුහුර්ත කළ නොහැකි විය.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> දැනටමත් පුරනය වී නැත.  ඔබේ බ්‍රවුස් කිරීම වෙනම තබා ගැනීමට, <ph name="USER_EMAIL_ADDRESS" /> ලෙස ඔබේම පැතිකඩෙන් Chrome හට පුරන්න.</translation>
 <translation id="4855026984605187434">ඔබේ තිරය බෙදා ගැනීමට, පද්ධති සැකසීම් තුළ Chrome සඳහා තිර පටිගත කිරීමට ඉඩ දෙන්න</translation>
@@ -504,6 +506,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome වෙතින් මෙවලම්<ph name="END_LINK" /> සමගින්, ඔබට සුරක්ෂිතව බ්‍රවුස් කර පාලනයේ සිටිය හැක</translation>
 <translation id="6018578474045062808">ඔබේ දුරකථනයේ Chrome සමග Google Lens උත්සාහ කරන්න</translation>
 <translation id="6022659036123304283">Chrome ඔබේම කර ගන්න</translation>
+<translation id="6024930613143833266">ඕනෑම තැනක සිට Chrome සමග සොයන්න</translation>
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" />කින් යළි ඇරඹෙනු ඇත</translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="604424701295382420">අමුණන ලදි! ඔබට මෙවලම් තීරුව මත නව බොත්තමින් Google Lens හට නැවත ප්‍රවේශ විය හැක</translation>
@@ -594,6 +597,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6750954913813541382">අක්‍ෂර වින්‍යාස දෝෂ නිවැරදි කිරීමට, නිඔබ බ්‍රවුසරය තුළ ටයිප් කරන පාඨය Chrome විසින් Google වෙත යවනු ලැබේ</translation>
 <translation id="6760235774835597023">Chrome හි V8 එන්ජිම සමග අඩවි වේගවත් කරයි, නමුත් Chrome ප්‍රහාරවලට තරමක් අඩු ප්‍රතිරෝධයක් දක්වයි. මෙම සැකසීම ක්‍රියාත්මකයි.</translation>
 <translation id="677276454032249905">කෙසේ වුවත් Chrome වෙතින් ඉවත් වන්න ද?</translation>
+<translation id="6777654166489463890">ඔබ විවෘත කර ඇති වෙනත් යෙදුමක් හෝ ගොනුවක් වැනි Chrome වලින් පිටත අන්තර්ගතය ගැන විමසන්න</translation>
 <translation id="6794858689789885890">ඔබ Chrome වසා දැමූ විට සැම විටම ඔබේ උපාංගයෙන් අඩවි දත්ත මකන්න</translation>
 <translation id="6800285125190089494">iOS හි Chrome සඳහා සුරකින ලද මුරපද භාවිතයෙන් වෙබ් අඩවි වලට වේගයෙන් පුරන්න</translation>
 <translation id="6831043979455480757">පරිවර්තනය කරන්න</translation>
@@ -646,6 +650,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="7285990705317078173">මිල ගණන් නිරීක්ෂණය කිරීමට සහ ඕනෑම වෙබ් අඩවියක මිල පහත වැටෙන විට ඇඟවීම් ලබා ගැනීමට ඔබේ දුරකථනයෙන් Chrome බාගන්න</translation>
 <translation id="7288567540154601580">පටිති සහ දිගු</translation>
 <translation id="7296210096911315575">වැදගත් භාවිතය සහ ආරක්‍ෂක තොරතුරු</translation>
+<translation id="7299899569525778554">ඩෙස්ක්ටොපයෙන් සොයන්න</translation>
 <translation id="7302361266603927550">ඔබේ Chrome දත්ත සමහරක් තවම ඔබේ Google ගිණුම තුළ සුරැකී නැත. වරන්නට පෙර විනාඩි කිහිපයක් රැඳී සිටීමට උත්සාහ කරන්න. ඔබ දැන් වරන්නේ නම් මෙම දත්ත මකනු ලැබේ.</translation>
 <translation id="7306401458628386911">ක්ෂණිකව බ්‍රවුස් කිරීම ආරම්භ කරන්න: Windows ආරම්භ වන විට Chrome හට දැන් දියත් කළ හැක.</translation>
 <translation id="7308322188646931570">Chrome හට ගොනු බාගැනීමට ආචයන ප්‍රවේශය අවශ්‍යයි</translation>

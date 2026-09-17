@@ -515,6 +515,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2996682533106928201">Tryck för att ignorera</translation>
 <translation id="2996809686854298943">En webbadress måste anges.</translation>
 <translation id="3024215143424744261">Inställningarna för läsläget har stängts</translation>
+<translation id="3024277805447899099">Förhandsgranska bild</translation>
 <translation id="3026955690410463085">Inkludera länk</translation>
 <translation id="3027950907978057636">Från <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Ingen förinläsning</translation>
@@ -788,6 +789,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4162867837470729563">Lista över delningsalternativ har öppnats över hela skärmen.</translation>
 <translation id="4164642020717536140">Snabb och säker webbsökning</translation>
 <translation id="4165077084524712774">Fler verktyg</translation>
+<translation id="4169156312706405526">Bifoga filer från Drive</translation>
 <translation id="4170577491341606575">Hämtar dina grejer \u2026</translation>
 <translation id="4172051516777682613">Visa alltid</translation>
 <translation id="4176838562184310003">Chrome stängdes inte av på rätt sätt och kan försöka återställa dina förlorade fönster och flikar. Vissa fönster kan minimeras när de återställs.</translation>
@@ -1031,6 +1033,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5040262127954254034">Integritet</translation>
 <translation id="504456571576643789">Tänk på detta</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> fönster har valts}other{<ph name="WINDOW_COUNT_NORMAL" /> fönster har valts}}</translation>
+<translation id="5058506215037547387">Förhandsgranska sida</translation>
 <translation id="506254248375231072">Inga flikar</translation>
 <translation id="5075939510584558547">Spara utan kryptering</translation>
 <translation id="5078638979202084724">Bokmärk alla flikar</translation>
@@ -1256,6 +1259,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="604996488070107836">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av ett okänt fel.</translation>
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="606985262342505139">Arket för flikar på nedre delen av skärmen har öppnats över hela skärmen</translation>
+<translation id="6070608977567243308">Shoppa bilden med Google Lens</translation>
 <translation id="6071995715087444295">Logga in på Google-kontot för att kontrollera om det finns utsatta lösenord</translation>
 <translation id="6078323886959318429">Genväg</translation>
 <translation id="6085886413119427067">Styr hur du ansluter till webbplatser via en säker anslutning</translation>
@@ -1303,6 +1307,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6232535412751077445">Om du aktiverar Do Not Track inkluderas en begäran i din surftrafik. Eventuella effekter beror på om webbplatsen svarar på begäran och hur begäran tolkas.
 
 Vissa webbplatser kan till exempel svara på begäran genom att visa annonser som inte baseras på andra webbplatser du har besökt. Många webbplatser samlar ändå in och använder din webbinformation – till exempel för att förbättra säkerheten, tillhandahålla innehåll, annonser och rekommendationer samt generera rapportstatistik.</translation>
+<translation id="6235349850462976369">Översätt bilden med Google Lens</translation>
 <translation id="623755660902014047">Läsläge</translation>
 <translation id="6246073558347462570">Popupfönster för sammanhang</translation>
 <translation id="6247557882553405851">Google Lösenordshantering</translation>

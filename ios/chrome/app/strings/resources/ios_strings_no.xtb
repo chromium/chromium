@@ -269,6 +269,7 @@
 <translation id="17906873777101817">Tilby å lagre passord og passnøkler</translation>
 <translation id="1794893174442046596">Fanegruppe</translation>
 <translation id="1807893857950749072">Tillat varsler om prissporing…</translation>
+<translation id="1808142805674973090">Bytt modus</translation>
 <translation id="1809929083618343438">Dette fjerner den valgte informasjonen fra Chrome, men den slettes ikke fra Google-kontoen din.</translation>
 <translation id="1810976980198522421">Avbryt</translation>
 <translation id="1815941218935345331">Sikkerhetskode</translation>
@@ -850,6 +851,7 @@
 <translation id="3779810277399252432">Ingen internettilkobling.</translation>
 <translation id="3782614601387961027">Lukk varsel</translation>
 <translation id="3789841737615482174">Installer</translation>
+<translation id="3793603310364129123">Færre trinn, raskere linker</translation>
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803696231112616155">Tilby å oversette dette nettstedet</translation>
 <translation id="3810973564298564668">Administrer</translation>
@@ -1381,6 +1383,7 @@
 <translation id="5467163657366219870">Slå av forhåndsvisninger i Maps</translation>
 <translation id="5474397204728336997">Familiepassord, nye tilpasninger med mer. Trykk for å finne ut mer.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Ingen passord er importert}=1{Importerte {count} passord}other{Importerte {count} passord}}</translation>
+<translation id="5477188385487393357">Hopp over kopiering og innliming</translation>
 <translation id="5478327362747197944">Opprett kalenderaktiviteter direkte ved å klikke på datoer på nettsider.</translation>
 <translation id="5482922178977937393">Vil du ha varsler om nyheter, sport med mer basert på interessene dine?</translation>
 <translation id="5483838506518938965">Du er klar</translation>
@@ -1747,6 +1750,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6585618849026997638">Du kan komme tilbake til sider som er viktige for deg, ved å legge til bokmerker</translation>
 <translation id="6589001036857939353">Slå sammen duplikater</translation>
 <translation id="659407965921887085">Dette kortet viser avslag på nett for produkter du sporer</translation>
+<translation id="6596324345367949437">Gemini er ikke tilgjengelig i inkognitomodus</translation>
 <translation id="6596481460663245319">Søk etter bildet med Google</translation>
 <translation id="6601302169302852717">Bildet er lagret i Google Foto for <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Autofyll og passord</translation>

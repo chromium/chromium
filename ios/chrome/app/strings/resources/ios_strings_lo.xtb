@@ -269,6 +269,7 @@
 <translation id="17906873777101817">ສະເໜີໃຫ້ບັນທຶກລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານ</translation>
 <translation id="1794893174442046596">ກຸ່ມແຖບ</translation>
 <translation id="1807893857950749072">ອະນຸຍາດການແຈ້ງເຕືອນການຕິດຕາມລາຄາ…</translation>
+<translation id="1808142805674973090">ສະຫຼັບໂໝດ</translation>
 <translation id="1809929083618343438">ສິ່ງນີ້ຈະເປັນການລຶບຂໍ້ມູນທີ່ເລືອກອອກຈາກ Chrome, ແຕ່ມັນບໍ່ໄດ້ລຶບຂໍ້ມູນນີ້ຈາກບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="1810976980198522421">ຍົກເລີກ</translation>
 <translation id="1815941218935345331">ລະຫັດ</translation>
@@ -850,6 +851,7 @@
 <translation id="3779810277399252432">ບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ.</translation>
 <translation id="3782614601387961027">ປິດຄຳເຕືອນ</translation>
 <translation id="3789841737615482174">​ຕິດ​ຕັ້ງ</translation>
+<translation id="3793603310364129123">ຂັ້ນຕອນໜ້ອຍລົງ, ລິ້ງໄວຂຶ້ນ</translation>
 <translation id="380329542618494757">ຊື່</translation>
 <translation id="3803696231112616155">ສະເໜີແປເວັບໄຊນີ້</translation>
 <translation id="3810973564298564668">ຈັດການ</translation>
@@ -1381,6 +1383,7 @@
 <translation id="5467163657366219870">ປິດແຜນທີ່ເວີຊັນຕົວຢ່າງ</translation>
 <translation id="5474397204728336997">ລະຫັດຜ່ານຄອບຄົວ, ການປັບແຕ່ງໃໝ່ ແລະ ອື່ນໆ. ແຕະເພື່ອສຶກສາເພີ່ມເຕີມ.</translation>
 <translation id="5475793109165786685">{count,plural, =0{ບໍ່ໄດ້ນຳເຂົ້າລະຫັດຜ່ານ}=1{ນຳເຂົ້າລະຫັດຜ່ານ {count} ລາຍການແລ້ວ}other{ນຳເຂົ້າລະຫັດຜ່ານ {count} ລາຍການແລ້ວ}}</translation>
+<translation id="5477188385487393357">ຂ້າມການສຳເນົາ ແລະ ວາງ</translation>
 <translation id="5478327362747197944">ສ້າງນັດໝາຍປະຕິທິນໂດຍກົງດ້ວຍການຄລິກໃສ່ວັນທີໃນໜ້າເວັບໃດໜຶ່ງ.</translation>
 <translation id="5482922178977937393">ທ່ານຕ້ອງການຮັບການແຈ້ງເຕືອນກ່ຽວກັບຂ່າວ, ກິລາ ແລະ ອື່ນໆໂດຍອີງຕາມຄວາມສົນໃຈຂອງທ່ານບໍ?</translation>
 <translation id="5483838506518938965">ທ່ານຮຽບຮ້ອຍໝົດແລ້ວ</translation>
@@ -1747,6 +1750,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6585618849026997638">ທ່ານສາມາດກັບໄປຫາໜ້າທີ່ສຳຄັນຕໍ່ກັບທ່ານໂດຍການເພີ່ມບຸກມາກໄດ້</translation>
 <translation id="6589001036857939353">ຮວມຂໍ້ມູນທີ່ຊ້ຳກັນ</translation>
 <translation id="659407965921887085">ບັດນີ້ສະແດງລາຄາລົງໃນທົ່ວເວັບໄຊຢູ່ສິນຄ້າທີ່ທ່ານຕິດຕາມໃນປັດຈຸບັນ</translation>
+<translation id="6596324345367949437">Gemini ບໍ່ພ້ອມນຳໃຊ້ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="6596481460663245319">ຊອກຫາຮູບດ້ວຍ Google</translation>
 <translation id="6601302169302852717">ບັນທຶກຮູບສຳລັບ <ph name="USER_EMAIL" /> ໄວ້ໃນ Google ຮູບພາບແລ້ວ</translation>
 <translation id="6602173570135186741">ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ ແລະ ລະຫັດຜ່ານ</translation>

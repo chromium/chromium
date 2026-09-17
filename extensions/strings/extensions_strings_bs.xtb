@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Zahtjev za odobrenje koje daje roditelj nije uspio.</translation>
 <translation id="1803557475693955505">Nije moguće učitati stranicu s pozadinama "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="1875387611427697908">Ovo se može dodati samo iz usluge <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715">Proširenje <ph name="EXTENSION_NAME" /> (ID proširenja: <ph name="EXTENSION_ID" />) ne može se instalirati u skladu s pravilima u okruženjima s niskom razinom pouzdanosti.</translation>
 <translation id="2131077480075264">Nije moguće instalirati aplikaciju "<ph name="APP_NAME" />" jer to ne dozvoljava "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2150661552845026580">Dodati ekstenziju "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Dekodiranje slike nije uspjelo: "<ph name="IMAGE_NAME" />"</translation>

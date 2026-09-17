@@ -1349,6 +1349,7 @@
 <translation id="2026367923222947564">పూర్తి పేజీ</translation>
 <translation id="2026377162111110983">ఏరియా వాయిస్</translation>
 <translation id="2028449514182362831">మోషన్ సెన్సార్‌లు అవసరం అయ్యే ఫీచర్‌లు పని చేయవు</translation>
+<translation id="2029064269235798707">కీబోర్డ్ షార్ట్‌కట్‌ను ఎంచుకోండి</translation>
 <translation id="202918510990975568">భద్రత మరియు సైన్ ఇన్‌ను కాన్ఫిగర్ చేయడానికి మీ పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
 <translation id="2030455719695904263">ట్రాక్‌ప్యాడ్</translation>
 <translation id="2030803782168502207">పరికరం నుండి సబ్‌స్క్రిప్షన్‌ను తీసివేయండి</translation>
@@ -1440,6 +1441,7 @@
 <translation id="2111670510994270194">కుడివైపున కొత్త ట్యాబ్</translation>
 <translation id="2111778868023567359">ఈ పేజీలో మీరు మళ్ళీ ట్యాబ్ గ్రూప్‌లను చూడలేరు</translation>
 <translation id="2112554630428445878">స్వాగతం, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> ఎమ్‌బి</translation>
 <translation id="2113314491145966441">macOS నుండి దిగుమతి చేసిన సర్టిఫికెట్‌లను చూడండి</translation>
 <translation id="21133533946938348">ట్యాబ్‌ను పిన్ చేయి</translation>
 <translation id="2113479184312716848">ఫైల్‌ను &amp;తెరువు...</translation>
@@ -1995,6 +1997,7 @@
 <translation id="252513908494776481">ఈ ట్యాబ్ గురించి అడగండి</translation>
 <translation id="2525746158911982776">సిస్టమ్‌లో తగినంత స్టోరేజ్ స్పేస్ లేనందున అప్‌డేట్ విఫలమైంది.</translation>
 <translation id="2525842906387880861">మీకు ఈ పేజీలో సూచనలు మళ్లీ కనిపించవు</translation>
+<translation id="2526346836766369775">కొత్త ఐసోలేటెడ్ &amp;ట్యాబ్</translation>
 <translation id="2526590354069164005">డెస్క్‌టాప్</translation>
 <translation id="2526619973349913024">అప్‌డేట్‌ కోసం చెక్ చేయి</translation>
 <translation id="2527167509808613699">ఎలాంటి కనెక్షన్ అయినా</translation>
@@ -2280,6 +2283,7 @@
 <translation id="2740531572673183784">సరే</translation>
 <translation id="2740876196999178364">ఈ పాస్-కీలు ఈ పరికరంలో మాత్రమే సేవ్ చేయబడ్డాయి. అవి మీ Google ఖాతాలో సేవ్ చేయబడలేదు.</translation>
 <translation id="2741912629735277980">లాగిన్ స్క్రీన్‌పై ప్రదర్శన UI</translation>
+<translation id="274229007420507506"><ph name="BEGIN_LINK" />సెట్టింగ్స్‌<ph name="END_LINK" />లో షార్ట్‌కట్‌ను మార్చండి</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ప్రస్తుతం అందుబాటులో లేదు.</translation>
 <translation id="2743301740238894839">ప్రారంభించండి</translation>
 <translation id="2743378970365831481">మీ పాస్‌వర్డ్‌ను Google Password Managerకు సేవ్ చేయడానికి, 'లొకేషన్ బార్'లో Password Manager చిహ్నాన్ని క్లిక్ చేయండి</translation>
@@ -2629,6 +2633,7 @@
 <translation id="3001614333383288217">{COUNT,plural, =0{అనుకూలంగా మార్చిన కీలు ఏవీ లేవు}=1{అనుకూలంగా మార్చిన 1 కీ}other{అనుకూలంగా మార్చిన {COUNT} కీలు}}</translation>
 <translation id="3002864108328203174">Gemini దిగువున ఉన్న షీట్ సగం ఎత్తులో ఉంది.</translation>
 <translation id="3003144360685731741">ప్రాధాన్య నెట్‌వర్క్‌లు</translation>
+<translation id="3003152206838282768">Chromeలో మీ Gemini యాప్ టాస్క్‌పై పని చేస్తోంది. మరిన్ని అప్‌డేట్ల కోసం Chromeను చెక్ చేయండి</translation>
 <translation id="3003253259757197230">మీరు చూసే URLలు మీరు తర్వాత ఏ సైట్‌లను చూడవచ్చో అంచనా వేయడానికి, మీరు చూసే పేజీ గురించిన అదనపు సమాచారాన్ని మీకు చూపడానికి Googleకు పంపబడతాయి</translation>
 <translation id="3003623123441819449">CSS క్యాష్</translation>
 <translation id="3003967365858406397">మీ <ph name="PHONE_NAME" /> ప్రైవేట్ Wi-Fi కనెక్షన్‌ని సృష్టిస్తుంది.</translation>
@@ -5078,6 +5083,7 @@
 <translation id="4864805589453749318">పాఠశాల ఖాతాను జోడించడానికి అనుమతిని ఇస్తున్న తల్లి/తండ్రిని ఎంచుకోండి.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (బ్లాక్ చేయబడింది)</translation>
 <translation id="486505726797718946">మెమరీ ఆదా అయ్యింది</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Chromeలో మీ Gemini యాప్ టాస్క్‌పై పని చేస్తోంది. మరిన్ని అప్‌డేట్ల కోసం Chromeను చెక్ చేయండి</translation>
 <translation id="486635084936119914">డౌన్‌లోడ్ చేసిన తర్వాత ఆటోమేటిక్‌గా నిర్దిష్ట ఫైల్ రకాలను తెరువు</translation>
 <translation id="4868284252360267853">ప్రస్తుతానికి ఈ డైలాగ్ ఫోకస్ చేయబడలేదు. ఈ డైలాగ్‌ను ఫోకస్ చేయడానికి Command-Shift-A కీని నొక్కండి.</translation>
 <translation id="4869170227080975044">ChromeOS నెట్‌వర్క్ సమాచారాన్ని చదవండి</translation>
@@ -7708,6 +7714,7 @@
 <translation id="6916818963747321523">అన్నింటినీ విస్తరించండి</translation>
 <translation id="6917873303492266709">ట్యాబ్ గ్రూప్‌లలో షేర్ చేయడానికి, వాటిలో చేరడానికి, సహకరించడానికి, సెట్టింగ్‌లను తెరిచి, 'Chrome సైన్-ఇన్‌ను అనుమతించండి' సెట్టింగ్‌ను ఆన్ చేయండి</translation>
 <translation id="6919354101107095996">సైట్‌లోకి సైన్ ఇన్ చేయడానికి ట్రై చేయండి. ఆపై మళ్లీ డౌన్‌లోడ్ చేయండి</translation>
+<translation id="6919461818524183254">షార్ట్‌కట్‌ను ఎంచుకోండి</translation>
 <translation id="6919952941889172531">అలాగే ఈ Chrome ప్రొఫైల్‌కు మెరుగైన సురక్షిత బ్రౌజింగ్‌ను ఆన్ చేయండి?</translation>
 <translation id="6920989436227028121">సాధారణ ట్యాబ్‌‌ లాగా తెరువు</translation>
 <translation id="6921104647315081813">యాక్టివిటీలను తీసివేయండి</translation>
@@ -8547,6 +8554,7 @@
 <translation id="7578137152457315135">వేలిముద్ర సెట్టింగ్‌లు</translation>
 <translation id="7578692661782707876">దయచేసి మీ నిర్ధారణ కోడ్‌ను ఎంటర్ చేయండి.</translation>
 <translation id="757941033127302446">సైన్ ఇన్ చేయబడింది</translation>
+<translation id="7580311608678791180">Windows టాస్క్ బార్ నుండి తెరవండి</translation>
 <translation id="7581462281756524039">క్లీన్‌అప్ సాధనం</translation>
 <translation id="7582582252461552277">ఈ నెట్‌వర్క్‌ను ప్రాధాన్యపరచు</translation>
 <translation id="7582844466922312471">మొబైల్ డేటా</translation>
@@ -8560,6 +8568,7 @@
 <translation id="7590883480672980941">ఇన్‌పుట్ సెట్టింగ్‌లు</translation>
 <translation id="7592060599656252486">కొన్ని</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (ఎర్రర్ కోడ్ <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Mac మెనూ బార్ నుండి తెరవండి</translation>
 <translation id="7600054753482800821">సెర్చ్ ఇంజిన్‌లను, సైట్ సెర్చ్‌ను &amp;మేనేజ్ చేయండి</translation>
 <translation id="7600218158048761260">ఈ ఖాతా రకంలో Google Drive డిజేబుల్ చేయబడింది.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />‌ను ఎప్పటికీ అనువదించవద్దు</translation>
@@ -9242,6 +9251,7 @@
 <translation id="8102139037507939978">system_logs.txt నుండి వ్యక్తిగతంగా గుర్తించగలిగే సమాచారాన్ని తొలగించండి.</translation>
 <translation id="810362914482827094">పాస్-కీలను సెర్చ్ చేయండి</translation>
 <translation id="8104088837833760645">eSIM ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
+<translation id="8104388155778519213">మీ స్క్రీన్‌పై ఉన్న వాటిని Google Lensతో షేర్ చేయండి</translation>
 <translation id="8104778744208707085">దీన్ని చూడండి</translation>
 <translation id="8105273883928376822">కొనసాగడానికి, దయచేసి సైన్ ఇన్ చేయండి.</translation>
 <translation id="8106114112474206597">మౌస్ బటన్‌ను నొక్కడానికి “i”ను వినియోగించండి</translation>

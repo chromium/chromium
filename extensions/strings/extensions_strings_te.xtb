@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">పేరెంట్ అనుమతి రిక్వెస్ట్ విఫలమైంది.</translation>
 <translation id="1803557475693955505">నేపథ్య పేజీ '<ph name="BACKGROUND_PAGE" />'ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="1875387611427697908">దీనిని <ph name="CHROME_WEB_STORE" /> నుండి మాత్రమే జోడించవచ్చు</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (ఎక్స్‌టెన్షన్ ID "<ph name="EXTENSION_ID" />")ను తక్కువ విశ్వసనీయత గల ఎన్విరాన్‌మెంట్‌లలో పాలసీ ప్రకారం ఇన్‌స్టాల్ చేయడం సాధ్యం కాదు.</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />"ను అనుమతించనందున దీన్ని ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />"ను జోడించాలా?</translation>
 <translation id="2159915644201199628">ఈ చిత్రం డీకోడ్ చేయబడదు: '<ph name="IMAGE_NAME" />'</translation>

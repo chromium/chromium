@@ -1519,6 +1519,7 @@
 <translation id="3577473026931028326">Алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Энэ хуудас бэлэн болмогц Chrome танд мэдэгдэх болно. &lt;a&gt;Цуцлах&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Табуудыг автоматаар нэмэх</translation>
 <translation id="3582930987043644930">Нэр нэмэх</translation>
 <translation id="3583757800736429874">&amp; Зөөвөрлөх үйлдлийг дахин хийх</translation>
 <translation id="3584299510153766161">Доод буланд хоёр нүх цоолох</translation>
@@ -1594,6 +1595,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" />, <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Уншиж байна...</translation>
 <translation id="3709599264800900598">Таны хуулсан текст</translation>
+<translation id="3711223220609269738">Шинэ тусгаарласан таб</translation>
 <translation id="3711430313228789376">Chrome хөтөч нууц үгнүүдийг харуулахаар оролдож байна</translation>
 <translation id="3711895659073496551">Түр зогсоох</translation>
 <translation id="3712004750972384495">Дэлгэцийн бичлэгийг хадгалж байна</translation>
@@ -1612,6 +1614,7 @@
 <translation id="3727309136762649052">Нэршил</translation>
 <translation id="3727850735097852673">Google Password Manager-г macOS Keychain-тэй ашиглахын тулд Chrome-г дахин ачаалж, Keychain-н хандалтыг зөвшөөрнө үү. Дахин ачаалсны дараа таны табуудыг дахин нээнэ.</translation>
 <translation id="3728173127485570463">Chrome хөтөч цаашид нууц үгнүүдийг автоматаар бөглөхөд хурууны хээг тань шаардахгүй</translation>
+<translation id="3729811201279509483">Табуудыг гар аргаар нэмэх</translation>
 <translation id="3736564442532774454">Chrome хөтөч таны эмзэг мэдээллийг <ph name="APP_NAME" /> дээр бөглөхөөр оролдож байна.</translation>
 <translation id="3738166223076830879">Танай администратор хөтчийг тань удирддаг.</translation>
 <translation id="3739842843727261045">Сайн тэмдэглэгээ нь танд эдгээр илэрц таалагдсан талаарх санал хүсэлтийг илгээнэ</translation>
@@ -2775,6 +2778,7 @@
 <translation id="5649053991847567735">Автоматаар татаж  авах файл</translation>
 <translation id="5651323159439184939">Цоолбортой урт цаас</translation>
 <translation id="5653681867130739344">Google Wallet-д биеийн байцаалтыг аюулгүй шинэчлээрэй</translation>
+<translation id="5653744563415531641">Мэдээллээ хадгалаад, Google-н бүтээгдэхүүнүүд дээрх маягтыг бөглөх зэрэг зүйлсийг илүү хурдан хийгээрэй. Та <ph name="ACCOUNT" />-н <ph name="MANAGE_WALLET_SETTINGS_LINK" /> боломжтой.</translation>
 <translation id="5654927323611874862">Байршуулсан гэмтлийн тайлангийн ID:</translation>
 <translation id="5654965123204121933">URL нь шаардлагатай <ph name="SEARCH_TERMS_REPLACEMENT" /> солих мөрийг оруулаагүй: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">И-мэйл хаяг</translation>
@@ -3220,6 +3224,7 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />-н дуусах огноо, карт баталгаажуулалтын кодыг оруулна уу</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Эцэг эхийн зөвшөөрлийн харилцах цонх</translation>
+<translation id="6413532517183895572">Wallet-н тохиргоогоо удирдах</translation>
 <translation id="6415778972515849510">Chromium танд Google Бүртгэлээ хамгаалах болон нууц үгээ солиход туслах боломжтой.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Бизнес, хувийн чухал өгөгдлийг гадна хадгалсан эсэхийг нягтална уу.</translation>

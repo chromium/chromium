@@ -1429,6 +1429,7 @@
 <translation id="3432601291244612633">Затвори ја страницата</translation>
 <translation id="3434025015623587566">Google Password Manager бара повеќе пристап</translation>
 <translation id="343474037147570563">Датотеките што ги прикачувате или приложувате се испраќаат до Google Cloud или трети страни за анализа. На пример, можеби ќе се скенираат за да се провери дали содржат чувствителни податоци или злонамерен софтвер. Можеби ќе се складираат согласно со правилата на компанијата и ќе бидат видливи за администраторот.</translation>
+<translation id="3435267628744367511">Притиснете Ctrl двапати во кој било формулар за да ги најдете и да ги пополните податоците без да се префрлате во друга картичка</translation>
 <translation id="3435557549311968410">Непрекинато (кратко)</translation>
 <translation id="3435738964857648380">Безбедност</translation>
 <translation id="3436125638121079308">Да се споделуваат автоматски релевантните картички за подобри одговори во нишкава?</translation>
@@ -1517,6 +1518,7 @@
 <translation id="3577473026931028326">Нешто тргна наопаку. Обидете се повторно.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome ќе ве извести кога страницава ќе биде готова. &lt;a&gt;Откажи&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Автоматско додавање картички</translation>
 <translation id="3582930987043644930">Додај име</translation>
 <translation id="3583757800736429874">&amp;Повтори преместување</translation>
 <translation id="3584299510153766161">Две дупки долу</translation>
@@ -1592,6 +1594,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Се вчитува...</translation>
 <translation id="3709599264800900598">Текстот што го копиравте</translation>
+<translation id="3711223220609269738">Нова изолирана картичка</translation>
 <translation id="3711430313228789376">Прелистувачот Chrome се обидува да ги прикаже лозинките</translation>
 <translation id="3711895659073496551">Суспендирај</translation>
 <translation id="3712004750972384495">Се зачувува снимката од екранот</translation>
@@ -1610,6 +1613,7 @@
 <translation id="3727309136762649052">Поле за име</translation>
 <translation id="3727850735097852673">За да користите Google Password Manager со macOS Keychain, рестартирајте го Chrome и дозволете пристап до Keychain. Вашите картички ќе се отворат повторно по рестартирањето.</translation>
 <translation id="3728173127485570463">Прелистувачот Chrome веќе нема да го бара вашиот отпечаток за да ги пополнува лозинките автоматски</translation>
+<translation id="3729811201279509483">Рачно додавање картички</translation>
 <translation id="3736564442532774454">Прелистувачот Chrome се обидува да ги пополни вашите чувствителни податоци на <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Администраторот управува со прелистувачот.</translation>
 <translation id="3739842843727261045">„Ми се допаѓа“ испраќа повратни информации дека ви се допаѓаат резултативе</translation>
@@ -2773,6 +2777,7 @@
 <translation id="5649053991847567735">Автоматски преземања</translation>
 <translation id="5651323159439184939">Хартија со дупчиња по страните</translation>
 <translation id="5653681867130739344">Ажурирајте ја личната карта безбедно во Google Wallet</translation>
+<translation id="5653744563415531641">Зачувајте ги вашите податоци и завршувајте ги работите побрзо, како пополнувањето формулари во производите на Google. Може <ph name="MANAGE_WALLET_SETTINGS_LINK" /> за <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID на прикачениот извештај за пад:</translation>
 <translation id="5654965123204121933">URL-адресата не ја опфаќа задолжителната заменска низа <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Е-пошта</translation>
@@ -2896,6 +2901,7 @@
 <translation id="5884465125445718607">Плик Chinese #6</translation>
 <translation id="5887400589839399685">Картичката е зачувана</translation>
 <translation id="5887687176710214216">Последно посетено вчера</translation>
+<translation id="5887791684215121787">Притиснете ⌘ ⌘ во кој било формулар за да ги најдете и да ги пополните податоците без да се префрлате во друга картичка</translation>
 <translation id="5889251770650310375">За да ја добиете историјата од другите ваши уреди, потврдете дека сте вие и синхронизирајте ги историјата и картичките. Може да ја сопрете синхронизацијата кога сакате во поставките. Google може да ги персонализира „Пребарување“ и другите услуги според вашата историја.</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="5895187275912066135">Издадено на</translation>
@@ -3218,6 +3224,7 @@
 <translation id="6410264514553301377">Внесете ги датумот на истекување и CVC за <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Дијалог за одобрување од родител</translation>
+<translation id="6413532517183895572">да управувате со вашите поставки за Wallet</translation>
 <translation id="6415778972515849510">Chromium може да ви помогне да ја заштитите сметката на Google и да ја промените лозинката.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Погрижете се критичните деловни или лични податоци да бидат складирани во екстерен простор.</translation>

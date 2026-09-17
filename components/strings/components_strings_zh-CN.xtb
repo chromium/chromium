@@ -1427,6 +1427,7 @@
 <translation id="3432601291244612633">关闭页面</translation>
 <translation id="3434025015623587566">Google 密码管理工具需要更多访问权限</translation>
 <translation id="343474037147570563">系统会将您上传或附加的文件发送给 Google Cloud 或第三方以供分析。例如，这些文件可能会被扫描以确定其是否包含敏感数据或恶意软件，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
+<translation id="3435267628744367511">在任何表单中按下 Ctrl 键两次，即可查找并填写信息，而无需切换标签页</translation>
 <translation id="3435557549311968410">连续纸（短边）</translation>
 <translation id="3435738964857648380">安全</translation>
 <translation id="3436125638121079308">要自动分享相关标签页，以便在此对话串中获得更优质的回答吗？</translation>
@@ -1514,6 +1515,7 @@
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">当此页面准备就绪时，Chrome 会通知您。&lt;a&gt;取消&lt;/a&gt;</translation>
+<translation id="3581499772329034229">自动添加标签页</translation>
 <translation id="3582930987043644930">添加名称</translation>
 <translation id="3583757800736429874">恢复移动(&amp;R)</translation>
 <translation id="3584299510153766161">双孔（底部）</translation>
@@ -1588,6 +1590,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">正在加载...</translation>
 <translation id="3709599264800900598">您复制的文字</translation>
+<translation id="3711223220609269738">新隔离标签页</translation>
 <translation id="3711430313228789376">Chrome 浏览器正在尝试显示密码</translation>
 <translation id="3711895659073496551">暂停</translation>
 <translation id="3712004750972384495">正在保存屏幕录制内容</translation>
@@ -1606,6 +1609,7 @@
 <translation id="3727309136762649052">命名空间</translation>
 <translation id="3727850735097852673">若要将 Google 密码管理工具与 macOS 钥匙串搭配使用，请重新启动 Chrome 并允许访问钥匙串。您的标签页会在重新启动后重新打开。</translation>
 <translation id="3728173127485570463">Chrome 浏览器将不再需要您的指纹来自动填充密码</translation>
+<translation id="3729811201279509483">手动添加标签页</translation>
 <translation id="3736564442532774454">Chrome 浏览器正尝试在 <ph name="APP_NAME" /> 上填充您的敏感信息。</translation>
 <translation id="3738166223076830879">您的浏览器由管理员管理。</translation>
 <translation id="3739842843727261045">选择“我喜欢”可对这些结果给予正面反馈</translation>
@@ -2769,6 +2773,7 @@
 <translation id="5649053991847567735">自动下载项</translation>
 <translation id="5651323159439184939">牵引送纸</translation>
 <translation id="5653681867130739344">更新 Google 钱包中的身份证件信息</translation>
+<translation id="5653744563415531641">保存信息可以提升效率，例如在不同 Google 产品中快速填写表单。您可以为 <ph name="ACCOUNT" /> <ph name="MANAGE_WALLET_SETTINGS_LINK" />。</translation>
 <translation id="5654927323611874862">已上传的崩溃报告 ID：</translation>
 <translation id="5654965123204121933">下述网址未包含必需的替换字符串“<ph name="SEARCH_TERMS_REPLACEMENT" />”：<ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">邮箱</translation>
@@ -2892,6 +2897,7 @@
 <translation id="5884465125445718607">中式 #6 信封</translation>
 <translation id="5887400589839399685">已保存卡片</translation>
 <translation id="5887687176710214216">上次访问时间：昨天</translation>
+<translation id="5887791684215121787">在任何表单中按下 ⌘ 键两次，即可查找并填写信息，而无需切换标签页</translation>
 <translation id="5889251770650310375">如需访问您在其他设备上的历史记录，请验证身份并同步历史记录和标签页。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5895187275912066135">颁发日期</translation>
@@ -3213,6 +3219,7 @@
 <translation id="6410264514553301377">请输入“<ph name="CREDIT_CARD" />”的到期日期和银行卡验证码 (CVC)</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">家长批准对话框</translation>
+<translation id="6413532517183895572">管理 Google 钱包设置</translation>
 <translation id="6415778972515849510">Chromium 可以帮助您保护您的 Google 账号和更改密码。</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">请确保将所有关键业务数据或个人数据均存储在外部。</translation>

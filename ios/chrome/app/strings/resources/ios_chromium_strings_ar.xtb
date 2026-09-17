@@ -142,6 +142,7 @@
 <translation id="3855938650519180865">‏الميزات الجديدة في Chromium</translation>
 <translation id="3886689467633467988">‏يمكنك تسجيل الدخول إلى هذا الموقع الإلكتروني وإلى Chromium للحصول على إشاراتك المرجعية وغيرها على جميع أجهزتك.</translation>
 <translation id="3949514465204582407">‏نصيحة من Chromium: يمكنك الوصول إلى كلمات المرور في أي تطبيق</translation>
+<translation id="3983298990898629929">‏يمكنك ضبط Chromium كمتصفّح تلقائي لفتح الروابط بنقرة واحدة</translation>
 <translation id="4005283307739974863">‏يؤدي هذا الاختصار إلى فتح صفحة "التحقّق من الأمان" وإجرائه في Chromium.</translation>
 <translation id="4043291146360695975">يتم حفظ كلمات المرور في "مدير كلمات المرور" على هذا الجهاز فقط.</translation>
 <translation id="4046625794029820944">‏لا داعي لنسخ عناوين URL، فما عليك سوى ضبط Chromium كمتصفّح تلقائي لتحميل الصفحات مباشرةً.</translation>
@@ -273,6 +274,7 @@
 <translation id="6680609900732453726">‏للحفاظ على خصوصية بيانات التصفُّح المتخفي، ننصحك بتفعيل خيار مصادقة الجهاز عند إغلاق Chromium</translation>
 <translation id="6696512128741076907">‏يمكنك ضبط Chromium كمتصفّح تلقائي لفتح الروابط على الفور من التطبيقات الأخرى.</translation>
 <translation id="6752854822223394465">‏تعمل مؤسستك حاليًا على إعداد Chromium...</translation>
+<translation id="6777348401413221846">‏فيديو بملء الشاشة حول طريقة ضبط Chromium كمتصفِّح تلقائي: يُرجى فتح إعدادات Chromium في نظام التشغيل iOS، ثم النقر على "تطبيق المتصفِّح التلقائي" (Default Browser App) واختيار Chromium.</translation>
 <translation id="6794054469102824109">‏يؤدي هذا الاختصار إلى فتح لعبة الديناصور في Chromium.</translation>
 <translation id="6820823224820483452">‏تعذّر على متصفِّح Chromium التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا.</translation>
 <translation id="6830782797004194206">‏يمكنك تسجيل الدخول بشكل أسرع باستخدام ميزة "الملء التلقائي" في Chromium</translation>
@@ -302,6 +304,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">سيتم حفظ كلمة المرور في "مدير كلمات المرور" لعنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">سيتم حفظ مفتاح المرور هذا في "مدير كلمات المرور" ضمن الحساب <ph name="USER_EMAIL" /></translation>
+<translation id="7453822113116681031">‏يمكنك جعل Chromium المتصفّح التلقائي لفتح الروابط بنقرة واحدة</translation>
 <translation id="7504829997542308412">‏فتح Chromium</translation>
 <translation id="7531461704633548377">‏من Chromium</translation>
 <translation id="7554983317097061001">‏نصيحة من Chromium: انقُل Chromium إلى شريط التطبيقات</translation>

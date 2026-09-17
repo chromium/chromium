@@ -1429,6 +1429,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3432601291244612633">Fechar página</translation>
 <translation id="3434025015623587566">O Gestor de Palavras-passe da Google precisa de mais acesso</translation>
 <translation id="343474037147570563">Os ficheiros que carrega ou anexa são enviados para o Google Cloud ou terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou software malicioso, ser armazenados com base nas políticas da empresa e ficar visíveis para o seu administrador.</translation>
+<translation id="3435267628744367511">Prima Ctrl duas vezes em qualquer formulário para encontrar e preencher informações sem mudar de separador</translation>
 <translation id="3435557549311968410">Contínuo (curto)</translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="3436125638121079308">Partilhar automaticamente os separadores relevantes para receber melhores respostas nesta conversa?</translation>
@@ -1517,6 +1518,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3577473026931028326">Algo correu mal. Tente novamente.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" />: <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">O Chrome irá informá-lo quando esta página estiver pronta. &lt;a&gt;Cancelar&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Adicione separadores automaticamente</translation>
 <translation id="3582930987043644930">Adicionar nome</translation>
 <translation id="3583757800736429874">&amp;Refazer movimentação</translation>
 <translation id="3584299510153766161">Perfuração dupla na parte inferior</translation>
@@ -1592,6 +1594,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">A carregar...</translation>
 <translation id="3709599264800900598">Texto que copiou</translation>
+<translation id="3711223220609269738">Novo separador isolado</translation>
 <translation id="3711430313228789376">O navegador Chrome está a tentar mostrar palavras-passe</translation>
 <translation id="3711895659073496551">Suspenso</translation>
 <translation id="3712004750972384495">A guardar a gravação de ecrã</translation>
@@ -1610,6 +1613,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3727309136762649052">Espaço de nomes</translation>
 <translation id="3727850735097852673">Para usar o Gestor de Palavras-passe da Google com o Porta-chaves macOS, reinicie o Chrome e permita o acesso ao Porta-chaves. Os separadores reabrem depois de serem reiniciados.</translation>
 <translation id="3728173127485570463">O navegador Chrome vai deixar de exigir a sua impressão digital para o preenchimento automático de palavras-passe</translation>
+<translation id="3729811201279509483">Adicione separadores manualmente</translation>
 <translation id="3736564442532774454">O navegador Chrome está a tentar preencher as suas informações confidenciais na app <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">O seu navegador é gerido pelo seu administrador.</translation>
 <translation id="3739842843727261045">A opção Gosto envia feedback a indicar que gosta destes resultados</translation>
@@ -2773,6 +2777,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5649053991847567735">Transferências automáticas</translation>
 <translation id="5651323159439184939">Alimentador</translation>
 <translation id="5653681867130739344">Atualize o cartão de identificação em segurança na Carteira do Google</translation>
+<translation id="5653744563415531641">Guarde as suas informações e realize tarefas mais rapidamente, como preencher formulários nos produtos Google. Pode <ph name="MANAGE_WALLET_SETTINGS_LINK" /> da conta <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID de relatório de falhas carregado:</translation>
 <translation id="5654965123204121933">O URL não inclui a string de substituição necessária <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Email</translation>
@@ -2896,6 +2901,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5884465125445718607">Envelope Chinese n.º 6</translation>
 <translation id="5887400589839399685">Cartão guardado</translation>
 <translation id="5887687176710214216">Última visita ontem</translation>
+<translation id="5887791684215121787">Prima ⌘ ⌘ em qualquer formulário para encontrar e preencher informações sem mudar de separador</translation>
 <translation id="5889251770650310375">Para ver o histórico dos seus outros dispositivos, valide a sua identidade e sincronize o histórico e os separadores. Pode parar a sincronização em qualquer altura nas definições. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido em</translation>
@@ -3218,6 +3224,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6410264514553301377">Introduza a data de validade e o Código de Segurança/CVC de <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Caixa de diálogo de aprovação parental</translation>
+<translation id="6413532517183895572">gerir as definições da Carteira</translation>
 <translation id="6415778972515849510">O Chromium pode ajudá-lo a proteger a sua Conta Google e alterar a palavra-passe.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Certifique-se de que todos os dados pessoais ou da empresa importantes são armazenados externamente.</translation>

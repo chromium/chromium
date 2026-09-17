@@ -142,6 +142,7 @@
 <translation id="3855938650519180865">ມີຫຍັງໃໝ່ໃນ Chromium</translation>
 <translation id="3886689467633467988">ເຂົ້າສູ່ລະບົບເວັບໄຊນີ້ ແລະ Chromium ເພື່ອຮັບບຸກມາກຂອງທ່ານ ແລະ ອື່ນໆຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ.</translation>
 <translation id="3949514465204582407">ເຄັດລັບສໍາລັບ Chromium: ເບິ່ງລະຫັດຜ່ານຂອງທ່ານໃນແອັບໃດກໍໄດ້</translation>
+<translation id="3983298990898629929">ຕັ້ງ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານເພື່ອເປີດລິ້ງດ້ວຍການແຕະພຽງເທື່ອດຽວ</translation>
 <translation id="4005283307739974863">ເປີດ ແລະ ເອີ້ນໃຊ້ການກວດສອບຄວາມປອດໄພໃນ Chromium.</translation>
 <translation id="4043291146360695975">ລະຫັດຜ່ານແມ່ນຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນ.</translation>
 <translation id="4046625794029820944">ຢຸດການສຳເນົາ URL. ຕັ້ງ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນເພື່ອໂຫຼດໜ້າເວັບໂດຍກົງ.</translation>
@@ -303,6 +304,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">ລະຫັດຜ່ານຂອງທ່ານຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານສຳລັບ <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">ລະບົບຈະບັນທຶກກະແຈຜ່ານນີ້ໄວ້ໃນຕົວຈັດການລະຫັດຜ່ານສຳລັບ <ph name="USER_EMAIL" /></translation>
+<translation id="7453822113116681031">ກຳນົດໃຫ້ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານເພື່ອເປີດລິ້ງດ້ວຍການແຕະພຽງເທື່ອດຽວ</translation>
 <translation id="7504829997542308412">ເປີດ Chromium</translation>
 <translation id="7531461704633548377">ຈາກ Chromium</translation>
 <translation id="7554983317097061001">ເຄັດລັບສຳລັບ Chromium: ຍ້າຍ Chromium ໄປຫາຖາດແອັບ</translation>

@@ -1442,6 +1442,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2111670510994270194">Оң жакка жаңы өтмөк кошуу</translation>
 <translation id="2111778868023567359">Мындан ары бул бетте Өтмөк топтору көрсөтүлбөйт</translation>
 <translation id="2112554630428445878">Кош келиңиз <ph name="USERNAME" />!</translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> Мб</translation>
 <translation id="2113314491145966441">macOS'тон импорттолгон тастыктамаларды көрүү</translation>
 <translation id="21133533946938348">Өтмөк кадоо</translation>
 <translation id="2113479184312716848">&amp;Файлды ачуу…</translation>
@@ -1997,6 +1998,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="252513908494776481">Бул өтмөк жөнүндө суроо берүү</translation>
 <translation id="2525746158911982776">Тутумдун сактагычында орун жетишсиз болгондуктан, жаңыртуу ишке ашкан жок.</translation>
 <translation id="2525842906387880861">Бул бетте сунуштар көрсөтүлбөй калат</translation>
+<translation id="2526346836766369775">Жаңы окчундатылган &amp;өтмөк</translation>
 <translation id="2526590354069164005">Иштакта</translation>
 <translation id="2526619973349913024">Жаңыртууларды карап көрүү</translation>
 <translation id="2527167509808613699">Туташуунун бардык түрү</translation>
@@ -8549,6 +8551,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7578137152457315135">Манжа изинин параметрлери</translation>
 <translation id="7578692661782707876">Ырастоо кодун киргизиңиз.</translation>
 <translation id="757941033127302446">Кирип турасыз</translation>
+<translation id="7580311608678791180">Windows'дун тапшырмалар панелинен ачуу</translation>
 <translation id="7581462281756524039">Тазалоо куралы</translation>
 <translation id="7582582252461552277">Бул тармакты жактыруу</translation>
 <translation id="7582844466922312471">Мобилдик Интернет</translation>
@@ -8562,6 +8565,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7590883480672980941">Киргизүү параметрлери</translation>
 <translation id="7592060599656252486">Айрымдар</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (ката коду <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Mac'тын меню тилкесинен ачыңыз</translation>
 <translation id="7600054753482800821">Издөө каражаттарын жана сайттан издөөнү башкаруу</translation>
 <translation id="7600218158048761260">Бул аккаунттун түрү үчүн Google Drive өчүрүлгөн.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> эч качан которулбасын</translation>
@@ -9247,6 +9251,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8102139037507939978">Адамдын инсандыгын аныктоочу маалыматты system_logs.txt таржымалынан өчүрүү.</translation>
 <translation id="810362914482827094">Киргизүүчү ачкычтар издөө</translation>
 <translation id="8104088837833760645">eSIM-карта профилин жүктөп алуу</translation>
+<translation id="8104388155778519213">Экраныңыздагы нерсени Google Lens менен бөлүшүңүз</translation>
 <translation id="8104778744208707085">Чара көрүшүңүз керек</translation>
 <translation id="8105273883928376822">Улантуу үчүн кириңиз.</translation>
 <translation id="8106114112474206597">Чычкандын баскычын басуу үчүн "i" баскычын колдонуңуз</translation>

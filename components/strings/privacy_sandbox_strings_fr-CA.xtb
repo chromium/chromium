@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
 <translation id="1184166532603925201">Lorsque vous êtes en mode Navigation privée, Chrome empêche les sites d'utiliser des témoins tiers</translation>
+<translation id="1365023215312302966">Les sites ne peuvent pas utiliser de témoins tiers pour personnaliser le contenu et les annonces ni pour connaître les actions que vous effectuez sur d'autres sites.</translation>
 <translation id="1569440020357229235">Lorsque vous êtes en mode Navigation privée, les sites ne peuvent pas utiliser de témoins tiers. Si un site qui dépend de ces témoins ne fonctionne pas, vous pouvez <ph name="BEGIN_LINK" />essayer de lui accorder un accès temporaire aux témoins tiers<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Les fonctionnalités de certains sites peuvent ne pas fonctionner.</translation>
 <translation id="2183376768278472507">Si un site ne fonctionne pas comme prévu, vous pouvez essayer d'autoriser les témoins tiers pour celui-ci en particulier.</translation>
 <translation id="2235344399760031203">Les témoins tiers sont bloqués</translation>
+<translation id="2360633687155619995">Les sites ne peuvent pas utiliser de témoins tiers pour personnaliser le contenu et les annonces ni pour connaître les actions que vous effectuez sur d'autres sites. Certaines fonctionnalités du site peuvent ne pas fonctionner comme prévu.</translation>
 <translation id="2496115946829713659">Les sites peuvent utiliser des témoins tiers pour personnaliser le contenu et les annonces, et connaître les actions que vous effectuez sur d'autres sites.</translation>
 <translation id="3045333309254072201">Lorsque vous êtes en mode Navigation privée, les sites ne peuvent pas utiliser de témoins tiers. Si un site qui dépend de ces témoins ne fonctionne pas, vous pouvez <ph name="START_LINK" />essayer de lui accorder un accès temporaire aux témoins tiers<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Les sites qui font appel à des témoins tiers devraient fonctionner comme prévu.</translation>

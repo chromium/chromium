@@ -476,7 +476,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2885355868600171871">アドレスバーに移動</translation>
 <translation id="2888126860611144412">Chrome について</translation>
 <translation id="2891154217021530873">ページの読み込みを停止</translation>
-<translation id="2893168226686371498">既定のブラウザ</translation>
+<translation id="2893168226686371498">デフォルトのブラウザ</translation>
 <translation id="2894821468041866720">ブラウザやデバイスの動作が大幅に遅くなることはありません。</translation>
 <translation id="2895521649038438824">このページを読み上げることができます</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />、音声ありの固定のタブ</translation>
@@ -515,6 +515,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2996682533106928201">タップすると閉じます</translation>
 <translation id="2996809686854298943">URLが必要です</translation>
 <translation id="3024215143424744261">リーディング モードの設定を閉じました</translation>
+<translation id="3024277805447899099">プレビュー画像</translation>
 <translation id="3026955690410463085">リンクを含める</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> から</translation>
 <translation id="3029276696788198026">プリロードなし</translation>
@@ -787,6 +788,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4162867837470729563">共有オプションのリストが画面全体に表示されています。</translation>
 <translation id="4164642020717536140">高速で安全なウェブ ブラウジング</translation>
 <translation id="4165077084524712774">その他のツール</translation>
+<translation id="4169156312706405526">ドライブからファイルを添付</translation>
 <translation id="4170577491341606575">データを取得しています\u2026</translation>
 <translation id="4172051516777682613">常に表示</translation>
 <translation id="4176838562184310003">Chrome が正常にシャットダウンしませんでした。開いていたウィンドウとタブを復元できる場合があります。復元時に一部のウィンドウが最小化されることがあります。</translation>
@@ -1030,6 +1032,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="5040262127954254034">プライバシー</translation>
 <translation id="504456571576643789">留意事項</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> 個のウィンドウを選択しました}other{<ph name="WINDOW_COUNT_NORMAL" /> 個のウィンドウを選択しました}}</translation>
+<translation id="5058506215037547387">ページをプレビュー</translation>
 <translation id="506254248375231072">タブはありません</translation>
 <translation id="5075939510584558547">暗号化せずに保存</translation>
 <translation id="5078638979202084724">すべてのタブをブックマークに追加する</translation>
@@ -1255,6 +1258,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="604996488070107836">不明なエラーが発生したため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="606985262342505139">タブのボトムシートが画面全体に表示されています</translation>
+<translation id="6070608977567243308">Google レンズで画像からショッピング</translation>
 <translation id="6071995715087444295">Google アカウントにログインし、不正使用されたパスワードを確認してください</translation>
 <translation id="6078323886959318429">追加</translation>
 <translation id="6085886413119427067">ウェブサイトに安全に接続する方法を決定します</translation>
@@ -1302,6 +1306,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6232535412751077445">「Do Not Track」を有効にすると、リクエストが閲覧トラフィックに含まれるようになります。ウェブサイトがリクエストに応答するかどうか、またリクエストがどのように解釈されるかによって、この影響は異なります。
 
 たとえば一部のウェブサイトでは、このリクエストに対して、ユーザーが過去にアクセスしたウェブサイトとは関係のない広告が表示されます。トラッキングを拒否しても、実際のところ多くのウェブサイトではユーザーの閲覧データが収集され利用されています。その用途としては、セキュリティの強化や、コンテンツ、サービス、広告、おすすめの表示、レポート統計情報の作成などが挙げられます。</translation>
+<translation id="6235349850462976369">Google レンズで画像を翻訳</translation>
 <translation id="623755660902014047">リーディング モード</translation>
 <translation id="6246073558347462570">コンテキスト ポップアップ ウィンドウ</translation>
 <translation id="6247557882553405851">Google パスワード マネージャー</translation>

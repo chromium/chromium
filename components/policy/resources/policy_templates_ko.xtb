@@ -2749,6 +2749,19 @@ Chrome에서 퍼스트 파티 세트 관련 통합을 지원하는지 제어합�
 <translation id="2702023190395322609">미디어 추천 사용 설정</translation>
 <translation id="2702682139813393777">cmd.exe를 통해 Windows 기본 메시지 호스트 강제 실행</translation>
 <translation id="270582584528242502">사용자가 종료하려고 할 때 경고 대화상자 표시 안함</translation>
+<translation id="2706209533052022524">'입어 보기'는 사용자가 웹에서 찾은 의류 이미지를 가상으로 입어 볼 수 있는 AI 기반 기능으로, Chrome의 Gemini가 사용 설정된 경우 Chrome의 Gemini에서 유용한 쇼핑 통계를 제공합니다.
+
+0 = 이 기능을 사용하도록 허용하면서 Google에서 관련 데이터를 사용하여 AI 모델을 개선하도록 허용합니다. 관련 데이터에는 기능에 따라 이미지, 입력, 출력, 소스 자료, 의견이 포함될 수 있습니다. AI 모델을 개선하기 위해 사람이 데이터를 검토할 수도 있습니다. 아래에 명시된 경우를 제외하고 0이 기본값입니다.
+
+1 = 기능을 사용하도록 허용하되 Google에서 사용자 콘텐츠(이미지, 입력, 출력, 소스 자료, 의견 등)를 사용하여 모델을 개선하도록 허용하지 않습니다. 1은 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />에서 관리되는 기업 사용자 및 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />에서 관리되는 Education 계정의 기본값입니다.
+
+2 = 기능을 허용하지 않습니다.
+
+참고: 모델 개선 제한(값 1)은 <ph name="CHROME" /> 브라우저 흐름을 통해 '입어 보기'가 트리거되는 경우에만 적용됩니다. 다른 흐름을 통해 기능을 사용하는 경우에는 적용되지 않습니다.
+
+정책을 설정하지 않으면 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 정책에 따라 동작이 결정됩니다. 생성형 AI 기능의 데이터 처리에 관한 자세한 내용은 https://support.google.com/chrome/a?p=generative_ai_settings 페이지를 참고하세요.
+
+'입어 보기' 기능은 일부 국가 또는 언어로만 제공됩니다. 이 정책을 설정해도 기능이 사용 설정된다는 보장은 없으며, 기능은 사용 가능 여부에 따라 달라집니다. 출시에 관한 자세한 내용은 Enterprise 출시 노트(https://support.google.com/chrome/a/answer/7679408?hl=ko)를 참고하세요.</translation>
 <translation id="2706708761587205154">PIN이 있을 때만 인쇄 허용</translation>
 <translation id="2707733461906745082">프로필 분리</translation>
 <translation id="2707873794476722903">세이프 브라우징이 표준 모드에서 활성화됩니다.</translation>
@@ -3668,6 +3681,7 @@ Microsoft Outlook 카드에는 추가 관리자 구성이 필요합니다. Chrom
       참고: <ph name="MS_AD_NAME" /> 관리 대상 기기에서는 이 정책을 통해 <ph name="MACHINE_NAME_VARIABLE" />을(를) <ph name="MS_AD_NAME" /> 컴퓨터 이름 또는 관련 하위 문자열로 확장할 수 있습니다. 예를 들어, 컴퓨터 이름이 <ph name="MACHINE_NAME_EXAMPLE" />인 경우 <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />이(가) 6번째 글자 후의 글자 4개로 대체되어 <ph name="MACHINE_NAME_PART_EXAMPLE" />이(가) 됩니다. 글자 위치는 0을 기준으로 합니다.
 
       이 정책은 지원 중단되었으므로 <ph name="PRINTERS_POLICY_NAME" /> 정책을 대신 사용하세요.</translation>
+<translation id="3296337890215573972">입어 보기를 사용 중지합니다.</translation>
 <translation id="3296560797994110772">검색 키를 이용한 단축키는 OS에서 처리되기 전에 앱으로 먼저 전송됩니다.</translation>
 <translation id="3300441638895109781">ChromeOS에서 인증 흐름 자동 새로고침</translation>
 <translation id="3300784749135986828"><ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> 사용 또는 사용 중지</translation>
@@ -5464,6 +5478,7 @@ false로 설정되면 확장 프로그램 및 플러그인 데이터가 수집�
 <translation id="4515404363392014383">신뢰할 수 있는 소스에서 세이프 브라우징을 사용할 수 있도록 허용</translation>
 <translation id="4517327050150780380">읽기 도우미 기능 설정</translation>
 <translation id="4518251772179446575">사이트에서 사용자의 실제 위치를 추적할 때마다 확인</translation>
+<translation id="4521106598519506386">백그라운드 탭 고정이 사용 설정됨</translation>
 <translation id="4521193243799782295">로그인하는 동안 <ph name="PRODUCT_OS_NAME" />는 서버(온라인) 또는 캐시된 비밀번호(오프라인)를 사용하여 인증할 수 있습니다.
 
       이 정책 값을 -1로 설정하면 정책에서는 온라인 인증을 시행하지 않으며, 정책이 아닌 다른 이유로 온라인 로그인이 시행될 때까지 사용자가 오프라인 인증을 사용하도록 허용합니다. 정책 값을 0으로 설정하면 항상 온라인으로 로그인해야 합니다. 정책을 다른 값으로 설정하면 마지막 온라인 인증 후 얼마만큼의 기간이 지난 후 사용자가 다음번 로그인에서 다시 온라인 인증을 사용해야 하는지 지정됩니다.
@@ -5574,6 +5589,7 @@ URL 패턴은 <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" /> 정책
 <translation id="4554651132977135445">사용자 정책 루프백 처리 모드</translation>
 <translation id="4554991346503872538">번역 안 함</translation>
 <translation id="4555850956567117258">사용자에 대한 원격 인증을 사용합니다.</translation>
+<translation id="455594321531952386">'입어 보기' 설정입니다.</translation>
 <translation id="4557134566541205630">기본 검색 공급자 새 탭 페이지 URL</translation>
 <translation id="4557484263538581790">주소 표시줄과 새 탭 페이지 검색창에 표시되는 서드 파티 AI 모드 통합 설정입니다.</translation>
 <translation id="4558166110367609724">서비스 약관을 자동으로 건너뛰고 브라우저 로드</translation>
@@ -8158,6 +8174,7 @@ false로 설정되면 기능에 액세스할 수 없습니다.</translation>
 
 <ph name="MAC_OS_NAME" />의 경우 이 정책은 MDM을 통해 관리되거나, MCX를 통해 도메인에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다.</translation>
 <translation id="6106258663605167373">NTP 바닥글에서 관리 알림 사용 중지</translation>
+<translation id="6108531405177298087">모델 개선을 포함해 '입어 보기'를 사용 설정합니다.</translation>
 <translation id="610892566190435199">기기 전원 상태 보고 사용 설정</translation>
 <translation id="6111936128861357925">공룡 부활절 달걀 게임 허용</translation>
 <translation id="6118226055960302400">허용 동작을 복원합니다.</translation>
@@ -8767,6 +8784,7 @@ Origin-Agent-Cluster: 헤더가 설정되지 않았을 때 M111의 기본값은 
 <translation id="6424486395812679373">다운로드한 모든 파일에 대해 세이프 브라우징 확인 실행</translation>
 <translation id="6426899507714989471">그래픽 가속 사용 중지</translation>
 <translation id="6431446111529802555">유럽.</translation>
+<translation id="6431778298276599807">백그라운드 탭 고정 사용 설정</translation>
 <translation id="6433697627431665375"><ph name="PRODUCT_NAME" /> 데이터가 백업에 포함되지 않도록 차단</translation>
 <translation id="6436052172226685535">LBS 기본 동작</translation>
 <translation id="6438472072089952201"><ph name="PRODUCT_NAME" />에서는 가능한 경우 일부 탐색을 HTTP에서 HTTPS로 업그레이드하려고 시도합니다. 이 정책을 사용하여 이 동작을 사용 중지할 수 있습니다. 'true'로 설정하거나 설정하지 않으면 이 기능이 기본적으로 사용 설정됩니다.
@@ -9993,6 +10011,7 @@ JavaScript 최적화 정책 예외는 사이트 세부사항에서만 시행됩�
       이 구성은 다운로드되며 캐시됩니다. URL이나 해시가 변경될 때마다 다시 다운로드됩니다.
 
       정책을 설정하면 사용자가 변경할 수 없습니다. 정책을 설정하지 않으면 Crostini가 정책에 의해 허용되는 경우 진행 중인 구성에서 사용자가 계속해서 기본 Crostini 컨테이너를 사용할 수 있습니다.</translation>
+<translation id="7130092870893836308">모델 개선 없이 '입어 보기'를 사용 설정합니다.</translation>
 <translation id="7132877481099023201">별도 메시지를 표시하지 않고 동영상 캡처 기기에 대한 액세스 권한이 부여되는 URL입니다.</translation>
 <translation id="7134420220355750019">기본 마우스 버튼을 오른쪽 버튼으로 전환합니다.
 
@@ -10869,6 +10888,7 @@ URL 패턴은 <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" /> 정책과 
 <translation id="7696412993033202071">외부 인증 앱 실행 URL</translation>
 <translation id="7696534428021833264">NTP SharePoint 및 OneDrive 파일 카드 사용 설정</translation>
 <translation id="7699644797467448158">크로스 사이트 최상위 탐색이고 BrowsingContextGroup을 교체할 때 window.name을 삭제합니다.</translation>
+<translation id="7700606318567398251"><ph name="CHROME_DEVTOOLS_NAME" /> 사용 허용 안함</translation>
 <translation id="7701341006446125684">앱 및 확장 프로그램 캐시 크기 설정(단위: 바이트)</translation>
 <translation id="7701825382808690457">WebRTC의 포스트 퀀텀 키 계약에 기본값 사용</translation>
 <translation id="7703041979684393741">Google 서비스에서 WebRTC 이벤트 로그 수집 허용 안함</translation>

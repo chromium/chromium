@@ -269,6 +269,7 @@
 <translation id="17906873777101817">Piedāvāt saglabāt paroles un piekļuves atslēgas</translation>
 <translation id="1794893174442046596">Ciļņu grupa</translation>
 <translation id="1807893857950749072">Atļaut cenu izsekošanas paziņojumus…</translation>
+<translation id="1808142805674973090">Pārslēgt režīmus</translation>
 <translation id="1809929083618343438">Tādējādi no pārlūka Chrome tiks noņemta atlasītā informācija, taču tā netiks dzēsta no jūsu Google konta.</translation>
 <translation id="1810976980198522421">Atcelt</translation>
 <translation id="1815941218935345331">Piekļuves kods</translation>
@@ -850,6 +851,7 @@
 <translation id="3779810277399252432">Nav interneta savienojuma.</translation>
 <translation id="3782614601387961027">Noraidīt brīdinājumu</translation>
 <translation id="3789841737615482174">Instalēt</translation>
+<translation id="3793603310364129123">Mazāk darbību, ātrākas saites</translation>
 <translation id="380329542618494757">Vārds, uzvārds</translation>
 <translation id="3803696231112616155">Piedāvāt tulkot šo vietni</translation>
 <translation id="3810973564298564668">Pārvaldīt</translation>
@@ -1381,6 +1383,7 @@
 <translation id="5467163657366219870">Izslēgt Maps priekšskatījumus</translation>
 <translation id="5474397204728336997">Ģimenes paroles, jaunas pielāgošanas opcijas un citas iespējas. Pieskarieties, lai uzzinātu vairāk.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Nav importēta neviena parole}=1{Importēta {count} parole}zero{Importētas {count} paroles}one{Importēta {count} parole}other{Importētas {count} paroles}}</translation>
+<translation id="5477188385487393357">Izlaidiet kopēšanu un ielīmēšanu</translation>
 <translation id="5478327362747197944">Izveidojiet kalendāra pasākumus, tieši noklikšķinot uz datuma tīmekļa lapā.</translation>
 <translation id="5482922178977937393">Vai vēlaties saņemt paziņojumus par ziņām, sportu un citu saturu atbilstoši savām interesēm?</translation>
 <translation id="5483838506518938965">Gatavs</translation>
@@ -1747,6 +1750,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6585618849026997638">Varat pievienot grāmatzīmi, lai varētu atgriezties vajadzīgajā lapā</translation>
 <translation id="6589001036857939353">Dublikātu apvienošana</translation>
 <translation id="659407965921887085">Šajā kartītē tiek rādīts cenu samazinājums tīmeklī par produktiem, kurus pašlaik izsekojat.</translation>
+<translation id="6596324345367949437">Gemini nav pieejams inkognito režīmā.</translation>
 <translation id="6596481460663245319">Meklēt attēlu ar Google</translation>
 <translation id="6601302169302852717">Attēls ir saglabāts pakalpojuma “Google fotoattēli” kontā <ph name="USER_EMAIL" />.</translation>
 <translation id="6602173570135186741">Automātiskā aizpilde un paroles</translation>

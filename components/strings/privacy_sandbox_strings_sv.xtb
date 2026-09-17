@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1184166532603925201">När du surfar i inkognitoläge blockerar Chrome webbplatser från att använda tredjepartscookies</translation>
+<translation id="1365023215312302966">Webbplatser kan använda tredjepartscookies för att anpassa innehåll och annonser och få information om åtgärder du vidtar på andra webbplatser</translation>
 <translation id="1569440020357229235">När du surfar i inkognitoläge kan webbplatser inte använda tredjepartscookies. Om en webbplats som förlitar sig på dessa cookies inte fungerar kan du <ph name="BEGIN_LINK" />försöka ge webbplatsen tillfällig åtkomst till tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Vissa webbplatsers funktioner kanske inte fungerar</translation>
 <translation id="2183376768278472507">Om en webbplats inte fungerar som förväntat kan du prova att tillåta tredjepartscookies från en viss webbplats som du besöker</translation>
 <translation id="2235344399760031203">Tredjepartscookies har blockerats</translation>
+<translation id="2360633687155619995">Webbplatser kan använda tredjepartscookies för att anpassa innehåll och annonser och få information om åtgärder du vidtar på andra webbplatser Vissa webbplatsfunktioner kanske inte fungerar som förväntat.</translation>
 <translation id="2496115946829713659">Webbplatser kan använda tredjepartscookies för att anpassa innehåll och annonser och få information om åtgärder du vidtar på andra webbplatser</translation>
 <translation id="3045333309254072201">När du surfar i inkognitoläge kan webbplatser inte använda tredjepartscookies. Om en webbplats som förlitar sig på dessa cookies inte fungerar kan du <ph name="START_LINK" />försöka ge webbplatsen tillfällig åtkomst till tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Webbplatser som använder tredjepartscookies bör fungera som förväntat</translation>
