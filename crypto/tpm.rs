@@ -22,8 +22,15 @@ pub const TPM_MAX_BUFFER_SIZE: usize = 1024;
 
 /// Object attributes for an Attestation Identity Key (AIK).
 /// fixedTPM (0x02) | fixedParent (0x10) | sensitiveDataOrigin (0x20) |
-/// userWithAuth (0x40) | restricted (0x10000) | sign (0x40000) = 0x00050072.
-pub const AIK_OBJECT_ATTRIBUTES: u32 = 0x00050072;
+/// userWithAuth (0x40) | noDA (0x400) | restricted (0x10000) | sign (0x40000)
+/// = 0x00050472.
+///
+/// noDA is set because the key is created with an empty authValue, so there is
+/// no secret for dictionary attack protection to guard. Without it the key
+/// would additionally be unusable whenever the TPM is in DA lockout: an object
+/// that is not DA exempt fails authorization with TPM_RC_LOCKOUT even when its
+/// authValue is empty (TPM 2.0 Part 1, Dictionary Attack Protection).
+pub const AIK_OBJECT_ATTRIBUTES: u32 = 0x00050472;
 
 /// Object attributes for the ECC Storage Root Key (SRK).
 /// fixedTPM (0x02) | fixedParent (0x10) | sensitiveDataOrigin (0x20) |

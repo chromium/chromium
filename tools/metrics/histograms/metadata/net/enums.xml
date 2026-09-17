@@ -3738,6 +3738,17 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//net/disk_cache/sql/sql_shared_cache_index_database.h:SqlSharedCacheIndexDatabaseResult) -->
 
+<!-- LINT.IfChange(SrkRecoveryResult) -->
+
+<enum name="SrkRecoveryResult">
+  <int value="0" label="Recreating the SRK via TPM2_CreatePrimary failed"/>
+  <int value="1" label="Retried TPM2_Create was never submitted"/>
+  <int value="2" label="Retried TPM2_Create still failed"/>
+  <int value="3" label="Retried TPM2_Create succeeded"/>
+</enum>
+
+<!-- LINT.ThenChange(//crypto/unexportable_key_win.cc:SrkRecoveryResult) -->
+
 <enum name="SSLECHResult">
   <summary>The result of a TLS connection that offered ECH</summary>
   <int value="0" label="The connection succeeded on the initial connection"/>

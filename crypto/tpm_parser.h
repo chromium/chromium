@@ -113,6 +113,11 @@ struct CRYPTO_EXPORT TpmParseError {
   friend bool operator==(const TpmParseError&, const TpmParseError&) = default;
 };
 
+// Returns true if `error` is a TPM error response reporting that a handle
+// referenced by the command does not exist. Callers of single-handle commands
+// can treat this as identifying that specific handle.
+CRYPTO_EXPORT bool IsHandleError(const TpmParseError& error);
+
 template <typename T>
 using TpmParseErrorOr = base::expected<T, TpmParseError>;
 

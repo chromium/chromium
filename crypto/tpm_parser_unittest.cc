@@ -4,6 +4,8 @@
 
 #include "crypto/tpm_parser.h"
 
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -969,5 +971,61 @@ TEST(TpmCppParserTest, ParseCreatePrimaryResponse_TpmError) {
       ParseCreatePrimaryResponse(resp),
       ErrorIs(TpmParseError(TpmParseError::Type::kTpmErrorResponse, 0x08B)));
 }
+
+struct HandleErrorTestParams {
+  std::string_view test_name;
+  TpmParseError error;
+  bool expected_is_handle_error;
+};
+
+class TpmParseErrorHandleTest
+    : public testing::TestWithParam<HandleErrorTestParams> {};
+
+TEST_P(TpmParseErrorHandleTest, IsHandleError) {
+  EXPECT_EQ(IsHandleError(GetParam().error),
+            GetParam().expected_is_handle_error);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TpmParseErrorHandleTest,
+    testing::Values(
+        HandleErrorTestParams{
+            .test_name = "TpmRcHandle",
+            .error = TpmParseError(TpmParseError::Type::kTpmErrorResponse,
+                                   0x08B),
+            .expected_is_handle_error = true,
+        },
+        HandleErrorTestParams{
+            .test_name = "TpmRcHandleWithParameterOne",
+            .error = TpmParseError(TpmParseError::Type::kTpmErrorResponse,
+                                   0x18B),
+            .expected_is_handle_error = true,
+        },
+        HandleErrorTestParams{
+            .test_name = "TpmRcReferenceH0",
+            .error = TpmParseError(TpmParseError::Type::kTpmErrorResponse,
+                                   0x910),
+            .expected_is_handle_error = true,
+        },
+        HandleErrorTestParams{
+            .test_name = "UnrelatedTpmError",
+            .error = TpmParseError(TpmParseError::Type::kTpmErrorResponse,
+                                   0x100),
+            .expected_is_handle_error = false,
+        },
+        HandleErrorTestParams{
+            .test_name = "BufferTooSmall",
+            .error = TpmParseError(TpmParseError::Type::kBufferTooSmall),
+            .expected_is_handle_error = false,
+        },
+        HandleErrorTestParams{
+            .test_name = "WrongType",
+            .error = TpmParseError(TpmParseError::Type::kWrongType),
+            .expected_is_handle_error = false,
+        }),
+    [](const testing::TestParamInfo<HandleErrorTestParams>& info) {
+      return std::string(info.param.test_name);
+    });
 
 }  // namespace crypto::tpm

@@ -190,6 +190,23 @@ std::optional<SignatureAlgorithms> ToSignatureAlgorithms(
 
 }  // namespace
 
+// A nonexistent handle is reported in more than one way: response codes are
+// stored unmasked, so TPM_RC_HANDLE may carry the handle-index qualifier
+// TPM_RC_1, and a handle that is absent from the resource manager is reported
+// as the warning TPM_RC_REFERENCE_H0 instead (TPM 2.0 Part 2, Table 17).
+bool IsHandleError(const TpmParseError& error) {
+  // `tpm_error_code` is only set for `kTpmErrorResponse`, and a TPM error
+  // response never carries code 0, so the fallback below cannot match.
+  switch (error.tpm_error_code.value_or(0)) {
+    case 0x08B:  // TPM_RC_HANDLE
+    case 0x18B:  // TPM_RC_HANDLE | TPM_RC_1
+    case 0x910:  // TPM_RC_REFERENCE_H0
+      return true;
+    default:
+      return false;
+  }
+}
+
 std::optional<std::vector<uint8_t>> BuildCreateAikCommand(
     uint32_t parent_handle,
     sign::SignatureKind kind) {

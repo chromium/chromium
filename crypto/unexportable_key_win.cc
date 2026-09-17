@@ -1130,6 +1130,115 @@ class AttestationKeyWin : public WinKeyImpl<UnexportableAttestationKey> {
   }
 };
 
+// Outcome of attempting to recover from a missing persistent SRK handle.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SrkRecoveryResult)
+enum class SrkRecoveryResult {
+  // TPM2_CreatePrimary did not yield a usable transient SRK, so no retry was
+  // made.
+  kCreatePrimaryFailed = 0,
+  // The transient SRK was created, but TPM2_Create could not be rebuilt
+  // against it or could not be resubmitted over TBS, so the TPM never saw the
+  // retry.
+  kRetryNotSubmitted = 1,
+  // The transient SRK was created and TPM2_Create was retried, but the TPM
+  // still rejected it.
+  kRetryFailed = 2,
+  // The transient SRK was created and the retried TPM2_Create succeeded.
+  kSuccess = 3,
+  kMaxValue = kSuccess,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SrkRecoveryResult)
+
+// Recovers from a TPM2_Create that failed with `error`, if `error` reports that
+// the parent handle does not exist, by recreating the Storage Root Key as a
+// transient object and creating the AIK under that instead. Returns `error`
+// unchanged otherwise.
+//
+// The persistent ECC SRK (0x81000009) is provisioned lazily and only on a best
+// effort basis: PCPKsp!GetEccSrk creates the key with TPM2_CreatePrimary and
+// then tries to persist it with TPM2_EvictControl, but simply keeps using the
+// transient object when that fails. NCrypt therefore works indefinitely on
+// machines where the handle never materializes, while submitting TPM2_Create
+// directly over TBS does not, because the command has to name its parent.
+// Provisioning the SRK through NCrypt and retrying was measured in the field
+// and rejected: the affected population already performs NCrypt ECC operations
+// immediately before attestation key creation without the handle appearing.
+//
+// TPM2_CreatePrimary reproduces exactly the key PCP would have persisted. A
+// primary key is derived deterministically from the hierarchy's seed and the
+// template, so the transient object has the same name as the persistent SRK,
+// and the AIK created under it is accepted by PCP on import. This was verified
+// on hardware by comparing the two public areas byte for byte.
+//
+// TPM2_Create takes exactly one handle (parentHandle), so a handle error
+// necessarily refers to the SRK.
+//
+// Only the ECC SRK is recreated. The template below is the ECC storage
+// primary, so an RSA key parented to it could not be loaded by the provider
+// afterwards. The RSA SRK does not need this: it is provisioned when the TPM
+// is taken ownership of rather than on first use.
+tpm::TpmParseErrorOr<tpm::CreateResponse> CreateAikUnderTransientSrk(
+    tpm::TpmParseError error,
+    TBS_HCONTEXT h_context,
+    sign::SignatureKind algo) {
+  if (!tpm::IsHandleError(error) ||
+      GetSrkHandleFor(algo) != WindowsSrkHandle::kEcc) {
+    return base::unexpected(error);
+  }
+
+  auto fail = [&](SrkRecoveryResult result) {
+    base::UmaHistogramEnumeration("Crypto.TPMOperation.Win.SrkRecovery.Result",
+                                  result);
+    return error;
+  };
+
+  ASSIGN_OR_RETURN(
+      std::vector<uint8_t> primary_resp,
+      SubmitTbsCommand(h_context, tpm::TpmCommand::kCreatePrimary,
+                       tpm::BuildCreatePrimaryEccSrkCommand(),
+                       kMaxTpmResponseSize, algo),
+      [&] { return fail(SrkRecoveryResult::kCreatePrimaryFailed); });
+
+  ASSIGN_OR_RETURN(
+      tpm::CreatePrimaryResponse primary,
+      ToOptionalAndRecordParseMetrics(
+          tpm::ParseCreatePrimaryResponse(primary_resp)),
+      [&] { return fail(SrkRecoveryResult::kCreatePrimaryFailed); });
+
+  // The primary object occupies one of the TPM's few transient object slots
+  // until it is explicitly released, so flush it on every path out of here.
+  // Unlike a hash sequence, nothing consumes the handle implicitly, so this
+  // guard is never cancelled.
+  absl::Cleanup flush_guard = [h_context, handle = primary.object_handle,
+                               algo] {
+    if (auto resp = SubmitTbsCommand(h_context, tpm::TpmCommand::kFlushContext,
+                                     tpm::BuildFlushContextCommand(handle),
+                                     kMaxTpmResponseSize, algo)) {
+      ToOptionalAndRecordParseMetrics(tpm::ParseFlushContextResponse(*resp));
+    }
+  };
+
+  ASSIGN_OR_RETURN(std::vector<uint8_t> retry_cmd,
+                   tpm::BuildCreateAikCommand(primary.object_handle, algo),
+                   [&] { return fail(SrkRecoveryResult::kRetryNotSubmitted); });
+
+  ASSIGN_OR_RETURN(std::vector<uint8_t> retry_resp,
+                   SubmitTbsCommand(h_context, tpm::TpmCommand::kCreate,
+                                    retry_cmd, kMaxTpmResponseSize, algo),
+                   [&] { return fail(SrkRecoveryResult::kRetryNotSubmitted); });
+
+  tpm::TpmParseErrorOr<tpm::CreateResponse> retried =
+      tpm::ParseCreateResponse(retry_resp);
+  base::UmaHistogramEnumeration("Crypto.TPMOperation.Win.SrkRecovery.Result",
+                                retried.has_value()
+                                    ? SrkRecoveryResult::kSuccess
+                                    : SrkRecoveryResult::kRetryFailed);
+  return retried;
+}
+
 // UnexportableKeyProviderWin uses NCrypt and the Platform Crypto
 // Provider to expose TPM-backed keys on Windows.
 class UnexportableKeyProviderWin : public UnexportableKeyProvider {
@@ -1334,12 +1443,16 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
                                       create_cmd, kMaxTpmResponseSize, algo),
                      [] { return nullptr; });
 
-    // 4. Parse the TPM2_Create response to extract the public and private
-    // key areas.
-    ASSIGN_OR_RETURN(
-        tpm::CreateResponse parsed_create,
-        ToOptionalAndRecordParseMetrics(tpm::ParseCreateResponse(create_resp)),
-        [] { return nullptr; });
+    // 4. Parse the TPM2_Create response to extract the public and private key
+    // areas, falling back to a transient SRK if the persistent one is missing.
+    ASSIGN_OR_RETURN(tpm::CreateResponse parsed_create,
+                     ToOptionalAndRecordParseMetrics(
+                         tpm::ParseCreateResponse(create_resp)
+                             .or_else([&](tpm::TpmParseError error) {
+                               return CreateAikUnderTransientSrk(
+                                   error, h_context, algo);
+                             })),
+                     [] { return nullptr; });
 
     // 5. Build a BCRYPT_OPAQUE_KEY_BLOB (PCP_KEY_BLOB_WIN8) from the
     // TPM2_Create output and import it to obtain a functional key handle.

@@ -557,6 +557,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Crypto.TPMOperation.Win.SrkRecovery.Result"
+    enum="SrkRecoveryResult" expires_after="2027-08-10">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Recorded on Windows when creating an attestation key via TPM2_Create fails
+    because the parent Storage Root Key handle does not exist, which happens
+    when the Platform Crypto Provider was unable to persist it. Records the
+    outcome of recreating the SRK as a transient object with TPM2_CreatePrimary
+    and retrying TPM2_Create under that object. Recorded exactly once per
+    recovery attempt, so the total count is the number of affected key
+    creations.
+  </summary>
+</histogram>
+
 <histogram name="Crypto.TPMOperation.Win.TbsSubmitCommand.Error"
     enum="Win32TpmErrorCodes" expires_after="2027-02-07">
   <owner>jdoerrie@chromium.org</owner>
