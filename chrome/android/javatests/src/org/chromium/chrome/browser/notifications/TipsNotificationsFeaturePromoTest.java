@@ -80,7 +80,7 @@ import java.util.List;
 })
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_STARTUP_PROMOS})
 @Batch(Batch.PER_CLASS)
-@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+@Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO, DeviceFormFactor.PHONE_OR_TABLET})
 public class TipsNotificationsFeaturePromoTest {
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =
