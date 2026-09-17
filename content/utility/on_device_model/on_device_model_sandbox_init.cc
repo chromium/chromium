@@ -23,6 +23,7 @@
 
 #include "content/common/gpu_pre_sandbox_hook_linux.h"
 #include "gpu/config/gpu_info_collector.h"  // nogncheck
+#include "sandbox/policy/features.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #endif
 
@@ -97,9 +98,13 @@ bool ShouldWarmDrivers() {
 #endif
 }
 
+bool g_pre_sandbox_init_called = false;
+
 }  // namespace
 
 bool PreSandboxInit() {
+  g_pre_sandbox_init_called = true;
+
 #if BUILDFLAG(ENABLE_ML_INTERNAL)
   // Ensure the library is loaded before the sandbox is initialized.
   if (!ml::ChromeML::Get()) {
@@ -154,6 +159,10 @@ bool PreSandboxInit() {
   return true;
 }
 
+bool WasPreSandboxInitCalled() {
+  return g_pre_sandbox_init_called;
+}
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void AddSandboxLinuxOptions(sandbox::policy::SandboxLinux::Options& options) {
   // Make sure any necessary vendor-specific options are set.
@@ -162,6 +171,18 @@ void AddSandboxLinuxOptions(sandbox::policy::SandboxLinux::Options& options) {
   UpdateSandboxOptionsForGpu(info.gpu, options);
   for (const auto& gpu : info.secondary_gpus) {
     UpdateSandboxOptionsForGpu(gpu, options);
+  }
+
+  // PreSandboxInit() loads GPU drivers which can open directories and leave
+  // background worker threads running. Skip checking for open directories which
+  // is only needed for the chroot layer.
+  options.check_for_open_directories = false;
+
+  if (base::FeatureList::IsEnabled(
+          sandbox::policy::features::
+              kOnDeviceModelExecutionMultiThreadedSandbox)) {
+    // Allow threads during sandbox init. Seccomp-BPF will be applied via TSYNC.
+    options.allow_threads_during_sandbox_init = true;
   }
 }
 
@@ -176,6 +197,14 @@ bool PreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
       content::CommandSetForGPU(options), file_permissions, options);
 
   if (!content::LoadLibrariesForGpu(options)) {
+    return false;
+  }
+
+  // Now that the broker process has been forked from a single-threaded process,
+  // warm drivers and load internal libraries. Any threads spawned here will be
+  // synchronized and covered when StartSeccompBPF() applies the Seccomp-BPF
+  // filter via TSYNC immediately following this hook.
+  if (!PreSandboxInit()) {
     return false;
   }
 
