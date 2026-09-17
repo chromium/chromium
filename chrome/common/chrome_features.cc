@@ -1320,6 +1320,10 @@ const base::FeatureParam<std::string> kIndigoScopes{
     &kIndigo, "indigo_scopes",
     "https://www.googleapis.com/auth/userinfo.email"};
 
+const base::FeatureParam<bool> kIndigoContextualCueingV2OverrideUcbScoring{
+    &kIndigoContextualCueingV2,
+    "indigo_contextual_cueing_v2_override_ucb_scoring", true};
+
 BASE_FEATURE(kIndigoMetadataKeywordHeuristic,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta>

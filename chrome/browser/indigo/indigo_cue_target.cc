@@ -176,6 +176,14 @@ contextual_cueing::CueActionData IndigoCueTarget::CueActionDataFromResponse(
   return std::monostate{};
 }
 
+bool IndigoCueTarget::OverridesUcbScoring() const {
+  return features::kIndigoContextualCueingV2OverrideUcbScoring.Get();
+}
+
+bool IndigoCueTarget::DowngradesToQuietOnDismiss() const {
+  return true;
+}
+
 optimization_guide::proto::ContextualCueingSurface IndigoCueTarget::GetSurface()
     const {
   return optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED;

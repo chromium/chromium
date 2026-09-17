@@ -11,7 +11,7 @@ BASE_FEATURE(kContextualCueingV2EnforceAgeRestriction,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualCueingV2MultiSource, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualCueingV2AllowOverridingUcbScoring,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<double> kEduClassifierThreshold(
     &kContextualCueingV2,
