@@ -272,6 +272,7 @@ suite('CrComponentsSearchboxIconTest', () => {
       });
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       icon = document.createElement('cr-searchbox-icon');
+      icon.style.setProperty('--cr-searchbox-icon-size-in-searchbox', '16px');
       icon.defaultIcon = 'search_loupe.svg';
       icon.inSearchbox = true;
       document.body.appendChild(icon);
@@ -500,7 +501,7 @@ suite('CrComponentsSearchboxIconTest', () => {
         'renders keyword search loupe when inKeywordMode is set in searchbox',
         async () => {
           icon.defaultIcon =
-              '//resources/cr_components/searchbox/icons/google_g_gradient.svg';
+              '//resources/cr_components/searchbox/icons/search_cr23.svg';
           icon.inSearchbox = true;
           icon.inKeywordMode = true;
           icon.pageUrl = 'https://example.com';
@@ -508,6 +509,41 @@ suite('CrComponentsSearchboxIconTest', () => {
             isSearchType: false,
             destinationUrl: 'https://example.com',
           });
+
+          await microtasksFinished();
+          await icon.updateComplete;
+
+          assertFalse(isVisible(icon.$.faviconImage));
+          assertTrue(window.getComputedStyle(icon.$.icon)
+                         .webkitMaskImage.includes('search_cr23.svg'));
+        });
+
+    test(
+        'renders custom keyword vector icon when defaultIcon is set in ' +
+            'keyword mode',
+        async () => {
+          icon.inSearchbox = true;
+          icon.inKeywordMode = true;
+          icon.defaultIcon =
+              '//resources/cr_components/searchbox/icons/spark.svg';
+
+          await microtasksFinished();
+          await icon.updateComplete;
+
+          assertFalse(isVisible(icon.$.faviconImage));
+          assertFalse(isVisible(icon.$.iconImg));
+          assertTrue(isVisible(icon.$.icon));
+          assertTrue(window.getComputedStyle(icon.$.icon)
+                         .webkitMaskImage.includes('spark.svg'));
+        });
+
+    test(
+        'renders fallback search loupe when defaultIcon is empty in keyword ' +
+            'mode',
+        async () => {
+          icon.inSearchbox = true;
+          icon.inKeywordMode = true;
+          icon.defaultIcon = '';
 
           await microtasksFinished();
           await icon.updateComplete;

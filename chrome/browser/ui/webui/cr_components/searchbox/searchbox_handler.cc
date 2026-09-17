@@ -1265,6 +1265,12 @@ void SearchboxHandler::SendAvailableKeywordModels() {
     keyword_model->display_text = names.full_name.empty()
                                       ? base::UTF16ToUTF8(turl->keyword())
                                       : base::UTF16ToUTF8(names.full_name);
+    const gfx::VectorIcon& keyword_icon =
+        searchbox::GetKeywordVectorIcon(*turl);
+    if (&keyword_icon != &vector_icons::kSearchIcon &&
+        &keyword_icon != &vector_icons::kSearchChromeRefreshOldIcon) {
+      keyword_model->icon_path = AutocompleteIconToResourceName(keyword_icon);
+    }
     models.push_back(std::move(keyword_model));
   }
 

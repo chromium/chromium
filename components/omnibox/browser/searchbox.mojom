@@ -43,6 +43,7 @@ struct InputKeywordModel {
   KeywordType type;
   string keyword;
   string display_text;
+  string icon_path;
 };
 
 struct MatchKeywordModel {

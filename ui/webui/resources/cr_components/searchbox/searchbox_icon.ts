@@ -408,10 +408,12 @@ export class SearchboxIconElement extends CrLitElement {
   }
 
   private computeMaskImage_(): string {
-    // In keyword mode, use search_cr23.svg as a fallback icon in the searchbox.
-    // If a custom keyword icon or favicon exists, it is displayed as an image
-    // via computeBackgroundImage_() / computeShowIconImg_().
+    // In keyword mode, show the custom keyword vector icon if present,
+    // otherwise fall back to search_cr23.svg in the searchbox.
     if (this.inSearchbox && this.inKeywordMode) {
+      if (this.defaultIcon) {
+        return `url(${this.defaultIcon})`;
+      }
       return 'url(//resources/cr_components/searchbox/icons/search_cr23.svg)';
     }
 

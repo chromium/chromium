@@ -275,6 +275,7 @@ suite('SearchboxInputTest', () => {
       type: KeywordType.kInKeyword,
       keyword: '@bookmarks',
       displayText: 'Search Bookmarks',
+      iconPath: '',
     };
     // Even if a URL match with a destination URL is selected, keyword mode
     // should use the generic search loupe rather than the match's favicon.
@@ -285,9 +286,40 @@ suite('SearchboxInputTest', () => {
     await input.$.icon.updateComplete;
 
     assertTrue(input.$.icon.inKeywordMode);
+    assertEquals(
+        '//resources/cr_components/searchbox/icons/search_cr23.svg',
+        input.$.icon.defaultIcon);
     assertIconMaskImageUrl(
         input.$.icon,
         '//resources/cr_components/searchbox/icons/search_cr23.svg');
+    assertFalse(isVisible(input.$.icon.$.faviconImage));
+  });
+
+  test('Keyword mode displays custom keyword icon if set', async () => {
+    loadTimeData.resetForTesting({
+      isLensSearchbox: false,
+      isTopChromeSearchbox: false,
+    });
+    input = await createInput({
+      searchboxIcon: 'google_g.svg',
+    });
+
+    // Enter keyword mode with custom icon path (e.g. @gemini).
+    input.inputKeywordModel = {
+      type: KeywordType.kInKeyword,
+      keyword: '@gemini',
+      displayText: 'Gemini',
+      iconPath: '//resources/cr_components/searchbox/icons/spark.svg',
+    };
+    await input.updateComplete;
+    await input.$.icon.updateComplete;
+
+    assertTrue(input.$.icon.inKeywordMode);
+    assertEquals(
+        '//resources/cr_components/searchbox/icons/spark.svg',
+        input.$.icon.defaultIcon);
+    assertIconMaskImageUrl(
+        input.$.icon, '//resources/cr_components/searchbox/icons/spark.svg');
     assertFalse(isVisible(input.$.icon.$.faviconImage));
   });
 
@@ -304,6 +336,7 @@ suite('SearchboxInputTest', () => {
       type: KeywordType.kInKeyword,
       keyword: '@bookmarks',
       displayText: 'Search Bookmarks',
+      iconPath: '',
     };
     await input.updateComplete;
     await input.$.icon.updateComplete;

@@ -54,6 +54,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
@@ -312,6 +313,16 @@ TEST_F(SearchboxHandlerTest, AvailableKeywordModels) {
   duplicate_case_data.prepopulate_id = 2;
   template_url_service->Add(std::make_unique<TemplateURL>(duplicate_case_data));
 
+  // Add a starter pack engine (@gemini).
+  TemplateURLData gemini_data;
+  gemini_data.SetShortName(u"Gemini");
+  gemini_data.SetKeyword(u"@gemini");
+  gemini_data.SetURL("https://gemini.google.com/prompt?q={searchTerms}");
+  gemini_data.starter_pack_id =
+      static_cast<int>(template_url_starter_pack_data::StarterPackId::kGemini);
+  gemini_data.is_active = TemplateURLData::ActiveStatus::kTrue;
+  template_url_service->Add(std::make_unique<TemplateURL>(gemini_data));
+
   auto web_contents = content::WebContents::Create(
       content::WebContents::CreateParams(profile()));
   testing::NiceMock<MockBrowserWindowInterface> browser_window_interface;
@@ -366,6 +377,28 @@ TEST_F(SearchboxHandlerTest, AvailableKeywordModels) {
   EXPECT_EQ(count_keywords(initial_models, "google.com"), 1);
   EXPECT_FALSE(has_keyword(initial_models, "inactive.com"));
   EXPECT_FALSE(has_keyword(initial_models, "noreplace.com"));
+
+  auto get_keyword_model =
+      [](const std::vector<searchbox::mojom::InputKeywordModelPtr>& list,
+         const std::string& kw) -> const searchbox::mojom::InputKeywordModel* {
+    for (const auto& m : list) {
+      if (m->keyword == kw) {
+        return m.get();
+      }
+    }
+    return nullptr;
+  };
+
+  const auto* gemini_model = get_keyword_model(initial_models, "@gemini");
+  ASSERT_TRUE(gemini_model);
+  EXPECT_EQ(gemini_model->icon_path,
+            features::IsWebUIRoundedIconsEnabled()
+                ? "//resources/cr_components/searchbox/icons/spark.svg"
+                : "//resources/cr_components/searchbox/icons/spark_old.svg");
+
+  const auto* google_model = get_keyword_model(initial_models, "google.com");
+  ASSERT_TRUE(google_model);
+  EXPECT_EQ(google_model->icon_path, "");
 
   // Now activate the inactive engine via TemplateURLService.
   std::vector<searchbox::mojom::InputKeywordModelPtr> updated_models;

@@ -13,7 +13,7 @@ export function getHtml(this: SearchboxInputElement) {
     <slot name="contextual-entrypoint"></slot>
     <cr-searchbox-icon id="icon" .match="${this.selectedMatch}"
         page-url="${this.pageUrl}"
-        default-icon="${this.searchboxIcon}"
+        default-icon="${this.computeDefaultIcon_()}"
         ?in-keyword-mode="${this.inKeywordMode_()}"
         in-searchbox part="icon">
     </cr-searchbox-icon>

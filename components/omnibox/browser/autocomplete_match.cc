@@ -41,6 +41,7 @@
 #include "components/omnibox/browser/document_provider.h"
 #include "components/omnibox/browser/inline_autocompletion_util.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/searchbox_utils.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/default_search_manager.h"
@@ -698,41 +699,16 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
 
     case Type::STARTER_PACK:
       if (turl) {
-        switch (turl->GetBuiltinEngineType()) {
-          case KEYWORD_MODE_STARTER_PACK_BOOKMARKS:
-            return features::IsRoundedIconsEnabled()
-                       ? omnibox::kStarFilledIcon
-                       : omnibox::kStarActiveChromeRefreshOldIcon;
-          case KEYWORD_MODE_STARTER_PACK_HISTORY:
-            return features::IsRoundedIconsEnabled()
-                       ? vector_icons::kHistoryIcon
-                       : vector_icons::kHistoryChromeRefreshOldIcon;
-          case KEYWORD_MODE_STARTER_PACK_TABS:
-            return features::IsRoundedIconsEnabled()
-                       ? omnibox::kChromeProductIcon
-                       : omnibox::kProductChromeRefreshOldIcon;
-          case KEYWORD_MODE_STARTER_PACK_GEMINI:
-            return omnibox::kSparkIcon;
-          case KEYWORD_MODE_STARTER_PACK_AI_MODE:
-            return features::IsRoundedIconsEnabled()
-                       ? omnibox::kSearchSparkIcon
-                       : omnibox::kSearchSparkOldIcon;
-          default:
-            break;
-        }
+        return searchbox::GetKeywordVectorIcon(*turl);
       }
       return features::IsRoundedIconsEnabled()
                  ? omnibox::kChromeProductIcon
                  : omnibox::kProductChromeRefreshOldIcon;
 
     case Type::FEATURED_ENTERPRISE_SEARCH:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      if (turl && turl->CreatedByEnterpriseSearchAggregatorPolicy()) {
-        return base::FeatureList::IsEnabled(omnibox::kUseAgentspace25Logo)
-                   ? vector_icons::kGoogleAgentspaceMonochromeLogo25Icon
-                   : vector_icons::kGoogleAgentspaceMonochromeLogoIcon;
+      if (turl && turl->featured_by_policy()) {
+        return searchbox::GetKeywordVectorIcon(*turl);
       }
-#endif
       return features::IsRoundedIconsEnabled()
                  ? omnibox::kPublicIcon
                  : omnibox::kPageChromeRefreshOldIcon;
