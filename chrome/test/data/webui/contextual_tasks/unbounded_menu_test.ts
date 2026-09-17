@@ -95,12 +95,9 @@ suite('UnboundedMenuTest', () => {
       await microtasksFinished();
 
       assertTrue(hideUnboundedCalled, 'hideUnboundedCalled should be true');
-      // The `unbounded` attribute stays in sync with the menu's unbounded mode,
-      // which remains enabled after close. hideUnboundedElement() tears down
-      // the native surface.
-      assertTrue(
+      assertFalse(
           dialogEl.hasAttribute('unbounded'),
-          'dialogEl should have unbounded attribute');
+          'dialogEl should not have unbounded attribute');
 
       const [tabId, url] =
           await proxy.handler.whenCalled('onTabClickedFromSourcesMenu');
@@ -173,10 +170,7 @@ suite('UnboundedMenuTest', () => {
       menu.close();
       await microtasksFinished();
       assertTrue(hideUnboundedCalled);
-      // The `unbounded` attribute stays in sync with the menu's unbounded mode,
-      // which remains enabled after close. hideUnboundedElement() tears down
-      // the native surface.
-      assertTrue(dialogEl.hasAttribute('unbounded'));
+      assertFalse(dialogEl.hasAttribute('unbounded'));
     });
   });
 });
