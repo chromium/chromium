@@ -63,7 +63,7 @@ export type {PromoteUpdaterStatus} from './about_page/about_page_browser_proxy.j
 // clang-format on
 export {ActiveTimer} from './active_timer.js';
 export {SettingsAiInfoCardElement} from './ai_page/ai_info_card.js';
-export {SettingsAiLoggingInfoBullet} from './ai_page/ai_logging_info_bullet.js';
+export {SettingsAiLoggingInfoBulletElement} from './ai_page/ai_logging_info_bullet.js';
 export {SettingsAiPageElement} from './ai_page/ai_page.js';
 export {SettingsAiPageIndexElement} from './ai_page/ai_page_index.js';
 export {ChromeSuggestionsSettingsValue, ModelExecutionEnterprisePolicyValue} from './ai_page/constants.js';

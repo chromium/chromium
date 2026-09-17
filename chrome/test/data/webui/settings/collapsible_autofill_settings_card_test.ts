@@ -9,7 +9,7 @@ import type {CrCollapseElement, CrExpandButtonElement} from 'chrome://settings/l
 import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CollapsibleCardElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
-import type {CrPolicyPrefIndicatorElement, SettingsAiLoggingInfoBullet, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import type {CrPolicyPrefIndicatorElement, SettingsAiLoggingInfoBulletElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -235,7 +235,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
         const card = await createCollapsibleAutofillSettingsCard();
 
         const enterpriseLogginInfoBullet =
-            card.shadowRoot!.querySelector<SettingsAiLoggingInfoBullet>(
+            card.shadowRoot!.querySelector<SettingsAiLoggingInfoBulletElement>(
                 '#enterpriseInfoBullet');
         assertFalse(!!enterpriseLogginInfoBullet);
       });
@@ -249,7 +249,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
         const card = await createCollapsibleAutofillSettingsCard();
 
         const enterpriseLogginInfoBullet =
-            card.shadowRoot!.querySelector<SettingsAiLoggingInfoBullet>(
+            card.shadowRoot!.querySelector<SettingsAiLoggingInfoBulletElement>(
                 '#enterpriseInfoBullet');
         assertTrue(!!enterpriseLogginInfoBullet);
         assertEquals(
@@ -266,7 +266,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
         const card = await createCollapsibleAutofillSettingsCard();
 
         const enterpriseLogginInfoBullet =
-            card.shadowRoot!.querySelector<SettingsAiLoggingInfoBullet>(
+            card.shadowRoot!.querySelector<SettingsAiLoggingInfoBulletElement>(
                 '#enterpriseInfoBullet');
         assertTrue(!!enterpriseLogginInfoBullet);
         assertEquals(
@@ -353,7 +353,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
         await flushTasks();
 
         const getLoggingBullet = () =>
-            card.shadowRoot!.querySelector<SettingsAiLoggingInfoBullet>(
+            card.shadowRoot!.querySelector<SettingsAiLoggingInfoBulletElement>(
                 '#enterpriseInfoBullet');
 
         // Initial state: Policy `ALLOW`.

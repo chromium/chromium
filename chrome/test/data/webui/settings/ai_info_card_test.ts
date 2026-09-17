@@ -5,22 +5,20 @@
 import type {SettingsAiInfoCardElement} from 'chrome://settings/settings.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('AiInfoCard', function() {
   let infoCard: SettingsAiInfoCardElement;
 
-  async function createInfoCard() {
+  function createInfoCard() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     infoCard = document.createElement('settings-ai-info-card');
     document.body.appendChild(infoCard);
-    return flushTasks();
   }
 
-  test('LoggingInfo', async () => {
-    await createInfoCard();
+  test('LoggingInfo', () => {
+    createInfoCard();
     const thirdRow =
-        infoCard.shadowRoot!.querySelector<HTMLElement>('li:nth-child(3)');
+        infoCard.shadowRoot.querySelector<HTMLElement>('li:nth-child(3)');
     assertTrue(!!thirdRow);
     assertEquals(
         thirdRow.innerText, loadTimeData.getString('aiPageMainSublabel3'));
@@ -31,11 +29,11 @@ suite('AiInfoCard', function() {
     assertEquals(crIcon.icon, 'settings20:account-box');
   });
 
-  test('LoggingInfoManaged', async () => {
+  test('LoggingInfoManaged', () => {
     loadTimeData.overrideValues({'isManaged': true});
-    await createInfoCard();
+    createInfoCard();
     const thirdRow =
-        infoCard.shadowRoot!.querySelector<HTMLElement>('li:nth-child(3)');
+        infoCard.shadowRoot.querySelector<HTMLElement>('li:nth-child(3)');
     assertTrue(!!thirdRow);
     assertStringContains(thirdRow.innerText, 'Your organization manages how');
     // The managed string contains a learn more link.

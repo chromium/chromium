@@ -6,58 +6,56 @@
  * @fileoverview
  * 'settings-ai-logging-info-bullet' is a bullet point that informs about
  * logging practices. It shows different info depending on the managed state of
- * an AI feature. |pref| must be set to the preference that is bound to the
- * enterprise policy of this AI feature.
+ * an AI feature. |prefKey| must be set to the preference name that is bound to
+ * the enterprise policy of this AI feature.
  */
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../settings_shared.css.js';
 
-import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {PrefKeyObserverMixinLit} from '../controls/pref_key_observer_mixin_lit.js';
 import {loadTimeData} from '../i18n_setup.js';
 
-import {getTemplate} from './ai_logging_info_bullet.html.js';
+import {getCss} from './ai_logging_info_bullet.css.js';
+import {getHtml} from './ai_logging_info_bullet.html.js';
 import {ModelExecutionEnterprisePolicyValue} from './constants.js';
 
-const SettingsAiLoggingInfoBulletBase = PrefControlMixin(PolymerElement);
+const SettingsAiLoggingInfoBulletElementBase =
+    PrefKeyObserverMixinLit(CrLitElement);
 
-export class SettingsAiLoggingInfoBullet extends
-    SettingsAiLoggingInfoBulletBase {
+export class SettingsAiLoggingInfoBulletElement extends
+    SettingsAiLoggingInfoBulletElementBase {
   static get is() {
     return 'settings-ai-logging-info-bullet';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      label_: {
-        type: String,
-        computed: 'computeLabel_(pref.value)',
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      loggingManagedDisabledCustomLabel: {
-        type: String,
-        value: null,
-      },
+  static override get properties() {
+    return {
+      pref: {type: Object},
+      loggingManagedDisabledCustomLabel: {type: String},
     };
   }
 
-  declare private label_: string;
-  declare loggingManagedDisabledCustomLabel: string|null;
+  protected accessor pref: chrome.settingsPrivate.PrefObject|undefined =
+      undefined;
+  accessor loggingManagedDisabledCustomLabel: string|null = null;
 
-  private isLoggingDisabledByPolicy_(): boolean {
+  protected isLoggingDisabledByPolicy_(): boolean {
     return this.pref?.value ===
         ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING ||
         this.pref?.value === ModelExecutionEnterprisePolicyValue.DISABLE;
   }
 
-  private computeLabel_(): string {
+  protected getLabel_(): string {
     if (!this.isLoggingDisabledByPolicy_()) {
       return loadTimeData.getString('aiSubpageSublabelReviewers');
     }
@@ -68,11 +66,13 @@ export class SettingsAiLoggingInfoBullet extends
   }
 }
 
+export type AiLoggingInfoBulletElement = SettingsAiLoggingInfoBulletElement;
+
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-ai-logging-info-bullet': SettingsAiLoggingInfoBullet;
+    'settings-ai-logging-info-bullet': SettingsAiLoggingInfoBulletElement;
   }
 }
 
 customElements.define(
-    SettingsAiLoggingInfoBullet.is, SettingsAiLoggingInfoBullet);
+    SettingsAiLoggingInfoBulletElement.is, SettingsAiLoggingInfoBulletElement);

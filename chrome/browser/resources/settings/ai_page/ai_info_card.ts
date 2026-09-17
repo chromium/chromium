@@ -7,45 +7,39 @@
  * 'settings-ai-info-card' is the top info card in AI settings page.
  */
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_page/settings_section.js';
-import '../settings_shared.css.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {getTemplate} from './ai_info_card.html.js';
+import {getCss} from './ai_info_card.css.js';
+import {getHtml} from './ai_info_card.html.js';
 
-export class SettingsAiInfoCardElement extends PolymerElement {
+export class SettingsAiInfoCardElement extends CrLitElement {
   static get is() {
     return 'settings-ai-info-card';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      icon3_: {
-        type: String,
-        computed: 'computeIcon3_()',
-      },
-    };
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  declare private icon3_: string;
-
-  private isManaged_(): boolean {
+  protected isManaged_(): boolean {
     return loadTimeData.getBoolean('isManaged');
   }
 
-  private computeIcon3_(): string {
+  protected getIcon3_(): string {
     return this.isManaged_() ? loadTimeData.getString('managedByIcon') :
                                'settings20:account-box';
   }
 }
+
+export type AiInfoCardElement = SettingsAiInfoCardElement;
 
 declare global {
   interface HTMLElementTagNameMap {
