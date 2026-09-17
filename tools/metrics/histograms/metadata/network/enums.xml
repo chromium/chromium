@@ -1185,6 +1185,15 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="OWE"/>
 </enum>
 
+<!-- LINT.IfChange(NetworkServiceClearHttpCacheMode) -->
+
+<enum name="NetworkServiceClearHttpCacheMode">
+  <int value="0" label="Physical"/>
+  <int value="1" label="Logical"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/network_context.h:ClearHttpCacheMode) -->
+
 <enum name="NetworkServiceCorsPreflightMethodAllowed">
   <int value="0" label="Both Disallowed"/>
   <int value="1" label="Only normalized_method allowed"/>

@@ -5137,6 +5137,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.ClearHttpCacheMode"
+    enum="NetworkServiceClearHttpCacheMode" expires_after="2027-05-26">
+  <owner>deepakr@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Whether an HTTP cache clearing request asked for physical eviction (entries
+    are removed from the disk cache immediately) or logical invalidation (an
+    invalidation filter is registered and matching entries are doomed on
+    access).
+
+    Recorded once per call to NetworkContext::ClearHttpCache() or
+    NetworkContext::ClearHttpCacheLogically(). Note this is recorded before the
+    LogicalClearHttpCache feature state is consulted, so Logical is recorded
+    even when the feature is disabled and the request falls back to a physical
+    clear. This makes the Logical bucket a count of requests that opted in to
+    logical clearing, independent of experiment arm.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.ConnectionAllowlist.Type"
     enum="ConnectionAllowlistType" expires_after="2027-02-14">
   <owner>averge@chromium.org</owner>
