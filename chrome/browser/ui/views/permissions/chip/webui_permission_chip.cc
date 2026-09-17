@@ -83,6 +83,7 @@ void WebUIPermissionChip::SetVisible(bool visible) {
   if (is_visible_ == visible) {
     return;
   }
+  ++state_token_;
   is_visible_ = visible;
   NotifyVisibilityChanged();
   UpdateState();
@@ -185,6 +186,7 @@ void WebUIPermissionChip::AnimateToFit(base::TimeDelta duration) {
 }
 
 void WebUIPermissionChip::ResetAnimation(AnimationState state) {
+  ++state_token_;
   bool was_animating = is_animating_;
   is_animating_ = false;
 
@@ -383,6 +385,7 @@ toolbar_ui_api::mojom::PermissionChipStatePtr WebUIPermissionChip::GetState()
   // the frontend to begin its CSS transition.
   state->is_fully_collapsed = should_collapse_;
   state->accessibility_name = accessibility_name_;
+  state->state_token = state_token_;
   return state;
 }
 

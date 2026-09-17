@@ -28,6 +28,8 @@ class WebUIPermissionDashboard : public PermissionDashboardInterface {
   WebUIPermissionChip* request_chip() { return &request_chip_; }
   WebUIPermissionChip* indicator_chip() { return &indicator_chip_; }
 
+  void ResetTabState();
+
  private:
   void UpdateState();
 

@@ -256,6 +256,7 @@ suite('LocationIconTest', function() {
         LhsChipIdentifier.kLocationIcon,
         toolbarUiHandler.getArgs('onLhsChipClicked')[0][0]);
     assertFalse(toolbarUiHandler.getArgs('onLhsChipClicked')[0][1]);
+    assertEquals(0, toolbarUiHandler.getArgs('onLhsChipClicked')[0][2]);
 
     // Simulate mouse interaction
     const clickEvent = new PointerEvent('click', {pointerType: 'mouse'});
@@ -265,6 +266,7 @@ suite('LocationIconTest', function() {
         LhsChipIdentifier.kLocationIcon,
         toolbarUiHandler.getArgs('onLhsChipClicked')[1][0]);
     assertTrue(toolbarUiHandler.getArgs('onLhsChipClicked')[1][1]);
+    assertEquals(0, toolbarUiHandler.getArgs('onLhsChipClicked')[1][2]);
   });
 
   test('Multi-touch scenario', async function() {

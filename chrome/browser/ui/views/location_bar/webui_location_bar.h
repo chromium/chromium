@@ -131,7 +131,8 @@ class WebUILocationBar : public LocationBar,
       toolbar_ui_api::mojom::LhsChipIdentifier identifier,
       bool is_middle_click);
   void OnLhsChipClicked(toolbar_ui_api::mojom::LhsChipIdentifier identifier,
-                        bool is_mouse_interaction);
+                        bool is_mouse_interaction,
+                        uint32_t state_token);
   void OnLhsChipPointerEntered(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier);
   void OnLhsChipPointerExited(

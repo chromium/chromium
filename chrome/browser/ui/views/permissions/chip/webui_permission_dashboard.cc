@@ -71,3 +71,8 @@ WebUIPermissionDashboard::GetState() const {
 void WebUIPermissionDashboard::UpdateState() {
   location_bar_->OnChanged();
 }
+
+void WebUIPermissionDashboard::ResetTabState() {
+  request_chip_.InvalidateStateToken();
+  indicator_chip_.InvalidateStateToken();
+}

@@ -133,7 +133,7 @@ void LocationIconTestAccessor::Click() {
 
     webui_view->OnLhsChipClicked(
         toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon,
-        /*is_mouse_interaction=*/false);
+        /*is_mouse_interaction=*/false, /*state_token=*/0);
     return;
   }
 }

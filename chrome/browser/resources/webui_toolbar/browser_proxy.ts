@@ -99,8 +99,8 @@ export class BrowserProxyImpl implements BrowserProxy {
     this.toolbarUIHandler = ToolbarUIService.getRemote();
   }
 
-  onChipClicked(id: LhsChipIdentifier, isPointer: boolean) {
-    this.toolbarUIHandler.onLhsChipClicked(id, isPointer);
+  onChipClicked(id: LhsChipIdentifier, isPointer: boolean, stateToken: number) {
+    this.toolbarUIHandler.onLhsChipClicked(id, isPointer, stateToken);
   }
 
   onChipPointerEntered(id: LhsChipIdentifier) {

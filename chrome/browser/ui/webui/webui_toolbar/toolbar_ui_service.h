@@ -80,7 +80,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
         bool is_middle_click) = 0;
     virtual void OnLhsChipClicked(
         toolbar_ui_api::mojom::LhsChipIdentifier identifier,
-        bool is_mouse_interaction) = 0;
+        bool is_mouse_interaction,
+        uint32_t state_token) = 0;
     virtual void OnLhsChipPointerEntered(
         toolbar_ui_api::mojom::LhsChipIdentifier identifier) = 0;
     virtual void OnLhsChipPointerExited(
@@ -188,7 +189,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
       toolbar_ui_api::mojom::LhsChipIdentifier identifier,
       bool is_middle_click) override;
   void OnLhsChipClicked(toolbar_ui_api::mojom::LhsChipIdentifier identifier,
-                        bool is_mouse_interaction) override;
+                        bool is_mouse_interaction,
+                        uint32_t state_token) override;
   void OnLhsChipPointerEntered(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
   void OnLhsChipPointerExited(

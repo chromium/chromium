@@ -298,7 +298,8 @@ export class LocationIconElement extends LocationIconElementBase {
       // PointerEvents, but they have an empty pointerType (""). We only want
       // to suppress true pointer interactions (mouse, touch, pen).
       BrowserProxyImpl.getInstance().toolbarUIHandler.onLhsChipClicked(
-          LhsChipIdentifier.kLocationIcon, e.pointerType !== '');
+          LhsChipIdentifier.kLocationIcon, e.pointerType !== '',
+          /*state_token=*/ 0);
     }
   }
 

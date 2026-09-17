@@ -179,7 +179,14 @@ interface ToolbarUIService {
   // (e.g., pressing Enter) because mouse clicks require specific handling to
   // prevent reopening the Page Info bubble if the click itself just closed it
   // due to native focus loss.
-  OnLhsChipClicked(LhsChipIdentifier identifier, bool is_mouse_interaction);
+  // `state_token` is the state generation token associated with the chip when
+  // clicked, incremented on browser-side visibility and animation changes. It
+  // is used as a best-effort staleness check to drop clicks queued before a
+  // tab switch or navigation.
+  OnLhsChipClicked(
+      LhsChipIdentifier identifier,
+      bool is_mouse_interaction,
+      uint32 state_token);
 
   // Called when an LHS permission chip pointerenter event is fired.
   OnLhsChipPointerEntered(LhsChipIdentifier identifier);

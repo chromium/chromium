@@ -946,6 +946,7 @@ suite('TopToolbarTest', () => {
         message: '',
         tooltip: '',
         accessibilityName: '',
+        stateToken: 1,
         ...overrides,
       };
     }

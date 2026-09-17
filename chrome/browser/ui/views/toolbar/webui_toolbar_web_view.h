@@ -262,7 +262,8 @@ class WebUIToolbarWebView
       toolbar_ui_api::mojom::LhsChipIdentifier identifier,
       bool is_middle_click) override;
   void OnLhsChipClicked(toolbar_ui_api::mojom::LhsChipIdentifier identifier,
-                        bool is_mouse_interaction) override;
+                        bool is_mouse_interaction,
+                        uint32_t state_token) override;
   void OnLhsChipPointerEntered(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
   void OnLhsChipPointerExited(

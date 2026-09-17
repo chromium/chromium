@@ -77,6 +77,9 @@ class WebUIPermissionChip : public PermissionChipInterface {
   // (e.g., `should_collapse_`), not the instantaneous physical state of the UI.
   toolbar_ui_api::mojom::PermissionChipStatePtr GetState() const;
 
+  uint32_t state_token() const { return state_token_; }
+  void InvalidateStateToken() { ++state_token_; }
+
  private:
   void NotifyVisibilityChanged();
   void UpdateState();
@@ -84,6 +87,14 @@ class WebUIPermissionChip : public PermissionChipInterface {
 
   raw_ptr<LocationBar> location_bar_;
 
+  // An epoch counter that increments whenever the chip's visibility or
+  // animation state changes (which occurs on tab switches, navigations, and
+  // prompt resets via ChipController). When the WebUI renders the chip, it
+  // echoes this token in OnLhsChipClicked. If the token in the incoming click
+  // IPC does not match `state_token_`, the click is dropped as stale to prevent
+  // actions from executing against an obsolete tab or request model.
+  // Note: Initialized to 1 so that 0 is reserved as an invalid/sentinel token.
+  uint32_t state_token_ = 1;
   bool is_visible_ = false;
   std::string icon_name_;
   std::u16string message_;

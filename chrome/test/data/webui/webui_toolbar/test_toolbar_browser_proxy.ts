@@ -139,8 +139,11 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
     this.methodCalled('onLhsChipMousePressed', [identifier, isMiddleClick]);
   }
 
-  onLhsChipClicked(identifier: LhsChipIdentifier, isMouseInteraction: boolean) {
-    this.methodCalled('onLhsChipClicked', [identifier, isMouseInteraction]);
+  onLhsChipClicked(
+      identifier: LhsChipIdentifier, isMouseInteraction: boolean,
+      stateToken: number = 0) {
+    this.methodCalled(
+        'onLhsChipClicked', [identifier, isMouseInteraction, stateToken]);
   }
 
   onLhsChipPointerEntered(identifier: LhsChipIdentifier) {
@@ -293,8 +296,9 @@ export class TestToolbarBrowserProxy extends TestBrowserProxy implements
   removeShowSplitTabsContextMenuListener(
       _handle: ShowSplitTabsContextMenuHandle) {}
 
-  onChipClicked(id: LhsChipIdentifier, isPointer: boolean) {
-    this.toolbarUIHandler.onLhsChipClicked(id, isPointer);
+  onChipClicked(
+      id: LhsChipIdentifier, isPointer: boolean, stateToken: number = 0) {
+    this.toolbarUIHandler.onLhsChipClicked(id, isPointer, stateToken);
   }
 
   onChipPointerEntered(id: LhsChipIdentifier) {

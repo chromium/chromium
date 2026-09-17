@@ -772,6 +772,18 @@ struct PermissionChipState {
   PermissionPromptStyle prompt_style;
   bool is_fully_collapsed;
   mojo_base.mojom.String16 accessibility_name;
+
+  // A generation counter incremented on the browser side whenever the chip
+  // visibility changes or its animation state is reset (which occurs on tab
+  // switches, navigations, and prompt dismissal/destruction).
+  //
+  // When a click event is sent back from WebUI, this token is echoed back to
+  // ensure the click is dropped if the chip state has changed in the meantime
+  // (e.g., dropping stale clicks queued before a tab switch).
+  //
+  // Note that this is a best-effort staleness check within the browser process,
+  // not a security boundary against a compromised renderer.
+  uint32 state_token;
 };
 
 struct PermissionDashboardState {

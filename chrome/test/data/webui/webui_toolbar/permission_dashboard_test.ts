@@ -24,6 +24,7 @@ suite('PermissionDashboardTest', function() {
       userDecision: PermissionAction.kGranted,
       shouldShowBlockedIcon: false,
       message: 'Camera',
+      stateToken: 1,
     };
   }
 

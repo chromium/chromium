@@ -72,7 +72,9 @@ class TestToolbarBrowserProxy extends TestBrowserProxy implements BrowserProxy {
 
   removeShowSplitTabsContextMenuListener() {}
 
-  onChipClicked(_chip: LhsChipIdentifier, _isPointerClick: boolean) {}
+  onChipClicked(
+      _chip: LhsChipIdentifier, _isPointerClick: boolean, _stateToken: number) {
+  }
   onChipPointerEntered(_chip: LhsChipIdentifier) {}
   onChipPointerExited(_chip: LhsChipIdentifier) {}
   onChipMousePressed(_chip: LhsChipIdentifier) {}

@@ -174,11 +174,15 @@ export class PermissionChipElement extends PermissionChipElementBase {
   }
 
   protected onClick_(e: PointerEvent) {
+    if (!this.chipState) {
+      return;
+    }
     // Note:'click' event dispatches using PointerEvents. Keyboard clicks
     // (Enter/Space) also dispatch PointerEvents, but they have an empty
     // pointerType (""). We only want to suppress true pointer interactions
     // (mouse, touch, pen).
-    this.delegate?.onChipClicked(this.getIdentifier_(), e.pointerType !== '');
+    this.delegate?.onChipClicked(
+        this.getIdentifier_(), e.pointerType !== '', this.chipState.stateToken);
   }
 
   // Computes the foreground and background colors for the chip based on its

@@ -30,6 +30,7 @@ suite('PermissionChipTest', function() {
       userDecision: PermissionAction.kGranted,
       shouldShowBlockedIcon: false,
       message: 'Camera',
+      stateToken: 1,
     };
   }
 
@@ -107,6 +108,7 @@ suite('PermissionChipTest', function() {
         LhsChipIdentifier.kPermissionRequest,
         toolbarUiHandler.getArgs('onLhsChipClicked')[0][0]);
     assertFalse(toolbarUiHandler.getArgs('onLhsChipClicked')[0][1]);
+    assertEquals(1, toolbarUiHandler.getArgs('onLhsChipClicked')[0][2]);
 
     // Mouse click
     chipEl.dispatchEvent(new PointerEvent('click', {pointerType: 'mouse'}));
@@ -115,6 +117,20 @@ suite('PermissionChipTest', function() {
         LhsChipIdentifier.kPermissionRequest,
         toolbarUiHandler.getArgs('onLhsChipClicked')[1][0]);
     assertTrue(toolbarUiHandler.getArgs('onLhsChipClicked')[1][1]);
+    assertEquals(1, toolbarUiHandler.getArgs('onLhsChipClicked')[1][2]);
+
+    // Click with non-zero stateToken forwards the token correctly.
+    const stateWithToken = createBaseState();
+    stateWithToken.stateToken = 42;
+    chip.chipState = stateWithToken;
+    await microtasksFinished();
+
+    chipEl.click();
+    assertEquals(3, toolbarUiHandler.getCallCount('onLhsChipClicked'));
+    assertEquals(
+        LhsChipIdentifier.kPermissionRequest,
+        toolbarUiHandler.getArgs('onLhsChipClicked')[2][0]);
+    assertEquals(42, toolbarUiHandler.getArgs('onLhsChipClicked')[2][2]);
   });
 
   test('Pointer hover events', async function() {
