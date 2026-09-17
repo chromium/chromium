@@ -80,6 +80,9 @@ struct HeuristicPageProperties {
   // The height of the page.
   float page_height = 0.0f;
 
+  // The vertical offset of the page in document coordinates.
+  float page_offset_y = 0.0f;
+
   // The maximum width threshold for page numbers. Runs exceeding this width are
   // disqualified from being considered page numbers.
   float max_page_number_width = 0.0f;

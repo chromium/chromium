@@ -536,6 +536,7 @@ HeuristicPageProperties ComputeHeuristicPageProperties(
 
   HeuristicPageProperties page_properties;
   page_properties.page_height = page_bounds.height();
+  page_properties.page_offset_y = page_bounds.y();
   page_properties.max_page_number_width =
       page_bounds.width() * kMaxPageNumberWidthRatio;
   page_properties.top_margin = page_bounds.height() * kHeaderMarginRatio;
@@ -851,6 +852,61 @@ void PromoteNodeToHeading(ui::AXNodeData* block_node, int heading_level) {
                                  "h" + base::NumberToString(heading_level));
 }
 
+// Re-evaluates the header or footer role of `block_node` for a later run on
+// the same visual line, since the first run alone may not identify the line.
+void UpdateHeaderFooterRoleForSameLineRun(
+    const chrome_pdf::AccessibilityTextRunInfo& current_run,
+    const chrome_pdf::AccessibilityTextRunInfo* next_run,
+    base::span<const chrome_pdf::AccessibilityCharInfo> current_run_chars,
+    const HeuristicPageProperties& page_properties,
+    ui::AXNodeData* block_node) {
+  if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    return;
+  }
+
+  // Only the header or footer role matters here. The page number kind is not
+  // needed, since heading classification already ran when the block was
+  // created.
+  PageNumberKind unused_page_number_kind;
+  HeaderFooterRole role =
+      GetHeaderFooterRole(current_run, next_run, current_run_chars,
+                          page_properties, &unused_page_number_kind);
+
+  // Wide text that is not a page number reads as body content, so demote the
+  // footer back to a paragraph.
+  if (block_node->role == ax::mojom::Role::kSectionFooter &&
+      role == HeaderFooterRole::kNone) {
+    if (current_run.bounds.width() > page_properties.max_page_number_width) {
+      block_node->role = ax::mojom::Role::kParagraph;
+    }
+    return;
+  }
+
+  if (block_node->role != ax::mojom::Role::kParagraph) {
+    return;
+  }
+
+  // Require the block to have started in the matching margin, and for footers
+  // to still be narrow, so body text that merely reaches into the margin is not
+  // promoted. Block bounds are in document coordinates, so subtract the page
+  // offset to compare against page-relative margins.
+  float block_page_bottom = block_node->relative_bounds.bounds.bottom() -
+                            page_properties.page_offset_y;
+  bool is_header = role == HeaderFooterRole::kHeader &&
+                   block_page_bottom <= page_properties.top_margin;
+  float block_page_y =
+      block_node->relative_bounds.bounds.y() - page_properties.page_offset_y;
+  bool is_footer = role == HeaderFooterRole::kFooter &&
+                   block_page_y >= page_properties.bottom_page_number_margin &&
+                   block_node->relative_bounds.bounds.width() <=
+                       page_properties.max_page_number_width;
+
+  if (is_header || is_footer) {
+    // `role` is a header or footer here, so the role always has a value.
+    block_node->role = GetAXRoleForHeaderFooterRole(role).value();
+  }
+}
+
 bool BreakParagraph(uint32_t text_run_index,
                     const ui::AXNodeData* block_node,
                     HeadingClassifier heading_classifier,
@@ -1091,18 +1147,26 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       static_text += inline_text_box_node->GetStringAttribute(
           ax::mojom::StringAttribute::kName);
 
-      block_node->relative_bounds.bounds.Union(
-          inline_text_box_node->relative_bounds.bounds);
-      static_text_node->relative_bounds.bounds.Union(
-          inline_text_box_node->relative_bounds.bounds);
-
       if (previous_on_line_node) {
         ConnectPreviousAndNextOnLine(previous_on_line_node,
                                      inline_text_box_node);
+        UpdateHeaderFooterRoleForSameLineRun(
+            text_run, GetRunAfterIndex(page_layout.text_runs, text_run_index),
+            GetTextRunChars(page_layout, text_run_index), page_properties,
+            block_node);
       } else {
         line_helper.StartNewLine(text_run_index);
       }
       line_helper.ProcessNextRun(text_run_index);
+
+      // Accumulate bounds last so the role update above measures the block
+      // without this run. Otherwise a right-aligned page number would stretch
+      // the block's bounding box across the gap, making a short footer look
+      // too wide to promote.
+      block_node->relative_bounds.bounds.Union(
+          inline_text_box_node->relative_bounds.bounds);
+      static_text_node->relative_bounds.bounds.Union(
+          inline_text_box_node->relative_bounds.bounds);
 
       if (text_run_index < builder_->text_runs().size() - 1) {
         if (line_helper.IsRunOnSameLine(text_run_index + 1)) {

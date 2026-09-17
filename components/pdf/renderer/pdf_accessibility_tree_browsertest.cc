@@ -2040,6 +2040,220 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicHeadingBreakOnItalicStyleMismatch) {
 }
 
 TEST_F(PdfAccessibilityTreeTest,
+       HeuristicMultiPageParagraphNotPromotedToFooterOnLastPageNumberRun) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+
+  // Page 2 of a document, so page-relative y is the document y minus 5000.
+  // The page number margin starts at y = 900, 90% of the 1000px page height.
+  page_info_.bounds = gfx::Rect(0, 5000, 800, 1000);
+
+  // A two-line paragraph that starts above the margin at y = 890, with a page
+  // number sharing its second line. The block did not start in the margin, so
+  // it is not promoted.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style},
+      MakeCharVector({"ChapterOne", "SectionTitle", "42"}),
+      {gfx::RectF(50.0f, 890.0f, 100.0f, 20.0f),
+       gfx::RectF(50.0f, 910.0f, 100.0f, 20.0f),
+       gfx::RectF(300.0f, 910.0f, 20.0f, 20.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, block->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicMultiPageFooterPromotedOnPageNumberRun) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+
+  // Page 2 of a document, so page-relative y is the document y minus 5000.
+  // The page number margin starts at y = 900, 90% of the 1000px page height.
+  page_info_.bounds = gfx::Rect(0, 5000, 800, 1000);
+
+  // The footer text sits at y = 920, below the 950 margin required for text
+  // that is not a page number, so it starts out as a paragraph. The page
+  // number beside it promotes the line.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f}, {normal_style, normal_style},
+      MakeCharVector({"DocumentFooter", "42"}),
+      {gfx::RectF(50.0f, 920.0f, 100.0f, 20.0f),
+       gfx::RectF(300.0f, 920.0f, 20.0f, 20.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block);
+  EXPECT_EQ(ax::mojom::Role::kSectionFooter, block->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicMultiPageHeaderPromotedOnPageNumberRun) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  // Page 2 of a document, so page-relative y is the document y minus 5000.
+  // The top margin ends at y = 100, 10% of the 1000px page height.
+  page_info_.bounds = gfx::Rect(0, 5000, 800, 1000);
+
+  // Runs 0-1: A running head in the top margin, set at body text size. Headers
+  // are expected to be smaller than body text, so run 0 starts out as a
+  // paragraph and only the page number beside it promotes the line.
+  // Runs 2-4: Body text, establishing a median font size of 10.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"RunningHeadText", "42", "BodyTextLineOne",
+                      "BodyTextLineTwo", "BodyTextLineThree"}),
+      {gfx::RectF(50.0f, 60.0f, 100.0f, 20.0f),
+       gfx::RectF(300.0f, 60.0f, 20.0f, 20.0f),
+       gfx::RectF(50.0f, 300.0f, 200.0f, 20.0f),
+       gfx::RectF(50.0f, 320.0f, 200.0f, 20.0f),
+       gfx::RectF(50.0f, 340.0f, 200.0f, 20.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  const ui::AXNode* header_block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, header_block);
+  EXPECT_EQ(ax::mojom::Role::kSectionHeader, header_block->GetRole());
+
+  const ui::AXNode* body_block = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, body_block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, body_block->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicMultiPageParagraphNotPromotedToHeaderOnPageNumberRun) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  // Page 2 of a document, so page-relative y is the document y minus 5000.
+  // The top margin ends at y = 100, 10% of the 1000px page height.
+  page_info_.bounds = gfx::Rect(0, 5000, 800, 1000);
+
+  // Runs 0-2: A two-line paragraph that grows out of the top margin, reaching
+  // y = 110, with a page number sharing its second line. The block no longer
+  // sits entirely within the margin, so it is not promoted.
+  // Runs 3-5: Body text, establishing a median font size of 10.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style,
+       normal_style},
+      MakeCharVector({"ChapterOne", "SectionTitle", "42", "BodyTextLineOne",
+                      "BodyTextLineTwo", "BodyTextLineThree"}),
+      {gfx::RectF(50.0f, 70.0f, 100.0f, 20.0f),
+       gfx::RectF(50.0f, 90.0f, 100.0f, 20.0f),
+       gfx::RectF(300.0f, 80.0f, 20.0f, 20.0f),
+       gfx::RectF(50.0f, 300.0f, 200.0f, 20.0f),
+       gfx::RectF(50.0f, 320.0f, 200.0f, 20.0f),
+       gfx::RectF(50.0f, 340.0f, 200.0f, 20.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  const ui::AXNode* block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, block->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicWideTextInMarginNotPromotedToFooterOnPageNumberRun) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+
+  // Page 2 of a document, so page-relative y is the document y minus 5000.
+  // The page number margin starts at y = 900, 90% of the 1000px page height.
+  page_info_.bounds = gfx::Rect(0, 5000, 800, 1000);
+
+  // The text in the margin is 300px wide, over 30% of the 800px page width, so
+  // the page number beside it does not promote the line.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f}, {normal_style, normal_style},
+      MakeCharVector({"WideTOCEntryOrFootnoteTextLine", "42"}),
+      {gfx::RectF(50.0f, 920.0f, 300.0f, 20.0f),
+       gfx::RectF(400.0f, 920.0f, 20.0f, 20.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, block->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicWideTextJoinedToFooterDemotesToParagraph) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+
+  // Page 2 of a document, so page-relative y is the document y minus 5000.
+  // The page number margin starts at y = 900, 90% of the 1000px page height.
+  page_info_.bounds = gfx::Rect(0, 5000, 800, 1000);
+
+  // The page number starts a footer, then 300px of text joins the line. That
+  // is over 30% of the 800px page width, so the block is demoted.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f}, {normal_style, normal_style},
+      MakeCharVector({"42", "WideBodyTextOrFootnoteLine"}),
+      {gfx::RectF(50.0f, 920.0f, 20.0f, 20.0f),
+       gfx::RectF(100.0f, 920.0f, 300.0f, 20.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, block->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
        HeuristicHeadingInTopMarginNotClassifiedAsHeader) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
