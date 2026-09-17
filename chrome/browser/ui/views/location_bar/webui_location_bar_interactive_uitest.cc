@@ -272,7 +272,6 @@ class WebUILocationBarInteractiveUiTest
       feature_list_.InitWithFeatures(
           {features::kInitialWebUI, features::kWebUIReloadButton,
            features::kWebUILocationBar, omnibox::kWebUIOmniboxFullPopup,
-           features::kOmniboxPopupVirtualFocusNavigation,
            omnibox::internal::kWebUIOmniboxAimPopup},
           {omnibox::kAimServerEligibilityEnabled, features::kPrewarm});
     }

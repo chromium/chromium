@@ -7370,12 +7370,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRealboxVirtualFocusNavigationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRealboxVirtualFocusNavigation)},
 
-    {"enable-omnibox-popup-virtual-focus",
-     flag_descriptions::kOmniboxPopupVirtualFocusNavigationName,
-     flag_descriptions::kOmniboxPopupVirtualFocusNavigationDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kOmniboxPopupVirtualFocusNavigation)},
-
     {"enable-lens-overlay-virtual-focus",
      flag_descriptions::kLensOverlayVirtualFocusNavigationName,
      flag_descriptions::kLensOverlayVirtualFocusNavigationDescription,

@@ -209,9 +209,15 @@ export class OmniboxPopupSearchboxElement extends
     };
   }
 
-  override accessor virtualFocusEnabled: boolean =
-      loadTimeData.valueExists('omniboxPopupVirtualFocusNavigation') &&
-      loadTimeData.getBoolean('omniboxPopupVirtualFocusNavigation');
+  override accessor virtualFocusEnabled: boolean = true;
+
+  override setSelection(selection: OmniboxPopupSelection) {
+    super.setSelection(selection);
+    if (this.virtualFocusEnabled &&
+        this.selectedMatchIndex !== selection.line) {
+      this.selectedMatchIndex = selection.line;
+    }
+  }
   accessor canShowSecondarySide: boolean =
       canShowSecondarySideMediaQueryList.matches;
   accessor hasSecondarySide: boolean = false;
@@ -414,6 +420,16 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
+    if (this.virtualFocusEnabled &&
+        changedProperties.has('selectedMatchIndex') &&
+        this.selectedMatchIndex !== this.selection.line) {
+      this.setSelection(this.selectedMatchIndex === -1 ? kDefaultSelection : {
+        line: this.selectedMatchIndex,
+        state: SelectionLineState.kNormal,
+        actionIndex: 0,
+      });
+    }
+
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('searchboxChromeRefreshTheming')) {
@@ -433,8 +449,17 @@ export class OmniboxPopupSearchboxElement extends
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (this.virtualFocusEnabled) {
-      if (changedProperties.has('selection')) {
+    if (changedProperties.has('selection') ||
+        changedProperties.has('selectedMatchIndex')) {
+      // Guard against transient out-of-bounds indices when autocomplete
+      // results are being cleared or updated asynchronously. The backend will
+      // be synced once the new valid results are rendered.
+      if (this.selectedMatchIndex !== -1 &&
+          (!this.result || !this.result.matches ||
+           this.selectedMatchIndex >= this.result.matches.length)) {
+        return;
+      }
+      if (this.virtualFocusEnabled) {
         this.searchboxPageHandler_.setPopupSelection(
             selectionIsNativelySupported(this.selection) ? this.selection :
                                                            kDefaultSelection);

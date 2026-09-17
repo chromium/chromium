@@ -198,7 +198,6 @@ TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictSetsVirtualFocusFlags) {
     base::DictValue strings =
         SearchboxHandler::GetWebUIDataSourceDict(profile());
     EXPECT_FALSE(*strings.FindBool("realboxVirtualFocusNavigation"));
-    EXPECT_FALSE(*strings.FindBool("omniboxPopupVirtualFocusNavigation"));
     EXPECT_FALSE(*strings.FindBool("lensOverlayVirtualFocusNavigation"));
     EXPECT_TRUE(*strings.FindBool("omniboxEverywhereVirtualFocusNavigation"));
     EXPECT_FALSE(*strings.FindBool("webuiBrowserVirtualFocusNavigation"));
@@ -209,7 +208,6 @@ TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictSetsVirtualFocusFlags) {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures(
         {features::kRealboxVirtualFocusNavigation,
-         features::kOmniboxPopupVirtualFocusNavigation,
          features::kLensOverlayVirtualFocusNavigation,
          features::kOmniboxEverywhereVirtualFocusNavigation,
          features::kWebuiBrowserVirtualFocusNavigation},
@@ -217,7 +215,6 @@ TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictSetsVirtualFocusFlags) {
     base::DictValue strings =
         SearchboxHandler::GetWebUIDataSourceDict(profile());
     EXPECT_TRUE(*strings.FindBool("realboxVirtualFocusNavigation"));
-    EXPECT_TRUE(*strings.FindBool("omniboxPopupVirtualFocusNavigation"));
     EXPECT_TRUE(*strings.FindBool("lensOverlayVirtualFocusNavigation"));
     EXPECT_TRUE(*strings.FindBool("omniboxEverywhereVirtualFocusNavigation"));
     EXPECT_TRUE(*strings.FindBool("webuiBrowserVirtualFocusNavigation"));
