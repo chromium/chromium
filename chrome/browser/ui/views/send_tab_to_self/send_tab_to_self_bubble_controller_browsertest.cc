@@ -155,6 +155,18 @@ class SendTabToSelfBubbleControllerBrowserTest : public SigninBrowserTestBase {
     }
   }
 
+  content::WebContents* GetActiveWebContents() {
+    return browser()->GetTabStripModel()->GetActiveWebContents();
+  }
+
+  SendTabToSelfBubbleController* NavigateToUrlAndGetController(
+      const GURL& url) {
+    content::WebContents* web_contents = GetActiveWebContents();
+    EXPECT_TRUE(content::NavigateToURL(web_contents, url));
+    return SendTabToSelfBubbleController::GetOrCreateForWebContents(
+        web_contents);
+  }
+
   StubSendTabToSelfSyncService* GetStubSyncService() {
     return static_cast<StubSendTabToSelfSyncService*>(
         SendTabToSelfSyncServiceFactory::GetForProfile(
@@ -182,17 +194,12 @@ class SendTabToSelfPostSendToastBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                        BubbleShowsToast_Desktop) {
-  GURL test_url = empty_url();
-
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
+  SendTabToSelfBubbleController* controller =
+      NavigateToUrlAndGetController(empty_url());
+  ASSERT_TRUE(controller);
 
   StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
   ASSERT_TRUE(sync_service);
-
-  SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
 
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
@@ -214,17 +221,12 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                        BubbleShowsToast_Phone) {
-  GURL test_url = empty_url();
-
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
+  SendTabToSelfBubbleController* controller =
+      NavigateToUrlAndGetController(empty_url());
+  ASSERT_TRUE(controller);
 
   StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
   ASSERT_TRUE(sync_service);
-
-  SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
 
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
@@ -246,17 +248,12 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                        BubbleShowsToast_Tablet) {
-  GURL test_url = empty_url();
-
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
+  SendTabToSelfBubbleController* controller =
+      NavigateToUrlAndGetController(empty_url());
+  ASSERT_TRUE(controller);
 
   StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
   ASSERT_TRUE(sync_service);
-
-  SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
 
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
@@ -277,20 +274,12 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                        BubbleShowsThrottledToast) {
-  GURL test_url = empty_url();
-
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
-
-  StubSendTabToSelfSyncService* sync_service =
-      static_cast<StubSendTabToSelfSyncService*>(
-          SendTabToSelfSyncServiceFactory::GetForProfile(
-              browser()->GetProfile()));
-  ASSERT_TRUE(sync_service);
-
   SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
+      NavigateToUrlAndGetController(empty_url());
+  ASSERT_TRUE(controller);
+
+  StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
+  ASSERT_TRUE(sync_service);
 
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
@@ -314,11 +303,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                        ContextMenuShowsToast) {
-  GURL test_url = empty_url();
-
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, empty_url()));
 
   StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
   ASSERT_TRUE(sync_service);
@@ -346,20 +332,15 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                        BubbleShowsFailureToast) {
-  GURL test_url = empty_url();
-
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
+  SendTabToSelfBubbleController* controller =
+      NavigateToUrlAndGetController(empty_url());
+  ASSERT_TRUE(controller);
 
   StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
   ASSERT_TRUE(sync_service);
 
   // Simulate failure by making the model not ready.
   sync_service->GetFakeSendTabToSelfModel()->SetIsReady(false);
-
-  SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
 
   controller->OnDeviceSelected("device_1", "device_name_1");
 
@@ -385,11 +366,9 @@ class SendTabToSelfPostSendToastDisabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastDisabledBrowserTest,
                        BubbleShowsFailureNotification) {
-  GURL test_url = empty_url();
-
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
+  SendTabToSelfBubbleController* controller =
+      NavigateToUrlAndGetController(empty_url());
+  ASSERT_TRUE(controller);
 
   StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
   ASSERT_TRUE(sync_service);
@@ -399,9 +378,6 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastDisabledBrowserTest,
 
   // Use NotificationDisplayServiceTester to monitor notifications.
   NotificationDisplayServiceTester notification_tester(browser()->GetProfile());
-
-  SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
 
   controller->OnDeviceSelected("device_1", "device_name_1");
 
@@ -434,8 +410,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
   GURL test_url =
       embedded_test_server()->GetURL("/send_tab_to_self/scroll.html");
 
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
 
   StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
@@ -472,8 +447,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
                        ScrollPositionPropagated_EmptyPage) {
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
 
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
 
   StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
@@ -509,8 +483,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
   GURL test_url =
       embedded_test_server()->GetURL("/send_tab_to_self/scroll.html");
 
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
 
   // Scroll the page so the target element's vertical midpoint moves to 35% of
@@ -563,9 +536,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        HideBubbleOnNavigation) {
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL("about:blank")));
+  content::WebContents* web_contents = GetActiveWebContents();
+  SendTabToSelfBubbleController* controller =
+      NavigateToUrlAndGetController(GURL("about:blank"));
+  ASSERT_TRUE(controller);
 
   identity_test_env()->MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
@@ -574,9 +548,6 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   ASSERT_TRUE(sync_service);
   sync_service->SetEntryPointDisplayReason(
       EntryPointDisplayReason::kOfferFeature);
-
-  SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
 
   controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
   EXPECT_TRUE(controller->IsBubbleShown());
@@ -588,10 +559,6 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        ShowBubbleRecordsMetrics) {
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL("about:blank")));
-
   identity_test_env()->MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
 
@@ -609,7 +576,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   base::HistogramTester histogram_tester;
 
   SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
+      NavigateToUrlAndGetController(GURL("about:blank"));
+  ASSERT_TRUE(controller);
 
   controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
   EXPECT_TRUE(controller->IsBubbleShown());
@@ -622,17 +590,14 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        ShowPromoBubble) {
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(web_contents, empty_url()));
-
   StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
   ASSERT_TRUE(sync_service);
   sync_service->SetEntryPointDisplayReason(
       EntryPointDisplayReason::kOfferSignIn);
 
   SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
+      NavigateToUrlAndGetController(empty_url());
+  ASSERT_TRUE(controller);
 
   controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
 
@@ -642,10 +607,6 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        PromoBubbleAccept_OpensDiceSignInTab) {
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(web_contents, empty_url()));
-
   // Trigger the 'Offer Sign-In' state by overriding the entry point display
   // reason.
   StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
@@ -654,7 +615,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
       EntryPointDisplayReason::kOfferSignIn);
 
   SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
+      NavigateToUrlAndGetController(empty_url());
+  ASSERT_TRUE(controller);
   controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
 
   ASSERT_TRUE(controller->IsBubbleShown());
@@ -709,8 +671,7 @@ IN_PROC_BROWSER_TEST_P(SendTabToSelfContextMenuParamsTest, VerifyMenuType) {
   }
 #endif
 
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::NavigateToURL(web_contents, GURL("about:blank")));
 
   StubSendTabToSelfSyncService* stts_sync_service = GetStubSyncService();
