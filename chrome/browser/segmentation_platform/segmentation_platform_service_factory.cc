@@ -137,6 +137,7 @@ SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
+  DependsOn(commerce::ShoppingServiceFactory::GetInstance());
 }
 
 SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
@@ -213,7 +214,7 @@ SegmentationPlatformServiceFactory::BuildServiceInstanceForBrowserContext(
         if (!context_ptr) {
           return nullptr;
         }
-        return commerce::ShoppingServiceFactory::GetForBrowserContextIfExists(
+        return commerce::ShoppingServiceFactory::GetForBrowserContext(
             context_ptr);
       },
       context->GetWeakPtr());
