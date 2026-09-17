@@ -510,10 +510,6 @@ class ChromePasswordManagerClient
   void MaybeShowSavePasswordPrimingPromo(const url::Origin& origin) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  gfx::RectF TransformToRootCoordinates(
-      content::RenderFrameHost* frame_host,
-      const gfx::RectF& bounds_in_frame_coordinates);
-
 #if BUILDFLAG(IS_ANDROID)
   void ResetErrorMessageDelegate();
 
