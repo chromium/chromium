@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
       PressButton(kToolbarAppMenuButtonElementId),
       SelectMenuItem(AppMenuModel::kClearBrowsingDataMenuItem),
       WaitForHide(AppMenuModel::kClearBrowsingDataMenuItem),
-      WaitForWebContentsReady(
+      WaitForWebContentsNavigation(
           kFirstTabElementId,
           chrome::GetSettingsUrl(chrome::kClearBrowserDataSubPage)),
       InstrumentTab(kClearBrowsingDataPage),
@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
   RunTestSequence(
       InstrumentTab(kFirstTabElementId),
       SendAccelerator(kBrowserViewElementId, clear_browsing_data_accelerator),
-      WaitForWebContentsReady(
+      WaitForWebContentsNavigation(
           kFirstTabElementId,
           chrome::GetSettingsUrl(chrome::kClearBrowserDataSubPage)),
       InstrumentTab(kClearBrowsingDataPage),
