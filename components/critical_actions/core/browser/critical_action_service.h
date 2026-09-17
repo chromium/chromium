@@ -115,6 +115,10 @@ class CriticalActionService : public KeyedService,
   void DropPendingActions(NavigationState& state,
                           VisitIdResolutionOutcome reason);
 
+  // TODO(b/561944228): Temporary solution while b/494212836 is in place; remove
+  // once fixed. CriticalActionService needs conversation_id.
+  void MaybeSetConversationId(CriticalActionEntry& entry);
+
   SEQUENCE_CHECKER(sequence_checker_);
   base::SequenceBound<CriticalActionBackend> backend_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -126,6 +130,10 @@ class CriticalActionService : public KeyedService,
   // Capacity-limited LRU cache for tracking recent navigation history
   // resolutions.
   base::LRUCache<int64_t, NavigationState> navigation_cache_;
+
+  // TODO(b/561944228): Capacity-limited LRU cache mapping actor_task_id to
+  // conversation_id.
+  base::LRUCache<std::string, std::string> task_to_conversation_cache_;
 };
 
 }  // namespace critical_actions

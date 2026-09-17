@@ -696,6 +696,13 @@ void GlicInstanceImpl::RegisterConversation(
   NotifyInstanceChanged();
   conversation_info_changed_callback_list_.Notify(*conversation_info_);
 
+  // TODO(b/561944228): CriticalActionService needs conversation_id, this is a
+  // temporary solution while b/494212836 is in place; remove once fixed.
+  if (actor_task_manager_) {
+    actor_task_manager_->OnConversationRegistered(
+        conversation_info_->conversation_id);
+  }
+
   std::move(callback).Run(std::nullopt);
 }
 

@@ -4,6 +4,7 @@
 
 #include "components/critical_actions/core/browser/critical_action_service.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
 #include <string_view>
@@ -51,7 +52,9 @@ CriticalActionService::CriticalActionService(
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
     history::HistoryService* history_service)
     : backend_(backend_task_runner, db_path),
-      navigation_cache_(features::kMaxNavigationCacheCapacity.Get()) {
+      navigation_cache_(features::kMaxNavigationCacheCapacity.Get()),
+      task_to_conversation_cache_(
+          features::kMaxTaskToConversationCacheCapacity.Get()) {
   backend_.AsyncCall(&CriticalActionBackend::Init);
   if (history_service) {
     history_service_observation_.Observe(history_service);
@@ -70,6 +73,7 @@ void CriticalActionService::Shutdown() {
                        VisitIdResolutionOutcome::kEvictedServiceShutdown);
   }
   navigation_cache_.Clear();
+  task_to_conversation_cache_.Clear();
   backend_.Reset();
 }
 
@@ -127,11 +131,15 @@ void CriticalActionService::AddCriticalAction(
   if (!backend_) {
     return;
   }
+  CriticalActionEntry resolved_entry = entry;
+  MaybeSetConversationId(resolved_entry);
+
   base::UmaHistogramEnumeration(
       base::StrCat({"CriticalActions.EventLogged.",
-                    ActionSourceToString(entry.action_source)}),
-      entry.action_type);
-  backend_.AsyncCall(&CriticalActionBackend::AddCriticalAction).WithArgs(entry);
+                    ActionSourceToString(resolved_entry.action_source)}),
+      resolved_entry.action_type);
+  backend_.AsyncCall(&CriticalActionBackend::AddCriticalAction)
+      .WithArgs(resolved_entry);
 }
 
 void CriticalActionService::SetCriticalActionsConversationId(
@@ -141,6 +149,13 @@ void CriticalActionService::SetCriticalActionsConversationId(
   if (!backend_ || actor_task_ids.empty() || conversation_id.empty()) {
     return;
   }
+
+  // TODO(b/561944228): CriticalActionService needs conversation_id, this is a
+  // temporary solution while b/494212836 is in place; remove once fixed.
+  for (const std::string& task_id : actor_task_ids) {
+    task_to_conversation_cache_.Put(task_id, std::string(conversation_id));
+  }
+
   backend_.AsyncCall(&CriticalActionBackend::SetCriticalActionsConversationId)
       .WithArgs(actor_task_ids, std::string(conversation_id));
 }
@@ -160,7 +175,8 @@ void CriticalActionService::AddCriticalActionWithNavigationId(
     CriticalActionEntry resolved_entry = entry;
     resolved_entry.visit_id = *it->second.visit_id;
     AddCriticalAction(resolved_entry);
-    LogVisitIdResolutionOutcome(entry, VisitIdResolutionOutcome::kSuccess);
+    LogVisitIdResolutionOutcome(resolved_entry,
+                                VisitIdResolutionOutcome::kSuccess);
     return;
   }
 
@@ -251,6 +267,15 @@ void CriticalActionService::DropPendingActions(
     LogVisitIdResolutionOutcome(entry, outcome);
   }
   state.pending_actions.clear();
+}
+
+void CriticalActionService::MaybeSetConversationId(CriticalActionEntry& entry) {
+  if (entry.conversation_id.empty() && !entry.actor_task_id.empty()) {
+    auto it = task_to_conversation_cache_.Get(entry.actor_task_id);
+    if (it != task_to_conversation_cache_.end()) {
+      entry.conversation_id = it->second;
+    }
+  }
 }
 
 }  // namespace critical_actions

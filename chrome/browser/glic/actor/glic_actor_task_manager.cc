@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_runner.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/actor/tab_observation_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
+#include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_journal_handler.h"
 #include "chrome/browser/glic/actor/glic_actor_metrics.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
@@ -47,6 +49,7 @@
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/sessions/core/session_id.h"
@@ -265,6 +268,13 @@ void GlicActorClientSession::CreateTask(
       instance_metrics().initial_invocation_source());
   CHECK(!current_task_id_.is_null());
 
+  // TODO(b/561944228): CriticalActionService needs conversation_id, this is a
+  // temporary solution while b/494212836 is in place; remove once fixed.
+  if (!conversation_id.has_value() || conversation_id->empty()) {
+    manager_->pending_conversation_task_ids_.push_back(
+        base::NumberToString(current_task_id_.value()));
+  }
+
   if (manager_->delegate_) {
     manager_->delegate_->OnTaskIdChanged(current_task_id_.value());
   }
@@ -276,6 +286,22 @@ void GlicActorClientSession::CreateTask(
           base::Unretained(this)));
 
   std::move(callback).Run(current_task_id_.value());
+}
+
+// TODO(b/561944228): CriticalActionService needs conversation_id, this is a
+// temporary solution while b/494212836 is in place; remove once fixed.
+void GlicActorTaskManager::OnConversationRegistered(
+    const std::string& conversation_id) {
+  if (pending_conversation_task_ids_.empty() || conversation_id.empty()) {
+    return;
+  }
+
+  if (auto* critical_action_service =
+          critical_actions::CriticalActionFactory::GetForProfile(profile_)) {
+    critical_action_service->SetCriticalActionsConversationId(
+        pending_conversation_task_ids_, conversation_id);
+  }
+  pending_conversation_task_ids_.clear();
 }
 
 void GlicActorClientSession::PerformActionsFinished(
@@ -1064,6 +1090,10 @@ base::WeakPtr<GlicActorClientSession> GlicActorClientSession::GetWeakPtr() {
 }
 
 void GlicActorTaskManager::UnbindSession() {
+  // TODO(b/561944228): CriticalActionService needs conversation_id, this is a
+  // temporary solution while b/494212836 is in place; remove once fixed.
+  pending_conversation_task_ids_.clear();
+
   session_.reset();
   MaybeNotifyActuatingChanged();
 }

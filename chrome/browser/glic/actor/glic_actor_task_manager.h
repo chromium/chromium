@@ -105,9 +105,17 @@ class GlicActorTaskManager {
 
   GlicActorClientSessionInterface* GetClientSessionForTesting();
 
+  // TODO(b/561944228): CriticalActionService needs conversation_id, this is a
+  // temporary solution while b/494212836 is in place; remove once fixed.
+  void OnConversationRegistered(const std::string& conversation_id);
+
  private:
   void MaybeNotifyActuatingChanged();
   friend class GlicActorClientSession;
+
+  // TODO(b/561944228): CriticalActionService needs conversation_id, this is a
+  // temporary solution while b/494212836 is in place; remove once fixed.
+  std::vector<std::string> pending_conversation_task_ids_;
 
   raw_ptr<Profile> profile_;
   raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
