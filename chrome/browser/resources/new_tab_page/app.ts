@@ -234,7 +234,6 @@ export class AppElement extends AppElementBase {
       // =======================================================================
 
       composeboxState_: {type: Object},
-      oneGoogleBarIframeOrigin_: {type: String},
       oneGoogleBarIframePath_: {type: String},
       oneGoogleBarLoaded_: {type: Boolean},
       theme_: {type: Object},
@@ -390,7 +389,6 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('searchboxShowComposebox');
 
   protected accessor composeboxState_: ComposeboxState|null = null;
-  protected accessor oneGoogleBarIframeOrigin_: string = OGB_IFRAME_ORIGIN;
   protected accessor oneGoogleBarIframePath_: string|undefined;
   protected accessor oneGoogleBarLoaded_: boolean = false;
   protected accessor theme_: Theme|null = null;
