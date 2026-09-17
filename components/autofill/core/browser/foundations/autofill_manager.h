@@ -402,6 +402,7 @@ class AutofillManager
       const FormData& form,
       const FieldGlobalId& trigger_field_id,
       const std::vector<JavaScriptFieldModification>& field_modifications,
+      base::TimeTicks detection_start_timestamp,
       RendererEventPassKey pass_key);
 
   // Other events.
@@ -575,7 +576,8 @@ class AutofillManager
   virtual void OnDidDetectJavaScriptAutofillImpl(
       const FormData& form,
       const FieldGlobalId& trigger_field_id,
-      const std::vector<JavaScriptFieldModification>& field_modifications) = 0;
+      const std::vector<JavaScriptFieldModification>& field_modifications,
+      base::TimeTicks detection_start_timestamp) = 0;
   virtual void OnLoadedServerPredictionsImpl(
       base::span<const raw_ref<FormStructure>> forms) = 0;
 

@@ -452,7 +452,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   // `JavaScriptAutofillTracker`.
   void OnJavaScriptAutofillDetected(
       blink::WebFormControlElement trigger_field,
-      std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications);
+      std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications,
+      base::TimeTicks detection_start_timestamp);
 
   // Stores immutable configuration this agent was created with. It contains
   // features and settings that are specific to the client using this agent.

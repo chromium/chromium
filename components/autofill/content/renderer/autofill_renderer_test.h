@@ -122,7 +122,8 @@ class MockAutofillDriver : public mojom::AutofillDriver {
       DidDetectJavaScriptAutofill,
       (const FormData& form,
        FieldRendererId trigger_field_id,
-       std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications),
+       std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications,
+       base::TimeTicks detection_start_timestamp),
       (override));
 
  private:

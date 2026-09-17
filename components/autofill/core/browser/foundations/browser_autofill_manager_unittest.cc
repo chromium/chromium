@@ -7456,7 +7456,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   autofill_manager().OnDidDetectJavaScriptAutofill(
       form, form.fields()[0].global_id(), field_modifications,
-      AutofillManagerTestApi::pass_key());
+      base::TimeTicks::Now(), AutofillManagerTestApi::pass_key());
 
   EXPECT_TRUE(form_structure->field(0)->did_trigger_javascript_autofill());
   EXPECT_FALSE(form_structure->field(1)->did_trigger_javascript_autofill());
@@ -7485,7 +7485,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   autofill_manager().OnDidDetectJavaScriptAutofill(
       form, form.fields()[0].global_id(), field_modifications,
-      AutofillManagerTestApi::pass_key());
+      base::TimeTicks::Now(), AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(form_structure->field(0)->did_trigger_javascript_autofill());
 }
@@ -7517,7 +7517,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   autofill_manager().OnDidDetectJavaScriptAutofill(
       form, form.fields()[0].global_id(), field_modifications,
-      AutofillManagerTestApi::pass_key());
+      base::TimeTicks::Now(), AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(form_structure->field(0)->did_trigger_javascript_autofill());
 }
@@ -7546,7 +7546,7 @@ TEST_F(
 
   autofill_manager().OnDidDetectJavaScriptAutofill(
       form, form.fields()[0].global_id(), field_modifications,
-      AutofillManagerTestApi::pass_key());
+      base::TimeTicks::Now(), AutofillManagerTestApi::pass_key());
 
   EXPECT_TRUE(form_structure->field(0)->did_trigger_javascript_autofill());
 }
@@ -7570,7 +7570,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   autofill_manager().OnDidDetectJavaScriptAutofill(
       form, form.fields()[0].global_id(), field_modifications,
-      AutofillManagerTestApi::pass_key());
+      base::TimeTicks::Now(), AutofillManagerTestApi::pass_key());
 
   EXPECT_TRUE(form_structure->field(0)->did_trigger_javascript_autofill());
 }
@@ -7595,7 +7595,7 @@ TEST_F(
 
   autofill_manager().OnDidDetectJavaScriptAutofill(
       form, form.fields()[0].global_id(), field_modifications,
-      AutofillManagerTestApi::pass_key());
+      base::TimeTicks::Now(), AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(form_structure->field(0)->did_trigger_javascript_autofill());
 }

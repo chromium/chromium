@@ -504,11 +504,13 @@ void AutofillDriverRouter::FormWithEmailVerificationTokenSubmitted(
 void AutofillDriverRouter::DidDetectJavaScriptAutofill(
     RoutedCallback<const FormData&,
                    const FieldGlobalId&,
-                   const std::vector<JavaScriptFieldModification>&> callback,
+                   const std::vector<JavaScriptFieldModification>&,
+                   base::TimeTicks> callback,
     AutofillDriver& source,
     FormData form,
     FieldGlobalId trigger_field_id,
-    std::vector<JavaScriptFieldModification> field_modifications) {
+    std::vector<JavaScriptFieldModification> field_modifications,
+    base::TimeTicks detection_start_timestamp) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -523,7 +525,7 @@ void AutofillDriverRouter::DidDetectJavaScriptAutofill(
   }
   auto* target = DriverOfFrame(browser_form.host_frame());
   callback(CHECK_DEREF(target), browser_form, trigger_field_id,
-           field_modifications);
+           field_modifications, detection_start_timestamp);
 }
 
 void AutofillDriverRouter::SelectFieldOptionsDidChange(

@@ -31,7 +31,8 @@ class JavaScriptAutofillTracker {
   // Callback signature invoked when a JS-autofill event is detected.
   using DidDetectCallback = base::RepeatingCallback<void(
       blink::WebFormControlElement trigger_field,
-      std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications)>;
+      std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications,
+      base::TimeTicks detection_start_timestamp)>;
 
   JavaScriptAutofillTracker(blink::WebLocalFrame* web_frame,
                             DidDetectCallback callback);
@@ -40,14 +41,14 @@ class JavaScriptAutofillTracker {
       delete;
   ~JavaScriptAutofillTracker();
 
-  void OnJavaScriptChangedValue(const blink::WebFormControlElement& element,
-                                const blink::WebString& old_value);
-
   // Invoked directly from Blink just prior to initiating DOM mousedown event
   // dispatch, before JavaScript receives the same signal.
   // `target_node` is the innermost hit-tested Blink node that receives the
   // mousedown event.
   void HandleMousedown(const blink::WebNode& target_node);
+
+  void OnJavaScriptChangedValue(const blink::WebFormControlElement& element,
+                                const blink::WebString& old_value);
 
   // Clears all recorded changes and stops the detection timer.
   void Reset();
@@ -58,7 +59,8 @@ class JavaScriptAutofillTracker {
   // Analyzes the recorded changes in `js_logs_` to determine if they constitute
   // a JavaScript autofill event anchored on `trigger_element_id`. If so,
   // invokes `callback_`.
-  void DetectJavaScriptAutofill(FieldRendererId trigger_element_id);
+  void DetectJavaScriptAutofill(FieldRendererId trigger_element_id,
+                                base::TimeTicks timer_start_timestamp);
 
   // The owning frame.
   const raw_ref<blink::WebLocalFrame> web_frame_;

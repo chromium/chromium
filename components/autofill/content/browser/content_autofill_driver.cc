@@ -151,6 +151,7 @@ JavaScriptFieldModification Lift(
   return JavaScriptFieldModification{
       .field_id = Lift(source, mod->field_id),
       .modification_type = mod->modification_type,
+      .timestamp = mod->timestamp,
   };
 }
 
@@ -793,11 +794,12 @@ void ContentAutofillDriver::FormWithEmailVerificationTokenSubmitted(
 void ContentAutofillDriver::DidDetectJavaScriptAutofill(
     const FormData& form,
     FieldRendererId trigger_field_id,
-    std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications) {
-  RouteToManager(*this, router(),
-                 &AutofillDriverRouter::DidDetectJavaScriptAutofill,
-                 &AutofillManager::OnDidDetectJavaScriptAutofill, form,
-                 trigger_field_id, field_modifications);
+    std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications,
+    base::TimeTicks detection_start_timestamp) {
+  RouteToManager(
+      *this, router(), &AutofillDriverRouter::DidDetectJavaScriptAutofill,
+      &AutofillManager::OnDidDetectJavaScriptAutofill, form, trigger_field_id,
+      field_modifications, detection_start_timestamp);
 }
 
 const mojo::AssociatedRemote<mojom::AutofillAgent>&

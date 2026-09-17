@@ -448,10 +448,11 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   void DidDetectJavaScriptAutofill(
       const FormData& form,
       FieldRendererId trigger_field_id,
-      std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications)
-      override {
+      std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications,
+      base::TimeTicks detection_start_timestamp) override {
     DeferMsg(&mojom::AutofillDriver::DidDetectJavaScriptAutofill, form,
-             trigger_field_id, std::move(field_modifications));
+             trigger_field_id, std::move(field_modifications),
+             detection_start_timestamp);
   }
 
   const raw_ref<AutofillAgent> agent_;
@@ -2395,7 +2396,8 @@ mojom::AutofillDriver* AutofillAgent::unsafe_autofill_driver() {
 
 void AutofillAgent::OnJavaScriptAutofillDetected(
     blink::WebFormControlElement trigger_field,
-    std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications) {
+    std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications,
+    base::TimeTicks detection_start_timestamp) {
   if (std::optional<form_util::FormAndField> form_and_field =
           form_util::FindFormAndFieldForFormControlElement(
               trigger_field, field_data_manager(),
@@ -2404,7 +2406,8 @@ void AutofillAgent::OnJavaScriptAutofillDetected(
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->DidDetectJavaScriptAutofill(
-          form, field.renderer_id(), std::move(field_modifications));
+          form, field.renderer_id(), std::move(field_modifications),
+          detection_start_timestamp);
     }
   }
 }

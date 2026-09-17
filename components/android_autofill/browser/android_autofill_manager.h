@@ -132,7 +132,8 @@ class AndroidAutofillManager : public AutofillManager,
       const FormData& form,
       const FieldGlobalId& trigger_field_id,
       const std::vector<autofill::JavaScriptFieldModification>&
-          field_modifications) override {}
+          field_modifications,
+      base::TimeTicks detection_start_timestamp) override {}
 
   void OnLoadedServerPredictionsImpl(
       base::span<const raw_ref<FormStructure>> forms) override {}

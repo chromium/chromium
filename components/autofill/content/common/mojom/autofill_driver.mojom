@@ -159,10 +159,16 @@ interface AutofillDriver {
   // Sent when the renderer suspects a custom JavaScript autofill event has
   // occurred, filling all fields in `field_ids`, and suspecting that
   // `trigger_field_id` is the field that triggered this.
+  // `field_modifications` contains information about fields that were part of
+  // the JavaScript autofill operation. It is also sorted by increasing
+  // `JavaScriptFieldModification::timestamp`.
+  // `detection_start_timestamp` is the time when the renderer started looking
+  // for logs to add to `field_modifications`.
   DidDetectJavaScriptAutofill(
     FormData form,
     FieldRendererId trigger_field_id,
-    array<JavaScriptFieldModification> field_modifications);
+    array<JavaScriptFieldModification> field_modifications,
+    mojo_base.mojom.TimeTicks detection_start_timestamp);
 };
 
 // There is one instance of this interface per web contents in the browser

@@ -4378,6 +4378,45 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.DropdownDetection.DetectedType"
+    enum="AutofillJavaScriptDropdownType" expires_after="2026-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the type of JavaScript dropdown detected by Autofill. Records
+    &quot;None&quot; if no dropdown is detected. Emitted each time the browser
+    receives a signal from the renderer about a JavaScript-autofill operation.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.DropdownDetection.JavaScriptModificationTime{ModificationType}"
+    units="ms" expires_after="2026-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records time (in milliseconds) metrics for JavaScript value-change events
+    that occurred in the renderer during the dropdown detection window.
+
+    {ModificationType}.
+  </summary>
+  <token key="ModificationType">
+    <variant name=""
+        summary="Emitted for all modifications (measured from the start of
+                 the detection window)"/>
+    <variant name=".Duration"
+        summary="Emitted once per detection, measuring the time elapsed
+                 between the first and last modification in the detection
+                 window"/>
+    <variant name=".First"
+        summary="Emitted only for the first modification in the detection
+                 window (measured from the start of the detection window)"/>
+    <variant name=".Last"
+        summary="Emitted only for the last modification in the detection
+                 window (measured from the start of the detection window)"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.EditedAutofilledFieldAtSubmission.AddressOnTyping"
     enum="AutofilledFieldUserEditingStatus" expires_after="2027-02-28">
   <owner>brunobraga@google.com</owner>

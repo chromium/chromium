@@ -3081,6 +3081,16 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Suggestion Selected"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillJavaScriptDropdownType) -->
+
+<enum name="AutofillJavaScriptDropdownType">
+  <int value="0" label="None"/>
+  <int value="1" label="Email Picker"/>
+  <int value="2" label="Address Picker"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/foundations/browser_autofill_manager.h:JavaScriptDropdownType) -->
+
 <!-- LINT.IfChange(AutofillKeyboardAccessoryInteraction) -->
 
 <enum name="AutofillKeyboardAccessoryInteraction">

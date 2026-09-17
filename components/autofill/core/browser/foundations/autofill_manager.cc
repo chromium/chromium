@@ -572,13 +572,15 @@ void AutofillManager::OnDidDetectJavaScriptAutofill(
     const FormData& form,
     const FieldGlobalId& trigger_field_id,
     const std::vector<JavaScriptFieldModification>& field_modifications,
+    base::TimeTicks detection_start_timestamp,
     RendererEventPassKey pass_key) {
   if (!IsValidFormData(form)) {
     return;
   }
   ParseFormAsync(
       form, ParsingCallback(&AutofillManager::OnDidDetectJavaScriptAutofillImpl,
-                            trigger_field_id, field_modifications)
+                            trigger_field_id, field_modifications,
+                            detection_start_timestamp)
                 .Then(base::BindOnce([](AutofillManager&) {})));
 }
 

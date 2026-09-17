@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/i18n/rtl.h"
+#include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -37,6 +38,7 @@ namespace autofill {
 struct JavaScriptFieldModification {
   FieldGlobalId field_id;
   mojom::JavaScriptModificationType modification_type;
+  base::TimeTicks timestamp;
 
   friend bool operator==(const JavaScriptFieldModification&,
                          const JavaScriptFieldModification&) = default;

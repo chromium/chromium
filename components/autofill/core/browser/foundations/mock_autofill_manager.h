@@ -55,7 +55,8 @@ class MockAutofillManager : public AutofillManager {
       OnDidDetectJavaScriptAutofillImpl,
       (const FormData& form,
        const FieldGlobalId& trigger_field_id,
-       const std::vector<JavaScriptFieldModification>& field_modifications),
+       const std::vector<JavaScriptFieldModification>& field_modifications,
+       base::TimeTicks detection_start_timestamp),
       (override));
   MOCK_METHOD(void,
               OnLoadedServerPredictionsImpl,

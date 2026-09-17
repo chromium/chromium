@@ -646,6 +646,7 @@ enum JavaScriptModificationType {
 struct JavaScriptFieldModification {
   FieldRendererId field_id;
   JavaScriptModificationType modification_type;
+  mojo_base.mojom.TimeTicks timestamp;
 };
 
 // Observer interface to receive visibility notifications for a field.
