@@ -22,9 +22,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
@@ -45,13 +42,9 @@ import java.util.Map;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public final class AuxiliarySearchDonorTest {
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Rule
-    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    @Mock private AuxiliarySearchHooks mHooks;
 
     private int[] mIds;
     private String[] mUrls;
@@ -63,7 +56,7 @@ public final class AuxiliarySearchDonorTest {
 
     @Before
     public void setUp() {
-        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, mHooks);
+        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, () -> false);
 
         mActivityTestRule.launchActivity(null);
         mAuxiliarySearchDonor = AuxiliarySearchDonor.getInstance();
