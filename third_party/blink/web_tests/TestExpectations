@@ -9221,4 +9221,4 @@ crbug.com/540619916 [ Debug Linux ] external/wpt/webdriver/tests/bidi/network/pr
 crbug.com/562009743 [ Win ] fast/ruby/base-shorter-than-text.html [ Failure Pass ]
 
 # Gardener 2026-09-17
-crbug.com/562895059 external/wpt/streams/readable-byte-streams/crashtests/from-cross-realm.html [ Failure ]
+crbug.com/562895059 external/wpt/streams/readable-byte-streams/crashtests/from-cross-realm.html [ Crash Failure ]
