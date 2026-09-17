@@ -1233,6 +1233,54 @@ TEST_F(H265DecoderTest, EndOfSequenceIdrOutputFailureReturnsDecodeError) {
   EXPECT_EQ(AcceleratedVideoDecoder::kDecodeError, decoder_->Decode());
 }
 
+// C.5.2.3 keeps bumping until no picture exceeds SpsMaxLatencyPictures. Since
+// bumping always picks the picture that is first for output, that can take more
+// invocations than there are pictures over the limit: here POC 100 is the only
+// one over it, but the four pictures ahead of it in output order have to go
+// first.
+TEST_F(H265DecoderTest, LatencyBumpingRunsUntilTheLimitIsMet) {
+  H26xAnnexBBitstreamBuilder builder;
+  H265SPS sps = MakeTestSps();
+  // Five pictures are decoded before latency bumping can emit POC 100; the
+  // buffering condition must not fire first.
+  sps.sps_max_dec_pic_buffering_minus1[0] = 5;
+  // Hold POC 100 while 1, 2 and 3 decode; reorder alone does not bump 100.
+  sps.sps_max_num_reorder_pics[0] = 1;
+  // Equation 7-9: SpsMaxLatencyPictures = MaxNumReorderPics +
+  // sps_max_latency_increase_plus1 - 1 = 1 + 3 - 1 = 3.
+  sps.sps_max_latency_increase_plus1[0] = 3;
+  BuildPackedH265SPS(builder, sps);
+  BuildPackedH265PPS(builder, MakeTestPps());
+
+  // POC 100 accumulates a PicLatencyCount of 3 from the three pictures that are
+  // decoded after it but precede it in output order.
+  AppendIntraPicture(builder, H265NALU::IDR_W_RADL, /*poc_lsb=*/0);
+  for (int poc_lsb : {100, 1, 2, 3}) {
+    AppendIntraPicture(builder, H265NALU::TRAIL_R, poc_lsb);
+  }
+
+  auto buffer = DecoderBuffer::CopyFrom(builder.data());
+  ExpectAnyAcceleratorCalls();
+  {
+    InSequence sequence;
+    EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(0))).WillOnce(Return(true));
+    EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(1))).WillOnce(Return(true));
+    EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(2))).WillOnce(Return(true));
+    EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(3))).WillOnce(Return(true));
+    EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(100)))
+        .WillOnce(Return(true));
+  }
+
+  decoder_->SetStream(0, buffer);
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, decoder_->Decode());
+
+  // Verify before flushing: the latency limit has to have pushed POC 100 out
+  // already, rather than leaving it for Flush() to pick up.
+  EXPECT_TRUE(Mock::VerifyAndClearExpectations(&*accelerator_));
+  EXPECT_TRUE(decoder_->Flush());
+}
+
 TEST_F(H265DecoderTest, InvalidCropRectReturnsDecodeError) {
   H26xAnnexBBitstreamBuilder builder;
 

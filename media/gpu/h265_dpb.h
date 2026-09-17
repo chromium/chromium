@@ -104,17 +104,15 @@ class H265DPB {
   // Removes all entries from the DPB.
   void Clear();
 
-  // Stores |pic| in the DPB. If |used_for_long_term| is true it'll be marked as
-  // used for long term reference, otherwise it'll be marked as used for short
-  // term reference.
+  // Stores |pic| in the DPB and marks it with |ref|.
   void StorePicture(scoped_refptr<H265Picture> pic,
                     H265Picture::ReferenceType ref);
 
   // Mark all pictures in DPB as unused for reference.
   void MarkAllUnusedForReference();
 
-  // Removes all pictures from the DPB that do not have |pic_output_flag_| set
-  // and are marked Unused for reference.
+  // Removes pictures that are no longer needed for output (PicOutputFlag is 0,
+  // or they have already been outputted) and are marked unused for reference.
   void DeleteUnused();
 
   // Returns the number of pictures in the DPB that are marked for reference.
@@ -132,7 +130,7 @@ class H265DPB {
   GetPicByPocMaskedAndMark(int poc, int mask, H265Picture::ReferenceType ref);
 
   // Appends to |out| all of the pictures in the DPB that are flagged for output
-  // but have not be outputted yet.
+  // but have not been outputted yet.
   void AppendPendingOutputPics(H265Picture::Vector* out);
 
   // Appends to |out| all of the pictures in the DPB that are not marked as
