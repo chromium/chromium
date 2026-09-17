@@ -1236,7 +1236,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
       // group.
       Screenshot(kTabGroupEditorBubbleNewTabInGroupButtonId,
                  "tab_group_editor_bubble_new_tab_in_group_with_accelerators",
-                 "6564307"),
+                 "8414812"),
       // Close the tab group editor bubble to prevent flakes on mac.
       HoverTabAt(0), ClickMouse(),
       WaitForHide(kTabGroupEditorBubbleNewTabInGroupButtonId));
@@ -1260,7 +1260,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
       // group.
       Screenshot(kTabGroupEditorBubbleCloseGroupButtonId,
                  "tab_group_editor_bubble_close_group_with_accelerators",
-                 "6564307"),
+                 "8414812"),
       // Close the tab group editor bubble to prevent flakes on mac.
       HoverTabAt(0), ClickMouse(),
       WaitForHide(kTabGroupEditorBubbleCloseGroupButtonId));

@@ -134,8 +134,6 @@ namespace {
 constexpr int kSeparatorPadding = 8;
 // The width of the tab group editor bubble.
 constexpr int kDialogWidth = 240;
-// The default size of icons that are displayed in the tab group editor bubble.
-static constexpr int kDefaultIconSize = 20;
 // The maximum number of times we will show the footer section with the learn
 // more link.
 constexpr int kFooterDisplayLimit = 5;
@@ -159,17 +157,28 @@ gfx::Insets GetControlInsets() {
              : gfx::Insets::VH(vertical_spacing, horizontal_spacing);
 }
 
+gfx::Insets GetMenuItemInsets() {
+  const int horizontal_spacing = GetHorizontalSpacing();
+  constexpr int kMenuItemVerticalPadding = 6;
+  const int vertical_padding = ui::TouchUiController::Get()->touch_ui()
+                                   ? 5 * GetVerticalSpacing() / 4
+                                   : kMenuItemVerticalPadding;
+
+  return gfx::Insets::VH(vertical_padding, horizontal_spacing);
+}
+
 std::unique_ptr<views::LabelButton> CreateMenuItem(
     int button_id,
     const std::u16string& name,
     views::Button::PressedCallback callback,
     const ui::ImageModel& icon = ui::ImageModel(),
     const std::u16string& accelerator_text = std::u16string()) {
-  const gfx::Insets control_insets = GetControlInsets();
+  const gfx::Insets menu_item_insets = GetMenuItemInsets();
   auto button = CreateBubbleMenuItem(button_id, name, std::move(callback), icon,
                                      accelerator_text);
-  button->SetBorder(views::CreateEmptyBorder(control_insets));
+  button->SetBorder(views::CreateEmptyBorder(menu_item_insets));
   button->SetLabelStyle(views::style::STYLE_BODY_3_EMPHASIS);
+  button->SetMinSize(gfx::Size(0, 32));
 
   return button;
 }
@@ -323,7 +332,7 @@ void TabGroupEditorBubbleView::AddedToWidget() {
     const gfx::VectorIcon* icon = vector_icon_model.vector_icon();
 
     const ui::ImageModel saved_tab_group_line_image_model =
-        ui::ImageModel::FromVectorIcon(*icon, icon_color);
+        ui::ImageModel::FromVectorIcon(*icon, icon_color, kDefaultIconSize);
     save_group_icon_->SetImage(saved_tab_group_line_image_model);
   }
 }
@@ -753,7 +762,8 @@ TabGroupEditorBubbleView::BuildUngroupButton() {
                           base::Unretained(this)),
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
                                          ? kUngroupIcon
-                                         : kUngroupRefreshOldIcon));
+                                         : kUngroupRefreshOldIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
 }
 
 std::unique_ptr<views::LabelButton>
@@ -894,7 +904,8 @@ TabGroupEditorBubbleView::BuildShareGroupButton() {
                           base::Unretained(this)),
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
                                          ? kGroupCustomIcon
-                                         : kTabGroupSharingOldIcon));
+                                         : kTabGroupSharingOldIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
   menu_item->SetProperty(views::kElementIdentifierKey,
                          kTabGroupEditorBubbleShareGroupButtonId);
   return menu_item;

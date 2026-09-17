@@ -66,6 +66,9 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   static constexpr int TAB_GROUP_HEADER_CXMENU_HOME = 13;
   static constexpr int TAB_GROUP_HEADER_CXMENU_ASK_GEMINI = 14;
 
+  // The default size of icons displayed in the tab group editor bubble menu.
+  static constexpr int kDefaultIconSize = 16;
+
   friend class TabGroupEditorBubbleInteractiveUiTest;
 
   ~TabGroupEditorBubbleView() override;
