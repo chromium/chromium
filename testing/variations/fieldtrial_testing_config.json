@@ -8561,7 +8561,7 @@
             ]
         }
     ],
-    "EncryptSessionStorage_Phase1": [
+    "EncryptSessionStorage_Phase2": [
         {
             "platforms": [
                 "chromeos",
@@ -8573,9 +8573,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Phase1",
+                    "name": "Phase2",
                     "params": {
-                        "stage": "write_both_read_only_clear"
+                        "stage": "write_both_read_prefer_encrypted"
                     },
                     "enable_features": [
                         "EncryptSessionStorage"
