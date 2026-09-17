@@ -907,6 +907,22 @@ void UpdateHeaderFooterRoleForSameLineRun(
   }
 }
 
+bool BreakParagraphByLineSpacing(
+    const chrome_pdf::AccessibilityTextRunInfo& current_run,
+    const chrome_pdf::AccessibilityTextRunInfo& next_run,
+    float paragraph_spacing_threshold) {
+
+  float line_spacing = fabsf(next_run.bounds.y() - current_run.bounds.y());
+  if (paragraph_spacing_threshold > 0) {
+    return line_spacing > paragraph_spacing_threshold;
+  }
+
+  // If there's no threshold, that means there weren't enough lines to compute
+  // an accurate median, so compare against the line size instead.
+  return line_spacing >
+         kParagraphLineSpacingRatio * current_run.bounds.height();
+}
+
 bool BreakParagraph(uint32_t text_run_index,
                     const ui::AXNodeData* block_node,
                     HeadingClassifier heading_classifier,
@@ -920,15 +936,9 @@ bool BreakParagraph(uint32_t text_run_index,
   // Use line spacing to determine where to break body text.
   if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled() ||
       heading_classifier == HeadingClassifier::kNone) {
-    float line_spacing = fabsf(next_run.bounds.y() - current_run.bounds.y());
-    if (page_properties.paragraph_spacing_threshold > 0) {
-      return line_spacing > page_properties.paragraph_spacing_threshold;
-    }
-
-    // If there's no threshold, that means there weren't enough lines to compute
-    // an accurate median, so compare against the line size instead.
-    return line_spacing >
-           kParagraphLineSpacingRatio * current_run.bounds.height();
+    return BreakParagraphByLineSpacing(
+        current_run, next_run,
+        page_properties.paragraph_spacing_threshold);
   }
 
   // Always break headings at style changes.
