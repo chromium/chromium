@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -671,6 +672,95 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(nav_observer.last_initiator_origin().has_value());
   EXPECT_EQ(url::Origin::Create(web_page_url),
             nav_observer.last_initiator_origin().value());
+}
+
+// Tests that a service worker for a web origin cannot fetch non-web-accessible
+// resources of a Chrome extension, but can successfully fetch web-accessible
+// resources in both `cors` and `no-cors` modes. We expect that attempting to
+// fetch a web-accessible resource succeeds, while attempting to fetch a
+// non-web-accessible resource rejects with an error.
+// Regression test for https://crbug.com/40092886.
+IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
+                       WebServiceWorkerFetch_WebAccessibleVsInaccessible) {
+  // Load the test extension with both web-accessible and private resources.
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("extension_resource_request_policy")
+          .AppendASCII("some_accessible"));
+  ASSERT_TRUE(extension);
+
+  const GURL public_url = extension->GetResourceURL("public.html");
+  const GURL private_url = extension->GetResourceURL("private.html");
+
+  // Navigate to the web page that registers the web service worker.
+  const GURL web_page_url = embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html");
+  content::WebContents* web_contents = GetActiveWebContents();
+  {
+    SCOPED_TRACE("Waiting for initial navigation to service worker test page");
+    ASSERT_TRUE(NavigateToURL(web_contents, web_page_url));
+  }
+
+  // Register the service worker on the web origin.
+  ASSERT_EQ("DONE",
+            content::EvalJs(web_contents, "register('fetch_worker.js');"));
+
+  // Reload the page to ensure it is controlled by the registered service
+  // worker.
+  {
+    SCOPED_TRACE("Waiting for reload to establish service worker controller");
+    ASSERT_TRUE(NavigateToURL(web_contents, web_page_url));
+  }
+  ASSERT_EQ(true, content::EvalJs(web_contents,
+                                  "!!navigator.serviceWorker.controller"));
+
+  // Message template for requesting the service worker to fetch a URL with a
+  // given request mode and report back the result via a dedicated
+  // `MessageChannel`.
+  const char kFetchScriptTemplate[] = R"(
+    new Promise((resolve) => {
+      const channel = new MessageChannel();
+      channel.port1.onmessage = (event) => {
+        resolve(event.data);
+      };
+      navigator.serviceWorker.controller.postMessage({
+        command: 'fetch',
+        url: $1,
+        mode: $2
+      }, [channel.port2]);
+    });
+  )";
+
+  // Helper lambda to trigger a fetch from the service worker via
+  // `content::EvalJs`.
+  auto fetch_from_service_worker = [&](const GURL& url, const char* mode) {
+    return content::EvalJs(web_contents,
+                           content::JsReplace(kFetchScriptTemplate, url, mode));
+  };
+
+  base::DictValue expected_success;
+  expected_success.Set("status", "SUCCESS");
+
+  base::DictValue expected_failure;
+  expected_failure.Set("status", "FAILURE");
+  expected_failure.Set("error", "TypeError: Failed to fetch");
+
+  // Verify that fetching `public.html` from the web service worker succeeds
+  // in both `cors` and `no-cors` modes.
+  EXPECT_EQ(
+      expected_success,
+      fetch_from_service_worker(public_url, /*mode=*/"cors").ExtractDict());
+  EXPECT_EQ(
+      expected_success,
+      fetch_from_service_worker(public_url, /*mode=*/"no-cors").ExtractDict());
+
+  // Verify that fetching `private.html` from the web service worker fails
+  // with a fetch error in both `cors` and `no-cors` modes.
+  EXPECT_EQ(
+      expected_failure,
+      fetch_from_service_worker(private_url, /*mode=*/"cors").ExtractDict());
+  EXPECT_EQ(
+      expected_failure,
+      fetch_from_service_worker(private_url, /*mode=*/"no-cors").ExtractDict());
 }
 
 // Tests that a page can't use history.back() on another page to navigate to a
