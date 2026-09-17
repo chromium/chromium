@@ -367,13 +367,14 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
 
   const auto* provider = ChromeLayoutProvider::Get();
 
-  const bool use_expanded_height =
-      action_item->GetActionId() == kActionZoomSubmenu;
+  const auto item_height =
+      action_item->GetProperty(AppMenuActionItem::kItemHeightKey);
 
   const int vertical_padding =
       (provider->GetDistanceMetric(
-           use_expanded_height ? DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT
-                               : DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT) -
+           item_height == AppMenuActionItem::ItemHeight::kExpanded
+               ? DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT
+               : DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT) -
        provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE)) /
       2;
 

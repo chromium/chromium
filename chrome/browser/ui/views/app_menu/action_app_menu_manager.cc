@@ -541,7 +541,8 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
                       .AddAction(kActionZoomPlus)
                       .AddAction(kActionFullscreen);
                 },
-                {.display_type = DisplayType::kCustom})
+                {.display_type = DisplayType::kCustom,
+                 .item_height = AppMenuActionItem::ItemHeight::kExpanded})
             .AddDivider(ui::MenuSeparatorType::SPACING_SEPARATOR)
             .AddAction(kActionPrint);
 

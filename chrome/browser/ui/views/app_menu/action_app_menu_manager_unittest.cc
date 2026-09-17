@@ -446,4 +446,18 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderUpgradeNotification) {
 }
 #endif
 
+TEST_F(ActionAppMenuManagerTest, ZoomSubmenuHasExpandedHeightProperty) {
+  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  actions::ActionItem* zoom_action =
+      actions::ActionManager::Get().FindAction(kActionZoomSubmenu, root);
+  ASSERT_NE(zoom_action, nullptr);
+  EXPECT_EQ(zoom_action->GetProperty(AppMenuActionItem::kItemHeightKey),
+            AppMenuActionItem::ItemHeight::kExpanded);
+}
+
 }  // namespace

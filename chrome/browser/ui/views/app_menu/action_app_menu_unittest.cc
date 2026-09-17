@@ -1620,4 +1620,39 @@ TEST_F(ActionAppMenuTest, UpgradeNotificationHiddenWhenInvisible) {
 }
 #endif
 
+TEST_F(ActionAppMenuTest, MenuItemVerticalMarginExpandedHeight) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  const auto* provider = ChromeLayoutProvider::Get();
+  const int expected_normal_margin =
+      (provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT) -
+       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE)) /
+      2;
+  const int expected_expanded_margin =
+      (provider->GetDistanceMetric(
+           DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT) -
+       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE)) /
+      2;
+
+  views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
+  ASSERT_TRUE(zoom_item);
+  EXPECT_EQ(zoom_item->GetTopMargin(), expected_expanded_margin);
+  EXPECT_EQ(zoom_item->GetBottomMargin(), expected_expanded_margin);
+
+  views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);
+  ASSERT_TRUE(print_item);
+  EXPECT_EQ(print_item->GetTopMargin(), expected_normal_margin);
+  EXPECT_EQ(print_item->GetBottomMargin(), expected_normal_margin);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 }  // namespace
