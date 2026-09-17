@@ -178,9 +178,11 @@ public class ImmersiveVideoPlayerCoordinator {
                                 XrSurfaceEntityStereoMode.MONO)
                         .with(
                                 ImmersiveVideoPlayerProperties.SHAPE,
-                                // TODO(crbug.com/550356627): Switch back to the QUAD shape once
-                                // updated to the latest SceneCore version.
-                                XrSurfaceEntityShape.ROUNDED_QUAD)
+                                // Native QUAD shape is used here as the default. Custom shapes
+                                // (such as custom meshes with synthetic colliders) should not be
+                                // used as default here to avoid creating custom mesh holders and
+                                // synthetic colliders before the actual video shape is applied.
+                                XrSurfaceEntityShape.QUAD)
                         .build();
 
         mMediator = new ImmersiveVideoPlayerMediator(mModel);
@@ -350,6 +352,6 @@ public class ImmersiveVideoPlayerCoordinator {
                 windowAndroid,
                 new ThinWebViewConstraints(),
                 sessionManager,
-                XrSurfaceEntityShape.ROUNDED_QUAD);
+                mModel.get(ImmersiveVideoPlayerProperties.SHAPE));
     }
 }
