@@ -26,8 +26,13 @@ struct GrContextOptions;
 class GrDirectContext;
 class GrVkSecondaryCBDrawContext;
 
+namespace skgpu::graphite {
+struct ContextOptions;
+}  // namespace skgpu::graphite
+
 namespace gpu {
 
+class GraphiteSharedContext;
 class VulkanDeviceQueue;
 class VulkanImplementation;
 
@@ -36,9 +41,12 @@ class GPU_GLES2_EXPORT VulkanContextProvider
     : public base::RefCountedThreadSafe<VulkanContextProvider> {
  public:
   virtual bool InitializeGrContext(const GrContextOptions& context_options) = 0;
+  virtual bool InitializeGraphiteContext(
+      const skgpu::graphite::ContextOptions& options) = 0;
   virtual VulkanImplementation* GetVulkanImplementation() = 0;
   virtual VulkanDeviceQueue* GetDeviceQueue() = 0;
   virtual GrDirectContext* GetGrContext() = 0;
+  virtual GraphiteSharedContext* GetGraphiteContext() = 0;
 
   // Get the current SecondaryCBDrawContext for the default render target.
   virtual GrVkSecondaryCBDrawContext* GetGrSecondaryCBDrawContext() = 0;

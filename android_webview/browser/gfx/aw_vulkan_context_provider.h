@@ -78,9 +78,12 @@ class AwVulkanContextProvider final : public gpu::VulkanContextProvider {
 
   // gpu::VulkanContextProvider implementation:
   bool InitializeGrContext(const GrContextOptions& context_options) override;
+  bool InitializeGraphiteContext(
+      const skgpu::graphite::ContextOptions& options) override;
   gpu::VulkanImplementation* GetVulkanImplementation() override;
   gpu::VulkanDeviceQueue* GetDeviceQueue() override;
   GrDirectContext* GetGrContext() override;
+  gpu::GraphiteSharedContext* GetGraphiteContext() override;
   GrVkSecondaryCBDrawContext* GetGrSecondaryCBDrawContext() override;
   void EnqueueSecondaryCBSemaphores(
       std::vector<VkSemaphore> semaphores) override;
