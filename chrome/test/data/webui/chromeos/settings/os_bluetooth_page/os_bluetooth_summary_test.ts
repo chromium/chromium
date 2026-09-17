@@ -6,7 +6,7 @@ import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
 import type {CrToggleElement, IronIconElement, SettingsBluetoothSummaryElement} from 'chrome://os-settings/os_settings.js';
-import {OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {setHidPreservingControllerForTesting} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -19,13 +19,10 @@ import {FakeHidPreservingBluetoothStateController} from 'chrome://webui-test/chr
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {TestOsBluetoothDevicesSubpageBrowserProxy} from './test_os_bluetooth_subpage_browser_proxy.js';
-
 suite('<os-settings-bluetooth-summary>', () => {
   let bluetoothConfig: FakeBluetoothConfig;
   let bluetoothSummary: SettingsBluetoothSummaryElement;
   let propertiesObserver: SystemPropertiesObserverInterface;
-  let browserProxy: TestOsBluetoothDevicesSubpageBrowserProxy;
   let hidPreservingController: FakeHidPreservingBluetoothStateController;
 
   setup(() => {
@@ -35,7 +32,6 @@ suite('<os-settings-bluetooth-summary>', () => {
 
   teardown(() => {
     bluetoothSummary.remove();
-    browserProxy.reset();
     Router.getInstance().resetRouteForTesting();
   });
 
@@ -44,9 +40,6 @@ suite('<os-settings-bluetooth-summary>', () => {
     hidPreservingController.setBluetoothConfigForTesting(bluetoothConfig);
     setHidPreservingControllerForTesting(hidPreservingController);
 
-    browserProxy = new TestOsBluetoothDevicesSubpageBrowserProxy();
-    OsBluetoothDevicesSubpageBrowserProxyImpl.setInstanceForTesting(
-        browserProxy);
     bluetoothSummary = document.createElement('os-settings-bluetooth-summary');
     document.body.appendChild(bluetoothSummary);
     flush();
@@ -198,7 +191,6 @@ suite('<os-settings-bluetooth-summary>', () => {
     await init();
     bluetoothConfig.setSystemState(BluetoothSystemState.kDisabled);
     await flushTasks();
-    assertEquals(0, browserProxy.getShowBluetoothRevampHatsSurveyCount());
 
     const getPairNewDeviceBtn = () =>
         bluetoothSummary.shadowRoot!.querySelector('#pairNewDeviceBtn');
@@ -217,9 +209,6 @@ suite('<os-settings-bluetooth-summary>', () => {
 
     // Toggle should be on since systemState is enabling.
     assertTrue(enableBluetoothToggle.checked);
-    assertEquals(
-        1, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
-        'Count failed to increase');
 
     // Mock operation failing.
     bluetoothConfig.completeSetBluetoothEnabledState(/*success=*/ false);
@@ -227,9 +216,6 @@ suite('<os-settings-bluetooth-summary>', () => {
 
     // Toggle should be off again.
     assertFalse(enableBluetoothToggle.checked);
-    assertEquals(
-        1, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
-        'Count failed to remain the same');
     assertNull(getPairNewDeviceBtn());
 
     // Click again.
@@ -238,9 +224,6 @@ suite('<os-settings-bluetooth-summary>', () => {
 
     // Toggle should be on since systemState is enabling.
     assertTrue(enableBluetoothToggle.checked);
-    assertEquals(
-        2, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
-        'Count failed to increase');
     assertNull(getPairNewDeviceBtn());
 
     // Mock operation success.
@@ -249,9 +232,6 @@ suite('<os-settings-bluetooth-summary>', () => {
 
     // Toggle should still be on.
     assertTrue(enableBluetoothToggle.checked);
-    assertEquals(
-        2, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
-        'Count failed to remain the same');
     assertTrue(!!getPairNewDeviceBtn());
 
     // Mock systemState becoming unavailable.
@@ -259,9 +239,6 @@ suite('<os-settings-bluetooth-summary>', () => {
     await flushTasks();
     assertTrue(enableBluetoothToggle.disabled);
     assertFalse(enableBluetoothToggle.checked);
-    assertEquals(
-        2, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
-        'Count failed to remain the same');
   });
 
   test('UI states test', async () => {
@@ -430,14 +407,5 @@ suite('<os-settings-bluetooth-summary>', () => {
         bluetoothSummary.i18n(
             'bluetoothPrimaryUserControlled', primaryUserEmail),
         bluetoothSummarySecondaryText.textContent?.trim());
-  });
-
-  test('Route to summary page', async () => {
-    await init();
-    assertEquals(0, browserProxy.getShowBluetoothRevampHatsSurveyCount());
-    Router.getInstance().navigateTo(routes.BLUETOOTH);
-    assertEquals(
-        1, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
-        'Count failed to increase');
   });
 });

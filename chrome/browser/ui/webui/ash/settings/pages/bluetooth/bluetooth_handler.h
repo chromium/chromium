@@ -33,8 +33,6 @@ class BluetoothHandler : public content::WebUIMessageHandler {
 
   void HandleRequestFastPairDeviceSupport(const base::ListValue& args);
 
-  void HandleShowBluetoothRevampHatsSurvey(const base::ListValue& args);
-
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::WeakPtrFactory<BluetoothHandler> weak_ptr_factory_{this};
 };

@@ -31,8 +31,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 
-import type {OsBluetoothDevicesSubpageBrowserProxy} from './os_bluetooth_devices_subpage_browser_proxy.js';
-import {OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
 import {getTemplate} from './os_bluetooth_page.html.js';
 
 const SettingsBluetoothPageElementBase = PrefsMixin(I18nMixin(PolymerElement));
@@ -70,7 +68,6 @@ export class SettingsBluetoothPageElement extends
     };
   }
 
-  private browserProxy_: OsBluetoothDevicesSubpageBrowserProxy;
   declare private section_: Section;
   declare private showSavedDevicesLoadingIndicators_: boolean;
   declare private shouldShowPairingDialog_: boolean;
@@ -82,8 +79,6 @@ export class SettingsBluetoothPageElement extends
 
     this.systemPropertiesObserverReceiver_ =
         new SystemPropertiesObserverReceiver(this);
-    this.browserProxy_ =
-        OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
   }
 
   override connectedCallback(): void {
@@ -101,7 +96,6 @@ export class SettingsBluetoothPageElement extends
 
   private onStartPairing_(): void {
     this.shouldShowPairingDialog_ = true;
-    this.browserProxy_.showBluetoothRevampHatsSurvey();
   }
 
   private onClosePairingDialog_(): void {

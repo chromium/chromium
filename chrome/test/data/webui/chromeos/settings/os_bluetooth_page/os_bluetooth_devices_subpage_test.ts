@@ -79,12 +79,8 @@ suite('<os-settings-bluetooth-devices-subpage>', () => {
   }
 
   test('Base Test', async () => {
-    assertEquals(0, browserProxy.getShowBluetoothRevampHatsSurveyCount());
     await init();
     assertTrue(!!bluetoothDevicesSubpage);
-    assertEquals(
-        1, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
-        'Count failed to increase');
   });
 
   test('Only show saved devices link row when flag is true', async () => {

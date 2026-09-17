@@ -330,10 +330,6 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("enableFastPairFlag", features::IsFastPairEnabled());
   html_source->AddBoolean("enableSavedDevicesFlag",
                           features::IsFastPairSavedDevicesEnabled());
-  html_source->AddBoolean(
-      "bluetoothRevampHatsSurveyFlag",
-      base::FeatureList::IsEnabled(
-          ash::features::kHappinessTrackingSystemBluetoothRevamp));
   bluetooth::AddLoadTimeData(html_source);
 }
 

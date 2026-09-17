@@ -15,7 +15,6 @@ export class TestOsBluetoothDevicesSubpageBrowserProxy extends TestBrowserProxy
   optInStatus = FastPairSavedDevicesOptInStatus.STATUS_OPTED_IN;
   private isBatterySaverActive_: boolean = false;
   private isHardwareOffloadingSupported_: boolean = true;
-  private showBluetoothRevampHatsSurveyCount_ = 0;
   constructor() {
     super([
       'deleteFastPairSavedDevice',
@@ -77,17 +76,5 @@ export class TestOsBluetoothDevicesSubpageBrowserProxy extends TestBrowserProxy
     webUIListenerCallback(
         'fast-pair-software-scanning-hardware-offloading-status',
         this.isHardwareOffloadingSupported_);
-  }
-
-  showBluetoothRevampHatsSurvey(): void {
-    this.showBluetoothRevampHatsSurveyCount_++;
-  }
-
-  /**
-   * Returns the number of times showBluetoothRevampHatsSurvey()
-   * was called.
-   */
-  getShowBluetoothRevampHatsSurveyCount(): number {
-    return this.showBluetoothRevampHatsSurveyCount_;
   }
 }

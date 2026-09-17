@@ -147,7 +147,6 @@ export class SettingsBluetoothDevicesSubpageElement extends
     }
     recordBluetoothUiSurfaceMetrics(
         BluetoothUiSurface.SETTINGS_DEVICE_LIST_SUBPAGE);
-    this.browserProxy_.showBluetoothRevampHatsSurvey();
 
     this.attemptDeepLink();
 

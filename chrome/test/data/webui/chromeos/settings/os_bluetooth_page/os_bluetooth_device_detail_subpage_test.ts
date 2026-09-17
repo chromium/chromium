@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import type {OsSettingsSubpageElement, SettingsBluetoothDeviceDetailSubpageElement, SettingsBluetoothTrueWirelessImagesElement} from 'chrome://os-settings/lazy_load.js';
 import type {CrLinkRowElement} from 'chrome://os-settings/os_settings.js';
-import {OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {BluetoothSystemProperties, DeviceBatteryInfo, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
@@ -17,13 +17,10 @@ import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://webui-
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {TestOsBluetoothDevicesSubpageBrowserProxy} from './test_os_bluetooth_subpage_browser_proxy.js';
-
 suite('<os-settings-bluetooth-device-detail-subpage>', () => {
   let bluetoothConfig: FakeBluetoothConfig;
   let bluetoothDeviceDetailPage: SettingsBluetoothDeviceDetailSubpageElement;
   let propertiesObserver: SystemPropertiesObserverInterface;
-  let browserProxy: TestOsBluetoothDevicesSubpageBrowserProxy;
 
   setup(() => {
     bluetoothConfig = new FakeBluetoothConfig();
@@ -31,10 +28,6 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
   });
 
   function init(): void {
-    browserProxy = new TestOsBluetoothDevicesSubpageBrowserProxy();
-    OsBluetoothDevicesSubpageBrowserProxyImpl.setInstanceForTesting(
-        browserProxy);
-
     bluetoothDeviceDetailPage =
         document.createElement('os-settings-bluetooth-device-detail-subpage');
     document.body.appendChild(bluetoothDeviceDetailPage);
@@ -54,7 +47,6 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
 
   teardown(() => {
     bluetoothDeviceDetailPage.remove();
-    browserProxy.reset();
     Router.getInstance().resetRouteForTesting();
   });
 
@@ -901,14 +893,5 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     // Device and device Id should be null after navigating backward.
     assertNull(bluetoothDeviceDetailPage.getDeviceForTest());
     assertEquals('', bluetoothDeviceDetailPage.getDeviceIdForTest());
-  });
-
-  test('Route to device details page', () => {
-    init();
-    assertEquals(0, browserProxy.getShowBluetoothRevampHatsSurveyCount());
-    navigateToDeviceDetailPage('id');
-    assertEquals(
-        1, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
-        'Count failed to increase');
   });
 });

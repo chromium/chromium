@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/bluetooth/bluetooth_handler.h"
 
-#include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/ash/quick_pair/fast_pair_support_utils.h"
@@ -18,7 +17,6 @@ namespace {
 
 const char kRequestFastPairDeviceSupport[] =
     "requestFastPairDeviceSupportStatus";
-const char kShowBluetoothRevampHatsSurvey[] = "showBluetoothRevampHatsSurvey";
 
 }  // namespace
 
@@ -35,12 +33,6 @@ void BluetoothHandler::RegisterMessages() {
       kRequestFastPairDeviceSupport,
       base::BindRepeating(&BluetoothHandler::HandleRequestFastPairDeviceSupport,
                           base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      kShowBluetoothRevampHatsSurvey,
-      base::BindRepeating(
-          &BluetoothHandler::HandleShowBluetoothRevampHatsSurvey,
-          base::Unretained(this)));
 }
 
 void BluetoothHandler::OnJavascriptAllowed() {}
@@ -59,15 +51,6 @@ void BluetoothHandler::HandleRequestFastPairDeviceSupport(
 
   base::Value is_supported(quick_pair::IsFastPairSupported(bluetooth_adapter_));
   FireWebUIListener("fast-pair-device-supported-status", is_supported);
-}
-
-void BluetoothHandler::HandleShowBluetoothRevampHatsSurvey(
-    const base::ListValue& args) {
-  AllowJavascript();
-
-  if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
-    hats_bluetooth_revamp_trigger->TryToShowSurvey();
-  }
 }
 
 }  // namespace ash::settings

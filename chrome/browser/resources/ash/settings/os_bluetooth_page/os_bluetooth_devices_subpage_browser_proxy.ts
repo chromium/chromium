@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-
 export interface OsBluetoothDevicesSubpageBrowserProxy {
   /**
    * Invokes the removal of a Fast Pair device by the account key
@@ -34,12 +32,6 @@ export interface OsBluetoothDevicesSubpageBrowserProxy {
    * ability to offload scanning and packet-filtering onto the hardware.
    */
   requestHardwareOffloadingSupportStatus(): void;
-
-  /**
-   * Triggers Bluetooth revamp Hats survey. If user is selected Hats survey
-   * would be shown after a 5 minute delay
-   */
-  showBluetoothRevampHatsSurvey(): void;
 }
 
 let instance: OsBluetoothDevicesSubpageBrowserProxy|null = null;
@@ -74,11 +66,5 @@ export class OsBluetoothDevicesSubpageBrowserProxyImpl implements
 
   requestHardwareOffloadingSupportStatus(): void {
     chrome.send('requestHardwareOffloadingSupportStatus');
-  }
-
-  showBluetoothRevampHatsSurvey(): void {
-    if (loadTimeData.getBoolean('bluetoothRevampHatsSurveyFlag')) {
-      chrome.send('showBluetoothRevampHatsSurvey');
-    }
   }
 }
