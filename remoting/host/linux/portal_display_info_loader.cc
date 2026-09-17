@@ -28,14 +28,27 @@ DesktopDisplayInfo PortalDisplayInfoLoader::GetCurrentDisplayInfo() {
   // the Portal API does not return the display scales or pixel type.
   display_info.set_pixel_type(DesktopDisplayInfo::PixelType::PHYSICAL);
   bool first = true;
-  for (const auto& [id, initial_rect] :
-       stream_manager_->GetActiveStreamInitialRects()) {
+  auto initial_rects = stream_manager_->GetActiveStreamInitialRects();
+  for (const auto& [id, stream] : stream_manager_->GetActiveStreams()) {
+    if (!stream) {
+      continue;
+    }
+    webrtc::DesktopRect rect;
+    auto it = initial_rects.find(id);
+    if (it != initial_rects.end() && it->second) {
+      rect = *it->second;
+    }
+    const auto& res = stream->resolution();
+    if (!res.is_empty()) {
+      rect = webrtc::DesktopRect::MakeOriginSize(rect.top_left(), res);
+    }
     // TODO: crbug.com/445973705 - We just assume that the left-most display is
     // the primary display, which may be wrong.
-    display_info.AddDisplay(
-        DisplayGeometry(id, initial_rect->left(), initial_rect->top(),
-                        initial_rect->width(), initial_rect->height(),
-                        kDefaultDpi, /*bpp=*/32, /*is_default=*/first, ""));
+    display_info.AddDisplay(DisplayGeometry(id, rect.left(), rect.top(),
+                                            rect.width(), rect.height(),
+                                            kDefaultDpi, /*bpp=*/32,
+                                            /*is_default=*/first, ""));
+    first = false;
   }
   return display_info;
 }
