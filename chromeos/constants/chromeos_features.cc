@@ -58,10 +58,6 @@ BASE_FEATURE(kMagicBoostRevampForQuickAnswers,
 // module.
 BASE_FEATURE(kFeatureManagementMahi, base::FEATURE_DISABLED_BY_DEFAULT);
 
-
-// Controls enabling / disabling the orca feature.
-BASE_FEATURE(kOrca, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls enabling / disabling the orca feature for dogfood population.
 BASE_FEATURE(kOrcaDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -199,8 +195,7 @@ bool IsPlatformKeysChangesWave1Enabled() {
 
 bool IsOrcaEnabled() {
   return base::FeatureList::IsEnabled(chromeos::features::kOrcaDogfood) ||
-         (base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
-          base::FeatureList::IsEnabled(kFeatureManagementOrca));
+         base::FeatureList::IsEnabled(kFeatureManagementOrca);
 }
 
 bool ShouldDisableChromeComposeOnChromeOS() {

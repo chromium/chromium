@@ -231,8 +231,7 @@ std::vector<std::string> GetAllowedInputMethodEngines() {
 }  // namespace
 
 bool IsAllowedForUseInDemoMode(std::string_view country_code) {
-  return base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
-         base::FeatureList::IsEnabled(
+  return base::FeatureList::IsEnabled(
              chromeos::features::kFeatureManagementOrca) &&
          IsGenerativeAiAllowedForCountry(country_code);
 }
@@ -240,8 +239,7 @@ bool IsAllowedForUseInDemoMode(std::string_view country_code) {
 bool IsAllowedForUseInNonDemoMode(Profile* profile,
                                   manta::MantaService* manta_service,
                                   std::string_view country_code) {
-  if (!base::FeatureList::IsEnabled(chromeos::features::kOrca) ||
-      !base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           chromeos::features::kFeatureManagementOrca) ||
       !IsGenerativeAiAllowedForCountry(country_code) ||
       (base::FeatureList::IsEnabled(
@@ -342,31 +340,28 @@ EditorOpportunityMode EditorSwitch::GetEditorOpportunityMode() const {
 std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {
   std::vector<EditorBlockedReason> blocked_reasons;
 
-  if (base::FeatureList::IsEnabled(chromeos::features::kOrca)) {
-    if (!IsGenerativeAiAllowedForCountry(context_->active_country_code())) {
-      blocked_reasons.push_back(
-          EditorBlockedReason::kBlockedByUnsupportedRegion);
-    }
+  if (!IsGenerativeAiAllowedForCountry(context_->active_country_code())) {
+    blocked_reasons.push_back(EditorBlockedReason::kBlockedByUnsupportedRegion);
+  }
 
-    if (profile_->GetPrefs()->IsManagedPreference(prefs::kOrcaEnabled) &&
-        !profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled)) {
-      blocked_reasons.push_back(EditorBlockedReason::kBlockedByPolicy);
-    }
+  if (profile_->GetPrefs()->IsManagedPreference(prefs::kOrcaEnabled) &&
+      !profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled)) {
+    blocked_reasons.push_back(EditorBlockedReason::kBlockedByPolicy);
+  }
 
-    if (base::FeatureList::IsEnabled(
-            ash::features::kOrcaUseAccountCapabilities)) {
-      switch (FetchOrcaAccountCapabilityFromMantaService(manta_service_)) {
-        case manta::FeatureSupportStatus::kUnsupported:
-          blocked_reasons.push_back(
-              EditorBlockedReason::kBlockedByUnsupportedCapability);
-          break;
-        case manta::FeatureSupportStatus::kUnknown:
-          blocked_reasons.push_back(
-              EditorBlockedReason::kBlockedByUnknownCapability);
-          break;
-        case manta::FeatureSupportStatus::kSupported:
-          break;
-      }
+  if (base::FeatureList::IsEnabled(
+          ash::features::kOrcaUseAccountCapabilities)) {
+    switch (FetchOrcaAccountCapabilityFromMantaService(manta_service_)) {
+      case manta::FeatureSupportStatus::kUnsupported:
+        blocked_reasons.push_back(
+            EditorBlockedReason::kBlockedByUnsupportedCapability);
+        break;
+      case manta::FeatureSupportStatus::kUnknown:
+        blocked_reasons.push_back(
+            EditorBlockedReason::kBlockedByUnknownCapability);
+        break;
+      case manta::FeatureSupportStatus::kSupported:
+        break;
     }
   }
 

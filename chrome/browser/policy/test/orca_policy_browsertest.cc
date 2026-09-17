@@ -26,8 +26,7 @@ class OrcaPolicyTest : public PolicyTest {
  public:
   OrcaPolicyTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kOrca,
-                              chromeos::features::kFeatureManagementOrca,
+        /*enabled_features=*/{chromeos::features::kFeatureManagementOrca,
                               ash::features::kOrcaForManagedUsers},
         // TODO: b:329215512: Remove the OrcaUseAccountCapabilities from the
         // disable list.

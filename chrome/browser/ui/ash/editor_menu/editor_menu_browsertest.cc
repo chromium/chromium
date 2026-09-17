@@ -121,7 +121,7 @@ class EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest
  public:
   EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kOrca},
+        /*enabled_features=*/{},
         /*disabled_features=*/{ash::features::kLobsterDogfood,
                                chromeos::features::kMagicBoostRevamp});
   }
@@ -392,8 +392,7 @@ class EditorMenuBrowserI18nTest : public EditorMenuBrowserTest {
  public:
   EditorMenuBrowserI18nTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kOrca,
-                              chromeos::features::kFeatureManagementOrca},
+        /*enabled_features=*/{chromeos::features::kFeatureManagementOrca},
         /*disabled_features=*/{ash::features::kLobsterDogfood,
                                chromeos::features::kMagicBoostRevamp});
   }
@@ -467,7 +466,6 @@ class EditorMenuBrowserWithMagicBoostRevampTest : public EditorMenuBrowserTest {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {
-            chromeos::features::kOrca,
             chromeos::features::kFeatureManagementOrca,
             chromeos::features::kMagicBoostRevamp,
         },
