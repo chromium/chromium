@@ -4224,7 +4224,6 @@ crbug.com/366553 external/wpt/svg/text/reftests/text-inline-size-003.svg [ Failu
 crbug.com/366558 external/wpt/svg/text/reftests/text-multiline-001.svg [ Failure ]
 crbug.com/366553 external/wpt/svg/text/reftests/text-inline-size-101.svg [ Failure ]
 crbug.com/626703 external/wpt/clear-site-data/executionContexts.sub.html [ Timeout ]
-crbug.com/626703 external/wpt/content-security-policy/securitypolicyviolation/targeting.html [ Timeout ]
 crbug.com/626703 external/wpt/web-animations/timing-model/timelines/update-and-send-events.html [ Failure ]
 
 

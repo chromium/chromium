@@ -631,7 +631,6 @@ external/wpt/content-security-policy/securitypolicyviolation/securitypolicyviola
 external/wpt/content-security-policy/securitypolicyviolation/securitypolicyviolation-block-cross-origin-image.sub.html [ Failure Pass ]
 external/wpt/content-security-policy/securitypolicyviolation/securitypolicyviolation-block-image-from-script.sub.html [ Failure Pass ]
 external/wpt/content-security-policy/securitypolicyviolation/securitypolicyviolation-block-image.sub.html [ Failure Pass ]
-external/wpt/content-security-policy/securitypolicyviolation/targeting.html [ Failure Pass Timeout ]
 external/wpt/content-security-policy/style-src/inline-style-allowed-while-cloning-objects.sub.html [ Failure Pass ]
 external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Failure Pass Timeout ]
 external/wpt/content-security-policy/webrtc/webrtc-blocked-explicit.html [ Failure Pass ]

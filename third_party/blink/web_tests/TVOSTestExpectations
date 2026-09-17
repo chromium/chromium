@@ -418,7 +418,6 @@ crbug.com/554992299 [ tvOS26-simulator ] external/wpt/content-dpr/content-dpr-va
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/content-security-policy/inheritance/auxiliary-blank-document.html [ Skip Timeout ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/content-security-policy/media-src/media-src-7_1_2.sub.html [ Skip Timeout ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/content-security-policy/reporting-api/reporting-api-works-on-frame-ancestors.https.sub.html [ Failure ]
-crbug.com/554992299 [ tvOS26-simulator ] external/wpt/content-security-policy/securitypolicyviolation/targeting.html [ Skip Timeout ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Skip Timeout ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/content-security-policy/xslt/document-function-blocked.html [ Skip Timeout ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/content-security-policy/xslt/xslt-strict-dynamic-blocked.html [ Skip Timeout ]
