@@ -77,6 +77,7 @@ TEST_F(PrivateInsightsServiceTest, TriggerUploadSkipsPostingTaskWhenNoData) {
   TestingPrefServiceSimple local_state;
   PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
                                  test_shared_url_loader_factory_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
 
   service.TriggerUpload();
   histogram_tester.ExpectUniqueSample(
@@ -109,8 +110,10 @@ TEST_F(PrivateInsightsServiceTest,
   histogram_tester.ExpectTotalCount(kTriggerUploadOutcomeHistogram, 2);
 
   // Wait for task execution to complete.
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !service.is_upload_running_; }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+    return !service.is_upload_running_;
+  }));
   EXPECT_EQ(mock_run_federated_computation_call_count_, 1);
 
   histogram_tester.ExpectTotalCount(kUploadPendingTimeHistogram, 1);
@@ -128,8 +131,10 @@ TEST_F(PrivateInsightsServiceTest,
       PrivateInsightsService::TriggerUploadOutcome::kTaskPosted, 2);
   histogram_tester.ExpectTotalCount(kTriggerUploadOutcomeHistogram, 3);
 
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !service.is_upload_running_; }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+    return !service.is_upload_running_;
+  }));
   EXPECT_EQ(mock_run_federated_computation_call_count_, 2);
   histogram_tester.ExpectUniqueSample(
       kFederatedComputationOutcomeHistogram,
@@ -169,6 +174,7 @@ TEST_F(PrivateInsightsServiceTest, MetricsChoiceCoupling) {
   PrivateInsightsService uninit_service(&local_state,
                                         tmp_profile_dir_.GetPath(),
                                         test_shared_url_loader_factory_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(uninit_service.sequence_checker_);
   EXPECT_FALSE(uninit_service.upload_timer_.IsRunning());
   local_state.SetBoolean(metrics::prefs::kMetricsReportingEnabled, true);
   EXPECT_FALSE(uninit_service.upload_timer_.IsRunning());
@@ -178,6 +184,7 @@ TEST_F(PrivateInsightsServiceTest, MetricsChoiceCoupling) {
   // When Init() IS called, UMA choice changes should start/stop the service.
   PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
                                  test_shared_url_loader_factory_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
   service.Init();
   EXPECT_FALSE(service.upload_timer_.IsRunning());
 
@@ -205,6 +212,7 @@ TEST_F(PrivateInsightsServiceTest, MetricsChoiceRespectedOnStartup) {
 
     PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
                                    test_shared_url_loader_factory_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
     EXPECT_FALSE(service.upload_timer_.IsRunning());
 
     service.Init();
@@ -219,6 +227,7 @@ TEST_F(PrivateInsightsServiceTest, MetricsChoiceRespectedOnStartup) {
 
     PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
                                    test_shared_url_loader_factory_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
     EXPECT_FALSE(service.upload_timer_.IsRunning());
 
     service.Init();
@@ -244,8 +253,10 @@ TEST_F(PrivateInsightsServiceTest, UploadSkippedWhenServerUriEmpty) {
 
   service.TriggerUpload();
 
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !service.is_upload_running_; }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+    return !service.is_upload_running_;
+  }));
   EXPECT_EQ(mock_run_federated_computation_call_count_, 0);
 
   histogram_tester.ExpectTotalCount(kUploadPendingTimeHistogram, 1);
@@ -272,8 +283,10 @@ TEST_F(PrivateInsightsServiceTest, PopulationNameFinchParam) {
   service.LogContextualCueEvent(event);
 
   service.TriggerUpload();
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !service.is_upload_running_; }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+    return !service.is_upload_running_;
+  }));
   EXPECT_EQ(mock_run_federated_computation_call_count_, 1);
   EXPECT_EQ(GetLastPopulationName(), "custom_population_name");
 }
@@ -525,8 +538,10 @@ TEST_P(PrivateInsightsServiceTriggerUploadTest, HandleEvents) {
   event2.set_cue_id("cue_2");
   service.LogContextualCueEvent(event2);
 
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !service.is_upload_running_; }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+    return !service.is_upload_running_;
+  }));
 
   // Verify federated computation received the queued event.
   EXPECT_EQ(captured_query_result->stats().output_rows_count(), 1);

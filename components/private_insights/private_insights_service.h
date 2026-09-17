@@ -176,14 +176,16 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
       const base::circular_deque<ContextualCueEventEntry>& events,
       fcp::client::ExampleQueryResult* query_result);
 
-  raw_ptr<PrefService> local_state_ = nullptr;
-  base::FilePath profile_dir_;
-  PrefChangeRegistrar pref_registrar_;
+  raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      nullptr;
+  base::FilePath profile_dir_ GUARDED_BY_CONTEXT(sequence_checker_);
+  PrefChangeRegistrar pref_registrar_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  bool is_upload_running_ = false;
-  base::RepeatingTimer upload_timer_;
+  bool is_upload_running_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  base::RepeatingTimer upload_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  scoped_refptr<FcpSimpleTaskEnvironment> fcp_task_env_;
+  scoped_refptr<FcpSimpleTaskEnvironment> fcp_task_env_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::circular_deque<ContextualCueEventEntry> contextual_cue_events_
       GUARDED_BY_CONTEXT(sequence_checker_);
