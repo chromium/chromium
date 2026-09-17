@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/graphite_shared_context.h"
 
+#include "base/test/test_future.h"
 #include "base/threading/thread.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/command_buffer/service/skia_utils.h"
@@ -285,6 +286,42 @@ TEST_P(GraphiteSharedContextTest, MaxPendingRecordings) {
 
     EXPECT_TRUE(graphite_shared_context_->insertRecording(info));
   }
+}
+
+// Test that async read pixels callbacks are skipped when the context is lost.
+TEST_P(GraphiteSharedContextTest, ReadPixelsContextLost) {
+  auto recorder = graphite_shared_context_->makeRecorder();
+  EXPECT_TRUE(recorder);
+
+  auto ii = SkImageInfo::Make(64, 64, kN32_SkColorType, kPremul_SkAlphaType);
+  auto surface = SkSurfaces::RenderTarget(recorder.get(), ii);
+  surface->getCanvas()->clear(SK_ColorRED);
+
+  auto recording = recorder->snap();
+  EXPECT_TRUE(recording);
+
+  skgpu::graphite::InsertRecordingInfo info = {};
+  info.fRecording = recording.get();
+  EXPECT_TRUE(graphite_shared_context_->insertRecording(info));
+
+  base::test::TestFuture<void*,
+                         std::unique_ptr<const SkSurface::AsyncReadResult>>
+      readback_future;
+
+  // When context is not lost, the callback should be invoked.
+  EXPECT_CALL(delegate_, IsContextLost()).WillOnce(testing::Return(false));
+  EXPECT_TRUE(graphite_shared_context_->asyncRescaleAndReadPixelsAndSubmit(
+      surface.get(), ii, SkIRect::MakeWH(64, 64), SkImage::RescaleGamma::kSrc,
+      SkImage::RescaleMode::kNearest, readback_future.GetCallback(), nullptr));
+  EXPECT_TRUE(readback_future.IsReady());
+
+  // When context is lost, the callback should not be invoked.
+  readback_future.Clear();
+  EXPECT_CALL(delegate_, IsContextLost()).WillOnce(testing::Return(true));
+  EXPECT_TRUE(graphite_shared_context_->asyncRescaleAndReadPixelsAndSubmit(
+      surface.get(), ii, SkIRect::MakeWH(64, 64), SkImage::RescaleGamma::kSrc,
+      SkImage::RescaleMode::kNearest, readback_future.GetCallback(), nullptr));
+  EXPECT_FALSE(readback_future.IsReady());
 }
 
 INSTANTIATE_TEST_SUITE_P(, GraphiteSharedContextTest, testing::Bool());
