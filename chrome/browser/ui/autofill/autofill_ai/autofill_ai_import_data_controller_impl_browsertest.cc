@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/url_constants.h"
@@ -261,6 +262,29 @@ IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
       {.record_type = EntityInstance::RecordType::kServerWallet});
   ShowUi("SaveNewVehicleEntity");
   EXPECT_EQ(controller()->GetLegalMessageLines().size(), 1u);
+  EXPECT_EQ(controller()->GetLegalMessageLines()[0].text(),
+            u"Test legal message");
+  controller()->OnBubbleClosed(
+      AutofillClient::AutofillAiBubbleResult::kAccepted);
+}
+
+// Tests that the public passes notice passed to `AutofillClient` is surfaced
+// in the prompt.
+IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
+                       ShowEntityImportBubble_ForwardsPublicPassesNotice) {
+  ChromeAutofillClient* client =
+      ChromeAutofillClient::FromWebContentsForTesting(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(client);
+
+  client->ShowEntityImportBubble(
+      test::GetVehicleEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet}),
+      /*old_entity=*/std::nullopt, /*save_is_synchronous=*/true,
+      {TestLegalMessageLine("Test legal message")}, base::DoNothing());
+
+  ASSERT_TRUE(controller()->IsShowingBubble());
+  ASSERT_EQ(controller()->GetLegalMessageLines().size(), 1u);
   EXPECT_EQ(controller()->GetLegalMessageLines()[0].text(),
             u"Test legal message");
   controller()->OnBubbleClosed(

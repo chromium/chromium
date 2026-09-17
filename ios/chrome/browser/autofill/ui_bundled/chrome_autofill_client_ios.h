@@ -210,6 +210,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
       EntityInstance new_entity,
       std::optional<EntityInstance> old_entity,
       bool save_is_synchronous,
+      LegalMessageLines public_passes_notice,
       EntityImportPromptResultCallback prompt_result_callback) override;
   void CloseEntityImportBubble() override;
   void ShowAutofillAiLocalSaveNotification() override;

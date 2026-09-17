@@ -301,6 +301,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
       EntityInstance new_entity,
       std::optional<EntityInstance> old_entity,
       bool save_is_synchronous,
+      LegalMessageLines public_passes_notice,
       EntityImportPromptResultCallback prompt_result_callback) final;
   void CloseEntityImportBubble() final;
   void ShowAutofillAiLocalSaveNotification() final;

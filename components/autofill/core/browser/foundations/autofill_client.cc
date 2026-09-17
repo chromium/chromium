@@ -426,6 +426,7 @@ void AutofillClient::ShowEntityImportBubble(
     EntityInstance new_entity,
     std::optional<EntityInstance> old_entity,
     bool save_is_synchronous,
+    LegalMessageLines public_passes_notice,
     EntityImportPromptResultCallback prompt_closed_callback) {}
 
 void AutofillClient::CloseEntityImportBubble() {

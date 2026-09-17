@@ -829,6 +829,7 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
   if (client) {
     client->ShowEntityImportBubble(std::move(entity), std::nullopt,
                                    /*save_is_synchronous=*/true,
+                                   /*public_passes_notice=*/{},
                                    base::DoNothing());
   }
 }

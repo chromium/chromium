@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/studies/hats_surveys_util.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/common/aliases.h"
@@ -876,10 +877,14 @@ class AutofillClient {
   // `save_is_synchronous` indicates whether accepting the prompt requires a
   // (notably) asynchronous operation. The UI can use this information to decide
   // whether to close the prompt upon acceptance.
+  // `public_passes_notice` contains the Wallet legal disclosure messages to
+  // show in the prompt's footer. It is empty if no disclosure is required, or
+  // if fetching the disclosure from the Wallet backend failed.
   virtual void ShowEntityImportBubble(
       EntityInstance new_entity,
       std::optional<EntityInstance> old_entity,
       bool save_is_synchronous,
+      LegalMessageLines public_passes_notice,
       EntityImportPromptResultCallback prompt_result_callback);
 
   // Hides the Autofill AI import bubble if it is currently showing.
