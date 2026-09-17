@@ -171,29 +171,26 @@ enum ItemIdentifier {
 
   id itemIdentifier = [_dataSource itemIdentifierForIndexPath:indexPath];
   if ([itemIdentifier isEqual:@(kManageEnhancedAutofillItem)]) {
-    // TODO(crbug.com/522340351): Update after confirming with UX.
-    [self.atMemoryHandler openAutofillSettings];
+    [self.mutator didSelectManageEnhancedAutofillItem];
   }
 }
 
 #pragma mark - Private
 
 // Creates the diffable data source snapshot with the granular fill section
-// and manage enhanced autofill section.
+// and the manage enhanced autofill section.
 - (void)createNewSnapshot {
   NSDiffableDataSourceSnapshot<NSNumber*, id>* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
 
-  [snapshot appendSectionsWithIdentifiers:@[
-    @(kGranularFillItemsSection),
-    @(kManageSection),
-  ]];
+  [snapshot appendSectionsWithIdentifiers:@[ @(kGranularFillItemsSection) ]];
 
   if (_granularFillItems.count > 0) {
     [snapshot appendItemsWithIdentifiers:_granularFillItems
                intoSectionWithIdentifier:@(kGranularFillItemsSection)];
   }
 
+  [snapshot appendSectionsWithIdentifiers:@[ @(kManageSection) ]];
   [snapshot appendItemsWithIdentifiers:@[ @(kManageEnhancedAutofillItem) ]
              intoSectionWithIdentifier:@(kManageSection)];
 

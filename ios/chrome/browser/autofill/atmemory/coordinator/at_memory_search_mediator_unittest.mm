@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_search_result_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
+#import "ios/chrome/browser/autofill/public/autofill_settings_navigator.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -481,17 +482,18 @@ TEST_F(AtMemorySearchMediatorTest, LogsAcknowledgedMetric) {
 }
 
 // Tests that clicking the settings link logs the "LinkButtonClicked" metric and
-// calls the handler.
+// opens the enhanced autofill settings page.
 TEST_F(AtMemorySearchMediatorTest,
-       LogsSettingsLinkClickedMetricAndCallsHandler) {
+       LogsSettingsLinkClickedMetricAndOpensSettings) {
   first_run_service_.set_should_show_at_memory_notice(true);
-  id mock_handler = OCMProtocolMock(@protocol(AtMemoryCommands));
+  id mock_navigator = OCMProtocolMock(@protocol(AutofillSettingsNavigator));
 
   CreateMediator();
 
-  mediator_.atMemoryHandler = mock_handler;
+  mediator_.settingsNavigator = mock_navigator;
 
-  OCMExpect([mock_handler openAutofillSettings]);
+  OCMExpect([mock_navigator
+      openSettingsForPage:AutofillSettingsPage::kEnhancedAutofill]);
 
   HistogramTester histogram_tester;
 
@@ -501,7 +503,25 @@ TEST_F(AtMemorySearchMediatorTest,
       "PersonalContext.AtMemory.NoticeInteractions",
       AutofillMetrics::PopupNoticeInteractions::kLinkButtonClicked, 1);
 
-  EXPECT_OCMOCK_VERIFY(mock_handler);
+  EXPECT_OCMOCK_VERIFY(mock_navigator);
+}
+
+// Tests that tapping the AI disclosure link opens the "Suggestions from Gemini"
+// settings page.
+TEST_F(AtMemorySearchMediatorTest, TapAIDisclosureLinkOpensSettings) {
+  id mock_navigator = OCMProtocolMock(@protocol(AutofillSettingsNavigator));
+
+  CreateMediator();
+
+  mediator_.settingsNavigator = mock_navigator;
+
+  OCMExpect([mock_navigator
+      openSettingsForPage:AutofillSettingsPage::
+                              kSuggestionsFromGeminiHelpImprove]);
+
+  [mediator_ didTapAIDisclosureLink];
+
+  EXPECT_OCMOCK_VERIFY(mock_navigator);
 }
 
 // Tests that disconnecting without interacting logs the "Dismissed" metric.

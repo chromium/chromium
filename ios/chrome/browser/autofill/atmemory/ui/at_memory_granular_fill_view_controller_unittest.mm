@@ -28,7 +28,7 @@ constexpr NSInteger kTestIndex = 0;
 using AtMemoryGranularFillViewControllerTest = PlatformTest;
 
 // Tests that setting granular fill items updates the table view sections and
-// rows.
+// rows, with the manage enhanced autofill row in its own section.
 TEST_F(AtMemoryGranularFillViewControllerTest, TestSetGranularFillItems) {
   AtMemoryGranularFillViewController* viewController =
       [[AtMemoryGranularFillViewController alloc]

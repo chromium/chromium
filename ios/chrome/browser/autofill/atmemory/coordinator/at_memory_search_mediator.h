@@ -27,6 +27,7 @@ class WebState;
 @protocol AtMemorySearchConsumer;
 @protocol AtMemoryCommands;
 @protocol AtMemorySearchResultCommands;
+@protocol AutofillSettingsNavigator;
 
 // Mediator for AtMemory search feature page.
 @interface AtMemorySearchMediator : NSObject <AtMemorySearchMutator>
@@ -39,6 +40,9 @@ class WebState;
 
 // Handler for AtMemory commands.
 @property(nonatomic, weak) id<AtMemoryCommands> atMemoryHandler;
+
+// Navigator used to open the Autofill settings pages.
+@property(nonatomic, weak) id<AutofillSettingsNavigator> settingsNavigator;
 
 // The consumer for this mediator.
 @property(nonatomic, weak) id<AtMemorySearchConsumer> consumer;

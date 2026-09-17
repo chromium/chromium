@@ -302,7 +302,7 @@ enum class ItemIdentifier {
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   if (URL.gurl == GURL(kAIDisclosureURL)) {
-    [self.atMemoryHandler openManageEnhancedAutofillDetails];
+    [self.mutator didTapAIDisclosureLink];
   }
 }
 

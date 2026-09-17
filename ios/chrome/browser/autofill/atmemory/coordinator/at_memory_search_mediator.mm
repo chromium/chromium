@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_search_result_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
+#import "ios/chrome/browser/autofill/public/autofill_settings_navigator.h"
 #import "ios/web/public/web_state.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
 #import "url/origin.h"
@@ -146,6 +147,7 @@ constexpr std::string_view kNoticeInteractionsHistogram =
   _suggestions.clear();
   _atMemoryHandler = nil;
   _searchResultHandler = nil;
+  _settingsNavigator = nil;
 }
 
 #pragma mark - Consumer
@@ -197,7 +199,8 @@ constexpr std::string_view kNoticeInteractionsHistogram =
   base::UmaHistogramEnumeration(
       kNoticeInteractionsHistogram,
       autofill::AutofillMetrics::PopupNoticeInteractions::kLinkButtonClicked);
-  [self.atMemoryHandler openAutofillSettings];
+  [self.settingsNavigator
+      openSettingsForPage:AutofillSettingsPage::kEnhancedAutofill];
 }
 
 - (void)didSelectSearchResultItem:(AtMemorySearchItem*)item {
@@ -221,6 +224,12 @@ constexpr std::string_view kNoticeInteractionsHistogram =
   }
 
   [self.searchResultHandler showAtMemoryGranularFill:suggestion];
+}
+
+- (void)didTapAIDisclosureLink {
+  [self.settingsNavigator
+      openSettingsForPage:AutofillSettingsPage::
+                              kSuggestionsFromGeminiHelpImprove];
 }
 
 #pragma mark - Private

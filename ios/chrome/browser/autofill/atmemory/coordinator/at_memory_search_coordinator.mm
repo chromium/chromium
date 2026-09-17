@@ -85,6 +85,7 @@
   _mediator.searchResultHandler = self.searchResultHandler;
   _mediator.atMemoryHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), AtMemoryCommands);
+  _mediator.settingsNavigator = self.settingsNavigator;
   _mediator.consumer = _atMemorySearchViewController;
   _atMemorySearchViewController.mutator = _mediator;
 

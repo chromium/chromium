@@ -28,6 +28,9 @@
 // Called when the user taps the info button for the search result at `index`.
 - (void)openGranularFillForSearchResultAtIndex:(NSInteger)index;
 
+// Called when the user taps the AI disclosure link in the footer.
+- (void)didTapAIDisclosureLink;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_UI_AT_MEMORY_SEARCH_MUTATOR_H_

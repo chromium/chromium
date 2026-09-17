@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_granular_fill_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "ios/chrome/browser/autofill/atmemory/coordinator/fake_at_memory_fill_handler.h"
@@ -12,6 +13,8 @@
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_fill_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_consumer.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_item.h"
+#import "ios/chrome/browser/autofill/public/autofill_settings_navigator.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -55,6 +58,8 @@ class AtMemoryGranularFillMediatorTest : public PlatformTest {
     PlatformTest::SetUp();
     mock_consumer_ = OCMProtocolMock(@protocol(AtMemoryGranularFillConsumer));
     mock_at_memory_handler_ = OCMProtocolMock(@protocol(AtMemoryCommands));
+    mock_settings_navigator_ =
+        OCMProtocolMock(@protocol(AutofillSettingsNavigator));
   }
 
   void TearDown() override {
@@ -67,10 +72,12 @@ class AtMemoryGranularFillMediatorTest : public PlatformTest {
         initWithSuggestion:std::move(suggestion)];
     mediator_.consumer = mock_consumer_;
     mediator_.atMemoryHandler = mock_at_memory_handler_;
+    mediator_.settingsNavigator = mock_settings_navigator_;
   }
 
   id mock_consumer_;
   id mock_at_memory_handler_;
+  id mock_settings_navigator_;
   AtMemoryGranularFillMediator* mediator_;
 };
 
@@ -123,4 +130,39 @@ TEST_F(AtMemoryGranularFillMediatorTest,
   [mediator_ didSelectGranularFillItem:item];
 
   EXPECT_OCMOCK_VERIFY(mock_at_memory_handler_);
+}
+
+// Tests that selecting the manage enhanced autofill item opens the settings
+// page matching the suggestion's memory data type.
+TEST_F(AtMemoryGranularFillMediatorTest,
+       SelectManageEnhancedAutofillItemOpensSettings) {
+  base::test::ScopedFeatureList feature_list(kYourSavedInfoSettingsPageIos);
+
+  CreateMediator(CreateTestSuggestionWithChildren());
+
+  OCMExpect([mock_settings_navigator_
+      openSettingsForPage:AutofillSettingsPage::kIdentityDocs]);
+
+  [mediator_ didSelectManageEnhancedAutofillItem];
+
+  EXPECT_OCMOCK_VERIFY(mock_settings_navigator_);
+}
+
+// Tests that selecting the manage enhanced autofill item falls back to the
+// Enhanced Autofill settings page when the suggestion has no matching page.
+TEST_F(AtMemoryGranularFillMediatorTest,
+       SelectManageEnhancedAutofillItemFallsBackToEnhancedAutofill) {
+  Suggestion suggestion(base::SysNSStringToUTF16(kPassportTitle),
+                        SuggestionType::kAtMemorySearchResult);
+  suggestion.payload = Suggestion::AtMemoryPayload(
+      base::SysNSStringToUTF16(kPassportNumberValue), MemoryDataType::kUnknown);
+
+  CreateMediator(std::move(suggestion));
+
+  OCMExpect([mock_settings_navigator_
+      openSettingsForPage:AutofillSettingsPage::kEnhancedAutofill]);
+
+  [mediator_ didSelectManageEnhancedAutofillItem];
+
+  EXPECT_OCMOCK_VERIFY(mock_settings_navigator_);
 }

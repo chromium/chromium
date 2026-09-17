@@ -13,18 +13,25 @@
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_consumer.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_item.h"
 #import "ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h"
+#import "ios/chrome/browser/autofill/public/autofill_settings_navigator.h"
 
 using autofill::Suggestion;
 
 @implementation AtMemoryGranularFillMediator {
   // Suggestion containing attributes to display.
   std::optional<Suggestion> _suggestion;
+  // Settings page opened by the "Manage enhanced autofill" row. Defaults to
+  // the Enhanced Autofill page when `_suggestion` has no more specific
+  // destination, as the row is always displayed.
+  AutofillSettingsPage _settingsPage;
 }
 
 - (instancetype)initWithSuggestion:(Suggestion&&)suggestion {
   self = [super init];
   if (self) {
     _suggestion = std::move(suggestion);
+    _settingsPage = AutofillSettingsPageForAtMemorySuggestion(*_suggestion)
+                        .value_or(AutofillSettingsPage::kEnhancedAutofill);
   }
   return self;
 }
@@ -54,6 +61,10 @@ using autofill::Suggestion;
   }
 
   [self.fillHandler fillWithSuggestion:_suggestion->children[item.index]];
+}
+
+- (void)didSelectManageEnhancedAutofillItem {
+  [self.settingsNavigator openSettingsForPage:_settingsPage];
 }
 
 @end

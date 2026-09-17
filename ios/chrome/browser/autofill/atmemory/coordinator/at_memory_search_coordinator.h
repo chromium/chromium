@@ -12,6 +12,7 @@
 
 @protocol AtMemoryFillCommands;
 @protocol AtMemorySearchResultCommands;
+@protocol AutofillSettingsNavigator;
 
 // Child coordinator for the AtMemory search UI. Managed by AtMemoryCoordinator,
 // it is the main UI to handle typing, displaying results, showing notices, and
@@ -23,6 +24,9 @@
 
 // Handler for search result commands.
 @property(nonatomic, weak) id<AtMemorySearchResultCommands> searchResultHandler;
+
+// Navigator used to open Autofill settings pages.
+@property(nonatomic, weak) id<AutofillSettingsNavigator> settingsNavigator;
 
 // Initializes the coordinator. `navigationController` is the base navigation
 // controller used to present the search UI. `browser` provides access to

@@ -319,12 +319,13 @@ TEST_F(AtMemorySearchViewControllerTest,
   EXPECT_OCMOCK_VERIFY(mock_mutator);
 }
 
-// Tests that tapping the footer link calls openManageEnhancedAutofillDetails.
+// Tests that tapping the footer link notifies the mutator, and that other URLs
+// are ignored.
 TEST_F(AtMemorySearchViewControllerTest, TestTapsFooterLink) {
-  id atMemoryHandler = OCMProtocolMock(@protocol(AtMemoryCommands));
-  view_controller_.atMemoryHandler = atMemoryHandler;
+  id mock_mutator = OCMProtocolMock(@protocol(AtMemorySearchMutator));
+  view_controller_.mutator = mock_mutator;
 
-  OCMExpect([atMemoryHandler openManageEnhancedAutofillDetails]);
+  OCMExpect([mock_mutator didTapAIDisclosureLink]);
 
   CrURL* mock_url =
       [[CrURL alloc] initWithGURL:GURL("settings://ai_disclosure")];
@@ -332,14 +333,14 @@ TEST_F(AtMemorySearchViewControllerTest, TestTapsFooterLink) {
   [(id<TableViewLinkHeaderFooterItemDelegate>)view_controller_ view:nil
                                                       didTapLinkURL:mock_url];
 
-  OCMReject([atMemoryHandler openManageEnhancedAutofillDetails]);
+  OCMReject([mock_mutator didTapAIDisclosureLink]);
 
   mock_url = [[CrURL alloc] initWithGURL:GURL("settings://incorrect_url")];
   // Cast to id to bypass the static type check for the delegate method.
   [(id<TableViewLinkHeaderFooterItemDelegate>)view_controller_ view:nil
                                                       didTapLinkURL:mock_url];
 
-  EXPECT_OCMOCK_VERIFY(atMemoryHandler);
+  EXPECT_OCMOCK_VERIFY(mock_mutator);
 }
 
 // Tests that search results remain visible when

@@ -7,8 +7,6 @@
 
 #import "components/autofill/core/common/unique_ids.h"
 
-@class CrURL;
-
 @protocol AtMemoryCommands <NSObject>
 
 // Commands the parent coordinator to show the AtMemory UI targeted at the
@@ -17,12 +15,6 @@
 
 // Commands the parent coordinator to dismiss the AtMemory UI.
 - (void)dismissAtMemory;
-
-// Commands the coordinator to open the Autofill & Passwords settings page.
-- (void)openAutofillSettings;
-
-// Opens the details page to manage enhanced autofill settings.
-- (void)openManageEnhancedAutofillDetails;
 
 @end
 

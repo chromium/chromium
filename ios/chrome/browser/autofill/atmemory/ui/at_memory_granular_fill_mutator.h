@@ -15,6 +15,9 @@
 // Called when the user taps to fill `item`.
 - (void)didSelectGranularFillItem:(AtMemoryGranularFillItem*)item;
 
+// Called when the user taps the "Manage Enhanced Autofill" row.
+- (void)didSelectManageEnhancedAutofillItem;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_UI_AT_MEMORY_GRANULAR_FILL_MUTATOR_H_

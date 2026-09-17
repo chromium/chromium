@@ -52,6 +52,7 @@ using autofill::Suggestion;
       self.browser->GetCommandDispatcher(), AtMemoryCommands);
   _mediator.fillHandler = self.fillHandler;
   _mediator.atMemoryHandler = atMemoryHandler;
+  _mediator.settingsNavigator = self.settingsNavigator;
   _atMemoryGranularFillViewController.atMemoryHandler = atMemoryHandler;
   _atMemoryGranularFillViewController.mutator = _mediator;
   _mediator.consumer = _atMemoryGranularFillViewController;
