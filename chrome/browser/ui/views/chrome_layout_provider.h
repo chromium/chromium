@@ -233,6 +233,8 @@ enum ChromeDistanceMetric {
   DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_SPACING,
   // Spacing between child views in a Block-style Action App Menu footer button.
   DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_BETWEEN_CHILD_SPACING,
+  // Spacing for Enterprise Menu in Action App Menu
+  DISTANCE_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER_SPACING,
   // Corner radius for a Block-style Action App Menu footer button.
   DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_CORNER_RADIUS,
   // Vertical margin for section headers in the Action App Menu.

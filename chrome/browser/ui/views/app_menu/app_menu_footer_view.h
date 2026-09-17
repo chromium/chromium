@@ -18,10 +18,11 @@ class ActionItem;
 
 namespace views {
 class ActionViewController;
+class Separator;
 }  // namespace views
 
-// A view containing the footer elements (Settings, Help, Exit buttons) for the
-// ActionAppMenu.
+// A view containing the footer elements (Settings, Help, Exit buttons, and
+// optional managed row) for the ActionAppMenu.
 class AppMenuFooterView : public views::BoxLayoutView {
   METADATA_HEADER(AppMenuFooterView, views::BoxLayoutView)
 
@@ -35,6 +36,23 @@ class AppMenuFooterView : public views::BoxLayoutView {
   AppMenuFooterView(const AppMenuFooterView&) = delete;
   AppMenuFooterView& operator=(const AppMenuFooterView&) = delete;
   ~AppMenuFooterView() override;
+
+  views::BoxLayoutView* top_container_for_testing() { return top_container_; }
+  views::BoxLayoutView* left_container_for_testing() { return left_container_; }
+  views::BoxLayoutView* right_container_for_testing() {
+    return right_container_;
+  }
+  views::BoxLayoutView* bottom_container_for_testing() {
+    return bottom_container_;
+  }
+  views::Separator* separator_for_testing() { return separator_; }
+
+ private:
+  raw_ptr<views::BoxLayoutView> top_container_ = nullptr;
+  raw_ptr<views::BoxLayoutView> left_container_ = nullptr;
+  raw_ptr<views::BoxLayoutView> right_container_ = nullptr;
+  raw_ptr<views::BoxLayoutView> bottom_container_ = nullptr;
+  raw_ptr<views::Separator> separator_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_FOOTER_VIEW_H_

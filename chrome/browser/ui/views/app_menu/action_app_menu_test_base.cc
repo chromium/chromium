@@ -172,6 +172,7 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionFeedback, u"Send Feedback");
   add_action(kActionReportUnsafeSite, u"Report Unsafe Site");
   add_action(kActionExit, u"Exit");
+  add_action(kActionShowManagementPage, u"Managed by your organization");
   add_action(kActionZoomSubmenu, u"Zoom");
   add_action(kActionZoomMinus, u"Zoom Out");
   add_action(kActionZoomPlus, u"Zoom In");

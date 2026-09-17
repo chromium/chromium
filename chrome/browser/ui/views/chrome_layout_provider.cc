@@ -284,6 +284,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 20;
     case DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_SPACING:
       return 12;
+    case DISTANCE_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER_SPACING:
+      return 8;
     case DISTANCE_ACTION_APP_MENU_CONTAINER_MARGIN:
       return 16;
     case DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_BETWEEN_CHILD_SPACING:

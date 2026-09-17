@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
@@ -308,6 +309,8 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
 
   action_view_controller_.CreateActionViewRelationship(
       menu_item, action_item->GetAsWeakPtr());
+
+  command_to_action_map_[command_id] = base_action_item;
   return menu_item;
 }
 
@@ -415,14 +418,10 @@ void ActionAppMenu::PopulateFooter(views::MenuItemView* view_parent,
   footer_item->set_children_use_full_width(true);
   footer_item->set_vertical_margin(0);
 
-  auto footer_view = std::make_unique<AppMenuFooterView>(
+  footer_item->AddChildView(std::make_unique<AppMenuFooterView>(
       footer_action_item, &action_view_controller_, &command_to_action_map_,
       base::BindRepeating(&ActionAppMenu::CancelAndEvaluate,
-                          base::Unretained(this)));
-  footer_view->SetProperty(views::kMarginsKey,
-                           ChromeLayoutProvider::Get()->GetInsetsMetric(
-                               INSETS_ACTION_APP_MENU_FOOTER_MARGIN));
-  footer_item->AddChildView(std::move(footer_view));
+                          base::Unretained(this))));
 }
 
 void ActionAppMenu::PopulateHeader(views::MenuItemView* view_parent,

@@ -29,6 +29,7 @@
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "ui/base/class_property.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -777,5 +778,17 @@ void ActionAppMenuManager::AddFooterActions(actions::ActionItem* root) {
         if (browser_defaults::kShowExitMenuItem) {
           section.AddAction(kActionExit);
         }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+        Profile* profile = browser_window_interface->GetProfile();
+        if (ShouldDisplayManagedUi(profile)) {
+          section.AddAction(
+              kActionShowManagementPage,
+              {.display_type = DisplayType::kRow,
+               .text_override = GetManagedUiMenuItemLabel(profile),
+               .icon_override =
+                   ui::ImageModel::FromVectorIcon(GetManagedUiIcon(profile))});
+        }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
       });
 }

@@ -69,6 +69,11 @@
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/separator.h"
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#endif
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -867,7 +872,8 @@ TEST_F(ActionAppMenuTest, FooterButtonClickExecutesActionAfterMenuClosed) {
   ASSERT_TRUE(footer_view);
 
   // Left container child 0 is kActionOptions (Settings).
-  views::View* left_container = footer_view->children()[0];
+  views::View* left_container = footer_view->left_container_for_testing();
+  ASSERT_TRUE(left_container);
   auto* settings_button =
       views::AsViewClass<AppMenuFooterButton>(left_container->children()[0]);
   ASSERT_TRUE(settings_button);
@@ -1034,20 +1040,27 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElements) {
   ASSERT_NE(footer_item, nullptr);
 
   // Check that the footer container is an AppMenuFooterView containing
-  // left container, spacer, and right container.
+  // only the top container when unmanaged.
   ASSERT_EQ(footer_item->children().size(), 1u);
-  views::View* footer_container = footer_item->children()[0];
-  EXPECT_TRUE(views::IsViewClass<AppMenuFooterView>(footer_container));
-  ASSERT_EQ(footer_container->children().size(), 3u);
+  auto* footer_view =
+      views::AsViewClass<AppMenuFooterView>(footer_item->children()[0]);
+  ASSERT_TRUE(footer_view);
+  ASSERT_EQ(footer_view->children().size(), 1u);
 
-  views::View* left_container = footer_container->children()[0];
+  views::View* top_container = footer_view->top_container_for_testing();
+  ASSERT_TRUE(top_container);
+  ASSERT_EQ(top_container->children().size(), 3u);
+
+  views::View* left_container = footer_view->left_container_for_testing();
+  ASSERT_TRUE(left_container);
   ASSERT_EQ(left_container->children().size(), 2u);  // Settings, Help
   EXPECT_TRUE(
       views::IsViewClass<AppMenuFooterButton>(left_container->children()[0]));
   EXPECT_TRUE(
       views::IsViewClass<AppMenuFooterButton>(left_container->children()[1]));
 
-  views::View* right_container = footer_container->children()[2];
+  views::View* right_container = footer_view->right_container_for_testing();
+  ASSERT_TRUE(right_container);
   if (browser_defaults::kShowExitMenuItem) {
     ASSERT_EQ(right_container->children().size(), 1u);  // Exit
     EXPECT_TRUE(views::IsViewClass<AppMenuFooterButton>(
@@ -1056,9 +1069,55 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElements) {
     EXPECT_EQ(right_container->children().size(), 0u);
   }
 
+  // Without managed UI, separator and bottom container should not be added.
+  EXPECT_EQ(footer_view->separator_for_testing(), nullptr);
+  EXPECT_EQ(footer_view->bottom_container_for_testing(), nullptr);
+
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ActionAppMenuTest, PopulatesFooterElementsWithManagedAction) {
+  policy::ScopedManagementServiceOverrideForTesting profile_management(
+      policy::ManagementServiceFactory::GetForProfile(profile_.get()),
+      policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::SubmenuView* submenu = root->GetSubmenu();
+  ASSERT_TRUE(submenu);
+  views::MenuItemView* footer_item =
+      submenu->GetMenuItemAt(submenu->GetMenuItems().size() - 1);
+  ASSERT_NE(footer_item, nullptr);
+
+  auto* footer_view =
+      views::AsViewClass<AppMenuFooterView>(footer_item->children()[0]);
+  ASSERT_TRUE(footer_view);
+  ASSERT_EQ(footer_view->children().size(), 3u);
+
+  // When managed, separator and bottom container are added inside the footer.
+  ASSERT_NE(footer_view->separator_for_testing(), nullptr);
+  EXPECT_TRUE(footer_view->separator_for_testing()->GetVisible());
+  EXPECT_EQ(footer_view->separator_for_testing()->GetColorId(),
+            ui::kColorMenuSeparator);
+  ASSERT_NE(footer_view->bottom_container_for_testing(), nullptr);
+  EXPECT_TRUE(footer_view->bottom_container_for_testing()->GetVisible());
+  ASSERT_EQ(footer_view->bottom_container_for_testing()->children().size(), 1u);
+  EXPECT_TRUE(views::IsViewClass<AppMenuFooterButton>(
+      footer_view->bottom_container_for_testing()->children()[0]));
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ActionAppMenuTest, ZoomLabelUpdatesOnZoomChange) {
   content::RenderViewHostTestEnabler rvh_test_enabler;
@@ -1283,12 +1342,14 @@ TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {
       views::AsViewClass<AppMenuFooterView>(footer_item->children()[0]);
   ASSERT_TRUE(footer_view);
   EXPECT_EQ(footer_view->GetInsets(), gfx::Insets());
-  const gfx::Insets* footer_margins =
-      footer_view->GetProperty(views::kMarginsKey);
-  ASSERT_TRUE(footer_margins);
-  EXPECT_EQ(*footer_margins,
+  EXPECT_EQ(footer_view->GetProperty(views::kMarginsKey), nullptr);
+  views::BoxLayoutView* top_container =
+      footer_view->top_container_for_testing();
+  ASSERT_TRUE(top_container);
+  EXPECT_EQ(top_container->GetInsideBorderInsets(),
             provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_MARGIN));
-  EXPECT_EQ(*footer_margins, gfx::Insets::TLBR(8, 16, 0, 16));
+  EXPECT_EQ(top_container->GetInsideBorderInsets(),
+            gfx::Insets::TLBR(8, 16, 0, 16));
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

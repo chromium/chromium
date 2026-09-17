@@ -113,7 +113,9 @@ void AppMenuFooterButton::SetImageModel(const ui::ImageModel& image_model) {
   } else if (image_model.IsVectorIcon()) {
     icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
         *image_model.GetVectorIcon().vector_icon(),
-        kColorAppMenuFooterButtonForeground, icon_size));
+        use_row_style_ ? ui::ColorId{ui::kColorMenuIcon}
+                       : ui::ColorId{kColorAppMenuFooterButtonForeground},
+        icon_size));
     icon_view_->SetVisible(true);
   } else {
     icon_view_->SetImage(image_model);
@@ -134,8 +136,28 @@ void AppMenuFooterButton::SetHasSubmenu(bool has_submenu) {
       features::IsRoundedIconsEnabled()
           ? vector_icons::kKeyboardArrowRightFlippableIcon
           : vector_icons::kSubmenuArrowChromeRefreshOldIcon,
-      kColorAppMenuFooterButtonForeground, icon_size));
+      use_row_style_ ? ui::ColorId{ui::kColorMenuIcon}
+                     : ui::ColorId{kColorAppMenuFooterButtonForeground},
+      icon_size));
   submenu_arrow_view_->SetVisible(true);
+}
+
+void AppMenuFooterButton::SetUseRowStyle(bool use_row_style) {
+  if (use_row_style_ == use_row_style) {
+    return;
+  }
+  use_row_style_ = use_row_style;
+  if (use_row_style_) {
+    label_->SetTextContext(views::style::CONTEXT_MENU);
+    label_->SetTextStyle(views::style::STYLE_PRIMARY);
+    label_->SetEnabledColor(ui::kColorMenuItemForeground);
+  } else {
+    label_->SetTextStyle(views::style::STYLE_BODY_5);
+    label_->SetEnabledColor(kColorAppMenuFooterButtonForeground);
+  }
+  if (!icon_view_->GetImageModel().IsEmpty()) {
+    SetImageModel(icon_view_->GetImageModel());
+  }
 }
 
 // ActionViewInterface implementation to sync ActionItem properties to the
