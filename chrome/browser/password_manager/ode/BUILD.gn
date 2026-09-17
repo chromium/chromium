@@ -3,27 +3,23 @@
 # found in the LICENSE file.
 
 source_set("ode") {
-  public_deps = [ "//components/password_manager/core/browser/ode" ]
+  public = [ "on_device_encryption_metrics_reporter_factory.h" ]
+  sources = [ "on_device_encryption_metrics_reporter_factory.cc" ]
+  public_deps = [
+    "//chrome/browser/profiles:profile",
+    "//components/password_manager/core/browser/ode",
+  ]
+  deps = [
+    "//chrome/browser/sync",
+    "//components/keyed_service/content",
+    "//components/pref_registry",
+    "//components/sync/base",
+  ]
 
   if (!is_android) {
-    public = [
-      "chrome_passkey_on_device_encryption_state_tracker.h",
-      "on_device_encryption_metrics_reporter_factory.h",
-    ]
-    sources = [
-      "chrome_passkey_on_device_encryption_state_tracker.cc",
-      "on_device_encryption_metrics_reporter_factory.cc",
-    ]
-    public_deps += [
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/webauthn",
-    ]
-    deps = [
-      "//chrome/browser/sync",
-      "//components/keyed_service/content",
-      "//components/pref_registry",
-      "//components/sync/base",
-    ]
+    public += [ "chrome_passkey_on_device_encryption_state_tracker.h" ]
+    sources += [ "chrome_passkey_on_device_encryption_state_tracker.cc" ]
+    public_deps += [ "//chrome/browser/webauthn" ]
   }
 }
 

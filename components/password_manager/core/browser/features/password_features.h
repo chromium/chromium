@@ -179,12 +179,10 @@ BASE_DECLARE_FEATURE(kPasswordFormGroupedAffiliations);
 // terminal.
 BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
 
-#if !BUILDFLAG(IS_ANDROID)
 // Enables the OnDeviceEncryptionMetricsReporter service which tracks
 // on-device encryption states of passwords and passkeys and records
 // readiness metrics.
 BASE_DECLARE_FEATURE(kPasswordManagerOnDeviceEncryptionMetricsReporter);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Performs additional security checks wrt. the triggering frame before adding
 // the "Select password" entry to the context menu.
