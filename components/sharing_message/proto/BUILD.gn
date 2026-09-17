@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/proto_extras/proto_extras.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 group("proto_lite") {
@@ -25,4 +26,12 @@ proto_library("proto") {
     "timestamp.proto",
   ]
   deps = [ "//third_party/protobuf:any_proto" ]
+}
+
+# base::Value serialization for the actuator downstream messages, used by
+# chrome://browser-actuator-internals to dump recorded sessions.
+proto_extras("actuator_downstream_message_extras") {
+  sources = [ "actuator_downstream_message.proto" ]
+  deps = [ ":proto" ]
+  extras_deps = [ "//components/proto_extras:any_proto_extras" ]
 }

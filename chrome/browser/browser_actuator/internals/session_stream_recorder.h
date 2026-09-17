@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -22,8 +23,14 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
-#include "components/sharing_message/proto/actuator_downstream_message.pb.h"
+#include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/transport_handler.h"
+#include "components/browser_actuator/public/transport_handler_factory.h"
+#include "components/sharing_message/proto/actuator_downstream_message.pb.h"
+
+namespace base {
+class DictValue;
+}  // namespace base
 
 namespace google::protobuf {
 class MessageLite;
@@ -31,13 +38,21 @@ class MessageLite;
 
 namespace browser_actuator {
 
+class TransportSession;
+
 // Metadata for an active or closed transport session.
 struct SessionMetadata {
   std::string session_id;
   base::TimeTicks start_time;
+  base::Time start_wall_time;
+  std::optional<base::TimeTicks> end_time;
   size_t total_downstream_messages = 0;
   size_t total_upstream_messages = 0;
   bool is_active = true;
+
+  // Serializes this metadata for diagnostic dumps. Keep in sync with the
+  // fields above.
+  base::DictValue ToValue() const;
 };
 
 // Records canonical protobuf messages (ActuatorDownstreamMessage and
@@ -49,6 +64,11 @@ class SessionStreamRecorder : public TransportHandler {
   struct Entry {
     base::TimeTicks timestamp;
     std::variant<ActuatorDownstreamMessage, ActuatorUpstreamMessage> message;
+
+    // Serializes this entry for diagnostic dumps. The message body is
+    // serialized by the generated `ToValue()` from //components/proto_extras,
+    // so new proto fields are picked up automatically.
+    base::DictValue ToValue() const;
   };
 
   using DestructionCallback =
@@ -105,6 +125,57 @@ class SessionStreamRecorder : public TransportHandler {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<SessionStreamRecorder> weak_ptr_factory_{this};
+};
+
+// Factory that creates and tracks SessionStreamRecorder instances.
+// Provides export functionality to dump all sessions' history as JSON.
+class SessionStreamRecorderFactory : public TransportHandlerFactory {
+ public:
+  SessionStreamRecorderFactory();
+  ~SessionStreamRecorderFactory() override;
+
+  SessionStreamRecorderFactory(const SessionStreamRecorderFactory&) = delete;
+  SessionStreamRecorderFactory& operator=(const SessionStreamRecorderFactory&) =
+      delete;
+
+  // TransportHandlerFactory implementation:
+  FactoryId GetFactoryId() const override;
+  std::vector<PayloadType> GetSupportedPayloadTypes() const override;
+  std::unique_ptr<TransportHandler> OnNewSession(
+      TransportSession* session) override;
+
+  // Exports all tracked sessions' metadata and history as a structured
+  // dictionary.
+  base::DictValue ExportAllSessionsAsValue() const;
+
+  // TODO(b/561566505): Support export as trace file.
+  // Exports all tracked sessions' metadata and history as JSON.
+  std::string ExportAllSessionsAsJson() const;
+
+  // For testing: returns the number of tracked active session recorders.
+  size_t GetActiveRecordersCountForTesting() const;
+
+ private:
+  struct RetainedSessionHistory {
+    SessionMetadata metadata;
+    std::vector<SessionStreamRecorder::Entry> entries;
+  };
+
+  void OnRecorderDestroyed(SessionStreamRecorder* recorder,
+                           const SessionMetadata& metadata,
+                           std::vector<SessionStreamRecorder::Entry> entries);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Active session recorders tracked via WeakPtr.
+  std::vector<base::WeakPtr<SessionStreamRecorder>> active_recorders_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Retained history for closed/destroyed sessions.
+  std::vector<RetainedSessionHistory> retained_sessions_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<SessionStreamRecorderFactory> weak_ptr_factory_{this};
 };
 
 }  // namespace browser_actuator

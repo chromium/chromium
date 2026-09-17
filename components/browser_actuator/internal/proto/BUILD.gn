@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/proto_extras/proto_extras.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
@@ -14,6 +15,24 @@ proto_library("proto") {
   deps = [
     "//components/sharing_message/proto",
     "//third_party/protobuf:any_proto",
+  ]
+  proto_in_dir = "//"
+}
+
+# base::Value serialization for the transport messages, used by
+# chrome://browser-actuator-internals to dump recorded sessions.
+proto_extras("transport_messages_extras") {
+  # The template forwards `visibility` to the generated sub-targets, which the
+  # group for this target depends on, so `:*` has to be allowed as well.
+  visibility = [
+    ":*",
+    "//chrome/browser/browser_actuator/internals:*",
+  ]
+  sources = [ "transport_messages.proto" ]
+  deps = [ ":proto" ]
+  extras_deps = [
+    "//components/proto_extras:any_proto_extras",
+    "//components/sharing_message/proto:actuator_downstream_message_extras",
   ]
   proto_in_dir = "//"
 }

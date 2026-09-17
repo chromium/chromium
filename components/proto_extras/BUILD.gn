@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/proto_extras/proto_extras.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 if (current_toolchain == host_toolchain) {
@@ -96,4 +97,13 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/protobuf:protobuf_lite",
   ]
+}
+
+# base::Value serialization for google::protobuf::Any. Lite protos embedding an
+# `Any` field need this to be able to generate their own serialization with
+# //components/proto_extras.
+proto_extras("any_proto_extras") {
+  sources = [ "//third_party/protobuf/src/google/protobuf/any.proto" ]
+  proto_in_dir = "//third_party/protobuf/src"
+  deps = [ "//third_party/protobuf:any_proto" ]
 }

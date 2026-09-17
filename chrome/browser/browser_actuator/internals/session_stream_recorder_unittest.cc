@@ -5,20 +5,45 @@
 #include "chrome/browser/browser_actuator/internals/session_stream_recorder.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <variant>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
+#include "components/browser_actuator/public/common.h"
+#include "components/browser_actuator/public/transport_session.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace browser_actuator {
 namespace {
+
+class FakeTransportSession : public TransportSession {
+ public:
+  explicit FakeTransportSession(std::string_view session_id)
+      : session_id_(session_id) {}
+  ~FakeTransportSession() override = default;
+
+  std::string_view GetSessionId() const override { return session_id_; }
+  base::expected<void, SendMessageError> SendMessage(
+      PayloadType payload_type,
+      const google::protobuf::MessageLite& message) override {
+    return {};
+  }
+  void OnMessage(PayloadType payload_type,
+                 const google::protobuf::MessageLite& message) override {}
+
+ private:
+  std::string session_id_;
+};
 
 class TestObserver : public SessionStreamRecorder::Observer {
  public:
@@ -58,7 +83,7 @@ TEST(SessionStreamRecorderTest, RecordsDownstreamMessage) {
 
   ActuatorDownstreamMessage downstream;
   downstream.set_session_id("session_123");
-  downstream.set_sequence_number(42);
+  downstream.set_sequence_number(5);
 
   recorder.RecordDownstreamMessage(downstream);
 
@@ -70,7 +95,7 @@ TEST(SessionStreamRecorderTest, RecordsDownstreamMessage) {
   EXPECT_FALSE(entry.timestamp.is_null());
   ASSERT_TRUE(std::holds_alternative<ActuatorDownstreamMessage>(entry.message));
   EXPECT_EQ(
-      std::get<ActuatorDownstreamMessage>(entry.message).sequence_number(), 42);
+      std::get<ActuatorDownstreamMessage>(entry.message).sequence_number(), 5);
 }
 
 TEST(SessionStreamRecorderTest, RecordsUpstreamMessage) {
@@ -257,12 +282,16 @@ TEST(SessionStreamRecorderTest, GetWeakPtr) {
 TEST(SessionStreamRecorderTest, MarkSessionClosed) {
   SessionStreamRecorder recorder("session_123");
   EXPECT_TRUE(recorder.metadata().is_active);
+  EXPECT_FALSE(recorder.metadata().end_time.has_value());
 
   recorder.MarkSessionClosed();
   EXPECT_FALSE(recorder.metadata().is_active);
+  EXPECT_TRUE(recorder.metadata().end_time.has_value());
+  base::TimeTicks first_end_time = *recorder.metadata().end_time;
 
   recorder.MarkSessionClosed();
   EXPECT_FALSE(recorder.metadata().is_active);
+  EXPECT_EQ(*recorder.metadata().end_time, first_end_time);
 }
 
 TEST(SessionStreamRecorderTest, InvokesDestructionCallback) {
@@ -292,12 +321,261 @@ TEST(SessionStreamRecorderTest, InvokesDestructionCallback) {
 
   EXPECT_TRUE(callback_invoked);
   EXPECT_EQ(saved_metadata.session_id, "session_123");
+  EXPECT_FALSE(saved_metadata.is_active);
+  EXPECT_TRUE(saved_metadata.end_time.has_value());
   EXPECT_EQ(saved_metadata.total_downstream_messages, 1u);
   EXPECT_EQ(saved_metadata.total_upstream_messages, 0u);
   ASSERT_EQ(saved_entries.size(), 1u);
   EXPECT_EQ(std::get<ActuatorDownstreamMessage>(saved_entries[0].message)
                 .sequence_number(),
             7);
+}
+
+TEST(SessionStreamRecorderFactoryTest, FactoryIdAndPayloadTypes) {
+  SessionStreamRecorderFactory factory;
+
+  EXPECT_EQ(factory.GetFactoryId(), FactoryId::kSessionStreamRecorder);
+  EXPECT_THAT(factory.GetSupportedPayloadTypes(),
+              ::testing::UnorderedElementsAre(
+                  PayloadType::kControl, PayloadType::kExperimentalTriggering));
+}
+
+TEST(SessionStreamRecorderFactoryTest, CreatesRecorderOnNewSession) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session("session_xyz");
+
+  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
+  ASSERT_NE(handler, nullptr);
+
+  auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
+  EXPECT_EQ(recorder->session_id(), "session_xyz");
+  EXPECT_TRUE(recorder->metadata().is_active);
+  EXPECT_EQ(factory.GetActiveRecordersCountForTesting(), 1u);
+}
+
+TEST(SessionStreamRecorderFactoryTest, ReturnsNullptrOnNullSession) {
+  SessionStreamRecorderFactory factory;
+  EXPECT_EQ(factory.OnNewSession(nullptr), nullptr);
+  EXPECT_EQ(factory.GetActiveRecordersCountForTesting(), 0u);
+}
+
+TEST(SessionStreamRecorderFactoryTest, ExportAllSessionsAsJson) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session1("session_1");
+  FakeTransportSession session2("session_2");
+
+  std::unique_ptr<TransportHandler> h1 = factory.OnNewSession(&session1);
+  std::unique_ptr<TransportHandler> h2 = factory.OnNewSession(&session2);
+
+  auto* r1 = static_cast<SessionStreamRecorder*>(h1.get());
+  auto* r2 = static_cast<SessionStreamRecorder*>(h2.get());
+
+  ActuatorDownstreamMessage d1;
+  d1.set_session_id("session_1");
+  d1.set_sequence_number(1);
+  d1.add_typed_payloads()->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  r1->RecordDownstreamMessage(d1);
+
+  ActuatorUpstreamMessage u1;
+  u1.set_session_id("session_1");
+  u1.set_client_sequence_number(2);
+  r1->RecordUpstreamMessage(u1);
+
+  ActuatorDownstreamMessage d2;
+  d2.set_session_id("session_2");
+  d2.set_sequence_number(5);
+  d2.add_typed_payloads()->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
+  r2->RecordDownstreamMessage(d2);
+
+  ActuatorUpstreamMessage u2;
+  u2.set_session_id("session_2");
+  u2.set_client_sequence_number(10);
+  u2.set_responding_to_sequence_number(5);
+  r2->RecordUpstreamMessage(u2);
+  r2->MarkSessionClosed();
+
+  std::string json_str = factory.ExportAllSessionsAsJson();
+  ASSERT_FALSE(json_str.empty());
+
+  std::optional<base::DictValue> parsed_json =
+      base::JSONReader::ReadDict(json_str, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(parsed_json.has_value());
+
+  const base::ListValue* sessions = parsed_json->FindList("sessions");
+  ASSERT_NE(sessions, nullptr);
+  ASSERT_EQ(sessions->size(), 2u);
+
+  const base::DictValue* s1_dict = (*sessions)[0].GetIfDict();
+  ASSERT_NE(s1_dict, nullptr);
+  EXPECT_EQ(*s1_dict->FindString("session_id"), "session_1");
+  EXPECT_TRUE(*s1_dict->FindBool("is_active"));
+  EXPECT_EQ(s1_dict->FindInt("total_downstream_messages"), 1);
+  EXPECT_EQ(s1_dict->FindInt("total_upstream_messages"), 1);
+  const base::ListValue* s1_events = s1_dict->FindList("events");
+  ASSERT_NE(s1_events, nullptr);
+  ASSERT_EQ(s1_events->size(), 2u);
+
+  // The message body is serialized by the generated `ToValue()`, which emits
+  // every proto field. int64 fields are emitted as strings, as base::Value has
+  // no int64 type.
+  const base::DictValue* s1_e0 = (*s1_events)[0].GetIfDict();
+  ASSERT_NE(s1_e0, nullptr);
+  EXPECT_EQ(*s1_e0->FindString("direction"), "Downstream");
+  const base::DictValue* s1_m0 = s1_e0->FindDict("message");
+  ASSERT_NE(s1_m0, nullptr);
+  EXPECT_EQ(*s1_m0->FindString("session_id"), "session_1");
+  EXPECT_EQ(*s1_m0->FindString("sequence_number"), "1");
+  const base::ListValue* s1_m0_payloads = s1_m0->FindList("typed_payloads");
+  ASSERT_NE(s1_m0_payloads, nullptr);
+  ASSERT_EQ(s1_m0_payloads->size(), 1u);
+  EXPECT_EQ(*(*s1_m0_payloads)[0].GetIfDict()->FindString("payload_type"),
+            "ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND");
+
+  const base::DictValue* s1_e1 = (*s1_events)[1].GetIfDict();
+  ASSERT_NE(s1_e1, nullptr);
+  EXPECT_EQ(*s1_e1->FindString("direction"), "Upstream");
+  const base::DictValue* s1_m1 = s1_e1->FindDict("message");
+  ASSERT_NE(s1_m1, nullptr);
+  EXPECT_EQ(*s1_m1->FindString("client_sequence_number"), "2");
+  // Unset optional fields are omitted entirely.
+  EXPECT_EQ(s1_m1->Find("responding_to_sequence_number"), nullptr);
+
+  const base::DictValue* s2_dict = (*sessions)[1].GetIfDict();
+  ASSERT_NE(s2_dict, nullptr);
+  EXPECT_EQ(*s2_dict->FindString("session_id"), "session_2");
+  EXPECT_FALSE(*s2_dict->FindBool("is_active"));
+  EXPECT_EQ(s2_dict->FindInt("total_downstream_messages"), 1);
+  EXPECT_EQ(s2_dict->FindInt("total_upstream_messages"), 1);
+  const base::ListValue* s2_events = s2_dict->FindList("events");
+  ASSERT_NE(s2_events, nullptr);
+  ASSERT_EQ(s2_events->size(), 2u);
+  const base::DictValue* s2_e0 = (*s2_events)[0].GetIfDict();
+  ASSERT_NE(s2_e0, nullptr);
+  EXPECT_EQ(*s2_e0->FindString("direction"), "Downstream");
+  const base::DictValue* s2_m0 = s2_e0->FindDict("message");
+  ASSERT_NE(s2_m0, nullptr);
+  EXPECT_EQ(*s2_m0->FindString("sequence_number"), "5");
+  const base::ListValue* s2_m0_payloads = s2_m0->FindList("typed_payloads");
+  ASSERT_NE(s2_m0_payloads, nullptr);
+  ASSERT_EQ(s2_m0_payloads->size(), 1u);
+  EXPECT_EQ(*(*s2_m0_payloads)[0].GetIfDict()->FindString("payload_type"),
+            "ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING");
+
+  const base::DictValue* s2_e1 = (*s2_events)[1].GetIfDict();
+  ASSERT_NE(s2_e1, nullptr);
+  EXPECT_EQ(*s2_e1->FindString("direction"), "Upstream");
+  const base::DictValue* s2_m1 = s2_e1->FindDict("message");
+  ASSERT_NE(s2_m1, nullptr);
+  EXPECT_EQ(*s2_m1->FindString("client_sequence_number"), "10");
+  EXPECT_EQ(*s2_m1->FindString("responding_to_sequence_number"), "5");
+}
+
+TEST(SessionStreamRecorderFactoryTest, RetainsDestroyedSessionsForDump) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session("session_temp");
+
+  {
+    std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
+    auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
+    ActuatorDownstreamMessage downstream;
+    downstream.set_session_id("session_temp");
+    downstream.set_sequence_number(42);
+    recorder->RecordDownstreamMessage(downstream);
+    // Handler destroyed at end of scope
+  }
+
+  EXPECT_EQ(factory.GetActiveRecordersCountForTesting(), 0u);
+
+  base::DictValue dump = factory.ExportAllSessionsAsValue();
+  const base::ListValue* sessions = dump.FindList("sessions");
+  ASSERT_NE(sessions, nullptr);
+  ASSERT_EQ(sessions->size(), 1u);
+  const base::DictValue* s_dict = (*sessions)[0].GetIfDict();
+  ASSERT_NE(s_dict, nullptr);
+  EXPECT_EQ(*s_dict->FindString("session_id"), "session_temp");
+  EXPECT_FALSE(*s_dict->FindBool("is_active"));
+  EXPECT_NE(s_dict->FindString("start_wall_time"), nullptr);
+  EXPECT_TRUE(s_dict->FindDouble("end_time_ticks").has_value());
+  EXPECT_TRUE(s_dict->FindDouble("duration_ms").has_value());
+  EXPECT_EQ(s_dict->FindInt("total_downstream_messages"), 1);
+  EXPECT_EQ(s_dict->FindInt("total_upstream_messages"), 0);
+  const base::ListValue* events = s_dict->FindList("events");
+  ASSERT_NE(events, nullptr);
+  ASSERT_EQ(events->size(), 1u);
+  const base::DictValue* e0 = (*events)[0].GetIfDict();
+  ASSERT_NE(e0, nullptr);
+  EXPECT_EQ(*e0->FindString("direction"), "Downstream");
+  const base::DictValue* message = e0->FindDict("message");
+  ASSERT_NE(message, nullptr);
+  EXPECT_EQ(*message->FindString("sequence_number"), "42");
+}
+
+// The message body is serialized by the generated `ToValue()` rather than by a
+// hand-written list of fields, so fields that no caller explicitly asked for
+// still end up in the dump.
+TEST(SessionStreamRecorderFactoryTest, ExportIncludesAllProtoFields) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session("session_1");
+  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
+  auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
+
+  ActuatorUpstreamMessage upstream;
+  upstream.set_session_id("session_1");
+  auto* capabilities = upstream.mutable_capabilities();
+  capabilities->set_chrome_major_version_number(140);
+  capabilities->add_supported_features("feature_a");
+  recorder->RecordUpstreamMessage(upstream);
+
+  ActuatorDownstreamMessage downstream;
+  downstream.set_session_id("session_1");
+  downstream.set_sequence_number(1);
+  auto* typed_payload = downstream.add_typed_payloads();
+  typed_payload->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  ControlCommand command;
+  command.mutable_close_session();
+  std::string serialized_command = command.SerializeAsString();
+  typed_payload->mutable_proto_payload()->set_type_url(
+      "type.googleapis.com/browser_actuator.ControlCommand");
+  typed_payload->mutable_proto_payload()->set_value(serialized_command);
+  recorder->RecordDownstreamMessage(downstream);
+
+  base::DictValue dump = factory.ExportAllSessionsAsValue();
+  const base::ListValue* events =
+      (*dump.FindList("sessions"))[0].GetIfDict()->FindList("events");
+  ASSERT_NE(events, nullptr);
+  ASSERT_EQ(events->size(), 2u);
+
+  const base::DictValue* upstream_message =
+      (*events)[0].GetIfDict()->FindDict("message");
+  ASSERT_NE(upstream_message, nullptr);
+  const base::DictValue* dumped_capabilities =
+      upstream_message->FindDict("capabilities");
+  ASSERT_NE(dumped_capabilities, nullptr);
+  EXPECT_EQ(*dumped_capabilities->FindString("chrome_major_version_number"),
+            "140");
+  const base::ListValue* features =
+      dumped_capabilities->FindList("supported_features");
+  ASSERT_NE(features, nullptr);
+  ASSERT_EQ(features->size(), 1u);
+  EXPECT_EQ((*features)[0].GetString(), "feature_a");
+
+  const base::DictValue* downstream_message =
+      (*events)[1].GetIfDict()->FindDict("message");
+  ASSERT_NE(downstream_message, nullptr);
+  const base::ListValue* dumped_payloads =
+      downstream_message->FindList("typed_payloads");
+  ASSERT_NE(dumped_payloads, nullptr);
+  ASSERT_EQ(dumped_payloads->size(), 1u);
+  const base::DictValue* dumped_proto_payload =
+      (*dumped_payloads)[0].GetIfDict()->FindDict("proto_payload");
+  ASSERT_NE(dumped_proto_payload, nullptr);
+  EXPECT_EQ(*dumped_proto_payload->FindString("type_url"),
+            "type.googleapis.com/browser_actuator.ControlCommand");
+  EXPECT_EQ(*dumped_proto_payload->FindString("value"),
+            base::Base64Encode(serialized_command));
 }
 
 }  // namespace
