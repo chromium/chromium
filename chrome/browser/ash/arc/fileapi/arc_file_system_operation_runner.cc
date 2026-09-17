@@ -11,7 +11,9 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -65,29 +67,39 @@ BrowserContextKeyedServiceFactory* ArcFileSystemOperationRunner::GetFactory() {
 std::unique_ptr<ArcFileSystemOperationRunner>
 ArcFileSystemOperationRunner::CreateForTesting(
     content::BrowserContext* context,
-    ArcBridgeService* bridge_service) {
+    ArcBridgeService* bridge_service,
+    size_t content_url_allowlist_cache_size) {
   // We can't use std::make_unique() here because we are calling a private
   // constructor.
   return base::WrapUnique<ArcFileSystemOperationRunner>(
-      new ArcFileSystemOperationRunner(context, bridge_service, false));
+      new ArcFileSystemOperationRunner(context, bridge_service, false,
+                                       content_url_allowlist_cache_size));
 }
 
 ArcFileSystemOperationRunner::ArcFileSystemOperationRunner(
     content::BrowserContext* context,
     ArcBridgeService* bridge_service)
-    : ArcFileSystemOperationRunner(Profile::FromBrowserContext(context),
-                                   bridge_service,
-                                   true) {
+    : ArcFileSystemOperationRunner(
+          Profile::FromBrowserContext(context),
+          bridge_service,
+          /*set_should_defer_by_events=*/true,
+          ArcContentUrlAllowlist::kLruCacheDefaultMaxSize) {
   DCHECK(context);
 }
 
 ArcFileSystemOperationRunner::ArcFileSystemOperationRunner(
     content::BrowserContext* context,
     ArcBridgeService* bridge_service,
-    bool set_should_defer_by_events)
+    bool set_should_defer_by_events,
+    size_t content_url_allowlist_cache_size)
     : context_(context),
       arc_bridge_service_(bridge_service),
-      set_should_defer_by_events_(set_should_defer_by_events) {
+      set_should_defer_by_events_(set_should_defer_by_events),
+      content_url_allowlist_(
+          context ? Profile::FromBrowserContext(context)->GetPath().AppendASCII(
+                        "arc_content_urls.db")
+                  : base::FilePath(),
+          content_url_allowlist_cache_size) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   arc_bridge_service_->file_system()->AddObserver(this);
@@ -117,6 +129,11 @@ void ArcFileSystemOperationRunner::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
+void ArcFileSystemOperationRunner::GrantAccessToContentUrl(const GURL& url) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  content_url_allowlist_.GrantAccess(url);
+}
+
 void ArcFileSystemOperationRunner::GetFileSize(const GURL& url,
                                                GetFileSizeCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -124,6 +141,22 @@ void ArcFileSystemOperationRunner::GetFileSize(const GURL& url,
     deferred_operations_.emplace_back(base::BindOnce(
         &ArcFileSystemOperationRunner::GetFileSize,
         weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+    return;
+  }
+  IsContentUrlAccessible(
+      url,
+      base::BindOnce(&ArcFileSystemOperationRunner::GetFileSizeAfterAccessCheck,
+                     weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+}
+
+void ArcFileSystemOperationRunner::GetFileSizeAfterAccessCheck(
+    const GURL& url,
+    GetFileSizeCallback callback,
+    bool accessible) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!accessible) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), -1));
     return;
   }
   auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
@@ -145,6 +178,22 @@ void ArcFileSystemOperationRunner::GetMimeType(const GURL& url,
         weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
     return;
   }
+  IsContentUrlAccessible(
+      url,
+      base::BindOnce(&ArcFileSystemOperationRunner::GetMimeTypeAfterAccessCheck,
+                     weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+}
+
+void ArcFileSystemOperationRunner::GetMimeTypeAfterAccessCheck(
+    const GURL& url,
+    GetMimeTypeCallback callback,
+    bool accessible) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!accessible) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+    return;
+  }
   auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->file_system(), GetMimeType);
   if (!file_system_instance) {
@@ -164,6 +213,23 @@ void ArcFileSystemOperationRunner::OpenThumbnail(
     deferred_operations_.emplace_back(base::BindOnce(
         &ArcFileSystemOperationRunner::OpenThumbnail,
         weak_ptr_factory_.GetWeakPtr(), url, size, std::move(callback)));
+    return;
+  }
+  IsContentUrlAccessible(
+      url, base::BindOnce(
+               &ArcFileSystemOperationRunner::OpenThumbnailAfterAccessCheck,
+               weak_ptr_factory_.GetWeakPtr(), url, size, std::move(callback)));
+}
+
+void ArcFileSystemOperationRunner::OpenThumbnailAfterAccessCheck(
+    const GURL& url,
+    const gfx::Size& size,
+    OpenThumbnailCallback callback,
+    bool accessible) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!accessible) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
     return;
   }
   auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
@@ -205,6 +271,24 @@ void ArcFileSystemOperationRunner::OpenFileSessionToWrite(
         weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
     return;
   }
+  IsContentUrlAccessible(
+      url,
+      base::BindOnce(
+          &ArcFileSystemOperationRunner::OpenFileSessionToWriteAfterAccessCheck,
+          weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+}
+
+void ArcFileSystemOperationRunner::OpenFileSessionToWriteAfterAccessCheck(
+    const GURL& url,
+    OpenFileSessionToWriteCallback callback,
+    bool accessible) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!accessible) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), mojom::FileSessionPtr()));
+    return;
+  }
   auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->file_system(), OpenFileSessionToWrite);
   if (!file_system_instance) {
@@ -224,6 +308,24 @@ void ArcFileSystemOperationRunner::OpenFileSessionToRead(
     deferred_operations_.emplace_back(base::BindOnce(
         &ArcFileSystemOperationRunner::OpenFileSessionToRead,
         weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+    return;
+  }
+  IsContentUrlAccessible(
+      url,
+      base::BindOnce(
+          &ArcFileSystemOperationRunner::OpenFileSessionToReadAfterAccessCheck,
+          weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+}
+
+void ArcFileSystemOperationRunner::OpenFileSessionToReadAfterAccessCheck(
+    const GURL& url,
+    OpenFileSessionToReadCallback callback,
+    bool accessible) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!accessible) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), mojom::FileSessionPtr()));
     return;
   }
   auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
@@ -608,6 +710,13 @@ void ArcFileSystemOperationRunner::SetShouldDefer(bool should_defer) {
 
   // No deferred operations should be left at this point.
   DCHECK(deferred_operations_.empty());
+}
+
+void ArcFileSystemOperationRunner::IsContentUrlAccessible(
+    const GURL& url,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  content_url_allowlist_.IsAccessGranted(url, std::move(callback));
 }
 
 // static
