@@ -1148,12 +1148,8 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
       OperandDataType::kFloat32, OperandDataType::kFloat16,
       OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
 
-  static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes{
-      OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
-
-  static constexpr SupportedDataTypes kInts8Ints32{
-      OperandDataType::kInt8, OperandDataType::kUint8, OperandDataType::kInt32,
-      OperandDataType::kUint32};
+  static constexpr SupportedDataTypes kInts8Int32{
+      OperandDataType::kInt8, OperandDataType::kUint8, OperandDataType::kInt32};
   SupportedDataTypes arg_min_max_input_supported_data_types = kFloatsAndInt32;
 
   static constexpr SupportedDataTypes kArgMinMaxOutputSupportedDataTypes{
@@ -1207,7 +1203,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        {kFloatsAndInt32, kMaxRank},
        // TODO(crbug.com/361603703): Support constant (u)int4 inputs via
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS18.compression.constexpr_blockwise_shift_scale
-       /*dequantize_linear_input=*/{kInts8Ints32, kMaxRank},
+       /*dequantize_linear_input=*/{kInts8Int32, kMaxRank},
        /*dequantize_linear_scale=*/
        {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*add_input=*/{kFloatsAndInt32, kMaxRank},
@@ -1273,14 +1269,14 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // operators, but WebNN does not have corresponding types. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.scatter_gather.gather
        /*gather_input=*/{kFloat16To32Int8To32AndUint8, kMaxRank},
-       /*gather_indices=*/{kGatherIndicesSupportedDataTypes, kMaxRank},
+       /*gather_indices=*/{kInts8Int32, kMaxRank},
        // Note that INT16, and UINT16 is also supported by CoreML, but WebNN
        // does not have corresponding types. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.scatter_gather.gather_along_axis
        /*gather_elements_input=*/{kFloatsAndInt32, kMaxRank},
-       /*gather_elements_indices=*/{kGatherIndicesSupportedDataTypes, kMaxRank},
+       /*gather_elements_indices=*/{kInts8Int32, kMaxRank},
        /*gather_nd_input=*/{kFloat16To32Int8To32AndUint8, kMaxRank},
-       /*gather_nd_indices=*/{kGatherIndicesSupportedDataTypes, kMaxRank},
+       /*gather_nd_indices=*/{kInts8Int32, kMaxRank},
        /*gelu_input=*/
        {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*gemm_a=*/
@@ -1341,7 +1337,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*quantize_linear_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*quantize_linear_zero_point=*/
-       {kInts8Ints32, kMaxRank},
+       {kInts8Int32, kMaxRank},
        /*reduce_l1_input=*/
        {kFloatsAndInt32, kMaxRank},
        /*reduce_l2_input=*/
@@ -2370,8 +2366,7 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
   CHECK(context_properties_.data_type_limits.dequantize_linear_input.data_types
             .Has(zero_point_operand_data_type));
 
-  if (input_operand_data_type == OperandDataType::kInt32 ||
-      input_operand_data_type == OperandDataType::kUint32) {
+  if (input_operand_data_type == OperandDataType::kInt32) {
     return AddOperationForDequantizeLinearEmulate(operation, block);
   }
 
@@ -4857,8 +4852,7 @@ GraphBuilderCoreml::AddOperationForQuantizeLinear(
   CHECK(context_properties_.data_type_limits.quantize_linear_zero_point
             .data_types.Has(zero_point_operand_data_type));
 
-  if (zero_point_operand_data_type == OperandDataType::kInt32 ||
-      zero_point_operand_data_type == OperandDataType::kUint32) {
+  if (zero_point_operand_data_type == OperandDataType::kInt32) {
     return AddOperationForQuantizeLinearEmulate(operation, block);
   }
 
