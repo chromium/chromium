@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+<meta name="flags" content="ahem">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<style>
+#outer2 {
+  max-content-sizing: shrink-to-fit;
+  width: fit-content;
+  font: 20px/1 Ahem;
+}
+#outer2 > div {
+  width: fit-content;
+  max-width: 100px;
+}
+
+math {
+  font-family: inherit;
+  width: fit-content;
+}
+
+mfrac, munder, msub {
+  width: fit-content;
+  max-width: 100px;
+  math-depth: 0;
+}
+</style>
+
+<div id="outer2">
+  <div>
+    <math display="block">
+      <mfrac style="padding: 0;"
+             title="mfrac: The target width should not be larger than max-width"
+             data-expected-bounding-client-rect-width="60">
+        <mtext><span>abc abc abc</span></mtext>
+        <mtext><span>a</span></mtext>
+      </mfrac>
+    </math>
+  </div>
+  <div>
+    <math display="block">
+      <munder title="munder: The target width should not be larger than max-width"
+              data-expected-bounding-client-rect-width="60">
+        <mtext><span>abc abc abc</span></mtext>
+        <mtext><span>a</span></mtext>
+      </munder>
+    </math>
+  </div>
+</div>
+
+<script>
+document.fonts.ready.then(() => checkLayout('[data-expected-bounding-client-rect-width]'));
+</script>

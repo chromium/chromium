@@ -231,7 +231,7 @@ const LayoutResult* MathRowLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult MathRowLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput&) {
+    const MinMaxSizesInput& input) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;
@@ -248,7 +248,8 @@ MinMaxSizesResult MathRowLayoutAlgorithm::ComputeMinMaxSizes(
       continue;
     const auto child_result = ComputeMinAndMaxContentContributionForMathChild(
         Style(), GetConstraintSpace(), To<BlockNode>(child),
-        ChildAvailableSize().block_size);
+        ChildAvailableSize().block_size,
+        MinMaxSizesInput::UnconstrainedUntriaged());
     sizes += child_result.sizes;
 
     if (should_add_space) {

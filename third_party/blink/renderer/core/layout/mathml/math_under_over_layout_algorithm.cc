@@ -401,7 +401,7 @@ const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult MathUnderOverLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput&) {
+    const MinMaxSizesInput& input) {
   DCHECK(IsValidMathMLScript(Node()));
 
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
@@ -418,7 +418,7 @@ MinMaxSizesResult MathUnderOverLayoutAlgorithm::ComputeMinMaxSizes(
     // TODO(crbug.com/1125136): take into account italic correction.
     const auto child_result = ComputeMinAndMaxContentContributionForMathChild(
         Style(), GetConstraintSpace(), To<BlockNode>(child),
-        ChildAvailableSize().block_size);
+        ChildAvailableSize().block_size, input);
 
     sizes.Encompass(child_result.sizes);
     depends_on_block_constraints |= child_result.depends_on_block_constraints;

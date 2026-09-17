@@ -197,7 +197,7 @@ const LayoutResult* MathRadicalLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult MathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput&) {
+    const MinMaxSizesInput& input) {
   DCHECK(IsValidMathMLRadical(Node()));
 
   BlockNode base = nullptr;
@@ -211,7 +211,8 @@ MinMaxSizesResult MathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
     sizes += horizontal.kern_before_degree.ClampNegativeToZero();
 
     const auto index_result = ComputeMinAndMaxContentContributionForMathChild(
-        Style(), GetConstraintSpace(), index, ChildAvailableSize().block_size);
+        Style(), GetConstraintSpace(), index, ChildAvailableSize().block_size,
+        MinMaxSizesInput::UnconstrainedUntriaged());
     depends_on_block_constraints |= index_result.depends_on_block_constraints;
     sizes += index_result.sizes;
 
@@ -228,7 +229,8 @@ MinMaxSizesResult MathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
   }
   if (base) {
     const auto base_result = ComputeMinAndMaxContentContributionForMathChild(
-        Style(), GetConstraintSpace(), base, ChildAvailableSize().block_size);
+        Style(), GetConstraintSpace(), base, ChildAvailableSize().block_size,
+        MinMaxSizesInput::UnconstrainedUntriaged());
     depends_on_block_constraints |= base_result.depends_on_block_constraints;
     sizes += base_result.sizes;
   }

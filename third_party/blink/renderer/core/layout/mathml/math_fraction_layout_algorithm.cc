@@ -272,7 +272,7 @@ const LayoutResult* MathFractionLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult MathFractionLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput&) {
+    const MinMaxSizesInput& input) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;
@@ -287,7 +287,7 @@ MinMaxSizesResult MathFractionLayoutAlgorithm::ComputeMinMaxSizes(
 
     const auto child_result = ComputeMinAndMaxContentContributionForMathChild(
         Style(), GetConstraintSpace(), To<BlockNode>(child),
-        ChildAvailableSize().block_size);
+        ChildAvailableSize().block_size, input);
 
     sizes.Encompass(child_result.sizes);
     depends_on_block_constraints |= child_result.depends_on_block_constraints;

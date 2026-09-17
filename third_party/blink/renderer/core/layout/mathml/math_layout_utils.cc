@@ -48,7 +48,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
     const ComputedStyle& parent_style,
     const ConstraintSpace& parent_space,
     const BlockNode& child,
-    LayoutUnit child_available_block_size) {
+    LayoutUnit child_available_block_size,
+    const MinMaxSizesInput& input) {
   DCHECK(child.CreatesNewFormattingContext());
   MinMaxConstraintSpaceBuilder builder(parent_space, parent_style, child,
                                        true /* is_new_fc */);
@@ -56,8 +57,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
   builder.SetPercentageResolutionBlockSize(child_available_block_size);
   const auto space = builder.ToConstraintSpace();
 
-  auto result = ComputeMinAndMaxContentContribution(
-      parent_style, child, space, MinMaxSizesInput::UnconstrainedUntriaged());
+  auto result =
+      ComputeMinAndMaxContentContribution(parent_style, child, space, input);
 
   // Add margins directly here.
   result.sizes +=

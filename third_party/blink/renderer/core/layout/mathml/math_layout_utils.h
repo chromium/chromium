@@ -19,6 +19,7 @@ class LayoutInputNode;
 class SimpleFontData;
 struct LogicalSize;
 struct MinMaxSizes;
+struct MinMaxSizesInput;
 struct MinMaxSizesResult;
 
 // Creates a new constraint space for the current child.
@@ -36,7 +37,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
     const ComputedStyle& parent_style,
     const ConstraintSpace& parent_constraint_space,
     const BlockNode& child,
-    LayoutUnit child_available_block_size);
+    LayoutUnit child_available_block_size,
+    const MinMaxSizesInput& input);
 
 LayoutInputNode FirstChildInFlow(const BlockNode&);
 LayoutInputNode NextSiblingInFlow(const BlockNode&);

@@ -106,7 +106,7 @@ const LayoutResult* MathPaddedLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult MathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput&) {
+    const MinMaxSizesInput& input) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;
@@ -115,7 +115,8 @@ MinMaxSizesResult MathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
   GetContentAsAnonymousMrow(&content);
 
   const auto content_result = ComputeMinAndMaxContentContributionForMathChild(
-      Style(), GetConstraintSpace(), content, ChildAvailableSize().block_size);
+      Style(), GetConstraintSpace(), content, ChildAvailableSize().block_size,
+      input);
 
   bool depends_on_block_constraints =
       content_result.depends_on_block_constraints;
