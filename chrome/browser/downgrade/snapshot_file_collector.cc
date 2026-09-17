@@ -76,9 +76,17 @@ std::vector<SnapshotItemDetails> CollectProfileItems() {
           base::FilePath(bookmarks::kLocalOrSyncableBookmarksFileName),
           SnapshotItemDetails::ItemType::kFile,
           chrome_browsing_data_remover::DATA_TYPE_BOOKMARKS),
+      SnapshotItemDetails(
+          base::FilePath(bookmarks::kEncryptedLocalOrSyncableBookmarksFileName),
+          SnapshotItemDetails::ItemType::kFile,
+          chrome_browsing_data_remover::DATA_TYPE_BOOKMARKS),
       SnapshotItemDetails(base::FilePath(bookmarks::kAccountBookmarksFileName),
                           SnapshotItemDetails::ItemType::kFile,
                           chrome_browsing_data_remover::DATA_TYPE_BOOKMARKS),
+      SnapshotItemDetails(
+          base::FilePath(bookmarks::kEncryptedAccountBookmarksFileName),
+          SnapshotItemDetails::ItemType::kFile,
+          chrome_browsing_data_remover::DATA_TYPE_BOOKMARKS),
       // Tab Restore and sessions
       SnapshotItemDetails(base::FilePath(sessions::kSessionsDirectory),
                           SnapshotItemDetails::ItemType::kDirectory,
