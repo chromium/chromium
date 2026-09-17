@@ -22,6 +22,7 @@ from test_helpers import (
     get_tree,
     send_JSON_command,
     subscribe,
+    wait_for_event,
     wait_for_filtered_event,
 )
 
@@ -306,6 +307,85 @@ async def test_script_evaluate_windowOpen_windowOpened(websocket, context_id):
 
     # Assert 2 contexts are present.
     assert len(result["contexts"]) == 2
+
+
+async def _assert_window_open_context_created_evaluate(
+    websocket, context_id, url_base, sandbox=None
+):
+    await subscribe(websocket, ["browsingContext.contextCreated"])
+
+    await send_JSON_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"window.open('{url_base}')",
+                "target": {"context": context_id},
+                "awaitPromise": True,
+            },
+        },
+    )
+
+    event = await wait_for_event(websocket, "browsingContext.contextCreated")
+    new_context_id = event["params"]["context"]
+
+    target = {"context": new_context_id}
+    if sandbox is not None:
+        target["sandbox"] = sandbox
+
+    result = await execute_command(
+        websocket,
+        {
+            "method": "script.callFunction",
+            "params": {
+                "functionDeclaration": "() => 1 + 1",
+                "target": target,
+                "awaitPromise": True,
+            },
+        },
+    )
+    assert result["result"] == {"type": "number", "value": 2}
+
+    result = await execute_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "2 + 2",
+                "target": target,
+                "awaitPromise": True,
+            },
+        },
+    )
+    assert result["result"] == {"type": "number", "value": 4}
+
+
+@pytest.mark.asyncio
+async def test_script_evaluate_windowOpen_contextCreated_evaluate(
+    websocket, context_id, url_base
+):
+    """Verify that evaluating a script immediately upon receiving
+    `browsingContext.contextCreated` for a newly opened window with a URL
+    waits for the initial target document's realm rather than running against
+    (or failing due to destruction of) the transient initial empty document.
+    See: https://github.com/GoogleChromeLabs/chromium-bidi/issues/1102
+    """
+    await _assert_window_open_context_created_evaluate(websocket, context_id, url_base)
+
+
+@pytest.mark.asyncio
+async def test_script_evaluate_windowOpen_contextCreated_evaluate_sandbox(
+    websocket, context_id, url_base
+):
+    """Verify that evaluating a script in a sandbox immediately upon receiving
+    `browsingContext.contextCreated` for a newly opened window with a URL
+    waits for the initial target document's realm rather than running against
+    (or failing due to destruction of) the transient initial empty document.
+    See: https://github.com/GoogleChromeLabs/chromium-bidi/issues/1102
+    """
+    await _assert_window_open_context_created_evaluate(
+        websocket, context_id, url_base, sandbox="some_sandbox"
+    )
 
 
 @pytest.mark.asyncio
