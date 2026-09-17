@@ -202,7 +202,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
 
         mProfileSupplier = profileObservableSupplier;
         mProfileChangeCallback = this::setAutocompleteProfile;
-        mProfileSupplier.addSyncObserverAndPostIfNonNull(mProfileChangeCallback);
+        mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileChangeCallback);
 
         // When AsyncViewInflation is disabled, OmniboxSuggestionsDropdown cannot create the
         // recycled view pool b/c it causes issues with the timing of prewarming views. Creation of
@@ -233,7 +233,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         mMediator = mediator;
         mProfileSupplier = profileObservableSupplier;
         mProfileChangeCallback = this::setAutocompleteProfile;
-        mProfileSupplier.addSyncObserverAndPostIfNonNull(mProfileChangeCallback);
+        mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileChangeCallback);
         mLocationBarEmbedder = locationBarEmbedder;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mViewProvider = new SuggestionListViewHolderProvider(new ModelList());

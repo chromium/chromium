@@ -30,6 +30,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.R;
@@ -55,6 +56,7 @@ public class AutocompleteCoordinatorUnitTest {
     @Mock private OmniboxSuggestionsContainer mSuggestionsContainer;
     @Mock private ViewGroup mParentView;
     @Mock private OmniboxResourceProvider mResourceProvider;
+    @Mock private Profile mProfile;
 
     @Before
     public void setUp() {
@@ -126,6 +128,23 @@ public class AutocompleteCoordinatorUnitTest {
         doReturn(false).when(mSuggestionsContainer).onKeyDown(eq(KeyEvent.KEYCODE_ENTER), any());
         assertFalse(sendKeyDownEvent(KeyEvent.KEYCODE_ENTER, KeyEvent.META_SHIFT_ON));
         verify(mSuggestionsContainer).onKeyDown(eq(KeyEvent.KEYCODE_ENTER), any());
+    }
+
+    @Test
+    public void testProfileObserver_synchronousBindingWhenNonNull() {
+        SettableMonotonicObservableSupplier<Profile> profileSupplier =
+                ObservableSuppliers.createMonotonic();
+        profileSupplier.set(mProfile);
+
+        new AutocompleteCoordinator(
+                mParentView,
+                mAutocompleteMediator,
+                profileSupplier,
+                mLocationBarEmbedder,
+                mModalDialogManagerSupplier,
+                mResourceProvider);
+
+        verify(mAutocompleteMediator).setAutocompleteProfile(mProfile);
     }
 
     private boolean sendKeyDownEvent(int keyCode, int metaState) {
