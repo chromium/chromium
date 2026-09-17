@@ -43,6 +43,7 @@
 #include "base/process/launch.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/google_update_constants.h"
@@ -50,6 +51,8 @@
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #endif
 
 namespace component_updater {
@@ -497,6 +500,11 @@ class PlatformRuntimeComponentInstallerWindowsTest
       base::FILE_EXE, base::PathService::CheckedGet(base::DIR_EXE)
                           .Append(installer::kChromeExe)};
   registry_util::RegistryOverrideManager registry_override_manager_;
+  // Forces platform management to NONE to prevent host OS enterprise state
+  // from leaking into tests (e.g., on corp dev workstations).
+  policy::ScopedManagementServiceOverrideForTesting platform_management_{
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE};
 };
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -921,6 +929,50 @@ TEST_F(PlatformRuntimeComponentInstallerWindowsTest,
   histogram_tester.ExpectUniqueSample(
       "ComponentUpdater.PlatformRuntime.InstallationResult.SystemLevel",
       PlatformRuntimeInstallationResult::kFailedInternal, 1);
+}
+
+TEST_F(PlatformRuntimeComponentInstallerWindowsTest,
+       OnCustomInstall_SystemLevel_InternalFailure_ManagedDevice) {
+  policy::ScopedManagementServiceOverrideForTesting scoped_platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+  install_static::ScopedInstallDetails scoped_install_details(
+      /*system_level=*/true);
+
+  base::FilePath inner_crx = component_install_dir_.GetPath().Append(
+      FILE_PATH_LITERAL("chrome_platform_runtime.crx3"));
+  ASSERT_TRUE(base::WriteFile(inner_crx, "dummy_crx_content"));
+
+  auto mock_app_command = Microsoft::WRL::Make<MockAppCommand>();
+  EXPECT_CALL(*mock_app_command.Get(), execute(_, _, _, _, _, _, _, _, _))
+      .WillOnce(testing::Return(S_OK));
+  EXPECT_CALL(*mock_app_command.Get(), get_status(_))
+      .WillOnce([](UINT* status) {
+        *status = COMMAND_STATUS_COMPLETE;
+        return S_OK;
+      });
+  EXPECT_CALL(*mock_app_command.Get(), get_exitCode(_))
+      .WillOnce([](DWORD* exit_code) {
+        *exit_code = installer::INSTALL_COMPONENT_FAILED_INTERNAL;
+        return S_OK;
+      });
+
+  auto mock_delegate = std::make_unique<
+      testing::NiceMock<MockPlatformRuntimeInstallerDelegate>>();
+  EXPECT_CALL(*mock_delegate,
+              GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
+      .WillOnce(testing::Return(mock_app_command));
+
+  PlatformRuntimeComponentInstallerPolicy policy(std::move(mock_delegate));
+  base::HistogramTester histogram_tester;
+
+  auto result = policy.OnCustomInstallForTesting(
+      base::DictValue(), component_install_dir_.GetPath());
+  EXPECT_NE(result.result.code, 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "ComponentUpdater.PlatformRuntime.InstallationResult.SystemLevel",
+      PlatformRuntimeInstallationResult::kFailedInternalManagedDevice, 1);
 }
 
 TEST_F(PlatformRuntimeComponentInstallerWindowsTest,

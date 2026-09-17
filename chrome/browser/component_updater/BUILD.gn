@@ -406,10 +406,12 @@ source_set("unit_tests") {
 
   if (is_win) {
     deps += [
+      "//chrome/browser/enterprise",
       "//chrome/browser/google",
       "//chrome/install_static/test:test_support",
       "//chrome/installer/util:with_no_strings",
       "//chrome/updater/app/server/win:updater_legacy_idl",
+      "//components/policy/core/common:test_support",
     ]
   }
 
