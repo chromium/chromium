@@ -1352,10 +1352,12 @@ void ServiceWorkerMainResourceLoader::StartResponse(
 
   // Synthetic and same-origin responses are same-origin to the requesting
   // client if the request initiator is same-origin with the request URL, so
-  // the timing allow check trivially passes. Filtered responses wrap a
+  // the timing allow check passes unless the response was fetched via a
+  // redirect chain that failed the TAO check. Filtered responses wrap a
   // cross-origin response for which the timing allow check must not be
-  // assumed to have passed unless the Timing-Allow-Origin check passes.
-  if (resource_request_.request_initiator &&
+  // assumed to have passed unless the response passed the TAO check and the
+  // Timing-Allow-Origin check passes for the request initiator.
+  if (resource_request_.request_initiator && response->timing_allow_passed &&
       ((resource_request_.request_initiator->IsSameOriginWith(
             resource_request_.url) &&
         (response_head_->response_type ==

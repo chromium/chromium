@@ -42,7 +42,7 @@ blink::mojom::FetchAPIResponsePtr BackgroundFetchSettledFetch::CloneResponse(
       mojo::Clone(response->parsed_headers), response->connection_info,
       response->alpn_negotiated_protocol, response->was_fetched_via_spdy,
       response->has_range_requested, response->auth_challenge_info,
-      response->request_include_credentials);
+      response->request_include_credentials, response->timing_allow_passed);
 }
 
 // static

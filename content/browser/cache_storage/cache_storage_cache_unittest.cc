@@ -898,7 +898,8 @@ class CacheStorageCacheTest : public testing::Test {
         /*alpn_negotiated_protocol=*/"unknown",
         /*was_fetched_via_spdy=*/false, /*has_range_requested=*/false,
         /*auth_challenge_info=*/std::nullopt,
-        /*request_include_credentials=*/true);
+        /*request_include_credentials=*/true,
+        /*timing_allow_passed=*/true);
   }
 
   void CopySideDataToResponse(const std::string& uuid,
@@ -3065,6 +3066,30 @@ TEST_P(CacheStorageCacheTestP, PutFailWriteHeaders) {
             /*error_count*/ mock_quota_manager_->write_error_tracker()
                 .begin()
                 ->second);
+}
+
+TEST_P(CacheStorageCacheTestP, TimingAllowPassed) {
+  EXPECT_TRUE(Keys());
+
+  // Put a response with timing_allow_passed = false.
+  blink::mojom::FetchAPIResponsePtr response = CreateNoBodyResponse();
+  response->timing_allow_passed = false;
+  EXPECT_TRUE(Put(no_body_request_, std::move(response)));
+
+  // Match the response and verify timing_allow_passed is preserved as false.
+  EXPECT_TRUE(Match(no_body_request_));
+  ASSERT_TRUE(callback_response_);
+  EXPECT_FALSE(callback_response_->timing_allow_passed);
+
+  // Put a response with timing_allow_passed = true.
+  blink::mojom::FetchAPIResponsePtr response2 = CreateBlobBodyResponse();
+  response2->timing_allow_passed = true;
+  EXPECT_TRUE(Put(body_request_, std::move(response2)));
+
+  // Match the response and verify timing_allow_passed is preserved as true.
+  EXPECT_TRUE(Match(body_request_));
+  ASSERT_TRUE(callback_response_);
+  EXPECT_TRUE(callback_response_->timing_allow_passed);
 }
 
 INSTANTIATE_TEST_SUITE_P(CacheStorageCacheTest,

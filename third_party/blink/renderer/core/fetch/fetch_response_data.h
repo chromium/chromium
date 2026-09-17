@@ -86,6 +86,7 @@ class CORE_EXPORT FetchResponseData final
   }
   bool HasRangeRequested() const { return has_range_requested_; }
   bool RequestIncludeCredentials() const;
+  bool TimingAllowPassed() const;
 
   int64_t GetPadding() const { return padding_; }
   void SetPadding(int64_t padding) { padding_ = padding; }
@@ -93,6 +94,7 @@ class CORE_EXPORT FetchResponseData final
     response_source_ = response_source;
   }
   void SetURLList(const Vector<KURL>&);
+  void SetTimingAllowPassed(bool);
   const Vector<KURL>& UrlList() const { return url_list_; }
   const Vector<KURL>& InternalURLList() const;
 
@@ -178,6 +180,7 @@ class CORE_EXPORT FetchResponseData final
   // algorithm.
   // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
   bool request_include_credentials_ : 1;
+  bool timing_allow_passed_ : 1;
 };
 
 }  // namespace blink

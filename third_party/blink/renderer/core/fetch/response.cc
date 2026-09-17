@@ -432,6 +432,7 @@ FetchResponseData* Response::CreateUnfilteredFetchResponseDataWithoutBody(
   response->SetHasRangeRequested(fetch_api_response.has_range_requested);
   response->SetRequestIncludeCredentials(
       fetch_api_response.request_include_credentials);
+  response->SetTimingAllowPassed(fetch_api_response.timing_allow_passed);
 
   for (const auto& header : fetch_api_response.headers)
     response->HeaderList()->Append(header.key, header.value);

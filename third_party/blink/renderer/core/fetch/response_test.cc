@@ -8,6 +8,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
@@ -207,6 +208,25 @@ TEST(ServiceWorkerResponseTest, BodyStreamBufferCloneError) {
           TextResourceDecoderOptions::CreateUTF8Decode()),
       client2, ASSERT_NO_EXCEPTION);
   blink::test::RunPendingTasks();
+}
+
+TEST(ServiceWorkerResponseTest, FromFetchAPIResponseTimingAllowPassed) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+
+  auto fetch_api_response = mojom::blink::FetchAPIResponse::New();
+  fetch_api_response->status_code = 200;
+  fetch_api_response->url_list.push_back(KURL("https://example.com/"));
+  fetch_api_response->timing_allow_passed = false;
+
+  Response* response =
+      Response::Create(scope.GetScriptState(), *fetch_api_response);
+  ASSERT_TRUE(response);
+
+  // Re-populating should preserve timing_allow_passed == false.
+  mojom::blink::FetchAPIResponsePtr repopulated =
+      response->PopulateFetchAPIResponse(KURL("https://example.com/"));
+  EXPECT_FALSE(repopulated->timing_allow_passed);
 }
 
 }  // namespace

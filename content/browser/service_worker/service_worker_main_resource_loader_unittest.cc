@@ -2380,6 +2380,7 @@ struct TimingAllowTestCase {
   network::mojom::FetchResponseType response_type;
   std::optional<std::string> timing_allow_origin;
   bool expected_timing_allow_passed;
+  bool response_timing_allow_passed = true;
 };
 
 class ServiceWorkerMainResourceLoaderTimingAllowTest
@@ -2403,6 +2404,7 @@ TEST_P(ServiceWorkerMainResourceLoaderTimingAllowTest, CheckTimingAllowPassed) {
   response->status_code = 200;
   response->status_text = "OK";
   response->response_type = test_case.response_type;
+  response->timing_allow_passed = test_case.response_timing_allow_passed;
   if (test_case.timing_allow_origin) {
     response->parsed_headers = network::mojom::ParsedHeaders::New();
     response->parsed_headers->timing_allow_origin =
@@ -2487,7 +2489,43 @@ INSTANTIATE_TEST_SUITE_P(
                             std::nullopt, false},
         TimingAllowTestCase{std::nullopt,
                             network::mojom::FetchResponseType::kCors, "*",
-                            false}));
+                            false},
+
+        // 4. Responses where response->timing_allow_passed is false:
+        // Even with same-origin initiator or valid TAO headers, they fail.
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kBasic,
+                            std::nullopt,
+                            /*expected_timing_allow_passed=*/false,
+                            /*response_timing_allow_passed=*/false},
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kDefault,
+                            std::nullopt,
+                            /*expected_timing_allow_passed=*/false,
+                            /*response_timing_allow_passed=*/false},
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kCors, "*",
+                            /*expected_timing_allow_passed=*/false,
+                            /*response_timing_allow_passed=*/false},
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kOpaque, "*",
+                            /*expected_timing_allow_passed=*/false,
+                            /*response_timing_allow_passed=*/false},
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kCors,
+                            "https://example.com",
+                            /*expected_timing_allow_passed=*/false,
+                            /*response_timing_allow_passed=*/false},
+        TimingAllowTestCase{"https://other.example.com",
+                            network::mojom::FetchResponseType::kBasic,
+                            "https://other.example.com",
+                            /*expected_timing_allow_passed=*/false,
+                            /*response_timing_allow_passed=*/false},
+        TimingAllowTestCase{"https://other.example.com",
+                            network::mojom::FetchResponseType::kCors,
+                            "https://other.example.com",
+                            /*expected_timing_allow_passed=*/false,
+                            /*response_timing_allow_passed=*/false}));
 
 }  // namespace service_worker_main_resource_loader_unittest
 }  // namespace content

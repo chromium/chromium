@@ -215,6 +215,7 @@ FetchResponseData* FetchResponseData::Clone(ScriptState* script_state,
   new_response->was_fetched_via_spdy_ = was_fetched_via_spdy_;
   new_response->has_range_requested_ = has_range_requested_;
   new_response->request_include_credentials_ = request_include_credentials_;
+  new_response->timing_allow_passed_ = timing_allow_passed_;
   if (auth_challenge_info_) {
     new_response->auth_challenge_info_ =
         std::make_unique<net::AuthChallengeInfo>(*auth_challenge_info_);
@@ -294,6 +295,7 @@ mojom::blink::FetchAPIResponsePtr FetchResponseData::PopulateFetchAPIResponse(
   response->was_fetched_via_spdy = was_fetched_via_spdy_;
   response->has_range_requested = has_range_requested_;
   response->request_include_credentials = request_include_credentials_;
+  response->timing_allow_passed = TimingAllowPassed();
   for (const auto& header : HeaderList()->List())
     response->headers.insert(header.first, header.second);
   response->parsed_headers = ParseHeaders(
@@ -383,6 +385,7 @@ void FetchResponseData::InitFromResourceResponse(
 
   SetAuthChallengeInfo(response.AuthChallengeInfo());
   SetRequestIncludeCredentials(response.RequestIncludeCredentials());
+  SetTimingAllowPassed(response.TimingAllowPassed());
 }
 
 FetchResponseData::FetchResponseData(Type type,
@@ -399,7 +402,20 @@ FetchResponseData::FetchResponseData(Type type,
       alpn_negotiated_protocol_("unknown"),
       was_fetched_via_spdy_(false),
       has_range_requested_(false),
-      request_include_credentials_(true) {}
+      request_include_credentials_(true),
+      timing_allow_passed_(true) {}
+
+bool FetchResponseData::TimingAllowPassed() const {
+  if (internal_response_) {
+    return internal_response_->TimingAllowPassed();
+  }
+  return timing_allow_passed_;
+}
+
+void FetchResponseData::SetTimingAllowPassed(bool timing_allow_passed) {
+  DCHECK(!internal_response_);
+  timing_allow_passed_ = timing_allow_passed;
+}
 
 void FetchResponseData::SetAuthChallengeInfo(
     const std::optional<net::AuthChallengeInfo>& auth_challenge_info) {

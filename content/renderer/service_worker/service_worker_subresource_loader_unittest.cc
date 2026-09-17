@@ -130,7 +130,8 @@ class FakeControllerServiceWorker
       std::string cache_storage_cache_name,
       network::mojom::FetchResponseType response_type =
           network::mojom::FetchResponseType::kDefault,
-      network::mojom::ParsedHeadersPtr parsed_headers = nullptr) {
+      network::mojom::ParsedHeadersPtr parsed_headers = nullptr,
+      bool timing_allow_passed = true) {
     auto response = blink::mojom::FetchAPIResponse::New();
     response->status_code = 200;
     response->status_text = "OK";
@@ -139,6 +140,7 @@ class FakeControllerServiceWorker
     response->response_time = response_time;
     response->cache_storage_cache_name = cache_storage_cache_name;
     response->parsed_headers = std::move(parsed_headers);
+    response->timing_allow_passed = timing_allow_passed;
     response->blob = std::move(blob_body);
     if (response->blob) {
       response->headers.emplace("Content-Length",
@@ -284,6 +286,9 @@ class FakeControllerServiceWorker
 
   void ResetTimingAllowOrigin() { parsed_headers_.reset(); }
 
+  void SetTimingAllowPassed(bool passed) { timing_allow_passed_ = passed; }
+  void ResetTimingAllowPassed() { timing_allow_passed_ = true; }
+
   // blink::mojom::ControllerServiceWorker:
   void DispatchFetchEventForSubresource(
       blink::mojom::DispatchFetchEventParamsPtr params,
@@ -309,7 +314,8 @@ class FakeControllerServiceWorker
             OkResponse(nullptr /* blob_body */, response_source_,
                        response_time_, cache_storage_cache_name_,
                        response_type_,
-                       parsed_headers_ ? parsed_headers_->Clone() : nullptr),
+                       parsed_headers_ ? parsed_headers_->Clone() : nullptr,
+                       timing_allow_passed_),
             std::move(timing), /*errors=*/nullptr);
         std::move(callback).Run(
             blink::mojom::ServiceWorkerEventStatus::COMPLETED);
@@ -469,6 +475,7 @@ class FakeControllerServiceWorker
   std::string cache_storage_cache_name_;
   base::Time response_time_;
   network::mojom::ParsedHeadersPtr parsed_headers_;
+  bool timing_allow_passed_ = true;
 };
 
 class FakeServiceWorkerContainerHost
@@ -1771,30 +1778,45 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, TimingAllowPassedByResponseType) {
   struct {
     network::mojom::FetchResponseType response_type;
     std::optional<std::string> timing_allow_origin;
+    bool response_timing_allow_passed;
     bool expected_timing_allow_passed;
   } kTestCases[] = {
-      // Basic and Default responses always pass timing allow check.
-      {network::mojom::FetchResponseType::kBasic, std::nullopt, true},
-      {network::mojom::FetchResponseType::kDefault, std::nullopt, true},
+      // Basic and Default responses pass timing allow check if
+      // response_timing_allow_passed is true.
+      {network::mojom::FetchResponseType::kBasic, std::nullopt, true, true},
+      {network::mojom::FetchResponseType::kDefault, std::nullopt, true, true},
+      // Basic and Default responses fail timing allow check if
+      // response_timing_allow_passed is false (e.g. redirected from cross-origin
+      // without TAO).
+      {network::mojom::FetchResponseType::kBasic, std::nullopt, false, false},
+      {network::mojom::FetchResponseType::kDefault, std::nullopt, false, false},
       // Filtered responses without Timing-Allow-Origin header fail.
-      {network::mojom::FetchResponseType::kCors, std::nullopt, false},
-      {network::mojom::FetchResponseType::kError, std::nullopt, false},
-      {network::mojom::FetchResponseType::kOpaque, std::nullopt, false},
-      {network::mojom::FetchResponseType::kOpaqueRedirect, std::nullopt, false},
-      // Filtered responses with valid Timing-Allow-Origin pass.
-      {network::mojom::FetchResponseType::kCors, "*", true},
-      {network::mojom::FetchResponseType::kOpaque, "*", true},
+      {network::mojom::FetchResponseType::kCors, std::nullopt, true, false},
+      {network::mojom::FetchResponseType::kError, std::nullopt, true, false},
+      {network::mojom::FetchResponseType::kOpaque, std::nullopt, true, false},
+      {network::mojom::FetchResponseType::kOpaqueRedirect, std::nullopt, true,
+       false},
+      // Filtered responses with valid Timing-Allow-Origin pass if
+      // response_timing_allow_passed is true.
+      {network::mojom::FetchResponseType::kCors, "*", true, true},
+      {network::mojom::FetchResponseType::kOpaque, "*", true, true},
       {network::mojom::FetchResponseType::kCors, "https://www.example.com",
-       true},
+       true, true},
+      // Filtered responses fail if response_timing_allow_passed is false even with
+      // TAO: *.
+      {network::mojom::FetchResponseType::kCors, "*", false, false},
+      {network::mojom::FetchResponseType::kOpaque, "*", false, false},
       // Filtered responses with mismatching Timing-Allow-Origin fail.
       {network::mojom::FetchResponseType::kCors, "https://other.example.com",
-       false},
+       true, false},
       {network::mojom::FetchResponseType::kOpaque, "https://other.example.com",
-       false},
+       true, false},
   };
 
   for (const auto& test_case : kTestCases) {
     fake_controller_.SetResponseType(test_case.response_type);
+    fake_controller_.SetTimingAllowPassed(
+        test_case.response_timing_allow_passed);
     if (test_case.timing_allow_origin) {
       fake_controller_.SetTimingAllowOrigin(*test_case.timing_allow_origin);
     } else {

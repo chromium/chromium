@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -297,6 +298,38 @@ TEST_F(FetchResponseDataTest, AuthChallengeInfo) {
   ASSERT_TRUE(fetch_api_response->auth_challenge_info.has_value());
   EXPECT_TRUE(fetch_api_response->auth_challenge_info->is_proxy);
   EXPECT_EQ("foobar", fetch_api_response->auth_challenge_info->challenge);
+}
+
+TEST_F(FetchResponseDataTest, TimingAllowPassed) {
+  FetchResponseData* response_data = CreateInternalResponse();
+  EXPECT_TRUE(response_data->TimingAllowPassed());
+
+  mojom::blink::FetchAPIResponsePtr fetch_api_response =
+      response_data->PopulateFetchAPIResponse(KURL());
+  EXPECT_TRUE(fetch_api_response->timing_allow_passed);
+
+  response_data->SetTimingAllowPassed(false);
+  EXPECT_FALSE(response_data->TimingAllowPassed());
+
+  fetch_api_response = response_data->PopulateFetchAPIResponse(KURL());
+  EXPECT_FALSE(fetch_api_response->timing_allow_passed);
+
+  // Filtered response should inherit TimingAllowPassed from internal response.
+  FetchResponseData* cors_response_data =
+      response_data->CreateCorsFilteredResponse(HTTPHeaderSet());
+  EXPECT_FALSE(cors_response_data->TimingAllowPassed());
+  fetch_api_response = cors_response_data->PopulateFetchAPIResponse(KURL());
+  EXPECT_FALSE(fetch_api_response->timing_allow_passed);
+
+  // Cloned response should preserve TimingAllowPassed.
+  DummyExceptionStateForTesting exception_state;
+  FetchResponseData* cloned_response_data =
+      response_data->Clone(nullptr, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_FALSE(cloned_response_data->TimingAllowPassed());
+  fetch_api_response =
+      cloned_response_data->PopulateFetchAPIResponse(KURL());
+  EXPECT_FALSE(fetch_api_response->timing_allow_passed);
 }
 
 }  // namespace blink

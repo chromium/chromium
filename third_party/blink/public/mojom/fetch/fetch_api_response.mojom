@@ -110,4 +110,8 @@ struct FetchAPIResponse {
   // algorithm.
   // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
   bool request_include_credentials = true;
+
+  // True if the Timing-Allow-Origin check passed for this response, including
+  // across any redirect chain if this response was fetched over the network.
+  bool timing_allow_passed = true;
 };
