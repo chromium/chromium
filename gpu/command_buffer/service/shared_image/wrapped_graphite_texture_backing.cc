@@ -178,10 +178,9 @@ bool WrappedGraphiteTextureBacking::Initialize() {
   for (int plane = 0; plane < num_planes; ++plane) {
     // is_yuv_plane is false here because the planes are separate single plane
     // textures, not planes of a multi-planar YUV texture.
-    constexpr bool is_yuv_plane = false;
     skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
-        context_state_->gr_context_type(), format(), plane, is_yuv_plane,
-        mipmapped, /*scanout_dcomp_surface=*/false);
+        context_state_->gr_context_type(), format(), plane, mipmapped,
+        /*scanout_dcomp_surface=*/false);
     auto sk_size = gfx::SizeToSkISize(format().GetPlaneSize(plane, size()));
     auto texture = recorder()->createBackendTexture(sk_size, texture_info);
     if (!texture.isValid()) {
@@ -204,7 +203,7 @@ bool WrappedGraphiteTextureBacking::InitializeWithData(
 
   skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
       context_state_->gr_context_type(), format(),
-      /*plane_index=*/0, /*is_yuv_plane=*/false,
+      /*plane_index=*/0,
       /*mipmapped=*/false, /*scanout_dcomp_surface=*/false);
   skgpu::graphite::BackendTexture texture = recorder()->createBackendTexture(
       gfx::SizeToSkISize(size()), texture_info);
