@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "services/device/geolocation/geolocation_context.h"
-#include "services/device/public/cpp/geolocation/geoposition.h"
 
 namespace device {
 
@@ -53,19 +52,6 @@ GeolocationImpl::~GeolocationImpl() {
     }
     ReportCurrentPosition();
   }
-}
-
-void GeolocationImpl::PauseUpdates() {
-  geolocation_subscription_ = {};
-}
-
-void GeolocationImpl::ResumeUpdates() {
-  if (position_override_) {
-    OnLocationUpdate(*position_override_);
-    return;
-  }
-
-  StartListeningForUpdates();
 }
 
 void GeolocationImpl::StartListeningForUpdates() {
@@ -155,11 +141,6 @@ void GeolocationImpl::SetOverride(const mojom::GeopositionResult& result) {
   }
 
   position_override_ = result.Clone();
-  if (result.is_error() ||
-      (result.is_position() && !ValidateGeoposition(*result.get_position()))) {
-    ResumeUpdates();
-  }
-
   geolocation_subscription_ = {};
 
   OnLocationUpdate(*position_override_);

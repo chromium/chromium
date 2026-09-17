@@ -36,10 +36,6 @@ class GeolocationImpl : public mojom::Geolocation {
   // Starts listening for updates.
   void StartListeningForUpdates();
 
-  // Pauses and resumes sending updates to the client of this instance.
-  void PauseUpdates();
-  void ResumeUpdates();
-
   // Enables and disables geolocation override.
   void SetOverride(const mojom::GeopositionResult& result);
   void ClearOverride();
