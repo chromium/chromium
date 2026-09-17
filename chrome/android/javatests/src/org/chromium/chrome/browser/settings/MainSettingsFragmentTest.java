@@ -903,7 +903,7 @@ public class MainSettingsFragmentTest {
         // This is an instrumentation test, so it's hard to force device form factor. Instead,
         // we just check that the flag is set the way we expect it to be set.
         var flagMatcher =
-                SettingsInTab.isEnabled()
+                SettingsInTab.shouldOpenSettingsInTab()
                         ? hasFlag(Intent.FLAG_ACTIVITY_NEW_TASK)
                         : not(hasFlag(Intent.FLAG_ACTIVITY_NEW_TASK));
         intended(
@@ -1179,7 +1179,7 @@ public class MainSettingsFragmentTest {
 
     private void waitForOptionsMenu() {
         // SettingsInTab doesn't have an options / help menu.
-        if (SettingsInTab.isEnabled()) return;
+        if (SettingsInTab.shouldOpenSettingsInTab()) return;
 
         CriteriaHelper.pollUiThread(
                 () -> {

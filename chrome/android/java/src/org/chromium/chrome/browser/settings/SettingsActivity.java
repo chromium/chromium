@@ -126,7 +126,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 SettingsMenuHelper.Delegate,
                 SettingsContainmentHelper.Delegate,
                 MultiColumnSettings.Observer,
-                SettingsActivityInterface {
+                SettingsActivityInterface,
+                SettingsHost {
     private static final String TAG = "SettingsActivity";
 
     // Key used to store activity start time in the Bundle to have it survive activity re-creation.
@@ -819,6 +820,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @Override
     public PreferenceUpdateObserver getPreferenceUpdateObserver() {
         return this;
+    }
+
+    @Override
+    public boolean isShownInTab() {
+        // This activity hosts settings itself, so settings is never shown in a browser tab here.
+        return false;
     }
 
     /**

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -24,6 +25,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.settings.FinancialAccountsManagementFragment;
@@ -235,6 +237,44 @@ public class SettingsNavigationImplTest {
 
         // First show some other fragment.
         mSettingsNavigationImpl.startSettings(activity, SecondFakeSettingsFragment.class, null);
+        hostFragment.getChildFragmentManager().executePendingTransactions();
+        Fragment active = hostFragment.getActiveFragment();
+        assertTrue(active instanceof SecondFakeSettingsFragment);
+
+        // Now call finishCurrentSettings on active fragment.
+        mSettingsNavigationImpl.finishCurrentSettings(active);
+        hostFragment.getChildFragmentManager().executePendingTransactions();
+
+        // Should return to initial fragment without casting activity to SettingsActivity.
+        assertTrue(hostFragment.getActiveFragment() instanceof FirstFakeSettingsFragment);
+    }
+
+    /**
+     * {@link SettingsInTab#shouldOpenSettingsInTab()} depends on the current screen width, so it
+     * can become false while settings is already open in a tab, for example when the user folds a
+     * foldable device. {@code finishCurrentSettings()} must keep delegating to the host fragment
+     * instead of casting the activity to {@link SettingsActivity}. Regression test for
+     * crbug.com/562619494.
+     */
+    @Test
+    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testFinishCurrentSettings_SettingsInTabDisabled_DelegatesToHostFragment() {
+        var scenario = Robolectric.buildActivity(TestActivity.class).setup();
+        TestActivity activity = scenario.get();
+        TestSettingsHostFragment hostFragment = new TestSettingsHostFragment();
+        activity.getSupportFragmentManager()
+                .beginTransaction()
+                .add(
+                        android.R.id.content,
+                        hostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+        assertFalse(SettingsInTab.shouldOpenSettingsInTab());
+
+        // Show a fragment in the host directly. startSettings() cannot be used here because it
+        // only routes to the host fragment when settings would be opened in a tab.
+        hostFragment.showFragment(
+                new SecondFakeSettingsFragment(), /* addToBackStack= */ false, /* tag= */ null);
         hostFragment.getChildFragmentManager().executePendingTransactions();
         Fragment active = hostFragment.getActiveFragment();
         assertTrue(active instanceof SecondFakeSettingsFragment);

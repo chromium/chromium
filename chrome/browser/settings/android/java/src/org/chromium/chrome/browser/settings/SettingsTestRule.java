@@ -63,7 +63,7 @@ public class SettingsTestRule<T extends Fragment>
     public ChromeBaseAppCompatActivity launchActivity(Intent startIntent) {
         Context context = ContextUtils.getApplicationContext();
         Class<? extends ChromeBaseAppCompatActivity> targetClass =
-                SettingsInTab.isEnabled()
+                SettingsInTab.shouldOpenSettingsInTab()
                         ? SettingsInTabTestActivity.class
                         : SettingsActivity.class;
         startIntent.setClass(context, targetClass);

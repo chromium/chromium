@@ -92,7 +92,7 @@ public class SettingsIntentUtil {
                 fragmentArgs,
                 addToBackStack,
                 /* tag= */ null,
-                SettingsInTab.isEnabled());
+                SettingsInTab.shouldOpenSettingsInTab());
     }
 
     /**

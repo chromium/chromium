@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -33,7 +32,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.After;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,7 +45,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -125,9 +122,20 @@ public class SettingsHostFragmentTest {
 
     @Test
     @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
-    public void testConstructor_SettingsInTabDisabled_ThrowsAssertionError() {
-        Assume.assumeTrue(BuildConfig.ENABLE_ASSERTS);
-        assertThrows(AssertionError.class, SettingsHostFragment::new);
+    public void testConstructor_SettingsInTabDisabled_Succeeds() {
+        // The framework re-instantiates this fragment when the activity is recreated, which can
+        // happen after a screen width change that makes SettingsInTab.shouldOpenSettingsInTab()
+        // return false. Construction must keep working so the open settings tab survives. See
+        // crbug.com/562619494.
+        SettingsHostFragment fragment = new SettingsHostFragment();
+        assertTrue(fragment.isShownInTab());
+    }
+
+    @Test
+    public void testIsShownInTab() {
+        attachHostFragment();
+        assertTrue(mSettingsHostFragment.isShownInTab());
+        assertTrue(SettingsHostUtil.isShownInTab(mSettingsHostFragment));
     }
 
     @Test

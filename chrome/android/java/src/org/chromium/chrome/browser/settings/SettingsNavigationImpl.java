@@ -412,43 +412,42 @@ public class SettingsNavigationImpl implements SettingsNavigation {
 
     @Override
     public void finishCurrentSettings(Fragment fragment) {
-        // SettingsInTab does not use SettingsActivity.
-        if (useSettingsInTab()) {
-            // Prefer looking up the enclosing SettingsHostFragment directly from the fragment's
-            // parent hierarchy. When Chrome is in the background or during lifecycle transitions,
-            // the host fragment view may not report isShown(), which causes the activity-level
-            // lookup to return null.
-            SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(fragment);
-            if (settingsHostFragment == null) {
-                Activity activity = fragment.getActivity();
-                if (activity != null) {
-                    settingsHostFragment = SettingsHostFragment.get(activity);
-                }
-            }
-            if (settingsHostFragment != null) {
-                settingsHostFragment.finishCurrentSettings(fragment);
-            }
+        // Branch on how settings is actually hosted, not on SettingsInTab, whose value depends on
+        // the current screen width and can change while settings is open. Otherwise the cast to
+        // SettingsActivity below can be reached for a tab-hosted fragment. See
+        // crbug.com/562619494.
+        //
+        // Prefer looking up the enclosing SettingsHostFragment directly from the fragment's parent
+        // hierarchy. When Chrome is in the background or during lifecycle transitions, the host
+        // fragment view may not report isShown(), which causes the activity-level lookup to return
+        // null.
+        Activity activity = fragment.getActivity();
+        SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(fragment);
+        if (settingsHostFragment == null && activity != null) {
+            settingsHostFragment = SettingsHostFragment.get(activity);
+        }
+        if (settingsHostFragment != null) {
+            settingsHostFragment.finishCurrentSettings(fragment);
             return;
         }
 
-        Activity activity = fragment.getActivity();
-        if (activity == null) return;
-
-        ((SettingsActivity) activity).finishCurrentSettings(fragment);
+        if (activity instanceof SettingsActivity settingsActivity) {
+            settingsActivity.finishCurrentSettings(fragment);
+        }
     }
 
     @Override
     public void executePendingNavigations(Activity activity) {
-        // SettingsInTab does not use SettingsActivity.
-        if (useSettingsInTab()) {
-            SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
-            if (settingsHostFragment != null) {
-                settingsHostFragment.executePendingNavigations();
-            }
+        // See the comment in finishCurrentSettings() above.
+        SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
+        if (settingsHostFragment != null) {
+            settingsHostFragment.executePendingNavigations();
             return;
         }
 
-        ((SettingsActivity) activity).executePendingNavigations();
+        if (activity instanceof SettingsActivity settingsActivity) {
+            settingsActivity.executePendingNavigations();
+        }
     }
 
     @Override
@@ -462,6 +461,6 @@ public class SettingsNavigationImpl implements SettingsNavigation {
         if (mUseSettingsActivityForTesting) {
             return false;
         }
-        return SettingsInTab.isEnabled();
+        return SettingsInTab.shouldOpenSettingsInTab();
     }
 }

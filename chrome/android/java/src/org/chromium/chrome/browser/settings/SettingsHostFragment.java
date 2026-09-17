@@ -53,7 +53,8 @@ import java.lang.ref.WeakReference;
 public class SettingsHostFragment extends Fragment
         implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
                 PreferenceUpdateObserver,
-                SettingsContainmentHelper.Delegate {
+                SettingsContainmentHelper.Delegate,
+                SettingsHost {
 
     public static final String SETTINGS_NATIVE_PAGE_TAG = "settings_native_page";
 
@@ -93,9 +94,12 @@ public class SettingsHostFragment extends Fragment
     private int mPendingPopBackCount;
 
     /** Public constructor needed for Fragment re-instantiation. */
-    public SettingsHostFragment() {
-        assert SettingsInTab.isEnabled()
-                : "SettingsInTab feature must be enabled to use SettingsHostFragment.";
+    public SettingsHostFragment() {}
+
+    @Override
+    public boolean isShownInTab() {
+        // This fragment is only used to host settings inside a tab. See SettingsPage.
+        return true;
     }
 
     /** Sets the dependency provider for child fragments. */

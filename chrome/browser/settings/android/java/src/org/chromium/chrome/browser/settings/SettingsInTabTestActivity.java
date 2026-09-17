@@ -54,6 +54,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 public class SettingsInTabTestActivity extends ChromeBaseAppCompatActivity
         implements SnackbarManageable,
                 SettingsActivityInterface,
+                SettingsHost,
                 ActivityLifecycleDispatcherProvider {
     private static final int TAB_ID = 123;
     private Profile mProfile;
@@ -72,8 +73,14 @@ public class SettingsInTabTestActivity extends ChromeBaseAppCompatActivity
             new OneshotSupplierImpl<>();
 
     @Override
+    public boolean isShownInTab() {
+        // This activity simulates hosting settings in a tab.
+        return true;
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        assert SettingsInTab.isEnabled();
+        assert SettingsInTab.shouldOpenSettingsInTab();
 
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
         mProfile = ProfileManager.getLastUsedRegularProfile();

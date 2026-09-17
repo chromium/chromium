@@ -19,21 +19,45 @@ import org.chromium.ui.display.DisplayUtil;
 @NullMarked
 public class SettingsInTab {
     /**
-     * Returns true if the feature flag is enabled and the device form factor is tablet/desktop.
-     * Desktop uses SettingsInTabDesktop; tablet uses SettingsInTab.
+     * Returns whether the Settings in Tab feature flags are enabled, without considering the device
+     * form factor or the screen size.
+     *
+     * <p>Use this to decide whether settings may be hosted in a tab at all, for example when
+     * recreating an existing settings tab. Form factor must not be considered there, because the
+     * screen width can change while settings is open (e.g. folding a foldable device or changing
+     * the display density on automotive) and an open settings tab must keep working. See
+     * crbug.com/562619494.
+     *
+     * <p>To decide whether to <em>open</em> settings in a tab, use {@link
+     * #shouldOpenSettingsInTab()} instead. To find out how an already-open settings UI is hosted,
+     * use {@link SettingsHost#isShownInTab()}, usually via {@link SettingsHostUtil}.
      */
-    public static boolean isEnabled() {
+    public static boolean isFeatureEnabled() {
         // SettingsInTab requires SettingsMultiColumn, which is disabled by some tests.
         if (!ChromeFeatureList.sSettingsMultiColumn.isEnabled()) return false;
 
+        // Desktop uses SettingsInTabDesktop; tablet uses SettingsInTab.
+        return DeviceInfo.isDesktop()
+                ? ChromeFeatureList.sSettingsInTabDesktop.isEnabled()
+                : ChromeFeatureList.sSettingsInTab.isEnabled();
+    }
+
+    /**
+     * Returns whether opening settings should create a settings tab rather than starting {@code
+     * SettingsActivity}. True if the feature flag is enabled and the device form factor is
+     * tablet/desktop.
+     *
+     * <p>This depends on the current screen width, so its value can change over the life of the
+     * process. It must therefore only be called when settings is opened, and the result must be
+     * remembered by the resulting settings UI. To find out how an already-open settings UI is
+     * hosted, use {@link SettingsHost#isShownInTab()}, usually via {@link SettingsHostUtil}.
+     */
+    public static boolean shouldOpenSettingsInTab() {
+        if (!isFeatureEnabled()) return false;
+
         // DeviceInfo.isDesktop() is checked in addition to isNonMultiDisplayContextOnTablet()
         // because desktop windows can be resized to narrow widths (< 600dp).
-        if (DeviceInfo.isDesktop()) {
-            return ChromeFeatureList.sSettingsInTabDesktop.isEnabled();
-        }
-
-        // Tablets and foldables use the SettingsInTab flag.
-        if (!ChromeFeatureList.sSettingsInTab.isEnabled()) return false;
+        if (DeviceInfo.isDesktop()) return true;
 
         // Foldables must be explicitly checked because they act as tablets while unfolded, but if
         // the user has settings open and folds the device, we must continue to display settings.
@@ -56,5 +80,19 @@ public class SettingsInTab {
             }
         }
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+    }
+
+    /**
+     * Returns whether opening settings should create a settings tab rather than starting {@code
+     * SettingsActivity}.
+     *
+     * <p>TODO(crbug.com/562619494): Remove this method and call {@link #shouldOpenSettingsInTab()}
+     * directly. This is a temporary alias kept so that the call sites outside of settings code are
+     * not renamed twice: the follow-up CLs that make the "shown in tab" state sticky have to
+     * revisit each of them anyway.
+     */
+    @Deprecated
+    public static boolean isEnabled() {
+        return shouldOpenSettingsInTab();
     }
 }

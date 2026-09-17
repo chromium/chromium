@@ -62,11 +62,14 @@ android_library("internal_java") {
 # Avoid circular dependencies for this small, widely-used helper class.
 android_library("settings_in_tab_java") {
   sources = [
+    "android/java/src/org/chromium/chrome/browser/settings/SettingsHost.java",
+    "android/java/src/org/chromium/chrome/browser/settings/SettingsHostUtil.java",
     "android/java/src/org/chromium/chrome/browser/settings/SettingsInTab.java",
   ]
   deps = [
     "//base:base_java",
     "//chrome/browser/flags:java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }
