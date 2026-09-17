@@ -225,6 +225,42 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) InteractionSequence {
   // available, it will be null.
   using StepEndCallback = base::OnceCallback<void(TrackedElement* element)>;
 
+  // Represents a single frame in the step stack.
+  //
+  // This is intended for use only in tests (e.g. via Kombucha's
+  // InteractiveTestApi) and is not used in production sequences (such as User
+  // Education tutorials). In production, step stacks remain empty and allocate
+  // no dynamic memory.
+  //
+  // The step stack is maintained purely for easier debugging and failure
+  // diagnosis when a test sequence fails; it does not affect sequence
+  // execution.
+  //
+  // This is planned as an improvement and replacement upon the string-prefixing
+  // system used initially to track step nesting (e.g. AddDescriptionPrefix).
+  struct COMPONENT_EXPORT(UI_BASE_INTERACTION) StepFrame {
+    StepFrame();
+    ~StepFrame();
+    StepFrame(const StepFrame& other);
+    StepFrame& operator=(const StepFrame& other);
+    StepFrame(StepFrame&& other) noexcept;
+    StepFrame& operator=(StepFrame&& other) noexcept;
+    explicit StepFrame(std::string description, int step_number = 0);
+
+    // Formats this frame as e.g. "In MyVerb, step 3", "In test, step 1".
+    std::string ToString() const;
+
+    // The description or name of the enclosing sequence or step context (e.g.
+    // "test", "MyVerb", or a custom verb name).
+    std::string description;
+
+    // The 1-based index of this step within its enclosing sequence, or 0 if
+    // not applicable / not indexed.
+    int step_number = 0;
+  };
+
+  using StepStack = std::vector<StepFrame>;
+
   // Information passed when a sequence fails or is aborted.
   struct COMPONENT_EXPORT(UI_BASE_INTERACTION) AbortedData {
     AbortedData();
@@ -240,6 +276,10 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) InteractionSequence {
 
     // The description of the failed step.
     std::string step_description;
+
+    // The stack of parent/wrapper steps leading to this step, from
+    // innermost to outermost.
+    StepStack step_stack;
 
     // The step type of the failed step.
     StepType step_type = StepType::kShown;
@@ -319,6 +359,10 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) InteractionSequence {
     // to the abort callback on failure.
     std::string description;
 
+    // The stack of parent/wrapper steps leading to this step, from
+    // innermost to outermost.
+    StepStack step_stack;
+
     // These only apply if the type of the step is kSubsequence.
     SubsequenceMode subsequence_mode = SubsequenceMode::kAll;
     std::vector<SubsequenceData> subsequence_data;
@@ -368,6 +412,12 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) InteractionSequence {
 
    private:
     friend class InteractionSequence;
+
+    // Recursively propagates step frames from parent subsequence steps
+    // (e.g., If, Then, Else, InParallel) down to the steps within each child
+    // subsequence, ensuring nested steps have a complete step stack for failure
+    // reporting.
+    void PopulateSubsequenceStepStacks();
 
     std::unique_ptr<InteractionSequence> BuildSubsequence(
         const Configuration* owner_config,
@@ -495,6 +545,14 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) InteractionSequence {
     // description.
     StepBuilder& AddDescriptionPrefix(std::string_view prefix) &;
     StepBuilder&& AddDescriptionPrefix(std::string_view prefix) &&;
+
+    // Adds a frame to the step stack. Intended for test usage only.
+    StepBuilder& AddStepFrame(StepFrame frame) &;
+    StepBuilder&& AddStepFrame(StepFrame frame) &&;
+
+    // Access the step stack. Intended for test usage only.
+    const StepStack& step_stack() const { return step_->step_stack; }
+    StepStack& step_stack() { return step_->step_stack; }
 
     // Builds the step. The builder will not be valid after calling Build().
     std::unique_ptr<Step> Build();
@@ -749,6 +807,14 @@ COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern std::ostream& operator<<(
     std::ostream& os,
     const InteractionSequence::AbortedData& aborted_data);
+
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
+extern std::ostream& operator<<(std::ostream& os,
+                                const InteractionSequence::StepFrame& frame);
+
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
+extern std::ostream& operator<<(std::ostream& os,
+                                const InteractionSequence::StepStack& stack);
 
 }  // namespace ui
 

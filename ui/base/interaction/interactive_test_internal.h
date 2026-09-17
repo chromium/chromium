@@ -600,6 +600,10 @@ bool InteractiveTestPrivate::AddStateObserver(
 inline ui::test::internal::MultiStep& operator+=(
     ui::test::internal::MultiStep& steps,
     ui::InteractionSequence::StepBuilder&& step) {
+  // Step numbering in step frames is 1-based to match Kombucha step indexes,
+  // so the newly appended step gets index `steps.size() + 1`.
+  const int step_number = static_cast<int>(steps.size()) + 1;
+  step.AddStepFrame(ui::InteractionSequence::StepFrame("", step_number));
   steps.push_back(std::move(step));
   return steps;
 }
@@ -607,7 +611,22 @@ inline ui::test::internal::MultiStep& operator+=(
 inline ui::test::internal::MultiStep& operator+=(
     ui::test::internal::MultiStep& steps,
     ui::test::internal::MultiStep&& other) {
-  std::ranges::move(other, std::back_inserter(steps));
+  const int offset = static_cast<int>(steps.size());
+  for (auto& step : other) {
+    auto& stack = step.step_stack();
+    if (!stack.empty() && stack.back().description.empty()) {
+      // Flatten anonymous steps: offset the existing step index so the
+      // incoming steps continue the parent sequence rather than adding a
+      // redundant anonymous nesting level.
+      stack.back().step_number += offset;
+    } else {
+      // Nest named steps: the incoming steps already have a description, so
+      // wrap them with a new parent frame at the current step index in `steps`.
+      step.AddStepFrame(ui::InteractionSequence::StepFrame(
+          "", static_cast<int>(steps.size()) + 1));
+    }
+    steps.push_back(std::move(step));
+  }
   return steps;
 }
 

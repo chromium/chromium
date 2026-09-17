@@ -122,6 +122,32 @@ bool AllowNullElementInStartCallback(InteractionSequence::StepType step_type) {
 
 }  // anonymous namespace
 
+InteractionSequence::StepFrame::StepFrame() = default;
+InteractionSequence::StepFrame::~StepFrame() = default;
+InteractionSequence::StepFrame::StepFrame(const StepFrame& other) = default;
+InteractionSequence::StepFrame& InteractionSequence::StepFrame::operator=(
+    const StepFrame& other) = default;
+InteractionSequence::StepFrame::StepFrame(StepFrame&& other) noexcept = default;
+InteractionSequence::StepFrame& InteractionSequence::StepFrame::operator=(
+    StepFrame&& other) noexcept = default;
+InteractionSequence::StepFrame::StepFrame(std::string description_,
+                                          int step_number_)
+    : description(std::move(description_)), step_number(step_number_) {}
+
+std::string InteractionSequence::StepFrame::ToString() const {
+  std::ostringstream oss;
+  if (step_number > 0) {
+    if (!description.empty()) {
+      oss << "In " << description << ", step " << step_number;
+    } else {
+      oss << "step " << step_number;
+    }
+  } else if (!description.empty()) {
+    oss << "In " << description;
+  }
+  return oss.str();
+}
+
 InteractionSequence::AbortedData::AbortedData() = default;
 InteractionSequence::AbortedData::~AbortedData() = default;
 InteractionSequence::AbortedData::AbortedData(const AbortedData&) = default;
@@ -265,8 +291,25 @@ InteractionSequence::Builder::SetDefaultStepStartMode(
   return *this;
 }
 
+void InteractionSequence::Builder::PopulateSubsequenceStepStacks() {
+  for (const auto& step : configuration_->steps) {
+    if (step->type != StepType::kSubsequence) {
+      continue;
+    }
+    for (auto& sub : step->subsequence_data) {
+      for (auto& child_step : sub.builder.configuration_->steps) {
+        child_step->step_stack.insert(child_step->step_stack.end(),
+                                      step->step_stack.begin(),
+                                      step->step_stack.end());
+      }
+      sub.builder.PopulateSubsequenceStepStacks();
+    }
+  }
+}
+
 std::unique_ptr<InteractionSequence> InteractionSequence::Builder::Build() {
   DCHECK(!configuration_->steps.empty());
+  PopulateSubsequenceStepStacks();
   DCHECK(configuration_->context)
       << "If no view is provided, Builder::SetContext() must be called.";
 
@@ -492,7 +535,14 @@ InteractionSequence::StepBuilder::SetDescription(
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::AddDescriptionPrefix(
     std::string_view prefix) & {
-  step_->description = base::StrCat({prefix, ": ", step_->description});
+  if (!step_->step_stack.empty() &&
+      step_->step_stack.back().description.empty()) {
+    step_->step_stack.back().description = std::string(prefix);
+  } else if (!step_->description.empty()) {
+    step_->description = base::StrCat({prefix, ": ", step_->description});
+  } else {
+    step_->description = std::string(prefix);
+  }
   return *this;
 }
 
@@ -502,8 +552,21 @@ InteractionSequence::StepBuilder::AddDescriptionPrefix(
   return std::move(this->AddDescriptionPrefix(prefix));
 }
 
+InteractionSequence::StepBuilder&
+InteractionSequence::StepBuilder::AddStepFrame(StepFrame frame) & {
+  step_->step_stack.push_back(std::move(frame));
+  return *this;
+}
+
+InteractionSequence::StepBuilder&&
+InteractionSequence::StepBuilder::AddStepFrame(StepFrame frame) && {
+  return std::move(this->AddStepFrame(std::move(frame)));
+}
+
 std::unique_ptr<InteractionSequence::Step>
 InteractionSequence::StepBuilder::Build() {
+  step_->step_stack.insert(step_->step_stack.begin(),
+                           StepFrame(step_->description));
   return std::move(step_);
 }
 
@@ -666,6 +729,7 @@ InteractionSequence::AbortedData InteractionSequence::BuildAbortedData(
       aborted_data.step_type = next_step()->type;
       aborted_data.element_id = next_step()->id;
       aborted_data.step_description = next_step()->description;
+      aborted_data.step_stack = next_step()->step_stack;
       if (reason == AbortedReason::kSubsequenceFailed) {
         for (const auto& data : next_step()->subsequence_data) {
           aborted_data.subsequence_failures.emplace_back(
@@ -692,6 +756,7 @@ InteractionSequence::AbortedData InteractionSequence::BuildAbortedData(
     aborted_data.element_id = current_step_->id;
     aborted_data.element = SafeElementReference(current_step_->element);
     aborted_data.step_description = current_step_->description;
+    aborted_data.step_stack = current_step_->step_stack;
     if (reason == AbortedReason::kElementHiddenDuringStep && next_step()) {
       // This may be due to the next step failing to happen, so store the next
       // step as well as a convenience (if present).
@@ -700,6 +765,7 @@ InteractionSequence::AbortedData InteractionSequence::BuildAbortedData(
       waiting_for.step_type = next_step()->type;
       waiting_for.element_id = next_step()->id;
       waiting_for.step_description = next_step()->description;
+      waiting_for.step_stack = next_step()->step_stack;
       aborted_data.subsequence_failures.emplace_back(std::move(waiting_for));
       if (const auto* ctx =
               std::get_if<ui::ElementContext>(&next_step()->context)) {
@@ -1652,8 +1718,14 @@ void PrintTo(const InteractionSequence::AbortedData& data, std::ostream* os) {
   if (data.element) {
     *os << "; element " << data.element.get();
   }
+
+  // Pointer to the failure data whose nested step stack should be printed at
+  // the end of this message. This will be nullified if a failed child
+  // subsequence will handle printing its own stack recursively.
+  const InteractionSequence::AbortedData* aborted_data_with_stack = &data;
   if (data.aborted_reason ==
       InteractionSequence::AbortedReason::kSubsequenceFailed) {
+    aborted_data_with_stack = nullptr;
     *os << "\nsubsequence failures:";
     size_t i = 0;
     for (auto& subsequence : data.subsequence_failures) {
@@ -1665,6 +1737,7 @@ void PrintTo(const InteractionSequence::AbortedData& data, std::ostream* os) {
   } else if (data.aborted_reason ==
                  InteractionSequence::AbortedReason::kSequenceTimedOut &&
              !data.subsequence_failures.empty()) {
+    aborted_data_with_stack = nullptr;
     *os << "\nsubsequence failures and timeouts:";
     size_t i = 0;
     for (auto& subsequence : data.subsequence_failures) {
@@ -1685,6 +1758,11 @@ void PrintTo(const InteractionSequence::AbortedData& data, std::ostream* os) {
       *os << next_step.step_description;
     }
     *os << "); id " << next_step.element_id << " }";
+    aborted_data_with_stack = &next_step;
+  }
+
+  if (aborted_data_with_stack) {
+    *os << aborted_data_with_stack->step_stack;
   }
 }
 
@@ -1715,6 +1793,28 @@ extern std::ostream& operator<<(std::ostream& os,
 extern std::ostream& operator<<(std::ostream& os,
                                 const InteractionSequence::AbortedData& data) {
   PrintTo(data, &os);
+  return os;
+}
+
+extern std::ostream& operator<<(std::ostream& os,
+                                const InteractionSequence::StepFrame& frame) {
+  return os << frame.ToString();
+}
+
+extern std::ostream& operator<<(std::ostream& os,
+                                const InteractionSequence::StepStack& stack) {
+  if (stack.size() <= 1) {
+    return os;
+  }
+  os << "\nNested steps (outermost to innermost):";
+  size_t frame_idx = 0;
+  for (auto it = stack.rbegin(); it != stack.rend() - 1; ++it) {
+    os << "\n  #" << frame_idx++ << ": " << *it;
+    auto next_it = it + 1;
+    if (!next_it->description.empty()) {
+      os << ": " << next_it->description;
+    }
+  }
   return os;
 }
 

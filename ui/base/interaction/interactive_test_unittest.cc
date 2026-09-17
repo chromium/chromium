@@ -7,8 +7,10 @@
 #include <functional>
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/functional/callback_helpers.h"
@@ -16,6 +18,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -2450,5 +2455,317 @@ TEST_F(InteractiveTestTest, TwoAdditionalContexts) {
         return private_test_impl().GetAdditionalContext().empty();
       }));
 }
+
+namespace {
+
+struct ExpectedFrame {
+  std::string container;
+  std::optional<int> step_number;
+  std::string child;
+
+  std::string Format(size_t frame_index) const {
+    std::string result;
+    if (step_number.has_value() && *step_number > 0) {
+      if (!container.empty()) {
+        result = base::StringPrintf("  #%zu: In %s, step %d", frame_index,
+                                    container.c_str(), *step_number);
+      } else {
+        result =
+            base::StringPrintf("  #%zu: step %d", frame_index, *step_number);
+      }
+    } else if (!container.empty()) {
+      result =
+          base::StringPrintf("  #%zu: In %s", frame_index, container.c_str());
+    }
+    if (!child.empty()) {
+      base::StringAppendF(&result, ": %s", child.c_str());
+    }
+    return result;
+  }
+};
+
+ExpectedFrame Frame(std::string container, int step_number, std::string child) {
+  return ExpectedFrame{std::move(container), step_number, std::move(child)};
+}
+
+ExpectedFrame Frame(std::string container, std::string child) {
+  return ExpectedFrame{std::move(container), std::nullopt, std::move(child)};
+}
+
+std::vector<std::string> ExtractNestedStepLines(const std::string& text) {
+  std::vector<std::string> lines;
+  constexpr std::string_view kHeader = "Nested steps (outermost to innermost):";
+  const size_t pos = text.find(kHeader);
+  if (pos == std::string::npos) {
+    return lines;
+  }
+  const std::vector<std::string> all_lines =
+      base::SplitString(text.substr(pos + kHeader.length()), "\n",
+                        base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (const auto& line : all_lines) {
+    if (base::StartsWith(line, "  #")) {
+      lines.push_back(line);
+    } else if (!lines.empty() && !line.empty()) {
+      break;
+    }
+  }
+  return lines;
+}
+
+MATCHER_P(MatchesStepStack, expected_frames, "") {
+  const std::string text = testing::PrintToString(arg);
+  const std::vector<std::string> actual_lines = ExtractNestedStepLines(text);
+  std::vector<std::string> expected_lines;
+  expected_lines.reserve(expected_frames.size());
+  for (size_t i = 0; i < expected_frames.size(); ++i) {
+    expected_lines.push_back(expected_frames[i].Format(i));
+  }
+
+  if (actual_lines != expected_lines) {
+    *result_listener << "\n  Actual step stack lines (" << actual_lines.size()
+                     << "):\n";
+    for (const auto& line : actual_lines) {
+      *result_listener << "    " << line << "\n";
+    }
+    *result_listener << "  Expected step stack lines (" << expected_lines.size()
+                     << "):\n";
+    for (const auto& line : expected_lines) {
+      *result_listener << "    " << line << "\n";
+    }
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
+
+class StepStackParameterizedTest;
+
+namespace {
+
+struct StepStackTestCase {
+  const char* test_name;
+  base::RepeatingCallback<bool(StepStackParameterizedTest&)> run_sequence;
+  std::vector<ExpectedFrame> expected_stack;
+};
+
+}  // namespace
+
+class StepStackParameterizedTest
+    : public InteractiveTestTest,
+      public testing::WithParamInterface<StepStackTestCase> {
+ public:
+  static auto FailTest() {
+    return Check([]() { return false; }, "Fail");
+  }
+
+  static std::vector<StepStackTestCase> GetTestCases() {
+    return {
+        StepStackTestCase{
+            .test_name = "SingleStep",
+            .run_sequence =
+                base::BindRepeating([](StepStackParameterizedTest& test) {
+                  return test.RunTestSequenceInContext(kTestContext1,
+                                                       FailTest());
+                }),
+            .expected_stack =
+                {
+                    Frame("test", 1, "Check(\"Fail\")"),
+                },
+        },
+        StepStackTestCase{
+            .test_name = "SingleBuiltStep",
+            .run_sequence =
+                base::BindRepeating([](StepStackParameterizedTest& test) {
+                  return test.RunTestSequenceInContext(kTestContext1,
+                                                       FailTest().Build());
+                }),
+            .expected_stack =
+                {
+                    Frame("test", 1, "Check(\"Fail\")"),
+                },
+        },
+        StepStackTestCase{
+            .test_name = "SingleMultiStep",
+            .run_sequence =
+                base::BindRepeating([](StepStackParameterizedTest& test) {
+                  auto custom_multistep = []() {
+                    auto steps = Steps(Do([]() {}), FailTest());
+                    AddDescriptionPrefix(steps, "CustomMultiStep");
+                    return steps;
+                  };
+                  return test.RunTestSequenceInContext(kTestContext1,
+                                                       custom_multistep());
+                }),
+            .expected_stack =
+                {
+                    Frame("test", 1, "CustomMultiStep"),
+                    Frame("CustomMultiStep", 2, "Check(\"Fail\")"),
+                },
+        },
+        StepStackTestCase{
+            .test_name = "AnonymousMultiStep",
+            .run_sequence =
+                base::BindRepeating([](StepStackParameterizedTest& test) {
+                  auto anonymous_multistep = []() {
+                    return Steps(Do([]() {}), FailTest());
+                  };
+                  return test.RunTestSequenceInContext(kTestContext1,
+                                                       anonymous_multistep());
+                }),
+            .expected_stack =
+                {
+                    Frame("test", 1, ""),
+                    Frame("", 2, "Check(\"Fail\")"),
+                },
+        },
+        StepStackTestCase{
+            .test_name = "NestedMultiSteps",
+            .run_sequence =
+                base::BindRepeating([](StepStackParameterizedTest& test) {
+                  auto inner_multistep = []() {
+                    auto steps = Steps(FailTest());
+                    AddDescriptionPrefix(steps, "InnerMultiStep");
+                    return steps;
+                  };
+                  auto outer_multistep = [&inner_multistep]() {
+                    auto steps = Steps(inner_multistep());
+                    AddDescriptionPrefix(steps, "OuterMultiStep");
+                    return steps;
+                  };
+                  return test.RunTestSequenceInContext(kTestContext1,
+                                                       outer_multistep());
+                }),
+            .expected_stack =
+                {
+                    Frame("test", 1, "OuterMultiStep"),
+                    Frame("OuterMultiStep", 1, "InnerMultiStep"),
+                    Frame("InnerMultiStep", 1, "Check(\"Fail\")"),
+                },
+        },
+        StepStackTestCase{
+            .test_name = "IfThen",
+            .run_sequence =
+                base::BindRepeating([](StepStackParameterizedTest& test) {
+                  return test.RunTestSequenceInContext(
+                      kTestContext1, If([]() { return true; }, Then(FailTest()),
+                                        Else(Do([]() {}))));
+                }),
+            .expected_stack =
+                {
+                    Frame("test", 1, "If()"),
+                    Frame("If()", ""),
+                    Frame("", 1, "Check(\"Fail\")"),
+                },
+        },
+        StepStackTestCase{
+            .test_name = "IfElse",
+            .run_sequence =
+                base::BindRepeating([](StepStackParameterizedTest& test) {
+                  return test.RunTestSequenceInContext(
+                      kTestContext1, If([]() { return false; },
+                                        Then(Do([]() {})), Else(FailTest())));
+                }),
+            .expected_stack =
+                {
+                    Frame("test", 1, "If()"),
+                    Frame("If()", ""),
+                    Frame("", 1, "Check(\"Fail\")"),
+                },
+        },
+        StepStackTestCase{
+            .test_name = "InParallel",
+            .run_sequence =
+                base::BindRepeating([](StepStackParameterizedTest& test) {
+                  return test.RunTestSequenceInContext(
+                      kTestContext1, InParallel(RunSubsequence(FailTest()),
+                                                RunSubsequence(Do([]() {}))));
+                }),
+            .expected_stack =
+                {
+                    Frame("test", 1, "InParallel()"),
+                    Frame("InParallel()", ""),
+                    Frame("", 1, "Check(\"Fail\")"),
+                },
+        },
+        StepStackTestCase{
+            .test_name = "ConcatenatedMultiStepWithStepBuilder",
+            .run_sequence =
+                base::BindRepeating([](StepStackParameterizedTest& test) {
+                  auto multi = Steps(Do([]() {}));
+                  multi += FailTest();
+                  return test.RunTestSequenceInContext(kTestContext1,
+                                                       std::move(multi));
+                }),
+            .expected_stack =
+                {
+                    Frame("test", 1, ""),
+                    Frame("", 2, "Check(\"Fail\")"),
+                },
+        },
+        StepStackTestCase{
+            .test_name = "ConcatenatedMultiStepWithMultiStep",
+            .run_sequence =
+                base::BindRepeating([](StepStackParameterizedTest& test) {
+                  auto multi = Steps(Do([]() {}));
+                  auto multi2 = Steps(FailTest());
+                  multi += std::move(multi2);
+                  return test.RunTestSequenceInContext(kTestContext1,
+                                                       std::move(multi));
+                }),
+            .expected_stack =
+                {
+                    Frame("test", 1, ""),
+                    Frame("", 2, "Check(\"Fail\")"),
+                },
+        },
+        StepStackTestCase{
+            .test_name = "ConcatenatedMultiStepWithNamedMultiStep",
+            .run_sequence =
+                base::BindRepeating([](StepStackParameterizedTest& test) {
+                  auto multi = Steps(Do([]() {}));
+                  auto multi2 = Steps(FailTest());
+                  AddDescriptionPrefix(multi2, "CustomVerb");
+                  multi += std::move(multi2);
+                  return test.RunTestSequenceInContext(kTestContext1,
+                                                       std::move(multi));
+                }),
+            .expected_stack =
+                {
+                    Frame("test", 1, ""),
+                    Frame("", 2, "CustomVerb"),
+                    Frame("CustomVerb", 1, "Check(\"Fail\")"),
+                },
+        },
+    };
+  }
+};
+
+TEST_P(StepStackParameterizedTest, StackMatches) {
+  const auto& param = GetParam();
+
+  InteractionSequence::AbortedData aborted_data;
+  private_test_impl().set_aborted_callback_for_testing(
+      base::BindLambdaForTesting(
+          [&](const InteractionSequence::AbortedData& data) {
+            aborted_data = data;
+          }));
+
+  EXPECT_FALSE(param.run_sequence.Run(*this));
+
+  EXPECT_TRUE(aborted_data.aborted_reason ==
+                  InteractionSequence::AbortedReason::kFailedForTesting ||
+              aborted_data.aborted_reason ==
+                  InteractionSequence::AbortedReason::kSubsequenceFailed);
+  EXPECT_THAT(aborted_data, MatchesStepStack(param.expected_stack));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    StepStackParameterizedTest,
+    testing::ValuesIn(StepStackParameterizedTest::GetTestCases()),
+    [](const testing::TestParamInfo<StepStackTestCase>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace ui::test

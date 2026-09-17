@@ -769,6 +769,8 @@ class InteractiveTestApi {
   // making one or more calls to `std::vector::emplace_back`.
   static void AddStep(MultiStep& dest, StepBuilder src);
   static void AddStep(MultiStep& dest, MultiStep src);
+  static void AddStep(MultiStep& dest, StepBuilder step, int step_number);
+  static void AddStep(MultiStep& dest, MultiStep steps, int step_number);
 
   // Equivalent to calling `AddDescriptionPrefix(prefix)` on every step in
   // `steps`.
@@ -810,6 +812,15 @@ class InteractiveTestApi {
   static void AddStep(InteractionSequence::Builder& builder, MultiStep steps);
   template <typename T>
   static void AddStep(InteractionSequence::Builder& builder, T&& step);
+  static void AddStep(InteractionSequence::Builder& builder,
+                      StepBuilder step,
+                      int step_number);
+  static void AddStep(InteractionSequence::Builder& builder,
+                      MultiStep steps,
+                      int step_number);
+  static void AddStep(InteractionSequence::Builder& builder,
+                      std::unique_ptr<InteractionSequence::Step> step,
+                      int step_number);
 
   std::unique_ptr<internal::InteractiveTestPrivate> private_test_impl_;
 };
@@ -845,7 +856,10 @@ template <typename... Args>
   requires(internal::IsValueOrRvalue<Args> && ...)
 InteractiveTestApi::MultiStep InteractiveTestApi::Steps(Args&&... args) {
   MultiStep result;
-  (AddStep(result, std::forward<Args>(args)), ...);
+  // Step numbering in step frames is 1-based. Using a fold expression with
+  // `++step_number` numbers each argument consecutively starting at 1.
+  int step_number = 0;
+  (AddStep(result, std::forward<Args>(args), ++step_number), ...);
   return result;
 }
 
@@ -864,7 +878,8 @@ bool InteractiveTestApi::RunTestSequenceInContext(ElementContext context,
   // get proper error scoping, RunLoop timeout handling, etc.? We may have to
   // inject information directly into the steps or step callbacks; it's unclear.
   InteractionSequence::Builder builder;
-  (AddStep(builder, std::forward<Args>(steps)), ...);
+  int step_number = 0;
+  (AddStep(builder, std::forward<Args>(steps), ++step_number), ...);
   return RunTestSequenceImpl(context, std::move(builder));
 }
 
