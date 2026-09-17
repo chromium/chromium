@@ -105,3 +105,11 @@ Build and run the browser test:
 autoninja -C out\BasicProcess content_browsertests
 out\BasicProcess\content_browsertests.exe --gtest_filter=BasicProcessEchoServiceBrowserTest.AuditsEchoServiceApiCalls
 ```
+
+## Generating reports
+
+The [Basic Process deep-dive skill](skills/basic-process-deep-dive/SKILL.md)
+describes how to capture audit logs, symbolize call stacks, and produce
+reviewer-focused Markdown and HTML reports. It accepts existing data or a fresh
+EchoService run and includes an HTML renderer. Point your coding agent at the
+skill file to use this workflow.
