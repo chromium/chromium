@@ -494,6 +494,35 @@ TEST_F(WebUIDataSourceTest, GetOrigin) {
             url::Origin::Create(GURL("chrome-untrusted://host")));
 }
 
+TEST_F(WebUIDataSourceTest, ShouldServiceRequest) {
+  CreateDataSource("host");
+  URLDataSource* chrome_source = source()->source();
+  EXPECT_TRUE(
+      chrome_source->ShouldServiceRequest(GURL("chrome://host/"), nullptr, -1));
+  EXPECT_FALSE(chrome_source->ShouldServiceRequest(GURL("devtools://host/"),
+                                                   nullptr, -1));
+  // TODO(https://crbug.com/562108905): URLDataSource currently allows both
+  // chrome: and chrome-untrusted: requests by default. We should tighten this
+  // to only allow the matching scheme.
+  EXPECT_TRUE(chrome_source->ShouldServiceRequest(
+      GURL("chrome-untrusted://host/"), nullptr, -1));
+  EXPECT_FALSE(
+      chrome_source->ShouldServiceRequest(GURL("https://host/"), nullptr, -1));
+
+  CreateDataSource("chrome-untrusted://host/");
+  URLDataSource* untrusted_source = source()->source();
+  EXPECT_TRUE(untrusted_source->ShouldServiceRequest(
+      GURL("chrome-untrusted://host/"), nullptr, -1));
+  // TODO(https://crbug.com/562108905): Tighten this to only allow the matching
+  // scheme.
+  EXPECT_TRUE(untrusted_source->ShouldServiceRequest(GURL("chrome://host/"),
+                                                     nullptr, -1));
+  EXPECT_FALSE(untrusted_source->ShouldServiceRequest(GURL("devtools://host/"),
+                                                      nullptr, -1));
+  EXPECT_FALSE(untrusted_source->ShouldServiceRequest(GURL("https://host/"),
+                                                      nullptr, -1));
+}
+
 #if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
 // LoadWebUIFromDiskTest does not run on any bots, only meant to run locally,
 // since it tests a feature only used during local development and guarded by a

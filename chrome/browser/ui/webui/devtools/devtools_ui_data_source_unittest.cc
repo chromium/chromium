@@ -363,6 +363,18 @@ TEST_F(DevToolsUIDataSourceTest, TestDevToolsNoRouteWithSwitch) {
                                base::CompareCase::SENSITIVE));
 }
 
+TEST_F(DevToolsUIDataSourceTest, ShouldServiceRequest) {
+  EXPECT_TRUE(data_source()->ShouldServiceRequest(
+      GURL("devtools://devtools/bundled/devtools_app.html"), nullptr, -1));
+  EXPECT_FALSE(data_source()->ShouldServiceRequest(
+      GURL("chrome://devtools/bundled/devtools_app.html"), nullptr, -1));
+  EXPECT_FALSE(data_source()->ShouldServiceRequest(
+      GURL("chrome-untrusted://devtools/bundled/devtools_app.html"), nullptr,
+      -1));
+  EXPECT_FALSE(data_source()->ShouldServiceRequest(
+      GURL("https://devtools/bundled/devtools_app.html"), nullptr, -1));
+}
+
 class DevToolsUIDataSourceWithTaskEnvTest : public testing::Test {
  public:
   DevToolsUIDataSourceWithTaskEnvTest()

@@ -42,10 +42,12 @@ class DevToolsDataSource : public content::URLDataSource {
 
   // content::URLDataSource implementation.
   std::string GetSource() override;
-
   void StartDataRequest(const GURL& url,
                         const content::WebContents::Getter& wc_getter,
                         GotDataCallback callback) override;
+  bool ShouldServiceRequest(const GURL& url,
+                            content::BrowserContext* browser_context,
+                            int render_process_id) override;
 
  private:
   friend class DevToolsUIDataSourceTest;

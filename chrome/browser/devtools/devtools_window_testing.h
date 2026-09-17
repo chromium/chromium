@@ -91,6 +91,11 @@ class DevToolsWindowCreationObserver {
  public:
   DevToolsWindowCreationObserver();
 
+  // Allows the caller to provide a custom callback that will be invoked on
+  // window creation.
+  explicit DevToolsWindowCreationObserver(
+      base::RepeatingCallback<void(DevToolsWindow*)> on_creation_callback);
+
   DevToolsWindowCreationObserver(const DevToolsWindowCreationObserver&) =
       delete;
   DevToolsWindowCreationObserver& operator=(
@@ -113,6 +118,7 @@ class DevToolsWindowCreationObserver {
   void DevToolsWindowCreated(DevToolsWindow* devtools_window);
 
   base::RepeatingCallback<void(DevToolsWindow*)> creation_callback_;
+  base::RepeatingCallback<void(DevToolsWindow*)> on_creation_callback_;
   DevToolsWindows devtools_windows_;
   scoped_refptr<content::MessageLoopRunner> runner_;
 };

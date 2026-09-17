@@ -243,9 +243,14 @@ void DevToolsDisabler::DisableDevTools() {
 // DevToolsWindowCreationObserver ---------------------------------------------
 
 DevToolsWindowCreationObserver::DevToolsWindowCreationObserver()
+    : DevToolsWindowCreationObserver(base::NullCallback()) {}
+
+DevToolsWindowCreationObserver::DevToolsWindowCreationObserver(
+    base::RepeatingCallback<void(DevToolsWindow*)> on_creation_callback)
     : creation_callback_(base::BindRepeating(
           &DevToolsWindowCreationObserver::DevToolsWindowCreated,
-          base::Unretained(this))) {
+          base::Unretained(this))),
+      on_creation_callback_(std::move(on_creation_callback)) {
   DevToolsWindow::AddCreationCallbackForTest(creation_callback_);
 }
 
@@ -270,6 +275,9 @@ void DevToolsWindowCreationObserver::WaitForLoad() {
 void DevToolsWindowCreationObserver::DevToolsWindowCreated(
     DevToolsWindow* devtools_window) {
   devtools_windows_.push_back(devtools_window);
+  if (on_creation_callback_) {
+    on_creation_callback_.Run(devtools_window);
+  }
   if (runner_.get())
     runner_->QuitClosure().Run();
 }

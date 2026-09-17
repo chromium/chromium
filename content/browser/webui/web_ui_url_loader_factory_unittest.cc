@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/browser/webui/url_data_manager.h"
+#include "content/browser/webui/url_data_manager_backend.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
@@ -230,14 +231,19 @@ class WebUIURLLoaderFactoryInvalidUrlTest
       public testing::WithParamInterface<std::string> {
  public:
   void SetUp() override {
+    URLDataManagerBackend::SetDisallowWebUISchemeCachingForTesting(true);
     RenderViewHostTestHarness::SetUp();
     browser_client_ = std::make_unique<InvalidUrlTestBrowserClient>();
     old_browser_client_ = SetBrowserClientForTesting(browser_client_.get());
+    URLDataManager::AddDataSource(
+        browser_context(),
+        std::make_unique<TestWebUIDataSource>(kMaxTestResourceSize));
   }
 
   void TearDown() override {
     SetBrowserClientForTesting(old_browser_client_);
     RenderViewHostTestHarness::TearDown();
+    URLDataManagerBackend::SetDisallowWebUISchemeCachingForTesting(false);
   }
 
  private:
@@ -246,6 +252,7 @@ class WebUIURLLoaderFactoryInvalidUrlTest
     void GetAdditionalWebUISchemes(
         std::vector<std::string>* additional_schemes) override {
       additional_schemes->push_back(kNonChromeDummyScheme);
+      additional_schemes->push_back(kChromeDevToolsScheme);
     }
   };
 
@@ -272,6 +279,29 @@ TEST_P(WebUIURLLoaderFactoryInvalidUrlTest, InvalidUrl) {
   EXPECT_EQ(loader_client.completion_status().error_code, net::ERR_INVALID_URL);
 }
 
+// Verifies that devtools schemes aren't handled by the default webui loaders.
+// Regression test for https://crbug.com/518138781.
+TEST_F(WebUIURLLoaderFactoryInvalidUrlTest,
+       DevToolsSchemeRejectsChromeDataSource) {
+  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory(
+      CreateWebUIURLLoaderFactory(main_rfh(), kChromeDevToolsScheme,
+                                  /*allowed_hosts=*/{}));
+
+  network::ResourceRequest request;
+  request.url =
+      GURL(base::StrCat({kChromeDevToolsScheme, "://", kTestWebUIHost}));
+
+  mojo::PendingRemote<network::mojom::URLLoader> loader;
+  network::TestURLLoaderClient loader_client;
+  loader_factory->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), /*request_id=*/0,
+      /*options=*/0, request, loader_client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  loader_client.RunUntilComplete();
+
+  EXPECT_EQ(loader_client.completion_status().error_code, net::ERR_INVALID_URL);
+}
+
 // Test that non-chrome://blob-internals, non-chrome://dino and
 // non-chrome://network-error/<xyz> are not reachable.
 INSTANTIATE_TEST_SUITE_P(
@@ -279,7 +309,8 @@ INSTANTIATE_TEST_SUITE_P(
     WebUIURLLoaderFactoryInvalidUrlTest,
     testing::Values(kChromeUIBlobInternalsHost,
                     kChromeUIDinoHost,
-                    base::StrCat({kChromeUINetworkErrorHost, "/-147"})),
+                    base::StrCat({kChromeUINetworkErrorHost, "/-147"}),
+                    kTestWebUIHost),
     [](const testing::TestParamInfo<std::string>& info) {
       std::string name = base::StrCat({kNonChromeDummyScheme, "_", info.param});
       std::replace_if(

@@ -107,9 +107,9 @@ class CONTENT_EXPORT URLDataSource {
   // happening, return false. It is OK to return false as needed.
   virtual bool ShouldDenyXFrameOptions();
 
-  // By default, only chrome: and devtools: requests are allowed.
+  // By default, only chrome: and chrome-untrusted: requests are allowed.
   // Override in specific WebUI data sources to enable for additional schemes or
-  // to implement fancier access control.  Typically used in concert with
+  // to implement specific access control. Typically used in concert with
   // ContentBrowserClient::GetAdditionalWebUISchemes() to permit additional
   // WebUI scheme support for an embedder.
   virtual bool ShouldServiceRequest(const GURL& url,

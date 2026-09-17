@@ -105,6 +105,7 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
+#include "content/public/browser/global_request_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -113,6 +114,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -128,6 +130,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/filename_util.h"
+#include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -140,6 +143,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/window_open_disposition.h"
@@ -4788,6 +4792,111 @@ IN_PROC_BROWSER_TEST_F(DevToolsFetchTest, FetchFromDevToolsSchemeIsProhibited) {
               content::EvalJsResult::ErrorIs(::testing::StartsWith(
                   "a JavaScript error: \"TypeError: Failed to fetch\n")));
 }
+
+// Tests that devtools is not allowed to fetch a host that's registered with a
+// different scheme. Regression test for https://crbug.com/518138781.
+IN_PROC_BROWSER_TEST_F(DevToolsFetchTest,
+                       DevToolsFetchDifferentHostDisallowed) {
+  OpenDevToolsWindow("about:blank", true);
+
+  const auto prefs_result =
+      FetchFromDevToolsWindow("devtools://prefs-internals/");
+  EXPECT_THAT(prefs_result,
+              content::EvalJsResult::ErrorIs(::testing::StartsWith(
+                  "a JavaScript error: \"TypeError: Failed to fetch\n")));
+
+  const auto extensions_result =
+      FetchFromDevToolsWindow("devtools://extensions-internals/");
+  EXPECT_THAT(extensions_result,
+              content::EvalJsResult::ErrorIs(::testing::StartsWith(
+                  "a JavaScript error: \"TypeError: Failed to fetch\n")));
+
+  CloseDevToolsWindow();
+}
+
+// These tests exercise that the devtools windows can access theme colors, but
+// the ThemeSource is not yet included on android builds. As such, exclude
+// these tests on android builds.
+#if !BUILDFLAG(IS_ANDROID)
+// Tests that devtools *is* allowed to fetch theme colors.
+IN_PROC_BROWSER_TEST_F(DevToolsFetchTest, DevToolsThemeColorsCssAllowed) {
+  OpenDevToolsWindow("about:blank", true);
+  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+
+  // Theme colors should be accessible by devtools.
+  EXPECT_EQ(true, content::EvalJs(wc, R"(
+    new Promise((resolve) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'devtools://theme/colors.css?sets=ui,chrome';
+      link.onload = () => resolve(true);
+      link.onerror = () => resolve(false);
+      document.body.appendChild(link);
+    });
+  )"));
+
+  // By contrast, other resources should not be.
+  EXPECT_EQ(false, content::EvalJs(wc, R"(
+    new Promise((resolve) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'devtools://theme/IDR_SETTINGS_FAVICON';
+      link.onload = () => resolve(true);
+      link.onerror = () => resolve(false);
+      document.body.appendChild(link);
+    });
+  )"));
+
+  CloseDevToolsWindow();
+}
+
+namespace {
+
+// Observes resource loads on a WebContents and tracks any requests that fail
+// with a network error.
+class FailedResourceLoadObserver : public content::WebContentsObserver {
+ public:
+  explicit FailedResourceLoadObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  void ResourceLoadComplete(
+      content::RenderFrameHost* render_frame_host,
+      const content::GlobalRequestID& request_id,
+      const GURL& original_url,
+      const blink::mojom::ResourceLoadInfo& resource_load_info) override {
+    if (resource_load_info.net_error != net::OK) {
+      failed_urls_.push_back(original_url);
+    }
+  }
+
+  const std::vector<GURL>& failed_urls() const { return failed_urls_; }
+
+ private:
+  std::vector<GURL> failed_urls_;
+};
+
+}  // namespace
+
+// Tests that there are no failed resources for a newly-opened devtools window.
+// This test helps catch any cases where we might have tweaked a security
+// setting that would result in devtools failing to have access to all the
+// resources it needed.
+IN_PROC_BROWSER_TEST_F(DevToolsTest, NoFailedResourceLoadsOnStartup) {
+  std::unique_ptr<FailedResourceLoadObserver> load_observer;
+  DevToolsWindowCreationObserver observer(
+      base::BindLambdaForTesting([&](DevToolsWindow* window) {
+        load_observer = std::make_unique<FailedResourceLoadObserver>(
+            DevToolsWindowTesting::Get(window)->main_web_contents());
+      }));
+
+  OpenDevToolsWindow("about:blank", /*is_docked=*/true);
+
+  ASSERT_TRUE(load_observer);
+  EXPECT_THAT(load_observer->failed_urls(), ::testing::IsEmpty());
+
+  CloseDevToolsWindow();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest, HostBindingsSyncIntegration) {
   // Smoke test to make sure that `registerPreference` works from JavaScript.

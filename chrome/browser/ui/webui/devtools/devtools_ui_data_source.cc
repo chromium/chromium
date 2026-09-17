@@ -245,6 +245,13 @@ bool DevToolsDataSource::ShouldServeMimeTypeAsContentTypeHeader() {
   return true;
 }
 
+bool DevToolsDataSource::ShouldServiceRequest(
+    const GURL& url,
+    content::BrowserContext* browser_context,
+    int render_process_id) {
+  return url.SchemeIs(content::kChromeDevToolsScheme);
+}
+
 void DevToolsDataSource::StartBundledDataRequest(
     const std::string& path,
     content::URLDataSource::GotDataCallback callback) {

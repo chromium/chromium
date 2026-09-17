@@ -133,7 +133,11 @@ bool URLDataSource::ShouldDenyXFrameOptions() {
 bool URLDataSource::ShouldServiceRequest(const GURL& url,
                                          BrowserContext* browser_context,
                                          int render_process_id) {
-  return url.SchemeIs(kChromeDevToolsScheme) || url.SchemeIs(kChromeUIScheme) ||
+  // By default, allow chrome and chrome-untrusted sources.
+  // TODO(https://crbug.com/562108905): We could tighten this for
+  // chrome-untrusted so that we only service requests for chrome-untrusted if
+  // the datasource is chrome-untrusted.
+  return url.SchemeIs(kChromeUIScheme) ||
          url.SchemeIs(kChromeUIUntrustedScheme);
 }
 
