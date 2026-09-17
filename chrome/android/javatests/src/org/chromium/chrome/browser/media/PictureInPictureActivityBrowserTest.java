@@ -36,6 +36,7 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.media.MediaSwitches;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.List;
@@ -100,6 +101,7 @@ public class PictureInPictureActivityBrowserTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562965594
     public void testClosePipForConferenceVideo() throws TimeoutException {
         WebContents webContents = loadUrlAndInitializeForTest(VIDEO_CONFERENCING_PAGE);
         DOMUtils.playMedia(webContents, VIDEO_ID);
