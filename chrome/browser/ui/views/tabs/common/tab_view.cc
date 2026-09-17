@@ -754,7 +754,9 @@ void TabView::OnGestureEvent(ui::GestureEvent* event) {
 
     case ui::EventType::kGestureLongTap: {
       // Show context menu on release after long press.
-      controller->ShowTabContextMenu(collection_node_, event->location(),
+      gfx::Point point_in_screen = event->location();
+      views::View::ConvertPointToScreen(this, &point_in_screen);
+      controller->ShowTabContextMenu(collection_node_, point_in_screen,
                                      ui::mojom::MenuSourceType::kTouch);
       event->SetHandled();
       break;
