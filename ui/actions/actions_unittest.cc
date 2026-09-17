@@ -485,7 +485,8 @@ TEST_F(ActionItemTest, TestActionProperties) {
       .SetEnabled(true)
       .SetAccessibleName(kActionAccessibleText)
       .SetTooltipText(kActionTooltipText)
-      .SetGroupId(kGroupId);
+      .SetGroupId(kGroupId)
+      .AddSynonyms({u"Synonym1", u"Synonym2"});
   // clang-format on
   auto action_item = std::move(builder).Build();
   EXPECT_EQ(action_item->GetText(), kActionText);
@@ -495,6 +496,12 @@ TEST_F(ActionItemTest, TestActionProperties) {
   EXPECT_EQ(action_item->GetAccessibleName(), kActionAccessibleText);
   EXPECT_EQ(action_item->GetTooltipText(), kActionTooltipText);
   EXPECT_EQ(action_item->GetGroupId(), kGroupId);
+  EXPECT_THAT(action_item->GetSynonyms(),
+              testing::ElementsAre(u"Synonym1", u"Synonym2"));
+
+  action_item->AddSynonyms({u"Synonym3"});
+  EXPECT_THAT(action_item->GetSynonyms(),
+              testing::ElementsAre(u"Synonym1", u"Synonym2", u"Synonym3"));
 }
 
 TEST_F(ActionItemTest, TestActionWeakPtr) {

@@ -375,6 +375,15 @@ class BaseActionItemBuilderT {
     return std::move(this->SetIsShowingBubble(showing_bubble));
   }
 
+  BuilderT& AddSynonyms(std::initializer_list<std::u16string> synonyms) & {
+    action_item_->AddSynonyms(synonyms);
+    return static_cast<BuilderT&>(*this);
+  }
+
+  BuilderT&& AddSynonyms(std::initializer_list<std::u16string> synonyms) && {
+    return std::move(this->AddSynonyms(synonyms));
+  }
+
   [[nodiscard]] std::unique_ptr<ActionItemClass> Build() && {
     CreateChildren();
     return std::move(action_item_);
@@ -463,6 +472,9 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
 
   // Alternative terms used to identify this action. Used for search indexing.
   void AddSynonyms(std::initializer_list<std::u16string> synonyms);
+
+  // Returns the synonyms for this action. Used for fuzzy search.
+  const std::vector<std::u16string>& GetSynonyms() const;
 
   // Do a "batch" update of the ActionItem state without triggering
   // ActionChanged callbacks for each state change.

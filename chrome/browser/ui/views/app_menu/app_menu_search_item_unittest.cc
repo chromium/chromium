@@ -16,18 +16,18 @@
 namespace {
 
 TEST(AppMenuSearchItemTest, BasicProperties) {
+  std::vector<std::u16string> synonyms = {u"tab", u"create"};
   auto action_item = actions::ActionItem::Builder()
                          .SetText(u"New Tab")
                          .SetActionId(kActionNewTab)
+                         .AddSynonyms({u"tab", u"create"})
                          .Build();
 
-  std::vector<std::u16string> synonyms = {u"tab", u"create"};
   auto search_item = AppMenuSearchItem::Builder()
                          .SetType(AppMenuSearchItem::Type::kAction)
                          .SetAction(action_item.get())
                          .SetTitle(u"New Tab")
                          .SetSecondaryText(u"Tools")
-                         .SetSynonyms(synonyms)
                          .Build();
 
   EXPECT_EQ(search_item->GetType(), AppMenuSearchItem::Type::kAction);
@@ -113,8 +113,10 @@ TEST(AppMenuSearchItemTest, SupportsIndirectActionItem) {
 }
 
 TEST(AppMenuSearchItemTest, WeakPtrExpired) {
-  auto action_item =
-      actions::ActionItem::Builder().SetText(u"Temporary Action").Build();
+  auto action_item = actions::ActionItem::Builder()
+                         .SetText(u"Temporary Action")
+                         .AddSynonyms({u"temp"})
+                         .Build();
 
   auto search_item = AppMenuSearchItem::Builder()
                          .SetType(AppMenuSearchItem::Type::kAction)
@@ -123,6 +125,7 @@ TEST(AppMenuSearchItemTest, WeakPtrExpired) {
                          .SetSecondaryText(u"Context")
                          .Build();
   EXPECT_EQ(search_item->GetActionItem(), action_item.get());
+  EXPECT_FALSE(search_item->GetSynonyms().empty());
 
   action_item.reset();
 
@@ -130,6 +133,7 @@ TEST(AppMenuSearchItemTest, WeakPtrExpired) {
   EXPECT_EQ(search_item->GetActionItem(), nullptr);
   EXPECT_EQ(search_item->GetTitle(), u"Temporary Action");
   EXPECT_EQ(search_item->GetSecondaryText(), u"Context");
+  EXPECT_TRUE(search_item->GetSynonyms().empty());
 }
 
 TEST(AppMenuSearchItemTest, BuilderCrashesWhenMissingAttributes) {
@@ -166,15 +170,14 @@ TEST(AppMenuSearchItemTest, IntegratesWithFuzzyFinder) {
   auto action_item = actions::ActionItem::Builder()
                          .SetText(u"Open New Window")
                          .SetActionId(kActionNewWindow)
+                         .AddSynonyms({u"incognito", u"create session"})
                          .Build();
 
-  std::vector<std::u16string> synonyms = {u"incognito", u"create session"};
   auto search_item = AppMenuSearchItem::Builder()
                          .SetType(AppMenuSearchItem::Type::kAction)
                          .SetAction(action_item.get())
                          .SetTitle(u"Open New Window")
                          .SetSecondaryText(u"File")
-                         .SetSynonyms(synonyms)
                          .Build();
 
   std::vector<FuzzySearchItem*> searchable_items = {search_item.get()};

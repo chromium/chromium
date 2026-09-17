@@ -343,6 +343,11 @@ void ActionItem::AddSynonyms(std::initializer_list<std::u16string> synonyms) {
   synonyms_.insert(synonyms_.end(), synonyms);
 }
 
+// Returns the synonyms for this action. Used for fuzzy search.
+const std::vector<std::u16string>& ActionItem::GetSynonyms() const {
+  return synonyms_;
+}
+
 void ActionItem::InvokeAction(ActionInvocationContext context) {
   if (enabled_) {
     invoke_count_++;

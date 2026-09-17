@@ -43,7 +43,6 @@ class AppMenuSearchItem : public FuzzySearchItem {
     Builder& SetAction(actions::BaseAction* action);
     Builder& SetTitle(std::u16string title);
     Builder& SetSecondaryText(std::u16string secondary_text);
-    Builder& SetSynonyms(std::vector<std::u16string> synonyms);
 
     [[nodiscard]] std::unique_ptr<AppMenuSearchItem> Build();
 
@@ -52,7 +51,6 @@ class AppMenuSearchItem : public FuzzySearchItem {
     raw_ptr<actions::BaseAction> action_ = nullptr;
     std::optional<std::u16string> title_;
     std::u16string secondary_text_;
-    std::vector<std::u16string> synonyms_;
   };
 
   AppMenuSearchItem();
@@ -74,16 +72,12 @@ class AppMenuSearchItem : public FuzzySearchItem {
   void SetSecondaryText(std::u16string secondary_text) {
     secondary_text_ = std::move(secondary_text);
   }
-  void SetSynonyms(std::vector<std::u16string> synonyms) {
-    synonyms_ = std::move(synonyms);
-  }
 
  private:
   Type type_;
   base::WeakPtr<actions::ActionItem> action_item_;
   std::u16string title_;
   std::u16string secondary_text_;
-  std::vector<std::u16string> synonyms_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_SEARCH_ITEM_H_

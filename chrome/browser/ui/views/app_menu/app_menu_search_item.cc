@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "ui/actions/actions.h"
 
 AppMenuSearchItem::Builder::Builder() = default;
@@ -39,12 +40,6 @@ AppMenuSearchItem::Builder& AppMenuSearchItem::Builder::SetSecondaryText(
   return *this;
 }
 
-AppMenuSearchItem::Builder& AppMenuSearchItem::Builder::SetSynonyms(
-    std::vector<std::u16string> synonyms) {
-  synonyms_ = std::move(synonyms);
-  return *this;
-}
-
 std::unique_ptr<AppMenuSearchItem> AppMenuSearchItem::Builder::Build() {
   CHECK(type_.has_value());
   CHECK(action_);
@@ -58,7 +53,6 @@ std::unique_ptr<AppMenuSearchItem> AppMenuSearchItem::Builder::Build() {
   search_item->SetActionItem(action_item);
   search_item->SetTitle(std::move(*title_));
   search_item->SetSecondaryText(std::move(secondary_text_));
-  search_item->SetSynonyms(std::move(synonyms_));
   return search_item;
 }
 
@@ -79,5 +73,6 @@ const std::u16string& AppMenuSearchItem::GetSecondaryText() const {
 }
 
 const std::vector<std::u16string>& AppMenuSearchItem::GetSynonyms() const {
-  return synonyms_;
+  static const base::NoDestructor<std::vector<std::u16string>> kEmptySynonyms;
+  return action_item_ ? action_item_->GetSynonyms() : *kEmptySynonyms;
 }
