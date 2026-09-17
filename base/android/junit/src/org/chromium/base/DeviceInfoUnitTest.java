@@ -13,16 +13,23 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.FeatureInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
+import android.os.Build;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
+import org.robolectric.shadows.ShadowSensor;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -149,6 +156,46 @@ public class DeviceInfoUnitTest {
         when(pm.getSystemAvailableFeatures()).thenThrow(new SecurityException());
 
         assertNull(DeviceInfo.getSystemFeatureSnapshot(pm));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testIsFoldable_hingeFeatureAndSensor() {
+        setHasHingeAngleFeature(true);
+        addHingeAngleSensor();
+
+        assertTrue(DeviceInfo.isFoldable());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testIsFoldable_hingeFeatureWithoutSensor() {
+        // Emulator system images declare FEATURE_SENSOR_HINGE_ANGLE in
+        // /vendor/etc/permissions/handheld_core_hardware.xml even when the AVD has no hinge, so
+        // the feature alone must not make a device look foldable. See crbug.com/555859584.
+        setHasHingeAngleFeature(true);
+
+        assertFalse(DeviceInfo.isFoldable());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testIsFoldable_noHingeFeature() {
+        addHingeAngleSensor();
+
+        assertFalse(DeviceInfo.isFoldable());
+    }
+
+    private static void setHasHingeAngleFeature(boolean hasFeature) {
+        Shadows.shadowOf(ContextUtils.getApplicationContext().getPackageManager())
+                .setSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE, hasFeature);
+    }
+
+    private static void addHingeAngleSensor() {
+        var context = ContextUtils.getApplicationContext();
+        var sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        Shadows.shadowOf(sensorManager)
+                .addSensor(ShadowSensor.newInstance(Sensor.TYPE_HINGE_ANGLE));
     }
 
     private static FeatureInfo createFeature(String name) {

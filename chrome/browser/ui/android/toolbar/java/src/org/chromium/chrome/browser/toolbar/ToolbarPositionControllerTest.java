@@ -21,8 +21,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
@@ -39,11 +37,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -476,10 +473,9 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @Config(qualifiers = "sw400dp", sdk = Build.VERSION_CODES.R)
+    @Config(qualifiers = "sw400dp")
     public void testIsToolbarPositionCustomizationEnabled_foldable() {
-        ShadowPackageManager shadowPackageManager = Shadows.shadowOf(mContext.getPackageManager());
-        shadowPackageManager.setSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE, true);
+        DeviceInfo.setIsFoldableForTesting(true);
         assertTrue(
                 ToolbarPositionController.isToolbarPositionCustomizationEnabled(mContext, false));
     }

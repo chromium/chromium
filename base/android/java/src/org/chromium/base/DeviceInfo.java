@@ -11,6 +11,8 @@ import android.content.pm.FeatureInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Process;
@@ -249,13 +251,16 @@ public final class DeviceInfo {
     /**
      * Checks whether the current device is a foldable device.
      *
-     * <p><b>Limitation:</b> This implementation relies entirely on the presence of the {@code
-     * PackageManager.FEATURE_SENSOR_HINGE_ANGLE} system feature to identify foldables. Because this
-     * feature was officially introduced in Android 11 (API level 30), early foldable devices that
-     * launched on Android 9 or 10 (such as the original Samsung Galaxy Fold, Z Fold2, and Z Flip)
-     * use proprietary implementations instead of the standard AOSP hinge sensor feature.
-     * Consequently, this method will incorrectly return {@code false} for those specific legacy
-     * devices.
+     * <p>A device is considered foldable if it both declares the {@code
+     * PackageManager.FEATURE_SENSOR_HINGE_ANGLE} system feature and exposes a real {@code
+     * Sensor.TYPE_HINGE_ANGLE} sensor. The sensor is required because some system images (notably
+     * emulators) declare the feature statically even when no hinge exists.
+     *
+     * <p><b>Limitation:</b> The hinge angle sensor was officially introduced in Android 11 (API
+     * level 30), so early foldable devices that launched on Android 9 or 10 (such as the original
+     * Samsung Galaxy Fold, Z Fold2, and Z Flip) use proprietary implementations instead of the
+     * standard AOSP hinge sensor. Consequently, this method will incorrectly return {@code false}
+     * for those specific legacy devices.
      *
      * @return {@code true} if the device is recognized by the OS as having a hinge angle sensor,
      *     {@code false} otherwise (including on legacy Samsung foldables).
@@ -458,6 +463,20 @@ public final class DeviceInfo {
         }
     }
 
+    /**
+     * Returns whether the device actually has a hinge angle sensor. Devices with a real hinge are
+     * required to expose a {@link Sensor#TYPE_HINGE_ANGLE} sensor, but some system images (notably
+     * emulators) declare {@code PackageManager.FEATURE_SENSOR_HINGE_ANGLE} without having one.
+     */
+    private static boolean hasHingeAngleSensor(Context context) {
+        // TYPE_HINGE_ANGLE was added in Android 11 (API 30).
+        if (Build.VERSION.SDK_INT < VERSION_CODES.R) return false;
+
+        var sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        return sensorManager != null
+                && sensorManager.getDefaultSensor(Sensor.TYPE_HINGE_ANGLE) != null;
+    }
+
     private DeviceInfo() {
         mIDeviceInfo = new IDeviceInfo();
         sInitialized = true;
@@ -510,13 +529,20 @@ public final class DeviceInfo {
                                 || CommandLine.getInstance()
                                         .hasSwitch(BaseSwitches.FORCE_DESKTOP_ANDROID);
 
-        // Detect whether device is foldable.
+        // Detect whether device is foldable. The system feature alone is not sufficient: emulator
+        // system images declare FEATURE_SENSOR_HINGE_ANGLE in
+        // /vendor/etc/permissions/handheld_core_hardware.xml even for AVDs configured without a
+        // hinge (hw.sensor.hinge = no), so phone-sized emulators look like foldables. Devices with
+        // a real hinge must also expose a TYPE_HINGE_ANGLE sensor (CDD 7.3.12), so require the
+        // sensor itself. The sensor lookup is short-circuited by the feature check, so it is only
+        // performed on the few devices that declare the feature. See crbug.com/555859584.
         mIDeviceInfo.isFoldable =
                 !mIDeviceInfo.isDesktop
                         && Build.VERSION.SDK_INT >= VERSION_CODES.R
                         && (systemFeatures != null
                                 ? systemFeatures.mHasHingeAngle
-                                : pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE));
+                                : pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE))
+                        && hasHingeAngleSensor(appContext);
         if (sIsFoldableForTesting != null) {
             mIDeviceInfo.isFoldable = sIsFoldableForTesting;
         }

@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
-import android.os.Build;
 
 import org.junit.After;
 import org.junit.Test;
@@ -119,17 +118,17 @@ public class SettingsInTabTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
-    public void testIsEnabled_FoldableAndroid13_ReturnsFalse() {
+    @Config(qualifiers = "sw320dp")
+    public void testIsEnabled_Foldable_ReturnsTrue() {
         DeviceInfo.setIsFoldableForTesting(true);
-        assertFalse(SettingsInTab.isEnabled());
+        assertTrue(SettingsInTab.isEnabled());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    public void testIsEnabled_FoldableAndroid14_ReturnsTrue() {
-        DeviceInfo.setIsFoldableForTesting(true);
-        assertTrue(SettingsInTab.isEnabled());
+    @Config(qualifiers = "sw320dp")
+    public void testIsEnabled_NonFoldablePhone_ReturnsFalse() {
+        DeviceInfo.setIsFoldableForTesting(false);
+        assertFalse(SettingsInTab.isEnabled());
     }
 }
