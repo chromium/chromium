@@ -16,7 +16,10 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -102,6 +105,38 @@ public final class BackgroundTabRestorationHelper {
     }
 
     /**
+     * Claims and returns the set of background pool tab IDs without placeholders to be restored by
+     * the calling authoritative store.
+     *
+     * @param orchestratorType The orchestrator type for the caller.
+     * @param selector The {@link TabModelSelector} to acquire pool from.
+     * @param isIncognito Whether the caller is incognito.
+     * @param isAuthoritativeStore Whether the caller is an authoritative store.
+     * @return A {@link Set} of claimed original {@link TabId} integers.
+     */
+    public static Set<@TabId Integer> claimRemainingBackgroundTabIds(
+            @TabOrchestratorType int orchestratorType,
+            TabModelSelector selector,
+            boolean isIncognito,
+            boolean isAuthoritativeStore) {
+        assertOnUiThread();
+        if (!shouldIntercept(orchestratorType, isIncognito, isAuthoritativeStore)) {
+            return Collections.emptySet();
+        }
+
+        BackgroundTabPool pool = acquirePool(selector);
+        if (pool == null) {
+            return Collections.emptySet();
+        }
+
+        try {
+            return pool.claimTabIdsWithoutPlaceholders();
+        } finally {
+            BackgroundTabPoolManager.release(pool);
+        }
+    }
+
+    /**
      * Attempts to restore and attach a background tab from {@link BackgroundTabPool} given its
      * placeholder tab ID.
      *
@@ -150,5 +185,55 @@ public final class BackgroundTabRestorationHelper {
         } finally {
             BackgroundTabPoolManager.release(pool);
         }
+    }
+
+    /**
+     * Restores the specified background tabs from {@link BackgroundTabPool} that were claimed
+     * without placeholders, appending them to the end of the non-incognito {@link TabModel}.
+     *
+     * @param orchestratorType The orchestrator type for the caller.
+     * @param selector The {@link TabModelSelector} managing tab models.
+     * @param tabIds The collection of claimed canonical tab IDs to restore.
+     * @param isAuthoritativeStore Whether the caller is an authoritative store.
+     * @return A list of newly restored {@link Tab} instances.
+     */
+    public static List<Tab> restoreRemainingBackgroundTabs(
+            @TabOrchestratorType int orchestratorType,
+            TabModelSelector selector,
+            Collection<@TabId Integer> tabIds,
+            boolean isAuthoritativeStore) {
+        assertOnUiThread();
+        if (!shouldIntercept(orchestratorType, /* isIncognito= */ false, isAuthoritativeStore)
+                || tabIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        BackgroundTabPool pool = acquirePool(selector);
+        if (pool == null) {
+            return Collections.emptyList();
+        }
+
+        List<Tab> restoredTabs = new ArrayList<>();
+        try {
+            TabModel model = selector.getModel(/* incognito= */ false);
+            for (@TabId int tabId : tabIds) {
+                if (model.getTabById(tabId) != null) {
+                    pool.removeTabById(tabId);
+                    continue;
+                }
+                assert pool.getLiveTab(tabId) == null;
+                BackgroundPoolTab backgroundTab = pool.loadTabByOriginalId(tabId);
+                if (backgroundTab != null) {
+                    Tab restoredTab = backgroundTab.attachTab(model, model.getCount());
+                    if (restoredTab != null) {
+                        restoredTabs.add(restoredTab);
+                    }
+                }
+            }
+            pool.cleanupPostRestore();
+        } finally {
+            BackgroundTabPoolManager.release(pool);
+        }
+        return restoredTabs;
     }
 }
