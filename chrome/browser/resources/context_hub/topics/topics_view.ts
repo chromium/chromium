@@ -62,6 +62,15 @@ export class TopicsViewElement extends CrLitElement {
     if (topic.badgeShape) {
       params.set('shape', topic.badgeShape);
     }
+    if (topic.icon) {
+      params.set('icon', topic.icon);
+    }
+    if (topic.title) {
+      params.set('title', topic.title);
+    }
+    if (topic.backgroundColor) {
+      params.set('bg', topic.backgroundColor);
+    }
     const queryString = params.toString();
     const topicUrl = queryString ?
         `chrome://context-hub/topic_details.html?${queryString}` :

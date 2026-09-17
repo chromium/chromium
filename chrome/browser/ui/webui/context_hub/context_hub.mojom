@@ -357,4 +357,9 @@ interface PageHandler {
   // artifacts.
   [RuntimeFeature=kSmartSearch]
   ExecuteSmartSearch(string query) => (array<SmartSearchResult> results);
+
+  // Opens the specified URLs (capped to 10) into a new tab group.
+  [RuntimeFeature=kAutoTabGroups]
+  OpenUrlsInTabGroup(string group_label, array<url.mojom.Url> urls)
+      => (bool success);
 };

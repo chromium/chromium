@@ -102,7 +102,9 @@ source_set("context_hub_page_handler") {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/saved_tab_groups",
       "//components/saved_tab_groups/public",
+      "//components/tab_groups",
       "//ui/base",
+      "//url",
     ]
   }
 }

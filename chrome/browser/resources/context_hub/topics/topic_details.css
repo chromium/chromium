@@ -73,6 +73,13 @@
   fill: var(--topic-details-pattern-fill);
 }
 
+.hero-pattern-icon {
+  fill: var(--cr-primary-text-color);
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji',
+      sans-serif;
+  user-select: none;
+}
+
 .hero-gradient-overlay {
   position: absolute;
   inset: 0;

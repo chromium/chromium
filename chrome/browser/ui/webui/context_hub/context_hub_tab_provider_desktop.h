@@ -12,6 +12,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub_page_handler.h"
 
+class GURL;
 class Profile;
 
 namespace content {
@@ -44,6 +45,8 @@ class ContextHubTabProviderDesktop : public ContextHubPageHandler::TabProvider {
       base::span<const context_hub::TabGroupEntry> groups) override;
   void RemoveGroupFromTabstripIfOpen(const base::Uuid& saved_guid) override;
   void UngroupGroupFromTabstripIfOpen(const base::Uuid& saved_guid) override;
+  bool OpenUrlsInTabGroup(const std::string& group_label,
+                          base::span<const GURL> urls) override;
 
  private:
   raw_ptr<Profile> profile_;

@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_button/cr_button.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+
+import {browserProxyFactory} from '../context_hub.mojom-webui.js';
 
 import {
   CIRCLE_PATH,
@@ -15,6 +21,8 @@ import {
 import type {BadgeShape, TopicItem} from './topic_card.js';
 import {getCss} from './topic_details.css.js';
 import {getHtml} from './topic_details.html.js';
+
+const MAX_URLS_TO_OPEN = 10;
 
 export class TopicDetailsElement extends CrLitElement {
   static get is() {
@@ -73,24 +81,44 @@ export class TopicDetailsElement extends CrLitElement {
       const urlParams = new URLSearchParams(window.location.search);
       const id = urlParams.get('id');
       const shape = urlParams.get('shape') as BadgeShape | null;
+      const icon = urlParams.get('icon');
+      const title = urlParams.get('title');
+      const bg = urlParams.get('bg');
 
       let topic: TopicItem | null = null;
       if (id) {
-        const storedById = sessionStorage.getItem(`context_hub_topic_${id}`);
-        if (storedById) {
-          topic = JSON.parse(storedById);
+        const raw = sessionStorage.getItem(`context_hub_topic_${id}`);
+        if (raw) {
+          topic = JSON.parse(raw);
         }
       }
 
       if (!topic) {
-        const storedActive = sessionStorage.getItem('active_topic');
-        if (storedActive) {
-          topic = JSON.parse(storedActive);
+        const raw = sessionStorage.getItem('active_topic');
+        if (raw) {
+          topic = JSON.parse(raw);
         }
       }
 
-      if (topic && shape) {
-        topic.badgeShape = shape;
+      if (topic) {
+        if (shape) {
+          topic.badgeShape = shape;
+        }
+        if (icon && !topic.icon) {
+          topic.icon = icon;
+        }
+        if (bg && !topic.backgroundColor) {
+          topic.backgroundColor = bg;
+        }
+      } else if (id || title) {
+        topic = {
+          id: id || '',
+          title: title || '',
+          description: '',
+          icon: icon || undefined,
+          backgroundColor: bg || undefined,
+          badgeShape: shape || undefined,
+        };
       }
       return topic;
     } catch {
@@ -136,8 +164,61 @@ export class TopicDetailsElement extends CrLitElement {
     return this.topic?.icon || DEFAULT_ICON;
   }
 
+  protected getTextIcon_(): string {
+    const icon = this.getIcon_();
+    return icon.includes(':') ? '' : icon;
+  }
+
   protected getLongDescription_(): string {
     return this.topic?.longDescription || this.topic?.description || '';
+  }
+
+  protected isValidUrl_(urlStr: string): boolean {
+    if (!urlStr) {
+      return false;
+    }
+    try {
+      new URL(urlStr);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  protected hasRelatedUrls_(): boolean {
+    return !!this.topic?.relatedUrls?.some(url => this.isValidUrl_(url));
+  }
+
+  protected async onOpenRelatedTabsClick_() {
+    const rawUrls = this.topic?.relatedUrls || [];
+    const urls = rawUrls.filter(url => this.isValidUrl_(url));
+    if (urls.length === 0) {
+      return;
+    }
+
+    const groupLabel = this.topic?.title || 'Related Tabs';
+
+    // Attempt to open tabs in a tab group via the Mojo PageHandler.
+    if (loadTimeData.valueExists('kAutoTabGroups') &&
+        loadTimeData.getBoolean('kAutoTabGroups')) {
+      try {
+        const {success} =
+            await browserProxyFactory.getInstance().handler.openUrlsInTabGroup(
+                groupLabel, urls);
+        if (success) {
+          return;
+        }
+      } catch (e) {
+        // Fallback if backend method call fails or is not supported.
+        console.error('Failed to open tabs in group:', e);
+      }
+    }
+
+    // Fallback: open capped URLs in new tabs. Note that opening multiple tabs
+    // via window.open is best-effort and may be throttled by popup blockers.
+    for (const url of urls.slice(0, MAX_URLS_TO_OPEN)) {
+      OpenWindowProxyImpl.getInstance().openUrl(url);
+    }
   }
 }
 

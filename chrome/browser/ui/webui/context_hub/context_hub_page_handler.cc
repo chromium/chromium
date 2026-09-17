@@ -58,6 +58,12 @@ ContextHubPageHandler::ContextHubPageHandler(
 
 ContextHubPageHandler::~ContextHubPageHandler() = default;
 
+bool ContextHubPageHandler::TabProvider::OpenUrlsInTabGroup(
+    const std::string& group_label,
+    base::span<const GURL> urls) {
+  return false;
+}
+
 void ContextHubPageHandler::OnAutoTodosChanged(
     base::span<const context_hub::AutoTodoEntry> entries) {
   page_->OnAutoTodosChanged(base::ToVector(entries));
@@ -728,4 +734,19 @@ void ContextHubPageHandler::ExecuteSmartSearch(
   }
 
   service->ExecuteSmartSearch(query, std::move(callback));
+}
+
+void ContextHubPageHandler::OpenUrlsInTabGroup(
+    const std::string& group_label,
+    const std::vector<GURL>& urls,
+    OpenUrlsInTabGroupCallback callback) {
+  if (!tab_provider_) {
+    std::move(callback).Run(false);
+    return;
+  }
+  constexpr size_t kMaxUrlsToOpen = 10;
+  base::span<const GURL> capped_urls =
+      base::span(urls).first(std::min(urls.size(), kMaxUrlsToOpen));
+  bool success = tab_provider_->OpenUrlsInTabGroup(group_label, capped_urls);
+  std::move(callback).Run(success);
 }

@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -28,10 +29,13 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_handle_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/base_window.h"
+#include "url/gurl.h"
 
 namespace context_hub {
 namespace {
@@ -418,6 +422,60 @@ void ContextHubTabProviderDesktop::UngroupGroupFromTabstripIfOpen(
     }
     return true;
   });
+}
+
+bool ContextHubTabProviderDesktop::OpenUrlsInTabGroup(
+    const std::string& group_label,
+    base::span<const GURL> urls) {
+  if (urls.empty()) {
+    return false;
+  }
+  ProfileBrowserCollection* collection =
+      ProfileBrowserCollection::GetForProfile(profile_);
+  if (!collection) {
+    return false;
+  }
+  BrowserWindowInterface* target_browser = collection->FindTabbedBrowser();
+  if (!target_browser) {
+    return false;
+  }
+
+  TabStripModel* tab_strip = target_browser->GetTabStripModel();
+  if (!tab_strip || !tab_strip->SupportsTabGroups()) {
+    return false;
+  }
+
+  std::vector<int> tab_indices;
+  for (const GURL& url : urls) {
+    if (!url.is_valid()) {
+      continue;
+    }
+    content::WebContents* contents = chrome::AddAndReturnTabAt(
+        target_browser, url, /*index=*/-1, /*foreground=*/false);
+    if (contents) {
+      int index = tab_strip->GetIndexOfWebContents(contents);
+      if (index != TabStripModel::kNoTab) {
+        tab_indices.push_back(index);
+      }
+    }
+  }
+
+  if (tab_indices.empty()) {
+    return false;
+  }
+
+  tab_groups::TabGroupId group_id = tab_strip->AddToNewGroup(tab_indices);
+  // TODO(crbug.com/546250053): In the future, consider deriving the tab group
+  // color from the topic's visual identity (e.g., backgroundColor).
+  tab_groups::TabGroupVisualData visual_data(base::UTF8ToUTF16(group_label),
+                                             tab_groups::TabGroupColorId::kBlue,
+                                             /*is_collapsed=*/false);
+  tab_strip->ChangeTabGroupVisuals(group_id, visual_data);
+  tab_strip->ActivateTabAt(tab_indices.front());
+  if (target_browser->GetWindow()) {
+    target_browser->GetWindow()->Show();
+  }
+  return true;
 }
 
 }  // namespace context_hub

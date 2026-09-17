@@ -21,11 +21,12 @@ export function getHtml(this: TopicDetailsElement) {
             <path class="hero-pattern-shape"
                 d="${this.getBadgePath_()}"></path>
           </g>
-          ${!this.getIcon_().includes(':') ? html`
-            <text x="32" y="34" font-size="22" text-anchor="middle"
-                dominant-baseline="central">
-              ${this.getIcon_()}
-            </text>` : ''}
+          ${this.getTextIcon_() ? html`
+            <text class="hero-pattern-icon" x="32" y="34" font-size="22"
+                text-anchor="middle" dominant-baseline="central">
+              ${this.getTextIcon_()}
+            </text>
+          ` : ''}
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#topic-grid-pattern)" />
@@ -37,6 +38,13 @@ export function getHtml(this: TopicDetailsElement) {
   <div class="sticky-header ${this.isScrolled_ ? 'scrolled' : ''}">
     <div class="title-row">
       <h1 class="topic-title">${this.topic?.title}</h1>
+      <!-- TODO(crbug.com/558572977): Use internationalized strings once GRD -->
+      <!-- strings are added. -->
+      <cr-button class="tonal-button"
+          ?hidden="${!this.hasRelatedUrls_()}"
+          @click="${this.onOpenRelatedTabsClick_}">
+        Open related tabs
+      </cr-button>
     </div>
     <div class="tabs-bar" role="tablist">
       <button class="tab-item active" role="tab" aria-selected="true"

@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+class GURL;
 class Profile;
 
 namespace content {
@@ -43,6 +44,8 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
         const base::Uuid& saved_guid) = 0;
     virtual void UngroupGroupFromTabstripIfOpen(
         const base::Uuid& saved_guid) = 0;
+    virtual bool OpenUrlsInTabGroup(const std::string& group_label,
+                                    base::span<const GURL> urls);
   };
 
   ContextHubPageHandler(
@@ -125,6 +128,9 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
       RemoveAllConfirmedTabGroupsCallback callback) override;
   void ExecuteSmartSearch(const std::string& query,
                           ExecuteSmartSearchCallback callback) override;
+  void OpenUrlsInTabGroup(const std::string& group_label,
+                          const std::vector<GURL>& urls,
+                          OpenUrlsInTabGroupCallback callback) override;
 
  private:
   mojo::Remote<browser::context_hub::mojom::Page> page_;

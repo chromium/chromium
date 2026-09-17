@@ -20,6 +20,7 @@ export interface TopicItem {
   icon?: string;
   backgroundColor?: string;
   badgeShape?: BadgeShape;
+  relatedUrls?: string[];
 }
 
 export type BadgeShape = 'cloud' | 'flower' | 'circle' | 'diamond';
