@@ -203,10 +203,8 @@ void FileSystemAccessDirectoryHandleImpl::GetFileResolved(
     return;
   }
 
-  if (GetReadPermissionStatus() != PermissionStatus::GRANTED) {
-    std::move(callback).Run(file_system_access_error::FromStatus(
-                                FileSystemAccessStatus::kPermissionDenied),
-                            mojo::NullRemote());
+  if (auto read_access = CheckReadAccess(); !read_access.has_value()) {
+    std::move(callback).Run(std::move(read_access.error()), mojo::NullRemote());
     return;
   }
 
@@ -348,10 +346,8 @@ void FileSystemAccessDirectoryHandleImpl::GetDirectoryResolved(
     return;
   }
 
-  if (GetReadPermissionStatus() != PermissionStatus::GRANTED) {
-    std::move(callback).Run(file_system_access_error::FromStatus(
-                                FileSystemAccessStatus::kPermissionDenied),
-                            mojo::NullRemote());
+  if (auto read_access = CheckReadAccess(); !read_access.has_value()) {
+    std::move(callback).Run(std::move(read_access.error()), mojo::NullRemote());
     return;
   }
 
@@ -389,11 +385,9 @@ void FileSystemAccessDirectoryHandleImpl::GetEntries(
           std::move(pending_listener),
           base::SequencedTaskRunner::GetCurrentDefault());
 
-  if (GetReadPermissionStatus() != PermissionStatus::GRANTED) {
-    listener_holder->listener->DidReadDirectory(
-        file_system_access_error::FromStatus(
-            FileSystemAccessStatus::kPermissionDenied),
-        {}, false);
+  if (auto read_access = CheckReadAccess(); !read_access.has_value()) {
+    listener_holder->listener->DidReadDirectory(std::move(read_access.error()),
+                                                {}, false);
     return;
   }
 

@@ -177,10 +177,9 @@ void FileSystemAccessFileHandleImpl::RequestPermission(
 void FileSystemAccessFileHandleImpl::AsBlob(AsBlobCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (GetReadPermissionStatus() != PermissionStatus::GRANTED) {
-    std::move(callback).Run(file_system_access_error::FromStatus(
-                                FileSystemAccessStatus::kPermissionDenied),
-                            base::File::Info(), nullptr);
+  if (auto read_access = CheckReadAccess(); !read_access.has_value()) {
+    std::move(callback).Run(std::move(read_access.error()), base::File::Info(),
+                            nullptr);
     return;
   }
 

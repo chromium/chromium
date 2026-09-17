@@ -94,6 +94,16 @@ FileSystemAccessHandleBase::GetReadPermissionStatus() {
   return handle_state_.read_grant->GetStatus();
 }
 
+base::expected<void, blink::mojom::FileSystemAccessErrorPtr>
+FileSystemAccessHandleBase::CheckReadAccess() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (GetReadPermissionStatus() != PermissionStatus::GRANTED) {
+    return base::unexpected(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kPermissionDenied));
+  }
+  return base::ok();
+}
+
 FileSystemAccessHandleBase::PermissionStatus
 FileSystemAccessHandleBase::GetWritePermissionStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -794,11 +804,8 @@ void FileSystemAccessHandleBase::DoGetCloudIdentifiers(
     return;
   }
 
-  if (GetReadPermissionStatus() != PermissionStatus::GRANTED) {
-    std::move(callback).Run(
-        file_system_access_error::FromStatus(
-            blink::mojom::FileSystemAccessStatus::kPermissionDenied),
-        {});
+  if (auto read_access = CheckReadAccess(); !read_access.has_value()) {
+    std::move(callback).Run(std::move(read_access.error()), {});
     return;
   }
 

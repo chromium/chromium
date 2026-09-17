@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
@@ -75,6 +76,24 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   // `GetWritePermissionStatus()` if appropriate. Returns the permission status
   // for reading and writing.
   PermissionStatus GetReadWritePermissionStatus();
+
+  // Checks whether the handle currently allows read operations. Returns
+  // base::ok() if read access is permitted, or an error status on failure.
+  //
+  // Distinction from `GetReadPermissionStatus()`:
+  // - `GetReadPermissionStatus()` queries only whether the underlying
+  //   permission grant is GRANTED, ASK, or DENIED.
+  // - `CheckReadAccess()` is the authorization check for actual read
+  //   operations (e.g. AsBlob, GetEntries). A GRANTED status from
+  //   `GetReadPermissionStatus()` is necessary but not always sufficient: read
+  //   operations may still be blocked by broader context or security
+  //   constraints even when the underlying grant is GRANTED. Callers
+  //   executing read operations should always call `CheckReadAccess()`.
+  // - Use `DoGetPermissionStatus()` to handle the renderer's
+  //   `queryPermission()` API call.
+  base::expected<void, blink::mojom::FileSystemAccessErrorPtr>
+  CheckReadAccess();
+
   storage::FileSystemURL GetParentURLForTesting() { return GetParentURL(); }
 
   // Implementation for the GetPermissionStatus method in the

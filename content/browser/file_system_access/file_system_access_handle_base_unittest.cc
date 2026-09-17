@@ -237,6 +237,41 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
+class FileSystemAccessHandleCheckReadAccessTest
+    : public FileSystemAccessHandleParamTestBase {};
+
+TEST_P(FileSystemAccessHandleCheckReadAccessTest, AllowedWhenGranted) {
+  auto handle = CreateTestHandle();
+
+  EXPECT_CALL(*read_grant_, GetStatus())
+      .WillOnce(testing::Return(PermissionStatus::GRANTED));
+  EXPECT_TRUE(handle.CheckReadAccess().has_value());
+}
+
+TEST_P(FileSystemAccessHandleCheckReadAccessTest, DeniedWhenNotGranted) {
+  auto handle = CreateTestHandle();
+
+  EXPECT_CALL(*read_grant_, GetStatus())
+      .WillOnce(testing::Return(PermissionStatus::ASK));
+  auto result = handle.CheckReadAccess();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error()->status, FileSystemAccessStatus::kPermissionDenied);
+
+  EXPECT_CALL(*read_grant_, GetStatus())
+      .WillOnce(testing::Return(PermissionStatus::DENIED));
+  result = handle.CheckReadAccess();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error()->status, FileSystemAccessStatus::kPermissionDenied);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FileSystemAccessHandleCheckReadAccessTest,
+    testing::ValuesIn(kTestContextParams),
+    [](const testing::TestParamInfo<TestContextParam>& info) {
+      return info.param.test_name;
+    });
+
 class FileSystemAccessHandleGetWritePermissionStatusTest
     : public FileSystemAccessHandleParamTestBase {};
 
