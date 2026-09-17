@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 
-#include <ostream>
 #include <tuple>
 
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -20,11 +20,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
-#include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -44,9 +40,7 @@
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -64,7 +58,26 @@ using FormFactor = syncer::DeviceInfo::FormFactor;
 using OsType = syncer::DeviceInfo::OsType;
 
 using testing::AnyOf;
+using testing::Bool;
+using testing::Combine;
 using testing::HasSubstr;
+using testing::TestParamInfo;
+using testing::Values;
+using testing::WithParamInterface;
+
+const char* DisplayReasonToString(EntryPointDisplayReason reason) {
+  switch (reason) {
+    case EntryPointDisplayReason::kOfferFeature:
+      return "OfferFeature";
+    case EntryPointDisplayReason::kOfferSignIn:
+      return "OfferSignIn";
+    case EntryPointDisplayReason::kOfferReauth:
+      return "OfferReauth";
+    case EntryPointDisplayReason::kInformNoTargetDevice:
+      return "InformNoTargetDevice";
+  }
+  NOTREACHED();
+}
 
 class TestSendTabToSelfModelObserver : public SendTabToSelfModelObserver {
  public:
@@ -681,28 +694,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-const char* DisplayReasonToString(EntryPointDisplayReason reason) {
-  switch (reason) {
-    case EntryPointDisplayReason::kOfferFeature:
-      return "OfferFeature";
-    case EntryPointDisplayReason::kOfferSignIn:
-      return "OfferSignIn";
-    case EntryPointDisplayReason::kOfferReauth:
-      return "OfferReauth";
-    case EntryPointDisplayReason::kInformNoTargetDevice:
-      return "InformNoTargetDevice";
-  }
-}
-
-[[maybe_unused]] std::ostream& operator<<(std::ostream& os,
-                                          EntryPointDisplayReason reason) {
-  return os << DisplayReasonToString(reason);
-}
-
 class SendTabToSelfContextMenuParamsTest
     : public SendTabToSelfBubbleControllerBrowserTest,
-      public ::testing::WithParamInterface<
-          std::tuple<bool, EntryPointDisplayReason>> {
+      public WithParamInterface<std::tuple<bool, EntryPointDisplayReason>> {
  public:
   SendTabToSelfContextMenuParamsTest() {
     const bool enhanced_ui_enabled = std::get<0>(GetParam());
@@ -765,15 +759,14 @@ IN_PROC_BROWSER_TEST_P(SendTabToSelfContextMenuParamsTest, VerifyMenuType) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    All,
+    ,
     SendTabToSelfContextMenuParamsTest,
-    ::testing::Combine(
-        ::testing::Bool(),  // enhanced_ui_enabled
-        ::testing::Values(EntryPointDisplayReason::kOfferFeature,
-                          EntryPointDisplayReason::kOfferSignIn,
-                          EntryPointDisplayReason::kInformNoTargetDevice)),
-    [](const ::testing::TestParamInfo<
-        SendTabToSelfContextMenuParamsTest::ParamType>& info) {
+    Combine(Bool(),  // enhanced_ui_enabled
+            Values(EntryPointDisplayReason::kOfferFeature,
+                   EntryPointDisplayReason::kOfferSignIn,
+                   EntryPointDisplayReason::kInformNoTargetDevice)),
+    [](const TestParamInfo<SendTabToSelfContextMenuParamsTest::ParamType>&
+           info) {
       const bool enhanced_ui_enabled = std::get<0>(info.param);
       const EntryPointDisplayReason display_reason = std::get<1>(info.param);
       return base::StringPrintf(
