@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1072,7 +1073,8 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, MAYBE_HorizontalSeparators) {
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, HorizontalSeparators_RTL) {
-  std::string original_locale = base::i18n::GetConfiguredLocale();
+  std::string original_locale =
+      std::string(base::i18n::GetDefaultIcuLocale().tag_string());
   base::i18n::SetICUDefaultLocale("ar");
 
   AppendTab();

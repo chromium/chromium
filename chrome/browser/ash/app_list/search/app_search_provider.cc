@@ -11,8 +11,10 @@
 
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/callback_list.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
-#include "base/i18n/rtl.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
@@ -25,15 +27,48 @@ namespace app_list {
 namespace {
 
 // Checks if current locale is non Latin locales.
-bool IsNonLatinLocale(std::string_view locale) {
+bool IsNonLatinLocale(const base::i18n::LanguageTag& locale) {
   // A set of of non Latin locales. This set is used to select appropriate
   // algorithm for app search.
-  static constexpr char kNonLatinLocales[][6] = {
-      "am", "ar", "be", "bg", "bn",    "el",    "fa",   "gu", "hi",
-      "hy", "iw", "ja", "ka", "kk",    "km",    "kn",   "ko", "ky",
-      "lo", "mk", "ml", "mn", "mr",    "my",    "pa",   "ru", "sr",
-      "ta", "te", "th", "uk", "zh-CN", "zh-HK", "zh-TW"};
-  return std::ranges::contains(kNonLatinLocales, locale);
+  static constexpr auto kNonLatinLocales =
+      base::MakeFixedFlatSet<base::i18n::LanguageTag>({
+          base::i18n::GetKnownLanguageTag("am"),
+          base::i18n::GetKnownLanguageTag("ar"),
+          base::i18n::GetKnownLanguageTag("be"),
+          base::i18n::GetKnownLanguageTag("bg"),
+          base::i18n::GetKnownLanguageTag("bn"),
+          base::i18n::GetKnownLanguageTag("el"),
+          base::i18n::GetKnownLanguageTag("fa"),
+          base::i18n::GetKnownLanguageTag("gu"),
+          base::i18n::GetKnownLanguageTag("he"),
+          base::i18n::GetKnownLanguageTag("hi"),
+          base::i18n::GetKnownLanguageTag("hy"),
+          base::i18n::GetKnownLanguageTag("ja"),
+          base::i18n::GetKnownLanguageTag("ka"),
+          base::i18n::GetKnownLanguageTag("kk"),
+          base::i18n::GetKnownLanguageTag("km"),
+          base::i18n::GetKnownLanguageTag("kn"),
+          base::i18n::GetKnownLanguageTag("ko"),
+          base::i18n::GetKnownLanguageTag("ky"),
+          base::i18n::GetKnownLanguageTag("lo"),
+          base::i18n::GetKnownLanguageTag("mk"),
+          base::i18n::GetKnownLanguageTag("ml"),
+          base::i18n::GetKnownLanguageTag("mn"),
+          base::i18n::GetKnownLanguageTag("mr"),
+          base::i18n::GetKnownLanguageTag("my"),
+          base::i18n::GetKnownLanguageTag("pa"),
+          base::i18n::GetKnownLanguageTag("ru"),
+          base::i18n::GetKnownLanguageTag("sr"),
+          base::i18n::GetKnownLanguageTag("ta"),
+          base::i18n::GetKnownLanguageTag("te"),
+          base::i18n::GetKnownLanguageTag("th"),
+          base::i18n::GetKnownLanguageTag("uk"),
+          base::i18n::GetKnownLanguageTag("zh-CN"),
+          base::i18n::GetKnownLanguageTag("zh-HK"),
+          base::i18n::GetKnownLanguageTag("zh-TW"),
+      });
+  return kNonLatinLocales.contains(locale) ||
+         kNonLatinLocales.contains(locale.WithLanguageSubtagOnly());
 }
 
 }  // namespace
@@ -80,7 +115,7 @@ void AppSearchProvider::UpdateResults() {
 
   const bool use_exact_match =
       app_list_features::IsExactMatchForNonLatinLocaleEnabled() &&
-      IsNonLatinLocale(base::i18n::GetConfiguredLocale());
+      IsNonLatinLocale(base::i18n::GetDefaultIcuLocale());
 
   if (use_exact_match) {
     new_results = data_source_->GetExactMatches(query_);

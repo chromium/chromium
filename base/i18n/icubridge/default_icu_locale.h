@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/component_export.h"
 #include "base/i18n/base_i18n_export.h"
 #include "base/i18n/language_tag.h"
 
@@ -44,6 +45,7 @@ class LocaleController;
 }
 
 namespace l10n_util {
+COMPONENT_EXPORT(UI_BASE)
 std::string GetApplicationLocale(std::string_view, bool);
 }
 

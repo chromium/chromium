@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -93,8 +94,9 @@ class PasskeyUpgradeBubbleController : public PasswordBubbleControllerBase {
     constexpr char kHelpCenterUrlBase[] =
         "https://support.google.com/chrome/?p=passkeys";
     GURL learn_more_url(kHelpCenterUrlBase);
-    google_util::AppendGoogleLocaleParam(learn_more_url,
-                                         base::i18n::GetConfiguredLocale());
+    google_util::AppendGoogleLocaleParam(
+        learn_more_url,
+        std::string(base::i18n::GetDefaultIcuLocale().tag_string()));
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
             learn_more_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,

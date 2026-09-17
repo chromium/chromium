@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
@@ -551,7 +552,7 @@ class TestInterstitialPage
                 web_contents,
                 CreateTestMetricsHelper(web_contents),
                 nullptr,
-                base::i18n::GetConfiguredLocale(),
+                std::string(base::i18n::GetDefaultIcuLocale().tag_string()),
                 GURL(),
                 /* settings_page_helper*/ nullptr)) {}
 

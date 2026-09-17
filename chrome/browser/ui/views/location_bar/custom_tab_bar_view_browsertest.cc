@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -145,7 +146,7 @@ class UrlHidingInterstitialPage
                 web_contents,
                 nullptr,
                 nullptr,
-                base::i18n::GetConfiguredLocale(),
+                std::string(base::i18n::GetDefaultIcuLocale().tag_string()),
                 GURL(),
                 nullptr /* settings_page_helper */)) {}
   void OnInterstitialClosing() override {}
