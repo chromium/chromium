@@ -99,12 +99,6 @@ class MockContextualTasksExtensionPage : public mojom::ExtensionPage {
               (const std::vector<uint8_t>& message),
               (override));
   MOCK_METHOD(void, OnHandshakeComplete, (), (override));
-  MOCK_METHOD(void, HideInput, (), (override));
-  MOCK_METHOD(void, RestoreInput, (), (override));
-  MOCK_METHOD(void, EnterBasicMode, (), (override));
-  MOCK_METHOD(void, ExitBasicMode, (), (override));
-  MOCK_METHOD(void, LockInput, (), (override));
-  MOCK_METHOD(void, UnlockInput, (), (override));
   MOCK_METHOD(void, OnLensOverlayStateChanged, (bool is_showing), (override));
 
  private:

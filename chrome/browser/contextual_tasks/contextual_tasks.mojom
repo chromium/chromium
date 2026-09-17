@@ -444,29 +444,6 @@ interface ExtensionPage {
   // Called by C++ after the browser processes the handshake response.
   OnHandshakeComplete();
 
-  // Called by the browser process (C++) when the AIM server sends a HideInput
-  // command to hide the compose box.
-  HideInput();
-
-  // Called by the browser process (C++) when the AIM server sends a
-  // RestoreInput command to show the compose box.
-  RestoreInput();
-
-  // Called by the browser process (C++) when the AIM server sends an
-  // EnterBasicMode command to enter basic mode.
-  EnterBasicMode();
-
-  // Called by the browser process (C++) when the AIM server sends an
-  // ExitBasicMode command to exit basic mode.
-  ExitBasicMode();
-
-  // Called by the browser process (C++) to lock/disable the input in the WebUI.
-  LockInput();
-
-  // Called by the browser process (C++) to unlock/enable the input in the
-  // WebUI.
-  UnlockInput();
-
   // Called by the browser process (C++) when the Lens overlay is shown/hidden.
   OnLensOverlayStateChanged(bool is_showing);
 };
