@@ -4,22 +4,29 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Rect;
 
 import androidx.annotation.Px;
 
+import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.SheetLayoutMode;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinates the bottom sheet UI lifecycle, state transitions, and event notifications. */
 @NullMarked
 class BottomSheetMediator {
+    private static final String TAG = "BottomSheet";
+
     /** Duration for transition to {@link SheetState#FULL}. */
     static final int ANIMATION_DURATION_EXPAND_MS = 350;
 
@@ -35,6 +42,9 @@ class BottomSheetMediator {
 
     /** This is similar to {@link #THRESHOLD_TO_NEXT_STATE_3} but for 2 states instead of 3. */
     static final float THRESHOLD_TO_NEXT_STATE_2 = 0.3f;
+
+    /** The height ratio for the sheet in the SheetState.HALF state. */
+    static final float HALF_HEIGHT_RATIO = 0.75f;
 
     private static final GlowSpec DEFAULT_GLOW_SPEC = new GlowSpec(0, GlowSpec.ShadowSize.DEFAULT);
 
@@ -621,5 +631,148 @@ class BottomSheetMediator {
      */
     void setContainerHeight(int height) {
         mModel.set(BottomSheetProperties.CONTAINER_HEIGHT, height);
+    }
+
+    /**
+     * Sets the sheet layout mode in the model.
+     *
+     * @param mode The sheet layout mode.
+     */
+    void setSheetLayoutMode(@SheetLayoutMode int mode) {
+        mModel.set(BottomSheetProperties.SHEET_LAYOUT_MODE, mode);
+    }
+
+    /**
+     * Sets the sheet width in the model.
+     *
+     * @param width The sheet width in pixels.
+     */
+    void setSheetWidth(@Px int width) {
+        mModel.set(BottomSheetProperties.SHEET_WIDTH_PX, width);
+    }
+
+    /** Returns the ratio of the height of the screen that the hidden state is. */
+    float getHiddenRatio() {
+        return 0;
+    }
+
+    /** Returns the ratio of the maximum sheet height that the peeking state is. */
+    float getPeekRatio(@Px int maxSheetHeight, @Px int peekHeight) {
+        if (maxSheetHeight <= 0) return 0;
+        return (float) peekHeight / maxSheetHeight;
+    }
+
+    /**
+     * @return The ratio of the height of the screen that the half expanded state is.
+     */
+    float getHalfRatio(int containerHeight, boolean isSmallScreen) {
+        if (containerHeight <= 0 || !isHalfStateEnabled(isSmallScreen)) return 0;
+
+        float customHalfRatio = assumeNonNull(mSheetContent).getHalfHeightRatio();
+        assert customHalfRatio != HeightMode.WRAP_CONTENT
+                : "Half-height cannot be WRAP_CONTENT. This is only supported for full-height.";
+
+        return customHalfRatio == HeightMode.DEFAULT ? HALF_HEIGHT_RATIO : customHalfRatio;
+    }
+
+    /** Returns the resolved PEEK height in pixels for the current content. */
+    @Px
+    int getPeekHeight(
+            @Px int containerHeight,
+            @Px int maxSheetHeight,
+            @Px int toolbarHeight,
+            @Px int handlebarHeight) {
+        if (containerHeight <= 0 || !isPeekStateEnabled()) return 0;
+
+        // If the content has a custom peek ratio set, use that instead of computing one.
+        if (mSheetContent != null) {
+            int peekHeight = mSheetContent.getPeekHeight();
+            if (peekHeight != HeightMode.DEFAULT) {
+                assert peekHeight != HeightMode.WRAP_CONTENT : "The peek mode can't wrap content.";
+                assert peekHeight > 0 : "Custom peek height must be positive.";
+                if (mSheetContent.showHandlebar()) {
+                    peekHeight += handlebarHeight;
+                }
+                // If the max sheet height is smaller than the custom peek height (e.g. when
+                // entering
+                // Picture-in-Picture mode where the window shrinks dynamically, or LFF desktop
+                // modes
+                // where top gaps exist), we cap the peek height to the max sheet height instead of
+                // throwing an AssertionError. This gracefully allows the bottom sheet to occupy the
+                // max allowed size rather than crashing the app.
+                if (peekHeight > maxSheetHeight) {
+                    Log.w(
+                            TAG,
+                            "Custom peek height (%d) exceeds max sheet height (%d), capping to"
+                                    + " max sheet height.",
+                            peekHeight,
+                            maxSheetHeight);
+                    peekHeight = maxSheetHeight;
+                }
+                return peekHeight;
+            }
+        }
+
+        if (mSheetContent != null && mSheetContent.showHandlebar()) {
+            toolbarHeight += handlebarHeight;
+        }
+        return toolbarHeight;
+    }
+
+    /** Return whether the peeking state for the sheet's content is enabled. */
+    boolean isPeekStateEnabled() {
+        return mSheetContent != null && mSheetContent.getPeekHeight() != HeightMode.DISABLED;
+    }
+
+    /** Return whether the half-height of the sheet is enabled. */
+    boolean isHalfStateEnabled(boolean isSmallScreen) {
+        if (mSheetContent == null) return false;
+
+        // Half state is invalid on small screens, when wrapping content at full height, and when
+        // explicitly disabled.
+        return !isSmallScreen
+                && mSheetContent.getHalfHeightRatio() != HeightMode.DISABLED
+                && mSheetContent.getFullHeightRatio() != HeightMode.WRAP_CONTENT;
+    }
+
+    /** Return whether the height mode for the full state is WRAP_CONTENT. */
+    boolean isFullHeightWrapContent() {
+        return mSheetContent != null
+                && mSheetContent.getFullHeightRatio() == HeightMode.WRAP_CONTENT;
+    }
+
+    /**
+     * @return Whether flinging down hard enough will close the sheet.
+     */
+    boolean swipeToDismissEnabled() {
+        return mSheetContent != null ? mSheetContent.swipeToDismissEnabled() : true;
+    }
+
+    /**
+     * @return The minimum sheet state that the user can swipe to. i.e. flinging down will either
+     *     close the sheet or peek it.
+     */
+    @SheetState
+    int getMinSwipableSheetState() {
+        return swipeToDismissEnabled() || !isPeekStateEnabled()
+                ? SheetState.HIDDEN
+                : SheetState.PEEK;
+    }
+
+    /**
+     * Get the state that the bottom sheet should open to with the provided content.
+     *
+     * @return The minimum opened state for the current content.
+     */
+    @SheetState
+    int getOpeningState(boolean isSmallScreen) {
+        if (mSheetContent == null) {
+            return SheetState.HIDDEN;
+        } else if (isPeekStateEnabled()) {
+            return SheetState.PEEK;
+        } else if (isHalfStateEnabled(isSmallScreen)) {
+            return SheetState.HALF;
+        }
+        return SheetState.FULL;
     }
 }

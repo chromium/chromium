@@ -81,9 +81,6 @@ class BottomSheet extends BottomSheetView
 
     private static final GlowSpec DEFAULT_GLOW_SPEC = new GlowSpec(0, GlowSpec.ShadowSize.DEFAULT);
 
-    /** The height ratio for the sheet in the SheetState.HALF state. */
-    private static final float HALF_HEIGHT_RATIO = 0.75f;
-
     /** The desired height of a content that has just been shown or whose height was invalidated. */
     private static final float HEIGHT_UNSPECIFIED = -1.0f;
 
@@ -260,6 +257,7 @@ class BottomSheet extends BottomSheetView
                 .with(
                         BottomSheetProperties.CLOSE_BUTTON_CLICK_LISTENER,
                         v -> setSheetState(SheetState.HIDDEN, true, StateChangeReason.CLOSE_BUTTON))
+                .with(BottomSheetProperties.SHEET_WIDTH_PX, ViewGroup.LayoutParams.MATCH_PARENT)
                 .build();
     }
 
@@ -657,8 +655,7 @@ class BottomSheet extends BottomSheetView
      * @return Whether flinging down hard enough will close the sheet.
      */
     private boolean swipeToDismissEnabled() {
-        BottomSheetContent content = getCurrentSheetContent();
-        return content != null ? content.swipeToDismissEnabled() : true;
+        return mMediator.swipeToDismissEnabled();
     }
 
     /**
@@ -667,9 +664,7 @@ class BottomSheet extends BottomSheetView
      */
     @SheetState
     int getMinSwipableSheetState() {
-        return swipeToDismissEnabled() || !isPeekStateEnabled()
-                ? SheetState.HIDDEN
-                : SheetState.PEEK;
+        return mMediator.getMinSwipableSheetState();
     }
 
     /**
@@ -679,15 +674,7 @@ class BottomSheet extends BottomSheetView
      */
     @SheetState
     int getOpeningState() {
-        BottomSheetContent content = getCurrentSheetContent();
-        if (content == null) {
-            return SheetState.HIDDEN;
-        } else if (isPeekStateEnabled()) {
-            return SheetState.PEEK;
-        } else if (isHalfStateEnabled()) {
-            return SheetState.HALF;
-        }
-        return SheetState.FULL;
+        return mMediator.getOpeningState(isSmallScreen());
     }
 
     @Override
@@ -931,31 +918,22 @@ class BottomSheet extends BottomSheetView
     /** Returns the ratio of the height of the screen that the hidden state is. */
     @VisibleForTesting
     float getHiddenRatio() {
-        return 0;
+        return mMediator.getHiddenRatio();
     }
 
     /** Return whether the peeking state for the sheet's content is enabled. */
     boolean isPeekStateEnabled() {
-        BottomSheetContent content = getCurrentSheetContent();
-        return content != null && content.getPeekHeight() != HeightMode.DISABLED;
+        return mMediator.isPeekStateEnabled();
     }
 
     /** Return whether the half-height of the sheet is enabled. */
     private boolean isHalfStateEnabled() {
-        BottomSheetContent content = getCurrentSheetContent();
-        if (content == null) return false;
-
-        // Half state is invalid on small screens, when wrapping content at full height, and when
-        // explicitly disabled.
-        return !isSmallScreen()
-                && content.getHalfHeightRatio() != HeightMode.DISABLED
-                && content.getFullHeightRatio() != HeightMode.WRAP_CONTENT;
+        return mMediator.isHalfStateEnabled(isSmallScreen());
     }
 
     /** Return whether the height mode for the full state is WRAP_CONTENT. */
     private boolean isFullHeightWrapContent() {
-        BottomSheetContent content = getCurrentSheetContent();
-        return content != null && content.getFullHeightRatio() == HeightMode.WRAP_CONTENT;
+        return mMediator.isFullHeightWrapContent();
     }
 
     /** Return whether the height mode for the full state is RESIZE_CONTENT. */
@@ -978,38 +956,11 @@ class BottomSheet extends BottomSheetView
     public int getPeekHeightPx() {
         if (mContainerHeight <= 0 || !isPeekStateEnabled()) return 0;
 
-        // If the content has a custom peek ratio set, use that instead of computing one.
         BottomSheetContent content = getCurrentSheetContent();
-        if (content != null) {
-            int peekHeight = content.getPeekHeight();
-            if (peekHeight != HeightMode.DEFAULT) {
-                assert peekHeight != HeightMode.WRAP_CONTENT : "The peek mode can't wrap content.";
-                assert peekHeight > 0 : "Custom peek height must be positive.";
-                if (content.showHandlebar()) {
-                    peekHeight += getHandlebarHeight();
-                }
-                // If the max sheet height is smaller than the custom peek height (e.g. when
-                // entering
-                // Picture-in-Picture mode where the window shrinks dynamically, or LFF desktop
-                // modes
-                // where top gaps exist), we cap the peek height to the max sheet height instead of
-                // throwing an AssertionError. This gracefully allows the bottom sheet to occupy the
-                // max allowed size rather than crashing the app.
-                int maxSheetHeight = getMaxSheetHeight();
-                if (peekHeight > maxSheetHeight) {
-                    Log.w(
-                            TAG,
-                            "Custom peek height (%d) exceeds max sheet height (%d), capping to"
-                                    + " max sheet height.",
-                            peekHeight,
-                            maxSheetHeight);
-                    peekHeight = maxSheetHeight;
-                }
-                return peekHeight;
-            }
-        }
-
-        View toolbarView = getToolbarView();
+        View toolbarView =
+                (content == null || content.getPeekHeight() == HeightMode.DEFAULT)
+                        ? getToolbarView()
+                        : null;
 
         int toolbarHeight;
         if (toolbarView == null) {
@@ -1034,16 +985,16 @@ class BottomSheet extends BottomSheetView
                 }
             }
         }
-        if (content != null && content.showHandlebar()) {
-            toolbarHeight += getHandlebarHeight();
-        }
-        return toolbarHeight;
+
+        return mMediator.getPeekHeight(
+                mContainerHeight, getMaxSheetHeight(), toolbarHeight, getHandlebarHeight());
     }
 
     /** Returns the ratio of the maximum sheet height that the peeking state is. */
     public float getPeekRatio() {
-        if (getMaxSheetHeight() <= 0) return 0;
-        return (float) getPeekHeightPx() / getMaxSheetHeight();
+        int maxSheetHeight = getMaxSheetHeight();
+        if (maxSheetHeight <= 0) return 0;
+        return mMediator.getPeekRatio(maxSheetHeight, getPeekHeightPx());
     }
 
     private @Nullable View getToolbarView() {
@@ -1054,13 +1005,7 @@ class BottomSheet extends BottomSheetView
     /** @return The ratio of the height of the screen that the half expanded state is. */
     @VisibleForTesting
     float getHalfRatio() {
-        if (mContainerHeight <= 0 || !isHalfStateEnabled()) return 0;
-
-        float customHalfRatio = assumeNonNull(getCurrentSheetContent()).getHalfHeightRatio();
-        assert customHalfRatio != HeightMode.WRAP_CONTENT
-                : "Half-height cannot be WRAP_CONTENT. This is only supported for full-height.";
-
-        return customHalfRatio == HeightMode.DEFAULT ? HALF_HEIGHT_RATIO : customHalfRatio;
+        return mMediator.getHalfRatio(mContainerHeight, isSmallScreen());
     }
 
     /**
@@ -1431,7 +1376,7 @@ class BottomSheet extends BottomSheetView
     /** Center and size the sheet in its container. */
     private void sizeAndPositionSheetInParent() {
         int maxSheetWidth = getMaxSheetWidth();
-        getLayoutParams().width = maxSheetWidth;
+        mMediator.setSheetWidth(maxSheetWidth);
         setTranslationX(
                 (LocalizationUtils.isLayoutRtl() ? -1 : 1)
                         * (mContainerWidth - maxSheetWidth)
@@ -1532,11 +1477,11 @@ class BottomSheet extends BottomSheetView
     public boolean isSmallScreen() {
         if (sIsSmallScreenForTesting != null) return sIsSmallScreenForTesting;
 
-        float halfRatio = HALF_HEIGHT_RATIO;
+        float halfRatio = BottomSheetMediator.HALF_HEIGHT_RATIO;
         BottomSheetContent content = getCurrentSheetContent();
         if (content != null) {
             float customHalf = content.getHalfHeightRatio();
-            if (customHalf > 0 && customHalf < HALF_HEIGHT_RATIO) {
+            if (customHalf > 0 && customHalf < BottomSheetMediator.HALF_HEIGHT_RATIO) {
                 halfRatio = customHalf;
             }
         }
@@ -1590,7 +1535,7 @@ class BottomSheet extends BottomSheetView
         }
         updateContentContainerHeight();
         updateBackgroundColor();
-        mModel.set(BottomSheetProperties.SHEET_LAYOUT_MODE, mode);
+        mMediator.setSheetLayoutMode(mode);
         mMediator.updateCloseButton(mode == SheetLayoutMode.DESKTOP_POPUP, content);
         mMediator.notifySheetContentChanged(content);
         mToolbarHolder.setBackgroundColor(Color.TRANSPARENT);

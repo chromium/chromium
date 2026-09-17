@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -549,5 +550,173 @@ public class BottomSheetMediatorUnitTest {
     public void testSetContainerHeight() {
         mMediator.setContainerHeight(750);
         assertEquals(750, mModel.get(BottomSheetProperties.CONTAINER_HEIGHT));
+    }
+
+    @Test
+    public void testSetSheetLayoutMode() {
+        mMediator.setSheetLayoutMode(BottomSheetView.SheetLayoutMode.DESKTOP_POPUP);
+        assertEquals(
+                BottomSheetView.SheetLayoutMode.DESKTOP_POPUP,
+                mModel.get(BottomSheetProperties.SHEET_LAYOUT_MODE));
+    }
+
+    @Test
+    public void testSetSheetWidth() {
+        mMediator.setSheetWidth(600);
+        assertEquals(600, mModel.get(BottomSheetProperties.SHEET_WIDTH_PX));
+    }
+
+    @Test
+    public void testSwipeToDismissEnabled() {
+        when(mContent.swipeToDismissEnabled()).thenReturn(true);
+        mMediator.setSheetContent(mContent);
+        assertTrue(mMediator.swipeToDismissEnabled());
+
+        when(mContent.swipeToDismissEnabled()).thenReturn(false);
+        assertFalse(mMediator.swipeToDismissEnabled());
+    }
+
+    @Test
+    public void testIsPeekStateEnabled() {
+        assertFalse(mMediator.isPeekStateEnabled());
+
+        when(mContent.getPeekHeight()).thenReturn(HeightMode.DISABLED);
+        mMediator.setSheetContent(mContent);
+        assertFalse(mMediator.isPeekStateEnabled());
+
+        when(mContent.getPeekHeight()).thenReturn(HeightMode.DEFAULT);
+        assertTrue(mMediator.isPeekStateEnabled());
+    }
+
+    @Test
+    public void testIsHalfStateEnabled() {
+        assertFalse(mMediator.isHalfStateEnabled(/* isSmallScreen= */ false));
+
+        when(mContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        mMediator.setSheetContent(mContent);
+
+        assertTrue(mMediator.isHalfStateEnabled(/* isSmallScreen= */ false));
+        assertFalse(mMediator.isHalfStateEnabled(/* isSmallScreen= */ true));
+
+        when(mContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DISABLED);
+        assertFalse(mMediator.isHalfStateEnabled(/* isSmallScreen= */ false));
+    }
+
+    @Test
+    public void testIsFullHeightWrapContent() {
+        assertFalse(mMediator.isFullHeightWrapContent());
+
+        when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.WRAP_CONTENT);
+        mMediator.setSheetContent(mContent);
+        assertTrue(mMediator.isFullHeightWrapContent());
+
+        when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        assertFalse(mMediator.isFullHeightWrapContent());
+    }
+
+    @Test
+    public void testGetMinSwipableSheetState() {
+        when(mContent.swipeToDismissEnabled()).thenReturn(true);
+        when(mContent.getPeekHeight()).thenReturn(HeightMode.DEFAULT);
+        mMediator.setSheetContent(mContent);
+        assertEquals(SheetState.HIDDEN, mMediator.getMinSwipableSheetState());
+
+        when(mContent.swipeToDismissEnabled()).thenReturn(false);
+        assertEquals(SheetState.PEEK, mMediator.getMinSwipableSheetState());
+
+        when(mContent.getPeekHeight()).thenReturn(HeightMode.DISABLED);
+        assertEquals(SheetState.HIDDEN, mMediator.getMinSwipableSheetState());
+    }
+
+    @Test
+    public void testGetOpeningState() {
+        assertEquals(SheetState.HIDDEN, mMediator.getOpeningState(/* isSmallScreen= */ false));
+
+        when(mContent.getPeekHeight()).thenReturn(HeightMode.DEFAULT);
+        when(mContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        mMediator.setSheetContent(mContent);
+        assertEquals(SheetState.PEEK, mMediator.getOpeningState(/* isSmallScreen= */ false));
+
+        when(mContent.getPeekHeight()).thenReturn(HeightMode.DISABLED);
+        assertEquals(SheetState.HALF, mMediator.getOpeningState(/* isSmallScreen= */ false));
+        assertEquals(SheetState.FULL, mMediator.getOpeningState(/* isSmallScreen= */ true));
+    }
+
+    @Test
+    public void testRatiosAndHeights() {
+        assertEquals(0f, mMediator.getHiddenRatio(), 0.001f);
+        assertEquals(
+                0.25f,
+                mMediator.getPeekRatio(/* maxSheetHeight= */ 400, /* peekHeight= */ 100),
+                0.001f);
+        assertEquals(
+                0f, mMediator.getPeekRatio(/* maxSheetHeight= */ 0, /* peekHeight= */ 100), 0.001f);
+
+        when(mContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        mMediator.setSheetContent(mContent);
+
+        assertEquals(
+                0.75f,
+                mMediator.getHalfRatio(/* containerHeight= */ 1000, /* isSmallScreen= */ false),
+                0.001f);
+        assertEquals(
+                0f,
+                mMediator.getHalfRatio(/* containerHeight= */ 1000, /* isSmallScreen= */ true),
+                0.001f);
+
+        when(mContent.getHalfHeightRatio()).thenReturn(0.6f);
+        when(mContent.getFullHeightRatio()).thenReturn(0.85f);
+        mMediator.setSheetContent(mContent);
+        assertEquals(
+                0.6f,
+                mMediator.getHalfRatio(/* containerHeight= */ 1000, /* isSmallScreen= */ false),
+                0.001f);
+    }
+
+    @Test
+    public void testGetPeekHeight() {
+        when(mContent.getPeekHeight()).thenReturn(HeightMode.DEFAULT);
+        when(mContent.showHandlebar()).thenReturn(false);
+        mMediator.setSheetContent(mContent);
+
+        assertEquals(
+                60,
+                mMediator.getPeekHeight(
+                        /* containerHeight= */ 1000,
+                        /* maxSheetHeight= */ 1000,
+                        /* toolbarHeight= */ 60,
+                        /* handlebarHeight= */ 16));
+
+        // With handlebar
+        when(mContent.showHandlebar()).thenReturn(true);
+        assertEquals(
+                76,
+                mMediator.getPeekHeight(
+                        /* containerHeight= */ 1000,
+                        /* maxSheetHeight= */ 1000,
+                        /* toolbarHeight= */ 60,
+                        /* handlebarHeight= */ 16));
+
+        // Custom peek height
+        when(mContent.getPeekHeight()).thenReturn(200);
+        assertEquals(
+                216,
+                mMediator.getPeekHeight(
+                        /* containerHeight= */ 1000,
+                        /* maxSheetHeight= */ 1000,
+                        /* toolbarHeight= */ 60,
+                        /* handlebarHeight= */ 16));
+
+        // Custom peek height capped to max sheet height
+        assertEquals(
+                150,
+                mMediator.getPeekHeight(
+                        /* containerHeight= */ 1000,
+                        /* maxSheetHeight= */ 150,
+                        /* toolbarHeight= */ 60,
+                        /* handlebarHeight= */ 16));
     }
 }
