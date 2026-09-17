@@ -7,6 +7,7 @@
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -257,6 +258,26 @@ IN_PROC_BROWSER_TEST_P(StorageAccessBrowserTest,
   ASSERT_TRUE(child->IsCredentialless());
 
   EXPECT_EQ(BindStorageAccessHandleInFrame(child),
+            expected_restricted_handle_result());
+}
+
+IN_PROC_BROWSER_TEST_P(StorageAccessBrowserTest,
+                       BindStorageAccessHandle_PdfRenderer) {
+  WebContentsImpl* tab = static_cast<WebContentsImpl*>(shell()->web_contents());
+  GURL url = embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  NavigationController::LoadURLParams params(url);
+  params.transition_type = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+  params.is_pdf = true;
+  NavigateToURLBlockUntilNavigationsComplete(
+      tab, params, 1, /*ignore_uncommitted_navigations=*/false);
+  ASSERT_TRUE(IsLastCommittedEntryOfPageType(tab, PAGE_TYPE_NORMAL));
+  ASSERT_EQ(url, tab->GetLastCommittedURL());
+  ASSERT_TRUE(host()->GetSiteInstance()->GetSiteInfo().is_pdf());
+  ASSERT_TRUE(host()->GetProcess()->IsPdf());
+
+  EXPECT_EQ(BindStorageAccessHandleInFrame(host()),
             expected_restricted_handle_result());
 }
 

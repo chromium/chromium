@@ -13805,7 +13805,9 @@ bool RenderFrameHostImpl::IsStorageAccessRestricted() {
          IsNestedWithinFencedFrame() ||
          IsSandboxed(
              network::mojom::WebSandboxFlags::kStorageAccessByUserActivation) ||
-         GetStorageKey().ForbidsUnpartitionedStorageAccess();
+         GetStorageKey().ForbidsUnpartitionedStorageAccess() ||
+         !ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
+             GetProcess()->GetID().GetUnsafeValue(), GetLastCommittedOrigin());
 }
 
 void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
