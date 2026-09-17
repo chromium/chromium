@@ -667,9 +667,7 @@ TEST_F(NewTabPageRedesignViewControllerTest,
 
   CGFloat height_with_magic_stack = [view_controller_ topContentHeight];
   CGFloat expected_magic_stack_delta =
-      content_suggestions::ReducedModuleSpacing(
-          view_controller_.traitCollection) +
-      kMagicStackHeight;
+      content_suggestions::ReducedModuleSpacing() + kMagicStackHeight;
 
   EXPECT_FLOAT_EQ(height_with_magic_stack,
                   initial_height + expected_magic_stack_delta);

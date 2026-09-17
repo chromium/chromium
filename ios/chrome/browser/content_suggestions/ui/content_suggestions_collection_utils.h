@@ -47,7 +47,6 @@ extern const CGFloat kReducedModuleSpacingControl;
 // Shared spacing constants.
 extern const CGFloat kQuickActionsTopPadding;
 extern const CGFloat kReducedModuleSpacing;
-extern const CGFloat kReducedModuleSpacingRegularXRegular;
 extern const CGFloat kNTPShrunkLogoSearchFieldBottomPadding;
 
 // Returns the proper height for the doodle, based on `logo_state`. The
@@ -91,16 +90,17 @@ CGFloat HeaderBottomPadding(UITraitCollection* trait_collection);
 CGFloat LogoTopPadding(SearchEngineLogoState logo_state,
                        UITraitCollection* trait_collection);
 // Returns padding between the Google logo/doodle and fakebox based on the
-// enabled arm.
-CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state);
+// enabled arm and size class.
+CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state,
+                             UITraitCollection* trait_collection);
 // Returns top padding for Quick Actions based on the enabled arm.
 CGFloat QuickActionsTopPadding();
 // Returns top padding for Most Visited Tiles based on the
-// enabled arm.
-CGFloat MostVisitedTopPadding();
-// Returns reduced spacing used between the MVT, Magic Stack, and Discover Feed.
-// Padding is based on the size class.
-CGFloat ReducedModuleSpacing(UITraitCollection* trait_collection = nil);
+// enabled arm and size class.
+CGFloat MostVisitedTopPadding(UITraitCollection* trait_collection);
+// Returns reduced spacing used between the MVT, Magic Stack, and Discover Feed
+// based on the enabled arm.
+CGFloat ReducedModuleSpacing();
 
 // Configure the `search_hint_label` for the fake omnibox.  `hintLabelContainer`
 // is added to the `search_tab_target` with autolayout and `search_hint_label`

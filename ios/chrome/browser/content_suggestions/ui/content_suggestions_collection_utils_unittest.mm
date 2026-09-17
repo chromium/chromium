@@ -328,13 +328,16 @@ TEST_F(ContentSuggestionsCollectionUtilsTest,
                                         IPhonePortraitTraitCollection()) +
                          DoodleHeight(SearchEngineLogoState::kLogo,
                                       IPhonePortraitTraitCollection()) +
-                         LogoToFakeboxPadding(SearchEngineLogoState::kLogo);
+                         LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
+                                              IPhonePortraitTraitCollection());
 
-    CGFloat total_doodle = LogoTopPadding(SearchEngineLogoState::kDoodle,
-                                          IPhonePortraitTraitCollection()) +
-                           DoodleHeight(SearchEngineLogoState::kDoodle,
-                                        IPhonePortraitTraitCollection()) +
-                           LogoToFakeboxPadding(SearchEngineLogoState::kDoodle);
+    CGFloat total_doodle =
+        LogoTopPadding(SearchEngineLogoState::kDoodle,
+                       IPhonePortraitTraitCollection()) +
+        DoodleHeight(SearchEngineLogoState::kDoodle,
+                     IPhonePortraitTraitCollection()) +
+        LogoToFakeboxPadding(SearchEngineLogoState::kDoodle,
+                             IPhonePortraitTraitCollection());
 
     // Extra height for logo when AIM is enabled (50pt vs 36pt standard logo).
     constexpr CGFloat kAimLogoHeightGain = 14.0;
@@ -362,11 +365,14 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
             LogoTopPadding(SearchEngineLogoState::kDoodle,
                            IPhonePortraitTraitCollection()));
   EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo),
-            LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
+            LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
+                                 IPhonePortraitTraitCollection()));
   EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kDoodle),
-            LogoToFakeboxPadding(SearchEngineLogoState::kDoodle));
+            LogoToFakeboxPadding(SearchEngineLogoState::kDoodle,
+                                 IPhonePortraitTraitCollection()));
   EXPECT_EQ(kQuickActionsTopPaddingControl, QuickActionsTopPadding());
-  EXPECT_EQ(kMostVisitedTopPaddingControl, MostVisitedTopPadding());
+  EXPECT_EQ(kMostVisitedTopPaddingControl,
+            MostVisitedTopPadding(IPhonePortraitTraitCollection()));
   EXPECT_EQ(kReducedModuleSpacingControl, ReducedModuleSpacing());
   EXPECT_EQ(kNTPShrunkLogoSearchFieldBottomPadding,
             HeaderBottomPadding(IPhoneLandscapeTraitCollection()));
@@ -386,13 +392,16 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
               LogoTopPadding(SearchEngineLogoState::kDoodle,
                              IPhonePortraitTraitCollection()));
     EXPECT_EQ(kLogoToFakeboxPaddingTight,
-              LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
+              LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
+                                   IPhonePortraitTraitCollection()));
     EXPECT_EQ(kDoodleToFakeboxPaddingTight,
-              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle));
+              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle,
+                                   IPhonePortraitTraitCollection()));
     EXPECT_EQ(
         kQuickActionsTopPadding - ntp_header::kScrolledToTopOmniboxBottomMargin,
         QuickActionsTopPadding());
-    EXPECT_EQ(kMostVisitedTopPaddingTight, MostVisitedTopPadding());
+    EXPECT_EQ(kMostVisitedTopPaddingTight,
+              MostVisitedTopPadding(IPhonePortraitTraitCollection()));
     EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
     EXPECT_EQ(0, HeaderBottomPadding(IPhoneLandscapeTraitCollection()));
   }
@@ -412,13 +421,16 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
               LogoTopPadding(SearchEngineLogoState::kDoodle,
                              IPhonePortraitTraitCollection()));
     EXPECT_EQ(kLogoToFakeboxPaddingMedium,
-              LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
+              LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
+                                   IPhonePortraitTraitCollection()));
     EXPECT_EQ(kDoodleToFakeboxPaddingMedium,
-              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle));
+              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle,
+                                   IPhonePortraitTraitCollection()));
     EXPECT_EQ(
         kQuickActionsTopPadding - ntp_header::kScrolledToTopOmniboxBottomMargin,
         QuickActionsTopPadding());
-    EXPECT_EQ(kMostVisitedTopPaddingMedium, MostVisitedTopPadding());
+    EXPECT_EQ(kMostVisitedTopPaddingMedium,
+              MostVisitedTopPadding(IPhonePortraitTraitCollection()));
     EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
     EXPECT_EQ(0, HeaderBottomPadding(IPhoneLandscapeTraitCollection()));
   }
@@ -438,13 +450,16 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
               LogoTopPadding(SearchEngineLogoState::kDoodle,
                              IPhonePortraitTraitCollection()));
     EXPECT_EQ(kLogoToFakeboxPaddingPreferred,
-              LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
+              LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
+                                   IPhonePortraitTraitCollection()));
     EXPECT_EQ(kDoodleToFakeboxPaddingPreferred,
-              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle));
+              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle,
+                                   IPhonePortraitTraitCollection()));
     EXPECT_EQ(
         kQuickActionsTopPadding - ntp_header::kScrolledToTopOmniboxBottomMargin,
         QuickActionsTopPadding());
-    EXPECT_EQ(kMostVisitedTopPaddingPreferred, MostVisitedTopPadding());
+    EXPECT_EQ(kMostVisitedTopPaddingPreferred,
+              MostVisitedTopPadding(IPhonePortraitTraitCollection()));
     EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
     EXPECT_EQ(0, HeaderBottomPadding(IPhoneLandscapeTraitCollection()));
   }
@@ -466,11 +481,14 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
               LogoTopPadding(SearchEngineLogoState::kDoodle,
                              IPhonePortraitTraitCollection()));
     EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo),
-              LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
+              LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
+                                   IPhonePortraitTraitCollection()));
     EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kDoodle),
-              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle));
+              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle,
+                                   IPhonePortraitTraitCollection()));
     EXPECT_EQ(kQuickActionsTopPaddingControl, QuickActionsTopPadding());
-    EXPECT_EQ(kMostVisitedTopPaddingControl, MostVisitedTopPadding());
+    EXPECT_EQ(kMostVisitedTopPaddingControl,
+              MostVisitedTopPadding(IPhonePortraitTraitCollection()));
     EXPECT_EQ(kReducedModuleSpacingControl, ReducedModuleSpacing());
     EXPECT_EQ(kNTPShrunkLogoSearchFieldBottomPadding,
               HeaderBottomPadding(IPhoneLandscapeTraitCollection()));
@@ -488,11 +506,12 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpersIPad) {
   EXPECT_FALSE(IsNewTabPageUICleanupPaddingEnabled());
   EXPECT_FALSE(ShouldApplyFakeboxBackgroundAndShadow());
   EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo),
-            LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
+            LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
+                                 IPadTraitCollection()));
   EXPECT_EQ(kQuickActionsTopPaddingControl, QuickActionsTopPadding());
-  EXPECT_EQ(kMostVisitedTopPaddingControl, MostVisitedTopPadding());
-  EXPECT_EQ(kReducedModuleSpacingRegularXRegular,
-            ReducedModuleSpacing(IPadTraitCollection()));
+  EXPECT_EQ(kMostVisitedTopPaddingControl,
+            MostVisitedTopPadding(IPadTraitCollection()));
+  EXPECT_EQ(kReducedModuleSpacingControl, ReducedModuleSpacing());
   EXPECT_EQ(kNTPShrunkLogoSearchFieldBottomPadding,
             HeaderBottomPadding(IPadTraitCollection()));
 
@@ -506,20 +525,26 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpersIPad) {
     EXPECT_TRUE(ShouldApplyFakeboxBackgroundAndShadow());
     EXPECT_EQ(NTPUICleanupVariation::kDisabled,
               GetNewTabPageUICleanupPaddingVariation());
-    EXPECT_EQ(162.0, LogoTopPadding(SearchEngineLogoState::kLogo,
-                                    IPadTraitCollection()));
-    EXPECT_EQ(162.0, LogoTopPadding(SearchEngineLogoState::kDoodle,
-                                    IPadTraitCollection()));
+    EXPECT_EQ(
+        FakeToolbarHeight() + kLogoTopPaddingPreferred,
+        LogoTopPadding(SearchEngineLogoState::kLogo, IPadTraitCollection()));
+    EXPECT_EQ(
+        FakeToolbarHeight() + kDoodleTopPaddingPreferred,
+        LogoTopPadding(SearchEngineLogoState::kDoodle, IPadTraitCollection()));
     EXPECT_EQ(162.0, DoodleTopMargin(SearchEngineLogoState::kLogo,
                                      IPadTraitCollection()));
-    EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo),
-              LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
-    EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kDoodle),
-              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle));
-    EXPECT_EQ(kQuickActionsTopPaddingControl, QuickActionsTopPadding());
-    EXPECT_EQ(kMostVisitedTopPaddingControl, MostVisitedTopPadding());
-    EXPECT_EQ(kReducedModuleSpacingRegularXRegular,
-              ReducedModuleSpacing(IPadTraitCollection()));
+    EXPECT_EQ(kLogoToFakeboxPaddingPreferred,
+              LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
+                                   IPadTraitCollection()));
+    EXPECT_EQ(kDoodleToFakeboxPaddingPreferred,
+              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle,
+                                   IPadTraitCollection()));
+    EXPECT_EQ(
+        kQuickActionsTopPadding - ntp_header::kScrolledToTopOmniboxBottomMargin,
+        QuickActionsTopPadding());
+    EXPECT_EQ(kMostVisitedTopPaddingPreferred,
+              MostVisitedTopPadding(IPadTraitCollection()));
+    EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
     EXPECT_EQ(kNTPShrunkLogoSearchFieldBottomPadding,
               HeaderBottomPadding(IPadTraitCollection()));
   }
@@ -534,14 +559,26 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpersIPad) {
     EXPECT_TRUE(ShouldApplyFakeboxBackgroundAndShadow());
     EXPECT_EQ(NTPUICleanupVariation::kDisabled,
               GetNewTabPageUICleanupPaddingVariation());
-    EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo),
-              LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
-    EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kDoodle),
-              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle));
-    EXPECT_EQ(kQuickActionsTopPaddingControl, QuickActionsTopPadding());
-    EXPECT_EQ(kMostVisitedTopPaddingControl, MostVisitedTopPadding());
-    EXPECT_EQ(kReducedModuleSpacingRegularXRegular,
-              ReducedModuleSpacing(IPadTraitCollection()));
+    EXPECT_EQ(
+        FakeToolbarHeight() + kLogoTopPaddingPreferred,
+        LogoTopPadding(SearchEngineLogoState::kLogo, IPadTraitCollection()));
+    EXPECT_EQ(
+        FakeToolbarHeight() + kDoodleTopPaddingPreferred,
+        LogoTopPadding(SearchEngineLogoState::kDoodle, IPadTraitCollection()));
+    EXPECT_EQ(162.0, DoodleTopMargin(SearchEngineLogoState::kLogo,
+                                     IPadTraitCollection()));
+    EXPECT_EQ(kLogoToFakeboxPaddingPreferred,
+              LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
+                                   IPadTraitCollection()));
+    EXPECT_EQ(kDoodleToFakeboxPaddingPreferred,
+              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle,
+                                   IPadTraitCollection()));
+    EXPECT_EQ(
+        kQuickActionsTopPadding - ntp_header::kScrolledToTopOmniboxBottomMargin,
+        QuickActionsTopPadding());
+    EXPECT_EQ(kMostVisitedTopPaddingPreferred,
+              MostVisitedTopPadding(IPadTraitCollection()));
+    EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
     EXPECT_EQ(kNTPShrunkLogoSearchFieldBottomPadding,
               HeaderBottomPadding(IPadTraitCollection()));
   }
@@ -556,14 +593,26 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpersIPad) {
     EXPECT_TRUE(ShouldApplyFakeboxBackgroundAndShadow());
     EXPECT_EQ(NTPUICleanupVariation::kDisabled,
               GetNewTabPageUICleanupPaddingVariation());
-    EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo),
-              LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
-    EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kDoodle),
-              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle));
-    EXPECT_EQ(kQuickActionsTopPaddingControl, QuickActionsTopPadding());
-    EXPECT_EQ(kMostVisitedTopPaddingControl, MostVisitedTopPadding());
-    EXPECT_EQ(kReducedModuleSpacingRegularXRegular,
-              ReducedModuleSpacing(IPadTraitCollection()));
+    EXPECT_EQ(
+        FakeToolbarHeight() + kLogoTopPaddingPreferred,
+        LogoTopPadding(SearchEngineLogoState::kLogo, IPadTraitCollection()));
+    EXPECT_EQ(
+        FakeToolbarHeight() + kDoodleTopPaddingPreferred,
+        LogoTopPadding(SearchEngineLogoState::kDoodle, IPadTraitCollection()));
+    EXPECT_EQ(162.0, DoodleTopMargin(SearchEngineLogoState::kLogo,
+                                     IPadTraitCollection()));
+    EXPECT_EQ(kLogoToFakeboxPaddingPreferred,
+              LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
+                                   IPadTraitCollection()));
+    EXPECT_EQ(kDoodleToFakeboxPaddingPreferred,
+              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle,
+                                   IPadTraitCollection()));
+    EXPECT_EQ(
+        kQuickActionsTopPadding - ntp_header::kScrolledToTopOmniboxBottomMargin,
+        QuickActionsTopPadding());
+    EXPECT_EQ(kMostVisitedTopPaddingPreferred,
+              MostVisitedTopPadding(IPadTraitCollection()));
+    EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
     EXPECT_EQ(kNTPShrunkLogoSearchFieldBottomPadding,
               HeaderBottomPadding(IPadTraitCollection()));
   }
@@ -577,13 +626,15 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpersIPad) {
     EXPECT_FALSE(IsNewTabPageUICleanupPaddingEnabled());
     EXPECT_TRUE(ShouldApplyFakeboxBackgroundAndShadow());
     EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo),
-              LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
+              LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
+                                   IPadTraitCollection()));
     EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kDoodle),
-              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle));
+              LogoToFakeboxPadding(SearchEngineLogoState::kDoodle,
+                                   IPadTraitCollection()));
     EXPECT_EQ(kQuickActionsTopPaddingControl, QuickActionsTopPadding());
-    EXPECT_EQ(kMostVisitedTopPaddingControl, MostVisitedTopPadding());
-    EXPECT_EQ(kReducedModuleSpacingRegularXRegular,
-              ReducedModuleSpacing(IPadTraitCollection()));
+    EXPECT_EQ(kMostVisitedTopPaddingControl,
+              MostVisitedTopPadding(IPadTraitCollection()));
+    EXPECT_EQ(kReducedModuleSpacingControl, ReducedModuleSpacing());
     EXPECT_EQ(kNTPShrunkLogoSearchFieldBottomPadding,
               HeaderBottomPadding(IPadTraitCollection()));
   }
