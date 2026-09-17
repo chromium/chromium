@@ -24,11 +24,13 @@ import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
@@ -157,6 +159,7 @@ public class BookmarkPopupViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/562625357
     public void testBookmarkPopupView_PriceTrackingChecked() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

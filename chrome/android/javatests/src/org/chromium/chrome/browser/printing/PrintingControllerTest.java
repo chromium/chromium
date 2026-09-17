@@ -32,6 +32,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -64,6 +65,7 @@ import org.chromium.printing.PrintManagerDelegate;
 import org.chromium.printing.Printable;
 import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.widget.ToastManager;
@@ -973,6 +975,7 @@ public class PrintingControllerTest {
     @Test
     @SmallTest
     @Feature({"Printing"})
+    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/562625776
     public void testStartPendingPrintWhenActivityIsFinishing() throws Throwable {
         WebPageStation page = mActivityTestRule.startOnUrl(URL);
         Tab tab = page.getTab();

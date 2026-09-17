@@ -48,6 +48,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+@DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/562625794
 public class ToolbarSwipeTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =

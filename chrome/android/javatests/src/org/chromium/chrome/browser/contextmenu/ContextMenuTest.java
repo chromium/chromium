@@ -532,6 +532,7 @@ public class ContextMenuTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/562626022
     public void testCopyTelNumber() throws Throwable {
         doAnswer(sCopyIsAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
@@ -751,6 +752,7 @@ public class ContextMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
+    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/562626022
     public void testContextMenuRetrievesLinkOptions() throws TimeoutException {
         Tab tab = mActivityTestRule.getActivityTab();
         mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "testLink");
@@ -830,6 +832,7 @@ public class ContextMenuTest {
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
     @Policies.Add({@Policies.Item(key = "DefaultSearchProviderEnabled", string = "false")})
+    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/562626022
     public void testContextMenuRetrievesImageOptions_NoDefaultSearchEngine()
             throws TimeoutException {
         Tab tab = mActivityTestRule.getActivityTab();
@@ -1016,6 +1019,7 @@ public class ContextMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
+    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/562626022
     public void testCopyImage_notAllowedByPolicy() throws Throwable {
         doAnswer(sCopyIsNotAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
