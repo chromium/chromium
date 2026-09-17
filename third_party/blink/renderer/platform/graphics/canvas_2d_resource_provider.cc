@@ -425,7 +425,7 @@ void Canvas2DResourceProvider::EndWriteAccess() {
     // CopyOnWrite.
     must_preserve_content_on_copy_on_write_ = true;
   } else {
-    if (ShouldReplaceTargetBuffer()) {
+    if (!resource() || resource()->IsLost() || !resource()->HasOneRef()) {
       resource_ = NewOrRecycledResource();
     }
     if (!resource() || !GetSkSurface()) {
