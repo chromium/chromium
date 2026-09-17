@@ -454,7 +454,7 @@ views::ProposedLayout VerticalTabStripRegionView::CalculateProposedLayout(
 }
 
 void VerticalTabStripRegionView::Layout(PassKey) {
-  LayoutSuperclass<views::AccessiblePaneView>(this);
+  LayoutSuperclass<BaseTabStripRegionView>(this);
 
   // Manually position the resize area as it overlaps views handled by the flex
   // layout.

@@ -95,6 +95,7 @@ void BaseTabStripRegionView::InitializeTabStrip() {
   CHECK(tab_strip_model);
   auto drag_handler = std::make_unique<TabDragHandlerImpl>(
       *tab_strip_model, *root_node_.get(), *this);
+  drag_handler->SetProperty(views::kViewIgnoredByLayoutKey, true);
   drag_handler_ = drag_handler.get();
 
   CHECK(!tab_strip_controller_);
@@ -473,6 +474,16 @@ void BaseTabStripRegionView::AddedToWidget() {
 
 void BaseTabStripRegionView::RemovedFromWidget() {
   widget_observation_.Reset();
+}
+
+void BaseTabStripRegionView::Layout(PassKey) {
+  LayoutSuperclass<TabStripRegionView>(this);
+  // `drag_handler_` (TabDragContext) is ignored by FlexLayout so that it does
+  // not consume layout space. Its bounds must match the region view so gesture
+  // and drag events can be accurately converted to screen coordinates.
+  if (drag_handler_) {
+    drag_handler_->GetDragContext()->SetBoundsRect(GetLocalBounds());
+  }
 }
 
 void BaseTabStripRegionView::OnWidgetVisibilityChanged(views::Widget* widget,

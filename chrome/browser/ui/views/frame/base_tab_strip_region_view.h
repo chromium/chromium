@@ -95,6 +95,7 @@ class BaseTabStripRegionView : public TabStripRegionView,
   // Views::View:
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+  void Layout(PassKey) override;
 
   // views::WidgetObserver:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;

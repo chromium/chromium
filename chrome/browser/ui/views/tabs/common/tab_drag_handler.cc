@@ -47,6 +47,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view_targeter.h"
 #include "ui/views/view_utils.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(gfx::Vector2d*)
@@ -184,9 +185,16 @@ TabDragHandlerImpl::TabDragHandlerImpl(
       root_node_(root_node),
       tab_strip_region_view_(tab_strip_region_view),
       link_drop_handler_(
-          std::make_unique<TabLinkDropHandler>(tab_strip_model)) {}
+          std::make_unique<TabLinkDropHandler>(tab_strip_model)) {
+  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+}
 
 TabDragHandlerImpl::~TabDragHandlerImpl() = default;
+
+bool TabDragHandlerImpl::DoesIntersectRect(const views::View* target,
+                                           const gfx::Rect& rect) const {
+  return false;
+}
 
 void TabDragHandlerImpl::InitializeDrag(
     TabCollectionNode& node,

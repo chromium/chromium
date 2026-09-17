@@ -26,6 +26,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/view_targeter_delegate.h"
 
 class TabCollectionNode;
 class TabStripModel;
@@ -110,7 +111,9 @@ class TabDragHandler {
 
 // Implements a minimal drag context to interact with the central
 // `TabDragController`.
-class TabDragHandlerImpl : public TabDragHandler, public TabDragContext {
+class TabDragHandlerImpl : public TabDragHandler,
+                           public TabDragContext,
+                           public views::ViewTargeterDelegate {
   METADATA_HEADER(TabDragHandlerImpl, TabDragContext)
  public:
   explicit TabDragHandlerImpl(TabStripModel& tab_strip_model,
@@ -119,6 +122,10 @@ class TabDragHandlerImpl : public TabDragHandler, public TabDragContext {
   ~TabDragHandlerImpl() override;
   TabDragHandlerImpl(const TabDragHandlerImpl&) = delete;
   TabDragHandlerImpl& operator=(const TabDragHandlerImpl&) = delete;
+
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override;
 
   // TabDragHandler
   void InitializeDrag(TabCollectionNode& node,
