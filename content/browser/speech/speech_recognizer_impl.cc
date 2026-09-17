@@ -733,7 +733,9 @@ SpeechRecognizerImpl::ProcessFinalResult(const FSMEventArgs& event_args) {
   for (; i != results.end(); ++i) {
     const media::mojom::WebSpeechRecognitionResultPtr& result = *i;
     if (result->is_provisional) {
-      CHECK(provisional_results_, base::NotFatalUntil::M159);
+      // TODO(crbug.com/562310685): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(provisional_results_);
       provisional_results_pending = true;
     } else if (results_are_empty) {
       results_are_empty = result->hypotheses.empty();
