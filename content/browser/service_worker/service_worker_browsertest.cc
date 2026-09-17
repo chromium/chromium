@@ -38,6 +38,8 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/test_timeouts.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -5680,11 +5682,30 @@ class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
   }
 
   int GetRequestCount(const std::string& relative_url) const {
+    base::AutoLock auto_lock(request_log_lock_);
     const auto& it = request_log_.find(relative_url);
     if (it == request_log_.end()) {
       return 0;
     }
     return it->second.size();
+  }
+
+  void WaitForRequest(const std::string& relative_url) {
+    base::RunLoop run_loop;
+    {
+      base::AutoLock auto_lock(request_log_lock_);
+      if (request_log_.contains(relative_url)) {
+        return;
+      }
+      request_quit_closures_[relative_url] = run_loop.QuitClosure();
+    }
+
+    base::test::ScopedRunLoopTimeout timeout(
+        FROM_HERE, TestTimeouts::action_timeout());
+    run_loop.Run();
+
+    base::AutoLock auto_lock(request_log_lock_);
+    request_quit_closures_.erase(relative_url);
   }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
@@ -5789,7 +5810,19 @@ class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
         base::Unretained(this)));
   }
   void MonitorRequestHandler(const net::test_server::HttpRequest& request) {
-    request_log_[request.relative_url].push_back(request);
+    base::OnceClosure quit_closure;
+    {
+      base::AutoLock auto_lock(request_log_lock_);
+      request_log_[request.relative_url].push_back(request);
+      auto it = request_quit_closures_.find(request.relative_url);
+      if (it != request_quit_closures_.end()) {
+        quit_closure = std::move(it->second);
+        request_quit_closures_.erase(it);
+      }
+    }
+    if (quit_closure) {
+      std::move(quit_closure).Run();
+    }
   }
 
   scoped_refptr<ServiceWorkerVersion> RegisterRaceNetworkRequestServiceWorker(
@@ -5815,8 +5848,11 @@ class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
     return version;
   }
 
-  std::map<std::string, std::vector<net::test_server::HttpRequest>>
-      request_log_;
+  mutable base::Lock request_log_lock_;
+  std::map<std::string, std::vector<net::test_server::HttpRequest>> request_log_
+      GUARDED_BY(request_log_lock_);
+  std::map<std::string, base::OnceClosure> request_quit_closures_
+      GUARDED_BY(request_log_lock_);
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
@@ -6705,18 +6741,9 @@ IN_PROC_BROWSER_TEST_P(
                    "response.status)"));
 }
 
-// TODO(crbug.com/40263529): Flaky on Fuchsia.
-// TODO(crbug.com/41490535): Flaky on Android.
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
-#define MAYBE_Subresource_FetchHandler_Wins_Redirect \
-  DISABLED_Subresource_FetchHandler_Wins_Redirect
-#else
-#define MAYBE_Subresource_FetchHandler_Wins_Redirect \
-  Subresource_FetchHandler_Wins_Redirect
-#endif
 IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
-    MAYBE_Subresource_FetchHandler_Wins_Redirect) {
+    Subresource_FetchHandler_Wins_Redirect) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
 
@@ -6728,6 +6755,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
             EvalJs(GetPrimaryMainFrame(),
                    "fetch('" + path + "').then(response => response.text())"));
+  WaitForRequest(path);
   // The first request is deduped.
   EXPECT_EQ(1, GetRequestCount(path));
   // Fetch handler handles the second request, and respond with a cached
