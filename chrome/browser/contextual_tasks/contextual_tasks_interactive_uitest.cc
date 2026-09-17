@@ -1382,7 +1382,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
   RunTestSequence(
       InstrumentTab(kPrimaryTab, 0),
       AddInstrumentedTab(kGenericTab2, kGenericPageUrl2),
+      WaitForWebContentsReady(kGenericTab2, kGenericPageUrl2),
       AddInstrumentedTab(kGenericTab, kGenericPageUrl1),
+      WaitForWebContentsReady(kGenericTab, kGenericPageUrl1),
       SelectTab(kTabStripElementId, 0),
       OpenContextualTasksInCurrentTab(kInterceptionUrl),
       InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0),
@@ -1393,18 +1395,19 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       WaitForFaviconGroupWithTitle(kPrimaryTab, "title1.html"),
       WaitForComposeboxFilesCount(1),
 
-      // 2. Add Tab 2 (now shifted to Index 1 since Tab 1 is selected. Menu is
-      // already open!)
+      // 2. Add Tab 2
+      ForceClickAddContextEntrypoint(kPrimaryTab),
       ForceClickMenuButton(kPrimaryTab, 1),
       WaitForFaviconGroupWithTitle(kPrimaryTab, "Title Of Awesomeness"),
       WaitForComposeboxFilesCount(2),
 
-      // 3. Set factory for PDF and upload PDF. Menu is still open!
+      // 3. Set factory for PDF and upload PDF
       Do(base::BindLambdaForTesting([&]() {
         ui::SelectFileDialog::SetFactory(
             std::make_unique<content::FakeSelectFileDialogFactory>(
                 std::vector<base::FilePath>{pdf_path}));
       })),
+      ForceClickAddContextEntrypoint(kPrimaryTab),
       ForceClickMenuButton(kPrimaryTab, "fileUpload"),
       WaitForDocumentChipWithTitle(kPrimaryTab, "download.pdf"),
       WaitForComposeboxFilesCount(3),
