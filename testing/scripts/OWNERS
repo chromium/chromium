@@ -10,4 +10,5 @@ per-file check_static_initializers.py=thomasanderson@chromium.org
 per-file run_performance_tests*=file://infra/config/groups/perf/OWNERS
 
 per-file run_chromedriver_tests.py=file://chrome/test/chromedriver/OWNERS
+per-file run_variations_smoke_tests.py=file://base/test/metrics/OWNERS
 
