@@ -45,7 +45,6 @@ namespace {
 const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
 const char kFileSystemId[] = "testing-file-system";
 const char kTextToWrite[] = "This is a test of FileStreamWriter.";
-const ProviderId kProviderId = ProviderId::CreateFromExtensionId(kExtensionId);
 
 // Pushes a value to the passed log vector.
 void LogValue(std::vector<int>* log, int value) {
@@ -82,10 +81,10 @@ class FileSystemProviderFileStreamWriter : public testing::Test {
     service->RegisterProvider(FakeExtensionProvider::Create(kExtensionId));
 
     const base::File::Error result = service->MountFileSystem(
-        kProviderId, MountOptions(kFileSystemId, "Testing File System"));
+        provider_id_, MountOptions(kFileSystemId, "Testing File System"));
     ASSERT_EQ(base::File::FILE_OK, result);
     provided_file_system_ = static_cast<FakeProvidedFileSystem*>(
-        service->GetProvidedFileSystem(kProviderId, kFileSystemId));
+        service->GetProvidedFileSystem(provider_id_, kFileSystemId));
     ASSERT_TRUE(provided_file_system_);
     const ProvidedFileSystemInfo& file_system_info =
         provided_file_system_->GetFileSystemInfo();
@@ -127,6 +126,9 @@ class FileSystemProviderFileStreamWriter : public testing::Test {
     run_loop.Run();
     return std::make_pair(result, callback_result);
   }
+
+  const ProviderId provider_id_ =
+      ProviderId::CreateFromExtensionId(kExtensionId);
 
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;

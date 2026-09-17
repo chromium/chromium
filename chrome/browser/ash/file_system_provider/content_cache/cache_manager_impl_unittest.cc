@@ -27,22 +27,6 @@ using testing::IsFalse;
 using testing::IsTrue;
 using testing::Property;
 
-const ProvidedFileSystemInfo kFileSystemInfo(
-    "abc",
-    MountOptions("fsp_id", "display name"),
-    base::FilePath("/file_system/fsp_id"),
-    /*configurable=*/false,
-    /*watchable=*/true,
-    extensions::SOURCE_FILE,
-    IconSet());
-const ProvidedFileSystemInfo kEmptyFileSystemInfo("",
-                                                  MountOptions("", ""),
-                                                  base::FilePath(),
-                                                  /*configurable=*/false,
-                                                  /*watchable=*/true,
-                                                  extensions::SOURCE_FILE,
-                                                  IconSet());
-
 class MockCacheManagerObserver : public CacheManager::Observer {
  public:
   MOCK_METHOD(void,
@@ -67,6 +51,22 @@ class FileSystemProviderCacheManagerImplTest : public testing::Test {
         .Append(base::Base64Encode(fsp_id));
   }
 
+  const ProvidedFileSystemInfo file_system_info_{
+      "abc",
+      MountOptions("fsp_id", "display name"),
+      base::FilePath("/file_system/fsp_id"),
+      /*configurable=*/false,
+      /*watchable=*/true,
+      extensions::SOURCE_FILE,
+      IconSet()};
+  const ProvidedFileSystemInfo empty_file_system_info_{"",
+                                                       MountOptions("", ""),
+                                                       base::FilePath(),
+                                                       /*configurable=*/false,
+                                                       /*watchable=*/true,
+                                                       extensions::SOURCE_FILE,
+                                                       IconSet()};
+
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   base::FilePath profile_dir_;
@@ -76,12 +76,12 @@ TEST_F(FileSystemProviderCacheManagerImplTest,
        EmptyProviderIdFailsInitialization) {
   CacheManagerImpl cache_manager(profile_dir_);
   TestFuture<FileErrorOrContentCache> future;
-  cache_manager.InitializeForProvider(kEmptyFileSystemInfo,
+  cache_manager.InitializeForProvider(empty_file_system_info_,
                                       future.GetCallback());
   EXPECT_THAT(future.Get(), Property(&FileErrorOrContentCache::error,
                                      base::File::FILE_ERROR_INVALID_URL));
   EXPECT_FALSE(base::PathExists(profile_dir_.Append(kFspContentCacheDirName)));
-  EXPECT_FALSE(cache_manager.IsProviderInitialized(kEmptyFileSystemInfo));
+  EXPECT_FALSE(cache_manager.IsProviderInitialized(empty_file_system_info_));
 }
 
 TEST_F(FileSystemProviderCacheManagerImplTest,
@@ -91,11 +91,11 @@ TEST_F(FileSystemProviderCacheManagerImplTest,
   cache_manager.AddObserver(&observer);
   TestFuture<FileErrorOrContentCache> future;
   // Expect successful initialization.
-  cache_manager.InitializeForProvider(kFileSystemInfo, future.GetCallback());
+  cache_manager.InitializeForProvider(file_system_info_, future.GetCallback());
   EXPECT_THAT(future.Get(),
               Property(&FileErrorOrContentCache::has_value, IsTrue()));
   EXPECT_TRUE(base::PathExists(GetProviderMountPath("fsp_id")));
-  EXPECT_TRUE(cache_manager.IsProviderInitialized(kFileSystemInfo));
+  EXPECT_TRUE(cache_manager.IsProviderInitialized(file_system_info_));
 
   // Expect successful uninitialization.
   base::RunLoop run_loop;
@@ -103,10 +103,10 @@ TEST_F(FileSystemProviderCacheManagerImplTest,
                             base::FilePath(base::Base64Encode("fsp_id")),
                             base::File::FILE_OK))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
-  cache_manager.UninitializeForProvider(kFileSystemInfo);
+  cache_manager.UninitializeForProvider(file_system_info_);
   run_loop.Run();
   EXPECT_FALSE(base::PathExists(GetProviderMountPath("fsp_id")));
-  EXPECT_FALSE(cache_manager.IsProviderInitialized(kFileSystemInfo));
+  EXPECT_FALSE(cache_manager.IsProviderInitialized(file_system_info_));
 }
 
 TEST_F(FileSystemProviderCacheManagerImplTest,
@@ -115,13 +115,13 @@ TEST_F(FileSystemProviderCacheManagerImplTest,
   MockCacheManagerObserver observer;
   cache_manager.AddObserver(&observer);
 
-  EXPECT_FALSE(cache_manager.IsProviderInitialized(kFileSystemInfo));
+  EXPECT_FALSE(cache_manager.IsProviderInitialized(file_system_info_));
 
   // Expect unsuccessful uninitialization of a non-existent provider.
   EXPECT_CALL(observer, OnProviderUninitialized(
                             base::FilePath(base::Base64Encode("fsp_id")),
                             base::File::FILE_ERROR_NOT_FOUND));
-  cache_manager.UninitializeForProvider(kFileSystemInfo);
+  cache_manager.UninitializeForProvider(file_system_info_);
 }
 
 }  // namespace

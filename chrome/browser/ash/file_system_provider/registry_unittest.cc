@@ -33,7 +33,6 @@ const char kPersistentOrigin[] =
     "chrome-extension://efgefgefgefgefgefgefgefgefgefgefgefge/";
 const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
 const char kDisplayName[] = "Camera Pictures";
-const ProviderId kProviderId = ProviderId::CreateFromExtensionId(kExtensionId);
 
 // The dot in the file system ID is there in order to check that saving to
 // preferences works correctly. File System ID is used as a key in
@@ -41,6 +40,10 @@ const ProviderId kProviderId = ProviderId::CreateFromExtensionId(kExtensionId);
 const char kFileSystemId[] = "camera/pictures/id .!@#$%^&*()_+";
 
 const int kOpenedFilesLimit = 5;
+
+ProviderId GetProviderId() {
+  return ProviderId::CreateFromExtensionId(kExtensionId);
+}
 
 // Stores a provided file system information in preferences together with a
 // fake watcher.
@@ -84,7 +87,7 @@ void RememberFakeFileSystem(TestingProfile* profile,
   file_system.Set(kPrefKeyWatchers, std::move(watchers));
   base::DictValue file_systems;
   file_systems.Set(kFileSystemId, std::move(file_system));
-  extensions.Set(kProviderId.ToString(), std::move(file_systems));
+  extensions.Set(GetProviderId().ToString(), std::move(file_systems));
   pref_service->SetDict(ash::prefs::kFileSystemProviderMounted,
                         std::move(extensions));
 }
@@ -123,17 +126,17 @@ class FileSystemProviderRegistryTest : public testing::Test {
 
 TEST_F(FileSystemProviderRegistryTest, RestoreFileSystems) {
   // Create a fake entry in the preferences.
-  RememberFakeFileSystem(profile_, kProviderId, kFileSystemId, kDisplayName,
+  RememberFakeFileSystem(profile_, GetProviderId(), kFileSystemId, kDisplayName,
                          /*writable=*/true, /*supports_notify_tag=*/true,
                          kOpenedFilesLimit, fake_watcher_);
 
   std::unique_ptr<RegistryInterface::RestoredFileSystems>
-      restored_file_systems = registry_->RestoreFileSystems(kProviderId);
+      restored_file_systems = registry_->RestoreFileSystems(GetProviderId());
 
   ASSERT_EQ(1u, restored_file_systems->size());
   const RegistryInterface::RestoredFileSystem& restored_file_system =
       restored_file_systems->at(0);
-  EXPECT_EQ(kProviderId, restored_file_system.provider_id);
+  EXPECT_EQ(GetProviderId(), restored_file_system.provider_id);
   EXPECT_EQ(kFileSystemId, restored_file_system.options.file_system_id);
   EXPECT_EQ(kDisplayName, restored_file_system.options.display_name);
   EXPECT_TRUE(restored_file_system.options.writable);
@@ -157,7 +160,7 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
   options.opened_files_limit = kOpenedFilesLimit;
 
   ProvidedFileSystemInfo file_system_info(
-      kProviderId, options, base::FilePath(FILE_PATH_LITERAL("/a/b/c")),
+      GetProviderId(), options, base::FilePath(FILE_PATH_LITERAL("/a/b/c")),
       /*configurable=*/false, /*watchable=*/true, extensions::SOURCE_FILE,
       IconSet());
 
@@ -175,7 +178,7 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
       pref_service->GetDict(ash::prefs::kFileSystemProviderMounted);
 
   const base::DictValue* file_systems =
-      extensions.FindDict(kProviderId.ToString());
+      extensions.FindDict(GetProviderId().ToString());
   ASSERT_TRUE(file_systems);
   EXPECT_EQ(1u, file_systems->size());
 
@@ -242,11 +245,11 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
 
 TEST_F(FileSystemProviderRegistryTest, ForgetFileSystem) {
   // Create a fake file systems in the preferences.
-  RememberFakeFileSystem(profile_, kProviderId, kFileSystemId, kDisplayName,
+  RememberFakeFileSystem(profile_, GetProviderId(), kFileSystemId, kDisplayName,
                          /*writable=*/true, /*supports_notify_tag=*/true,
                          kOpenedFilesLimit, fake_watcher_);
 
-  registry_->ForgetFileSystem(kProviderId, kFileSystemId);
+  registry_->ForgetFileSystem(GetProviderId(), kFileSystemId);
 
   sync_preferences::TestingPrefServiceSyncable* const pref_service =
       profile_->GetTestingPrefService();
@@ -256,7 +259,7 @@ TEST_F(FileSystemProviderRegistryTest, ForgetFileSystem) {
       pref_service->GetDict(ash::prefs::kFileSystemProviderMounted);
 
   const base::DictValue* file_systems =
-      extensions.FindDict(kProviderId.GetExtensionId());
+      extensions.FindDict(GetProviderId().GetExtensionId());
   EXPECT_FALSE(file_systems);
 }
 
@@ -266,7 +269,7 @@ TEST_F(FileSystemProviderRegistryTest, UpdateWatcherTag) {
   options.supports_notify_tag = true;
 
   ProvidedFileSystemInfo file_system_info(
-      kProviderId, options, base::FilePath(FILE_PATH_LITERAL("/a/b/c")),
+      GetProviderId(), options, base::FilePath(FILE_PATH_LITERAL("/a/b/c")),
       /*configurable=*/false, /*watchable=*/true, extensions::SOURCE_FILE,
       IconSet());
 
@@ -287,7 +290,7 @@ TEST_F(FileSystemProviderRegistryTest, UpdateWatcherTag) {
       pref_service->GetDict(ash::prefs::kFileSystemProviderMounted);
 
   const base::DictValue* file_systems =
-      extensions.FindDict(kProviderId.ToString());
+      extensions.FindDict(GetProviderId().ToString());
   ASSERT_TRUE(file_systems);
   EXPECT_EQ(1u, file_systems->size());
 

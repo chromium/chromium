@@ -44,7 +44,6 @@ namespace {
 
 const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
 const char kFileSystemId[] = "testing-file-system";
-const ProviderId kProviderId = ProviderId::CreateFromExtensionId(kExtensionId);
 
 // Logs callbacks invocations on the file stream reader.
 class EventLogger {
@@ -105,16 +104,16 @@ class FileSystemProviderFileStreamReader : public testing::Test {
     service->RegisterProvider(FakeExtensionProvider::Create(kExtensionId));
 
     const base::File::Error result = service->MountFileSystem(
-        kProviderId, MountOptions(kFileSystemId, "Testing File System"));
+        provider_id_, MountOptions(kFileSystemId, "Testing File System"));
     ASSERT_EQ(base::File::FILE_OK, result);
     FakeProvidedFileSystem* provided_file_system =
         static_cast<FakeProvidedFileSystem*>(
-            service->GetProvidedFileSystem(kProviderId, kFileSystemId));
+            service->GetProvidedFileSystem(provider_id_, kFileSystemId));
     ASSERT_TRUE(provided_file_system);
     fake_file_ = provided_file_system->GetEntry(base::FilePath(kFakeFilePath));
     ASSERT_TRUE(fake_file_);
     const ProvidedFileSystemInfo& file_system_info =
-        service->GetProvidedFileSystem(kProviderId, kFileSystemId)
+        service->GetProvidedFileSystem(provider_id_, kFileSystemId)
             ->GetFileSystemInfo();
     const std::string mount_point_name =
         file_system_info.mount_path().BaseName().AsUTF8Unsafe();
@@ -126,6 +125,9 @@ class FileSystemProviderFileStreamReader : public testing::Test {
         mount_point_name, base::FilePath(FILE_PATH_LITERAL("im-not-here.txt")));
     ASSERT_TRUE(wrong_file_url_.is_valid());
   }
+
+  const ProviderId provider_id_ =
+      ProviderId::CreateFromExtensionId(kExtensionId);
 
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;

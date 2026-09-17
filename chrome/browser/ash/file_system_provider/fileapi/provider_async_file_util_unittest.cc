@@ -45,7 +45,6 @@ namespace {
 
 const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
 const char kFileSystemId[] = "testing-file-system";
-const ProviderId kProviderId = ProviderId::CreateFromExtensionId(kExtensionId);
 
 // Logs callbacks invocations on the tested operations.
 // TODO(mtomasz): Store and verify more arguments, once the operations return
@@ -185,10 +184,10 @@ class FileSystemProviderProviderAsyncFileUtilTest : public testing::Test {
     service->RegisterProvider(FakeExtensionProvider::Create(kExtensionId));
 
     const base::File::Error result = service->MountFileSystem(
-        kProviderId, MountOptions(kFileSystemId, "Testing File System"));
+        provider_id_, MountOptions(kFileSystemId, "Testing File System"));
     ASSERT_EQ(base::File::FILE_OK, result);
     const ProvidedFileSystemInfo& file_system_info =
-        service->GetProvidedFileSystem(kProviderId, kFileSystemId)
+        service->GetProvidedFileSystem(provider_id_, kFileSystemId)
             ->GetFileSystemInfo();
     mount_point_name_ = file_system_info.mount_path().BaseName().AsUTF8Unsafe();
 
@@ -208,6 +207,9 @@ class FileSystemProviderProviderAsyncFileUtilTest : public testing::Test {
     return std::make_unique<storage::FileSystemOperationContext>(
         file_system_context_.get());
   }
+
+  const ProviderId provider_id_ =
+      ProviderId::CreateFromExtensionId(kExtensionId);
 
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
