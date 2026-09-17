@@ -20,7 +20,7 @@ constexpr std::string_view kTestJson = R"({
     "LastCheckPeriod": {
       "prevailingSource": "Device Management",
       "valuesBySource": {
-        "Device Management": 120
+        "Device Management": "7200000000"
       }
     },
     "ProxyMode": {
@@ -148,8 +148,9 @@ TEST(GoogleUpdatePolicyFetcherTest, ParsePoliciesJsonCaseInsensitiveAppId) {
 
   policy::PolicyMap policies;
   // Look up using lowercase 'c' GUID.
-  ParsePoliciesJsonIntoPolicyMap(
-      kJsonWithUppercaseGuid, "{8A69D345-D564-463c-AFF1-A69D9E530F96}", &policies);
+  ParsePoliciesJsonIntoPolicyMap(kJsonWithUppercaseGuid,
+                                 "{8A69D345-D564-463c-AFF1-A69D9E530F96}",
+                                 &policies);
 
   const policy::PolicyMap::Entry* update_policy = policies.Get(kUpdatePolicy);
   ASSERT_TRUE(update_policy);
