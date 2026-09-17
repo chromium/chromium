@@ -10,6 +10,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -36,11 +37,13 @@ void EnsureAllChildrenAreVisible(ui::Layer* layer) {
 }
 
 void DeleteNode(ui::Layer* node) {
-  for (ui::Layer* child : node->children()) {
+  while (node->children().size()) {
+    auto child = node->children().back();
+    CHECK_EQ(child->parent(), node);
+    node->Remove(child);
     DeleteNode(child);
-    child->parent()->Remove(child);
-    delete child;
   }
+  delete node;
 }
 
 // Excludes the shadow container layer from the mirrored window layer hierarchy.
@@ -60,6 +63,7 @@ void ExcludeShadowContainer(ui::Layer* root, ui::Layer* shadow_layer) {
       to_remove.push_back(child);
     }
   }
+
   for (ui::Layer* child : to_remove) {
     DeleteNode(child);
   }
@@ -97,13 +101,11 @@ void WindowMirrorView::RecreateMirrorLayers() {
 std::unique_ptr<ui::Layer> WindowMirrorView::RecreateLayer() {
   // Move the mirror layer to the recreated layer for close animation,
   // so that deleting the source_ will not delete the mirror layer.
-  ui::Layer* old_mirror_layer = GetMirrorLayer();
   std::unique_ptr<ui::Layer> old_layer = views::View::RecreateLayer();
-  if (old_mirror_layer) {
-    old_layer->Add(old_mirror_layer);
-  }
   if (layer_owner_) {
-    std::ignore = layer_owner_.release();
+    ui::Layer* old_mirror_layer = layer_owner_->release();
+    CHECK(old_mirror_layer);
+    old_layer->Add(old_mirror_layer);
   }
   if (source_) {
     InitLayerOwner();

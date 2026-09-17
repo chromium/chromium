@@ -6,30 +6,31 @@
 
 #include "ash/test/ash_test_base.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer.h"
+#include "ui/decoration/shadow.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace ash {
 namespace {
 
-bool HasNinePatchLayer(ui::Layer* layer) {
+// Returns the number of nine-patch layers in the layer tree rooted at `layer`.
+int CountNinePatchLayers(ui::Layer* layer) {
   if (!layer) {
-    return false;
+    return 0;
   }
-  if (layer->type() == ui::LayerType::LAYER_NINE_PATCH) {
-    return true;
-  }
+  int count = layer->type() == ui::LayerType::LAYER_NINE_PATCH ? 1 : 0;
   for (ui::Layer* child : layer->children()) {
-    if (HasNinePatchLayer(child)) {
-      return true;
-    }
+    count += CountNinePatchLayers(child);
   }
-  return false;
+  return count;
 }
 
 using WindowMirrorViewTest = AshTestBase;
@@ -75,13 +76,7 @@ TEST_F(WindowMirrorViewTest, MirrorLayerHasNoTransformWhenNonClientViewShown) {
       mirror_view->GetMirrorLayerForTesting()->transform().IsIdentity());
 }
 
-// TODO(crbug.com/562105237): Flaky on ASan + LSan.
-#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
-#define MAYBE_Clipping DISABLED_Clipping
-#else
-#define MAYBE_Clipping Clipping
-#endif
-TEST_F(WindowMirrorViewTest, MAYBE_Clipping) {
+TEST_F(WindowMirrorViewTest, Clipping) {
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   const gfx::Rect window_bounds(0, 0, 400, 400);
   widget->SetBounds(window_bounds);
@@ -128,14 +123,7 @@ TEST_F(WindowMirrorViewTest, MAYBE_Clipping) {
   }
 }
 
-// TODO(crbug.com/562105237): Flaky on ASan + LSan.
-#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
-#define MAYBE_ChangingBoundsUpdatesClipRect \
-  DISABLED_ChangingBoundsUpdatesClipRect
-#else
-#define MAYBE_ChangingBoundsUpdatesClipRect ChangingBoundsUpdatesClipRect
-#endif
-TEST_F(WindowMirrorViewTest, MAYBE_ChangingBoundsUpdatesClipRect) {
+TEST_F(WindowMirrorViewTest, ChangingBoundsUpdatesClipRect) {
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetBounds(gfx::Rect(0, 0, 400, 400));
   aura::Window* widget_window = widget->GetNativeWindow();
@@ -171,8 +159,20 @@ TEST_F(WindowMirrorViewTest, MAYBE_ChangingBoundsUpdatesClipRect) {
 TEST_F(WindowMirrorViewTest, ExcludeShadow) {
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetBounds(gfx::Rect{0, 0, 100, 100});
-  ::wm::SetShadowElevation(widget->GetNativeWindow(),
-                           ::wm::kShadowElevationActiveWindow);
+  aura::Window* window = widget->GetNativeWindow();
+  ::wm::SetShadowElevation(window, ::wm::kShadowElevationInactiveWindow);
+
+  // Change the elevation while the shadow animation is running. The old shadow
+  // layer fades out and is kept until the animation ends, so that the shadow
+  // container has two child layers.
+  gfx::ScopedAnimationDurationScaleMode animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  ::wm::SetShadowElevation(window, ::wm::kShadowElevationActiveWindow);
+
+  ui::Shadow* shadow = ::wm::ShadowController::GetShadowForWindow(window);
+  ASSERT_TRUE(shadow);
+  ASSERT_EQ(2u, shadow->layer()->children().size());
+  ASSERT_EQ(2, CountNinePatchLayers(shadow->layer()));
 
   auto mirror_widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -182,25 +182,25 @@ TEST_F(WindowMirrorViewTest, ExcludeShadow) {
   // included.
   {
     auto* mirror_view = contents_view->AddChildView(
-        std::make_unique<WindowMirrorView>(widget->GetNativeWindow(),
+        std::make_unique<WindowMirrorView>(window,
                                            /*show_non_client_view=*/true,
                                            /*sync_bounds=*/false,
                                            /*exclude_shadow=*/false));
     mirror_view->RecreateMirrorLayers();
-    EXPECT_TRUE(HasNinePatchLayer(mirror_view->GetMirrorLayerForTesting()));
+    EXPECT_EQ(2, CountNinePatchLayers(mirror_view->GetMirrorLayerForTesting()));
     contents_view->RemoveChildViewT(mirror_view);
   }
 
-  // 2. With exclude_shadow = true, the shadow container and its sublayers are
-  // excluded.
+  // 2. With exclude_shadow = true, the shadow container and all of its
+  // sublayers are excluded.
   {
     auto* mirror_view = contents_view->AddChildView(
-        std::make_unique<WindowMirrorView>(widget->GetNativeWindow(),
+        std::make_unique<WindowMirrorView>(window,
                                            /*show_non_client_view=*/true,
                                            /*sync_bounds=*/false,
                                            /*exclude_shadow=*/true));
     mirror_view->RecreateMirrorLayers();
-    EXPECT_FALSE(HasNinePatchLayer(mirror_view->GetMirrorLayerForTesting()));
+    EXPECT_EQ(0, CountNinePatchLayers(mirror_view->GetMirrorLayerForTesting()));
     contents_view->RemoveChildViewT(mirror_view);
   }
 }
