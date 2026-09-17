@@ -16,7 +16,6 @@
 import argparse
 import json
 import os
-import subprocess
 import sys
 
 
@@ -93,17 +92,18 @@ def main():
     if len(sources) == 0:
         return 0
 
-    # Resolve absolute path to TSC under repository root
-    tsc_path = os.path.join(repo_root, "node_modules/typescript/lib/tsc.js")
+    # Import typescript module from third_party/typescript
+    sys.path.append(os.path.abspath(os.path.join(repo_root, "..", "typescript")))
+    import typescript
 
-    # Execute TSC using node wrapper
-    node_path = os.path.join(repo_root, "tools", "node.py")
-    cmd = [sys.executable, node_path, tsc_path, "--project", args.tsconfig_output]
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    # Execute TSC using typescript.py wrapper (TSGO)
+    returncode, stdout, stderr = typescript.RunTypeScriptRaw(
+        ["--project", args.tsconfig_output]
+    )
 
-    if result.returncode != 0:
-        sys.stderr.write(result.stdout + "\n" + result.stderr)
-        sys.exit(result.returncode)
+    if returncode != 0:
+        sys.stderr.write(stdout + "\n" + stderr)
+        sys.exit(returncode)
 
     # Touch output files to ensure Ninja freshness detection works correctly
     if os.path.exists(args.tsconfig_output):

@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import("//third_party/typescript/tsgo.gni")
+
 # Standalone GN Template for compiling TypeScript files, fully isolated inside
 # the repository.
 
@@ -32,10 +34,7 @@ template("ts_library") {
     if (!defined(inputs)) {
       inputs = []
     }
-    inputs += [
-      "../tsconfig.base.json",
-      "../node_modules/typescript/lib/tsc.js",
-    ]
+    inputs += [ "../tsconfig.base.json" ] + tsgo_inputs
 
     if (defined(deps)) {
       foreach(dep, deps) {

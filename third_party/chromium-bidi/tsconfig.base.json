@@ -2,6 +2,7 @@
   "compilerOptions": {
     "alwaysStrict": true,
     "composite": true,
+    "skipLibCheck": true,
     "declaration": true,
     "esModuleInterop": true,
     "incremental": true,
