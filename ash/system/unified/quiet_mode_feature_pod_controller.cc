@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
-#include "ash/public/cpp/notifier_metadata.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -15,7 +14,6 @@
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -101,35 +99,11 @@ void QuietModeFeaturePodController::OnQuietModeChanged(bool in_quiet_mode) {
       GetQuietModeStateTooltip()));
 }
 
-void QuietModeFeaturePodController::OnNotifiersUpdated(
-    const std::vector<NotifierMetadata>& notifiers) {
-  // TODO(b/307974199) remove this method with the `NotifierSettingsController`
-  // clean up.
-}
-
 std::u16string QuietModeFeaturePodController::GetQuietModeStateTooltip() {
   return l10n_util::GetStringUTF16(
       MessageCenter::Get()->IsQuietMode()
           ? IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_ON_STATE
           : IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_OFF_STATE);
-}
-
-void QuietModeFeaturePodController::RecordDisabledNotifierCount(
-    int disabled_count) {
-  if (!last_disabled_count_.has_value()) {
-    last_disabled_count_ = disabled_count;
-    UMA_HISTOGRAM_COUNTS_100("ChromeOS.SystemTray.BlockedNotifiersOnOpen",
-                             disabled_count);
-    return;
-  }
-
-  if (*last_disabled_count_ == disabled_count) {
-    return;
-  }
-
-  last_disabled_count_ = disabled_count;
-  UMA_HISTOGRAM_COUNTS_100("ChromeOS.SystemTray.BlockedNotifiersAfterUpdate",
-                           disabled_count);
 }
 
 }  // namespace ash

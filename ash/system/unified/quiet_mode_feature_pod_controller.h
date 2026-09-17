@@ -5,12 +5,10 @@
 #ifndef ASH_SYSTEM_UNIFIED_QUIET_MODE_FEATURE_POD_CONTROLLER_H_
 #define ASH_SYSTEM_UNIFIED_QUIET_MODE_FEATURE_POD_CONTROLLER_H_
 
-#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "ash/constants/quick_settings_catalogs.h"
-#include "ash/public/cpp/notifier_settings_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -23,8 +21,7 @@ namespace ash {
 // color and different icon.
 class ASH_EXPORT QuietModeFeaturePodController
     : public FeaturePodControllerBase,
-      public message_center::MessageCenterObserver,
-      public NotifierSettingsObserver {
+      public message_center::MessageCenterObserver {
  public:
   QuietModeFeaturePodController();
 
@@ -47,19 +44,11 @@ class ASH_EXPORT QuietModeFeaturePodController
   // message_center::MessageCenterObserver:
   void OnQuietModeChanged(bool in_quiet_mode) override;
 
-  // NotifierSettingsObserver:
-  void OnNotifiersUpdated(
-      const std::vector<NotifierMetadata>& notifiers) override;
-
  private:
   std::u16string GetQuietModeStateTooltip();
 
-  void RecordDisabledNotifierCount(int disabled_count);
-
   // Owned by the views hierarchy.
   raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;
-
-  std::optional<int> last_disabled_count_;
 
   base::WeakPtrFactory<QuietModeFeaturePodController> weak_ptr_factory_{this};
 };

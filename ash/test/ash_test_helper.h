@@ -17,7 +17,6 @@
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell_delegate.h"
-#include "ash/system/notification_center/test_notifier_settings_controller.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"
@@ -169,9 +168,6 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   // Stabilizes the variable UI components (such as the battery view).
   void StabilizeUIForPixelTest();
 
-  TestNotifierSettingsController* notifier_settings_controller() {
-    return notifier_settings_controller_.get();
-  }
   TestSystemTrayClient* system_tray_client() {
     return system_tray_client_.get();
   }
@@ -250,7 +246,6 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::unique_ptr<session_manager::SessionManager> session_manager_;
 
   std::unique_ptr<TestPrefServiceProvider> prefs_provider_;
-  std::unique_ptr<TestNotifierSettingsController> notifier_settings_controller_;
   std::unique_ptr<TestSystemTrayClient> system_tray_client_;
   std::unique_ptr<AppListTestHelper> app_list_test_helper_;
   std::unique_ptr<BluezDBusManagerInitializer> bluez_dbus_manager_initializer_;

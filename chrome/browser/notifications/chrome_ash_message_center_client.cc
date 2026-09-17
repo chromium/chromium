@@ -4,59 +4,26 @@
 
 #include "chrome/browser/notifications/chrome_ash_message_center_client.h"
 
-#include "ash/public/cpp/notifier_metadata.h"
-#include "ash/public/cpp/notifier_settings_observer.h"
-#include "base/feature_list.h"
-#include "base/i18n/string_compare.h"
+#include <memory>
+#include <optional>
+#include <set>
+#include <string>
+#include <utility>
+
+#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/notifications/arc_application_notifier_controller.h"
-#include "chrome/browser/notifications/extension_notifier_controller.h"
-#include "chrome/browser/notifications/web_page_notifier_controller.h"
+#include "base/memory/ref_counted.h"
+#include "chrome/browser/notifications/notification_platform_bridge_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "ui/message_center/message_center.h"
-#include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/origin.h"
 
 using message_center::MessageCenter;
-using message_center::NotifierId;
 
 namespace {
 
 // The singleton instance, which is tracked to allow access from tests.
 ChromeAshMessageCenterClient* g_chrome_ash_message_center_client = nullptr;
-
-// All notifier actions are performed on the notifiers for the currently active
-// profile, so this just returns the active profile.
-Profile* GetProfileForNotifiers() {
-  return Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
-          user_manager::UserManager::Get()->GetActiveUser()));
-}
-
-class NotifierComparator {
- public:
-  explicit NotifierComparator(icu::Collator* collator) : collator_(collator) {}
-
-  bool operator()(const ash::NotifierMetadata& n1,
-                  const ash::NotifierMetadata& n2) {
-    if (n1.notifier_id.type != n2.notifier_id.type)
-      return n1.notifier_id.type < n2.notifier_id.type;
-
-    if (collator_) {
-      return base::i18n::CompareString16WithCollator(*collator_, n1.name,
-                                                     n2.name) == UCOL_LESS;
-    }
-    return n1.name < n2.name;
-  }
-
- private:
-  raw_ptr<icu::Collator> collator_;
-};
 
 // This delegate forwards NotificationDelegate methods to their equivalent in
 // NotificationPlatformBridgeDelegate.
@@ -110,18 +77,6 @@ ChromeAshMessageCenterClient::ChromeAshMessageCenterClient(
     : delegate_(delegate) {
   DCHECK(!g_chrome_ash_message_center_client);
   g_chrome_ash_message_center_client = this;
-
-  sources_.insert(
-      std::make_pair(message_center::NotifierType::APPLICATION,
-                     std::make_unique<ExtensionNotifierController>(this)));
-
-  sources_.insert(
-      std::make_pair(message_center::NotifierType::WEB_PAGE,
-                     std::make_unique<WebPageNotifierController>(this)));
-
-  sources_.insert(std::make_pair(
-      message_center::NotifierType::ARC_APPLICATION,
-      std::make_unique<arc::ArcApplicationNotifierController>(this)));
 }
 
 ChromeAshMessageCenterClient::~ChromeAshMessageCenterClient() {
@@ -193,67 +148,4 @@ void ChromeAshMessageCenterClient::SetReadyCallback(
     NotificationBridgeReadyCallback callback) {
   // Ash is always available in-process, so report the client is ready.
   std::move(callback).Run(true);
-}
-
-void ChromeAshMessageCenterClient::GetNotifiers() {
-  if (notifier_observers_.empty())
-    return;
-
-  Profile* profile = GetProfileForNotifiers();
-  if (!profile) {
-    user_manager::UserManager::Get()
-        ->GetActiveUser()
-        ->AddProfileCreatedObserver(
-            base::BindOnce(&ChromeAshMessageCenterClient::GetNotifiers,
-                           weak_ptr_.GetWeakPtr()));
-    LOG(ERROR) << "GetNotifiers called before profile fully loaded, see "
-                  "https://crbug.com/40629978";
-    return;
-  }
-
-  std::vector<ash::NotifierMetadata> notifiers;
-  for (auto& source : sources_) {
-    auto source_notifiers = source.second->GetNotifierList(profile);
-    for (auto& notifier : source_notifiers)
-      notifiers.push_back(std::move(notifier));
-  }
-
-  UErrorCode error = U_ZERO_ERROR;
-  std::unique_ptr<icu::Collator> collator(icu::Collator::createInstance(error));
-  NotifierComparator comparator(U_SUCCESS(error) ? collator.get() : nullptr);
-  std::sort(notifiers.begin(), notifiers.end(), comparator);
-
-  for (auto& observer : notifier_observers_)
-    observer.OnNotifiersUpdated(notifiers);
-}
-
-void ChromeAshMessageCenterClient::SetNotifierEnabled(
-    const NotifierId& notifier_id,
-    bool enabled) {
-  sources_[notifier_id.type]->SetNotifierEnabled(GetProfileForNotifiers(),
-                                                 notifier_id, enabled);
-}
-
-void ChromeAshMessageCenterClient::AddNotifierSettingsObserver(
-    ash::NotifierSettingsObserver* observer) {
-  notifier_observers_.AddObserver(observer);
-}
-
-void ChromeAshMessageCenterClient::RemoveNotifierSettingsObserver(
-    ash::NotifierSettingsObserver* observer) {
-  notifier_observers_.RemoveObserver(observer);
-}
-
-void ChromeAshMessageCenterClient::OnIconImageUpdated(
-    const NotifierId& notifier_id,
-    const gfx::ImageSkia& image) {
-  for (auto& observer : notifier_observers_)
-    observer.OnNotifierIconUpdated(notifier_id, image);
-}
-
-void ChromeAshMessageCenterClient::OnNotifierEnabledChanged(
-    const NotifierId& notifier_id,
-    bool enabled) {
-  if (!enabled)
-    MessageCenter::Get()->RemoveNotificationsForNotifierId(notifier_id);
 }

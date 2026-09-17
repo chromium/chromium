@@ -96,21 +96,14 @@ source_set("notifications") {
 
   if (is_chromeos) {
     public += [
-      "arc_application_notifier_controller.h",
       "chrome_ash_message_center_client.h",
-      "extension_notifier_controller.h",
       "notification_platform_bridge_chromeos.h",
       "notification_platform_bridge_delegate.h",
-      "notifier_controller.h",
-      "notifier_dataset.h",
       "passphrase_textfield.h",
-      "web_page_notifier_controller.h",
     ]
 
     public_deps += [
-      "//ash/public/cpp",
       "//components/app_icon_loader",
-      "//components/services/app_service/public/cpp:app_types",
       "//ui/views",
     ]
   }
@@ -286,25 +279,18 @@ source_set("impl") {
 
   if (is_chromeos) {
     sources += [
-      "arc_application_notifier_controller.cc",
       "chrome_ash_message_center_client.cc",
-      "extension_notifier_controller.cc",
       "notification_platform_bridge_chromeos.cc",
-      "notifier_dataset.cc",
       "passphrase_textfield.cc",
-      "web_page_notifier_controller.cc",
     ]
 
     deps += [
-      "//chrome/browser/apps/app_service",
       "//chrome/browser/content_settings",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/notifications",
-      "//chrome/browser/favicon",
       "//chrome/browser/nearby_sharing",
       "//chrome/browser/ui:settings_window_manager_chromeos",
       "//chrome/browser/ui/ash/multi_user",
-      "//chromeos/ash/components/browser_context_helper",
       "//ui/message_center",
     ]
   }
@@ -535,16 +521,8 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos) {
-    sources += [
-      "chrome_ash_message_center_client_unittest.cc",
-      "notification_platform_bridge_chromeos_unittest.cc",
-      "web_page_notifier_controller_unittest.cc",
-    ]
-    deps += [
-      "//chrome/browser/favicon",
-      "//chrome/browser/nearby_sharing",
-      "//components/favicon/core/test:test_support",
-    ]
+    sources += [ "notification_platform_bridge_chromeos_unittest.cc" ]
+    deps += [ "//chrome/browser/nearby_sharing" ]
   }
 
   if (is_linux) {
@@ -579,11 +557,7 @@ if (!is_android) {
     ]
 
     if (is_chromeos) {
-      sources += [
-        "notification_platform_bridge_chromeos_browsertest.cc",
-        "notifier_settings_test_observer.cc",
-        "notifier_settings_test_observer.h",
-      ]
+      sources += [ "notification_platform_bridge_chromeos_browsertest.cc" ]
       deps += [ "//chrome/browser/ash/notifications" ]
     }
 
