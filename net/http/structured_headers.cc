@@ -73,20 +73,10 @@ void set_bare_item_byte_sequence(BareItem& out, rust::Slice<const uint8_t> v) {
   out = BareItem(BareItem::byte_sequence, base::as_string_view(v));
 }
 
-// Parameters is a type alias in net::structured_headers, so it cannot be
-// forward-declared. To keep the FFI header (functions.h) clean, we use an
-// opaque tag class there and reinterpret_cast it here to the actual type.
-Parameters& get_inner_list_params(InnerList& inner_list) {
-  return *reinterpret_cast<Parameters*>(&inner_list.params);
-}
+namespace {
 
-Parameters& get_item_params(Item& item) {
-  return *reinterpret_cast<Parameters*>(&item.params);
-}
-
-BareItem& get_or_insert_param(Parameters& parameters, rust::Str key) {
-  auto& params =
-      reinterpret_cast<net::structured_headers::Parameters&>(parameters);
+BareItem& get_or_insert_param(net::structured_headers::Parameters& params,
+                              rust::Str key) {
   std::string_view key_view = base::RustStrToStringView(key);
   for (auto& param : params) {
     if (param.first == key_view) {
@@ -94,6 +84,16 @@ BareItem& get_or_insert_param(Parameters& parameters, rust::Str key) {
     }
   }
   return params.emplace_back(key_view, BareItem()).second;
+}
+
+}  // namespace
+
+BareItem& get_or_insert_inner_list_param(InnerList& inner_list, rust::Str key) {
+  return get_or_insert_param(inner_list.params, key);
+}
+
+BareItem& get_or_insert_item_param(Item& item, rust::Str key) {
+  return get_or_insert_param(item.params, key);
 }
 
 }  // namespace sfv
@@ -132,8 +132,7 @@ std::optional<ParameterizedItem> ParseItem(std::string_view str) {
   if (base::FeatureList::IsEnabled(kStructuredHeadersInRust)) {
     ParameterizedItem item;
     bool ok = ParseAndRecordMetrics(kTimeMetricItem, kSuccessMetricItem, [&]() {
-      return sfv::decode_item(base::StringViewToRustSlice(str), item.item,
-                              sfv::get_item_params(item));
+      return sfv::decode_item(base::StringViewToRustSlice(str), item);
     });
     if (!ok) {
       return std::nullopt;

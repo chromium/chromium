@@ -21,8 +21,6 @@ struct ParameterizedMember;
 
 namespace sfv {
 
-class Parameters;
-
 using BareItem = quiche::structured_headers::Item;
 using Dictionary = quiche::structured_headers::Dictionary;
 using InnerList = quiche::structured_headers::InnerList;
@@ -43,12 +41,10 @@ void set_bare_item_token(BareItem&, rust::Str);
 void set_bare_item_byte_sequence(BareItem&, rust::Slice<const uint8_t>);
 
 Item& inner_list_append_item(InnerList&);
-Parameters& get_inner_list_params(InnerList&);
+BareItem& get_or_insert_inner_list_param(InnerList&, rust::Str key);
 
 BareItem& get_item_bare_item(Item&);
-Parameters& get_item_params(Item&);
-
-BareItem& get_or_insert_param(Parameters&, rust::Str key);
+BareItem& get_or_insert_item_param(Item&, rust::Str key);
 
 }  // namespace sfv
 

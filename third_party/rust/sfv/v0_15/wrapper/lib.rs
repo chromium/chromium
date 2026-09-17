@@ -18,7 +18,6 @@ mod ffi {
         type InnerList;
         type Item;
         type List;
-        type Parameters;
 
         fn list_append_item(ctx: Pin<&mut List>) -> Pin<&mut Item>;
         fn list_append_inner_list(ctx: Pin<&mut List>) -> Pin<&mut InnerList>;
@@ -37,23 +36,18 @@ mod ffi {
         fn set_bare_item_byte_sequence(ctx: Pin<&mut BareItem>, val: &[u8]);
 
         fn inner_list_append_item(ctx: Pin<&mut InnerList>) -> Pin<&mut Item>;
-        fn get_inner_list_params(ctx: Pin<&mut InnerList>) -> Pin<&mut Parameters>;
-
-        fn get_item_bare_item(ctx: Pin<&mut Item>) -> Pin<&mut BareItem>;
-        fn get_item_params(ctx: Pin<&mut Item>) -> Pin<&mut Parameters>;
-
-        fn get_or_insert_param<'a>(
-            ctx: Pin<&'a mut Parameters>,
+        fn get_or_insert_inner_list_param<'a>(
+            ctx: Pin<&'a mut InnerList>,
             key: &str,
         ) -> Pin<&'a mut BareItem>;
+
+        fn get_item_bare_item(ctx: Pin<&mut Item>) -> Pin<&mut BareItem>;
+        fn get_or_insert_item_param<'a>(ctx: Pin<&'a mut Item>, key: &str)
+            -> Pin<&'a mut BareItem>;
     }
 
     extern "Rust" {
-        fn decode_item(
-            input: &[u8],
-            bare_item: Pin<&mut BareItem>,
-            params: Pin<&mut Parameters>,
-        ) -> bool;
+        fn decode_item(input: &[u8], item: Pin<&mut Item>) -> bool;
 
         fn decode_list(input: &[u8], ctx: Pin<&mut List>) -> bool;
 
@@ -84,7 +78,26 @@ impl<'de> sfv::visitor::ItemVisitor<'de> for Pin<&mut ffi::Item> {
     ) -> Result<impl sfv::visitor::ParameterVisitor<'de, Out = Self::Out>, Self::Error> {
         let out = ffi::get_item_bare_item(self.as_mut());
         set_bare_item(out, bare_item);
-        Ok(ffi::get_item_params(self))
+        Ok(self)
+    }
+}
+
+impl<'de> sfv::visitor::ParameterVisitor<'de> for Pin<&mut ffi::Item> {
+    type Out = ();
+    type Error = Infallible;
+
+    fn parameter(
+        &mut self,
+        key: &'de KeyRef,
+        value: BareItemFromInput<'de>,
+    ) -> Result<(), Self::Error> {
+        let out = ffi::get_or_insert_item_param(self.as_mut(), key.as_str());
+        set_bare_item(out, value);
+        Ok(())
+    }
+
+    fn finish(self) -> Result<Self::Out, Self::Error> {
+        Ok(())
     }
 }
 
@@ -96,11 +109,11 @@ impl<'de> sfv::visitor::InnerListVisitor<'de> for Pin<&mut ffi::InnerList> {
     }
 
     fn finish(self) -> Result<impl sfv::visitor::ParameterVisitor<'de>, Self::Error> {
-        Ok(ffi::get_inner_list_params(self))
+        Ok(self)
     }
 }
 
-impl<'de> sfv::visitor::ParameterVisitor<'de> for Pin<&mut ffi::Parameters> {
+impl<'de> sfv::visitor::ParameterVisitor<'de> for Pin<&mut ffi::InnerList> {
     type Out = ();
     type Error = Infallible;
 
@@ -109,7 +122,7 @@ impl<'de> sfv::visitor::ParameterVisitor<'de> for Pin<&mut ffi::Parameters> {
         key: &'de KeyRef,
         value: BareItemFromInput<'de>,
     ) -> Result<(), Self::Error> {
-        let out = ffi::get_or_insert_param(self.as_mut(), key.as_str());
+        let out = ffi::get_or_insert_inner_list_param(self.as_mut(), key.as_str());
         set_bare_item(out, value);
         Ok(())
     }
@@ -177,38 +190,15 @@ impl<'de> sfv::visitor::DictionaryVisitor<'de> for Pin<&mut ffi::Dictionary> {
     }
 }
 
-struct TopLevelItemVisitor<'a> {
-    bare_item: Pin<&'a mut ffi::BareItem>,
-    params: Pin<&'a mut ffi::Parameters>,
-}
-
-impl<'de> sfv::visitor::ItemVisitor<'de> for TopLevelItemVisitor<'_> {
-    type Out = ();
-    type Error = Infallible;
-
-    fn bare_item(
-        self,
-        bare_item: BareItemFromInput<'de>,
-    ) -> Result<impl sfv::visitor::ParameterVisitor<'de, Out = Self::Out>, Self::Error> {
-        set_bare_item(self.bare_item, bare_item);
-        Ok(self.params)
-    }
-}
-
 /// Decodes a Structured Header Item from the input bytes using RFC 8941.
 ///
 /// Returns true if decoding was successful, and false otherwise.
-/// On success, the result is stored in the provided `BareItem` and
-/// `Parameters`.
-pub fn decode_item(
-    input: &[u8],
-    bare_item: Pin<&mut ffi::BareItem>,
-    params: Pin<&mut ffi::Parameters>,
-) -> bool {
+/// On success, the result is stored in the provided `Item`.
+pub fn decode_item(input: &[u8], item: Pin<&mut ffi::Item>) -> bool {
     sfv::Parser::new(input)
         .with_version(sfv::Version::Rfc8941)
         .with_lenient_mode(true)
-        .parse_item_with_visitor(TopLevelItemVisitor { bare_item, params })
+        .parse_item_with_visitor(item)
         .is_ok()
 }
 
