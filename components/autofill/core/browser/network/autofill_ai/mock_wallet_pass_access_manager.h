@@ -34,7 +34,8 @@ class MockWalletPassAccessManager : public WalletPassAccessManager {
               (override));
   MOCK_METHOD(void,
               GetDetailsForUpsertPass,
-              (GetDetailsForUpsertPassCallback callback),
+              (EntityType entity_type,
+               GetDetailsForUpsertPassCallback callback),
               (override));
 };
 

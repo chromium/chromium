@@ -125,6 +125,7 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
   // Retrieves the details (legal message and context token) required to upsert
   // a pass from Wallet servers.
   void GetDetailsForUpsertPass(
+      int entity_type,
       WalletPassAccessManager::GetDetailsForUpsertPassCallback callback);
 
   // Gets information about all entities to be displayed in the management

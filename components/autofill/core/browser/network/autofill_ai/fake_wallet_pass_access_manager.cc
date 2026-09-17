@@ -91,6 +91,7 @@ void FakeWalletPassAccessManager::GetUnmaskedWalletEntityInstance(
 }
 
 void FakeWalletPassAccessManager::GetDetailsForUpsertPass(
+    EntityType entity_type,
     GetDetailsForUpsertPassCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -101,7 +102,8 @@ void FakeWalletPassAccessManager::GetDetailsForUpsertPass(
               return;
             }
             if (features::debug::kFakeWalletApiResponsesSimulateFailure.Get()) {
-              std::move(callback).Run(std::nullopt);
+              std::move(callback).Run(base::unexpected(
+                  wallet::WalletHttpClient::WalletRequestError::kGenericError));
               return;
             }
             base::ListValue parameters;

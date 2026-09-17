@@ -115,13 +115,15 @@ public class EntityDataManager implements Destroyable {
     /**
      * Retrieves the details (legal message and context token) required to upsert a pass.
      *
+     * @param entityType The type of the entity to upsert.
      * @param callback Callback to receive the response, or null if the request failed or was not
      *     possible.
      */
-    public void getDetailsForUpsertPass(Callback<@Nullable DetailsForUpsertPass> callback) {
+    public void getDetailsForUpsertPass(
+            @EntityTypeName int entityType, Callback<@Nullable DetailsForUpsertPass> callback) {
         ThreadUtils.assertOnUiThread();
         EntityDataManagerJni.get()
-                .getDetailsForUpsertPass(mNativeEntityDataManagerAndroid, callback);
+                .getDetailsForUpsertPass(mNativeEntityDataManagerAndroid, entityType, callback);
     }
 
     /**
@@ -387,6 +389,7 @@ public class EntityDataManager implements Destroyable {
 
         void getDetailsForUpsertPass(
                 long nativeEntityDataManagerAndroid,
+                @EntityTypeName int entityType,
                 @JniType("autofill::WalletPassAccessManager::GetDetailsForUpsertPassCallback")
                         Callback<@Nullable DetailsForUpsertPass> callback);
 

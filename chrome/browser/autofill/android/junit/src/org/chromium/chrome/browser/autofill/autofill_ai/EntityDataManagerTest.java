@@ -102,9 +102,11 @@ public class EntityDataManagerTest {
 
     @Test
     public void testGetDetailsForUpsertPass() {
-        mEntityDataManager.getDetailsForUpsertPass(mGetDetailsForUpsertPassCallback);
+        mEntityDataManager.getDetailsForUpsertPass(
+                EntityTypeName.VEHICLE, mGetDetailsForUpsertPassCallback);
         verify(mEntityDataManagerJniMock)
-                .getDetailsForUpsertPass(NATIVE_PTR, mGetDetailsForUpsertPassCallback);
+                .getDetailsForUpsertPass(
+                        NATIVE_PTR, EntityTypeName.VEHICLE, mGetDetailsForUpsertPassCallback);
     }
 
     @Test

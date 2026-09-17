@@ -44,6 +44,7 @@ class FakeWalletPassAccessManager : public WalletPassAccessManager {
       const EntityInstance::EntityId& entity_id,
       GetUnmaskedEntityInstanceCallback callback) override;
   void GetDetailsForUpsertPass(
+      EntityType entity_type,
       GetDetailsForUpsertPassCallback callback) override;
 
  private:

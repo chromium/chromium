@@ -15,18 +15,22 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
+#include "base/values.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/network/autofill_ai/private_pass_conversion_util.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
+#include "components/wallet/core/browser/proto/common.pb.h"
 #include "components/wallet/core/browser/proto/private_pass.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -34,7 +38,9 @@ namespace autofill {
 
 namespace {
 
+using ::wallet::LegalMessage;
 using ::wallet::PrivatePass;
+using PassType = ::wallet::WalletHttpClient::PassType;
 using WalletRequestError = ::wallet::WalletHttpClient::WalletRequestError;
 
 // Attempts to extract the pass number from the `response` and constructs an
@@ -81,6 +87,61 @@ bool AttributeCorrespondsToEntity(const AttributeInstance& attribute,
                                   const EntityInstance& entity) {
   return attribute.type().entity_type() == entity.type() &&
          entity.attribute(attribute.type()).has_value();
+}
+
+PassType PassTypeFromEntityType(EntityType entity_type) {
+  switch (entity_type.name()) {
+    case EntityTypeName::kVehicle:
+      return PassType::kVehicleRegistration;
+    case EntityTypeName::kPassport:
+    case EntityTypeName::kDriversLicense:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
+    case EntityTypeName::kFlightReservation:
+    case EntityTypeName::kOrder:
+    case EntityTypeName::kShipment:
+      NOTREACHED();
+  }
+}
+
+base::DictValue LegalMessageToDict(const LegalMessage& legal_message) {
+  base::ListValue lines_list;
+  for (const LegalMessage::Line& line : legal_message.line()) {
+    base::ListValue parameters_list;
+    for (const LegalMessage::Link& link : line.template_parameter()) {
+      parameters_list.Append(base::DictValue()
+                                 .Set("display_text", link.display_text())
+                                 .Set("url", link.url()));
+    }
+    lines_list.Append(
+        base::DictValue()
+            .Set("template", line.template_())
+            .Set("template_parameter", std::move(parameters_list)));
+  }
+  return base::DictValue().Set("line", std::move(lines_list));
+}
+
+base::expected<WalletPassAccessManager::GetDetailsForUpsertPassResponse,
+               WalletRequestError>
+ToGetDetailsForUpsertPassResponse(
+    base::expected<wallet::WalletHttpClient::PassUpsertDetails,
+                   WalletRequestError> response) {
+  if (!response.has_value()) {
+    return base::unexpected(response.error());
+  }
+  LegalMessageLines legal_message_lines;
+  if (response->legal_message) {
+    if (!LegalMessageLine::Parse(LegalMessageToDict(*response->legal_message),
+                                 &legal_message_lines,
+                                 /*escape_apostrophes=*/true)) {
+      return base::unexpected(WalletRequestError::kParseResponseFailed);
+    }
+  }
+  return WalletPassAccessManager::GetDetailsForUpsertPassResponse{
+      .legal_message_lines = std::move(legal_message_lines),
+      .context_token = std::move(response->context_token).value_or(""),
+  };
 }
 
 }  // namespace
@@ -160,20 +221,12 @@ void WalletPassAccessManagerImpl::GetUnmaskedWalletEntityInstance(
 }
 
 void WalletPassAccessManagerImpl::GetDetailsForUpsertPass(
+    EntityType entity_type,
     GetDetailsForUpsertPassCallback callback) {
-  // TODO(crbug.com/553442816): Update to call the actual RPC once it is in place.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<WalletPassAccessManagerImpl> access_manager,
-             GetDetailsForUpsertPassCallback callback) {
-            if (!access_manager) {
-              return;
-            }
-            std::move(callback).Run(
-                WalletPassAccessManager::GetDetailsForUpsertPassResponse{});
-          },
-          weak_factory_.GetWeakPtr(), std::move(callback)));
+  http_client_->GetDetailsForUpsertPass(
+      PassTypeFromEntityType(entity_type),
+      base::BindOnce(&ToGetDetailsForUpsertPassResponse)
+          .Then(std::move(callback)));
 }
 
 base::OnceCallback<std::optional<EntityInstance>(
