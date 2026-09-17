@@ -7,8 +7,8 @@
 #include <windows.h>
 
 #include <stddef.h>
-#include <stdlib.h>
 
+#include <iterator>
 #include <string>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,7 +37,7 @@ TEST_F(InstallerStringTest, StackStringOverflow) {
 
   size_t max_chars = str.capacity() - 1;
 
-  while ((str.length() + (_countof(kTestString) - 1)) <= max_chars) {
+  while ((str.length() + (std::size(kTestString) - 1)) <= max_chars) {
     EXPECT_TRUE(str.append(kTestString));
     compare_str.append(kTestString);
     EXPECT_EQ(str.length(), compare_str.length());
