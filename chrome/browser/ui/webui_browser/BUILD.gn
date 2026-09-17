@@ -122,6 +122,7 @@ source_set("impl") {
     "//chrome/browser/ui/views:tab_search_bubble_host",
     "//chrome/browser/ui/views/exclusive_access",
     "//chrome/browser/ui/views/page_info",
+    "//chrome/browser/ui/views/profiles:profile_menu_coordinator",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/views/translate",
     "//chrome/browser/ui/views/zoom",

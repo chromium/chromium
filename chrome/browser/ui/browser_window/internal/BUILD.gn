@@ -202,6 +202,7 @@ source_set("internal") {
         "//chrome/browser/ui/views:upgrade_notification_controller",
         "//chrome/browser/ui/views/extensions:extensions_views_utils",
         "//chrome/browser/ui/views/frame:scrim_view_controller",
+        "//chrome/browser/ui/views/profiles:profile_menu_coordinator",
       ]
     }
 
