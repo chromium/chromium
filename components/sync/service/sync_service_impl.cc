@@ -672,6 +672,8 @@ void SyncServiceImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("sync", "SyncServiceImpl::Shutdown");
 
+  is_shutting_down_ = true;
+
   NotifyShutdown();
 
   device_statistics_scheduler_.reset();
@@ -969,6 +971,9 @@ SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
 }
 
 void SyncServiceImpl::NotifyObservers() {
+  if (is_shutting_down_) {
+    return;
+  }
   CHECK(observers_);
   SyncService::UserActionableError user_actionable_error =
       GetUserActionableError();
@@ -982,13 +987,28 @@ void SyncServiceImpl::NotifyObservers() {
   }
   for (SyncServiceObserver& observer : *observers_) {
     observer.OnStateChanged(this);
+    // Shutdown() can be triggered re-entrantly while this notification loop is
+    // already running. Shutdown destroys data type controllers and clears
+    // `observers_`, so abort remaining iteration to avoid use-after-free.
+    if (is_shutting_down_) {
+      return;
+    }
   }
 }
 
 void SyncServiceImpl::NotifySyncCycleCompleted() {
+  if (is_shutting_down_) {
+    return;
+  }
   CHECK(observers_);
   for (SyncServiceObserver& observer : *observers_) {
     observer.OnSyncCycleCompleted(this);
+    // Shutdown() can be triggered re-entrantly while this notification loop is
+    // already running. Shutdown destroys data type controllers and clears
+    // `observers_`, so abort remaining iteration to avoid use-after-free.
+    if (is_shutting_down_) {
+      return;
+    }
   }
 }
 

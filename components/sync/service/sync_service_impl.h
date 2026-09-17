@@ -516,6 +516,8 @@ class SyncServiceImpl : public SyncService,
   // Manages the start and stop of the data types.
   std::unique_ptr<DataTypeManager> data_type_manager_;
 
+  bool is_shutting_down_ = false;
+
   // Note: This is an Optional so that we can control its destruction - in
   // particular, to trigger the "check_empty" test in Shutdown().
   // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
