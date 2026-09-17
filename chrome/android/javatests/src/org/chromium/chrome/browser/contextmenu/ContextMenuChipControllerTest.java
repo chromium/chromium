@@ -9,9 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.view.View;
@@ -22,20 +19,19 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+
+import java.util.concurrent.TimeoutException;
 
 /** Tests for {@link ContextMenuChipController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -71,12 +67,10 @@ public class ContextMenuChipControllerTest {
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
+    private final CallbackHelper mChipClickCallbackHelper = new CallbackHelper();
+    private final CallbackHelper mDismissCallbackHelper = new CallbackHelper();
+
     private static Activity sActivity;
-
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Runnable mMockChipClickRunnable;
-
-    @Mock private Runnable mMockDismissRunnable;
 
     private float mMeasuredDeviceDensity;
     private View mAnchorView;
@@ -103,7 +97,8 @@ public class ContextMenuChipControllerTest {
     @SmallTest
     public void testDismissChipWhenNotShownBeforeClassificationReturned() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(sActivity, mAnchorView, mMockDismissRunnable);
+                new ContextMenuChipController(
+                        sActivity, mAnchorView, mDismissCallbackHelper::notifyCalled);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     chipController.dismissChipIfShowing();
@@ -119,55 +114,58 @@ public class ContextMenuChipControllerTest {
     @SmallTest
     public void testDismissChipWhenShown() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(sActivity, mAnchorView, mMockDismissRunnable);
+                new ContextMenuChipController(
+                        sActivity, mAnchorView, mDismissCallbackHelper::notifyCalled);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChipRenderParams chipRenderParams = new ChipRenderParams();
                     chipRenderParams.titleResourceId =
                             R.string.contextmenu_translate_image_with_google_lens;
                     chipRenderParams.iconResourceId = R.drawable.lens_icon;
-                    chipRenderParams.onClickCallback = mMockChipClickRunnable;
+                    chipRenderParams.onClickCallback = mChipClickCallbackHelper::notifyCalled;
                     chipController.showChip(chipRenderParams);
                     chipController.dismissChipIfShowing();
                 });
 
-        verify(mMockDismissRunnable, never()).run();
-        verify(mMockChipClickRunnable, never()).run();
+        assertEquals(0, mDismissCallbackHelper.getCallCount());
+        assertEquals(0, mChipClickCallbackHelper.getCallCount());
         assertNotNull("Anchor view was not initialized.", mAnchorView);
         assertNotNull(
                 "Popup window was not initialized.",
                 chipController.getCurrentPopupWindowForTesting());
         assertFalse(
-                "Popup window showing unexpectedly.",
+                "Popup window was showing unexpectedly.",
                 chipController.getCurrentPopupWindowForTesting().isShowing());
     }
 
     @Test
     @SmallTest
-    public void testClickChipWhenShown() {
+    public void testClickChipWhenShown() throws TimeoutException {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(sActivity, mAnchorView, mMockDismissRunnable);
+                new ContextMenuChipController(
+                        sActivity, mAnchorView, mDismissCallbackHelper::notifyCalled);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChipRenderParams chipRenderParams = new ChipRenderParams();
                     chipRenderParams.titleResourceId =
                             R.string.contextmenu_translate_image_with_google_lens;
                     chipRenderParams.iconResourceId = R.drawable.lens_icon;
-                    chipRenderParams.onClickCallback = mMockChipClickRunnable;
+                    chipRenderParams.onClickCallback = mChipClickCallbackHelper::notifyCalled;
                     chipController.showChip(chipRenderParams);
                     chipController.clickChipForTesting();
                 });
 
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        verify(mMockDismissRunnable, times(1)).run();
-        verify(mMockChipClickRunnable, times(1)).run();
+        mDismissCallbackHelper.waitForOnly();
+        mChipClickCallbackHelper.waitForOnly();
         assertNotNull("Anchor view was not initialized.", mAnchorView);
         assertNotNull(
                 "Popup window was not initialized.",
                 chipController.getCurrentPopupWindowForTesting());
         assertTrue(
-                "Dismiss was mocked so the popup window should still be showing.",
+                "Dismiss callback does not dismiss the popup window, so it should still be"
+                        + " showing.",
                 chipController.getCurrentPopupWindowForTesting().isShowing());
     }
 
@@ -175,7 +173,8 @@ public class ContextMenuChipControllerTest {
     @SmallTest
     public void testExpectedVerticalPxNeededForChip() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(sActivity, mAnchorView, mMockDismissRunnable);
+                new ContextMenuChipController(
+                        sActivity, mAnchorView, mDismissCallbackHelper::notifyCalled);
         assertEquals(
                 "Vertical px is not matching the expectation",
                 EXPECTED_VERTICAL_DP * mMeasuredDeviceDensity,
@@ -187,7 +186,8 @@ public class ContextMenuChipControllerTest {
     @SmallTest
     public void testExpectedChipTextMaxWidthPx() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(sActivity, mAnchorView, mMockDismissRunnable);
+                new ContextMenuChipController(
+                        sActivity, mAnchorView, mDismissCallbackHelper::notifyCalled);
         assertEquals(
                 "Chip width px is not matching the expectation",
                 EXPECTED_CHIP_WIDTH_DP * mMeasuredDeviceDensity,
@@ -199,7 +199,8 @@ public class ContextMenuChipControllerTest {
     @SmallTest
     public void testExpectedChipTextMaxWidthPx_EndButtonHidden() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(sActivity, mAnchorView, mMockDismissRunnable);
+                new ContextMenuChipController(
+                        sActivity, mAnchorView, mDismissCallbackHelper::notifyCalled);
         assertEquals(
                 "Chip width px is not matching the expectation",
                 EXPECTED_CHIP_NO_END_BUTTON_WIDTH_DP * mMeasuredDeviceDensity,
