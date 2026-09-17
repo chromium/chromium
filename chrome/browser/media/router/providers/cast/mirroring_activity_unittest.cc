@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -28,6 +29,7 @@
 #include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
+#include "content/public/browser/browser_thread.h"
 #include "media/cast/constants.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -476,9 +478,8 @@ TEST_F(MirroringActivityTest, GetScrubbedLogMessage) {
       base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(message_json);
   EXPECT_TRUE(message_json.value().is_dict());
-  EXPECT_THAT(scrubbed_message,
-              base::test::IsJson(MirroringActivity::GetScrubbedLogMessage(
-                  message_json.value().GetDict())));
+  EXPECT_THAT(scrubbed_message, base::test::IsJson(GetScrubbedLogMessage(
+                                    message_json.value().GetDict())));
 }
 
 // Site-initiated mirroring activities must be able to send messages to the
@@ -510,17 +511,21 @@ TEST_F(MirroringActivityTest, OnSourceChanged) {
   EXPECT_CALL(*mirroring_service_, GetTabSourceId())
       .WillOnce(testing::Return(new_tab_source));
 
-  EXPECT_EQ(activity_->frame_tree_node_id_, kFrameTreeNodeId);
+  EXPECT_EQ(activity_->frame_tree_node_id(), kFrameTreeNodeId);
   activity_->OnSourceChanged();
-  EXPECT_EQ(activity_->frame_tree_node_id_, new_tab_source);
-  RunUntilIdle();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return activity_->frame_tree_node_id() == new_tab_source; }));
   testing::Mock::VerifyAndClearExpectations(mirroring_service_);
 
   // Nothing should happen as no value was returned for tab source.
-  EXPECT_CALL(*mirroring_service_, GetTabSourceId())
-      .WillOnce(testing::Return(std::nullopt));
+  bool get_tab_source_called = false;
+  EXPECT_CALL(*mirroring_service_, GetTabSourceId()).WillOnce([&] {
+    get_tab_source_called = true;
+    return std::nullopt;
+  });
   activity_->OnSourceChanged();
-  EXPECT_EQ(activity_->frame_tree_node_id_, new_tab_source);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return get_tab_source_called; }));
+  EXPECT_EQ(activity_->frame_tree_node_id(), new_tab_source);
   testing::Mock::VerifyAndClearExpectations(mirroring_service_);
 }
 
@@ -553,12 +558,32 @@ TEST_F(MirroringActivityTest, OnSourceChangedNotifiesMediaStatusObserver) {
   testing::Mock::VerifyAndClearExpectations(&media_status_observer);
 }
 
+TEST_F(MirroringActivityTest, OnSourceChangedQueriesHostOnUIThread) {
+  MakeActivity();
+
+  const content::FrameTreeNodeId new_tab_source = content::FrameTreeNodeId(3);
+  EXPECT_CALL(on_source_changed_, Run(kFrameTreeNodeId, new_tab_source));
+  EXPECT_CALL(*mirroring_service_, GetTabSourceId()).WillOnce([&] {
+    EXPECT_TRUE(
+        content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    return std::make_optional(new_tab_source);
+  });
+
+  activity_->OnSourceChanged();
+  // The host must be queried via a task posted to the UI thread, so the
+  // source change is processed asynchronously.
+  EXPECT_EQ(activity_->frame_tree_node_id(), kFrameTreeNodeId);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return activity_->frame_tree_node_id() == new_tab_source; }));
+}
+
 TEST_F(MirroringActivityTest, ReportsNotEnabledByDefault) {
   MediaSource source = MediaSource::ForDesktop(kDesktopMediaId, true);
   MakeActivity(source);
 
   activity_->DidStart();
-  EXPECT_FALSE(activity_->should_fetch_stats_on_start_);
+  EXPECT_CALL(*mirroring_service_, GetMirroringStats(_)).Times(0);
+  task_environment_.FastForwardBy(media::cast::kRtcpReportInterval);
 }
 
 TEST_F(MirroringActivityTest, EnableRtcpReports) {
@@ -566,7 +591,6 @@ TEST_F(MirroringActivityTest, EnableRtcpReports) {
   MakeActivity(source, kFrameTreeNodeId, CastDiscoveryType::kMdns, true);
 
   activity_->DidStart();
-  EXPECT_TRUE(activity_->should_fetch_stats_on_start_);
 
   ON_CALL(*mirroring_service_, GetMirroringStats(_))
       .WillByDefault([](base::OnceCallback<void(const base::Value)> callback) {

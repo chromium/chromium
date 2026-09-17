@@ -240,6 +240,7 @@ void CastMirroringServiceHost::Start(
 
 std::optional<content::FrameTreeNodeId>
 CastMirroringServiceHost::GetTabSourceId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (web_contents()) {
     return web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
   }

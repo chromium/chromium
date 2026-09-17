@@ -329,6 +329,30 @@ void RecordCastStreamingSenderUma(const base::DictValue& all_mirroring_stats,
 
 }  // namespace
 
+std::string GetScrubbedLogMessage(const base::DictValue& message) {
+  auto scrubbed_message = message.Clone();
+  base::ListValue* streams =
+      scrubbed_message.FindListByDottedPath("offer.supportedStreams");
+  if (!streams) {
+    return base::WriteJson(scrubbed_message).value_or("");
+  }
+
+  // An entry is "scrubbed" if the sensitive data that it contains should
+  // be replaced with a preset string for privacy or security reasons.
+  for (base::Value& item : *streams) {
+    base::DictValue* dict = item.GetIfDict();
+    if (!dict) {
+      continue;
+    }
+    for (std::string_view key : {"aesKey", "aesIvMask"}) {
+      if (std::string* match = dict->FindString(key)) {
+        *match = "[REDACTED]";
+      }
+    }
+  }
+  return base::WriteJson(scrubbed_message).value_or("");
+}
+
 MirroringActivity::MirroringActivity(
     const MediaRoute& route,
     const std::string& app_id,
@@ -516,8 +540,24 @@ void MirroringActivity::OnSourceChanged() {
     return;
   }
 
-  std::optional<content::FrameTreeNodeId> frame_tree_node_id =
-      host_->GetTabSourceId();
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<mirroring::MirroringServiceHost> host,
+             base::OnceCallback<void(std::optional<content::FrameTreeNodeId>)>
+                 callback) {
+            std::move(callback).Run(host ? host->GetTabSourceId()
+                                         : std::nullopt);
+          },
+          host_->GetWeakPtr(),
+          base::BindPostTaskToCurrentDefault(
+              base::BindOnce(&MirroringActivity::DidGetTabSourceId,
+                             weak_ptr_factory_.GetWeakPtr()))));
+}
+
+void MirroringActivity::DidGetTabSourceId(
+    std::optional<content::FrameTreeNodeId> frame_tree_node_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
   if (!source_changed_callback_ || !frame_tree_node_id ||
       frame_tree_node_id == frame_tree_node_id_) {
     return;
@@ -817,31 +857,6 @@ void MirroringActivity::StopMirroring() {
   if (on_stop_) {
     std::move(on_stop_).Run();
   }
-}
-
-std::string MirroringActivity::GetScrubbedLogMessage(
-    const base::DictValue& message) {
-  auto scrubbed_message = message.Clone();
-  base::ListValue* streams =
-      scrubbed_message.FindListByDottedPath("offer.supportedStreams");
-  if (!streams) {
-    return base::WriteJson(scrubbed_message).value_or("");
-  }
-
-  // An entry is "scrubbed" if the sensitive data that it contains should
-  // be replaced with a preset string for privacy or security reasons.
-  for (base::Value& item : *streams) {
-    base::DictValue* dict = item.GetIfDict();
-    if (!dict) {
-      continue;
-    }
-    for (std::string_view key : {"aesKey", "aesIvMask"}) {
-      if (std::string* match = dict->FindString(key)) {
-        *match = "[REDACTED]";
-      }
-    }
-  }
-  return base::WriteJson(scrubbed_message).value_or("");
 }
 
 void MirroringActivity::ScheduleFetchMirroringStats() {

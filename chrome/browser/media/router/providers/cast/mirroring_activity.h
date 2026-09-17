@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
 #include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -36,6 +35,9 @@
 namespace media_router {
 
 struct CastSinkExtraData;
+
+// Scrubs AES related data in messages with type "OFFER".
+std::string GetScrubbedLogMessage(const base::DictValue& message);
 
 class MirroringActivity : public CastActivity,
                           public mirroring::mojom::SessionObserver,
@@ -85,6 +87,9 @@ class MirroringActivity : public CastActivity,
   void OnAppMessage(
       const openscreen::cast::proto::CastMessage& message) override;
   void OnInternalMessage(const cast_channel::InternalMessage& message) override;
+  void BindMediaController(
+      mojo::PendingReceiver<mojom::MediaController> media_controller,
+      mojo::PendingRemote<mojom::MediaStatusObserver> observer) override;
 
   // mojom::MediaController implementation
   void SetMute(bool mute) override {}
@@ -101,6 +106,10 @@ class MirroringActivity : public CastActivity,
   // mirroring session.
   void Pause() override;
 
+  content::FrameTreeNodeId frame_tree_node_id() const {
+    return frame_tree_node_id_;
+  }
+
   mirroring::MirroringServiceHost* GetHost() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
     return host_.get();
@@ -115,26 +124,14 @@ class MirroringActivity : public CastActivity,
   void OnSessionSet(const CastSession& session) override;
   void StartSession(const std::string& destination_id,
                     bool enable_rtcp_reporting = false);
-  void BindMediaController(
-      mojo::PendingReceiver<mojom::MediaController> media_controller,
-      mojo::PendingRemote<mojom::MediaStatusObserver> observer) override;
   std::string GetRouteDescription(const CastSession& session) const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, GetScrubbedLogMessage);
-  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, OnSourceChanged);
-  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest,
-                           OnSourceChangedNotifiesMediaStatusObserver);
-  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, ReportsNotEnabledByDefault);
-  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, EnableRtcpReports);
-  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, Pause);
-  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, Play);
-  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, OnRemotingStateChanged);
-  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest,
-                           MultipleMediaControllersNotified);
-
   void HandleParseJsonResult(const std::string& route_id,
                              const base::JSONReader::Result& result);
+
+  void DidGetTabSourceId(
+      std::optional<content::FrameTreeNodeId> frame_tree_node_id);
 
   void StopMirroring();
 
@@ -150,9 +147,6 @@ class MirroringActivity : public CastActivity,
   // Invoked when mirroring is paused / resumed, for metrics.
   void OnMirroringPaused();
   void OnMirroringResumed();
-
-  // Scrubs AES related data in messages with type "OFFER".
-  static std::string GetScrubbedLogMessage(const base::DictValue& message);
 
   // Starts the mirroring service via the Ui thread. Can only be called on the
   // Ui thread.

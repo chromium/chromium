@@ -32,8 +32,8 @@ class MirroringServiceHost {
       mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel,
       const std::string& sink_name) = 0;
 
-  // Replies back with the current tab source id of the active mirroring
-  // session if exist. Doesn't need to be called on UI thread.
+  // Returns the current tab source id of the active mirroring session if it
+  // exists.
   virtual std::optional<content::FrameTreeNodeId> GetTabSourceId() const = 0;
 
   // Fetches the statistics of the current mirroring sessions.
