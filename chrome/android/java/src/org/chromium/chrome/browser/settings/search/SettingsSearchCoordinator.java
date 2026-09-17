@@ -1307,7 +1307,7 @@ public class SettingsSearchCoordinator
         if (mActionBar != null) {
             boolean isMainSettings = mMultiColumnSettings != null && isShowingMainSettings();
             SettingsMenuHelper.updateNavigationIcon(
-                    mActionBar, mActivity, show, mUseMultiColumn, isMainSettings);
+                    mActionBar, mActivity, mShownInTab, show, mUseMultiColumn, isMainSettings);
         }
     }
 

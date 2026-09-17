@@ -41,14 +41,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
 import org.chromium.components.browser_ui.settings.SearchViewProvider;
 import org.chromium.ui.base.TestActivity;
@@ -89,7 +85,7 @@ public class SettingsMenuHelperUnitTest {
                         any(Integer.class)))
                 .thenReturn(menuItem);
 
-        SettingsMenuHelper.onCreateOptionsMenu(menu, mActivity);
+        SettingsMenuHelper.onCreateOptionsMenu(menu, mActivity, mDelegate);
 
         verify(menu)
                 .add(
@@ -101,12 +97,11 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
-    public void testCreateOptionsMenu_SettingsInTab() {
+    public void testCreateOptionsMenu_shownInTab() {
+        when(mDelegate.isShownInTab()).thenReturn(true);
         Menu menu = mock(Menu.class);
 
-        SettingsMenuHelper.onCreateOptionsMenu(menu, mActivity);
+        SettingsMenuHelper.onCreateOptionsMenu(menu, mActivity, mDelegate);
 
         verify(menu, never()).add(anyInt(), anyInt(), anyInt(), anyInt());
     }
@@ -119,7 +114,7 @@ public class SettingsMenuHelperUnitTest {
         when(menu.getItem(0)).thenReturn(menuItem);
         when(menuItem.getIcon()).thenReturn(mock(Drawable.class));
 
-        SettingsMenuHelper.onPrepareOptionsMenu(menu);
+        SettingsMenuHelper.onPrepareOptionsMenu(menu, mDelegate);
 
         verify(menuItem).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
     }
@@ -204,9 +199,8 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
-    public void testUpdateOptionsMenu_SettingsInTab_FragmentWithOptionsMenu() {
+    public void testUpdateOptionsMenu_shownInTab_FragmentWithOptionsMenu() {
+        when(mDelegate.isShownInTab()).thenReturn(true);
         TestMenuFragment fragment = new TestMenuFragment(true);
         mActivity
                 .getSupportFragmentManager()
@@ -226,9 +220,8 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
-    public void testUpdateOptionsMenu_SettingsInTab_FragmentWithoutOptionsMenu() {
+    public void testUpdateOptionsMenu_shownInTab_FragmentWithoutOptionsMenu() {
+        when(mDelegate.isShownInTab()).thenReturn(true);
         TestMenuFragment fragment = new TestMenuFragment(false);
         mActivity
                 .getSupportFragmentManager()
@@ -247,9 +240,8 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
-    public void testUpdateOptionsMenu_SettingsInTab_NoFragment() {
+    public void testUpdateOptionsMenu_shownInTab_NoFragment() {
+        when(mDelegate.isShownInTab()).thenReturn(true);
         when(mDelegate.getMainFragment()).thenReturn(null);
 
         SettingsMenuHelper.updateOptionsMenu(mToolbar, mActivity, mDelegate);
@@ -283,9 +275,8 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
-    public void testUpdateOptionsMenu_SettingsInTab_FragmentWithTargetedHelp_removesHelp() {
+    public void testUpdateOptionsMenu_shownInTab_FragmentWithTargetedHelp_removesHelp() {
+        when(mDelegate.isShownInTab()).thenReturn(true);
         TestTargetedHelpFragment fragment = new TestTargetedHelpFragment();
         mActivity
                 .getSupportFragmentManager()
@@ -303,10 +294,9 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
     public void
-            testUpdateOptionsMenu_SettingsInTab_FragmentWithEditorMenu_removesHelpAndKeepsDelete() {
+            testUpdateOptionsMenu_shownInTab_FragmentWithEditorMenu_removesHelpAndKeepsDelete() {
+        when(mDelegate.isShownInTab()).thenReturn(true);
         TestEditorMenuFragment fragment = new TestEditorMenuFragment();
         mActivity
                 .getSupportFragmentManager()
@@ -357,9 +347,8 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
-    public void testUpdateOptionsMenu_SettingsInTab_TwoColumn_removesSearchAndHelp() {
+    public void testUpdateOptionsMenu_shownInTab_TwoColumn_removesSearchAndHelp() {
+        when(mDelegate.isShownInTab()).thenReturn(true);
         // Show a page that adds its own search and help menu items.
         addSiteSettingsMenuFragment();
 
@@ -378,9 +367,8 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
-    public void testUpdateOptionsMenu_SettingsInTab_SingleColumn_keepsSearchRemovesHelp() {
+    public void testUpdateOptionsMenu_shownInTab_SingleColumn_keepsSearchRemovesHelp() {
+        when(mDelegate.isShownInTab()).thenReturn(true);
         // Show a page that adds its own search and help menu items.
         addSiteSettingsMenuFragment();
 
@@ -392,7 +380,7 @@ public class SettingsMenuHelperUnitTest {
         // Build the toolbar menu for the page.
         SettingsMenuHelper.updateOptionsMenu(mToolbar, mActivity, mDelegate);
 
-        // The search item survives, but SettingsInTab never shows a help icon.
+        // The search item survives, but settings in a tab never shows a help icon.
         Menu menu = mToolbar.getMenu();
         assertEquals(1, menu.size());
         assertNotNull(menu.findItem(R.id.search));
@@ -400,12 +388,11 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    public void testUpdateOptionsMenu_SettingsInTabDisabled_keepsSearchAndHelp() {
+    public void testUpdateOptionsMenu_notShownInTab_keepsSearchAndHelp() {
         // Show a page that adds its own search and help menu items.
         addSiteSettingsMenuFragment();
 
-        // Two-column layout, but the SettingsInTab feature is off.
+        // Two-column layout, but settings is not shown in a tab.
         when(mMultiColumnSettings.isTwoColumn()).thenReturn(true);
         when(mDelegate.getMultiColumnSettings()).thenReturn(mMultiColumnSettings);
 
@@ -420,9 +407,8 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
-    public void testOnPrepareOptionsMenu_SettingsInTab_removesHelpMenuItems() {
+    public void testOnPrepareOptionsMenu_shownInTab_removesHelpMenuItems() {
+        when(mDelegate.isShownInTab()).thenReturn(true);
         Menu menu = mToolbar.getMenu();
         menu.clear();
         menu.add(Menu.NONE, R.id.menu_id_general_help, Menu.NONE, "General Help");
@@ -430,7 +416,7 @@ public class SettingsMenuHelperUnitTest {
         menu.add(Menu.NONE, R.id.help_menu_id, Menu.NONE, "Help");
         menu.add(Menu.NONE, R.id.delete_menu_id, Menu.NONE, "Delete");
 
-        SettingsMenuHelper.onPrepareOptionsMenu(menu);
+        SettingsMenuHelper.onPrepareOptionsMenu(menu, mDelegate);
 
         assertEquals(1, menu.size());
         assertNotNull(menu.findItem(R.id.delete_menu_id));
@@ -451,7 +437,7 @@ public class SettingsMenuHelperUnitTest {
         when(itemWithIcon.getIcon()).thenReturn(mock(Drawable.class));
         when(itemWithoutIcon.getIcon()).thenReturn(null);
 
-        SettingsMenuHelper.onPrepareOptionsMenu(menu);
+        SettingsMenuHelper.onPrepareOptionsMenu(menu, mDelegate);
 
         verify(itemWithIcon).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         verify(itemWithoutIcon, never()).setShowAsAction(anyInt());
@@ -543,6 +529,7 @@ public class SettingsMenuHelperUnitTest {
         SettingsMenuHelper.updateNavigationIcon(
                 mToolbar,
                 mActivity,
+                /* shownInTab= */ false,
                 /* show= */ true,
                 /* isMultiColumn= */ true,
                 /* isMainSettings= */ true);
@@ -563,6 +550,7 @@ public class SettingsMenuHelperUnitTest {
         SettingsMenuHelper.updateNavigationIcon(
                 mToolbar,
                 activity,
+                /* shownInTab= */ false,
                 /* show= */ true,
                 /* isMultiColumn= */ false,
                 /* isMainSettings= */ false);
@@ -580,12 +568,11 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
-    public void testUpdateNavigationIcon_ShowSingleColumn_SettingsInTabMainSettings() {
+    public void testUpdateNavigationIcon_ShowSingleColumn_shownInTabMainSettings() {
         SettingsMenuHelper.updateNavigationIcon(
                 mToolbar,
                 mActivity,
+                /* shownInTab= */ true,
                 /* show= */ true,
                 /* isMultiColumn= */ false,
                 /* isMainSettings= */ true);
@@ -600,14 +587,13 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
-    public void testUpdateNavigationIcon_ShowSingleColumn_SettingsInTabDetailSettings() {
+    public void testUpdateNavigationIcon_ShowSingleColumn_shownInTabDetailSettings() {
         Activity activity = mock(Activity.class);
 
         SettingsMenuHelper.updateNavigationIcon(
                 mToolbar,
                 activity,
+                /* shownInTab= */ true,
                 /* show= */ true,
                 /* isMultiColumn= */ false,
                 /* isMainSettings= */ false);
@@ -630,6 +616,7 @@ public class SettingsMenuHelperUnitTest {
         SettingsMenuHelper.updateNavigationIcon(
                 mToolbar,
                 mActivity,
+                /* shownInTab= */ false,
                 /* show= */ false,
                 /* isMultiColumn= */ false,
                 /* isMainSettings= */ false);
@@ -638,13 +625,12 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
     public void testUpdateNavigationIcon_LogoAccessibility() {
         // Update the navigation icon to be the Chrome logo.
         SettingsMenuHelper.updateNavigationIcon(
                 mToolbar,
                 mActivity,
+                /* shownInTab= */ true,
                 /* show= */ true,
                 /* isMultiColumn= */ false,
                 /* isMainSettings= */ true);
@@ -663,13 +649,12 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
     public void testUpdateNavigationIcon_BackButtonAccessibility() {
         // Update the navigation icon to be a back button.
         SettingsMenuHelper.updateNavigationIcon(
                 mToolbar,
                 mActivity,
+                /* shownInTab= */ true,
                 /* show= */ true,
                 /* isMultiColumn= */ false,
                 /* isMainSettings= */ false);
@@ -684,14 +669,13 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
-    public void testUpdateNavigationIcon_BackButtonFocus_SettingsInTab() {
+    public void testUpdateNavigationIcon_BackButtonFocus_shownInTab() {
         mActivity.setContentView(mToolbar);
 
         SettingsMenuHelper.updateNavigationIcon(
                 mToolbar,
                 mActivity,
+                /* shownInTab= */ true,
                 /* show= */ true,
                 /* isMultiColumn= */ false,
                 /* isMainSettings= */ false);

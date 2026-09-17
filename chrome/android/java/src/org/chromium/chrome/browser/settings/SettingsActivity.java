@@ -842,13 +842,13 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        SettingsMenuHelper.onCreateOptionsMenu(menu, this);
+        SettingsMenuHelper.onCreateOptionsMenu(menu, this, this);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        SettingsMenuHelper.onPrepareOptionsMenu(menu);
+        SettingsMenuHelper.onPrepareOptionsMenu(menu, this);
         return super.onPrepareOptionsMenu(menu);
     }
 

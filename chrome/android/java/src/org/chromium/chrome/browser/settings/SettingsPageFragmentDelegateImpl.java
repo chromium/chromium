@@ -566,6 +566,12 @@ public class SettingsPageFragmentDelegateImpl
     }
 
     @Override
+    public boolean isShownInTab() {
+        // This delegate is only created for settings hosted in a browser tab.
+        return true;
+    }
+
+    @Override
     public @Nullable Fragment getMainFragment() {
         // Allows tests to simulate activity attachment behavior.
         if (mSettingsHostFragment == null || !mSettingsHostFragment.isAttachedToActivity()) {
@@ -732,6 +738,7 @@ public class SettingsPageFragmentDelegateImpl
             SettingsMenuHelper.updateNavigationIcon(
                     mToolbar,
                     mActivity,
+                    /* shownInTab= */ true,
                     /* show= */ shouldShowNavigationIcon(),
                     isTwoColumnSettingsVisible(),
                     isMainSettingsVisible());
