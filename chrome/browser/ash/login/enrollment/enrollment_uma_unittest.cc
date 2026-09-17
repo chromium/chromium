@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/enrollment/enrollment_uma.h"
 
+#include <string_view>
+
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
@@ -14,10 +16,10 @@ namespace ash {
 
 struct TokenBasedEnrollmentOOBEConfigUMATestCase {
   policy::OOBEConfigSource oobe_config_source;
-  std::string expected_oobe_config_source_variant;
+  std::string_view expected_oobe_config_source_variant;
 };
 
-TokenBasedEnrollmentOOBEConfigUMATestCase test_cases[] = {
+constexpr TokenBasedEnrollmentOOBEConfigUMATestCase kTestCases[] = {
     {policy::OOBEConfigSource::kNone, "None"},
     {policy::OOBEConfigSource::kUnknown, "Unknown"},
     {policy::OOBEConfigSource::kRemoteDeployment, "RemoteDeployment"},
@@ -63,10 +65,10 @@ TEST_P(TokenBasedEnrollmentUMAFailureTest, Failure) {
 
 INSTANTIATE_TEST_SUITE_P(Success,
                          TokenBasedEnrollmentUMASuccessTest,
-                         testing::ValuesIn(test_cases));
+                         testing::ValuesIn(kTestCases));
 
 INSTANTIATE_TEST_SUITE_P(Failure,
                          TokenBasedEnrollmentUMAFailureTest,
-                         testing::ValuesIn(test_cases));
+                         testing::ValuesIn(kTestCases));
 
 }  //  namespace ash
