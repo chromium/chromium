@@ -142,6 +142,7 @@ void ConfigFetcher::OnWellKnownFetched(
                 additional_console_error_message);
         return;
       }
+      case ParseStatus::kUseNativeUiDelegation:
       case ParseStatus::kSuccess: {
         NOTREACHED();
       }
@@ -202,6 +203,7 @@ void ConfigFetcher::OnConfigFetched(
       case ParseStatus::kEmptyListError: {
         NOTREACHED() << "kEmptyListError is undefined for OnConfigFetched";
       }
+      case ParseStatus::kUseNativeUiDelegation:
       case ParseStatus::kSuccess: {
         NOTREACHED();
       }

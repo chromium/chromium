@@ -5,7 +5,9 @@
 #include "content/browser/webid/idp_accounts_parser.h"
 
 #include "base/json/json_reader.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content::webid {
@@ -106,6 +108,48 @@ TEST_F(IdpAccountsParserTest, ParseAccountNotADict) {
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(IdpNetworkRequestManager::AccountsResponseInvalidReason::
                 kAccountIsNotDict,
+            result.error());
+}
+
+TEST_F(IdpAccountsParserTest, ParseAccountsResponseWithNativeUiDelegation) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  const char json[] = R"({
+    "error": "use_native_ui_delegation"
+  })";
+  auto dict = base::JSONReader::ReadDict(json, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(dict.has_value());
+
+  auto result = IdpAccountsParser::ParseAccountsResponse(*dict);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(IdpNetworkRequestManager::AccountsResponseInvalidReason::
+                kUseNativeUiDelegation,
+            result.error());
+}
+
+TEST_F(IdpAccountsParserTest,
+       ParseAccountsResponseWithNativeUiDelegationAndAccounts) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  const char json[] = R"({
+    "error": "use_native_ui_delegation",
+    "accounts": [
+      {
+        "id": "123",
+        "email": "ken@example.com",
+        "name": "Ken"
+      }
+    ]
+  })";
+  auto dict = base::JSONReader::ReadDict(json, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(dict.has_value());
+
+  auto result = IdpAccountsParser::ParseAccountsResponse(*dict);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(IdpNetworkRequestManager::AccountsResponseInvalidReason::
+                kUseNativeUiDelegation,
             result.error());
 }
 

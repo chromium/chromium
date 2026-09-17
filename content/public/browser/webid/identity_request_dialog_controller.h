@@ -192,9 +192,10 @@ class CONTENT_EXPORT IdentityRequestDialogController {
                               const std::string& /*account_id*/,
                               bool /*is_sign_in*/)>;
   struct CONTENT_EXPORT NativeAppResult {
-    enum class Type { kToken, kLoginFinished };
-    Type type;
+    enum class Type { kToken, kError, kLoginFinished };
+    Type type = Type::kError;
     std::string token;
+    std::optional<IdentityCredentialTokenError> error;
   };
 
   using NativeAppResultCallback = base::OnceCallback<void(NativeAppResult)>;
@@ -311,6 +312,13 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       IdentityRequestAccount::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
       AccountsDisplayedCallback accounts_displayed_callback);
+
+  // Shows the native app UI flow. Returns true if the native app UI was
+  // initiated. When false, the caller should assume the flow cannot be shown.
+  virtual bool ShowNativeAppUi(const content::RelyingPartyData& rp_data,
+                               const IdentityProviderData& idp_data,
+                               DismissCallback dismiss_callback,
+                               NativeAppResultCallback native_result_callback);
 
   // Only to be called after a dialog is shown.
   virtual std::string GetTitle() const;

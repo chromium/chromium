@@ -26,8 +26,16 @@ class CONTENT_EXPORT IdpAccountsParser {
       base::expected<std::vector<scoped_refptr<IdentityRequestAccount>>,
                      IdpNetworkRequestManager::AccountsResponseInvalidReason>;
 
+  using AccountsResponseParseResult =
+      base::expected<IdpNetworkRequestManager::AccountsResponse,
+                     IdpNetworkRequestManager::AccountsResponseInvalidReason>;
+
   // Parses accounts from a JSON dictionary response.
   static ParseResult ParseAccounts(const base::DictValue& response_dict);
+
+  // Parses the full accounts endpoint response including metadata and accounts.
+  static AccountsResponseParseResult ParseAccountsResponse(
+      const base::DictValue& response_dict);
 };
 
 }  // namespace content::webid

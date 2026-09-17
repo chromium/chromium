@@ -3122,6 +3122,80 @@ TEST_F(IdpNetworkRequestManagerTest, GetOrCreateNativeIdpFetcherIdempotent) {
   EXPECT_EQ(raw_fetcher, manager->GetOrCreateNativeIdpFetcher(idp_origin));
 }
 
+TEST_F(IdpNetworkRequestManagerTest,
+       AccountsResponseNativeUiDelegationEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  const char test_accounts_json[] = R"({
+  "error": "use_native_ui_delegation"
+  })";
+
+  FetchStatus accounts_response;
+  IdpNetworkRequestManager::AccountsResponse accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  EXPECT_EQ(ParseStatus::kUseNativeUiDelegation,
+            accounts_response.parse_status);
+  EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
+  EXPECT_TRUE(accounts.accounts.empty());
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.Status.AccountsResponseInvalidReason",
+      AccountsResponseInvalidReason::kUseNativeUiDelegation, 1);
+}
+
+TEST_F(IdpNetworkRequestManagerTest,
+       AccountsResponseNativeUiDelegationWithAccounts) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  const char test_accounts_json[] = R"({
+  "error": "use_native_ui_delegation",
+  "accounts": [
+    {
+      "id": "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example"
+    }
+  ]
+  })";
+
+  FetchStatus accounts_response;
+  IdpNetworkRequestManager::AccountsResponse accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  EXPECT_EQ(ParseStatus::kUseNativeUiDelegation,
+            accounts_response.parse_status);
+  EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
+  EXPECT_TRUE(accounts.accounts.empty());
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.Status.AccountsResponseInvalidReason",
+      AccountsResponseInvalidReason::kUseNativeUiDelegation, 1);
+}
+
+TEST_F(IdpNetworkRequestManagerTest,
+       AccountsResponseNativeUiDelegationDisabledWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kFedCmNativeIdPs);
+
+  const char test_accounts_json[] = R"({
+  "error": "use_native_ui_delegation"
+  })";
+
+  FetchStatus accounts_response;
+  IdpNetworkRequestManager::AccountsResponse accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  // Without the feature, no accounts key is treated as invalid response.
+  EXPECT_EQ(ParseStatus::kInvalidResponseError, accounts_response.parse_status);
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.Status.AccountsResponseInvalidReason",
+      AccountsResponseInvalidReason::kNoAccountsKey, 1);
+}
+
 }  // namespace
 
 }  // namespace content::webid

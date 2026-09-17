@@ -87,8 +87,9 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
     kAccountIsNotDict = 3,
     kAccountMissesRequiredField = 4,
     kAccountsShareSameId = 5,
+    kUseNativeUiDelegation = 6,
 
-    kMaxValue = kAccountsShareSameId
+    kMaxValue = kUseNativeUiDelegation
   };
 
   // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmAccountsResponseInvalidReason)

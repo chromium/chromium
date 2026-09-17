@@ -192,6 +192,7 @@ AccountParseStatusToRequestResultAndTokenStatus(ParseStatus parse_status) {
     case ParseStatus::kNoResponseError:
       return {FederatedRequestResult::kAccountsNoResponse,
               RequestIdTokenStatus::kAccountsNoResponse};
+    case ParseStatus::kUseNativeUiDelegation:
     case ParseStatus::kInvalidResponseError:
       return {FederatedRequestResult::kAccountsInvalidResponse,
               RequestIdTokenStatus::kAccountsInvalidResponse};
@@ -292,6 +293,8 @@ IdAssertionFetchStatusToRequestResultAndTokenStatus(FetchStatus status) {
               RequestIdTokenStatus::kIdTokenInvalidContentType};
     case ParseStatus::kEmptyListError:
       NOTREACHED() << "EmptyListError is not an option for this fetch";
+    case ParseStatus::kUseNativeUiDelegation:
+      NOTREACHED() << "UseNativeUiDelegation is not an option for this fetch";
     case ParseStatus::kSuccess:
       NOTREACHED() << "Should not be invoked with success";
   }
@@ -315,6 +318,7 @@ EmailVerificationRequestResult WellKnownParseStatusToEvpRequestStatus(
       return EmailVerificationRequestResult::kWellKnownListEmpty;
     case ParseStatus::kInvalidContentTypeError:
       return EmailVerificationRequestResult::kWellKnownInvalidContentType;
+    case ParseStatus::kUseNativeUiDelegation:
     case ParseStatus::kSuccess:
       NOTREACHED();
   }
@@ -343,6 +347,7 @@ EmailVerificationWellKnownParseStatusToEvpRequestStatus(
     case ParseStatus::kInvalidContentTypeError:
       return EmailVerificationRequestResult::
           kEmailVerificationWellKnownInvalidContentType;
+    case ParseStatus::kUseNativeUiDelegation:
     case ParseStatus::kSuccess:
       NOTREACHED();
   }
@@ -360,6 +365,7 @@ EmailVerificationRequestResult AccountsListParseStatusToEvpRequestStatus(
     case ParseStatus::kBlockedByConnectionAllowlist:
     case ParseStatus::kNoResponseError:
       return EmailVerificationRequestResult::kAccountsNoResponse;
+    case ParseStatus::kUseNativeUiDelegation:
     case ParseStatus::kInvalidResponseError:
       return EmailVerificationRequestResult::kAccountsInvalidResponse;
     case ParseStatus::kEmptyListError:
@@ -388,6 +394,7 @@ EmailVerificationRequestResult TokenParseStatusToEvpRequestStatus(
     case ParseStatus::kInvalidContentTypeError:
       return EmailVerificationRequestResult::kTokenInvalidContentType;
     case ParseStatus::kEmptyListError:
+    case ParseStatus::kUseNativeUiDelegation:
     case ParseStatus::kSuccess:
       NOTREACHED();
   }
@@ -410,6 +417,7 @@ EmailVerificationRequestResult JwksParseStatusToEvpRequestStatus(
     case ParseStatus::kEmptyListError:
     case ParseStatus::kInvalidContentTypeError:
       return EmailVerificationRequestResult::kJwksInvalidResponse;
+    case ParseStatus::kUseNativeUiDelegation:
     case ParseStatus::kSuccess:
       NOTREACHED();
   }

@@ -172,4 +172,30 @@ IdpAccountsParser::ParseResult IdpAccountsParser::ParseAccounts(
   return account_list;
 }
 
+// static
+IdpAccountsParser::AccountsResponseParseResult
+IdpAccountsParser::ParseAccountsResponse(const base::DictValue& response_dict) {
+  if (IsFedCmNativeIdPsEnabled()) {
+    const std::string* error = response_dict.FindString("error");
+    if (error && *error == "use_native_ui_delegation") {
+      return base::unexpected(
+          AccountsResponseInvalidReason::kUseNativeUiDelegation);
+    }
+  }
+
+  IdpNetworkRequestManager::AccountsResponse response;
+  const std::string* site_salt = response_dict.FindString(kSiteSaltKey);
+  if (IsEmbedderInitiatedLoginEnabled() && site_salt) {
+    response.site_salt = *site_salt;
+  }
+
+  auto accounts_result = ParseAccounts(response_dict);
+  if (!accounts_result.has_value()) {
+    return base::unexpected(accounts_result.error());
+  }
+
+  response.accounts = std::move(*accounts_result);
+  return response;
+}
+
 }  // namespace content::webid

@@ -449,6 +449,7 @@ void Metrics::RecordIdpSigninMatchStatus(std::optional<bool> idp_signin_status,
       case ParseStatus::kInvalidResponseError:
         match_status = IdpSigninMatchStatus::kMismatchWithInvalidResponse;
         break;
+      case ParseStatus::kUseNativeUiDelegation:
       case ParseStatus::kEmptyListError:
         match_status = IdpSigninMatchStatus::kMismatchWithNoContent;
         break;

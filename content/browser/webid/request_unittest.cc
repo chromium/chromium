@@ -246,6 +246,14 @@ enum class AccountsDialogAction {
   kAddAccount,
 };
 
+// Action on native app UI taken by TestDialogController.
+enum class NativeAppUiAction {
+  kNone,
+  kSuccess,
+  kError,
+  kLoginFinished,
+};
+
 // Action on IdP-sign-in-status-mismatch dialog taken by TestDialogController.
 // Does not indicate a test expectation.
 enum class IdpSigninStatusMismatchDialogAction {
@@ -289,6 +297,7 @@ struct MockConfiguration {
   std::optional<ErrorUrlType> error_url_type;
   blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kPassive};
   bool suppressed_by_segmentation_platform{false};
+  NativeAppUiAction native_app_ui_action{NativeAppUiAction::kNone};
 };
 
 static const MockClientIdConfiguration kDefaultClientMetadata{
@@ -621,12 +630,16 @@ class TestDialogController
     std::optional<TokenError> token_error;
     // State related to ShowLoadingDialog().
     bool did_show_loading_dialog{false};
+    // State related to ShowNativeAppUi().
+    bool did_show_native_app_ui{false};
     // List of IDP strings for which a mismatch is shown in a test.
     std::vector<std::string> displayed_mismatch_idps;
   };
 
   explicit TestDialogController(MockConfiguration config)
       : accounts_dialog_action_(config.accounts_dialog_action),
+        native_app_ui_action_(config.native_app_ui_action),
+        token_(config.token ? config.token : ""),
         idp_signin_status_mismatch_dialog_action_(
             config.idp_signin_status_mismatch_dialog_action),
         error_dialog_action_(config.error_dialog_action),
@@ -639,10 +652,12 @@ class TestDialogController
 
   void UpdateConfiguration(MockConfiguration config) {
     accounts_dialog_action_ = config.accounts_dialog_action;
+    native_app_ui_action_ = config.native_app_ui_action;
     idp_signin_status_mismatch_dialog_action_ =
         config.idp_signin_status_mismatch_dialog_action;
     error_dialog_action_ = config.error_dialog_action;
     loading_dialog_action_ = config.loading_dialog_action;
+    token_ = config.token ? config.token : "";
     passive_dialog_volume_ =
         config.suppressed_by_segmentation_platform
             ? IdentityRequestDialogController::PassiveDialogVolume::kAmbient
@@ -855,11 +870,58 @@ class TestDialogController
     return true;
   }
 
+  bool ShowNativeAppUi(
+      const content::RelyingPartyData& rp_data,
+      const IdentityProviderData& idp_data,
+      DismissCallback dismiss_callback,
+      NativeAppResultCallback native_result_callback) override {
+    if (!state_) {
+      return false;
+    }
+
+    state_->did_show_native_app_ui = true;
+    switch (native_app_ui_action_) {
+      case NativeAppUiAction::kSuccess: {
+        IdentityRequestDialogController::NativeAppResult result;
+        result.type =
+            IdentityRequestDialogController::NativeAppResult::Type::kToken;
+        result.token = token_;
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(native_result_callback),
+                                      std::move(result)));
+        return true;
+      }
+      case NativeAppUiAction::kError: {
+        IdentityRequestDialogController::NativeAppResult result;
+        result.type =
+            IdentityRequestDialogController::NativeAppResult::Type::kError;
+        result.error = IdentityCredentialTokenError{"access_denied", GURL()};
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(native_result_callback),
+                                      std::move(result)));
+        return true;
+      }
+      case NativeAppUiAction::kLoginFinished: {
+        IdentityRequestDialogController::NativeAppResult result;
+        result.type = IdentityRequestDialogController::NativeAppResult::Type::
+            kLoginFinished;
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(native_result_callback),
+                                      std::move(result)));
+        return true;
+      }
+      case NativeAppUiAction::kNone:
+        return false;
+    }
+  }
+
   base::WeakPtr<TestDialogController> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
   AccountsDialogAction accounts_dialog_action_{AccountsDialogAction::kNone};
+  NativeAppUiAction native_app_ui_action_{NativeAppUiAction::kNone};
+  std::string token_;
 
  protected:
   IdpSigninStatusMismatchDialogAction idp_signin_status_mismatch_dialog_action_{
@@ -1423,12 +1485,18 @@ class RequestTest : public RenderViewHostImplTestHarness {
       if (!base::FeatureList::IsEnabled(features::kFedCmLightweightMode)) {
         EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
       }
-      EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
+      if (configuration.native_app_ui_action != NativeAppUiAction::kSuccess) {
+        EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
+      }
       // FetchedEndpoint::CLIENT_METADATA is optional.
 
-      EXPECT_EQ(did_show_accounts_dialog(),
-                !expectation.is_auto_selected ||
-                    configuration.rp_mode != blink::mojom::RpMode::kActive);
+      if (configuration.native_app_ui_action != NativeAppUiAction::kNone) {
+        EXPECT_FALSE(did_show_accounts_dialog());
+      } else {
+        EXPECT_EQ(did_show_accounts_dialog(),
+                  !expectation.is_auto_selected ||
+                      configuration.rp_mode != blink::mojom::RpMode::kActive);
+      }
     }
 
     EXPECT_EQ(expectation.is_auto_selected, request_helper->is_auto_selected());
@@ -9963,6 +10031,112 @@ TEST_F(RequestTest, LoginToIdPRefocusesWhenPopupAlreadyOpen) {
   // without re-registering observer or resetting state.
   SimulateLoginToIdP();
   EXPECT_EQ(request_->GetDialogType(), Request::DialogType::kLoginToIdpPopup);
+}
+
+// Verifies that when an IdP in active mode indicates native UI delegation, the
+// native app UI is triggered and token resolution completes successfully.
+TEST_F(RequestTest, NativeAppUiSuccess) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  MockConfiguration config = kConfigurationValid;
+  config.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kUseNativeUiDelegation;
+  config.native_app_ui_action = NativeAppUiAction::kSuccess;
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kSuccess, FederatedRequestResult::kSuccess,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/kProviderUrlFull};
+
+  RunTest(parameters, expectations, config);
+  EXPECT_TRUE(dialog_controller_state_.did_show_native_app_ui);
+}
+
+// Verifies that when the native app UI returns an IdP error, the request
+// completes with an IdTokenIdpErrorResponse error.
+TEST_F(RequestTest, NativeAppUiError) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  MockConfiguration config = kConfigurationValid;
+  config.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kUseNativeUiDelegation;
+  config.native_app_ui_action = NativeAppUiAction::kError;
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedRequestResult::kIdTokenIdpErrorResponse,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  RunTest(parameters, expectations, config);
+  EXPECT_TRUE(dialog_controller_state_.did_show_native_app_ui);
+}
+
+// Verifies that when ShowNativeAppUi returns false (e.g. unsupported by the
+// embedder/platform), the request immediately completes with an error instead
+// of hanging.
+TEST_F(RequestTest, NativeAppUiUnsupportedCompletesWithError) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  MockConfiguration config = kConfigurationValid;
+  config.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kUseNativeUiDelegation;
+  config.native_app_ui_action = NativeAppUiAction::kNone;
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedRequestResult::kError,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  RunTest(parameters, expectations, config);
+  EXPECT_TRUE(dialog_controller_state_.did_show_native_app_ui);
+}
+
+// Verifies that receiving an unexpected result type (e.g. kLoginFinished) from
+// the dialog controller completes with an error instead of hanging.
+TEST_F(RequestTest, NativeAppUiUnexpectedLoginFinishedCompletesWithError) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  MockConfiguration config = kConfigurationValid;
+  config.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kUseNativeUiDelegation;
+  config.native_app_ui_action = NativeAppUiAction::kLoginFinished;
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedRequestResult::kError,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  RunTest(parameters, expectations, config);
+  EXPECT_TRUE(dialog_controller_state_.did_show_native_app_ui);
 }
 
 }  // namespace content::webid

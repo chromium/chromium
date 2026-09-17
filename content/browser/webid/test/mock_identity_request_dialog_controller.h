@@ -77,6 +77,13 @@ class MockIdentityRequestDialogController
                blink::mojom::RpMode,
                AccountsDisplayedCallback),
               (override));
+  MOCK_METHOD(bool,
+              ShowNativeAppUi,
+              (const content::RelyingPartyData&,
+               const IdentityProviderData&,
+               DismissCallback,
+               NativeAppResultCallback),
+              (override));
   MOCK_METHOD(WebContents*,
               ShowModalDialog,
               (const GURL&,

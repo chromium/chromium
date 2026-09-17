@@ -150,6 +150,14 @@ bool IdentityRequestDialogController::ShowVerifyingDialog(
   return true;
 }
 
+bool IdentityRequestDialogController::ShowNativeAppUi(
+    const content::RelyingPartyData& rp_data,
+    const IdentityProviderData& idp_data,
+    DismissCallback dismiss_callback,
+    NativeAppResultCallback native_result_callback) {
+  return false;
+}
+
 std::string IdentityRequestDialogController::GetTitle() const {
   return std::string();
 }

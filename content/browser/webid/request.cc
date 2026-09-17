@@ -662,6 +662,12 @@ void Request::OnAccountsResultsReceived(
       continue;
     }
 
+    if (result.use_native_app_ui) {
+      CHECK_EQ(results.size(), 1u);
+      MaybeShowNativeAppUi(std::move(result.idp_info));
+      continue;
+    }
+
     if (result.error) {
       OnFetchDataForIdpFailed(std::move(result.idp_info), *result.error,
                               result.token_status,
@@ -2252,6 +2258,41 @@ void Request::OnIntentResolved(const std::string& token) {
   OnResolve(config_url_, std::nullopt, std::move(params));
 }
 
+void Request::OnNativeAppUiResult(
+    const GURL& idp_config_url,
+    IdentityRequestDialogController::NativeAppResult result) {
+  if (!request_token_callback_) {
+    return;
+  }
+  if (result.type ==
+      IdentityRequestDialogController::NativeAppResult::Type::kToken) {
+    // TODO(crbug.com/549228397): Add a dedicated TokenStatus type for
+    // native app UI success (e.g. kSuccessUsingNativeAppToken) instead of
+    // reusing kSuccessUsingTokenInHttpResponse.
+    CompleteRequest(FederatedRequestResult::kSuccess,
+                    TokenStatus::kSuccessUsingTokenInHttpResponse,
+                    /*token_error=*/std::nullopt, idp_config_url,
+                    base::Value(result.token),
+                    /*should_delay_callback=*/false);
+    return;
+  }
+  if (result.type ==
+      IdentityRequestDialogController::NativeAppResult::Type::kError) {
+    if (result.error) {
+      token_error_ = result.error;
+    }
+    CompleteRequestWithError(FederatedRequestResult::kIdTokenIdpErrorResponse,
+                             TokenStatus::kIdTokenIdpErrorResponse,
+                             /*should_delay_callback=*/false);
+    return;
+  }
+  // kLoginFinished is not expected for native app UI. Complete with error to
+  // ensure the request does not hang.
+  CompleteRequestWithError(FederatedRequestResult::kError,
+                           TokenStatus::kLoginPopupClosedWithoutSignin,
+                           /*should_delay_callback=*/false);
+}
+
 void Request::OnNativeAppResult(
     DialogType dialog_type,
     const GURL& idp_config_url,
@@ -2268,6 +2309,14 @@ void Request::OnNativeAppResult(
       return;
     }
     OnIntentResolved(result.token);
+  } else if (result.type ==
+             IdentityRequestDialogController::NativeAppResult::Type::kError) {
+    if (result.error) {
+      token_error_ = result.error;
+    }
+    CompleteRequestWithError(FederatedRequestResult::kIdTokenIdpErrorResponse,
+                             TokenStatus::kIdTokenIdpErrorResponse,
+                             /*should_delay_callback=*/false);
   } else if (result.type == IdentityRequestDialogController::NativeAppResult::
                                 Type::kLoginFinished) {
     if (dialog_type != DialogType::kLoginToIdpPopup) {
@@ -2555,6 +2604,38 @@ void Request::RecordErrorMetrics(
     // This is used to determine if we need to use the cross-site specific
     // devtools issue when failing the request.
     error_url_type_ = error_url_type;
+  }
+}
+
+void Request::MaybeShowNativeAppUi(
+    std::unique_ptr<IdentityProviderInfo> idp_info) {
+  CHECK(idp_info);
+  const GURL& idp_config_url = idp_info->provider->config->config_url;
+  idp_infos_[idp_config_url] = std::move(idp_info);
+  IdentityProviderInfo* info = idp_infos_[idp_config_url].get();
+
+  const std::string idp_for_display = FormatUrlToSite(idp_config_url);
+  info->data = base::MakeRefCounted<IdentityProviderData>(
+      idp_for_display, info->metadata,
+      ClientMetadata{GURL(), GURL(), GURL(), gfx::Image()}, info->rp_context,
+      info->format, GetDisclosureFields(info->provider->fields),
+      /*has_login_status_mismatch=*/false);
+  idp_data_for_display_ = {info->data};
+
+  RelyingPartyData rp_data = CreateRpData(/*client_metadata_received=*/false);
+
+  auto dismiss_callback = base::BindOnce(&Request::OnDialogDismissed,
+                                         weak_ptr_factory_.GetWeakPtr());
+  auto result_callback =
+      base::BindOnce(&Request::OnNativeAppUiResult,
+                     weak_ptr_factory_.GetWeakPtr(), idp_config_url);
+
+  if (!GetDialogController()->ShowNativeAppUi(rp_data, *info->data,
+                                              std::move(dismiss_callback),
+                                              std::move(result_callback))) {
+    CompleteRequestWithError(FederatedRequestResult::kError,
+                             TokenStatus::kUnhandledRequest,
+                             /*should_delay_callback=*/false);
   }
 }
 

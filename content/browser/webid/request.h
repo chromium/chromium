@@ -240,6 +240,10 @@ class CONTENT_EXPORT Request
 
   void MaybeShowActiveModeModalDialog(const GURL& idp_config_url,
                                       const GURL& idp_login_url);
+  void MaybeShowNativeAppUi(std::unique_ptr<IdentityProviderInfo> idp_info);
+  void OnNativeAppUiResult(
+      const GURL& idp_config_url,
+      IdentityRequestDialogController::NativeAppResult result);
 
   void SetAccountsFetchedTime(base::TimeTicks time) {
     accounts_fetched_time_ = time;

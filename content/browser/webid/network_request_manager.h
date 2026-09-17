@@ -34,6 +34,7 @@ enum class ParseStatus {
   kEmptyListError,
   kInvalidContentTypeError,
   kBlockedByConnectionAllowlist,
+  kUseNativeUiDelegation,
 };
 
 struct FetchStatus {

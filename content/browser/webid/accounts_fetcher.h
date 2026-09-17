@@ -82,6 +82,7 @@ class CONTENT_EXPORT AccountsFetcher {
     bool should_delay_callback = false;
     bool is_mismatch = false;
     bool show_active_mode_modal_dialog = false;
+    bool use_native_app_ui = false;
     base::TimeTicks accounts_fetched_time;
     base::TimeTicks client_metadata_fetched_time;
   };

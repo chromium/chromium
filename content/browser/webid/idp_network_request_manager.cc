@@ -449,40 +449,38 @@ void OnAccountsRequestParsed(
     IdpNetworkRequestManager::AccountsRequestCallback callback,
     FetchStatus fetch_status,
     std::optional<base::DictValue> result) {
-  IdpNetworkRequestManager::AccountsResponse response;
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
     RecordAccountsResponseInvalidReason(
         AccountsResponseInvalidReason::kResponseIsNotJsonOrDict);
-    std::move(callback).Run(fetch_status, std::move(response));
+    std::move(callback).Run(fetch_status,
+                            IdpNetworkRequestManager::AccountsResponse());
     return;
   }
 
-  auto parse_result = IdpAccountsParser::ParseAccounts(*result);
-
-  if (!parse_result.has_value()) {
-    AccountsResponseInvalidReason parse_error = parse_result.error();
+  auto response_result = IdpAccountsParser::ParseAccountsResponse(*result);
+  if (!response_result.has_value()) {
+    AccountsResponseInvalidReason parse_error = response_result.error();
     CHECK_NE(parse_error,
              AccountsResponseInvalidReason::kResponseIsNotJsonOrDict);
     RecordAccountsResponseInvalidReason(parse_error);
     ParseStatus parse_status = ParseStatus::kInvalidResponseError;
     if (parse_error == AccountsResponseInvalidReason::kAccountListIsEmpty) {
       parse_status = ParseStatus::kEmptyListError;
+    } else if (parse_error ==
+               AccountsResponseInvalidReason::kUseNativeUiDelegation) {
+      parse_status = ParseStatus::kUseNativeUiDelegation;
     }
     std::move(callback).Run({parse_status, fetch_status.response_code},
                             IdpNetworkRequestManager::AccountsResponse());
     return;
   }
 
-  response.accounts = std::move(*parse_result);
+  IdpNetworkRequestManager::AccountsResponse response =
+      std::move(*response_result);
   if (fetch_status.from_accounts_push) {
     for (auto& account : response.accounts) {
       account->from_accounts_push = true;
     }
-  }
-
-  const std::string* site_salt = result->FindString(kSiteSaltKey);
-  if (IsEmbedderInitiatedLoginEnabled() && site_salt) {
-    response.site_salt = *site_salt;
   }
 
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},

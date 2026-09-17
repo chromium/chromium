@@ -383,6 +383,17 @@ void AccountsFetcher::OnAccountsResponseReceived(
     return;
   }
 
+  if (status.parse_status == ParseStatus::kUseNativeUiDelegation &&
+      idp_info->rp_mode == blink::mojom::RpMode::kActive &&
+      request_get_infos_.size() == 1u) {
+    Result result;
+    result.idp_info = std::move(idp_info);
+    result.idp_config_url = idp_config_url;
+    result.use_native_app_ui = true;
+    AddResult(std::move(result));
+    return;
+  }
+
   if (status.parse_status != ParseStatus::kSuccess) {
     if (IsFedCmNativeIdPsEnabled() && network_manager_) {
       NativeIdpFetcher* fetcher = network_manager_->GetOrCreateNativeIdpFetcher(
@@ -482,24 +493,35 @@ void AccountsFetcher::OnNativeAccountsFetched(
     return;
   }
 
-  IdpAccountsParser::ParseResult parse_result =
-      IdpAccountsParser::ParseAccounts(*dict);
-  if (!parse_result.has_value()) {
+  auto response_result = IdpAccountsParser::ParseAccountsResponse(*dict);
+  if (!response_result.has_value()) {
+    IdpNetworkRequestManager::AccountsResponseInvalidReason parse_error =
+        response_result.error();
+    ParseStatus parse_status = ParseStatus::kInvalidResponseError;
+    if (parse_error == IdpNetworkRequestManager::AccountsResponseInvalidReason::
+                           kUseNativeUiDelegation) {
+      parse_status = ParseStatus::kUseNativeUiDelegation;
+    }
+    if (parse_status == ParseStatus::kUseNativeUiDelegation &&
+        idp_info->rp_mode == blink::mojom::RpMode::kActive &&
+        request_get_infos_.size() == 1u) {
+      OnAccountsResponseReceived(std::move(idp_info),
+                                 {parse_status, net::HTTP_OK},
+                                 IdpNetworkRequestManager::AccountsResponse());
+      return;
+    }
     auto [result, token_status] =
-        AccountParseStatusToRequestResultAndTokenStatus(
-            ParseStatus::kInvalidResponseError);
+        AccountParseStatusToRequestResultAndTokenStatus(parse_status);
     HandleAccountsFetchFailure(
         std::move(idp_info), old_idp_signin_status, result, token_status,
-        {ParseStatus::kInvalidResponseError, net::HTTP_OK},
-        std::vector<IdentityRequestAccountPtr>(), accounts_fetched_time);
+        {parse_status, net::HTTP_OK}, std::vector<IdentityRequestAccountPtr>(),
+        accounts_fetched_time);
     return;
   }
 
-  IdpNetworkRequestManager::AccountsResponse response;
-  response.accounts = std::move(*parse_result);
   OnAccountsResponseReceived(std::move(idp_info),
                              {ParseStatus::kSuccess, net::HTTP_OK},
-                             std::move(response));
+                             std::move(*response_result));
 }
 
 void AccountsFetcher::OnAccountsFetchSucceeded(
