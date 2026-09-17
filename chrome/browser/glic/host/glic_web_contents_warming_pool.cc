@@ -281,7 +281,7 @@ void GlicWebContentsWarmingPool::OnMemoryPressure(
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
     if (should_warm_when_memory_allows_ && !warmed_container_ &&
         !delay_timer_.IsRunning()) {
-      EnsurePreloadDelayed(ContainerCreationReason::kRefill);
+      EnsurePreloadDelayed(ContainerCreationReason::kMemoryPressureRecovery);
     }
   }
 }

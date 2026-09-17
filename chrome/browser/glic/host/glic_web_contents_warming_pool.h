@@ -42,9 +42,10 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
     kRefill = 2,  // Created to refill the pool after TakeContainer()
     kReloadAfterExpiry =
         3,  // Created to reload the pool after the previous container expired
-    kNudge = 4,  // Preloaded when a contextual nudge is shown.
-    kIph = 5,    // Preloaded when Gemini IPH is shown.
-    kMaxValue = kIph,
+    kNudge = 4,                   // Preloaded when a contextual nudge is shown.
+    kIph = 5,                     // Preloaded when Gemini IPH is shown.
+    kMemoryPressureRecovery = 6,  // Preloaded when memory pressure subsides.
+    kMaxValue = kMemoryPressureRecovery,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicContainerCreationReason)
 

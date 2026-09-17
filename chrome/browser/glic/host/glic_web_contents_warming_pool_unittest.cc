@@ -552,6 +552,7 @@ TEST_F(GlicWebContentsWarmingPoolTest,
       /*enabled_features=*/{base::kStatefulMemoryPressure,
                             kGlicReloadWebContentsAfterExpiry},
       /*disabled_features=*/{});
+  base::HistogramTester histogram_tester;
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
 
@@ -573,6 +574,11 @@ TEST_F(GlicWebContentsWarmingPoolTest,
       base::Milliseconds(features::kGlicWarmingDelayMs.Get()));
   EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
   EXPECT_TRUE(warming_pool.IsExpiryTimerRunningForTesting());
+  histogram_tester.ExpectBucketCount(
+      "Glic.WarmingPool.ContainerCreationReason",
+      GlicWebContentsWarmingPool::ContainerCreationReason::
+          kMemoryPressureRecovery,
+      1);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest,
