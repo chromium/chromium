@@ -42,6 +42,17 @@ TEST_F(GpuDriverBugListTest, CurrentListForImagination) {
       list->MakeDecision(GpuControlList::kOsAndroid, "4.1", gpu_info, {});
   EXPECT_EQ(1u, bugs.count(USE_CLIENT_SIDE_ARRAYS_FOR_STREAM_BUFFERS));
 }
+
+TEST_F(GpuDriverBugListTest, CurrentListForPowerVRRogue) {
+  std::unique_ptr<GpuDriverBugList> list = GpuDriverBugList::Create();
+  GPUInfo gpu_info;
+  gpu_info.gl_vendor = "Imagination Technologies";
+  gpu_info.gl_renderer = "PowerVR Rogue GE8322";
+  gpu_info.gl_version = "OpenGL ES 3.2";
+  std::set<int> bugs =
+      list->MakeDecision(GpuControlList::kOsAndroid, "14.0", gpu_info, {});
+  EXPECT_EQ(1u, bugs.count(ROUND_UP_3D_TEXTURE_SIZE_TO_POT_FOR_LIMIT));
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(GpuDriverBugListTest, AppendSingleWorkaround) {

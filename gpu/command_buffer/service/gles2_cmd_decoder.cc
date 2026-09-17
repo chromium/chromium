@@ -16554,25 +16554,35 @@ void GLES2DecoderImpl::TexStorageImpl(GLenum target,
     PixelStoreParams params;
     params.alignment = 1;
     for (int ii = 0; ii < levels; ++ii) {
+      GLsizei pessimized_level_width = level_width;
+      GLsizei pessimized_level_height = level_height;
+      GLsizei pessimized_level_depth = level_depth;
+      if (workarounds().round_up_3d_texture_size_to_pot_for_limit &&
+          (target == GL_TEXTURE_3D || depth > 1)) {
+        pessimized_level_width = static_cast<GLsizei>(
+            std::bit_ceil(static_cast<uint32_t>(level_width)));
+        pessimized_level_height = static_cast<GLsizei>(
+            std::bit_ceil(static_cast<uint32_t>(level_height)));
+        pessimized_level_depth = static_cast<GLsizei>(
+            std::bit_ceil(static_cast<uint32_t>(level_depth)));
+      }
       uint32_t size;
       if (is_compressed_format) {
         GLsizei level_size;
         if (!GetCompressedTexSizeInBytes(
-                function_name, level_width, level_height, level_depth,
-                internal_format, &level_size, error_state_.get())) {
-          // GetCompressedTexSizeInBytes() already generates a GL error.
+                function_name, pessimized_level_width, pessimized_level_height,
+                pessimized_level_depth, internal_format, &level_size,
+                error_state_.get())) {
+          // GetCompressedTexSizeInBytes() already generated a GL error
+          // (e.g. in the case of overflow, GL_INVALID_VALUE).
           return;
         }
         size = static_cast<uint32_t>(level_size);
       } else {
-        if (!GLES2Util::ComputeImageDataSizesES3(level_width,
-                                                 level_height,
-                                                 level_depth,
-                                                 format, type,
-                                                 params,
-                                                 &size,
-                                                 nullptr, nullptr,
-                                                 nullptr, nullptr)) {
+        if (!GLES2Util::ComputeImageDataSizesES3(
+                pessimized_level_width, pessimized_level_height,
+                pessimized_level_depth, format, type, params, &size, nullptr,
+                nullptr, nullptr, nullptr)) {
           LOCAL_SET_GL_ERROR(
               GL_OUT_OF_MEMORY, function_name, "dimensions too large");
           return;

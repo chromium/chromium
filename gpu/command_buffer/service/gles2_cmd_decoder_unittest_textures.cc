@@ -4081,6 +4081,45 @@ TEST_P(GLES3DecoderManualInitTest, ResetTexStorageBaseLevelWorkaround) {
   EXPECT_EQ(error::kNoError, ExecuteCmd(storage_cmd));
 }
 
+TEST_P(GLES3DecoderManualInitTest,
+       RoundUp3DTextureSizeToPOTForLimitWorkaround) {
+  InitState init;
+  init.gl_version = "OpenGL ES 3.0";
+  init.has_alpha = true;
+  init.has_depth = true;
+  init.context_type = CONTEXT_TYPE_OPENGLES3;
+  GpuDriverBugWorkarounds workarounds;
+  workarounds.round_up_3d_texture_size_to_pot_for_limit = true;
+  InitDecoderWithWorkarounds(init, workarounds);
+
+  DoBindTexture(GL_TEXTURE_3D, client_texture_id_, kServiceTextureId);
+
+  // 600 * 600 * 600 * 4 bytes is ~864MB, which fits in uint32_t.
+  // But rounded up to POT (1024 * 1024 * 1024 * 4 bytes = 4GB), it overflows
+  // uint32_t and should generate GL_OUT_OF_MEMORY.
+  cmds::TexStorage3D cmd;
+  cmd.Init(GL_TEXTURE_3D, 1, GL_RGBA8, 600, 600, 600);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_OUT_OF_MEMORY, GetGLError());
+
+  // A size whose POT-rounded dimensions fit in uint32_t should succeed.
+  EXPECT_CALL(*gl_, GenTextures(1, _))
+      .WillOnce(SetArgPointee<1>(kNewServiceId))
+      .RetiresOnSaturation();
+  GenHelper<cmds::GenTexturesImmediate>(kNewClientId);
+  DoBindTexture(GL_TEXTURE_3D, kNewClientId, kNewServiceId);
+  EXPECT_CALL(*gl_, TexStorage3D(GL_TEXTURE_3D, 1, GL_RGBA8, 600, 600, 512))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
+  cmd.Init(GL_TEXTURE_3D, 1, GL_RGBA8, 600, 600, 512);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
+
 TEST_P(GLES3DecoderTest, TexImage3DValidArgs) {
   const GLenum kTarget = GL_TEXTURE_3D;
   const GLint kLevel = 2;

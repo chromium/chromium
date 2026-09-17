@@ -3984,6 +3984,16 @@
       "features": [
         "disable_accelerated_av1_decode"
       ]
+    },
+    {
+      "id": 501,
+      "description": "Older PowerVR drivers mishandle large 3D NPOT sizes in texStorage3D",
+      "cr_bugs": [551673541],
+      "gl_vendor": "Imagination.*",
+      "gl_renderer": "PowerVR.*",
+      "features": [
+        "round_up_3d_texture_size_to_pot_for_limit"
+      ]
     }
   ]
 }
