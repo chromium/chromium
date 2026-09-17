@@ -195,11 +195,6 @@ constexpr const char kPrefManifestPermissions[] = "manifest_permissions";
 constexpr const char kPrefExplicitHosts[] = "explicit_host";
 constexpr const char kPrefScriptableHosts[] = "scriptable_host";
 
-// A preference that indicates when an extension was installed/updated.
-// TODO(anunoy): DEPRECATED! Remove after M113.
-// Use kPrefLastUpdateTime instead.
-constexpr const char kPrefDeprecatedInstallTime[] = "install_time";
-
 // A preference which saves the creation flags for extensions.
 constexpr const char kPrefCreationFlags[] = "creation_flags";
 
@@ -2213,8 +2208,6 @@ ExtensionPrefs::ExtensionPrefs(
 
   InitPrefStore();
 
-  BackfillAndMigrateInstallTimePrefs();
-
   MigrateDeprecatedDisableReasons();
 
   CleanUpCdpInstalledExtensions();
@@ -2544,28 +2537,6 @@ void ExtensionPrefs::FinishExtensionInfoPrefs(
 
   for (auto& observer : observer_list_) {
     observer.OnExtensionRegistered(extension_id, install_time, is_enabled);
-  }
-}
-
-void ExtensionPrefs::BackfillAndMigrateInstallTimePrefs() {
-  // Get information for for all extensions including component extensions
-  // since the install time pref is saved for them too.
-  const InstallRecords extensions_info =
-      GetInstalledExtensionsInfo(/*include_component_extensions=*/true);
-
-  for (const auto& info : extensions_info) {
-    ScopedExtensionPrefUpdate update(prefs_, info.extension_id);
-    auto ext_dict = update.Get();
-    if (ext_dict->HasKey(kPrefDeprecatedInstallTime)) {
-      std::string install_time_string;
-      ext_dict->GetString(kPrefDeprecatedInstallTime, &install_time_string);
-      // Populate the new 'last_update_time' pref.
-      ext_dict->SetString(kPrefLastUpdateTime, install_time_string);
-      // Backfill the 'first_install_time' pref with the existing install time.
-      ext_dict->SetString(kPrefFirstInstallTime, install_time_string);
-      // Remove the deprecated 'install_time' pref.
-      ext_dict->Remove(kPrefDeprecatedInstallTime);
-    }
   }
 }
 

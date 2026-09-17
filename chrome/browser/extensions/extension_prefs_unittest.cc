@@ -660,53 +660,6 @@ class ExtensionPrefsPopulatesInstallTimePrefs : public ExtensionPrefsTest {
 TEST_F(ExtensionPrefsPopulatesInstallTimePrefs,
        ExtensionPrefsPopulatesInstallTimePrefs) {}
 
-class ExtensionPrefsMigratesToLastUpdateTime : public ExtensionPrefsTest {
- public:
-  void Initialize() override {
-    extension_ = prefs_.AddExtension("test1");
-    // Re-create migration scenario by removing the new first_install_time,
-    // last_update_time pref keys and adding back the legacy install_time key.
-    prefs()->UpdateExtensionPref(extension_->id(), kLastUpdateTimePrefKey,
-                                 std::nullopt);
-    prefs()->UpdateExtensionPref(extension_->id(), kFirstInstallTimePrefKey,
-                                 std::nullopt);
-    time_str_ = base::NumberToString(
-        base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    prefs()->SetStringPref(extension_->id(), kOldInstallTimePrefMap, time_str_);
-
-    // Run the migration routine.
-    prefs()->BackfillAndMigrateInstallTimePrefs();
-  }
-
-  void Verify() override {
-    auto* dict = prefs()->GetExtensionPref(extension_->id());
-
-    // Verify the legacy install_time key has been removed and replaced by
-    // the last_update_time key. Also verify that the first_install_time key
-    // has been added and has the same value as the last_update_time key.
-    EXPECT_FALSE(dict->FindString(kOldInstallTimePrefKey));
-    const std::string* first_install_time =
-        dict->FindString(kFirstInstallTimePrefKey);
-    ASSERT_TRUE(first_install_time);
-    EXPECT_EQ(*first_install_time, time_str_);
-    const std::string* last_update_time =
-        dict->FindString(kLastUpdateTimePrefKey);
-    ASSERT_TRUE(last_update_time);
-    EXPECT_EQ(*last_update_time, time_str_);
-  }
-
- private:
-  scoped_refptr<Extension> extension_;
-  std::string time_str_;
-  static constexpr char kFirstInstallTimePrefKey[] = "first_install_time";
-  static constexpr char kLastUpdateTimePrefKey[] = "last_update_time";
-  static constexpr char kOldInstallTimePrefKey[] = "install_time";
-  static constexpr PrefMap kOldInstallTimePrefMap = {
-      kOldInstallTimePrefKey, PrefType::kString, PrefScope::kExtensionSpecific};
-};
-TEST_F(ExtensionPrefsMigratesToLastUpdateTime,
-       ExtensionPrefsMigratesToLastUpdateTime) {}
-
 // Tests that the bit map pref value is cleared if the value matches the default
 // bit.
 class ExtensionPrefsBitMapPrefValueClearedIfEqualsDefaultValue

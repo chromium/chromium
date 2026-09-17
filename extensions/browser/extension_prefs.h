@@ -772,11 +772,6 @@ class ExtensionPrefs : public KeyedService {
   bool NeedsSync(const ExtensionId& extension_id) const;
   void SetNeedsSync(const ExtensionId& extension_id, bool needs_sync);
 
-  // Backfills the first_install_time pref for currently installed extensions
-  // that did not have the pref recorded when they were installed.
-  // TODO(anunoy): Remove this in M113.
-  void BackfillAndMigrateInstallTimePrefs();
-
   // Migrates the disable reasons extension pref for extensions that were
   // disabled due to a deprecated reason.
   // TODO(archanasimha): Remove this around M89.
@@ -846,7 +841,6 @@ class ExtensionPrefs : public KeyedService {
   friend class ExtensionPrefsUninstallExtension;     // Unit test.
   friend class ExtensionPrefsDisableReasonsBitflagToListMigration;  // Unit
                                                                     // test.
-  friend class ExtensionPrefsMigratesToLastUpdateTime;  // Unit test.
   friend class
       ExtensionPrefsBitMapPrefValueClearedIfEqualsDefaultValue;  // Unit test.
 
