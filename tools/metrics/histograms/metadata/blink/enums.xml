@@ -9258,6 +9258,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="452" label="InteractionContentfulPaint"/>
   <int value="453" label="ElementTiming"/>
   <int value="454" label="ContainerTiming"/>
+  <int value="455"
+      label="SameSiteCookieInclusionChangedByCrossSiteRedirectNoInitiator"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

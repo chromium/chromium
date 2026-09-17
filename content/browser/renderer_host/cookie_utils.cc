@@ -30,6 +30,7 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -285,6 +286,7 @@ void EmitCookieWarningsAndMetrics(
   bool lax_allow_unsafe_cookies = false;
 
   bool samesite_cookie_inclusion_changed_by_cross_site_redirect = false;
+  bool samesite_cookie_inclusion_changed_by_redirect_no_initiator = false;
 
   bool partitioned_cookies_exist = false;
   bool valid_partitioned_cookies_for_ukm_exist = false;
@@ -350,6 +352,13 @@ void EmitCookieWarningsAndMetrics(
           status.HasWarningReason(
               net::CookieInclusionStatus::WarningReason::
                   WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION);
+      if (samesite_cookie_inclusion_changed_by_cross_site_redirect) {
+        samesite_cookie_inclusion_changed_by_redirect_no_initiator =
+            samesite_cookie_inclusion_changed_by_redirect_no_initiator ||
+            status.HasWarningReason(
+                net::CookieInclusionStatus::WarningReason::
+                    WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION_NO_INITIATOR);
+      }
     }
 
     cookie_has_domain_non_ascii =
@@ -457,6 +466,12 @@ void EmitCookieWarningsAndMetrics(
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::
                  kSameSiteCookieInclusionChangedByCrossSiteRedirect);
+    if (samesite_cookie_inclusion_changed_by_redirect_no_initiator) {
+      GetContentClient()->browser()->LogWebDXFeatureForCurrentPage(
+          rfh,
+          blink::mojom::WebDXFeature::
+              kSameSiteCookieInclusionChangedByCrossSiteRedirectNoInitiator);
+    }
   }
 
   if (partitioned_cookies_exist) {

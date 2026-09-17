@@ -121,6 +121,11 @@ class NET_EXPORT CookieOptions {
       ContextDowngradeType cross_site_redirect_downgrade =
           ContextDowngradeType::kNoDowngrade;
 
+      // Records if the initiator for this particular request is null. We want
+      // to separately measure when a context downgrade due to cross-site
+      // redirect specifically impacts pages with null initiator.
+      bool has_null_initiator = false;
+
       ContextRedirectTypeBug1221316 redirect_type_bug_1221316 =
           ContextRedirectTypeBug1221316::kUnset;
     };

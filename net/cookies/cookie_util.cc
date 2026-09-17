@@ -221,6 +221,8 @@ ComputeSameSiteContextResult ComputeSameSiteContext(
       !initiator ||
       SiteForCookies::FromOrigin(initiator.value())
           .IsFirstPartyWithSchemefulMode(request_url, compute_schemefully);
+  // Record when the request had a null initiator.
+  result.metadata.has_null_initiator = !initiator;
 
   // Check that the URLs in the redirect chain are all same-site with the
   // site_for_cookies and hence (by transitivity) same-site with the request
@@ -1021,6 +1023,7 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForResponse(
       CookieOptions::SameSiteCookieContext::ContextMetadata& result_metadata =
           compute_schemefully ? result.schemeful_metadata() : result.metadata();
 
+      result_metadata.has_null_initiator = !initiator;
       result_metadata.redirect_type_bug_1221316 =
           ComputeContextRedirectTypeBug1221316(
               url_chain.size() == 1u, same_site_initiator,
