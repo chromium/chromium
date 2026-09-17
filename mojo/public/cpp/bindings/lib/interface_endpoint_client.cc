@@ -869,12 +869,19 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
         const auto method_info = method_info_callback_(*message);
         if (method_info) {
           info->set_ipc_hash((*method_info)());
-          const auto method_address = reinterpret_cast<uintptr_t>(method_info);
-          const std::optional<size_t> location_iid =
-              base::trace_event::InternedUnsymbolizedSourceLocation::Get(
-                  &ctx, method_address);
-          if (location_iid) {
-            info->set_mojo_interface_method_iid(*location_iid);
+          // Interning unsymbolized source locations incurs ModuleCache lookup
+          // overhead which can skew toplevel traces during process startup
+          // (crbug.com/561471278). Only emit when "mojom" is explicitly
+          // enabled.
+          if (TRACE_EVENT_CATEGORY_ENABLED("mojom")) {
+            const auto method_address =
+                reinterpret_cast<uintptr_t>(method_info);
+            const std::optional<size_t> location_iid =
+                base::trace_event::InternedUnsymbolizedSourceLocation::Get(
+                    &ctx, method_address);
+            if (location_iid) {
+              info->set_mojo_interface_method_iid(*location_iid);
+            }
           }
         }
 
