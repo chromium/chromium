@@ -17,6 +17,22 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Coordinates the bottom sheet UI lifecycle, state transitions, and event notifications. */
 @NullMarked
 class BottomSheetMediator {
+    /** Duration for transition to {@link SheetState#FULL}. */
+    static final int ANIMATION_DURATION_EXPAND_MS = 350;
+
+    /** Duration for transition from {@link SheetState#FULL}. */
+    static final int ANIMATION_DURATION_SHRINK_MS = 250;
+
+    /**
+     * The fraction of the way to the next state the sheet must be swiped to animate there when
+     * released. This is the value used when there are 3 active states. A smaller value here means a
+     * smaller swipe is needed to move the sheet around.
+     */
+    static final float THRESHOLD_TO_NEXT_STATE_3 = 0.4f;
+
+    /** This is similar to {@link #THRESHOLD_TO_NEXT_STATE_3} but for 2 states instead of 3. */
+    static final float THRESHOLD_TO_NEXT_STATE_2 = 0.3f;
+
     private static final GlowSpec DEFAULT_GLOW_SPEC = new GlowSpec(0, GlowSpec.ShadowSize.DEFAULT);
 
     private final PropertyModel mModel;
@@ -307,5 +323,261 @@ class BottomSheetMediator {
 
     ObserverList<BottomSheetObserver> getObserversForTesting() {
         return mObservers;
+    }
+
+    /**
+     * Finds the target state for the sheet based on the current state, offset, and velocity.
+     *
+     * @param sheetHeight The current sheet height in flux.
+     * @param yVelocity The vertical velocity of the sheet in flux.
+     * @param isHalfStateEnabled Whether the HALF state is enabled.
+     * @param isPeekStateEnabled Whether the PEEK state is enabled.
+     * @param swipeToDismissEnabled Whether swipe to dismiss is enabled.
+     * @param peekHeight The height of the PEEK state in pixels.
+     * @param halfHeight The height of the HALF state in pixels.
+     * @param fullHeight The height of the FULL state in pixels.
+     * @return The target {@link SheetState}.
+     */
+    @SheetState
+    int getTargetSheetState(
+            float sheetHeight,
+            float yVelocity,
+            boolean isHalfStateEnabled,
+            boolean isPeekStateEnabled,
+            boolean swipeToDismissEnabled,
+            float peekHeight,
+            float halfHeight,
+            float fullHeight) {
+        @SheetState
+        int minSwipableState =
+                (swipeToDismissEnabled || !isPeekStateEnabled)
+                        ? SheetState.HIDDEN
+                        : SheetState.PEEK;
+        float minOffset = minSwipableState == SheetState.HIDDEN ? 0f : peekHeight;
+        float maxOffset = fullHeight;
+
+        if (sheetHeight <= minOffset) return minSwipableState;
+        if (sheetHeight >= maxOffset) return SheetState.FULL;
+
+        boolean isMovingDownward = yVelocity < 0;
+
+        // If velocity shouldn't affect dismissing the sheet, reverse effect on the sheet height.
+        if (isMovingDownward && !swipeToDismissEnabled) sheetHeight -= yVelocity;
+
+        // Find the two states that the sheet height is between.
+        @SheetState int prevState = mScrollingStartState;
+        @SheetState
+        int nextState =
+                isMovingDownward
+                        ? getLargestCollapsingState(
+                                isMovingDownward,
+                                sheetHeight,
+                                isHalfStateEnabled,
+                                isPeekStateEnabled,
+                                minSwipableState,
+                                peekHeight,
+                                halfHeight,
+                                fullHeight)
+                        : getSmallestExpandingState(
+                                isMovingDownward,
+                                sheetHeight,
+                                isHalfStateEnabled,
+                                isPeekStateEnabled,
+                                minSwipableState,
+                                peekHeight,
+                                halfHeight,
+                                fullHeight);
+
+        // Go into the next state only if the threshold for minimal change has been cleared.
+        return hasCrossedThresholdToNextState(
+                        prevState,
+                        nextState,
+                        sheetHeight,
+                        isMovingDownward,
+                        peekHeight,
+                        halfHeight,
+                        fullHeight)
+                ? nextState
+                : prevState;
+    }
+
+    /**
+     * Returns whether the sheet was scrolled far enough to transition into the next state.
+     *
+     * @param prev The state before the scrolling transition happened.
+     * @param next The state before the scrolling transitions into.
+     * @param sheetHeight The current sheet height in flux.
+     * @param sheetMovesDown True if the sheet moves down.
+     * @param peekHeight The height of the PEEK state in pixels.
+     * @param halfHeight The height of the HALF state in pixels.
+     * @param fullHeight The height of the FULL state in pixels.
+     * @return True, iff the sheet was scrolled far enough to transition from |prev| to |next|.
+     */
+    boolean hasCrossedThresholdToNextState(
+            @SheetState int prev,
+            @SheetState int next,
+            float sheetHeight,
+            boolean sheetMovesDown,
+            float peekHeight,
+            float halfHeight,
+            float fullHeight) {
+        if (next == prev) return false;
+        // Moving from an internal/temporary state always works:
+        if (prev == SheetState.NONE || prev == SheetState.SCROLLING) return true;
+        float lowerBound = getHeightForState(prev, peekHeight, halfHeight, fullHeight);
+        float distance = getHeightForState(next, peekHeight, halfHeight, fullHeight) - lowerBound;
+        if (distance == 0) return true;
+        return Math.abs((sheetHeight - lowerBound) / distance)
+                > getThresholdToNextState(prev, next, sheetMovesDown);
+    }
+
+    /**
+     * The threshold to enter a state depends on whether a transition skips the half state. The more
+     * states to cross, the smaller the (percentual) threshold. A small threshold is used iff:
+     *
+     * <ul>
+     *   <li>It doesn't move into the HALF state,
+     *   <li>Skipping the HALF state is allowed, and
+     *   <li>The distance is large enough to skip the HALF state
+     * </ul>
+     *
+     * @param prev The state before the scrolling transition happened.
+     * @param next The state before the scrolling transitions into.
+     * @param sheetMovesDown True if the sheet moves down.
+     * @return a threshold (as percentage of the scroll distance covered).
+     */
+    float getThresholdToNextState(
+            @SheetState int prev, @SheetState int next, boolean sheetMovesDown) {
+        if (next == SheetState.HALF) return THRESHOLD_TO_NEXT_STATE_3;
+        boolean crossesHalf =
+                (sheetMovesDown && prev > SheetState.HALF && next < SheetState.HALF)
+                        || (!sheetMovesDown && prev < SheetState.HALF && next > SheetState.HALF);
+        if (!crossesHalf) return THRESHOLD_TO_NEXT_STATE_3;
+        if (!shouldSkipHalfStateOnScrollingDown()) return THRESHOLD_TO_NEXT_STATE_3;
+        return THRESHOLD_TO_NEXT_STATE_2;
+    }
+
+    /**
+     * @return Whether the half state should be skipped when moving the sheet down.
+     */
+    boolean shouldSkipHalfStateOnScrollingDown() {
+        return mSheetContent == null || mSheetContent.skipHalfStateOnScrollingDown();
+    }
+
+    private float getHeightForState(
+            @SheetState int state, float peekHeight, float halfHeight, float fullHeight) {
+        switch (state) {
+            case SheetState.PEEK:
+                return peekHeight;
+            case SheetState.HALF:
+                return halfHeight;
+            case SheetState.FULL:
+                return fullHeight;
+            case SheetState.HIDDEN:
+            case SheetState.NONE:
+            case SheetState.SCROLLING:
+            default:
+                return 0f;
+        }
+    }
+
+    /**
+     * Returns the largest, acceptable state whose height is smaller than the given sheet height.
+     * E.g. if a sheet is between FULL and HALF, collapsing states are PEEK and HALF. Although HALF
+     * is closer to the sheet's height, it might have to be skipped. Then, PEEK is returned instead.
+     *
+     * @param sheetMovesDown If the sheet moves down, some smaller states might be skipped.
+     * @param sheetHeight The current sheet height in flux.
+     * @param isHalfStateEnabled Whether the HALF state is enabled.
+     * @param isPeekStateEnabled Whether the PEEK state is enabled.
+     * @param minSwipableState The minimum swipable sheet state.
+     * @param peekHeight The height of the PEEK state in pixels.
+     * @param halfHeight The height of the HALF state in pixels.
+     * @param fullHeight The height of the FULL state in pixels.
+     * @return The largest, acceptable, collapsing state.
+     */
+    private @SheetState int getLargestCollapsingState(
+            boolean sheetMovesDown,
+            float sheetHeight,
+            boolean isHalfStateEnabled,
+            boolean isPeekStateEnabled,
+            @SheetState int minSwipableState,
+            float peekHeight,
+            float halfHeight,
+            float fullHeight) {
+        @SheetState int largestCollapsingState = minSwipableState;
+        boolean skipHalfState = !isHalfStateEnabled || shouldSkipHalfStateOnScrollingDown();
+        for (@SheetState int i = largestCollapsingState + 1; i < SheetState.FULL; i++) {
+            if (i == SheetState.PEEK && !isPeekStateEnabled) continue;
+            if (i == SheetState.HALF && skipHalfState) continue;
+
+            float h = getHeightForState(i, peekHeight, halfHeight, fullHeight);
+            if (sheetHeight > h || (sheetHeight == h && !sheetMovesDown)) {
+                largestCollapsingState = i;
+            }
+        }
+        return largestCollapsingState;
+    }
+
+    /**
+     * Returns the smallest, acceptable state whose height is larger than the given sheet height.
+     * E.g. if the sheet is between PEEK and HALF, expanding states are HALF and FULL. Although HALF
+     * is closer to the sheet's height, it might not be enabled. Then, FULL is returned instead.
+     *
+     * @param sheetMovesDown If the sheet moves down, some collapsing states might be skipped. This
+     *     affects the smallest possible expanding state as well.
+     * @param sheetHeight The current sheet height in flux.
+     * @param isHalfStateEnabled Whether the HALF state is enabled.
+     * @param isPeekStateEnabled Whether the PEEK state is enabled.
+     * @param minSwipableState The minimum swipable sheet state.
+     * @param peekHeight The height of the PEEK state in pixels.
+     * @param halfHeight The height of the HALF state in pixels.
+     * @param fullHeight The height of the FULL state in pixels.
+     * @return The smallest, acceptable, expanding state.
+     */
+    private @SheetState int getSmallestExpandingState(
+            boolean sheetMovesDown,
+            float sheetHeight,
+            boolean isHalfStateEnabled,
+            boolean isPeekStateEnabled,
+            @SheetState int minSwipableState,
+            float peekHeight,
+            float halfHeight,
+            float fullHeight) {
+        @SheetState
+        int largestCollapsingState =
+                getLargestCollapsingState(
+                        sheetMovesDown,
+                        sheetHeight,
+                        isHalfStateEnabled,
+                        isPeekStateEnabled,
+                        minSwipableState,
+                        peekHeight,
+                        halfHeight,
+                        fullHeight);
+        @SheetState int smallestExpandingState = SheetState.FULL;
+        for (@SheetState int i = smallestExpandingState - 1; i > largestCollapsingState; i--) {
+            if (i == SheetState.HALF && !isHalfStateEnabled) continue;
+            if (i == SheetState.PEEK && !isPeekStateEnabled) continue;
+
+            float h = getHeightForState(i, peekHeight, halfHeight, fullHeight);
+            if (sheetHeight <= h) {
+                smallestExpandingState = i;
+            }
+        }
+
+        return smallestExpandingState;
+    }
+
+    /**
+     * Gets the duration for settling the sheet in milliseconds.
+     *
+     * @param targetState The {@link SheetState} to settle into.
+     * @return The settle duration in milliseconds.
+     */
+    long getSettleDuration(@SheetState int targetState) {
+        return targetState == SheetState.FULL
+                ? ANIMATION_DURATION_EXPAND_MS
+                : ANIMATION_DURATION_SHRINK_MS;
     }
 }

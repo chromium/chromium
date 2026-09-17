@@ -266,4 +266,233 @@ public class BottomSheetMediatorUnitTest {
         mMediator.onSheetOpened(StateChangeReason.SWIPE);
         verify(mObserver, never()).onSheetOpened(anyInt());
     }
+
+    @Test
+    public void testGetTargetSheetState_Expanding() {
+        float peek = 60f;
+        float half = 500f;
+        float full = 1000f;
+
+        mMediator.setScrollingStartState(SheetState.PEEK);
+
+        // Sheet height at 300 (between peek 60 and half 500) crosses the threshold ((500-60)*0.4 =
+        // 176 -> 60+176 = 236).
+        int target =
+                mMediator.getTargetSheetState(
+                        /* sheetHeight= */ 300f,
+                        /* yVelocity= */ 0f,
+                        /* isHalfStateEnabled= */ true,
+                        /* isPeekStateEnabled= */ true,
+                        /* swipeToDismissEnabled= */ true,
+                        peek,
+                        half,
+                        full);
+        assertEquals(SheetState.HALF, target);
+
+        // Sheet height at 200 has not crossed threshold -> returns prevState PEEK.
+        target =
+                mMediator.getTargetSheetState(
+                        /* sheetHeight= */ 200f,
+                        /* yVelocity= */ 0f,
+                        /* isHalfStateEnabled= */ true,
+                        /* isPeekStateEnabled= */ true,
+                        /* swipeToDismissEnabled= */ true,
+                        peek,
+                        half,
+                        full);
+        assertEquals(SheetState.PEEK, target);
+
+        // Half state disabled: moves from PEEK to FULL if threshold crossed.
+        target =
+                mMediator.getTargetSheetState(
+                        /* sheetHeight= */ 600f,
+                        /* yVelocity= */ 0f,
+                        /* isHalfStateEnabled= */ false,
+                        /* isPeekStateEnabled= */ true,
+                        /* swipeToDismissEnabled= */ true,
+                        peek,
+                        half,
+                        full);
+        assertEquals(SheetState.FULL, target);
+    }
+
+    @Test
+    public void testGetTargetSheetState_Collapsing() {
+        float peek = 60f;
+        float half = 500f;
+        float full = 1000f;
+
+        mMediator.setScrollingStartState(SheetState.HALF);
+
+        // Moving downward from HALF to PEEK (distance 440, threshold 176 -> height < 500 - 176 =
+        // 324).
+        int target =
+                mMediator.getTargetSheetState(
+                        /* sheetHeight= */ 200f,
+                        /* yVelocity= */ -100f,
+                        /* isHalfStateEnabled= */ true,
+                        /* isPeekStateEnabled= */ true,
+                        /* swipeToDismissEnabled= */ true,
+                        peek,
+                        half,
+                        full);
+        assertEquals(SheetState.PEEK, target);
+
+        // Sheet height at 400 has not crossed threshold -> returns prevState HALF.
+        target =
+                mMediator.getTargetSheetState(
+                        /* sheetHeight= */ 400f,
+                        /* yVelocity= */ -100f,
+                        /* isHalfStateEnabled= */ true,
+                        /* isPeekStateEnabled= */ true,
+                        /* swipeToDismissEnabled= */ true,
+                        peek,
+                        half,
+                        full);
+        assertEquals(SheetState.HALF, target);
+
+        // Sheet height below minOffset -> minSwipableState (HIDDEN if swipeToDismissEnabled).
+        target =
+                mMediator.getTargetSheetState(
+                        /* sheetHeight= */ 0f,
+                        /* yVelocity= */ -100f,
+                        /* isHalfStateEnabled= */ true,
+                        /* isPeekStateEnabled= */ true,
+                        /* swipeToDismissEnabled= */ true,
+                        peek,
+                        half,
+                        full);
+        assertEquals(SheetState.HIDDEN, target);
+
+        // Sheet height at or above full height -> FULL.
+        target =
+                mMediator.getTargetSheetState(
+                        /* sheetHeight= */ 1000f,
+                        /* yVelocity= */ 0f,
+                        /* isHalfStateEnabled= */ true,
+                        /* isPeekStateEnabled= */ true,
+                        /* swipeToDismissEnabled= */ true,
+                        peek,
+                        half,
+                        full);
+        assertEquals(SheetState.FULL, target);
+    }
+
+    @Test
+    public void testHasCrossedThresholdToNextState() {
+        float peek = 60f;
+        float half = 500f;
+        float full = 1000f;
+
+        // Same state returns false.
+        assertFalse(
+                mMediator.hasCrossedThresholdToNextState(
+                        SheetState.PEEK, SheetState.PEEK, 60f, false, peek, half, full));
+
+        // Moving from NONE or SCROLLING always returns true.
+        assertTrue(
+                mMediator.hasCrossedThresholdToNextState(
+                        SheetState.NONE, SheetState.HALF, 200f, false, peek, half, full));
+        assertTrue(
+                mMediator.hasCrossedThresholdToNextState(
+                        SheetState.SCROLLING, SheetState.HALF, 200f, false, peek, half, full));
+
+        // PEEK (60) to HALF (500), distance 440, threshold 40% = 176 -> threshold offset 236.
+        assertFalse(
+                mMediator.hasCrossedThresholdToNextState(
+                        SheetState.PEEK, SheetState.HALF, 200f, false, peek, half, full));
+        assertTrue(
+                mMediator.hasCrossedThresholdToNextState(
+                        SheetState.PEEK, SheetState.HALF, 300f, false, peek, half, full));
+
+        // HALF (500) to PEEK (60), distance -440, threshold 40% = 176 -> threshold offset 324.
+        assertFalse(
+                mMediator.hasCrossedThresholdToNextState(
+                        SheetState.HALF, SheetState.PEEK, 400f, true, peek, half, full));
+        assertTrue(
+                mMediator.hasCrossedThresholdToNextState(
+                        SheetState.HALF, SheetState.PEEK, 200f, true, peek, half, full));
+    }
+
+    @Test
+    public void testGetThresholdToNextState() {
+        // Target state HALF always uses 3-state threshold.
+        assertEquals(
+                BottomSheetMediator.THRESHOLD_TO_NEXT_STATE_3,
+                mMediator.getThresholdToNextState(SheetState.PEEK, SheetState.HALF, false),
+                0.001f);
+
+        // Crossing HALF when skipHalfState is true uses 2-state threshold.
+        assertEquals(
+                BottomSheetMediator.THRESHOLD_TO_NEXT_STATE_2,
+                mMediator.getThresholdToNextState(SheetState.FULL, SheetState.PEEK, true),
+                0.001f);
+
+        // Crossing HALF when skipHalfState is false uses 3-state threshold.
+        when(mContent.skipHalfStateOnScrollingDown()).thenReturn(false);
+        mMediator.setSheetContent(mContent);
+        assertEquals(
+                BottomSheetMediator.THRESHOLD_TO_NEXT_STATE_3,
+                mMediator.getThresholdToNextState(SheetState.FULL, SheetState.PEEK, true),
+                0.001f);
+    }
+
+    @Test
+    public void testGetSettleDuration() {
+        assertEquals(
+                BottomSheetMediator.ANIMATION_DURATION_EXPAND_MS,
+                mMediator.getSettleDuration(SheetState.FULL));
+        assertEquals(
+                BottomSheetMediator.ANIMATION_DURATION_SHRINK_MS,
+                mMediator.getSettleDuration(SheetState.HALF));
+        assertEquals(
+                BottomSheetMediator.ANIMATION_DURATION_SHRINK_MS,
+                mMediator.getSettleDuration(SheetState.PEEK));
+        assertEquals(
+                BottomSheetMediator.ANIMATION_DURATION_SHRINK_MS,
+                mMediator.getSettleDuration(SheetState.HIDDEN));
+    }
+
+    @Test
+    public void testScrollingStartState() {
+        assertEquals(SheetState.NONE, mMediator.getScrollingStartState());
+
+        mMediator.setScrollingStartState(SheetState.PEEK);
+        assertEquals(SheetState.PEEK, mMediator.getScrollingStartState());
+
+        // Transitioning to a non-scrolling state resets mScrollingStartState to SheetState.NONE.
+        mMediator.setInternalCurrentState(SheetState.HALF);
+        assertEquals(SheetState.NONE, mMediator.getScrollingStartState());
+
+        // Transitioning to SheetState.SCROLLING preserves the previous state (HALF) as
+        // mScrollingStartState.
+        mMediator.setInternalCurrentState(SheetState.SCROLLING);
+        assertEquals(SheetState.HALF, mMediator.getScrollingStartState());
+
+        // Transitioning to another non-scrolling state resets mScrollingStartState to
+        // SheetState.NONE.
+        mMediator.setInternalCurrentState(SheetState.FULL);
+        assertEquals(SheetState.NONE, mMediator.getScrollingStartState());
+
+        // setSheetStateForTesting updates current state without overwriting mScrollingStartState.
+        mMediator.setScrollingStartState(SheetState.HALF);
+        mMediator.setSheetStateForTesting(SheetState.SCROLLING);
+        assertEquals(SheetState.SCROLLING, mMediator.getSheetState());
+        assertEquals(SheetState.HALF, mMediator.getScrollingStartState());
+    }
+
+    @Test
+    public void testShouldSkipHalfStateOnScrollingDown() {
+        // When content is null, skip half state returns true.
+        assertTrue(mMediator.shouldSkipHalfStateOnScrollingDown());
+
+        // When content specifies skipHalfStateOnScrollingDown is false.
+        when(mContent.skipHalfStateOnScrollingDown()).thenReturn(false);
+        mMediator.setSheetContent(mContent);
+        assertFalse(mMediator.shouldSkipHalfStateOnScrollingDown());
+
+        // When content specifies skipHalfStateOnScrollingDown is true.
+        when(mContent.skipHalfStateOnScrollingDown()).thenReturn(true);
+        assertTrue(mMediator.shouldSkipHalfStateOnScrollingDown());
+    }
 }
