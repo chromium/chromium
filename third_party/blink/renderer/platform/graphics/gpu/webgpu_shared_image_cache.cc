@@ -189,6 +189,7 @@ std::optional<gpu::SyncToken> WebGpuSharedImageLease::CopyToBackingSharedImage(
                           copy_rect.y(), copy_rect.width(), copy_rect.height());
   gpu::SyncToken completion_sync_token =
       gpu::RasterScopedAccess::EndAccess(std::move(src_access));
+  shared_image->UpdateDestructionSyncToken(completion_sync_token);
   auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(dst_access));
   resource_.sync_token_ = sync_token;
   resource_.shared_image_->UpdateDestructionSyncToken(sync_token);
