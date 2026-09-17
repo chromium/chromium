@@ -27,7 +27,7 @@ struct ConfigureShortcutsWidgetEntry: TimelineEntry {
   let isExpired: Bool
   // Expiration date of the widget if it hasn't expired.
   let expirationDate: Date?
-  // Account avatar (to be used when multiprofile flag is enabled).
+  // Account avatar.
   let avatar: Image?
   let gaiaID: String?
   let email: String?

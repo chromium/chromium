@@ -49,9 +49,6 @@ struct AccountDetail: AppEntity {
       localized: "IDS_IOS_WIDGET_KIT_EXTENSION_DEFAULT_ACCOUNT_LABEL")
     accountsDetail.append(AccountDetail(id: "Default", email: defaultAccountName))
 
-    // Only add the Default account to the list of accounts if multi-profile flag is not enabled.
-    if !MultiprofileEnabled() { return accountsDetail }
-
     let noAccountName = String(
       localized: "IDS_IOS_WIDGET_KIT_EXTENSION_NO_ACCOUNT_LABEL")
     accountsDetail.append(AccountDetail(id: "No account", email: noAccountName))
@@ -62,23 +59,6 @@ struct AccountDetail: AppEntity {
       }
     }
     return accountsDetail
-  }
-
-  static func MultiprofileEnabled() -> Bool {
-    guard let appGroup = AppGroupHelper.groupUserDefaults() else { return false }
-
-    guard let extensionsPrefs = appGroup.object(forKey: "Extension.FieldTrial") as? NSDictionary
-    else { return false }
-
-    guard
-      let shortcutsWidgetPrefs = extensionsPrefs.object(forKey: "MultiprofileKey")
-        as? NSDictionary
-    else { return false }
-    guard
-      let shortcutsWidgetEnabled = shortcutsWidgetPrefs.object(forKey: "FieldTrialValue")
-        as? NSNumber
-    else { return false }
-    return shortcutsWidgetEnabled == 1
   }
 }
 
