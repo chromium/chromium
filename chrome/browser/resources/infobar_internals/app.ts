@@ -24,6 +24,9 @@ import {getHtml} from './app.html.js';
 import {browserProxyFactory} from './infobar_internals.mojom-webui.js';
 import type {InfoBarEntry, InfoBarType} from './infobar_internals.mojom-webui.js';
 
+// Persists the dropdown selection across reloads.
+const SELECTION_STORAGE_KEY = 'infobar-internals-selected';
+
 export interface InfobarInternalsAppElement {
   $: {
     dropdownButton: CrButtonElement,
@@ -62,7 +65,10 @@ export class InfobarInternalsAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
     browserProxyFactory.getInstance().handler.getInfoBars().then(
-        ({infobars}) => this.infobars = infobars);
+        ({infobars}) => {
+          this.infobars = infobars;
+          this.restoreSelection();
+        });
   }
 
   protected onDropdownClick() {
@@ -89,10 +95,12 @@ export class InfobarInternalsAppElement extends CrLitElement {
     this.selectedTypes = checkbox.checked ?
         [...this.selectedTypes, type] :
         this.selectedTypes.filter(selected => selected !== type);
+    this.saveSelection();
   }
 
   protected onClearSelectionClick() {
     this.selectedTypes = [];
+    this.saveSelection();
   }
 
   protected isSelected(type: InfoBarType): boolean {
@@ -123,6 +131,7 @@ export class InfobarInternalsAppElement extends CrLitElement {
       }
       this.selectedTypes = Array.from(newTypes);
     }
+    this.saveSelection();
   }
 
   protected getFilteredInfobars(): InfoBarEntry[] {
@@ -144,6 +153,34 @@ export class InfobarInternalsAppElement extends CrLitElement {
       return 'Select infobars';
     }
     return `${count} ${count === 1 ? 'infobar' : 'infobars'} selected`;
+  }
+
+  private saveSelection() {
+    const names = this.getSelectedInfobars().map(infobar => infobar.name);
+    window.localStorage.setItem(SELECTION_STORAGE_KEY, JSON.stringify(names));
+  }
+
+  private restoreSelection() {
+    const stored = window.localStorage.getItem(SELECTION_STORAGE_KEY);
+    if (!stored) {
+      return;
+    }
+
+    let names: string[];
+    try {
+      names = JSON.parse(stored);
+    } catch {
+      return;
+    }
+    if (!Array.isArray(names)) {
+      return;
+    }
+
+    // Drop anything no longer offered.
+    const saved = new Set(names);
+    this.selectedTypes =
+        this.infobars.filter(infobar => saved.has(infobar.name))
+            .map(infobar => infobar.type);
   }
 
   protected async onTriggerClick(e: Event) {
