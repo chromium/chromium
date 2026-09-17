@@ -42,7 +42,8 @@ function waitForAllTabs(callback) {
       let ready = true;
       for (const i in windows) {
         for (const j in windows[i].tabs) {
-          if (windows[i].tabs[j].status !== 'complete') {
+          if (windows[i].tabs[j].status !== 'complete' ||
+              windows[i].tabs[j].pendingUrl) {
             ready = false;
             break;
           }

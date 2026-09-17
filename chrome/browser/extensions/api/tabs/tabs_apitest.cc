@@ -52,11 +52,20 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/feature_engagement/public/feature_constants.h"
+#endif
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ExtensionApiTabTest : public extensions::ExtensionApiTest {
  public:
-  ExtensionApiTabTest() = default;
+  ExtensionApiTabTest() {
+#if BUILDFLAG(IS_ANDROID)
+    feature_list_.InitAndDisableFeature(
+        feature_engagement::kIPHAndroidVerticalTabsPromoFeature);
+#endif
+  }
   ~ExtensionApiTabTest() override = default;
   ExtensionApiTabTest(const ExtensionApiTabTest&) = delete;
   ExtensionApiTabTest& operator=(const ExtensionApiTabTest&) = delete;
@@ -66,6 +75,11 @@ class ExtensionApiTabTest : public extensions::ExtensionApiTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
+
+ private:
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList feature_list_;
+#endif
 };
 
 class ExtensionApiTabBackForwardCacheTest : public ExtensionApiTabTest {
