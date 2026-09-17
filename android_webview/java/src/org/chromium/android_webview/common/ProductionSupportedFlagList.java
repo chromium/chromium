@@ -566,6 +566,9 @@ public final class ProductionSupportedFlagList {
                 "Enables usage of the display topology API to obtain information about all"
                         + " displays."),
         Flag.baseFeature(
+                UiAndroidFeatures.AVOID_PER_CONTEXT_COLOR_PROVIDERS,
+                "Avoids per-context ColorProviders for contexts without dynamic color support."),
+        Flag.baseFeature(
                 UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION,
                 "Deprecates old external file picker function."),
         Flag.baseFeature("ThreadGroupSemaphore"),

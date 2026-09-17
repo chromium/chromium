@@ -173,6 +173,11 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid,
 
   static std::unique_ptr<ScopedWindowAndroidForTesting> CreateForTesting();
 
+  // Allows unit tests to simulate whether a ColorProviderBridge exists without
+  // registering real Java bridge singletons.
+  ColorProviderKey GetColorProviderKeyForTesting(
+      bool has_color_provider_bridge) const;
+
   // This should return the same Display as Screen::GetDisplayNearestWindow
   // except the color space depends on the status of this particular window
   // rather than the display itself.
@@ -220,6 +225,9 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid,
 
   // ViewAndroid overrides.
   WindowAndroid* GetWindowAndroid() const override;
+
+  ColorProviderKey GetColorProviderKeyImpl(
+      bool has_color_provider_bridge) const;
 
   // The ID of the display that this window belongs to.
   int display_id() const { return display_id_; }

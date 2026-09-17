@@ -10,12 +10,15 @@
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/event_forwarder.h"
 #include "ui/android/test_view_android_delegate.h"
+#include "ui/android/ui_android_features.h"
 #include "ui/android/view_android.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
+#include "ui/color/android/color_provider_bridge.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/events/android/event_handler_android.h"
 #include "ui/events/android/motion_event_android_factory.h"
@@ -575,6 +578,38 @@ TEST(ViewAndroidTest, WindowAndroidColorProviderSource) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> context = key.context.get(env);
   EXPECT_FALSE(context.is_null());
+}
+
+TEST(ViewAndroidTest,
+     WindowAndroidColorProviderKeyIsContextAgnosticWithoutBridge) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kAvoidPerContextColorProviders);
+
+  // No ColorProviderBridge is registered in unit tests, so the key should not
+  // be scoped to the Context.
+  ASSERT_FALSE(ColorProviderBridge::HasInstance());
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  ui::ColorProviderKey key = window->get()->GetColorProviderKey();
+
+  EXPECT_EQ(key.context_hash, 0);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  EXPECT_TRUE(key.context.get(env).is_null());
+}
+
+TEST(ViewAndroidTest, WindowAndroidColorProviderKeyKeepsContextWithBridge) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kAvoidPerContextColorProviders);
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  ui::ColorProviderKey key = window->get()->GetColorProviderKeyForTesting(
+      /*has_color_provider_bridge=*/true);
+
+  EXPECT_NE(key.context_hash, 0);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  EXPECT_FALSE(key.context.get(env).is_null());
 }
 
 }  // namespace ui

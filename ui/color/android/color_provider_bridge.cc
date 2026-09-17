@@ -33,6 +33,12 @@ std::optional<SkColor> JavaColorToOptionalSkColor(int64_t java_color) {
 }  // namespace
 
 // static
+bool ColorProviderBridge::HasInstance() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_ColorProviderBridgeFactory_hasInstance(env);
+}
+
+// static
 std::vector<std::optional<SkColor>> ColorProviderBridge::GetThemeColors(
     const base::android::JavaRef<jobject>& context) {
   JNIEnv* env = base::android::AttachCurrentThread();

@@ -114,6 +114,10 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
 // width.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kUpdatePaddingForDisplayCalculation);
 
+// Avoids allocating unique ColorProviders per Activity context in Android
+// embedders that do not supply a ColorProviderBridge.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAvoidPerContextColorProviders);
+
 }  // namespace ui
 
 #endif  // UI_ANDROID_UI_ANDROID_FEATURES_H_

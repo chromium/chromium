@@ -12,16 +12,19 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/android/display_android_manager.h"
+#include "ui/android/ui_android_features.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android_compositor.h"
 #include "ui/android/window_android_observer.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/android/color_provider_bridge.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_utils.h"
@@ -454,7 +457,23 @@ ui::RendererColorMap WindowAndroid::GetRendererColorMap(
 }
 
 ui::ColorProviderKey WindowAndroid::GetColorProviderKey() const {
+  return GetColorProviderKeyImpl(ColorProviderBridge::HasInstance());
+}
+
+ui::ColorProviderKey WindowAndroid::GetColorProviderKeyForTesting(
+    bool has_color_provider_bridge) const {
+  return GetColorProviderKeyImpl(has_color_provider_bridge);
+}
+
+ui::ColorProviderKey WindowAndroid::GetColorProviderKeyImpl(
+    bool has_color_provider_bridge) const {
   auto key = ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr);
+  // Keying ColorProviders by Context is only useful when Java can actually
+  // resolve per-Context theme colors.
+  if (base::FeatureList::IsEnabled(kAvoidPerContextColorProviders) &&
+      !has_color_provider_bridge) {
+    return key;
+  }
   key.context_hash = GetContextHash();
   JNIEnv* env = AttachCurrentThread();
   key.context = JavaObjectWeakGlobalRef(env, GetContext());

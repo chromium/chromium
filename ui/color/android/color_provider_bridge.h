@@ -20,6 +20,10 @@ class COMPONENT_EXPORT(COLOR) ColorProviderBridge {
   ColorProviderBridge() = delete;
   ~ColorProviderBridge() = delete;
 
+  // Returns whether the embedder has registered a Java ColorProviderBridge
+  // implementation.
+  static bool HasInstance();
+
   static std::vector<std::optional<SkColor>> GetThemeColors(
       const base::android::JavaRef<jobject>& context);
 };

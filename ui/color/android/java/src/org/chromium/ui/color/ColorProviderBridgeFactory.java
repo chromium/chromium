@@ -21,12 +21,22 @@ import org.chromium.build.annotations.Nullable;
 public class ColorProviderBridgeFactory {
     @Nullable private static ColorProviderBridge sInstance;
 
+    /**
+     * Registers the implementation used to resolve theme colors.
+     *
+     * @param instance The {@link ColorProviderBridge} implementation to use.
+     */
     public static void setInstance(ColorProviderBridge instance) {
         sInstance = instance;
     }
 
     @CalledByNative
-    public static long[] getThemeColors(@Nullable Context context) {
+    private static boolean hasInstance() {
+        return sInstance != null;
+    }
+
+    @CalledByNative
+    private static long[] getThemeColors(@Nullable Context context) {
         if (sInstance == null) {
             return new long[0];
         }
