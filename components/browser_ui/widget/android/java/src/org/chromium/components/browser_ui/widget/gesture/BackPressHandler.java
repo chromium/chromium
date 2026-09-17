@@ -46,6 +46,7 @@ public interface BackPressHandler {
         Type.TAB_HISTORY,
         Type.BOTTOM_SHEET,
         Type.SHOW_READING_LIST,
+        Type.SEND_TAB_TO_SELF,
         Type.MINIMIZE_APP_AND_CLOSE_TAB,
         Type.ARCHIVED_TABS_DIALOG,
         Type.NATIVE_PAGE,
@@ -81,7 +82,10 @@ public interface BackPressHandler {
         int TAB_HISTORY = 20;
         int NATIVE_PAGE = 21;
         int SHOW_READING_LIST = 22;
-        int MINIMIZE_APP_AND_CLOSE_TAB = 23;
+        // Send tab to self must take precedence over minimize app and close tab
+        // to switch back to the parent tab instead of closing or minimizing.
+        int SEND_TAB_TO_SELF = 23;
+        int MINIMIZE_APP_AND_CLOSE_TAB = 24;
         int NUM_TYPES = MINIMIZE_APP_AND_CLOSE_TAB + 1;
     }
 
