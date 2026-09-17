@@ -52,6 +52,11 @@ FakeVideoCaptureStack::~FakeVideoCaptureStack() = default;
 void FakeVideoCaptureStack::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // `started_` and `error_occurred_` are latched by the receiver and must be
+  // cleared too, otherwise a second capture session on the same stack starts
+  // out looking like it has already produced a frame.
+  started_ = false;
+  error_occurred_ = false;
   frames_.clear();
   last_frame_timestamp_ = base::TimeDelta::Min();
 }
