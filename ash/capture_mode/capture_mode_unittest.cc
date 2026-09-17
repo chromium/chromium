@@ -6092,8 +6092,8 @@ enum AbortReason {
   kUserPressedEsc,
 };
 
-struct {
-  const std::string scope_trace;
+constexpr struct {
+  const char* scope_trace;
   const AbortReason reason;
 } kTestCases[] = {
     {"Blocked by DLP", kBlockedByDlp},

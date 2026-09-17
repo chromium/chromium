@@ -48,7 +48,6 @@ namespace ash {
 namespace {
 
 inline constexpr int kPanelCornerRadius = 16;
-const std::u16string kSearchBoxPlaceholderText = u"Add to your search";
 inline constexpr gfx::Insets kPanelPadding =
     gfx::Insets(capture_mode::kPanelPaddingSize);
 inline constexpr gfx::Insets kSearchResultsViewSpacing =

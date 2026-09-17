@@ -22,29 +22,20 @@
 namespace ash {
 namespace {
 
-const gfx::FontList kEmojiFont({"Noto Color Emoji"},
-                               gfx::Font::NORMAL,
-                               20,
-                               gfx::Font::Weight::NORMAL);
-const gfx::FontList kEmoticonFont({"Google Sans", "Roboto"},
-                                  gfx::Font::NORMAL,
-                                  14,
-                                  gfx::Font::Weight::NORMAL);
-const gfx::FontList kSymbolFont({"Google Sans", "Roboto"},
-                                gfx::Font::NORMAL,
-                                16,
-                                gfx::Font::Weight::NORMAL);
 constexpr int kCornerRadius = 4;
 constexpr auto kEmoticonItemMargins = gfx::Insets::VH(0, 6);
 
-const gfx::FontList& GetFontForStyle(QuickInsertEmojiItemView::Style style) {
+gfx::FontList GetFontForStyle(QuickInsertEmojiItemView::Style style) {
   switch (style) {
     case QuickInsertEmojiItemView::Style::kEmoji:
-      return kEmojiFont;
+      return gfx::FontList({"Noto Color Emoji"}, gfx::Font::NORMAL, 20,
+                           gfx::Font::Weight::NORMAL);
     case QuickInsertEmojiItemView::Style::kEmoticon:
-      return kEmoticonFont;
+      return gfx::FontList({"Google Sans", "Roboto"}, gfx::Font::NORMAL, 14,
+                           gfx::Font::Weight::NORMAL);
     case QuickInsertEmojiItemView::Style::kSymbol:
-      return kSymbolFont;
+      return gfx::FontList({"Google Sans", "Roboto"}, gfx::Font::NORMAL, 16,
+                           gfx::Font::Weight::NORMAL);
   }
 }
 

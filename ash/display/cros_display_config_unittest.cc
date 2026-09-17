@@ -559,11 +559,11 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesBoundsOrigin) {
 }
 
 TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesDisplayZoomFactor) {
-  static std::string configs[] = {
+  static constexpr const char* kConfigs[] = {
       "1200x600, 1600x1000#1600x1000",  // landscape
       "600x1200, 1000x1600#1000x1600",  // portrait
   };
-  for (auto config : configs) {
+  for (const char* config : kConfigs) {
     SCOPED_TRACE(config);
     UpdateDisplay(config);
     display::DisplayIdList display_id_list =

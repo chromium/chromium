@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/capture_mode_session.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -2816,15 +2817,15 @@ FineTunePosition CaptureModeSession::GetFineTunePosition(
 
   gfx::Rect capture_region_in_screen = controller_->user_capture_region();
   wm::ConvertRectToScreen(current_root_, &capture_region_in_screen);
-  // In the case of overlapping affordances, prioritize the bottomm right
+  // In the case of overlapping affordances, prioritize the bottom right
   // corner, then the rest of the corners, then the edges.
-  static const std::vector<FineTunePosition> drag_positions = {
+  static constexpr auto kDragPositions = std::to_array<FineTunePosition>({
       FineTunePosition::kBottomRightVertex, FineTunePosition::kBottomLeftVertex,
       FineTunePosition::kTopLeftVertex,     FineTunePosition::kTopRightVertex,
       FineTunePosition::kBottomEdge,        FineTunePosition::kLeftEdge,
-      FineTunePosition::kTopEdge,           FineTunePosition::kRightEdge};
+      FineTunePosition::kTopEdge,           FineTunePosition::kRightEdge});
 
-  for (FineTunePosition position : drag_positions) {
+  for (FineTunePosition position : kDragPositions) {
     if (GetHitTestRectForFineTunePosition(capture_region_in_screen, position,
                                           is_touch, active_behavior_)
             .Contains(location_in_screen)) {

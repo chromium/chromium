@@ -169,52 +169,57 @@ class QuickInsertInsertMediaRequestTest
 class QuickInsertInsertMediaRequestImageTest
     : public QuickInsertInsertMediaRequestTest {};
 
-const TestCaseCallback kTextTestCases[] = {
-    BasicTestCase(
-        /*media_to_insert=*/QuickInsertTextMedia(u"hello"),
-        /*expected_text=*/u"hello")
-        .ToCallback(),
-    BasicTestCase(
-        /*media_to_insert=*/QuickInsertLinkMedia(GURL("http://foo.com"), "Foo"),
-        /*expected_text=*/u"http://foo.com/")
-        .ToCallback(),
-};
+std::vector<TestCaseCallback> GetTextTestCases() {
+  return {
+      BasicTestCase(
+          /*media_to_insert=*/QuickInsertTextMedia(u"hello"),
+          /*expected_text=*/u"hello")
+          .ToCallback(),
+      BasicTestCase(
+          /*media_to_insert=*/QuickInsertLinkMedia(GURL("http://foo.com"),
+                                                   "Foo"),
+          /*expected_text=*/u"http://foo.com/")
+          .ToCallback(),
+  };
+}
 
-const TestCaseCallback kImageTestCases[] = {
-    BasicTestCase(
-        /*media_to_insert=*/QuickInsertImageMedia(
-            GURL("http://foo.com/fake.jpg"),
-            gfx::Size(10, 10)),
-        /*expected_image_url=*/GURL("http://foo.com/fake.jpg"))
-        .ToCallback(),
-    MakeLocalImageTestCaseCallback(
-        "png",
-        base::BindRepeating([](const SkBitmap& bitmap) {
-          return gfx::PNGCodec::EncodeBGRASkBitmap(
-              bitmap, /*discard_transparency=*/false);
-        })),
-    MakeLocalImageTestCaseCallback(
-        "jpeg",
-        base::BindRepeating([](const SkBitmap& bitmap) {
-          return gfx::JPEGCodec::Encode(bitmap, /*quality=*/80);
-        })),
-    MakeLocalImageTestCaseCallback(
-        "webp",
-        base::BindRepeating([](const SkBitmap& bitmap) {
-          return gfx::WebpCodec::Encode(bitmap, /*quality=*/80);
-        }))};
+std::vector<TestCaseCallback> GetImageTestCases() {
+  return {
+      BasicTestCase(
+          /*media_to_insert=*/QuickInsertImageMedia(
+              GURL("http://foo.com/fake.jpg"),
+              gfx::Size(10, 10)),
+          /*expected_image_url=*/GURL("http://foo.com/fake.jpg"))
+          .ToCallback(),
+      MakeLocalImageTestCaseCallback(
+          "png",
+          base::BindRepeating([](const SkBitmap& bitmap) {
+            return gfx::PNGCodec::EncodeBGRASkBitmap(
+                bitmap, /*discard_transparency=*/false);
+          })),
+      MakeLocalImageTestCaseCallback(
+          "jpeg",
+          base::BindRepeating([](const SkBitmap& bitmap) {
+            return gfx::JPEGCodec::Encode(bitmap, /*quality=*/80);
+          })),
+      MakeLocalImageTestCaseCallback(
+          "webp",
+          base::BindRepeating([](const SkBitmap& bitmap) {
+            return gfx::WebpCodec::Encode(bitmap, /*quality=*/80);
+          }))};
+}
 
 INSTANTIATE_TEST_SUITE_P(Text,
                          QuickInsertInsertMediaRequestTest,
-                         testing::ValuesIn(kTextTestCases));
+                         testing::ValuesIn(GetTextTestCases()));
 
 INSTANTIATE_TEST_SUITE_P(Image,
                          QuickInsertInsertMediaRequestTest,
-                         testing::ValuesIn(kImageTestCases));
+                         testing::ValuesIn(GetImageTestCases()));
 
 INSTANTIATE_TEST_SUITE_P(,
                          QuickInsertInsertMediaRequestImageTest,
-                         testing::ValuesIn(kImageTestCases));
+                         testing::ValuesIn(GetImageTestCases()));
 
 TEST_P(QuickInsertInsertMediaRequestTest, DoesNotInsertWhenBlurred) {
   ui::FakeTextInputClient client(

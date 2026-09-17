@@ -26,11 +26,11 @@ namespace ash {
 
 namespace {
 
-std::unique_ptr<ThottleControllerWindowDelegate> instance = nullptr;
+ThottleControllerWindowDelegate* g_delegate_instance = nullptr;
 
 viz::FrameSinkId GetFrameSinkId(const aura::Window* window) {
-  if (instance) {
-    return instance->GetFrameSinkIdForWindow(window);
+  if (g_delegate_instance) {
+    return g_delegate_instance->GetFrameSinkIdForWindow(window);
   }
   return window->GetFrameSinkId();
 }
@@ -74,7 +74,8 @@ void CollectBrowserFrameSinkIdsInWindow(
 
 void SetThottleControllerWindowDelegate(
     std::unique_ptr<ThottleControllerWindowDelegate> delegate) {
-  instance = std::move(delegate);
+  delete g_delegate_instance;
+  g_delegate_instance = delegate.release();
 }
 
 ThrottleCandidates::ThrottleCandidates() = default;
@@ -105,6 +106,7 @@ FrameThrottlingController::FrameThrottlingController(
 
 FrameThrottlingController::~FrameThrottlingController() {
   EndThrottling();
+  SetThottleControllerWindowDelegate(nullptr);
 }
 
 void FrameThrottlingController::StartThrottling(

@@ -72,6 +72,13 @@ namespace ash {
 namespace debug {
 namespace {
 
+// Toast debug shortcut constants.
+constexpr char16_t kOnelineToastText[] = u"SystemUI toast text string";
+constexpr char16_t kMultilineToastText[] =
+    u"SystemUI toast text string that breaks to two lines due to accomodate "
+    u"long strings or translations. The text container has a max-width of "
+    u"512px.";
+
 void HandlePrintLayerHierarchy() {
   std::ostringstream out;
   PrintLayerHierarchy(&out);
@@ -260,13 +267,6 @@ void HandleShowInformedRestore() {
   }
 }
 
-// Toast debug shortcut constants.
-const std::u16string oneline_toast_text = u"SystemUI toast text string";
-const std::u16string multiline_toast_text =
-    u"SystemUI toast text string that breaks to two lines due to accomodate "
-    u"long strings or translations. The text container has a max-width of "
-    u"512px.";
-
 void HandleShowToast() {
   // Iterates through all toast variations, which are a combination of having
   // multi-line text, a leading icon, and a text or icon button.
@@ -281,7 +281,7 @@ void HandleShowToast() {
 
   ToastData toast_data(
       /*id=*/"id", ToastCatalogName::kDebugCommand,
-      has_multiline_text ? multiline_toast_text : oneline_toast_text,
+      has_multiline_text ? kMultilineToastText : kOnelineToastText,
       ToastData::kDefaultToastDuration,
       /*visible_on_lock_screen=*/true);
   if (has_leading_icon) {

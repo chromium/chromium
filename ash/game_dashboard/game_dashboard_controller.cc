@@ -8,6 +8,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -48,7 +49,7 @@ namespace {
 GameDashboardController* g_instance = nullptr;
 
 // List of known app IDs that are games.
-static const std::array<std::string, 19> kGameAppIdAllowList{
+constexpr auto kGameAppIdAllowList = std::to_array<std::string_view>({
     extension_misc::kGeForceNowAppId,     "iicceeckdelepgbcpojbgahbhnklpane",
     "ojjlibnpojmhhabohpkclejfdblglkpj",   "hhkmajjdndhdnkbmomodobajdjngeejb",
     "gihmggjjlnjaldngedmnegjmhccccahg",   "lbefcdhjbnilmnokeflglbaiaebadckd",
@@ -58,7 +59,7 @@ static const std::array<std::string, 19> kGameAppIdAllowList{
     extension_misc::kAmazonLunaAppIdNL,   extension_misc::kAmazonLunaAppIdPL,
     extension_misc::kAmazonLunaAppIdUK,   extension_misc::kAmazonLunaAppIdUS,
     extension_misc::kBoosteroidAppId,     extension_misc::kPokiAppId,
-    extension_misc::kXboxCloudGamingAppId};
+    extension_misc::kXboxCloudGamingAppId});
 
 // Checks whether the given `app_id` is allow listed to show the Game
 // Dashboard button.

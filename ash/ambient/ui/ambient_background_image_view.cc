@@ -216,7 +216,7 @@ void AmbientBackgroundImageView::ResetRelatedImageForTesting() {
 }
 
 void AmbientBackgroundImageView::InitLayout() {
-  static const views::FlexSpecification kUnboundedScaleToZero(
+  const views::FlexSpecification unbounded_scale_to_zero(
       views::MinimumFlexSizeRule::kScaleToZero,
       views::MaximumFlexSizeRule::kUnbounded);
 
@@ -231,7 +231,7 @@ void AmbientBackgroundImageView::InitLayout() {
       image_container_->AddChildView(std::make_unique<views::ImageView>());
   // Set a place holder size for Flex layout to assign bounds.
   image_view_->SetPreferredSize(gfx::Size(1, 1));
-  image_view_->SetProperty(views::kFlexBehaviorKey, kUnboundedScaleToZero);
+  image_view_->SetProperty(views::kFlexBehaviorKey, unbounded_scale_to_zero);
   observed_views_.AddObservation(image_view_.get());
 
   related_image_view_ =
@@ -239,7 +239,7 @@ void AmbientBackgroundImageView::InitLayout() {
   // Set a place holder size for Flex layout to assign bounds.
   related_image_view_->SetPreferredSize(gfx::Size(1, 1));
   related_image_view_->SetProperty(views::kFlexBehaviorKey,
-                                   kUnboundedScaleToZero);
+                                   unbounded_scale_to_zero);
   observed_views_.AddObservation(related_image_view_.get());
 
   ambient_peripheral_ui_ =

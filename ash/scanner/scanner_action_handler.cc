@@ -56,21 +56,19 @@ constexpr std::string_view kPersonResourceNamePrefix = "people/";
 // The path for the Contacts web UI that displays a Person.
 constexpr std::string_view kPersonContactsWebUiPath = "/person/";
 
-const GURL& GetCalendarEventTemplateUrl() {
+GURL GetCalendarEventTemplateUrl() {
   // Required to delay the creation of this GURL to avoid hitting the
   // `url::DoSchemeModificationPreamble` DCHECK.
-  static GURL kGoogleCalendarEventTemplateUrl(
-      "https://calendar.google.com/calendar/render?action=TEMPLATE");
-  return kGoogleCalendarEventTemplateUrl;
+  return GURL("https://calendar.google.com/calendar/render?action=TEMPLATE");
 }
 
-const GURL& GetGoogleContactsBaseUrl() {
-  static GURL kGoogleContactsBaseUrl("https://contacts.google.com/");
-  return kGoogleContactsBaseUrl;
+GURL GetGoogleContactsBaseUrl() {
+  return GURL("https://contacts.google.com/");
 }
 
 GURL GetCalendarEventUrl(const manta::proto::NewEventAction& event) {
-  std::string query = GetCalendarEventTemplateUrl().GetQuery();
+  GURL template_url = GetCalendarEventTemplateUrl();
+  std::string query = template_url.GetQuery();
   CHECK(!query.empty());
   if (!event.title().empty()) {
     query += "&text=";
@@ -92,7 +90,7 @@ GURL GetCalendarEventUrl(const manta::proto::NewEventAction& event) {
 
   GURL::Replacements replacements;
   replacements.SetQueryStr(query);
-  return GetCalendarEventTemplateUrl().ReplaceComponents(replacements);
+  return template_url.ReplaceComponents(replacements);
 }
 
 // Given a resource name of a Person from the People API, returns a URL to the
