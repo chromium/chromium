@@ -21,24 +21,20 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-class LocationBar;
-
 namespace contextual_tasks {
 
-class ContextualTasksWebView;
+class ContextualTasksLocationBar;
 
 // TODO(crbug.com/559188237): Create a shared base class besides interface for
 // ContextualTasksPermissionChip and WebUIPermissionChip to deduplicate shared
 // WebUI permission chip implementation details.
 class ContextualTasksPermissionChip : public PermissionChipInterface {
  public:
-  using WebViewCallback = base::RepeatingCallback<ContextualTasksWebView*()>;
   using AnnounceAlertCallback =
       base::RepeatingCallback<void(const std::u16string&)>;
 
-  explicit ContextualTasksPermissionChip(
-      LocationBar* location_bar,
-      WebViewCallback web_view_callback,
+  ContextualTasksPermissionChip(
+      ContextualTasksLocationBar* location_bar,
       ui::ElementIdentifier element_id,
       base::RepeatingClosure update_state_callback = base::DoNothing(),
       AnnounceAlertCallback announce_alert_callback = base::DoNothing());
@@ -106,8 +102,7 @@ class ContextualTasksPermissionChip : public PermissionChipInterface {
   void NotifyVisibilityChanged();
   void UpdateState();
 
-  raw_ptr<LocationBar> location_bar_ = nullptr;
-  WebViewCallback web_view_callback_;
+  raw_ptr<ContextualTasksLocationBar> location_bar_ = nullptr;
   ui::ElementIdentifier element_id_;
   base::RepeatingClosure update_state_callback_;
   AnnounceAlertCallback announce_alert_callback_;
