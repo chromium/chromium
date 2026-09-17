@@ -25,8 +25,7 @@ std::unique_ptr<KeywordSearchTermVisit> KeywordSearchTermVisitFromStatement(
   search_term->term = statement.ColumnString16(0);
   search_term->normalized_term = statement.ColumnString16(1);
   search_term->visit_count = statement.ColumnInt(2);
-  search_term->last_visit_time =
-      base::Time::FromInternalValue(statement.ColumnInt64(3));
+  search_term->last_visit_time = statement.ColumnTime(3);
   return search_term;
 }
 

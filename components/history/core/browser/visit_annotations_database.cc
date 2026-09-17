@@ -327,11 +327,11 @@ void VisitAnnotationsDatabase::AddContextAnnotationsForVisit(
       ")VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"));
   statement.BindInt64(0, visit_id);
   statement.BindInt64(1, ContextAnnotationsToFlags(visit_context_annotations));
-  statement.BindInt64(
-      2, visit_context_annotations.duration_since_last_visit.InMicroseconds());
+  statement.BindTimeDelta(2,
+                          visit_context_annotations.duration_since_last_visit);
   statement.BindInt(3, visit_context_annotations.page_end_reason);
-  statement.BindInt64(
-      4, visit_context_annotations.total_foreground_duration.InMicroseconds());
+  statement.BindTimeDelta(4,
+                          visit_context_annotations.total_foreground_duration);
   statement.BindInt(
       5, BrowserTypeToInt(visit_context_annotations.on_visit.browser_type));
   statement.BindInt(6, visit_context_annotations.on_visit.window_id.id());
@@ -409,11 +409,11 @@ void VisitAnnotationsDatabase::UpdateContextAnnotationsForVisit(
                                  "response_code=? "
                                  "WHERE visit_id=?"));
   statement.BindInt64(0, ContextAnnotationsToFlags(visit_context_annotations));
-  statement.BindInt64(
-      1, visit_context_annotations.duration_since_last_visit.InMicroseconds());
+  statement.BindTimeDelta(1,
+                          visit_context_annotations.duration_since_last_visit);
   statement.BindInt(2, visit_context_annotations.page_end_reason);
-  statement.BindInt64(
-      3, visit_context_annotations.total_foreground_duration.InMicroseconds());
+  statement.BindTimeDelta(3,
+                          visit_context_annotations.total_foreground_duration);
   statement.BindInt(
       4, BrowserTypeToInt(visit_context_annotations.on_visit.browser_type));
   statement.BindInt(5, visit_context_annotations.on_visit.window_id.id());
@@ -453,8 +453,8 @@ bool VisitAnnotationsDatabase::GetContextAnnotationsForVisit(
   // The `VisitID` in column 0 is intentionally ignored, as it's not part of
   // `VisitContextAnnotations`.
   *out_context_annotations = ConstructContextAnnotationsWithFlags(
-      statement.ColumnInt64(1), base::Microseconds(statement.ColumnInt64(2)),
-      statement.ColumnInt(3), base::Microseconds(statement.ColumnInt64(4)),
+      statement.ColumnInt64(1), statement.ColumnTimeDelta(2),
+      statement.ColumnInt(3), statement.ColumnTimeDelta(4),
       statement.ColumnInt(5),
       SessionID::FromSerializedValue(statement.ColumnInt(6)),
       SessionID::FromSerializedValue(statement.ColumnInt(7)),

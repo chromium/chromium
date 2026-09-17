@@ -464,8 +464,7 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
     info->target_path = ColumnFilePath(statement_main, column++);
     info->mime_type = statement_main.ColumnString(column++);
     info->original_mime_type = statement_main.ColumnString(column++);
-    info->start_time =
-        base::Time::FromInternalValue(statement_main.ColumnInt64(column++));
+    info->start_time = statement_main.ColumnTime(column++);
     info->received_bytes = statement_main.ColumnInt64(column++);
     info->total_bytes = statement_main.ColumnInt64(column++);
     int state = statement_main.ColumnInt(column++);
@@ -475,11 +474,9 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
     info->interrupt_reason =
         IntToDownloadInterruptReason(statement_main.ColumnInt(column++));
     info->hash = statement_main.ColumnBlobAsString(column++);
-    info->end_time =
-        base::Time::FromInternalValue(statement_main.ColumnInt64(column++));
+    info->end_time = statement_main.ColumnTime(column++);
     info->opened = statement_main.ColumnInt(column++) != 0;
-    info->last_access_time =
-        base::Time::FromInternalValue(statement_main.ColumnInt64(column++));
+    info->last_access_time = statement_main.ColumnTime(column++);
     info->transient = statement_main.ColumnInt(column++) != 0;
     info->referrer_url = GURL(statement_main.ColumnStringView(column++));
     info->site_url = GURL(statement_main.ColumnStringView(column++));
