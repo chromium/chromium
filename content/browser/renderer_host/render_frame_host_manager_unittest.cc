@@ -898,12 +898,14 @@ class RenderViewHostDestroyer : public WebContentsObserver {
   RenderViewHostDestroyer& operator=(const RenderViewHostDestroyer&) = delete;
 
   void RenderViewDeleted(RenderViewHost* render_view_host) override {
-    if (render_view_host == render_view_host_)
+    if (render_view_host == render_view_host_) {
+      render_view_host_ = nullptr;
       web_contents_.reset();
+    }
   }
 
  private:
-  raw_ptr<RenderViewHost, DanglingUntriaged> render_view_host_;
+  raw_ptr<RenderViewHost> render_view_host_ = nullptr;
   std::unique_ptr<WebContents> web_contents_;
 };
 

@@ -350,14 +350,16 @@ class ShellCloser : public RenderProcessHostObserver {
   void RenderProcessExited(RenderProcessHost* host,
                            const ChildProcessTerminationInfo& info) override {
     logging_string_->append("ShellCloser::RenderProcessExited ");
-    shell_->Close();
+    Shell* shell = shell_;
+    shell_ = nullptr;
+    shell->Close();
   }
 
   void RenderProcessHostDestroyed(RenderProcessHost* host) override {
     logging_string_->append("ShellCloser::RenderProcessHostDestroyed ");
   }
 
-  raw_ptr<Shell, AcrossTasksDanglingUntriaged> shell_;
+  raw_ptr<Shell> shell_ = nullptr;
   raw_ptr<std::string> logging_string_;
 };
 
