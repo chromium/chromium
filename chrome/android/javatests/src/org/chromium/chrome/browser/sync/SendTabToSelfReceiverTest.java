@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.sync;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -30,7 +29,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -42,7 +40,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
-import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.share.send_tab_to_self.NotificationManager;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
@@ -94,7 +91,6 @@ public class SendTabToSelfReceiverTest {
 
     @Before
     public void setUp() {
-        AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
         PersistedTabDataConfiguration.setUseTestConfig(true);
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
@@ -869,50 +865,5 @@ public class SendTabToSelfReceiverTest {
         // Verify that the secondary message banner offering to open in the native app is displayed.
         onView(withId(R.id.message_primary_button)).check(matches(isDisplayed()));
         onView(withText("From Example Phone 2")).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Sync"})
-    @EnableFeatures({ChromeFeatureList.SEND_TAB_TO_SELF_SWITCH_TO_PARENT_ON_BACK})
-    public void testSendTabToSelfMessageBannerClick_BackGestureClosesTabAndReturnsToPreviousTab() {
-        long now = getCurrentTimeSinceWindowsEpochMicros();
-        injectSendTabToSelfEntity(
-                "stts_test_guid", "https://www.example1.com", "Example 1", "Example Phone", now);
-        SyncTestUtil.triggerSyncAndWaitForCompletion();
-
-        // Verify that the tab is opened in the background (total 2 tabs).
-        TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 2, 0);
-
-        TabModel tabModel = mSyncTestRule.getActivity().getTabModelSelector().getModel(false);
-        // Verify index is initially 0 (initial tab).
-        Assert.assertEquals(
-                0, ThreadUtils.runOnUiThreadBlocking(() -> tabModel.index()).intValue());
-
-        // Verify that the message banner is displayed.
-        onView(withId(R.id.message_primary_button)).check(matches(isDisplayed()));
-        onView(withText("Open")).check(matches(isDisplayed()));
-
-        // Click on the message banner primary button ("Open").
-        onView(withId(R.id.message_primary_button)).perform(click());
-
-        // Verify that the received tab (index 1) is selected.
-        Assert.assertEquals(
-                1, ThreadUtils.runOnUiThreadBlocking(() -> tabModel.index()).intValue());
-
-        // Perform back gesture.
-        pressBack();
-
-        // The received tab has a single navigation entry, so the back press reaches the bottom of
-        // its history: the tab is closed (tab count back to 1) and NextTabPolicy.HIERARCHICAL
-        // selects its parent, the tab that was active when the received tab arrived.
-        CriteriaHelper.pollUiThread(() -> tabModel.index() == 0);
-        TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 1, 0);
-        Assert.assertFalse(
-                "Chrome activity should remain active after back gesture",
-                mSyncTestRule.getActivity().isFinishing());
-        Assert.assertFalse(
-                "Chrome activity should not be minimized on back press",
-                AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
     }
 }

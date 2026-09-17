@@ -157,10 +157,7 @@ class TabModel : public TabListInterface {
     // Used for tab pre-warming where the reason for tab creation is not yet
     // known.
     UNSET,
-    // Used when opening a tab in the background at an explicit index (e.g., to
-    // keep synced tab groups up to date, or for tabs received via Send Tab to
-    // Self). This does not trigger adjacency logic in Java, allowing the
-    // requested position to be respected.
+    // Used when creating a tab to keep synced tab groups up to date.
     FROM_SYNC_BACKGROUND,
     // Open most recent tab in foregroud, used by ctrl-shift-t to restore
     // most recently closed tab or tabs.

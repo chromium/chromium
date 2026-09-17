@@ -772,60 +772,6 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP)
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SWITCH_TO_PARENT_ON_BACK)
-    public void testBackShouldCloseTab_FromSyncBackground() {
-        Tab tabWithParent =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            ChromeTabCreator tabCreator = mActivity.getCurrentTabCreator();
-                            return tabCreator.createNewTab(
-                                    new LoadUrlParams("about:blank"),
-                                    TabLaunchType.FROM_SYNC_BACKGROUND,
-                                    mActivity.getActivityTab());
-                        });
-        boolean retWithParent =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> mActivity.backShouldCloseTab(tabWithParent));
-        Assert.assertTrue(retWithParent);
-
-        Tab tabNoParent =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            ChromeTabCreator tabCreator = mActivity.getCurrentTabCreator();
-                            return tabCreator.createNewTab(
-                                    new LoadUrlParams("about:blank"),
-                                    TabLaunchType.FROM_SYNC_BACKGROUND,
-                                    null);
-                        });
-        boolean retNoParent =
-                ThreadUtils.runOnUiThreadBlocking(() -> mActivity.backShouldCloseTab(tabNoParent));
-        Assert.assertFalse(retNoParent);
-    }
-
-    @Test
-    @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP)
-    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SWITCH_TO_PARENT_ON_BACK)
-    public void testBackShouldCloseTab_FromSyncBackground_FeatureDisabled() {
-        Tab tabWithParent =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            ChromeTabCreator tabCreator = mActivity.getCurrentTabCreator();
-                            return tabCreator.createNewTab(
-                                    new LoadUrlParams("about:blank"),
-                                    TabLaunchType.FROM_SYNC_BACKGROUND,
-                                    mActivity.getActivityTab());
-                        });
-        // With the feature disabled, received tabs keep the pre-existing behavior of minimizing
-        // the app rather than closing.
-        Assert.assertFalse(
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> mActivity.backShouldCloseTab(tabWithParent)));
-    }
-
-    @Test
-    @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testBackShouldCloseTab_Collaboration() {
         mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
         Tab tab =

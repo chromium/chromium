@@ -80,10 +80,6 @@ BASE_DECLARE_FEATURE(kSendTabToSelfOpenNativeApp);
 // will be recorded as ShareActivatedEntryPoint::kMobileMessageBanner (instead
 // of ShareActivatedEntryPoint::kTabStrip) and drop the tab label immediately.
 BASE_DECLARE_FEATURE(kSendTabToSelfRecordSnackbarActivation);
-
-// If this feature is enabled, pressing back on an incoming tab opened via the
-// message banner switches back to the parent tab instead of minimizing Chrome.
-BASE_DECLARE_FEATURE(kSendTabToSelfSwitchToParentOnBack);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
