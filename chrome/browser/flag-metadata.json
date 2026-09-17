@@ -7871,7 +7871,7 @@
   {
     "name": "on-startup-window-policy",
     "owners": ["aishwaryarj@google.com", "zheliooo@google.com", "clank-large-form-factors@google.com"],
-    "expiry_milestone": 156
+    "expiry_milestone": 160
   },
   {
     "name": "one-step-aim-access",
