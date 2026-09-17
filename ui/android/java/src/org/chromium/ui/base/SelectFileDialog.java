@@ -304,6 +304,18 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         sPhotoPickerDelegate = delegate;
     }
 
+    public static void setPhotoPickerDelegateForTesting(PhotoPickerDelegate delegate) {
+        PhotoPickerDelegate oldValue = sPhotoPickerDelegate;
+        sPhotoPickerDelegate = delegate;
+        ResettersForTesting.register(() -> sPhotoPickerDelegate = oldValue);
+    }
+
+    private boolean shouldBlockFilePicker(@Nullable WindowAndroid window) {
+        return sPhotoPickerDelegate != null
+                && window != null
+                && sPhotoPickerDelegate.shouldBlockFilePicker(window);
+    }
+
     @VisibleForTesting
     SelectFileDialog(long nativeSelectFileDialog) {
         mNativeSelectFileDialog = nativeSelectFileDialog;
@@ -352,6 +364,11 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         mCapture = capture;
         mAllowMultiple = multiple;
         mWindowAndroid = (sWindowAndroidForTesting == null) ? window : sWindowAndroidForTesting;
+
+        if (shouldBlockFilePicker(mWindowAndroid)) {
+            onFileNotSelected();
+            return;
+        }
 
         // FileSystemAccess API uses intent actions OPEN_DOCUMENT (showOpenFilePicker),
         // OPEN_DOCUMENT_TREE (showDirectoryPicker), and CREATE_DOCUMENT (showSaveFilePicker),
@@ -494,6 +511,10 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
     /** Called to launch an intent to allow user to select files. */
     private void launchSelectFileIntent() {
+        if (shouldBlockFilePicker(mWindowAndroid)) {
+            onFileNotSelected();
+            return;
+        }
         boolean hasCameraPermission = mWindowAndroid.hasPermission(Manifest.permission.CAMERA);
         if (mSupportsImageCapture && hasCameraPermission) {
             // GetCameraIntentTask will call LaunchSelectFileWithCameraIntent later.
@@ -546,12 +567,17 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     }
 
     /**
-     * Called to launch an intent to allow user to select files. If |camera| is null,
-     * the select file dialog shouldn't include any files from the camera. Otherwise, user
-     * is allowed to choose files from the camera.
+     * Called to launch an intent to allow user to select files. If |camera| is null, the select
+     * file dialog shouldn't include any files from the camera. Otherwise, user is allowed to choose
+     * files from the camera.
+     *
      * @param camera Intent for selecting files from camera.
      */
     private void launchSelectFileWithCameraIntent(@Nullable Intent camera) {
+        if (shouldBlockFilePicker(mWindowAndroid)) {
+            onFileNotSelected();
+            return;
+        }
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.SelectFileDialogScope",
                 determineSelectFileDialogScope(),
@@ -594,12 +620,17 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     /**
      * Launches a chooser intent to get files from an external source. If launching the Intent is
      * not successful, the onFileNotSelected is called to end file upload.
+     *
      * @param camera A camera capture intent to supply as extra Intent data.
      * @param camcorder A camcorder intent to supply as extra Intent data.
      * @param soundRecorder A soundRecorder intent to supply as extra Intent data.
      */
     private void showExternalPicker(
             @Nullable Intent camera, @Nullable Intent camcorder, @Nullable Intent soundRecorder) {
+        if (shouldBlockFilePicker(mWindowAndroid)) {
+            onFileNotSelected();
+            return;
+        }
         if (UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION)) {
             showExternalPickerDeprecated(camera, camcorder, soundRecorder);
             return;
@@ -898,6 +929,10 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
         @Override
         protected void onPostExecute(@Nullable Uri result) {
+            if (shouldBlockFilePicker(mWindow)) {
+                onFileNotSelected();
+                return;
+            }
             mCameraOutputUri = result;
             if (mCameraOutputUri == null) {
                 if (captureImage() || mDirectToCamera) {

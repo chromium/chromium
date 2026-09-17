@@ -25,4 +25,14 @@ public interface PhotoPickerDelegate {
             PhotoPickerListener listener,
             boolean allowMultiple,
             List<String> mimeTypes);
+
+    /**
+     * Returns whether showing a file picker dialog should be blocked for the given window.
+     *
+     * @param windowAndroid The window of the Activity.
+     * @return true if showing a file picker dialog should be blocked.
+     */
+    default boolean shouldBlockFilePicker(WindowAndroid windowAndroid) {
+        return false;
+    }
 }

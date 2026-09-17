@@ -40,7 +40,6 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.BrowserExitReasonTracker;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
@@ -120,7 +119,6 @@ import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.photo_picker.DecoderServiceHost;
-import org.chromium.components.browser_ui.photo_picker.PhotoPickerDialog;
 import org.chromium.components.browser_ui.share.ClipboardImageFileProvider;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.content_capture.PlatformContentCaptureController;
@@ -142,9 +140,7 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.accessibility.ApplicationStatusAccessibilityStateVisibilityManager;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.SelectFileDialog;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.color.ColorProviderBridgeFactory;
-import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.native_theme.OsSettingsProviderAndroidBridge;
 import org.chromium.url.GURL;
 
@@ -411,23 +407,7 @@ public class ProcessInitializationHandler {
         DecoderServiceHost.setIntentSupplier(
                 () -> new Intent(ContextUtils.getApplicationContext(), DecoderService.class));
 
-        SelectFileDialog.setPhotoPickerDelegate(
-                (windowAndroid, listener, allowMultiple, mimeTypes) -> {
-                    Context context = windowAndroid.getContext().get();
-                    assumeNonNull(context);
-                    PhotoPickerDialog dialog =
-                            new PhotoPickerDialog(
-                                    windowAndroid,
-                                    context.getContentResolver(),
-                                    listener,
-                                    allowMultiple,
-                                    mimeTypes,
-                                    shouldDialogPadForContent(windowAndroid));
-                    assumeNonNull(dialog.getWindow()).getAttributes().windowAnimations =
-                            R.style.PickerDialogAnimation;
-                    dialog.show();
-                    return dialog;
-                });
+        SelectFileDialog.setPhotoPickerDelegate(new PhotoPickerDelegateImpl());
 
         ContactsPickerDelegateProvider.initialize();
 
@@ -981,9 +961,5 @@ public class ProcessInitializationHandler {
             return;
         }
         ChildProcessLauncherHelper.startBindingManagement(ContextUtils.getApplicationContext());
-    }
-
-    private static boolean shouldDialogPadForContent(WindowAndroid windowAndroid) {
-        return EdgeToEdgeStateProvider.isEdgeToEdgeEnabledForWindow(windowAndroid);
     }
 }

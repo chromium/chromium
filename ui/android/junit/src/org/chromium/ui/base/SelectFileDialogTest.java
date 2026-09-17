@@ -1728,4 +1728,29 @@ public class SelectFileDialogTest {
 
         runAllAsyncTasks();
     }
+
+    @Test
+    public void testSelectFileBlockedByDelegate() throws Exception {
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+        WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+
+        PhotoPickerDelegate delegate = Mockito.mock(PhotoPickerDelegate.class);
+        when(delegate.shouldBlockFilePicker(windowAndroid)).thenReturn(true);
+        SelectFileDialog.setPhotoPickerDelegateForTesting(delegate);
+
+        int callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.selectFile(
+                Intent.ACTION_GET_CONTENT,
+                new String[] {"image/*"},
+                /* capture= */ false,
+                /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
+                windowAndroid);
+        mOnActionCallback.waitForCallback(callCount, 1);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(1, selectFileDialog.mFileSelectionAborted);
+        Mockito.verify(windowAndroid, Mockito.never())
+                .showIntent(any(Intent.class), any(), anyInt());
+    }
 }
