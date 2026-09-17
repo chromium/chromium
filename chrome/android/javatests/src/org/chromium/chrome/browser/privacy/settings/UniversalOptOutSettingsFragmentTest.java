@@ -10,10 +10,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
@@ -34,15 +32,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -51,11 +47,12 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+
+import java.util.Collections;
 
 /** Tests for {@link UniversalOptOutSettings}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -67,11 +64,6 @@ public class UniversalOptOutSettingsFragmentTest {
     @Rule
     public final SettingsActivityTestRule<UniversalOptOutSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(UniversalOptOutSettings.class);
-
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private SettingsIndexData mSearchIndexDataMock;
-    @Mock private SettingsCustomTabLauncher mCustomTabLauncherMock;
 
     @Before
     public void setUp() {
@@ -181,24 +173,39 @@ public class UniversalOptOutSettingsFragmentTest {
     })
     public void testSearchableIndex_RemovedWhenNonEligible() {
         var indexProvider = UniversalOptOutSettings.SEARCH_INDEX_DATA_PROVIDER;
+        SettingsIndexData searchIndexData = new SettingsIndexData();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, false);
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE, false);
+                    indexProvider.initPreferenceXml(
+                            ApplicationProvider.getApplicationContext(),
+                            searchIndexData,
+                            Collections.emptyMap());
+                    assertNotNull(
+                            searchIndexData.getEntry(
+                                    indexProvider.getUniqueId(
+                                            UniversalOptOutSettings
+                                                    .PREF_UNIVERSAL_OPT_OUT_SWITCH)));
+                    assertNotNull(
+                            searchIndexData.getEntry(
+                                    indexProvider.getUniqueId(
+                                            UniversalOptOutSettings
+                                                    .PREF_UNIVERSAL_OPT_OUT_INFO_TEXT)));
                     indexProvider.updateDynamicPreferences(
-                            mSettingsActivityTestRule.getActivity(),
-                            mSearchIndexDataMock,
+                            ApplicationProvider.getApplicationContext(),
+                            searchIndexData,
                             ProfileManager.getLastUsedRegularProfile());
                 });
 
-        verify(mSearchIndexDataMock)
-                .removeEntry(
+        assertNull(
+                searchIndexData.getEntry(
                         indexProvider.getUniqueId(
-                                UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_SWITCH));
-        verify(mSearchIndexDataMock)
-                .removeEntry(
+                                UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_SWITCH)));
+        assertNull(
+                searchIndexData.getEntry(
                         indexProvider.getUniqueId(
-                                UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_INFO_TEXT));
+                                UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_INFO_TEXT)));
     }
 
     @Test
@@ -206,22 +213,37 @@ public class UniversalOptOutSettingsFragmentTest {
     @DisableFeatures(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)
     public void testSearchableIndex_RemovedWhenFeatureDisabled() {
         var indexProvider = UniversalOptOutSettings.SEARCH_INDEX_DATA_PROVIDER;
+        SettingsIndexData searchIndexData = new SettingsIndexData();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    indexProvider.initPreferenceXml(
+                            ApplicationProvider.getApplicationContext(),
+                            searchIndexData,
+                            Collections.emptyMap());
+                    assertNotNull(
+                            searchIndexData.getEntry(
+                                    indexProvider.getUniqueId(
+                                            UniversalOptOutSettings
+                                                    .PREF_UNIVERSAL_OPT_OUT_SWITCH)));
+                    assertNotNull(
+                            searchIndexData.getEntry(
+                                    indexProvider.getUniqueId(
+                                            UniversalOptOutSettings
+                                                    .PREF_UNIVERSAL_OPT_OUT_INFO_TEXT)));
                     indexProvider.updateDynamicPreferences(
-                            mSettingsActivityTestRule.getActivity(),
-                            mSearchIndexDataMock,
+                            ApplicationProvider.getApplicationContext(),
+                            searchIndexData,
                             ProfileManager.getLastUsedRegularProfile());
                 });
 
-        verify(mSearchIndexDataMock)
-                .removeEntry(
+        assertNull(
+                searchIndexData.getEntry(
                         indexProvider.getUniqueId(
-                                UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_SWITCH));
-        verify(mSearchIndexDataMock)
-                .removeEntry(
+                                UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_SWITCH)));
+        assertNull(
+                searchIndexData.getEntry(
                         indexProvider.getUniqueId(
-                                UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_INFO_TEXT));
+                                UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_INFO_TEXT)));
     }
 
     private ViewAction clickOnLearnMoreLink() {
@@ -256,9 +278,10 @@ public class UniversalOptOutSettingsFragmentTest {
     @Test
     @LargeTest
     public void testLearnMoreLinkOpensCustomTab() {
+        PayloadCallbackHelper<String> customTabLauncherHelper = new PayloadCallbackHelper<>();
         mSettingsActivityTestRule.startSettingsActivity();
         UniversalOptOutSettings fragment = mSettingsActivityTestRule.getFragment();
-        fragment.setCustomTabLauncher(mCustomTabLauncherMock);
+        fragment.setCustomTabLauncher((context, url) -> customTabLauncherHelper.notifyCalled(url));
 
         String summaryText =
                 ApplicationProvider.getApplicationContext()
@@ -266,7 +289,8 @@ public class UniversalOptOutSettingsFragmentTest {
                         .replaceAll("<.?link>", "");
         onView(withText(summaryText)).perform(clickOnLearnMoreLink());
 
-        verify(mCustomTabLauncherMock)
-                .openUrlInCct(any(), eq(UniversalOptOutSettings.UNIVERSAL_OPT_OUT_LEARN_MORE_URL));
+        assertEquals(
+                UniversalOptOutSettings.UNIVERSAL_OPT_OUT_LEARN_MORE_URL,
+                customTabLauncherHelper.getOnlyPayloadBlocking());
     }
 }
