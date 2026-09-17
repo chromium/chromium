@@ -27,9 +27,11 @@ ios_test_extra_system_frameworks = [
 if (xcode_version_int >= 1300) {
   ios_test_extra_system_frameworks += [
     "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestCore.framework",
-    "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUnit.framework",
     "$ios_sdk_platform_path/Developer/usr/lib/libXCTestSwiftSupport.dylib",
   ]
+  if (xcode_version_int < 2720) {
+    ios_test_extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUnit.framework" ]
+  }
 }
 
 # XCTestSupport framework is required as of Xcode 14.3 or later.
