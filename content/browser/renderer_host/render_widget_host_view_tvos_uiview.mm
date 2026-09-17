@@ -4,8 +4,14 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_tvos_uiview.h"
 
+#include <map>
+#include <memory>
+#include <variant>
+
 #include "base/apple/owned_objc.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -34,6 +40,12 @@ typedef NS_ENUM(NSInteger, RemoteButton) {
 // The minimum velocity to generate left/right direction events from
 // UIPanGestureRecognizer.
 const CGFloat kMinVelocity = 100;
+
+// Key auto-repeat timing for held Up/Down/Left/Right presses, mirroring
+// standard keyboard auto-repeat: an initial delay before repeating starts,
+// then a fixed interval between each subsequent repeat.
+constexpr base::TimeDelta kKeyRepeatStartDelay = base::Milliseconds(500);
+constexpr base::TimeDelta kKeyRepeatInterval = base::Milliseconds(50);
 
 UIKeyboardType keyboardTypeForInputType(ui::TextInputType inputType) {
   // TODO(crbug.com/411452047): Implement textFieldShouldEndEditing to detect
@@ -85,7 +97,37 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
   return button;
 }
 
+// Only the directional pad buttons auto-repeat while held, matching the
+// behavior of a physical Siri Remote D-pad; Select/Menu/Play-Pause are
+// discrete actions.
+BOOL RemoteButtonSupportsAutoRepeat(RemoteButton button) {
+  switch (button) {
+    case kUp:
+    case kDown:
+    case kLeft:
+    case kRight:
+      return YES;
+    default:
+      return NO;
+  }
+}
+
 }  // namespace
+
+@interface RenderWidgetUIView () {
+  // Maps a held button to the timer currently driving its auto-repeat: a
+  // `base::OneShotTimer` while counting down the initial
+  // `kKeyRepeatStartDelay`, replaced with a `base::RepeatingTimer` once that
+  // delay elapses and the repeat proper begins (see
+  // `beginRepeatingKeyForButton:`).
+  // Entries are removed once the button is released or the press is
+  // cancelled.
+  std::map<RemoteButton,
+           std::variant<std::unique_ptr<base::OneShotTimer>,
+                        std::unique_ptr<base::RepeatingTimer>>>
+      _keyRepeatTimers;
+}
+@end
 
 @implementation RenderWidgetUIView
 
@@ -148,6 +190,7 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
 }
 
 - (void)removeView {
+  [self stopAllKeyRepeats];
   UIScrollView* view = (UIScrollView*)[self superview];
   [view removeObserver:self
             forKeyPath:NSStringFromSelector(@selector(contentInset))];
@@ -276,6 +319,13 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
   NSMutableSet<UIPress*>* unhandled = [NSMutableSet set];
   for (UIPress* press in presses) {
     RemoteButton button = remoteButtonFromPressType(press.type);
+    if (type == blink::WebInputEvent::Type::kKeyUp) {
+      // Unconditionally release any in-flight auto-repeat as soon as the
+      // physical press ends. Auto-repeat must track whether the button
+      // is physically held.
+      // No-op if `button` has no in-flight repeat.
+      [self stopKeyRepeatForButton:button];
+    }
     if (button == kNone) {
       // Since UIPress has key information from the physical keyboard,
       // NativeWebKeyboardEvent is built with it in `sendKeyboardEvent`.
@@ -297,8 +347,50 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
       // Pass `UIPressTypeMenu` to the framework to manage app suspension.
       [unhandled addObject:press];
     }
+    // Don't start auto-repeat for a press we're also handing off to `super`
+    // as unhandled - we're not the sole/authoritative handler of it.
+    if (![unhandled containsObject:press] &&
+        type == blink::WebInputEvent::Type::kKeyDown &&
+        RemoteButtonSupportsAutoRepeat(button)) {
+      [self startKeyRepeatForButton:button];
+    }
   }
   return unhandled;
+}
+
+- (void)startKeyRepeatForButton:(RemoteButton)button {
+  if (_keyRepeatTimers.contains(button)) {
+    // Already repeating (or waiting to); ignore a duplicate pressesBegan.
+    return;
+  }
+  auto timer = std::make_unique<base::OneShotTimer>();
+  __weak RenderWidgetUIView* weakSelf = self;
+  timer->Start(FROM_HERE, kKeyRepeatStartDelay, base::BindOnce(^{
+                 [weakSelf beginRepeatingKeyForButton:button];
+               }));
+  _keyRepeatTimers[button] = std::move(timer);
+}
+
+- (void)beginRepeatingKeyForButton:(RemoteButton)button {
+  // Replaces the one-shot delay timer scheduled by `startKeyRepeatForButton:`
+  // for this button.
+  auto timer = std::make_unique<base::RepeatingTimer>();
+  __weak RenderWidgetUIView* weakSelf = self;
+  const blink::WebInputEvent::Type type = blink::WebInputEvent::Type::kKeyDown;
+  timer->Start(FROM_HERE, kKeyRepeatInterval, base::BindRepeating(^{
+                 [weakSelf sendKeyEventWithRemoteButton:button
+                                              eventType:type
+                                           isAutoRepeat:YES];
+               }));
+  _keyRepeatTimers[button] = std::move(timer);
+}
+
+- (void)stopKeyRepeatForButton:(RemoteButton)button {
+  _keyRepeatTimers.erase(button);
+}
+
+- (void)stopAllKeyRepeats {
+  _keyRepeatTimers.clear();
 }
 
 - (void)pressesBegan:(NSSet<UIPress*>*)presses
@@ -316,7 +408,19 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
   NSSet<UIPress*>* unhandled =
       [self handlePresses:presses withType:blink::WebInputEvent::Type::kKeyUp];
   if (unhandled.count > 0) {
-    [super pressesEnded:presses withEvent:event];
+    [super pressesEnded:unhandled withEvent:event];
+  }
+}
+
+// The system calls this instead of `pressesEnded:` when a press sequence is
+// interrupted (e.g. an alert or another app takes over), so it must also
+// stop any in-flight auto-repeat and report the button as released.
+- (void)pressesCancelled:(NSSet<UIPress*>*)presses
+               withEvent:(UIPressesEvent*)event {
+  NSSet<UIPress*>* unhandled =
+      [self handlePresses:presses withType:blink::WebInputEvent::Type::kKeyUp];
+  if (unhandled.count > 0) {
+    [super pressesCancelled:unhandled withEvent:event];
   }
 }
 
@@ -335,11 +439,27 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
   return YES;
 }
 
-// Helper method to generate WebKeyboardEvent with RemoteButton.
+// Helper method to generate WebKeyboardEvent with RemoteButton. It
+// sets `isAutoRepeat` to NO for general usages.
 - (BOOL)sendKeyEventWithRemoteButton:(RemoteButton)remoteButton
                            eventType:(blink::WebInputEvent::Type)type {
-  blink::WebKeyboardEvent event(type, blink::WebInputEvent::kNoModifiers,
-                                ui::EventTimeForNow());
+  return [self sendKeyEventWithRemoteButton:remoteButton
+                                  eventType:type
+                               isAutoRepeat:NO];
+}
+
+// Helper method to generate WebKeyboardEvent with RemoteButton.
+// `isAutoRepeat` marks events synthesized while the button is held down,
+// matching how physical keyboard repeat events are flagged (see
+// WebKeyboardEventBuilder::Build in web_input_event_builders_mac.mm).
+- (BOOL)sendKeyEventWithRemoteButton:(RemoteButton)remoteButton
+                           eventType:(blink::WebInputEvent::Type)type
+                        isAutoRepeat:(BOOL)isAutoRepeat {
+  int modifiers = blink::WebInputEvent::kNoModifiers;
+  if (isAutoRepeat) {
+    modifiers |= blink::WebInputEvent::kIsAutoRepeat;
+  }
+  blink::WebKeyboardEvent event(type, modifiers, ui::EventTimeForNow());
 
   switch (remoteButton) {
     case kLeft:
