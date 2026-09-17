@@ -259,9 +259,10 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
 
   // Called after we are done processing |pic|. This runs the additional
   // bumping of clause C.5.2.3 with the limits that StartNewFrame()
-  // snapshotted from |pic|'s SPS. |last_slice_hdr_| cannot stand in for that
-  // snapshot: an alpha-layer slice of the same access unit replaces that
-  // header.
+  // snapshotted from |pic|'s SPS. The parser cannot stand in for that
+  // snapshot: an alpha-layer slice of the same access unit replaces
+  // |last_slice_hdr_|, and an alpha-layer SPS may reuse the base-layer
+  // SPS id.
   bool FinishPicture(scoped_refptr<H265Picture> pic);
 
   // Commits all pending data for HW decoder and starts HW decoder.
@@ -390,9 +391,10 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   int curr_pps_id_ = -1;
 
   // C.5.2 bumping limits copied from the current picture's SPS. C.5.2.3 runs
-  // once the rest of the access unit has been parsed, by which point
-  // |last_slice_hdr_| no longer belongs to this picture: an alpha-layer
-  // slice of the same access unit replaces that header.
+  // once the rest of the access unit has been parsed, by which point neither
+  // |last_slice_hdr_| nor |curr_sps_id_| still resolves to this SPS: an
+  // alpha-layer slice replaces the header, and an alpha-layer SPS may reuse
+  // the base-layer SPS id in the parser.
   int max_num_reorder_pics_ = 0;
   uint32_t max_latency_pictures_ = 0;
   int max_dec_pic_buffering_minus1_ = 0;

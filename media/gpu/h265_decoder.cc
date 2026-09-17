@@ -295,9 +295,10 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
                   *curr_nalu_, curr_slice_hdr_.get(), last_slice_hdr_.get());
               if (par_res == H265Parser::kMissingParameterSet) {
                 // As with the base layer, we could be trying to start decoding
-                // from a bad frame, and may be able to recover later.
+                // from a bad frame, and may be able to recover later. Only this
+                // slice is dropped; |last_slice_hdr_| is left alone because the
+                // base layer picture it belongs to is still decodable.
                 curr_slice_hdr_.reset();
-                last_slice_hdr_.reset();
                 break;
               }
               if (par_res != H265Parser::kOk) {
@@ -316,8 +317,12 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             curr_slice_hdr_.reset();
             break;
           }
+          // Per 7.4.2.4.4 an SPS or PPS starts a new access unit only when
+          // nuh_layer_id is 0, so these NALUs must not finish the base-layer
+          // picture of the current access unit. A stream may place the
+          // alpha-layer parameter sets between the base-layer slices and the
+          // alpha-layer slices of the same access unit.
           case H265NALU::SPS_NUT: {
-            CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
             int sps_id;
             par_res = parser_.ParseSPS(&sps_id);
             if (par_res != H265Parser::kOk) {
@@ -327,7 +332,6 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             break;
           }
           case H265NALU::PPS_NUT: {
-            CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
             int pps_id;
             par_res = parser_.ParsePPS(*curr_nalu_, &pps_id);
             if (par_res != H265Parser::kOk) {
@@ -1079,9 +1083,9 @@ H265Decoder::H265Accelerator::Status H265Decoder::StartNewFrame(
   DCHECK(sps);
 
   // Snapshot the bumping limits of the current picture's SPS. C.5.2.2 uses
-  // them immediately. C.5.2.3 in FinishPicture() cannot re-resolve the SPS
-  // from |last_slice_hdr_|: an alpha-layer slice of the same access unit
-  // replaces that header.
+  // them immediately. C.5.2.3 in FinishPicture() cannot re-resolve them: an
+  // alpha-layer slice replaces |last_slice_hdr_|, and an alpha-layer SPS
+  // may overwrite the parser entry for the same SPS id.
   const int highest_tid = sps->sps_max_sub_layers_minus1;
   max_num_reorder_pics_ = sps->sps_max_num_reorder_pics[highest_tid];
   max_latency_pictures_ = sps->sps_max_latency_pictures[highest_tid];
