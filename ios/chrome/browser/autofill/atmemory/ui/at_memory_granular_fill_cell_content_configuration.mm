@@ -161,8 +161,6 @@ UIButton* CreateChipButton() {
   _chipButton.accessibilityIdentifier =
       GetAtMemoryGranularFillChipButtonAccessibilityIdentifier(
           _configuration.attributeName);
-
-  self.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 }
 
 @end
