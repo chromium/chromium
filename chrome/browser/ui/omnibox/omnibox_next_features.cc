@@ -21,12 +21,19 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/search.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#endif
 
 namespace {
 constexpr base::FeatureState DISABLED = base::FEATURE_DISABLED_BY_DEFAULT;
@@ -58,7 +65,8 @@ constexpr base::FeatureParam<AddContextButtonVariant>::Option
 // Configures the placement of the "Add Context" button in the Omnibox popup.
 const base::FeatureParam<AddContextButtonVariant>
     kWebUIOmniboxAimPopupAddContextButtonVariantParam{
-        &internal::kWebUIOmniboxSimplification, "Omnibox_AddContextButtonVariant",
+        &internal::kWebUIOmniboxSimplification,
+        "Omnibox_AddContextButtonVariant",
         AddContextButtonVariant::kBelowResults,
         &kAddContextButtonVariantOptions};
 // If true, hides the "Add Context" button in the "classic" popup.
@@ -348,6 +356,33 @@ bool IsDeepSearchEnabled(Profile* profile) {
          aim_eligibility_service->IsDeepSearchEligible();
 }
 
+bool AreContextualTasksEligible(Profile* profile) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!profile) {
+    return false;
+  }
+
+  if (!lens::features::IsLensSidePanelUnificationEnabled() ||
+      !contextual_tasks::IsContextualTasksUIEnabled()) {
+    return false;
+  }
+
+  if (!lens::features::IsLensSidePanelUnificationAllowSignedOut()) {
+    auto* ui_service =
+        contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+            profile);
+    if (!ui_service || !ui_service->IsSignedInToBrowserWithValidCredentials() ||
+        !ui_service->CookieJarContainsPrimaryAccount()) {
+      return false;
+    }
+  }
+
+  return true;
+#else
+  return false;
+#endif
+}
+
 std::unique_ptr<
     contextual_search::ContextualSearchContextController::ConfigParams>
 CreateQueryControllerConfigParams() {
@@ -428,7 +463,6 @@ const base::FeatureParam<bool> kWebUIOmniboxDynamicColorScheme{
     &kWebUIOmniboxDynamicAiModeButton, "Omnibox_DynamicColorScheme", false};
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
-
 
 FeatureConfig::FeatureConfig(const FeatureConfig&) = default;
 FeatureConfig::FeatureConfig(FeatureConfig&&) = default;
