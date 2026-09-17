@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/animations/common_animation_values.h"
 #include "ui/base/interaction/safe_castable.h"
 
 DEFINE_SAFE_CAST_TARGET(OrganizerPanelAnimations)
@@ -38,14 +39,12 @@ OrganizerPanelAnimations::~OrganizerPanelAnimations() = default;
 
 OrganizerPanelAnimations::GroupInfos
 OrganizerPanelAnimations::GenerateAnimations() const {
-  static constexpr int kShowMs = 250;
-  static constexpr int kHideMs = 200;
-  constexpr auto kShowHideTween = gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED;
-
   return Groups(
       Group(kOrganizerPanel,
-            Motion(kShow, TotalDurationMs(kShowMs), kShowHideTween,
+            Motion(kShow, TotalDurationMs(browser_animations::kFlyoutShowMs),
+                   browser_animations::kFlyoutTween,
                    Animate(kVisibleWidth, FromValue(0.0), ToValue(1.0))),
-            Motion(kHide, TotalDurationMs(kHideMs), kShowHideTween,
+            Motion(kHide, TotalDurationMs(browser_animations::kFlyoutHideMs),
+                   browser_animations::kFlyoutTween,
                    Animate(kVisibleWidth, FromValue(1.0), ToValue(0.0)))));
 }
