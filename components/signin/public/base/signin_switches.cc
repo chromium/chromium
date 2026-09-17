@@ -380,44 +380,43 @@ BASE_FEATURE_PARAM(size_t,
                    kAutofillWalletMetadataQ3Threshold,
                    &kEnableAccountPreviewPreferredAccount,
                    3);
+BASE_FEATURE_PARAM(size_t,
+                   kReadingListQ1Threshold,
+                   &kEnableAccountPreviewPreferredAccount,
+                   1);
+BASE_FEATURE_PARAM(size_t,
+                   kReadingListMedianThreshold,
+                   &kEnableAccountPreviewPreferredAccount,
+                   2);
+BASE_FEATURE_PARAM(size_t,
+                   kReadingListQ3Threshold,
+                   &kEnableAccountPreviewPreferredAccount,
+                   3);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+BASE_FEATURE_PARAM(size_t,
+                   kExtensionsQ1Threshold,
+                   &kEnableAccountPreviewPreferredAccount,
+                   2);
+BASE_FEATURE_PARAM(size_t,
+                   kExtensionsMedianThreshold,
+                   &kEnableAccountPreviewPreferredAccount,
+                   3);
+BASE_FEATURE_PARAM(size_t,
+                   kExtensionsQ3Threshold,
+                   &kEnableAccountPreviewPreferredAccount,
+                   6);
+#endif
 BASE_FEATURE_PARAM(
     base::TimeDelta,
     kAccountPreviewPreferredAccountSingleAccountPromoFetchTimeout,
     &kEnableAccountPreviewPreferredAccount,
     base::Seconds(1));
 
-// Controls followup features for preferred account preview (additional data
-// types, new promos, and updated strings).
-// This flag has no effect if `kEnableAccountPreviewPreferredAccount` is not
-// enabled.
+// Controls followup features for preferred account preview (new promos, and
+// updated strings). This flag has no effect if
+// `kEnableAccountPreviewPreferredAccount` is not enabled.
 BASE_FEATURE(kEnableAccountPreviewPreferredAccountFollowup,
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(size_t,
-                   kReadingListQ1Threshold,
-                   &kEnableAccountPreviewPreferredAccountFollowup,
-                   1);
-BASE_FEATURE_PARAM(size_t,
-                   kReadingListMedianThreshold,
-                   &kEnableAccountPreviewPreferredAccountFollowup,
-                   2);
-BASE_FEATURE_PARAM(size_t,
-                   kReadingListQ3Threshold,
-                   &kEnableAccountPreviewPreferredAccountFollowup,
-                   3);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-BASE_FEATURE_PARAM(size_t,
-                   kExtensionsQ1Threshold,
-                   &kEnableAccountPreviewPreferredAccountFollowup,
-                   2);
-BASE_FEATURE_PARAM(size_t,
-                   kExtensionsMedianThreshold,
-                   &kEnableAccountPreviewPreferredAccountFollowup,
-                   3);
-BASE_FEATURE_PARAM(size_t,
-                   kExtensionsQ3Threshold,
-                   &kEnableAccountPreviewPreferredAccountFollowup,
-                   6);
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 // This flag controls whether the CCT captures the account name of the 1p app

@@ -248,28 +248,7 @@ TEST_F(AccountPreviewHeuristicTest, SingleValidAccountReturnsPreference) {
 }
 
 TEST_F(AccountPreviewHeuristicTest,
-       ComputeAccountPreviewPreferenceFollowupDisabledIgnoresNewDataTypes) {
-  AccountPreviewData data = CreatePreviewData({
-      .passwords = switches::kPasswordsMedianThreshold.Get(),
-      .reading_list = 10,
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-      .extensions = 10,
-#endif
-  });
-
-  auto pref = ComputeAccountPreviewPreference(GaiaId("user1"), data);
-  ASSERT_TRUE(pref.has_value());
-  EXPECT_THAT(pref->preferred_data_types,
-              ElementsAre(PreferredDataTypeInfo{
-                  .data_type = syncer::PASSWORDS,
-                  .quartile = SyncDataQuartile::kMedianToQ3}));
-}
-
-TEST_F(AccountPreviewHeuristicTest,
-       ComputeAccountPreviewPreferenceFollowupEnabledIncludesNewDataTypes) {
-  base::test::ScopedFeatureList feature_list{
-      switches::kEnableAccountPreviewPreferredAccountFollowup};
-
+       ComputeAccountPreviewPreferenceIncludesNewDataTypes) {
   AccountPreviewData data = CreatePreviewData({
       .reading_list = switches::kReadingListMedianThreshold.Get(),
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -296,10 +275,7 @@ TEST_F(AccountPreviewHeuristicTest,
 }
 
 TEST_F(AccountPreviewHeuristicTest,
-       ComputePreferredAccountForPromoScoreIgnoresNewDataTypes) {
-  base::test::ScopedFeatureList feature_list{
-      switches::kEnableAccountPreviewPreferredAccountFollowup};
-
+       ComputePreferredAccountForPromoScoreIgnoredDataTypesNotUsedForScoring) {
   // Account A only has reading list and extensions data.
   AccountPreviewData data_a = CreatePreviewData({
       .reading_list = 100,
