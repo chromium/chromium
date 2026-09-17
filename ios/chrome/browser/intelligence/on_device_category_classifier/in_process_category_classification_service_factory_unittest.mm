@@ -9,8 +9,11 @@
 
 #import "base/functional/bind.h"
 #import "base/no_destructor.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -59,6 +62,40 @@ TEST_F(InProcessCategoryClassificationServiceFactoryTest,
   EXPECT_EQ(
       InProcessCategoryClassificationServiceFactory::GetForProfile(otr_profile),
       nullptr);
+}
+
+// Test fixture which registers the factory's real (non-stubbed) default
+// factory, so that the feature checks in
+// `BuildInProcessCategoryClassificationService()` are exercised.
+class InProcessCategoryClassificationServiceFactoryFeatureTest
+    : public PlatformTest {
+ protected:
+  std::unique_ptr<TestProfileIOS> CreateProfile() {
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        OptimizationGuideServiceFactory::GetInstance(),
+        OptimizationGuideServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        InProcessCategoryClassificationServiceFactory::GetInstance(),
+        InProcessCategoryClassificationServiceFactory::GetDefaultFactory());
+    return std::move(builder).Build();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  web::WebTaskEnvironment task_environment_;
+};
+
+// Tests that no service is built when the on-device category classifier is
+// disabled, even for a regular profile.
+TEST_F(InProcessCategoryClassificationServiceFactoryFeatureTest,
+       DoNotCreateServiceWhenOnDeviceClassifierDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(kGeminiContextualSuggestionsCues);
+  ASSERT_FALSE(IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled());
+
+  auto profile = CreateProfile();
+  EXPECT_EQ(InProcessCategoryClassificationServiceFactory::GetForProfile(
+                profile.get()),
+            nullptr);
 }
 
 }  // namespace
