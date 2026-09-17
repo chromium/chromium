@@ -55,6 +55,7 @@ import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -66,7 +67,7 @@ import org.chromium.url.GURL;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/** Tests for {@link MediaState}. */
+/** Tests for {@link TabAlert} and {@link MediaState}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
@@ -141,7 +142,7 @@ public class TabMediaIndicatorTest {
 
         new TabLoadObserver(mTab).fullyLoadUrl(mActivityTestRule.getTestServer().getURL(TEST_PATH));
         DOMUtils.waitForNonZeroNodeBounds(mTab.getWebContents(), VIDEO_ID);
-        assertEquals(MediaState.NONE, mTab.getMediaState());
+        assertEquals(TabAlert.NONE, mTab.getAlertState());
 
         grantRecordingPermissions();
 
@@ -162,97 +163,97 @@ public class TabMediaIndicatorTest {
 
     @Test
     @SmallTest
-    public void testMediaStateAudible() throws TimeoutException {
+    public void testAlertStateAudioPlaying() throws TimeoutException {
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
-        waitForMediaState(mTab, MediaState.AUDIBLE);
+        waitForAlertState(mTab, TabAlert.AUDIO_PLAYING);
     }
 
     @Test
     @SmallTest
-    public void testMediaStateMuted() throws TimeoutException {
+    public void testAlertStateAudioMuting() throws TimeoutException {
         setMuteState(true);
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
-        waitForMediaState(mTab, MediaState.MUTED);
+        waitForAlertState(mTab, TabAlert.AUDIO_MUTING);
     }
 
     @Test
     @SmallTest
-    public void testMediaStateMutedThenUnmute() throws TimeoutException {
+    public void testAlertStateAudioMutingThenUnmute() throws TimeoutException {
         setMuteState(true);
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
-        waitForMediaState(mTab, MediaState.MUTED);
+        waitForAlertState(mTab, TabAlert.AUDIO_MUTING);
         setMuteState(false);
-        waitForMediaState(mTab, MediaState.AUDIBLE);
+        waitForAlertState(mTab, TabAlert.AUDIO_PLAYING);
     }
 
     @Test
     @SmallTest
-    public void testMediaStateAudibleThenMute() throws TimeoutException {
+    public void testAlertStateAudioPlayingThenMute() throws TimeoutException {
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
-        waitForMediaState(mTab, MediaState.AUDIBLE);
+        waitForAlertState(mTab, TabAlert.AUDIO_PLAYING);
         setMuteState(true);
-        waitForMediaState(mTab, MediaState.MUTED);
+        waitForAlertState(mTab, TabAlert.AUDIO_MUTING);
     }
 
     @Test
     @SmallTest
-    public void testMediaStateAudibleMuteWithPause() throws TimeoutException {
+    public void testAlertStateAudioPlayingMuteWithPause() throws TimeoutException {
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
-        waitForMediaState(mTab, MediaState.AUDIBLE);
+        waitForAlertState(mTab, TabAlert.AUDIO_PLAYING);
 
         // Pause video.
         DOMUtils.pauseMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPauseBeforeEnd(mTab.getWebContents(), VIDEO_ID);
 
         // Wait for the recently audible state to clear.
-        waitForMediaState(mTab, MediaState.NONE);
+        waitForAlertState(mTab, TabAlert.NONE);
 
         // Mute video.
         setMuteState(true);
-        assertEquals(MediaState.NONE, mTab.getMediaState());
+        assertEquals(TabAlert.NONE, mTab.getAlertState());
 
         // Play the video again.
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
-        waitForMediaState(mTab, MediaState.MUTED);
+        waitForAlertState(mTab, TabAlert.AUDIO_MUTING);
     }
 
     @Test
     @SmallTest
-    public void testMediaStateWithVideoMutedAndUnmuted() throws TimeoutException {
+    public void testAlertStateWithVideoMutedAndUnmuted() throws TimeoutException {
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
-        waitForMediaState(mTab, MediaState.AUDIBLE);
+        waitForAlertState(mTab, TabAlert.AUDIO_PLAYING);
 
         // Mute video element.
         DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), MUTE_VIDEO_ID);
 
         // Wait for the recently audible state to clear.
         assertFalse(DOMUtils.isMediaPaused(mTab.getWebContents(), VIDEO_ID));
-        waitForMediaState(mTab, MediaState.NONE);
+        waitForAlertState(mTab, TabAlert.NONE);
 
         // Unmute video element.
         DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), UNMUTE_VIDEO_ID);
-        waitForMediaState(mTab, MediaState.AUDIBLE);
+        waitForAlertState(mTab, TabAlert.AUDIO_PLAYING);
     }
 
     @Test
     @SmallTest
-    public void testMediaStateRecordingMic() {
+    public void testAlertStateAudioRecording() {
         requestMic();
-        waitForMediaState(mTab, MediaState.RECORDING);
+        waitForAlertState(mTab, TabAlert.AUDIO_RECORDING);
     }
 
     @Test
     @SmallTest
-    public void testMediaStateRecordingCam() {
+    public void testAlertStateVideoRecording() {
         requestCam();
-        waitForMediaState(mTab, MediaState.RECORDING);
+        waitForAlertState(mTab, TabAlert.VIDEO_RECORDING);
     }
 
     @Test
@@ -261,90 +262,71 @@ public class TabMediaIndicatorTest {
     @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.R)
     // PiP is not supported for automotive.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    public void testMediaStatePictureInPicture() throws TimeoutException {
+    public void testAlertStatePipPlaying() throws TimeoutException {
         assumeTrue("PiP is not enabled", isPiPEnabled());
 
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
-        waitForMediaState(mTab, MediaState.AUDIBLE);
+        waitForAlertState(mTab, TabAlert.AUDIO_PLAYING);
 
         // Enter Picture-in-Picture
         enterPictureInPicture();
-        waitForMediaState(mTab, MediaState.PICTURE_IN_PICTURE);
+        waitForAlertState(mTab, TabAlert.PIP_PLAYING);
 
         // Exit Picture-in-Picture
         exitPictureInPicture();
-        waitForMediaState(mTab, MediaState.AUDIBLE);
+        waitForAlertState(mTab, TabAlert.AUDIO_PLAYING);
     }
 
     @Test
     @SmallTest
-    public void testMediaStatePriority() throws TimeoutException {
+    public void testAlertStatePriority() throws TimeoutException {
         // MUTED
         setMuteState(true);
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
-        waitForMediaState(mTab, MediaState.MUTED);
+        waitForAlertState(mTab, TabAlert.AUDIO_MUTING);
 
         // AUDIBLE
         setMuteState(false);
-        waitForMediaState(mTab, MediaState.AUDIBLE);
+        waitForAlertState(mTab, TabAlert.AUDIO_PLAYING);
 
         // RECORDING
         requestMic();
-        waitForMediaState(mTab, MediaState.RECORDING);
+        waitForAlertState(mTab, TabAlert.AUDIO_RECORDING);
 
         if (isPiPEnabled()) {
             // PICTURE_IN_PICTURE
             // Indicator should stay RECORDING as it has higher priority.
             enterPictureInPicture();
-            waitForMediaState(mTab, MediaState.RECORDING);
+            waitForAlertState(mTab, TabAlert.AUDIO_RECORDING);
 
             // Stop recording, indicator should drop to PiP.
             stopMic();
-            waitForMediaState(mTab, MediaState.PICTURE_IN_PICTURE);
+            waitForAlertState(mTab, TabAlert.PIP_PLAYING);
 
             // Exit PiP, indicator should drop to AUDIBLE.
             exitPictureInPicture();
-            waitForMediaState(mTab, MediaState.AUDIBLE);
+            waitForAlertState(mTab, TabAlert.AUDIO_PLAYING);
         }
     }
 
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.DESKTOP)
-    public void testMediaStateSharing() {
-        // Expect SHARING
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Tab.Android.MediaState", MediaState.SHARING);
-        startTabCapture(mTab, mTab);
-        watcher.assertExpected();
-
-        // Expect NONE
-        watcher =
-                HistogramWatcher.newSingleRecordWatcher("Tab.Android.MediaState", MediaState.NONE);
-        stopTabCapture(mTab);
-        waitForMediaState(mTab, MediaState.NONE);
-        watcher.assertExpected();
-    }
-
-    @Test
-    @SmallTest
-    @Restriction(DeviceFormFactor.DESKTOP)
-    public void testMediaStateSharingOverridesRecording() {
+    public void testAlertStateTabCapturingOverridesRecording() {
         requestMic();
-        waitForMediaState(mTab, MediaState.RECORDING);
+        waitForAlertState(mTab, TabAlert.AUDIO_RECORDING);
 
         startTabCapture(mTab, mTab);
         stopTabCapture(mTab);
-        waitForMediaState(mTab, MediaState.RECORDING);
+        waitForAlertState(mTab, TabAlert.AUDIO_RECORDING);
     }
 
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.DESKTOP)
-    public void testMediaStateSharingNewTab() {
+    public void testAlertStateTabCapturingNewTab() {
         Tab newTab = openNewTabWith(GOOGLE_PATH);
 
         // Pick the new tab to be captured
@@ -353,13 +335,13 @@ public class TabMediaIndicatorTest {
         selectTab(mTab);
         startTabCapture(mTab, newTab);
         stopTabCapture(mTab);
-        waitForMediaState(newTab, MediaState.NONE);
+        waitForAlertState(newTab, TabAlert.NONE);
     }
 
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.DESKTOP)
-    public void testMediaStateSharingDisappearsWhenCapturerTabIsClosed() {
+    public void testAlertStateTabCapturingDisappearsWhenCapturerTabIsClosed() {
         Tab newTab = openNewTabWith(GOOGLE_PATH);
 
         // Pick the new tab to be captured
@@ -369,13 +351,13 @@ public class TabMediaIndicatorTest {
         startTabCapture(mTab, newTab);
 
         closeTab(mTab);
-        waitForMediaState(newTab, MediaState.NONE);
+        waitForAlertState(newTab, TabAlert.NONE);
     }
 
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.DESKTOP)
-    public void testMediaStateSharingWithTwoCapturers() {
+    public void testAlertStateTabCapturingWithTwoCapturers() {
         Tab capturer1Tab = mTab;
 
         // Create and setup a capturee tab.
@@ -398,13 +380,13 @@ public class TabMediaIndicatorTest {
         // Stop capture from the first tab and verify the indicator is still present.
         selectTab(capturer1Tab);
         stopTabCapture(capturer1Tab);
-        // The media state should persist as the second capturer is still active.
-        waitForMediaState(captureeTab, MediaState.SHARING);
+        // The alert state should persist as the second capturer is still active.
+        waitForAlertState(captureeTab, TabAlert.TAB_CAPTURING);
 
         // Stop capture from the second tab and verify the indicator is gone.
         selectTab(capturer2Tab);
         stopTabCapture(capturer2Tab);
-        waitForMediaState(captureeTab, MediaState.NONE);
+        waitForAlertState(captureeTab, TabAlert.NONE);
     }
 
     @Test
@@ -458,6 +440,25 @@ public class TabMediaIndicatorTest {
             waitForMediaState(mTab, MediaState.PICTURE_IN_PICTURE);
             watcher.assertExpected();
         }
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.DESKTOP)
+    public void testMediaStateSharing() {
+        // Expect SHARING
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tab.Android.MediaState", MediaState.SHARING);
+        startTabCapture(mTab, mTab);
+        watcher.assertExpected();
+
+        // Expect NONE
+        watcher =
+                HistogramWatcher.newSingleRecordWatcher("Tab.Android.MediaState", MediaState.NONE);
+        stopTabCapture(mTab);
+        waitForMediaState(mTab, MediaState.NONE);
+        watcher.assertExpected();
     }
 
     private void enterPictureInPicture() {
@@ -523,7 +524,7 @@ public class TabMediaIndicatorTest {
                             Matchers.is(true));
                 });
         waitForTitle(capturer, "stream_ready");
-        waitForMediaState(capturee, MediaState.SHARING);
+        waitForAlertState(capturee, TabAlert.TAB_CAPTURING);
     }
 
     private void stopTabCapture(Tab capturer) {
@@ -534,6 +535,16 @@ public class TabMediaIndicatorTest {
     private void stopMic() {
         JavaScriptUtils.executeJavaScript(mTab.getWebContents(), "stopMic();");
         waitForTitle(mTab, "mic_stopped");
+    }
+
+    private void waitForAlertState(Tab tab, @TabAlert int expectedState) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Tab alert state should be " + expectedState,
+                            tab.getAlertState(),
+                            Matchers.is(expectedState));
+                });
     }
 
     private void waitForMediaState(Tab tab, @MediaState int expectedState) {

@@ -1523,7 +1523,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tab") {
     "//chrome/test/data/media/bigbuck.webm",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//components/tabs/public/android:java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.tab_group_sync") {
