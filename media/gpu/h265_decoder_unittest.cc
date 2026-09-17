@@ -7,6 +7,7 @@
 #include <array>
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -94,6 +95,16 @@ class HasPocMatcher : public MatcherInterface<scoped_refptr<H265Picture>> {
 
 Matcher<scoped_refptr<H265Picture>> HasPoc(int expected_poc) {
   return MakeMatcher(new HasPocMatcher(expected_poc));
+}
+
+// Checks the number of entries in one of the reference picture lists that are
+// passed to SubmitSlice().
+MATCHER_P(RefPicListSizeIs, expected_size, "") {
+  if (arg.size() == static_cast<size_t>(expected_size)) {
+    return true;
+  }
+  *result_listener << "with size: " << arg.size();
+  return false;
 }
 
 // Shared SPS for the synthetic streams in this file. Fields that are already
@@ -216,6 +227,39 @@ void AppendPpsWithLayerId(H26xAnnexBBitstreamBuilder& builder,
   H26xAnnexBBitstreamBuilder packed;
   BuildPackedH265PPS(packed, pps);
   AppendPackedNaluWithLayerId(builder, packed, nuh_layer_id);
+}
+
+// Appends one P slice segment of a trailing picture that references the picture
+// one POC below it. A |slice_segment_address| of 0 marks the first slice
+// segment of the picture; the others are independent slice segments because the
+// PPS does not enable dependent ones. Passing |num_ref_idx_l0_active_minus1|
+// overrides the value the PPS defaults to.
+void AppendPSliceSegment(H26xAnnexBBitstreamBuilder& builder,
+                         int poc_lsb,
+                         int slice_segment_address,
+                         std::optional<int> num_ref_idx_l0_active_minus1) {
+  AppendNaluHeader(builder, H265NALU::TRAIL_R);
+  const bool first_slice = slice_segment_address == 0;
+  builder.AppendBool(first_slice);  // first_slice_segment_in_pic_flag
+  builder.AppendUE(0);              // slice_pic_parameter_set_id
+  if (!first_slice) {
+    builder.AppendBits(8, slice_segment_address);
+  }
+  builder.AppendUE(1);             // slice_type = P
+  builder.AppendBits(8, poc_lsb);  // slice_pic_order_cnt_lsb
+  builder.AppendBool(false);       // short_term_ref_pic_set_sps_flag
+  builder.AppendUE(1);             // num_negative_pics
+  builder.AppendUE(0);             // num_positive_pics
+  builder.AppendUE(0);             // delta_poc_s0_minus1[0]
+  builder.AppendBool(true);        // used_by_curr_pic_s0_flag[0]
+  builder.AppendBool(num_ref_idx_l0_active_minus1.has_value());
+  if (num_ref_idx_l0_active_minus1.has_value()) {
+    builder.AppendUE(*num_ref_idx_l0_active_minus1);
+  }
+  builder.AppendUE(0);       // five_minus_max_num_merge_cand
+  builder.AppendSE(0);       // slice_qp_delta
+  builder.AppendBool(true);  // byte alignment bit
+  builder.Flush();
 }
 
 }  // namespace
@@ -1338,6 +1382,49 @@ TEST_F(H265DecoderTest, LatencyBumpingRunsUntilTheLimitIsMet) {
   // Verify before flushing: the latency limit has to have pushed POC 100 out
   // already, rather than leaving it for Flush() to pick up.
   EXPECT_TRUE(Mock::VerifyAndClearExpectations(&*accelerator_));
+  EXPECT_TRUE(decoder_->Flush());
+}
+
+// Clause 8.3.4 is a per slice process: the number of active reference indices
+// is slice level syntax, so every independent slice of a picture gets its own
+// reference picture lists.
+TEST_F(H265DecoderTest, ReferencePictureListsAreBuiltPerSlice) {
+  H26xAnnexBBitstreamBuilder builder;
+  H265SPS sps = MakeTestSps();
+  // Keep the IDR available as a reference for both P slices.
+  sps.sps_max_dec_pic_buffering_minus1[0] = 4;
+  BuildPackedH265SPS(builder, sps);
+  // PPS default num_ref_idx_l0_default_active_minus1 is 0, so the first P
+  // slice gets L0 size 1 until the second slice overrides it.
+  BuildPackedH265PPS(builder, MakeTestPps());
+
+  AppendIntraPicture(builder, H265NALU::IDR_W_RADL, /*poc_lsb=*/0);
+  // Two independent slice segments of the same picture, the second one
+  // overriding the number of active reference indices that the PPS defaults to.
+  AppendPSliceSegment(builder, /*poc_lsb=*/1, /*slice_segment_address=*/0,
+                      /*num_ref_idx_l0_active_minus1=*/std::nullopt);
+  AppendPSliceSegment(builder, /*poc_lsb=*/1, /*slice_segment_address=*/1,
+                      /*num_ref_idx_l0_active_minus1=*/1);
+
+  auto buffer = DecoderBuffer::CopyFrom(builder.data());
+  ExpectAnyAcceleratorCalls();
+  {
+    InSequence sequence;
+    // The IDR is intra coded and has no reference picture lists.
+    EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, RefPicListSizeIs(0), _, _,
+                                           _, _, _, _, _, _))
+        .WillOnce(Return(H265Decoder::H265Accelerator::Status::kOk));
+    EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, RefPicListSizeIs(1), _, _,
+                                           _, _, _, _, _, _))
+        .WillOnce(Return(H265Decoder::H265Accelerator::Status::kOk));
+    EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, RefPicListSizeIs(2), _, _,
+                                           _, _, _, _, _, _))
+        .WillOnce(Return(H265Decoder::H265Accelerator::Status::kOk));
+  }
+
+  decoder_->SetStream(0, buffer);
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, decoder_->Decode());
   EXPECT_TRUE(decoder_->Flush());
 }
 

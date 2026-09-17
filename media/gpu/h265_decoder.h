@@ -289,15 +289,22 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
                       const H265PPS* pps,
                       const H265SliceHeader* slice_hdr);
 
-  // Builds the reference pictures lists for |curr_pic_| using |sps|, |pps|,
-  // |slice_hdr| and the member variables calculated in CalcRefPicPocs. Returns
-  // false if bitstream conformance is not maintained or needed reference
-  // pictures are missing, true otherwise. At the end of this,
-  // |ref_pic_list{0,1}| will be populated with the required reference pictures
-  // for submitting to the accelerator.
-  bool BuildRefPicLists(const H265SPS* sps,
-                        const H265PPS* pps,
-                        const H265SliceHeader* slice_hdr);
+  // Derives the reference picture sets of clause 8.3.2 for |curr_pic_| from
+  // |sps| and the POCs calculated in CalcRefPicPocs(), and marks the
+  // corresponding pictures in the DPB. This is invoked once per picture, and
+  // populates |ref_pic_set_{lt_curr,st_curr_after,st_curr_before}_| and
+  // |ref_pic_list_| for submitting to the accelerator. Returns false if
+  // bitstream conformance is not maintained, true otherwise.
+  bool MarkRefPicSets(const H265SPS* sps);
+
+  // Builds the reference picture lists of clause 8.3.4 for |slice_hdr| from the
+  // sets derived by MarkRefPicSets(). Independent P/B slices can override the
+  // active list sizes and the list modifications, so this is invoked for every
+  // slice of the picture. I slices produce empty lists. At the end of this,
+  // |ref_pic_list{0,1}_| will be populated with the required reference pictures
+  // for submitting to the accelerator. Returns false if bitstream conformance
+  // is not maintained, true otherwise.
+  bool BuildRefPicLists(const H265SliceHeader* slice_hdr);
 
   // Returns true if the "bumping" process of clause C.5.2.4 needs to be
   // invoked. |include_buffering| selects between the condition set of C.5.2.2,

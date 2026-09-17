@@ -742,6 +742,17 @@ H265Decoder::H265Accelerator::Status H265Decoder::ProcessCurrentSlice() {
   const H265PPS* pps = parser_.GetPPS(curr_pps_id_);
   DCHECK(pps);
 
+  // 8.3.4 is a slice-level process. Independent P/B slices can override the
+  // number of active reference indices and the list modifications, so the
+  // lists are rebuilt from this slice header. I slices produce empty lists.
+  // Dependent slice segments copy the independent slice's header, so they
+  // rebuild the same lists. Rebuilding is safe on a kTryAgain retry because
+  // it only depends on |slice_hdr| and on the sets that MarkRefPicSets()
+  // derived once for this picture.
+  if (!BuildRefPicLists(slice_hdr)) {
+    return H265Accelerator::Status::kFail;
+  }
+
   return accelerator_->SubmitSlice(
       sps, pps, slice_hdr, ref_pic_list0_, ref_pic_list1_, ref_pic_set_lt_curr_,
       ref_pic_set_st_curr_after_, ref_pic_set_st_curr_before_, curr_pic_.get(),
@@ -906,9 +917,7 @@ bool H265Decoder::CalcRefPicPocs(const H265SPS* sps,
   return true;
 }
 
-bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
-                                   const H265PPS* pps,
-                                   const H265SliceHeader* slice_hdr) {
+bool H265Decoder::MarkRefPicSets(const H265SPS* sps) {
   ref_pic_set_lt_curr_.clear();
   ref_pic_set_lt_curr_.resize(kMaxDpbSize);
   ref_pic_set_st_curr_after_.clear();
@@ -983,15 +992,33 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
 
   ref_pic_list_.clear();
   dpb_.AppendReferencePics(&ref_pic_list_);
-  ref_pic_list0_.clear();
-  ref_pic_list1_.clear();
 
   // 8.3.3 Generation of unavailable reference pictures is something we do not
   // need to handle here. It's handled by the accelerator itself when we do not
   // specify a reference picture that it needs.
 
+  return true;
+}
+
+bool H265Decoder::BuildRefPicLists(const H265SliceHeader* slice_hdr) {
+  ref_pic_list0_.clear();
+  ref_pic_list1_.clear();
+
   if (slice_hdr->IsPSlice() || slice_hdr->IsBSlice()) {
-    // 8.3.4 Decoding process for reference picture lists construction
+    // 8.3.4 Decoding process for reference picture lists construction.
+    // Equations 8-8 and 8-10 fill the temporary lists by cycling through
+    // RefPicSetStCurrBefore, RefPicSetStCurrAfter and RefPicSetLtCurr, so the
+    // combined size of those sets has to be non-zero to make progress. The
+    // parser already guarantees this for a base-layer P or B slice, by
+    // requiring num_pic_total_curr to be non-zero and by rejecting a non-I
+    // slice on an IRAP picture. Checking it here keeps the loops below from
+    // depending on those invariants.
+    if (!num_poc_st_curr_before_ && !num_poc_st_curr_after_ &&
+        !num_poc_lt_curr_) {
+      DVLOG(1) << "No reference pictures available for a P or B slice";
+      return false;
+    }
+
     int num_rps_curr_temp_list0 =
         std::max(slice_hdr->num_ref_idx_l0_active_minus1 + 1,
                  slice_hdr->num_pic_total_curr);
@@ -1114,7 +1141,7 @@ H265Decoder::H265Accelerator::Status H265Decoder::StartNewFrame(
       return H265Accelerator::Status::kFail;
     }
 
-    if (!BuildRefPicLists(sps, pps, slice_hdr)) {
+    if (!MarkRefPicSets(sps)) {
       return H265Accelerator::Status::kFail;
     }
 
