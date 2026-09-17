@@ -315,6 +315,7 @@ void SuspiciousSiteControllerAndroid::CloseDialog(
 
   switch (dismissal_cause) {
     case ui::ModalDialogWrapper::DismissalCause::NAVIGATE_BACK:
+    case ui::ModalDialogWrapper::DismissalCause::NAVIGATE_BACK_OR_TOUCH_OUTSIDE:
       HandleBackNavigation(UserInteraction::kSystemBack);
       return;
     case ui::ModalDialogWrapper::DismissalCause::NAVIGATE:
