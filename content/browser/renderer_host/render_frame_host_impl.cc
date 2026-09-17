@@ -13326,13 +13326,18 @@ void RenderFrameHostImpl::CommitNavigation(
     }
 #endif
 
-    auto* partition = GetStoragePartition();
-    non_network_factories.emplace(
-        url::kFileSystemScheme,
-        CreateFileSystemURLLoaderFactory(
-            GetProcess()->GetDeprecatedID(), GetFrameTreeNodeId(),
-            partition->GetFileSystemContext(), partition->GetPartitionDomain(),
-            commit_params->storage_key));
+    // Only non-PDF documents can load filesystem: subresources.  PDF
+    // documents may commit an origin, but their processes are not allowed to
+    // access stored data for it.
+    if (!navigation_request->GetUrlInfo().embedder_isolation_info.is_pdf()) {
+      auto* partition = GetStoragePartition();
+      non_network_factories.emplace(
+          url::kFileSystemScheme,
+          CreateFileSystemURLLoaderFactory(
+              GetProcess()->GetID().GetUnsafeValue(), GetFrameTreeNodeId(),
+              partition->GetFileSystemContext(),
+              partition->GetPartitionDomain(), commit_params->storage_key));
+    }
 
     non_network_factories.emplace(url::kDataScheme,
                                   DataURLLoaderFactory::Create());
