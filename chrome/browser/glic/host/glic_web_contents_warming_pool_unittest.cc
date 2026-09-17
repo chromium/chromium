@@ -13,6 +13,8 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/performance_manager/scenario_api/performance_scenario_test_support.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
@@ -697,6 +699,97 @@ TEST_F(GlicWebContentsWarmingPoolTest, ProfileDestructionClearsWarmingPool) {
   // Further attempts to warm after shutdown must be rejected.
   EXPECT_FALSE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest,
+       BackfillWarmingWithPerformanceManagerTriggersWhenIdle) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicWebContentsWarming,
+                            features::
+                                kGlicBackfillWarmingUsePerformanceManager},
+      /*disabled_features=*/{});
+
+  auto test_helper =
+      performance_scenarios::PerformanceScenarioTestHelper::Create();
+  ASSERT_TRUE(test_helper);
+  test_helper->SetLoadingScenario(
+      performance_scenarios::ScenarioScope::kGlobal,
+      performance_scenarios::LoadingScenario::kFocusedPageLoading);
+  test_helper->SetInputScenario(performance_scenarios::ScenarioScope::kGlobal,
+                                performance_scenarios::InputScenario::kNoInput);
+
+  TestGlicWebContentsWarmingPool warming_pool(&profile_,
+                                              &web_contents_factory_);
+  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+
+  // Taking the container drains the pool and schedules backfill via PM.
+  auto taken = warming_pool.TakeContainer();
+  EXPECT_TRUE(taken);
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_TRUE(warming_pool.GetBackfillSchedulerForTesting().IsScheduled());
+
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_TRUE(warming_pool.GetBackfillSchedulerForTesting().IsScheduled());
+
+  // Fast-forwarding time past the default warming delay does NOT trigger
+  // backfill because Performance Manager observation is trusted without a
+  // racing timer.
+  task_environment_.FastForwardBy(features::kGlicWebContentsWarmingDelay.Get() +
+                                  base::Seconds(30));
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_TRUE(warming_pool.GetBackfillSchedulerForTesting().IsScheduled());
+
+  // Transition global loading scenario to idle (kNoPageLoading).
+  test_helper->SetLoadingScenario(
+      performance_scenarios::ScenarioScope::kGlobal,
+      performance_scenarios::LoadingScenario::kNoPageLoading);
+  task_environment_.RunUntilIdle();
+
+  // Container is backfilled!
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_FALSE(warming_pool.GetBackfillSchedulerForTesting().IsScheduled());
+}
+
+TEST_F(
+    GlicWebContentsWarmingPoolTest,
+    BackfillWarmingWithPerformanceManagerFallbackWhenObserverListUnavailable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicWebContentsWarming,
+                            features::
+                                kGlicBackfillWarmingUsePerformanceManager},
+      /*disabled_features=*/{});
+
+  // Note: No PerformanceScenarioTestHelper is created, so observer list is
+  // nullptr.
+  ASSERT_EQ(performance_scenarios::PerformanceScenarioObserverList::GetForScope(
+                performance_scenarios::ScenarioScope::kGlobal),
+            nullptr);
+
+  TestGlicWebContentsWarmingPool warming_pool(&profile_,
+                                              &web_contents_factory_);
+  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+
+  auto taken = warming_pool.TakeContainer();
+  EXPECT_TRUE(taken);
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_TRUE(warming_pool.GetBackfillSchedulerForTesting().IsScheduled());
+
+  // Advance time up to just before fallback timeout
+  // (features::kGlicWebContentsWarmingDelay).
+  task_environment_.FastForwardBy(features::kGlicWebContentsWarmingDelay.Get() -
+                                  base::Seconds(1));
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_TRUE(warming_pool.GetBackfillSchedulerForTesting().IsScheduled());
+
+  // Fallback timeout expires, forcing backfill.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_FALSE(warming_pool.GetBackfillSchedulerForTesting().IsScheduled());
 }
 
 }  // namespace glic

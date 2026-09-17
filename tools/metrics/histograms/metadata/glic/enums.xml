@@ -1289,6 +1289,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_contents_warming_pool.h:GlicWarmingPoolStatus) -->
 
+<!-- LINT.IfChange(GlicWarmingSchedulerSchedulingMethod) -->
+
+<enum name="GlicWarmingSchedulerSchedulingMethod">
+  <int value="0" label="Fixed Delay Timer"/>
+  <int value="1" label="Performance Manager: Immediate Idle"/>
+  <int value="2" label="Performance Manager: Observed Scenario Changes"/>
+  <int value="3" label="Performance Manager: Missing Observer List Fallback"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic_warming_scheduler.cc:GlicWarmingSchedulerSchedulingMethod) -->
+
 <!-- LINT.IfChange(GlicWebClientLifecycleEvent) -->
 
 <enum name="GlicWebClientLifecycleEvent">

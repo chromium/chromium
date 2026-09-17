@@ -3595,6 +3595,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.WarmingScheduler.SchedulingMethod"
+    enum="GlicWarmingSchedulerSchedulingMethod" expires_after="2027-03-01">
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Logged when GlicWarmingScheduler::Schedule is called to schedule a warming
+    task. Records the mechanism chosen to schedule warming, such as whether
+    Performance Manager scenario observation was used, whether the browser was
+    already idle, or whether a fallback timer was used because the Performance
+    Manager observer list was unavailable.
+  </summary>
+</histogram>
+
+<histogram name="Glic.WarmingScheduler.TimeToIdle" units="ms"
+    expires_after="2027-03-01">
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Logged when GlicWarmingScheduler finishes waiting for Performance Manager
+    idle conditions after being scheduled (either immediately if already idle,
+    or upon receiving a scenario notification). Records the time elapsed between
+    Schedule() and the idle state being reached.
+  </summary>
+</histogram>
+
 <histogram name="Glic.WebContentContextMenu.Enabled" enum="Boolean"
     expires_after="2026-09-01">
   <owner>basiaz@google.com</owner>
