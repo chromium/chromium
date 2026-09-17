@@ -58,7 +58,7 @@
 #include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing_factory.h"
 #endif
 
@@ -358,16 +358,6 @@ SharedImageFactory::SharedImageFactory(
         gpu_preferences_, workarounds_, context_state_);
     factories_.push_back(std::move(factory));
   }
-
-#if BUILDFLAG(IS_WIN)
-  if (gr_context_type_ == GrContextType::kVulkan) {
-    auto external_vk_image_factory =
-        std::make_unique<ExternalVkImageBackingFactory>(
-            context_state_,
-            gpu_preferences_.enable_webgpu_on_vk_via_gl_interop);
-    factories_.push_back(std::move(external_vk_image_factory));
-  }
-#endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
   // Create EGLImageBackingFactory if egl images are supported. Note that the

@@ -453,7 +453,7 @@ target(link_target_type, "gles2_sources") {
       "vulkan_in_process_context_provider.h",
     ]
 
-    if (is_linux || is_fuchsia || is_win) {
+    if (is_linux || is_fuchsia) {
       sources += [
         "external_semaphore.cc",
         "external_semaphore.h",
