@@ -2487,11 +2487,6 @@ static_library("ui") {
   }
 
   if (is_win || is_mac || is_linux) {
-    sources += [
-      "views/profiles/profile_picker_view.cc",
-      "views/profiles/profile_picker_view.h",
-    ]
-
     deps += [
       "//chrome/browser/default_browser",
       "//chrome/browser/ui/download",
@@ -2506,6 +2501,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/profiles:profile_menu_view",
       "//chrome/browser/ui/views/profiles:profile_picker_feature_promo_controller",
       "//chrome/browser/ui/views/profiles:profile_picker_feature_promo_controller_impl",
+      "//chrome/browser/ui/views/profiles:profile_picker_view",
       "//chrome/browser/ui/views/profiles:profile_picker_web_contents_host",
       "//chrome/browser/ui/views/profiles:profile_picker_widget",
       "//chrome/browser/ui/views/profiles:profile_picker_widget_impl",
@@ -2528,12 +2524,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/profiles:profile_menu_view",
       "//chrome/browser/ui/startup/default_browser_prompt:impl",
       "//chrome/browser/ui/webui/signin:profile_impl",
-
-      # profile_picker_feature_promo_controller_impl and
-      # profile_picker_widget_impl include profile_picker_view.h which
-      # cannot be split out yet.
-      "//chrome/browser/ui/views/profiles:profile_picker_feature_promo_controller_impl",
-      "//chrome/browser/ui/views/profiles:profile_picker_widget_impl",
 
       # TODO(crbug.com/353332589):
       # profile_customization_bubble_sync_controller.cc includes browser_view.h.

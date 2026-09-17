@@ -457,6 +457,87 @@ if (is_win || is_mac || is_linux) {
     ]
   }
 
+  source_set("profile_picker_view") {
+    public = [ "profile_picker_view.h" ]
+
+    sources = [ "profile_picker_view.cc" ]
+
+    public_deps = [
+      ":profile_management_types",
+      ":profile_picker_web_contents_host",
+      "//base",
+      "//build:buildflag_header_h",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
+      "//chrome/browser/ui/profiles",
+      "//components/keep_alive_registry",
+      "//components/user_education/common",
+      "//ui/base/metadata",
+      "//ui/views",
+      "//ui/views/controls/webview",
+    ]
+
+    deps = [
+      ":first_run_flow_controller",
+      ":profile_management_flow_controller",
+      ":profile_management_flow_controller_impl",
+      ":profile_picker_feature_promo_controller",
+      ":profile_picker_flow_controller",
+      ":profile_picker_glic_flow_controller",
+      ":profile_picker_omnibox_everywhere_flow_controller",
+      ":profile_picker_toolbar",
+      ":profile_picker_utils",
+      ":profile_picker_widget",
+      "//chrome/app:branded_strings",
+      "//chrome/app:command_ids",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/feature_engagement",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/profiles:profile_manager",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/signin",
+      "//chrome/browser/signin:signin_promo",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui:accelerator_table",
+      "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/webui/signin:profile",
+      "//chrome/browser/ui/webui/signin:signin_ui_error",
+      "//chrome/browser/ui/webui/signin:signin_utils",
+      "//chrome/browser/user_education",
+      "//chrome/common",
+      "//chrome/common:constants",
+      "//components/prefs",
+      "//components/signin/public/base",
+      "//components/signin/public/base:signin_switches",
+      "//components/signin/public/identity_manager",
+      "//components/startup_metric_utils",
+      "//components/web_modal",
+      "//content/public/browser",
+      "//content/public/common",
+      "//google_apis",
+      "//ui/base",
+      "//ui/base:types",
+      "//url",
+    ]
+
+    if (is_win) {
+      deps += [ "//chrome/browser:shell_integration" ]
+    }
+
+    if (is_mac) {
+      deps += [
+        "//chrome/browser:global_keyboard_shortcuts_mac",
+        "//chrome/browser/renderer_host:history_swiping_control",
+      ]
+    }
+
+    if (is_linux) {
+      deps += [ "//chrome/browser:shell_integration_linux" ]
+    }
+  }
+
   # ProfilePickerView and the flow controllers this helper drives are only
   # compiled into //chrome/browser/ui on Windows, Mac and Linux, so the helper
   # (whose object file is always linked in, unlike when it lived in the
@@ -471,6 +552,7 @@ if (is_win || is_mac || is_linux) {
 
     public_deps = [
       ":profile_management_flow_controller",
+      ":profile_picker_view",
       ":profile_picker_web_contents_host",
       "//base",
       "//chrome/browser/ui/profiles",
@@ -662,6 +744,7 @@ if (enable_dice_support) {
       "//chrome/browser:browser_public_dependencies",
     ]
     deps = [
+      ":profile_picker_view",
       "//base",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/views/user_education",
@@ -687,6 +770,7 @@ if (enable_dice_support) {
       "//chrome/browser:browser_public_dependencies",
     ]
     deps = [
+      ":profile_picker_view",
       "//base",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/themes",

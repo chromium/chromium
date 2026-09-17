@@ -4491,6 +4491,7 @@ if (!is_android) {
         "//chrome/browser/lifetime",
         "//chrome/browser/profiles:profile",
         "//chrome/browser/ui/cocoa",
+        "//chrome/browser/ui/views/profiles:profile_picker_view",
         "//chrome/test/base:chrome_test_path_utils",
         "//chrome/test/base:profile_lifecycle_test_utils",
         "//chrome/test/interaction",

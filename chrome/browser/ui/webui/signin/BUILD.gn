@@ -253,6 +253,7 @@ source_set("signin_impl") {
     ]
     deps += [
       "//chrome/browser/resources/signin/history_sync_optin:resources_grit",
+      "//chrome/browser/ui/views/profiles:profile_picker_view",
     ]
   }
 }
