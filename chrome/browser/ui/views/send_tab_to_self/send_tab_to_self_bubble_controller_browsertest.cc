@@ -65,6 +65,13 @@ using testing::TestParamInfo;
 using testing::Values;
 using testing::WithParamInterface;
 
+constexpr char kTargetDeviceId[] = "device_1";
+constexpr char kTargetDeviceName[] = "device_name_1";
+constexpr char16_t kTargetDeviceNameUtf16[] = u"device_name_1";
+
+constexpr char kSecondDeviceId[] = "device_0";
+constexpr char kSecondDeviceName[] = "device_name_0";
+
 const char* DisplayReasonToString(EntryPointDisplayReason reason) {
   switch (reason) {
     case EntryPointDisplayReason::kOfferFeature:
@@ -205,10 +212,11 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo("device_name_1", "device_1", FormFactor::kDesktop,
-                        OsType::kLinux, base::Time::Now())});
+      {TargetDeviceInfo(kTargetDeviceName, kTargetDeviceId,
+                        FormFactor::kDesktop, OsType::kLinux,
+                        base::Time::Now())});
 
-  controller->OnDeviceSelected("device_1", "device_name_1");
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
   observer.WaitForNextEntry();
 
   const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
@@ -216,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                                              : kHardwareComputerOldIcon;
   ExpectToastShown(ToastId::kSendTabToSelfSuccess,
                    IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
-                   u"device_name_1", &expected_icon);
+                   kTargetDeviceNameUtf16, &expected_icon);
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
@@ -232,10 +240,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo("device_name_1", "device_1", FormFactor::kPhone,
+      {TargetDeviceInfo(kTargetDeviceName, kTargetDeviceId, FormFactor::kPhone,
                         OsType::kAndroid, base::Time::Now())});
 
-  controller->OnDeviceSelected("device_1", "device_name_1");
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
   observer.WaitForNextEntry();
 
   const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
@@ -243,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                                              : kHardwareSmartphoneOldIcon;
   ExpectToastShown(ToastId::kSendTabToSelfSuccess,
                    IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
-                   u"device_name_1", &expected_icon);
+                   kTargetDeviceNameUtf16, &expected_icon);
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
@@ -259,17 +267,17 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo("device_name_1", "device_1", FormFactor::kTablet,
+      {TargetDeviceInfo(kTargetDeviceName, kTargetDeviceId, FormFactor::kTablet,
                         OsType::kAndroid, base::Time::Now())});
 
-  controller->OnDeviceSelected("device_1", "device_name_1");
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
   observer.WaitForNextEntry();
 
   const gfx::VectorIcon& expected_icon =
       features::IsRoundedIconsEnabled() ? kTabletFilledIcon : kTabletOldIcon;
   ExpectToastShown(ToastId::kSendTabToSelfSuccess,
                    IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
-                   u"device_name_1", &expected_icon);
+                   kTargetDeviceNameUtf16, &expected_icon);
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
@@ -285,12 +293,13 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo("device_name_1", "device_1", FormFactor::kDesktop,
-                        OsType::kLinux, base::Time::Now())});
+      {TargetDeviceInfo(kTargetDeviceName, kTargetDeviceId,
+                        FormFactor::kDesktop, OsType::kLinux,
+                        base::Time::Now())});
   sync_service->GetFakeSendTabToSelfModel()->SetSendResult(
       SendTabToSelfResult::kSuccessThrottled);
 
-  controller->OnDeviceSelected("device_1", "device_name_1");
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
   observer.WaitForNextEntry();
 
   const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
@@ -298,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                                              : kHardwareComputerOldIcon;
   ExpectToastShown(ToastId::kSendTabToSelfSuccessThrottled,
                    IDS_SEND_TAB_TO_SELF_POST_SEND_THROTTLED_TOAST,
-                   u"device_name_1", &expected_icon);
+                   kTargetDeviceNameUtf16, &expected_icon);
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
@@ -310,8 +319,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   ASSERT_TRUE(sync_service);
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo("device_name_1", "device_1", FormFactor::kDesktop,
-                        OsType::kLinux, base::Time::Now())});
+      {TargetDeviceInfo(kTargetDeviceName, kTargetDeviceId,
+                        FormFactor::kDesktop, OsType::kLinux,
+                        base::Time::Now())});
 
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
@@ -327,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                                              : kHardwareComputerOldIcon;
   ExpectToastShown(ToastId::kSendTabToSelfSuccess,
                    IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
-                   u"device_name_1", &expected_icon);
+                   kTargetDeviceNameUtf16, &expected_icon);
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
@@ -342,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   // Simulate failure by making the model not ready.
   sync_service->GetFakeSendTabToSelfModel()->SetIsReady(false);
 
-  controller->OnDeviceSelected("device_1", "device_name_1");
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
 
   // Verify that the failure toast is shown.
   const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
@@ -379,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastDisabledBrowserTest,
   // Use NotificationDisplayServiceTester to monitor notifications.
   NotificationDisplayServiceTester notification_tester(browser()->GetProfile());
 
-  controller->OnDeviceSelected("device_1", "device_name_1");
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
 
   // Verify that a notification is shown.
   std::vector<message_center::Notification> notifications =
@@ -425,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   base::HistogramTester histogram_tester;
-  controller->OnDeviceSelected("device_1", "device_name_1");
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
   SendTabToSelfEntry entry = observer.WaitForNextEntry();
 
   // Test that the entry was added with the correct URL.
@@ -462,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   base::HistogramTester histogram_tester;
-  controller->OnDeviceSelected("device_1", "device_name_1");
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
   SendTabToSelfEntry entry = observer.WaitForNextEntry();
 
   // Test that the entry was added with the correct URL.
@@ -511,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   base::HistogramTester histogram_tester;
-  controller->OnDeviceSelected("device_1", "device_name_1");
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
   SendTabToSelfEntry entry = observer.WaitForNextEntry();
 
   // Test that the entry was added with the correct URL.
@@ -568,10 +578,12 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
       EntryPointDisplayReason::kOfferFeature);
   // Set up 2 target devices.
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo("device_name_0", "device_0", FormFactor::kDesktop,
-                        OsType::kLinux, base::Time::Now()),
-       TargetDeviceInfo("device_name_1", "device_1", FormFactor::kDesktop,
-                        OsType::kLinux, base::Time::Now())});
+      {TargetDeviceInfo(kSecondDeviceName, kSecondDeviceId,
+                        FormFactor::kDesktop, OsType::kLinux,
+                        base::Time::Now()),
+       TargetDeviceInfo(kTargetDeviceName, kTargetDeviceId,
+                        FormFactor::kDesktop, OsType::kLinux,
+                        base::Time::Now())});
 
   base::HistogramTester histogram_tester;
 
