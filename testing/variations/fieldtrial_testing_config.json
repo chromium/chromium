@@ -691,6 +691,21 @@
             ]
         }
     ],
+    "AndroidDesktopGlicContextMenu": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled_50_20260915",
+                    "disable_features": [
+                        "ClankGlicContextMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDesktopUAPlatform": [
         {
             "platforms": [
