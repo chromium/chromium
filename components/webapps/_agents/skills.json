@@ -6,7 +6,7 @@
   ],
   "entries": [
     {
-      "path": "components/webapps/_agents/skills/webapps-harness"
+      "path": "components/webapps/_agents/skills/webapps-dev"
     },
     {
       "path": "chrome/browser/web_applications/docs/skills/create-web-applications-browsertest"

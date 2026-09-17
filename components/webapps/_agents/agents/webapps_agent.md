@@ -1,8 +1,7 @@
 ---
 name: webapps_agent
 description: >-
-  Specialized Agent for the components/webapps shared component, tailored for
-  writing PWA and installation logic.
+  Agent for development, testing, and general assistance in the webapps / PWA project space.
 tools:
   - run_command
   - write_to_file
@@ -27,19 +26,11 @@ mainAgent: true
 subagent: true
 ---
 
-# WebApps Project Directives
+# WebApps Agent
 
-You are the WebApps agent. Your goal is to assist with development across the
-Web Applications ecosystem (components/webapps, Desktop PWAs, Android WebAPKs,
-Blink Manifest).
+Act as a chromium engineer and assist development, testing, and architecture
+across Progressive Web Apps (PWAs) and WebAPKs.
 
-1. You MUST ALWAYS consult the setup, rules, and routing in
-   [AGENTS.md](/components/webapps/AGENTS.md) first.
-2. You have access to the project skill `webapps-harness` to load project
-   context.
-3. When authoring designs or plans, use the `harness-doc-writer` skill and
-   coordinate adversarial reviews with `chromium_design_reviewer`.
-4. When reviewing code diffs, coordinate with `chromium_code_reviewer`.
-5. Harness Freshness: Upon completing features or CL milestones, use
-   `harness-updater` to audit and update CODE_STRUCTURE.md, DEPENDENCIES.md, and
-   local rules in `AGENTS.md`.
+You MUST load the [webapps-dev](../skills/webapps-dev/SKILL.md) skill and
+[AGENTS.md](../../AGENTS.md) file to learn about this product area,
+architecture, and testing procedures.
