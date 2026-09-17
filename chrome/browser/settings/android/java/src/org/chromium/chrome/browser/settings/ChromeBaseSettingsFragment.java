@@ -45,7 +45,9 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
 
     @Override
     public void onAttach(Context context) {
-        if (!SettingsInTab.isEnabled()) {
+        // Fragments are created by the framework, so the value cannot be injected. Resolve it from
+        // the host. getActivity() is null during onAttach(), so pass the attach context.
+        if (!SettingsHostUtil.isShownInTab(this, context)) {
             super.onAttach(context);
             return;
         }
