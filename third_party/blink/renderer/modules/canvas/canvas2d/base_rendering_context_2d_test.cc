@@ -127,6 +127,8 @@ class TestRenderingContext2D final
     context_lost_mode_ = context_lost_mode;
   }
 
+  void SetIsPaintable(bool is_paintable) { is_paintable_ = is_paintable; }
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(execution_context_);
     BaseRenderingContext2D::Trace(visitor);
@@ -181,11 +183,12 @@ class TestRenderingContext2D final
   }
 
   bool IsComposited() const override { return false; }
-  bool IsPaintable() const override { return true; }
+  bool IsPaintable() const override { return is_paintable_; }
   void Stop() override {}
 
   Member<ExecutionContext> execution_context_;
   bool restore_matrix_enabled_ = true;
+  bool is_paintable_ = true;
 };
 
 BeginLayerOptions* FilterOption(blink::V8TestingScope& scope,
@@ -249,6 +252,21 @@ TEST(BaseRenderingContextLayersCSSTests,
   EXPECT_THAT(context->FlushRecorder(),
               RecordedOpsAre(DrawRecordOpEq(PaintOpEq<SaveLayerOp>(flags),
                                             PaintOpEq<RestoreOp>())));
+}
+
+TEST(BaseRenderingContext2DTest, GetPaintCanvasRequiresIsPaintable) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  ASSERT_NE(context->Recorder(), nullptr);
+  EXPECT_NE(context->GetPaintCanvas(), nullptr);
+
+  context->SetIsPaintable(false);
+  EXPECT_NE(context->Recorder(), nullptr);
+  EXPECT_EQ(context->GetPaintCanvas(), nullptr);
+
+  context->SetIsPaintable(true);
+  EXPECT_NE(context->GetPaintCanvas(), nullptr);
 }
 
 TEST(BaseRenderingContext2DTest, RecordingLimits) {

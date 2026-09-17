@@ -164,7 +164,7 @@ const MemoryManagedPaintRecorder* BaseRenderingContext2D::Recorder() const {
 }
 
 const MemoryManagedPaintCanvas* BaseRenderingContext2D::GetPaintCanvas() const {
-  if (isContextLost()) [[unlikely]] {
+  if (isContextLost() || !IsPaintable()) [[unlikely]] {
     return nullptr;
   }
   const MemoryManagedPaintRecorder* recorder = Recorder();
