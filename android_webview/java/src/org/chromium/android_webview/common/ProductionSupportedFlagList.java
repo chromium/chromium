@@ -587,7 +587,6 @@ public final class ProductionSupportedFlagList {
                 "Minimizes Mojo URLLoaderFactory cloning overhead during navigation and worker"
                         + " startup."),
         Flag.baseFeature("NetworkServiceCookiesHighPriorityTaskRunner"),
-        Flag.baseFeature("IncreaseCoookieAccesCacheSize"),
         Flag.baseFeature("AvoidScheduleWorkDuringNativeEventProcessing"),
         Flag.baseFeature("AvoidEntryCreationForNoStore"),
         Flag.baseFeature("ChangeGeneratedCodeCacheSize"),
