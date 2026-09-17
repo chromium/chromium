@@ -13772,7 +13772,7 @@ const FeatureEntry kFeatureEntries[] = {
          kAutofillIgnorePaymentsChurnedUsersStrikesForTestingName,
      flag_descriptions::
          kAutofillIgnorePaymentsChurnedUsersStrikesForTestingDescription,
-     kOsDesktop,
+     kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillIgnorePaymentsChurnedUsersStrikesForTesting)},
