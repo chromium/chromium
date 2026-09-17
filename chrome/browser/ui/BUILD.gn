@@ -141,6 +141,47 @@ if (!is_android) {
     ]
   }
 
+  source_set("intent_picker_tab_helper") {
+    public = [ "intent_picker_tab_helper.h" ]
+
+    sources = [ "intent_picker_tab_helper.cc" ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/web_applications",
+      "//components/apps/link_capturing",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//ui/base",
+      "//ui/base/unowned_user_data",
+      "//url",
+    ]
+
+    deps = [
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/intent_helper:intent_chip_display_prefs",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/preloading/prefetch/no_state_prefetch",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui:layout_constants",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//chrome/browser/ui/views/intent_picker:intent_picker_page_action",
+      "//chrome/browser/ui/web_applications:launch_utils",
+      "//chrome/browser/web_applications:features",
+      "//chrome/browser/web_applications/proto",
+      "//components/password_manager/content/common",
+      "//components/services/app_service/public/cpp:app_types",
+      "//content/public/common",
+      "//mojo/public/cpp/bindings",
+      "//ui/gfx",
+    ]
+  }
+
   source_set("browser_window_state") {
     public = [ "browser_window_state.h" ]
     sources = [ "browser_window_state.cc" ]
@@ -237,6 +278,7 @@ if (!is_android) {
       ":browser_window_header",
       ":bubble_anchor_util",
       ":chrome_pages",
+      ":intent_picker_tab_helper",
       ":singleton_tabs",
       ":ui",
       "//build:branding_buildflags",
@@ -1618,8 +1660,6 @@ static_library("ui") {
       "browser_tabstrip.cc",
       "browser_tabstrip.h",
       "chrome_pages.cc",
-      "intent_picker_tab_helper.cc",
-      "intent_picker_tab_helper.h",
       "unload_controller.cc",
       "unload_controller.h",
     ]
@@ -1649,6 +1689,7 @@ static_library("ui") {
       ":collected_cookies_infobar_delegate",
       ":confirm_bubble_model",
       ":focus_tab_after_navigation_helper",
+      ":intent_picker_tab_helper",
       ":layout_constants",
       ":tab_ui_helper",
       ":uma_browsing_activity_observer",
@@ -4505,6 +4546,7 @@ source_set("unit_tests") {
       ":accelerator_table",
       ":browser_manager_service",
       ":browser_window_state",
+      ":intent_picker_tab_helper",
       ":managed_ui",
       "//chrome/browser/apps/intent_helper:intent_chip_display_prefs",
       "//chrome/browser/apps/link_capturing:test_support",

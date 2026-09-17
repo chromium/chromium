@@ -50,6 +50,7 @@ source_set("impl") {
     sources += [ "app_banner_manager_desktop.cc" ]
     deps += [
       "//chrome/browser/ui",
+      "//chrome/browser/ui:intent_picker_tab_helper",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
