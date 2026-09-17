@@ -41,6 +41,8 @@ class ExtensionsContentClient : public content::ContentClient {
   // content::ContentClient overrides:
   void AddAdditionalSchemes(Schemes* schemes) override {
     schemes->standard_schemes.push_back(extensions::kExtensionScheme);
+    schemes->extension_schemes.push_back(extensions::kExtensionScheme);
+    schemes->secure_schemes.push_back(extensions::kExtensionScheme);
     schemes->savable_schemes.push_back(extensions::kExtensionScheme);
   }
 };

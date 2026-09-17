@@ -6,6 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "components/version_info/channel.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
@@ -19,13 +20,17 @@ namespace errors = manifest_errors;
 
 class ManifestProtocolHandlersTest : public ManifestTest {
  public:
+  static constexpr char kTestExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
+
   ManifestProtocolHandlersTest() {
     feature_list_.InitAndEnableFeature(
         extensions_features::kExtensionProtocolHandlers);
   }
 
+  std::string GetTestExtensionID() const override { return kTestExtensionId; }
+
  protected:
-  ManifestData GetManifestData(const char* manifest_part) {
+  ManifestData GetManifestData(const std::string& manifest_part) {
     static constexpr char kManifestStub[] =
         R"({
           "name": "Test",
@@ -33,8 +38,8 @@ class ManifestProtocolHandlersTest : public ManifestTest {
           "manifest_version": 3,
           "protocol_handlers": %s
         })";
-    base::Value manifest_value =
-        base::test::ParseJson(base::StringPrintf(kManifestStub, manifest_part));
+    base::Value manifest_value = base::test::ParseJson(
+        base::StringPrintf(kManifestStub, manifest_part.c_str()));
     EXPECT_EQ(base::Value::Type::DICT, manifest_value.type());
     return ManifestData(std::move(manifest_value).TakeDict());
   }
@@ -298,6 +303,17 @@ TEST_F(ManifestProtocolHandlersTest, InvalidProtocolHandler) {
           {errors::kProtocolHandlerUrlInvalidSyntax,
            errors::kProtocolHandlerUntrustworthyScheme},
       },
+      {
+          "Custom handler URL with cross-origin extension scheme.",
+          R"([
+            {
+              "protocol": "web+glsearch",
+              "name": "Testing handler",
+              "uriTemplate": "chrome-extension://otherabcdefghijklmnopabcdefgh/handler.html?q=%s"
+            }
+          ])",
+          {errors::kProtocolHandlerIncompabibleOrigins},
+      },
   };
 
   for (const auto& test_case : test_cases) {
@@ -305,6 +321,28 @@ TEST_F(ManifestProtocolHandlersTest, InvalidProtocolHandler) {
     LoadAndExpectWarnings(GetManifestData(test_case.protocol_handler),
                           test_case.expected_warnings);
   }
+}
+
+TEST_F(ManifestProtocolHandlersTest, SameOriginExtensionHandlerAccepted) {
+  GURL handler_url = Extension::ResolveExtensionURL(
+      Extension::GetBaseURLFromExtensionId(kTestExtensionId),
+      "handler.html?q=%s");
+  static constexpr char kManifest[] =
+      R"([
+            {
+              "protocol": "web+testingScheme",
+              "name": "Testing handler",
+              "uriTemplate": "%s"
+            }
+          ])";
+  scoped_refptr<Extension> extension = LoadAndExpectSuccess(GetManifestData(
+      base::StringPrintf(kManifest, handler_url.spec().c_str())));
+  ASSERT_TRUE(extension);
+  const ProtocolHandlersInfo* handlers =
+      ProtocolHandlers::GetProtocolHandlers(*extension);
+  ASSERT_TRUE(handlers);
+  ASSERT_EQ(1u, handlers->size());
+  EXPECT_EQ(handler_url, handlers->at(0).url);
 }
 
 }  // namespace extensions
