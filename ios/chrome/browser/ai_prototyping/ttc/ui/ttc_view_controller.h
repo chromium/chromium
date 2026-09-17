@@ -7,14 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_view_controller_protocol.h"
+
+@protocol TTCMutator;
 
 // View controller displaying the "TalkToChrome" (TTC) feature.
 @interface TTCViewController
-    : UIViewController <AIPrototypingViewControllerProtocol>
+    : UIViewController <AIPrototypingViewControllerProtocol, TTCConsumer>
 
 // Mutator handling common AI prototyping interactions.
 @property(nonatomic, weak) id<AIPrototypingMutator> mutator;
+
+// Mutator handling TTC-specific user interactions.
+@property(nonatomic, weak) id<TTCMutator> ttcMutator;
 
 // Use `initForFeature:` from `AIPrototypingViewControllerProtocol` instead.
 - (instancetype)init NS_UNAVAILABLE;

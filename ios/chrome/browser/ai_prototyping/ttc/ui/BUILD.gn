@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "ttc_consumer.h",
+    "ttc_mutator.h",
     "ttc_view_controller.h",
     "ttc_view_controller.mm",
   ]
@@ -11,6 +13,7 @@ source_set("ui") {
     "//base",
     "//ios/chrome/browser/ai_prototyping/ui",
     "//ios/chrome/browser/ai_prototyping/utils",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
   ]
   frameworks = [ "UIKit.framework" ]
