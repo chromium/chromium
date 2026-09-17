@@ -89,26 +89,33 @@ NSString* gmailAppID = @"com.google.Gmail";
 @end
 
 // Test the `AppStartupParameters` and its fetched application mode /
-// parameters.
+// parameters with the legacy startup flow.
 class AppStartupParamsTest : public PlatformTest,
                              public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
+    PlatformTest::SetUp();
+    ResetEnableNewStartupFlowEnabledForTesting();
     if (GetParam()) {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/{kAppSwitcherAISummarization, kPageActionMenu},
-          /*disabled_features=*/{});
+          /*disabled_features=*/{kEnableNewStartupFlow});
       app_switcher_helper_ = [[TestAppSwitcherProviderTestHelper alloc] init];
       ios::provider::test::SetAppSwitcherProviderTestHelper(
           app_switcher_helper_);
     } else {
-      feature_list_.InitAndDisableFeature(kAppSwitcherAISummarization);
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{kAppSwitcherAISummarization,
+                                 kEnableNewStartupFlow});
       helper_ = [[TestApplicationModeFetcherProviderTestHelper alloc] init];
       ios::provider::test::SetApplicationModeFetcherProviderTestHelper(helper_);
     }
+    SaveEnableNewStartupFlowForNextStart();
   }
 
   void TearDown() override {
+    ResetEnableNewStartupFlowEnabledForTesting();
     if (GetParam()) {
       ios::provider::test::SetAppSwitcherProviderTestHelper(nil);
     } else {
