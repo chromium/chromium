@@ -1799,7 +1799,11 @@ bool GraphBuilderTflite::RequiresFloat32Precision(const mojom::Operation& op) {
       input_operand_id = op.get_cumulative_sum()->input_operand_id;
       break;
     case mojom::Operation::Tag::kDequantizeLinear:
-      input_operand_id = op.get_dequantize_linear()->input_operand_id;
+      // `dequantizeLinear` consumes an integer type and *produces* the
+      // float, so its input data type can never be float32 and says nothing
+      // about the precision the graph needs. Check the output instead, whose
+      // data type matches the scale operand.
+      input_operand_id = op.get_dequantize_linear()->output_operand_id;
       break;
     case mojom::Operation::Tag::kElementWiseBinary:
       input_operand_id = op.get_element_wise_binary()->lhs_operand_id;
@@ -9315,11 +9319,20 @@ auto GraphBuilderTflite::SerializeDequantizeLinear(
 
   // TODO(crbug.com/375614289): Support constant input after TFLite runtime fix
   // the issue https://github.com/tensorflow/tensorflow/issues/78748.
+  //
+  // int4 is excluded on GPU only: ML Drift has no runtime 4-bit tensor path,
+  // so a non-constant 4-bit DEQUANTIZE crashes it. Fall through to the
+  // emulation below, which is what constant int4 inputs already use. The CPU
+  // DEQUANTIZE kernel dequantizes int4 natively, so keep the fused op there.
+  const bool is_int4_on_gpu =
+      context_device_ == mojom::Device::kGpu &&
+      input_operand.descriptor.data_type() == OperandDataType::kInt4;
   if (quantize_params &&
       !IsSerializedWithMismatchQuantizeParameters(
           dequantize_linear.input_operand_id, *quantize_params) &&
       input_operand.kind != mojom::Operand::Kind::kConstant &&
-      input_operand.descriptor.data_type() != OperandDataType::kInt32) {
+      input_operand.descriptor.data_type() != OperandDataType::kInt32 &&
+      !is_int4_on_gpu) {
     ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                      SerializeInputTensorInfo(
                          dequantize_linear.input_operand_id, *quantize_params));
