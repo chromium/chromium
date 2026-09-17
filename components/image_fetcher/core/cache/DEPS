@@ -2,5 +2,4 @@ include_rules = [
   "+components/base32",
   "+components/leveldb_proto",
   "+components/prefs",
-  "+components/image_fetcher/core:metrics",
 ]

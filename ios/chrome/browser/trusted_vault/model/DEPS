@@ -4,7 +4,5 @@ include_rules = [
   "+components/trusted_vault",
   "+ios/chrome/browser/shared/model/profile",
   "+ios/chrome/browser/signin/model",
-  "+ios/chrome/browser/signin/model:trusted_vault",
-  "+ios/chrome/browser/signin/model:trusted_vault_factory",
   # keep-sorted end
 ]

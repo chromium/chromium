@@ -28,7 +28,6 @@ include_rules = [
   "+components/leveldb_proto/public",
   "+components/link_header_util",
   "+components/metrics",
-  "+components/metrics:single_sample_metrics",
   "+components/network_session_configurator/common",
   "+components/offline_pages/buildflags/buildflags.h",
   "+components/offline_pages/core/request_header",
