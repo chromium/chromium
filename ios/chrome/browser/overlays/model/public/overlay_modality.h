@@ -22,6 +22,9 @@ enum class OverlayModality {
   // modality is in front of the banner, as it is possible for an Infobar to
   // present its modal on top of its banner.
   kInfobarModal,
+  // Used to Used to schedule overlay UI to display watermark. This modality is
+  // inftont of the `WKWebview`.
+  kWatermark,
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_OVERLAY_MODALITY_H_

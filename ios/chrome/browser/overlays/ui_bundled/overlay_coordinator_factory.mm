@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
+#import "base/notimplemented.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
@@ -80,6 +81,9 @@
       NOTREACHED() << "Received unsupported modality.";
     case OverlayModality::kWebContentArea:
       return [AlertOverlayCoordinator class];
+    case OverlayModality::kWatermark:
+      NOTIMPLEMENTED();
+      return nil;
     case OverlayModality::kInfobarBanner:
       if ([TranslateInfobarPlaceholderOverlayCoordinator requestSupport]
               ->IsRequestSupported(request)) {
@@ -107,6 +111,8 @@
       NOTREACHED() << "Received unsupported modality.";
     case OverlayModality::kWebContentArea:
       NOTREACHED() << "None implemented yet. Received unsupported modality.";
+    case OverlayModality::kWatermark:
+      NOTREACHED() << "Received unsupported modality.";
     case OverlayModality::kInfobarBanner:
       return [InfobarBannerOverlayCoordinator class];
     case OverlayModality::kInfobarModal:

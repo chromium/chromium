@@ -1132,6 +1132,8 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
       break;
     case OverlayModality::kTesting:
       NOTREACHED();
+    case OverlayModality::kWatermark:
+      NOTREACHED();
   }
 }
 
