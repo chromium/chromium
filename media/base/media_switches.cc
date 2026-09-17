@@ -575,6 +575,11 @@ BASE_FEATURE(kExternalClearKeyForTesting, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kMediaFoundationClearKeyCdmPathForTesting{
     &kExternalClearKeyForTesting, "media_foundation_cdm_path", ""};
 
+// When enabled, URLProvisionFetcher is hardened against SSRF and OOM by
+// restricting requests and redirects to HTTPS POST, and enforcing a maximum
+// response size.
+BASE_FEATURE(kHardenUrlProvisionFetcher, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Prevents UrlProvisionFetcher from making a provisioning request. If
 // specified, any provisioning request made will not be sent to the provisioning
 // server, and the response will indicate a failure to communicate with the

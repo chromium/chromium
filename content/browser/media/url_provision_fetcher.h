@@ -10,6 +10,11 @@
 #include <string_view>
 
 #include "media/base/provision_fetcher.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
+
+namespace net {
+struct RedirectInfo;
+}  // namespace net
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -40,6 +45,11 @@ class URLProvisionFetcher : public media::ProvisionFetcher {
 
  private:
   void OnSimpleLoaderComplete(std::optional<std::string> response_body);
+
+  void OnRedirect(const GURL& url_before_redirect,
+                  const net::RedirectInfo& redirect_info,
+                  const network::mojom::URLResponseHead& response_head,
+                  std::vector<std::string>* removed_headers);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
