@@ -556,6 +556,7 @@ source_set("unit_tests") {
     sources += [
       "current_tab_desktop_media_list_unittest.cc",
       "desktop_capture_access_handler_unittest.cc",
+      "desktop_media_list_base_unittest.cc",
       "desktop_media_picker_controller_unittest.cc",
       "display_media_access_handler_unittest.cc",
       "media_capture_devices_dispatcher_unittest.cc",

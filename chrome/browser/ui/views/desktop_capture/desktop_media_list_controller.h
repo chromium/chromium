@@ -125,6 +125,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // update the underlying DesktopMediaList.
   size_t GetSourceCount() const;
   const DesktopMediaList::Source& GetSource(size_t index) const;
+  bool IsSourceSharingBlocked(const content::DesktopMediaID& id) const;
   void SetThumbnailSize(const gfx::Size& size);
   void SetPreviewedSource(const std::optional<content::DesktopMediaID>& id);
 
@@ -175,6 +176,11 @@ class DesktopMediaListController : public DesktopMediaListObserver,
 
   // Whether or not the reselect button (if supported), should be enabled.
   bool can_reselect_ = false;
+
+  // Tracks whether the currently selected source is sharing-blocked so
+  // OnSourceThumbnailChanged only notifies the dialog when the blocked state
+  // actually changes.
+  std::optional<bool> selected_source_sharing_blocked_;
 
   // Auto-selection. Used only in tests.
   const std::string auto_select_tab_;        // Only tabs, by title.

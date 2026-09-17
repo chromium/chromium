@@ -110,8 +110,9 @@ void DesktopMediaListBase::ShowDelegatedList() {}
 
 DesktopMediaListBase::SourceDescription::SourceDescription(
     DesktopMediaID id,
-    const std::u16string& name)
-    : id(id), name(name) {}
+    const std::u16string& name,
+    bool is_sharing_blocked)
+    : id(id), name(name), is_sharing_blocked(is_sharing_blocked) {}
 
 void DesktopMediaListBase::UpdateSourcesList(
     const std::vector<SourceDescription>& new_sources) {
@@ -143,6 +144,7 @@ void DesktopMediaListBase::UpdateSourcesList(
         sources_.insert(sources_.begin() + i, Source());
         sources_[i].id = new_sources[i].id;
         sources_[i].name = new_sources[i].name;
+        sources_[i].is_sharing_blocked = new_sources[i].is_sharing_blocked;
         if (observer_)
           observer_->OnSourceAdded(i);
       }
@@ -176,6 +178,15 @@ void DesktopMediaListBase::UpdateSourcesList(
       sources_[pos].name = new_sources[pos].name;
       if (observer_)
         observer_->OnSourceNameChanged(pos);
+    }
+    if (sources_[pos].is_sharing_blocked !=
+        new_sources[pos].is_sharing_blocked) {
+      sources_[pos].is_sharing_blocked = new_sources[pos].is_sharing_blocked;
+      if (observer_) {
+        // Reuse OnSourceThumbnailChanged to refresh the table row's icon,
+        // tooltip, preview state, and dialog button enablement.
+        observer_->OnSourceThumbnailChanged(pos);
+      }
     }
     ++pos;
   }

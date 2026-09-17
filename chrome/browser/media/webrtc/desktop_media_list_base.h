@@ -55,10 +55,13 @@ class DesktopMediaListBase : public DesktopMediaList {
   using RefreshCallback = UpdateCallback;
 
   struct SourceDescription {
-    SourceDescription(content::DesktopMediaID id, const std::u16string& name);
+    SourceDescription(content::DesktopMediaID id,
+                      const std::u16string& name,
+                      bool is_sharing_blocked = false);
 
     content::DesktopMediaID id;
     std::u16string name;
+    bool is_sharing_blocked = false;
   };
 
   DesktopMediaListBase(base::TimeDelta update_period,

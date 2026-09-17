@@ -27,6 +27,7 @@ class FakeDesktopMediaList : public DesktopMediaList {
   void SetSourceThumbnail(int index);
   void SetSourceName(int index, std::u16string name);
   void SetSourcePreview(int index, gfx::ImageSkia);
+  void SetSourceSharingBlocked(int index, bool is_sharing_blocked);
   void OnDelegatedSourceListSelection();
   void OnDelegatedSourceListDismissed();
 

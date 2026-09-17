@@ -542,5 +542,5 @@ IN_PROC_BROWSER_TEST_P(TabDesktopMediaListProtectionTest,
 
   ASSERT_GE(media_list.GetSourceCount(), 1);
   const auto& source = media_list.GetSource(0);
-  EXPECT_EQ(source.id.is_sharing_blocked, !allow_screenshots);
+  EXPECT_EQ(source.is_sharing_blocked, !allow_screenshots);
 }
