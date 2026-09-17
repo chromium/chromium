@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_contents_wrapper.h"
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
@@ -35,6 +36,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/find_in_page/find_tab_helper.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -45,6 +47,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -731,6 +734,17 @@ content::WebContents* ReadAnythingController::OpenURLFromTab(
     }
   }
   return nullptr;
+}
+
+bool ReadAnythingController::HandleEscapeKey(
+    const input::NativeWebKeyboardEvent& event) {
+  if (event.windows_key_code == ui::VKEY_ESCAPE && tab_ &&
+      tab_->GetBrowserWindowInterface()) {
+    ExclusiveAccessManager::From(tab_->GetBrowserWindowInterface())
+        ->HandleUserKeyEvent(event);
+    return true;
+  }
+  return false;
 }
 
 void ReadAnythingController::OnDistillationStateChanged(

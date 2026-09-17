@@ -37,6 +37,10 @@ class NavigationHandle;
 struct OpenURLParams;
 }  // namespace content
 
+namespace input {
+struct NativeWebKeyboardEvent;
+}  // namespace input
+
 class ReadAnythingController;
 class ReadAnythingService;
 
@@ -174,6 +178,10 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
       const content::OpenURLParams& params,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback);
+
+  // Handles Escape key press to exit fullscreen via ExclusiveAccessManager.
+  // Returns true if the event was handled.
+  bool HandleEscapeKey(const input::NativeWebKeyboardEvent& event);
 
   void OnDistillationStateChanged(DistillationState new_state);
 

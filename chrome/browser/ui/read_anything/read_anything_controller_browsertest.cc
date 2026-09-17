@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/read_anything/read_anything_service.h"
 #include "chrome/browser/ui/read_anything/read_anything_service_factory.h"
+#include "chrome/browser/ui/read_anything/read_anything_side_panel_web_view.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
@@ -2226,6 +2227,48 @@ IN_PROC_BROWSER_TEST_F(
 
   // Wait for the "press and hold" timer (1.5s) to trigger the exit.
   // We use a FullscreenWaiter to wait for the state change.
+  ui_test_utils::FullscreenWaiter waiter(browser(),
+                                         {.browser_fullscreen = false});
+  waiter.Wait();
+
+  // Verify the browser has exited fullscreen.
+  ASSERT_FALSE(browser()->GetWindow()->IsFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingControllerBrowserTest,
+    HandleKeyboardEvent_WhenFullscreenInSidePanelMode_EscapeClosesFullscreen) {
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return SidePanelUI::From(browser())->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  auto* side_panel =
+      BrowserView::GetBrowserViewForBrowser(browser())->side_panel();
+  auto* content_wrapper = side_panel->GetContentParentView();
+  ASSERT_FALSE(content_wrapper->children().empty());
+  auto* sp_view = static_cast<ReadAnythingSidePanelWebView*>(
+      content_wrapper->children()[0]);
+  ASSERT_TRUE(sp_view);
+
+  // Put the browser in fullscreen mode
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
+
+  // Create an event that holds down the escape button
+  input::NativeWebKeyboardEvent escape_event(
+      blink::WebInputEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
+  escape_event.windows_key_code = ui::VKEY_ESCAPE;
+  sp_view->HandleKeyboardEvent(sp_view->GetWebContents(), escape_event);
+
+  // Wait for the "press and hold" timer (1.5s) to trigger the exit.
   ui_test_utils::FullscreenWaiter waiter(browser(),
                                          {.browser_fullscreen = false});
   waiter.Wait();
