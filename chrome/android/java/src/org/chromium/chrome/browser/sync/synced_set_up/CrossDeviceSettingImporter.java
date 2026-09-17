@@ -784,11 +784,6 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     }
 
     /**
-     * @param profile The {@link Profile}.
-     * @param settings The settings to check.
-     * @return whether the user's current settings are different from {@code settings}.
-     */
-    /**
      * Returns whether cross-device theme import is enabled and supported on this device. Notably,
      * this checks whether we're in any group besides the control group and that underlying theme
      * sync is supported.
@@ -880,8 +875,13 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     }
 
     /**
+     * Checks whether preference values differ from local settings in a way that affects non-NTP
+     * pages. Note that this method only checks preference values, not theme settings (even though
+     * themes can also affect non-NTP pages via omnibox coloring). See {@link #shouldShowSnackbar}
+     * where both preference and theme changes are checked.
+     *
      * @param preferences The preferences to check.
-     * @return whether the user's settings differ from {@param preferences} in a way that affects
+     * @return whether the user's preferences differ from {@code preferences} in a way that affects
      *     non-NTP pages.
      */
     @VisibleForTesting
@@ -909,30 +909,6 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
             Log.i(TAG, "importedSettingsAffectNonNtp, returning false at bottom of function");
         }
-        return false;
-    }
-
-    /**
-     * @param settings The settings to check.
-     * @return whether the user's settings differ from {@param settings} in a way that affects
-     *     non-NTP pages (e.g. bottom omnibox position or omnibox theme coloring).
-     */
-    @VisibleForTesting
-    boolean importedSettingsAffectNonNtp(SyncedSetupSettings settings) {
-        if (importedSettingsAffectNonNtp(settings.getPrefs())) {
-            return true;
-        }
-
-        // Themes affect non-NTP pages as well by tinting the omnibox. Cross-platform themes
-        // (which do not sync continuously) that differ from the current local theme therefore
-        // affect non-NTP pages.
-        if (isThemeImportSnackbarEnabled()
-                && settings.getTheme() != null
-                && settings.getTheme().getPlatformType() != PlatformType.ANDROID
-                && importedSettingHasThemeChange(settings.getTheme())) {
-            return true;
-        }
-
         return false;
     }
 
