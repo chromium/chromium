@@ -60,8 +60,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/ash_element_identifiers.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/test/run_until.h"
 #include "ui/base/interaction/element_test_util.h"
+#include "ui/display/screen.h"
 #include "ui/strings/grit/ui_strings.h"
 #endif
 
@@ -239,6 +241,55 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
   emoji_picker.Hide();
 
   // Since the bubble was deactivated, it should close now.
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    return !bubble_weak_ptr || bubble_weak_ptr->IsClosed();
+  }));
+  EXPECT_TRUE(!bubble_weak_ptr || bubble_weak_ptr->IsClosed());
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
+                       ConvertingToTabletModeClosesEditorBubble) {
+  ASSERT_FALSE(display::Screen::Get()->InTabletMode());
+  ShowUi("SetUp");
+  views::Widget* const editor_bubble = WaitForAndGetEditorBubbleWidget();
+  ASSERT_NE(nullptr, editor_bubble);
+  ASSERT_FALSE(editor_bubble->IsClosed());
+  const base::WeakPtr<views::Widget> bubble_weak_ptr =
+      editor_bubble->GetWeakPtr();
+  // Name the group first, the way a user would before converting. The title is
+  // committed to the model on each keystroke, so dismissing the bubble must
+  // leave it in place rather than discard the edit.
+  auto* const title_field = views::AsViewClass<views::Textfield>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kTabGroupEditorBubbleId,
+          views::ElementTrackerViews::GetContextForWidget(editor_bubble)));
+  ASSERT_NE(nullptr, title_field);
+  title_field->InsertOrReplaceText(u"Vacation");
+  ASSERT_EQ(u"Vacation",
+            group_model()->GetTabGroup(group_.value())->visual_data()->title());
+  ash::TabletMode::Get()->SetEnabledForTest(true);
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    return !bubble_weak_ptr || bubble_weak_ptr->IsClosed();
+  }));
+  EXPECT_TRUE(!bubble_weak_ptr || bubble_weak_ptr->IsClosed());
+  // Dismissing the bubble edits nothing: the group and its new name survive.
+  ASSERT_TRUE(group_model()->ContainsTabGroup(group_.value()));
+  EXPECT_EQ(u"Vacation",
+            group_model()->GetTabGroup(group_.value())->visual_data()->title());
+  ash::TabletMode::Get()->SetEnabledForTest(false);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
+                       ConvertingToClamshellModeClosesEditorBubble) {
+  ash::TabletMode::Get()->SetEnabledForTest(true);
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
+  ShowUi("SetUp");
+  views::Widget* const editor_bubble = WaitForAndGetEditorBubbleWidget();
+  ASSERT_NE(nullptr, editor_bubble);
+  ASSERT_FALSE(editor_bubble->IsClosed());
+  const base::WeakPtr<views::Widget> bubble_weak_ptr =
+      editor_bubble->GetWeakPtr();
+  ash::TabletMode::Get()->SetEnabledForTest(false);
   ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
     return !bubble_weak_ptr || bubble_weak_ptr->IsClosed();
   }));

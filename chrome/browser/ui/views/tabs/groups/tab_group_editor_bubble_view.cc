@@ -115,13 +115,13 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/ash_element_identifiers.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/widget/widget.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
@@ -442,6 +442,13 @@ void TabGroupEditorBubbleView::OnTabGroupChanged(const TabGroupChange& change) {
 
   if (text_changed) {
     title_field_->SetText(new_visuals->title());
+  }
+}
+
+void TabGroupEditorBubbleView::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (views::Widget* const widget = GetWidget()) {
+    widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   }
 }
 

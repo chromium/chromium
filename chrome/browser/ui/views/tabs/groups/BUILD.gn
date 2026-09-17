@@ -36,6 +36,7 @@ source_set("groups") {
     "//ui/base/metadata",
     "//ui/base/mojom:ui_base_types",
     "//ui/base/unowned_user_data",
+    "//ui/display",
     "//ui/views",
   ]
 }
@@ -159,6 +160,7 @@ source_set("browser_tests") {
     "//ui/base",
     "//ui/base:test_support",
     "//ui/base/interaction:test_support",
+    "//ui/display",
     "//ui/events:test_support",
     "//ui/gfx",
     "//ui/views",
