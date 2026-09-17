@@ -46,7 +46,20 @@ namespace {
 constexpr base::TimeDelta kServiceIdleCheckingDelay = base::Seconds(3);
 // LINT.ThenChange(//services/screen_ai/screen_ai_service_impl.cc:kIdleCheckingDelay)
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !BUILDFLAG(USE_FAKE_SCREEN_AI)
+// When BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) is not set, the library is not
+// available for testing. Also do not perform tests on Linux debug builds
+// because service initialization and tests are too slow in that configuration
+// and become flaky.
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && \
+    (!BUILDFLAG(IS_LINUX) || defined(NDEBUG))
+#define ENABLE_SCREEN_AI_LIBRARY_BROWSERTESTS 1
+#else
+#define ENABLE_SCREEN_AI_LIBRARY_BROWSERTESTS 0
+#endif
+
+// The fake library (used on MSan/UBSan) does not perform actual OCR, so
+// tests and resources requiring the real library are excluded when it is used.
+#if ENABLE_SCREEN_AI_LIBRARY_BROWSERTESTS && !BUILDFLAG(USE_FAKE_SCREEN_AI)
 // LINT.IfChange(kResourceMeasurementInterval)
 constexpr base::TimeDelta kResourceMeasurementInterval = base::Seconds(1);
 // LINT.ThenChange(//chrome/browser/screen_ai/resource_monitor.cc:kSampleInterval)
@@ -127,7 +140,7 @@ struct OpticalCharacterRecognizerTestParamsToString {
   }
 };
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !BUILDFLAG(USE_FAKE_SCREEN_AI)
+#if ENABLE_SCREEN_AI_LIBRARY_BROWSERTESTS && !BUILDFLAG(USE_FAKE_SCREEN_AI)
 
 // Name of files which have results.
 const int kTestFilenamesCount = 7;
@@ -184,7 +197,7 @@ double StringMatch(std::string_view expected, std::string_view extracted) {
              static_cast<double>(std::max(expected_size, extracted_size));
 }
 
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) &&
+#endif  // ENABLE_SCREEN_AI_LIBRARY_BROWSERTESTS &&
         // !BUILDFLAG(USE_FAKE_SCREEN_AI)
 
 }  // namespace
@@ -292,12 +305,10 @@ class OpticalCharacterRecognizerTest
 
   bool IsOcrServiceEnabled() const { return std::get<0>(GetParam()); }
   bool IsLibraryAvailable() const {
-#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
+    // Parameterization ensures that the library is not requested when
+    // ENABLE_SCREEN_AI_LIBRARY_BROWSERTESTS is false.
     return std::get<1>(GetParam()) &&
            ScreenAIInstallState::IsDeviceCompatible();
-#else
-    return false;
-#endif
   }
 
   bool IsOcrAvailable() const {
@@ -309,7 +320,7 @@ class OpticalCharacterRecognizerTest
     InProcessBrowserTest::SetUpOnMainThread();
 
     if (IsLibraryAvailable()) {
-#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
+#if ENABLE_SCREEN_AI_LIBRARY_BROWSERTESTS
       ScreenAIInstallState::GetInstance()->SetComponentFolder(
           GetComponentBinaryPathForTests().DirName());
 #else
@@ -355,8 +366,8 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, Create) {
   WaitForStatus(ocr, future.GetCallback(), /*remaining_tries=*/25);
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_TRUE(ocr->StatusAvailableForTesting());
-  EXPECT_EQ(ocr->is_ready(), IsOcrAvailable());
+  ASSERT_TRUE(ocr->StatusAvailableForTesting());
+  ASSERT_EQ(ocr->is_ready(), IsOcrAvailable());
 
   base::test::TestFuture<uint32_t> max_dimension_future;
   ocr->GetMaxImageDimension(max_dimension_future.GetCallback());
@@ -620,12 +631,19 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
 #endif
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         OpticalCharacterRecognizerTest,
-                         ::testing::Combine(testing::Bool(), testing::Bool()),
-                         OpticalCharacterRecognizerTestParamsToString());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OpticalCharacterRecognizerTest,
+    ::testing::Combine(testing::Bool(),
+#if ENABLE_SCREEN_AI_LIBRARY_BROWSERTESTS
+                       testing::Bool()
+#else
+                       testing::Values(false)
+#endif
+                       ),
+    OpticalCharacterRecognizerTestParamsToString());
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !BUILDFLAG(USE_FAKE_SCREEN_AI)
+#if ENABLE_SCREEN_AI_LIBRARY_BROWSERTESTS && !BUILDFLAG(USE_FAKE_SCREEN_AI)
 
 TEST(OpticalCharacterRecognizer, StringMatchTest) {
   ASSERT_EQ(StringMatch("ABC", ""), 0);
@@ -1067,6 +1085,6 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
       0);
 }
 
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !
+#endif  // ENABLE_SCREEN_AI_LIBRARY_BROWSERTESTS && !
         // BUILDFLAG(USE_FAKE_SCREEN_AI)
 }  // namespace screen_ai
