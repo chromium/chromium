@@ -28,6 +28,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -41,6 +42,7 @@ class OrganizerPanelViewImpl : public OrganizerPanelView {
  public:
   explicit OrganizerPanelViewImpl(BrowserWindowInterface& browser)
       : OrganizerPanelView(browser) {
+    SetLayoutManager(std::make_unique<views::FillLayout>());
     auto web_view = std::make_unique<views::WebView>(browser.GetProfile());
     webui::SetBrowserWindowInterface(web_view->GetWebContents(), &browser);
     views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(

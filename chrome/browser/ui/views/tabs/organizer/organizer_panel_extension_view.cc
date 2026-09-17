@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "extensions/browser/extension_util.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
 
 OrganizerPanelExtensionView::OrganizerPanelExtensionView(
@@ -29,7 +30,9 @@ OrganizerPanelExtensionView::OrganizerPanelExtensionView(
           OrganizerPanelController::From(&browser)->RegisterOnStateChanged(
               base::BindRepeating(
                   &OrganizerPanelExtensionView::OnOrganizerPanelStateChanged,
-                  base::Unretained(this)))) {}
+                  base::Unretained(this)))) {
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+}
 
 OrganizerPanelExtensionView::~OrganizerPanelExtensionView() {
   ResetExtensionContent();
