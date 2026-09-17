@@ -102,7 +102,7 @@ void OmniboxEverywhereSettingsHandler::HandleSetOmniboxEverywhereShortcut(
     if (profile &&
         omnibox_everywhere::prefs::GetCurrentFreStage(profile) ==
             omnibox_everywhere::prefs::FreStage::kShortcutSetupChin) {
-      omnibox_everywhere::prefs::OnFreStageDismissed(
+      omnibox_everywhere::prefs::MarkFreStageCompleted(
           profile, omnibox_everywhere::prefs::FreStage::kShortcutSetupChin);
     }
 #endif

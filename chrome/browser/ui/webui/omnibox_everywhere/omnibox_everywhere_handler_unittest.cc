@@ -370,7 +370,7 @@ TEST_F(OmniboxEverywhereHandlerTest,
 }
 
 TEST_F(OmniboxEverywhereHandlerTest,
-       DismissShortcutSetupWithHotkeyAdvancesToReminder) {
+       DismissShortcutSetupWithHotkeySkipsReminder) {
   handler_->SetHotkey("Ctrl+Shift+Space");
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
       omnibox_everywhere::prefs::kFreShortcutSetupDismissed));
@@ -379,9 +379,9 @@ TEST_F(OmniboxEverywhereHandlerTest,
 
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
       omnibox_everywhere::prefs::kFreShortcutSetupDismissed));
-  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
       omnibox_everywhere::prefs::kFreShortcutReminderDismissed));
-  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
       omnibox_everywhere::prefs::kFreDismissed));
 }
 
