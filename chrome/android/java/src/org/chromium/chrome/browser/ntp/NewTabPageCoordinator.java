@@ -553,11 +553,20 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     }
 
     private void initializeComposeplateFlags(Profile profile) {
-        mCanShowComposeplateButton =
-                TriStateUtils.from(ComposeplateUtils.canShowComposeplateButtonOnNtp(profile));
+        mCanShowComposeplateButton = TriStateUtils.from(canShowAiModeButtonOnNtp());
         mIsComposeplatePolicyEnabled =
                 mCanShowComposeplateButton == TriState.TRUE
                         && ComposeplateUtils.isEnabledByPolicy(profile);
+    }
+
+    /** Returns whether the AI Mode button can be shown on NTPs. */
+    private boolean canShowAiModeButtonOnNtp() {
+        if (mSearchProviderInfoDelegate.getSearchProviderIsGoogle()) {
+            return ComposeplateUtils.canShowComposeplateButtonOnNtp(mProfile);
+        }
+
+        // TODO(https://crbug.com/561995440): Updates logic for 3p DSE.
+        return false;
     }
 
     @VisibleForTesting
@@ -789,12 +798,14 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      * @param isGoogle Whether the search provider is Google.
      */
     void setSearchProviderInfo(boolean hasLogo, boolean isGoogle) {
-        boolean isSearchProviderIsGoogleChanged =
-                mSearchProviderInfoDelegate.getSearchProviderIsGoogle() != isGoogle;
-
+        boolean isDseChanged = isDseChanged(isGoogle);
         // Always calls mSearchProviderInfoDelegate.setSearchProviderInfo() as the first one to
         // prevent it is being skipped.
         if (!mSearchProviderInfoDelegate.setSearchProviderInfo(hasLogo, isGoogle) && mInitialized) {
+            // Currently this is no op. This is because when #setSearchProviderInfo() returns false;
+            // isDseChanged will be false too, and #updateComposeplate() will early exits when
+            // isDseChanged is false.
+            updateComposeplate(isDseChanged);
             return;
         }
 
@@ -807,34 +818,54 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         // visibility of Logo is handled by LogoCoordinator.
         setSearchBoxTextAppearance();
 
-        // Skips if the flag hasn't been initialized since the initialization of the following
-        // components will be called again in #initialize().
-        if (mCanShowComposeplateButton != TriState.NOT_SET) {
-            // When mSearchProviderIsGoogle is changed, mCanShowComposeplateButton might be changed
-            // too, recalculate its value.
-            if (isSearchProviderIsGoogleChanged) {
-                int previousCanShowComposeplateButton = mCanShowComposeplateButton;
-                initializeComposeplateFlags(mProfile);
-                if (previousCanShowComposeplateButton != TriState.TRUE
-                        && mCanShowComposeplateButton == TriState.TRUE
-                        && mComposeplateCoordinator == null) {
-                    // If the composeplate view is enabled while mComposeplateCoordinator hasn't
-                    // been initialized yet, initialize it now.
-                    initializeComposeplate();
-                }
-
-                if (previousCanShowComposeplateButton != mCanShowComposeplateButton) {
-                    // When the flag value is changed, the height of search box might be changed.
-                    setSearchBoxHeightBoundsVerticalInset();
-                    // Updates the composeplate view's visibility.
-                    updateActionButtonVisibility();
-                }
-            }
-        }
+        updateComposeplate(isDseChanged);
 
         onUrlFocusAnimationChanged();
 
         mSnapshotTileGridChanged = true;
+    }
+
+    private boolean isDseChanged(boolean isGoogle) {
+        // TODO(https://crbug.com/561995440): Handles check of whether the DSE is changed.
+        return mSearchProviderInfoDelegate.getSearchProviderIsGoogle() != isGoogle;
+    }
+
+    /**
+     * @param isDseChanged: Whether the default search engine is changed.
+     */
+    private void updateComposeplate(boolean isDseChanged) {
+        // Skips if the flag hasn't been initialized since the initialization of the following
+        // components will be called again in #initialize().
+        if (mCanShowComposeplateButton == TriState.NOT_SET || !isDseChanged) {
+            return;
+        }
+
+        // When search engine is changed, the visibility of the composeplate button and
+        // mCanShowComposeplateButton might be changed too, recalculate its value.
+        int previousCanShowComposeplateButton = mCanShowComposeplateButton;
+        initializeComposeplateFlags(mProfile);
+        if (previousCanShowComposeplateButton != TriState.TRUE
+                && mCanShowComposeplateButton == TriState.TRUE
+                && mComposeplateCoordinator == null) {
+            // If the composeplate view is enabled while mComposeplateCoordinator hasn't
+            // been initialized yet, initialize it now.
+            initializeComposeplate();
+        }
+
+        maybeUpdateAiModeButton();
+
+        if (previousCanShowComposeplateButton != mCanShowComposeplateButton) {
+            // When the AI mode button's visibility is changed, the height of search box might be
+            // changed.
+            setSearchBoxHeightBoundsVerticalInset();
+            // Updates the composeplate view's visibility.
+            updateActionButtonVisibility();
+        }
+    }
+
+    /** Updates the icon and text for AI Mode button. */
+    private void maybeUpdateAiModeButton() {
+        // TODO(https://crbug.com/561995440): Updates the icon and text for AI Mode button.
     }
 
     /** Updates the margins for the most visited tiles layout based on what is shown above it. */
@@ -1096,7 +1127,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         if (mComposeplateCoordinator != null) {
             shouldShowComposeplateButton =
                     mCanShowComposeplateButton == TriState.TRUE
-                            && mSearchProviderInfoDelegate.getSearchProviderIsGoogle()
                             && IncognitoUtils.isIncognitoModeEnabled(mProfile);
             mComposeplateCoordinator.setVisibility(
                     shouldShowComposeplateButton, mManager.isCurrentPage());

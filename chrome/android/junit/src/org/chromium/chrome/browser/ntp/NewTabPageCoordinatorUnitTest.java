@@ -793,10 +793,13 @@ public class NewTabPageCoordinatorUnitTest {
 
         when(mManager.isVoiceSearchEnabled()).thenReturn(true);
         when(mMockSearchBox.isLensEnabled(anyInt())).thenReturn(false);
-        mCoordinator.setIsComposeplateEnabledForTesting(TriState.TRUE);
+
+        clearInvocations(mMockSearchBox);
+        clearInvocations(mMockLogo);
+        clearInvocations(mMockTiles);
+        clearInvocations(mMockComposeplate);
 
         mCoordinator.setSearchProviderInfo(targetHasLogo, targetIsGoogle);
-        mCoordinator.updateActionButtonVisibility();
 
         assertEquals(
                 targetHasLogo,
