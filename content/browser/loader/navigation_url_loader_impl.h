@@ -166,12 +166,14 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
   // Creates a SharedURLLoaderFactory for network-service-bound requests.
   static scoped_refptr<network::SharedURLLoaderFactory>
-  CreateNetworkLoaderFactory(BrowserContext* browser_context,
-                             StoragePartitionImpl* storage_partition,
-                             FrameTreeNode* frame_tree_node,
-                             const ukm::SourceIdObj& ukm_id,
-                             bool* bypass_redirect_checks,
-                             bool allow_same_site_none_cookies_override);
+  CreateNetworkLoaderFactory(
+      BrowserContext* browser_context,
+      StoragePartitionImpl* storage_partition,
+      FrameTreeNode* frame_tree_node,
+      const ukm::SourceIdObj& ukm_id,
+      bool* bypass_redirect_checks,
+      bool allow_same_site_none_cookies_override,
+      scoped_refptr<base::SingleThreadTaskRunner> network_response_task_runner);
 
   void BindAndInterceptNonNetworkURLLoaderFactoryReceiver(
       const GURL& url,
@@ -289,6 +291,9 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // Record ServiceWorker and the static routing API evaluation related results.
   void MaybeRecordServiceWorkerMainResourceInfo(
       const network::mojom::URLResponseHeadPtr& head);
+
+  scoped_refptr<base::SingleThreadTaskRunner>
+  GetNavigationNetworkResponseTaskRunner() const;
 
   const network::ResourceRequest& resource_request() const;
 

@@ -69,6 +69,10 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // network service.
     kNavigationNetworkResponse,
 
+    // For tasks processing primary main frame navigation network request's
+    // response from the network service with the highest priority.
+    kMainFrameNavigationNetworkResponse,
+
     // For tasks processing ServiceWorker's storage control's response. This has
     // the highest priority during startup, and is updated to normal priority
     // after startup.

@@ -211,8 +211,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
             false /* allow_cookies_from_browser */,
             pending_navigation_->GetNavigationHandle()
                 ->GetNavigationId() /* navigation_id */,
-            is_ad_tagged /* is_ad_tagged */,
-            false /* force_no_https_upgrade */));
+            is_ad_tagged /* is_ad_tagged */, false /* force_no_https_upgrade */,
+            true /* is_visible */));
 
     return std::make_unique<NavigationURLLoaderImpl>(
         browser_context_.get(), browser_context_->GetDefaultStoragePartition(),

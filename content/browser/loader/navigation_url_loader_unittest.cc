@@ -7,10 +7,15 @@
 #include <memory>
 #include <utility>
 
+#include "base/base_switches.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_amount_of_physical_memory_override.h"
+#include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
@@ -18,6 +23,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -133,11 +139,12 @@ class NavigationURLLoaderTest : public testing::Test {
             nullptr /* blob_url_loader_factory */,
             base::UnguessableToken::Create() /* devtools_navigation_token */,
             base::UnguessableToken::Create() /* devtools_frame_token */,
-            nullptr /* client_security_state */,
-            false /* is_pdf */, ChildProcessId() /* initiator_process_id */,
+            nullptr /* client_security_state */, false /* is_pdf */,
+            ChildProcessId() /* initiator_process_id */,
             std::nullopt /* initiator_document_token */,
             false /* allow_cookies_from_browser */, 0 /* navigation_id */,
-            false /* is_ad_tagged */, false /* force_no_https_upgrade */));
+            false /* is_ad_tagged */, false /* force_no_https_upgrade */,
+            true /* is_visible */));
     return NavigationURLLoader::Create(
         browser_context_.get(), storage_partition, std::move(request_info),
         nullptr, nullptr, nullptr, delegate,
@@ -231,6 +238,153 @@ TEST_F(NavigationURLLoaderTest, RequestFailedCertErrorFatal) {
             net::MapCertStatusToNetError(ssl_info.cert_status));
   EXPECT_TRUE(ssl_info.is_fatal_cert_error);
   EXPECT_EQ(1, delegate.on_request_handled_counter());
+}
+
+TEST_F(NavigationURLLoaderTest, GetNavigationNetworkResponseTaskRunner) {
+  // When feature is disabled, both primary main frame and subframe get default
+  // navigation network response task runner regardless of visibility or device
+  // tier.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kPrioritizeMainFrameNavigationNetworkResponse);
+    EXPECT_EQ(
+        NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+            /*is_primary_main_frame=*/true, /*is_visible=*/true),
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+    EXPECT_EQ(
+        NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+            /*is_primary_main_frame=*/true, /*is_visible=*/false),
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+    EXPECT_EQ(
+        NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+            /*is_primary_main_frame=*/false, /*is_visible=*/true),
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+    EXPECT_EQ(
+        NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+            /*is_primary_main_frame=*/false, /*is_visible=*/false),
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+  }
+
+  // When kNavigationNetworkResponseQueue is disabled, tasks remain on
+  // kNavigationNetworkResponse even if
+  // kPrioritizeMainFrameNavigationNetworkResponse is enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kPrioritizeMainFrameNavigationNetworkResponse},
+        {features::kNavigationNetworkResponseQueue});
+    EXPECT_EQ(
+        NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+            /*is_primary_main_frame=*/true, /*is_visible=*/true),
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+  }
+
+  // When feature is enabled on capable (non-low-end) devices:
+  // - Foreground primary main frame (is_primary_main_frame=true,
+  // is_visible=true)
+  //   gets kMainFrameNavigationNetworkResponse.
+  // - Hidden/background tab (is_visible=false) gets kNavigationNetworkResponse.
+  // - Non-primary main frame / subframe gets kNavigationNetworkResponse.
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        switches::kDisableLowEndDeviceMode);
+    base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+        base::GiB(16));
+
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kNavigationNetworkResponseQueue,
+         features::kPrioritizeMainFrameNavigationNetworkResponse},
+        {});
+
+    EXPECT_EQ(NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+                  /*is_primary_main_frame=*/true, /*is_visible=*/true),
+              GetUIThreadTaskRunner(
+                  {BrowserTaskType::kMainFrameNavigationNetworkResponse}));
+    EXPECT_EQ(
+        NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+            /*is_primary_main_frame=*/true, /*is_visible=*/false),
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+    EXPECT_EQ(
+        NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+            /*is_primary_main_frame=*/false, /*is_visible=*/true),
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+    EXPECT_EQ(
+        NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+            /*is_primary_main_frame=*/false, /*is_visible=*/false),
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+  }
+
+  // When feature is enabled on low-end devices with
+  // enable_on_low_end_devices=false (default): Does not promote to
+  // kMainFrameNavigationNetworkResponse.
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        switches::kEnableLowEndDeviceMode);
+    base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+        base::GiB(1));
+
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kNavigationNetworkResponseQueue,
+         features::kPrioritizeMainFrameNavigationNetworkResponse},
+        {});
+
+    EXPECT_EQ(
+        NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+            /*is_primary_main_frame=*/true, /*is_visible=*/true),
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+    EXPECT_EQ(
+        NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+            /*is_primary_main_frame=*/true, /*is_visible=*/false),
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+    EXPECT_EQ(
+        NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+            /*is_primary_main_frame=*/false, /*is_visible=*/true),
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+    EXPECT_EQ(
+        NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+            /*is_primary_main_frame=*/false, /*is_visible=*/false),
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+  }
+
+  // When feature is enabled on low-end devices with
+  // enable_on_low_end_devices=true: Foreground primary main frame gets
+  // kMainFrameNavigationNetworkResponse.
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        switches::kEnableLowEndDeviceMode);
+    base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+        base::GiB(1));
+
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{features::kNavigationNetworkResponseQueue, {}},
+         {features::kPrioritizeMainFrameNavigationNetworkResponse,
+          {{"enable_on_low_end_devices", "true"}}}},
+        {});
+
+    EXPECT_EQ(NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+                  /*is_primary_main_frame=*/true, /*is_visible=*/true),
+              GetUIThreadTaskRunner(
+                  {BrowserTaskType::kMainFrameNavigationNetworkResponse}));
+    EXPECT_EQ(
+        NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+            /*is_primary_main_frame=*/true, /*is_visible=*/false),
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+    EXPECT_EQ(
+        NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+            /*is_primary_main_frame=*/false, /*is_visible=*/true),
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+    EXPECT_EQ(
+        NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+            /*is_primary_main_frame=*/false, /*is_visible=*/false),
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+  }
 }
 
 }  // namespace content

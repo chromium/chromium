@@ -68,6 +68,8 @@ QueueName GetUITaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return QueueName::UI_USER_INPUT_TQ;
     case BrowserTaskQueues::QueueType::kNavigationNetworkResponse:
       return QueueName::UI_NAVIGATION_NETWORK_RESPONSE_TQ;
+    case BrowserTaskQueues::QueueType::kMainFrameNavigationNetworkResponse:
+      return QueueName::UI_MAIN_FRAME_NAVIGATION_NETWORK_RESPONSE_TQ;
     case BrowserTaskQueues::QueueType::kServiceWorkerStorageControlResponse:
       return QueueName::UI_SERVICE_WORKER_STORAGE_CONTROL_RESPONSE_TQ;
     case BrowserTaskQueues::QueueType::kBeforeUnloadBrowserResponse:
@@ -91,6 +93,8 @@ QueueName GetIOTaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return QueueName::IO_USER_INPUT_TQ;
     case BrowserTaskQueues::QueueType::kNavigationNetworkResponse:
       return QueueName::IO_NAVIGATION_NETWORK_RESPONSE_TQ;
+    case BrowserTaskQueues::QueueType::kMainFrameNavigationNetworkResponse:
+      return QueueName::IO_MAIN_FRAME_NAVIGATION_NETWORK_RESPONSE_TQ;
     case BrowserTaskQueues::QueueType::kServiceWorkerStorageControlResponse:
       return QueueName::IO_SERVICE_WORKER_STORAGE_CONTROL_RESPONSE_TQ;
     case BrowserTaskQueues::QueueType::kBeforeUnloadBrowserResponse:
@@ -181,6 +185,9 @@ BrowserTaskQueues::BrowserTaskQueues(
 
   GetBrowserTaskQueue(QueueType::kNavigationNetworkResponse)
       ->SetQueuePriority(BrowserTaskPriority::kHighPriority);
+
+  GetBrowserTaskQueue(QueueType::kMainFrameNavigationNetworkResponse)
+      ->SetQueuePriority(BrowserTaskPriority::kHighestPriority);
 
   GetBrowserTaskQueue(QueueType::kServiceWorkerStorageControlResponse)
       ->SetQueuePriority(BrowserTaskPriority::kHighestPriority);

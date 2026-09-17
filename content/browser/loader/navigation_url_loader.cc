@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/cached_navigation_url_loader.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
@@ -15,6 +16,8 @@
 #include "content/browser/renderer_host/navigation_request_info.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/browser/webui/initial_webui_navigation_url_loader.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "services/network/public/cpp/features.h"
 
@@ -117,4 +120,17 @@ uint32_t NavigationURLLoader::GetURLLoaderOptions(
 
   return options;
 }
+
+// static
+scoped_refptr<base::SingleThreadTaskRunner>
+NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+    bool is_primary_main_frame,
+    bool is_visible) {
+  if (is_primary_main_frame && is_visible) {
+    return GetUIThreadTaskRunner(
+        {BrowserTaskType::kMainFrameNavigationNetworkResponse});
+  }
+  return GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse});
+}
+
 }  // namespace content

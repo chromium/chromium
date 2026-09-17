@@ -32,6 +32,10 @@ enum class BrowserTaskType {
   // TODO(altimin): Make this content-internal.
   kNavigationNetworkResponse,
 
+  // Tasks processing primary main frame navigation network request's response
+  // from the network service.
+  kMainFrameNavigationNetworkResponse,
+
   // Tasks processing ServiceWorker's storage control's response.
   // TODO(chikamune): Make this content-internal.
   kServiceWorkerStorageControlResponse,

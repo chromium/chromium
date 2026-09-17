@@ -749,6 +749,16 @@ BASE_FEATURE(kNavigationNetworkResponseQueue,
 #endif
 );
 
+// When PrioritizeMainFrameNavigationNetworkResponse is enabled, the browser
+// will schedule tasks related to primary main frame navigation network
+// responses in a kHighest priority queue.
+BASE_FEATURE(kPrioritizeMainFrameNavigationNetworkResponse,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool>
+    kPrioritizeMainFrameNavigationNetworkResponseEnableOnLowEndDevices{
+        &kPrioritizeMainFrameNavigationNetworkResponse,
+        "enable_on_low_end_devices", false};
+
 // If the network service is enabled, runs it in process.
 BASE_FEATURE(kNetworkServiceInProcess,
              "NetworkServiceInProcess2",

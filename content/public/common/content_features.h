@@ -238,6 +238,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationConfidenceEpsilon);
 CONTENT_EXPORT extern const base::FeatureParam<double>
     kNavigationConfidenceEpsilonValue;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationNetworkResponseQueue);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kPrioritizeMainFrameNavigationNetworkResponse);
+CONTENT_EXPORT extern const base::FeatureParam<bool>
+    kPrioritizeMainFrameNavigationNetworkResponseEnableOnLowEndDevices;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNetworkQualityEstimatorWebHoldback);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNetworkServiceInProcess);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNoSelectionMenuCaching);

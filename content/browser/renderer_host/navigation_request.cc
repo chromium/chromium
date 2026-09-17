@@ -149,6 +149,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/tracing_support.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -1945,13 +1946,16 @@ NavigationRequest::NavigationRequest(
     // That means there is no need to synchronize this signal with other
     // renderer events, so this interface doesn't have to be associated and can
     // use a prioritized task runner.
-    // kNavigationNetworkResponse is used as CommitNavigation typically already
-    // runs in on a task from this task runner (via OnResponseReceived message
-    // received from the network service).
+    // The navigation network response task runner is used as CommitNavigation
+    // typically runs on a task from this task runner (via OnResponseReceived
+    // message received from the network service).
     if (renderer_cancellation_listener.is_valid()) {
+      bool is_visible = GetWebContents() && GetWebContents()->GetVisibility() ==
+                                                Visibility::VISIBLE;
       renderer_cancellation_listener_.Bind(
           std::move(renderer_cancellation_listener),
-          GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+          NavigationURLLoader::GetNavigationNetworkResponseTaskRunner(
+              IsInPrimaryMainFrame(), is_visible));
     }
     if (renderer_ignore_duplicate_navigation_listener.is_valid()) {
       renderer_ignore_duplicate_navigation_listener_.Bind(
@@ -6144,12 +6148,14 @@ void NavigationRequest::OnStartChecksComplete(
   }
   CHECK(local_root_rfh);
 
+  bool is_visible = GetWebContents() &&
+                    GetWebContents()->GetVisibility() == Visibility::VISIBLE;
+
   loader_ = NavigationURLLoader::Create(
       browser_context, partition,
       std::make_unique<NavigationRequestInfo>(
           common_params_->Clone(), begin_params_.Clone(), sandbox_flags,
-          GetIsolationInfo(),
-          frame_tree_node_->current_frame_host()->IsInPrimaryMainFrame(),
+          GetIsolationInfo(), IsInPrimaryMainFrame(),
           frame_tree_node_->IsOutermostMainFrame(),
           frame_tree_node_->IsMainFrame(),
           frame_tree_node_->AreAncestorsSecure(),
@@ -6161,7 +6167,7 @@ void NavigationRequest::OnStartChecksComplete(
           BuildClientSecurityStateForNavigationFetch(), IsPdf(),
           GetInitiatorProcessId(), initiator_document_token_,
           allow_cookies_from_browser_, navigation_id_, is_ad_tagged(),
-          force_no_https_upgrade_),
+          force_no_https_upgrade_, is_visible),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       std::move(prefetched_signed_exchange_cache_), this, loader_type,
       CreateCookieAccessObserver(), CreateTrustTokenAccessObserver(),

@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_switches.h"
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
@@ -16,6 +18,9 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_amount_of_physical_memory_override.h"
+#include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/browser/scheduler/browser_io_thread_delegate.h"
 #include "content/browser/scheduler/browser_task_priority.h"
@@ -25,6 +30,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -346,6 +352,132 @@ TEST_F(BrowserTaskExecutorWithNoContentClientTest,
 
   EXPECT_CALL(task, Run).Times(2);
   BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(BrowserThread::UI);
+}
+
+TEST(BrowserTaskExecutorUnitTest, GetQueueTypeForNavigationNetworkResponse) {
+  // 1. By default (kPrioritizeMainFrameNavigationNetworkResponse disabled,
+  // kNavigationNetworkResponseQueue enabled),
+  // kMainFrameNavigationNetworkResponse falls through to
+  // kNavigationNetworkResponse.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kNavigationNetworkResponseQueue},
+        {features::kPrioritizeMainFrameNavigationNetworkResponse});
+    EXPECT_EQ(BrowserTaskExecutor::GetQueueType(BrowserTaskTraits(
+                  {BrowserTaskType::kMainFrameNavigationNetworkResponse})),
+              BrowserTaskQueues::QueueType::kNavigationNetworkResponse);
+    EXPECT_EQ(BrowserTaskExecutor::GetQueueType(BrowserTaskTraits(
+                  {BrowserTaskType::kNavigationNetworkResponse})),
+              BrowserTaskQueues::QueueType::kNavigationNetworkResponse);
+  }
+
+  // 2. When kNavigationNetworkResponseQueue is disabled, both fall back to
+  // kUserBlocking.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {}, {features::kNavigationNetworkResponseQueue,
+             features::kPrioritizeMainFrameNavigationNetworkResponse});
+    EXPECT_EQ(BrowserTaskExecutor::GetQueueType(BrowserTaskTraits(
+                  {BrowserTaskType::kMainFrameNavigationNetworkResponse})),
+              BrowserTaskQueues::QueueType::kUserBlocking);
+    EXPECT_EQ(BrowserTaskExecutor::GetQueueType(BrowserTaskTraits(
+                  {BrowserTaskType::kNavigationNetworkResponse})),
+              BrowserTaskQueues::QueueType::kUserBlocking);
+  }
+
+  // 3. When both features are enabled on capable devices,
+  // kMainFrameNavigationNetworkResponse maps to
+  // QueueType::kMainFrameNavigationNetworkResponse.
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        switches::kDisableLowEndDeviceMode);
+    base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+        base::GiB(16));
+
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kNavigationNetworkResponseQueue,
+         features::kPrioritizeMainFrameNavigationNetworkResponse},
+        {});
+
+    EXPECT_EQ(
+        BrowserTaskExecutor::GetQueueType(BrowserTaskTraits(
+            {BrowserTaskType::kMainFrameNavigationNetworkResponse})),
+        BrowserTaskQueues::QueueType::kMainFrameNavigationNetworkResponse);
+    EXPECT_EQ(BrowserTaskExecutor::GetQueueType(BrowserTaskTraits(
+                  {BrowserTaskType::kNavigationNetworkResponse})),
+              BrowserTaskQueues::QueueType::kNavigationNetworkResponse);
+  }
+
+  // 4. When both features are enabled on low-end devices without
+  // enable_on_low_end_devices, it falls back to
+  // QueueType::kNavigationNetworkResponse.
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        switches::kEnableLowEndDeviceMode);
+    base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+        base::GiB(1));
+
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kNavigationNetworkResponseQueue,
+         features::kPrioritizeMainFrameNavigationNetworkResponse},
+        {});
+
+    EXPECT_EQ(BrowserTaskExecutor::GetQueueType(BrowserTaskTraits(
+                  {BrowserTaskType::kMainFrameNavigationNetworkResponse})),
+              BrowserTaskQueues::QueueType::kNavigationNetworkResponse);
+    EXPECT_EQ(BrowserTaskExecutor::GetQueueType(BrowserTaskTraits(
+                  {BrowserTaskType::kNavigationNetworkResponse})),
+              BrowserTaskQueues::QueueType::kNavigationNetworkResponse);
+  }
+
+  // 5. When both features are enabled on low-end devices with
+  // enable_on_low_end_devices=true, it maps to
+  // QueueType::kMainFrameNavigationNetworkResponse.
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        switches::kEnableLowEndDeviceMode);
+    base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+        base::GiB(1));
+
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{features::kNavigationNetworkResponseQueue, {}},
+         {features::kPrioritizeMainFrameNavigationNetworkResponse,
+          {{"enable_on_low_end_devices", "true"}}}},
+        {});
+
+    EXPECT_EQ(
+        BrowserTaskExecutor::GetQueueType(BrowserTaskTraits(
+            {BrowserTaskType::kMainFrameNavigationNetworkResponse})),
+        BrowserTaskQueues::QueueType::kMainFrameNavigationNetworkResponse);
+    EXPECT_EQ(BrowserTaskExecutor::GetQueueType(BrowserTaskTraits(
+                  {BrowserTaskType::kNavigationNetworkResponse})),
+              BrowserTaskQueues::QueueType::kNavigationNetworkResponse);
+  }
+
+  // 6. When kPrioritizeMainFrameNavigationNetworkResponse is enabled, but
+  // kNavigationNetworkResponseQueue is disabled, it falls back to
+  // QueueType::kUserBlocking.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kPrioritizeMainFrameNavigationNetworkResponse},
+        {features::kNavigationNetworkResponseQueue});
+
+    EXPECT_EQ(BrowserTaskExecutor::GetQueueType(BrowserTaskTraits(
+                  {BrowserTaskType::kMainFrameNavigationNetworkResponse})),
+              BrowserTaskQueues::QueueType::kUserBlocking);
+    EXPECT_EQ(BrowserTaskExecutor::GetQueueType(BrowserTaskTraits(
+                  {BrowserTaskType::kNavigationNetworkResponse})),
+              BrowserTaskQueues::QueueType::kUserBlocking);
+  }
 }
 
 }  // namespace content

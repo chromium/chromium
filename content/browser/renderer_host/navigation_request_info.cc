@@ -32,7 +32,8 @@ NavigationRequestInfo::NavigationRequestInfo(
     bool allow_cookies_from_browser,
     int64_t navigation_id,
     bool is_ad_tagged,
-    bool force_no_https_upgrade)
+    bool force_no_https_upgrade,
+    bool is_visible)
     : common_params(std::move(common_params)),
       begin_params(std::move(begin_params)),
       sandbox_flags(sandbox_flags),
@@ -54,7 +55,8 @@ NavigationRequestInfo::NavigationRequestInfo(
       allow_cookies_from_browser(allow_cookies_from_browser),
       navigation_id(navigation_id),
       is_ad_tagged(is_ad_tagged),
-      force_no_https_upgrade(force_no_https_upgrade) {}
+      force_no_https_upgrade(force_no_https_upgrade),
+      is_visible(is_visible) {}
 
 NavigationRequestInfo::~NavigationRequestInfo() {}
 

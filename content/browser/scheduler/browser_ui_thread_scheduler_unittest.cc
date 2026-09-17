@@ -71,6 +71,312 @@ TEST(BrowserUIThreadSchedulerTest, DestructorPostChainDuringShutdown) {
   EXPECT_TRUE(run);
 }
 
+TEST(BrowserUIThreadSchedulerTest,
+     PrioritizeMainFrameNavigationNetworkResponse) {
+  auto scheduler = BrowserUIThreadScheduler::CreateForTesting();
+  scheduler->GetHandle()->OnStartupComplete();
+
+  auto default_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+      BrowserUIThreadScheduler::QueueType::kDefault);
+  auto nav_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+      BrowserUIThreadScheduler::QueueType::kMainFrameNavigationNetworkResponse);
+
+  base::RunLoop run_loop;
+  std::vector<int> order;
+  default_tq->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                         order.push_back(1);
+                         if (order.size() == 2u) {
+                           run_loop.Quit();
+                         }
+                       }));
+  nav_tq->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                     order.push_back(2);
+                     if (order.size() == 2u) {
+                       run_loop.Quit();
+                     }
+                   }));
+
+  run_loop.Run();
+
+  ASSERT_EQ(order.size(), 2u);
+  EXPECT_EQ(order[0], 2);
+  EXPECT_EQ(order[1], 1);
+}
+
+TEST(BrowserUIThreadSchedulerTest, PreemptionByUserInputUnderContention) {
+  // 1. Baseline: QueueType::kNavigationNetworkResponse (Priority 2).
+  // When posted before UserInput tasks (Priority 1) while the UI thread is
+  // busy, the subsequent UserInput tasks preempt it and execute first.
+  {
+    auto scheduler = BrowserUIThreadScheduler::CreateForTesting();
+    scheduler->GetHandle()->OnStartupComplete();
+
+    auto default_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+        BrowserUIThreadScheduler::QueueType::kDefault);
+    auto user_input_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+        BrowserUIThreadScheduler::QueueType::kUserInput);
+    auto nav_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+        BrowserUIThreadScheduler::QueueType::kNavigationNetworkResponse);
+
+    base::RunLoop run_loop;
+    std::vector<std::string> order;
+
+    default_tq->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          nav_tq->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                             order.push_back("NavigationNetworkResponse");
+                             if (order.size() == 3u) {
+                               run_loop.Quit();
+                             }
+                           }));
+          user_input_tq->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                    order.push_back("UserInput1");
+                                    if (order.size() == 3u) {
+                                      run_loop.Quit();
+                                    }
+                                  }));
+          user_input_tq->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                    order.push_back("UserInput2");
+                                    if (order.size() == 3u) {
+                                      run_loop.Quit();
+                                    }
+                                  }));
+        }));
+
+    run_loop.Run();
+
+    ASSERT_EQ(order.size(), 3u);
+    EXPECT_EQ(order[0], "UserInput1");
+    EXPECT_EQ(order[1], "UserInput2");
+    EXPECT_EQ(order[2], "NavigationNetworkResponse");
+  }
+
+  // 2. Treatment: QueueType::kMainFrameNavigationNetworkResponse (Priority 1).
+  // When posted before UserInput tasks (Priority 1) while the UI thread is
+  // busy, it is in the same highest-priority tier and is NOT preempted by later
+  // UserInput tasks.
+  {
+    auto scheduler = BrowserUIThreadScheduler::CreateForTesting();
+    scheduler->GetHandle()->OnStartupComplete();
+
+    auto default_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+        BrowserUIThreadScheduler::QueueType::kDefault);
+    auto user_input_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+        BrowserUIThreadScheduler::QueueType::kUserInput);
+    auto nav_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+        BrowserUIThreadScheduler::QueueType::
+            kMainFrameNavigationNetworkResponse);
+
+    base::RunLoop run_loop;
+    std::vector<std::string> order;
+
+    default_tq->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          nav_tq->PostTask(
+              FROM_HERE, base::BindLambdaForTesting([&]() {
+                order.push_back("MainFrameNavigationNetworkResponse");
+                if (order.size() == 3u) {
+                  run_loop.Quit();
+                }
+              }));
+          user_input_tq->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                    order.push_back("UserInput1");
+                                    if (order.size() == 3u) {
+                                      run_loop.Quit();
+                                    }
+                                  }));
+          user_input_tq->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                    order.push_back("UserInput2");
+                                    if (order.size() == 3u) {
+                                      run_loop.Quit();
+                                    }
+                                  }));
+        }));
+
+    run_loop.Run();
+
+    ASSERT_EQ(order.size(), 3u);
+    EXPECT_EQ(order[0], "MainFrameNavigationNetworkResponse");
+    EXPECT_EQ(order[1], "UserInput1");
+    EXPECT_EQ(order[2], "UserInput2");
+  }
+}
+
+TEST(BrowserUIThreadSchedulerTest,
+     MainFramePreemptsSubframeNavigationResponse) {
+  // Verifies that when a subframe/hidden response (kNavigationNetworkResponse,
+  // Priority 2) is posted first while UI thread is busy, and a primary main
+  // frame response (kMainFrameNavigationNetworkResponse, Priority 1) is posted
+  // afterwards, the main frame response preempts the subframe response and runs
+  // first.
+  auto scheduler = BrowserUIThreadScheduler::CreateForTesting();
+  scheduler->GetHandle()->OnStartupComplete();
+
+  auto default_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+      BrowserUIThreadScheduler::QueueType::kDefault);
+  auto subframe_nav_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+      BrowserUIThreadScheduler::QueueType::kNavigationNetworkResponse);
+  auto main_frame_nav_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+      BrowserUIThreadScheduler::QueueType::kMainFrameNavigationNetworkResponse);
+
+  base::RunLoop run_loop;
+  std::vector<std::string> order;
+
+  default_tq->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                         subframe_nav_tq->PostTask(
+                             FROM_HERE, base::BindLambdaForTesting([&]() {
+                               order.push_back("SubframeResponse");
+                               if (order.size() == 2u) {
+                                 run_loop.Quit();
+                               }
+                             }));
+                         main_frame_nav_tq->PostTask(
+                             FROM_HERE, base::BindLambdaForTesting([&]() {
+                               order.push_back("MainFrameResponse");
+                               if (order.size() == 2u) {
+                                 run_loop.Quit();
+                               }
+                             }));
+                       }));
+
+  run_loop.Run();
+
+  ASSERT_EQ(order.size(), 2u);
+  // Main frame response (Priority 1) preempts earlier-posted subframe response
+  // (Priority 2).
+  EXPECT_EQ(order[0], "MainFrameResponse");
+  EXPECT_EQ(order[1], "SubframeResponse");
+}
+
+TEST(BrowserUIThreadSchedulerTest, ConcurrentMainFrameNavigationsFIFO) {
+  auto scheduler = BrowserUIThreadScheduler::CreateForTesting();
+  scheduler->GetHandle()->OnStartupComplete();
+
+  auto default_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+      BrowserUIThreadScheduler::QueueType::kDefault);
+  auto main_frame_nav_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+      BrowserUIThreadScheduler::QueueType::kMainFrameNavigationNetworkResponse);
+
+  base::RunLoop run_loop;
+  std::vector<int> order;
+
+  default_tq->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                         for (int i = 1; i <= 3; ++i) {
+                           main_frame_nav_tq->PostTask(
+                               FROM_HERE, base::BindLambdaForTesting([&, i]() {
+                                 order.push_back(i);
+                                 if (order.size() == 3u) {
+                                   run_loop.Quit();
+                                 }
+                               }));
+                         }
+                       }));
+
+  run_loop.Run();
+
+  ASSERT_EQ(order.size(), 3u);
+  EXPECT_EQ(order[0], 1);
+  EXPECT_EQ(order[1], 2);
+  EXPECT_EQ(order[2], 3);
+}
+
+TEST(BrowserUIThreadSchedulerTest,
+     MixedContentionUserInputMainFrameAndSubframe) {
+  auto scheduler = BrowserUIThreadScheduler::CreateForTesting();
+  scheduler->GetHandle()->OnStartupComplete();
+
+  auto default_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+      BrowserUIThreadScheduler::QueueType::kDefault);
+  auto subframe_nav_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+      BrowserUIThreadScheduler::QueueType::kNavigationNetworkResponse);
+  auto user_input_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+      BrowserUIThreadScheduler::QueueType::kUserInput);
+  auto main_frame_nav_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+      BrowserUIThreadScheduler::QueueType::kMainFrameNavigationNetworkResponse);
+
+  base::RunLoop run_loop;
+  std::vector<std::string> order;
+
+  default_tq->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        subframe_nav_tq->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                    order.push_back("SubframeResponse");
+                                    if (order.size() == 3u) {
+                                      run_loop.Quit();
+                                    }
+                                  }));
+        user_input_tq->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                  order.push_back("UserInput");
+                                  if (order.size() == 3u) {
+                                    run_loop.Quit();
+                                  }
+                                }));
+        main_frame_nav_tq->PostTask(FROM_HERE,
+                                    base::BindLambdaForTesting([&]() {
+                                      order.push_back("MainFrameResponse");
+                                      if (order.size() == 3u) {
+                                        run_loop.Quit();
+                                      }
+                                    }));
+      }));
+
+  run_loop.Run();
+
+  ASSERT_EQ(order.size(), 3u);
+  // UserInput and MainFrameResponse are both Priority 1 (FIFO between them).
+  // SubframeResponse is Priority 2 (runs after all Priority 1 tasks).
+  EXPECT_EQ(order[0], "UserInput");
+  EXPECT_EQ(order[1], "MainFrameResponse");
+  EXPECT_EQ(order[2], "SubframeResponse");
+}
+
+TEST(BrowserUIThreadSchedulerTest,
+     StarvationResistanceUnderContinuousUserInput) {
+  auto measure_steps_until_run =
+      [](BrowserUIThreadScheduler::QueueType nav_queue_type) -> int {
+    auto scheduler = BrowserUIThreadScheduler::CreateForTesting();
+    scheduler->GetHandle()->OnStartupComplete();
+
+    auto user_input_tq = scheduler->GetHandle()->GetBrowserTaskRunner(
+        BrowserUIThreadScheduler::QueueType::kUserInput);
+    auto nav_tq = scheduler->GetHandle()->GetBrowserTaskRunner(nav_queue_type);
+
+    base::RunLoop run_loop;
+    int input_task_count = 0;
+    int nav_executed_at_step = -1;
+    bool nav_completed = false;
+
+    base::RepeatingClosure post_input_task;
+    post_input_task = base::BindLambdaForTesting([&]() {
+      input_task_count++;
+      if (!nav_completed && input_task_count < 20) {
+        user_input_tq->PostTask(FROM_HERE, post_input_task);
+      }
+    });
+
+    user_input_tq->PostTask(FROM_HERE, post_input_task);
+
+    nav_tq->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                       nav_completed = true;
+                       nav_executed_at_step = input_task_count;
+                       run_loop.Quit();
+                     }));
+
+    run_loop.Run();
+    return nav_executed_at_step;
+  };
+
+  int baseline_step = measure_steps_until_run(
+      BrowserUIThreadScheduler::QueueType::kNavigationNetworkResponse);
+  int treatment_step = measure_steps_until_run(
+      BrowserUIThreadScheduler::QueueType::kMainFrameNavigationNetworkResponse);
+
+  // Treatment runs immediately on step 1 alongside user input.
+  EXPECT_EQ(treatment_step, 1);
+  // Baseline is starved until the input stream terminates (step 20).
+  EXPECT_GE(baseline_step, 20);
+}
+
 class BrowserUIThreadSchedulerLoopQuarantineTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{

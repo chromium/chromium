@@ -376,6 +376,10 @@ public final class ProductionSupportedFlagList {
                 "Schedules tasks related to the navigation network responses on a higher "
                         + "priority task queue."),
         Flag.baseFeature(
+                ContentFeatures.PRIORITIZE_MAIN_FRAME_NAVIGATION_NETWORK_RESPONSE,
+                "Schedules tasks related to the primary main frame navigation network responses"
+                        + " on a highest priority task queue."),
+        Flag.baseFeature(
                 ContentFeatures.GIN_JAVA_BRIDGE_MOJO_SKIP_CLEAR_OBJECTS_ON_MAIN_DOCUMENT_READY,
                 "Skips clearing objects on main document ready."),
         Flag.baseFeature(

@@ -16786,6 +16786,25 @@
             ]
         }
     ],
+    "PrioritizeMainFrameNavigationNetworkResponse": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrioritizeMainFrameNavigationNetworkResponse"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxAdPrivacyUxDeprecation": [
         {
             "platforms": [

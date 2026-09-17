@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
+#include "base/system/sys_info.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -87,6 +88,18 @@ QueueType BrowserTaskExecutor::GetQueueType(const BrowserTaskTraits& traits) {
     case BrowserTaskType::kUserInput:
       return QueueType::kUserInput;
 
+    case BrowserTaskType::kMainFrameNavigationNetworkResponse:
+      if (base::FeatureList::IsEnabled(
+              features::kPrioritizeMainFrameNavigationNetworkResponse) &&
+          base::FeatureList::IsEnabled(
+              features::kNavigationNetworkResponseQueue) &&
+          (!base::SysInfo::IsLowEndDevice() ||
+           features::
+               kPrioritizeMainFrameNavigationNetworkResponseEnableOnLowEndDevices
+                   .Get())) {
+        return QueueType::kMainFrameNavigationNetworkResponse;
+      }
+      [[fallthrough]];
     case BrowserTaskType::kNavigationNetworkResponse:
       if (base::FeatureList::IsEnabled(
               features::kNavigationNetworkResponseQueue)) {
