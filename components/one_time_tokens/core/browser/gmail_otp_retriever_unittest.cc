@@ -162,6 +162,14 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_SuccessFromCache) {
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason."
       "Received",
       0);
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Cached",
+      GmailOtpSenderDomainMatchType::kExact, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Received",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest, RetrieveOtp_SuccessFromSubscription) {
@@ -191,6 +199,14 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_SuccessFromSubscription) {
   histogram_tester.ExpectTotalCount(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason."
       "Received",
+      0);
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Received",
+      GmailOtpSenderDomainMatchType::kExact, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Cached",
       0);
 }
 
@@ -261,6 +277,7 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_ExactMatch) {
 }
 
 TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_WwwExactMatch) {
+  base::HistogramTester histogram_tester;
   const std::string kOtp = "123456";
   otp_service().SetCachedTokens(
       {{OneTimeTokenType::kGmail, kOtp, base::TimeTicks::Now(),
@@ -277,6 +294,15 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_WwwExactMatch) {
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get()->otp, kOtp);
+
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Cached",
+      GmailOtpSenderDomainMatchType::kFrameIsWwwPsl, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Received",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_WwwSender_Rejected) {
@@ -305,6 +331,7 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_WwwSender_Rejected) {
 
 TEST_F(GmailOtpRetrieverTest,
        RetrieveOtp_CachedToken_WwwSender_AllowedForLoginFlow) {
+  base::HistogramTester histogram_tester;
   const std::string kOtp = "123456";
   otp_service().SetCachedTokens(
       {{OneTimeTokenType::kGmail, kOtp, base::TimeTicks::Now(),
@@ -322,10 +349,20 @@ TEST_F(GmailOtpRetrieverTest,
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get()->otp, kOtp);
+
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Cached",
+      GmailOtpSenderDomainMatchType::kPsl, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Received",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest,
        RetrieveOtp_CachedToken_WwwSenderWwwFrame_AllowedForNonLoginFlow) {
+  base::HistogramTester histogram_tester;
   const std::string kOtp = "123456";
   otp_service().SetCachedTokens(
       {{OneTimeTokenType::kGmail, kOtp, base::TimeTicks::Now(),
@@ -343,11 +380,21 @@ TEST_F(GmailOtpRetrieverTest,
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get()->otp, kOtp);
+
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Cached",
+      GmailOtpSenderDomainMatchType::kExact, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Received",
+      0);
 }
 
 TEST_F(
     GmailOtpRetrieverTest,
     RetrieveOtp_CachedToken_WwwSubdomainSenderSubdomain_AllowedForNonLoginFlow) {
+  base::HistogramTester histogram_tester;
   const std::string kOtp = "123456";
   otp_service().SetCachedTokens(
       {{OneTimeTokenType::kGmail, kOtp, base::TimeTicks::Now(),
@@ -365,6 +412,15 @@ TEST_F(
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get()->otp, kOtp);
+
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Cached",
+      GmailOtpSenderDomainMatchType::kFrameIsWwwPsl, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Received",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest,
@@ -418,6 +474,7 @@ TEST_F(GmailOtpRetrieverTest,
 TEST_F(
     GmailOtpRetrieverTest,
     RetrieveOtp_SubscriptionToken_WwwFrameSenderRoot_AllowedForNonLoginFlow) {
+  base::HistogramTester histogram_tester;
   const std::string kOtp = "654321";
   otp_service().SetCachedTokens({});
 
@@ -439,9 +496,19 @@ TEST_F(
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get()->otp, kOtp);
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
+
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Received",
+      GmailOtpSenderDomainMatchType::kFrameIsWwwPsl, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Cached",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_AffiliatedMatch) {
+  base::HistogramTester histogram_tester;
   const std::string kOtp = "999888";
   affiliation_service().AddAffiliationGroup(AffiliatedFacets{
       {Facet{FacetURI::FromCanonicalSpec("https://example.com")},
@@ -461,10 +528,20 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_AffiliatedMatch) {
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get()->otp, kOtp);
+
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Cached",
+      GmailOtpSenderDomainMatchType::kAffiliated, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Received",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest,
        RetrieveOtp_CachedToken_PslMatch_AllowedForLoginFlow) {
+  base::HistogramTester histogram_tester;
   const std::string kOtp = "555444";
   otp_service().SetCachedTokens(
       {{OneTimeTokenType::kGmail, kOtp, base::TimeTicks::Now(),
@@ -480,10 +557,20 @@ TEST_F(GmailOtpRetrieverTest,
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get()->otp, kOtp);
+
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Cached",
+      GmailOtpSenderDomainMatchType::kPsl, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Received",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest,
        RetrieveOtp_SubscriptionToken_PslMatch_AllowedForLoginFlow) {
+  base::HistogramTester histogram_tester;
   const std::string kPslOtp = "654321";
   otp_service().SetCachedTokens({});
 
@@ -506,6 +593,15 @@ TEST_F(GmailOtpRetrieverTest,
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get()->otp, kPslOtp);
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
+
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Received",
+      GmailOtpSenderDomainMatchType::kPsl, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Cached",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest,
@@ -546,10 +642,18 @@ TEST_F(GmailOtpRetrieverTest,
 
   histogram_tester.ExpectUniqueSample(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason.Cached",
-      GmailOtpSenderDomainMatchRejectionReason::kPslMatchDisallowed, 1);
+      GmailOtpSenderDomainMatchType::kPsl, 1);
   histogram_tester.ExpectTotalCount(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason."
       "Received",
+      0);
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Received",
+      GmailOtpSenderDomainMatchType::kExact, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Cached",
       0);
 }
 
@@ -785,9 +889,17 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_NoMatch_LogsRejection) {
 
   histogram_tester.ExpectUniqueSample(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason.Cached",
-      GmailOtpSenderDomainMatchRejectionReason::kNoMatch, 1);
+      GmailOtpSenderDomainMatchType::kNoMatch, 1);
   histogram_tester.ExpectTotalCount(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason."
+      "Received",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Cached",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
       "Received",
       0);
 }
@@ -820,7 +932,15 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_Grouped_LogsRejection) {
 
   histogram_tester.ExpectUniqueSample(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason.Cached",
-      GmailOtpSenderDomainMatchRejectionReason::kGrouped, 1);
+      GmailOtpSenderDomainMatchType::kGrouped, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Cached",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Received",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest, RetrieveOtp_ReceivedToken_RejectionsLogged) {
@@ -848,9 +968,17 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_ReceivedToken_RejectionsLogged) {
   histogram_tester.ExpectUniqueSample(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason."
       "Received",
-      GmailOtpSenderDomainMatchRejectionReason::kNoMatch, 1);
+      GmailOtpSenderDomainMatchType::kNoMatch, 1);
   histogram_tester.ExpectTotalCount(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason.Cached",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Cached",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
+      "Received",
       0);
 }
 

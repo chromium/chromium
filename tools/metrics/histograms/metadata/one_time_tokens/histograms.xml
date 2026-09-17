@@ -8,6 +8,11 @@ found in the LICENSE file.
 
 <histograms>
 
+<variants name="GmailOtpTokenSource">
+  <variant name="Cached" summary="a cached"/>
+  <variant name="Received" summary="a received (fresh)"/>
+</variants>
+
 <histogram
     name="OneTimeTokens.Actor.AttemptOtpFilling.GmailOtpConfirmationDialogInteraction"
     enum="GmailOtpConfirmationDialogInteraction" expires_after="2027-06-30">
@@ -113,25 +118,27 @@ found in the LICENSE file.
 </histogram>
 
 <histogram
-    name="OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason.Cached"
-    enum="GmailOtpSenderDomainMatchRejectionReason" expires_after="2027-06-30">
+    name="OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType.{Source}"
+    enum="GmailOtpSenderDomainMatchType" expires_after="2027-06-30">
   <owner>ioanap@chromium.org</owner>
   <owner>sdrab@google.com</owner>
   <summary>
-    Records the reason why a sender domain match was rejected for a cached OTP
-    in GmailOtpRetriever. Recorded only when a token is rejected.
+    Records the match type for an accepted sender domain match for {Source} OTP
+    in GmailOtpRetriever. Recorded only when a token is accepted.
   </summary>
+  <token key="Source" variants="GmailOtpTokenSource"/>
 </histogram>
 
 <histogram
-    name="OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason.Received"
-    enum="GmailOtpSenderDomainMatchRejectionReason" expires_after="2027-06-30">
+    name="OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason.{Source}"
+    enum="GmailOtpSenderDomainMatchType" expires_after="2027-06-30">
   <owner>ioanap@chromium.org</owner>
   <owner>sdrab@google.com</owner>
   <summary>
-    Records the reason why a sender domain match was rejected for a received
-    (fresh) OTP in GmailOtpRetriever. Recorded only when a token is rejected.
+    Records the reason why a sender domain match was rejected for {Source} OTP
+    in GmailOtpRetriever. Recorded only when a token is rejected.
   </summary>
+  <token key="Source" variants="GmailOtpTokenSource"/>
 </histogram>
 
 </histograms>

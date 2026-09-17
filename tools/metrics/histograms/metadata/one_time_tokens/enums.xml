@@ -145,17 +145,20 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_metrics.h:GmailOtpOptInCardInteraction) -->
 
-<!-- LINT.IfChange(GmailOtpSenderDomainMatchRejectionReason) -->
+<!-- LINT.IfChange(GmailOtpSenderDomainMatchType) -->
 
-<enum name="GmailOtpSenderDomainMatchRejectionReason">
+<enum name="GmailOtpSenderDomainMatchType">
   <int value="0" label="Unknown"/>
   <int value="1" label="NoMatch"/>
   <int value="2" label="Grouped"/>
-  <int value="3" label="PslMatchDisallowed"/>
-  <int value="4" label="GroupedAndPslMatchDisallowed"/>
+  <int value="3" label="Psl"/>
+  <int value="4" label="GroupedAndPsl"/>
+  <int value="5" label="Exact"/>
+  <int value="6" label="Affiliated"/>
+  <int value="7" label="FrameIsWwwPsl"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/one_time_tokens/core/browser/gmail_otp_retriever.h:GmailOtpSenderDomainMatchRejectionReason) -->
+<!-- LINT.ThenChange(//components/one_time_tokens/core/browser/gmail_otp_retriever.h:GmailOtpSenderDomainMatchType) -->
 
 </enums>
 

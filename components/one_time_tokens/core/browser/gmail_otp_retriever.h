@@ -32,16 +32,19 @@ class DomainRelationChecker;
 
 namespace one_time_tokens {
 
-// LINT.IfChange(GmailOtpSenderDomainMatchRejectionReason)
-enum class GmailOtpSenderDomainMatchRejectionReason {
+// LINT.IfChange(GmailOtpSenderDomainMatchType)
+enum class GmailOtpSenderDomainMatchType {
   kUnknown = 0,
   kNoMatch = 1,
   kGrouped = 2,
-  kPslMatchDisallowed = 3,
-  kGroupedAndPslMatchDisallowed = 4,
-  kMaxValue = kGroupedAndPslMatchDisallowed
+  kPsl = 3,
+  kGroupedAndPsl = 4,
+  kExact = 5,
+  kAffiliated = 6,
+  kFrameIsWwwPsl = 7,
+  kMaxValue = kFrameIsWwwPsl
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:GmailOtpSenderDomainMatchRejectionReason)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:GmailOtpSenderDomainMatchType)
 
 class OneTimeTokenService;
 enum class OneTimeTokenSource;
@@ -113,26 +116,22 @@ class GmailOtpRetriever {
   void SubscribeForOneTimeToken();
   void CheckSenderDomainMatchesFrameToFill(
       std::string_view sender_address,
-      base::OnceCallback<void(std::optional<affiliations::MatchType>)>
-          callback);
+      base::OnceCallback<void(GmailOtpSenderDomainMatchType)> callback);
   void OnSenderDomainMatchChecked(
       const url::SchemeHostPort& sender_tuple,
-      base::OnceCallback<void(std::optional<affiliations::MatchType>)> callback,
+      base::OnceCallback<void(GmailOtpSenderDomainMatchType)> callback,
       std::optional<affiliations::MatchType> match_type);
   void CheckCachedTokenMatch(std::vector<OneTimeToken> cached_tokens,
                              size_t index);
-  bool IsMatchTypeAllowed(
-      std::optional<affiliations::MatchType> match_type) const;
-  void OnCachedTokenMatchChecked(
-      std::vector<OneTimeToken> cached_tokens,
-      size_t index,
-      std::optional<affiliations::MatchType> match_type);
+  bool IsMatchTypeAllowed(GmailOtpSenderDomainMatchType match_type) const;
+  void OnCachedTokenMatchChecked(std::vector<OneTimeToken> cached_tokens,
+                                 size_t index,
+                                 GmailOtpSenderDomainMatchType match_type);
   void OnOneTimeTokenReceived(
       OneTimeTokenSource source,
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> result);
-  void OnReceivedTokenMatchChecked(
-      OneTimeToken token,
-      std::optional<affiliations::MatchType> match_type);
+  void OnReceivedTokenMatchChecked(OneTimeToken token,
+                                   GmailOtpSenderDomainMatchType match_type);
   void OnOneTimeTokenTimeout();
   void MaybeCompleteOrWaitForPendingRequests();
   void OnOpaqueOriginDetected();

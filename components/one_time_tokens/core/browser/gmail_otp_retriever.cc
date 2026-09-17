@@ -30,37 +30,53 @@ namespace one_time_tokens {
 
 namespace {
 
-GmailOtpSenderDomainMatchRejectionReason GetRejectionReason(
+GmailOtpSenderDomainMatchType ResolveSenderDomainMatchType(
     std::optional<affiliations::MatchType> match_type,
-    bool is_login_flow) {
+    const url::Origin& frame_origin,
+    const url::SchemeHostPort& sender_tuple) {
   if (!match_type.has_value()) {
-    return GmailOtpSenderDomainMatchRejectionReason::kNoMatch;
+    return GmailOtpSenderDomainMatchType::kNoMatch;
+  }
+  if (*match_type == affiliations::MatchType::kExact) {
+    return GmailOtpSenderDomainMatchType::kExact;
   }
 
   int value = static_cast<int>(*match_type);
   bool has_psl = value & static_cast<int>(affiliations::MatchType::kPSL);
   bool has_grouped =
       value & static_cast<int>(affiliations::MatchType::kGrouped);
+  bool has_affiliated =
+      value & static_cast<int>(affiliations::MatchType::kAffiliated);
 
-  if (has_grouped && has_psl) {
-    return GmailOtpSenderDomainMatchRejectionReason::
-        kGroupedAndPslMatchDisallowed;
+  if (has_psl) {
+    std::string stripped_frame_host =
+        url_formatter::StripWWW(frame_origin.host());
+    url::SchemeHostPort stripped_frame_tuple(frame_origin.scheme(),
+                                             std::move(stripped_frame_host),
+                                             frame_origin.port());
+    if (stripped_frame_tuple == sender_tuple) {
+      return GmailOtpSenderDomainMatchType::kFrameIsWwwPsl;
+    }
   }
-  if (has_grouped) {
-    return GmailOtpSenderDomainMatchRejectionReason::kGrouped;
+
+  if (has_affiliated) {
+    return GmailOtpSenderDomainMatchType::kAffiliated;
+  }
+  if (has_grouped && has_psl) {
+    return GmailOtpSenderDomainMatchType::kGroupedAndPsl;
   }
   if (has_psl) {
-    return GmailOtpSenderDomainMatchRejectionReason::kPslMatchDisallowed;
+    return GmailOtpSenderDomainMatchType::kPsl;
   }
-  return GmailOtpSenderDomainMatchRejectionReason::kUnknown;
+  if (has_grouped) {
+    return GmailOtpSenderDomainMatchType::kGrouped;
+  }
+  return GmailOtpSenderDomainMatchType::kUnknown;
 }
 
 void RecordSenderDomainMatchRejectionReason(
-    std::optional<affiliations::MatchType> match_type,
-    bool is_login_flow,
+    GmailOtpSenderDomainMatchType reason,
     bool is_cached) {
-  GmailOtpSenderDomainMatchRejectionReason reason =
-      GetRejectionReason(match_type, is_login_flow);
   if (is_cached) {
     base::UmaHistogramEnumeration(
         "OneTimeTokens.GmailOtpRetriever."
@@ -71,6 +87,22 @@ void RecordSenderDomainMatchRejectionReason(
         "OneTimeTokens.GmailOtpRetriever."
         "SenderDomainMatchRejectionReason.Received",
         reason);
+  }
+}
+
+void RecordSenderDomainMatchAcceptedMatchType(
+    GmailOtpSenderDomainMatchType match_type,
+    bool is_cached) {
+  if (is_cached) {
+    base::UmaHistogramEnumeration(
+        "OneTimeTokens.GmailOtpRetriever."
+        "SenderDomainMatchAcceptedMatchType.Cached",
+        match_type);
+  } else {
+    base::UmaHistogramEnumeration(
+        "OneTimeTokens.GmailOtpRetriever."
+        "SenderDomainMatchAcceptedMatchType.Received",
+        match_type);
   }
 }
 
@@ -178,7 +210,7 @@ void GmailOtpRetriever::SubscribeForOneTimeToken() {
 
 void GmailOtpRetriever::CheckSenderDomainMatchesFrameToFill(
     std::string_view sender_address,
-    base::OnceCallback<void(std::optional<affiliations::MatchType>)> callback) {
+    base::OnceCallback<void(GmailOtpSenderDomainMatchType)> callback) {
   pending_sender_domain_checks_++;
   std::string sender_domain = ExtractEmailDomain(sender_address);
 
@@ -204,21 +236,10 @@ void GmailOtpRetriever::CheckSenderDomainMatchesFrameToFill(
 
 void GmailOtpRetriever::OnSenderDomainMatchChecked(
     const url::SchemeHostPort& sender_tuple,
-    base::OnceCallback<void(std::optional<affiliations::MatchType>)> callback,
+    base::OnceCallback<void(GmailOtpSenderDomainMatchType)> callback,
     std::optional<affiliations::MatchType> match_type) {
-  if (!is_login_flow_ && match_type.has_value() &&
-      (static_cast<int>(*match_type) &
-       static_cast<int>(affiliations::MatchType::kPSL))) {
-    std::string stripped_frame_host =
-        url_formatter::StripWWW(otp_frame_origin_.host());
-    url::SchemeHostPort stripped_frame_tuple(otp_frame_origin_.scheme(),
-                                             std::move(stripped_frame_host),
-                                             otp_frame_origin_.port());
-    if (stripped_frame_tuple == sender_tuple) {
-      match_type = affiliations::MatchType::kExact;
-    }
-  }
-  std::move(callback).Run(match_type);
+  std::move(callback).Run(ResolveSenderDomainMatchType(
+      match_type, otp_frame_origin_, sender_tuple));
 }
 
 void GmailOtpRetriever::CheckCachedTokenMatch(
@@ -242,34 +263,43 @@ void GmailOtpRetriever::CheckCachedTokenMatch(
 }
 
 bool GmailOtpRetriever::IsMatchTypeAllowed(
-    std::optional<affiliations::MatchType> match_type) const {
-  if (!match_type.has_value()) {
-    return false;
+    GmailOtpSenderDomainMatchType match_type) const {
+  switch (match_type) {
+    case GmailOtpSenderDomainMatchType::kExact:
+      LOG_OTT(one_time_token_service_->log_sink())
+          << "GmailOtpRetriever exact match";
+      return true;
+    case GmailOtpSenderDomainMatchType::kFrameIsWwwPsl:
+      // This is a particular case of PSL matching that is considered
+      // a strong match.
+      LOG_OTT(one_time_token_service_->log_sink())
+          << "GmailOtpRetriever frame is www PSL match";
+      return true;
+    case GmailOtpSenderDomainMatchType::kAffiliated:
+      LOG_OTT(one_time_token_service_->log_sink())
+          << "GmailOtpRetriever affiliated match";
+      return true;
+    case GmailOtpSenderDomainMatchType::kPsl:
+    case GmailOtpSenderDomainMatchType::kGroupedAndPsl:
+      // PSL matches are allowed for login flows because the user already
+      // expressed the intention to fill the target frame, by approving the
+      // login flow.
+      if (is_login_flow_) {
+        LOG_OTT(one_time_token_service_->log_sink())
+            << "GmailOtpRetriever PSL match during login flow";
+      }
+      return is_login_flow_;
+    case GmailOtpSenderDomainMatchType::kUnknown:
+    case GmailOtpSenderDomainMatchType::kNoMatch:
+    case GmailOtpSenderDomainMatchType::kGrouped:
+      return false;
   }
-  bool is_exact_or_affiliated =
-      (*match_type == affiliations::MatchType::kExact) ||
-      (static_cast<int>(*match_type) &
-       static_cast<int>(affiliations::MatchType::kAffiliated));
-  if (is_exact_or_affiliated) {
-    LOG_OTT(one_time_token_service_->log_sink())
-        << "GmailOtpRetriever exact or affiliated match";
-    return true;
-  }
-  bool is_psl = static_cast<int>(*match_type) &
-                static_cast<int>(affiliations::MatchType::kPSL);
-  // PSL matches are allowed for login flows because the user already expressed
-  // the intention to fill the target frame, by approving the login flow.
-  if (is_psl && is_login_flow_) {
-    LOG_OTT(one_time_token_service_->log_sink())
-        << "GmailOtpRetriever PSL match during login flow";
-  }
-  return is_psl && is_login_flow_;
 }
 
 void GmailOtpRetriever::OnCachedTokenMatchChecked(
     std::vector<OneTimeToken> cached_tokens,
     size_t index,
-    std::optional<affiliations::MatchType> match_type) {
+    GmailOtpSenderDomainMatchType match_type) {
   // If the retriever had already completed, all weak pointers would have been
   // invalidated, so this wouldn't be called.
   CHECK(retrieve_otp_callback_);
@@ -281,9 +311,10 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
   bool allowed = IsMatchTypeAllowed(match_type);
   LOG_OTT(one_time_token_service_->log_sink())
       << "GmailOtpRetriever cached token match checked: allowed=" << allowed
-      << ", match_type=" << (match_type ? static_cast<int>(*match_type) : -1)
+      << ", match_type=" << static_cast<int>(match_type)
       << ", is_login_flow=" << is_login_flow_;
   if (allowed) {
+    RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/true);
     const OneTimeToken& matched_token = cached_tokens.at(index);
     if (!best_candidate_.has_value() ||
         matched_token.email_received_timestamp().value_or(base::Time()) >=
@@ -299,8 +330,7 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
     return;
   }
 
-  RecordSenderDomainMatchRejectionReason(match_type, is_login_flow_,
-                                         /*is_cached=*/true);
+  RecordSenderDomainMatchRejectionReason(match_type, /*is_cached=*/true);
 
   // Since `cached_tokens` is sorted descending by email received timestamp in
   // `Start()`, only check the next cached token if we don't already have a
@@ -348,7 +378,7 @@ void GmailOtpRetriever::OnOneTimeTokenReceived(
 
 void GmailOtpRetriever::OnReceivedTokenMatchChecked(
     OneTimeToken token,
-    std::optional<affiliations::MatchType> match_type) {
+    GmailOtpSenderDomainMatchType match_type) {
   // If the retriever had already completed, all weak pointers would have been
   // invalidated, so this wouldn't be called.
   CHECK(retrieve_otp_callback_);
@@ -360,9 +390,10 @@ void GmailOtpRetriever::OnReceivedTokenMatchChecked(
   bool allowed = IsMatchTypeAllowed(match_type);
   LOG_OTT(one_time_token_service_->log_sink())
       << "GmailOtpRetriever received token match checked: allowed=" << allowed
-      << ", match_type=" << (match_type ? static_cast<int>(*match_type) : -1)
+      << ", match_type=" << static_cast<int>(match_type)
       << ", is_login_flow=" << is_login_flow_;
   if (allowed) {
+    RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/false);
     if (!best_candidate_.has_value() ||
         token.email_received_timestamp().value_or(base::Time()) >=
             best_candidate_->email_received_timestamp) {
@@ -374,8 +405,7 @@ void GmailOtpRetriever::OnReceivedTokenMatchChecked(
       };
     }
   } else {
-    RecordSenderDomainMatchRejectionReason(match_type, is_login_flow_,
-                                           /*is_cached=*/false);
+    RecordSenderDomainMatchRejectionReason(match_type, /*is_cached=*/false);
   }
 
   MaybeCompleteOrWaitForPendingRequests();
