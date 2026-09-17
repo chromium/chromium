@@ -65,7 +65,6 @@ WebUIAllUrlsBrowserTest::WebUIAllUrlsBrowserTest() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  enable_feature(ash::features::kDriveFsMirroring);
   enable_feature(ash::features::kShimlessRMAOsUpdate);
 #endif
 

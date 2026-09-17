@@ -92,7 +92,6 @@ static_library("config") {
     "//chrome/browser/ui/webui/ash/lock_screen_reauth",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/mako",
-    "//chrome/browser/ui/webui/ash/manage_mirrorsync",
     "//chrome/browser/ui/webui/ash/multidevice_internals",
     "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chrome/browser/ui/webui/ash/network_ui",

@@ -39,7 +39,6 @@ include_rules = [
   "+chrome/browser/signin",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/webui/ash/cloud_upload",
-  "+chrome/browser/ui/webui/ash/manage_mirrorsync",
   "+chrome/services/pdf/public/mojom",
 ]
 

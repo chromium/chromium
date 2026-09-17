@@ -63,7 +63,6 @@ group("browser_tests") {
     "//chrome/browser/ui/webui/ash/kerberos:browser_tests",
     "//chrome/browser/ui/webui/ash/login:browser_tests",
     "//chrome/browser/ui/webui/ash/login/testapi:browser_tests",
-    "//chrome/browser/ui/webui/ash/manage_mirrorsync:browser_tests",
     "//chrome/browser/ui/webui/ash/office_fallback:browser_tests",
     "//chrome/browser/ui/webui/ash/parent_access:browser_tests",
     "//chrome/browser/ui/webui/ash/settings/integration_tests:browser_tests",

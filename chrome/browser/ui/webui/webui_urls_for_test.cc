@@ -227,7 +227,6 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://emoji-picker",
       "chrome://file-manager",
       "chrome://help-app",
-      "chrome://manage-mirrorsync",
       "chrome://multidevice-internals",
       "chrome://multidevice-setup",
       "chrome://nearby",

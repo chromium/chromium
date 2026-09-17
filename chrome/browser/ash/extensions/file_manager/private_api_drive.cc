@@ -48,7 +48,6 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_dialog.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_util.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -937,10 +936,6 @@ FileManagerPrivateGetBulkPinProgressFunction::Run() {
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateOpenManageSyncSettingsFunction::Run() {
-  if (ash::features::IsDriveFsMirroringEnabled()) {
-    ash::ManageMirrorSyncDialog::Show(
-        Profile::FromBrowserContext(browser_context()));
-  }
   return RespondNow(NoArguments());
 }
 

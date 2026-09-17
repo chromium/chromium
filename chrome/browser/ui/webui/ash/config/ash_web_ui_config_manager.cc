@@ -117,7 +117,6 @@
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_start_reauth_ui.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
-#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/ash/network_ui/network_ui.h"
@@ -434,7 +433,6 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
       browser_policy_connector_ash_.get()));
   AddWebUIConfig(MakeComponentConfigWithDelegate<MallUIConfig, MallUI,
                                                  ChromeMallUIDelegate>());
-  AddWebUIConfig(std::make_unique<ManageMirrorSyncUIConfig>());
   AddWebUIConfig(MakeComponentConfigWithDelegate<MediaAppUIConfig, MediaAppUI,
                                                  ChromeMediaAppUIDelegate>());
   AddWebUIConfig(std::make_unique<MultideviceInternalsUIConfig>());

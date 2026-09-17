@@ -117,7 +117,6 @@ static_library("file_manager") {
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/multi_user",
-    "//chrome/browser/ui/webui/ash/manage_mirrorsync",
     "//chrome/common",
     "//chrome/services/pdf/public/mojom",
     "//chromeos/ash/components/browser_context_helper",

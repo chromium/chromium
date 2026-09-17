@@ -110,8 +110,6 @@
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_factory.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
-#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync.mojom.h"
-#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/ash/network_ui/network_ui.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback.mojom.h"
@@ -483,12 +481,6 @@ void PopulateChromeWebUIFrameBindersPartsCros(
 
   RegisterWebUIControllerInterfaceBinder<
       ash::firmware_update::mojom::SystemUtils, ash::FirmwareUpdateAppUI>(map);
-
-  if (ash::features::IsDriveFsMirroringEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::manage_mirrorsync::mojom::PageHandlerFactory,
-        ash::ManageMirrorSyncUI>(map);
-  }
 
   Profile* profile =
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
