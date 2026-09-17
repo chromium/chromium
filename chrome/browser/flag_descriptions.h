@@ -5615,6 +5615,14 @@ inline constexpr char
         "When enabled, grammar suggestion spans will be blocked when "
         "entering composition mode";
 
+inline constexpr char kAndroidStartupImprovementsName[] =
+    "Android startup improvements";
+inline constexpr char kAndroidStartupImprovementsDescription[] =
+    "Defers initialization of several non-critical components (Find toolbar, "
+    "ephemeral tab, reader mode, loading fullscreen, promos and metrics "
+    "recording) out of the Chrome Android startup path to reduce startup "
+    "latency.";
+
 inline constexpr char kAndroidSurfaceColorUpdateName[] =
     "Android surface color update.";
 inline constexpr char kAndroidSurfaceColorUpdateDescription[] =

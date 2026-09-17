@@ -14054,6 +14054,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCCTEarlyInitPowerManagerName,
      flag_descriptions::kCCTEarlyInitPowerManagerDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTEarlyInitPowerManager)},
+
+    {"android-startup-improvements",
+     flag_descriptions::kAndroidStartupImprovementsName,
+     flag_descriptions::kAndroidStartupImprovementsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidStartupImprovements)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
