@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_view_delegate.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -105,7 +105,8 @@ class MockGlicKeyedServiceForButtonController : public MockGlicKeyedService {
   std::unique_ptr<TestingGlicInstanceCoordinator> window_controller_;
 };
 
-class MockGlicButtonControllerDelegate : public glic::GlicSplitButtonDelegate {
+class MockGlicButtonControllerDelegate
+    : public glic::GlicSplitButtonViewDelegate {
  public:
   void SetGlicShowState(bool show) override { show_state_ = show; }
   void SetGlicPanelIsOpen(bool panel_open) override {

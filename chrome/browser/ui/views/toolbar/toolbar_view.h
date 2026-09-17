@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/command_observer.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_view_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
@@ -97,7 +97,7 @@ class ToolbarView : public views::AccessiblePaneView,
                     public AppMenuIconController::Delegate,
                     public ToolbarButtonProvider,
                     public BrowserRootView::DropTarget,
-                    public glic::GlicSplitButtonDelegate {
+                    public glic::GlicSplitButtonViewDelegate {
   METADATA_HEADER(ToolbarView, views::AccessiblePaneView)
 
  public:
@@ -252,7 +252,7 @@ class ToolbarView : public views::AccessiblePaneView,
 
   friend class AvatarToolbarButtonBaseBrowserTest;
 
-  // GlicSplitButtonDelegate:
+  // GlicSplitButtonViewDelegate:
   void SetGlicShowState(bool show) override;
   void SetGlicPanelIsOpen(bool open) override;
   // Called when the glic nudge UI needs to be triggered. `label' holds the

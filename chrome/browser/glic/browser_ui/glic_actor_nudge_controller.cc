@@ -14,7 +14,7 @@
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_view_delegate.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -65,12 +65,12 @@ GlicActorNudgeController* GlicActorNudgeController::From(
 }
 
 void GlicActorNudgeController::SetHorizontalTabsDelegate(
-    GlicSplitButtonDelegate* delegate) {
+    GlicSplitButtonViewDelegate* delegate) {
   split_button_controller_->SetHorizontalTabsDelegate(delegate);
 }
 
 void GlicActorNudgeController::SetVerticalTabsDelegate(
-    GlicSplitButtonDelegate* delegate) {
+    GlicSplitButtonViewDelegate* delegate) {
   split_button_controller_->SetVerticalTabsDelegate(delegate);
 }
 
@@ -163,13 +163,13 @@ void GlicActorNudgeController::UpdateCurrentActorNudgeState() {
 }
 
 void GlicActorNudgeController::ShowGlicActorTaskIcon() {
-  CallOnBoth(base::BindRepeating([](GlicSplitButtonDelegate& delegate) {
+  CallOnBoth(base::BindRepeating([](GlicSplitButtonViewDelegate& delegate) {
     delegate.ShowGlicActorTaskIcon();
   }));
 }
 
 void GlicActorNudgeController::HideGlicActorTaskIcon() {
-  CallOnBoth(base::BindRepeating([](GlicSplitButtonDelegate& delegate) {
+  CallOnBoth(base::BindRepeating([](GlicSplitButtonViewDelegate& delegate) {
     delegate.HideGlicActorTaskIcon();
   }));
 }
@@ -177,7 +177,8 @@ void GlicActorNudgeController::HideGlicActorTaskIcon() {
 void GlicActorNudgeController::SetGlicActorNudgeLabel(
     const std::u16string& nudge_label) {
   CallOnBoth(base::BindRepeating(
-      [](const std::u16string& nudge_label, GlicSplitButtonDelegate& delegate) {
+      [](const std::u16string& nudge_label,
+         GlicSplitButtonViewDelegate& delegate) {
         delegate.SetGlicActorNudgeLabel(nudge_label);
       },
       nudge_label));
@@ -186,7 +187,8 @@ void GlicActorNudgeController::SetGlicActorNudgeLabel(
 void GlicActorNudgeController::TriggerGlicActorNudge(
     const std::u16string& nudge_label) {
   CallOnBoth(base::BindRepeating(
-      [](const std::u16string& nudge_label, GlicSplitButtonDelegate& delegate) {
+      [](const std::u16string& nudge_label,
+         GlicSplitButtonViewDelegate& delegate) {
         delegate.TriggerGlicActorNudge(nudge_label);
       },
       nudge_label));
@@ -205,22 +207,22 @@ void GlicActorNudgeController::CloseBubble() {
 }
 
 bool GlicActorNudgeController::IsShowingNudge() {
-  if (auto* delegate = split_button_controller_->GetActiveDelegate()) {
-    return delegate->GetIsShowingGlicActorTaskIconNudge();
+  if (auto* view_delegate = split_button_controller_->GetActiveViewDelegate()) {
+    return view_delegate->GetIsShowingGlicActorTaskIconNudge();
   }
   return false;
 }
 
 void GlicActorNudgeController::OnBubbleVisibilityChange(bool is_bubble_open) {
   CallOnBoth(base::BindRepeating(
-      [](bool is_bubble_open, GlicSplitButtonDelegate& delegate) {
+      [](bool is_bubble_open, GlicSplitButtonViewDelegate& delegate) {
         delegate.SetGlicActorNudgePressedState(is_bubble_open);
       },
       is_bubble_open));
 }
 
 void GlicActorNudgeController::CallOnBoth(
-    base::RepeatingCallback<void(GlicSplitButtonDelegate&)> fn) {
+    base::RepeatingCallback<void(GlicSplitButtonViewDelegate&)> fn) {
   split_button_controller_->CallOnBoth(fn);
 }
 

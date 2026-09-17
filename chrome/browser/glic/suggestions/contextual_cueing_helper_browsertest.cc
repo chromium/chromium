@@ -11,7 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_view_delegate.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
@@ -48,7 +48,7 @@
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #endif
 
-class FakeGlicNudgeDelegate : public glic::GlicSplitButtonDelegate {
+class FakeGlicNudgeDelegate : public glic::GlicSplitButtonViewDelegate {
  public:
   void OnTriggerGlicNudgeUI(glic::NudgeParams params) override {
     last_nudge_label_ = params.label;

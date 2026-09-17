@@ -22,7 +22,7 @@ class GlicActorNudgeController;
 class GlicButtonController;
 class GlicKeyedService;
 class GlicNudgeController;
-class GlicSplitButtonDelegate;
+class GlicSplitButtonViewDelegate;
 
 class GlicSplitButtonController {
  public:
@@ -41,14 +41,15 @@ class GlicSplitButtonController {
 
   // TODO(crbug.com/511309088): Rename these to toolbar and tab strip delegate
   // since they no longer necessarily correspond to vertical tab mode.
-  void SetHorizontalTabsDelegate(GlicSplitButtonDelegate* delegate);
-  void SetVerticalTabsDelegate(GlicSplitButtonDelegate* delegate);
+  void SetHorizontalTabsDelegate(GlicSplitButtonViewDelegate* delegate);
+  void SetVerticalTabsDelegate(GlicSplitButtonViewDelegate* delegate);
   base::WeakPtr<GlicSplitButtonController> GetWeakPtr();
 
   void OnGlicButtonClicked();
 
-  virtual GlicSplitButtonDelegate* GetActiveDelegate();
-  void CallOnBoth(base::RepeatingCallback<void(GlicSplitButtonDelegate&)> fn);
+  virtual GlicSplitButtonViewDelegate* GetActiveViewDelegate();
+  void CallOnBoth(
+      base::RepeatingCallback<void(GlicSplitButtonViewDelegate&)> fn);
 
   GlicNudgeController* nudge_controller() {
     return glic_nudge_controller_.get();
@@ -62,11 +63,11 @@ class GlicSplitButtonController {
  private:
   bool IsToolbarButton() const;
   mojom::InvocationSource GetInvocationSource(
-      GlicSplitButtonDelegate& delegate) const;
+      GlicSplitButtonViewDelegate& delegate) const;
 
   const raw_ptr<BrowserWindowInterface> browser_;
-  raw_ptr<GlicSplitButtonDelegate> horizontal_tabs_delegate_ = nullptr;
-  raw_ptr<GlicSplitButtonDelegate> vertical_tabs_delegate_ = nullptr;
+  raw_ptr<GlicSplitButtonViewDelegate> horizontal_tabs_delegate_ = nullptr;
+  raw_ptr<GlicSplitButtonViewDelegate> vertical_tabs_delegate_ = nullptr;
   raw_ptr<GlicKeyedService> glic_service_ = nullptr;
 
   std::unique_ptr<GlicNudgeController> glic_nudge_controller_;

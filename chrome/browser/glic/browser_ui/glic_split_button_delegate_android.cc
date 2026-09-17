@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
-
 #include <vector>
 
 #include "base/android/jni_android.h"
@@ -17,16 +15,18 @@
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_view_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/actor/core/task_id.h"
 
 namespace glic {
 
-// C++ implementation of GlicSplitButtonDelegate for Android.
+// C++ implementation of GlicSplitButtonViewDelegate for Android.
 // Acts as JNI bridge to forward C++ split button requests to Java's
 // GlicSplitButtonDelegateBridge.
-class GlicSplitButtonDelegateAndroid : public GlicSplitButtonDelegate {
+// TODO(crbug.com/559190458): Rename to GlicSplitButtonViewDelegateAndroid.
+class GlicSplitButtonDelegateAndroid : public GlicSplitButtonViewDelegate {
  public:
   GlicSplitButtonDelegateAndroid(
       BrowserWindowInterface* browser,
@@ -48,7 +48,7 @@ class GlicSplitButtonDelegateAndroid : public GlicSplitButtonDelegate {
     }
   }
 
-  // GlicSplitButtonDelegate:
+  // GlicSplitButtonViewDelegate:
   void OnTriggerGlicNudgeUI(NudgeParams params) override {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_GlicSplitButtonDelegateBridge_onTriggerGlicNudgeUi(

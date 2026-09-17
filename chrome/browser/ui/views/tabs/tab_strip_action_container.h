@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_view_delegate.h"
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
@@ -44,7 +44,7 @@ enum class LockedExpansionMode {
 class TabStripActionContainer : public views::View,
                                 public views::AnimationDelegateViews,
                                 public views::MouseWatcherListener,
-                                public glic::GlicSplitButtonDelegate {
+                                public glic::GlicSplitButtonViewDelegate {
   METADATA_HEADER(TabStripActionContainer, views::View)
 
  public:
@@ -121,7 +121,7 @@ class TabStripActionContainer : public views::View,
   // views::MouseWatcherListener:
   void MouseMovedOutOfHost() override;
 
-  // GlicSplitButtonDelegate:
+  // GlicSplitButtonViewDelegate:
   void SetGlicShowState(bool show) override;
   void SetGlicPanelIsOpen(bool open) override;
   void OnTriggerGlicNudgeUI(glic::NudgeParams params) override;

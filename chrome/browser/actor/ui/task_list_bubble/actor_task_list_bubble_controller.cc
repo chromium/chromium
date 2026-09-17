@@ -19,7 +19,7 @@
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_view_delegate.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -254,8 +254,8 @@ void ActorTaskListBubbleController::ShowBubble(bool is_start_notification) {
 }
 
 void ActorTaskListBubbleController::CloseBubble() {
-  if (auto* delegate = split_button_controller_->GetActiveDelegate()) {
-    delegate->CloseActorTaskListBubble();
+  if (auto* view_delegate = split_button_controller_->GetActiveViewDelegate()) {
+    view_delegate->CloseActorTaskListBubble();
   }
 }
 
@@ -307,7 +307,7 @@ void ActorTaskListBubbleController::ShowBubbleImpl(bool is_start_notification) {
   }
   // Close any existing bubble widget to avoid stacking multiple bubble windows.
   split_button_controller_->CallOnBoth(
-      base::BindRepeating([](glic::GlicSplitButtonDelegate& delegate) {
+      base::BindRepeating([](glic::GlicSplitButtonViewDelegate& delegate) {
         delegate.CloseActorTaskListBubble();
       }));
   delegate->ShowActorTaskListBubble();
@@ -381,7 +381,7 @@ void ActorTaskListBubbleController::OnTaskRowClicked(actor::TaskId task_id) {
 
 ActorTaskListBubbleControllerDelegate*
 ActorTaskListBubbleController::GetActiveDelegate() const {
-  return split_button_controller_->GetActiveDelegate();
+  return split_button_controller_->GetActiveViewDelegate();
 }
 
 // static
