@@ -23,6 +23,8 @@ class TestTabPickerBrowserProxy extends TestBrowserProxy implements
     super([
       'getRecentTabs',
       'getPluralString',
+      'addTabContext',
+      'deleteTabContext',
     ]);
   }
 
@@ -42,6 +44,14 @@ class TestTabPickerBrowserProxy extends TestBrowserProxy implements
           count === 1 ? 'Sharing 1 tab' : `Sharing ${count} tabs`);
     }
     return Promise.resolve('');
+  }
+
+  addTabContext(tabId: number) {
+    this.methodCalled('addTabContext', tabId);
+  }
+
+  deleteTabContext(tabId: number) {
+    this.methodCalled('deleteTabContext', tabId);
   }
 }
 
@@ -164,6 +174,9 @@ suite('TabPickerTest', () => {
     const event1 = await selectPromise1;
     assertEquals(tab0.tabId, event1.detail.tab.tabId);
     assertTrue(event1.detail.selected);
+    const addedTabId1 = await testProxy.whenCalled('addTabContext');
+    assertEquals(tab0.tabId, addedTabId1);
+    testProxy.resetResolver('addTabContext');
     await microtasksFinished();
 
     const label = app.$.shareTabsTrigger.querySelector('.tab-title');
@@ -179,6 +192,9 @@ suite('TabPickerTest', () => {
     const event2 = await selectPromise2;
     assertEquals(tab1.tabId, event2.detail.tab.tabId);
     assertTrue(event2.detail.selected);
+    const addedTabId2 = await testProxy.whenCalled('addTabContext');
+    assertEquals(tab1.tabId, addedTabId2);
+    testProxy.resetResolver('addTabContext');
     await microtasksFinished();
 
     assertEquals('Sharing 2 tabs', label.textContent.trim());
@@ -191,6 +207,9 @@ suite('TabPickerTest', () => {
     const deselectEvent1 = await deselectPromise1;
     assertEquals(tab0.tabId, deselectEvent1.detail.tab.tabId);
     assertFalse(deselectEvent1.detail.selected);
+    const deletedTabId1 = await testProxy.whenCalled('deleteTabContext');
+    assertEquals(tab0.tabId, deletedTabId1);
+    testProxy.resetResolver('deleteTabContext');
     await microtasksFinished();
 
     assertEquals('Sharing 1 tab', label.textContent.trim());
@@ -203,6 +222,9 @@ suite('TabPickerTest', () => {
     const deselectEvent2 = await deselectPromise2;
     assertEquals(tab1.tabId, deselectEvent2.detail.tab.tabId);
     assertFalse(deselectEvent2.detail.selected);
+    const deletedTabId2 = await testProxy.whenCalled('deleteTabContext');
+    assertEquals(tab1.tabId, deletedTabId2);
+    testProxy.resetResolver('deleteTabContext');
     await microtasksFinished();
 
     assertEquals('Add tabs', label.textContent.trim());

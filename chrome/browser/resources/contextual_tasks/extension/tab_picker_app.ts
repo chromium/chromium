@@ -182,8 +182,10 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     const isSelected = this.isTabSelected_(tab);
     if (isSelected) {
       this.selectedTabs = this.selectedTabs.filter(t => t.tabId !== tab.tabId);
+      this.browserProxy_.deleteTabContext(tab.tabId);
     } else {
       this.selectedTabs = [...this.selectedTabs, tab];
+      this.browserProxy_.addTabContext(tab.tabId);
     }
     this.fire('tab-selected', {tab, selected: !isSelected});
   }
