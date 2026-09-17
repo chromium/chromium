@@ -102,12 +102,12 @@ void RecordDiceFetchTokenResult(DiceTokenFetchResult result) {
                                 kDiceTokenFetchResultCount);
 }
 
-// Creates a serialized string header value out of the input type, using
+// Creates a serialized string header value out of the input string, using
 // structured headers.
-template <typename T>
-std::string SerializeHeaderString(const T& value) {
+std::string SerializeHeaderString(const std::string& value) {
   return net::structured_headers::SerializeItem(
-             net::structured_headers::Item(value))
+             net::structured_headers::Item(
+                 net::structured_headers::Item::string, value))
       .value_or(std::string());
 }
 

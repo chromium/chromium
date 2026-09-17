@@ -53,11 +53,11 @@ using blink::mojom::ResourceType;
 //
 // Shameless lifted from content/browser/client_hints/client_hints.cc.
 // TODO(crbug.com/342445996): Deduplicate this function.
-template <typename T>
-  requires(std::is_constructible_v<net::structured_headers::Item, T>)
-const std::string SerializeHeaderString(const T& value) {
+template <typename... Args>
+  requires(std::is_constructible_v<net::structured_headers::Item, Args...>)
+const std::string SerializeHeaderString(Args&&... args) {
   return net::structured_headers::SerializeItem(
-             net::structured_headers::Item(value))
+             net::structured_headers::Item(std::forward<Args>(args)...))
       .value_or(std::string());
 }
 
@@ -128,7 +128,8 @@ void PrefetchResource(network::mojom::NetworkContext* network_context,
   headers.SetHeader("sec-ch-ua-mobile",
                     SerializeHeaderString(ua_metadata.mobile));
   headers.SetHeader("sec-ch-ua-platform",
-                    SerializeHeaderString(ua_metadata.platform));
+                    SerializeHeaderString(net::structured_headers::Item::string,
+                                          ua_metadata.platform));
   // We shouldn't be prefetching if data saver is enabled, so we should never
   // need to set the "save-data" header.
 
