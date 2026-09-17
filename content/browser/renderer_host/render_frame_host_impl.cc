@@ -16227,9 +16227,9 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
       params->transition &
       ui::PAGE_TRANSITION_RENDERER_DISALLOWED_QUALIFIERS_MASK);
   if ((commit_qualifiers & ~request_qualifiers) != 0) {
-    bad_message::ReceivedBadMessage(
-        process, bad_message::RFH_COMMIT_NAVIGATION_DISALLOWED_QUALIFIER);
-    return false;
+    // TODO(https://crbug.com/562797793): Re-enable
+    // RFH_COMMIT_NAVIGATION_DISALLOWED_QUALIFIER once same-document navigation
+    // transitions are fixed (https://crbug.com/557522042).
   }
 
   if (is_main_frame) {
@@ -16238,9 +16238,9 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
       // without a browser NavigationRequest, the transition must be
       // web-triggerable.
       if (!ui::PageTransitionIsWebTriggerable(transition)) {
-        bad_message::ReceivedBadMessage(
-            process, bad_message::RFH_COMMIT_NAVIGATION_NON_WEBBY_TRANSITION);
-        return false;
+        // TODO(https://crbug.com/562797793): Re-enable
+        // RFH_COMMIT_NAVIGATION_NON_WEBBY_TRANSITION once same-document
+        // navigation transitions are fixed (https://crbug.com/557522042).
       }
     } else {
       // For main-frame navigations where the browser provided an expected
@@ -16255,11 +16255,10 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
            ui::PageTransitionCoreTypeIs(transition,
                                         ui::PAGE_TRANSITION_FORM_SUBMIT));
       if (!core_type_matches) {
-        bad_message::ReceivedBadMessage(
-            process,
-            bad_message::
-                RFH_COMMIT_NAVIGATION_BROWSER_INITIATED_TRANSITION_MISMATCH);
-        return false;
+        // TODO(https://crbug.com/562797793): Re-enable
+        // RFH_COMMIT_NAVIGATION_BROWSER_INITIATED_TRANSITION_MISMATCH once
+        // same-document navigation transitions are fixed
+        // (https://crbug.com/557522042).
       }
     }
   }
