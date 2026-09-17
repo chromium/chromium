@@ -113,9 +113,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       blink::features::kEnforceNoopenerOnBlobURLNavigation);
 
+#if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
   // DISABLED_TEMPORARY: https://crbug.com/40593023
   aw_feature_overrides.DisableFeature(
       ::features::kDefaultPassthroughCommandDecoder);
+#endif
 
   // DISABLED_TEMPORARY: https://crbug.com/1493153. HDR does not support webview
   // yet.
