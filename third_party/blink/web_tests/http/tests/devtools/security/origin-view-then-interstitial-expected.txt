@@ -57,11 +57,7 @@ Panel on origin view before interstitial:
     <STYLE >
     </STYLE>
     <DIV class=title-section >
-        <#comment >
-        </#comment>
         <DIV class=title-section-header role=heading aria-level=1 >
-            <#comment >
-            </#comment>
 Origin
         </DIV>
         <DIV class=origin-display >
@@ -73,47 +69,25 @@ Origin
                     </SPAN>
                 </#document-fragment>
             </DEVTOOLS-ICON>
-            <#comment >
-            </#comment>
             <SPAN class=highlighted-url >
                 <SPAN class=url-scheme-insecure >
-                    <#comment >
-                    </#comment>
 http
                 </SPAN>
                 <SPAN class=url-scheme-separator >
-                    <#comment >
-                    </#comment>
 ://
                 </SPAN>
                 <SPAN >
-                    <#comment >
-                    </#comment>
 foo.test
                 </SPAN>
             </SPAN>
         </DIV>
         <DIV class=view-network-button >
             <DEVTOOLS-BUTTON role=presentation >
-                <#comment >
-                </#comment>
 View requests in Network panel
                 <#document-fragment >
-                    <#comment >
-                    </#comment>
                     <STYLE >
-                        <#comment >
-                        </#comment>
-                        <#comment >
-                        </#comment>
                     </STYLE>
                     <BUTTON class= outlined  jslog=Action; track: click; context: reveal-in-network >
-                        <#comment >
-                        </#comment>
-                        <#comment >
-                        </#comment>
-                        <#comment >
-                        </#comment>
                         <SLOT >
                         </SLOT>
                     </BUTTON>

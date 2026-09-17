@@ -24,21 +24,9 @@ The connection to this site is using a valid, trusted server certificate issued 
         <DEVTOOLS-BUTTON role=button class=origin-button jslog=Action; track: click; context: security.view-certificate >
 View certificate
             <#document-fragment >
-                <#comment >
-                </#comment>
                 <STYLE >
-                    <#comment >
-                    </#comment>
-                    <#comment >
-                    </#comment>
                 </STYLE>
                 <BUTTON class=outlined >
-                    <#comment >
-                    </#comment>
-                    <#comment >
-                    </#comment>
-                    <#comment >
-                    </#comment>
                     <SLOT >
                     </SLOT>
                 </BUTTON>

@@ -7,11 +7,7 @@ Panel on origin view:
     <STYLE >
     </STYLE>
     <DIV class=title-section >
-        <#comment >
-        </#comment>
         <DIV class=title-section-header role=heading aria-level=1 >
-            <#comment >
-            </#comment>
 Origin
         </DIV>
         <DIV class=origin-display >
@@ -23,47 +19,25 @@ Origin
                     </SPAN>
                 </#document-fragment>
             </DEVTOOLS-ICON>
-            <#comment >
-            </#comment>
             <SPAN class=highlighted-url >
                 <SPAN class=url-scheme-secure >
-                    <#comment >
-                    </#comment>
 https
                 </SPAN>
                 <SPAN class=url-scheme-separator >
-                    <#comment >
-                    </#comment>
 ://
                 </SPAN>
                 <SPAN >
-                    <#comment >
-                    </#comment>
 foo.test
                 </SPAN>
             </SPAN>
         </DIV>
         <DIV class=view-network-button >
             <DEVTOOLS-BUTTON role=presentation >
-                <#comment >
-                </#comment>
 View requests in Network panel
                 <#document-fragment >
-                    <#comment >
-                    </#comment>
                     <STYLE >
-                        <#comment >
-                        </#comment>
-                        <#comment >
-                        </#comment>
                     </STYLE>
                     <BUTTON class= outlined  jslog=Action; track: click; context: reveal-in-network >
-                        <#comment >
-                        </#comment>
-                        <#comment >
-                        </#comment>
-                        <#comment >
-                        </#comment>
                         <SLOT >
                         </SLOT>
                     </BUTTON>
@@ -72,71 +46,37 @@ View requests in Network panel
         </DIV>
     </DIV>
     <DIV class=origin-view-section connection-section >
-        <#comment >
-        </#comment>
         <DIV class=origin-view-section-title role=heading aria-level=2 >
-            <#comment >
-            </#comment>
 Connection
         </DIV>
-        <#comment >
-        </#comment>
         <TABLE class=details-table >
-            <#comment >
-            </#comment>
-            <#comment >
-            </#comment>
             <TR class=details-table-row >
                 <TD >
-                    <#comment >
-                    </#comment>
 Protocol
                 </TD>
                 <TD >
-                    <#comment >
-                    </#comment>
 TLS 1.2
                 </TD>
             </TR>
-            <#comment >
-            </#comment>
-            <#comment >
-            </#comment>
             <TR class=details-table-row >
                 <TD >
-                    <#comment >
-                    </#comment>
 Key exchange
                 </TD>
                 <TD >
-                    <#comment >
-                    </#comment>
 Key_Exchange
                 </TD>
             </TR>
-            <#comment >
-            </#comment>
-            <#comment >
-            </#comment>
             <TR class=details-table-row >
                 <TD >
-                    <#comment >
-                    </#comment>
 Cipher
                 </TD>
                 <TD >
-                    <#comment >
-                    </#comment>
 Cypher with Mac
                 </TD>
             </TR>
-            <#comment >
-            </#comment>
         </TABLE>
-        <#comment >
-        </#comment>
     </DIV>
-    <DIV class=origin-view-section >
+    <DIV class=origin-view-section certificate-section >
         <DIV class=origin-view-section-title role=heading aria-level=2 >
 Certificate
         </DIV>
@@ -154,33 +94,13 @@ foo.test
 SAN
                 </TD>
                 <TD >
-                    <DIV >
-                        <#comment >
-                        </#comment>
-                        <DIV class= san  >
-                            <#comment >
-                            </#comment>
-                            <#comment >
-                            </#comment>
-                            <SPAN class= san-entry  >
-                                <#comment >
-                                </#comment>
+                    <DIV class= san  >
+                        <SPAN class= san-entry  >
 foo.test
-                            </SPAN>
-                            <#comment >
-                            </#comment>
-                            <#comment >
-                            </#comment>
-                            <SPAN class= san-entry  >
-                                <#comment >
-                                </#comment>
+                        </SPAN>
+                        <SPAN class= san-entry  >
 *.test
-                            </SPAN>
-                            <#comment >
-                            </#comment>
-                            <#comment >
-                            </#comment>
-                        </DIV>
+                        </SPAN>
                     </DIV>
                 </TD>
             </TR>
@@ -212,24 +132,12 @@ Super CA
                 <TD >
                 </TD>
                 <TD >
-                    <DEVTOOLS-BUTTON role=button class=origin-button jslog=Action; track: click; context: security.view-certificate-for-origin title=Open full certificate details >
+                    <DEVTOOLS-BUTTON class=origin-button role=presentation title=Open full certificate details >
 Open full certificate details
                         <#document-fragment >
-                            <#comment >
-                            </#comment>
                             <STYLE >
-                                <#comment >
-                                </#comment>
-                                <#comment >
-                                </#comment>
                             </STYLE>
-                            <BUTTON class=outlined title=Open full certificate details aria-label=Open full certificate details >
-                                <#comment >
-                                </#comment>
-                                <#comment >
-                                </#comment>
-                                <#comment >
-                                </#comment>
+                            <BUTTON title=Open full certificate details class= outlined  aria-label=Open full certificate details jslog=Action; track: click; context: security.view-certificate-for-origin >
                                 <SLOT >
                                 </SLOT>
                             </BUTTON>
