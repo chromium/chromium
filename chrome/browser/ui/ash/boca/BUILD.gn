@@ -23,25 +23,6 @@ static_library("boca") {
   ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [ "chrome_tab_strip_delegate_unittest.cc" ]
-
-  deps = [
-    ":boca",
-    "//ash",
-    "//ash:test_support",
-    "//ash/constants",
-    "//base",
-    "//chrome/common",
-    "//chrome/test:test_support",
-    "//chromeos/ui/base",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
 source_set("browser_tests") {
   testonly = true
 

@@ -145,3 +145,18 @@ IN_PROC_BROWSER_TEST_F(ChromeTabStripDelegateBrowserTest,
   // Contains the webui itself.
   EXPECT_EQ(1u, tab_list.size());
 }
+
+IN_PROC_BROWSER_TEST_F(ChromeTabStripDelegateBrowserTest,
+                       NullWindowShouldReturnEmptyData) {
+  auto tab_list = delegate()->GetTabsListForWindow(/*window=*/nullptr);
+  EXPECT_EQ(0u, tab_list.size());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeTabStripDelegateBrowserTest,
+                       EmptyWindowShouldReturnEmptyData) {
+  BrowserWindowInterface* browser =
+      CreateBrowser(/*urls=*/{}, /*active_url_index=*/std::nullopt);
+  auto tab_list =
+      delegate()->GetTabsListForWindow(browser->GetWindow()->GetNativeWindow());
+  EXPECT_EQ(0u, tab_list.size());
+}
