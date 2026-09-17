@@ -20,6 +20,13 @@ include_rules = [
   "+chrome/browser/manta",
   "+chrome/browser/net",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Production code gets its IdentityManager from ash::IdentityManagerProvider;
+  # only the test needs the //chrome Profile-keyed factory to seed the fake.
+  "google_photos_wallpaper_handlers_unittest\\.cc": [
+    "+chrome/browser/signin",
+  ],
+}

@@ -41,16 +41,20 @@ class WallpaperFetcherDelegate {
       const std::string& collection_id) const = 0;
 
   virtual std::unique_ptr<GooglePhotosAlbumsFetcher>
-  CreateGooglePhotosAlbumsFetcher(Profile* profile) const = 0;
+  CreateGooglePhotosAlbumsFetcher(Profile* profile,
+                                  const AccountId& account_id) const = 0;
 
   virtual std::unique_ptr<GooglePhotosSharedAlbumsFetcher>
-  CreateGooglePhotosSharedAlbumsFetcher(Profile* profile) const = 0;
+  CreateGooglePhotosSharedAlbumsFetcher(Profile* profile,
+                                        const AccountId& account_id) const = 0;
 
   virtual std::unique_ptr<GooglePhotosEnabledFetcher>
-  CreateGooglePhotosEnabledFetcher(Profile* profile) const = 0;
+  CreateGooglePhotosEnabledFetcher(Profile* profile,
+                                   const AccountId& account_id) const = 0;
 
   virtual std::unique_ptr<GooglePhotosPhotosFetcher>
-  CreateGooglePhotosPhotosFetcher(Profile* profile) const = 0;
+  CreateGooglePhotosPhotosFetcher(Profile* profile,
+                                  const AccountId& account_id) const = 0;
 
   virtual void FetchGooglePhotosAccessToken(
       const AccountId& account_id,
@@ -83,16 +87,21 @@ class WallpaperFetcherDelegateImpl : public WallpaperFetcherDelegate {
       const std::string& collection_id) const override;
 
   std::unique_ptr<GooglePhotosAlbumsFetcher> CreateGooglePhotosAlbumsFetcher(
-      Profile* profile) const override;
+      Profile* profile,
+      const AccountId& account_id) const override;
 
   std::unique_ptr<GooglePhotosSharedAlbumsFetcher>
-  CreateGooglePhotosSharedAlbumsFetcher(Profile* profile) const override;
+  CreateGooglePhotosSharedAlbumsFetcher(
+      Profile* profile,
+      const AccountId& account_id) const override;
 
   std::unique_ptr<GooglePhotosEnabledFetcher> CreateGooglePhotosEnabledFetcher(
-      Profile* profile) const override;
+      Profile* profile,
+      const AccountId& account_id) const override;
 
   std::unique_ptr<GooglePhotosPhotosFetcher> CreateGooglePhotosPhotosFetcher(
-      Profile* profile) const override;
+      Profile* profile,
+      const AccountId& account_id) const override;
 
   void FetchGooglePhotosAccessToken(
       const AccountId& account_id,

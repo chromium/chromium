@@ -16,12 +16,17 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/signin/fake_identity_manager_provider.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -30,6 +35,9 @@ namespace wallpaper_handlers {
 namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
+constexpr auto kFakeTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kFakeTestEmail,
+                                            GaiaId::Literal("fake-gaia-id"));
 
 constexpr char kGooglePhotosResumeTokenOnlyResponse[] =
     "{\"resumeToken\": \"token\"}";
@@ -153,6 +161,12 @@ class GooglePhotosFetcherTestBase : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
+
+    // The fetchers look their IdentityManager up by AccountId through
+    // ash::IdentityManagerProvider, so register `profile_`'s under the
+    // account the fetchers will be created for.
+    identity_manager_provider_.SetIdentityManagerForAccount(
+        kFakeTestAccountId, IdentityManagerFactory::GetForProfile(profile_));
   }
 
  private:
@@ -160,6 +174,10 @@ class GooglePhotosFetcherTestBase : public testing::Test {
   user_manager::ScopedUserManager scoped_user_manager_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
+  // Declared after `profile_manager_` so it is destroyed first: it holds a
+  // raw_ptr to an IdentityManager owned by a profile that `profile_manager_`
+  // destroys, and must not outlive it.
+  ash::FakeIdentityManagerProvider identity_manager_provider_;
 };
 
 class GooglePhotosEnabledFetcherTest : public GooglePhotosFetcherTestBase {
@@ -173,7 +191,7 @@ class GooglePhotosEnabledFetcherTest : public GooglePhotosFetcherTestBase {
     GooglePhotosFetcherTestBase::SetUp();
     google_photos_enabled_fetcher_ =
         std::make_unique<WallpaperFetcherDelegateImpl>()
-            ->CreateGooglePhotosEnabledFetcher(profile());
+            ->CreateGooglePhotosEnabledFetcher(profile(), kFakeTestAccountId);
   }
 
  private:
@@ -215,7 +233,7 @@ class GooglePhotosPhotosFetcherTest : public GooglePhotosFetcherTestBase {
     GooglePhotosFetcherTestBase::SetUp();
     google_photos_photos_fetcher_ =
         std::make_unique<WallpaperFetcherDelegateImpl>()
-            ->CreateGooglePhotosPhotosFetcher(profile());
+            ->CreateGooglePhotosPhotosFetcher(profile(), kFakeTestAccountId);
   }
 
  private:
@@ -332,7 +350,7 @@ class GooglePhotosAlbumsFetcherTest : public GooglePhotosFetcherTestBase {
     GooglePhotosFetcherTestBase::SetUp();
     google_photos_albums_fetcher_ =
         std::make_unique<WallpaperFetcherDelegateImpl>()
-            ->CreateGooglePhotosAlbumsFetcher(profile());
+            ->CreateGooglePhotosAlbumsFetcher(profile(), kFakeTestAccountId);
   }
 
  private:

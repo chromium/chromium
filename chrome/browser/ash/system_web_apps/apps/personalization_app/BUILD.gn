@@ -274,6 +274,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support_unit",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/signin:test_support",
     "//chromeos/constants",
     "//chromeos/strings",
     "//chromeos/strings:strings_grit",

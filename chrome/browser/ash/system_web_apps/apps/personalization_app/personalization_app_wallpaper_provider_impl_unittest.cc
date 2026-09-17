@@ -45,12 +45,14 @@
 #include "chrome/browser/ash/wallpaper_handlers/mock_google_photos_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/mock_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/signin/fake_identity_manager_provider.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
@@ -221,6 +223,11 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
                 GetInstance(),
             base::BindRepeating(&MakeMockPersonalizationAppManager)}});
 
+    // The Google Photos fetchers resolve their IdentityManager by AccountId
+    // through ash::IdentityManagerProvider.
+    identity_manager_provider_.SetIdentityManagerForAccount(
+        kTestAccountId, IdentityManagerFactory::GetForProfile(profile_));
+
     test_wallpaper_controller()->SetCurrentUser(kTestAccountId);
 
     web_contents_ = content::WebContents::Create(
@@ -241,6 +248,10 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
     web_contents_.reset();
     wallpaper_provider_.reset();
     wallpaper_controller_client_.reset();
+    // Drop the IdentityManager pointer before the profile that owns it is
+    // destroyed, so the provider is never left holding a dangling raw_ptr.
+    identity_manager_provider_.SetIdentityManagerForAccount(kTestAccountId,
+                                                            nullptr);
     profile_ = nullptr;
     profile_manager_.DeleteAllTestingProfiles();
     profile_user_manager_controller_.reset();
@@ -335,6 +346,7 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
       profile_user_manager_controller_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
+  ash::FakeIdentityManagerProvider identity_manager_provider_;
   SeaPenWallpaperManager sea_pen_wallpaper_manager_;
   TestWallpaperController test_wallpaper_controller_;
   // |wallpaper_controller_client_| must be destructed before

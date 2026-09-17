@@ -79,8 +79,10 @@ CreateFakeGooglePhotosSharedAlbumsResponse() {
 
 }  // namespace
 
-MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(Profile* profile)
-    : GooglePhotosAlbumsFetcher(profile) {
+MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(
+    Profile* profile,
+    const AccountId& account_id)
+    : GooglePhotosAlbumsFetcher(profile, account_id) {
   using ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse;
   using ash::personalization_app::mojom::GooglePhotosAlbumPtr;
 
@@ -104,8 +106,9 @@ MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(Profile* profile)
 MockGooglePhotosAlbumsFetcher::~MockGooglePhotosAlbumsFetcher() = default;
 
 MockGooglePhotosSharedAlbumsFetcher::MockGooglePhotosSharedAlbumsFetcher(
-    Profile* profile)
-    : GooglePhotosSharedAlbumsFetcher(profile) {
+    Profile* profile,
+    const AccountId& account_id)
+    : GooglePhotosSharedAlbumsFetcher(profile, account_id) {
   using ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse;
   using ash::personalization_app::mojom::GooglePhotosAlbumPtr;
 
@@ -130,8 +133,10 @@ MockGooglePhotosSharedAlbumsFetcher::MockGooglePhotosSharedAlbumsFetcher(
 MockGooglePhotosSharedAlbumsFetcher::~MockGooglePhotosSharedAlbumsFetcher() =
     default;
 
-MockGooglePhotosEnabledFetcher::MockGooglePhotosEnabledFetcher(Profile* profile)
-    : GooglePhotosEnabledFetcher(profile) {
+MockGooglePhotosEnabledFetcher::MockGooglePhotosEnabledFetcher(
+    Profile* profile,
+    const AccountId& account_id)
+    : GooglePhotosEnabledFetcher(profile, account_id) {
   ON_CALL(*this, AddRequestAndStartIfNecessary)
       .WillByDefault(
           [](base::OnceCallback<void(GooglePhotosEnablementState)> callback) {
@@ -149,8 +154,10 @@ MockGooglePhotosEnabledFetcher::MockGooglePhotosEnabledFetcher(Profile* profile)
 
 MockGooglePhotosEnabledFetcher::~MockGooglePhotosEnabledFetcher() = default;
 
-MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
-    : GooglePhotosPhotosFetcher(profile) {
+MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(
+    Profile* profile,
+    const AccountId& account_id)
+    : GooglePhotosPhotosFetcher(profile, account_id) {
   using ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse;
   using ash::personalization_app::mojom::GooglePhotosPhotoPtr;
 

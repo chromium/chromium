@@ -21,6 +21,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
+class AccountId;
 class Profile;
 
 namespace network {
@@ -39,8 +40,11 @@ namespace wallpaper_handlers {
 template <typename T>
 class GooglePhotosFetcher : public signin::IdentityManager::Observer {
  public:
+  // `account_id` identifies the Google Photos account to query; `profile` is
+  // used for its URLLoaderFactory and prefs.
   GooglePhotosFetcher(
       Profile* profile,
+      const AccountId& account_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
   GooglePhotosFetcher(const GooglePhotosFetcher&) = delete;
@@ -123,7 +127,7 @@ class GooglePhotosAlbumsFetcher
  protected:
   // Protected constructor forces creation via `WallpaperFetcherDelegate` to
   // allow mocking in test code.
-  explicit GooglePhotosAlbumsFetcher(Profile* profile);
+  GooglePhotosAlbumsFetcher(Profile* profile, const AccountId& account_id);
 
   // GooglePhotosFetcher:
   GooglePhotosAlbumsCbkArgs ParseResponse(
@@ -155,7 +159,8 @@ class GooglePhotosSharedAlbumsFetcher
  protected:
   // Protected constructor forces creation via `WallpaperFetcherDelegate` to
   // allow mocking in test code.
-  explicit GooglePhotosSharedAlbumsFetcher(Profile* profile);
+  GooglePhotosSharedAlbumsFetcher(Profile* profile,
+                                  const AccountId& account_id);
 
   // GooglePhotosFetcher:
   GooglePhotosAlbumsCbkArgs ParseResponse(
@@ -181,7 +186,7 @@ class GooglePhotosEnabledFetcher
  protected:
   // Protected constructor forces creation via `WallpaperFetcherDelegate` to
   // allow mocking in test code.
-  explicit GooglePhotosEnabledFetcher(Profile* profile);
+  GooglePhotosEnabledFetcher(Profile* profile, const AccountId& account_id);
 
   // GooglePhotosFetcher:
   GooglePhotosEnablementState ParseResponse(
@@ -214,7 +219,7 @@ class GooglePhotosPhotosFetcher
  protected:
   // Protected constructor forces creation via `WallpaperFetcherDelegate` to
   // allow mocking in test code.
-  explicit GooglePhotosPhotosFetcher(Profile* profile);
+  GooglePhotosPhotosFetcher(Profile* profile, const AccountId& account_id);
 
   // GooglePhotosFetcher:
   std::optional<base::Value> CreateErrorResponse(int error_code) override;

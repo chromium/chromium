@@ -21,7 +21,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "content/public/browser/browser_thread.h"
@@ -219,13 +219,20 @@ void AddGooglePhotosPhotoIfValid(
 template <typename T>
 GooglePhotosFetcher<T>::GooglePhotosFetcher(
     Profile* profile,
+    const AccountId& account_id,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
     : profile_(profile),
-      identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
+      identity_manager_(ash::IdentityManagerProvider::Get().Find(account_id)),
       traffic_annotation_(traffic_annotation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile_);
-  DCHECK(identity_manager_);
+  // These fetchers are only created for a signed-in user's profile, so the
+  // AccountId resolves to an IdentityManager. CHECK rather than DCHECK
+  // because Observe() below dereferences the pointer either way, and the
+  // caller's GetAccountId() returns EmptyAccountId() for a profile with no
+  // User -- a case that should not reach here.
+  CHECK(account_id.is_valid());
+  CHECK(identity_manager_);
   identity_manager_observation_.Observe(identity_manager_.get());
 }
 
@@ -362,8 +369,12 @@ bool GooglePhotosFetcher<T>::IsGooglePhotosIntegrationPolicyEnabled() const {
       prefs::kWallpaperGooglePhotosIntegrationEnabled);
 }
 
-GooglePhotosAlbumsFetcher::GooglePhotosAlbumsFetcher(Profile* profile)
-    : GooglePhotosFetcher(profile, kGooglePhotosAlbumsTrafficAnnotation) {
+GooglePhotosAlbumsFetcher::GooglePhotosAlbumsFetcher(
+    Profile* profile,
+    const AccountId& account_id)
+    : GooglePhotosFetcher(profile,
+                          account_id,
+                          kGooglePhotosAlbumsTrafficAnnotation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -432,8 +443,11 @@ GooglePhotosAlbumsCbkArgs GooglePhotosAlbumsFetcher::ParseResponse(
 }
 
 GooglePhotosSharedAlbumsFetcher::GooglePhotosSharedAlbumsFetcher(
-    Profile* profile)
-    : GooglePhotosFetcher(profile, kGooglePhotosAlbumsTrafficAnnotation) {
+    Profile* profile,
+    const AccountId& account_id)
+    : GooglePhotosFetcher(profile,
+                          account_id,
+                          kGooglePhotosAlbumsTrafficAnnotation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -507,8 +521,12 @@ GooglePhotosAlbumsCbkArgs GooglePhotosSharedAlbumsFetcher::ParseResponse(
   return parsed_response;
 }
 
-GooglePhotosEnabledFetcher::GooglePhotosEnabledFetcher(Profile* profile)
-    : GooglePhotosFetcher(profile, kGooglePhotosEnabledTrafficAnnotation) {
+GooglePhotosEnabledFetcher::GooglePhotosEnabledFetcher(
+    Profile* profile,
+    const AccountId& account_id)
+    : GooglePhotosFetcher(profile,
+                          account_id,
+                          kGooglePhotosEnabledTrafficAnnotation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -547,8 +565,12 @@ GooglePhotosEnablementState GooglePhotosEnabledFetcher::ParseResponse(
              : GooglePhotosEnablementState::kError;
 }
 
-GooglePhotosPhotosFetcher::GooglePhotosPhotosFetcher(Profile* profile)
-    : GooglePhotosFetcher(profile, kGooglePhotosPhotosTrafficAnnotation) {
+GooglePhotosPhotosFetcher::GooglePhotosPhotosFetcher(
+    Profile* profile,
+    const AccountId& account_id)
+    : GooglePhotosFetcher(profile,
+                          account_id,
+                          kGooglePhotosPhotosTrafficAnnotation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 

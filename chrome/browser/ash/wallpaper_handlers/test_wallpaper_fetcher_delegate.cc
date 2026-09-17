@@ -43,30 +43,35 @@ TestWallpaperFetcherDelegate::CreateBackdropSurpriseMeImageFetcher(
 
 std::unique_ptr<GooglePhotosAlbumsFetcher>
 TestWallpaperFetcherDelegate::CreateGooglePhotosAlbumsFetcher(
-    Profile* profile) const {
+    Profile* profile,
+    const AccountId& account_id) const {
   return std::make_unique<testing::NiceMock<MockGooglePhotosAlbumsFetcher>>(
-      profile);
+      profile, account_id);
 }
 
 std::unique_ptr<GooglePhotosSharedAlbumsFetcher>
 TestWallpaperFetcherDelegate::CreateGooglePhotosSharedAlbumsFetcher(
-    Profile* profile) const {
+    Profile* profile,
+    const AccountId& account_id) const {
   return std::make_unique<
-      testing::NiceMock<MockGooglePhotosSharedAlbumsFetcher>>(profile);
+      testing::NiceMock<MockGooglePhotosSharedAlbumsFetcher>>(profile,
+                                                              account_id);
 }
 
 std::unique_ptr<GooglePhotosEnabledFetcher>
 TestWallpaperFetcherDelegate::CreateGooglePhotosEnabledFetcher(
-    Profile* profile) const {
+    Profile* profile,
+    const AccountId& account_id) const {
   return std::make_unique<testing::NiceMock<MockGooglePhotosEnabledFetcher>>(
-      profile);
+      profile, account_id);
 }
 
 std::unique_ptr<GooglePhotosPhotosFetcher>
 TestWallpaperFetcherDelegate::CreateGooglePhotosPhotosFetcher(
-    Profile* profile) const {
+    Profile* profile,
+    const AccountId& account_id) const {
   return std::make_unique<testing::NiceMock<MockGooglePhotosPhotosFetcher>>(
-      profile);
+      profile, account_id);
 }
 
 void TestWallpaperFetcherDelegate::FetchGooglePhotosAccessToken(

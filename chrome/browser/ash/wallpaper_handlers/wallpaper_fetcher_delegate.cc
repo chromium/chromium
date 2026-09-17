@@ -53,30 +53,35 @@ WallpaperFetcherDelegateImpl::CreateBackdropSurpriseMeImageFetcher(
 
 std::unique_ptr<GooglePhotosAlbumsFetcher>
 WallpaperFetcherDelegateImpl::CreateGooglePhotosAlbumsFetcher(
-    Profile* profile) const {
+    Profile* profile,
+    const AccountId& account_id) const {
   // Use `WrapUnique` to access the protected constructor.
-  return absl::WrapUnique(new GooglePhotosAlbumsFetcher(profile));
+  return absl::WrapUnique(new GooglePhotosAlbumsFetcher(profile, account_id));
 }
 
 std::unique_ptr<GooglePhotosSharedAlbumsFetcher>
 WallpaperFetcherDelegateImpl::CreateGooglePhotosSharedAlbumsFetcher(
-    Profile* profile) const {
+    Profile* profile,
+    const AccountId& account_id) const {
   // Use `WrapUnique` to access the protected constructor.
-  return absl::WrapUnique(new GooglePhotosSharedAlbumsFetcher(profile));
+  return absl::WrapUnique(
+      new GooglePhotosSharedAlbumsFetcher(profile, account_id));
 }
 
 std::unique_ptr<GooglePhotosEnabledFetcher>
 WallpaperFetcherDelegateImpl::CreateGooglePhotosEnabledFetcher(
-    Profile* profile) const {
+    Profile* profile,
+    const AccountId& account_id) const {
   // Use `WrapUnique` to access the protected constructor.
-  return absl::WrapUnique(new GooglePhotosEnabledFetcher(profile));
+  return absl::WrapUnique(new GooglePhotosEnabledFetcher(profile, account_id));
 }
 
 std::unique_ptr<GooglePhotosPhotosFetcher>
 WallpaperFetcherDelegateImpl::CreateGooglePhotosPhotosFetcher(
-    Profile* profile) const {
+    Profile* profile,
+    const AccountId& account_id) const {
   // Use `WrapUnique` to access the protected constructor.
-  return absl::WrapUnique(new GooglePhotosPhotosFetcher(profile));
+  return absl::WrapUnique(new GooglePhotosPhotosFetcher(profile, account_id));
 }
 
 void WallpaperFetcherDelegateImpl::FetchGooglePhotosAccessToken(

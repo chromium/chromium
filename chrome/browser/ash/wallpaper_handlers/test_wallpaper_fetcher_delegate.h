@@ -36,13 +36,18 @@ class TestWallpaperFetcherDelegate : public WallpaperFetcherDelegate {
   CreateBackdropSurpriseMeImageFetcher(
       const std::string& collection_id) const override;
   std::unique_ptr<GooglePhotosAlbumsFetcher> CreateGooglePhotosAlbumsFetcher(
-      Profile* profile) const override;
+      Profile* profile,
+      const AccountId& account_id) const override;
   std::unique_ptr<GooglePhotosSharedAlbumsFetcher>
-  CreateGooglePhotosSharedAlbumsFetcher(Profile* profile) const override;
+  CreateGooglePhotosSharedAlbumsFetcher(
+      Profile* profile,
+      const AccountId& account_id) const override;
   std::unique_ptr<GooglePhotosEnabledFetcher> CreateGooglePhotosEnabledFetcher(
-      Profile* profile) const override;
+      Profile* profile,
+      const AccountId& account_id) const override;
   std::unique_ptr<GooglePhotosPhotosFetcher> CreateGooglePhotosPhotosFetcher(
-      Profile* profile) const override;
+      Profile* profile,
+      const AccountId& account_id) const override;
   void FetchGooglePhotosAccessToken(
       const AccountId& account_id,
       ash::WallpaperControllerClient::FetchGooglePhotosAccessTokenCallback

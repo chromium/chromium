@@ -820,7 +820,8 @@ PersonalizationAppWallpaperProviderImpl::
     GetOrCreateGooglePhotosAlbumsFetcher() {
   if (!google_photos_albums_fetcher_) {
     google_photos_albums_fetcher_ =
-        wallpaper_fetcher_delegate_->CreateGooglePhotosAlbumsFetcher(profile_);
+        wallpaper_fetcher_delegate_->CreateGooglePhotosAlbumsFetcher(
+            profile_, GetAccountId(profile_));
   }
   return google_photos_albums_fetcher_.get();
 }
@@ -831,7 +832,7 @@ PersonalizationAppWallpaperProviderImpl::
   if (!google_photos_shared_albums_fetcher_) {
     google_photos_shared_albums_fetcher_ =
         wallpaper_fetcher_delegate_->CreateGooglePhotosSharedAlbumsFetcher(
-            profile_);
+            profile_, GetAccountId(profile_));
   }
   return google_photos_shared_albums_fetcher_.get();
 }
@@ -841,7 +842,8 @@ PersonalizationAppWallpaperProviderImpl::
     GetOrCreateGooglePhotosEnabledFetcher() {
   if (!google_photos_enabled_fetcher_) {
     google_photos_enabled_fetcher_ =
-        wallpaper_fetcher_delegate_->CreateGooglePhotosEnabledFetcher(profile_);
+        wallpaper_fetcher_delegate_->CreateGooglePhotosEnabledFetcher(
+            profile_, GetAccountId(profile_));
   }
   return google_photos_enabled_fetcher_.get();
 }
@@ -851,7 +853,8 @@ PersonalizationAppWallpaperProviderImpl::
     GetOrCreateGooglePhotosPhotosFetcher() {
   if (!google_photos_photos_fetcher_) {
     google_photos_photos_fetcher_ =
-        wallpaper_fetcher_delegate_->CreateGooglePhotosPhotosFetcher(profile_);
+        wallpaper_fetcher_delegate_->CreateGooglePhotosPhotosFetcher(
+            profile_, GetAccountId(profile_));
   }
   return google_photos_photos_fetcher_.get();
 }

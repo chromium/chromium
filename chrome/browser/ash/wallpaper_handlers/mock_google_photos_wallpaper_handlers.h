@@ -21,7 +21,7 @@ namespace wallpaper_handlers {
 // in unit tests.
 class MockGooglePhotosAlbumsFetcher : public GooglePhotosAlbumsFetcher {
  public:
-  explicit MockGooglePhotosAlbumsFetcher(Profile* profile);
+  MockGooglePhotosAlbumsFetcher(Profile* profile, const AccountId& account_id);
 
   MockGooglePhotosAlbumsFetcher(const MockGooglePhotosAlbumsFetcher&) = delete;
   MockGooglePhotosAlbumsFetcher& operator=(
@@ -48,7 +48,8 @@ class MockGooglePhotosAlbumsFetcher : public GooglePhotosAlbumsFetcher {
 class MockGooglePhotosSharedAlbumsFetcher
     : public GooglePhotosSharedAlbumsFetcher {
  public:
-  explicit MockGooglePhotosSharedAlbumsFetcher(Profile* profile);
+  MockGooglePhotosSharedAlbumsFetcher(Profile* profile,
+                                      const AccountId& account_id);
 
   MockGooglePhotosSharedAlbumsFetcher(
       const MockGooglePhotosSharedAlbumsFetcher&) = delete;
@@ -74,7 +75,7 @@ class MockGooglePhotosSharedAlbumsFetcher
 // avoid network requests in unit tests.
 class MockGooglePhotosEnabledFetcher : public GooglePhotosEnabledFetcher {
  public:
-  explicit MockGooglePhotosEnabledFetcher(Profile* profile);
+  MockGooglePhotosEnabledFetcher(Profile* profile, const AccountId& account_id);
 
   MockGooglePhotosEnabledFetcher(const MockGooglePhotosEnabledFetcher&) =
       delete;
@@ -100,7 +101,7 @@ class MockGooglePhotosEnabledFetcher : public GooglePhotosEnabledFetcher {
 // network requests in unit tests.
 class MockGooglePhotosPhotosFetcher : public GooglePhotosPhotosFetcher {
  public:
-  explicit MockGooglePhotosPhotosFetcher(Profile* profile);
+  MockGooglePhotosPhotosFetcher(Profile* profile, const AccountId& account_id);
 
   MockGooglePhotosPhotosFetcher(const MockGooglePhotosPhotosFetcher&) = delete;
   MockGooglePhotosPhotosFetcher& operator=(
