@@ -34,8 +34,9 @@ FuchsiaIntlProfileWatcher::FuchsiaIntlProfileWatcher(
   DCHECK(on_profile_changed_);
 
   property_provider_.set_error_handler([](zx_status_t status) {
-    ZX_LOG(ERROR, status) << "intl.PropertyProvider disconnected. "
-                          << "Profile changes will not be monitored.";
+    ZX_LOG_IF(ERROR, status != ZX_ERR_PEER_CLOSED, status)
+        << "intl.PropertyProvider disconnected. "
+        << "Profile changes will not be monitored.";
   });
 
   property_provider_.events().OnChange = [this] {
