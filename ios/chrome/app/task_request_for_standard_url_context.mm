@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "net/base/apple/url_conversions.h"
+#import "net/base/url_util.h"
 #import "url/gurl.h"
 
 namespace {
@@ -163,9 +164,18 @@ void RecordExternalActionMetrics(NSURL* url) {
       ProfileIOS* profile = sceneState.profileState.profile;
       CHECK_DEREF(profile).GetPrefs()->SetBoolean(
           prefs::kAppStoreGeminiPromoTriggered, true);
-    } else if (IsAppSwitcherAISummarizationEnabled() &&
-               [path isEqualToString:kExternalActionAppSwitcherTesting]) {
-      // TODO(crbug.com/493816082): Add implementation.
+    } else if ([path isEqualToString:kExternalActionAppSwitcherTesting]) {
+      // TODO(crbug.com/527016607): Remove this entire testing path when the
+      // feature is enabled by default.
+      std::string queryUrlString;
+      net::GetValueForKeyInQuery(externalGURL, "url", &queryUrlString);
+      GURL queryUrl(queryUrlString);
+
+      externalGURL = queryUrl.SchemeIsHTTPOrHTTPS()
+                         ? queryUrl
+                         : GURL(kGeminiAppStorePromoURL);
+      postOpeningAction =
+          TabOpeningPostOpeningAction::START_GEMINI_AI_SUMMARIZATION;
     } else {
       // An unrecognized or invalid external action is discarded without opening
       // a tab.
