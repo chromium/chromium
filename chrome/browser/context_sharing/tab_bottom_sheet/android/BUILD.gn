@@ -189,7 +189,10 @@ robolectric_library("junit") {
 android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.context_sharing"
-  sources = [ "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetManagerTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetManagerTest.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetPeekViewRenderTest.java",
+  ]
   deps = [
     ":java",
     ":java_resources",
@@ -221,6 +224,7 @@ android_library("javatests") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
     "//url:url_java",
   ]
 }
