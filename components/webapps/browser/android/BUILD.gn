@@ -46,7 +46,6 @@ android_library("java") {
   ]
   deps = [
     ":java_resources",
-    ":pwa_restore_bottom_sheet_mediator_jni_headers_java",
     ":webapps_jni_headers_java",
     "//base:base_java",
     "//base:flagged_apis_java",
@@ -85,10 +84,6 @@ generate_jni("webapps_jni_headers") {
     "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetControllerProvider.java",
     "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetCoordinator.java",
   ]
-}
-
-generate_jni("pwa_restore_bottom_sheet_mediator_jni_headers") {
-  sources = [ "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetMediator.java" ]
 }
 
 java_cpp_enum("webapps_java_enums_srcjar") {
@@ -221,7 +216,6 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":java_resources",
-    ":pwa_restore_bottom_sheet_mediator_jni_headers_java",
     ":webapps_jni_headers_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
@@ -254,7 +248,6 @@ android_library("unit_device_javatests") {
   sources = [ "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetViewRenderTest.java" ]
   deps = [
     ":java",
-    ":pwa_restore_bottom_sheet_mediator_jni_headers_java",
     "//base:base_java_test_support",
     "//base:tasks_java",
     "//chrome/android:chrome_java",

@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -23,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -53,13 +51,10 @@ public class PwaRestoreBottomSheetCoordinatorTest {
                             createBitmap(Color.BLUE)));
 
     @Mock private BottomSheetController mBottomSheetControllerMock;
-    @Mock private PwaRestoreBottomSheetMediator.Natives mNativeMediatorMock;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
-        PwaRestoreBottomSheetMediatorJni.setInstanceForTesting(mNativeMediatorMock);
-        when(mNativeMediatorMock.initialize(Mockito.any())).thenReturn(0L);
     }
 
     @After

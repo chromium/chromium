@@ -8,9 +8,6 @@ import android.app.Activity;
 import android.text.TextUtils;
 import android.view.View;
 
-import org.jni_zero.JNINamespace;
-import org.jni_zero.NativeMethods;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
@@ -20,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** The Mediator for the PWA Restore bottom sheet. */
-@JNINamespace("webapk")
 @NullMarked
 class PwaRestoreBottomSheetMediator {
     // The underlying property model for the bottom sheeet.
@@ -28,8 +24,6 @@ class PwaRestoreBottomSheetMediator {
 
     // The callback for the parent to get notified on when Restore is clicked.
     private final Runnable mParentRestoreClickHandler;
-
-    private long mNativeMediator;
 
     PwaRestoreBottomSheetMediator(
             ArrayList<PwaRestoreProperties.AppInfo> apps,
@@ -45,7 +39,6 @@ class PwaRestoreBottomSheetMediator {
                         this::onDeselectButtonClicked,
                         this::onRestoreButtonClicked,
                         this::onSelectionToggled);
-        mNativeMediator = PwaRestoreBottomSheetMediatorJni.get().initialize(this);
 
         initializeState(apps, activity);
         setPeekingState();
@@ -101,20 +94,6 @@ class PwaRestoreBottomSheetMediator {
     }
 
     private void onRestoreButtonClicked() {
-        List<PwaRestoreProperties.AppInfo> appList = mModel.get(PwaRestoreProperties.APPS);
-        List<String> selectedAppLists = new ArrayList<>();
-        for (PwaRestoreProperties.AppInfo app : appList) {
-            if (app.isSelected()) {
-                selectedAppLists.add(app.getId());
-            }
-        }
-        if (mNativeMediator != 0) {
-            PwaRestoreBottomSheetMediatorJni.get()
-                    .onRestoreWebapps(
-                            mNativeMediator,
-                            selectedAppLists.toArray(new String[selectedAppLists.size()]));
-        }
-
         // Notify the parent.
         mParentRestoreClickHandler.run();
     }
@@ -139,23 +118,9 @@ class PwaRestoreBottomSheetMediator {
         mModel.set(PwaRestoreProperties.EXPANDED_BUTTON_ENABLED, somethingSelected);
     }
 
-    void destroy() {
-        if (mNativeMediator != 0) {
-            PwaRestoreBottomSheetMediatorJni.get().destroy(mNativeMediator);
-            mNativeMediator = 0;
-        }
-    }
+    void destroy() {}
 
     PropertyModel getModel() {
         return mModel;
-    }
-
-    @NativeMethods
-    interface Natives {
-        long initialize(PwaRestoreBottomSheetMediator instance);
-
-        void onRestoreWebapps(long nativePwaRestoreBottomSheetMediator, String[] restoreAppsList);
-
-        void destroy(long nativePwaRestoreBottomSheetMediator);
     }
 }

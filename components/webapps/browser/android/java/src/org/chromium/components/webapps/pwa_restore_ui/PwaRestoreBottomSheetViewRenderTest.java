@@ -14,16 +14,11 @@ import android.widget.LinearLayout.LayoutParams;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -48,7 +43,6 @@ import java.util.List;
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
 public class PwaRestoreBottomSheetViewRenderTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static Activity sActivity;
 
     @ClassParameter
@@ -69,14 +63,6 @@ public class PwaRestoreBottomSheetViewRenderTest {
     @BeforeClass
     public static void setupSuite() {
         sActivity = sActivityTestRule.launchActivity(null);
-    }
-
-    @Mock private PwaRestoreBottomSheetMediator.Natives mNativeMock;
-
-    @Before
-    public void setUp() {
-        PwaRestoreBottomSheetMediatorJni.setInstanceForTesting(mNativeMock);
-        Mockito.when(mNativeMock.initialize(Mockito.any())).thenReturn(0L);
     }
 
     public PwaRestoreBottomSheetViewRenderTest(boolean nightModeEnabled) {
