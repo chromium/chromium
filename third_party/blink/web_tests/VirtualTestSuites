@@ -2839,6 +2839,7 @@
       "svg/zoom/page/zoom-getbbox-invariance.html",
       "svg/zoom/page/zoom-getctm-invariance.html",
       "svg/zoom/page/zoom-getscreenctm-getboundingclientrect-parity.html",
+      "external/wpt/css/css-overflow/scroll-axis-lock-dynamic-change.html",
       "external/wpt/css/css-overflow/scroll-axis-lock-none-touch.html",
       "external/wpt/css/css-overflow/scroll-axis-lock-none-wheel.html"
     ],
