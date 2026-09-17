@@ -49,6 +49,9 @@ def install_chrome(channel: str, device: device_utils.DeviceUtils) -> str:
   """Installs Chrome to the device and returns the package name."""
   args = [
     _INSTALLER_SCRIPT_PY, f'--product=chrome',
+    # TODO(b/563029158): Revert once clank/bin/install_chrome.py defaults to
+    # Standalone Chrome for M154+.
+    '--package=Chrome',
     f'--channel={channel}', f'--serial={device.serial}',
     f'--adb={adb_wrapper.AdbWrapper.GetAdbPath()}',
   ]
