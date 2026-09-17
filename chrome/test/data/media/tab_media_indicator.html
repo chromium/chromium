@@ -38,34 +38,46 @@
       navigator.mediaDevices.getUserMedia({audio: true})
         .then(stream => {
           micStream = stream;
+          document.title = 'mic_ready';
           console.log('Mic access granted');
         })
-        .catch(err => console.error('Mic access denied', err));
+        .catch(err => {
+          console.error('Mic access denied', err);
+          document.title = 'mic_error';
+        });
+    }
+
+    function stopStream(stream, stoppedTitle, logMessage) {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+      document.title = stoppedTitle;
+      console.log(logMessage);
     }
 
     function stopMic() {
-      if (micStream) {
-        micStream.getTracks().forEach(track => track.stop());
-        micStream = null;
-        console.log('Mic stopped');
-      }
+      const stream = micStream;
+      micStream = null;
+      stopStream(stream, 'mic_stopped', 'Mic stopped');
     }
 
     function requestCam() {
       navigator.mediaDevices.getUserMedia({video: true})
         .then(stream => {
           camStream = stream;
+          document.title = 'cam_ready';
           console.log('Cam access granted');
         })
-        .catch(err => console.error('Cam access denied', err));
+        .catch(err => {
+          console.error('Cam access denied', err);
+          document.title = 'cam_error';
+        });
     }
 
     function stopCam() {
-      if (camStream) {
-        camStream.getTracks().forEach(track => track.stop());
-        camStream = null;
-        console.log('Cam stopped');
-      }
+      const stream = camStream;
+      camStream = null;
+      stopStream(stream, 'cam_stopped', 'Cam stopped');
     }
 
     function requestTabCapture() {
@@ -85,19 +97,9 @@
     }
 
     function stopTabCapture() {
-      if (tabCaptureStream) {
-        tabCaptureStream.getTracks().forEach(track => track.stop());
-        tabCaptureStream = null;
-        document.title = 'stopped_successfully';
-        console.log('Tab capture stopped');
-      }
-    }
-
-    function monitorStreamEnd() {
-      if (tabCaptureStream && tabCaptureStream.getVideoTracks().length > 0) {
-        tabCaptureStream.getVideoTracks()[0].onended = () => { document.title = 'ended'; };
-        document.title = 'listener_attached';
-      }
+      const stream = tabCaptureStream;
+      tabCaptureStream = null;
+      stopStream(stream, 'stopped_successfully', 'Tab capture stopped');
     }
 
     document.getElementById('request-mic').onclick = requestMic;

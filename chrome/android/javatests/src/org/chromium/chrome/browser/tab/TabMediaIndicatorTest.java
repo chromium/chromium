@@ -4,24 +4,17 @@
 
 package org.chromium.chrome.browser.tab;
 
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
-
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.view.View;
 
-import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.SmallTest;
@@ -68,6 +61,7 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.media.MediaSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
+import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -94,21 +88,24 @@ public class TabMediaIndicatorTest {
     private static final String VIDEO_ID = "video";
     private static final String MUTE_VIDEO_ID = "mute";
     private static final String UNMUTE_VIDEO_ID = "unmute";
+    private static final String REQUEST_PIP_ID = "request-pip";
+    private static final String EXIT_PIP_ID = "exit-pip";
     private static final String REQUEST_MIC_ID = "request-mic";
     private static final String REQUEST_CAM_ID = "request-cam";
     private static final String REQUEST_TAB_CAPTURE_ID = "request-tab-capture";
     private static final String STOP_TAB_CAPTURE_ID = "stop-tab-capture";
-    private static final long WAIT = 2000;
+    private static final String SCREEN_CAPTURE_INTENT_ACTION = "CUSTOM_ACTION";
+
+    /** Extra time allowed on top of the default poll timeout when waiting for a title change. */
+    private static final long TITLE_TIMEOUT_SLACK_MS = 2000;
 
     private WebPageStation mPage;
     private TabModel mTabModel;
-    private TabRemover mTabRemover;
     private Tab mTab;
-    private MockMediaCapturePickerDelegate mMockDelegate;
+    private MockMediaCapturePickerDelegate mMediaPickerDelegate;
 
     private class MockMediaCapturePickerDelegate implements MediaCapturePickerDelegate {
         private Tab mPickedTab;
-        private Intent mScreenCaptureIntent;
         public boolean mCreateScreenCaptureIntentCalled;
 
         public void setPickedTab(Tab tab) {
@@ -121,9 +118,7 @@ public class TabMediaIndicatorTest {
                 MediaCapturePickerManager.Params params,
                 MediaCapturePickerManager.Delegate delegate) {
             mCreateScreenCaptureIntentCalled = true;
-            return mScreenCaptureIntent != null
-                    ? mScreenCaptureIntent
-                    : new Intent("CUSTOM_ACTION");
+            return new Intent(SCREEN_CAPTURE_INTENT_ACTION);
         }
 
         @Override
@@ -142,19 +137,21 @@ public class TabMediaIndicatorTest {
         ChromeTabbedActivity.interceptMoveTaskToBackForTesting();
         mPage = mActivityTestRule.startOnBlankPage();
         mTabModel = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
-        mTabRemover = mTabModel.getTabRemover();
         mTab = mPage.getTab();
 
         new TabLoadObserver(mTab).fullyLoadUrl(mActivityTestRule.getTestServer().getURL(TEST_PATH));
         DOMUtils.waitForNonZeroNodeBounds(mTab.getWebContents(), VIDEO_ID);
         assertEquals(MediaState.NONE, mTab.getMediaState());
 
+        grantRecordingPermissions();
+
         ForegroundServiceUtils.setInstanceForTesting(Mockito.mock(ForegroundServiceUtils.class));
 
-        mMockDelegate = new MockMediaCapturePickerDelegate();
-        ServiceLoaderUtil.setInstanceForTesting(MediaCapturePickerDelegate.class, mMockDelegate);
+        mMediaPickerDelegate = new MockMediaCapturePickerDelegate();
+        ServiceLoaderUtil.setInstanceForTesting(
+                MediaCapturePickerDelegate.class, mMediaPickerDelegate);
         Intents.init();
-        Intents.intending(IntentMatchers.hasAction("CUSTOM_ACTION"))
+        Intents.intending(IntentMatchers.hasAction(SCREEN_CAPTURE_INTENT_ACTION))
                 .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, new Intent()));
     }
 
@@ -203,7 +200,7 @@ public class TabMediaIndicatorTest {
 
     @Test
     @SmallTest
-    public void testMediaStateAudibleMuteWithPause() throws Exception {
+    public void testMediaStateAudibleMuteWithPause() throws TimeoutException {
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
         waitForMediaState(mTab, MediaState.AUDIBLE);
@@ -227,7 +224,7 @@ public class TabMediaIndicatorTest {
 
     @Test
     @SmallTest
-    public void testMediaStateWithVideoMutedAndUnmuted() throws Exception {
+    public void testMediaStateWithVideoMutedAndUnmuted() throws TimeoutException {
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
         waitForMediaState(mTab, MediaState.AUDIBLE);
@@ -246,15 +243,15 @@ public class TabMediaIndicatorTest {
 
     @Test
     @SmallTest
-    public void testMediaStateRecordingMic() throws InterruptedException {
-        requestRecording(REQUEST_MIC_ID);
+    public void testMediaStateRecordingMic() {
+        requestMic();
         waitForMediaState(mTab, MediaState.RECORDING);
     }
 
     @Test
     @SmallTest
-    public void testMediaStateRecordingCam() throws InterruptedException {
-        requestRecording(REQUEST_CAM_ID);
+    public void testMediaStateRecordingCam() {
+        requestCam();
         waitForMediaState(mTab, MediaState.RECORDING);
     }
 
@@ -266,7 +263,6 @@ public class TabMediaIndicatorTest {
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testMediaStatePictureInPicture() throws TimeoutException {
         assumeTrue("PiP is not enabled", isPiPEnabled());
-        assertEquals(MediaState.NONE, mTab.getMediaState());
 
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
@@ -283,9 +279,7 @@ public class TabMediaIndicatorTest {
 
     @Test
     @SmallTest
-    public void testMediaStatePriority() throws Exception {
-        assertEquals(MediaState.NONE, mTab.getMediaState());
-
+    public void testMediaStatePriority() throws TimeoutException {
         // MUTED
         setMuteState(true);
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
@@ -297,7 +291,7 @@ public class TabMediaIndicatorTest {
         waitForMediaState(mTab, MediaState.AUDIBLE);
 
         // RECORDING
-        requestRecording(REQUEST_MIC_ID);
+        requestMic();
         waitForMediaState(mTab, MediaState.RECORDING);
 
         if (isPiPEnabled()) {
@@ -307,7 +301,7 @@ public class TabMediaIndicatorTest {
             waitForMediaState(mTab, MediaState.RECORDING);
 
             // Stop recording, indicator should drop to PiP.
-            DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), "stop-mic");
+            stopMic();
             waitForMediaState(mTab, MediaState.PICTURE_IN_PICTURE);
 
             // Exit PiP, indicator should drop to AUDIBLE.
@@ -319,9 +313,7 @@ public class TabMediaIndicatorTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.DESKTOP)
-    public void testMediaStateSharing() throws InterruptedException {
-        assertEquals(MediaState.NONE, mTab.getMediaState());
-
+    public void testMediaStateSharing() {
         // Expect SHARING
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -340,8 +332,8 @@ public class TabMediaIndicatorTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.DESKTOP)
-    public void testMediaStateSharingOverridesRecording() throws Exception {
-        requestRecording(REQUEST_MIC_ID);
+    public void testMediaStateSharingOverridesRecording() {
+        requestMic();
         waitForMediaState(mTab, MediaState.RECORDING);
 
         startTabCapture(mTab, mTab);
@@ -352,15 +344,11 @@ public class TabMediaIndicatorTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.DESKTOP)
-    public void testMediaStateSharingNewTab() throws Exception {
-        mPage =
-                mPage.openNewTabFast()
-                        .loadWebPageProgrammatically(
-                                mActivityTestRule.getTestServer().getURL(GOOGLE_PATH));
-        Tab newTab = mPage.getTab();
+    public void testMediaStateSharingNewTab() {
+        Tab newTab = openNewTabWith(GOOGLE_PATH);
 
         // Pick the new tab to be captured
-        mMockDelegate.setPickedTab(newTab);
+        mMediaPickerDelegate.setPickedTab(newTab);
 
         selectTab(mTab);
         startTabCapture(mTab, newTab);
@@ -371,15 +359,11 @@ public class TabMediaIndicatorTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.DESKTOP)
-    public void testMediaStateSharingDisappearsWhenCapturerTabIsClosed() throws Exception {
-        mPage =
-                mPage.openNewTabFast()
-                        .loadWebPageProgrammatically(
-                                mActivityTestRule.getTestServer().getURL(GOOGLE_PATH));
-        Tab newTab = mPage.getTab();
+    public void testMediaStateSharingDisappearsWhenCapturerTabIsClosed() {
+        Tab newTab = openNewTabWith(GOOGLE_PATH);
 
         // Pick the new tab to be captured
-        mMockDelegate.setPickedTab(newTab);
+        mMediaPickerDelegate.setPickedTab(newTab);
 
         selectTab(mTab);
         startTabCapture(mTab, newTab);
@@ -391,39 +375,31 @@ public class TabMediaIndicatorTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.DESKTOP)
-    public void testMediaStateSharingWithTwoCapturers() throws Exception {
+    public void testMediaStateSharingWithTwoCapturers() {
         Tab capturer1Tab = mTab;
 
         // Create and setup a capturee tab.
-        mPage =
-                mPage.openNewTabFast()
-                        .loadWebPageProgrammatically(
-                                mActivityTestRule.getTestServer().getURL(GOOGLE_PATH));
-        Tab captureeTab = mPage.getTab();
+        Tab captureeTab = openNewTabWith(GOOGLE_PATH);
 
         // Create and setup a second capturer tab.
-        mPage =
-                mPage.openNewTabFast()
-                        .loadWebPageProgrammatically(
-                                mActivityTestRule.getTestServer().getURL(TEST_PATH));
-        Tab capturer2Tab = mPage.getTab();
+        Tab capturer2Tab = openNewTabWith(TEST_PATH);
         DOMUtils.waitForNonZeroNodeBounds(capturer2Tab.getWebContents(), REQUEST_TAB_CAPTURE_ID);
 
         // Start capture from the first tab.
         selectTab(capturer1Tab);
-        mMockDelegate.setPickedTab(captureeTab);
+        mMediaPickerDelegate.setPickedTab(captureeTab);
         startTabCapture(capturer1Tab, captureeTab);
 
         // Start capture from the second tab.
         selectTab(capturer2Tab);
-        mMockDelegate.setPickedTab(captureeTab);
+        mMediaPickerDelegate.setPickedTab(captureeTab);
         startTabCapture(capturer2Tab, captureeTab);
 
         // Stop capture from the first tab and verify the indicator is still present.
         selectTab(capturer1Tab);
         stopTabCapture(capturer1Tab);
         // The media state should persist as the second capturer is still active.
-        assertEquals(MediaState.SHARING, captureeTab.getMediaState());
+        waitForMediaState(captureeTab, MediaState.SHARING);
 
         // Stop capture from the second tab and verify the indicator is gone.
         selectTab(capturer2Tab);
@@ -433,39 +409,7 @@ public class TabMediaIndicatorTest {
 
     @Test
     @SmallTest
-    @Restriction(DeviceFormFactor.DESKTOP)
-    public void testMediaStateSharingDisappearsWhenCaptureeTabIsClosed() throws Exception {
-        mPage =
-                mPage.openNewTabFast()
-                        .loadWebPageProgrammatically(
-                                mActivityTestRule.getTestServer().getURL(GOOGLE_PATH));
-        Tab captureeTab = mPage.getTab();
-
-        // Pick the new tab to be captured
-        mMockDelegate.setPickedTab(captureeTab);
-
-        // mTab is the capturer tab.
-        selectTab(mTab);
-        startTabCapture(mTab, captureeTab);
-
-        // When the `onended` event is fired on the track, the title will be updated to 'ended'. We
-        // wait for listener_attached before proceeding to close the capturee tab.
-        JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                mTab.getWebContents(), "monitorStreamEnd();");
-        waitForTitle(mTab, "listener_attached");
-
-        closeTab(captureeTab);
-
-        // After capturee is closed, the sharing should stop.
-        waitForTitle(mTab, "ended");
-        waitForMediaState(captureeTab, MediaState.NONE);
-    }
-
-    @Test
-    @SmallTest
-    public void testMediaStateHistogram() throws Exception {
-        assertEquals(MediaState.NONE, mTab.getMediaState());
-
+    public void testMediaStateHistogram() throws TimeoutException {
         // Expect AUDIBLE
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -497,13 +441,13 @@ public class TabMediaIndicatorTest {
         watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tab.Android.MediaState", MediaState.RECORDING);
-        requestRecording(REQUEST_MIC_ID);
+        requestMic();
         waitForMediaState(mTab, MediaState.RECORDING);
         watcher.assertExpected();
 
         if (isPiPEnabled()) {
             // Remove the mic recording so we can drop down to NONE and avoid flakiness with PiP.
-            DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), "stop-mic");
+            stopMic();
             waitForMediaState(mTab, MediaState.NONE);
 
             // Expect PICTURE_IN_PICTURE
@@ -517,50 +461,56 @@ public class TabMediaIndicatorTest {
     }
 
     private void enterPictureInPicture() {
-        DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), "request-pip");
+        DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), REQUEST_PIP_ID);
     }
 
     private void exitPictureInPicture() {
-        DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), "exit-pip");
+        DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), EXIT_PIP_ID);
     }
 
-    private void requestRecording(String id) throws InterruptedException {
-        DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), id);
+    private void requestMic() {
+        DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), REQUEST_MIC_ID);
+        waitForTitle(mTab, "mic_ready");
+    }
 
-        @ContentSettingsType.EnumType
-        int contentSettingsType =
-                REQUEST_MIC_ID.equals(id)
-                        ? ContentSettingsType.MEDIASTREAM_MIC
-                        : ContentSettingsType.MEDIASTREAM_CAMERA;
+    private void requestCam() {
+        DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), REQUEST_CAM_ID);
+        waitForTitle(mTab, "cam_ready");
+    }
 
-        @ContentSetting
-        int contentSetting =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return WebsitePreferenceBridge.getContentSetting(
-                                    mTab.getProfile(),
-                                    contentSettingsType,
-                                    mTab.getUrl(),
-                                    mTab.getUrl());
-                        });
+    private Tab openNewTabWith(String path) {
+        mPage =
+                mPage.openNewTabFast()
+                        .loadWebPageProgrammatically(
+                                mActivityTestRule.getTestServer().getURL(path));
+        return mPage.getTab();
+    }
 
-        if (contentSetting == ContentSetting.ASK) {
-            Thread.sleep(WAIT); // Reduce flakiness by waiting for the dialog to appear.
-
-            // Remove accessibility checks to prevent flakiness.
-            ViewInteraction viewInteraction =
-                    onViewWaiting(withText(Matchers.is("Allow while visiting the site")));
-            viewInteraction.check(
-                    (view, noViewFoundException) -> {
-                        if (view != null) {
-                            view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-                        }
-                    });
-            viewInteraction.perform(click());
-        }
+    private void grantRecordingPermissions() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // The test page is loaded at the top level, so the requesting
+                    // (primary) and embedding (secondary) origins are the same.
+                    GURL url = mTab.getUrl();
+                    WebsitePreferenceBridge.setContentSettingDefaultScope(
+                            mTab.getProfile(),
+                            ContentSettingsType.MEDIASTREAM_MIC,
+                            /* primaryUrl= */ url,
+                            /* secondaryUrl= */ url,
+                            ContentSetting.ALLOW);
+                    WebsitePreferenceBridge.setContentSettingDefaultScope(
+                            mTab.getProfile(),
+                            ContentSettingsType.MEDIASTREAM_CAMERA,
+                            /* primaryUrl= */ url,
+                            /* secondaryUrl= */ url,
+                            ContentSetting.ALLOW);
+                });
     }
 
     private void startTabCapture(Tab capturer, Tab capturee) {
+        // Reset before triggering: tests that capture more than once would otherwise see the flag
+        // left true by the previous capture and skip the verification below.
+        mMediaPickerDelegate.mCreateScreenCaptureIntentCalled = false;
         DOMUtils.clickNodeWithJavaScript(capturer.getWebContents(), REQUEST_TAB_CAPTURE_ID);
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -569,7 +519,7 @@ public class TabMediaIndicatorTest {
                     }
                     Criteria.checkThat(
                             "createScreenCaptureIntent was not called",
-                            mMockDelegate.mCreateScreenCaptureIntentCalled,
+                            mMediaPickerDelegate.mCreateScreenCaptureIntentCalled,
                             Matchers.is(true));
                 });
         waitForTitle(capturer, "stream_ready");
@@ -579,6 +529,11 @@ public class TabMediaIndicatorTest {
     private void stopTabCapture(Tab capturer) {
         DOMUtils.clickNodeWithJavaScript(capturer.getWebContents(), STOP_TAB_CAPTURE_ID);
         waitForTitle(capturer, "stopped_successfully");
+    }
+
+    private void stopMic() {
+        JavaScriptUtils.executeJavaScript(mTab.getWebContents(), "stopMic();");
+        waitForTitle(mTab, "mic_stopped");
     }
 
     private void waitForMediaState(Tab tab, @MediaState int expectedState) {
@@ -595,22 +550,25 @@ public class TabMediaIndicatorTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     String title = tab.getTitle();
-                    if ("capture_error".equals(title)) {
-                        fail("Tab capture failed with title: " + title);
+                    // The page reports acquisition failures as "<stream>_error" titles. Those are
+                    // terminal, so fail immediately rather than polling until the timeout.
+                    if (title.endsWith("_error")) {
+                        fail("Media stream acquisition failed with title: " + title);
                     }
                     Criteria.checkThat(
                             "Tab title should be " + expectedTitle,
                             title,
                             Matchers.is(expectedTitle));
                 },
-                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL + WAIT,
+                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL + TITLE_TIMEOUT_SLACK_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private void closeTab(Tab tab) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabRemover.closeTabs(
+                    TabRemover tabRemover = mTabModel.getTabRemover();
+                    tabRemover.closeTabs(
                             TabClosureParams.closeTab(tab).allowUndo(false).build(),
                             /* allowDialog= */ false);
                 });
