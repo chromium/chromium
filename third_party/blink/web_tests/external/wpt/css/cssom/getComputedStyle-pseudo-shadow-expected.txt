@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] getComputedStyle() returns an empty declaration for ::part(foo)
-  assert_equals: expected 0 but got 491
-[FAIL] getComputedStyle() returns an empty declaration for ::slotted(foo)
-  assert_equals: expected 0 but got 491
-Harness: the test ran to completion.
-
