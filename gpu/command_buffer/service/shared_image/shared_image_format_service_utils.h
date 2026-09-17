@@ -26,6 +26,10 @@
 #include <dxgi.h>
 #endif  // BUILDFLAG(IS_WIN)
 
+namespace gfx {
+class ColorSpace;
+}
+
 namespace skgpu::graphite {
 class TextureInfo;
 class DawnTextureInfo;
@@ -129,6 +133,10 @@ GPU_GLES2_EXPORT VkFormat ToVkFormatSinglePlanar(viz::SharedImageFormat format);
 // multiplanar with per-plane sampling.
 GPU_GLES2_EXPORT VkFormat ToVkFormat(viz::SharedImageFormat format,
                                      int plane_index);
+// Returns supported vulkan usage flags based on `format`. `is_yuv_plane`
+// indicates if the texture corresponds to a plane of a multi-planar image
+GPU_GLES2_EXPORT VkImageUsageFlags
+SupportedVkImageUsage(viz::SharedImageFormat format, bool is_yuv_plane);
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -194,6 +202,7 @@ GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphiteBackendTextureInfo(
 GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
+    const gfx::ColorSpace& color_space,
     std::optional<VulkanYCbCrInfo> ycbcr_info,
     int plane_index = 0,
     bool mipmapped = false);
