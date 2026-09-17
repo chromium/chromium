@@ -59,7 +59,13 @@ struct ASH_PUBLIC_EXPORT TrackableFeatureInfo {
   constexpr TrackableFeatureInfo(TrackableFeature param_feature,
                                  const char* param_name,
                                  const char* param_histogram_clamshell,
-                                 const char* param_histogram_tablet);
+                                 const char* param_histogram_tablet)
+      : feature(param_feature),
+        name(param_name),
+        histogram(nullptr),
+        histogram_clamshell(param_histogram_clamshell),
+        histogram_tablet(param_histogram_tablet),
+        split_by_tablet_mode(true) {}
 
   // This ctor should be used when the metric data collected from this feature
   // should NOT be separated by tablet mode.
@@ -67,11 +73,17 @@ struct ASH_PUBLIC_EXPORT TrackableFeatureInfo {
   // back to tablet-mode-split.
   constexpr TrackableFeatureInfo(TrackableFeature param_feature,
                                  const char* param_name,
-                                 const char* param_histogram);
+                                 const char* param_histogram)
+      : feature(param_feature),
+        name(param_name),
+        histogram(param_histogram),
+        histogram_clamshell(nullptr),
+        histogram_tablet(nullptr),
+        split_by_tablet_mode(false) {}
 
-  TrackableFeatureInfo(const TrackableFeatureInfo&) = delete;
+  TrackableFeatureInfo(const TrackableFeatureInfo&) = default;
   TrackableFeatureInfo& operator=(const TrackableFeatureInfo&) = delete;
-  ~TrackableFeatureInfo();
+  ~TrackableFeatureInfo() = default;
 
   // A trackable feature's enum type.
   const TrackableFeature feature;

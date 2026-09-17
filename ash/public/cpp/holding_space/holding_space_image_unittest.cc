@@ -87,11 +87,10 @@ class ImageGenerator {
 
   size_t NumberOfPendingRequests() const { return pending_requests_.size(); }
 
-  const base::FilePath& GetPendingRequestFilePath(size_t index) const {
+  base::FilePath GetPendingRequestFilePath(size_t index) const {
     if (index >= pending_requests_.size()) {
       ADD_FAILURE() << "Invalid index " << index;
-      static base::FilePath kEmptyPath;
-      return kEmptyPath;
+      return base::FilePath();
     }
     return pending_requests_[index]->file_path;
   }

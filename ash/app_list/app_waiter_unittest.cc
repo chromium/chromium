@@ -18,13 +18,20 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
 constexpr std::string_view kTestAppId = "test-app";
-const AccountId kTestAccountId = AccountId::FromUserEmail("test@example.com");
+
+class AppWaiterTest : public testing::Test {
+ protected:
+  const AccountId test_account_id_ =
+      AccountId::FromUserEmail("test@example.com");
+};
+
 }  // namespace
 
-TEST(AppWaiterTest, CacheLoadedLater) {
+TEST_F(AppWaiterTest, CacheLoadedLater) {
   base::test::TestFuture<std::string> future;
-  ash::AppWaiter app_waiter(kTestAccountId, future.GetCallback(), kTestAppId);
+  ash::AppWaiter app_waiter(test_account_id_, future.GetCallback(), kTestAppId);
 
   EXPECT_FALSE(future.IsReady());
 
@@ -42,18 +49,18 @@ TEST(AppWaiterTest, CacheLoadedLater) {
 
   EXPECT_FALSE(future.IsReady());
 
-  apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(kTestAccountId,
+  apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(test_account_id_,
                                                            &cache);
 
   EXPECT_EQ(future.Get(), "Test App");
 }
 
-TEST(AppWaiterTest, AppLoadedWithName) {
+TEST_F(AppWaiterTest, AppLoadedWithName) {
   base::test::TestFuture<std::string> future;
   apps::AppRegistryCache cache;
-  apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(kTestAccountId,
+  apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(test_account_id_,
                                                            &cache);
-  ash::AppWaiter app_waiter(kTestAccountId, future.GetCallback(), kTestAppId);
+  ash::AppWaiter app_waiter(test_account_id_, future.GetCallback(), kTestAppId);
 
   std::unique_ptr<apps::App> app = std::make_unique<apps::App>(
       apps::AppType::kSystemWeb, std::string(kTestAppId));
@@ -68,12 +75,12 @@ TEST(AppWaiterTest, AppLoadedWithName) {
   EXPECT_EQ(future.Get(), "Test App");
 }
 
-TEST(AppWaiterTest, AppLoadedFirstNameLoadedLater) {
+TEST_F(AppWaiterTest, AppLoadedFirstNameLoadedLater) {
   base::test::TestFuture<std::string> future;
   apps::AppRegistryCache cache;
-  apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(kTestAccountId,
+  apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(test_account_id_,
                                                            &cache);
-  ash::AppWaiter app_waiter(kTestAccountId, future.GetCallback(), kTestAppId);
+  ash::AppWaiter app_waiter(test_account_id_, future.GetCallback(), kTestAppId);
 
   {
     std::unique_ptr<apps::App> app = std::make_unique<apps::App>(
@@ -103,10 +110,10 @@ TEST(AppWaiterTest, AppLoadedFirstNameLoadedLater) {
   EXPECT_EQ(future.Get(), "Test App");
 }
 
-TEST(AppWaiterTest, AppAlreadyLoaded) {
+TEST_F(AppWaiterTest, AppAlreadyLoaded) {
   base::test::TestFuture<std::string> future;
   apps::AppRegistryCache cache;
-  apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(kTestAccountId,
+  apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(test_account_id_,
                                                            &cache);
 
   std::unique_ptr<apps::App> app = std::make_unique<apps::App>(
@@ -119,6 +126,6 @@ TEST(AppWaiterTest, AppAlreadyLoaded) {
   cache.OnAppsForTesting(std::move(apps), apps::AppType::kSystemWeb,
                          /*should_notify_initialized=*/false);
 
-  ash::AppWaiter app_waiter(kTestAccountId, future.GetCallback(), kTestAppId);
+  ash::AppWaiter app_waiter(test_account_id_, future.GetCallback(), kTestAppId);
   EXPECT_EQ(future.Get(), "Test App");
 }

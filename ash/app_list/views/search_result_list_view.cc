@@ -231,19 +231,17 @@ SearchResultView* SearchResultListView::GetResultViewAt(size_t index) {
 }
 std::vector<SearchResultListView::SearchResultListType>
 SearchResultListView::GetAllListTypesForCategoricalSearch() {
-  static const std::vector<SearchResultListType> categorical_search_types = {
-      SearchResultListType::kAnswerCard,
-      SearchResultListType::kBestMatch,
-      SearchResultListType::kApps,
-      SearchResultListType::kAppShortcuts,
-      SearchResultListType::kWeb,
-      SearchResultListType::kFiles,
-      SearchResultListType::kSettings,
-      SearchResultListType::kHelp,
-      SearchResultListType::kPlayStore,
-      SearchResultListType::kSearchAndAssistant,
-      SearchResultListType::kGames};
-  return categorical_search_types;
+  return {SearchResultListType::kAnswerCard,
+          SearchResultListType::kBestMatch,
+          SearchResultListType::kApps,
+          SearchResultListType::kAppShortcuts,
+          SearchResultListType::kWeb,
+          SearchResultListType::kFiles,
+          SearchResultListType::kSettings,
+          SearchResultListType::kHelp,
+          SearchResultListType::kPlayStore,
+          SearchResultListType::kSearchAndAssistant,
+          SearchResultListType::kGames};
 }
 
 void SearchResultListView::AppendShownResultMetadata(

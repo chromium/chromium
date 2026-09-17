@@ -11,46 +11,20 @@ namespace ash::feature_discovery {
 namespace {
 
 // The histogram that records the mock feature's discovery duration.
-const char kMockFeatureHistogram[] = "FeatureDiscoveryTestMockFeature";
+constexpr char kMockFeatureHistogram[] = "FeatureDiscoveryTestMockFeature";
 
 // The mock histograms that report metrics data under clamshell/tablet.
-const char kMockFeatureClamshellHistogram[] =
+constexpr char kMockFeatureClamshellHistogram[] =
     "FeatureDiscoveryTestMockFeature.clamshell";
-const char kMockFeatureTabletHistogram[] =
+constexpr char kMockFeatureTabletHistogram[] =
     "FeatureDiscoveryTestMockFeature.tablet";
 
 // The mock features' names.
-const char kMockFeatureName[] = "kMockFeature";
-const char kModeSeparateMockFeatureName[] = "kMockFeatureSeparate";
+constexpr char kMockFeatureName[] = "kMockFeature";
+constexpr char kModeSeparateMockFeatureName[] = "kMockFeatureSeparate";
 
 }  // namespace
 
-// TrackableFeatureInfo --------------------------------------------------------
-
-constexpr TrackableFeatureInfo::TrackableFeatureInfo(
-    TrackableFeature param_feature,
-    const char* param_feature_name,
-    const char* param_histogram_clamshell,
-    const char* param_histogram_tablet)
-    : feature(param_feature),
-      name(param_feature_name),
-      histogram(nullptr),
-      histogram_clamshell(param_histogram_clamshell),
-      histogram_tablet(param_histogram_tablet),
-      split_by_tablet_mode(true) {}
-
-constexpr TrackableFeatureInfo::TrackableFeatureInfo(
-    TrackableFeature param_feature,
-    const char* param_feature_name,
-    const char* param_histogram)
-    : feature(param_feature),
-      name(param_feature_name),
-      histogram(param_histogram),
-      histogram_clamshell(nullptr),
-      histogram_tablet(nullptr),
-      split_by_tablet_mode(false) {}
-
-TrackableFeatureInfo::~TrackableFeatureInfo() = default;
 
 // kTrackableFeatureArray ------------------------------------------------------
 
