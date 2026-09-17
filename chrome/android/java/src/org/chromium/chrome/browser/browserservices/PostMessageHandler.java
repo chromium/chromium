@@ -118,11 +118,7 @@ public class PostMessageHandler implements OriginVerificationListener {
         // Can't reset with the same web contents twice.
         if (webContents.equals(mWebContents)) return;
         if (mWebContents != null) {
-            closeChannel();
-            if (mWebContentsObserver != null) {
-                mWebContentsObserver.observe(null);
-                mWebContentsObserver = null;
-            }
+            closeChannelAndForgetWebContents();
         }
         mWebContents = webContents;
         mWebContentsObserver =
