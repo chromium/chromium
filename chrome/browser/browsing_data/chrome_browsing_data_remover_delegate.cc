@@ -671,16 +671,19 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         delegate->ClearPersistedTokens();
     }
 
-    if (auto* media_device_salt_service =
-            MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
-                profile_)) {
-      content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher;
-      if (!filter_builder->MatchesAllOriginsAndDomains()) {
-        storage_key_matcher = filter_builder->BuildStorageKeyFilter();
+    if (!filter_builder->PartitionedCookiesOnly()) {
+      if (auto* media_device_salt_service =
+              MediaDeviceSaltServiceFactory::GetInstance()
+                  ->GetForBrowserContext(profile_)) {
+        content::StoragePartition::StorageKeyMatcherFunction
+            storage_key_matcher;
+        if (!filter_builder->MatchesAllOriginsAndDomains()) {
+          storage_key_matcher = filter_builder->BuildStorageKeyFilter();
+        }
+        media_device_salt_service->DeleteSalts(
+            delete_begin_, delete_end_, std::move(storage_key_matcher),
+            CreateTaskCompletionClosure(TracingDataType::kMediaDeviceSalts));
       }
-      media_device_salt_service->DeleteSalts(
-          delete_begin_, delete_end_, std::move(storage_key_matcher),
-          CreateTaskCompletionClosure(TracingDataType::kMediaDeviceSalts));
     }
 
 #if !BUILDFLAG(IS_ANDROID)

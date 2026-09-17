@@ -441,6 +441,83 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, MediaDeviceIdSalt) {
   EXPECT_NE(original_salt, new_salt);
 }
 
+// Test that the salt for media device IDs is not reset when only partitioned
+// cookies are cleared.
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
+                       MediaDeviceIdSalt_PartitionedCookiesOnly) {
+  GURL url = embedded_test_server()->GetURL(kExampleHost, "/simple_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
+
+  content::RenderFrameHost* frame_host = GetBrowser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
+  url::Origin origin = frame_host->GetLastCommittedOrigin();
+  net::SiteForCookies site_for_cookies =
+      net::SiteForCookies::FromOrigin(origin);
+  blink::StorageKey storage_key = blink::StorageKey::CreateFirstParty(origin);
+
+  base::test::TestFuture<bool, const std::string&> future;
+  content::GetContentClientForTesting()->browser()->GetMediaDeviceIDSalt(
+      frame_host, site_for_cookies, storage_key, future.GetCallback());
+  std::string original_salt = future.Get<1>();
+
+  std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder =
+      content::BrowsingDataFilterBuilder::Create(
+          content::BrowsingDataFilterBuilder::Mode::kDelete);
+  filter_builder->AddRegisterableDomain(kExampleHost);
+  filter_builder->SetCookiePartitionKeyCollection(
+      net::CookiePartitionKeyCollection(
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL("https://other-site.com"))));
+  filter_builder->SetPartitionedCookiesOnly(true);
+
+  RemoveWithFilterAndWait(content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+                          std::move(filter_builder));
+
+  future.Clear();
+  content::GetContentClientForTesting()->browser()->GetMediaDeviceIDSalt(
+      frame_host, site_for_cookies, storage_key, future.GetCallback());
+  std::string new_salt = future.Get<1>();
+
+  EXPECT_EQ(original_salt, new_salt);
+}
+
+// Test that Clear-Site-Data for partitioned cookies does not reset the
+// first-party salt for media device IDs.
+IN_PROC_BROWSER_TEST_F(
+    BrowsingDataRemoverBrowserTest,
+    ClearSiteDataPartitionedCookiesDoesNotResetMediaDeviceIdSalt) {
+  GURL url = embedded_test_server()->GetURL(kExampleHost, "/simple_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
+
+  content::RenderFrameHost* frame_host = GetBrowser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
+  url::Origin origin = frame_host->GetLastCommittedOrigin();
+  net::SiteForCookies site_for_cookies =
+      net::SiteForCookies::FromOrigin(origin);
+  blink::StorageKey storage_key = blink::StorageKey::CreateFirstParty(origin);
+
+  base::test::TestFuture<bool, const std::string&> future;
+  content::GetContentClientForTesting()->browser()->GetMediaDeviceIDSalt(
+      frame_host, site_for_cookies, storage_key, future.GetCallback());
+  std::string original_salt = future.Get<1>();
+
+  net::CookiePartitionKey partition_key =
+      net::CookiePartitionKey::FromURLForTesting(GURL("https://other.example"));
+  ClearSiteDataAndWait(origin, partition_key, /*storage_key=*/std::nullopt,
+                       /*storage_buckets_to_remove=*/{});
+
+  future.Clear();
+  content::GetContentClientForTesting()->browser()->GetMediaDeviceIDSalt(
+      frame_host, site_for_cookies, storage_key, future.GetCallback());
+  std::string new_salt = future.Get<1>();
+
+  EXPECT_EQ(original_salt, new_salt);
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Test that Sync is not paused when cookies are cleared.
 IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest, SyncToken) {
