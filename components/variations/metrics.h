@@ -123,7 +123,9 @@ enum class PrepareRuntimeMutableChangesResult {
   kControllingTrialHasOtherFeatures = 11,
   kTrialNameCollision = 12,
   kControllingTrialNotFound = 13,
-  kPrepareFeatureStateUpdateFailed = 14,
+  // Deprecated: preparing the feature state update is now CHECK()ed, so this
+  // can no longer be recorded.
+  // kPrepareFeatureStateUpdateFailed = 14,
   kRuntimeExperimentHasGoogleWebId = 15,
   kOverriddenTrialHasGoogleWebId = 16,
   kRuntimeExperimentHasParams = 17,

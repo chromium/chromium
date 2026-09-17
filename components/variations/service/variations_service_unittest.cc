@@ -2978,6 +2978,66 @@ TEST_F(VariationsServiceTest,
   base::RuntimeFieldTrialOverrides::GetInstance()->RemoveObserver(&observer);
 }
 
+// Verifies that `base::RuntimeFieldTrialOverrides::Observer`s, which are
+// notified synchronously from within the mutation phase, observe the *new*
+// feature state (i.e. the feature states are updated before the field trial
+// override is applied).
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_ObserverSeesUpdatedFeatureState) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+
+  class TestObserver : public base::RuntimeFieldTrialOverrides::Observer {
+   public:
+    void OnRuntimeFieldTrialOverride(
+        const base::RuntimeFieldTrialOverrides::RuntimeOverrideInfo&
+            override_info,
+        std::string_view previous_override_trial_name) override {
+      notified = true;
+      feature_enabled = base::FeatureList::IsEnabled(kTestRuntimeFeatureA);
+      associated_trial_name =
+          base::FeatureList::GetInstance()
+              ->GetAssociatedRuntimeFieldTrialOverrideByFeatureName(
+                  kTestRuntimeFeatureA.name);
+    }
+
+    bool notified = false;
+    // The state observed from within `OnRuntimeFieldTrialOverride()`.
+    bool feature_enabled = true;
+    std::string associated_trial_name;
+  };
+
+  TestObserver observer;
+  base::RuntimeFieldTrialOverrides::GetInstance()->AddObserver(&observer);
+
+  VariationsSeed seed = CreateTestRuntimeMutableSeed(
+      "Study1", "Group1", {}, {kTestRuntimeFeatureA.name});
+  service.SimulateAndApplyRuntimeMutableChanges(seed);
+
+  EXPECT_TRUE(observer.notified);
+  // The feature state must already reflect the killswitch when the observer is
+  // notified.
+  EXPECT_FALSE(observer.feature_enabled);
+  EXPECT_EQ(observer.associated_trial_name, "Study1");
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+
+  base::RuntimeFieldTrialOverrides::GetInstance()->RemoveObserver(&observer);
+}
+
 // Verifies that across multiple studies, all pre-mutation callbacks are run
 // before any mutations (FieldTrial override and feature state update), and all
 // mutations are applied before any post-mutation callbacks are run.

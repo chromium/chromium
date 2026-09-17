@@ -276,8 +276,10 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Controlling Trial Not Found">
     The controlling trial could not be found.
   </int>
-  <int value="14" label="Prepare Feature State Update Failed">
-    Preparing the feature state update failed.
+  <int value="14"
+      label="Prepare Feature State Update Failed (Deprecated 09/2026)">
+    Preparing the feature state update failed. No longer recorded: this is now
+    CHECK()ed instead.
   </int>
   <int value="15" label="Runtime Experiment Has Google Web ID">
     The runtime mutable experiment has a Google web experiment ID.

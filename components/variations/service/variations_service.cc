@@ -957,15 +957,22 @@ void VariationsService::SimulateAndApplyRuntimeMutableChanges(
   auto* runtime_field_trial_overrides =
       base::RuntimeFieldTrialOverrides::GetInstance();
   for (auto& changes : prepared_changes) {
-    bool trial_override_result =
-        runtime_field_trial_overrides->ApplyRuntimeOverride(
-            base::PassKey<VariationsService>(), changes.study_name,
-            changes.group_name, changes.trial_to_override,
-            changes.previous_override_to_replace);
-    DCHECK(trial_override_result);
+    // Update the feature states before applying the field trial override, so
+    // that `RuntimeFieldTrialOverrides::Observer`s, which are notified
+    // synchronously by `ApplyRuntimeOverride()`, observe the new feature state
+    // (e.g. via `FeatureList::IsEnabled()`).
     for (auto& update : changes.feature_updates) {
       update.UpdateState();
     }
+    // This must succeed: the feature states above have already been updated to
+    // point at `changes.study_name`, so a failure here would permanently
+    // desynchronize `FeatureList` and `RuntimeFieldTrialOverrides`. Crashing is
+    // preferable to running the rest of the session in a corrupted state, and
+    // gradual seed rollout will catch any seed-triggered crash.
+    CHECK(runtime_field_trial_overrides->ApplyRuntimeOverride(
+        base::PassKey<VariationsService>(), changes.study_name,
+        changes.group_name, changes.trial_to_override,
+        changes.previous_override_to_replace));
     // TODO(crbug.com/482450632): Clean up overridden trial's variation IDs, and
     // register any new ones from the new trial.
   }
@@ -1461,7 +1468,7 @@ VariationsService::PrepareRuntimeMutableChanges(
   const base::FieldTrial* trial_to_override;
   std::string previous_override_to_replace;
   if (controlling_trial_is_runtime_override) {
-    DCHECK(!controlling_trial_name.empty());
+    CHECK(!controlling_trial_name.empty());
     const auto& runtime_override_info =
         runtime_field_trial_overrides->GetRuntimeOverride(
             controlling_trial_name);
@@ -1471,7 +1478,7 @@ VariationsService::PrepareRuntimeMutableChanges(
     }
     trial_to_override = runtime_override_info->overridden_trial.get();
     previous_override_to_replace = runtime_override_info->trial_name;
-    DCHECK_EQ(previous_override_to_replace, controlling_trial_name);
+    CHECK_EQ(previous_override_to_replace, controlling_trial_name);
   } else if (!controlling_trial_name.empty()) {
     trial_to_override = base::FieldTrialList::Find(controlling_trial_name);
     if (!trial_to_override) {
@@ -1508,11 +1515,7 @@ VariationsService::PrepareRuntimeMutableChanges(
     auto update = feature_list->PrepareRuntimeMutableFeatureStateUpdate(
         base::PassKey<VariationsService>(), study.name(), group_name,
         feature_name, base::FeatureList::OVERRIDE_DISABLE_FEATURE);
-    DCHECK(update.has_value());
-    if (!update.has_value()) {
-      // This should never happen.
-      return base::unexpected(kPrepareFeatureStateUpdateFailed);
-    }
+    CHECK(update.has_value());
     changes.feature_updates.push_back(std::move(*update));
   }
 
