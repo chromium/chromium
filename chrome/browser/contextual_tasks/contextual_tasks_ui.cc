@@ -460,6 +460,12 @@ content::WebUIDataSource* ContextualTasksUI::RegisterWebUIDataSource(
       contextual_tasks::ContextualTasksUIBase::RegisterWebUIDataSource(profile);
   source->AddLocalizedStrings(GetContextualTasksLoadTimeData(profile));
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Exposes shared components under "shared/*" (e.g.,
+  // shared/permission_chip.js)
+  source->AddResourcePaths(kWebuiToolbarSharedResources);
+#endif
+
   return source;
 }
 
