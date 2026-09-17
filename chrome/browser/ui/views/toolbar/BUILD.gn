@@ -11,7 +11,6 @@ source_set("toolbar") {
   public = [
     "ai_overlay_toolbar_button.h",
     "app_menu.h",
-    "app_menu_control.h",
     "avatar_toolbar_button_interface.h",
     "back_forward_button.h",
     "browser_app_menu_button.h",
@@ -34,8 +33,6 @@ source_set("toolbar") {
     "toolbar_action_hover_card_bubble_view.h",
     "toolbar_action_hover_card_controller.h",
     "toolbar_action_view.h",
-    "toolbar_button.h",
-    "toolbar_button_menu_highlighter.h",
     "toolbar_chip_button.h",
     "toolbar_controller.h",
     "toolbar_divider.h",
@@ -61,6 +58,8 @@ source_set("toolbar") {
   ]
 
   public_deps = [
+    ":app_menu_control",
+    ":toolbar_button",
     "//base",
     "//build:buildflag_header_h",
     "//chrome/browser:command_updater_impl",
@@ -118,6 +117,46 @@ source_set("toolbar") {
   if (is_chromeos) {
     public_deps += [ "//chromeos/ash/experiences/arc/intent_helper" ]
   }
+}
+
+# Interface for controlling the app menu, which may be implemented by a Views
+# button or a WebUI-based control.
+source_set("app_menu_control") {
+  public = [ "app_menu_control.h" ]
+
+  public_deps = [
+    "//chrome/browser/ui/toolbar",
+    "//ui/views",
+  ]
+}
+
+# The ToolbarButton base class and the interfaces it implements. This is a leaf
+# so that buttons defined outside this directory (e.g.
+# //chrome/browser/ui/views/frame:app_menu_button) can derive from them without
+# depending on :toolbar, which would be circular because :toolbar's own
+# browser_app_menu_button.h derives from AppMenuButton.
+source_set("toolbar_button") {
+  public = [
+    "toolbar_button.h",
+    "toolbar_button_menu_highlighter.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/lifetime",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/views",
+    "//components/user_education/common",
+    "//ui/base",
+    "//ui/base:features",
+    "//ui/base/interaction",
+    "//ui/base/metadata",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx",
+    "//ui/gfx/animation",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
 }
 
 source_set("impl") {
