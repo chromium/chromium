@@ -600,7 +600,9 @@ function formatValue(data, property) {
 function addFavicon(row, data) {
   const favicon = document.createElement('img');
   if (data['faviconUrl']) {
-    favicon.src = data['faviconUrl'];
+    const internalURL = new URL('chrome://favicon2/');
+    internalURL.searchParams.set('iconUrl', data['faviconUrl']);
+    favicon.src = internalURL;
   }
   const propertiesBox = row.querySelector('.properties-box');
   propertiesBox.insertBefore(favicon, propertiesBox.firstChild);
