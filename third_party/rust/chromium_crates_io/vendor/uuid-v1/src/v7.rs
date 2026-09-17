@@ -33,8 +33,9 @@ impl Uuid {
     /// # Counter treatment
     ///
     /// This method accepts a [`Timestamp`] which may include a counter value.
-    /// Only up to 74 bits of the counter value will be used when constructing
-    /// the UUID. Any unused counter bits will be filled with random data.
+    /// The 74 most significant bits of the counter value are retained when
+    /// constructing the UUID, and the rest is filled with random data. Avoid
+    /// using a counter wider than 74 bits.
     ///
     /// # Examples
     ///
@@ -74,51 +75,39 @@ impl Uuid {
             .saturating_mul(1000)
             .saturating_add(nanos as u64 / 1_000_000);
 
-        let (counter, counter_bits) = ts.counter();
+        let (mut counter, counter_bits) = ts.counter();
 
-        // If the counter intersects the variant field then shift around it.
-        // This ensures that any bits set in the counter that would intersect
-        // the variant are still preserved
-        let shift_counter_over_variant = |mut counter: u128, mut counter_bits: u32| {
-            let mask = u128::MAX << (cmp::min(128, counter_bits) - 12);
+        // `Builder::from_unix_timestamp_millis` takes the top 80 bits of this value,
+        // so the counter is placed directly below the version nibble and shifted
+        // around the variant:
+        //
+        // bit 127                                                       bit 48
+        // | ver (4) |    rand_a (12)    | var (2) |       rand_b (62)        | ...
+        //           |<- counter <= 12 ->|
+        //           |<---- counter > 12: shifted by 2 over the variant ---->|
+        const RAND_A_BITS: u32 = 12;
+        const PAYLOAD_BITS: u32 = RAND_A_BITS + 62;
+
+        // Retain the most significant bits of a counter wider than the payload
+        let mut counter_bits = cmp::min(counter_bits as u32, 128);
+        if counter_bits > PAYLOAD_BITS {
+            counter >>= counter_bits - PAYLOAD_BITS;
+            counter_bits = PAYLOAD_BITS;
+        }
+
+        // Shift the counter around the variant field
+        if counter_bits > RAND_A_BITS {
+            let mask = u128::MAX << (counter_bits - RAND_A_BITS);
             counter = (counter & !mask) | ((counter & mask) << 2);
             counter_bits += 2;
+        }
 
-            (counter, counter_bits)
-        };
+        let counter_and_random = if counter_bits == 0 {
+            rng::u128()
+        } else {
+            let shift = 124 - counter_bits;
 
-        // Mask `counter_bits` of the `counter` into `dst`
-        let mask_counter_into_random = |mut dst: u128, counter: u128, counter_bits: u32| {
-            dst &= u128::MAX >> counter_bits;
-            dst |= counter << (128 - counter_bits);
-
-            dst
-        };
-
-        let counter_and_random = match counter_bits {
-            // The counter doesn't contribute any bits
-            0 => rng::u128(),
-            // The counter doesn't intersect the variant field
-            // It needs to be merged with random data
-            ..12 => {
-                let counter_bits = counter_bits as u32;
-
-                mask_counter_into_random(rng::u128(), counter, counter_bits)
-            }
-            // `rand_a` (12 bits) + `rand_b` (62 bits) + `var` (2 bits)
-            // The counter needs to be shifted around the variant and merged with random data
-            ..74 => {
-                let (counter, counter_bits) =
-                    shift_counter_over_variant(counter, counter_bits as u32);
-
-                mask_counter_into_random(rng::u128(), counter, counter_bits)
-            }
-            // The counter overrides all bits
-            74.. => {
-                let (counter, _) = shift_counter_over_variant(counter, counter_bits as u32);
-
-                counter
-            }
+            (rng::u128() & (u128::MAX >> (128 - shift))) | (counter << shift)
         };
 
         Builder::from_unix_timestamp_millis(
@@ -276,6 +265,74 @@ mod tests {
                     "{:>032x} = {:>032x} with counter {counter:x} should be {eq:?}",
                     a.as_u128(),
                     b.as_u128()
+                );
+            }
+        }
+    }
+
+    #[test]
+    #[cfg_attr(
+        all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")),
+        wasm_bindgen_test
+    )]
+    fn test_42bit_counter_is_fully_preserved() {
+        fn rand_a(uuid: &Uuid) -> u16 {
+            let b = uuid.as_bytes();
+
+            (((b[6] & 0x0f) as u16) << 8) | b[7] as u16
+        }
+
+        // `rand_a` and the top 30 bits of `rand_b`, with the variant masked out
+        fn counter_bits(uuid: &Uuid) -> (u16, [u8; 4]) {
+            let b = uuid.as_bytes();
+
+            (rand_a(uuid), [b[8] & 0x3f, b[9], b[10], b[11]])
+        }
+
+        for bit in 0..42 {
+            let counter = 1u128 << bit;
+
+            let with = Uuid::new_v7(Timestamp::from_unix_time(0, 0, counter, 42));
+            let without = Uuid::new_v7(Timestamp::from_unix_time(0, 0, 0, 42));
+
+            assert_ne!(
+                counter_bits(&with),
+                counter_bits(&without),
+                "counter bit {bit} did not reach the UUID"
+            );
+        }
+
+        let all_ones = Uuid::new_v7(Timestamp::from_unix_time(0, 0, (1 << 42) - 1, 42));
+        assert_eq!(0x0fff, rand_a(&all_ones));
+        assert_eq!(Variant::RFC4122, all_ones.get_variant());
+
+        let before = Uuid::new_v7(Timestamp::from_unix_time(1, 0, 0x3f_ffff_ffff, 42));
+        let after = Uuid::new_v7(Timestamp::from_unix_time(1, 0, 0x40_0000_0000, 42));
+        assert!(before < after, "{before} should sort before {after}");
+    }
+
+    #[test]
+    #[cfg_attr(
+        all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")),
+        wasm_bindgen_test
+    )]
+    fn test_additional_precision_preserves_sorting() {
+        for start in (0..1_000_000).step_by(50_000) {
+            for delta in [50_000u32, 100_000, 200_000] {
+                if start + delta >= 1_000_000 {
+                    continue;
+                }
+
+                let context = crate::ContextV7::new().with_additional_precision();
+
+                let earlier = Uuid::new_v7(Timestamp::from_unix(&context, 1_700_000_000, start));
+                let later =
+                    Uuid::new_v7(Timestamp::from_unix(&context, 1_700_000_000, start + delta));
+
+                assert!(
+                    earlier < later,
+                    "{start}ns gave {earlier} and {}ns gave {later}",
+                    start + delta
                 );
             }
         }

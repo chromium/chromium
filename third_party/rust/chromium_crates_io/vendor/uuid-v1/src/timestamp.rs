@@ -221,10 +221,19 @@ impl TryFrom<std::time::SystemTime> for Timestamp {
 
 #[cfg(feature = "std")]
 impl From<Timestamp> for std::time::SystemTime {
+    /// Perform the conversion.
+    ///
+    /// If the conversion would fail, an undefined `SystemTime` will be returned instead.
+    /// This can happen if the `Timestamp` would overflow the max value allowed by `SystemTime` on the target platform.
+    /// Use `TryFrom` to catch conversion failures and handle them explicitly.
     fn from(ts: Timestamp) -> Self {
         let (seconds, subsec_nanos) = ts.to_unix();
 
-        Self::UNIX_EPOCH + std::time::Duration::new(seconds, subsec_nanos)
+        // NOTE: The actual value on overflow is undefined and may change
+        // See: https://github.com/rust-lang/rust/issues/151199
+        Self::UNIX_EPOCH
+            .checked_add(std::time::Duration::new(seconds, subsec_nanos))
+            .unwrap_or(std::time::SystemTime::UNIX_EPOCH)
     }
 }
 
@@ -1352,6 +1361,14 @@ mod tests {
 
             Timestamp::try_from(before_epoch)
                 .expect_err("Timestamp should not be created from before epoch");
+        }
+
+        #[test]
+        fn from_system_time_max() {
+            let ts = Timestamp::from_unix_time(u64::MAX, 999_999_999, 0, 0);
+
+            // Just make sure we don't panic
+            let _: SystemTime = ts.into();
         }
     }
 }
