@@ -30146,6 +30146,711 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PrivateInsights.FcpEvent.Checkin" not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the Checkin event during private
+    insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.CheckinClientInterrupted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the CheckinClientInterrupted event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.CheckinFinished"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the CheckinFinished event during
+    private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.CheckinFinishedV2"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the CheckinFinishedV2 event during
+    private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.CheckinInvalidPayload"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the CheckinInvalidPayload event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.CheckinIoError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the CheckinIoError event during
+    private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.CheckinPlanUriReceived"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the CheckinPlanUriReceived event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.CheckinServerAborted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the CheckinServerAborted event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.ComputationCompleted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the ComputationCompleted event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.ComputationExampleIteratorError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    ComputationExampleIteratorError event during private insights federated
+    computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.ComputationInsufficientData"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the ComputationInsufficientData
+    event during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.ComputationInterrupted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the ComputationInterrupted event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.ComputationInvalidArgument"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the ComputationInvalidArgument
+    event during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.ComputationIOError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the ComputationIOError event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.ComputationStarted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the ComputationStarted event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.ComputationTensorflowError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the ComputationTensorflowError
+    event during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.EligibilityEvalCheckin"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the EligibilityEvalCheckin event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.EligibilityEvalCheckinClientInterrupted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    EligibilityEvalCheckinClientInterrupted event during private insights
+    federated computation.
+  </description>
+</action>
+
+<action
+    name="PrivateInsights.FcpEvent.EligibilityEvalCheckinErrorInvalidPayload"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    EligibilityEvalCheckinErrorInvalidPayload event during private insights
+    federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.EligibilityEvalCheckinIoError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the EligibilityEvalCheckinIoError
+    event during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.EligibilityEvalCheckinServerAborted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    EligibilityEvalCheckinServerAborted event during private insights federated
+    computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.EligibilityEvalComputationCompleted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    EligibilityEvalComputationCompleted event during private insights federated
+    computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.EligibilityEvalComputationErrorNonfatal"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    EligibilityEvalComputationErrorNonfatal event during private insights
+    federated computation.
+  </description>
+</action>
+
+<action
+    name="PrivateInsights.FcpEvent.EligibilityEvalComputationExampleIteratorError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    EligibilityEvalComputationExampleIteratorError event during private insights
+    federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.EligibilityEvalComputationInterrupted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    EligibilityEvalComputationInterrupted event during private insights
+    federated computation.
+  </description>
+</action>
+
+<action
+    name="PrivateInsights.FcpEvent.EligibilityEvalComputationInvalidArgument"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    EligibilityEvalComputationInvalidArgument event during private insights
+    federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.EligibilityEvalComputationIOError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    EligibilityEvalComputationIOError event during private insights federated
+    computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.EligibilityEvalComputationStarted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    EligibilityEvalComputationStarted event during private insights federated
+    computation.
+  </description>
+</action>
+
+<action
+    name="PrivateInsights.FcpEvent.EligibilityEvalComputationTensorflowError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    EligibilityEvalComputationTensorflowError event during private insights
+    federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.EligibilityEvalNotConfigured"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the EligibilityEvalNotConfigured
+    event during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.EligibilityEvalPlanReceived"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the EligibilityEvalPlanReceived
+    event during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.EligibilityEvalPlanUriReceived"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the EligibilityEvalPlanUriReceived
+    event during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.EligibilityEvalRejected"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the EligibilityEvalRejected event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.ExampleSelectorError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the ExampleSelectorError event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.FailureUploadClientInterrupted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the FailureUploadClientInterrupted
+    event during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.FailureUploadCompleted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the FailureUploadCompleted event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.FailureUploadIOError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the FailureUploadIOError event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.FailureUploadServerAborted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the FailureUploadServerAborted
+    event during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.FailureUploadStarted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the FailureUploadStarted event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.FatalInitializationError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the FatalInitializationError event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.Interruption" not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the Interruption event during
+    private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.IoError" not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the IoError event during private
+    insights federated computation.
+  </description>
+</action>
+
+<action
+    name="PrivateInsights.FcpEvent.MultipleTaskAssignmentsClientInterrupted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    MultipleTaskAssignmentsClientInterrupted event during private insights
+    federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.MultipleTaskAssignmentsCompleted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    MultipleTaskAssignmentsCompleted event during private insights federated
+    computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.MultipleTaskAssignmentsInvalidPayload"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    MultipleTaskAssignmentsInvalidPayload event during private insights
+    federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.MultipleTaskAssignmentsIOError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the MultipleTaskAssignmentsIOError
+    event during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.MultipleTaskAssignmentsPartialCompleted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    MultipleTaskAssignmentsPartialCompleted event during private insights
+    federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.MultipleTaskAssignmentsPayloadIOError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    MultipleTaskAssignmentsPayloadIOError event during private insights
+    federated computation.
+  </description>
+</action>
+
+<action
+    name="PrivateInsights.FcpEvent.MultipleTaskAssignmentsPlanUriPartialReceived"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    MultipleTaskAssignmentsPlanUriPartialReceived event during private insights
+    federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.MultipleTaskAssignmentsPlanUriReceived"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    MultipleTaskAssignmentsPlanUriReceived event during private insights
+    federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.MultipleTaskAssignmentsServerAborted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    MultipleTaskAssignmentsServerAborted event during private insights federated
+    computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.MultipleTaskAssignmentsStarted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the MultipleTaskAssignmentsStarted
+    event during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.MultipleTaskAssignmentsTurnedAway"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the
+    MultipleTaskAssignmentsTurnedAway event during private insights federated
+    computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.NonfatalInitializationError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the NonfatalInitializationError
+    event during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.Rejected" not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the Rejected event during private
+    insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.ResultUploadClientInterrupted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the ResultUploadClientInterrupted
+    event during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.ResultUploadCompleted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the ResultUploadCompleted event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.ResultUploadIOError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the ResultUploadIOError event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.ResultUploadServerAborted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the ResultUploadServerAborted
+    event during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.ResultUploadStarted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the ResultUploadStarted event
+    during private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.TaskNotStarted"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the TaskNotStarted event during
+    private insights federated computation.
+  </description>
+</action>
+
+<action name="PrivateInsights.FcpEvent.TensorFlowError"
+    not_user_triggered="true">
+  <owner>kjarosz@google.com</owner>
+  <owner>nclliu@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <description>
+    Logged each time the FCP client publishes the TensorFlowError event during
+    private insights federated computation.
+  </description>
+</action>
+
 <action name="ProcessSwapBindingsMismatch_RVHM">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

@@ -6,10 +6,270 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 
 namespace private_insights {
 
 namespace {
+
+void RecordFcpUserAction(FcpEvent event) {
+  switch (event) {
+    case FcpEvent::kEligibilityEvalCheckin:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.EligibilityEvalCheckin"));
+      break;
+    case FcpEvent::kEligibilityEvalPlanUriReceived:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.EligibilityEvalPlanUriReceived"));
+      break;
+    case FcpEvent::kEligibilityEvalPlanReceived:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.EligibilityEvalPlanReceived"));
+      break;
+    case FcpEvent::kEligibilityEvalNotConfigured:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.EligibilityEvalNotConfigured"));
+      break;
+    case FcpEvent::kEligibilityEvalRejected:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.EligibilityEvalRejected"));
+      break;
+    case FcpEvent::kCheckin:
+      base::RecordAction(
+          base::UserMetricsAction("PrivateInsights.FcpEvent.Checkin"));
+      break;
+    case FcpEvent::kCheckinFinished:
+      base::RecordAction(
+          base::UserMetricsAction("PrivateInsights.FcpEvent.CheckinFinished"));
+      break;
+    case FcpEvent::kRejected:
+      base::RecordAction(
+          base::UserMetricsAction("PrivateInsights.FcpEvent.Rejected"));
+      break;
+    case FcpEvent::kTensorFlowError:
+      base::RecordAction(
+          base::UserMetricsAction("PrivateInsights.FcpEvent.TensorFlowError"));
+      break;
+    case FcpEvent::kIoError:
+      base::RecordAction(
+          base::UserMetricsAction("PrivateInsights.FcpEvent.IoError"));
+      break;
+    case FcpEvent::kExampleSelectorError:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.ExampleSelectorError"));
+      break;
+    case FcpEvent::kInterruption:
+      base::RecordAction(
+          base::UserMetricsAction("PrivateInsights.FcpEvent.Interruption"));
+      break;
+    case FcpEvent::kTaskNotStarted:
+      base::RecordAction(
+          base::UserMetricsAction("PrivateInsights.FcpEvent.TaskNotStarted"));
+      break;
+    case FcpEvent::kNonfatalInitializationError:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.NonfatalInitializationError"));
+      break;
+    case FcpEvent::kFatalInitializationError:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.FatalInitializationError"));
+      break;
+    case FcpEvent::kEligibilityEvalCheckinIoError:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.EligibilityEvalCheckinIoError"));
+      break;
+    case FcpEvent::kEligibilityEvalCheckinClientInterrupted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.EligibilityEvalCheckinClientInterrupted"));
+      break;
+    case FcpEvent::kEligibilityEvalCheckinServerAborted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.EligibilityEvalCheckinServerAborted"));
+      break;
+    case FcpEvent::kEligibilityEvalCheckinErrorInvalidPayload:
+      base::RecordAction(
+          base::UserMetricsAction("PrivateInsights.FcpEvent."
+                                  "EligibilityEvalCheckinErrorInvalidPayload"));
+      break;
+    case FcpEvent::kEligibilityEvalComputationStarted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.EligibilityEvalComputationStarted"));
+      break;
+    case FcpEvent::kEligibilityEvalComputationInvalidArgument:
+      base::RecordAction(
+          base::UserMetricsAction("PrivateInsights.FcpEvent."
+                                  "EligibilityEvalComputationInvalidArgument"));
+      break;
+    case FcpEvent::kEligibilityEvalComputationIOError:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.EligibilityEvalComputationIOError"));
+      break;
+    case FcpEvent::kEligibilityEvalComputationExampleIteratorError:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent."
+          "EligibilityEvalComputationExampleIteratorError"));
+      break;
+    case FcpEvent::kEligibilityEvalComputationTensorflowError:
+      base::RecordAction(
+          base::UserMetricsAction("PrivateInsights.FcpEvent."
+                                  "EligibilityEvalComputationTensorflowError"));
+      break;
+    case FcpEvent::kEligibilityEvalComputationInterrupted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.EligibilityEvalComputationInterrupted"));
+      break;
+    case FcpEvent::kEligibilityEvalComputationErrorNonfatal:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.EligibilityEvalComputationErrorNonfatal"));
+      break;
+    case FcpEvent::kEligibilityEvalComputationCompleted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.EligibilityEvalComputationCompleted"));
+      break;
+    case FcpEvent::kMultipleTaskAssignmentsStarted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.MultipleTaskAssignmentsStarted"));
+      break;
+    case FcpEvent::kMultipleTaskAssignmentsIOError:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.MultipleTaskAssignmentsIOError"));
+      break;
+    case FcpEvent::kMultipleTaskAssignmentsPayloadIOError:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.MultipleTaskAssignmentsPayloadIOError"));
+      break;
+    case FcpEvent::kMultipleTaskAssignmentsInvalidPayload:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.MultipleTaskAssignmentsInvalidPayload"));
+      break;
+    case FcpEvent::kMultipleTaskAssignmentsClientInterrupted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.MultipleTaskAssignmentsClientInterrupted"));
+      break;
+    case FcpEvent::kMultipleTaskAssignmentsServerAborted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.MultipleTaskAssignmentsServerAborted"));
+      break;
+    case FcpEvent::kMultipleTaskAssignmentsTurnedAway:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.MultipleTaskAssignmentsTurnedAway"));
+      break;
+    case FcpEvent::kMultipleTaskAssignmentsPlanUriReceived:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.MultipleTaskAssignmentsPlanUriReceived"));
+      break;
+    case FcpEvent::kMultipleTaskAssignmentsPlanUriPartialReceived:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent."
+          "MultipleTaskAssignmentsPlanUriPartialReceived"));
+      break;
+    case FcpEvent::kMultipleTaskAssignmentsPartialCompleted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.MultipleTaskAssignmentsPartialCompleted"));
+      break;
+    case FcpEvent::kMultipleTaskAssignmentsCompleted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.MultipleTaskAssignmentsCompleted"));
+      break;
+    case FcpEvent::kCheckinIoError:
+      base::RecordAction(
+          base::UserMetricsAction("PrivateInsights.FcpEvent.CheckinIoError"));
+      break;
+    case FcpEvent::kCheckinClientInterrupted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.CheckinClientInterrupted"));
+      break;
+    case FcpEvent::kCheckinServerAborted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.CheckinServerAborted"));
+      break;
+    case FcpEvent::kCheckinInvalidPayload:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.CheckinInvalidPayload"));
+      break;
+    case FcpEvent::kCheckinPlanUriReceived:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.CheckinPlanUriReceived"));
+      break;
+    case FcpEvent::kCheckinFinishedV2:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.CheckinFinishedV2"));
+      break;
+    case FcpEvent::kComputationStarted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.ComputationStarted"));
+      break;
+    case FcpEvent::kComputationInvalidArgument:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.ComputationInvalidArgument"));
+      break;
+    case FcpEvent::kComputationIOError:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.ComputationIOError"));
+      break;
+    case FcpEvent::kComputationExampleIteratorError:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.ComputationExampleIteratorError"));
+      break;
+    case FcpEvent::kComputationTensorflowError:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.ComputationTensorflowError"));
+      break;
+    case FcpEvent::kComputationInterrupted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.ComputationInterrupted"));
+      break;
+    case FcpEvent::kComputationCompleted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.ComputationCompleted"));
+      break;
+    case FcpEvent::kComputationInsufficientData:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.ComputationInsufficientData"));
+      break;
+    case FcpEvent::kResultUploadStarted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.ResultUploadStarted"));
+      break;
+    case FcpEvent::kResultUploadIOError:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.ResultUploadIOError"));
+      break;
+    case FcpEvent::kResultUploadClientInterrupted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.ResultUploadClientInterrupted"));
+      break;
+    case FcpEvent::kResultUploadServerAborted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.ResultUploadServerAborted"));
+      break;
+    case FcpEvent::kResultUploadCompleted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.ResultUploadCompleted"));
+      break;
+    case FcpEvent::kFailureUploadStarted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.FailureUploadStarted"));
+      break;
+    case FcpEvent::kFailureUploadIOError:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.FailureUploadIOError"));
+      break;
+    case FcpEvent::kFailureUploadClientInterrupted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.FailureUploadClientInterrupted"));
+      break;
+    case FcpEvent::kFailureUploadServerAborted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.FailureUploadServerAborted"));
+      break;
+    case FcpEvent::kFailureUploadCompleted:
+      base::RecordAction(base::UserMetricsAction(
+          "PrivateInsights.FcpEvent.FailureUploadCompleted"));
+      break;
+  }
+}
 
 void LogFcpMethodExecution(absl::string_view name,
                            absl::string_view details = "") {
@@ -24,6 +284,7 @@ void LogFcpEvent(absl::string_view name,
                  FcpEvent event,
                  absl::string_view details = "") {
   base::UmaHistogramEnumeration(kFcpEventHistogram, event);
+  RecordFcpUserAction(event);
   LogFcpMethodExecution(name, details);
 }
 

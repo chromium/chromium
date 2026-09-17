@@ -112,6 +112,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "contextual_cue_log_event_helpers_unittest.cc",
+    "fcp_event_publisher_unittest.cc",
     "fcp_files_unittest.cc",
     "fcp_http_client_unittest.cc",
     "fcp_simple_task_environment_unittest.cc",
@@ -119,6 +120,7 @@ source_set("unit_tests") {
     "private_insights_service_unittest.cc",
   ]
   deps = [
+    ":fcp_event_publisher",
     ":fcp_files",
     ":fcp_http_client",
     ":fcp_simple_task_environment",
