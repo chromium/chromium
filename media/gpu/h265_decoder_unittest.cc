@@ -92,6 +92,75 @@ Matcher<scoped_refptr<H265Picture>> HasPoc(int expected_poc) {
   return MakeMatcher(new HasPocMatcher(expected_poc));
 }
 
+// Shared SPS for the synthetic streams in this file. Fields that are already
+// 0 in H265SPS{} are left untouched. The non-zero values are:
+// - Main / level 4.0, 4:2:0, 320x184, matching the bear clips in this file
+// - CTB size 16 (20x12 CTBs), so slice_segment_address is 8 bits wide
+// - 8-bit POC LSB, matching AppendIntraPicture()'s default width
+// - DPB of 2 pictures; tests that need more reorder or buffering override it
+H265SPS MakeTestSps() {
+  H265SPS sps;
+  sps.sps_temporal_id_nesting_flag = true;
+  sps.profile_tier_level.general_profile_idc = 1;
+  sps.profile_tier_level.general_level_idc = 120;
+  sps.chroma_format_idc = 1;
+  sps.pic_width_in_luma_samples = 320;
+  sps.pic_height_in_luma_samples = 184;
+  sps.log2_max_pic_order_cnt_lsb_minus4 = 4;
+  sps.log2_diff_max_min_luma_coding_block_size = 1;
+  sps.sps_max_dec_pic_buffering_minus1[0] = 1;
+  return sps;
+}
+
+H265PPS MakeTestPps() {
+  return H265PPS{};
+}
+
+void AppendNaluHeader(H26xAnnexBBitstreamBuilder& builder,
+                      int nal_unit_type,
+                      int nuh_layer_id = 0) {
+  builder.AppendBits(32, 0x00000001);  // start code
+  builder.Flush();
+  builder.AppendBits(1, 0);  // forbidden_zero_bit
+  builder.AppendBits(6, nal_unit_type);
+  builder.AppendBits(6, nuh_layer_id);
+  builder.AppendBits(3, 1);  // nuh_temporal_id_plus1
+}
+
+// Appends a picture made of a single intra coded slice with an empty reference
+// picture set, which is enough to exercise the DPB logic without needing real
+// coded data. |poc_lsb| is ignored for IDR pictures, whose POC is always 0.
+void AppendIntraPicture(H26xAnnexBBitstreamBuilder& builder,
+                        int nal_unit_type,
+                        int poc_lsb,
+                        bool no_output_of_prior_pics_flag = false,
+                        int poc_lsb_bits = 8,
+                        int nuh_layer_id = 0) {
+  AppendNaluHeader(builder, nal_unit_type, nuh_layer_id);
+  builder.AppendBool(true);  // first_slice_segment_in_pic_flag
+  if (nal_unit_type >= H265NALU::BLA_W_LP &&
+      nal_unit_type <= H265NALU::RSV_IRAP_VCL23) {
+    builder.AppendBool(no_output_of_prior_pics_flag);
+  }
+  builder.AppendUE(0);  // slice_pic_parameter_set_id
+  builder.AppendUE(2);  // slice_type = I
+  if (nal_unit_type != H265NALU::IDR_W_RADL &&
+      nal_unit_type != H265NALU::IDR_N_LP) {
+    builder.AppendBits(poc_lsb_bits, poc_lsb);  // slice_pic_order_cnt_lsb
+    builder.AppendBool(false);  // short_term_ref_pic_set_sps_flag
+    builder.AppendUE(0);        // num_negative_pics
+    builder.AppendUE(0);        // num_positive_pics
+  }
+  builder.AppendSE(0);       // slice_qp_delta
+  builder.AppendBool(true);  // byte alignment bit
+  builder.Flush();
+}
+
+void AppendEndOfSequence(H26xAnnexBBitstreamBuilder& builder) {
+  AppendNaluHeader(builder, H265NALU::EOS_NUT);
+  builder.Flush();
+}
+
 }  // namespace
 
 class MockH265Accelerator : public H265Decoder::H265Accelerator {
@@ -176,6 +245,23 @@ class H265DecoderTest : public ::testing::Test {
     EXPECT_CALL(*accelerator_, SetStream(_, _))
         .WillRepeatedly(
             Return(H265Decoder::H265Accelerator::Status::kNotSupported));
+  }
+
+  // Accepts every accelerator call that the synthetic stream tests do not make
+  // assertions about. Tests that assert on SubmitSlice() declare their own
+  // expectations after calling this, which take priority over the catch-all.
+  void ExpectAnyAcceleratorCalls() {
+    EXPECT_CALL(*accelerator_, SetStream(_, _))
+        .WillRepeatedly(Return(H265Decoder::H265Accelerator::Status::kOk));
+    EXPECT_CALL(*accelerator_, CreateH265Picture()).WillRepeatedly([]() {
+      return base::MakeRefCounted<H265Picture>();
+    });
+    EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
+        .WillRepeatedly(Return(H265Decoder::H265Accelerator::Status::kOk));
+    EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _, _, _, _))
+        .WillRepeatedly(Return(H265Decoder::H265Accelerator::Status::kOk));
+    EXPECT_CALL(*accelerator_, SubmitDecode(_))
+        .WillRepeatedly(Return(H265Decoder::H265Accelerator::Status::kOk));
   }
 
  protected:
@@ -1121,6 +1207,30 @@ TEST_F(H265DecoderTest, AlphaLayerSpsPpsMidPicture) {
 
   EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
   EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, decoder_->Decode());
+}
+
+// C.5.2.2: if NoOutputOfPriorPicsFlag is 0, a failed OutputPicture() must
+// return kDecodeError rather than clearing the DPB and succeeding.
+TEST_F(H265DecoderTest, EndOfSequenceIdrOutputFailureReturnsDecodeError) {
+  H26xAnnexBBitstreamBuilder builder;
+  H265SPS sps = MakeTestSps();
+  // Hold the CRA so C.5.2.2 still has a picture to output after EOS.
+  sps.sps_max_dec_pic_buffering_minus1[0] = 4;
+  sps.sps_max_num_reorder_pics[0] = 1;
+  BuildPackedH265SPS(builder, sps);
+  BuildPackedH265PPS(builder, MakeTestPps());
+
+  AppendIntraPicture(builder, H265NALU::CRA_NUT, /*poc_lsb=*/3);
+  AppendEndOfSequence(builder);
+  AppendIntraPicture(builder, H265NALU::IDR_W_RADL, /*poc_lsb=*/0);
+
+  auto buffer = DecoderBuffer::CopyFrom(builder.data());
+  ExpectAnyAcceleratorCalls();
+  EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(3))).WillOnce(Return(false));
+
+  decoder_->SetStream(0, buffer);
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
+  EXPECT_EQ(AcceleratedVideoDecoder::kDecodeError, decoder_->Decode());
 }
 
 TEST_F(H265DecoderTest, InvalidCropRectReturnsDecodeError) {

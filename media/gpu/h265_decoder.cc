@@ -1135,11 +1135,14 @@ H265Decoder::H265Accelerator::Status H265Decoder::FinishPrevFrameIfPresent() {
 }
 
 bool H265Decoder::PerformDpbOperations(const H265SPS* sps) {
-  // C.5.2.2 - Output and removal of pictures from the DPB
+  // C.5.2.2 - Output and removal of pictures from the DPB.
   if (curr_pic_->irap_pic_ && curr_pic_->no_rasl_output_flag_ &&
       !curr_pic_->first_picture_) {
-    if (!curr_pic_->no_output_of_prior_pics_flag_) {
-      OutputAllRemainingPics();
+    // NoOutputOfPriorPicsFlag=0 must output remaining pictures before Clear().
+    // A failed output is a Decode() error, matching Flush() and bumping.
+    if (!curr_pic_->no_output_of_prior_pics_flag_ &&
+        !OutputAllRemainingPics()) {
+      return false;
     }
     dpb_.Clear();
   } else {
