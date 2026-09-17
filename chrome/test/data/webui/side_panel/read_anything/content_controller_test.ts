@@ -1143,6 +1143,34 @@ suite('ContentController', () => {
       assertFalse(drewImage);
       assertFalse(receivedContentChange);
     });
+
+    test('does nothing if content is cleared while decoding', async () => {
+      nodeStore.setDomNode(canvas, nodeId);
+
+      // Don't await yet, so that the content can be cleared while the image is
+      // still decoding, as it would be if the page were redistilled.
+      const downloaded = contentController.onImageDownloaded(nodeId);
+      nodeStore.clearDomNodes();
+      await downloaded;
+      await microtasksFinished();
+
+      assertFalse(drewImage);
+      assertFalse(receivedContentChange);
+    });
+
+    test('does nothing if node is replaced while decoding', async () => {
+      nodeStore.setDomNode(canvas, nodeId);
+
+      // Don't await yet, so that this node can be redrawn with a new canvas
+      // while the image for the old canvas is still decoding.
+      const downloaded = contentController.onImageDownloaded(nodeId);
+      nodeStore.setDomNode(document.createElement('canvas'), nodeId);
+      await downloaded;
+      await microtasksFinished();
+
+      assertFalse(drewImage);
+      assertFalse(receivedContentChange);
+    });
   });
 
   suite('updateImages', () => {

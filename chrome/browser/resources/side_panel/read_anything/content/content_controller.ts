@@ -814,8 +814,18 @@ export class ContentController {
         colorSpaceConversion: 'none',
         premultiplyAlpha: 'premultiply',
       });
-      context.drawImage(bitmap, 0, 0);
-      this.listeners_.forEach(l => l.onContentChange());
+      try {
+        // Return early if content was cleared or redistilled while the image
+        // was decoding. Otherwise, listeners would be notified to recalculate
+        // text positions for unchanged content.
+        if (this.nodeStore_.getDomNode(nodeId) !== element) {
+          return;
+        }
+        context.drawImage(bitmap, 0, 0);
+        this.listeners_.forEach(l => l.onContentChange());
+      } finally {
+        bitmap.close();
+      }
     }
   }
 
