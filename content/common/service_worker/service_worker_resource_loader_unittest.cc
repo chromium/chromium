@@ -131,6 +131,58 @@ TEST(ServiceWorkerResourceLoaderTest, IsValidServiceWorkerResponse) {
     EXPECT_FALSE(ServiceWorkerResourceLoader::IsValidServiceWorkerResponse(
         request_mode, network::mojom::RedirectMode::kManual, response));
   }
+
+  // navigate request and default response (OK).
+  {
+    auto response = blink::mojom::FetchAPIResponse::New();
+    response->response_type = network::mojom::FetchResponseType::kDefault;
+    EXPECT_TRUE(ServiceWorkerResourceLoader::IsValidServiceWorkerResponse(
+        network::mojom::RequestMode::kNavigate, redirect_mode, response));
+  }
+
+  // navigate request and basic response (OK).
+  {
+    auto response = blink::mojom::FetchAPIResponse::New();
+    response->response_type = network::mojom::FetchResponseType::kBasic;
+    EXPECT_TRUE(ServiceWorkerResourceLoader::IsValidServiceWorkerResponse(
+        network::mojom::RequestMode::kNavigate, redirect_mode, response));
+  }
+
+  // navigate request and cors response (OK).
+  {
+    auto response = blink::mojom::FetchAPIResponse::New();
+    response->response_type = network::mojom::FetchResponseType::kCors;
+    EXPECT_TRUE(ServiceWorkerResourceLoader::IsValidServiceWorkerResponse(
+        network::mojom::RequestMode::kNavigate, redirect_mode, response));
+  }
+
+  // navigate request and opaque response.
+  {
+    auto response = blink::mojom::FetchAPIResponse::New();
+    response->response_type = network::mojom::FetchResponseType::kOpaque;
+    EXPECT_FALSE(ServiceWorkerResourceLoader::IsValidServiceWorkerResponse(
+        network::mojom::RequestMode::kNavigate, redirect_mode, response));
+  }
+
+  // navigate request, opaqueredirect response, and follow redirect mode.
+  {
+    auto response = blink::mojom::FetchAPIResponse::New();
+    response->response_type =
+        network::mojom::FetchResponseType::kOpaqueRedirect;
+    EXPECT_FALSE(ServiceWorkerResourceLoader::IsValidServiceWorkerResponse(
+        network::mojom::RequestMode::kNavigate,
+        network::mojom::RedirectMode::kFollow, response));
+  }
+
+  // navigate request, opaqueredirect response, and manual redirect mode (OK).
+  {
+    auto response = blink::mojom::FetchAPIResponse::New();
+    response->response_type =
+        network::mojom::FetchResponseType::kOpaqueRedirect;
+    EXPECT_TRUE(ServiceWorkerResourceLoader::IsValidServiceWorkerResponse(
+        network::mojom::RequestMode::kNavigate,
+        network::mojom::RedirectMode::kManual, response));
+  }
 }
 
 TEST(ServiceWorkerResourceLoaderTest, IsValidStaticRouterResponse) {
@@ -294,6 +346,55 @@ TEST(ServiceWorkerResourceLoaderTest, IsValidStaticRouterResponse) {
     histogram_tester.ExpectBucketCount(
         "ServiceWorker.StaticRouter.Subresource.CORPCheckResult",
         ServiceWorkerResourceLoader::CORPCheckResult::kSuccess, 1);
+  }
+
+  // Case 7: Main resource navigation request with opaque response should be
+  // invalid.
+  {
+    TestServiceWorkerResourceLoader main_loader(/*is_main_resource=*/true);
+    base::HistogramTester histogram_tester;
+
+    network::ResourceRequest nav_request;
+    nav_request.url = GURL("https://a.test/resource");
+    nav_request.request_initiator =
+        url::Origin::Create(GURL("https://a.test/"));
+    nav_request.mode = network::mojom::RequestMode::kNavigate;
+    nav_request.destination = network::mojom::RequestDestination::kDocument;
+
+    auto opaque_response = blink::mojom::FetchAPIResponse::New();
+    opaque_response->response_type = network::mojom::FetchResponseType::kOpaque;
+    opaque_response->request_include_credentials = true;
+    opaque_response->url_list.emplace_back("https://b.test/resource");
+
+    EXPECT_FALSE(main_loader.IsValidStaticRouterResponse(
+        nav_request, opaque_response, coep, nullptr, dip, nullptr));
+    histogram_tester.ExpectBucketCount(
+        "ServiceWorker.StaticRouter.MainResource.ValidResponse", false, 1);
+  }
+
+  // Case 8: Main resource navigation request with default response should be
+  // valid.
+  {
+    TestServiceWorkerResourceLoader main_loader(/*is_main_resource=*/true);
+    base::HistogramTester histogram_tester;
+
+    network::ResourceRequest nav_request;
+    nav_request.url = GURL("https://a.test/resource");
+    nav_request.request_initiator =
+        url::Origin::Create(GURL("https://a.test/"));
+    nav_request.mode = network::mojom::RequestMode::kNavigate;
+    nav_request.destination = network::mojom::RequestDestination::kDocument;
+
+    auto default_response = blink::mojom::FetchAPIResponse::New();
+    default_response->response_type =
+        network::mojom::FetchResponseType::kDefault;
+    default_response->request_include_credentials = true;
+    default_response->url_list.emplace_back("https://a.test/resource");
+
+    EXPECT_TRUE(main_loader.IsValidStaticRouterResponse(
+        nav_request, default_response, coep, nullptr, dip, nullptr));
+    histogram_tester.ExpectBucketCount(
+        "ServiceWorker.StaticRouter.MainResource.ValidResponse", true, 1);
   }
 }
 

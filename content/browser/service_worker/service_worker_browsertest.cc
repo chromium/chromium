@@ -7270,6 +7270,7 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
   ~ServiceWorkerStaticRouterBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
     ServiceWorkerBrowserTest::SetUpOnMainThread();
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
@@ -7366,6 +7367,44 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
               c.put("/service_worker/cache_with_wrong_name", response.clone());
           });)"));
     }
+  }
+
+  void WaitUntilOpaqueResponseStoredInCache(const std::string& relative_url,
+                                            const GURL& cross_origin_url) {
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
+    int retries = 10;
+    while (retries-- > 0) {
+      if (CacheStorageDataChecker::Exist(
+              partition->GetCacheStorageControl(),
+              embedded_test_server()->base_url(), std::string("test"),
+              embedded_test_server()->GetURL(relative_url)) ==
+          CacheStorageDataChecker::Status::kExist) {
+        return;
+      }
+      EXPECT_EQ("opaque", EvalJs(GetPrimaryMainFrame(),
+                                 JsReplace(R"(
+          (async () => {
+            const iframe = document.createElement('iframe');
+            iframe.src = '/empty.html';
+            document.body.appendChild(iframe);
+            await new Promise(resolve => iframe.onload = resolve);
+            const res = await iframe.contentWindow.fetch($1, { mode:'no-cors'});
+            const type = res.type;
+            const c = await iframe.contentWindow.caches.open("test");
+            await c.put($2, res);
+            iframe.remove();
+            return type;
+          })();)",
+                                           cross_origin_url, relative_url)));
+    }
+    ASSERT_EQ(CacheStorageDataChecker::Exist(
+                  partition->GetCacheStorageControl(),
+                  embedded_test_server()->base_url(), std::string("test"),
+                  embedded_test_server()->GetURL(relative_url)),
+              CacheStorageDataChecker::Status::kExist);
   }
 
  private:
@@ -7700,6 +7739,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
 
   ukm::TestAutoSetUkmRecorder::EntryHasMetric(
       entry, MainResourceLoadCompletedUkmEntry::kCacheLookupTimeName);
+
+  histogram_tester().ExpectBucketCount(
+      "ServiceWorker.StaticRouter.MainResource.ValidResponse", true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
@@ -7769,6 +7811,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
 
   ukm::TestAutoSetUkmRecorder::EntryHasMetric(
       entry, MainResourceLoadCompletedUkmEntry::kCacheLookupTimeName);
+
+  histogram_tester().ExpectBucketCount(
+      "ServiceWorker.StaticRouter.MainResource.ValidResponse", true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
@@ -7881,6 +7926,69 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
                                               "response.text())"));
   // Due to the cache miss, the result should be got from the network.
   EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       MainResourceCacheStorageOpaqueResponseBlocked) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  WorkerRunningStatusObserver observer(public_context());
+  const std::string relative_url = "/service_worker/cache_opaque";
+  const GURL cross_origin_url =
+      embedded_test_server()->GetURL("b.com", "/service_worker/empty.html");
+  WaitUntilOpaqueResponseStoredInCache(relative_url, cross_origin_url);
+
+  // Main resource navigation with an opaque cached response should not succeed.
+  EXPECT_FALSE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+
+  histogram_tester().ExpectBucketCount(
+      "ServiceWorker.StaticRouter.MainResource.ValidResponse", false, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       IframeCacheStorageOpaqueResponseBlocked) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  WorkerRunningStatusObserver observer(public_context());
+  const std::string relative_url = "/service_worker/cache_opaque";
+  const GURL cross_origin_url =
+      embedded_test_server()->GetURL("b.com", "/service_worker/empty.html");
+  WaitUntilOpaqueResponseStoredInCache(relative_url, cross_origin_url);
+
+  EXPECT_TRUE(ExecJs(GetPrimaryMainFrame(), R"(
+      const iframe = document.createElement('iframe');
+      iframe.id = 'test_iframe';
+      iframe.src = '/service_worker/cache_opaque';
+      document.body.appendChild(iframe);
+  )"));
+
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  histogram_tester().ExpectBucketCount(
+      "ServiceWorker.StaticRouter.MainResource.ValidResponse", false, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       SubresourceCacheStorageOpaqueResponseBlocked) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  StopServiceWorker(version().get());
+
+  const std::string relative_url = "/service_worker/cache_opaque";
+  const GURL cross_origin_url =
+      embedded_test_server()->GetURL("b.com", "/service_worker/empty.html");
+  WaitUntilOpaqueResponseStoredInCache(relative_url, cross_origin_url);
+
+  EXPECT_EQ(
+      "TypeError: Failed to fetch",
+      EvalJs(GetPrimaryMainFrame(),
+             "fetch('" + relative_url +
+                 "').then(() => 'FETCH_SUCCEEDED').catch(e => e.name + ': ' + "
+                 "e.message)"));
+
+  FetchHistogramsFromChildProcesses();
+
+  histogram_tester().ExpectBucketCount(
+      "ServiceWorker.StaticRouter.Subresource.ValidResponse", false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,

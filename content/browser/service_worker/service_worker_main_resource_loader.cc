@@ -976,6 +976,10 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     network::DocumentIsolationPolicy document_isolation_policy;
     network::mojom::DocumentIsolationPolicyReporter*
         document_isolation_policy_reporter = nullptr;
+    // For main resource navigations, container_host() is not yet created
+    // prior to response commit. Policy container policies will default to
+    // empty, but IsValidStaticRouterResponse will still validate the response
+    // type (e.g. rejecting opaque responses for navigation mode).
     if (service_worker_client_ && service_worker_client_->container_host()) {
       ServiceWorkerContainerHostForClient* container_host =
           service_worker_client_->container_host();
