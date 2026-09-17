@@ -12,7 +12,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -51,7 +50,6 @@ import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
-import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
@@ -284,8 +282,12 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
 
         if (contentTypes.contains(ContentType.IMAGE)
                 || contentTypes.contains(ContentType.IMAGE_AND_LINK)) {
-            assert mParams.getImageUriToShare() != null;
-            setImageForPreviewFromUri(mParams.getImageUriToShare());
+            if (mParams.getPreviewImageBitmap() != null) {
+                setImageForPreviewFromBitmap(mParams.getPreviewImageBitmap());
+            } else {
+                setDefaultIconForPreview(
+                        AppCompatResources.getDrawable(mActivity, R.drawable.generic_file));
+            }
             if (TextUtils.isEmpty(subtitle)) {
                 subtitle = getFileType(fileContentType);
             }
@@ -327,11 +329,6 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         }
 
         setTextForPreview(title, subtitle);
-    }
-
-    private void setImageForPreviewFromUri(Uri imageUri) {
-        ShareImageFileUtils.getBitmapFromUriAsync(
-                mActivity, imageUri, this::setImageForPreviewFromBitmap);
     }
 
     private void setImageForPreviewFromBitmap(@Nullable Bitmap bitmap) {

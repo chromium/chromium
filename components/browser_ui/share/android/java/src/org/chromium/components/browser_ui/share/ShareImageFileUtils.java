@@ -8,17 +8,13 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.provider.MediaStore;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
@@ -29,7 +25,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Contract;
@@ -216,33 +211,6 @@ public class ShareImageFileUtils {
                 fileWriter,
                 /* isTemporary= */ true,
                 bitmap.hasAlpha() ? PNG_EXTENSION : JPEG_EXTENSION);
-    }
-
-    public static void getBitmapFromUriAsync(
-            Context context, Uri imageUri, Callback<@Nullable Bitmap> callback) {
-        new BackgroundOnlyAsyncTask<Void>() {
-            @Override
-            protected Void doInBackground() {
-                Bitmap bitmap = null;
-                try {
-                    bitmap =
-                            ApiCompatibilityUtils.getBitmapByUri(
-                                    context.getContentResolver(), imageUri);
-                    if (isHardwareBitmap(bitmap)) {
-                        bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, /* mutable= */ false);
-                    }
-                } catch (IOException e) {
-                }
-                final Bitmap result = bitmap;
-                // Run the callback on main thread.
-                new Handler(Looper.getMainLooper()).post(callback.bind(result));
-                return null;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    private static boolean isHardwareBitmap(Bitmap bitmap) {
-        return bitmap.getConfig() == Bitmap.Config.HARDWARE;
     }
 
     /** Interface for notifying image download result. */

@@ -109,6 +109,7 @@ class ScreenshotShareSheetMediator {
                     ShareParams params =
                             new ShareParams.Builder(mWindowAndroid, title, /* url= */ "")
                                     .setSingleImageUri(bitmapUri)
+                                    .setPreviewImageBitmap(bitmap)
                                     .setFileContentType(type)
                                     .build();
 

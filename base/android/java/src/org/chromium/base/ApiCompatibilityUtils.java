@@ -213,7 +213,13 @@ public class ApiCompatibilityUtils {
         return false;
     }
 
-    /** Retrieves an image for the given uri as a Bitmap. */
+    /**
+     * Retrieves an image for the given uri as a Bitmap.
+     *
+     * <p>WARNING: Decodes in-process via {@link ImageDecoder}. Do NOT call in the browser process
+     * on untrusted or renderer-supplied URIs (violates Rule of 2; use {@code
+     * data_decoder::DecodeImageIsolated} instead).
+     */
     public static Bitmap getBitmapByUri(ContentResolver cr, Uri uri) throws IOException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             return ImageDecoder.decodeBitmap(ImageDecoder.createSource(cr, uri));
