@@ -133,21 +133,17 @@ constexpr base::TimeDelta kSmallDelay = base::Milliseconds(500);
 // A delay time that ensures that DownloadCert happens.
 constexpr base::TimeDelta kInitialDownloadCertDelay = base::Seconds(35);
 
-const std::string& GetPublicKey() {
-  static std::string public_key;
-  if (public_key.empty()) {
-    base::Base64Decode(kPublicKeyBase64, &public_key);
-  }
+std::string GetPublicKey() {
+  std::string public_key;
+  CHECK(base::Base64Decode(kPublicKeyBase64, &public_key));
   return public_key;
 }
 
-const std::vector<uint8_t>& GetPublicKeyBin() {
-  static std::optional<std::vector<uint8_t>> public_key;
-  if (!public_key.has_value()) {
-    public_key = base::Base64Decode(kPublicKeyBase64);
-    CHECK(public_key.has_value());
-  }
-  return public_key.value();
+std::vector<uint8_t> GetPublicKeyBin() {
+  std::optional<std::vector<uint8_t>> public_key =
+      base::Base64Decode(kPublicKeyBase64);
+  CHECK(public_key.has_value());
+  return std::move(public_key).value();
 }
 
 std::vector<uint8_t> GetDataToSign() {
