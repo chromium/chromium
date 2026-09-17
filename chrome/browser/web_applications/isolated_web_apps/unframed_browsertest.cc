@@ -26,6 +26,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_types.mojom-shared.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

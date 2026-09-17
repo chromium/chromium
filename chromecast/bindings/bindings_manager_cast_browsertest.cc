@@ -24,6 +24,7 @@
 #include "chromecast/browser/cast_web_contents_observer.h"
 #include "chromecast/browser/test/cast_browser_test.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"

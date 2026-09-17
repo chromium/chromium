@@ -12,6 +12,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "ui/base/window_open_disposition.h"

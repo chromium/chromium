@@ -11,6 +11,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/page_transition_types.h"

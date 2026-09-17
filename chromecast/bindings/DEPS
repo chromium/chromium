@@ -12,6 +12,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "bindings_manager_cast_browsertest\.cc": [
+    "+content/public/browser/web_contents_delegate.h",
+  ],
   "bindings_manager_fuchsia\\..*": [
     "+fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h",
   ],
