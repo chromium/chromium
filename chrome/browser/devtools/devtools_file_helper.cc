@@ -36,6 +36,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/common/content_client.h"
 #include "crypto/obsolete/md5.h"
+#include "net/base/filename_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
@@ -166,30 +167,24 @@ void DevToolsFileHelper::Save(const std::string& url,
   }
 
   if (initial_path.empty()) {
-    GURL gurl(url);
-    std::string suggested_file_name;
-    if (gurl.is_valid()) {
-      std::string escaped_content = gurl.ExtractFileName();
-      // TODO(crbug.com/40839171): Due to filename encoding on Windows we can't
-      // expect to always be able to convert to UTF8 and back
-      suggested_file_name = url::DecodeUrlEscapeSequences(
-          escaped_content, url::DecodeUrlMode::kUtf8OrIsomorphic);
-    } else {
-      suggested_file_name = url;
-    }
-    // TODO(crbug.com/40839171): Truncate a UTF8 string in a better way
-    if (suggested_file_name.length() > 64) {
-      suggested_file_name.erase(64);
-    }
-    // TODO(crbug.com/40839171): Ensure suggested_file_name is an ASCII string
+    // SECURITY: |url| is page-controlled. Derive the suggested filename via
+    // net::GenerateFileName(), which strips path separators, "..", BiDi
+    // control characters and shell-integrated extensions - the same
+    // sanitization the download stack applies. This prevents %2F / %5C
+    // traversal out of the default Save-As folder and U+202E filename
+    // spoofing.
+    base::FilePath suggested_file_name = net::GenerateFileName(
+        GURL(url), /*content_disposition=*/std::string(),
+        /*referrer_charset=*/std::string(), /*suggested_name=*/std::string(),
+        /*mime_type=*/std::string(), /*default_name=*/"download");
+
     if (!GetLastSavePath().empty()) {
-      initial_path =
-          GetLastSavePath().DirName().AppendASCII(suggested_file_name);
+      initial_path = GetLastSavePath().DirName().Append(suggested_file_name);
     } else {
       base::FilePath download_path =
           DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
               ->DownloadPath();
-      initial_path = download_path.AppendASCII(suggested_file_name);
+      initial_path = download_path.Append(suggested_file_name);
     }
   }
 

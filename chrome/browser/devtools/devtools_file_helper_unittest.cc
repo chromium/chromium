@@ -103,6 +103,40 @@ class DevToolsFileHelperTest : public Test {
         });
   }
 
+  // Runs Save() for `url` and returns the path that would be pre-filled in the
+  // "Save as" dialog. The selection is canceled, so nothing is written to disk.
+  base::FilePath GetSuggestedSavePath(const std::string& url) {
+    base::FilePath suggested_path;
+    base::test::TestFuture<void> canceled;
+    file_helper()->Save(
+        url, "some text", /* save_as */ true,
+        /* is_base64 */ false,
+        base::BindLambdaForTesting(
+            [&](DevToolsFileHelper::SelectedCallback,
+                DevToolsFileHelper::CanceledCallback canceled_callback,
+                const base::FilePath& initial_path) {
+              suggested_path = initial_path;
+              std::move(canceled_callback).Run();
+            }),
+        base::DoNothing(), canceled.GetCallback());
+    EXPECT_TRUE(canceled.Wait());
+    return suggested_path;
+  }
+
+  // Saves to `path`, which makes it the directory against which subsequent
+  // suggested save paths are resolved. DevToolsFileHelper keeps the last save
+  // path in a process-global, so tests that care about the directory must
+  // prime it explicitly rather than rely on the order tests run in.
+  void PrimeLastSaveDirectory(const base::FilePath& path) {
+    base::test::TestFuture<const std::string&> saved;
+    file_helper()->Save("https://example.com/primer.txt", "primer",
+                        /* save_as */ true,
+                        /* is_base64 */ false,
+                        FakeSelectFileCallback(ui::SelectedFileInfo(path)),
+                        saved.GetCallback(), base::DoNothing());
+    EXPECT_TRUE(saved.Wait());
+  }
+
   void ConnectAutomaticFileSystem(const base::FilePath& path,
                                   const base::Uuid& uuid,
                                   bool already_known,
@@ -251,6 +285,66 @@ TEST_F(DevToolsFileHelperTest, Append) {
   EXPECT_TRUE(future2.Wait());
 
   EXPECT_EQ(base::ReadFileToBytes(tf.path()), data);
+}
+
+TEST_F(DevToolsFileHelperTest, SuggestedSavePathUsesLastSaveDirectory) {
+  base::ScopedTempFile tf;
+  ASSERT_TRUE(tf.Create());
+  PrimeLastSaveDirectory(tf.path());
+
+  EXPECT_EQ(GetSuggestedSavePath("https://example.com/script.js"),
+            tf.path().DirName().Append(FILE_PATH_LITERAL("script.js")));
+}
+
+TEST_F(DevToolsFileHelperTest, SuggestedSavePathFallsBackToDefaultName) {
+  base::ScopedTempFile tf;
+  ASSERT_TRUE(tf.Create());
+  PrimeLastSaveDirectory(tf.path());
+  const base::FilePath dir = tf.path().DirName();
+
+  // URLs without a usable file name must fall back to the default name,
+  // rather than turning the raw URL into a file name.
+  for (const char* url : {"https://example.com/", "not a url", ""}) {
+    EXPECT_EQ(GetSuggestedSavePath(url),
+              dir.Append(FILE_PATH_LITERAL("download")))
+        << url;
+  }
+}
+
+// Regression test: `url` is page-controlled, so the file name derived from it
+// must never be able to escape the target directory, no matter how the
+// separators and parent references are escaped.
+TEST_F(DevToolsFileHelperTest, SuggestedSavePathCannotEscapeDirectory) {
+  base::ScopedTempFile tf;
+  ASSERT_TRUE(tf.Create());
+  PrimeLastSaveDirectory(tf.path());
+  const base::FilePath dir = tf.path().DirName();
+
+  for (const char* url : {
+           "https://example.com/a%2F..%2F..%2Fevil.sh",
+           "https://example.com/%2e%2e%2f%2e%2e%2fevil.sh",
+           "https://example.com/a%5C..%5C..%5Cevil.sh",
+           "https://example.com/%2Fetc%2Fpasswd",
+       }) {
+    const base::FilePath suggested = GetSuggestedSavePath(url);
+    EXPECT_FALSE(suggested.ReferencesParent()) << url;
+    EXPECT_EQ(suggested.DirName(), dir) << url;
+  }
+}
+
+// Regression test: the suggested file name must not carry BiDi control
+// characters, which can be used to spoof the extension shown in the dialog.
+TEST_F(DevToolsFileHelperTest, SuggestedSavePathStripsBidiControlCharacters) {
+  base::ScopedTempFile tf;
+  ASSERT_TRUE(tf.Create());
+  PrimeLastSaveDirectory(tf.path());
+
+  const base::FilePath suggested =
+      GetSuggestedSavePath("https://example.com/report%E2%80%AEfdp.exe");
+
+  EXPECT_EQ(suggested.value().find(FILE_PATH_LITERAL("\u202e")),
+            base::FilePath::StringType::npos);
+  EXPECT_EQ(suggested.DirName(), tf.path().DirName());
 }
 
 #if BUILDFLAG(IS_ANDROID)
