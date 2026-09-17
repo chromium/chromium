@@ -48,6 +48,9 @@ class OrganizerTrayView : public views::FlexLayoutView,
   void SetTargetWidth(int target_width);
   int target_width() const { return target_width_; }
 
+  // Updates the organizer panel clip if present.
+  void UpdatePanelClip();
+
   // Used to enable dragging.
   bool IsPositionInWindowCaption(const gfx::Point& point);
 

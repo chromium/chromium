@@ -1685,6 +1685,9 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
             views().vertical_tab_strip_region_view, blur_background_opacity);
       }
     }
+
+    views().vertical_tab_strip_region_view->UpdatePanelClips();
+
   } else if (layout_data_->tab_strip_type == TabStripType::kHorizontal &&
              !is_fullscreen(layout_data_->window_state) && in_glass_mode()) {
     frame_color.opacity = 0.0f;
@@ -1694,25 +1697,37 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
   // elevated, the background of vertical tabs should fade to match the
   // background color of the panel.
   if (IsParentedTo(views().organizer_tray, views().browser_view)) {
+    const bool is_elevated = views().organizer_tray->is_elevated();
     if (CustomCornersBackground* const background =
             views()
                 .organizer_tray->background()
                 ->AsA<CustomCornersBackground>();
         background && views().organizer_tray->GetVisible()) {
-      const bool blur = features::IsGlassFrameEnabled() &&
-                        views().organizer_tray->is_elevated();
+      const bool blur = features::IsGlassFrameEnabled() && is_elevated;
       background->SetUseBackgroundBlur(blur);
       background->SetPrimaryColor(CustomCorners::ColorChoiceWithAlpha(
           organizer_panel::kOrganizerPanelBackgroundColor,
           blur ? flyover_panel_opacity : 1.0));
+
+      CustomCornersBackground::Corners corners;
+      corners[CornerOrientation::kTopLeading] =
+          background->GetWindowCorner(true);
+      corners[CornerOrientation::kBottomLeading] =
+          background->GetWindowCorner(false);
+      corners[CornerOrientation::kTopTrailing].type =
+          is_elevated ? CustomCornersBackground::CornerType::kRounded
+                      : CustomCornersBackground::CornerType::kSquare;
+      corners[CornerOrientation::kBottomTrailing].type =
+          is_elevated ? CustomCornersBackground::CornerType::kRounded
+                      : CustomCornersBackground::CornerType::kSquare;
+      background->SetCorners(corners);
     }
     CustomFloatingCorner* const vertical_tabs_top_corner =
         views().vertical_tab_strip_top_corner;
     CustomFloatingCorner* const vertical_tabs_bottom_corner =
         views().vertical_tab_strip_bottom_corner;
     if (vertical_tabs_background) {
-      if (views().organizer_tray->GetVisible() &&
-          !views().organizer_tray->is_elevated()) {
+      if (views().organizer_tray->GetVisible() && !is_elevated) {
         CustomCorners::ColorChoiceWithAlpha const fade_background{
             organizer_panel::kOrganizerPanelBackgroundColor,
             static_cast<float>(
@@ -1728,6 +1743,10 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
         vertical_tabs_top_corner->SetFadeBackground(std::nullopt);
         vertical_tabs_bottom_corner->SetFadeBackground(std::nullopt);
       }
+    }
+
+    if (views().organizer_tray->GetVisible()) {
+      views().organizer_tray->UpdatePanelClip();
     }
   }
 

@@ -100,39 +100,5 @@ bool OrganizerPanelView::IsInExtensionModeForTesting() const {
   return false;
 }
 
-void OrganizerPanelView::Layout(PassKey) {
-  LayoutSuperclass<views::View>(this);
-
-  // Set clip region based on parent.
-  if (parent()) {
-    const gfx::Rect clip_bounds = GetLocalBounds();
-    const gfx::Rect parent_bounds = views::View::ConvertRectToTarget(
-        parent(), this, parent()->GetLocalBounds());
-    gfx::Rect clip_rect = clip_bounds;
-    clip_rect.Intersect(parent_bounds);
-    layer()->SetClipRect(clip_rect);
-    gfx::RoundedCornersF corners;
-    if (parent()->background()) {
-      if (auto* const background =
-              parent()->background()->AsA<CustomCornersBackground>();
-          background && background->is_visible()) {
-        // Note: this mirrors for RtL.
-        corners = background->GetRoundedCornerRadii().value_or(
-            gfx::RoundedCornersF());
-        // These bounds are also mirrored for RtL.
-        if (clip_bounds.x() < parent_bounds.x()) {
-          corners.set_upper_left(0.f);
-          corners.set_lower_left(0.f);
-        }
-        if (clip_bounds.right() > parent_bounds.right()) {
-          corners.set_upper_right(0.f);
-          corners.set_lower_right(0.f);
-        }
-      }
-    }
-    layer()->SetRoundedCornerRadius(corners);
-  }
-}
-
 BEGIN_METADATA(OrganizerPanelView)
 END_METADATA

@@ -148,9 +148,12 @@ class OrganizerPanelInteractiveUiTest : public InteractiveBrowserTest {
         CheckView(
             kOrganizerPanelViewElementId,
             [](OrganizerPanelView* panel_view) {
-              return panel_view->layer()->rounded_corner_radii().IsEmpty();
+              const auto radii = panel_view->layer()->rounded_corner_radii();
+              // Leading corners may be rounded to accommodate the window
+              // itself, so only count the trailing corners.
+              return radii.upper_right() > 0.0f || radii.lower_right() > 0.0f;
             },
-            !should_have_rounded_corners)
+            should_have_rounded_corners)
             .SetDescription("Panel has expected corners."));
     AddDescriptionPrefix(steps, "CheckPanelHasExpectedWidthAndStyling");
     return steps;

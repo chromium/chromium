@@ -154,6 +154,14 @@ OrganizerTrayView::OrganizerTrayView(BrowserWindowInterface& browser,
 
 OrganizerTrayView::~OrganizerTrayView() = default;
 
+void OrganizerTrayView::UpdatePanelClip() {
+  if (!background() || !panel_view_) {
+    return;
+  }
+  const auto* const bg = background()->AsA<CustomCornersBackground>();
+  bg->ClipViewToBackground(panel_view_);
+}
+
 bool OrganizerTrayView::IsPositionInWindowCaption(const gfx::Point& point) {
   const auto in_controls =
       views::View::ConvertPointToTarget(this, controls_view_, point);
@@ -231,14 +239,6 @@ void OrganizerTrayView::AddedToWidget() {
   int radius = 8;
   if (background()) {
     auto* const bg = background()->AsA<CustomCornersBackground>();
-    CustomCornersBackground::Corners corners;
-    corners[CornerOrientation::kTopLeading] = bg->GetWindowCorner(true);
-    corners[CornerOrientation::kBottomLeading] = bg->GetWindowCorner(false);
-    corners[CornerOrientation::kTopTrailing].type =
-        CustomCornersBackground::CornerType::kRounded;
-    corners[CornerOrientation::kBottomTrailing].type =
-        CustomCornersBackground::CornerType::kRounded;
-    bg->SetCorners(corners);
     radius = bg->default_radius();
   }
   shadow_frame_->SetShadowCornerRadius(radius);
@@ -295,6 +295,7 @@ void OrganizerTrayView::Layout(PassKey) {
         controls_view_->bounds().bottom() + controls_margins.bottom();
     panel_view_->SetBounds(std::min(0, width() - target_width_), panel_top,
                            target_width_, height() - panel_top);
+    panel_view_->SetVisible(panel_view_->bounds().Intersects(GetLocalBounds()));
   }
 
   // If there's an exclusion for caption buttons and the panel is not at its

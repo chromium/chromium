@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_CUSTOM_CORNERS_BACKGROUND_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_CUSTOM_CORNERS_BACKGROUND_H_
 
+#include <tuple>
 #include <variant>
 #include <vector>
 
@@ -14,6 +15,8 @@
 #include "ui/base/interaction/safe_castable.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/view.h"
 
@@ -134,6 +137,10 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
   // `CustomCornersBackground` as well as for `CustomFloatingCorner`. Empty
   // clears the cutout.
   void SetCutoutFrom(const Cutouts& cutouts);
+
+  // Does a best effort to clip `view` to this background. The view must be in
+  // the same hierarchy and ideally a descendant of this background's host view.
+  void ClipViewToBackground(views::View* view) const;
 
   // views::Background:
   void Paint(gfx::Canvas* canvas, views::View* view) const override;

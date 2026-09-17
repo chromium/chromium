@@ -38,9 +38,6 @@ class OrganizerPanelView : public views::View {
  protected:
   explicit OrganizerPanelView(BrowserWindowInterface& browser);
 
-  // views::View:
-  void Layout(PassKey) override;
-
  private:
   // Invalidates the view hierarchy when the panel animates.
   const base::CallbackListSubscription animation_subscription_;

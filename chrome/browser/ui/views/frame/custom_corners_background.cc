@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 
 #include <memory>
+#include <tuple>
 #include <variant>
 
 #include "base/i18n/rtl.h"
@@ -26,6 +27,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -266,6 +268,45 @@ void CustomCornersBackground::SetCutoutFrom(const Cutouts& cutouts) {
   view_->SchedulePaint();
 }
 
+void CustomCornersBackground::ClipViewToBackground(views::View* view) const {
+  const gfx::Rect my_bounds_in_view_coords =
+      views::View::ConvertRectToTarget(&*view_, view, view_->GetLocalBounds());
+  if (view->layer()) {
+    // Clip layers using fast rounded corners.
+    // Note: this approach is not exact.
+    const gfx::Rect unclipped_bounds = view->GetLocalBounds();
+    gfx::Rect clipped_bounds = unclipped_bounds;
+    clipped_bounds.Intersect(my_bounds_in_view_coords);
+    gfx::RoundedCornersF corners =
+        GetRoundedCornerRadii().value_or(gfx::RoundedCornersF());
+    corners.set_upper_left(std::max(
+        0.0f, corners.upper_left() -
+                  std::max(clipped_bounds.x() - my_bounds_in_view_coords.x(),
+                           clipped_bounds.y() - my_bounds_in_view_coords.y())));
+    corners.set_upper_right(std::max(
+        0.0f,
+        corners.upper_right() -
+            std::max(my_bounds_in_view_coords.right() - clipped_bounds.right(),
+                     clipped_bounds.y() - my_bounds_in_view_coords.y())));
+    corners.set_lower_right(std::max(
+        0.0f,
+        corners.lower_right() -
+            std::max(
+                my_bounds_in_view_coords.right() - clipped_bounds.right(),
+                my_bounds_in_view_coords.bottom() - clipped_bounds.bottom())));
+    corners.set_lower_left(std::max(
+        0.0f, corners.lower_left() -
+                  std::max(clipped_bounds.x() - my_bounds_in_view_coords.x(),
+                           my_bounds_in_view_coords.bottom() -
+                               clipped_bounds.bottom())));
+    view->layer()->SetIsFastRoundedCorner(true);
+    view->layer()->SetClipRect(clipped_bounds);
+    view->layer()->SetRoundedCornerRadius(corners);
+  } else {
+    view->SetClipPath(GetBackgroundPath(my_bounds_in_view_coords));
+  }
+}
+
 void CustomCornersBackground::Paint(gfx::Canvas* canvas,
                                     views::View* view) const {
   if (!visible_) {
@@ -459,7 +500,6 @@ void CustomCornersBackground::OnViewThemeChanged(views::View* view) {
 
 std::optional<gfx::RoundedCornersF>
 CustomCornersBackground::GetRoundedCornerRadii() const {
-  // Provided for completeness; this is not used anywhere.
   const VisualCorners corners = GetMirroredCorners();
   return gfx::RoundedCornersF(
       CornerToRadius(corners[VisualCorner::kTopLeft], default_radius_),

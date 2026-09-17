@@ -67,7 +67,6 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/resize_area.h"
@@ -136,6 +135,8 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
       views::kFlexBehaviorKey,
       views::FlexSpecification(content_area_view->GetDefaultFlexRule()));
   content_area_view_ = AddChildView(std::move(content_area_view));
+  content_area_view_->SetPaintToLayer();
+  content_area_view_->layer()->SetFillsBoundsOpaquely(false);
 
   // --------------
   // Views that go into the content area below
@@ -439,15 +440,13 @@ views::ProposedLayout VerticalTabStripRegionView::CalculateProposedLayout(
       base::ClampRound(available.width() * organizer_panel_show_percent_);
   contents_bounds.Offset(-adjustment, 0);
   organizer_bounds.Offset(available.width() - adjustment, 0);
-  layout.child_layouts.push_back(
-      {.child_view = content_area_view_.get(),
-       .visible = organizer_panel_show_percent_ < 1.0,
-       .bounds = contents_bounds});
+  layout.child_layouts.push_back({.child_view = content_area_view_.get(),
+                                  .visible = adjustment < available.width(),
+                                  .bounds = contents_bounds});
   if (organizer_panel_view_) {
-    layout.child_layouts.push_back(
-        {.child_view = organizer_panel_view_.get(),
-         .visible = organizer_panel_show_percent_ > 0.0,
-         .bounds = organizer_bounds});
+    layout.child_layouts.push_back({.child_view = organizer_panel_view_.get(),
+                                    .visible = adjustment > 0,
+                                    .bounds = organizer_bounds});
   }
 
   return layout;
@@ -561,10 +560,6 @@ void VerticalTabStripRegionView::OnMouseExited(const ui::MouseEvent& event) {
 void VerticalTabStripRegionView::SetOrganizerPanelView(
     std::unique_ptr<views::View> panel_view) {
   CHECK(!organizer_panel_view_);
-  // TODO(https://crbug.com/555248711): This is a placeholder for indicating
-  // where the panel is and ensure it is clipped properly; remove it when there
-  // is actual content to show.
-  panel_view->SetBackground(views::CreateSolidBackground(SK_ColorRED));
   organizer_panel_view_ =
       AddChildViewAt(std::move(panel_view), *GetIndexOf(content_area_view_));
 }
@@ -573,10 +568,6 @@ std::unique_ptr<views::View>
 VerticalTabStripRegionView::TakeOrganizerPanelView() {
   CHECK(organizer_panel_view_);
   organizer_panel_show_percent_ = 0.0;
-  // TODO(https://crbug.com/555248711): This is a placeholder for indicating
-  // where the panel is and ensure it is clipped properly; remove it when there
-  // is actual content to show.
-  organizer_panel_view_->SetBackground(nullptr);
   return RemoveChildViewT(std::exchange(organizer_panel_view_, nullptr));
 }
 
@@ -793,6 +784,14 @@ void VerticalTabStripRegionView::SetOrganizerPanelShowPercent(double percent) {
   }
   organizer_panel_show_percent_ = percent;
   InvalidateLayout(/*avoid_propagate_during_layout=*/true);
+}
+
+void VerticalTabStripRegionView::UpdatePanelClips() {
+  auto* const bg = background()->AsA<CustomCornersBackground>();
+  if (organizer_panel_view_) {
+    bg->ClipViewToBackground(organizer_panel_view_);
+  }
+  bg->ClipViewToBackground(content_area_view_);
 }
 
 VerticalTabStripRegionView::RegionViewFocusListener::RegionViewFocusListener(

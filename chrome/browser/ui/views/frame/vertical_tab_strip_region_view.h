@@ -143,6 +143,7 @@ class VerticalTabStripRegionView final
   void RequestCollapse(bool collapse) override;
 
   void SetOrganizerPanelShowPercent(double percent);
+  void UpdatePanelClips();
 
   views::Separator* tabs_separator_for_testing() {
     return tab_strip_view() ? tab_strip_view()->GetTabsSeparator() : nullptr;
