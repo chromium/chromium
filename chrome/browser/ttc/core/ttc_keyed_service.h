@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ttc/core/ttc_state.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -69,12 +70,16 @@ class TtcKeyedService : public KeyedService {
 
   SessionController* session_controller() { return session_controller_.get(); }
 
+  base::WeakPtr<TtcKeyedService> GetWeakPtr();
+
  private:
   raw_ptr<Profile> profile_;
   ConversationFactory conversation_factory_;
   std::unique_ptr<SessionController> session_controller_;
 
   base::RepeatingCallbackList<void(TtcState)> state_changed_callbacks_;
+
+  base::WeakPtrFactory<TtcKeyedService> weak_ptr_factory_{this};
 };
 
 }  // namespace ttc

@@ -73,4 +73,8 @@ std::unique_ptr<Conversation> TtcKeyedService::MakeConversation(
   return conversation;
 }
 
+base::WeakPtr<TtcKeyedService> TtcKeyedService::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ttc

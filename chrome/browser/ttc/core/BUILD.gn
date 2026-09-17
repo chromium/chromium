@@ -42,7 +42,6 @@ source_set("impl") {
     "page_context.cc",
     "session_controller_impl.cc",
     "session_controller_impl.h",
-    "session_view.cc",
     "session_view_delegate.h",
     "tool_controller.cc",
     "ttc_keyed_service.cc",
@@ -67,10 +66,18 @@ source_set("impl") {
   if (is_android) {
     deps += [ "//chrome/browser/ui/android/tab_model" ]
   } else {
+    sources += [
+      "session_view_impl.cc",
+      "session_view_impl.h",
+    ]
     deps += [
+      "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/browser/ui/views/dictation",
+      "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/toolbar",
+      "//ui/views",
     ]
   }
 }
@@ -173,6 +180,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
       "entrypoint_controller_interactive_test.cc",
+      "session_view_impl_browsertest.cc",
       "ttc_interactive_browser_test_base.cc",
       "ttc_interactive_browser_test_base.h",
     ]
@@ -187,6 +195,7 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/browser/ui/views/dictation",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/test:test_support",
       "//chrome/test/interaction",

@@ -34,6 +34,12 @@ class SessionControllerImpl : public SessionController,
   // SessionController implementation:
   void GetPageContext(FetchCompleteCallback callback) override;
 
+  // SessionViewDelegate implementation:
+  BrowserWindowInterface* GetBrowserWindowInterface() override;
+  void EndSessionAsync() override;
+
+  // TODO(bokan): Android doesn't yet have a session_view so calling
+  // this will crash there.
   SessionView& session_view() { return CHECK_DEREF(session_view_.get()); }
   Conversation& conversation() { return CHECK_DEREF(conversation_.get()); }
 

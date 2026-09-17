@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,17 +24,32 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
+#include "chrome/browser/ttc/core/session_view_impl.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #endif
 
 namespace ttc {
 
+namespace {
+
+std::unique_ptr<SessionView> MakeSessionView(
+    [[maybe_unused]] SessionViewDelegate& delegate) {
+#if BUILDFLAG(IS_ANDROID)
+  // SessionViewImpl is views-based; Android will need its own implementation.
+  return nullptr;
+#else
+  return std::make_unique<SessionViewImpl>(delegate);
+#endif
+}
+
+}  // namespace
+
 SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
     : service_(service),
       conversation_(
           service.MakeConversation(base::PassKey<SessionControllerImpl>())),
-      session_view_(std::make_unique<SessionView>(*this)) {
+      session_view_(MakeSessionView(*this)) {
   if (content::WebContents* contents = GetObservedWebContents()) {
     // TODO(b/555800359): Reset page_context_monitor_ on active tab changes.
     page_context_monitor_ = std::make_unique<TtcPageContextMonitor>(
@@ -43,10 +61,26 @@ SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
 
 SessionControllerImpl::~SessionControllerImpl() = default;
 
-content::WebContents* SessionControllerImpl::GetObservedWebContents() {
-  Profile* profile = service_->profile();
-
+BrowserWindowInterface* SessionControllerImpl::GetBrowserWindowInterface() {
 #if BUILDFLAG(IS_ANDROID)
+  return nullptr;
+#else
+  ProfileBrowserCollection* browsers =
+      ProfileBrowserCollection::GetForProfile(service_->profile());
+  return browsers ? browsers->GetLastActiveBrowser() : nullptr;
+#endif
+}
+
+void SessionControllerImpl::EndSessionAsync() {
+  // Ending the session destroys this object so it must be done asynchronously.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&TtcKeyedService::EndSession, service_->GetWeakPtr()));
+}
+
+content::WebContents* SessionControllerImpl::GetObservedWebContents() {
+#if BUILDFLAG(IS_ANDROID)
+  Profile* profile = service_->profile();
   for (TabModel* model : TabModelList::models()) {
     if (model->GetProfile() == profile && model->IsActiveModel()) {
       tabs::TabInterface* active_tab = model->GetActiveTab();
@@ -55,10 +89,7 @@ content::WebContents* SessionControllerImpl::GetObservedWebContents() {
   }
   return nullptr;
 #else
-  ProfileBrowserCollection* browsers =
-      ProfileBrowserCollection::GetForProfile(profile);
-  BrowserWindowInterface* window =
-      browsers ? browsers->GetLastActiveBrowser() : nullptr;
+  BrowserWindowInterface* window = GetBrowserWindowInterface();
   tabs::TabInterface* active_tab =
       window ? window->GetActiveTabInterface() : nullptr;
   return active_tab ? active_tab->GetContents() : nullptr;

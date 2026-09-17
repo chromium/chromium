@@ -5,23 +5,23 @@
 #ifndef CHROME_BROWSER_TTC_CORE_SESSION_VIEW_H_
 #define CHROME_BROWSER_TTC_CORE_SESSION_VIEW_H_
 
-#include "base/memory/raw_ref.h"
-
 namespace ttc {
 
-class SessionViewDelegate;
-
+// Interface for the object holding and implementing all UI interaction for a
+// session.
 class SessionView {
  public:
-  explicit SessionView(SessionViewDelegate& delegate);
-  ~SessionView();
-  SessionView(const SessionView&) = delete;
-  SessionView& operator=(const SessionView&) = delete;
+  virtual ~SessionView() = default;
 
- private:
-  // Safe because the delegate is guaranteed to outlive this object. Assigned on
-  // construction.
-  const raw_ref<SessionViewDelegate> delegate_;
+  // Called when the audio level of the user's microphone input changes.
+  virtual void UpdateAudioLevel(float audio_level) = 0;
+
+  // Called when the session has finished initializing and audio capture is
+  // live.
+  virtual void OnSessionInitialized() = 0;
+
+  // Called when the session has ended and the UI should be torn down.
+  virtual void OnSessionEnded() = 0;
 };
 
 }  // namespace ttc
