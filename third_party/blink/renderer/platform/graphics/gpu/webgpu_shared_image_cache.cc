@@ -160,31 +160,6 @@ void WebGpuSharedImageLease::DrawToBackingSharedImage(
   }
 }
 
-std::optional<gpu::SyncToken> WebGpuSharedImageLease::CopyToBackingSharedImage(
-    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
-    uint32_t src_x,
-    uint32_t src_y,
-    const gpu::SyncToken& ready_sync_token) {
-  gpu::raster::RasterInterface* raster = RasterInterface();
-  if (!raster) {
-    return std::nullopt;
-  }
-
-  if (IsGpuContextLost()) {
-    return std::nullopt;
-  }
-
-  gfx::Rect copy_rect(src_x, src_y, resource_.shared_image_->size().width(),
-                      resource_.shared_image_->size().height());
-
-  auto result = raster->CopySharedImage(
-      shared_image, ready_sync_token, resource_.shared_image_,
-      resource_.sync_token_, copy_rect, gfx::Point());
-  resource_.sync_token_ = result.dest_sync_token;
-  resource_.is_cleared_ = true;
-  return result.source_sync_token;
-}
-
 void WebGpuSharedImageLease::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,

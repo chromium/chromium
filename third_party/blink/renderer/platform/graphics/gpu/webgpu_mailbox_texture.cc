@@ -89,10 +89,17 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     bool copy_success = false;
     if (image->IsTextureBacked()) {
       if (auto shared_image = image->GetSharedImage()) {
-        if (auto completion_sync_token = lease->CopyToBackingSharedImage(
-                std::move(shared_image), image_sub_rect.x(), image_sub_rect.y(),
-                image->GetSyncToken())) {
-          image->UpdateSyncToken(*completion_sync_token);
+        gpu::raster::RasterInterface* raster = lease->RasterInterface();
+        if (raster && !lease->IsGpuContextLost()) {
+          gfx::Rect copy_rect(image_sub_rect.x(), image_sub_rect.y(),
+                              lease->shared_image()->size().width(),
+                              lease->shared_image()->size().height());
+          auto result = raster->CopySharedImage(
+              shared_image, image->GetSyncToken(), lease->shared_image(),
+              lease->sync_token(), copy_rect, gfx::Point());
+          lease->SetSyncToken(result.dest_sync_token);
+          lease->SetCleared();
+          image->UpdateSyncToken(result.source_sync_token);
           copy_success = true;
         }
       }
