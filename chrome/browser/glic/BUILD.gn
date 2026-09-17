@@ -623,6 +623,7 @@ source_set("impl") {
       "//chrome/browser/glic/selection",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/themes",
+      "//chrome/browser/ui:browser_manager_service",
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:scoped_tabbed_browser_displayer",

@@ -574,6 +574,7 @@ source_set("impl") {
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/sync",
       "//chrome/browser/themes",
+      "//chrome/browser/ui:browser_manager_service",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:tabs_public",

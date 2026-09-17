@@ -111,6 +111,36 @@ if (!is_android) {
     ]
   }
 
+  source_set("browser_manager_service") {
+    public = [
+      "browser_manager_service.h",
+      "browser_manager_service_factory.h",
+    ]
+    sources = [
+      "browser_manager_service.cc",
+      "browser_manager_service_factory.cc",
+    ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui/browser_window",
+      "//components/keyed_service/content",
+      "//components/keyed_service/core",
+    ]
+
+    deps = [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/history",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/lifetime:termination_notification",
+      "//chrome/browser/printing",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_manager",
+      "//components/keep_alive_registry",
+      "//printing/buildflags",
+    ]
+  }
+
   source_set("browser_window_state") {
     public = [ "browser_window_state.h" ]
     sources = [ "browser_window_state.cc" ]
@@ -1583,10 +1613,7 @@ static_library("ui") {
       "browser_commands.cc",
       "browser_commands.h",
       "browser_live_tab_context.cc",
-      "browser_manager_service.cc",
-      "browser_manager_service.h",
-      "browser_manager_service_factory.cc",
-      "browser_manager_service_factory.h",
+      "browser_tab_restorer.cc",
       "browser_tab_strip_model_delegate.cc",
       "browser_tabstrip.cc",
       "browser_tabstrip.h",
@@ -1615,6 +1642,7 @@ static_library("ui") {
     deps += [
       ":accelerator_table",
       ":browser_actions",
+      ":browser_manager_service",
       ":browser_select_file_dialog_controller",
       ":browser_window_header",
       ":browser_window_state",
@@ -4195,6 +4223,7 @@ if (!is_android) {
       ":breadcrumb_manager_browser_agent",
       ":browser_actions",
       ":browser_instant_controller",
+      ":browser_manager_service",
       ":browser_tabrestore",
       ":browser_ui_prefs",
       ":browser_window_header",
@@ -4474,6 +4503,7 @@ source_set("unit_tests") {
     ]
     deps += [
       ":accelerator_table",
+      ":browser_manager_service",
       ":browser_window_state",
       ":managed_ui",
       "//chrome/browser/apps/intent_helper:intent_chip_display_prefs",

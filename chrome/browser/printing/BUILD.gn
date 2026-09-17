@@ -369,6 +369,7 @@ if (enable_printing) {
         ]
         deps += [
           ":test_support",
+          "//chrome/browser/ui:browser_manager_service",
           "//chrome/browser/ui/webui/print_preview",
           "//chrome/browser/ui/webui/print_preview:browser_tests",
           "//printing:test_support",

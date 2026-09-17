@@ -84,6 +84,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/sharing",
       "//chrome/browser/sync",
+      "//chrome/browser/ui:browser_manager_service",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/desktop_to_mobile_promos",

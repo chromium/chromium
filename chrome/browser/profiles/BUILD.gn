@@ -934,6 +934,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/sharing_hub",
       "//chrome/browser/themes",
+      "//chrome/browser/ui:browser_manager_service",
       "//chrome/browser/ui/desktop_to_mobile_promos:service",
       "//chrome/browser/ui/global_error",
       "//chrome/browser/ui/global_media_controls",

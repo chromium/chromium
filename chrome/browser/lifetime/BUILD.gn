@@ -171,6 +171,7 @@ source_set("impl") {
       "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/sessions",
       "//chrome/browser/ui:browser_init_state",
+      "//chrome/browser/ui:browser_manager_service",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:scoped_tabbed_browser_displayer",

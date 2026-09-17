@@ -155,6 +155,7 @@ source_set("unit_tests") {
   if (!is_android) {
     sources += [ "context_hub_tab_provider_desktop_unittest.cc" ]
     deps += [
+      "//chrome/browser/ui:browser_manager_service",
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui/tabs:test_support",
       "//ui/base:test_support",

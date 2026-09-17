@@ -1054,6 +1054,10 @@ source_set("unit_tests") {
       "//testing/gmock",
     ]
   }
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_manager_service" ]
+  }
 }
 
 source_set("test_support") {
