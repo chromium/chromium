@@ -19,6 +19,10 @@
 
 namespace webnn {
 
+struct Float16 {
+  uint16_t data;
+};
+
 std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     OpTagToString(mojom::Operation::Tag tag);
 std::string COMPONENT_EXPORT(WEBNN_SERVICE)

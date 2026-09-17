@@ -29,6 +29,7 @@
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/webnn_utils.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h"
@@ -44,10 +45,6 @@ class WebNNConstantOperand;
 namespace tflite {
 
 using TensorIndex = int32_t;
-
-struct Float16 {
-  uint16_t data;
-};
 
 struct TensorDescriptor {
   TensorIndex tensor_index;

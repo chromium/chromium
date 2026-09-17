@@ -25,6 +25,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/webnn_utils.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/coremltools/mlmodel/format/MIL.pb.h"
 #include "third_party/coremltools/mlmodel/format/Model.pb.h"
@@ -34,10 +35,6 @@ namespace webnn {
 class WebNNConstantOperand;
 
 namespace coreml {
-
-struct Float16 {
-  uint16_t data;
-};
 
 namespace internal {
 // Supported tensor types for immediate values. The list can be expanded as

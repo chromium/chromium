@@ -47,12 +47,6 @@ namespace webnn::test {
 
 namespace {
 
-// TODO(crbug.com/373443096): Consolidate with the other Float16 types declared
-// elsewhere.
-struct Float16 {
-  uint16_t data;
-};
-
 struct TensorRemoteAndHandle {
   mojo::AssociatedRemote<mojom::WebNNTensor> remote;
   blink::WebNNTensorToken handle;
