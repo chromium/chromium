@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -417,10 +418,14 @@ void ChromeHidDelegate::OnWebViewHidPermissionRequestCompleted(
     return;
   }
 
-  chooser->SetCloseClosure(chrome::ShowDeviceChooserDialog(
+  base::ScopedClosureRunner close_runner(chrome::ShowDeviceChooserDialog(
       render_frame_host,
       std::make_unique<HidChooserController>(
           render_frame_host, std::move(filters), std::move(exclusion_filters),
           std::move(callback))));
+  if (!chooser) {
+    return;
+  }
+  chooser->SetCloseClosure(close_runner.Release());
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
