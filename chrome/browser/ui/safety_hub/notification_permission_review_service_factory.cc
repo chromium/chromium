@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 
 // static
 NotificationPermissionsReviewServiceFactory*
@@ -54,6 +56,10 @@ std::unique_ptr<KeyedService> NotificationPermissionsReviewServiceFactory::
 
 bool NotificationPermissionsReviewServiceFactory::
     ServiceIsCreatedWithBrowserContext() const {
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationSafetyHub.Get()) {
+    return false;
+  }
   return true;
 }
 

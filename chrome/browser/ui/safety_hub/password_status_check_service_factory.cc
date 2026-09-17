@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
+#include "chrome/common/chrome_features.h"
 
 // static
 PasswordStatusCheckServiceFactory*
@@ -67,5 +69,9 @@ PasswordStatusCheckServiceFactory::BuildServiceInstanceForBrowserContext(
 
 bool PasswordStatusCheckServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationSafetyHub.Get()) {
+    return false;
+  }
   return true;
 }
