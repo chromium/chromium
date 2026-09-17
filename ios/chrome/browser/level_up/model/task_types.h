@@ -16,7 +16,7 @@ enum class TaskType {
   kPinTabs = 3,
   kGemini = 4,
   kPaymentMethods = 5,
-  kQuickDelete = 6,
+  kClearBrowsingData = 6,
   kSafeBrowsing = 7,
   kIncognito = 8,
   kPasswordCheckup = 9,

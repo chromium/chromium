@@ -18,8 +18,8 @@ std::string TaskTypeToString(TaskType type) {
       return "Gemini";
     case TaskType::kPaymentMethods:
       return "PaymentMethods";
-    case TaskType::kQuickDelete:
-      return "QuickDelete";
+    case TaskType::kClearBrowsingData:
+      return "ClearBrowsingData";
     case TaskType::kSafeBrowsing:
       return "SafeBrowsing";
     case TaskType::kIncognito:
@@ -42,6 +42,7 @@ TaskType StringToTaskType(std::string_view str) {
       base::MakeFixedFlatMap<std::string_view, TaskType>({
           {"AISearch", TaskType::kAISearch},
           {"Autofill", TaskType::kAutofill},
+          {"ClearBrowsingData", TaskType::kClearBrowsingData},
           {"Gemini", TaskType::kGemini},
           {"Incognito", TaskType::kIncognito},
           {"LensCameraSearch", TaskType::kLensCameraSearch},
@@ -49,7 +50,6 @@ TaskType StringToTaskType(std::string_view str) {
           {"PasswordCheckup", TaskType::kPasswordCheckup},
           {"PaymentMethods", TaskType::kPaymentMethods},
           {"PinTabs", TaskType::kPinTabs},
-          {"QuickDelete", TaskType::kQuickDelete},
           {"SafeBrowsing", TaskType::kSafeBrowsing},
           {"TabGroups", TaskType::kTabGroups},
       });

@@ -4724,6 +4724,12 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
           =1 {1 completed task}
           other {# completed tasks}}
       </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_DELETE_BROWSING_DATA" desc="Feature Name for Level Up's Delete browsing data task. [iOS only]">
+        Delete browsing data
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_DELETE_BROWSING_DATA_DESCRIPTION" desc="Description for Level Up's Delete browsing data task. [iOS only]">
+        Manage your history, cookies, and more to protect your privacy
+      </message>
       <message name="IDS_IOS_LEVEL_UP_FEATURE_GOOGLE_LENS" desc="Feature name for Google Lens. [iOS only]">
         Google Lens
       </message>
@@ -4839,6 +4845,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_AUTOFILL" desc="Completion snackbar message for the Autofill task. [iOS only]">
         Passwords and Autofill completed!
       </message>
+      <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_DELETE_BROWSING_DATA" desc="Completion snackbar message for the Delete Browsing Data task. [iOS only]">
+        Delete browsing data completed!
+      </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_GEMINI" desc="Completion snackbar message for the Gemini task. [iOS only]">
         Use Gemini in Chrome completed!
       </message>
@@ -4859,9 +4868,6 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_PIN_TABS" desc="Completion snackbar message for the Pin Tabs task. [iOS only]">
         Pin tabs completed!
-      </message>
-      <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_QUICK_DELETE" desc="Completion snackbar message for the Quick Delete task. [iOS only]">
-        Quick delete completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_SAFE_BROWSING" desc="Completion snackbar message for the Safe Browsing task. [iOS only]">
         Enhanced Safe Browsing completed!

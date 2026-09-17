@@ -13,16 +13,20 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-class QuickDeleteTaskInfo : public TaskInfo {
+class ClearBrowsingDataTaskInfo : public TaskInfo {
  public:
-  QuickDeleteTaskInfo() = default;
-  ~QuickDeleteTaskInfo() override = default;
+  ClearBrowsingDataTaskInfo() = default;
+  ~ClearBrowsingDataTaskInfo() override = default;
 
   // TaskInfo implementation.
-  TaskType GetTaskType() const override { return TaskType::kQuickDelete; }
-  std::string GetTitle() const override { return "Quick delete"; }
+  TaskType GetTaskType() const override { return TaskType::kClearBrowsingData; }
+  std::string GetTitle() const override {
+    return l10n_util::GetStringUTF8(
+        IDS_IOS_LEVEL_UP_FEATURE_DELETE_BROWSING_DATA);
+  }
   std::string GetTaskDescription() const override {
-    return "Manage your history, cookies and more to protect your privacy";
+    return l10n_util::GetStringUTF8(
+        IDS_IOS_LEVEL_UP_FEATURE_DELETE_BROWSING_DATA_DESCRIPTION);
   }
   Symbol GetIconSymbol() const override { return SymbolTrash; }
   LevelUpTaskCategory GetCategory() const override {
@@ -33,7 +37,7 @@ class QuickDeleteTaskInfo : public TaskInfo {
   }
   std::string GetCompletionSnackbarMessage() const override {
     return l10n_util::GetStringUTF8(
-        IDS_IOS_LEVEL_UP_TASK_COMPLETED_QUICK_DELETE);
+        IDS_IOS_LEVEL_UP_TASK_COMPLETED_DELETE_BROWSING_DATA);
   }
   TaskInfo::NavigationAction GetNavigationAction() const override {
     return base::BindRepeating(
@@ -45,6 +49,6 @@ class QuickDeleteTaskInfo : public TaskInfo {
   }
 };
 
-std::unique_ptr<TaskInfo> CreateQuickDeleteTaskInfo() {
-  return std::make_unique<QuickDeleteTaskInfo>();
+std::unique_ptr<TaskInfo> CreateClearBrowsingDataTaskInfo() {
+  return std::make_unique<ClearBrowsingDataTaskInfo>();
 }

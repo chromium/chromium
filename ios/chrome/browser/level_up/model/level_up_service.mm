@@ -475,7 +475,7 @@ void LevelUpService::PopulateTasks() {
   tasks_[TaskType::kPinTabs] = CreatePinTabsTaskInfo();
   tasks_[TaskType::kGemini] = CreateGeminiTaskInfo();
   tasks_[TaskType::kPaymentMethods] = CreatePaymentMethodsTaskInfo();
-  tasks_[TaskType::kQuickDelete] = CreateQuickDeleteTaskInfo();
+  tasks_[TaskType::kClearBrowsingData] = CreateClearBrowsingDataTaskInfo();
   tasks_[TaskType::kSafeBrowsing] = CreateSafeBrowsingTaskInfo();
   tasks_[TaskType::kIncognito] = CreateIncognitoTaskInfo();
   tasks_[TaskType::kPasswordCheckup] = CreatePasswordCheckupTaskInfo();

@@ -14,7 +14,7 @@ std::unique_ptr<TaskInfo> CreateAutofillTaskInfo();
 std::unique_ptr<TaskInfo> CreatePinTabsTaskInfo();
 std::unique_ptr<TaskInfo> CreateGeminiTaskInfo();
 std::unique_ptr<TaskInfo> CreatePaymentMethodsTaskInfo();
-std::unique_ptr<TaskInfo> CreateQuickDeleteTaskInfo();
+std::unique_ptr<TaskInfo> CreateClearBrowsingDataTaskInfo();
 std::unique_ptr<TaskInfo> CreateSafeBrowsingTaskInfo();
 std::unique_ptr<TaskInfo> CreateIncognitoTaskInfo();
 std::unique_ptr<TaskInfo> CreatePasswordCheckupTaskInfo();

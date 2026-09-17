@@ -6,6 +6,7 @@ source_set("tasks") {
   sources = [
     "ai_search_task_info.mm",
     "autofill_task_info.mm",
+    "clear_browsing_data_task_info.mm",
     "gemini_task_info.mm",
     "incognito_task_info.mm",
     "lens_camera_search_task_info.mm",
@@ -13,7 +14,6 @@ source_set("tasks") {
     "password_checkup_task_info.mm",
     "payment_methods_task_info.mm",
     "pin_tabs_task_info.mm",
-    "quick_delete_task_info.mm",
     "safe_browsing_task_info.mm",
     "tab_groups_task_info.mm",
     "task_factories.h",

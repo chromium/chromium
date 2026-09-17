@@ -81,7 +81,7 @@ TEST_F(LevelUpServiceTest, TestMilestoneProgression) {
   // Complete 4 more tasks (total 7).
   service_->MarkTaskCompleted(TaskType::kGemini);
   service_->MarkTaskCompleted(TaskType::kPaymentMethods);
-  service_->MarkTaskCompleted(TaskType::kQuickDelete);
+  service_->MarkTaskCompleted(TaskType::kClearBrowsingData);
   service_->MarkTaskCompleted(TaskType::kSafeBrowsing);
   EXPECT_EQ(service_->GetCurrentLevel(), 2);
   EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), 1);
@@ -313,7 +313,7 @@ TEST_F(LevelUpServiceTest, TestGetRecommendedTasksDefaultOrder) {
 // in recommendations.
 TEST_F(LevelUpServiceTest, TestGetRecommendedTasksCategoryRecency) {
   // Complete a Safety task.
-  service_->MarkTaskCompleted(TaskType::kQuickDelete);
+  service_->MarkTaskCompleted(TaskType::kClearBrowsingData);
 
   std::vector<const TaskInfo*> recommended = service_->GetRecommendedTasks();
   ASSERT_EQ(4u, recommended.size());
