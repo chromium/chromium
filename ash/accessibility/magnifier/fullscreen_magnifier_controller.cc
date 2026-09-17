@@ -483,8 +483,7 @@ ui::EventDispatchDetails FullscreenMagnifierController::RewriteEvent(
 }
 
 const std::string& FullscreenMagnifierController::GetName() const {
-  static const std::string name("FullscreenMagnifierController");
-  return name;
+  return name_;
 }
 
 base::WeakPtr<ui::GestureConsumer> FullscreenMagnifierController::GetWeakPtr() {

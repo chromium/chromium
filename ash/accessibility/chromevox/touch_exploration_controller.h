@@ -557,6 +557,8 @@ class ASH_EXPORT TouchExplorationController
   // The maximum touch points seen in the current gesture.
   size_t max_gesture_touch_points_ = 0;
 
+  const std::string name_ = "TouchExplorationController";
+
   base::WeakPtrFactory<TouchExplorationController> weak_ptr_factory_{this};
 };
 

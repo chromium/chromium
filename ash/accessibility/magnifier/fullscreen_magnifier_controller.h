@@ -319,6 +319,8 @@ class ASH_EXPORT FullscreenMagnifierController
   base::RepeatingCallback<void(const gfx::Point&)>
       cursor_moved_callback_for_testing_;
 
+  const std::string name_ = "FullscreenMagnifierController";
+
   base::WeakPtrFactory<FullscreenMagnifierController> weak_ptr_factory_{this};
 };
 

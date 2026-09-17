@@ -863,8 +863,7 @@ void TouchExplorationController::OnGestureEvent(ui::GestureConsumer* consumer,
                                                 ui::GestureEvent* gesture) {}
 
 const std::string& TouchExplorationController::GetName() const {
-  static const std::string name("TouchExplorationController");
-  return name;
+  return name_;
 }
 
 base::WeakPtr<ui::GestureConsumer> TouchExplorationController::GetWeakPtr() {

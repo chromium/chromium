@@ -43,9 +43,6 @@ struct BatchParams {
   const char* non_lockable_pref;
 };
 
-// Used when the server value is irrelevant to the test.
-const base::Value kIrrelevantServerValue;
-
 }  // namespace
 
 class AccessibilityPrefsCustomAssociatorTest : public testing::Test {
@@ -61,6 +58,9 @@ class AccessibilityPrefsCustomAssociatorTest : public testing::Test {
                                            const base::Value& server) {
     return associator_->GetPreferredPrefMergeValue(pref_name, server);
   }
+
+  // Used when the server value is irrelevant to the test.
+  const base::Value kIrrelevantServerValue;
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<AccessibilityPrefsCustomAssociator> associator_;

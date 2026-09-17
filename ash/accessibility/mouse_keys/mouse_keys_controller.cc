@@ -14,7 +14,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/accessibility/mouse_keys/mouse_keys_bubble_controller.h"
 #include "ash/wm/window_util.h"
-#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/cursor_client.h"
@@ -28,57 +27,126 @@
 namespace ash {
 
 namespace {
-const base::flat_map<ui::DomCode, MouseKeysController::MouseKey>
-    kLeftHandedKeys({
-        {ui::DomCode::US_W, MouseKeysController::kKeyClick},
-        {ui::DomCode::US_V, MouseKeysController::kKeyDoubleClick},
-        {ui::DomCode::US_Z, MouseKeysController::kKeyDragStart},
-        {ui::DomCode::US_C, MouseKeysController::kKeyDragStop},
-        {ui::DomCode::DIGIT1, MouseKeysController::kKeyUpLeft},
-        {ui::DomCode::DIGIT2, MouseKeysController::kKeyUp},
-        {ui::DomCode::DIGIT3, MouseKeysController::kKeyUpRight},
-        {ui::DomCode::US_Q, MouseKeysController::kKeyLeft},
-        {ui::DomCode::US_E, MouseKeysController::kKeyRight},
-        {ui::DomCode::US_A, MouseKeysController::kKeyDownLeft},
-        {ui::DomCode::US_S, MouseKeysController::kKeyDown},
-        {ui::DomCode::US_D, MouseKeysController::kKeyDownRight},
-        {ui::DomCode::US_X, MouseKeysController::kKeySelectNextButton},
-    });
+constexpr std::optional<MouseKeysController::MouseKey> GetLeftHandedMouseKey(
+    ui::DomCode dom_code) {
+  switch (dom_code) {
+    case ui::DomCode::US_W:
+      return MouseKeysController::kKeyClick;
+    case ui::DomCode::US_V:
+      return MouseKeysController::kKeyDoubleClick;
+    case ui::DomCode::US_Z:
+      return MouseKeysController::kKeyDragStart;
+    case ui::DomCode::US_C:
+      return MouseKeysController::kKeyDragStop;
+    case ui::DomCode::DIGIT1:
+      return MouseKeysController::kKeyUpLeft;
+    case ui::DomCode::DIGIT2:
+      return MouseKeysController::kKeyUp;
+    case ui::DomCode::DIGIT3:
+      return MouseKeysController::kKeyUpRight;
+    case ui::DomCode::US_Q:
+      return MouseKeysController::kKeyLeft;
+    case ui::DomCode::US_E:
+      return MouseKeysController::kKeyRight;
+    case ui::DomCode::US_A:
+      return MouseKeysController::kKeyDownLeft;
+    case ui::DomCode::US_S:
+      return MouseKeysController::kKeyDown;
+    case ui::DomCode::US_D:
+      return MouseKeysController::kKeyDownRight;
+    case ui::DomCode::US_X:
+      return MouseKeysController::kKeySelectNextButton;
+    default:
+      return std::nullopt;
+  }
+}
 
-const base::flat_map<ui::DomCode, MouseKeysController::MouseKey>
-    kRightHandedKeys({
-        {ui::DomCode::US_I, MouseKeysController::kKeyClick},
-        {ui::DomCode::SLASH, MouseKeysController::kKeyDoubleClick},
-        {ui::DomCode::US_M, MouseKeysController::kKeyDragStart},
-        {ui::DomCode::PERIOD, MouseKeysController::kKeyDragStop},
-        {ui::DomCode::DIGIT7, MouseKeysController::kKeyUpLeft},
-        {ui::DomCode::DIGIT8, MouseKeysController::kKeyUp},
-        {ui::DomCode::DIGIT9, MouseKeysController::kKeyUpRight},
-        {ui::DomCode::US_U, MouseKeysController::kKeyLeft},
-        {ui::DomCode::US_O, MouseKeysController::kKeyRight},
-        {ui::DomCode::US_J, MouseKeysController::kKeyDownLeft},
-        {ui::DomCode::US_K, MouseKeysController::kKeyDown},
-        {ui::DomCode::US_L, MouseKeysController::kKeyDownRight},
-        {ui::DomCode::COMMA, MouseKeysController::kKeySelectNextButton},
-    });
+constexpr std::optional<MouseKeysController::MouseKey> GetRightHandedMouseKey(
+    ui::DomCode dom_code) {
+  switch (dom_code) {
+    case ui::DomCode::US_I:
+      return MouseKeysController::kKeyClick;
+    case ui::DomCode::SLASH:
+      return MouseKeysController::kKeyDoubleClick;
+    case ui::DomCode::US_M:
+      return MouseKeysController::kKeyDragStart;
+    case ui::DomCode::PERIOD:
+      return MouseKeysController::kKeyDragStop;
+    case ui::DomCode::DIGIT7:
+      return MouseKeysController::kKeyUpLeft;
+    case ui::DomCode::DIGIT8:
+      return MouseKeysController::kKeyUp;
+    case ui::DomCode::DIGIT9:
+      return MouseKeysController::kKeyUpRight;
+    case ui::DomCode::US_U:
+      return MouseKeysController::kKeyLeft;
+    case ui::DomCode::US_O:
+      return MouseKeysController::kKeyRight;
+    case ui::DomCode::US_J:
+      return MouseKeysController::kKeyDownLeft;
+    case ui::DomCode::US_K:
+      return MouseKeysController::kKeyDown;
+    case ui::DomCode::US_L:
+      return MouseKeysController::kKeyDownRight;
+    case ui::DomCode::COMMA:
+      return MouseKeysController::kKeySelectNextButton;
+    default:
+      return std::nullopt;
+  }
+}
 
-const base::flat_map<ui::DomCode, MouseKeysController::MouseKey> kNumPadKeys({
-    {ui::DomCode::NUMPAD5, MouseKeysController::kKeyClick},
-    {ui::DomCode::NUMPAD_ADD, MouseKeysController::kKeyDoubleClick},
-    {ui::DomCode::NUMPAD0, MouseKeysController::kKeyDragStart},
-    {ui::DomCode::NUMPAD_DECIMAL, MouseKeysController::kKeyDragStop},
-    {ui::DomCode::NUMPAD7, MouseKeysController::kKeyUpLeft},
-    {ui::DomCode::NUMPAD8, MouseKeysController::kKeyUp},
-    {ui::DomCode::NUMPAD9, MouseKeysController::kKeyUpRight},
-    {ui::DomCode::NUMPAD4, MouseKeysController::kKeyLeft},
-    {ui::DomCode::NUMPAD6, MouseKeysController::kKeyRight},
-    {ui::DomCode::NUMPAD1, MouseKeysController::kKeyDownLeft},
-    {ui::DomCode::NUMPAD2, MouseKeysController::kKeyDown},
-    {ui::DomCode::NUMPAD3, MouseKeysController::kKeyDownRight},
-    {ui::DomCode::NUMPAD_DIVIDE, MouseKeysController::kKeySelectLeftButton},
-    {ui::DomCode::NUMPAD_SUBTRACT, MouseKeysController::kKeySelectRightButton},
-    {ui::DomCode::NUMPAD_MULTIPLY, MouseKeysController::kKeySelectBothButtons},
-});
+constexpr std::optional<MouseKeysController::MouseKey> GetNumPadMouseKey(
+    ui::DomCode dom_code) {
+  switch (dom_code) {
+    case ui::DomCode::NUMPAD5:
+      return MouseKeysController::kKeyClick;
+    case ui::DomCode::NUMPAD_ADD:
+      return MouseKeysController::kKeyDoubleClick;
+    case ui::DomCode::NUMPAD0:
+      return MouseKeysController::kKeyDragStart;
+    case ui::DomCode::NUMPAD_DECIMAL:
+      return MouseKeysController::kKeyDragStop;
+    case ui::DomCode::NUMPAD7:
+      return MouseKeysController::kKeyUpLeft;
+    case ui::DomCode::NUMPAD8:
+      return MouseKeysController::kKeyUp;
+    case ui::DomCode::NUMPAD9:
+      return MouseKeysController::kKeyUpRight;
+    case ui::DomCode::NUMPAD4:
+      return MouseKeysController::kKeyLeft;
+    case ui::DomCode::NUMPAD6:
+      return MouseKeysController::kKeyRight;
+    case ui::DomCode::NUMPAD1:
+      return MouseKeysController::kKeyDownLeft;
+    case ui::DomCode::NUMPAD2:
+      return MouseKeysController::kKeyDown;
+    case ui::DomCode::NUMPAD3:
+      return MouseKeysController::kKeyDownRight;
+    case ui::DomCode::NUMPAD_DIVIDE:
+      return MouseKeysController::kKeySelectLeftButton;
+    case ui::DomCode::NUMPAD_SUBTRACT:
+      return MouseKeysController::kKeySelectRightButton;
+    case ui::DomCode::NUMPAD_MULTIPLY:
+      return MouseKeysController::kKeySelectBothButtons;
+    default:
+      return std::nullopt;
+  }
+}
+
+constexpr std::optional<MouseKeysController::MouseKey> GetMouseKey(
+    ui::DomCode dom_code,
+    bool left_handed,
+    bool use_primary_keys) {
+  if (use_primary_keys) {
+    std::optional<MouseKeysController::MouseKey> primary_key =
+        left_handed ? GetLeftHandedMouseKey(dom_code)
+                    : GetRightHandedMouseKey(dom_code);
+    if (primary_key) {
+      return primary_key;
+    }
+  }
+  return GetNumPadMouseKey(dom_code);
+}
 
 bool ShouldEndDragOperation(ui::MouseEvent* event) {
   return event->type() == ui::EventType::kMousePressed && event->IsAnyButton();
@@ -149,22 +217,12 @@ bool MouseKeysController::RewriteEvent(const ui::Event& event) {
 
   CenterMouseIfUninitialized();
 
-  // Check primary keyboard keys.
+  // Check mouse keys.
   const ui::KeyEvent* key_event = event.AsKeyEvent();
-  if (use_primary_keys_) {
-    auto mappings = left_handed_ ? kLeftHandedKeys : kRightHandedKeys;
-    for (auto mapping : mappings) {
-      if (CheckFlagsAndMaybeSendEvent(*key_event, mapping.first,
-                                      mapping.second)) {
-        return true;
-      }
-    }
-  }
-
-  // Check num pad.
-  for (auto mapping : kNumPadKeys) {
-    if (CheckFlagsAndMaybeSendEvent(*key_event, mapping.first,
-                                    mapping.second)) {
+  if (auto mouse_key = GetMouseKey(key_event->code(), left_handed_,
+                                   use_primary_keys_)) {
+    if (CheckFlagsAndMaybeSendEvent(*key_event, key_event->code(),
+                                    *mouse_key)) {
       return true;
     }
   }
