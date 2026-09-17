@@ -53,17 +53,21 @@
   --toolbar-chip-icon-label-gap: var(--location-bar-child-internal-spacing);
 }
 
-:host([is-aim]) #button {
+:host([is-aim]) #button,
+:host([slide-and-crossfade]) #button {
   /* AiModePageActionController natively forces its layout down to 16px. Our
    * --dynamic-base-padding CSS variable will instantly and automatically react
-   * to this override and recalculate the perfect centering offset! */
-  --toolbar-chip-icon-size: var(--location-bar-chip-icon-size);
+   * to this override and recalculate the perfect centering offset!
+   * The 16px fallback ensures the chip sizes correctly in isolated
+   * environments (e.g. unit test suites) where --location-bar-chip-icon-size
+   * is not defined. */
+  --toolbar-chip-icon-size: var(--location-bar-chip-icon-size, 16px);
 }
 
 #button[has-label] {
-  /* When fully expanded, C++ Native (PageActionView) explicitly adds
-   * Inset1D(4, 8) to the label. */
-
+  /* In PageActionView::PageActionView, C++ explicitly adds
+   * SetExpandedLabelAdditionalInsets(views::Inset1D(4, 8)) to the label:
+   * 4px leading padding and 8px trailing padding. */
   --toolbar-chip-padding-start: calc(
       var(--location-bar-page-action-icon-padding-start) +
       var(--dynamic-base-padding) + 4px);
@@ -103,4 +107,136 @@
   text-box: trim-both cap alphabetic;
   text-overflow: clip;
   white-space: nowrap;
+}
+
+/* SlideAndCrossfade animation styling: used by the AI Mode page action chip
+ * to drop the leading icon, slide the label left, and transition in a trailing
+ * arrow icon when user typing begins, and vice-versa when cleared.
+ *
+ * Matches Native Views 1:1 with
+ * SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy (in
+ * chrome/browser/ui/views/location_bar/slide_and_crossfade_icon_label_bubble_layout_strategy.cc).
+ * - Durations: 333ms (expand) and 383ms (collapse).
+ * - Deceleration easing: cubic-bezier(0.2, 0, 0, 1).
+ * - Opacity: 50ms linear fade-out for outgoing icons, full-duration
+ *   deceleration fade-in for incoming icons.
+ * - Padding/spacing: mirrors LayoutDimensions{6, 4, 10, 10, 4} (non-touch)
+ *   and LayoutDimensions{10, 6, 14, 14, 6} (touch). */
+:host([slide-and-crossfade]) {
+  /* Direction multiplier: -1 in LTR (slide left), +1 in RTL (slide right). */
+  --slide-crossfade-direction: -1;
+  --slide-crossfade-duration-collapse: 383ms;
+  --slide-crossfade-duration-expand: 333ms;
+  --slide-crossfade-duration-fade-out: 50ms;
+  --slide-crossfade-easing: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Dimensions from Native Views' LayoutDimensions struct in
+   * SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::
+   * GetLayoutDimensions():
+   *   Non-touch: {leading_expanded: 6px, spacing_expanded: 4px,
+   *               trailing_expanded: 10px, leading_collapsed: 10px,
+   *               spacing_collapsed: 4px}
+   *   Touch:     {leading_expanded: 10px, spacing_expanded: 6px,
+   *               trailing_expanded: 14px, leading_collapsed: 14px,
+   *               spacing_collapsed: 6px}
+   * Computed as: base + touch_mode * (touch - base).
+   * Note: In Native Views, leading_collapsed and trailing_expanded share the
+   * same values (10px non-touch, 14px touch). */
+  --slide-crossfade-leading: calc(
+      6px + var(--touch-mode, 0) * (10px - 6px));
+  --slide-crossfade-spacing: calc(
+      4px + var(--touch-mode, 0) * (6px - 4px));
+  --slide-crossfade-trailing: calc(
+      10px + var(--touch-mode, 0) * (14px - 10px));
+  --slide-crossfade-leading-collapsed: var(--slide-crossfade-trailing);
+}
+
+:host([slide-and-crossfade]:dir(rtl)) {
+  --slide-crossfade-direction: 1;
+}
+
+:host([slide-and-crossfade]) #button {
+  --toolbar-chip-padding-start: var(--slide-crossfade-leading);
+  --toolbar-chip-padding-end: var(--slide-crossfade-trailing);
+  --toolbar-chip-icon-label-gap: var(--slide-crossfade-spacing);
+  /* In Native Views, label displacement is:
+   * (leading_expanded + icon_size + spacing_expanded) - leading_collapsed.
+   * --slide-crossfade-leading-collapsed matches --slide-crossfade-trailing
+   * as defined in Native Views' LayoutDimensions. */
+  --slide-crossfade-distance: calc(
+      var(--slide-crossfade-leading) +
+      var(--toolbar-chip-icon-size) +
+      var(--slide-crossfade-spacing) -
+      var(--slide-crossfade-leading-collapsed));
+  position: relative;
+}
+
+:host([slide-and-crossfade]) #icon {
+  height: var(--toolbar-chip-icon-size);
+  width: var(--toolbar-chip-icon-size);
+  will-change: opacity;
+}
+
+:host([slide-and-crossfade]) #trailing-icon {
+  /* Positioned out of flow to mirror Native Views' stationary trailing icon
+   * without affecting flex layout. */
+  bottom: 0;
+  height: var(--toolbar-chip-icon-size);
+  inset-inline-end: var(--slide-crossfade-leading);
+  margin-block: auto;
+  position: absolute;
+  top: 0;
+  width: var(--toolbar-chip-icon-size);
+  will-change: opacity;
+}
+
+:host([slide-and-crossfade]) #text {
+  will-change: transform;
+}
+
+:host([slide-and-crossfade]:not([show-trailing-icon])) #icon {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity var(--slide-crossfade-duration-collapse)
+      var(--slide-crossfade-easing);
+}
+
+:host([slide-and-crossfade][show-trailing-icon]) #icon {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--slide-crossfade-duration-fade-out) linear;
+}
+
+:host([slide-and-crossfade]:not([show-trailing-icon])) #trailing-icon {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--slide-crossfade-duration-fade-out) linear;
+}
+
+:host([slide-and-crossfade][show-trailing-icon]) #trailing-icon {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity var(--slide-crossfade-duration-expand)
+      var(--slide-crossfade-easing);
+}
+
+:host([slide-and-crossfade]:not([show-trailing-icon])) #text {
+  transform: translateX(0);
+  transition: transform var(--slide-crossfade-duration-collapse)
+      var(--slide-crossfade-easing);
+}
+
+:host([slide-and-crossfade][show-trailing-icon]) #text {
+  transform: translateX(calc(
+      var(--slide-crossfade-direction) * var(--slide-crossfade-distance)));
+  transition: transform var(--slide-crossfade-duration-expand)
+      var(--slide-crossfade-easing);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host([slide-and-crossfade]) #icon,
+  :host([slide-and-crossfade]) #trailing-icon,
+  :host([slide-and-crossfade]) #text {
+    transition: none !important;
+  }
 }

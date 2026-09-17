@@ -180,6 +180,8 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
           {{&omnibox::kStarFilledIcon},
            {"webui-toolbar:star_filled", IconType::kIconSet}},
           {{&omnibox::kStarIcon}, {"webui-toolbar:star", IconType::kIconSet}},
+          {{&vector_icons::kArrowForwardIcon},
+           {"webui-toolbar:arrow_forward", IconType::kIconSet}},
           {{&vector_icons::kBusinessChromeRefreshOldIcon},
            {"webui-toolbar:domain", IconType::kIconSet}},
           {{&vector_icons::kCastConnectedIcon},

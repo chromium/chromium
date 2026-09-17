@@ -34,6 +34,10 @@ export function getHtml(this: PageActionIconElement) {
   <span id="text" ?visible="${this.shouldShowLabel_()}">
     ${this.state.text || ''}
   </span>
+  ${this.hasTrailingIcon_() ? html`
+    <icon-from-table slot="suffix-icon" id="trailing-icon"
+        .iconHandle="${this.state.trailingIcon!}"></icon-from-table>
+  ` : nothing}
 </toolbar-chip-button>
 <!--_html_template_end_-->`;
   // clang-format on

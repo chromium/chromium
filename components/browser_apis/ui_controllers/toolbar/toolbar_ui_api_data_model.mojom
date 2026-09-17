@@ -475,6 +475,21 @@ enum PageActionTrigger {
   kGesture = 2,
 };
 
+// Dictates the animation style used when expanding, collapsing,
+// or transitioning a page action chip.
+enum PageActionAnimationStyle {
+  // Standard animation style used by most page actions (e.g. Translate, Lens,
+  // Bookmark, Memory Saver) where the label slides out horizontally beside the
+  // leading icon as the button expands or collapses.
+  kStandard = 0,
+
+  // Animation style used by chips such as AI Mode (AIM) where the leading icon
+  // fades out and collapses while a trailing icon (e.g. an arrow indicator)
+  // crossfades in as the label slides when user typing begins or ends in the
+  // omnibox.
+  kSlideAndCrossfade = 1,
+};
+
 // These fields correspond to PageActionModel accessors.
 struct PageActionState {
   // The specific page action icon button to display, described by this state.
@@ -521,6 +536,16 @@ struct PageActionState {
   // Token that changes when the active tab or URL navigation changes. Used to
   // suppress tab-switching and navigation icon animations in the WebUI.
   uint32 icon_animation_token;
+
+  // The animation style to use for this chip.
+  PageActionAnimationStyle animation_style;
+
+  // Optional trailing icon handle to display (e.g. arrow icon for
+  // slide-and-crossfade).
+  IconHandle? trailing_icon;
+
+  // Whether the trailing icon should currently be shown.
+  bool show_trailing_icon;
 };
 
 // Colors used by the omnibox.

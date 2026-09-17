@@ -172,6 +172,10 @@ class WebUIPageActionControl::WebUIPageActionDelegate
 
   void CloseWidgetDeferred(base::WeakPtr<views::Widget> widget_to_close);
 
+  // Clears cached icon handles and any active mojo state sent to WebUI,
+  // notifying the owner if the state changed.
+  void ResetCachedState();
+
   const actions::ActionId action_id_;
   // Safe because the ActionItem tree is owned by BrowserActions (via
   // BrowserWindowFeatures), which is owned by Browser. The delegate is owned
@@ -221,6 +225,7 @@ class WebUIPageActionControl::WebUIPageActionDelegate
   WebUIBubbleReopenSuppressor bubble_reopen_suppressor_;
 
   toolbar_ui_api::IconHandle cached_icon_;
+  toolbar_ui_api::IconHandle cached_trailing_icon_;
 
   // The AnchoredMessageBubbleView is owned and destroyed by the
   // DialogClientView of `anchored_message_widget_`.
@@ -271,10 +276,16 @@ void WebUIPageActionControl::WebUIPageActionDelegate::SetController(
     anchored_message_expand_callback_ = base::DoNothing();
     anchored_message_collapse_callback_ = base::DoNothing();
     click_callback_ = base::DoNothing();
-    if (old_state_) {
-      old_state_ = nullptr;
-      owner_->NotifyPageActionStateChanged();
-    }
+    ResetCachedState();
+  }
+}
+
+void WebUIPageActionControl::WebUIPageActionDelegate::ResetCachedState() {
+  cached_icon_ = {};
+  cached_trailing_icon_ = {};
+  if (old_state_) {
+    old_state_ = nullptr;
+    owner_->NotifyPageActionStateChanged();
   }
 }
 
@@ -346,10 +357,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
   was_chip_visible_ = false;
   was_showing_bubble_ = false;
   was_anchored_message_showing_ = false;
-  if (old_state_) {
-    old_state_ = nullptr;
-    owner_->NotifyPageActionStateChanged();
-  }
+  ResetCachedState();
 }
 
 toolbar_ui_api::mojom::PageActionStatePtr
@@ -438,6 +446,28 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
   // Pass the current icon animation token to the WebUI so it can detect tab
   // switches and suppress animations.
   state->icon_animation_token = owner_->icon_animation_token_;
+
+  switch (model->GetAnimationStyle()) {
+    case page_actions::PageActionAnimationStyle::kStandard:
+      state->animation_style =
+          toolbar_ui_api::mojom::PageActionAnimationStyle::kStandard;
+      break;
+    case page_actions::PageActionAnimationStyle::kSlideAndCrossfade:
+      state->animation_style =
+          toolbar_ui_api::mojom::PageActionAnimationStyle::kSlideAndCrossfade;
+      break;
+  }
+
+  state->show_trailing_icon = model->GetShowTrailingIcon();
+
+  if (model->GetTrailingImage().has_value()) {
+    state->trailing_icon = cached_trailing_icon_ =
+        owner_->webui_delegate_->GetIconTable().RegisterImageModelTryReuse(
+            *model->GetTrailingImage(), cached_trailing_icon_);
+  } else {
+    state->trailing_icon = std::nullopt;
+    cached_trailing_icon_ = {};
+  }
   return state;
 }
 

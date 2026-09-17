@@ -32,6 +32,7 @@
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -363,6 +364,33 @@ TEST_F(WebUIPageActionControlTest, ChipShowingChangedForwarding) {
           },
           &run_loop));
   run_loop.Run();
+}
+
+TEST_F(WebUIPageActionControlTest, SlideAndCrossfadeState) {
+  control_->UpdateController(web_contents());
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  page_actions::PageActionController* controller =
+      page_actions::PageActionController::From(tab);
+
+  actions::ActionId target_action_id = kActionAiMode;
+  controller->Show(target_action_id);
+  controller->SetAnimationStyle(
+      target_action_id,
+      page_actions::PageActionAnimationStyle::kSlideAndCrossfade);
+  controller->SetTrailingImage(
+      target_action_id,
+      ui::ImageModel::FromVectorIcon(vector_icons::kArrowForwardIcon));
+  controller->SetShowTrailingIcon(target_action_id, true);
+
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(states.size(), 1u);
+  EXPECT_EQ(
+      states[0]->animation_style,
+      toolbar_ui_api::mojom::PageActionAnimationStyle::kSlideAndCrossfade);
+  EXPECT_TRUE(states[0]->show_trailing_icon);
+  EXPECT_TRUE(states[0]->trailing_icon.has_value());
 }
 
 TEST_F(WebUIPageActionControlTest, AccessibilityAnnouncement) {

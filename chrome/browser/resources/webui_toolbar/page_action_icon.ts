@@ -14,7 +14,7 @@ import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mo
 import {AnimationTracker} from '/shared/animation_tracker.js';
 import {IconTable} from '/shared/icon_table.js';
 import type {PageActionState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
-import {PageActionId, PageActionTrigger} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import {PageActionAnimationStyle, PageActionId, PageActionTrigger} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -80,6 +80,9 @@ export class PageActionIconElement extends PageActionIconElementBase {
     },
     isActive: false,
     iconAnimationToken: 0,
+    animationStyle: PageActionAnimationStyle.kStandard,
+    trailingIcon: null,
+    showTrailingIcon: false,
   };
 
   accessor forceFocusRing: boolean = false;
@@ -196,14 +199,31 @@ export class PageActionIconElement extends PageActionIconElementBase {
         this.state.shouldAnimateChipIn :
         (this.wasShowingChip_ && this.state.shouldAnimateChipOut);
   }
+  // Returns whether a trailing icon should be rendered in the DOM. For chips
+  // using kSlideAndCrossfade (such as AIM), the controller sets a persistent
+  // trailing icon handle up front, keeping the element mounted in the DOM so
+  // CSS transitions (opacity and transform) play smoothly as `showTrailingIcon`
+  // toggles during user typing.
+  protected hasTrailingIcon_(): boolean {
+    const {animationStyle, trailingIcon} = this.state;
+    return animationStyle === PageActionAnimationStyle.kSlideAndCrossfade &&
+        Boolean(trailingIcon?.handleId);
+  }
+
   override updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has('forceFocusRing')) {
       this.$.button.toggleAttribute('force-focus-ring', this.forceFocusRing);
     }
     if (changedProperties.has('state')) {
+      const isSlideAndCrossfade = this.state.animationStyle ===
+          PageActionAnimationStyle.kSlideAndCrossfade;
       this.toggleAttribute(
           'is-aim', this.state.pageActionId === PageActionId.kActionAiMode);
+      this.toggleAttribute('slide-and-crossfade', isSlideAndCrossfade);
+      this.toggleAttribute(
+          'show-trailing-icon',
+          this.hasTrailingIcon_() && this.state.showTrailingIcon);
       const oldState = changedProperties.get('state');
       if (!oldState || oldState.shouldShowChip !== this.state.shouldShowChip) {
         const fireIpc = () => {

@@ -9,8 +9,8 @@ import {hexColorToSkColor} from '//resources/js/color_utils.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, IconTable, IconType, PageActionId, PageActionTrigger, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {BrowserProxyImpl, IconTable, IconType, PageActionAnimationStyle, PageActionId, PageActionTrigger, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {PageActionIconElement, PageActionState} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {TestToolbarBrowserProxy} from './test_toolbar_browser_proxy.js';
@@ -46,6 +46,9 @@ suite('PageActionIconTest', function() {
       },
       isActive: false,
       iconAnimationToken: 0,
+      animationStyle: PageActionAnimationStyle.kStandard,
+      trailingIcon: null,
+      showTrailingIcon: false,
     };
   }
 
@@ -673,6 +676,112 @@ suite('PageActionIconTest', function() {
         assertTrue(!!icon.shadowRoot.querySelector('icon-from-table'));
         assertTrue(!icon.shadowRoot.querySelector('#animatedIcon'));
       });
+
+  test(
+      'SlideAndCrossfade animation attributes and trailing icon',
+      async function() {
+        icon.state = {
+          ...createBaseState(),
+          pageActionId: PageActionId.kActionAiMode,
+          text: 'AI Mode',
+          shouldShowChip: true,
+          animationStyle: PageActionAnimationStyle.kSlideAndCrossfade,
+          trailingIcon: {handleId: 123n},
+          showTrailingIcon: false,
+        };
+        await microtasksFinished();
+
+        assertTrue(icon.hasAttribute('is-aim'));
+        assertTrue(icon.hasAttribute('slide-and-crossfade'));
+        assertFalse(icon.hasAttribute('show-trailing-icon'));
+        const trailingIcon = icon.shadowRoot.querySelector('#trailing-icon')!;
+        assertTrue(trailingIcon !== null);
+        const iconElInitial =
+            icon.shadowRoot.querySelector<HTMLElement>('#icon')!;
+        assertEquals('1', window.getComputedStyle(iconElInitial).opacity);
+        assertEquals('0', window.getComputedStyle(trailingIcon).opacity);
+
+        const textEl = icon.shadowRoot.querySelector<HTMLElement>('#text')!;
+        const textStartLeft = textEl.getBoundingClientRect().left;
+
+        // Test expand animation (false -> true).
+        const whenExpanded = Promise.all([
+          eventToPromise('transitionend', textEl),
+          eventToPromise('transitionend', trailingIcon),
+        ]);
+        icon.state = {
+          ...icon.state,
+          showTrailingIcon: true,
+        };
+        await whenExpanded;
+
+        assertTrue(icon.hasAttribute('slide-and-crossfade'));
+        assertTrue(icon.hasAttribute('show-trailing-icon'));
+        assertEquals('1', window.getComputedStyle(trailingIcon).opacity);
+        assertEquals('0', window.getComputedStyle(iconElInitial).opacity);
+        assertTrue(textEl.getBoundingClientRect().left < textStartLeft);
+
+        // Test collapse animation (true -> false).
+        const textExpandedLeft = textEl.getBoundingClientRect().left;
+        const whenCollapsed = Promise.all([
+          eventToPromise('transitionend', textEl),
+          eventToPromise('transitionend', iconElInitial),
+        ]);
+        icon.state = {
+          ...icon.state,
+          showTrailingIcon: false,
+        };
+        await whenCollapsed;
+
+        assertTrue(icon.hasAttribute('slide-and-crossfade'));
+        assertFalse(icon.hasAttribute('show-trailing-icon'));
+        assertEquals('0', window.getComputedStyle(trailingIcon).opacity);
+        assertEquals('1', window.getComputedStyle(iconElInitial).opacity);
+        assertTrue(textEl.getBoundingClientRect().left > textExpandedLeft);
+        assertEquals(textStartLeft, textEl.getBoundingClientRect().left);
+      });
+
+  test(
+      'Standard animation style does not render trailing icon',
+      async function() {
+        icon.state = {
+          ...createBaseState(),
+          pageActionId: PageActionId.kActionAiMode,
+          text: 'AI Mode',
+          shouldShowChip: true,
+          animationStyle: PageActionAnimationStyle.kStandard,
+          trailingIcon: {handleId: 123n},
+          showTrailingIcon: true,
+        };
+        await microtasksFinished();
+
+        assertFalse(icon.hasAttribute('slide-and-crossfade'));
+        assertFalse(icon.hasAttribute('show-trailing-icon'));
+        const trailingIcon = icon.shadowRoot.querySelector('#trailing-icon');
+        assertEquals(null, trailingIcon);
+      });
+
+  test(
+      'SlideAndCrossfade with missing trailing icon does not set show-trailing-icon',
+      async function() {
+        icon.state = {
+          ...createBaseState(),
+          pageActionId: PageActionId.kActionAiMode,
+          text: 'AI Mode',
+          shouldShowChip: true,
+          animationStyle: PageActionAnimationStyle.kSlideAndCrossfade,
+          trailingIcon: null,
+          showTrailingIcon: true,
+        };
+        await microtasksFinished();
+
+        assertTrue(icon.hasAttribute('slide-and-crossfade'));
+        assertFalse(icon.hasAttribute('show-trailing-icon'));
+        const trailingIcon = icon.shadowRoot.querySelector('#trailing-icon');
+        assertEquals(null, trailingIcon);
+        const iconEl = icon.shadowRoot.querySelector<HTMLElement>('#icon')!;
+        assertEquals('16px', window.getComputedStyle(iconEl).width);
+      });
 });
 
 suite('PageActionIconsTest', function() {
@@ -693,6 +802,9 @@ suite('PageActionIconsTest', function() {
       },
       isActive: false,
       iconAnimationToken: 0,
+      animationStyle: PageActionAnimationStyle.kStandard,
+      trailingIcon: null,
+      showTrailingIcon: false,
     };
   }
 
