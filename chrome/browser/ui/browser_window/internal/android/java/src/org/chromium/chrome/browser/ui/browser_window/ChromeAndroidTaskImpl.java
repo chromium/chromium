@@ -768,7 +768,7 @@ final class ChromeAndroidTaskImpl
     public <T extends ChromeAndroidTaskFeature> @Nullable ChromeAndroidTaskFeature addFeature(
             ChromeAndroidTaskFeatureKey featureKey, Supplier<@Nullable T> featureSupplier) {
         ThreadUtils.assertOnUiThread();
-        assertPendingCreateOrIdle();
+        assertCanAddFeature();
 
         ChromeAndroidTaskFeature feature = mFeatures.get(featureKey);
         if (feature != null) {
@@ -1764,6 +1764,19 @@ final class ChromeAndroidTaskImpl
     private void assertPendingCreateOrIdle() {
         assert mState == State.IDLE || mState == State.PENDING_CREATE
                 : "This Task is neither pending create nor idle. Current state: " + mState;
+    }
+
+    /**
+     * Asserts that this Task can still accept new {@link ChromeAndroidTaskFeature}s.
+     *
+     * <p>Adding a Feature doesn't depend on the window state, so {@code PENDING_UPDATE} is allowed;
+     * only a Task that's being or has been destroyed rejects new Features.
+     */
+    private void assertCanAddFeature() {
+        assert mState == State.PENDING_CREATE
+                        || mState == State.IDLE
+                        || mState == State.PENDING_UPDATE
+                : "This Task can no longer accept Features. Current state: " + mState;
     }
 
     private static boolean isActiveInternal(TopActivityScopedObjects topActivityScopedObjects) {

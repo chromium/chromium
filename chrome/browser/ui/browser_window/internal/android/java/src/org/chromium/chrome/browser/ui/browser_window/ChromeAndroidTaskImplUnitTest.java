@@ -1111,6 +1111,28 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void addFeature_whenPendingUpdate_addsFeature() {
+        // Arrange: put the Task in PENDING_UPDATE by starting a minimize that hasn't settled yet.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
+
+        chromeAndroidTask.minimize();
+        assertEquals(State.PENDING_UPDATE, chromeAndroidTask.getState());
+
+        // Act.
+        var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+        ChromeAndroidTaskFeatureKey featureKey =
+                new ChromeAndroidTaskFeatureKey(TestChromeAndroidTaskFeature.class, profile);
+        var returnedFeature = chromeAndroidTask.addFeature(featureKey, () -> testFeature);
+
+        // Assert.
+        assertEquals(testFeature, returnedFeature);
+        assertEquals(testFeature, chromeAndroidTask.getFeatureForTesting(featureKey));
+    }
+
+    @Test
     public void removeAllFeaturesForActivity_removesFeatureAndInvokesOnFeatureRemoved()
             throws Exception {
         // Arrange.
