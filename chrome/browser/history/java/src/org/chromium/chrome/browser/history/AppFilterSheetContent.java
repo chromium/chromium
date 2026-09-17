@@ -14,10 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
 /** BottomSheetContent implementation for app filter bottom sheet. */
 @NullMarked
 class AppFilterSheetContent implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder().setUserInitiated(true).build();
+
     private final View mContentView;
     private final View mToolbarView;
     private final RecyclerView mListView;
@@ -51,6 +55,11 @@ class AppFilterSheetContent implements BottomSheetContent {
     @Override
     public void destroy() {
         mCloseRunnable.run();
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
     }
 
     @Override
