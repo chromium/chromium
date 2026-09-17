@@ -51,7 +51,7 @@
 <translation id="1031343556156414679">‏مدیریت گذرکلیدها در Windows Hello</translation>
 <translation id="1031362278801463162">بارگیری پیش‌نمایش</translation>
 <translation id="1032605640136438169">لطفاً «شرایط» جدید را مرور کنید</translation>
-<translation id="1033060461778467949">انتقال زبانه به «نمای تقسیم‌شده»</translation>
+<translation id="1033060461778467949">حرکت دادن زبانه به نمای دونیمه</translation>
 <translation id="1033780634303702874">دسترسی به دستگاه‌های سریال خودتان</translation>
 <translation id="1034484273907870301">نوار زبانه ریزعکس برای حالت رایانه لوحی</translation>
 <translation id="103477588607005550">واحد پردازش مرکزی: <ph name="CPU_MODEL" /> (<ph name="CPU_CORES" />)</translation>
@@ -186,7 +186,7 @@
 <translation id="1129348283834595293">سایبرپانک</translation>
 <translation id="1129420403709586868">مشاهده رسانه و عکس‌های تلفن</translation>
 <translation id="1129850422003387628">مدیریت برنامه‌ها</translation>
-<translation id="1130116586186908674">ایجاد نمای تقسیم‌شده</translation>
+<translation id="1130116586186908674">ایجاد نمای دونیمه</translation>
 <translation id="1130430615924359526">{0,plural, =1{بستن پنجره ناشناس}one{بستن پنجره ناشناس (# پنجره)}other{بستن پنجره ناشناس (# پنجره)}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - بخشی از گروه <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">سطح باتری راست <ph name="PERCENTAGE" />٪.</translation>
@@ -652,7 +652,7 @@
 <translation id="1500801317528437432">‏درباره «برنامه‌های Chrome» پشتیبانی‌نشده بیشتر بدانید</translation>
 <translation id="1501480321619201731">حذف گروه</translation>
 <translation id="150411034776756821">حذف <ph name="SITE" /></translation>
-<translation id="1504253885059472207">سنجاق کردن نمای تقسیم‌شده</translation>
+<translation id="1504253885059472207">سنجاق کردن نمای دونیمه</translation>
 <translation id="1505494256539862015">صادر کردن گذرواژه‌ها</translation>
 <translation id="1505654899813338756">می‌توانید زبانه‌ها را گروه‌بندی کنید تا صفحات مرتبط را کنار هم نگه دارید و آن‌ها را در همه دستگاه‌هایتان ذخیره کنید</translation>
 <translation id="1506061864768559482">موتور جستجو</translation>
@@ -778,7 +778,7 @@
 <translation id="1597806446183714225">بهبود کیفیت صدا تا صداها طبیعی‌تر و واضح‌تر باشند.</translation>
 <translation id="1598163867407640634">استفاده از <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">سرپرست سیستم شما به‌روزرسانی‌ها را غیرفعال کرده است.</translation>
-<translation id="1598293830962835699">هر زمان نیاز داشتید، به‌سرعت نمای تقسیم‌شده ایجاد کنید</translation>
+<translation id="1598293830962835699">هر زمان که نیاز داشتید، به‌سرعت نمای دونیمه ایجاد کنید</translation>
 <translation id="1600857548979126453">دسترسی به مرحله پایانی اشکال‌زدای صفحه</translation>
 <translation id="1601481906560916994">مستثنی کردن سایت</translation>
 <translation id="1601560923496285236">اعمال</translation>
@@ -813,7 +813,7 @@
 <translation id="1619829618836636922">گواهینامه‌های کارخواه واردشده از پلاتفرم</translation>
 <translation id="1620307519959413822">گذرواژه نادرست است. دوباره امتحان کنید یا روی «گذرواژه را فراموش کرده‌اید» کلیک کنید تا آن را بازنشانی کنید.</translation>
 <translation id="1620510694547887537">دوربین</translation>
-<translation id="1620760691416124482">باز کردن در نمای تقسیم‌شده</translation>
+<translation id="1620760691416124482">باز کردن در نمای دونیمه</translation>
 <translation id="1621729191093924223">ویژگی‌هایی که به میکروفون نیاز دارند کار نخواهند کرد</translation>
 <translation id="1621984899599015181">سازمانتان گزینه‌های هم‌رسانی را مدیریت می‌کند. ممکن است برخی‌از موارد پنهان شده باشند.</translation>
 <translation id="1622054403950683339">‏فراموش کردن شبکه Wi-Fi</translation>
@@ -3051,7 +3051,7 @@
 <translation id="3335380372402547327">پیش‌دید کردن اعلان‌های چشمک‌زن</translation>
 <translation id="3335947283844343239">باز کردن مجدد برگه بسته شده</translation>
 <translation id="3336661809256024098">زبانه جدید در <ph name="GROUP_NAME" /></translation>
-<translation id="3336855445806447827">مطمئن نیستم</translation>
+<translation id="3336855445806447827">نامطمئن</translation>
 <translation id="3337568642696914359">به سایت‌ها اجازه داده نشود پروتکل‌ها را مدیریت کنند</translation>
 <translation id="333863344734218290">درباره سایت‌های عمومی و خصوصی ناامن به شما هشدار می‌دهد</translation>
 <translation id="3339789735267352349">دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است از شما محافظت می‌کند</translation>
@@ -3111,7 +3111,7 @@
 <translation id="338583716107319301">جداساز</translation>
 <translation id="3385916046075724800">اکنون گروه‌های زبانه شما به‌طور خودکار ذخیره می‌شوند.</translation>
 <translation id="3387023983419383865">،</translation>
-<translation id="3387412523265061481">باز کردن در «نمای تقسیم‌شده»</translation>
+<translation id="3387412523265061481">باز کردن در نمای دونیمه</translation>
 <translation id="3387588771342841525">وقتی روشن باشد، گذرواژه‌ها در <ph name="EMAIL" /> ذخیره می‌شوند. وقتی خاموش باشد، گذرواژه‌ها فقط در این دستگاه ذخیره می‌شوند.</translation>
 <translation id="3387614642886316601">استفاده از غلط‌یاب املایی بهبودیافته</translation>
 <translation id="3387829698079331264">اجازه ندارد وقتی شما به‌طور فعال از دستگاه استفاده می‌کنید مطلع شود</translation>
@@ -3551,7 +3551,7 @@
 <translation id="371302509916403935">زیرخط</translation>
 <translation id="3713047097299026954">این کلید امنیتی هیچ داده ورود به سیستمی ندارد</translation>
 <translation id="3713091615825314967">به‌روزرسانی‌های خودکار روشن هستند.</translation>
-<translation id="3713673533020367620">باز کردن زبانه در نمای تقسیم‌شده</translation>
+<translation id="3713673533020367620">باز کردن زبانه در نمای دونیمه</translation>
 <translation id="371370241367527062">میکروفون جلو</translation>
 <translation id="37143699183660101">پایداری مکان‌نما</translation>
 <translation id="3714610938239537183">مرحله ۲ از ۴: انتخاب داده‌های عیب‌یابی برای صادر کردن</translation>
@@ -3758,7 +3758,7 @@
 <translation id="3847319713229060696">کمک به بهبود امنیت برای همه کاربران وب</translation>
 <translation id="3847734730889093333">‫<ph name="RATE" /> برابر</translation>
 <translation id="3848547754896969219">باز کردن در «پنجره ناشناس»</translation>
-<translation id="3848688783623004960">باز کردن در نمای تقسیم‌شده</translation>
+<translation id="3848688783623004960">باز کردن در نمای دونیمه</translation>
 <translation id="3849517590329855428">جمع کردن همه</translation>
 <translation id="385051799172605136">برگشتن</translation>
 <translation id="3850989673553106152">گذرواژه تغییر کرد</translation>
@@ -3837,7 +3837,7 @@
 <translation id="3900966090527141178">صادر کردن گذرواژه‌ها</translation>
 <translation id="3903187154317825986">صفحه‌کلید داخلی</translation>
 <translation id="3903696968689283281">‏اطلاعات مالکان Wi-Fi Direct:</translation>
-<translation id="3904572359926093799">دسته تغییر اندازه نمای تقسیم‌شده (کشیدنی)</translation>
+<translation id="3904572359926093799">دسته تغییر اندازه نمای دونیمه (کشیدنی)</translation>
 <translation id="3909456989251621103">‏اگر گواهی سرور را حذف کنید، Chrome دیگر از آن برای شناسایی سرورها استفاده نخواهد کرد.</translation>
 <translation id="3909701002594999354">نمایش همه &amp;کنترل‌ها</translation>
 <translation id="3909791450649380159">&amp;برش</translation>
@@ -4346,7 +4346,7 @@
 <translation id="4310139701823742692">‏قالب فایل صحیح نیست. فایل PPD را بررسی کرده و دوباره امتحان کنید.</translation>
 <translation id="4310496734563057511">‏اگر این دستگاه را با دیگران هم‌رسانی می‌کنید، می‌توانید Windows Hello را روشن کنید تا هرگاه از گذرواژه ذخیره‌شده استفاده می‌کنید هویتتان را تأیید کند</translation>
 <translation id="431076611119798497">&amp;جزئیات</translation>
-<translation id="431127643228811252">نمای تقسیم‌شده انجام چندوظیفگی را آسان‌تر می‌کند</translation>
+<translation id="431127643228811252">نمای دونیمه انجام چندوظیفگی را آسان‌تر می‌کند</translation>
 <translation id="4311284648179069796">اجازه ندارد بخواند و تغییر دهد</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{‏۱ «حساب Google»}one{‏<ph name="EXTRA_ACCOUNTS" /> «حساب Google»}other{‏<ph name="EXTRA_ACCOUNTS" /> «حساب Google»}}</translation>
 <translation id="4312866146174492540">مسدود کردن (پیش‌فرض)</translation>
@@ -5555,7 +5555,7 @@
 <translation id="5235750401727657667">جایگزین کردن صفحه‌ای که هنگام باز کردن برگه جدید می‌بینید</translation>
 <translation id="5238301240406177137">ذخیره کردن در حساب</translation>
 <translation id="523862956770478816">اجازه‌های سایت</translation>
-<translation id="5240247138804326767">مرتب کردن «نمای تقسیم‌شده»</translation>
+<translation id="5240247138804326767">مرتب کردن «نمای دونیمه»</translation>
 <translation id="5244234799035360187">‏ازاین‌پس OneDrive در برنامه Files نشان داده خواهد شد</translation>
 <translation id="5244474230056479698">درحال همگام‌سازی در <ph name="EMAIL" /></translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> خراب شده است. برای راه‌اندازی مجدد برنامه بر روی این بالون کلیک کنید.</translation>
@@ -6693,7 +6693,7 @@
 <translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6169040057125497443">لطفاً میکروفون را بررسی کنید.</translation>
 <translation id="6169967265765719844">‏اجازه‌های مربوط به بازی‌ها و برنامه‌های نصب‌شده ازطریق Steam را می‌توان در <ph name="LINK_BEGIN" />تنظیمات برنامه Steam<ph name="LINK_END" /> مدیریت کرد.</translation>
-<translation id="6170313103929479668">مرتب کردن «نمای تقسیم‌شده»</translation>
+<translation id="6170313103929479668">مرتب کردن «نمای دونیمه»</translation>
 <translation id="6170470584681422115">ساندویچ</translation>
 <translation id="6170675927290506430">رفتن به تنظیمات اعلان</translation>
 <translation id="6171779718418683144">در هر بازدید پرسیده شود</translation>
@@ -6801,7 +6801,7 @@
 <translation id="6248988683584659830">تنظیمات جستجو</translation>
 <translation id="6249200942125593849">‏مدیریت کردن a11y</translation>
 <translation id="6250186368828697007">درحین هم‌رسانی صفحه، جزئیات پنهان می‌شود</translation>
-<translation id="6250887692313997958">زبانه‌ای را برای افزودن به نمای تقسیم‌شده انتخاب کنید</translation>
+<translation id="6250887692313997958">زبانه‌ای را برای افزودن به نمای دونیمه انتخاب کنید</translation>
 <translation id="6251870443722440887">‏کنترل‌کننده‌های GDI</translation>
 <translation id="6251924700383757765">خط‌مشی رازداری</translation>
 <translation id="625369703868467034">سلامت شبکه</translation>
@@ -6865,7 +6865,7 @@
 <translation id="6300478323573969040">باید حداقل ۱۲ نویسه داشته باشد و شامل حروف بزرگ، حروف کوچک، اعداد، و نمادها باشد. نباید نویسه تکراری یا توالی ۴ نویسه‌ای یا بیشتر داشته باشد.</translation>
 <translation id="630065524203833229">&amp;خروج</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> به‌طور خودکار پیکربندی نشد. لطفاً جزئیات پیشرفته چاپگر را مشخص کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
-<translation id="6302661287897119265">فیلتر</translation>
+<translation id="6302661287897119265">فیلتر کردن</translation>
 <translation id="6303023592034094909">نسخه جدیدی از این برنامه دردسترس است</translation>
 <translation id="630308129961693966">انتخاب کردن جای نوار نشانی</translation>
 <translation id="6304017513498618504">می‌توانید درخواست‌هایی مثل «خلاصه کردن» نیز داشته باشید</translation>
@@ -7331,7 +7331,7 @@
 <translation id="6667187897999649121">‏درحال‌حاضر، می‌توانید گذرواژه‌ها را فقط با اعضای خانواده هم‌رسانی کنید. <ph name="BEGIN_LINK" />گروه خانواده‌ای با حداکثر ۶ عضو ایجاد کنید<ph name="END_LINK" /> و بهره بیشتری از محصولات و اشتراک‌ها در Google ببرید.</translation>
 <translation id="666731172850799929">باز کردن در <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">با داده‌ها و سایتی که درحال مشاهده هستید یکسان رفتار می‌شود</translation>
-<translation id="6669865825859209286">برای جدا کردن یا مرتب کردن نمای تقسیم‌شده، اینجا کلیک کنید</translation>
+<translation id="6669865825859209286">برای جدا کردن یا مرتب کردن نمای دونیمه، اینجا کلیک کنید</translation>
 <translation id="6670767097276846646">‏بعضی‌از افزونه‌ها می‌توانند موتور جستجو به Chrome اضافه کنند</translation>
 <translation id="6670983860904543332">با به‌روزرسانی‌های خودکار می‌توانید جدیدترین ویژگی‌ها را داشته باشید. ویژگی‌های برجسته مربوط به‌روزرسانی‌های اخیر را کاوش کنید.</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{یک نشانی}one{# نشانی}other{# نشانی}}</translation>
@@ -7694,7 +7694,7 @@
 <translation id="6931690462168617033">قدرت کلیک</translation>
 <translation id="6933321725007230600">درحال روشن کردن همگام‌سازی…</translation>
 <translation id="693459579445775904">به‌منظور صرفه‌جویی در فضای دیسک، فایل‌های صوتی میان کاربران هم‌رسانی می‌شود</translation>
-<translation id="6934597021412437058">اکنون می‌توانید از نمای تقسیم‌شده برای مقایسه کردن، انجام چندوظیفگی، و کارهای دیگر استفاده کنید</translation>
+<translation id="6934597021412437058">اکنون می‌توانید از نمای دونیمه برای مقایسه کردن، انجام چندوظیفگی، و کارهای دیگر استفاده کنید</translation>
 <translation id="6938386202199793006">۱ چاپگر ذخیره‌نشده دارید.</translation>
 <translation id="6938606182859551396">‏برای دریافت اعلان‌های تلفنتان در <ph name="DEVICE_TYPE" />، دستورالعمل‌های مجاز کردن «خدمات Google Play» برای دسترسی به اعلان‌ها را در تلفنتان دنبال کنید.</translation>
 <translation id="6941514251635934269">درباره این سند بپرسید</translation>
@@ -7891,7 +7891,7 @@
 <translation id="7088960765736518739">دسترسی کلیدی</translation>
 <translation id="7089253021944603172">برگه دوباره فعال شد</translation>
 <translation id="7090714929377281710">خاموش کردن خودکار نقطه اتصال</translation>
-<translation id="7092452922791061650">روی این زبانه کلیک راست کنید و «نمای تقسیم‌شده جدید با زبانه فعلی» را انتخاب کنید</translation>
+<translation id="7092452922791061650">روی این زبانه کلیک راست کنید و «نمای دونیمه جدید با زبانه فعلی» را انتخاب کنید</translation>
 <translation id="7092504544229909737">‏در برنامه‌های Android قابل‌استفاده نیست</translation>
 <translation id="7093220653036489319">پاسخ‌های سریع</translation>
 <translation id="7093866338626856921">تبادل داده با دستگاه‌هایی با نام‌های: <ph name="HOSTNAMES" /></translation>
@@ -8502,7 +8502,7 @@
 <translation id="756503097602602175">‏می‌توانید «حساب‌های Google» را که به سیستم آن‌ها وارد شده‌اید از <ph name="LINK_BEGIN" />تنظیمات<ph name="LINK_END" /> مدیریت کنید. اجازه‌هایی را که به وب‌سایت‌ها و برنامه‌ها اعطا کرده‌اید ممکن است در همه حساب‌ها اعمال شوند. اگر نمی‌خواهید سایت‌ها یا برنامه‌ها به اطلاعات حسابتان دسترسی داشته باشند، می‌توانید به‌عنوان مهمان به سیستم <ph name="DEVICE_TYPE" /> وارد شوید یا وب را در <ph name="LINK_2_BEGIN" />پنجره ناشناس<ph name="LINK_2_END" /> مرور کنید.</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">ایجاد ترکیب کلید</translation>
-<translation id="7567100268516475532">انتقال زبانه به «نمای تقسیم‌شده»</translation>
+<translation id="7567100268516475532">حرکت دادن زبانه به نمای دونیمه</translation>
 <translation id="7568014768212280234">گروه زبانه شما پر است، اعضای جدید نمی‌توانند با پیوند بپیوندند</translation>
 <translation id="7568759527730933493">‏برای جستجوی نشانی IP سایت در ساناد (سیستم نامگذاری دامنه) از اتصال ایمن استفاده می‌شود. این ویژگی از فراهم‌ساز خدمات تحت مدیریت <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> استفاده می‌کند. برای برخی‌از دامنه‌هایی که سرپرستتان پیکربندی کرده است، از اتصال ایمن استفاده نمی‌شود.</translation>
 <translation id="756876171895853918">سفارشی کردن چهرک</translation>
@@ -9795,7 +9795,7 @@
 <translation id="8569682776816196752">مقصدی یافت نشد</translation>
 <translation id="857026972772582291">خط‌مشی‌های <ph name="APP_NAME" /></translation>
 <translation id="8571213806525832805">۴ هفته گذشته</translation>
-<translation id="8571323456914890254">باز کردن در نمای تقسیم‌شده</translation>
+<translation id="8571323456914890254">باز کردن در نمای دونیمه</translation>
 <translation id="8571687764447439720">‏افزودن بلیت Kerberos</translation>
 <translation id="8572052284359771939">‏نشانی‌های وب سایت‌هایی که بازدید می‌کنید و نمونه کوچکی از محتوای صفحه، بارگیری‌ها، فعالیت افزونه‌ها، و اطلاعات سیستم را برای «مرور ایمن Google» ارسال می‌کند تا بررسی شود که آن‌ها ایمن هستند یا نه.</translation>
 <translation id="8573111744706778015">‏برای دریافت «ươ»، ‏«uo7» را تایپ کنید</translation>
@@ -10532,7 +10532,7 @@
 <translation id="9113240369465613386">فقط صفحه‌های فرد</translation>
 <translation id="9113469270512809735">پنهان/ نمایان کردن موارد اخیراً بسته‌شده</translation>
 <translation id="9113529408970052045">وقتی چارگوش نوشتاری در سایتی می‌تواند با محتوای کوتاه پر شود، «کمک گرفتن در نوشتن» می‌تواند به‌طور خودکار باز شود</translation>
-<translation id="9114210796909453187">نمای تقسیم‌شده را کامل کنید</translation>
+<translation id="9114210796909453187">نمای دونیمه را کامل کنید</translation>
 <translation id="9114663181201435112">ورود به سیستم آسان</translation>
 <translation id="9115675100829699941">&amp;نشانک ها</translation>
 <translation id="9116366756388192417">موضوعی را انتخاب کنید</translation>
@@ -10608,7 +10608,7 @@
 <translation id="9172270007201309670">اندازه قلم افزایش یافت</translation>
 <translation id="9173063514323762371">&amp;پنهان کردن نوار نشانک‌ها</translation>
 <translation id="917350715406657904">به حداکثر زمانی که ولی‌تان برای استفاده از <ph name="APP_NAME" /> تعیین کرده است رسیده‌اید. می‌توانید فردا به‌مدت <ph name="TIME_LIMIT" /> از آن استفاده کنید.</translation>
-<translation id="9174854240439014335">مجاز کردن کشیدن و رها کردن در لبه سمت چپ یا راست پنجره برای حالت «نمای تقسیم‌شده»</translation>
+<translation id="9174854240439014335">اجازه دادن به کشیدن و رها کردن در نمای دونیمه در لبه چپ یا راست پنجره</translation>
 <translation id="9174870712400134574">نشان دادن فقط در صفحه «زبانه جدید»</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - دستگاه بلوتوث متصل شد</translation>
 <translation id="9177859716483578738">برای ادامه دادن، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> شما را با این سایت هم‌رسانی خواهد کرد. <ph name="BEGIN_LINK" />خط‌مشی رازداری<ph name="END_LINK" /> این سایت را بررسی کنید.</translation>

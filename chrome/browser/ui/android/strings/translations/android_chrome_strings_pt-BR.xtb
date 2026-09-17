@@ -481,7 +481,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2977350910003566746">Ordenar por último aberto</translation>
 <translation id="297771753501244313">Ordenar por último aberto</translation>
 <translation id="2979639724566107830">Abrir em uma nova janela</translation>
-<translation id="2980545254049127870">Abra links com facilidade de mensagens, documentos e outros apps</translation>
+<translation id="2980545254049127870">Abra com facilidade links de mensagens, documentos e outros apps</translation>
 <translation id="2983102365694924129">Com base na sua atividade em um site. Esta configuração está desativada.</translation>
 <translation id="2983398917942897288">Guias inativas (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Sair de "picture in picture"</translation>
@@ -625,7 +625,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3602290021589620013">Prévia</translation>
 <translation id="3614126103057878858">Informações de preço</translation>
 <translation id="3616113530831147358">Áudio</translation>
-<translation id="3616798734782988169">Confirme se o app <ph name="DOWNLOAD_DOMAIN" /> é confiável</translation>
+<translation id="3616798734782988169">Confirme se <ph name="DOWNLOAD_DOMAIN" /> é confiável</translation>
 <translation id="3619255692378312441">Gerenciar o acesso</translation>
 <translation id="3622349720008044802">Gerenciar janelas</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{e mais 1 site}one{e mais # site}other{e mais # sites}}</translation>
@@ -2077,7 +2077,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="945522503751344254">Enviar comentários</translation>
 <translation id="948276827484905248">Criar QR code</translation>
 <translation id="95817756606698420">O Chrome pode usar o <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para fazer pesquisas na China. É possível alterar essa opção nas <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
-<translation id="961856697154696964">Excluir dados</translation>
+<translation id="961856697154696964">Excluir dados de navegação</translation>
 <translation id="963246339335003378">Abrir o gerenciador de tarefas</translation>
 <translation id="966337994629449077">A conta <ph name="FROM_EMAIL" /> está conectada.\n\nPara continuar no computador, mude para <ph name="TO_EMAIL" />. Você vai receber as senhas, os favoritos e outros itens dessa conta.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutos restantes</translation>
