@@ -22238,6 +22238,21 @@
             ]
         }
     ],
+    "WebViewConstructableStylesheetCache": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "ConstructableStylesheetCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewDisableClassPreloading": [
         {
             "platforms": [

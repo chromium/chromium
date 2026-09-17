@@ -443,6 +443,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(BlinkFeatures.SCROLLBAR_COLOR),
         Flag.baseFeature(BlinkFeatures.RASTER_INDUCING_SCROLL),
         Flag.baseFeature(
+                BlinkFeatures.CONSTRUCTABLE_STYLESHEET_CACHE,
+                "Enables StyleSheetContents cache for constructible stylesheets."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS, "Enables JS File System Access API"),
         Flag.baseFeature(
                 BlinkFeatures.V_SYNC_DECODING, "Runs the WebRTC metronome off the VSync signal."),
