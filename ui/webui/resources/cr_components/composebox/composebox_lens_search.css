@@ -16,14 +16,35 @@
 }
 
 #lensSearchPill {
-  align-items: center;
   background-color: var(--color-composebox-context-entrypoint-hover-background);
   border: none;
+  border-radius: 100px;
   color: var(--color-searchbox-results-foreground);
-  display: flex;
+  display: block;
+  flex-shrink: 1;
   font-size: 13px;
   height: var(--cr-icon-button-height, 32px);
-  justify-content: center;
-  padding: 8px 12px;
-  border-radius: 100px;
+  line-height: 20px;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px 12px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#lensSearchPill:focus {
+  outline-offset: -2px;
+}
+
+#content,
+#content > div {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
 }

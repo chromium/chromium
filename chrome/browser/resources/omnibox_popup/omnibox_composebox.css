@@ -47,9 +47,21 @@
   --cr-icon-button-size: 36px;
 }
 
+#lensSearchChip {
+  flex-shrink: 1;
+  max-width: 100%;
+  min-width: 0;
+}
+
 #lensSearchChip::part(lens-search-pill) {
   font-size: var(--omnibox-font-size, 14px);
   height: 36px;
+  padding: 8px 12px;
+}
+
+#contextMenuContainer {
+  margin-inline-end: 96px;
+  min-width: 0;
 }
 
 cr-composebox-tool-chip {
