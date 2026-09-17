@@ -28,82 +28,59 @@
     </svg>
   </cr-iconset>
 
-  <div id="dialogRoot">
-    <!-- Unified Error Panel -->
-    <section id="errorPanel" class="dialog panel" hidden>
-      <div class="header">
-        <div></div>
-        <cr-icon-button class="close-button" id="closeButtonError"
-            iron-icon="cr:close" aria-label="$i18n{closeButtonLabel}">
-        </cr-icon-button>
-      </div>
-      <div class="notice">
-        <div class="icon">
-          <cr-icon id="errorIcon" icon="glic:error"></cr-icon>
-        </div>
-        <p id="errorHeadline" class="headline">$i18n{errorNoticeHeader}</p>
-        <p id="errorMessage" class="notice-message">
-          $i18n{experimentalOptInErrorNoticeMessage}
-        </p>
-        <cr-button id="tryAgainButton" class="tonal-button">
-          $i18n{tryAgainButtonLabel}
-        </cr-button>
-      </div>
-    </section>
+  <!-- Unified Error Panel -->
+  <section id="errorPanel" class="dialog panel" hidden>
+    <div class="header">
+      <div></div>
+      <cr-icon-button class="close-button" id="closeButtonError" iron-icon="cr:close" aria-label="$i18n{closeButtonLabel}">
+      </cr-icon-button>
+    </div>
+    <div class="notice">
+      <div class="icon"><cr-icon id="errorIcon" icon="glic:error"></cr-icon></div>
+      <p id="errorHeadline" class="headline">$i18n{errorNoticeHeader}</p>
+      <p id="errorMessage" class="notice-message">$i18n{experimentalOptInErrorNoticeMessage}</p>
+      <cr-button id="tryAgainButton" class="tonal-button">$i18n{tryAgainButtonLabel}</cr-button>
+    </div>
+  </section>
 
-    <div id="skeleton-container" class="shimmer-container">
+  <div id="skeleton-container" class="shimmer-container">
 
-      <div class="skeleton-glic">
-        <div class="skeleton-illustration">
-          <div class="skeleton-block shimmer" style="--shimmer-delay: 200ms;">
-          </div>
-        </div>
-        <div class="skeleton-block middle-tos shimmer"
-            style="--shimmer-delay: 250ms;"></div>
-        <div class="skeleton-card">
-          <div class="skeleton-segment-glic shimmer"
-              style="--shimmer-delay: 300ms;"></div>
-          <div class="skeleton-segment-glic shimmer"
-              style="--shimmer-delay: 350ms;"></div>
-          <div class="skeleton-segment-glic shimmer"
-              style="--shimmer-delay: 400ms;"></div>
-        </div>
-        <div class="skeleton-block bottom-tos shimmer"
-            style="--shimmer-delay: 450ms;"></div>
+    <div class="skeleton-glic">
+      <div class="skeleton-illustration">
+        <div class="skeleton-block shimmer" style="--shimmer-delay: 200ms;"></div>
       </div>
-
-      <div class="skeleton-experimental">
-        <div class="skeleton-illustration">
-          <div class="skeleton-block shimmer" style="--shimmer-delay: 200ms;">
-          </div>
-        </div>
-        <div class="skeleton-block middle-tos shimmer"
-            style="--shimmer-delay: 250ms;"></div>
-        <div class="skeleton-card">
-          <div class="skeleton-segment shimmer" style="--shimmer-delay: 300ms;">
-          </div>
-          <div class="skeleton-segment shimmer" style="--shimmer-delay: 350ms;">
-          </div>
-          <div class="skeleton-segment shimmer" style="--shimmer-delay: 400ms;">
-          </div>
-          <div class="skeleton-segment shimmer" style="--shimmer-delay: 450ms;">
-          </div>
-        </div>
+      <div class="skeleton-block middle-tos shimmer" style="--shimmer-delay: 250ms;"></div>
+      <div class="skeleton-card">
+        <div class="skeleton-segment-glic shimmer" style="--shimmer-delay: 300ms;"></div>
+        <div class="skeleton-segment-glic shimmer" style="--shimmer-delay: 350ms;"></div>
+        <div class="skeleton-segment-glic shimmer" style="--shimmer-delay: 400ms;"></div>
       </div>
+      <div class="skeleton-block bottom-tos shimmer" style="--shimmer-delay: 450ms;"></div>
+    </div>
 
-      <div class="buttons-row">
-        <div class="skeleton-block button-pill shimmer"
-            style="--shimmer-delay: 600ms;"></div>
-        <div class="skeleton-block button-pill shimmer"
-            style="--shimmer-delay: 700ms;"></div>
+    <div class="skeleton-experimental">
+      <div class="skeleton-illustration">
+        <div class="skeleton-block shimmer" style="--shimmer-delay: 200ms;"></div>
+      </div>
+      <div class="skeleton-block middle-tos shimmer" style="--shimmer-delay: 250ms;"></div>
+      <div class="skeleton-card">
+        <div class="skeleton-segment shimmer" style="--shimmer-delay: 300ms;"></div>
+        <div class="skeleton-segment shimmer" style="--shimmer-delay: 350ms;"></div>
+        <div class="skeleton-segment shimmer" style="--shimmer-delay: 400ms;"></div>
+        <div class="skeleton-segment shimmer" style="--shimmer-delay: 450ms;"></div>
       </div>
     </div>
 
-    <!-- The existing webview -->
-    <webview id="webview" partition="glicexperimentalpart" autosize="on"
-        minheight="200" maxheight="800">
-    </webview>
+    <div class="buttons-row">
+      <div class="skeleton-block button-pill shimmer" style="--shimmer-delay: 600ms;"></div>
+      <div class="skeleton-block button-pill shimmer" style="--shimmer-delay: 700ms;"></div>
+    </div>
   </div>
+
+  <!-- The existing webview -->
+  <webview id="webview" partition="glicexperimentalpart" autosize="on"
+      minheight="200" maxheight="800">
+  </webview>
   <script type="module" src="experimental_opt_in.js"></script>
 </body>
 

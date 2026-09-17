@@ -63,7 +63,6 @@ document.documentElement.style.setProperty(
 
 export class ExperimentalOptInApp {
   private webview_: WebViewType;
-  private dialogRoot_: HTMLElement;
   private errorPanel_: HTMLElement;
   private errorIcon_: HTMLElement;
   private errorHeadline_: HTMLElement;
@@ -75,6 +74,7 @@ export class ExperimentalOptInApp {
 
   private hasError_: boolean = false;
   private transitioned_: boolean = false;
+  private isInitialLoad_: boolean = true;
   private loadingTimeoutId_: number|null = null;
 
   constructor() {
@@ -98,7 +98,6 @@ export class ExperimentalOptInApp {
     this.webview_.removeAttribute('autosize');
     // </if>
 
-    this.dialogRoot_ = getRequiredElement('dialogRoot');
     this.errorPanel_ = getRequiredElement('errorPanel');
     this.errorIcon_ = getRequiredElement('errorIcon');
     this.errorHeadline_ = getRequiredElement('errorHeadline');
@@ -125,8 +124,6 @@ export class ExperimentalOptInApp {
 
     this.setupEventListeners_();
 
-    this.initDialogSemantics_();
-
     if (!this.hasError_) {
       this.tryLoad_();
     }
@@ -139,6 +136,13 @@ export class ExperimentalOptInApp {
         'loadstop', () => this.transitionToWebview_());
     this.webview_.addEventListener(
         'loadcommit', () => this.transitionToWebview_());
+
+    window.addEventListener(
+        'message',
+        (_e: MessageEvent) => {
+            // Intentionally no-op: heading title updates are handled inside
+            // guest DOM.
+        });
 
     this.webview_.addEventListener('loadstart', () => {
       this.hasError_ = false;
@@ -192,7 +196,13 @@ export class ExperimentalOptInApp {
       this.errorPanel_.hidden = true;
       this.webview_.classList.add('autosized');
       this.webview_.hidden = false;
-      this.focusWebview_();
+
+      if (this.isInitialLoad_) {
+        this.isInitialLoad_ = false;
+        this.scheduleInstantHeadingChecks_();
+      } else if (loadTimeData.getBoolean('glicOptInDialogA11yFixEnabled')) {
+        this.scheduleInstantHeadingChecks_();
+      }
       handler.onWebviewLoaded();
     });
 
@@ -231,11 +241,20 @@ export class ExperimentalOptInApp {
                         const urlHash = urlObj.hash;
 
                         if (urlHash === '#continue') {
+                          if (loadTimeData.getBoolean(
+                                  'glicOptInDialogA11yFixEnabled')) {
+                            this.focusGuestHeading_();
+                          }
                           handler.accept();
                         } else if (urlHash.startsWith('#noThanks')) {
                           handler.reject();
                         }
                       }) as EventListener);
+
+    this.webview_.addEventListener(
+        'pointerdown', () => this.scheduleInstantHeadingChecks_());
+    this.webview_.addEventListener(
+        'click', () => this.scheduleInstantHeadingChecks_());
 
     this.webview_.addEventListener(
         'newwindow', (e: Event) => this.onNewWindow_(e));
@@ -266,7 +285,7 @@ export class ExperimentalOptInApp {
     this.webview_.offsetHeight;
     this.webview_.classList.add('visible');
     if (loadTimeData.getBoolean('glicOptInDialogA11yFixEnabled')) {
-      this.focusWebview_();
+      this.scheduleInstantHeadingChecks_();
     }
 
     setTimeout(() => {
@@ -277,35 +296,107 @@ export class ExperimentalOptInApp {
     }, TRANSITION_DURATION_MS);
   }
 
-  // Applies the dialog semantics used by screen readers to announce this
-  // WebUI, and moves focus into it. The Views dialog hosting this page is a
-  // tab-modal child widget, so without an explicitly labelled dialog container
-  // in the focused document there is nothing for the screen reader to
-  // announce when the dialog opens.
-  private initDialogSemantics_() {
-    if (!loadTimeData.getBoolean('glicOptInDialogA11yFixEnabled')) {
-      return;
-    }
-    const title = loadTimeData.getString('glicWindowTitle');
-    document.title = title;
-    this.dialogRoot_.setAttribute('role', 'dialog');
-    this.dialogRoot_.setAttribute('aria-modal', 'true');
-    this.dialogRoot_.setAttribute('aria-label', title);
-    this.dialogRoot_.setAttribute('tabindex', '-1');
-    this.dialogRoot_.focus();
+  private scheduleInstantHeadingChecks_() {
+    this.focusGuestHeading_();
   }
 
-  private focusWebview_() {
+  private focusGuestHeading_() {
     if (!loadTimeData.getBoolean('glicOptInDialogA11yFixEnabled')) {
       return;
     }
-    if (!this.webview_.checkVisibility()) {
-      return;
-    }
-    try {
-      this.webview_.focus();
-    } catch (e) {
-      console.warn('[Glic Opt-in A11y] Failed to focus webview element:', e);
+    const code = `
+      (function() {
+        function focusVisibleDialog() {
+          const selectors = 'h1, h2, h3, h4, [role="heading"], .title, .headline, .header';
+          const candidates = document.querySelectorAll(selectors);
+          for (const el of candidates) {
+            if (el.offsetWidth > 0 && el.offsetHeight > 0 && window.getComputedStyle(el).visibility !== 'hidden') {
+              const text = el.textContent ? el.textContent.trim() : '';
+              if (text && text === window.__lastHeadingText) {
+                return true;
+              }
+              let target = document.getElementById('a11y-dialog-announcer');
+              if (target && document.activeElement === target && target.getAttribute('aria-label') === text) {
+                return true;
+              }
+              if (!target) {
+                target = document.createElement('div');
+                target.id = 'a11y-dialog-announcer';
+                target.style.position = 'absolute';
+                target.style.opacity = '0';
+                target.style.pointerEvents = 'none';
+                (document.body || document.documentElement).appendChild(target);
+              }
+              target.setAttribute('role', 'dialog');
+              target.setAttribute('tabindex', '-1');
+              if (text) {
+                target.setAttribute('aria-label', text);
+              }
+              window.__lastHeadingText = text;
+              target.focus();
+              try {
+                if (text && window.parent) {
+                  window.parent.postMessage({ type: 'a11y-heading-update', title: text }, '*');
+                }
+              } catch(e) {}
+              return true;
+            }
+          }
+          return false;
+        }
+
+        focusVisibleDialog();
+
+        if (!window.__a11yObserverActive) {
+          window.__a11yObserverActive = true;
+          const observer = new MutationObserver(() => {
+            const selectors = 'h1, h2, h3, h4, [role="heading"], .title, .headline, .header';
+            const candidates = document.querySelectorAll(selectors);
+            for (const el of candidates) {
+              if (el.offsetWidth > 0 && el.offsetHeight > 0 && window.getComputedStyle(el).visibility !== 'hidden') {
+                const text = el.textContent ? el.textContent.trim() : '';
+                if (text && text !== window.__lastHeadingText) {
+                  window.__lastHeadingText = text;
+                  let target = document.getElementById('a11y-dialog-announcer');
+                  if (!target) {
+                    target = document.createElement('div');
+                    target.id = 'a11y-dialog-announcer';
+                    target.style.position = 'absolute';
+                    target.style.opacity = '0';
+                    target.style.pointerEvents = 'none';
+                    (document.body || document.documentElement).appendChild(target);
+                  }
+                  target.setAttribute('role', 'dialog');
+                  target.setAttribute('tabindex', '-1');
+                  if (text) {
+                    target.setAttribute('aria-label', text);
+                  }
+                  target.focus();
+                  try {
+                    if (text && window.parent) {
+                      window.parent.postMessage({ type: 'a11y-heading-update', title: text }, '*');
+                    }
+                  } catch(e) {}
+                }
+                break;
+              }
+            }
+          });
+          observer.observe(document.body || document.documentElement, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+            attributes: true,
+          });
+        }
+      })();
+    `;
+    if (isFullWebView(this.webview_)) {
+      try {
+        this.webview_.executeScript({code: code});
+      } catch (e) {
+        console.warn('Failed executeScript:', e);
+      }
     }
   }
 
