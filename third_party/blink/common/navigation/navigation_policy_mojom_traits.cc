@@ -17,8 +17,6 @@ blink::mojom::NavigationDownloadTypesPtr CreateDownloadTypes(
   auto data = blink::mojom::NavigationDownloadTypes::New();
   data->view_source =
       types.test(static_cast<size_t>(DownloadType::kViewSource));
-  data->interstitial =
-      types.test(static_cast<size_t>(DownloadType::kInterstitial));
   data->opener_cross_origin =
       types.test(static_cast<size_t>(DownloadType::kOpenerCrossOrigin));
   data->ad_frame_no_gesture =
@@ -39,12 +37,6 @@ blink::mojom::NavigationDownloadTypesPtr CreateDownloadTypes(
 bool StructTraits<DownloadTypesDataView, DownloadTypes>::view_source(
     const DownloadTypes& types) {
   return types.test(static_cast<size_t>(DownloadType::kViewSource));
-}
-
-// static
-bool StructTraits<DownloadTypesDataView, DownloadTypes>::interstitial(
-    const DownloadTypes& types) {
-  return types.test(static_cast<size_t>(DownloadType::kInterstitial));
 }
 
 // static
@@ -89,8 +81,6 @@ bool StructTraits<DownloadTypesDataView, DownloadTypes>::Read(
     DownloadTypes* out) {
   if (in.view_source())
     out->set(static_cast<size_t>(DownloadType::kViewSource));
-  if (in.interstitial())
-    out->set(static_cast<size_t>(DownloadType::kInterstitial));
   if (in.opener_cross_origin())
     out->set(static_cast<size_t>(DownloadType::kOpenerCrossOrigin));
   if (in.ad_frame_no_gesture())

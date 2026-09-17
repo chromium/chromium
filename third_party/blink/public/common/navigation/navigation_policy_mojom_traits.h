@@ -19,8 +19,6 @@ class BLINK_COMMON_EXPORT
  public:
   static bool view_source(
       const blink::NavigationDownloadPolicy::NavigationDownloadTypes& types);
-  static bool interstitial(
-      const blink::NavigationDownloadPolicy::NavigationDownloadTypes& types);
   static bool opener_cross_origin(
       const blink::NavigationDownloadPolicy::NavigationDownloadTypes& types);
   static bool ad_frame_no_gesture(

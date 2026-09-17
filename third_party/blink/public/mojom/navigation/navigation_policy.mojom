@@ -6,11 +6,8 @@ module blink.mojom;
 
 // This struct represents std::bitset of navigation types which aliases
 // to blink::NavigationDownloadPolicy::NavigationDownloadTypes.
-// TODO(https://crbug.com/1082291): Change to bitset when mojom supports
-// explicit bitset types.
 struct NavigationDownloadTypes {
   bool view_source;
-  bool interstitial;
   bool opener_cross_origin;
   bool ad_frame_no_gesture;
   bool ad_frame;

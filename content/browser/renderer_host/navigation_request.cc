@@ -12455,7 +12455,6 @@ void NavigationRequest::ComputeDownloadPolicy() {
   // [NoGesture]
   // [AdFrameNoGesture]
   // [AdFrame]
-  // [Interstitial]
 }
 
 bool NavigationRequest::ShouldQueueDueToExistingPendingCommitRFH() const {

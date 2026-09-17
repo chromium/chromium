@@ -17,28 +17,27 @@ namespace blink {
 // Navigation type that affects the download decision at download-discovery
 // time.
 enum class NavigationDownloadType {
-  kViewSource = 0,
-  kInterstitial = 1,
+  kViewSource,
 
   // The navigation was initiated on a x-origin opener.
-  kOpenerCrossOrigin = 2,
+  kOpenerCrossOrigin,
 
   // The navigation was initiated from or occurred in an ad frame without user
   // activation.
-  kAdFrameNoGesture = 3,
+  kAdFrameNoGesture,
 
   // The navigation was initiated from or occurred in an ad frame.
-  kAdFrame = 4,
+  kAdFrame,
 
   // The navigation was initiated from or occurred in an iframe with
   // |network::mojom::WebSandboxFlags::kDownloads| flag set.
-  kSandbox = 5,
+  kSandbox,
 
   // The navigation was initiated without user activation.
-  kNoGesture = 6,
+  kNoGesture,
 
   // The navigation was initiated from an ad script.
-  kAdScript = 7,
+  kAdScript,
 
   kMaxValue = kAdScript
 };
