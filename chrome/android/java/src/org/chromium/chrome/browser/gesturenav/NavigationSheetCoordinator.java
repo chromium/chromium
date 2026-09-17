@@ -26,6 +26,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -39,6 +40,9 @@ import java.util.function.Supplier;
 /** Coordinator class for navigation sheet. TODO(jinsukkim): Write tests. */
 @NullMarked
 class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder().setUserInitiated(true).build();
+
     // Type of the navigation list item. We have only single type.
     static final int NAVIGATION_LIST_ITEM_TYPE_ID = 0;
 
@@ -315,6 +319,11 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     @Override
     public void destroy() {
         mMediator.destroy();
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
     }
 
     @Override
