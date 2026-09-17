@@ -670,7 +670,8 @@ public class SettingsPageFragmentDelegateImpl
                         containmentHelper.getItemDecorations(),
                         mProfile,
                         this::updateFirstVisibleTitle,
-                        mModalDialogSupplier);
+                        mModalDialogSupplier,
+                        /* shownInTab= */ true);
 
         // Multi column settings may have already created its view (in case of Activity
         // re-creation), so initialize the search coordinator's view if it exists.

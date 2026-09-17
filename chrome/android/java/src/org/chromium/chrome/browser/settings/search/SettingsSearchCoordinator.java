@@ -135,6 +135,7 @@ public class SettingsSearchCoordinator
     private final Profile mProfile;
     private final Callback<Integer> mUpdateFirstVisibleTitle;
     private final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final boolean mShownInTab;
 
     private @Nullable Runnable mSearchRunnable;
     private @Nullable Runnable mRemoveResultChildViewListener;
@@ -243,6 +244,8 @@ public class SettingsSearchCoordinator
      * @param profile User profile object.
      * @param updateFirstVisibleTitle Callback used to set the first visible one of the titles. See
      *     {@link MultiColumnSettings#mFirstVisibleTitleIndex}.
+     * @param shownInTab Whether settings is shown in a browser tab rather than standalone {@link
+     *     SettingsActivity}.
      */
     public SettingsSearchCoordinator(
             FragmentActivity activity,
@@ -252,7 +255,8 @@ public class SettingsSearchCoordinator
             Map<PreferenceFragmentCompat, ContainmentItemDecoration> itemDecorations,
             Profile profile,
             Callback<Integer> updateFirstVisibleTitle,
-            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            boolean shownInTab) {
         AccessibilityState.addListener(this);
 
         mActivity = activity;
@@ -264,6 +268,7 @@ public class SettingsSearchCoordinator
         mProfile = profile;
         mUpdateFirstVisibleTitle = updateFirstVisibleTitle;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mShownInTab = shownInTab;
     }
 
     /** Finds a view and assumes that it exists. */
@@ -802,9 +807,15 @@ public class SettingsSearchCoordinator
     /**
      * Whether the search box should automatically receive accessibility focus on page load or tab
      * switch. Anchors TalkBack focus to the search box when Settings is opened in a tab.
+     *
+     * <p>On foldable devices, {@link SettingsInTab#isEnabled()} returns true even when folded so
+     * that an already-open settings tab survives folding. However, opening settings from the app
+     * menu while folded launches {@link SettingsActivity}. If the user later unfolds the device,
+     * the screen size changes, but settings behaviors need to stay consistent with how settings is
+     * hosted (indicated by {@code mShownInTab}).
      */
     private boolean shouldAutoFocusSearchBox() {
-        return SettingsInTab.isEnabled();
+        return mShownInTab;
     }
 
     private boolean isShowingMainSettings() {

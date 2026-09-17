@@ -109,20 +109,24 @@ public class SettingsSearchCoordinatorUnitTest {
 
         mActivity.setContentView(rootView);
 
+        mCoordinator = createCoordinator(/* shownInTab= */ false);
+    }
+
+    private SettingsSearchCoordinator createCoordinator(boolean shownInTab) {
         SettableMonotonicObservableSupplier<ModalDialogManager> modalDialogSupplier =
                 ObservableSuppliers.createMonotonic();
         modalDialogSupplier.set(mModalDialogManager);
 
-        mCoordinator =
-                new SettingsSearchCoordinator(
-                        mActivity,
-                        mToolbar,
-                        this::isTwoColumnSettingsVisible,
-                        mMultiColumnSettings,
-                        new HashMap<>(),
-                        mProfile,
-                        (index) -> {},
-                        modalDialogSupplier);
+        return new SettingsSearchCoordinator(
+                mActivity,
+                mToolbar,
+                this::isTwoColumnSettingsVisible,
+                mMultiColumnSettings,
+                new HashMap<>(),
+                mProfile,
+                (index) -> {},
+                modalDialogSupplier,
+                shownInTab);
     }
 
     /**
@@ -689,10 +693,9 @@ public class SettingsSearchCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
-    public void testInitializeSearchUi_withSettingsInTab_setsSearchBoxFocusable() {
+    public void testInitializeSearchUi_whenShownInTab_setsSearchBoxFocusable() {
         setUpMultiColumnSettings();
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
         mCoordinator.initializeSearchUi(null);
 
         View searchBox = mActivity.findViewById(R.id.search_box);
@@ -702,8 +705,7 @@ public class SettingsSearchCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
-    public void testInitializeSearchUi_withoutSettingsInTab_doesNotSetSearchBoxFocusable() {
+    public void testInitializeSearchUi_whenNotShownInTab_doesNotSetSearchBoxFocusable() {
         setUpMultiColumnSettings();
         mCoordinator.initializeSearchUi(null);
 
@@ -754,11 +756,10 @@ public class SettingsSearchCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
-    public void testExitSearchState_withSettingsInTab_multiColumn_focusesSearchBox() {
+    public void testExitSearchState_whenShownInTab_multiColumn_focusesSearchBox() {
         setUpMultiColumnSettings();
         mUseMultiColumn = true;
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
         mCoordinator.initializeSearchUi(null);
         ShadowLooper.idleMainLooper();
 
@@ -916,13 +917,11 @@ public class SettingsSearchCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
     public void testTouchSearchBox_whenUnfocused_entersSearchState() {
         SettingsIndexData.createInstance().resetNeedsIndexing();
         setUpMultiColumnSettings();
         mUseMultiColumn = true;
-
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
         mCoordinator.initializeSearchUi(null);
         ShadowLooper.idleMainLooper();
 
@@ -953,13 +952,11 @@ public class SettingsSearchCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
     public void testTouchSearchBox_whenUnfocused_dragDoesNotEnterSearchState() {
         SettingsIndexData.createInstance().resetNeedsIndexing();
         setUpMultiColumnSettings();
         mUseMultiColumn = true;
-
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
         mCoordinator.initializeSearchUi(null);
         ShadowLooper.idleMainLooper();
 

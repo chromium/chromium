@@ -482,7 +482,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         mContainmentHelper.getItemDecorations(),
                         mProfile,
                         updateFirstVisibleTitle,
-                        getModalDialogManagerSupplier());
+                        getModalDialogManagerSupplier(),
+                        /* shownInTab= */ false);
         if (mMultiColumnSettings != null) {
             if (savedState != null) {
                 // Title text view gets temporarily hidden while restoring the
