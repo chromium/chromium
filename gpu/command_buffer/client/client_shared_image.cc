@@ -565,7 +565,8 @@ uint64_t ClientSharedImage::SignalLatestSyncToken(
       }
       base::AutoLock auto_lock(shared_image->lock_);
       auto it = shared_image->sync_token_map_.find(client_id);
-      if (it != shared_image->sync_token_map_.end() && it->second.HasData()) {
+      if (it != shared_image->sync_token_map_.end() &&
+          it->second.release_count() > latest_sync_token.release_count()) {
         latest_sync_token = it->second;
       }
     }
