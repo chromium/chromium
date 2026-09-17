@@ -133,6 +133,7 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
         assertNotNull("Controller should not be null", model.get(ModalDialogProperties.CONTROLLER));
         assertEquals(false, model.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
         assertNotNull(model.get(ModalDialogProperties.CUSTOM_VIEW));
+        assertNotNull("Close button should be attached", coordinator.getCloseButtonForTesting());
 
         verify(mModalDialogManager).showDialog(model, ModalDialogManager.ModalDialogType.APP);
     }
@@ -195,5 +196,30 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
         verify(mThinWebView).destroy();
         // Regression guard: native destruction must not call back into native.
         verify(mNativeMock, never()).onDismissed(any(Long.class));
+    }
+
+    @Test
+    public void testCloseButton_ClicksAndDismissesDialog() {
+        GlicExperimentalOptInUiCoordinator coordinator =
+                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+        assertNotNull(coordinator);
+        PropertyModel model = coordinator.getPropertyModelForTesting();
+        assertNotNull(model);
+
+        View closeButton = coordinator.getCloseButtonForTesting();
+        assertNotNull("Close button should be attached", closeButton);
+        assertEquals(View.VISIBLE, closeButton.getVisibility());
+        closeButton.performClick();
+
+        verify(mModalDialogManager)
+                .dismissDialog(eq(model), eq(DialogDismissalCause.DISMISSED_BY_NATIVE));
+
+        // ModalDialogManager is mocked, so drive the dismissal callback manually to verify
+        // that teardown runs.
+        ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
+        assertNotNull("Controller should not be null", controller);
+        controller.onDismiss(model, DialogDismissalCause.DISMISSED_BY_NATIVE);
+
+        verify(mThinWebView).destroy();
     }
 }

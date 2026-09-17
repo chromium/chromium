@@ -166,7 +166,7 @@ public class GlicAndroidMojoIntegrationTest {
 
     @Test
     @LargeTest
-    public void testShowExperimentalOptInDialog() throws Throwable {
+    public void testShowExperimentalOptInDialogAndDismissViaCloseButton() throws Throwable {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     GlicKeyedService service =
@@ -174,13 +174,37 @@ public class GlicAndroidMojoIntegrationTest {
                     service.showExperimentalOptInDialogForTesting(mTab);
                 });
 
-        // Verify the dialog is showing via ModalDialogManager.
         CriteriaHelper.pollUiThread(
                 () -> {
                     var windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
                     if (windowAndroid == null) return false;
                     var modalDialogManager = windowAndroid.getModalDialogManager();
                     return modalDialogManager != null && modalDialogManager.isShowing();
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
+                    var modalDialogManager = windowAndroid.getModalDialogManager();
+                    org.chromium.ui.modelutil.PropertyModel model =
+                            modalDialogManager.getCurrentDialogForTest();
+                    Assert.assertNotNull(model);
+                    android.view.View customView =
+                            model.get(
+                                    org.chromium.ui.modaldialog.ModalDialogProperties.CUSTOM_VIEW);
+                    Assert.assertNotNull(customView);
+                    android.view.View closeButton =
+                            customView.findViewById(R.id.glic_experimental_opt_in_close_button);
+                    Assert.assertNotNull(closeButton);
+                    closeButton.performClick();
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
+                    if (windowAndroid == null) return true;
+                    var modalDialogManager = windowAndroid.getModalDialogManager();
+                    return modalDialogManager == null || !modalDialogManager.isShowing();
                 });
     }
 }

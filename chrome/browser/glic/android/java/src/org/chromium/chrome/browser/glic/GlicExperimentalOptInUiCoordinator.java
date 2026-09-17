@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.glic;
 
 import android.app.Activity;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
@@ -32,6 +33,7 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ChromeImageButton;
 
 /**
  * Coordinator for displaying the Glic experimental opt-in dialog on Android using
@@ -51,6 +53,7 @@ public class GlicExperimentalOptInUiCoordinator {
     private @Nullable PropertyModel mModel;
     private @Nullable ThinWebView mThinWebView;
     private @Nullable ContentView mContentView;
+    private @Nullable ChromeImageButton mCloseButton;
 
     private final ModalDialogProperties.Controller mDialogController =
             new ModalDialogProperties.Controller() {
@@ -157,6 +160,20 @@ public class GlicExperimentalOptInUiCoordinator {
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         cardContainer.setLayoutParams(new ViewGroup.LayoutParams(mTargetWidthPx, mTargetHeightPx));
 
+        // The close button is overlaid on top of the web contents rather than using
+        // ModalDialogProperties.TITLE_CLOSE_BUTTON_*. This dialog has no title, so the shared
+        // title row would collapse to just the close button, aligning it to the start and
+        // exposing a strip of the dialog's window background above the web contents.
+        LayoutInflater.from(mActivity)
+                .inflate(
+                        R.layout.glic_experimental_opt_in_close_button,
+                        cardContainer,
+                        /* attachToRoot= */ true);
+        ChromeImageButton closeButton =
+                cardContainer.findViewById(R.id.glic_experimental_opt_in_close_button);
+        closeButton.setOnClickListener(v -> dismiss());
+        mCloseButton = closeButton;
+
         mModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, mDialogController)
@@ -189,6 +206,7 @@ public class GlicExperimentalOptInUiCoordinator {
             mThinWebView.destroy();
             mThinWebView = null;
         }
+        mCloseButton = null;
         mContentView = null;
         mModel = null;
     }
@@ -216,6 +234,10 @@ public class GlicExperimentalOptInUiCoordinator {
 
     public @Nullable PropertyModel getPropertyModelForTesting() {
         return mModel;
+    }
+
+    public @Nullable ChromeImageButton getCloseButtonForTesting() {
+        return mCloseButton;
     }
 
     @NativeMethods

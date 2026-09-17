@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+Close button overlaid on top of the experimental opt-in dialog's web contents.
+It is deliberately not the shared ModalDialogProperties.TITLE_CLOSE_BUTTON: that
+one lives in a separate title row above the custom view, which leaves a visible
+strip of the dialog's window background above the web contents.
+-->
+<org.chromium.ui.widget.ChromeImageButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/glic_experimental_opt_in_close_button"
+    android:layout_width="@dimen/min_touch_target_size"
+    android:layout_height="@dimen/min_touch_target_size"
+    android:layout_gravity="top|end"
+    android:layout_margin="@dimen/glic_experimental_opt_in_close_button_margin"
+    android:background="@drawable/default_icon_background"
+    android:contentDescription="@string/close"
+    android:src="@drawable/btn_close"
+    app:tint="@color/default_icon_color_tint_list" />

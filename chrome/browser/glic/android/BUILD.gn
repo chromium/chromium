@@ -44,6 +44,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_move_item_24dp.xml",
     "java/res/layout/glic_auto_browse.xml",
     "java/res/layout/glic_default_tab_access.xml",
+    "java/res/layout/glic_experimental_opt_in_close_button.xml",
     "java/res/layout/glic_mic_permission_dialog.xml",
     "java/res/layout/glic_promo_bottom_sheet.xml",
     "java/res/layout/glic_settings_extra_info.xml",
