@@ -49,6 +49,7 @@
 #include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 #endif
 
+class BrowserWindowInterface;
 class Profile;
 class ContextualSearchboxTabFaviconHelper;
 class DrivePickerHostController;
@@ -183,6 +184,14 @@ class ContextualSearchboxHandler
                    bool meta_key,
                    bool shift_key,
                    bool is_voice_search) override;
+
+  // Returns recent tabs from the tab list associated with
+  // `browser_window_interface` sorted by recency. If `max_tab_suggestions` > 0,
+  // the result is capped to that number of tabs.
+  static std::vector<searchbox::mojom::TabInfoPtr> GetRecentTabInfos(
+      BrowserWindowInterface* browser_window_interface,
+      int max_tab_suggestions = -1);
+
   void GetRecentTabs(GetRecentTabsCallback callback) override;
   void GetTabPreview(int32_t tab_id, GetTabPreviewCallback callback) override;
   void WaitForTabFaviconLoad(int32_t tab_id,

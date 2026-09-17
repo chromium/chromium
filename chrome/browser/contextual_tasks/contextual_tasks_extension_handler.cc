@@ -38,6 +38,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #endif
 
 DOCUMENT_USER_DATA_KEY_IMPL(ContextualTasksExtensionHandler);
@@ -267,7 +268,12 @@ void ContextualTasksExtensionHandler::GetCyclingPlaceholderConfig(
 }
 void ContextualTasksExtensionHandler::GetRecentTabs(
     GetRecentTabsCallback callback) {
-  std::move(callback).Run({});
+  content::WebContents* host_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  auto* browser_window_interface =
+      host_contents ? webui::GetBrowserWindowInterface(host_contents) : nullptr;
+  std::move(callback).Run(
+      ContextualSearchboxHandler::GetRecentTabInfos(browser_window_interface));
 }
 void ContextualTasksExtensionHandler::GetTabPreview(
     int32_t tab_id,
