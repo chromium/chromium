@@ -8855,6 +8855,11 @@ inline constexpr char kHandleMdmErrorsForDasherAccountsName[] =
 inline constexpr char kHandleMdmErrorsForDasherAccountsDescription[] =
     "Enables the mdm error handling feature for dasher accounts";
 
+inline constexpr char kHandleMdmErrorsForDasherAccountsOnAndroidName[] =
+    "Handle MDM errors for dasher accounts on Android";
+inline constexpr char kHandleMdmErrorsForDasherAccountsOnAndroidDescription[] =
+    "Enables MDM error handling for managed accounts on Android.";
+
 inline constexpr char kEnableOktaSSOName[] =
     "Enable Okta SSO for enterprise browsers.";
 inline constexpr char kEnableOktaSSODescription[] =

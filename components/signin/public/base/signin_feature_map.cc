@@ -37,6 +37,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kMakeIdentityManagerSourceOfAccountsPart2,
     &switches::kMigrateAccountManagerDelegate,
     &switches::kFullscreenSignInPromoUseDate,
+    &switches::kHandleMdmErrorsForDasherAccountsOnAndroid,
     &switches::kSmartEmailLineBreaking,
     &switches::kSupportWebSigninAddSession,
     &switches::kSignOutDeletesBrowsingData,

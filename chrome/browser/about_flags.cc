@@ -14065,6 +14065,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCCTEarlyInitPowerManagerDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTEarlyInitPowerManager)},
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+    {"handle-mdm-errors-for-dasher-accounts-on-android",
+     flag_descriptions::kHandleMdmErrorsForDasherAccountsOnAndroidName,
+     flag_descriptions::kHandleMdmErrorsForDasherAccountsOnAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kHandleMdmErrorsForDasherAccountsOnAndroid)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

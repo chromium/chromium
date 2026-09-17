@@ -698,6 +698,12 @@ BASE_DECLARE_FEATURE(kGlicEligibilitySeparateAccountCapability);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kHandleMdmErrorsForDasherAccounts);
 
+#if BUILDFLAG(IS_ANDROID)
+// Feature to handle MDM errors on managed accounts on Android.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kHandleMdmErrorsForDasherAccountsOnAndroid);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_IOS)
 // Killswitch for ignoring X-Chrome-Manage-Accounts header in subframes.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

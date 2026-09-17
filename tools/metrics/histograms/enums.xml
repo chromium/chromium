@@ -9809,6 +9809,8 @@ from previous Chrome versions.
   <int value="-1533450851" label="EnablePerDeskZOrder:enabled"/>
   <int value="-1533406166" label="ContextualPanelCloseButton:disabled"/>
   <int value="-1533258008" label="CalculateNativeWinOcclusion:enabled"/>
+  <int value="-1532777224"
+      label="HandleMdmErrorsForDasherAccountsOnAndroid:enabled"/>
   <int value="-1532720464" label="WellKnownChangePassword:enabled"/>
   <int value="-1532704297" label="AimEligibilityComponentExtension:enabled"/>
   <int value="-1532645183" label="ReleaseNotesNotification:enabled"/>
@@ -17891,6 +17893,8 @@ from previous Chrome versions.
   <int value="955200915" label="enable-openxr-android-smooth-depth:disabled"/>
   <int value="955340765" label="ChromeHomeOptOutSnackbar:enabled"/>
   <int value="955425932" label="EnterpriseReportingInChromeOS:enabled"/>
+  <int value="955814491"
+      label="HandleMdmErrorsForDasherAccountsOnAndroid:disabled"/>
   <int value="955901619" label="EmojiSuggestAddition:disabled"/>
   <int value="956587578" label="ProcessRankPolicyAndroid:enabled"/>
   <int value="956709316"
