@@ -623,8 +623,7 @@ void HTMLCanvasElement::configureHighDynamicRange(
 }
 
 bool HTMLCanvasElement::ShouldSkipPaintInvalidation() const {
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
-      IsInCanvasSubtree()) {
+  if (IsInCanvasSubtree()) {
     return false;
   }
   return (context_ && context_->IsComposited()) || (!!surface_layer_bridge_);

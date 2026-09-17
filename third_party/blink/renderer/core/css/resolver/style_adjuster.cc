@@ -740,9 +740,7 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
 // to have a stacking context and become a containing block for all descendants.
 static bool ForceStackingAndContainingBlockForCanvasLayoutSubtree(
     const Element* element) {
-  if (element && element->IsCanvasOrInCanvasSubtree() &&
-      RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          element->GetExecutionContext())) {
+  if (element && element->IsCanvasOrInCanvasSubtree()) {
     const Element* parent =
         FlatTreeTraversal::ParentElementSkippingSlots(*element);
     if (const auto* canvas = DynamicTo<HTMLCanvasElement>(parent)) {
@@ -753,9 +751,7 @@ static bool ForceStackingAndContainingBlockForCanvasLayoutSubtree(
 }
 
 static bool IsCanvasWithDrawElements(const Element* element) {
-  if (!element || !element->IsCanvasOrInCanvasSubtree() ||
-      !RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          element->GetExecutionContext())) {
+  if (!element || !element->IsCanvasOrInCanvasSubtree()) {
     return false;
   }
 

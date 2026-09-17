@@ -111,9 +111,7 @@ bool ShouldUseInfiniteCullRect(
     return true;
   }
 
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          object.GetDocument().GetExecutionContext()) &&
-      object.IsInCanvasSubtree()) {
+  if (object.IsInCanvasSubtree()) {
     return true;
   }
 

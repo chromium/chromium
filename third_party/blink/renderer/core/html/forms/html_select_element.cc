@@ -372,8 +372,7 @@ void HTMLSelectElement::SetSuggestedValue(const String& value) {
 }
 
 void HTMLSelectElement::SetSuggestedOption(HTMLOptionElement* option) {
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
-      IsCanvasOrInCanvasSubtree()) {
+  if (IsCanvasOrInCanvasSubtree()) {
     // Hide suggested values when under canvas, to prevent leaking this
     // information to javascript.
     option = nullptr;
@@ -889,8 +888,7 @@ int HTMLSelectElement::SelectedListIndex() const {
 
 void HTMLSelectElement::DidChangeIsInCanvasSubtree() {
   HTMLFormControlElementWithState::DidChangeIsInCanvasSubtree();
-  if (IsInCanvasSubtree() &&
-      RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext())) {
+  if (IsInCanvasSubtree()) {
     // Hide suggested values when under canvas, to prevent leaking this
     // information to javascript.
     SetSuggestedOption(nullptr);

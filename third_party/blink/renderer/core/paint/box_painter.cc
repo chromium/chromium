@@ -47,10 +47,7 @@ void BoxPainter::RecordScrollHitTestData(
   // content under <canvas>, which disables compositing but which needs scroll
   // hit test data.
   if (paint_info.ShouldOmitCompositingInfo()) {
-    bool painting_canvas_child =
-        RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-            layout_box_.GetDocument().GetExecutionContext()) &&
-        layout_box_.IsInCanvasSubtree();
+    bool painting_canvas_child = layout_box_.IsInCanvasSubtree();
     if (!painting_canvas_child) {
       return;
     }
