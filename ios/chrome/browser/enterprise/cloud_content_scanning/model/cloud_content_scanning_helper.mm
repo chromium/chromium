@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -185,6 +186,14 @@ class PendingScanDecision : public web::WebStateUserData<PendingScanDecision>,
     CHECK_EQ(web_state_, web_state);
     web_state_->RemoveObserver(this);
     web_state_ = nullptr;
+  }
+
+  void DidStartNavigation(web::WebState* web_state,
+                          web::NavigationContext* navigation_context) override {
+    CHECK_EQ(web_state_, web_state);
+    if (!navigation_context->IsSameDocument()) {
+      web_state_->RemoveUserData(UserDataKey());
+    }
   }
 
  private:
