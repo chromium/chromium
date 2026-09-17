@@ -14,8 +14,6 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
-#include "chrome/browser/ui/autofill/payments/payments_churned_users_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -29,7 +27,6 @@
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
-#include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -186,24 +183,6 @@ class MockVirtualCardEnrollBubbleController
   MOCK_METHOD(void,
               ShowConfirmationBubbleView,
               (payments::PaymentsAutofillClient::PaymentsRpcResult),
-              (override));
-};
-
-class MockPaymentsChurnedUsersBubbleController
-    : public PaymentsChurnedUsersBubbleController {
- public:
-  explicit MockPaymentsChurnedUsersBubbleController(
-      tabs::TabInterface& tab_interface,
-      content::WebContents* web_contents)
-      : PaymentsChurnedUsersBubbleController(tab_interface, web_contents) {}
-  ~MockPaymentsChurnedUsersBubbleController() override = default;
-
-  MOCK_METHOD(void,
-              Show,
-              (base::OnceClosure accept_callback,
-               base::OnceClosure cancel_callback,
-               base::OnceClosure closed_callback,
-               AccountInfo account_info),
               (override));
 };
 
@@ -1123,51 +1102,6 @@ TEST_F(ChromePaymentsAutofillClientOmniboxTest, HideOmniboxAutofillChip) {
       .Times(1);
 
   chrome_payments_client()->HideOmniboxAutofillChip();
-}
-
-TEST_F(ChromePaymentsAutofillClientTest,
-       ShowPaymentsChurnedUsersUI_WithAccountInfo) {
-  tabs::MockTabInterface mock_tab_interface;
-  ui::UnownedUserDataHost user_data_host;
-  ON_CALL(mock_tab_interface, GetUnownedUserDataHost())
-      .WillByDefault(testing::ReturnRef(user_data_host));
-
-  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
-                                                       &mock_tab_interface);
-
-  MockPaymentsChurnedUsersBubbleController controller(mock_tab_interface,
-                                                      web_contents());
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
-  signin::UpdateAccountInfoForAccount(
-      identity_manager, signin::WithGeneratedUserInfo(account_info, "Test"));
-
-  EXPECT_CALL(controller, Show).Times(1);
-
-  chrome_payments_client()->ShowPaymentsChurnedUsersUI(
-      base::DoNothing(), base::DoNothing(), base::DoNothing());
-}
-
-TEST_F(ChromePaymentsAutofillClientTest,
-       ShowPaymentsChurnedUsersUI_NoAccountInfo) {
-  tabs::MockTabInterface mock_tab_interface;
-  ui::UnownedUserDataHost user_data_host;
-  ON_CALL(mock_tab_interface, GetUnownedUserDataHost())
-      .WillByDefault(testing::ReturnRef(user_data_host));
-
-  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
-                                                       &mock_tab_interface);
-
-  MockPaymentsChurnedUsersBubbleController controller(mock_tab_interface,
-                                                      web_contents());
-
-  EXPECT_CALL(controller, Show).Times(0);
-
-  chrome_payments_client()->ShowPaymentsChurnedUsersUI(
-      base::DoNothing(), base::DoNothing(), base::DoNothing());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

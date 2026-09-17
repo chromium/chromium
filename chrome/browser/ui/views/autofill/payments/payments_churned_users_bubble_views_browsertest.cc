@@ -30,7 +30,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_churned_users_metrics.h"
+#include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -76,9 +78,11 @@ class PaymentsChurnedUsersBubbleViewsBrowserTest
         autofill::ChromeAutofillClient::FromWebContentsForTesting(
             browser()->GetTabStripModel()->GetActiveWebContents());
     ASSERT_TRUE(autofill_client);
-    autofill_client->GetPaymentsAutofillClient()->ShowPaymentsChurnedUsersUI(
-        std::move(accept_callback), std::move(cancel_callback),
-        std::move(closed_callback));
+    autofill_client->GetPaymentsAutofillClient()
+        ->GetPaymentsChurnedUsersUiDelegate()
+        ->ShowPaymentsChurnedUsersUI(std::move(accept_callback),
+                                     std::move(cancel_callback),
+                                     std::move(closed_callback));
   }
 
   bool IsIconVisible() {

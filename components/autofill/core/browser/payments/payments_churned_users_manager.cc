@@ -9,13 +9,13 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/notimplemented.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_churned_users_metrics.h"
+#include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -108,16 +108,19 @@ void PaymentsChurnedUsersManager::OnFieldTypesDetermined(
             features::kAutofillEnableResurrectingPaymentsUsers)) {
       if (payments::PaymentsAutofillClient* payments_client =
               client_->GetPaymentsAutofillClient()) {
-        payments_client->ShowPaymentsChurnedUsersUI(
-            base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
-                           weak_factory_.GetWeakPtr(),
-                           PaymentsUiClosedReason::kAccepted),
-            base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
-                           weak_factory_.GetWeakPtr(),
-                           PaymentsUiClosedReason::kCancelled),
-            base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
-                           weak_factory_.GetWeakPtr(),
-                           PaymentsUiClosedReason::kUnknown));
+        if (PaymentsChurnedUsersUiDelegate* ui_delegate =
+                payments_client->GetPaymentsChurnedUsersUiDelegate()) {
+          ui_delegate->ShowPaymentsChurnedUsersUI(
+              base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
+                             weak_factory_.GetWeakPtr(),
+                             PaymentsUiClosedReason::kAccepted),
+              base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
+                             weak_factory_.GetWeakPtr(),
+                             PaymentsUiClosedReason::kCancelled),
+              base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
+                             weak_factory_.GetWeakPtr(),
+                             PaymentsUiClosedReason::kUnknown));
+        }
       }
     }
   }

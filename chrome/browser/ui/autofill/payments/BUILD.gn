@@ -339,6 +339,7 @@ source_set("unit_tests") {
       "offer_notification_bubble_controller_impl_unittest.cc",
       "omnibox_autofill_bubble_controller_unittest.cc",
       "omnibox_autofill_page_action_controller_unittest.cc",
+      "payments_churned_users_ui_delegate_desktop_unittest.cc",
       "save_card_bubble_controller_impl_unittest.cc",
       "wallet_reminder_notice_bubble_controller_unittest.cc",
       "wallet_reminder_notice_page_action_controller_unittest.cc",
