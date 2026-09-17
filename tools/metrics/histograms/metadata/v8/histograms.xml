@@ -1623,6 +1623,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmAvx2Support" enum="BooleanSupported"
+    expires_after="2027-09-17">
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>gdeepti@chromium.org</owner>
+  <owner>wasm-runtime@google.com</owner>
+  <summary>
+    Whether the system supports AVX/AVX2 vector extensions. This is recorded
+    once per isolate during isolate creation (startup).
+
+    As this is only available on x64 systems, this value is only recorded on
+    those machines.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmCacheCount" units="count" expires_after="2027-02-21">
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-runtime@google.com</owner>
@@ -2007,6 +2021,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Number of WebAssembly native modules live in an isolate. Recorded whenever a
     new native module is created.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmRevecConversionPercent" units="%"
+    expires_after="2027-09-17">
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>gdeepti@chromium.org</owner>
+  <owner>wasm-runtime@google.com</owner>
+  <summary>
+    The percentage of SIMD operations that were successfully re-vectorized.
+    Recorded for each optimized Wasm function compilation if re-vectorization is
+    enabled.
   </summary>
 </histogram>
 
