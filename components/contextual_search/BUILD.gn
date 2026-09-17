@@ -161,6 +161,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "consent_kit/consent_kit_result_parser_unittest.cc",
     "consent_kit/consent_kit_url_builder_unittest.cc",
     "contextual_search_metrics_recorder_unittest.cc",
     "contextual_search_service_unittest.cc",

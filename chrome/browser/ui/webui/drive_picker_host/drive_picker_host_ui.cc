@@ -11,6 +11,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/drive_picker_host_resources.h"
 #include "chrome/grit/drive_picker_host_resources_map.h"
+#include "components/contextual_search/consent_kit/consent_kit_result_parser.h"
 #include "components/contextual_search/consent_kit/consent_kit_url_builder.h"
 #include "components/contextual_search/consent_kit/proto/iframe_interface.pb.h"
 #include "components/contextual_search/input_state_model.h"
@@ -352,28 +353,14 @@ void DrivePickerHostUI::HandlePrivacyFlowResult(
     return;
   }
 
-  if (!result.has_flow_id() ||
-      result.flow_id() != static_cast<identity_consent::ConsentFlowId>(
-                              omnibox::kComposeboxDriveConsentFlowId.Get())) {
+  if (!drive::IsExpectedConsentFlow(
+          result, omnibox::kComposeboxDriveConsentFlowId.Get())) {
     DLOG(WARNING) << "Unexpected or missing flow_id";
     OnConsentKitError("Unexpected or missing flow_id");
     return;
   }
 
-  bool has_consent = false;
-  for (const auto& decision : result.decision()) {
-    if (decision.ftc_consent_setting_id() ==
-            identity_consent::ConsentSettingId::
-                PERSONAL_CONTEXT_SEARCH_USING_WORKSPACE &&
-        (decision.decision() == identity_consent::Decision::DECISION_CONSENT ||
-         decision.decision() ==
-             identity_consent::Decision::DECISION_KEEP_CONSENT)) {
-      has_consent = true;
-      break;
-    }
-  }
-
-  if (has_consent) {
+  if (drive::HasGrantedDriveConsent(result)) {
     VLOG(1) << "[DrivePickerHostUI] Handling decision consent. "
                "Transitioning to Picker.";
     Profile* profile = Profile::FromWebUI(web_ui());

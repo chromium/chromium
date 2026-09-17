@@ -4,6 +4,8 @@
 
 source_set("consent_kit") {
   sources = [
+    "consent_kit_result_parser.cc",
+    "consent_kit_result_parser.h",
     "consent_kit_url_builder.cc",
     "consent_kit_url_builder.h",
   ]
