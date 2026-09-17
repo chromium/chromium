@@ -60,6 +60,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/search_engines",
     "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/views/profiles:avatar_toolbar_button",
     "//chrome/test:test_support",
     "//chrome/test/user_education:impl",
     "//components/contextual_tasks/public",

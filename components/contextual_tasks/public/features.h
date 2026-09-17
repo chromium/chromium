@@ -72,7 +72,6 @@ BASE_DECLARE_FEATURE(kContextualTasksSendContextualInputUploadType);
 // contextual tasks URL and redirect to aim URL.
 BASE_DECLARE_FEATURE(kContextualTasksUrlRedirectToAimUrl);
 
-
 // If enabled, animates the caret.
 BASE_DECLARE_FEATURE(kContextualTasksAnimatedCaret);
 
@@ -289,6 +288,11 @@ extern const base::FeatureParam<EntryPointOption, true> kShowEntryPoint;
 // when the side panel is right-aligned.
 extern bool GetEnableRightHandContextualTasksEphemeralButton();
 
+// Controls whether the contextual tasks ephemeral button is placed as a regular
+// circular button with drop shadow next to the battery saver button.
+BASE_DECLARE_FEATURE_PARAM(bool,
+                           kEnableCircularEphemeralButtonNextToBatterySaver);
+
 // UI Options to expand the contextual tasks side panel to tab.
 extern const base::FeatureParam<ExpandButtonOption, true> kExpandButtonOptions;
 
@@ -354,7 +358,6 @@ extern int GetContextualTasksOnboardingTooltipImpressionDelay();
 // The number of seconds inactive side panel WebContents should keep in cache.
 // Expired side panel WebContents will be destroyed.
 extern int ContextualTasksInactiveSidePanelKeepInCacheMinutes();
-
 
 // Returns if the protected page error is enabled.
 extern bool GetIsProtectedPageErrorEnabled();
@@ -453,7 +456,6 @@ extern bool GetEnableContextualTasksSmartCompose();
 // zero state suggestions are enabled for Contextual Tasks.
 extern bool GetEnableNativeZeroStateSuggestions();
 
-
 // Returns whether basic mode should be enabled.
 extern bool GetIsBasicModeEnabled();
 
@@ -470,7 +472,6 @@ extern bool ShouldEnableCookiePrefetch();
 // Returns whether the input plate can be locked and unlocked by a message
 // from AIM.
 extern bool ShouldEnableLockAndUnlockInputCapability();
-
 
 // Returns whether the file hint is enabled in the composebox.
 extern bool GetEnableFileHint();

@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -280,6 +281,11 @@ class ToolbarView : public views::AccessiblePaneView,
   void SetToolbarVisibility(bool visible);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ToolbarViewCircularContextualTasksBrowserTest,
+                           CircularButtonRetainsInteriorMarginsAndPosition);
+  FRIEND_TEST_ALL_PREFIXES(ToolbarViewCircularContextualTasksBrowserTest,
+                           LeftSidePanelUsesOriginalLeftButton);
+
   // Forwards view overrides to this class.
   class ContainerView;
 
@@ -296,21 +302,22 @@ class ToolbarView : public views::AccessiblePaneView,
   // Logic that must be done on initialization and then on layout.
   void LayoutCommon();
 
-  // Returns true if the contextual tasks button is visible and positioned at
-  // the trailing edge of the toolbar.
-  bool IsTrailingContextualTasksButtonVisible() const;
-
-  // Reorders the contextual tasks button to the leading or trailing edge based
-  // on side panel alignment and RTL state.
-  void ReorderContextualTasksButton();
-
-  // Returns true if the contextual tasks button should be positioned at the
-  // trailing edge of the toolbar.
-  bool IsContextualTasksButtonTrailing() const;
-
   // Returns whether the app menu control should apply Fitts' law edge padding
   // to extend to the window border when maximized or fullscreen.
   bool ShouldAppMenuApplyFittsLaw(bool is_maximized_or_fullscreen) const;
+
+  // Positions `contextual_tasks_button_` in the toolbar hierarchy based on
+  // whether it should dock at the edges or sit as a circular button to the
+  // left of profile (and glic button if visible).
+  void PositionContextualTasksButton();
+
+  // Returns true if the contextual tasks button is visible and positioned at
+  // the leading edge of the toolbar.
+  bool IsLeadingContextualTasksButtonVisible() const;
+
+  // Returns true if the contextual tasks button is visible and positioned at
+  // the trailing edge of the toolbar.
+  bool IsTrailingContextualTasksButtonVisible() const;
 
   // AppMenuIconController::Delegate:
   void UpdateTypeAndSeverity(

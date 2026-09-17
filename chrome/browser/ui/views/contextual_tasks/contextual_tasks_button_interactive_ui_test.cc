@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_tab_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -47,6 +48,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/base/consent_level.h"
@@ -1282,4 +1284,100 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       SelectTab(kTabStripElementId, 0),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
       Do(VerifyDropShadow));
+}
+
+class ContextualTasksCircularEphemeralButtonNextToBatterySaverInteractiveTest
+    : public ContextualTasksEphemeralButtonInteractiveTestMixin<
+          InteractiveFeaturePromoTest> {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {
+        {contextual_tasks::kContextualTasks,
+         {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
+        {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
+         {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"},
+          {contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
+               .name,
+           "true"}}},
+        {contextual_tasks::kContextualTasksHideCloseButtonInVerticalTabs, {}},
+        {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}}};
+  }
+
+  auto SetContextualTasksRightAligned(bool right_aligned) {
+    return Do([this, right_aligned]() {
+      ScopedDictPrefUpdate(browser()->GetProfile()->GetPrefs(),
+                           prefs::kSidePanelAlignmentOverrides)
+          ->Set("kContextualTasks", right_aligned);
+      browser()->GetProfile()->GetPrefs()->SetBoolean(
+          prefs::kSidePanelHorizontalAlignment, right_aligned);
+    });
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksCircularEphemeralButtonNextToBatterySaverInteractiveTest,
+    ShowsAsCircleButtonNextToBatterySaver) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), SetContextualTasksRightAligned(true),
+      InstrumentTab(kFirstTab), AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      SimulateOpeningContextualTaskSidePanel(),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckView(kContextualTasksEphemeralToolbarButtonElementId,
+                [](ContextualTasksButton* button) {
+                  return button->GetShape() ==
+                         ContextualTasksButton::Shape::kCircle;
+                }),
+      CheckView(kContextualTasksEphemeralToolbarButtonElementId,
+                [this](ContextualTasksButton* button) {
+                  BrowserView* browser_view =
+                      BrowserView::GetBrowserViewForBrowser(browser());
+                  ToolbarView* toolbar = browser_view->toolbar();
+                  views::View* anchor = nullptr;
+                  if (toolbar->GetGlicButton() &&
+                      toolbar->GetGlicButton()->GetVisible()) {
+                    anchor = toolbar->GetGlicButton();
+                  } else if (toolbar->avatar_toolbar_button()) {
+                    anchor = toolbar->avatar_toolbar_button();
+                  }
+                  if (anchor) {
+                    auto button_idx = toolbar->GetIndexOf(button);
+                    auto anchor_idx = toolbar->GetIndexOf(anchor);
+                    return button_idx.has_value() && anchor_idx.has_value() &&
+                           *button_idx == *anchor_idx - 1;
+                  }
+                  return true;
+                }));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksCircularEphemeralButtonNextToBatterySaverInteractiveTest,
+    ShowsAsLeftFlatEdgeButtonWhenSidePanelOnLeft) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), SetContextualTasksRightAligned(false),
+      InstrumentTab(kFirstTab), AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      SimulateOpeningContextualTaskSidePanel(),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckView(kContextualTasksEphemeralToolbarButtonElementId,
+                [](ContextualTasksButton* button) {
+                  return button->GetShape() ==
+                         ContextualTasksButton::Shape::kFlatEdgeLeft;
+                }),
+      CheckView(kContextualTasksEphemeralToolbarButtonElementId,
+                [](ContextualTasksButton* button) {
+                  auto* toolbar =
+                      views::AsViewClass<ToolbarView>(button->parent());
+                  return toolbar && toolbar->GetIndexOf(button) == 0u;
+                }));
 }

@@ -469,7 +469,10 @@ void ToolbarView::Init() {
     auto button = std::make_unique<ContextualTasksButton>(browser_);
     auto* vts_controller =
         tabs::VerticalTabStripStateController::From(browser_);
-    if (!vts_controller || !vts_controller->ShouldDisplayVerticalTabs()) {
+    if ((!vts_controller || !vts_controller->ShouldDisplayVerticalTabs()) &&
+        !(contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
+              .Get() &&
+          button->IsSidePanelRightAligned())) {
       button->SetProperty(views::kMarginsKey, gfx::Insets());
     }
     contextual_tasks_button_ = AddChildViewAt(std::move(button), 0);
@@ -629,11 +632,11 @@ void ToolbarView::Init() {
     if (auto* const controller =
             ContextualTasksEphemeralButtonController::From(browser_)) {
       contextual_tasks_button_position_subscription_ =
-          controller->RegisterShouldUpdateButtonPosition(base::BindRepeating(
-              &ToolbarView::ReorderContextualTasksButton,
-              base::Unretained(this)));
+          controller->RegisterShouldUpdateButtonPosition(
+              base::BindRepeating(&ToolbarView::PositionContextualTasksButton,
+                                  base::Unretained(this)));
     }
-    ReorderContextualTasksButton();
+    PositionContextualTasksButton();
   }
 
   LoadImages();
@@ -1505,6 +1508,10 @@ void ToolbarView::ChildVisibilityChanged(views::View* child) {
       base::UmaHistogramBoolean("Toolbar.Overflow.HomeButton", true);
     }
   }
+  if (child == glic_button_ || child == glic_actor_button_container_ ||
+      child == avatar_) {
+    PositionContextualTasksButton();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1668,12 +1675,10 @@ void ToolbarView::LayoutCommon() {
   gfx::Insets interior_margin =
       GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
 
-  const bool is_contextual_tasks_visible =
-      contextual_tasks_button_ && contextual_tasks_button_->GetVisible();
   const bool is_trailing_contextual_tasks_visible =
       IsTrailingContextualTasksButtonVisible();
   const bool is_leading_contextual_tasks_visible =
-      is_contextual_tasks_visible && !is_trailing_contextual_tasks_visible;
+      IsLeadingContextualTasksButtonVisible();
 
   // Only zero out the interior margin if the contextual tasks button
   // is actually visible and not in vertical tabs mode (where the button does
@@ -1779,34 +1784,55 @@ void ToolbarView::LayoutCommon() {
   // Cast button visibility is controlled externally.
 }
 
-bool ToolbarView::IsTrailingContextualTasksButtonVisible() const {
-  return contextual_tasks_button_ && contextual_tasks_button_->GetVisible() &&
-         GetIndexOf(contextual_tasks_button_).value_or(0) != 0;
-}
-
-void ToolbarView::ReorderContextualTasksButton() {
+void ToolbarView::PositionContextualTasksButton() {
   if (!contextual_tasks_button_) {
     return;
   }
-  const size_t target_index =
-      IsContextualTasksButtonTrailing() ? children().size() : 0;
+  auto* button =
+      static_cast<ContextualTasksButton*>(contextual_tasks_button_.get());
+  if (contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
+          .Get() &&
+      button->IsSidePanelRightAligned()) {
+    const bool is_glic_left_of_profile =
+        features::kGlicToolbarButtonLocationParam.Get() ==
+            features::GlicToolbarButtonLocation::kLeftOfProfileChip ||
+        features::kGlicToolbarButtonLocationParam.Get() ==
+            features::GlicToolbarButtonLocation::
+                kLeftOfProfileChipWithBackground;
+    views::View* anchor = nullptr;
+    if (glic_button_ && glic_button_->GetVisible() && is_glic_left_of_profile) {
+      anchor = (glic_button_->parent() == this)
+                   ? static_cast<views::View*>(glic_button_)
+                   : static_cast<views::View*>(glic_button_->parent());
+    } else if (avatar_) {
+      anchor = avatar_;
+    } else {
+      anchor = app_menu_button_;
+    }
+    if (anchor) {
+      std::optional<size_t> anchor_index = GetIndexOf(anchor);
+      if (anchor_index.has_value()) {
+        const size_t current_index =
+            GetIndexOf(contextual_tasks_button_).value();
+        const size_t target_index =
+            current_index < *anchor_index ? *anchor_index - 1 : *anchor_index;
+        ReorderChildView(contextual_tasks_button_, target_index);
+        return;
+      }
+    }
+  }
+  const size_t target_index = button->IsTrailing() ? children().size() : 0;
   ReorderChildView(contextual_tasks_button_, target_index);
 }
 
-bool ToolbarView::IsContextualTasksButtonTrailing() const {
-  PrefService* const pref_service = browser_->GetProfile()->GetPrefs();
-  if (!pref_service) {
-    return false;
-  }
-  const base::DictValue& overrides =
-      pref_service->GetDict(prefs::kSidePanelAlignmentOverrides);
-  std::optional<bool> override_value = overrides.FindBool(
-      SidePanelEntryIdToString(SidePanelEntryId::kContextualTasks));
-  const bool is_right_aligned =
-      override_value.has_value()
-          ? *override_value
-          : pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment);
-  return is_right_aligned != base::i18n::IsRTL();
+bool ToolbarView::IsLeadingContextualTasksButtonVisible() const {
+  return contextual_tasks_button_ && contextual_tasks_button_->GetVisible() &&
+         !children().empty() && children().front() == contextual_tasks_button_;
+}
+
+bool ToolbarView::IsTrailingContextualTasksButtonVisible() const {
+  return contextual_tasks_button_ && contextual_tasks_button_->GetVisible() &&
+         !children().empty() && children().back() == contextual_tasks_button_;
 }
 
 bool ToolbarView::ShouldAppMenuApplyFittsLaw(
