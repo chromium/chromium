@@ -103,7 +103,7 @@ class ShareRankingTest : public testing::Test {
 // ranking, and every app in the ranking is available, so the new ranking and
 // the displayed ranking should both be the same as the current ranking, modulo
 // the addition of the More target.
-TEST(ShareRankingStaticTest, CountsMatchOldRanking) {
+TEST_F(ShareRankingStaticTest, CountsMatchOldRanking) {
   std::map<std::string, int> history = {
       {"foo", 3},
       {"bar", 2},
@@ -124,7 +124,7 @@ TEST(ShareRankingStaticTest, CountsMatchOldRanking) {
 // If the existing ranking includes an above-the-fold app that doesn't exist on
 // the system, that app should be replaced by the next available below-the-fold
 // app that does.
-TEST(ShareRankingStaticTest, UnavailableAppDoesNotShow) {
+TEST_F(ShareRankingStaticTest, UnavailableAppDoesNotShow) {
   std::map<std::string, int> history = {
       {"foo", 5}, {"bar", 4}, {"baz", 3}, {"quxx", 2}, {"blit", 1},
   };
@@ -145,7 +145,7 @@ TEST(ShareRankingStaticTest, UnavailableAppDoesNotShow) {
   EXPECT_EQ(persisted, current);
 }
 
-TEST(ShareRankingStaticTest, HighAllUsageAppReplacesLowest) {
+TEST_F(ShareRankingStaticTest, HighAllUsageAppReplacesLowest) {
   std::map<std::string, int> history = {
       {"foo", 5}, {"bar", 4}, {"baz", 3}, {"quxx", 2}, {"blit", 10}};
 
@@ -162,7 +162,7 @@ TEST(ShareRankingStaticTest, HighAllUsageAppReplacesLowest) {
   EXPECT_EQ(persisted, expected_persisted);
 }
 
-TEST(ShareRankingStaticTest, HighRecentUsageAppReplacesLowest) {
+TEST_F(ShareRankingStaticTest, HighRecentUsageAppReplacesLowest) {
   std::map<std::string, int> history = {
       {"foo", 5}, {"bar", 4}, {"baz", 3}, {"quxx", 2}, {"blit", 6}};
 
@@ -178,7 +178,7 @@ TEST(ShareRankingStaticTest, HighRecentUsageAppReplacesLowest) {
   EXPECT_EQ(persisted, expected_persisted);
 }
 
-TEST(ShareRankingStaticTest, MoreTargetReplacesLast) {
+TEST_F(ShareRankingStaticTest, MoreTargetReplacesLast) {
   std::map<std::string, int> history = {
       {"bar", 2},
       {"foo", 3},
