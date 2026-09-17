@@ -2227,6 +2227,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    test('LensIconShown', async () => {
      loadTimeData.overrideValues({
        composeboxShowLensIcon: true,
+       composeboxShowChip: false,
      });
 
      document.body.innerHTML = window.trustedTypes!.emptyHTML;

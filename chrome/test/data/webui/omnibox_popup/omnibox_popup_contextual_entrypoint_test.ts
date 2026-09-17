@@ -134,6 +134,7 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
 
   test('CurrentTabChipHasPriorityOverLensChip', async () => {
     element.isLensSearchEligible = true;
+    element.isLensIconEligible = true;
     testProxy.handler.setPromiseResolveFor<'getRecentTabs'>('getRecentTabs', {
       tabs: [{
         tabId: 123,
@@ -152,6 +153,9 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
 
     const lensChip = $$<HTMLElement>(element, '#lensSearchChip');
     assertFalse(!!lensChip);
+
+    const lensIcon = $$<HTMLElement>(element, '#lensSearchIcon');
+    assertTrue(!!lensIcon);
   });
 
   test('CurrentTabChipSuppressedWhenFeatureIneligible', async () => {
@@ -164,6 +168,7 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
     newElement.inputState = createDefaultInputState();
     newElement.isContentSharingEnabled = true;
     newElement.isLensSearchEligible = true;
+    newElement.isLensIconEligible = true;
     document.body.appendChild(newElement);
     testProxy.initVisibilityPrefs();
 
@@ -185,6 +190,9 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
 
     const lensChip = $$<HTMLElement>(newElement, '#lensSearchChip');
     assertTrue(!!lensChip);
+
+    const lensIcon = $$<HTMLElement>(newElement, '#lensSearchIcon');
+    assertFalse(!!lensIcon);
   });
 
   test('BackgroundAndShapeProperties', async () => {
