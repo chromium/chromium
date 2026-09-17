@@ -24,6 +24,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -509,6 +510,37 @@ class DevToolsHttpHandlerWithServerTest : public DevToolsHttpHandlerTest {
   base::RunLoop run_loop_;
   base::RunLoop run_loop_2_;
 };
+
+TEST_F(DevToolsHttpHandlerWithServerTest, JsonVersionIncludesFilePathStyle) {
+  int port = StartServer();
+
+  GURL url(base::StringPrintf("http://127.0.0.1:%d/json/version", port));
+  net::TestDelegate delegate;
+  auto request = request_context_->CreateRequest(
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle);
+  request->Start();
+  delegate.RunUntilComplete();
+  EXPECT_GE(delegate.request_status(), 0);
+  std::string response_body = delegate.data_received();
+
+  StopServer();
+
+  std::optional<base::Value> response = base::JSONReader::Read(
+      response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(response.has_value());
+  const base::DictValue* dict = response->GetIfDict();
+  ASSERT_NE(dict, nullptr);
+  const std::string* file_path_style = dict->FindString("File-Path-Style");
+  ASSERT_NE(file_path_style, nullptr);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ("windows", *file_path_style);
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  EXPECT_EQ("posix", *file_path_style);
+#else
+#error Unsupported native file path style
+#endif
+}
 
 class DevToolsWebSocketHandlerTest : public DevToolsHttpHandlerWithServerTest {
  public:

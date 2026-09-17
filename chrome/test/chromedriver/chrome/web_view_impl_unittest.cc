@@ -4,11 +4,15 @@
 
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
 
+#include <initializer_list>
 #include <memory>
 #include <optional>
 #include <queue>
 #include <string>
+#include <string_view>
+#include <vector>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -18,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/chrome/frame_tracker.h"
@@ -243,6 +248,72 @@ class FakeDevToolsClient : public StubDevToolsClient {
   base::ListValue extra_child_frames_;
   std::string element_key_ = kElementKeyW3C;
   std::string loader_id_ = "root_loader";
+};
+
+class RecordingFileInputClient : public FakeDevToolsClient {
+ public:
+  explicit RecordingFileInputClient(std::string id)
+      : FakeDevToolsClient(std::move(id)) {}
+
+  Status SendCommand(const std::string& method,
+                     const base::DictValue& params) override {
+    last_method_ = method;
+    last_params_ = params.Clone();
+    ++command_count_;
+    return Status(kOk);
+  }
+
+  int command_count() const { return command_count_; }
+  const std::string& last_method() const { return last_method_; }
+  const base::DictValue& last_params() const { return last_params_; }
+
+ private:
+  int command_count_ = 0;
+  std::string last_method_;
+  base::DictValue last_params_;
+};
+
+class SetFileInputFilesTest : public testing::Test {
+ protected:
+  void Initialize(std::optional<std::string_view> file_path_style,
+                  bool is_android = false) {
+    base::DictValue version;
+    version.Set("Browser", "Chrome/155.0.8000.0");
+    version.Set("WebKit-Version", "537.36 (@123456)");
+    if (file_path_style) {
+      version.Set("File-Path-Style", *file_path_style);
+    }
+    if (is_android) {
+      version.Set("Android-Package", "org.chromium.chrome");
+    }
+
+    std::optional<std::string> version_json = base::WriteJson(version);
+    ASSERT_TRUE(version_json);
+    ASSERT_TRUE(browser_info_.ParseBrowserInfo(*version_json).IsOk());
+
+    auto client = std::make_unique<RecordingFileInputClient>("root");
+    client_ = client.get();
+    view_ = std::make_unique<WebViewImpl>(
+        client_->GetId(), true, nullptr, nullptr, &browser_info_,
+        std::move(client), std::nullopt, PageLoadStrategy::kEager, true);
+  }
+
+  Status SetFiles(std::initializer_list<std::string_view> files) {
+    std::vector<base::FilePath> paths;
+    paths.reserve(files.size());
+    for (std::string_view file : files) {
+      paths.push_back(base::FilePath::FromUTF8Unsafe(file));
+    }
+
+    base::DictValue element;
+    element.Set(kElementKeyW3C, ElementReference("root", "root_loader", 13));
+    return view_->SetFileInputFiles("", base::Value(std::move(element)), paths,
+                                    /*append=*/false);
+  }
+
+  BrowserInfo browser_info_;
+  std::unique_ptr<WebViewImpl> view_;
+  raw_ptr<RecordingFileInputClient> client_ = nullptr;
 };
 
 void AssertEvalFails(const base::DictValue& command_result) {
@@ -668,6 +739,195 @@ TEST(CreateChild, IsPendingNavigation_NoErrors) {
   Timeout timeout(base::Milliseconds(10));
   bool result;
   ASSERT_NO_FATAL_FAILURE(child_view->IsPendingNavigation(&timeout, &result));
+}
+
+TEST(SetFileInputFiles, PathValidationUsesSelectedPlatformGrammar) {
+  struct TestCase {
+    FilePathStyle style;
+    const char* path;
+    bool is_absolute;
+    bool references_parent;
+  };
+  constexpr TestCase kCases[] = {
+      {FilePathStyle::kPosix, "/file.txt", true, false},
+      {FilePathStyle::kPosix, "//server/share/file.txt", true, false},
+      {FilePathStyle::kPosix, R"(/tmp/a\b.txt)", true, false},
+      {FilePathStyle::kPosix, "/tmp/./file.txt", true, false},
+      {FilePathStyle::kPosix, "/tmp/.../file.txt", true, false},
+      {FilePathStyle::kPosix, "/tmp/a../file.txt", true, false},
+      {FilePathStyle::kPosix, R"(/tmp/\..\file.txt)", true, false},
+      {FilePathStyle::kPosix, "", false, false},
+      {FilePathStyle::kPosix, "file.txt", false, false},
+      {FilePathStyle::kPosix, "tmp/file.txt", false, false},
+      {FilePathStyle::kPosix, R"(C:\dir\file.txt)", false, false},
+      {FilePathStyle::kPosix, "C:/dir/file.txt", false, false},
+      {FilePathStyle::kPosix, "/tmp/../file.txt", true, true},
+      {FilePathStyle::kPosix, "/tmp/a/../../file.txt", true, true},
+      {FilePathStyle::kWindows, R"(C:\file.txt)", true, false},
+      {FilePathStyle::kWindows, "C:/dir/file.txt", true, false},
+      {FilePathStyle::kWindows, R"(z:\a\b)", true, false},
+      {FilePathStyle::kWindows, R"(\\server\share\file.txt)", true, false},
+      {FilePathStyle::kWindows, "//server/share/file.txt", true, false},
+      {FilePathStyle::kWindows, R"(C:\dir\.\file.txt)", true, false},
+      {FilePathStyle::kWindows, R"(C:\dir\a..\file.txt)", true, false},
+      {FilePathStyle::kWindows, "", false, false},
+      {FilePathStyle::kWindows, "file.txt", false, false},
+      {FilePathStyle::kWindows, "C:file.txt", false, false},
+      {FilePathStyle::kWindows, R"(\file.txt)", false, false},
+      {FilePathStyle::kWindows, "/file.txt", false, false},
+      {FilePathStyle::kWindows, R"(?:\file.txt)", false, false},
+      {FilePathStyle::kWindows, R"(1:\file.txt)", false, false},
+      {FilePathStyle::kWindows, R"(C:\dir\..\file.txt)", true, true},
+      {FilePathStyle::kWindows, "C:/dir/../file.txt", true, true},
+      {FilePathStyle::kWindows, R"(\\server\share\..\file.txt)", true, true},
+      {FilePathStyle::kWindows, R"(C:\dir\...\file.txt)", true, true},
+      {FilePathStyle::kWindows, R"(C:\dir\.. \file.txt)", true, true},
+      {FilePathStyle::kWindows, R"(C:\dir\ ..\file.txt)", true, true},
+      {FilePathStyle::kWindows, R"(C:/dir\../file.txt)", true, true},
+  };
+
+  for (const TestCase& test : kCases) {
+    SCOPED_TRACE(test.path);
+    const base::FilePath path = base::FilePath::FromUTF8Unsafe(test.path);
+    EXPECT_EQ(test.is_absolute,
+              internal::IsFileInputPathAbsolute(path, test.style));
+    EXPECT_EQ(test.references_parent,
+              internal::FileInputPathReferencesParent(path, test.style));
+  }
+}
+
+TEST(SetFileInputFiles, SelectedPlatformGrammarMatchesNativeFilePath) {
+#if BUILDFLAG(IS_WIN)
+  constexpr FilePathStyle kNativeStyle = FilePathStyle::kWindows;
+  constexpr const char* kPaths[] = {R"(C:\file.txt)",
+                                    R"(C:\dir\..\file.txt)",
+                                    R"(\\server\share\file.txt)",
+                                    R"(C:/dir\...\file.txt)",
+                                    R"(\file.txt)",
+                                    "C:file.txt"};
+#else
+  constexpr FilePathStyle kNativeStyle = FilePathStyle::kPosix;
+  constexpr const char* kPaths[] = {"/file.txt",       "/tmp/../file.txt",
+                                    R"(/tmp/a\b.txt)", "/tmp/.../file.txt",
+                                    "file.txt",        "C:/file.txt"};
+#endif
+
+  for (const char* value : kPaths) {
+    SCOPED_TRACE(value);
+    const base::FilePath path = base::FilePath::FromUTF8Unsafe(value);
+    EXPECT_EQ(path.IsAbsolute(),
+              internal::IsFileInputPathAbsolute(path, kNativeStyle));
+    EXPECT_EQ(path.ReferencesParent(),
+              internal::FileInputPathReferencesParent(path, kNativeStyle));
+  }
+}
+
+TEST(SetFileInputFiles, UnknownStylePreservesNativeBehavior) {
+  constexpr const char* kPaths[] = {"", "file.txt", "/tmp/../file.txt",
+                                    R"(C:\dir\..\file.txt)"};
+  for (const char* value : kPaths) {
+    SCOPED_TRACE(value);
+    const base::FilePath path = base::FilePath::FromUTF8Unsafe(value);
+    EXPECT_EQ(path.IsAbsolute(),
+              internal::IsFileInputPathAbsolute(path, FilePathStyle::kUnknown));
+    EXPECT_EQ(path.ReferencesParent(), internal::FileInputPathReferencesParent(
+                                           path, FilePathStyle::kUnknown));
+  }
+}
+
+TEST(SetFileInputFiles, AndroidOverridesMissingOrConflictingMetadata) {
+  BrowserInfo browser_info;
+  browser_info.is_android = true;
+  browser_info.file_path_style = FilePathStyle::kWindows;
+  EXPECT_EQ(FilePathStyle::kPosix,
+            internal::GetFileInputPathStyle(browser_info));
+}
+
+TEST_F(SetFileInputFilesTest, WindowsMetadataForwardsEveryPathVerbatim) {
+  Initialize("windows");
+  const Status status =
+      SetFiles({R"(C:\files\first.txt)", R"(D:/files/second.txt)"});
+
+  ASSERT_EQ(kOk, status.code()) << status.message();
+  ASSERT_EQ(1, client_->command_count());
+  EXPECT_EQ("DOM.setFileInputFiles", client_->last_method());
+  EXPECT_EQ(13, client_->last_params().FindInt("backendNodeId"));
+  const base::ListValue* files = client_->last_params().FindList("files");
+  ASSERT_NE(nullptr, files);
+  ASSERT_EQ(2u, files->size());
+  EXPECT_EQ(R"(C:\files\first.txt)", (*files)[0].GetString());
+  EXPECT_EQ("D:/files/second.txt", (*files)[1].GetString());
+}
+
+TEST_F(SetFileInputFilesTest, PosixMetadataPreservesLiteralBackslashes) {
+  Initialize("posix");
+  const Status status = SetFiles({R"(/tmp/a\b.txt)"});
+
+  ASSERT_EQ(kOk, status.code()) << status.message();
+  ASSERT_EQ(1, client_->command_count());
+  const base::ListValue* files = client_->last_params().FindList("files");
+  ASSERT_NE(nullptr, files);
+  ASSERT_EQ(1u, files->size());
+  EXPECT_EQ(R"(/tmp/a\b.txt)", (*files)[0].GetString());
+}
+
+TEST_F(SetFileInputFilesTest, MissingMetadataForwardsNativeAbsolutePath) {
+#if BUILDFLAG(IS_WIN)
+  constexpr std::string_view kPath = R"(C:\files\first.txt)";
+#else
+  constexpr std::string_view kPath = "/tmp/first.txt";
+#endif
+  Initialize(std::nullopt);
+  const Status status = SetFiles({kPath});
+
+  ASSERT_EQ(kOk, status.code()) << status.message();
+  ASSERT_EQ(1, client_->command_count());
+  const base::ListValue* files = client_->last_params().FindList("files");
+  ASSERT_NE(nullptr, files);
+  ASSERT_EQ(1u, files->size());
+  EXPECT_EQ(kPath, (*files)[0].GetString());
+}
+
+TEST_F(SetFileInputFilesTest, MissingMetadataRejectsNativeParentPath) {
+#if BUILDFLAG(IS_WIN)
+  constexpr std::string_view kPath = R"(C:\files\..\second.txt)";
+#else
+  constexpr std::string_view kPath = "/tmp/../second.txt";
+#endif
+  Initialize(std::nullopt);
+  const Status status = SetFiles({kPath});
+
+  EXPECT_EQ(kInvalidArgument, status.code());
+  EXPECT_THAT(status.message(), testing::HasSubstr(kPath));
+  EXPECT_EQ(0, client_->command_count());
+}
+
+TEST_F(SetFileInputFilesTest, RejectsRelativePathAsInvalidArgument) {
+  Initialize("posix");
+  const Status status = SetFiles({"tmp/file.txt"});
+
+  EXPECT_EQ(kInvalidArgument, status.code());
+  EXPECT_THAT(status.message(), testing::HasSubstr("tmp/file.txt"));
+  EXPECT_EQ(0, client_->command_count());
+}
+
+TEST_F(SetFileInputFilesTest, WindowsParentPathIsInvalidArgument) {
+  Initialize("windows");
+  const Status status = SetFiles({R"(C:\files\..\second.txt)"});
+
+  EXPECT_EQ(kInvalidArgument, status.code());
+  EXPECT_THAT(status.message(),
+              testing::HasSubstr(R"(C:\files\..\second.txt)"));
+  EXPECT_EQ(0, client_->command_count());
+}
+
+TEST_F(SetFileInputFilesTest, RejectsEntireBatchIfLaterPathIsNotCanonical) {
+  Initialize("posix");
+  const Status status = SetFiles({"/tmp/first.txt", "/tmp/../second.txt"});
+
+  EXPECT_EQ(kInvalidArgument, status.code());
+  EXPECT_THAT(status.message(), testing::HasSubstr("/tmp/../second.txt"));
+  EXPECT_EQ(0, client_->command_count());
 }
 
 TEST(ManageCookies, AddCookie_SameSiteTrue) {

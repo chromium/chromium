@@ -87,6 +87,14 @@ const char kTargetWebSocketDebuggerUrlField[] = "webSocketDebuggerUrl";
 const char kTargetDevtoolsFrontendUrlField[] = "devtoolsFrontendUrl";
 const char kMissingGitRevision[] = "@0000000000000000000000000000000000000000";
 
+#if BUILDFLAG(IS_WIN)
+const char kNativeFilePathStyle[] = "windows";
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+const char kNativeFilePathStyle[] = "posix";
+#else
+#error Unsupported native file path style
+#endif
+
 const int32_t kSendBufferSizeForDevTools = 256 * 1024 * 1024;  // 256Mb
 const int32_t kReceiveBufferSizeForDevTools = 100 * 1024 * 1024;  // 100Mb
 
@@ -618,6 +626,7 @@ void DevToolsHttpHandler::OnJsonRequest(
     version.Set("Protocol-Version", DevToolsAgentHost::GetProtocolVersion());
     version.Set("WebKit-Version", GetWebKitVersion());
     version.Set("Browser", GetContentClient()->browser()->GetProduct());
+    version.Set("File-Path-Style", kNativeFilePathStyle);
     version.Set("User-Agent", GetContentClient()->browser()->GetUserAgent());
     version.Set("V8-Version", V8_VERSION_STRING);
     std::string host = info.GetHeaderValue("host");

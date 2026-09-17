@@ -4,6 +4,9 @@
 
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 
+#include <string_view>
+
+#include "base/strings/strcat.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -12,6 +15,13 @@ void AssertParseBrowserInfoFails(const std::string& data) {
   BrowserInfo browser_info;
   Status status = BrowserInfo::ParseBrowserInfo(data, &browser_info);
   ASSERT_TRUE(status.IsError());
+}
+
+std::string CreateBrowserInfoJson(std::string_view extra_fields) {
+  return base::StrCat(
+      {"{\"Browser\": \"Chrome/37.0.2062.124\", \"WebKit-Version\": "
+       "\"537.36 (@181352)\"",
+       extra_fields, "}"});
 }
 
 }  // namespace
@@ -40,6 +50,73 @@ TEST(ParseBrowserInfo, BlinkVersionContainsSvnRevision) {
   ASSERT_EQ(2062, browser_info.build_no);
   ASSERT_EQ(181352, browser_info.blink_revision);
   ASSERT_FALSE(browser_info.is_headless_shell);
+  EXPECT_EQ(FilePathStyle::kUnknown, browser_info.file_path_style);
+}
+
+TEST(ParseBrowserInfo, RecognizesFilePathStyle) {
+  struct TestCase {
+    const char* file_path_style;
+    FilePathStyle expected_file_path_style;
+  };
+  constexpr TestCase kTestCases[] = {
+      {"windows", FilePathStyle::kWindows},
+      {"posix", FilePathStyle::kPosix},
+  };
+
+  for (const TestCase& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.file_path_style);
+    BrowserInfo browser_info;
+    Status status =
+        browser_info.ParseBrowserInfo(CreateBrowserInfoJson(base::StrCat(
+            {R"(, "File-Path-Style": ")", test_case.file_path_style, R"(")"})));
+    ASSERT_TRUE(status.IsOk());
+    EXPECT_EQ(test_case.expected_file_path_style, browser_info.file_path_style);
+  }
+}
+
+TEST(ParseBrowserInfo, MissingFilePathStyleIsNonFatal) {
+  BrowserInfo browser_info;
+  browser_info.file_path_style = FilePathStyle::kWindows;
+  Status status = browser_info.ParseBrowserInfo(CreateBrowserInfoJson(""));
+  ASSERT_TRUE(status.IsOk());
+  EXPECT_EQ(FilePathStyle::kUnknown, browser_info.file_path_style);
+}
+
+TEST(ParseBrowserInfo, UnrecognizedFilePathStyleIsNonFatal) {
+  BrowserInfo browser_info;
+  browser_info.file_path_style = FilePathStyle::kWindows;
+  Status status = browser_info.ParseBrowserInfo(
+      CreateBrowserInfoJson(R"(, "File-Path-Style": "native")"));
+  ASSERT_TRUE(status.IsOk());
+  EXPECT_EQ(FilePathStyle::kUnknown, browser_info.file_path_style);
+}
+
+TEST(ParseBrowserInfo, EmptyFilePathStyleIsNonFatal) {
+  BrowserInfo browser_info;
+  browser_info.file_path_style = FilePathStyle::kWindows;
+  Status status = browser_info.ParseBrowserInfo(
+      CreateBrowserInfoJson(R"(, "File-Path-Style": "")"));
+  ASSERT_TRUE(status.IsOk());
+  EXPECT_EQ(FilePathStyle::kUnknown, browser_info.file_path_style);
+}
+
+TEST(ParseBrowserInfo, NonStringFilePathStyleIsNonFatal) {
+  BrowserInfo browser_info;
+  browser_info.file_path_style = FilePathStyle::kWindows;
+  Status status = browser_info.ParseBrowserInfo(
+      CreateBrowserInfoJson(R"(, "File-Path-Style": 42)"));
+  ASSERT_TRUE(status.IsOk());
+  EXPECT_EQ(FilePathStyle::kUnknown, browser_info.file_path_style);
+}
+
+TEST(ParseBrowserInfo, AndroidPackageForcesPosixFilePathStyle) {
+  BrowserInfo browser_info;
+  Status status = browser_info.ParseBrowserInfo(
+      CreateBrowserInfoJson(R"(, "Android-Package": "com.android.chrome", )"
+                            R"("File-Path-Style": "windows")"));
+  ASSERT_TRUE(status.IsOk());
+  EXPECT_TRUE(browser_info.is_android);
+  EXPECT_EQ(FilePathStyle::kPosix, browser_info.file_path_style);
 }
 
 TEST(ParseBrowserInfo, BlinkVersionContainsGitHash) {
@@ -68,6 +145,7 @@ TEST(ParseBrowserString, KitKatWebView) {
   ASSERT_EQ(kToTBuildNo, browser_info.build_no);
   ASSERT_TRUE(browser_info.is_android);
   ASSERT_FALSE(browser_info.is_headless_shell);
+  EXPECT_EQ(FilePathStyle::kPosix, browser_info.file_path_style);
 }
 
 TEST(ParseBrowserString, LollipopWebView) {
@@ -81,6 +159,7 @@ TEST(ParseBrowserString, LollipopWebView) {
   ASSERT_EQ(kToTBuildNo, browser_info.build_no);
   ASSERT_TRUE(browser_info.is_android);
   ASSERT_FALSE(browser_info.is_headless_shell);
+  EXPECT_EQ(FilePathStyle::kPosix, browser_info.file_path_style);
 }
 
 TEST(ParseBrowserString, AndroidChrome) {
@@ -94,6 +173,7 @@ TEST(ParseBrowserString, AndroidChrome) {
   ASSERT_EQ(2171, browser_info.build_no);
   ASSERT_TRUE(browser_info.is_android);
   ASSERT_FALSE(browser_info.is_headless_shell);
+  EXPECT_EQ(FilePathStyle::kPosix, browser_info.file_path_style);
 }
 
 TEST(ParseBrowserString, DesktopChrome) {
@@ -107,6 +187,7 @@ TEST(ParseBrowserString, DesktopChrome) {
   ASSERT_EQ(2171, browser_info.build_no);
   ASSERT_FALSE(browser_info.is_android);
   ASSERT_FALSE(browser_info.is_headless_shell);
+  EXPECT_EQ(FilePathStyle::kUnknown, browser_info.file_path_style);
 }
 
 TEST(ParseBrowserString, HeadlessChrome) {
@@ -120,6 +201,7 @@ TEST(ParseBrowserString, HeadlessChrome) {
   ASSERT_EQ(2171, browser_info.build_no);
   ASSERT_FALSE(browser_info.is_android);
   ASSERT_TRUE(browser_info.is_headless_shell);
+  EXPECT_EQ(FilePathStyle::kUnknown, browser_info.file_path_style);
 }
 
 TEST(ParseBlinkVersionString, GitHash) {
@@ -167,6 +249,7 @@ TEST(FillFromBrowserVersionResponse, Chrome) {
   ASSERT_EQ(37, browser_info.major_version);
   ASSERT_EQ(2062, browser_info.build_no);
   ASSERT_FALSE(browser_info.is_headless_shell);
+  EXPECT_EQ(FilePathStyle::kUnknown, browser_info.file_path_style);
 }
 
 TEST(FillFromBrowserVersionResponse, HeadlessChrome) {
@@ -180,4 +263,5 @@ TEST(FillFromBrowserVersionResponse, HeadlessChrome) {
   ASSERT_EQ(39, browser_info.major_version);
   ASSERT_EQ(2171, browser_info.build_no);
   ASSERT_TRUE(browser_info.is_headless_shell);
+  EXPECT_EQ(FilePathStyle::kUnknown, browser_info.file_path_style);
 }

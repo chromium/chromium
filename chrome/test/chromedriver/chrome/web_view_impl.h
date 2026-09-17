@@ -17,6 +17,7 @@
 #include "chrome/test/chromedriver/chrome/web_view_info.h"
 
 struct BrowserInfo;
+enum class FilePathStyle;
 class DevToolsClient;
 class DownloadDirectoryOverrideManager;
 class FedCmTracker;
@@ -356,6 +357,11 @@ class WebViewImplHolder : public WebViewHolder {
 };
 
 namespace internal {
+FilePathStyle GetFileInputPathStyle(const BrowserInfo& browser_info);
+bool IsFileInputPathAbsolute(const base::FilePath& path,
+                             FilePathStyle file_path_style);
+bool FileInputPathReferencesParent(const base::FilePath& path,
+                                   FilePathStyle file_path_style);
 Status EvaluateScript(DevToolsClient* client,
                       const std::string& context_id,
                       const std::string& expression,

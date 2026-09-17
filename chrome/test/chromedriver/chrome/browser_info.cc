@@ -19,6 +19,20 @@
 #include "base/values.h"
 #include "chrome/test/chromedriver/constants/version.h"
 
+namespace {
+
+FilePathStyle ParseFilePathStyle(std::string_view file_path_style) {
+  if (file_path_style == "windows") {
+    return FilePathStyle::kWindows;
+  }
+  if (file_path_style == "posix") {
+    return FilePathStyle::kPosix;
+  }
+  return FilePathStyle::kUnknown;
+}
+
+}  // namespace
+
 BrowserInfo::BrowserInfo() = default;
 
 BrowserInfo::~BrowserInfo() = default;
@@ -75,6 +89,18 @@ Status BrowserInfo::ParseBrowserInfo(std::string_view data,
   if (status.IsError())
     return status;
 
+  // Android-Package predates File-Path-Style and is authoritative when both
+  // are present. Missing, malformed, and unrecognized File-Path-Style values
+  // are intentionally non-fatal for compatibility with older browsers.
+  if (browser_info->is_android) {
+    browser_info->file_path_style = FilePathStyle::kPosix;
+  } else {
+    const std::string* file_path_style = dict->FindString("File-Path-Style");
+    browser_info->file_path_style = file_path_style
+                                        ? ParseFilePathStyle(*file_path_style)
+                                        : FilePathStyle::kUnknown;
+  }
+
   // "webSocketDebuggerUrl" is only returned on Chrome 62.0.3178 and above,
   // thus it's not an error if it's missing.
   const std::string* web_socket_url_in =
@@ -92,8 +118,10 @@ Status BrowserInfo::ParseBrowserInfo(std::string_view data,
 Status BrowserInfo::ParseBrowserString(bool has_android_package,
                                        std::string_view browser_string,
                                        BrowserInfo* browser_info) {
-  if (has_android_package)
+  if (has_android_package) {
     browser_info->is_android = true;
+    browser_info->file_path_style = FilePathStyle::kPosix;
+  }
 
   if (browser_string.empty()) {
     browser_info->browser_name = "content shell";
@@ -144,6 +172,7 @@ Status BrowserInfo::ParseBrowserString(bool has_android_package,
       browser_info->browser_version =
           std::string(browser_string.substr(pos + kVersionPrefix.length()));
       browser_info->is_android = true;
+      browser_info->file_path_style = FilePathStyle::kPosix;
       return ParseBrowserVersionString(browser_info->browser_version,
                                        &browser_info->major_version, &build_no);
     }
