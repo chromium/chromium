@@ -49,9 +49,10 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final @Nullable Runnable mRecomputeUiStateCallback;
     private final ButtonSpec mDefaultSpec;
-    private final ButtonSpec mWorkingSpec;
-    private final ButtonSpec mReviewSpec;
-    private final ButtonSpec mDoneSpec;
+    private @Nullable ButtonSpec mWorkingSpec;
+    private @Nullable ButtonSpec mReviewSpec;
+    private @Nullable ButtonSpec mDoneSpec;
+    private @Nullable Drawable mCollapsedDrawable;
     private final GlicButtonStateController mStateController;
 
     private @Nullable GlicTaskMenuCoordinator mTaskMenuCoordinator;
@@ -91,11 +92,6 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mRecomputeUiStateCallback = recomputeUiStateCallback;
         mDefaultSpec = mButtonData.getButtonSpec();
-        Drawable collapsedDrawable =
-                new DirtyDotDrawableWrapper(
-                        AppCompatResources.getDrawable(activity, R.drawable.ic_spark_24dp),
-                        activity.getColor(R.color.default_icon_color_accent1_baseline),
-                        activity.getResources().getDimensionPixelSize(R.dimen.glic_dirty_dot_size));
 
         mStateController =
                 new GlicButtonStateController(
@@ -110,16 +106,47 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
                         taskSupplier,
                         browserControlsVisibilityManager);
 
-        mWorkingSpec = createWorkingSpec(activity);
-        mReviewSpec =
-                new ButtonSpec.Builder(createReviewSpec())
-                        .setCollapsedDrawable(collapsedDrawable)
-                        .build();
-        mDoneSpec =
-                new ButtonSpec.Builder(createDoneSpec())
-                        .setCollapsedDrawable(collapsedDrawable)
-                        .build();
         setShouldShowOnIncognitoTabs(true);
+    }
+
+    private Drawable getCollapsedDrawable() {
+        if (mCollapsedDrawable == null) {
+            mCollapsedDrawable =
+                    new DirtyDotDrawableWrapper(
+                            AppCompatResources.getDrawable(mActivity, R.drawable.ic_spark_24dp),
+                            mActivity.getColor(R.color.default_icon_color_accent1_baseline),
+                            mActivity
+                                    .getResources()
+                                    .getDimensionPixelSize(R.dimen.glic_dirty_dot_size));
+        }
+        return mCollapsedDrawable;
+    }
+
+    private ButtonSpec getWorkingSpec() {
+        if (mWorkingSpec == null) {
+            mWorkingSpec = createWorkingSpec(mActivity);
+        }
+        return mWorkingSpec;
+    }
+
+    private ButtonSpec getReviewSpec() {
+        if (mReviewSpec == null) {
+            mReviewSpec =
+                    new ButtonSpec.Builder(createReviewSpec())
+                            .setCollapsedDrawable(getCollapsedDrawable())
+                            .build();
+        }
+        return mReviewSpec;
+    }
+
+    private ButtonSpec getDoneSpec() {
+        if (mDoneSpec == null) {
+            mDoneSpec =
+                    new ButtonSpec.Builder(createDoneSpec())
+                            .setCollapsedDrawable(getCollapsedDrawable())
+                            .build();
+        }
+        return mDoneSpec;
     }
 
     private ButtonSpec createReviewSpec() {
@@ -206,13 +233,13 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
         ButtonSpec desiredSpec = mDefaultSpec;
         switch (mStateController.getButtonState()) {
             case ButtonState.NEEDS_REVIEW:
-                desiredSpec = mReviewSpec;
+                desiredSpec = getReviewSpec();
                 break;
             case ButtonState.WORKING:
-                desiredSpec = mWorkingSpec;
+                desiredSpec = getWorkingSpec();
                 break;
             case ButtonState.DONE:
-                desiredSpec = mDoneSpec;
+                desiredSpec = getDoneSpec();
                 break;
             case ButtonState.DEFAULT:
             default:

@@ -11,6 +11,8 @@ import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -62,10 +64,9 @@ public class GlicActionCoordinator {
     private final UserEducationHelper mUserEducationHelper;
     private @Nullable GlicTaskMenuCoordinator mTaskMenuCoordinator;
     private final Drawable mDefaultDrawable;
-    private final Drawable mFilledDrawable;
-    private final Drawable mWorkingDrawable;
-    private final Drawable mReviewDrawable;
-    private final Drawable mDoneDrawable;
+    private @Nullable Drawable mFilledDrawable;
+    private @Nullable Drawable mWorkingDrawable;
+    private @Nullable Drawable mReviewDrawable;
 
     public GlicActionCoordinator(
             Activity activity,
@@ -123,25 +124,44 @@ public class GlicActionCoordinator {
                         : R.drawable.ic_spark_outlined_24dp;
 
         mDefaultDrawable = AppCompatResources.getDrawable(activity, glicIconResId);
-        mFilledDrawable = AppCompatResources.getDrawable(activity, R.drawable.ic_spark_filled_24dp);
+    }
 
-        // Create a separate instance of the spark icon for mWorkingDrawable.
-        // Sharing the same drawable instance (mFilledDrawable) across multiple states
-        // causes the ImageView's callback clearing logic to break the callback chain of
-        // the child drawable. This results in the spark icon layer losing its themed tint
-        // initially when entering the WORKING state, until  a hover/state change forces a full view
-        // redraw.
-        Drawable workingSparkIcon =
-                AppCompatResources.getDrawable(activity, R.drawable.ic_spark_filled_24dp);
-        mWorkingDrawable = GlicUiHelper.createWorkingDrawable(activity, workingSparkIcon);
+    private Drawable getFilledDrawable() {
+        if (mFilledDrawable == null) {
+            mFilledDrawable =
+                    AppCompatResources.getDrawable(mActivity, R.drawable.ic_spark_filled_24dp);
+        }
+        return mFilledDrawable;
+    }
 
-        Drawable sparkIcon =
-                AppCompatResources.getDrawable(activity, R.drawable.ic_spark_filled_24dp);
-        int dotColor = activity.getColor(R.color.default_icon_color_accent1_baseline);
-        int dotSize = activity.getResources().getDimensionPixelSize(R.dimen.glic_dirty_dot_size);
-        Drawable dirtyDotFilledSpark = new DirtyDotDrawableWrapper(sparkIcon, dotColor, dotSize);
-        mReviewDrawable = dirtyDotFilledSpark;
-        mDoneDrawable = dirtyDotFilledSpark;
+    private Drawable getWorkingDrawable() {
+        if (mWorkingDrawable == null) {
+            // Create a separate instance of the spark icon for mWorkingDrawable.
+            // Sharing the same drawable instance (mFilledDrawable) across multiple states
+            // causes the ImageView's callback clearing logic to break the callback chain of
+            // the child drawable. This results in the spark icon layer losing its themed tint
+            // initially when entering the WORKING state, until  a hover/state change forces a full
+            // view redraw.
+            Drawable workingSparkIcon =
+                    AppCompatResources.getDrawable(mActivity, R.drawable.ic_spark_filled_24dp);
+            mWorkingDrawable = GlicUiHelper.createWorkingDrawable(mActivity, workingSparkIcon);
+        }
+        return mWorkingDrawable;
+    }
+
+    /** Returns the dirty-dot drawable shared by the NEEDS_REVIEW and DONE states. */
+    private Drawable getReviewDrawable() {
+        if (mReviewDrawable == null) {
+            Drawable sparkIcon =
+                    AppCompatResources.getDrawable(mActivity, R.drawable.ic_spark_filled_24dp);
+            @ColorInt
+            int dotColor = mActivity.getColor(R.color.default_icon_color_accent1_baseline);
+            @Px
+            int dotSize =
+                    mActivity.getResources().getDimensionPixelSize(R.dimen.glic_dirty_dot_size);
+            mReviewDrawable = new DirtyDotDrawableWrapper(sparkIcon, dotColor, dotSize);
+        }
+        return mReviewDrawable;
     }
 
     private void onModelChanged(@Nullable PropertyModel model) {
@@ -159,17 +179,17 @@ public class GlicActionCoordinator {
             Drawable desiredDrawable;
             switch (state) {
                 case GlicButtonStateController.ButtonState.WORKING:
-                    desiredDrawable = mWorkingDrawable;
+                    desiredDrawable = getWorkingDrawable();
                     break;
                 case GlicButtonStateController.ButtonState.NEEDS_REVIEW:
-                    desiredDrawable = mReviewDrawable;
-                    break;
                 case GlicButtonStateController.ButtonState.DONE:
-                    desiredDrawable = mDoneDrawable;
+                    // These two states intentionally share one drawable instance, as they did
+                    // when both were built eagerly in the constructor.
+                    desiredDrawable = getReviewDrawable();
                     break;
                 case GlicButtonStateController.ButtonState.DEFAULT:
                 default:
-                    desiredDrawable = isPanelOpen ? mFilledDrawable : mDefaultDrawable;
+                    desiredDrawable = isPanelOpen ? getFilledDrawable() : mDefaultDrawable;
                     break;
             }
             model.set(GlicActionProperties.GLIC_DRAWABLE, desiredDrawable);
