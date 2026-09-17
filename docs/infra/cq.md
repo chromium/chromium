@@ -99,6 +99,24 @@ The Chromium CQ supports a variety of options that can change what it checks.
   addition to the default bots. The format for the list of trybots is
   "bucket:trybot1,trybot2;bucket2:trybot3".
 
+* `Cq-No-Rebase: true`
+
+  Instructs trybots to check out the patch ref directly without rebasing it
+  onto the target branch tip (passes `gerrit_no_rebase_patch_ref=True` to
+  `bot_update`). This is intended for testing multi-parent merge CLs (such as
+  automated downstream syncs) where auto-rebasing the merged history onto the
+  branch tip would attempt to cherry-pick all merged commits individually.
+
+  **Restrictions:**
+  * **CQ Dry Runs only**: In CV, this footer is only supported during CQ Dry
+    Runs (`CQ+1`). Full CQ runs (`CQ+2`) containing this footer will fail
+    immediately.
+  * **No build reuse**: Builds executed with this footer are marked as reusable
+    only by other dry runs, and cannot be reused by subsequent Full Runs
+    (`CQ+2`).
+  * **Manual tryjobs**: Supported when triggering tryjobs directly outside CV
+    (e.g. via `git cl try` or `bb add`).
+
 * `Disable-Retries: true`
 
   The CQ will normally try to retry failed test shards (up to a point) to work
