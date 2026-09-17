@@ -357,7 +357,8 @@ class ChromiumDepGraph {
                 'testCompileLatest',
                 'androidTestCompile',
                 'androidTestCompileLatest',
-                'buildCompileNoDeps'
+                'buildCompileNoDeps',
+                'buildCompileNoDepsLatest'
         ]
         timeIt('** Resolving all deps') {
             for (Project project : projects) {

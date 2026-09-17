@@ -54,6 +54,7 @@ class ChromiumPlugin implements Plugin<Project> {
 
             /** Libraries that are only used during build but should not automatically retrieve their dependencies. */
             buildCompileNoDeps
+            buildCompileNoDepsLatest
 
             /** Libraries that are used for testing only and support android. */
             androidTestCompile
@@ -114,6 +115,9 @@ class ChromiumPlugin implements Plugin<Project> {
 
         project.configurations.buildCompileNoDeps {
             // transitive false means do not also pull in the deps of these deps.
+            transitive = false
+        }
+        project.configurations.buildCompileNoDepsLatest {
             transitive = false
         }
 
