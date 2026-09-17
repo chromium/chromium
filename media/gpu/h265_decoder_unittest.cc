@@ -1428,6 +1428,48 @@ TEST_F(H265DecoderTest, ReferencePictureListsAreBuiltPerSlice) {
   EXPECT_TRUE(decoder_->Flush());
 }
 
+// 8.3.1: prevTid0Pic is the previous TemporalId==0 picture that is not RASL,
+// RADL or SLNR. TRAIL_N is an SLNR picture, so it must not update the POC
+// derivation state. With MaxPicOrderCntLsb equal to 16, wrapping from LSB 8
+// to LSB 0 produces POC 16 only if prevTid0Pic is still the TRAIL_R; if the
+// TRAIL_N were used instead, the wrap would be missed and the POC would be 0.
+TEST_F(H265DecoderTest, TrailNDoesNotUpdatePrevTid0Pic) {
+  H26xAnnexBBitstreamBuilder builder;
+  H265SPS sps = MakeTestSps();
+  // Equation 7-8: MaxPicOrderCntLsb = 2^(4+0) = 16, so LSB 8 wrapping to 0
+  // is a half-range wrap that depends on prevTid0Pic still being the TRAIL_R.
+  sps.log2_max_pic_order_cnt_lsb_minus4 = 0;
+  // Four pictures; do not let C.5.2.2 buffering bump them out of order.
+  sps.sps_max_dec_pic_buffering_minus1[0] = 4;
+  BuildPackedH265SPS(builder, sps);
+  BuildPackedH265PPS(builder, MakeTestPps());
+
+  constexpr int kPocLsbBits = 4;
+  AppendIntraPicture(builder, H265NALU::IDR_W_RADL, /*poc_lsb=*/0);
+  AppendIntraPicture(builder, H265NALU::TRAIL_R, /*poc_lsb=*/8,
+                     /*no_output_of_prior_pics_flag=*/false, kPocLsbBits);
+  AppendIntraPicture(builder, H265NALU::TRAIL_N, /*poc_lsb=*/1,
+                     /*no_output_of_prior_pics_flag=*/false, kPocLsbBits);
+  AppendIntraPicture(builder, H265NALU::TRAIL_R, /*poc_lsb=*/0,
+                     /*no_output_of_prior_pics_flag=*/false, kPocLsbBits);
+
+  auto buffer = DecoderBuffer::CopyFrom(builder.data());
+  ExpectAnyAcceleratorCalls();
+  {
+    InSequence sequence;
+    EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(0))).WillOnce(Return(true));
+    EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(8))).WillOnce(Return(true));
+    EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(1))).WillOnce(Return(true));
+    EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(16)))
+        .WillOnce(Return(true));
+  }
+
+  decoder_->SetStream(0, buffer);
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, decoder_->Decode());
+  EXPECT_TRUE(decoder_->Flush());
+}
+
 TEST_F(H265DecoderTest, InvalidCropRectReturnsDecodeError) {
   H26xAnnexBBitstreamBuilder builder;
 

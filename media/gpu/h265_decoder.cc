@@ -795,10 +795,18 @@ void H265Decoder::CalcPicOutputFlags(const H265SliceHeader* slice_hdr) {
 void H265Decoder::CalcPictureOrderCount(const H265PPS* pps,
                                         const H265SliceHeader* slice_hdr) {
   // 8.3.1 Decoding process for picture order count.
+  // prevTid0Pic is the previous picture in decoding order that has TemporalId
+  // equal to 0 and that is not a RASL, RADL or SLNR picture. Per 7.4.2.2 the
+  // SLNR pictures are the ones with an even nal_unit_type in the range of
+  // TRAIL_N to RSV_VCL_N14, which already covers RADL_N and RASL_N; RADL_R and
+  // RASL_R are the remaining RADL and RASL pictures.
+  const int nal_unit_type = slice_hdr->nal_unit_type;
+  const bool is_slnr =
+      nal_unit_type <= H265NALU::RSV_VCL_N14 && nal_unit_type % 2 == 0;
+  const bool is_radl_or_rasl =
+      nal_unit_type == H265NALU::RADL_R || nal_unit_type == H265NALU::RASL_R;
   curr_pic_->valid_for_prev_tid0_pic_ =
-      !slice_hdr->temporal_id &&
-      (slice_hdr->nal_unit_type < H265NALU::RADL_N ||
-       slice_hdr->nal_unit_type > H265NALU::RSV_VCL_N14);
+      !slice_hdr->temporal_id && !is_slnr && !is_radl_or_rasl;
   curr_pic_->slice_pic_order_cnt_lsb_ = slice_hdr->slice_pic_order_cnt_lsb;
 
   // Calculate POC for current picture.
