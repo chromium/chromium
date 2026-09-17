@@ -191,7 +191,7 @@ class ChromeBrowserCloudManagementControllerObserver
 class ChromeBrowserExtraSetUp : public ChromeBrowserMainExtraParts {
  public:
   explicit ChromeBrowserExtraSetUp(
-      ChromeBrowserCloudManagementControllerObserver* observer)
+      ChromeBrowserCloudManagementController::Observer* observer)
       : observer_(observer) {}
   ChromeBrowserExtraSetUp(const ChromeBrowserExtraSetUp&) = delete;
   ChromeBrowserExtraSetUp& operator=(const ChromeBrowserExtraSetUp&) = delete;
@@ -202,7 +202,7 @@ class ChromeBrowserExtraSetUp : public ChromeBrowserMainExtraParts {
   }
 
  private:
-  raw_ptr<ChromeBrowserCloudManagementControllerObserver> observer_;
+  raw_ptr<ChromeBrowserCloudManagementController::Observer> observer_;
 };
 
 class PolicyFetchClientObserver : public CloudPolicyClient::Observer {
@@ -257,36 +257,6 @@ class PolicyFetchStoreObserver : public CloudPolicyStore::Observer {
   raw_ptr<CloudPolicyStore> store_;
   base::OnceClosure quit_closure_;
   bool is_succesfully_loaded_;
-};
-
-class PolicyFetchCoreObserver : public CloudPolicyCore::Observer {
- public:
-  PolicyFetchCoreObserver(CloudPolicyCore* core, base::OnceClosure quit_closure)
-      : core_(core), quit_closure_(std::move(quit_closure)) {
-    core_->AddObserver(this);
-  }
-  ~PolicyFetchCoreObserver() override { core_->RemoveObserver(this); }
-
-  void OnCoreConnected(CloudPolicyCore* core) override {}
-
-  void OnRefreshSchedulerStarted(CloudPolicyCore* core) override {}
-
-  void OnCoreDisconnecting(CloudPolicyCore* core) override {
-    // This is called when policy fetching fails and is used in
-    // ChromeBrowserCloudManagementController to unenroll the browser. The
-    // status must be either `DM_STATUS_SERVICE_DEVICE_NOT_FOUND` or
-    // `DM_STATUS_SERVICE_DEVICE_NEEDS_RESET` for this to happen.
-    EXPECT_THAT((std::array{DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
-                            DM_STATUS_SERVICE_DEVICE_NEEDS_RESET}),
-                testing::Contains(core->client()->last_dm_status()));
-    std::move(quit_closure_).Run();
-  }
-
-  void OnRemoteCommandsServiceStarted(CloudPolicyCore* core) override {}
-
- private:
-  raw_ptr<CloudPolicyCore> core_;
-  base::OnceClosure quit_closure_;
 };
 
 }  // namespace
@@ -681,26 +651,41 @@ INSTANTIATE_TEST_SUITE_P(ChromeBrowserCloudManagementEnrollmentTest,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 class MachineLevelUserCloudPolicyPolicyFetchObserver
-    : public ChromeBrowserCloudManagementControllerObserver {
+    : public ChromeBrowserCloudManagementController::Observer {
  public:
-  MachineLevelUserCloudPolicyPolicyFetchObserver(
-      ChromeBrowserCloudManagementBrowserTestDelegate* delegate)
-      : ChromeBrowserCloudManagementControllerObserver(delegate) {}
+  MachineLevelUserCloudPolicyPolicyFetchObserver() = default;
   ~MachineLevelUserCloudPolicyPolicyFetchObserver() override = default;
 
-  void QuitOnUnenroll(base::RepeatingClosure quit_closure) {
-    quit_closure_ = std::move(quit_closure);
+  void WaitUntilUnenrolled() {
+    if (is_unenrolled_) {
+      return;
+    }
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
   }
 
   void OnBrowserUnenrolled(bool succeeded) override {
+    is_unenrolled_ = true;
+    unenroll_succeeded_ = succeeded;
     if (!quit_closure_.is_null()) {
-      EXPECT_FALSE(succeeded);
       std::move(quit_closure_).Run();
     }
   }
 
+  void OnPolicyRegisterFinished(bool succeeded) override {
+    is_registration_finished_ = true;
+  }
+
+  bool is_registration_finished() const { return is_registration_finished_; }
+  bool is_unenrolled() const { return is_unenrolled_; }
+  bool unenroll_succeeded() const { return unenroll_succeeded_; }
+
  private:
-  base::RepeatingClosure quit_closure_;
+  bool is_registration_finished_ = false;
+  bool is_unenrolled_ = false;
+  bool unenroll_succeeded_ = false;
+  base::OnceClosure quit_closure_;
 };
 
 class MachineLevelUserCloudPolicyPolicyFetchTest
@@ -710,7 +695,7 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
           /*storage_enabled=*/bool,
           /*is_policy_fetch_with_sha256_enabled=*/bool>> {
  public:
-  MachineLevelUserCloudPolicyPolicyFetchTest() : observer_(&delegate_) {
+  MachineLevelUserCloudPolicyPolicyFetchTest() {
     BrowserDMTokenStorage::SetForTesting(&storage_);
     storage_.SetEnrollmentToken(kEnrollmentToken);
     storage_.SetClientId(kClientID);
@@ -731,10 +716,10 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
   MachineLevelUserCloudPolicyPolicyFetchTest& operator=(
       const MachineLevelUserCloudPolicyPolicyFetchTest&) = delete;
 
-  void SetUpOnMainThread() override {
-    g_browser_process->browser_policy_connector()
-        ->chrome_browser_cloud_management_controller()
-        ->AddObserver(&observer_);
+  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
+    PlatformBrowserTest::CreatedBrowserMainParts(parts);
+    static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
+        std::make_unique<ChromeBrowserExtraSetUp>(&observer_));
   }
 
   void TearDownOnMainThread() override {
@@ -789,46 +774,40 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-// TODO(crbug.com/40782028): Test is flaky.
-IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest,
-                       DISABLED_Test) {
-#else
 IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest, Test) {
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  if (dm_token().empty() && !observer_.is_registration_finished()) {
+    delegate_.MaybeWaitForEnrollmentConfirmation(kEnrollmentToken);
+  }
   MachineLevelUserCloudPolicyManager* manager =
       g_browser_process->browser_policy_connector()
           ->machine_level_user_cloud_policy_manager();
   ASSERT_TRUE(manager);
-  // If the policy hasn't been updated, wait for it.
-  if (manager->core()->client()->last_policy_timestamp().is_null()) {
-    base::RunLoop run_loop;
-    // Listen to store event which is fired after policy validation if token is
-    // valid. Otherwise listen to the core since it gets disconnected by
-    // unenrollment.
-    std::unique_ptr<PolicyFetchCoreObserver> core_observer;
-    std::unique_ptr<PolicyFetchStoreObserver> store_observer;
-    if (dm_token() == kInvalidDMToken || dm_token() == kDeletionDMToken) {
-      if (storage_enabled()) {
-        // |run_loop|'s QuitClosure will be called after the core is
-        // disconnected following unenrollment.
-        core_observer = std::make_unique<PolicyFetchCoreObserver>(
-            manager->core(), run_loop.QuitClosure());
-      } else {
-        // |run_loop|'s QuitClosure will be called after the browser attempts to
-        // unenroll from CBCM. This is necessary to quit the loop in the case
-        // the storage fails since the core is not disconnected.
-        observer_.QuitOnUnenroll(run_loop.QuitClosure());
-      }
-    } else {
-      store_observer = std::make_unique<PolicyFetchStoreObserver>(
-          manager->store(), run_loop.QuitClosure());
+  if (dm_token() == kInvalidDMToken || dm_token() == kDeletionDMToken) {
+    if (!observer_.is_unenrolled()) {
+      g_browser_process->browser_policy_connector()
+          ->device_management_service()
+          ->ScheduleInitialization(0);
+      observer_.WaitUntilUnenrolled();
     }
-    g_browser_process->browser_policy_connector()
-        ->device_management_service()
-        ->ScheduleInitialization(0);
-    run_loop.Run();
+    // Verify unenrollment outcome matches storage availability.
+    EXPECT_EQ(storage_enabled(), observer_.unenroll_succeeded());
+    if (storage_enabled()) {
+      EXPECT_FALSE(manager->core()->IsConnected());
+    } else {
+      EXPECT_TRUE(manager->core()->IsConnected());
+    }
+  } else {
+    ASSERT_TRUE(manager->core()->client());
+    // If the policy hasn't been updated, wait for it.
+    if (manager->core()->client()->last_policy_timestamp().is_null()) {
+      base::RunLoop run_loop;
+      PolicyFetchStoreObserver store_observer(manager->store(),
+                                              run_loop.QuitClosure());
+      g_browser_process->browser_policy_connector()
+          ->device_management_service()
+          ->ScheduleInitialization(0);
+      run_loop.Run();
+    }
   }
   EXPECT_TRUE(
       manager->IsInitializationComplete(PolicyDomain::POLICY_DOMAIN_CHROME));
