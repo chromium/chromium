@@ -4,8 +4,11 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
+import android.graphics.Rect;
+
 import androidx.annotation.Px;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -579,5 +582,44 @@ class BottomSheetMediator {
         return targetState == SheetState.FULL
                 ? ANIMATION_DURATION_EXPAND_MS
                 : ANIMATION_DURATION_SHRINK_MS;
+    }
+
+    /**
+     * Test whether a motion event y-coordinate is in the usable area of the sheet (i.e. not on the
+     * shadow shown above the sheet).
+     *
+     * @param y The y coordinate of the motion event relative to the bottom sheet view.
+     * @return Whether the event is considered to be in the usable area of the sheet.
+     */
+    boolean isTouchEventInUsableArea(float y) {
+        return y > 0;
+    }
+
+    /**
+     * Calculates the height of the content container when resizing content at full height.
+     *
+     * @param halfHeightPx The sheet height in pixels for the HALF state.
+     * @param fullHeightPx The sheet height in pixels for the FULL state.
+     * @param currentOffsetPx The current sheet offset in pixels.
+     * @param visibleViewportRect The visible viewport bounds.
+     * @return The calculated content container height in pixels.
+     */
+    @Px
+    int calculateContentContainerHeight(
+            float halfHeightPx,
+            float fullHeightPx,
+            float currentOffsetPx,
+            Rect visibleViewportRect) {
+        int newHeight = (int) MathUtils.clamp(currentOffsetPx, halfHeightPx, fullHeightPx);
+        return Math.min(visibleViewportRect.height(), newHeight);
+    }
+
+    /**
+     * Sets the container height in the model.
+     *
+     * @param height The container height in pixels or ViewGroup.LayoutParams constant.
+     */
+    void setContainerHeight(int height) {
+        mModel.set(BottomSheetProperties.CONTAINER_HEIGHT, height);
     }
 }

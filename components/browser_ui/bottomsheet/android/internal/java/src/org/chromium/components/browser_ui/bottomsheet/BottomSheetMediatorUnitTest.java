@@ -13,6 +13,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Rect;
 import android.view.View;
 
 import org.junit.Before;
@@ -494,5 +495,59 @@ public class BottomSheetMediatorUnitTest {
         // When content specifies skipHalfStateOnScrollingDown is true.
         when(mContent.skipHalfStateOnScrollingDown()).thenReturn(true);
         assertTrue(mMediator.shouldSkipHalfStateOnScrollingDown());
+    }
+
+    @Test
+    public void testIsTouchEventInUsableArea() {
+        assertTrue(mMediator.isTouchEventInUsableArea(/* y= */ 50f));
+        assertFalse(mMediator.isTouchEventInUsableArea(/* y= */ 0f));
+        assertFalse(mMediator.isTouchEventInUsableArea(/* y= */ -10f));
+    }
+
+    @Test
+    public void testCalculateContentContainerHeight() {
+        Rect viewport = new Rect(0, 0, 1080, 1920);
+
+        // When currentOffset < halfHeight, clamp to halfHeight.
+        assertEquals(
+                500,
+                mMediator.calculateContentContainerHeight(
+                        /* halfHeightPx= */ 500f,
+                        /* fullHeightPx= */ 1000f,
+                        /* currentOffsetPx= */ 300f,
+                        viewport));
+
+        // When currentOffset is between halfHeight and fullHeight, use currentOffset.
+        assertEquals(
+                800,
+                mMediator.calculateContentContainerHeight(
+                        /* halfHeightPx= */ 500f,
+                        /* fullHeightPx= */ 1000f,
+                        /* currentOffsetPx= */ 800f,
+                        viewport));
+
+        // When currentOffset exceeds fullHeight, clamp to fullHeight.
+        assertEquals(
+                1000,
+                mMediator.calculateContentContainerHeight(
+                        /* halfHeightPx= */ 500f,
+                        /* fullHeightPx= */ 1000f,
+                        /* currentOffsetPx= */ 1200f,
+                        viewport));
+
+        // When currentOffset exceeds viewport height, clamp to viewport height.
+        assertEquals(
+                1920,
+                mMediator.calculateContentContainerHeight(
+                        /* halfHeightPx= */ 500f,
+                        /* fullHeightPx= */ 2500f,
+                        /* currentOffsetPx= */ 2500f,
+                        viewport));
+    }
+
+    @Test
+    public void testSetContainerHeight() {
+        mMediator.setContainerHeight(750);
+        assertEquals(750, mModel.get(BottomSheetProperties.CONTAINER_HEIGHT));
     }
 }

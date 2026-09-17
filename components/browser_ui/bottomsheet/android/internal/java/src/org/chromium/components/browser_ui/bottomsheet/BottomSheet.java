@@ -640,7 +640,7 @@ class BottomSheet extends BottomSheetView
      * @return Whether the event is considered to be in the usable area of the sheet.
      */
     public boolean isTouchEventInUsableArea(MotionEvent event) {
-        return event.getY() > 0;
+        return mMediator.isTouchEventInUsableArea(event.getY());
     }
 
     @Override
@@ -967,11 +967,11 @@ class BottomSheet extends BottomSheetView
     }
 
     private @Px int getResizingContentContainerHeight() {
-        float minContentHeight = getSheetHeightForState(SheetState.HALF);
-        float maxContentHeight = getSheetHeightForState(SheetState.FULL);
-        @Px
-        int newHeight = (int) MathUtils.clamp(mCurrentOffsetPx, minContentHeight, maxContentHeight);
-        return Math.min(mVisibleViewportRect.height(), newHeight);
+        return mMediator.calculateContentContainerHeight(
+                getSheetHeightForState(SheetState.HALF),
+                getSheetHeightForState(SheetState.FULL),
+                mCurrentOffsetPx,
+                mVisibleViewportRect);
     }
 
     /** Returns the resolved PEEK height in pixels for the current content. */
@@ -1630,8 +1630,7 @@ class BottomSheet extends BottomSheetView
         }
 
         if (isFullHeightResizeContent()) {
-            @Px int newHeight = getResizingContentContainerHeight();
-            mModel.set(BottomSheetProperties.CONTAINER_HEIGHT, newHeight);
+            mMediator.setContainerHeight(getResizingContentContainerHeight());
         } else {
             int targetHeight;
             if (isLargeFormFactorUiEnabled()) {
@@ -1644,7 +1643,7 @@ class BottomSheet extends BottomSheetView
             } else {
                 targetHeight = ViewGroup.LayoutParams.MATCH_PARENT;
             }
-            mModel.set(BottomSheetProperties.CONTAINER_HEIGHT, targetHeight);
+            mMediator.setContainerHeight(targetHeight);
 
             @Px
             int viewportBottomInset = isLargeFormFactorUiEnabled() ? 0 : getViewportBottomInset();
