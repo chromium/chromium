@@ -509,6 +509,7 @@ if (is_android) {
       "android/java/src/org/chromium/printing/PrintDocumentAdapterWrapper.java",
       "android/java/src/org/chromium/printing/PrintManagerDelegate.java",
       "android/java/src/org/chromium/printing/PrintManagerDelegateImpl.java",
+      "android/java/src/org/chromium/printing/PrintSession.java",
       "android/java/src/org/chromium/printing/Printable.java",
       "android/java/src/org/chromium/printing/PrintingContext.java",
       "android/java/src/org/chromium/printing/PrintingController.java",

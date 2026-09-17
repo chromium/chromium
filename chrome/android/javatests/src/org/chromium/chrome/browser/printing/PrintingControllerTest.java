@@ -918,6 +918,55 @@ public class PrintingControllerTest {
     }
 
     /**
+     * Test to verify that sequential print jobs do not leak state (pages, callbacks, finished flag)
+     * across jobs.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Printing"})
+    public void testSequentialPrintJobsDoNotLeakState() throws Throwable {
+        WebPageStation page = mActivityTestRule.startOnUrl(URL);
+        Tab tab = page.getTab();
+        WindowAndroid window = tab.getWindowAndroid();
+
+        PrintManagerDelegate successfulPrintManager =
+                new PrintManagerDelegate() {
+                    @Override
+                    public boolean print(
+                            String printJobName,
+                            PrintDocumentAdapter documentAdapter,
+                            @Nullable PrintAttributes attributes) {
+                        return true;
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrintingControllerImpl printingController =
+                            (PrintingControllerImpl) PrintingControllerImpl.getInstance(window);
+                    // Start first job.
+                    printingController.startPrint(new TabPrinter(tab), successfulPrintManager);
+                    Assert.assertTrue(printingController.isBusy());
+                    Assert.assertFalse(printingController.hasPrintingFinished());
+
+                    // Simulate completion of first job.
+                    printingController.onStart();
+                    printingController.onFinish();
+                    Assert.assertFalse(printingController.isBusy());
+                    Assert.assertTrue(printingController.hasPrintingFinished());
+
+                    // Start second job.
+                    printingController.startPrint(new TabPrinter(tab), successfulPrintManager);
+                    Assert.assertTrue(printingController.isBusy());
+                    // Verify that finished flag from job 1 does not leak into job 2.
+                    Assert.assertFalse(printingController.hasPrintingFinished());
+
+                    // Cleanup
+                    printingController.onFinish();
+                });
+    }
+
+    /**
      * Test to verify that if the Activity is finishing, calling startPendingPrint() will
      * immediately invoke the pending print callback and not start printing.
      */
