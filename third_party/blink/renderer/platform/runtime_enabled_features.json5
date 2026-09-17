@@ -418,7 +418,7 @@
     // tracked using the Element::SetTrackedElementSubRect() method.
     {
       name: "AIPageContentTrackedElementsPassword",
-      status: "test"
+      status: "stable"
     },
     // Clamp AIPageContent visible bounding boxes to the local-root viewport
     // after visual-viewport mapping to normalize viewport-relative geometry.
