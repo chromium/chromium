@@ -10959,21 +10959,6 @@
             ]
         }
     ],
-    "HeliosMultiTabContext": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GeminiMultiTabContext"
-                    ]
-                }
-            ]
-        }
-    ],
     "HeliosPageContextPdf": [
         {
             "platforms": [

@@ -699,7 +699,7 @@ bool IsGeminiClientMigrationEnabled() {
   return base::FeatureList::IsEnabled(kGeminiClientMigration);
 }
 
-BASE_FEATURE(kGeminiMultiTabContext, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiMultiTabContext, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiMultiTabContextEnabled() {
   if (!IsPageActionMenuEnabled() || !IsGeminiScreenContextMigrationEnabled()) {
