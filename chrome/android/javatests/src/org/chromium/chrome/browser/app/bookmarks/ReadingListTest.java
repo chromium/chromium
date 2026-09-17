@@ -18,7 +18,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.startsWith;
-import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
@@ -43,7 +42,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -600,11 +598,10 @@ public class ReadingListTest {
                 "Read later items should have mark as read",
                 toolbar.getMenu().findItem(R.id.reading_list_mark_as_read_id).isVisible());
 
-        MenuItem mockMenuItem = Mockito.mock(MenuItem.class);
-        doReturn(R.id.reading_list_mark_as_read_id).when(mockMenuItem).getItemId();
+        MenuItem markAsReadItem = toolbar.getMenu().findItem(R.id.reading_list_mark_as_read_id);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    toolbar.onMenuItemClick(mockMenuItem);
+                    toolbar.onMenuItemClick(markAsReadItem);
                 });
 
         Assert.assertFalse(
