@@ -551,10 +551,14 @@ No modifications.
             }
 
             // tools/licenses/licenses.py reads README.chromium and LICENSE from
-            // here. For autorolled projects that is the cipd package, so the
-            // directory only exists on Android checkouts, which licenses.py
-            // tolerates (it skips listed directories that are absent).
-            dependencyDirectories.add(dependency.artifactDirectoryPath)
+            // here. For androidx and autorolled deps that is the cipd package
+            // (committed/ no longer carries LICENSE), which only exists on
+            // Android checkouts; licenses.py skips listed directories that are
+            // absent. For the main project the cipd package holds only the
+            // artifact and the metadata stays in libs/<dep>.
+            dependencyDirectories.add(dependency.committedPrefix
+                    ? dependency.artifactDirectoryPath
+                    : dependency.committedDirectoryPath)
 
             if (project.file("${dependency.directoryPath}/${dependency.fileName}").exists()) {
                 logger.quiet("${dependency.id} exists, skipping.")

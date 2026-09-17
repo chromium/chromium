@@ -210,8 +210,8 @@ def create_to_commit_zip(
     output_path: where to output the zipfile.
     package_root: path to gradle/cipd package.
     dirnames: list of subdirs under |package_root| to walk.
-    absolute_file_map: List of files to be stored under the absolute prefix
-      CHROMIUM_SRC/.
+    absolute_file_map: dict of file path relative to |package_root| -> path
+      in the repo; each is stored under the absolute prefix CHROMIUM_SRC/.
   """
   to_commit_paths = []
   for directory in dirnames:
