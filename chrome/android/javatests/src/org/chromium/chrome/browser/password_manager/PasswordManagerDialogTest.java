@@ -13,7 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.not;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertEquals;
 
 import static org.chromium.chrome.browser.password_manager.PasswordManagerDialogProperties.ILLUSTRATION_VISIBLE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -24,16 +24,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -50,22 +46,20 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PasswordManagerDialogTest {
-    private PasswordManagerDialogCoordinator mCoordinator;
-    private PasswordManagerDialogMediator mMediator;
-    private PropertyModel mModel;
     private static final String TITLE = "Title";
     private static final String DETAILS = "Explanation text.";
     private static final String OK_BUTTON = "OK";
     private static final String CANCEL_BUTTON = "Cancel";
 
-    @Mock private Callback<Integer> mOnClick;
-
     @Rule
-    public AutoResetCtaTransitTestRule mActivityTestRule =
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    private final PayloadCallbackHelper<Integer> mOnClick = new PayloadCallbackHelper<>();
 
+    private PasswordManagerDialogCoordinator mCoordinator;
+    private PasswordManagerDialogMediator mMediator;
+    private PropertyModel mModel;
     private WebPageStation mStartingPage;
 
     @Before
@@ -87,7 +81,7 @@ public class PasswordManagerDialogTest {
                                     R.drawable.password_checkup_warning,
                                     OK_BUTTON,
                                     CANCEL_BUTTON,
-                                    mOnClick);
+                                    mOnClick::notifyCalled);
                     contents.setDialogType(ModalDialogManager.ModalDialogType.TAB);
                     mCoordinator.initialize(
                             activity.getWindowAndroid().getContext().get(), contents);
@@ -112,21 +106,27 @@ public class PasswordManagerDialogTest {
     @SmallTest
     public void testAcceptedCallback() {
         onView(withId(R.id.positive_button)).perform(click());
-        verify(mOnClick).onResult(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        assertEquals(
+                Integer.valueOf(DialogDismissalCause.POSITIVE_BUTTON_CLICKED),
+                mOnClick.getOnlyPayloadBlocking());
     }
 
     @Test
     @SmallTest
     public void testRejectedCallback() {
         onView(withId(R.id.negative_button)).perform(click());
-        verify(mOnClick).onResult(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        assertEquals(
+                Integer.valueOf(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED),
+                mOnClick.getOnlyPayloadBlocking());
     }
 
     @Test
     @SmallTest
     public void testDismissedCallbackBackButton() {
         pressBack();
-        verify(mOnClick).onResult(DialogDismissalCause.NAVIGATE_BACK);
+        assertEquals(
+                Integer.valueOf(DialogDismissalCause.NAVIGATE_BACK),
+                mOnClick.getOnlyPayloadBlocking());
     }
 
     @Test
