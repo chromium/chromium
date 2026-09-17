@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.os.PowerManager;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +33,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowPowerManager;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -43,10 +47,14 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link CustomTabActivityTimeoutHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.CCT_RESET_TIMEOUT_ALLOWED})
+@EnableFeatures({
+    ChromeFeatureList.CCT_RESET_TIMEOUT_ALLOWED,
+    ChromeFeatureList.CCT_RESET_TIMEOUT_SKIP_CONFIGURATION_CHANGES
+})
 public class CustomTabActivityTimeoutHandlerUnitTest {
     @Mock private Runnable mFinishRunnable;
     @Mock private PendingIntent mPendingIntent;
+    @Mock private Activity mActivity;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
@@ -74,6 +82,15 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
         PowerManager powerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         mShadowPowerManager = shadowOf(powerManager);
         mShadowPowerManager.setIsInteractive(true);
+        when(mActivity.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
+
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
+    }
+
+    @After
+    public void tearDown() {
+        ApplicationStatus.destroyForJUnitTests();
     }
 
     @Test
@@ -390,5 +407,68 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
 
         new CustomTabActivityTimeoutHandler(constructorContext, mFinishRunnable, new Intent());
         verify(constructorContext, never()).getSystemService(Context.POWER_SERVICE);
+    }
+
+
+
+    @Test
+    public void onStop_isChangingConfigurations_doesNotSetTimestamp() {
+        when(mActivity.isChangingConfigurations()).thenReturn(true);
+        mTimeoutHandler.onStop(mActivity);
+
+        mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
+        mTimeoutHandler.onResume(mActivity);
+        verify(mFinishRunnable, never()).run();
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.CCT_RESET_TIMEOUT_SKIP_CONFIGURATION_CHANGES})
+    public void onStop_isChangingConfigurations_flagDisabled_setsTimestamp() {
+        when(mActivity.isChangingConfigurations()).thenReturn(true);
+        mTimeoutHandler.onStop(mActivity);
+
+        mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
+        mTimeoutHandler.onResume(mActivity);
+        verify(mFinishRunnable).run();
+    }
+
+    @Test
+    public void onResume_applicationInBackground_skipsTimeoutEvaluation() {
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
+
+        mTimeoutHandler.onStop(mContext);
+        mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
+
+        mTimeoutHandler.onResume(mContext);
+        verify(mFinishRunnable, never()).run();
+    }
+
+    @Test
+    public void onResume_applicationInBackground_evaluatesTimeoutOnSubsequentForegroundResume() {
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
+
+        mTimeoutHandler.onStop(mContext);
+        mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
+
+        // Background resume skips timeout
+        mTimeoutHandler.onResume(mContext);
+        verify(mFinishRunnable, never()).run();
+
+        // Foreground resume evaluates timeout
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
+        mTimeoutHandler.onResume(mContext);
+        verify(mFinishRunnable).run();
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.CCT_RESET_TIMEOUT_SKIP_CONFIGURATION_CHANGES})
+    public void onResume_applicationInBackground_flagDisabled_evaluatesTimeout() {
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
+
+        mTimeoutHandler.onStop(mContext);
+        mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
+
+        mTimeoutHandler.onResume(mContext);
+        verify(mFinishRunnable).run();
     }
 }

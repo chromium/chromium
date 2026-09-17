@@ -139,6 +139,7 @@ BASE_DECLARE_FEATURE(kCCTRealtimeEngagementEventsInBackground);
 BASE_DECLARE_FEATURE(kCCTReportParallelRequestStatus);
 BASE_DECLARE_FEATURE(kCCTReportPrerenderEvents);
 BASE_DECLARE_FEATURE(kCCTResetTimeoutAllowed);
+BASE_DECLARE_FEATURE(kCCTResetTimeoutSkipConfigurationChanges);
 BASE_DECLARE_FEATURE(kCCTResizableForThirdParties);
 BASE_DECLARE_FEATURE(kCCTRetainingStateInMemory);
 BASE_DECLARE_FEATURE(kCCTTabModalDialog);

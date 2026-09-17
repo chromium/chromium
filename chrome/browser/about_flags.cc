@@ -8061,6 +8061,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kCCTResetTimeoutAllowed,
                                     kCCTResetTimeoutVariations,
                                     "CCTResetTimeoutVariations")},
+    {"cct-reset-timeout-skip-configuration-changes",
+     flag_descriptions::kCCTResetTimeoutSkipConfigurationChangesName,
+     flag_descriptions::kCCTResetTimeoutSkipConfigurationChangesDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kCCTResetTimeoutSkipConfigurationChanges)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -1440,6 +1440,12 @@ inline constexpr char kCCTResetTimeoutAllowedDescription[] =
     "allows embedder to close CCT after a specified time in mins. This flag is "
     "always enabled.";
 
+inline constexpr char kCCTResetTimeoutSkipConfigurationChangesName[] =
+    "CCT Reset Timeout Skip Configuration Changes";
+inline constexpr char kCCTResetTimeoutSkipConfigurationChangesDescription[] =
+    "When enabled, the CCT reset timeout timer will not be reset during "
+    "activity configuration changes or background launches.";
+
 inline constexpr char kInAppWindowManagerDeprecationName[] =
     "In-app window manager deprecation";
 inline constexpr char kInAppWindowManagerDeprecationDescription[] =
@@ -5310,7 +5316,6 @@ inline constexpr char kSemanticEmbedderAPIDescription[] =
     "The API may be subject to changes including the supported options. "
     "Please refer to the built-in AI documentation [1] for details.";
 
-
 inline constexpr char kSummarizerAPIWithPerformancePreferenceName[] =
     "Summarizer API Performance Preference";
 inline constexpr char kSummarizerAPIWithPerformancePreferenceDescription[] =
@@ -5835,7 +5840,6 @@ inline constexpr char kApb144Patch4Name[] = "Apb144Patch4";
 inline constexpr char kApb144Patch4Description[] =
     "Enables the fourth patch for APB in 144.";
 
-
 inline constexpr char kApb144Patch6Name[] = "Apb144Patch6";
 inline constexpr char kApb144Patch6Description[] =
     "Enables the sixth patch for APB in 144";
@@ -6188,7 +6192,6 @@ inline constexpr char kEnableEscapeHandlingForSecondaryActivitiesName[] =
     "Enable escape handling for secondary activities and native pages.";
 inline constexpr char kEnableEscapeHandlingForSecondaryActivitiesDescription[] =
     "Enables handling escape events on secondary activities and native pages.";
-
 
 inline constexpr char kEnableSwipeToSwitchPaneName[] =
     "Enable Swipe To Switch Pane";
@@ -8034,7 +8037,6 @@ inline constexpr char kHindiInscriptLayoutName[] =
     "Hindi Inscript Layout on CrOS";
 inline constexpr char kHindiInscriptLayoutDescription[] =
     "Enables Hindi Inscript Layout on ChromeOS.";
-
 
 inline constexpr char kMicrophoneMuteSwitchDeviceName[] =
     "Microphone Mute Switch Device";

@@ -13,8 +13,10 @@ import android.os.Bundle;
 import android.os.PowerManager;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -117,6 +119,12 @@ class CustomTabActivityTimeoutHandler {
             return;
         }
 
+        if (isActivityChangingConfigurations(context)) {
+            mLeaveTimestamp = -1;
+            Log.d(TAG, "onStop: Changing configurations, not starting timeout.");
+            return;
+        }
+
         if (mLeaveTimestamp == -1) {
             mLeaveTimestamp = TimeUtils.elapsedRealtimeMillis();
             Log.d(TAG, "onStop: User leaving task, timeout timer started.");
@@ -127,7 +135,12 @@ class CustomTabActivityTimeoutHandler {
     void onResume(Context context) {
         if (!mIsTimeoutEnabled) return;
 
-        Log.d(TAG, "onResume: timeoutMinutes: %d", mTimeoutMinutes);
+        if (isApplicationInBackground()) {
+            Log.d(TAG, "onResume: Application is in background, skipping timeout.");
+            return;
+        }
+
+        Log.d(TAG, "onResume: Triggering timeout check, timeoutMinutes: %d", mTimeoutMinutes);
         handleTimeout(context);
     }
 
@@ -255,5 +268,23 @@ class CustomTabActivityTimeoutHandler {
             return pendingIntent;
         }
         return null;
+    }
+
+    private static boolean isSkipConfigurationChangesEnabled() {
+        return ChromeFeatureList.sCctResetTimeoutSkipConfigurationChanges.isEnabled();
+    }
+
+    private static boolean isActivityChangingConfigurations(Context context) {
+        if (!isSkipConfigurationChangesEnabled()) {
+            return false;
+        }
+        return context instanceof Activity activity && activity.isChangingConfigurations();
+    }
+
+    private static boolean isApplicationInBackground() {
+        if (!isSkipConfigurationChangesEnabled()) {
+            return false;
+        }
+        return !ApplicationStatus.hasVisibleActivities() || SysUtils.isProcessInBackground();
     }
 }

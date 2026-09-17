@@ -468,6 +468,8 @@ public abstract class ChromeFeatureList {
             "CCTReportParallelRequestStatus";
     public static final String CCT_REPORT_PRERENDER_EVENTS = "CCTReportPrerenderEvents";
     public static final String CCT_RESET_TIMEOUT_ALLOWED = "CCTResetTimeoutAllowed";
+    public static final String CCT_RESET_TIMEOUT_SKIP_CONFIGURATION_CHANGES =
+            "CCTResetTimeoutSkipConfigurationChanges";
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
     public static final String CCT_TAB_MODAL_DIALOG = "CCTTabModalDialog";
     public static final String CCT_TAB_RESUMPTION = "CctTabResumption";
@@ -1100,6 +1102,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_REALTIME_ENGAGEMENT_EVENTS_IN_BACKGROUND, true);
     public static final CachedFlag sCctResetTimeoutAllowed =
             newCachedFlag(CCT_RESET_TIMEOUT_ALLOWED, true);
+    public static final CachedFlag sCctResetTimeoutSkipConfigurationChanges =
+            newCachedFlag(CCT_RESET_TIMEOUT_SKIP_CONFIGURATION_CHANGES, false);
     public static final CachedFlag sCctResizableForThirdParties =
             newCachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
     public static final CachedFlag sCctTabModalDialog = newCachedFlag(CCT_TAB_MODAL_DIALOG, true);
@@ -1586,6 +1590,7 @@ public abstract class ChromeFeatureList {
                     sCctPageContentRequestEnabled,
                     sCctRealtimeEngagementEventsInBackground,
                     sCctResetTimeoutAllowed,
+                    sCctResetTimeoutSkipConfigurationChanges,
                     sCctResizableForThirdParties,
                     sCctTabModalDialog,
                     sCctTabResumption,
