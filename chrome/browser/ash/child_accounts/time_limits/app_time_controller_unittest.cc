@@ -54,8 +54,6 @@ constexpr base::TimeDelta kOneHour = base::Hours(1);
 constexpr base::TimeDelta kZeroTime = base::Seconds(0);
 constexpr char kApp1Name[] = "App1";
 constexpr char kApp2Name[] = "App2";
-const AppId kApp1(apps::AppType::kArc, "1");
-const AppId kApp2(apps::AppType::kArc, "2");
 
 // Calculate the previous reset time.
 base::Time GetLastResetTime(base::Time timestamp) {
@@ -143,6 +141,9 @@ class AppTimeControllerTest : public testing::Test {
 
   Profile& profile() { return *profile_.get(); }
 
+  const AppId app1_{apps::AppType::kArc, "1"};
+  const AppId app2_{apps::AppType::kArc, "2"};
+
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -183,8 +184,8 @@ void AppTimeControllerTest::SetUp() {
   task_environment_.RunUntilIdle();
 
   InstantiateController();
-  SimulateInstallArcApp(kApp1, kApp1Name);
-  SimulateInstallArcApp(kApp2, kApp2Name);
+  SimulateInstallArcApp(app1_, kApp1Name);
+  SimulateInstallArcApp(app2_, kApp2Name);
 }
 
 void AppTimeControllerTest::TearDown() {
@@ -288,16 +289,16 @@ TEST_F(AppTimeControllerTest, ResetTimeReached) {
   ASSERT_EQ(start_time, start_time.LocalMidnight());
 
   // This App will not reach its time limit. Advances time by 1 hour.
-  CreateActivityForApp(kApp1, kOneHour, kOneHour * 2);
+  CreateActivityForApp(app1_, kOneHour, kOneHour * 2);
 
   // This app will reach its time limit. Advances time by 1 hour.
-  CreateActivityForApp(kApp2, kOneHour, kOneHour / 2);
+  CreateActivityForApp(app2_, kOneHour, kOneHour / 2);
 
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp1), kOneHour);
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp2), kOneHour / 2);
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp1),
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app1_), kOneHour);
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app2_), kOneHour / 2);
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app1_),
             AppState::kAvailable);
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp2),
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app2_),
             AppState::kLimitReached);
 
   // The default reset time is 6 hours after local midnight. Fast forward by 4
@@ -305,17 +306,17 @@ TEST_F(AppTimeControllerTest, ResetTimeReached) {
   task_environment().FastForwardBy(base::Hours(4));
 
   // Make sure that there is no activity
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp1), kZeroTime);
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp2), kZeroTime);
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp1),
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app1_), kZeroTime);
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app2_), kZeroTime);
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app1_),
             AppState::kAvailable);
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp2),
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app2_),
             AppState::kAvailable);
 }
 
 TEST_F(AppTimeControllerTest, SystemTimeChangedFastForwardByTwoDays) {
-  CreateActivityForApp(kApp1, kOneHour, kOneHour * 2);
-  CreateActivityForApp(kApp2, kOneHour, kOneHour / 2);
+  CreateActivityForApp(app1_, kOneHour, kOneHour * 2);
+  CreateActivityForApp(app2_, kOneHour, kOneHour / 2);
 
   // Advance system time with two days. TaskEnvironment::AdvanceClock doesn't
   // run the tasks that have been posted. This allows us to simulate the system
@@ -324,34 +325,34 @@ TEST_F(AppTimeControllerTest, SystemTimeChangedFastForwardByTwoDays) {
 
   // Since the reset timer has not been triggered the application activities are
   // instact.
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp1), kOneHour);
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp2), kOneHour / 2);
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp1),
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app1_), kOneHour);
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app2_), kOneHour / 2);
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app1_),
             AppState::kAvailable);
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp2),
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app2_),
             AppState::kLimitReached);
 
   // Notify AppTimeController that system time has changed. This triggers reset.
   system_clock_client_test()->NotifyObserversSystemClockUpdated();
 
   // Make sure that there is no activity
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp1), kZeroTime);
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp2), kZeroTime);
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp1),
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app1_), kZeroTime);
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app2_), kZeroTime);
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app1_),
             AppState::kAvailable);
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp2),
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app2_),
             AppState::kAvailable);
 }
 
 TEST_F(AppTimeControllerTest, SystemTimeChangedGoingBackwards) {
-  CreateActivityForApp(kApp1, kOneHour, kOneHour * 2);
-  CreateActivityForApp(kApp2, kOneHour, kOneHour / 2);
+  CreateActivityForApp(app1_, kOneHour, kOneHour * 2);
+  CreateActivityForApp(app2_, kOneHour, kOneHour / 2);
 
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp1), kOneHour);
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp2), kOneHour / 2);
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp1),
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app1_), kOneHour);
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app2_), kOneHour / 2);
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app1_),
             AppState::kAvailable);
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp2),
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app2_),
             AppState::kLimitReached);
 
   // Simulate time has gone back by setting the last reset time to be in the
@@ -361,11 +362,11 @@ TEST_F(AppTimeControllerTest, SystemTimeChangedGoingBackwards) {
   system_clock_client_test()->NotifyObserversSystemClockUpdated();
 
   // Make sure that there is no activity
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp1), kZeroTime);
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp2), kZeroTime);
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp1),
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app1_), kZeroTime);
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app2_), kZeroTime);
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app1_),
             AppState::kAvailable);
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp2),
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app2_),
             AppState::kAvailable);
 }
 
@@ -376,17 +377,17 @@ TEST_F(AppTimeControllerTest, TimeLimitNotification) {
                         base::Time::Now());
   const AppLimit limit2(AppRestriction::kTimeLimit, base::Minutes(30),
                         base::Time::Now());
-  const std::map<AppId, AppLimit> limits{{kApp1, limit1}, {kApp2, limit2}};
+  const std::map<AppId, AppLimit> limits{{app1_, limit1}, {app2_, limit2}};
   registry->UpdateAppLimits(limits);
   task_environment().RunUntilIdle();
 
   auto instance_id = base::UnguessableToken::Create();
-  registry->OnAppActive(kApp1, instance_id, base::Time::Now());
-  registry->OnAppActive(kApp2, instance_id, base::Time::Now());
+  registry->OnAppActive(app1_, instance_id, base::Time::Now());
+  registry->OnAppActive(app2_, instance_id, base::Time::Now());
 
   task_environment().FastForwardBy(base::Minutes(25));
 
-  // Expect that there is a 5 minute notification for kApp2.
+  // Expect that there is a 5 minute notification for app2_.
   EXPECT_TRUE(HasNotificationFor(kApp2Name, AppNotification::kFiveMinutes));
 
   // One minute left notification will be shown and then the app will reach its
@@ -409,7 +410,7 @@ TEST_F(AppTimeControllerTest, TimeLimitUpdatedNotification) {
                         base::Time::Now());
   const AppLimit limit2(AppRestriction::kTimeLimit, base::Minutes(30),
                         base::Time::Now());
-  registry->UpdateAppLimits({{kApp1, limit1}, {kApp2, limit2}});
+  registry->UpdateAppLimits({{app1_, limit1}, {app2_, limit2}});
   task_environment().RunUntilIdle();
 
   // Expect time limit changed notification for both apps.
@@ -425,7 +426,7 @@ TEST_F(AppTimeControllerTest, TimeLimitUpdatedNotification) {
   const base::TimeDelta delta = base::Minutes(1);
   const AppLimit limit3(AppRestriction::kTimeLimit, base::Minutes(10),
                         base::Time::Now() + delta);
-  registry->UpdateAppLimits({{kApp1, limit1}, {kApp2, limit3}});
+  registry->UpdateAppLimits({{app1_, limit1}, {app2_, limit3}});
   task_environment().RunUntilIdle();
   EXPECT_EQ(1u, GetNotificationsCount());
   EXPECT_TRUE(
@@ -434,7 +435,7 @@ TEST_F(AppTimeControllerTest, TimeLimitUpdatedNotification) {
   DismissNotifications();
 
   // Remove one time limit.
-  registry->UpdateAppLimits({{kApp2, limit3}});
+  registry->UpdateAppLimits({{app2_, limit3}});
   task_environment().RunUntilIdle();
   EXPECT_EQ(1u, GetNotificationsCount());
   EXPECT_TRUE(
@@ -446,9 +447,9 @@ TEST_F(AppTimeControllerTest, TimeLimitUpdatedNotification) {
 TEST_F(AppTimeControllerTest, RestoreLastResetTime) {
   {
     AppTimeLimitsPolicyBuilder builder;
-    builder.AddAppLimit(kApp1, AppLimit(AppRestriction::kTimeLimit,
+    builder.AddAppLimit(app1_, AppLimit(AppRestriction::kTimeLimit,
                                         kOneHour * 2, base::Time::Now()));
-    builder.AddAppLimit(kApp2, AppLimit(AppRestriction::kTimeLimit,
+    builder.AddAppLimit(app2_, AppLimit(AppRestriction::kTimeLimit,
                                         kOneHour / 2, base::Time::Now()));
     builder.SetResetTime(6, 0);
     profile().GetPrefs()->SetDict(ash::prefs::kPerAppTimeLimitsPolicy,
@@ -462,17 +463,17 @@ TEST_F(AppTimeControllerTest, RestoreLastResetTime) {
   EXPECT_EQ(test_api()->GetLastResetTime(), last_reset_time);
 
   auto instance_id = base::UnguessableToken::Create();
-  controller()->app_registry()->OnAppActive(kApp1, instance_id,
+  controller()->app_registry()->OnAppActive(app1_, instance_id,
                                             last_reset_time);
-  controller()->app_registry()->OnAppActive(kApp2, instance_id,
+  controller()->app_registry()->OnAppActive(app2_, instance_id,
                                             last_reset_time);
   task_environment().FastForwardBy(kOneHour);
 
-  controller()->app_registry()->OnAppInactive(kApp1, instance_id,
+  controller()->app_registry()->OnAppInactive(app1_, instance_id,
                                               base::Time::Now());
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp1),
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app1_),
             AppState::kAvailable);
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp2),
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app2_),
             AppState::kLimitReached);
 
   AppActivityRegistry::TestApi(controller()->app_registry()).SaveAppActivity();
@@ -487,12 +488,12 @@ TEST_F(AppTimeControllerTest, RestoreLastResetTime) {
   // its last reset time.
   EXPECT_EQ(test_api()->GetLastResetTime(), last_reset_time);
 
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp1),
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app1_),
             AppState::kAvailable);
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp2),
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app2_),
             AppState::kLimitReached);
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp1), kOneHour);
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp2), kOneHour / 2);
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app1_), kOneHour);
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app2_), kOneHour / 2);
 
   DeleteController();
 
@@ -510,12 +511,12 @@ TEST_F(AppTimeControllerTest, RestoreLastResetTime) {
   EXPECT_EQ(test_api()->GetLastResetTime(),
             GetLastResetTime(base::Time::Now()));
 
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp1),
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app1_),
             AppState::kAvailable);
-  EXPECT_EQ(controller()->app_registry()->GetAppState(kApp2),
+  EXPECT_EQ(controller()->app_registry()->GetAppState(app2_),
             AppState::kAvailable);
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp1), kZeroTime);
-  EXPECT_EQ(controller()->app_registry()->GetActiveTime(kApp2), kZeroTime);
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app1_), kZeroTime);
+  EXPECT_EQ(controller()->app_registry()->GetActiveTime(app2_), kZeroTime);
 }
 
 TEST_F(AppTimeControllerTest, MetricsTest) {
@@ -529,9 +530,9 @@ TEST_F(AppTimeControllerTest, MetricsTest) {
     AppLimit app_limit(AppRestriction::kTimeLimit, kOneHour, base::Time::Now());
     AppLimit blocked_app(AppRestriction::kBlocked, std::nullopt,
                          base::Time::Now());
-    builder.AddAppLimit(kApp1, app_limit);
+    builder.AddAppLimit(app1_, app_limit);
     builder.AddAppLimit(absent_app, app_limit);
-    builder.AddAppLimit(kApp2, blocked_app);
+    builder.AddAppLimit(app2_, blocked_app);
     builder.SetResetTime(6, 0);
     profile().GetPrefs()->SetDict(ash::prefs::kPerAppTimeLimitsPolicy,
                                   builder.value().Clone());

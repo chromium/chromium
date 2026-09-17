@@ -16,24 +16,26 @@
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
-#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
 namespace {
-const AccountId kDefaultOwnerAccountId =
-    AccountId::FromUserEmailGaiaId(test::kTestEmail, GaiaId(test::kTestGaiaId));
 constexpr char kKioskAppUserEmail[] =
     "example@kiosk-apps.device-local.localhost";
 constexpr char kWebKioskAppUserEmail[] =
     "example@web-kiosk-apps.device-local.localhost";
 constexpr char kPublicAccountUserEmail[] =
     "example@public-accounts.device-local.localhost";
+
+constexpr AccountId::Literal kDefaultOwnerAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(test::kTestEmail,
+                                            test::kTestGaiaId);
 
 }  // namespace
 
