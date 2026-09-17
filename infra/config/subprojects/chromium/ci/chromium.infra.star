@@ -472,6 +472,9 @@ ci.builder(
         short_name = "ssci",
     ),
     contact_team_email = "chops-security-core@google.com",
+    properties = {
+        "crowbar_role": "ROLE_CI_BUILDER",
+    },
     service_account = "chromium-roller@chops-crowbar.iam.gserviceaccount.com",
     shadow_pool = None,
     shadow_service_account = None,
