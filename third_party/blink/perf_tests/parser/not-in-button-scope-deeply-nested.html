@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<body>
+<script src="../resources/runner.js"></script>
+<script>
+const target = document.createElement("div");
+document.body.appendChild(target);
+const markup = "<div>".repeat(10000);
+
+PerfTestRunner.measureTime({
+  description: "Measures parsing deeply nested unclosed elements outside a button scope.",
+  run() {
+    target.innerHTML = markup;
+    target.textContent = "";
+  },
+});
+</script>
+</body>
