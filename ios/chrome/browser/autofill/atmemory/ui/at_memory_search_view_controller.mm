@@ -39,6 +39,9 @@ namespace {
 // URL for the AI disclosure footer link.
 constexpr char kAIDisclosureURL[] = "settings://ai_disclosure";
 
+// Vertical spacing between the notice section and search results.
+constexpr CGFloat kNoticeSectionSpacing = 16.0;
+
 // Section identifiers in the "AtMemory" page table view.
 enum class SectionIdentifier {
   kSearchSection,
@@ -286,6 +289,10 @@ enum class ItemIdentifier {
 
   if (sectionIdentifier == SectionIdentifier::kSearchFooterSection) {
     return UITableViewAutomaticDimension;
+  }
+
+  if (sectionIdentifier == SectionIdentifier::kNoticeSection) {
+    return kNoticeSectionSpacing;
   }
 
   return 0;
