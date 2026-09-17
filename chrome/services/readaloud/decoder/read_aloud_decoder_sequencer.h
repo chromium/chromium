@@ -62,6 +62,7 @@ class ReadAloudDecoderSequencer {
 
   uint32_t next_chunk_to_decode() const { return next_chunk_to_decode_; }
   bool is_decoding() const { return is_decoding_; }
+  bool is_pumping() const { return pump_timer_.IsRunning(); }
 
  private:
   void OnAudioDecoded(

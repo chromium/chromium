@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/common/readaloud/read_aloud.mojom.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
 #include "chrome/services/readaloud/decoded_audio_segment.h"
@@ -101,6 +102,12 @@ class ReadAloudPlaybackController
                                  mojo_base::BigBuffer response_bytes,
                                  bool success);
 
+  // Maximum duration a Play request will remain deferred before timing out.
+  static constexpr base::TimeDelta kPlayOnReadyTimeout = base::Seconds(10);
+
+  // Triggered if play_on_ready_ remains true beyond kPlayOnReadyTimeout.
+  void OnPlayOnReadyTimeout();
+
   // Evaluates whether all prerequisites for audio playback are satisfied.
   bool IsReadyToPlay() const;
   bool IsTextSet() const;
@@ -129,6 +136,8 @@ class ReadAloudPlaybackController
 
   // True if a Play request was received while requirements were unfulfilled.
   bool play_on_ready_ = false;
+  // Timer tracking maximum wait duration for pending play_on_ready_ state.
+  base::OneShotTimer play_on_ready_timer_;
 
   // Manages document-bound speech synthesis caching and sentence timeline.
   PrefetchManager prefetch_manager_;

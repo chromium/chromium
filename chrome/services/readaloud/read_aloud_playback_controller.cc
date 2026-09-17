@@ -211,6 +211,26 @@ void ReadAloudPlaybackController::Play() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!PlayIfReady()) {
     play_on_ready_ = true;
+    // Restart watchdog timer on each Play() call to grant a fresh 10s window
+    // from the last click.
+    play_on_ready_timer_.Start(
+        FROM_HERE, kPlayOnReadyTimeout,
+        base::BindOnce(&ReadAloudPlaybackController::OnPlayOnReadyTimeout,
+                       base::Unretained(this)));
+  }
+}
+
+void ReadAloudPlaybackController::OnPlayOnReadyTimeout() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!play_on_ready_) {
+    return;
+  }
+  play_on_ready_ = false;
+
+  // Defensive Guard: Do not emit kPaused if playback is actively pumping audio.
+  if (client_.is_bound() && !decoder_sequencer_.is_pumping()) {
+    client_->OnPlaybackStateChanged(
+        read_aloud::mojom::PlaybackState::kPaused);
   }
 }
 
@@ -235,6 +255,7 @@ bool ReadAloudPlaybackController::PlayIfReady() {
     return false;
   }
   play_on_ready_ = false;
+  play_on_ready_timer_.Stop();
   if (audio_resources_ && audio_resources_->audio_output_stream.is_bound()) {
     audio_resources_->audio_output_stream->Play();
   }
@@ -253,6 +274,7 @@ bool ReadAloudPlaybackController::MaybePlayOnReady() {
 void ReadAloudPlaybackController::Pause() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   play_on_ready_ = false;
+  play_on_ready_timer_.Stop();
   if (audio_resources_ && audio_resources_->audio_output_stream.is_bound()) {
     audio_resources_->audio_output_stream->Pause();
   }
@@ -350,6 +372,7 @@ void ReadAloudPlaybackController::ResetSession() {
   segments_.clear();
   playback_rate_ = 1.0f;
   play_on_ready_ = false;
+  play_on_ready_timer_.Stop();
   session_weak_factory_.InvalidateWeakPtrs();
 }
 
