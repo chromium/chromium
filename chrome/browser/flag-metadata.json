@@ -6932,11 +6932,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "magic-boost-revamp-for-quick-answers",
-    "owners": [ "hdchuong@chromium.org", "yawano@google.com", "assistive-eng@google.com" ],
-    "expiry_milestone": 144
-  },
-  {
     "name": "magichrome-passkey-signin",
     "owners": [ "msalama@google.com", "chrome-signin-team@google.com" ],
     "expiry_milestone": 160

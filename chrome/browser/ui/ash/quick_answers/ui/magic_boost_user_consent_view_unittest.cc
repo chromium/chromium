@@ -53,9 +53,6 @@ class MagicBoostUserConsentViewTest : public ChromeQuickAnswersTestBase {
   // ChromeQuickAnswersTestBase:
   void SetUp() override {
     ChromeQuickAnswersTestBase::SetUp();
-
-    feature_list_.InitWithFeatures(
-        {chromeos::features::kMagicBoostRevampForQuickAnswers}, {});
   }
 
   void TearDown() override {
@@ -117,7 +114,6 @@ class MagicBoostUserConsentViewTest : public ChromeQuickAnswersTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   chromeos::ReadWriteCardsUiController controller_;
   raw_ptr<FakeQuickAnswersState> fake_quick_answers_state_ = nullptr;
 };

@@ -50,10 +50,6 @@ BASE_FEATURE(kGeminiAppPreinstall, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables the new Magic Boost Consent Flow.
 BASE_FEATURE(kMagicBoostRevamp, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the new Magic Boost Consent Flow For Quick Answers.
-BASE_FEATURE(kMagicBoostRevampForQuickAnswers,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls enabling / disabling the mahi feature from the feature management
 // module.
 BASE_FEATURE(kFeatureManagementMahi, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -176,10 +172,6 @@ bool IsGeminiAppPreinstallEnabled() {
 
 bool IsMagicBoostRevampEnabled() {
   return base::FeatureList::IsEnabled(kMagicBoostRevamp);
-}
-
-bool IsMagicBoostRevampForQuickAnswersEnabled() {
-  return base::FeatureList::IsEnabled(kMagicBoostRevampForQuickAnswers);
 }
 
 bool IsMahiEnabled() {

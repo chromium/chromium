@@ -251,9 +251,8 @@ void QuickAnswersUiController::CreateUserConsentView(
   CHECK_EQ(controller_->GetQuickAnswersVisibility(),
            QuickAnswersVisibility::kPending);
 
-  if (chromeos::features::IsMagicBoostRevampForQuickAnswersEnabled() &&
-      QuickAnswersState::GetFeatureType() ==
-          QuickAnswersState::FeatureType::kHmr) {
+  if (QuickAnswersState::GetFeatureType() ==
+      QuickAnswersState::FeatureType::kHmr) {
     // Directing to the right settings toggle requires an active profile.
     profile_ = profile;
     user_consent_view_.SetView(

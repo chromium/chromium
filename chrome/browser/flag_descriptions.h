@@ -1597,12 +1597,6 @@ inline constexpr char kDoubleBufferCompositingDescription[] =
     "Latency should be reduced in some cases. On the other hand, more skipped "
     "frames are expected.";
 
-inline constexpr char kMagicBoostUpdateForQuickAnswersName[] =
-    "Magic Boost Update for Quick Answers";
-inline constexpr char kMagicBoostUpdateForQuickAnswersDescription[] =
-    "Enables to show the new Quick Answers card with chips in the revamped "
-    "Magic Boost opt-in flow";
-
 inline constexpr char kMagiChromePasskeySignInName[] =
     "MagiChrome Passkey Sign-in";
 inline constexpr char kMagiChromePasskeySignInDescription[] =
