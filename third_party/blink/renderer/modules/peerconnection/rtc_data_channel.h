@@ -29,6 +29,7 @@
 #include <cstdint>
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -209,7 +210,7 @@ class MODULES_EXPORT RTCDataChannel final
 
   const webrtc::scoped_refptr<webrtc::DataChannelInterface>& channel() const;
   bool ValidateSendLength(uint64_t length, ExceptionState& exception_state);
-  void SendRawData(const char* data, size_t length);
+  void SendRawData(base::span<const uint8_t> data);
   void SendDataBuffer(webrtc::DataBuffer data_buffer);
 
   // Initializes |feature_handle_for_scheduler_|, which must not yet have been

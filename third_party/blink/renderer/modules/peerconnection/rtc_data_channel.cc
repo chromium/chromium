@@ -539,14 +539,13 @@ void RTCDataChannel::send(DOMArrayBuffer* data,
     return;
   }
 
-  size_t data_length = data->ByteLength();
-
-  if (!ValidateSendLength(data_length, exception_state))
+  if (!ValidateSendLength(data->ByteLength(), exception_state)) {
     return;
+  }
 
   // Increase the value of the [[BufferedAmount]] slot by the byte size of data.
-  buffered_amount_ += data_length;
-  SendRawData(static_cast<const char*>((data->Data())), data_length);
+  buffered_amount_ += data->ByteLength();
+  SendRawData(data->ByteSpan());
 }
 
 void RTCDataChannel::send(NotShared<DOMArrayBufferView> data,
@@ -563,8 +562,7 @@ void RTCDataChannel::send(NotShared<DOMArrayBufferView> data,
     return;
 
   buffered_amount_ += data->byteLength();
-  SendRawData(static_cast<const char*>(data->BaseAddress()),
-              data->byteLength());
+  SendRawData(data->ByteSpan());
 }
 
 void RTCDataChannel::send(Blob* data, ExceptionState& exception_state) {
@@ -827,10 +825,10 @@ RTCDataChannel::channel() const {
   return observer_->channel();
 }
 
-void RTCDataChannel::SendRawData(const char* data, size_t length) {
+void RTCDataChannel::SendRawData(base::span<const uint8_t> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!was_transferred_);
-  webrtc::CopyOnWriteBuffer buffer(data, length);
+  webrtc::CopyOnWriteBuffer buffer(data);
   webrtc::DataBuffer data_buffer(buffer, true);
   RecordMessageSent(*channel(), data_buffer.size());
 
@@ -924,9 +922,7 @@ void RTCDataChannel::PendingMessage::Trace(Visitor* visitor) const {
 void RTCDataChannel::BlobReader::DidFinishLoading(FileReaderData data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DOMArrayBuffer* array_buffer = std::move(data).AsDOMArrayBuffer();
-  webrtc::CopyOnWriteBuffer buffer(
-      static_cast<const char*>((array_buffer->Data())),
-      array_buffer->ByteLength());
+  webrtc::CopyOnWriteBuffer buffer(array_buffer->ByteSpan());
   message_->buffer_ = webrtc::DataBuffer(buffer, true);
   message_->type_ = RTCDataChannel::PendingMessage::Type::kBufferReady;
   data_channel_->ProcessSendQueue();
