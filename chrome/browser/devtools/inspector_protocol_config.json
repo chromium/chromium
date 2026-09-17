@@ -12,9 +12,9 @@
             },
             {
                 "domain": "Page",
-                "include": [ "enable", "disable", "setAdBlockingEnabled", "getInstallabilityErrors", "getManifestIcons", "printToPDF", "getAppId", "setSPCTransactionMode", "setRPHRegistrationMode" ],
+                "include": [ "enable", "disable", "setAdBlockingEnabled", "getInstallabilityErrors", "getManifestIcons", "printToPDF", "getAppId", "getSubApps", "getSiblingSubApps", "setSPCTransactionMode", "setRPHRegistrationMode" ],
                 "include_events": [],
-                "async": ["getInstallabilityErrors", "getManifestIcons", "printToPDF", "getAppId" ]
+                "async": ["getInstallabilityErrors", "getManifestIcons", "printToPDF", "getAppId", "getSubApps", "getSiblingSubApps" ]
             },
             {
                 "domain": "Browser",

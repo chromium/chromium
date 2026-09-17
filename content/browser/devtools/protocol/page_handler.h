@@ -201,6 +201,9 @@ class PageHandler : public DevToolsDomainHandler,
       std::unique_ptr<GetManifestIconsCallback> callback) override;
 
   void GetAppId(std::unique_ptr<GetAppIdCallback> callback) override;
+  void GetSubApps(std::unique_ptr<GetSubAppsCallback> callback) override;
+  void GetSiblingSubApps(
+      std::unique_ptr<GetSiblingSubAppsCallback> callback) override;
 
   Response SetBypassCSP(bool enabled) override;
   Response AddCompilationCache(const std::string& url,

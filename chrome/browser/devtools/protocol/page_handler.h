@@ -76,6 +76,9 @@ class PageHandler : public protocol::Page::Backend {
                   std::unique_ptr<PrintToPDFCallback> callback) override;
 
   void GetAppId(std::unique_ptr<GetAppIdCallback> callback) override;
+  void GetSubApps(std::unique_ptr<GetSubAppsCallback> callback) override;
+  void GetSiblingSubApps(
+      std::unique_ptr<GetSiblingSubAppsCallback> callback) override;
 
  private:
   static void GotInstallabilityErrors(

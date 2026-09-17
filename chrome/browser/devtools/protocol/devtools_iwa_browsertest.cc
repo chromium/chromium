@@ -17,6 +17,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
@@ -92,6 +95,8 @@ class IWAProtocolTestBase : public DevToolsProtocolTestBase {
   }
 
   webapps::AppId AppId() const { return app_id_; }
+
+  const web_package::SignedWebBundleId& BundleId() const { return bundle_id_; }
 
   bool AppExists() {
     auto* provider = WebAppProvider::GetForTest(browser()->GetProfile());
@@ -278,4 +283,178 @@ IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile, Install_Uninstall) {
       "PWA.uninstall",
       base::DictValue{}.Set("manifestId", InstallManifestId())));
   ASSERT_FALSE(AppExists());
+}
+
+IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile, GetAppId_BundleIdForIwa) {
+  Install();
+  content::RenderFrameHost* iwa_frame =
+      web_app::OpenIsolatedWebApp(browser()->GetProfile(), AppId());
+  content::WebContents* iwa_contents =
+      content::WebContents::FromRenderFrameHost(iwa_frame);
+  DetachProtocolClient();
+  AttachToWebContents(iwa_contents);
+
+  const base::DictValue* result =
+      SendCommandSync("Page.getAppId", base::DictValue{});
+  ASSERT_TRUE(result);
+  EXPECT_THAT(result->FindString("bundleId"),
+              testing::Pointee(testing::Eq(BundleId().id())));
+  EXPECT_FALSE(result->FindString("parentAppName"));
+
+  DetachProtocolClient();
+}
+
+IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile,
+                       GetAppId_ParentAppNameForSubApp) {
+  Install();
+
+  embedded_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL sub_app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
+  std::unique_ptr<WebAppInstallInfo> sub_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(sub_app_url);
+  sub_app_info->title = u"Sub App 1";
+  sub_app_info->scope = sub_app_url;
+  sub_app_info->parent_app_id = AppId();
+  webapps::AppId sub_app_id = web_app::test::InstallWebApp(
+      browser()->GetProfile(), std::move(sub_app_info));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), sub_app_url));
+  DetachProtocolClient();
+  AttachToWebContents(browser()->tab_strip_model()->GetActiveWebContents());
+
+  const base::DictValue* sub_app_result =
+      SendCommandSync("Page.getAppId", base::DictValue{});
+  ASSERT_TRUE(sub_app_result);
+  EXPECT_THAT(sub_app_result->FindString("parentAppName"),
+              testing::Pointee(testing::Eq("Test App")));
+
+  DetachProtocolClient();
+}
+
+IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile, SubApps_ListAndSiblingList) {
+  Install();
+
+  embedded_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL sub_app_1_url = embedded_test_server()->GetURL("/web_apps/basic.html");
+  std::unique_ptr<WebAppInstallInfo> sub_app_1_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(sub_app_1_url);
+  sub_app_1_info->title = u"Sub App 1";
+  sub_app_1_info->scope = sub_app_1_url;
+  sub_app_1_info->parent_app_id = AppId();
+  webapps::AppId sub_app_1_id = web_app::test::InstallWebApp(
+      browser()->GetProfile(), std::move(sub_app_1_info));
+
+  GURL sub_app_2_url =
+      embedded_test_server()->GetURL("/web_apps/has_manifest_id.html");
+  std::unique_ptr<WebAppInstallInfo> sub_app_2_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(sub_app_2_url);
+  sub_app_2_info->title = u"Sub App 2";
+  sub_app_2_info->scope = sub_app_2_url;
+  sub_app_2_info->parent_app_id = AppId();
+  webapps::AppId sub_app_2_id = web_app::test::InstallWebApp(
+      browser()->GetProfile(), std::move(sub_app_2_info));
+
+  // Inspect Sub-App 1:
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), sub_app_1_url));
+  DetachProtocolClient();
+  AttachToWebContents(browser()->tab_strip_model()->GetActiveWebContents());
+
+  // getSiblingSubApps on sub-app 1 returns only sub-app 2 (excluding itself):
+  const base::DictValue* siblings_result =
+      SendCommandSync("Page.getSiblingSubApps", base::DictValue{});
+  ASSERT_TRUE(siblings_result);
+  const base::ListValue* sibling_apps = siblings_result->FindList("subApps");
+  ASSERT_TRUE(sibling_apps);
+  EXPECT_EQ(sibling_apps->size(), 1u);
+  EXPECT_THAT((*sibling_apps)[0].GetDict().FindString("name"),
+              testing::Pointee(testing::Eq("Sub App 2")));
+  EXPECT_THAT((*sibling_apps)[0].GetDict().FindString("startUrl"),
+              testing::Pointee(testing::Eq(sub_app_2_url.spec())));
+
+  // Inspect Parent App:
+  content::RenderFrameHost* iwa_frame =
+      web_app::OpenIsolatedWebApp(browser()->GetProfile(), AppId());
+  content::WebContents* iwa_contents =
+      content::WebContents::FromRenderFrameHost(iwa_frame);
+  DetachProtocolClient();
+  AttachToWebContents(iwa_contents);
+
+  // getSubApps on parent app returns both sub-apps:
+  const base::DictValue* sub_apps_result =
+      SendCommandSync("Page.getSubApps", base::DictValue{});
+  ASSERT_TRUE(sub_apps_result);
+  const base::ListValue* sub_apps = sub_apps_result->FindList("subApps");
+  ASSERT_TRUE(sub_apps);
+  EXPECT_EQ(sub_apps->size(), 2u);
+
+  std::vector<std::string> sub_app_names;
+  for (const auto& item : *sub_apps) {
+    const std::string* name = item.GetDict().FindString("name");
+    ASSERT_TRUE(name);
+    sub_app_names.push_back(*name);
+  }
+  EXPECT_THAT(sub_app_names,
+              testing::UnorderedElementsAre("Sub App 1", "Sub App 2"));
+
+  DetachProtocolClient();
+}
+
+IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile, GetSubApps_NoSubApps) {
+  Install();
+  content::RenderFrameHost* iwa_frame =
+      web_app::OpenIsolatedWebApp(browser()->GetProfile(), AppId());
+  content::WebContents* iwa_contents =
+      content::WebContents::FromRenderFrameHost(iwa_frame);
+  DetachProtocolClient();
+  AttachToWebContents(iwa_contents);
+
+  const base::DictValue* sub_apps_result =
+      SendCommandSync("Page.getSubApps", base::DictValue{});
+  ASSERT_TRUE(sub_apps_result);
+  const base::ListValue* sub_apps = sub_apps_result->FindList("subApps");
+  ASSERT_TRUE(sub_apps);
+  EXPECT_TRUE(sub_apps->empty());
+
+  const base::DictValue* siblings_result =
+      SendCommandSync("Page.getSiblingSubApps", base::DictValue{});
+  ASSERT_TRUE(siblings_result);
+  const base::ListValue* sibling_apps = siblings_result->FindList("subApps");
+  ASSERT_TRUE(sibling_apps);
+  EXPECT_TRUE(sibling_apps->empty());
+
+  DetachProtocolClient();
+}
+
+IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile, GetAppId_NoManifestUrl) {
+  Install();
+
+  embedded_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL sub_app_url = embedded_test_server()->GetURL("/title1.html");
+  std::unique_ptr<WebAppInstallInfo> sub_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(sub_app_url);
+  sub_app_info->title = u"Sub App Without Manifest";
+  sub_app_info->scope = sub_app_url;
+  sub_app_info->parent_app_id = AppId();
+  webapps::AppId sub_app_id = web_app::test::InstallWebApp(
+      browser()->GetProfile(), std::move(sub_app_info));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), sub_app_url));
+  DetachProtocolClient();
+  AttachToWebContents(browser()->tab_strip_model()->GetActiveWebContents());
+
+  const base::DictValue* result =
+      SendCommandSync("Page.getAppId", base::DictValue{});
+  ASSERT_TRUE(result);
+  EXPECT_FALSE(result->FindString("appId"));
+  EXPECT_FALSE(result->FindString("recommendedId"));
+  EXPECT_THAT(result->FindString("parentAppName"),
+              testing::Pointee(testing::Eq("Test App")));
+
+  DetachProtocolClient();
 }

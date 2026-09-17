@@ -804,7 +804,18 @@ domain Page
     returns
       optional binary primaryIcon
 
-  # Returns the unique (PWA) app id.
+  type SubApp extends object
+    properties
+      # Display name of the sub-app.
+      string name
+      # Scope of the sub-app.
+      string scope
+      # Manifest id of the sub-app.
+      string manifestId
+      # Start URL of the sub-app.
+      string startUrl
+
+  # Returns the unique (PWA) app id, along with IWA bundle ID and parent app info.
   # Only returns values if the feature flag 'WebAppEnableManifestId' is enabled
   experimental command getAppId
     returns
@@ -812,6 +823,20 @@ domain Page
       optional string appId
       # Recommendation for manifest's id attribute to match current id computed from start_url
       optional string recommendedId
+      # The bundle ID for an Isolated Web App (IWA)
+      optional string bundleId
+      # The name of the parent app if this app is a Sub-App
+      optional string parentAppName
+
+  # Returns the list of installed child Sub-Apps for the inspected parent app.
+  experimental command getSubApps
+    returns
+      array of SubApp subApps
+
+  # Returns the list of sibling Sub-Apps sharing the same parent app if the inspected context is a Sub-App.
+  experimental command getSiblingSubApps
+    returns
+      array of SubApp subApps
 
   experimental command getAdScriptAncestry
     parameters

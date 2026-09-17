@@ -5775,4 +5775,23 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DetachWithCrashedHiddenTargets) {
   Detach();
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageGetSubApps) {
+  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+  Attach();
+
+  const base::DictValue* sub_apps_result =
+      SendCommandSync("Page.getSubApps", base::DictValue{});
+  ASSERT_TRUE(sub_apps_result);
+  const base::ListValue* sub_apps = sub_apps_result->FindList("subApps");
+  ASSERT_TRUE(sub_apps);
+  EXPECT_TRUE(sub_apps->empty());
+
+  const base::DictValue* siblings_result =
+      SendCommandSync("Page.getSiblingSubApps", base::DictValue{});
+  ASSERT_TRUE(siblings_result);
+  const base::ListValue* sibling_apps = siblings_result->FindList("subApps");
+  ASSERT_TRUE(sibling_apps);
+  EXPECT_TRUE(sibling_apps->empty());
+}
+
 }  // namespace content

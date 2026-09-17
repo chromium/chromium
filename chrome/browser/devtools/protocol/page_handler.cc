@@ -9,10 +9,16 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/gfx/image/image.h"
 
@@ -323,8 +329,35 @@ void PageHandler::GetAppId(std::unique_ptr<GetAppIdCallback> callback) {
 
 void PageHandler::OnDidGetManifest(std::unique_ptr<GetAppIdCallback> callback,
                                    const webapps::InstallableData& data) {
+  std::optional<std::string> bundle_id;
+  std::optional<std::string> parent_app_name;
+
+  if (web_contents_) {
+    const GURL& current_url = web_contents_->GetLastCommittedURL();
+    if (current_url.SchemeIs(webapps::kIsolatedAppScheme)) {
+      if (auto url_info = web_app::IsolatedWebAppUrlInfo::Create(current_url);
+          url_info.has_value()) {
+        bundle_id = url_info->web_bundle_id().id();
+      }
+    }
+
+    auto* provider =
+        web_app::WebAppProvider::GetForWebContents(web_contents_.get());
+    if (provider) {
+      const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
+      std::optional<webapps::AppId> app_id =
+          registrar.FindBestAppWithUrlInScope(
+              current_url, web_app::WebAppFilter::IsIsolatedApp() |
+                               web_app::WebAppFilter::IsIsolatedSubApp());
+      if (app_id.has_value()) {
+        parent_app_name = registrar.GetParentAppShortName(*app_id);
+      }
+    }
+  }
+
   if (data.manifest_url->is_empty()) {
-    callback->sendSuccess(std::nullopt, std::nullopt);
+    callback->sendSuccess(std::nullopt, std::nullopt, bundle_id,
+                          parent_app_name);
     return;
   }
   // Either both the id and start_url are present, or they are both empty.
@@ -339,7 +372,100 @@ void PageHandler::OnDidGetManifest(std::unique_ptr<GetAppIdCallback> callback,
   } else {
     CHECK(!data.manifest->start_url.is_valid());
   }
-  callback->sendSuccess(current_app_id_str, recommended_manifest_id_path_only);
+
+  callback->sendSuccess(current_app_id_str, recommended_manifest_id_path_only,
+                        bundle_id, parent_app_name);
+}
+
+void PageHandler::GetSubApps(std::unique_ptr<GetSubAppsCallback> callback) {
+  auto sub_apps = std::make_unique<protocol::Array<protocol::Page::SubApp>>();
+  if (!web_contents_) {
+    callback->sendSuccess(std::move(sub_apps));
+    return;
+  }
+
+  auto* provider =
+      web_app::WebAppProvider::GetForWebContents(web_contents_.get());
+  if (!provider) {
+    callback->sendSuccess(std::move(sub_apps));
+    return;
+  }
+
+  const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
+  std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
+      web_contents_->GetLastCommittedURL(),
+      web_app::WebAppFilter::IsIsolatedApp() |
+          web_app::WebAppFilter::IsIsolatedSubApp());
+  if (!app_id.has_value()) {
+    callback->sendSuccess(std::move(sub_apps));
+    return;
+  }
+
+  std::vector<webapps::AppId> sub_app_ids = registrar.GetAllSubAppIds(*app_id);
+  for (const auto& sub_id : sub_app_ids) {
+    const web_app::WebApp* sub_app = registrar.GetAppById(sub_id);
+    CHECK(sub_app);
+    sub_apps->emplace_back(protocol::Page::SubApp::Create()
+                               .SetName(registrar.GetAppShortName(sub_id))
+                               .SetScope(sub_app->scope().spec())
+                               .SetManifestId(sub_app->manifest_id().spec())
+                               .SetStartUrl(sub_app->start_url().spec())
+                               .Build());
+  }
+
+  callback->sendSuccess(std::move(sub_apps));
+}
+
+void PageHandler::GetSiblingSubApps(
+    std::unique_ptr<GetSiblingSubAppsCallback> callback) {
+  auto sibling_apps =
+      std::make_unique<protocol::Array<protocol::Page::SubApp>>();
+  if (!web_contents_) {
+    callback->sendSuccess(std::move(sibling_apps));
+    return;
+  }
+
+  auto* provider =
+      web_app::WebAppProvider::GetForWebContents(web_contents_.get());
+  if (!provider) {
+    callback->sendSuccess(std::move(sibling_apps));
+    return;
+  }
+
+  const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
+  std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
+      web_contents_->GetLastCommittedURL(),
+      web_app::WebAppFilter::IsIsolatedApp() |
+          web_app::WebAppFilter::IsIsolatedSubApp());
+  if (!app_id.has_value()) {
+    callback->sendSuccess(std::move(sibling_apps));
+    return;
+  }
+
+  std::optional<webapps::AppId> parent_id = registrar.GetParentAppId(*app_id);
+  if (!parent_id.has_value()) {
+    callback->sendSuccess(std::move(sibling_apps));
+    return;
+  }
+
+  std::vector<webapps::AppId> sibling_ids =
+      registrar.GetAllSubAppIds(*parent_id);
+  for (const auto& sibling_id : sibling_ids) {
+    if (sibling_id == *app_id) {
+      continue;
+    }
+    const web_app::WebApp* sibling_app = registrar.GetAppById(sibling_id);
+    CHECK(sibling_app);
+    sibling_apps->emplace_back(
+        protocol::Page::SubApp::Create()
+            .SetName(registrar.GetAppShortName(sibling_id))
+            .SetScope(sibling_app->scope().spec())
+            .SetManifestId(sibling_app->manifest_id().spec())
+            .SetStartUrl(sibling_app->start_url().spec())
+            .Build());
+  }
+
+  callback->sendSuccess(std::move(sibling_apps));
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)

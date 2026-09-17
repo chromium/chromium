@@ -2023,7 +2023,18 @@ void PageHandler::GetManifestIcons(
 void PageHandler::GetAppId(std::unique_ptr<GetAppIdCallback> callback) {
   // TODO: Use InstallableManager once it moves into content/.
   // Until then, this code is only used to return no image data in the tests.
-  callback->sendSuccess(std::nullopt, std::nullopt);
+  callback->sendSuccess(std::nullopt, std::nullopt, std::nullopt, std::nullopt);
+}
+
+void PageHandler::GetSubApps(std::unique_ptr<GetSubAppsCallback> callback) {
+  callback->sendSuccess(
+      std::make_unique<protocol::Array<protocol::Page::SubApp>>());
+}
+
+void PageHandler::GetSiblingSubApps(
+    std::unique_ptr<GetSiblingSubAppsCallback> callback) {
+  callback->sendSuccess(
+      std::make_unique<protocol::Array<protocol::Page::SubApp>>());
 }
 
 Response PageHandler::SetBypassCSP(bool enabled) {
