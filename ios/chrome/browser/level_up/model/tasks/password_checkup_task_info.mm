@@ -24,7 +24,8 @@ class PasswordCheckupTaskInfo : public TaskInfo {
     return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_FEATURE_PASSWORD_CHECKUP);
   }
   std::string GetTaskDescription() const override {
-    return "Check your saved passwords for security issues";
+    return l10n_util::GetStringUTF8(
+        IDS_IOS_LEVEL_UP_FEATURE_PASSWORD_CHECKUP_DESCRIPTION);
   }
   Symbol GetIconSymbol() const override { return SymbolPasswordManager; }
   bool IsMulticolorIcon() const override { return true; }

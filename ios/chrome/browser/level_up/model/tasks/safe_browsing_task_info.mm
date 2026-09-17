@@ -20,9 +20,13 @@ class SafeBrowsingTaskInfo : public TaskInfo {
 
   // TaskInfo implementation.
   TaskType GetTaskType() const override { return TaskType::kSafeBrowsing; }
-  std::string GetTitle() const override { return "Enhanced Safe Browsing"; }
+  std::string GetTitle() const override {
+    return l10n_util::GetStringUTF8(
+        IDS_IOS_LEVEL_UP_FEATURE_ENHANCED_SAFE_BROWSING);
+  }
   std::string GetTaskDescription() const override {
-    return "Add an extra layer of protection against online threats";
+    return l10n_util::GetStringUTF8(
+        IDS_IOS_LEVEL_UP_FEATURE_ENHANCED_SAFE_BROWSING_DESCRIPTION);
   }
   Symbol GetIconSymbol() const override { return SymbolShield; }
   LevelUpTaskCategory GetCategory() const override {

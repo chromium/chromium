@@ -21,9 +21,12 @@ class IncognitoTaskInfo : public TaskInfo {
 
   // TaskInfo implementation.
   TaskType GetTaskType() const override { return TaskType::kIncognito; }
-  std::string GetTitle() const override { return "Go Incognito"; }
+  std::string GetTitle() const override {
+    return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_FEATURE_INCOGNITO);
+  }
   std::string GetTaskDescription() const override {
-    return "Open incognito tabs to browse the web privately";
+    return l10n_util::GetStringUTF8(
+        IDS_IOS_LEVEL_UP_FEATURE_INCOGNITO_DESCRIPTION);
   }
   Symbol GetIconSymbol() const override { return SymbolIncognito; }
   LevelUpTaskCategory GetCategory() const override {
