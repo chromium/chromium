@@ -284,14 +284,13 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
     ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER);
 #endif
 
-    // The window disappears immediately.
-    popup_owner = extensions_container()->popup_owner_for_testing();
-    EXPECT_FALSE(popup_owner);
-
     // Wait for the notification to achieve a consistent state and verify that
     // the popup was properly torn down.
     host_helper.WaitForHostDestroyed();
     base::RunLoop().RunUntilIdle();
+
+    EXPECT_FALSE(extensions_container()->popup_owner_for_testing());
+    EXPECT_FALSE(HasPopupNativeView());
   }
 
   ExtensionsToolbarDesktop* extensions_container() {
