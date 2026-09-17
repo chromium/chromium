@@ -32,6 +32,8 @@ class StorageOptions {
  public:
   using QueuesOptionsList = std::vector<std::pair<Priority, QueueOptions>>;
 
+  static constexpr base::TimeDelta kSecurityUploadPeriod = base::Seconds(2);
+
   StorageOptions();
   StorageOptions(const StorageOptions& options);
   StorageOptions& operator=(const StorageOptions& options) = delete;

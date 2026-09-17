@@ -1079,7 +1079,7 @@ class StorageTest
   // Can be set only if before that it is zero.
   // Needs to be set to a positive number (usually 1) before executing an action
   // that would trigger upload (e.g., advancing time or FLUSH or calling write
-  // to IMMEDIATE/SECURITY queue). As long as the counter is positive, uploads
+  // to IMMEDIATE queue). As long as the counter is positive, uploads
   // will be permitted, and the counter will decrement by 1. Once the counter
   // becomes zero, upload calls will be ignored (they may be caused by mocked
   // time being advanced more than requested).
@@ -1529,13 +1529,11 @@ TEST_P(StorageTest, WriteAndUploadWithBadConfirmation) {
 TEST_P(StorageTest, WriteAndRepeatedlySecurityUpload) {
   CreateTestStorageOrDie(BuildTestStorageOptions());
 
-  // Upload is initiated asynchronously, so it may happen after the next
-  // record is also written. Because of that we set expectations for the
-  // records after the current one as |Possible|.
+  // Upload is initiated periodically.
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(SECURITY, &waiter, this)
@@ -1544,14 +1542,14 @@ TEST_P(StorageTest, WriteAndRepeatedlySecurityUpload) {
             })
         .RetiresOnSaturation();
     SetExpectedUploadsCount(1);
-    WriteStringOrDie(SECURITY,
-                     kData[0]);  // Immediately uploads and verifies.
+    WriteStringOrDie(SECURITY, kData[0]);
+    task_environment_.FastForwardBy(StorageOptions::kSecurityUploadPeriod);
   }
 
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(SECURITY, &waiter, this)
@@ -1561,14 +1559,14 @@ TEST_P(StorageTest, WriteAndRepeatedlySecurityUpload) {
             })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
-    WriteStringOrDie(SECURITY,
-                     kData[1]);  // Immediately uploads and verifies.
+    WriteStringOrDie(SECURITY, kData[1]);
+    task_environment_.FastForwardBy(StorageOptions::kSecurityUploadPeriod);
   }
 
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(SECURITY, &waiter, this)
@@ -1579,8 +1577,8 @@ TEST_P(StorageTest, WriteAndRepeatedlySecurityUpload) {
             })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
-    WriteStringOrDie(SECURITY,
-                     kData[2]);  // Immediately uploads and verifies.
+    WriteStringOrDie(SECURITY, kData[2]);
+    task_environment_.FastForwardBy(StorageOptions::kSecurityUploadPeriod);
   }
 }
 
@@ -2198,63 +2196,6 @@ TEST_P(StorageTest, WriteAttemptWithRecordsSheddingSuccess) {
   } else {
     const Status write_result_immediate = WriteString(IMMEDIATE, kData[2]);
     ASSERT_FALSE(write_result_immediate.ok());
-  }
-
-  // Discard the space reserved
-  options_.disk_space_resource()->Discard(to_reserve);
-}
-
-// Test Security queue cant_shed_records option
-TEST_P(StorageTest, RecordsSheddingSecurityCantShedRecords) {
-  // The test will try to write this amount of records.
-  static constexpr size_t kAmountOfBigRecords = 3u;
-
-  CreateTestStorageOrDie(BuildTestStorageOptions());
-
-  // This writes enough records to create `kAmountOfBigRecords` files in
-  // SECURITY queue that does not permit shedding.
-  for (size_t i = 0; i < kAmountOfBigRecords; i++) {
-    // Write and expect immediate uploads.
-    test::TestCallbackAutoWaiter waiter;
-    EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
-        .WillOnce([&waiter, i, this](UploaderInterface::UploadReason reason) {
-          auto uploader = TestUploader::SetUp(SECURITY, &waiter, this);
-          for (size_t j = 0; j <= i; j++) {
-            uploader.Required(j, xBigData);
-          }
-          return uploader.Complete();
-        })
-        .RetiresOnSaturation();
-    SetExpectedUploadsCount();
-    WriteStringOrDie(SECURITY, xBigData);
-  }
-
-  // Reserve the remaining space to have none available and trigger Records
-  // Shedding.
-  const uint64_t temp_used = options_.disk_space_resource()->GetUsed();
-  const uint64_t temp_total = options_.disk_space_resource()->GetTotal();
-  const uint64_t to_reserve = temp_total - temp_used;
-  options_.disk_space_resource()->Reserve(to_reserve);
-
-  // Write records on a higher priority queue to see if records shedding has no
-  // effect. Expect upload even with failure, since there are other records in
-  // the queue.
-  {
-    test::TestCallbackAutoWaiter waiter;
-    EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
-        .WillOnce([&waiter, this](UploaderInterface::UploadReason reason) {
-          auto uploader = TestUploader::SetUp(SECURITY, &waiter, this);
-          for (size_t j = 0; j < kAmountOfBigRecords; j++) {
-            uploader.Required(j, xBigData);
-          }
-          return uploader.Complete();
-        })
-        .RetiresOnSaturation();
-    SetExpectedUploadsCount();
-    const Status write_result = WriteString(SECURITY, xBigData);
-    ASSERT_FALSE(write_result.ok());
   }
 
   // Discard the space reserved
