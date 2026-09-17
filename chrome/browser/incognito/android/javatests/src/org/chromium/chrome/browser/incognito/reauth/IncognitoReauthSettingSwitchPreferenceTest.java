@@ -8,10 +8,9 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 
@@ -22,15 +21,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
+
+import java.util.concurrent.TimeoutException;
 
 /** Tests of {@link IncognitoReauthSettingSwitchPreference}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -39,16 +38,14 @@ public class IncognitoReauthSettingSwitchPreferenceTest {
     private static final String TITLE = "Preference Title";
     private static final String SUMMARY = "This is a summary.";
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Rule
-    public SettingsTestRule<PlaceholderSettingsForTest> mSettingsTestRule =
+    public final SettingsTestRule<PlaceholderSettingsForTest> mSettingsTestRule =
             new SettingsTestRule<>(PlaceholderSettingsForTest.class);
+
+    private final CallbackHelper mLinkClickDelegateHelper = new CallbackHelper();
 
     private IncognitoReauthSettingSwitchPreference mPreference;
     private Context mContext;
-
-    @Mock private Runnable mLinkClickDelegate;
 
     @Before
     public void setUp() {
@@ -60,7 +57,7 @@ public class IncognitoReauthSettingSwitchPreferenceTest {
         mPreference.setTitle(TITLE);
         mPreference.setSummary(SUMMARY);
 
-        mPreference.setLinkClickDelegate(mLinkClickDelegate);
+        mPreference.setLinkClickDelegate(mLinkClickDelegateHelper::notifyCalled);
         fragment.getPreferenceScreen().addPreference(mPreference);
     }
 
@@ -70,16 +67,17 @@ public class IncognitoReauthSettingSwitchPreferenceTest {
         mPreference.setPreferenceInteractable(true);
 
         onView(withId(android.R.id.summary)).perform(click());
-        verify(mLinkClickDelegate, never()).run();
+        assertEquals(0, mLinkClickDelegateHelper.getCallCount());
     }
 
     @Test
     @SmallTest
-    public void testChromeSwitchPreferenceWithClickableSummary_OnSummaryClick_NonInteractable() {
+    public void testChromeSwitchPreferenceWithClickableSummary_OnSummaryClick_NonInteractable()
+            throws TimeoutException {
         mPreference.setPreferenceInteractable(false);
 
         onView(withId(android.R.id.summary)).perform(click());
-        verify(mLinkClickDelegate).run();
+        mLinkClickDelegateHelper.waitForOnly();
     }
 
     @Test
@@ -91,7 +89,7 @@ public class IncognitoReauthSettingSwitchPreferenceTest {
         onView(withId(android.R.id.title)).perform(click());
 
         // Toggling the preference shouldn't invoke the click defined for summary text.
-        verify(mLinkClickDelegate, never()).run();
+        assertEquals(0, mLinkClickDelegateHelper.getCallCount());
         assertTrue(mPreference.isChecked());
     }
 }
