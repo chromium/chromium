@@ -103,7 +103,7 @@ class DriveFsHost::MountState : public DriveFsSession {
         base::FeatureList::IsEnabled(ash::features::kDriveFsMirroring),
         delegate->IsVerboseLoggingEnabled(),
         mojom::CSESupport::kListing,
-        ash::features::IsLauncherContinueSectionWithRecentsEnabled(),
+        /*fetch_modifying_user_metadata=*/true,
         ash::features::IsShowSharingUserInLauncherContinueSectionEnabled(),
     };
     return DriveFsConnection::Create(delegate->CreateMojoListener(),

@@ -1107,19 +1107,6 @@ const base::FeatureParam<bool> kLanguagePacksFontsLoadAfterDownloadDuringLogin =
 // via the corresponding Settings page.
 BASE_FEATURE(kLanguagePacksInSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, launcher continue section will suggest drive files based on
-// recency, instead of fetching them using drive's ItemSuggest API.
-BASE_FEATURE(kLauncherContinueSectionWithRecents,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Same as `kLauncherContinueSectionWithRecents`, but used to enable the feature
-// via finch, while ensuring minimum Chrome version - i.e. to avoid finch config
-// from enabling the feature on versions where
-// LauncherContinueSectionWithRecents was first added.
-BASE_FEATURE(kLauncherContinueSectionWithRecentsRollout,
-             "LauncherContinueSectionWithRecentsRollout125",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Uses short intervals for launcher nudge for testing if enabled.
 BASE_FEATURE(kLauncherNudgeShortInterval, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2718,12 +2705,6 @@ bool IsJupiterScreensaverEnabled() {
          IsTimeOfDayScreenSaverEnabled();
 }
 
-bool IsLauncherContinueSectionWithRecentsEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherContinueSectionWithRecents) ||
-         base::FeatureList::IsEnabled(
-             kLauncherContinueSectionWithRecentsRollout);
-}
-
 bool IsLobsterEnabled() {
   return base::FeatureList::IsEnabled(kLobsterDogfood) ||
          (base::FeatureList::IsEnabled(kLobster) &&
@@ -3049,9 +3030,8 @@ bool IsShimlessRMAHideGoogleSKUEnabled() {
 }
 
 bool IsShowSharingUserInLauncherContinueSectionEnabled() {
-  return IsLauncherContinueSectionWithRecentsEnabled() &&
-         base::FeatureList::IsEnabled(
-             kShowSharingUserInLauncherContinueSection);
+  return base::FeatureList::IsEnabled(
+      kShowSharingUserInLauncherContinueSection);
 }
 
 bool IsSunfishFeatureEnabled() {
@@ -3243,18 +3223,6 @@ bool IsWebAuthNAuthDialogMergeEnabled() {
 
 bool ShouldEnterOverviewFromWallpaper() {
   return base::FeatureList::IsEnabled(kEnterOverviewFromWallpaper);
-}
-
-bool UseMixedFileLauncherContinueSection() {
-  return (base::FeatureList::IsEnabled(kLauncherContinueSectionWithRecents) &&
-          base::GetFieldTrialParamByFeatureAsBool(
-              features::kLauncherContinueSectionWithRecents,
-              "mix_local_and_drive", false)) ||
-         (base::FeatureList::IsEnabled(
-              kLauncherContinueSectionWithRecentsRollout) &&
-          base::GetFieldTrialParamByFeatureAsBool(
-              features::kLauncherContinueSectionWithRecentsRollout,
-              "mix_local_and_drive", false));
 }
 
 bool IsUseTokenHandleStoreEnabled() {

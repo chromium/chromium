@@ -691,9 +691,6 @@ TEST_F(SearchControllerTest, ZeroStateResultsGetTimedOut) {
 }
 
 TEST_F(SearchControllerTest, ContinueRanksDriveAboveLocal) {
-  if (ash::features::UseMixedFileLauncherContinueSection()) {
-    return;
-  }
   // Use the full ranking stack.
   search_controller_->set_ranker_manager_for_test(
       std::make_unique<RankerManager>(&profile_));

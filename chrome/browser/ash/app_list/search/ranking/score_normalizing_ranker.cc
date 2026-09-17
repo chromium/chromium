@@ -56,12 +56,9 @@ void ScoreNormalizingRanker::UpdateResultRanks(ResultsMap& results,
   auto it = results.find(provider);
   DCHECK(it != results.end());
 
-  // Skip normalization for continue section files - in continue section, files
-  // are either
-  // *   scored consistently based on the file timestamps (for
-  //     `ash::features::UseMixedFileLauncherContinueSection()`), or
-  // *   results from one provider are always preferred over the other, so
-  //     keeping existing scoring within the provider is sufficient.
+  // Skip normalization for continue section files - results from one provider
+  // are always preferred over the other, so keeping existing scoring within
+  // the provider is sufficient.
   if (provider == ProviderType::kZeroStateDrive ||
       provider == ProviderType::kZeroStateFile) {
     for (auto& result : it->second) {

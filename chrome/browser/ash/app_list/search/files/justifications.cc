@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_list/search/files/justifications.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/i18n/icubridge/date_time_formatter.h"
 #include "base/i18n/icubridge/icu_bridge.h"
@@ -21,10 +20,6 @@ namespace {
 // Time limits for how last accessed or modified time maps to each justification
 // string.
 constexpr base::TimeDelta kJustNow = base::Minutes(15);
-constexpr base::TimeDelta kToday = base::Days(1);
-constexpr base::TimeDelta kYesterday = base::Days(2);
-constexpr base::TimeDelta kPastWeek = base::Days(7);
-constexpr base::TimeDelta kPastMonth = base::Days(31);
 
 std::u16string GetTimeString(const base::Time& timestamp) {
   const base::Time now = base::Time::Now();
@@ -40,40 +35,6 @@ std::u16string GetTimeString(const base::Time& timestamp) {
 
   return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
       timestamp, base::i18n::datetime_options::MD::Medium());
-}
-
-std::optional<std::u16string> GetEditStringFromTime(const base::Time& time) {
-  const auto& delta = base::Time::Now() - time;
-  if (delta <= kJustNow) {
-    return l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_JUST_NOW);
-  } else if (delta <= kToday) {
-    return l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_TODAY);
-  } else if (delta <= kYesterday) {
-    return l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_YESTERDAY);
-  } else if (delta <= kPastWeek) {
-    return l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_PAST_WEEK);
-  } else if (delta <= kPastMonth) {
-    return l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_PAST_MONTH);
-  } else {
-    return std::nullopt;
-  }
-}
-
-std::optional<std::u16string> GetOpenStringFromTime(const base::Time& time) {
-  const auto& delta = base::Time::Now() - time;
-  if (delta <= kJustNow) {
-    return l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_JUST_NOW);
-  } else if (delta <= kToday) {
-    return l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_TODAY);
-  } else if (delta <= kYesterday) {
-    return l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_YESTERDAY);
-  } else if (delta <= kPastWeek) {
-    return l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_PAST_WEEK);
-  } else if (delta <= kPastMonth) {
-    return l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_PAST_MONTH);
-  } else {
-    return std::nullopt;
-  }
 }
 
 std::u16string GetActionString(ash::FileSuggestionJustificationType type,
@@ -115,21 +76,9 @@ std::optional<std::u16string> GetJustificationString(
     ash::FileSuggestionJustificationType type,
     const base::Time& timestamp,
     const std::string& user_name) {
-  if (ash::features::IsLauncherContinueSectionWithRecentsEnabled()) {
-    return l10n_util::GetStringFUTF16(IDS_FILE_SUGGESTION_JUSTIFICATION,
-                                      GetActionString(type, user_name),
-                                      GetTimeString(timestamp));
-  }
-  switch (type) {
-    case ash::FileSuggestionJustificationType::kViewed:
-      return GetOpenStringFromTime(timestamp);
-    case ash::FileSuggestionJustificationType::kModified:
-    case ash::FileSuggestionJustificationType::kModifiedByCurrentUser:
-      return GetEditStringFromTime(timestamp);
-    case ash::FileSuggestionJustificationType::kShared:
-      return std::nullopt;
-  }
-  NOTREACHED();
+  return l10n_util::GetStringFUTF16(IDS_FILE_SUGGESTION_JUSTIFICATION,
+                                    GetActionString(type, user_name),
+                                    GetTimeString(timestamp));
 }
 
 }  // namespace app_list

@@ -161,9 +161,8 @@ class FakeSearchQuery : public drivefs::mojom::SearchQuery {
 class DriveRecentFileSuggestionProviderTest : public ::testing::Test {
  public:
   DriveRecentFileSuggestionProviderTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLauncherContinueSectionWithRecentsRollout},
-        {ash::features::kShowSharingUserInLauncherContinueSection});
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kShowSharingUserInLauncherContinueSection);
   }
   DriveRecentFileSuggestionProviderTest(
       const DriveRecentFileSuggestionProviderTest&) = delete;
@@ -282,10 +281,8 @@ class DriveRecentFileSuggestionProviderWithSharingUserTest
     : public DriveRecentFileSuggestionProviderTest {
  public:
   DriveRecentFileSuggestionProviderWithSharingUserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLauncherContinueSectionWithRecentsRollout,
-         ash::features::kShowSharingUserInLauncherContinueSection},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kShowSharingUserInLauncherContinueSection);
   }
 
  private:

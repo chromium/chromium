@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -93,22 +92,12 @@ void ZeroStateDriveProvider::SetSearchResults(
   // Assign scores to results by simply using their position in the results
   // list. The order of results from the ItemSuggest API is significant:
   // the first is better than the second, etc. Resulting scores are in [0, 1].
-  //
-  // If drive files and local files need to be mixed in continue section, create
-  // ranking using time stamps, so local and drive files are consistently
-  // ranked.
-  const bool timestamp_based_score =
-      ash::features::UseMixedFileLauncherContinueSection();
-
   const double total_items = static_cast<double>(suggest_results.size());
   int item_index = 0;
 
-  const base::TimeDelta max_recency = ash::GetMaxFileSuggestionRecency();
   SearchProvider::Results provider_results;
   for (const auto& result : suggest_results) {
-    const double score = timestamp_based_score
-                             ? ash::ToTimestampBasedScore(result, max_recency)
-                             : (1.0 - item_index / total_items);
+    const double score = 1.0 - item_index / total_items;
     ++item_index;
     auto provider_result = std::make_unique<FileResult>(
         result.id, result.file_path, result.prediction_reason,

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/time/time.h"
 
 namespace ash {
@@ -33,46 +32,7 @@ std::string GetPrefixFromSuggestionType(FileSuggestionType type) {
 }  // namespace
 
 base::TimeDelta GetMaxFileSuggestionRecency() {
-  if (base::FeatureList::IsEnabled(
-          features::kLauncherContinueSectionWithRecents)) {
-    return base::Days(base::GetFieldTrialParamByFeatureAsInt(
-        features::kLauncherContinueSectionWithRecents, "max_recency_in_days",
-        kDefaultMaxRecencyInDays));
-  }
-
-  return base::Days(base::GetFieldTrialParamByFeatureAsInt(
-      features::kLauncherContinueSectionWithRecentsRollout,
-      "max_recency_in_days", kDefaultMaxRecencyInDays));
-}
-
-double ToTimestampBasedScore(const FileSuggestData& data,
-                             base::TimeDelta max_recency) {
-  auto score_timestamp = [&](const base::Time& timestamp, double interval_max,
-                             double interval_size) {
-    return interval_max -
-           interval_size *
-               std::min(
-                   1.0,
-                   (base::Time::Now() - timestamp).magnitude().InSeconds() /
-                       static_cast<double>(max_recency.InSeconds()));
-  };
-
-  if (data.modified_time) {
-    return score_timestamp(*data.modified_time,
-                           /*interval_max=*/1.0, /*interval_size=*/0.33);
-  }
-
-  if (data.viewed_time) {
-    return score_timestamp(*data.viewed_time,
-                           /*interval_max=*/0.66, /*interval_size=*/0.33);
-  }
-
-  if (data.shared_time) {
-    return score_timestamp(*data.shared_time,
-                           /*interval_max=*/0.33, /*interval_size=*/0.33);
-  }
-
-  return 0.0;
+  return base::Days(kDefaultMaxRecencyInDays);
 }
 
 // FileSuggestData -------------------------------------------------------------

@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
@@ -70,10 +68,8 @@ class FakeSearchQuery : public drivefs::mojom::SearchQuery {
 class FileSuggestKeyedServiceBrowserTest
     : public drive::DriveIntegrationServiceBrowserTestBase {
  public:
-  FileSuggestKeyedServiceBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kLauncherContinueSectionWithRecentsRollout);
-  }
+  FileSuggestKeyedServiceBrowserTest() = default;
+
   // drive::DriveIntegrationServiceBrowserTestBase:
   void SetUpOnMainThread() override {
     drive::DriveIntegrationServiceBrowserTestBase::SetUpOnMainThread();
@@ -193,8 +189,6 @@ class FileSuggestKeyedServiceBrowserTest
   // Maps a test file added during test setup ID to the associated absolute file
   // path.
   std::map<std::string, base::FilePath> file_paths_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verifies that the file suggest keyed service works as expected when the Drive

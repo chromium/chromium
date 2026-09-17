@@ -519,10 +519,6 @@ extern const base::FeatureParam<bool>
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLanguagePacksInSettings);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kLauncherContinueSectionWithRecents);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kLauncherContinueSectionWithRecentsRollout);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLauncherNudgeShortInterval);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagementLocalImageSearch);
@@ -1134,8 +1130,6 @@ bool IsInternalServerSideSpeechRecognitionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInternalServerSideSpeechRecognitionEnabledByFinch();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsJupiterScreensaverEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsLauncherContinueSectionWithRecentsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterEnabledForManagedUsers();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterDisabledByInvalidIME();
@@ -1287,7 +1281,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseStorkSmds();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFeatureAwareDeviceDemoModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUseTokenHandleStoreEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool UseMixedFileLauncherContinueSection();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLocalFactorsPasswordComplexityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsManagedLocalPinAndPasswordEnabled();
 

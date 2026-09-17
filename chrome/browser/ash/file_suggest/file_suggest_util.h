@@ -58,11 +58,6 @@ enum class FileSuggestionJustificationType {
 // be available as a file suggestion.
 base::TimeDelta GetMaxFileSuggestionRecency();
 
-// Creates a suggestion score in interval [0, 1] based on the suggestion
-// timestamps. Assumes that the timestamps are at most `max_recency` old.
-double ToTimestampBasedScore(const FileSuggestData& suggestion_data,
-                             base::TimeDelta max_recency);
-
 // The data of an individual file suggested by `FileSuggestKeyedService`.
 struct FileSuggestData {
   FileSuggestData(FileSuggestionType new_type,

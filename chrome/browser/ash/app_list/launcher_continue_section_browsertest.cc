@@ -117,16 +117,12 @@ class FakeSearchQuery : public drivefs::mojom::SearchQuery {
 
 }  // namespace
 
-class LauncherContinueSectionTest
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+class LauncherContinueSectionTest : public InProcessBrowserTest,
+                                    public ::testing::WithParamInterface<bool> {
  public:
   LauncherContinueSectionTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{ash::features::kLauncherContinueSectionWithRecentsRollout,
-          {{"mix_local_and_drive", base::ToString(MixLocalAndDriveFiles())}}},
-         {ash::features::kShowSharingUserInLauncherContinueSection, {}}},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kShowSharingUserInLauncherContinueSection);
   }
   ~LauncherContinueSectionTest() override = default;
   LauncherContinueSectionTest(const LauncherContinueSectionTest&) = delete;
@@ -162,9 +158,7 @@ class LauncherContinueSectionTest
             profile));
   }
 
-  bool IsTabletMode() const { return std::get<0>(GetParam()); }
-
-  bool MixLocalAndDriveFiles() const { return std::get<1>(GetParam()); }
+  bool IsTabletMode() const { return GetParam(); }
 
   base::FilePath AddTestLocalFile(const std::string& file_name,
                                   const base::Time& last_access_time,
@@ -323,9 +317,7 @@ class LauncherContinueSectionTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         LauncherContinueSectionTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, LauncherContinueSectionTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(LauncherContinueSectionTest, ShowDriveFiles) {
   base::FilePath file_1 =
@@ -498,26 +490,13 @@ IN_PROC_BROWSER_TEST_P(LauncherContinueSectionTest, ShowDriveAndLocalFiles) {
       ash::AppListTestApi().GetContinueTaskViews();
   EXPECT_EQ(4u, continue_tasks.size());
 
-  std::vector<std::u16string> expected_titles;
-  if (MixLocalAndDriveFiles()) {
-    expected_titles = {u"Test File 1", u"Test Local File.txt", u"Test File 2",
-                       u"Test File 3"};
-  } else {
-    expected_titles = {u"Test File 1", u"Test File 2", u"Test File 3",
-                       u"Test Local File.txt"};
-  }
+  const std::vector<std::u16string> expected_titles = {
+      u"Test File 1", u"Test File 2", u"Test File 3", u"Test Local File.txt"};
   EXPECT_EQ(expected_titles, GetContinueTaskTitles(continue_tasks));
 
-  std::vector<std::u16string> expected_descriptions;
-  if (MixLocalAndDriveFiles()) {
-    expected_descriptions = {u"You opened · just now", u"You opened · Feb 24",
-                             u"Test User 2 edited · just now",
-                             u"Test User 3 shared · 10:00 AM"};
-  } else {
-    expected_descriptions = {
-        u"You opened · just now", u"Test User 2 edited · just now",
-        u"Test User 3 shared · 10:00 AM", u"You opened · Feb 24"};
-  }
+  const std::vector<std::u16string> expected_descriptions = {
+      u"You opened · just now", u"Test User 2 edited · just now",
+      u"Test User 3 shared · 10:00 AM", u"You opened · Feb 24"};
   EXPECT_EQ(expected_descriptions, GetContinueTaskDescriptions(continue_tasks));
 
   ASSERT_GT(continue_tasks.size(), 1u);

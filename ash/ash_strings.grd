@@ -6840,36 +6840,6 @@ New install
       <message name="IDS_FILE_SUGGESTION_JUSTIFICATION_TIME_NOW" desc="Part of the file suggestion chip UI in Chrome OS launcher. The suggestion chip provides users suggestions for files they may want to open based on the recent activity. The suggestion contains the file name, and a justification describing why the file was suggested (which contains the user action that prompted suggestion, followed by the time the action was taken). The justification is displayed under the file name. This string is used to describe the time when the action was taken in the case the action happened very recently.">
         just now
       </message>
-      <message name="IDS_APP_LIST_CONTINUE_EDITED_JUST_NOW" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown. 'Just now' should apply to any time within the last few minutes.">
-        Edited just now
-      </message>
-      <message name="IDS_APP_LIST_CONTINUE_EDITED_PAST_MONTH" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
-        Edited in the past month
-      </message>
-      <message name="IDS_APP_LIST_CONTINUE_EDITED_PAST_WEEK" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
-        Edited in the past week
-      </message>
-      <message name="IDS_APP_LIST_CONTINUE_EDITED_TODAY" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
-        Edited today
-      </message>
-      <message name="IDS_APP_LIST_CONTINUE_EDITED_YESTERDAY" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
-        Edited yesterday
-      </message>
-      <message name="IDS_APP_LIST_CONTINUE_OPENED_JUST_NOW" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown. 'Just now' should apply to any time within the last few minutes.">
-        Opened just now
-      </message>
-      <message name="IDS_APP_LIST_CONTINUE_OPENED_PAST_MONTH" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
-        Opened in the past month
-      </message>
-      <message name="IDS_APP_LIST_CONTINUE_OPENED_PAST_WEEK" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
-        Opened in the past week
-      </message>
-      <message name="IDS_APP_LIST_CONTINUE_OPENED_TODAY" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
-        Opened today
-      </message>
-      <message name="IDS_APP_LIST_CONTINUE_OPENED_YESTERDAY" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
-        Opened yesterday
-      </message>
       <message name="IDS_APP_LIST_OPEN_TAB_HINT" desc="Shown alongside launcher search results which will take the user to an open tab when clicked.">
         <ph name="delimiter">$1<ex> - </ex></ph> Go to this tab
       </message>

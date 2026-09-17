@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/files/file_enumerator.h"
 #include "base/metrics/field_trial_params.h"
@@ -90,11 +89,8 @@ std::unique_ptr<SearchController> CreateSearchController(
         kMaxAppShortcutResults, profile, list_controller));
   }
 
-  if (ash::features::IsLauncherContinueSectionWithRecentsEnabled()) {
-    controller->AddProvider(std::make_unique<ZeroStateFileProvider>(profile));
-
-    controller->AddProvider(std::make_unique<ZeroStateDriveProvider>(profile));
-  }
+  controller->AddProvider(std::make_unique<ZeroStateFileProvider>(profile));
+  controller->AddProvider(std::make_unique<ZeroStateDriveProvider>(profile));
 
   controller->AddProvider(std::make_unique<OsSettingsProvider>(profile));
 

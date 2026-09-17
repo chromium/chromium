@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/feature_list.h"
@@ -99,10 +98,6 @@ void ZeroStateFileProvider::OnSuggestFileDataFetched(
 
 void ZeroStateFileProvider::SetSearchResults(
     const std::vector<ash::FileSuggestData>& results) {
-  const bool timestamp_based_score =
-      ash::features::UseMixedFileLauncherContinueSection();
-  const base::TimeDelta max_recency = ash::GetMaxFileSuggestionRecency();
-
   // Use valid results for search results.
   SearchProvider::Results new_results;
   for (size_t i = 0; i < std::min(results.size(), kMaxLocalFiles); ++i) {
@@ -110,9 +105,7 @@ void ZeroStateFileProvider::SetSearchResults(
     if (!IsScreenshot(filepath, downloads_path_)) {
       DCHECK(results[i].score.has_value());
 
-      const double score = timestamp_based_score ? ash::ToTimestampBasedScore(
-                                                       results[i], max_recency)
-                                                 : *results[i].score;
+      const double score = *results[i].score;
       auto result = std::make_unique<FileResult>(
           results[i].id, filepath, results[i].prediction_reason,
           ash::AppListSearchResultType::kZeroStateFile,
