@@ -59,8 +59,6 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
     "notification_supervised_user.icon",
     "redeem.icon",
     "text.icon",
-    "timer.icon",
-    "translate.icon",
     "unfloat_button.icon",
     "unfloat_landscape.icon",
     "window_control_back.icon",
