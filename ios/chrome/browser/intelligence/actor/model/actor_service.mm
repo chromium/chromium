@@ -421,6 +421,7 @@ bool ActorService::RegisterBackgroundTask(ActorTask* task) {
       [[BackgroundContinuedProcessingTaskConfiguration alloc]
               initWithTitle:base::SysUTF8ToNSString(task->title())
           expirationHandler:expiration_handler];
+  config.subtitle = @"";
 
   std::string task_id_string = base::NumberToString(task_id.value());
   BackgroundContinuedProcessingTaskContext* context =
