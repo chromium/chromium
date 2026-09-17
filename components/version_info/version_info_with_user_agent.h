@@ -6,9 +6,6 @@
 #define COMPONENTS_VERSION_INFO_VERSION_INFO_WITH_USER_AGENT_H_
 
 #include <string>
-#include <string_view>
-
-#include "base/version_info/version_info_values.h"
 
 namespace version_info {
 
@@ -18,9 +15,7 @@ std::string GetProductNameAndVersionForReducedUserAgent();
 
 // Returns the product name and version information for the User-Agent header,
 // in the format: Chrome/<major_version>.<minor_version>.<build>.<patch>.
-constexpr std::string_view GetProductNameAndVersionForUserAgent() {
-  return "Chrome/" PRODUCT_VERSION;
-}
+std::string GetProductNameAndVersionForUserAgent();
 
 }  // namespace version_info
 

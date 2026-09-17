@@ -734,7 +734,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ExpiredSeed) {
 // Verify that a regular seed is not used when the milestone with which it was
 // fetched is greater than the client's milestone.
 TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_FutureMilestone) {
-  const int future_seed_milestone = 7890;
+  const int future_seed_milestone =
+      version_info::GetMajorVersionNumberAsInt() + 5;
 
   // When the seed is associated with a future milestone (relative to the
   // client's milestone), no field trials should be created from the seed.
@@ -917,7 +918,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ExpiredSafeSeed) {
 // Verify that no seed is applied when (i) safe mode is triggered and (ii) the
 // loaded safe seed was fetched with a future milestone.
 TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_SafeSeedForFutureMilestone) {
-  const int future_seed_milestone = 7890;
+  const int future_seed_milestone =
+      version_info::GetMajorVersionNumberAsInt() + 5;
 
   // The safe seed manager should not be informed of the active seed state.
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());

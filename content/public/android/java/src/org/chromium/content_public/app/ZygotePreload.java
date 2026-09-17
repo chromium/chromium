@@ -15,7 +15,6 @@ import androidx.annotation.RequiresApi;
 import org.chromium.base.Log;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.process_launcher.ChildProcessService;
-import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 
@@ -44,9 +43,8 @@ public class ZygotePreload implements android.app.ZygotePreload {
     protected final void doPreloadCommon(ApplicationInfo appInfo) {
         Log.i(
                 TAG,
-                "version=%s (%s) minSdkVersion=%s isBundle=%s",
-                VersionConstants.PRODUCT_VERSION,
-                BuildConfig.VERSION_CODE,
+                "versionCode=%s minSdkVersion=%s isBundle=%s",
+                BuildConfig.ORIGINAL_VERSION_CODE,
                 BuildConfig.MIN_SDK_VERSION,
                 appInfo.splitNames != null && appInfo.splitNames.length > 0);
         try {

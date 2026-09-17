@@ -26,7 +26,7 @@ import org.robolectric.Shadows;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.version_info.VersionConstants;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking.Source;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking.Type;
@@ -89,7 +89,7 @@ public class UpdateSuccessMetricsTest {
     private static Tracking buildProto() {
         return Tracking.newBuilder()
                 .setTimestampMs(System.currentTimeMillis())
-                .setVersion(VersionConstants.PRODUCT_VERSION)
+                .setVersion(VersionInfo.getProductVersion())
                 .setType(Type.INTENT)
                 .setSource(Source.FROM_MENU)
                 .setRecordedSession(false)

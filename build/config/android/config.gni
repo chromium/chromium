@@ -253,7 +253,13 @@ if (is_android) {
     android_default_version_code = "1"
 
     # Android versionName for android_apk()s that don't explicitly set one.
-    android_default_version_name = "Developer Build"
+    # This must parse as a base::Version, since native code reads the version
+    # from the APK manifest at runtime. It is faked far into the future so that
+    # APKs without a real version (test APKs, sample apps) are never treated as
+    # being older than some minimum supported version. This matches the
+    # sentinel used by //base/version_info/android for non-chromium builds.
+    # The minor component is zero to match Chrome's MAJOR.0.BUILD.PATCH scheme.
+    android_default_version_name = "9999.0.9999.9999"
 
     # Forced Android versionCode
     android_override_version_code = ""

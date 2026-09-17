@@ -11,13 +11,13 @@ import android.os.PersistableBundle;
 
 import androidx.activity.OnBackPressedCallback;
 
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -286,8 +286,9 @@ public class IncognitoReauthControllerImpl
     public static boolean isFromUpdate(@Nullable PersistableBundle persistableBundle) {
         if (persistableBundle == null) return false;
 
-        return BuildConfig.VERSION_CODE
-                != persistableBundle.getLong(PREVIOUS_VERSION_CODE, BuildConfig.VERSION_CODE);
+        long currentVersionCode = ApkInfo.getPackageVersionCodeAsLong();
+        return currentVersionCode
+                != persistableBundle.getLong(PREVIOUS_VERSION_CODE, currentVersionCode);
     }
 
     /** Override from {@link IncognitoReauthController}. */

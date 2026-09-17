@@ -78,7 +78,6 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.cc.input.BrowserControlsState;
@@ -5304,7 +5303,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (shouldPersistAcrossReboots()) {
             saveToBaseBundle(outPersistentState);
             CipherLazyHolder.sCipherInstance.saveToPersistableBundle(outPersistentState);
-            outPersistentState.putLong(PREVIOUS_VERSION_CODE, BuildConfig.VERSION_CODE);
+            outPersistentState.putLong(
+                    PREVIOUS_VERSION_CODE, ApkInfo.getPackageVersionCodeAsLong());
 
             // Store a unique id to verify the state that is restored later. The bundle's hashCode
             // works fine here, though note that it only reflects the object id, not the bundle's

@@ -666,7 +666,7 @@ public class ChildProcessConnection {
                 // browser process launched (i.e. if the install somehow did not kill our process)
                 PackageInfo latestPackage = PackageUtils.getApplicationPackageInfo(0);
                 long latestVersionCode = latestPackage.getLongVersionCode();
-                long loadedVersionCode = BuildConfig.VERSION_CODE;
+                long loadedVersionCode = ApkInfo.getPackageVersionCodeAsLong();
                 if (latestVersionCode != loadedVersionCode) {
                     // Crashing the process is likely to improve the situation - when we are next
                     // launched, we should be running the new version and match new children.

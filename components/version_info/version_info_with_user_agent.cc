@@ -13,4 +13,8 @@ std::string GetProductNameAndVersionForReducedUserAgent() {
   return base::StrCat({"Chrome/", GetMajorVersionNumber(), ".0.0.0"});
 }
 
+std::string GetProductNameAndVersionForUserAgent() {
+  return base::StrCat({"Chrome/", GetVersionNumber()});
+}
+
 }  // namespace version_info

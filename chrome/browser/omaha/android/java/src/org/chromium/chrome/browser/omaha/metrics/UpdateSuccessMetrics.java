@@ -9,7 +9,7 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.version_info.VersionConstants;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omaha.UpdateConfigs;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking;
@@ -76,7 +76,7 @@ public class UpdateSuccessMetrics {
                             Tracking info =
                                     Tracking.newBuilder()
                                             .setTimestampMs(System.currentTimeMillis())
-                                            .setVersion(VersionConstants.PRODUCT_VERSION)
+                                            .setVersion(VersionInfo.getProductVersion())
                                             .setType(Type.INTENT)
                                             .setSource(Source.FROM_MENU)
                                             .setRecordedSession(false)
@@ -105,7 +105,7 @@ public class UpdateSuccessMetrics {
                                     timedelta > UpdateConfigs.getUpdateAttributionWindowMs();
                             boolean success =
                                     !TextUtils.equals(
-                                            state.getVersion(), VersionConstants.PRODUCT_VERSION);
+                                            state.getVersion(), VersionInfo.getProductVersion());
 
                             if (success || expired) {
                                 mProvider.clear();

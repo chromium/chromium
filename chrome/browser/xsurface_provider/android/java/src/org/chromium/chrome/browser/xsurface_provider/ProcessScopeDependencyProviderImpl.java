@@ -17,6 +17,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionConstants;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedProcessScopeDependencyProvider;
@@ -109,7 +110,7 @@ public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependen
 
     @Override
     public String getChromeVersion() {
-        return VersionConstants.PRODUCT_VERSION;
+        return VersionInfo.getProductVersion();
     }
 
     @Override

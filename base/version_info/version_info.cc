@@ -11,7 +11,17 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/apk_info.h"
+#endif
+
 namespace version_info {
+
+#if BUILDFLAG(IS_ANDROID)
+std::string_view GetVersionNumber() {
+  return base::android::apk_info::package_version_name();
+}
+#endif
 
 int GetMajorVersionNumberAsInt() {
   DCHECK(GetVersion().IsValid());

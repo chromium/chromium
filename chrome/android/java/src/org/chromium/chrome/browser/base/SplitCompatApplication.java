@@ -8,6 +8,8 @@ import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Process;
@@ -24,6 +26,7 @@ import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.TraceEvent;
@@ -31,7 +34,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
 import org.chromium.build.annotations.Initializer;
@@ -155,11 +157,28 @@ public class SplitCompatApplication extends Application {
         // Perform initialization of globals common to all processes.
         ContextUtils.initApplicationContext(this);
 
+        // Do not call ApkInfo here, as ApkInfo reads CommandLine switches which have not yet been
+        // initialized in child processes at this point.
+        String versionName = "";
+        long versionCode = BuildConfig.ORIGINAL_VERSION_CODE;
+        if (!isIsolatedProcess) {
+            try {
+                PackageInfo pi =
+                        context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+                if (pi != null) {
+                    versionName = pi.versionName != null ? pi.versionName : "";
+                    versionCode = PackageUtils.packageVersionCode(pi);
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                // Ignore.
+            }
+        }
+
         Log.i(
                 TAG,
                 "version=%s (%s) minSdkVersion=%s processName=%s isIsolatedProcess=%s splits=%s",
-                VersionConstants.PRODUCT_VERSION,
-                BuildConfig.VERSION_CODE,
+                versionName,
+                versionCode,
                 BuildConfig.MIN_SDK_VERSION,
                 ContextUtils.getProcessName(),
                 isIsolatedProcess,

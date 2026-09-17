@@ -48,6 +48,7 @@
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 constexpr const char* UpdaterVersion() {
 #if BUILDFLAG(IS_CHROMEOS) && CHROMIUM_COMMIT_POSITION_IS_MAIN
   // Adds the revision number as a suffix to the version number if the chrome
@@ -57,6 +58,7 @@ constexpr const char* UpdaterVersion() {
   return PRODUCT_VERSION;
 #endif
 }
+#endif
 
 }  // namespace
 
@@ -151,8 +153,14 @@ void ChromeCrashReporterClient::GetProductInfo(ProductInfo* product_info) {
   NOTREACHED();
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+  std::string_view version = version_info::GetVersionNumber();
+#else
+  std::string_view version = UpdaterVersion();
+#endif
+
   *product_info =
-      ProductInfo(product_name, UpdaterVersion(),
+      ProductInfo(product_name, version,
                   chrome::GetChannelName(chrome::WithExtendedStable(true)));
 }
 

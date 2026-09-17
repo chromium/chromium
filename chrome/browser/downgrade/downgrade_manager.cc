@@ -32,7 +32,6 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/version_info/version_info.h"
-#include "components/version_info/version_info_values.h"
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -231,7 +230,7 @@ bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
 void DowngradeManager::UpdateLastVersion(const base::FilePath& user_data_dir) {
   DCHECK(!user_data_dir.empty());
   DCHECK_NE(type_, Type::kAdministrativeWipe);
-  const std::string_view version(PRODUCT_VERSION);
+  const std::string_view version = version_info::GetVersionNumber();
   base::WriteFile(GetLastVersionFile(user_data_dir), version);
 }
 

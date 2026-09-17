@@ -4,6 +4,7 @@
 
 import("//android_webview/variables.gni")
 import("//build/config/android/rules.gni")
+import("//chrome/version.gni")
 
 # Upstream and Downstream WebView both have instrumentation tests.
 # These templates enables a shared basis for these test, ensuring that they use
@@ -56,6 +57,13 @@ template("base_webview_instrumentation_apk") {
     srcjar_deps = [ "//android_webview/test:libstandalonelibwebviewchromium__jni_registration" ]
 
     command_line_flags_file = "android-webview-command-line"
+
+    # Telemetry launches this APK as the "android-webview-instrumentation"
+    # browser, and GPU telemetry tests run with --enforce-browser-version, which
+    # requires the manifest version to exactly match //chrome/VERSION. See
+    # _CheckBrowserVersion() in content/test/gpu/gpu_tests/gpu_integration_test.
+    # py. Without this the APK would fall back to android_default_version_name.
+    version_name = chrome_version_name
   }
 }
 

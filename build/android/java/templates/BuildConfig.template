@@ -52,11 +52,13 @@ public class BuildConfig {
     public static int MIN_SDK_VERSION = 1;
 #endif
 
-    // Value of android:versionCode.
+    // Value of android:versionCode at compile time.
+    // Use ApkInfo.getPackageVersionCode() instead of this because this will not reflect any
+    // version code updates made by patching tools.
 #if defined(_VERSION_CODE)
-    public static long VERSION_CODE = _VERSION_CODE;
+    public static long ORIGINAL_VERSION_CODE = _VERSION_CODE;
 #else
-    public static long VERSION_CODE = 1;
+    public static long ORIGINAL_VERSION_CODE = 1;
 #endif
 
 #if defined(_IS_INCREMENTAL_INSTALL)

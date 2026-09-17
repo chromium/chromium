@@ -17,7 +17,6 @@ import org.chromium.base.Log;
 import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.version_info.VersionInfo;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -146,7 +145,7 @@ public abstract class PureJavaExceptionReporter
                 String.format(
                         "%s v%s (%s)",
                         ApkInfo.getPackageName(),
-                        BuildConfig.VERSION_CODE,
+                        ApkInfo.getPackageVersionCode(),
                         ApkInfo.getPackageVersionName()));
         mReportContent.put(RESOURCES_VERSION, ApkInfo.getResourcesVersion());
 

@@ -4,6 +4,7 @@
 
 package org.chromium.base.version_info;
 
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -83,7 +84,7 @@ public class VersionInfo {
      * @return The version number.
      */
     public static String getProductVersion() {
-        return VersionConstants.PRODUCT_VERSION;
+        return ApkInfo.getPackageVersionName();
     }
 
     /**

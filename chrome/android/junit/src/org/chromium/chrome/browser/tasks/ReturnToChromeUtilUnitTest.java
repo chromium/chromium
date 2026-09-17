@@ -44,6 +44,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ApkInfo;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
@@ -52,7 +53,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -477,17 +477,18 @@ public class ReturnToChromeUtilUnitTest {
         assertTrue(IntentUtils.isMainIntentFromLauncher(intent));
 
         PersistableBundle persistentState = new PersistableBundle();
-        persistentState.putLong(PREVIOUS_VERSION_CODE, BuildConfig.VERSION_CODE);
+        long currentVersionCode = ApkInfo.getPackageVersionCodeAsLong();
+        persistentState.putLong(PREVIOUS_VERSION_CODE, currentVersionCode);
         assertTrue(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
                         intent, mSaveInstanceState, persistentState, mInactivityTracker));
 
-        persistentState.putLong(PREVIOUS_VERSION_CODE, BuildConfig.VERSION_CODE - 1);
+        persistentState.putLong(PREVIOUS_VERSION_CODE, currentVersionCode - 1);
         assertFalse(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
                         intent, mSaveInstanceState, persistentState, mInactivityTracker));
 
-        persistentState.putLong(PREVIOUS_VERSION_CODE, BuildConfig.VERSION_CODE);
+        persistentState.putLong(PREVIOUS_VERSION_CODE, currentVersionCode);
         assertTrue(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
                         intent, mSaveInstanceState, persistentState, mInactivityTracker));

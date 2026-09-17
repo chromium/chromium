@@ -8,9 +8,9 @@ import org.chromium.build.annotations.NullMarked;
 
 // Constants shared by Android Chrome and WebView. Chrome specific constants are
 // in ChromeVersionConstants.
+// Note: PATCH, VERSION_NAME and VERSION_CODE should come from ApkInfo.
 @NullMarked
 public class VersionConstants {
-    public static final String PRODUCT_VERSION = "@MAJOR@.@MINOR@.@BUILD@.@PATCH@";
     @SuppressWarnings({"ComplexBooleanConstant", "IdentityBinaryExpression"})
     public static final boolean IS_OFFICIAL_BUILD = @OFFICIAL_BUILD@ == 1;
 

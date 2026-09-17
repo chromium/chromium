@@ -60,7 +60,7 @@
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_ids_provider.h"
-#include "components/version_info/version_info_values.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -346,7 +346,7 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
         variations::SyntheticTrialAnnotationMode::kCurrentLog);
     AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         metrics, "BitnessForMidRangeRAM_wVersion",
-        std::string(PRODUCT_VERSION) + "_" + trial_group,
+        std::string(version_info::GetVersionNumber()) + "_" + trial_group,
         variations::SyntheticTrialAnnotationMode::kCurrentLog);
   }
   AwMetricsServiceClient::GetInstance()->FlushPendingSyntheticTrialsFromJava();

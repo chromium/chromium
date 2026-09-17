@@ -1977,9 +1977,13 @@ TEST_P(SearchEngineChoiceUtilsParamTest, Reprompt) {
   pref_service()->SetInt64(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
       kPreviousTimestamp);
+  std::string_view choice_version = GetParam().choice_version;
+  if (choice_version == "CURRENT_VERSION") {
+    choice_version = version_info::GetVersionNumber();
+  }
   pref_service()->SetString(
       prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
-      GetParam().choice_version);
+      choice_version);
 
   // Trigger the creation of the service, which should check for the reprompt.
   search_engine_choice_service();
@@ -1999,7 +2003,7 @@ TEST_P(SearchEngineChoiceUtilsParamTest, Reprompt) {
         kPreviousTimestamp,
         pref_service()->GetInt64(
             prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
-    EXPECT_EQ(GetParam().choice_version,
+    EXPECT_EQ(choice_version,
               pref_service()->GetString(
                   prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
     histogram_tester_.ExpectTotalCount(
@@ -2086,7 +2090,7 @@ constexpr RepromptTestParam kRepromptTestParams[] = {
 
     // Don't reprompt when the choice was made in the current version.
     {std::nullopt, RepromptResult::kRecentChoice,
-     RepromptResult::kNoDictionaryKey, version_info::GetVersionNumber(),
+     RepromptResult::kNoDictionaryKey, "CURRENT_VERSION",
      "{\"*\":\"CURRENT_VERSION\"}"},
     // Don't reprompt when the choice was recent enough.
     {std::nullopt, RepromptResult::kRecentChoice,

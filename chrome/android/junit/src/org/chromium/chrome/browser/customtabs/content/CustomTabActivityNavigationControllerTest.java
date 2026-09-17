@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
@@ -95,9 +97,19 @@ public class CustomTabActivityNavigationControllerTest {
     }
 
     @Before
-    public void setUp() {
-        mTestContext = new TestContext(ContextUtils.getApplicationContext());
+    public void setUp() throws PackageManager.NameNotFoundException {
+        Context appContext = ContextUtils.getApplicationContext();
+        // ApkInfo reads the app's own PackageInfo (e.g. via IntentUtils.intentTargetsSelf()).
+        // mPackageManager is a mock, and an unstubbed mock returns null rather than throwing
+        // NameNotFoundException, which would NPE inside ApkInfo. Delegate to the real
+        // PackageInfo so the version information matches the rest of the test environment.
+        PackageInfo appPackageInfo =
+                appContext.getPackageManager().getPackageInfo(appContext.getPackageName(), 0);
+
+        mTestContext = new TestContext(appContext);
         ContextUtils.initApplicationContextForTests(mTestContext);
+
+        doReturn(appPackageInfo).when(mPackageManager).getPackageInfo(anyString(), anyInt());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             when(env.activity.getOnBackInvokedDispatcher()).thenReturn(mDispatcher);

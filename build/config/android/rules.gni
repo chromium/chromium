@@ -2026,6 +2026,7 @@ if (!is_robolectric && enable_java_templates) {
       } else {
         defines += [ "_VERSION_CODE=$android_default_version_code" ]
       }
+
       if (defined(invoker.resources_version_variable)) {
         defines += [
           "_RESOURCES_VERSION_VARIABLE=${invoker.resources_version_variable}",

@@ -169,7 +169,7 @@ bool IsVkPipelineCache(std::string_view key_str) {
 }
 #endif
 
-std::string_view GetCacheMetadataKey() {
+std::string GetCacheMetadataKey() {
   return version_info::GetProductNameAndVersionForUserAgent();
 }
 }  // namespace

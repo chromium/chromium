@@ -27,7 +27,6 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/version_info/android/channel_getter.h"
 #include "components/version_info/version_info.h"
-#include "components/version_info/version_info_values.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/crash_client_jni/AwCrashReporterClient_jni.h"
@@ -59,7 +58,7 @@ class AwCrashReporterClient : public crash_reporter::CrashReporterClient {
 
   void GetProductInfo(ProductInfo* product_info) override {
     *product_info = ProductInfo(
-        "AndroidWebView", PRODUCT_VERSION,
+        "AndroidWebView", version_info::GetVersionNumber(),
         version_info::GetChannelString(version_info::android::GetChannel()));
   }
 

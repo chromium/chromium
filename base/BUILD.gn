@@ -5803,7 +5803,7 @@ if (is_android) {
       ":log_java",
       ":resetters_java",
       ":tasks_java",
-      "//base/version_info/android:version_constants_java",
+      "//base/version_info/android:channel_enum_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -6280,6 +6280,7 @@ if (is_android) {
     deps = [
       ":base_java",
       ":base_java_test_support",
+      "//base/version_info/android:version_constants_java",
       "//testing/android/junit:junit_test_support",
       "//third_party/androidx:androidx_test_core_java",
       "//third_party/androidx:androidx_test_monitor_java",

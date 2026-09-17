@@ -94,7 +94,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.base.version_info.VersionConstants;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
@@ -561,8 +560,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 Log.i(
                         TAG,
                         "version=%s (%s) minSdkVersion=%s multiprocess=%s packageId=%s splits=%s",
-                        VersionConstants.PRODUCT_VERSION,
-                        BuildConfig.VERSION_CODE,
+                        ApkInfo.getPackageVersionName(),
+                        ApkInfo.getPackageVersionCode(),
                         BuildConfig.MIN_SDK_VERSION,
                         mIsMultiProcessEnabled,
                         packageId,

@@ -4,6 +4,7 @@
 
 package org.chromium.base.test;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -13,6 +14,7 @@ import org.jni_zero.JniTestInstancesSnapshot;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.robolectric.Shadows;
 import org.robolectric.android.util.concurrent.PausedExecutorService;
 import org.robolectric.shadows.ShadowLog;
 
@@ -32,6 +34,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner.HelperTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.NativeLibraries;
 import org.chromium.build.annotations.Nullable;
 
@@ -101,6 +104,19 @@ public class BaseRobolectricTestRule implements TestRule {
         ContextUtils.initApplicationContextForTests(ApplicationProvider.getApplicationContext());
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
         ApplicationStatus.initialize(ApplicationProvider.getApplicationContext());
+
+        // We don't pass --version-name when building resources for Robolectric binaries, so without
+        // this ApkInfo.getPackageVersionName() (and therefore VersionInfo.getProductVersion())
+        // returns "", which is not a parseable version and silently breaks version comparisons.
+        // Real APKs always have a versionName in their manifest, so give Robolectric one too.
+        Context appContext = ApplicationProvider.getApplicationContext();
+        Shadows.shadowOf(appContext.getPackageManager())
+                        .getInternalMutablePackageInfo(appContext.getPackageName())
+                        .versionName =
+                VersionConstants.PRODUCT_MAJOR_VERSION
+                        + ".0."
+                        + VersionConstants.PRODUCT_BUILD_VERSION
+                        + ".0";
 
         Class<?> testClass = method.getDeclaringClass();
         CommandLineFlags.reset(testClass.getAnnotations(), method.getAnnotations());

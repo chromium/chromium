@@ -6,6 +6,8 @@ package org.chromium.android_webview.nonembedded;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 
 import com.android.webview.chromium.WebViewLibraryPreloader;
 
@@ -20,12 +22,12 @@ import org.chromium.android_webview.services.NonembeddedSafeModeActionsList;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.UmaRecorderHolder;
-import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
 import org.chromium.components.crash.CustomAssertionHandler;
 import org.chromium.components.crash.PureJavaExceptionHandler;
@@ -54,11 +56,28 @@ public class WebViewApkApplication extends Application {
         super.attachBaseContext(context);
         ContextUtils.initApplicationContext(this);
 
+        // Do not call ApkInfo here, as ApkInfo reads CommandLine switches which have not yet been
+        // initialized in child processes at this point.
+        String versionName = "";
+        long versionCode = BuildConfig.ORIGINAL_VERSION_CODE;
+        if (!ContextUtils.isIsolatedProcess()) {
+            try {
+                PackageInfo pi =
+                        context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+                if (pi != null) {
+                    versionName = pi.versionName != null ? pi.versionName : "";
+                    versionCode = PackageUtils.packageVersionCode(pi);
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                // Ignore.
+            }
+        }
+
         Log.i(
                 TAG,
                 "version=%s (%s) minSdkVersion=%s processName=%s splits=%s",
-                VersionConstants.PRODUCT_VERSION,
-                BuildConfig.VERSION_CODE,
+                versionName,
+                versionCode,
                 BuildConfig.MIN_SDK_VERSION,
                 ContextUtils.getProcessName(),
                 // BundleUtils uses getApplicationContext, so logging after we init it.

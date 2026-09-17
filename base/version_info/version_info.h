@@ -26,9 +26,13 @@ constexpr std::string_view GetProductName() {
 }
 
 // Returns the version number, e.g. "6.0.490.1".
+#if BUILDFLAG(IS_ANDROID)
+std::string_view GetVersionNumber();
+#else
 constexpr std::string_view GetVersionNumber() {
   return PRODUCT_VERSION;
 }
+#endif
 
 // Returns the major component (aka the milestone) of the version as an int,
 // e.g. 6 when the version is "6.0.490.1".

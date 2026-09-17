@@ -32,7 +32,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
-import org.chromium.base.version_info.VersionConstants;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.AutofillPopup.AutofillDropdownItem;
@@ -206,7 +206,7 @@ public class AutofillProvider {
         if (bundle != null) {
             bundle.putCharSequence("VIRTUAL_STRUCTURE_PROVIDER_NAME", mProviderName);
             bundle.putCharSequence(
-                    "VIRTUAL_STRUCTURE_PROVIDER_VERSION", VersionConstants.PRODUCT_VERSION);
+                    "VIRTUAL_STRUCTURE_PROVIDER_VERSION", VersionInfo.getProductVersion());
 
             if (mRequest != null && mRequest.getAutofillHintsService() != null) {
                 bundle.putBinder(
