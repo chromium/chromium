@@ -83,6 +83,20 @@ TEST(UrlUtilTest, ValidateLaunchUrlWebSafe) {
   EXPECT_FALSE(ValidateLaunchUrlWebSafe(GURL(
       "chrome-native://pdf/link?url=https%3A%2F%2Fexample.com%2Fdoc.pdf")));
   EXPECT_FALSE(ValidateLaunchUrlWebSafe(GURL("chrome-native://newtab/")));
+
+  // Schemes that ChildProcessSecurityPolicy::IsWebSafeScheme() considers
+  // web-safe, but that are not valid launch targets. These are rejected by the
+  // explicit http/https/about:blank allowlist.
+  EXPECT_FALSE(ValidateLaunchUrlWebSafe(
+      GURL("data:text/html,<script>alert(1)</script>")));
+  EXPECT_FALSE(ValidateLaunchUrlWebSafe(GURL("data:text/plain,hello")));
+  EXPECT_FALSE(ValidateLaunchUrlWebSafe(GURL("ws://example.com/socket")));
+  EXPECT_FALSE(ValidateLaunchUrlWebSafe(GURL("wss://example.com/socket")));
+
+  // Schemes registered via navigator.registerProtocolHandler() become web-safe
+  // at runtime, but must never be launch targets.
+  EXPECT_FALSE(ValidateLaunchUrlWebSafe(GURL("mailto:user@example.com")));
+  EXPECT_FALSE(ValidateLaunchUrlWebSafe(GURL("web+example:payload")));
 }
 
 TEST(UrlUtilTest, ValidateUrlRejectsNestedSchemes) {
