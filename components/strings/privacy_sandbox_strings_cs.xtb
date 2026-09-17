@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1184166532603925201">V anonymním režimu Chrome webům používání souborů cookie třetích stran blokuje</translation>
+<translation id="1365023215312302966">Weby nemůžou používat soubory cookie třetích stran k personalizaci obsahu a reklam ani ke sledování vaší činnosti na jiných webech</translation>
 <translation id="1569440020357229235">V anonymním režimu nemůžou weby používat soubory cookie třetích stran. Pokud web, který se spoléhá na tyhle soubory cookie, ​​nefunguje, můžete mu <ph name="BEGIN_LINK" />zkusit udělit dočasný přístup k souborům cookie třetích stran<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Některé weby můžou přestat fungovat</translation>
 <translation id="2183376768278472507">Pokud některý web nefunguje správně, můžete soubory cookie třetích stran zkusit pro konkrétní navštívený web povolit</translation>
 <translation id="2235344399760031203">Soubory cookie třetích stran jsou blokovány</translation>
+<translation id="2360633687155619995">Weby nemůžou používat soubory cookie třetích stran k personalizaci obsahu a reklam ani ke sledování vaší činnosti na jiných webech. Některé weby nemusí fungovat správně.</translation>
 <translation id="2496115946829713659">Weby můžou používat soubory cookie třetích stran k personalizaci obsahu a reklam a k získání informací o akcích, které provádíte na jiných webech</translation>
 <translation id="3045333309254072201">V anonymním režimu nemůžou weby používat soubory cookie třetích stran. Pokud web využívající tyhle soubory cookie ​​nefunguje, můžete mu <ph name="START_LINK" />zkusit udělit dočasný přístup k souborům cookie třetích stran<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Weby, které potřebují soubory cookie třetích stran, by měly fungovat správně</translation>

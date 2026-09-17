@@ -923,7 +923,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2527451058878391043">CVC-koden finns på framsidan av kortet. Det är den fyrsiffriga koden uppe till höger ovanför kortnumret.</translation>
 <translation id="2529899080962247600">Fältet får ha högst <ph name="MAX_ITEMS_LIMIT" /> poster. Alla poster utöver det ignoreras.</translation>
 <translation id="2530042584066815841">Låsa och använda musen</translation>
-<translation id="253493526287553278">Visa information om kampanjkoden</translation>
 <translation id="2535585790302968248">Öppna en ny inkognitoflik och surfa privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{och 1 till}other{och # till}}</translation>
 <translation id="2536110899380797252">Lägg till adress</translation>
@@ -1429,6 +1428,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3432601291244612633">Stäng sidan</translation>
 <translation id="3434025015623587566">Google Lösenordshantering behöver mer åtkomst</translation>
 <translation id="343474037147570563">Filer som du laddar upp eller bifogar skickas till Google Cloud eller tredje part för analys. De kan till exempel genomsökas i syfte att upptäcka känsliga uppgifter eller skadlig kod, och de kan lagras i enlighet med företagspolicyer och är synliga för administratören.</translation>
+<translation id="3435267628744367511">Tryck på Ctrl två gånger i valfritt formulär för att hitta och fylla i information utan att byta flik</translation>
 <translation id="3435557549311968410">Kontinuerlig (kort)</translation>
 <translation id="3435738964857648380">Säkerhet</translation>
 <translation id="3436125638121079308">Vill du automatiskt dela relevanta flikar för att få bättre svar i den här tråden?</translation>
@@ -1517,6 +1517,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3577473026931028326">Något gick fel. Försök igen.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Ett meddelande visas när sidan är klar. &lt;a&gt;Avbryt&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Lägg till flikar automatiskt</translation>
 <translation id="3582930987043644930">Lägg till namn</translation>
 <translation id="3583757800736429874">&amp;Gör om Flytta</translation>
 <translation id="3584299510153766161">Två hål längst ned</translation>
@@ -1592,6 +1593,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Läser in...</translation>
 <translation id="3709599264800900598">Texten som du kopierade</translation>
+<translation id="3711223220609269738">Ny isolerad flik</translation>
 <translation id="3711430313228789376">Chrome-webbläsaren försöker visa lösenord</translation>
 <translation id="3711895659073496551">Stäng av</translation>
 <translation id="3712004750972384495">Sparar skärminspelningen</translation>
@@ -1610,6 +1612,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3727309136762649052">Namnrymd</translation>
 <translation id="3727850735097852673">Om du vill använda Google Lösenordshantering med en macOS-nyckelring ska du starta om Chrome och tillåta åtkomst till nyckelringen. Flikarna öppnas igen när du har startat om enheten.</translation>
 <translation id="3728173127485570463">Du behöver inte längre registrera ditt fingeravtryck för att Chrome-webbläsaren ska fylla i lösenord automatiskt</translation>
+<translation id="3729811201279509483">Lägg till flikar manuellt</translation>
 <translation id="3736564442532774454">Chrome-webbläsaren försöker fylla i dina känsliga uppgifter på <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Webbläsaren hanteras av administratören.</translation>
 <translation id="3739842843727261045">Gilla-markera för att visa att du gillar dessa resultat</translation>
@@ -2407,7 +2410,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5052488928733955073">Det gick inte att fylla i dina uppgifter. Kontrollera anslutningen.</translation>
 <translation id="5053116470141135293">Ett virtuellt kortnummer fylls i när du betalar med det här kortet för att skydda dina faktiska uppgifter. Hantera i Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Om du vill skicka den här filen med Närdelning ska du frigöra utrymme (<ph name="DISK_SPACE_SIZE" />) på enheten}other{Om du vill skicka de här filerna med Närdelning ska du frigöra utrymme (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>
-<translation id="5056587122125565772">Skapa bild</translation>
 <translation id="505757197798929356">Ange anledning till att den öppnas (obligatoriskt)</translation>
 <translation id="5058282932481719070">läs mer om förbättrad autofyll i inställningarna</translation>
 <translation id="5061227663725596739">Menade du <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2773,6 +2775,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5649053991847567735">Automatiska nedladdningar</translation>
 <translation id="5651323159439184939">Traktormatning</translation>
 <translation id="5653681867130739344">Uppdatera id-kortet säkert i Google Wallet</translation>
+<translation id="5653744563415531641">Spara dina uppgifter så att du kan få saker gjorda snabbare, till exempel fylla i formulär i Googles produkter. Du kan <ph name="MANAGE_WALLET_SETTINGS_LINK" /> för <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Uppladdat kraschrapport-id:</translation>
 <translation id="5654965123204121933">Webbadressen innehåller inte den obligatoriska ersättningssträngen <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-post</translation>
@@ -2896,6 +2899,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5884465125445718607">Kinesiskt nr 6-kuvert</translation>
 <translation id="5887400589839399685">Kortet har sparats</translation>
 <translation id="5887687176710214216">Besöktes senast i går</translation>
+<translation id="5887791684215121787">Tryck på ⌘ ⌘ i valfritt formulär för att hitta och fylla i information utan att byta flik</translation>
 <translation id="5889251770650310375">Om du vill få tillgång till historiken på dina andra enheter måste du verifiera din identitet och synkronisera din historik och dina flikar. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="5895138241574237353">Starta om</translation>
 <translation id="5895187275912066135">Utfärdat</translation>
@@ -3218,6 +3222,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6410264514553301377">Ange utgångsdatum och CVC-kod för <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4 x 8</translation>
 <translation id="6412543105195503444">Dialogruta för föräldragodkännande</translation>
+<translation id="6413532517183895572">hantera dina Wallet-inställningar</translation>
 <translation id="6415778972515849510">Du kan skydda Google-kontot genom att byta lösenord.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Se till att alla viktiga företags- och personuppgifter lagras externt.</translation>

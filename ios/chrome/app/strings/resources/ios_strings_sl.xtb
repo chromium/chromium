@@ -268,6 +268,7 @@
 <translation id="17906873777101817">Ponudi shranjevanje gesel in ključev za dostop</translation>
 <translation id="1794893174442046596">Skupina zavihkov</translation>
 <translation id="1807893857950749072">Dovolite obvestila o spremljanju cen …</translation>
+<translation id="1808142805674973090">Preklopi med načini</translation>
 <translation id="1809929083618343438">S tem boste iz Chroma odstranili izbrane podatke, vendar jih ne boste izbrisali iz računa Google.</translation>
 <translation id="1810976980198522421">Prekliči</translation>
 <translation id="1815941218935345331">Geslo</translation>
@@ -849,6 +850,7 @@
 <translation id="3779810277399252432">Ni internetne povezave.</translation>
 <translation id="3782614601387961027">Opusti opozorilo</translation>
 <translation id="3789841737615482174">Namesti</translation>
+<translation id="3793603310364129123">Manj korakov, hitrejše povezave</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803696231112616155">Ponudi prevod tega spletnega mesta</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
@@ -1380,6 +1382,7 @@
 <translation id="5467163657366219870">Izklop Predogledov Zemljevidov</translation>
 <translation id="5474397204728336997">Družinska gesla, nove prilagoditve in drugo. Dotaknite se, če želite izvedeti več.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Nobeno geslo ni uvoženo}=1{Uvoženo je {count} geslo}one{Uvoženo je {count} geslo}two{Uvoženi sta {count} gesli}few{Uvožena so {count} gesla}other{Uvoženih je {count} gesel}}</translation>
+<translation id="5477188385487393357">Preskočite kopiranje in lepljenje</translation>
 <translation id="5478327362747197944">Dogodke v koledarju ustvarite neposredno tako, da na spletni strani kliknete datum.</translation>
 <translation id="5482922178977937393">Ali želite prejemati obvestila za novice, šport in drugo na podlagi svojih zanimanj?</translation>
 <translation id="5483838506518938965">Pripravljeni ste</translation>
@@ -1746,6 +1749,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6585618849026997638">Na stran, ki vam je pomembna, se lahko vrnete tako, da jo dodate med zaznamke.</translation>
 <translation id="6589001036857939353">Spajanje dvojnikov</translation>
 <translation id="659407965921887085">Ta kartica prikazuje znižanja cen v spletu za izdelke, ki jih trenutno spremljate</translation>
+<translation id="6596324345367949437">Gemini ni na voljo v anonimnem načinu</translation>
 <translation id="6596481460663245319">Iskanje slike z Googlom</translation>
 <translation id="6601302169302852717">Slika je shranjena v Googlu Foto za račun <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Samodejno izpolnjevanje in gesla</translation>

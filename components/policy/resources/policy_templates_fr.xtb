@@ -5396,6 +5396,7 @@ Elle n'a aucun effet si elle est activée, laissée vide ou n'est pas définie.<
 <translation id="4515404363392014383">Activer la navigation sécurisée pour les sources fiables</translation>
 <translation id="4517327050150780380">Paramètres de la fonctionnalité Aide-moi à lire</translation>
 <translation id="4518251772179446575">Demander chaque fois qu'un site veut suivre la position géographique des utilisateurs</translation>
+<translation id="4521106598519506386">Le figement des onglets en arrière-plan est activé</translation>
 <translation id="4521193243799782295">Lors de la connexion, l'authentification dans <ph name="PRODUCT_OS_NAME" /> peut être effectuée sur un serveur (en ligne) ou à l'aide d'un mot de passe en cache (hors connexion).
 
       Lorsque la valeur de cette règle est définie sur -1, cela signifie que l'authentification en ligne ne sera pas appliquée. L'utilisateur pourra ainsi utiliser l'authentification hors connexion jusqu'à ce qu'un motif différent indique le contraire. Si cette règle est définie sur 0, cela signifie qu'une connexion en ligne sera toujours demandée. Toute autre valeur définie pour cette règle indique le délai écoulé depuis la dernière authentification en ligne au terme duquel l'utilisateur devra à nouveau s'identifier en ligne lors de sa prochaine connexion.
@@ -8633,6 +8634,7 @@ Si cette règle est désactivée ou n'est pas configurée, la recherche du CNAME
 <translation id="6424486395812679373">Procéder aux vérifications de la navigation sécurisée pour tous les fichiers téléchargés</translation>
 <translation id="6426899507714989471">Désactiver l'accélération graphique</translation>
 <translation id="6431446111529802555">Europe.</translation>
+<translation id="6431778298276599807">Activer le figement des onglets en arrière-plan</translation>
 <translation id="6433697627431665375">Exclure des sauvegardes les données de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6436052172226685535">Comportement par défaut de LBS.</translation>
 <translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> essaie de mettre à niveau une partie de la navigation de HTTP vers HTTPS, lorsque cela est possible. Cette règle peut servir à désactiver ce comportement. Si elle est définie sur "True" ou n'est pas configurée, cette fonctionnalité est activée par défaut.
@@ -10686,6 +10688,7 @@ Pour les origines d'applications Web isolées spécifiques, cette règle peut ê
 <translation id="7696412993033202071">URL de lancement de l'appli d'authentification externe</translation>
 <translation id="7696534428021833264">Activer la carte de fichiers SharePoint et OneDrive pour la page "Nouvel onglet"</translation>
 <translation id="7699644797467448158">Supprimer window.name lorsque la navigation est de premier niveau et intersites, et échange BrowsingContextGroup.</translation>
+<translation id="7700606318567398251">Interdire l'utilisation des <ph name="CHROME_DEVTOOLS_NAME" /></translation>
 <translation id="7701341006446125684">Régler la taille du cache pour les applications et les extensions (en octets)</translation>
 <translation id="7701825382808690457">Utiliser la valeur par défaut pour l'accord de clé post-quantique pour WebRTC</translation>
 <translation id="7703041979684393741">Ne pas autoriser la collecte des journaux des événements WebRTC à partir des services Google</translation>

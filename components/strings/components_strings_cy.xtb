@@ -837,6 +837,8 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2384307209577226199">Menter ddiofyn</translation>
 <translation id="2385809941344967209">Diweddarwch Chrome o'ch gosodiadau Chrome</translation>
 <translation id="2386255080630008482">Mae tystysgrif y gweinydd wedi'i dirymu.</translation>
+<translation id="2387424091060104123">Awgrymwyd gan Gemini · <ph name="SRC_LINK" />Gweld ffynonellau<ph name="END_SRC_LINK" />
+Gallwch dynnu'r awgrym hwn o Chrome. Ni fydd eich ffynhonnell wreiddiol yn cael ei dileu. <ph name="MANAGE_LINK" />Rheoli awtolenwi gwell<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Ymhelaethwch</translation>
 <translation id="2392959068659972793">Dangos polisïau sydd heb unrhyw werth wedi'i osod</translation>
 <translation id="239429038616798445">Nid yw'r dull anfon hwn ar gael. Rhowch gynnig ar ddull gwahanol.</translation>
@@ -923,7 +925,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2527451058878391043">Mae eich CVC ar flaen eich cerdyn. Dyma'r cod 4 digid ar y dde uchaf, uwchben rhif eich cerdyn.</translation>
 <translation id="2529899080962247600">Ni ddylai'r maes hwn gynnwys mwy na <ph name="MAX_ITEMS_LIMIT" /> o gofnodion. Bydd pob cofnod arall yn cael ei anwybyddu.</translation>
 <translation id="2530042584066815841">Clo llygoden a defnydd</translation>
-<translation id="253493526287553278">Gweld manylion y cod hyrwyddo</translation>
 <translation id="2535585790302968248">Agor tab Anhysbys newydd i bori'n breifat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ac 1 arall}zero{a # arall}two{a # arall}few{a # arall}many{a # arall}other{a # arall}}</translation>
 <translation id="2536110899380797252">Ychwanegu Cyfeiriad</translation>
@@ -2411,7 +2412,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5052488928733955073">Bu trafferth wrth lenwi'ch gwybodaeth. Gwiriwch eich cysylltiad.</translation>
 <translation id="5053116470141135293">Bydd rhif cerdyn rhithwir yn cael ei lenwi pan fyddwch yn talu gyda'r cerdyn hwn i warchod eich manylion gwirioneddol. Rheoli yn Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{I anfon y ffeil hon drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}zero{I anfon y ffeiliau hyn drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}two{I anfon y ffeiliau hyn drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}few{I anfon y ffeiliau hyn drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}many{I anfon y ffeiliau hyn drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}other{I anfon y ffeiliau hyn drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}}</translation>
-<translation id="5056587122125565772">Creu llun</translation>
 <translation id="505757197798929356">Rhowch reswm dros agor (gofynnol)</translation>
 <translation id="5058282932481719070">dysgu rhagor am awtolenwi gwell yn y gosodiadau</translation>
 <translation id="5061227663725596739">A oeddech chi'n golygu <ph name="LOOKALIKE_DOMAIN" />?</translation>

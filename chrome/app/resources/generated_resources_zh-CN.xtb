@@ -1341,6 +1341,7 @@
 <translation id="2026367923222947564">整页</translation>
 <translation id="2026377162111110983">区域收音</translation>
 <translation id="2028449514182362831">所有需要使用移动传感器的功能都将无法正常运行</translation>
+<translation id="2029064269235798707">选择键盘快捷键</translation>
 <translation id="202918510990975568">您必须输入密码，才能配置安全性和登录</translation>
 <translation id="2030455719695904263">触控板</translation>
 <translation id="2030803782168502207">从设备中移除订阅</translation>
@@ -1432,6 +1433,7 @@
 <translation id="2111670510994270194">在右侧新增标签页</translation>
 <translation id="2111778868023567359">此页面不会再显示标签页分组</translation>
 <translation id="2112554630428445878">欢迎您，<ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">查看从 macOS 导入的证书</translation>
 <translation id="21133533946938348">固定标签页</translation>
 <translation id="2113479184312716848">打开文件(&amp;F)...</translation>
@@ -1984,6 +1986,7 @@
 <translation id="252513908494776481">询问关于此标签页的问题</translation>
 <translation id="2525746158911982776">系统存储空间不足导致更新失败。</translation>
 <translation id="2525842906387880861">此页面不会再显示建议</translation>
+<translation id="2526346836766369775">新的隔离标签页</translation>
 <translation id="2526590354069164005">桌面</translation>
 <translation id="2526619973349913024">检查是否有更新</translation>
 <translation id="2527167509808613699">各种连接</translation>
@@ -2269,6 +2272,7 @@
 <translation id="2740531572673183784">确定</translation>
 <translation id="2740876196999178364">这些通行密钥只会保存在此设备上，不会保存到您的 Google 账号中。</translation>
 <translation id="2741912629735277980">登录屏幕上的显示界面</translation>
+<translation id="274229007420507506">在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中更改快捷键</translation>
 <translation id="2742373789128106053">目前无法使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />。</translation>
 <translation id="2743301740238894839">开始</translation>
 <translation id="2743378970365831481">如需将密码保存到 Google 密码管理工具，请点击地址栏中的密码管理工具图标</translation>
@@ -2618,6 +2622,7 @@
 <translation id="3001614333383288217">{COUNT,plural, =0{未自定义任何键}=1{1 个自定义键}other{{COUNT} 个自定义键}}</translation>
 <translation id="3002864108328203174">Gemini 底部动作条已以一半高度打开。</translation>
 <translation id="3003144360685731741">首选网络</translation>
+<translation id="3003152206838282768">正在 Chrome 中处理您的 Gemini 应用任务。查看 Chrome 以了解更多更新</translation>
 <translation id="3003253259757197230">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站，并向您显示有关当前所访问网页的更多信息</translation>
 <translation id="3003623123441819449">CSS 缓存</translation>
 <translation id="3003967365858406397">您的 <ph name="PHONE_NAME" /> 将创建一个私享的 Wi-Fi 网络连接。</translation>
@@ -5063,6 +5068,7 @@
 <translation id="4864805589453749318">请选择让哪位家长授权您添加学校账号。</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" />（已屏蔽）</translation>
 <translation id="486505726797718946">节省的内存</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />：正在 Chrome 中处理您的 Gemini 应用任务。查看 Chrome 以了解更多更新</translation>
 <translation id="486635084936119914">下载特定类型的文件后自动将其打开</translation>
 <translation id="4868284252360267853">此对话框目前未被聚焦。按 Command+Shift+Option+A 即可聚焦于此对话框。</translation>
 <translation id="4869170227080975044">读取 ChromeOS 网络信息</translation>
@@ -7690,6 +7696,7 @@
 <translation id="6916818963747321523">全部展开</translation>
 <translation id="6917873303492266709">如需分享、加入标签页分组并在其中协作，请打开“设置”并开启“允许登录 Chrome”</translation>
 <translation id="6919354101107095996">请先尝试登录相应网站，再重新下载</translation>
+<translation id="6919461818524183254">选择快捷键</translation>
 <translation id="6919952941889172531">也为这份 Chrome 个人资料开启增强型安全浏览？</translation>
 <translation id="6920989436227028121">在常规标签页中打开</translation>
 <translation id="6921104647315081813">清除活动</translation>
@@ -8529,6 +8536,7 @@
 <translation id="7578137152457315135">指纹设置</translation>
 <translation id="7578692661782707876">请输入您的确认码。</translation>
 <translation id="757941033127302446">已登录</translation>
+<translation id="7580311608678791180">从 Windows 任务栏打开</translation>
 <translation id="7581462281756524039">清理工具</translation>
 <translation id="7582582252461552277">首选此网络</translation>
 <translation id="7582844466922312471">移动数据</translation>
@@ -8542,6 +8550,7 @@
 <translation id="7590883480672980941">输入设置</translation>
 <translation id="7592060599656252486">部分</translation>
 <translation id="7595547011743502844"><ph name="ERROR" />（错误代码为：<ph name="ERROR_CODE" />）。</translation>
+<translation id="7597816893408026784">从 Mac 菜单栏打开</translation>
 <translation id="7600054753482800821">管理搜索引擎和网站搜索(&amp;M)</translation>
 <translation id="7600218158048761260">此账号类型已停用 Google 云端硬盘。</translation>
 <translation id="7600965453749440009">一律不翻译<ph name="LANGUAGE" /></translation>
@@ -9227,6 +9236,7 @@
 <translation id="8102139037507939978">从 system_logs.txt 中删除个人身份信息。</translation>
 <translation id="810362914482827094">搜索密钥</translation>
 <translation id="8104088837833760645">下载 eSIM 卡配置文件</translation>
+<translation id="8104388155778519213">与 Google 智能镜头分享屏幕上的内容</translation>
 <translation id="8104778744208707085">需要您注意</translation>
 <translation id="8105273883928376822">若要继续，请先登录。</translation>
 <translation id="8106114112474206597">按下“i”键表示按下鼠标按键</translation>

@@ -923,7 +923,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2527451058878391043">O CVC é um código de quatro dígitos que fica no canto superior direito da parte da frente do cartão, logo acima do número dele.</translation>
 <translation id="2529899080962247600">Esse campo não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as entradas futuras serão ignoradas.</translation>
 <translation id="2530042584066815841">Bloqueio e uso do mouse</translation>
-<translation id="253493526287553278">Consulte os detalhes do código promocional</translation>
 <translation id="2535585790302968248">Abra uma nova guia anônima para navegar com privacidade</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e mais 1}one{e mais #}other{e mais #}}</translation>
 <translation id="2536110899380797252">Adicionar Endereço</translation>
@@ -1429,6 +1428,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3432601291244612633">Fechar página</translation>
 <translation id="3434025015623587566">O Gerenciador de senhas do Google precisa de mais acesso</translation>
 <translation id="343474037147570563">Os arquivos transferidos por upload ou anexados são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis ou malware e podem ser armazenados com base nas políticas da empresa e ficar visíveis para seu administrador.</translation>
+<translation id="3435267628744367511">Pressione Ctrl duas vezes em qualquer formulário para encontrar e preencher informações sem trocar de guia</translation>
 <translation id="3435557549311968410">Contínua (curta)</translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="3436125638121079308">Compartilhar as guias relevantes de forma automática para receber respostas melhores nesta conversa?</translation>
@@ -2407,7 +2407,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5052488928733955073">Erro ao preencher as informações. Verifique sua conexão.</translation>
 <translation id="5053116470141135293">Quando você finalizar uma compra com este cartão, os dados serão preenchidos com um número do cartão virtual para sua proteção. Gerencie pela Carteira do Google. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este arquivo usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}one{Para enviar este arquivo usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes arquivos usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
-<translation id="5056587122125565772">Criar imagem</translation>
 <translation id="505757197798929356">Informe o motivo da abertura (obrigatório)</translation>
 <translation id="5058282932481719070">Saiba mais sobre o preenchimento automático aprimorado nas configurações</translation>
 <translation id="5061227663725596739">Você quis dizer "<ph name="LOOKALIKE_DOMAIN" />"?</translation>
@@ -2896,6 +2895,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5884465125445718607">Envelope chinês 6</translation>
 <translation id="5887400589839399685">Cartão salvo</translation>
 <translation id="5887687176710214216">Última visita: ontem</translation>
+<translation id="5887791684215121787">Pressione ⌘ ⌘ em qualquer formulário para encontrar e preencher informações sem trocar de guia</translation>
 <translation id="5889251770650310375">Para acessar seu histórico de outros dispositivos, confirme sua identidade e sincronize o histórico e as guias. Você pode parar a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido em</translation>
@@ -4852,7 +4852,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="958952958906914932">Mais guias de outros dispositivos</translation>
 <translation id="961372935451193190">Guias e arquivos</translation>
 <translation id="961663415146723894">Encadernação na parte inferior</translation>
-<translation id="961856697154696964">Excluir dados</translation>
+<translation id="961856697154696964">Excluir dados de navegação</translation>
 <translation id="961930410699694996">Localização permitida apenas desta vez</translation>
 <translation id="962484866189421427">Este conteúdo pode tentar instalar apps enganosos que fingem ser outra coisa ou coletam dados que podem ser usados para rastrear você. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Com base na legislação da sua região, o Chromium pede que você escolha o mecanismo de pesquisa padrão. Esses mecanismos são famosos na sua região e estão em ordem aleatória.</translation>

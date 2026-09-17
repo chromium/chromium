@@ -1432,6 +1432,7 @@
 <translation id="2111670510994270194">දකුණට නව පටිත්ත</translation>
 <translation id="2111778868023567359">ඔබට මෙම පිටුවේ නැවත පටිති සමූහ නොපෙනේ</translation>
 <translation id="2112554630428445878">ආයුබෝවන්, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">macOS වෙතින් ආයාත කළ සහතික බලන්න</translation>
 <translation id="21133533946938348">ටැබය වෙත අමුණන්න</translation>
 <translation id="2113479184312716848">ගොනුව විවෘත කරන්න (&amp;F)...</translation>
@@ -1987,6 +1988,7 @@
 <translation id="252513908494776481">මෙම පටිත්ත ගැන විමසන්න</translation>
 <translation id="2525746158911982776">පද්ධතියට ප්‍රමාණවත් ආචයන ඉඩක් නොමැති නිසා යාවත්කාලීනය අසමත් විය.</translation>
 <translation id="2525842906387880861">ඔබට මෙම පිටුවේ යෝජනා නැවත නොපෙනෙනු ඇත</translation>
+<translation id="2526346836766369775">නව හුදකලා &amp;ටැබය</translation>
 <translation id="2526590354069164005">ඩෙස්ක්ටොප්</translation>
 <translation id="2526619973349913024">යාවත්කාලීනය සඳහා පරික්ෂා කරන්න</translation>
 <translation id="2527167509808613699">කිසියම් ආකාරයක සම්බන්ධය</translation>
@@ -8537,6 +8539,7 @@
 <translation id="7578137152457315135">ඇඟලි සලකුණු සැකසීම්</translation>
 <translation id="7578692661782707876">කරුණාකර ඔබගේ තහවුරු කිරීමේ කේතය ඇතුළු කරන්න</translation>
 <translation id="757941033127302446">පුරන ලදි</translation>
+<translation id="7580311608678791180">Windows කාර්ය තීරුවෙන් විවෘත කරන්න</translation>
 <translation id="7581462281756524039">පිරිසිදු කිරීමේ මෙවලමක්</translation>
 <translation id="7582582252461552277">මෙම ජාලය නිර්දේශිතයි</translation>
 <translation id="7582844466922312471">ජංගම දත්ත</translation>
@@ -8550,6 +8553,7 @@
 <translation id="7590883480672980941">ආදාන සැකසීම්</translation>
 <translation id="7592060599656252486">සමහර</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (දෝෂ කේතය <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Mac මෙනු තීරුවෙන් විවෘත කරන්න</translation>
 <translation id="7600054753482800821">සෙවීම් යන්ත්‍ර සහ අඩවි සෙවීම &amp;කළමනාකරණය කරන්න</translation>
 <translation id="7600218158048761260">මෙම ගිණුම් වර්ගය සඳහා Google Drive අබල කර ඇත.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> කිසිදා පරිවර්තනය නොකරන්න</translation>
@@ -9235,6 +9239,7 @@
 <translation id="8102139037507939978">system_logs.txt වෙතින් පුද්ගලිකව හඳුනා ගත හැකි තොරතුරු ඉවත් කරන්න.</translation>
 <translation id="810362914482827094">මුරයතුරු සොයන්න</translation>
 <translation id="8104088837833760645">eSIM පැතිකඩ බාගන්න</translation>
+<translation id="8104388155778519213">Google Lens සමඟ ඔබේ තිරයේ ඇති දේ බෙදා ගන්න</translation>
 <translation id="8104778744208707085">ඔබේ අවධානය අවශ්‍යයි</translation>
 <translation id="8105273883928376822">ඉදිරියට යාමට පුරන්න.</translation>
 <translation id="8106114112474206597">මූසික බොත්තම එබීමට "i" භාවිත කරන්න</translation>

@@ -1441,6 +1441,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2111670510994270194">Novi zavihek na desni</translation>
 <translation id="2111778868023567359">Skupine zavihkov na tej strani ne bodo več prikazane</translation>
 <translation id="2112554630428445878">Pozdravljeni, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">Ogled uvoženih potrdil iz sistema macOS</translation>
 <translation id="21133533946938348">Pripni zavihek</translation>
 <translation id="2113479184312716848">Odpri &amp;datoteko ...</translation>
@@ -1996,6 +1997,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="252513908494776481">Vprašajte o tem zavihku</translation>
 <translation id="2525746158911982776">Posodobitev ni uspela, ker sistem nima dovolj prostora za shranjevanje.</translation>
 <translation id="2525842906387880861">Na tej strani ne bo več prikazano to:</translation>
+<translation id="2526346836766369775">Novi izolirani &amp;zavihek</translation>
 <translation id="2526590354069164005">Namizje</translation>
 <translation id="2526619973349913024">Poišči posodobitev</translation>
 <translation id="2527167509808613699">Kakršna koli povezava</translation>
@@ -8556,6 +8558,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7578137152457315135">Nastavitve prstnih odtisov</translation>
 <translation id="7578692661782707876">Vnesite potrditveno kodo.</translation>
 <translation id="757941033127302446">Prijavljen</translation>
+<translation id="7580311608678791180">Odprite v opravilni vrstici sistema Windows</translation>
 <translation id="7581462281756524039">Orodje za čiščenje</translation>
 <translation id="7582582252461552277">Prednostno uporabi to omrežje</translation>
 <translation id="7582844466922312471">Prenos podatkov v mobilnih omrežjih</translation>
@@ -8569,6 +8572,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7590883480672980941">Nastavitve vnosa</translation>
 <translation id="7592060599656252486">Nekatera</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (koda napake <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Odprite v menijski vrstici Maca</translation>
 <translation id="7600054753482800821">&amp;Upravljanje iskalnikov in iskanja po spletnih mestih</translation>
 <translation id="7600218158048761260">Google Drive je onemogočen za to vrsto računa.</translation>
 <translation id="7600965453749440009">Nikoli ne prevedi iz jezika: <ph name="LANGUAGE" /></translation>
@@ -9254,6 +9258,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8102139037507939978">Odstrani podatke, ki omogočajo osebno prepoznavo, iz datoteke system_logs.txt.</translation>
 <translation id="810362914482827094">Iskanje gesel</translation>
 <translation id="8104088837833760645">Prenesi profil za e-SIM</translation>
+<translation id="8104388155778519213">Delite vsebino na zaslonu z Googlom Lens</translation>
 <translation id="8104778744208707085">Preverite</translation>
 <translation id="8105273883928376822">Če želite nadaljevati, se prijavite.</translation>
 <translation id="8106114112474206597">Uporabite »i« za pritisk gumba miške</translation>

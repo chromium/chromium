@@ -923,7 +923,6 @@
 <translation id="2527451058878391043">CVC는 카드 앞면에 있습니다. 카드 번호 오른쪽 상단의 4자리 코드입니다.</translation>
 <translation id="2529899080962247600">입력란에 항목이 <ph name="MAX_ITEMS_LIMIT" />개 넘게 있으면 안 됩니다. 이후 항목은 모두 무시됩니다.</translation>
 <translation id="2530042584066815841">마우스 잠금 및 사용</translation>
-<translation id="253493526287553278">프로모션 코드 세부정보 보기</translation>
 <translation id="2535585790302968248">비공개로 탐색하려면 새 시크릿 탭을 여세요.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{외 1개}other{외 #개}}</translation>
 <translation id="2536110899380797252">주소 추가</translation>
@@ -2407,7 +2406,6 @@
 <translation id="5052488928733955073">정보를 입력하는 중에 문제가 발생했습니다. 연결 상태를 확인하세요.</translation>
 <translation id="5053116470141135293">이 카드로 결제하면 실제 정보를 보호하기 위해 가상 카드 번호가 입력됩니다. Google 월렛에서 관리하세요. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share를 사용해 이 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}other{Nearby Share를 사용해 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}}</translation>
-<translation id="5056587122125565772">이미지 만들기</translation>
 <translation id="505757197798929356">열려는 이유 입력(필수)</translation>
 <translation id="5058282932481719070">설정에서 향상된 자동 완성에 관해 자세히 알아보기</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" />을(를) 찾으셨나요?</translation>

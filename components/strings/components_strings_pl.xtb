@@ -923,7 +923,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2527451058878391043">Kod CVC znajduje się z przodu karty. To 4-cyfrowy kod widoczny w prawym górnym rogu, nad numerem karty.</translation>
 <translation id="2529899080962247600">Maksymalna liczba wpisów w tym polu to <ph name="MAX_ITEMS_LIMIT" />. Wszystkie następne wpisy będą ignorowane.</translation>
 <translation id="2530042584066815841">Blokowanie i używanie myszy</translation>
-<translation id="253493526287553278">Zobacz szczegóły kodu promocyjnego</translation>
 <translation id="2535585790302968248">Otwórz nową kartę incognito, aby przeglądać prywatnie</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i jeszcze 1}few{i jeszcze #}many{i jeszcze #}other{i jeszcze #}}</translation>
 <translation id="2536110899380797252">Dodaj adres</translation>
@@ -2407,7 +2406,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5052488928733955073">Nie udało się uzupełnić informacji. Sprawdź połączenie.</translation>
 <translation id="5053116470141135293">Podczas płacenia tą kartą zostanie wypełniony numer karty wirtualnej – pozwala to chronić Twoje prawdziwe dane. Zarządzaj w Portfelu Google. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Aby wysłać plik przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}few{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}many{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}other{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}}</translation>
-<translation id="5056587122125565772">Utwórz obraz</translation>
 <translation id="505757197798929356">Podaj powód otwarcia (wymagane)</translation>
 <translation id="5058282932481719070">Więcej informacji o ulepszonym autouzupełnianiu w ustawieniach</translation>
 <translation id="5061227663725596739">Czy chodziło Ci o <ph name="LOOKALIKE_DOMAIN" />?</translation>

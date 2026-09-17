@@ -231,6 +231,7 @@
 <translation id="3112458742631356345">এই ফাইলটো সাধাৰণতে ডাউনল’ড কৰা নহয় আৰু ই বিপজ্জনক হ’ব পাৰে বাবে Chromeএ এই ডাউনল’ডটো অৱৰোধ কৰিছে</translation>
 <translation id="3119573284443908657">আৰ্কাইভ কৰা ফাইলটোত অন্য ফাইল আছে, যিবোৰে মালৱেৰ লুকুৱাই ৰাখিব পাৰে বাবে Chromeএ এই ডাউনল’ডটো অৱৰোধ কৰিছে</translation>
 <translation id="3124332159330678621">আপোনাৰ ব্ৰাউজাৰক এটা নতুন ৰূপ প্ৰদান কৰিবলৈ Chrome কাষ্টমাইজ কৰক</translation>
+<translation id="3125851611828811913">যিকোনো ঠাইৰ পৰা সন্ধান কৰক আৰু প্ৰশ্ন সোধক, আনকি Chrome মিনিমাইজ কৰা থাকিলেও। Chromeক নেপথ্যত চলিবলৈ অনুমতি দিয়ে।</translation>
 <translation id="3130333203120345554">নতুন সন্ধান</translation>
 <translation id="3135560418014806498">Chrome প্ৰ'ফাইল যোগ দিয়ক</translation>
 <translation id="3137969841538672700">সন্ধান কৰিবলৈ টানি আনি এৰক</translation>
@@ -388,6 +389,7 @@
 <translation id="4793679854893018356">Chromeএ আপোনাক কিদৰে সুৰক্ষিত কৰি ৰাখে জানক</translation>
 <translation id="4799870290441980300">Chromeৰ আটাইতকৈ শক্তিশালী সুৰক্ষা প্ৰদান কৰিবলৈ অতিৰিক্ত সুবিধাসমূহ অন কৰে</translation>
 <translation id="4828579605166583682">Google Chromeএ আগৰে পৰা থকা পাছৱৰ্ডসমূহ সলনি কৰিবলৈ চেষ্টা কৰি আছে। এই কাৰ্যৰ বাবে অনুমতি দিবলৈ আপোনাৰ Windowsৰ পাছৱৰ্ডটো টাইপ কৰক।</translation>
+<translation id="4836321460899997044">Chromeৰ প্ৰ’ফাইল</translation>
 <translation id="4842397268809523050">আপোনাৰ ড’মেইনত ছিংক কৰাৰ সুবিধা নথকাৰ বাবে ChromeOS Flexএ আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে।</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> ইতিমধ্যে ছাইন ইন হৈ আছে।  আপোনাৰ ব্ৰাউজিং পৃথক কৰি ৰাখিবলৈ, আপোনাৰ নিজৰ প্ৰ’ফাইলত <ph name="USER_EMAIL_ADDRESS" /> হিচাপে Chromeত ছাইন ইন কৰক</translation>
 <translation id="4855026984605187434">আপোনাৰ স্ক্ৰীনখন শ্বেয়াৰ কৰিবলৈ, ছিষ্টেমৰ ছেটিঙত Chromeৰ বাবে স্ক্ৰীন ৰেকৰ্ডিঙৰ অনুমতি দিয়ক</translation>
@@ -505,6 +507,7 @@ Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰু�
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chromeৰ সঁজুলি<ph name="END_LINK" />ৰ জৰিয়তে, আপুনি সুৰক্ষিতভাৱে ব্ৰাউজ কৰি নিয়ন্ত্ৰণত থাকিব পাৰে</translation>
 <translation id="6018578474045062808">আপোনাৰ ফ’নত Chromeৰ জৰিয়তে Google Lens ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="6022659036123304283">আপোনাৰ ডিভাইচত Chromeৰ ছেট আপ কৰক</translation>
+<translation id="6024930613143833266">যিকোনো ঠাইৰ পৰা Chromeৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" />ত ৰিষ্টাৰ্ট হ’ব</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
 <translation id="604424701295382420">পিন কৰা হৈছে! টুলবাৰত নতুন বুটামটোৰ পৰা আপুনি Google Lens পুনৰ এক্সেছ কৰিব পাৰে</translation>
@@ -558,6 +561,7 @@ Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰু�
 <translation id="6434035853014503219">আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে Chrome বাছনি কৰাৰ বাবে ধন্যবাদ!</translation>
 <translation id="6438015621983209660">আপোনাৰ ফ’নত Chromeৰ জৰিয়তে বৰ্ধিত সুৰক্ষিত ব্ৰাউজিঙৰ সুবিধাটো সম্প্ৰসাৰিত কৰক</translation>
 <translation id="6442774133615368941">Chrome iOS এপ্‌টোত আপোনাৰ কেমেৰাৰ জৰিয়তে আপুনি দেখা পোৱা বস্তু ক্ৰয়, অনুবাদ আৰু চিনাক্ত কৰক</translation>
+<translation id="6446105560007692480">Chromeৰ জৰিয়তে সন্ধান কৰিবলৈ বা <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" />ত কাষ্টমাইজ কৰিবলৈ</translation>
 <translation id="6448835208126432197">Chromeত Geminiত স্ক্ৰীনৰ অংশ বাছনি কৰিবলৈ, কীব’ৰ্ডৰ শ্বৰ্টকাট ব্যৱহাৰ কৰক।</translation>
 <translation id="6473905796280459355">Chromeৰ বিষয়ে থকা পৃষ্ঠাখনলৈ যাওক</translation>
 <translation id="6481963882741794338">ব্যক্তিগতকৰণ কৰিবলৈ আৰু অন্য উদ্দেশ্যে Chrome আৰু অন্য Google সেৱাসমূহ লিংক কৰক</translation>
@@ -579,6 +583,7 @@ Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰু�
 <translation id="6612152958212564387">আপুনি Googleলৈ ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট পঠিয়াই থকা নাই। <ph name="BEGIN_LINK" />পৰিচালনা কৰক<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে Chrome ছেট কৰি আটাইবোৰ ডিভাইচতে আপোনাৰ পাছৱৰ্ড, বুকমাৰ্ক আৰু ইতিহাস নিখুঁতভাৱে ছিংক কৰি ৰাখক।</translation>
 <translation id="6631524303639368205">আপুনি য’ত এৰিছিল তাৰ পৰা অব্যাহত ৰাখক: Chromeএ আপোনাৰ অন্তিম ছেশ্বনটোৰ পৰা আপোনাৰ টেবসমূহ পুনঃস্থাপন কৰিছে। আপুনি ইয়াত এইটো অফ কৰিব পাৰে</translation>
+<translation id="6632012506031284914">Chromeৰ জৰিয়তে সন্ধান কৰিবলৈ।</translation>
 <translation id="6632473616050862500">ChromeOS Flexক অতিৰিক্ত <ph name="BEGIN_LINK_CROS_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_CROS_OSS" />ৰ দ্বাৰা তৈয়াৰ কৰা হৈছে।</translation>
 <translation id="6634299872736643004">Chrome ৰিষ্টাৰ্ট হোৱাৰ পাছত এই ছেটিঙত কৰা সালসলনিসমূহ প্ৰয়োগ কৰা হ’ব।</translation>
 <translation id="6660596345553328257">Chromeত ছাইন-ইন কৰিবনে?</translation>
@@ -595,6 +600,7 @@ Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰু�
 <translation id="6750954913813541382">Chromeএ বানানৰ আসোঁৱাহসমূহ আঁতৰাবলৈ আপুনি ব্ৰাউজাৰত টাইপ কৰা পাঠ Googleলৈ পঠিয়ায়</translation>
 <translation id="6760235774835597023">Chromeৰ V8 ইঞ্জিনৰ সৈতে ছাইটবোৰ খৰতকীয়া কৰি তোলে কিন্তু Chromeক আক্ৰমণৰ পৰা সামান্য কম প্ৰতিৰোধী কৰে। এই ছেটিংটো অন হৈ আছে।</translation>
 <translation id="677276454032249905">যিকোনো প্ৰকাৰে Chrome বন্ধ কৰিবনে?</translation>
+<translation id="6777654166489463890">আপুনি খুলি থোৱা অন্য কোনো এপ্‌ বা ফাইলৰ দৰে Chromeৰ বাহিৰৰ সমলৰ বিষয়ে সোধক</translation>
 <translation id="6794858689789885890">আপুনি Chrome বন্ধ কৰিলে সদায়েই আপোনাৰ ডিভাইচৰ পৰা ছাইটৰ ডেটা মচক</translation>
 <translation id="6800285125190089494">iOSৰ বাবে Chromeত ছেভ কৰি থোৱা পাছৱৰ্ড ব্যৱহাৰ কৰি ছাইটত দ্ৰুতভাৱে ছাইন ইন কৰক</translation>
 <translation id="6831043979455480757">Translate</translation>
@@ -647,6 +653,7 @@ Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰু�
 <translation id="7285990705317078173">মূল্য ট্ৰেক কৰিবলৈ আৰু কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা পাবলৈ আপোনাৰ ফ’নত Chrome ডাউনল’ড কৰক</translation>
 <translation id="7288567540154601580">টেব আৰু এক্সটেনশ্বন</translation>
 <translation id="7296210096911315575">ব্যৱহাৰ আৰু সুৰক্ষা সম্পর্কীয় গুৰুত্বপূর্ণ তথ্য</translation>
+<translation id="7299899569525778554">ডেস্কটপৰ পৰা সন্ধান কৰক</translation>
 <translation id="7302361266603927550">আপোনাৰ কিছুমান Chromeৰ ডেটা এতিয়াও আপোনাৰ Google একাউণ্টত ছেভ কৰা হোৱা নাই। ছাইন আউট কৰাৰ আগতে কেইমিনিটমান অপেক্ষা কৰি চাওক। যদি আপুনি এতিয়াই ছাইন আউট কৰে, এই ডেটা মচি পেলোৱা হ’ব।</translation>
 <translation id="7306401458628386911">তাৎক্ষণিকভাৱে ব্ৰাউজ কৰা আৰম্ভ কৰক: Windows ষ্টাৰ্ট হোৱাৰ লগে লগে এতিয়া Chrome লঞ্চ কৰিব পাৰি।</translation>
 <translation id="7308322188646931570">ফাইল ডাউনল’ড কৰিবলৈ Chromeক ষ্ট’ৰেজৰ এক্সেছৰ আৱশ্যক</translation>

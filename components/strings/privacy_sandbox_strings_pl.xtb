@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="1184166532603925201">W trybie incognito Chrome blokuje witrynom możliwość używania plików cookie innych firm</translation>
+<translation id="1365023215312302966">Witryny nie mogą używać plików cookie innych firm do personalizowania treści i reklam ani do śledzenia Twoich działań w innych witrynach</translation>
 <translation id="1569440020357229235">W trybie incognito witryny nie mogą używać plików cookie innych firm. Jeśli witryna, która wymaga tych plików, nie działa, możesz <ph name="BEGIN_LINK" />tymczasowo przyznać jej dostęp do plików cookie innych firm<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">W niektórych witrynach mogą nie działać funkcje</translation>
 <translation id="2183376768278472507">Jeśli witryna działa niezgodnie z oczekiwaniami, spróbuj zezwolić jej na używanie plików cookie innych firm</translation>
 <translation id="2235344399760031203">Blokowane są pliki cookie innych firm</translation>
+<translation id="2360633687155619995">Witryny nie mogą używać plików cookie innych firm do personalizowania treści i reklam ani do śledzenia Twoich działań w innych witrynach. Niektóre funkcje witryny mogą działać niezgodnie z oczekiwaniami.</translation>
 <translation id="2496115946829713659">Witryny mogą używać plików cookie innych firm do personalizowania treści i reklam oraz do śledzenia Twoich działań w innych witrynach</translation>
 <translation id="3045333309254072201">W trybie incognito witryny nie mogą używać plików cookie innych firm. Jeśli witryna, która wymaga tych plików, nie działa, możesz <ph name="START_LINK" />tymczasowo przyznać jej dostęp do plików cookie innych firm<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Witryny, które wymagają plików cookie innych firm, powinny działać poprawnie</translation>

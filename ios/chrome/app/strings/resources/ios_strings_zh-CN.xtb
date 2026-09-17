@@ -268,6 +268,7 @@
 <translation id="17906873777101817">询问是否保存密码和通行密钥</translation>
 <translation id="1794893174442046596">标签页分组</translation>
 <translation id="1807893857950749072">允许接收价格跟踪通知…</translation>
+<translation id="1808142805674973090">切换模式</translation>
 <translation id="1809929083618343438">此操作会将所选信息从 Chrome 中移除，但不会将其从您的 Google 账号中删除。</translation>
 <translation id="1810976980198522421">取消</translation>
 <translation id="1815941218935345331">密码</translation>
@@ -849,6 +850,7 @@
 <translation id="3779810277399252432">无互联网连接。</translation>
 <translation id="3782614601387961027">忽略警告</translation>
 <translation id="3789841737615482174">安装</translation>
+<translation id="3793603310364129123">减少操作步骤，加快链接访问</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803696231112616155">主动询问是否翻译此网站</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -1380,6 +1382,7 @@
 <translation id="5467163657366219870">关闭地图预览</translation>
 <translation id="5474397204728336997">家庭密码、全新自定义功能等。点按即可了解详情。</translation>
 <translation id="5475793109165786685">{count,plural, =0{未导入任何密码}=1{已导入 {count} 个密码}other{已导入 {count} 个密码}}</translation>
+<translation id="5477188385487393357">无需复制和粘贴</translation>
 <translation id="5478327362747197944">点击网页上的日期即可直接创建日历活动。</translation>
 <translation id="5482922178977937393">是否愿意接收系统根据您的兴趣推送的新闻、体育等方面的通知？</translation>
 <translation id="5483838506518938965">一切都已就绪</translation>
@@ -1746,6 +1749,7 @@
 <translation id="6585618849026997638">您可以为重要网页添加书签以便返回查看</translation>
 <translation id="6589001036857939353">合并重复的凭证</translation>
 <translation id="659407965921887085">此卡片会显示您当前跟踪的商品在网络上的降价信息</translation>
+<translation id="6596324345367949437">Gemini 在无痕模式下无法使用</translation>
 <translation id="6596481460663245319">使用 Google 搜索图片</translation>
 <translation id="6601302169302852717">已将此图片保存到 <ph name="USER_EMAIL" /> 所用的 Google 相册</translation>
 <translation id="6602173570135186741">自动填充和密码</translation>

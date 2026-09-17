@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1184166532603925201">Quan utilitzes el mode d'incògnit, Chrome impedeix que els llocs web utilitzin galetes de tercers</translation>
+<translation id="1365023215312302966">Els llocs web no poden utilitzar galetes de tercers per personalitzar ni el contingut ni els anuncis, i tampoc per obtenir informació sobre les teves accions en altres llocs web</translation>
 <translation id="1569440020357229235">Quan utilitzes el mode d'incògnit, els llocs web no poden utilitzar galetes de tercers. Si un lloc web que utilitza aquestes galetes no funciona, pots <ph name="BEGIN_LINK" />provar de permetre-hi temporalment l'accés a les galetes de tercers<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">És possible que les funcions d'alguns llocs web no funcionin</translation>
 <translation id="2183376768278472507">Si un lloc web no funciona de la manera prevista, pots provar de permetre les galetes de tercers per al lloc web concret que visites</translation>
 <translation id="2235344399760031203">Les galetes de tercers estan bloquejades</translation>
+<translation id="2360633687155619995">Els llocs web no poden utilitzar galetes de tercers per personalitzar ni el contingut ni els anuncis, i tampoc per obtenir informació sobre les teves accions en altres llocs web. És possible que algunes funcions del lloc web no funcionin de la manera prevista.</translation>
 <translation id="2496115946829713659">Els llocs web poden utilitzar galetes de tercers per personalitzar el contingut i els anuncis, així com per obtenir informació sobre les teves accions en altres llocs web</translation>
 <translation id="3045333309254072201">Quan utilitzes el mode d'incògnit, els llocs web no poden utilitzar galetes de tercers. Si un lloc web que utilitza aquestes galetes no funciona, pots <ph name="START_LINK" />provar de permetre-hi temporalment l'accés a les galetes de tercers<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Els llocs web que utilitzen galetes de tercers haurien de funcionar de la manera prevista</translation>

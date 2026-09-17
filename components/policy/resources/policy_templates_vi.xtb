@@ -2732,6 +2732,19 @@ Nếu bạn đặt chính sách này thành 2 – "Đã tắt", thì bạn sẽ 
 <translation id="2702023190395322609">Bật tính năng đề xuất nội dung nghe nhìn</translation>
 <translation id="2702682139813393777">Buộc Máy chủ nhắn tin gốc của Windows khởi chạy thông qua cmd.exe</translation>
 <translation id="270582584528242502">Không hiện hộp thoại nhắc nhở khi người dùng định thoát</translation>
+<translation id="2706209533052022524">Mặc thử là một tính năng dựa trên AI, cho phép người dùng thử đồ ảo qua hình ảnh quần áo tìm thấy trên web và sẽ cung cấp thông tin mua sắm chi tiết trong Gemini trong Chrome, nếu Gemini trong Chrome đã được bật.
+
+0 = Cho phép sử dụng tính năng này và cho phép Google sử dụng dữ liệu liên quan để cải tiến các mô hình AI. Tuỳ thuộc vào tính năng, dữ liệu liên quan có thể bao gồm hình ảnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi. Dữ liệu này cũng có thể được nhân viên xem xét để cải tiến các mô hình AI. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
+
+1 = Cho phép sử dụng tính năng nhưng không cho phép Google sử dụng nội dung của người dùng (bao gồm hình ảnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi) để cải tiến các mô hình. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
+
+2 = Không cho phép sử dụng tính năng này.
+
+Lưu ý: Quy định hạn chế đối với việc cải tiến mô hình (giá trị 1) chỉ áp dụng khi tính năng Mặc thử được kích hoạt thông qua quy trình của trình duyệt <ph name="CHROME" />. Quy định hạn chế này không áp dụng khi tính năng được sử dụng thông qua các quy trình khác.
+
+Nếu bạn không đặt chính sách này thì hành vi của chính sách sẽ do chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> xác định. Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings
+
+Tính năng Mặc thử không được hỗ trợ ở một số quốc gia hoặc ngôn ngữ. Việc thiết lập chính sách này không đảm bảo rằng tính năng sẽ được kích hoạt; điều này vẫn tuỳ thuộc vào khả năng sử dụng tính năng. Để biết thêm thông tin về việc ra mắt tính năng, hãy xem Ghi chú phát hành của Enterprise: https://support.google.com/chrome/a/answer/7679408?hl=en</translation>
 <translation id="2706708761587205154">Chỉ cho phép in khi có mã PIN</translation>
 <translation id="2707733461906745082">Phân tách hồ sơ</translation>
 <translation id="2707873794476722903">Tính năng Duyệt web an toàn đang hoạt động ở chế độ chuẩn.</translation>
@@ -3649,6 +3662,7 @@ Nếu bạn tắt <ph name="NTPCARDSVISIBLE" />, Thẻ Outlook sẽ không hiể
       Lưu ý: Đối với các thiết bị được quản lý <ph name="MS_AD_NAME" />, chính sách này hỗ trợ việc mở rộng <ph name="MACHINE_NAME_VARIABLE" /> sang tên máy <ph name="MS_AD_NAME" /> hoặc một chuỗi con của biến đó. Ví dụ: nếu tên máy là <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> sẽ được thay bằng 4 ký tự bắt đầu sau vị trí thứ 6, nói cách khác là sẽ được thay bằng <ph name="MACHINE_NAME_PART_EXAMPLE" />. Vị trí này dựa trên mốc 0.
 
       Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="PRINTERS_POLICY_NAME" />.</translation>
+<translation id="3296337890215573972">Tắt tính năng Mặc thử.</translation>
 <translation id="3296560797994110772">Phím tắt chứa phím tìm kiếm sẽ được gửi đến ứng dụng trước rồi mới được hệ điều hành xử lý.</translation>
 <translation id="3300441638895109781">Tự động tải lại quy trình xác thực trên ChromeOS</translation>
 <translation id="3300784749135986828">Bật hoặc tắt <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
@@ -5456,6 +5470,7 @@ Chính sách này không có hiệu lực nếu bạn bật, để trống hoặ
 <translation id="4515404363392014383">Bật tính năng Duyệt web an toàn cho các nguồn đáng tin cậy</translation>
 <translation id="4517327050150780380">Chế độ cài đặt cho tính năng Giúp tôi đọc</translation>
 <translation id="4518251772179446575">Hỏi bất cứ khi nào trang web muốn theo dõi vị trí thực của người dùng.</translation>
+<translation id="4521106598519506386">Tính năng đóng băng thẻ chạy trong nền đang bật</translation>
 <translation id="4521193243799782295">Trong khi đăng nhập, <ph name="PRODUCT_OS_NAME" /> có thể xác thực với một máy chủ (trực tuyến) hoặc sử dụng mật khẩu đã lưu vào bộ nhớ đệm (ngoại tuyến).
 
       Khi bạn đặt chính sách này thành -1, chính sách này sẽ không thực thi quá trình xác thực trực tuyến. Đồng thời, người dùng có thể sử dụng phương thức xác thực ngoại tuyến cho đến khi có một lý do khác không phải là chính sách này buộc họ phải đăng nhập ngoại tuyến. Nếu bạn đặt chính sách này thành 0 thì người dùng bắt buộc phải đăng nhập trực tuyến. Khi bạn đặt chính sách này thành bất kỳ giá trị nào khác, chính sách này sẽ chỉ định khoảng thời gian kể từ lần xác thực trực tuyến cuối cùng trước khi người dùng phải xác thực trực tuyến trong lần đăng nhập tiếp theo.
@@ -5566,6 +5581,7 @@ Các mẫu URL không được xung đột với <ph name="CONTROLLED_FRAME_BLOC
 <translation id="4554651132977135445">Chế độ xử lý vòng lặp trở lại của chính sách người dùng</translation>
 <translation id="4554991346503872538">Không bao giờ cung cấp bản dịch</translation>
 <translation id="4555850956567117258">Cho phép chứng thực từ xa cho người dùng</translation>
+<translation id="455594321531952386">Chế độ cài đặt cho tính năng Mặc thử.</translation>
 <translation id="4557134566541205630">URL trang thẻ mới của nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="4557484263538581790">Cài đặt cho phần tích hợp Chế độ AI của bên thứ ba trong thanh địa chỉ và hộp tìm kiếm trên trang Thẻ mới.</translation>
 <translation id="4558166110367609724">Tự động bỏ qua Điều khoản dịch vụ (ToS) và tải trình duyệt.</translation>
@@ -8151,6 +8167,7 @@ Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên b
 
 Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên bản được quản lý qua MDM (Quản lý thiết bị di động), đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6106258663605167373">Tắt thông báo quản lý trong phần chân trang của NTP</translation>
+<translation id="6108531405177298087">Bật tính năng Mặc thử và cải tiến mô hình.</translation>
 <translation id="610892566190435199">Bật tính năng báo cáo trạng thái nguồn của thiết bị</translation>
 <translation id="6111936128861357925">Cho phép trò chơi trứng khủng long Phục sinh</translation>
 <translation id="6118226055960302400">Khôi phục hành vi được phép.</translation>
@@ -8790,6 +8807,7 @@ Nếu bạn đặt thành Disabled (Tắt) hoặc không đặt chính sách nà
 <translation id="6424486395812679373">Thực hiện quá trình kiểm tra của tính năng Duyệt web an toàn đối với tất cả tệp tải xuống</translation>
 <translation id="6426899507714989471">Tắt tính năng tăng tốc đồ hoạ</translation>
 <translation id="6431446111529802555">Châu Âu.</translation>
+<translation id="6431778298276599807">Bật tính năng đóng băng thẻ chạy trong nền</translation>
 <translation id="6433697627431665375">Không cho phép đưa dữ liệu của <ph name="PRODUCT_NAME" /> vào bản sao lưu</translation>
 <translation id="6436052172226685535">Hành vi mặc định cho tính năng Hỗ trợ trình duyệt cũ.</translation>
 <translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> cố gắng nâng cấp một số
@@ -10017,6 +10035,7 @@ Nếu bạn không đặt chính sách này thì hành vi của chính sách s�
       Cấu hình được tải xuống và lưu vào bộ nhớ đệm. Cấu hình này sẽ được tải xuống lại mỗi khi URL hoặc hàm băm thay đổi.
 
       Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi được. Nếu bạn không đặt chính sách này, người dùng có thể tiếp tục sử dụng vùng chứa Crostini mặc định trong mục cấu hình đang hoạt động của vùng chứa đó nếu các chính sách cho phép Crostini.</translation>
+<translation id="7130092870893836308">Bật tính năng Mặc thử mà không cải tiến mô hình.</translation>
 <translation id="7132877481099023201">Các URL sẽ được cấp quyền truy cập thiết bị quay video mà không cần phải hiển thị lời nhắc</translation>
 <translation id="7134420220355750019">Chuyển nút chuột chính thành nút phải.
 
@@ -10875,6 +10894,7 @@ Bạn có thể ghi đè chính sách này cho các nguồn gốc cụ thể c�
 <translation id="7696412993033202071">URL mở ứng dụng xác thực bên ngoài</translation>
 <translation id="7696534428021833264">Bật Thẻ tệp SharePoint và OneDrive trên NTP</translation>
 <translation id="7699644797467448158">Xoá window.name khi thao tác điều hướng là thao tác ở cấp cao nhất giữa các trang web và hoán đổi BrowsingContextGroup.</translation>
+<translation id="7700606318567398251">Không cho phép sử dụng <ph name="CHROME_DEVTOOLS_NAME" /></translation>
 <translation id="7701341006446125684">Đặt kích thước bộ nhớ đệm của tiện ích và ứng dụng (bằng byte)</translation>
 <translation id="7701825382808690457">Sử dụng giá trị mặc định cho thoả thuận về khoá hậu lượng tử đối với WebRTC</translation>
 <translation id="7703041979684393741">Không cho phép thu thập nhật ký sự kiện WebRTC từ các dịch vụ của Google</translation>

@@ -515,6 +515,7 @@
 <translation id="2996682533106928201">輕觸即可關閉</translation>
 <translation id="2996809686854298943">必須要有網址</translation>
 <translation id="3024215143424744261">閱讀模式偏好設定已關閉</translation>
+<translation id="3024277805447899099">預覽圖片</translation>
 <translation id="3026955690410463085">加入連結</translation>
 <translation id="3027950907978057636">來自「<ph name="APP_LABEL" />」</translation>
 <translation id="3029276696788198026">不使用預先載入模式</translation>
@@ -787,6 +788,7 @@
 <translation id="4162867837470729563">分享選項清單已開啟，顯示於整個畫面。</translation>
 <translation id="4164642020717536140">快速又安全的網路瀏覽體驗</translation>
 <translation id="4165077084524712774">更多工具</translation>
+<translation id="4169156312706405526">附加雲端硬碟檔案</translation>
 <translation id="4170577491341606575">正在擷取你的資料\u2026</translation>
 <translation id="4172051516777682613">一律顯示</translation>
 <translation id="4176838562184310003">Chrome 上次未正確關閉，系統可嘗試還原遺失的視窗和分頁。還原後，部分視窗可能會處於最小化狀態。</translation>
@@ -1030,6 +1032,7 @@
 <translation id="5040262127954254034">隱私權</translation>
 <translation id="504456571576643789">注意事項</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{已選取 <ph name="WINDOW_COUNT_ONE" /> 個視窗}other{已選取 <ph name="WINDOW_COUNT_NORMAL" /> 個視窗}}</translation>
+<translation id="5058506215037547387">預覽頁面</translation>
 <translation id="506254248375231072">沒有任何分頁</translation>
 <translation id="5075939510584558547">不加密直接儲存</translation>
 <translation id="5078638979202084724">將所有分頁加入書籤</translation>
@@ -1255,6 +1258,7 @@
 <translation id="604996488070107836">發生不明錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="605721222689873409">年</translation>
 <translation id="606985262342505139">分頁底部功能表顯示在整個畫面上</translation>
+<translation id="6070608977567243308">選購 Google 智慧鏡頭拍攝的產品</translation>
 <translation id="6071995715087444295">如要檢查密碼是否外洩，請登入 Google 帳戶</translation>
 <translation id="6078323886959318429">新增捷徑</translation>
 <translation id="6085886413119427067">判斷如何透過安全連線連上網站</translation>
@@ -1302,6 +1306,7 @@
 <translation id="6232535412751077445">啟用「不追蹤」選項後，您的瀏覽流量會置入一項特定的要求，其作用則視網站是否回應要求，以及網站解讀要求的方式而定。
 
 舉例來說，部分網站可能會以顯示廣告的方式回應這類要求，而這些廣告並非根據您所造訪的其他網站記錄而產生。許多網站仍會收集您的瀏覽資料，並將這些資料用於下列目的：提高網站安全性、在網站上提供更相關的內容、廣告和推薦項目，以及產生報告統計資料。</translation>
+<translation id="6235349850462976369">翻譯 Google 智慧鏡頭拍攝的文字</translation>
 <translation id="623755660902014047">閱讀模式</translation>
 <translation id="6246073558347462570">內容彈出式視窗</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>

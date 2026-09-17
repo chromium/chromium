@@ -24,6 +24,7 @@
 <translation id="1757786065507923842">अभिभावकसँग अनुमति माग्दै अनुरोध पठाउन सकिएन।</translation>
 <translation id="1803557475693955505">पृष्ठभूमि पृष्ठ '<ph name="BACKGROUND_PAGE" />' लोड गर्न सकिएन।</translation>
 <translation id="1875387611427697908">यसलाई <ph name="CHROME_WEB_STORE" /> बाट मात्रै थप्न सकिन्छ</translation>
+<translation id="1901182793187376715">कम विश्वसनीय इन्भारोमेन्टमा नीतिअनुसार <ph name="EXTENSION_NAME" /> (एक्स्टेन्सन ID "<ph name="EXTENSION_ID" />") इन्स्टल गर्न मिल्दैन।</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" स्थापना गर्न असक्षम किनभने त्यो "<ph name="IMPORT_NAME" />" द्वारा अनुमति गरिएको छैन</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" थप्ने?</translation>
 <translation id="2159915644201199628">फोटो डिकोड गर्न सकिएन: '<ph name="IMAGE_NAME" />'</translation>

@@ -923,7 +923,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2527451058878391043">CVC možete pronaći na prednjoj strani kartice. To je četveroznamenkasti kôd u gornjem desnom kutu iznad broja kartice.</translation>
 <translation id="2529899080962247600">Broj unosa u ovom polju ne smije biti veći od <ph name="MAX_ITEMS_LIMIT" />. Svi će se daljnji unosi zanemariti.</translation>
 <translation id="2530042584066815841">Zaključavanje i upotreba miša</translation>
-<translation id="253493526287553278">Pogledajte pojedinosti o promotivnom kodu</translation>
 <translation id="2535585790302968248">Otvorite novu anonimnu karticu da biste pregledavali privatno</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i još jedan sudionik}one{i još #}few{i još #}other{i još #}}</translation>
 <translation id="2536110899380797252">Dodajte adresu</translation>
@@ -1429,6 +1428,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3432601291244612633">Zatvori stranicu</translation>
 <translation id="3434025015623587566">Google upravitelj zaporki treba više pristupa</translation>
 <translation id="343474037147570563">Datoteke koje prenesete ili priložite šalju se Google Cloudu ili trećim stranama na analizu. Na primjer, mogu se pregledavati radi otkrivanja osjetljivih podataka ili zlonamjernog softvera, pohranjivati na temelju pravila tvrtke i biti vidljive vašem administratoru.</translation>
+<translation id="3435267628744367511">Dvaput pritisnite Ctrl u bilo kojem obrascu da biste pronašli podatke i popunili ih bez prelaska s jedne kartice na drugu</translation>
 <translation id="3435557549311968410">Kontinuirano (kratko)</translation>
 <translation id="3435738964857648380">Sigurnost</translation>
 <translation id="3436125638121079308">Želite li automatski dijeliti relevantne kartice da biste dobili bolje odgovore u ovoj niti?</translation>
@@ -1517,6 +1517,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3577473026931028326">Nešto nije u redu. Pokušajte ponovo.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome će vas obavijestiti kada je stranica spremna. &lt;a&gt;Otkaži&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Automatsko dodavanje kartica</translation>
 <translation id="3582930987043644930">Dodajte ime</translation>
 <translation id="3583757800736429874">&amp;Ponovi premještanje</translation>
 <translation id="3584299510153766161">Dvostruko bušenje pri dnu</translation>
@@ -1591,6 +1592,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Učitavanje...</translation>
 <translation id="3709599264800900598">Tekst koji ste kopirali</translation>
+<translation id="3711223220609269738">Nova izolirana kartica</translation>
 <translation id="3711430313228789376">Preglednik Chrome pokušava prikazati zaporke</translation>
 <translation id="3711895659073496551">Obustavi</translation>
 <translation id="3712004750972384495">Spremanje snimanja zaslona</translation>
@@ -1609,6 +1611,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3727309136762649052">Prostor naziva</translation>
 <translation id="3727850735097852673">Da biste upotrebljavali Google upravitelj zaporki s macOS Keychainom, ponovo pokrenite Chrome i dopustite pristup Keychainu. Kartice će se ponovo otvoriti nakon ponovnog pokretanja.</translation>
 <translation id="3728173127485570463">Preglednik Chrome više neće zahtijevati vaš otisak prsta za automatsko popunjavanje zaporki</translation>
+<translation id="3729811201279509483">Ručno dodavanje kartica</translation>
 <translation id="3736564442532774454">Preglednik Chrome pokušava unijeti vaše osjetljive podatke u aplikaciji <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Vašim preglednikom upravlja vaš administrator.</translation>
 <translation id="3739842843727261045">Palac gore šalje povratne informacije da vam se ti rezultati sviđaju</translation>
@@ -2406,7 +2409,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5052488928733955073">Došlo je do problema pri unosu podataka. Provjerite vezu.</translation>
 <translation id="5053116470141135293">Prilikom naplate pomoću ove kartice popunit će se broj virtualne kartice radi zaštite vaših stvarnih podataka. Tom postavkom možete upravljati u Google Walletu. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Da biste poslali tu datoteku pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}one{Da biste poslali te datoteke pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}few{Da biste poslali te datoteke pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}other{Da biste poslali te datoteke pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}}</translation>
-<translation id="5056587122125565772">Izradi sliku</translation>
 <translation id="505757197798929356">Navedite razlog otvaranja (obavezno)</translation>
 <translation id="5058282932481719070">saznajte više o poboljšanom automatskom popunjavanju u postavkama</translation>
 <translation id="5061227663725596739">Jeste li mislili <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2772,6 +2774,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5649053991847567735">Automatska preuzimanja</translation>
 <translation id="5651323159439184939">Feed traktora</translation>
 <translation id="5653681867130739344">Sigurno ažurirajte osobnu iskaznicu u Google Walletu</translation>
+<translation id="5653744563415531641">Spremite svoje podatke da biste brže obavljali zadatke kao što je ispunjavanje obrazaca u Googleovim proizvodima. Možete <ph name="MANAGE_WALLET_SETTINGS_LINK" /> za račun <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID prenesenog izvješća o rušenju:</translation>
 <translation id="5654965123204121933">URL ne sadrži obavezni zamjenski niz <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">e-pošta</translation>
@@ -2895,6 +2898,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5884465125445718607">Kineska omotnica br. 6</translation>
 <translation id="5887400589839399685">Kartica je spremljena</translation>
 <translation id="5887687176710214216">Posljednji posjet bio je jučer</translation>
+<translation id="5887791684215121787">Pritisnite ⌘ ⌘ u bilo kojem obrascu da biste pronašli podatke i popunili ih bez prelaska s jedne kartice na drugu</translation>
 <translation id="5889251770650310375">Da bi se prikazala povijest s drugih uređaja, potvrdite svoj identitet te sinkronizirajte povijest i kartice. Sinkronizaciju uvijek možete zaustaviti u postavkama. Google može personalizirati Pretraživanje i druge usluge na temelju vaše povijesti.</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
 <translation id="5895187275912066135">Izdano</translation>
@@ -3217,6 +3221,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="6410264514553301377">Unesite datum isteka i CVC za karticu <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Dijaloški okvir roditeljskog odobrenja</translation>
+<translation id="6413532517183895572">upravljati postavkama Walleta</translation>
 <translation id="6415778972515849510">Chromium vam može pomoći da zaštitite svoj Google račun i promijenite zaporku.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Provjerite jesu li svi ključni poslovni ili osobni podaci pohranjeni eksterno.</translation>

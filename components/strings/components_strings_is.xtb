@@ -923,7 +923,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2527451058878391043">CVC-númerið er á framhlið kortsins. Það er 4 tölustafa kóðinn efst til hægri ofan við kortanúmerið.</translation>
 <translation id="2529899080962247600">Þessi reitur á ekki að innihalda fleiri en <ph name="MAX_ITEMS_LIMIT" /> færslur. Allar frekari færslur verða hunsaðar.</translation>
 <translation id="2530042584066815841">Læsing og notkun músar</translation>
-<translation id="253493526287553278">Sjá upplýsingar um kynningarkóða</translation>
 <translation id="2535585790302968248">Opnaðu nýjan huliðsflipa til að fara huldu höfði</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{og 1 í viðbót}one{og # í viðbót}other{og # í viðbót}}</translation>
 <translation id="2536110899380797252">Bæta við heimilisfangi</translation>
@@ -1517,6 +1516,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3577473026931028326">Eitthvað fór úrskeiðis. Reyndu aftur.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome lætur þig vita þegar þessi síða er tilbúin. &lt;a&gt;Hætta við&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Bæta flipum sjálfkrafa við</translation>
 <translation id="3582930987043644930">Bæta við nafni</translation>
 <translation id="3583757800736429874">Endu&amp;rtaka flutning</translation>
 <translation id="3584299510153766161">Tvö göt neðst</translation>
@@ -1592,6 +1592,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" />–<ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Hleður...</translation>
 <translation id="3709599264800900598">Texti sem þú afritaðir</translation>
+<translation id="3711223220609269738">Nýr einangraður flipi</translation>
 <translation id="3711430313228789376">Chrome-vafri er að reyna að birta aðgangsorð</translation>
 <translation id="3711895659073496551">Biðstaða</translation>
 <translation id="3712004750972384495">Vistar skjáupptöku</translation>
@@ -1610,6 +1611,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3727309136762649052">Nafnrými</translation>
 <translation id="3727850735097852673">Til að nota Google-aðgangsorðastjórnun með macOS Keychain skaltu endurræsa Chrome og veita Keychain aðgang. Fliparnir þínir opnast aftur eftir endurræsingu.</translation>
 <translation id="3728173127485570463">Chrome-vafri krefst ekki lengur fingrafars frá þér til að fylla aðgangsorð út sjálfvirkt</translation>
+<translation id="3729811201279509483">Bæta flipum við handvirkt</translation>
 <translation id="3736564442532774454">Chrome-vafrinn er að reyna að fylla út viðkvæmar upplýsingar í <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Vafranum er stjórnað af kerfisstjóranum þínum.</translation>
 <translation id="3739842843727261045">Þumall upp sendir ábendingu um að þér líki við þessar niðurstöður</translation>
@@ -2407,7 +2409,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5052488928733955073">Vandamál kom upp við að fylla út upplýsingarnar þínar. Athugaðu tenginguna þína.</translation>
 <translation id="5053116470141135293">Númer sýndarkorts verður fyllt út þegar þú gengur frá kaupum með þessu korti til að vernda raunupplýsingarnar þínar. Stjórna í Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Losaðu um pláss (<ph name="DISK_SPACE_SIZE" />) í tækinu þínu til að senda þessa skrá með nærdeilingu}one{Losaðu um pláss (<ph name="DISK_SPACE_SIZE" />) í tækinu þínu til að senda þessa skrá með nærdeilingu}other{Losaðu um pláss (<ph name="DISK_SPACE_SIZE" />) í tækinu þínu til að senda þessar skrár með nærdeilingu}}</translation>
-<translation id="5056587122125565772">Búa til mynd</translation>
 <translation id="505757197798929356">Gefðu upp ástæðu opnunar (áskilið)</translation>
 <translation id="5058282932481719070">nánar um ítarlega sjálfvirka útfyllingu í stillingum</translation>
 <translation id="5061227663725596739">Áttirðu við <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2773,6 +2774,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5649053991847567735">Sjálfvirkt niðurhal</translation>
 <translation id="5651323159439184939">Gatapappír</translation>
 <translation id="5653681867130739344">Uppfærðu skilríki á öruggan hátt í Google-veski</translation>
+<translation id="5653744563415531641">Vistaðu upplýsingarnar þínar og komdu hlutum hraðar í verk, t.d. að fylla út eyðublöð í Google-vörum. Hægt er að <ph name="MANAGE_WALLET_SETTINGS_LINK" /> fyrir <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Auðkenni sendrar hrunskýrslu:</translation>
 <translation id="5654965123204121933">Vefslóðin inniheldur ekki nauðsynlega skiptistrenginn <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Netfang</translation>
@@ -3218,6 +3220,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6410264514553301377">Sláðu inn gildistímann og CVC-númerið fyrir <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Gluggi með samþykki foreldris</translation>
+<translation id="6413532517183895572">stjórna stillingum Veskis</translation>
 <translation id="6415778972515849510">Chromium getur hjálpað þér að vernda Google reikninginn þinn og breyta aðgangsorðinu.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Gakktu úr skugga um að mikilvægar rekstrar- eða persónuupplýsingar séu vistaðar í ytri geymslu.</translation>

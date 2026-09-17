@@ -268,6 +268,7 @@
 <translation id="17906873777101817">ਪਾਸਵਰਡ ਅਤੇ ਪਾਸਕੀਆਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰੋ</translation>
 <translation id="1794893174442046596">ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="1807893857950749072">ਕੀਮਤ ਸੰਬੰਧੀ ਟਰੈਕਿੰਗ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਦੀ ਆਗਿਆ ਦਿਓ…</translation>
+<translation id="1808142805674973090">ਮੋਡ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="1809929083618343438">ਇਸ ਨਾਲ Chrome ਤੋਂ ਚੁਣੀ ਗਈ ਜਾਣਕਾਰੀ ਹਟ ਜਾਂਦੀ ਹੈ, ਪਰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਤੋਂ ਇਹ ਜਾਣਕਾਰੀ ਨਹੀਂ ਹਟਦੀ।</translation>
 <translation id="1810976980198522421">ਰੱਦ ਕਰੋ</translation>
 <translation id="1815941218935345331">ਪਾਸਕੋਡ</translation>
@@ -849,6 +850,7 @@
 <translation id="3779810277399252432">ਕੋਈ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਨਹੀਂ ਹੈ।</translation>
 <translation id="3782614601387961027">ਚਿਤਾਵਨੀ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="3789841737615482174">ਸਥਾਪਤ ਕਰੋ</translation>
+<translation id="3793603310364129123">ਘੱਟ ਪੜਾਅ, ਤੇਜ਼ ਲਿੰਕ</translation>
 <translation id="380329542618494757">ਨਾਮ</translation>
 <translation id="3803696231112616155">ਇਸ ਸਾਈਟ ਨੂੰ ਅਨੁਵਾਦ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼</translation>
 <translation id="3810973564298564668">ਵਿਵਸਥਿਤ ਕਰੋ</translation>
@@ -1380,6 +1382,7 @@
 <translation id="5467163657366219870">Maps ਪੂਰਵ-ਝਲਕ ਬੰਦ ਕਰੋ</translation>
 <translation id="5474397204728336997">ਪਰਿਵਾਰਕ ਪਾਸਵਰਡ, ਨਵੇਂ ਵਿਉਂਤਬੱਧਕਰਨ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ। ਹੋਰ ਜਾਣਨ ਲਈ ਟੈਪ ਕਰੋ।</translation>
 <translation id="5475793109165786685">{count,plural, =0{ਕੋਈ ਪਾਸਵਰਡ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ}=1{{count} ਪਾਸਵਰਡ ਆਯਾਤ ਕੀਤਾ ਗਿਆ}other{{count} ਪਾਸਵਰਡ ਆਯਾਤ ਕੀਤੇ ਗਏ}}</translation>
+<translation id="5477188385487393357">ਕਾਪੀ ਅਤੇ ਪੇਸਟ ਕਰਨਾ ਛੱਡੋ</translation>
 <translation id="5478327362747197944">ਕਿਸੇ ਵੈੱਬ ਪੰਨੇ 'ਤੇ ਕਿਸੇ ਤਾਰੀਖ 'ਤੇ ਕਲਿੱਕ ਕਰ ਕੇ ਸਿੱਧੇ ਕੈਲੰਡਰ ਇਵੈਂਟ ਬਣਾਓ।</translation>
 <translation id="5482922178977937393">ਕੀ ਤੁਸੀਂ ਆਪਣੀਆਂ ਦਿਲਚਸਪੀਆਂ ਦੇ ਆਧਾਰ 'ਤੇ ਖਬਰਾਂ, ਖੇਡਾਂ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਬਾਰੇ ਸੂਚਨਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="5483838506518938965">ਤੁਸੀਂ ਪੂਰੀ ਤਰ੍ਹਾਂ ਤਿਆਰ ਹੋ</translation>
@@ -1746,6 +1749,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="6585618849026997638">ਬੁੱਕਮਾਰਕ ਸ਼ਾਮਲ ਕਰਕੇ ਤੁਸੀਂ ਉਸ ਪੰਨੇ 'ਤੇ ਆਸਾਨੀ ਨਾਲ ਵਾਪਸ ਜਾ ਸਕਦੇ ਹੋ ਜੋ ਤੁਹਾਡੇ ਲਈ ਮਹੱਤਵਪੂਰਨ ਹੈ</translation>
 <translation id="6589001036857939353">ਡੁਪਲੀਕੇਟਾਂ ਨੂੰ ਮਿਲਾਓ</translation>
 <translation id="659407965921887085">ਇਸ ਕਾਰਡ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਟਰੈਕ ਕੀਤੇ ਉਤਪਾਦਾਂ ਦੀ ਕੀਮਤਾਂ ਘਟਣ ਬਾਰੇ ਜਾਣਕਾਰੀ ਦਿਖਾਈ ਦਿੰਦੀ ਹੈ</translation>
+<translation id="6596324345367949437">Gemini ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="6596481460663245319">Google ਨਾਲ ਚਿੱਤਰ ਖੋਜੋ</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> ਲਈ Google Photos ਵਿੱਚ ਚਿੱਤਰ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="6602173570135186741">ਆਟੋਫਿਲ ਅਤੇ ਪਾਸਵਰਡ</translation>

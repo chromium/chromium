@@ -142,6 +142,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1090541560108055381">Trước khi ghép nối, hãy đảm bảo mã này giống nhau trên cả hai thiết bị</translation>
 <translation id="1093457606523402488">Mạng hiển thị:</translation>
 <translation id="1093645050124056515">ctrl + alt + mũi tên xuống</translation>
+<translation id="1095398697303758108">Nhấn Ctrl hai lần để dùng tính năng tự động điền nâng cao</translation>
 <translation id="1095879482467973146">Trình quản lý mật khẩu của Google trên web</translation>
 <translation id="1097016918605049747">Không thể dịch trang này</translation>
 <translation id="1099962274138857708">Hình ảnh được sao chép từ <ph name="DEVICE_NAME" /></translation>
@@ -5334,6 +5335,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5060419232449737386">Cài đặt phụ đề</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Thư mục này chứa một dấu trang. Bạn có chắc chắn muốn xóa thư mục không?}other{Thư mục này chứa # dấu trang. Bạn có chắc chắn muốn xóa thư mục không?}}</translation>
 <translation id="5061531353537614467">Lãnh nguyên</translation>
+<translation id="5061781067616989032">Thiết lập phím tắt của riêng bạn</translation>
 <translation id="5062863364865466276">Chuyển động</translation>
 <translation id="5063480226653192405">Mức sử dụng</translation>
 <translation id="5064921774605267982">Mở hồ sơ <ph name="PROFILE_NAME" />. Hồ sơ này do cha mẹ của bạn quản lý.</translation>
@@ -7417,6 +7419,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6710213216561001401">Trước</translation>
 <translation id="6710394144992407503">Kiểm tra lỗi chính tả khi bạn nhập văn bản trên các trang web</translation>
 <translation id="6711236403841768371">Trước <ph name="END_DATE" /></translation>
+<translation id="6711569175139833669">Nhấn ⌘ hai lần để dùng tính năng tự động điền nâng cao</translation>
 <translation id="6712943853047024245">Bạn đã lưu mật khẩu cho tên người dùng này trên <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Thêm hồ sơ công việc</translation>
 <translation id="6713441551032149301">Giữ phím trình chạy để thay đổi giữa phím chức năng và phím hàng trên cùng của hệ thống</translation>
@@ -8573,6 +8576,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7602173054665172958">Quản lý lệnh in</translation>
 <translation id="7602805861133750578">Giờ đây, bạn có thể quản lý các nhóm thẻ, cuộc trò chuyện với Gemini và chuỗi trò chuyện trong Chế độ AI ở cùng một nơi. Bạn có thể bỏ ghim nội dung này bất cứ lúc nào.</translation>
 <translation id="7602868996817972616">Hỏi Google về trang này</translation>
+<translation id="7603583710244190070">Tổ chức của bạn chặn thao tác chia sẻ màn hình của thẻ này</translation>
 <translation id="7603785829538808504">Các trang web trong danh sách dưới đây tuân theo một chế độ cài đặt tùy chỉnh</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{Còn 1 mật khẩu chưa nhập}other{Còn {NUM_PASSWORDS} mật khẩu chưa nhập}}</translation>
 <translation id="7605163396341021431">Cấp cho ứng dụng Android quyền kiểm soát thiết bị USB trên Chromebook này</translation>
@@ -8726,6 +8730,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="7707108266051544351">Trang web này đã bị chặn sử dụng cảm biến chuyển động.</translation>
 <translation id="7707922173985738739">Sử dụng dữ liệu di động</translation>
 <translation id="7709152031285164251">Không thành công - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7709839510451455295">Xoá phím tắt tuỳ chỉnh của tính năng tự động điền nâng cao</translation>
 <translation id="7710568461918838723">&amp;Truyền...</translation>
 <translation id="7711968363685835633">Tắt tính năng chuyển đổi và đề xuất được cá nhân hoá cũng như từ điển người dùng</translation>
 <translation id="7712739869553853093">Hộp thoại Xem trước bản in</translation>
@@ -8765,6 +8770,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="7742706086992565332">Bạn có thể đặt mức phóng to hoặc thu nhỏ trên một số trang web</translation>
 <translation id="7742879569460013116">Chia sẻ đường liên kết cho</translation>
 <translation id="774377079771918250">Chọn vị trí lưu</translation>
+<translation id="7743876437245989842">Tổ chức của bạn chặn thao tác chia sẻ màn hình của một thẻ</translation>
 <translation id="7744047395460924128">Xem lịch sử in của bạn</translation>
 <translation id="7744192722284567281">Phát hiện thấy trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="7744649840067671761">Nhấn vào một công tắc mới hoặc một phím trên bàn phím để bắt đầu gán.
@@ -9387,6 +9393,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8215129063232901118">Sử dụng các tính năng của điện thoại trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Làm nổi bật con trỏ</translation>
 <translation id="8217399928341212914">Tiếp tục chặn tự động tải nhiều tệp xuống</translation>
+<translation id="8218411859495801458">Chỉnh sửa phím tắt tuỳ chỉnh của tính năng tự động điền nâng cao</translation>
 <translation id="8221358554841691213">Kiểu tiêu điểm trung bình</translation>
 <translation id="8221942262855134126">Quản lý mật khẩu</translation>
 <translation id="8222112516148944758">Các nhóm thẻ sẽ tự động lưu và cập nhật trên mọi thiết bị của bạn.</translation>
@@ -9770,6 +9777,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="851263357009351303">Luôn cho phép <ph name="HOST" /> hiển thị hình ảnh</translation>
 <translation id="8513108775083588393">Tự động xoay</translation>
 <translation id="8513357934662532537">Để nhập mật khẩu vào <ph name="BRAND" /> cho <ph name="USER_EMAIL" />, hãy chọn một tệp CSV.</translation>
+<translation id="8514257511170433540">Sử dụng phím tắt mặc định khi điền vào biểu mẫu</translation>
 <translation id="8514746246728959655">Thử một khóa bảo mật khác</translation>
 <translation id="8514828975162859845">Bánh kẹo mút</translation>
 <translation id="8514955299594277296">Không cho phép các trang web lưu dữ liệu trên thiết bị của bạn (không khuyến nghị)</translation>
@@ -10761,6 +10769,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="973558314812359997">Kích thước chuột</translation>
 <translation id="973788791897303708">Nhóm thẻ này đã đầy</translation>
 <translation id="97381968209917373">Xoá chứng chỉ <ph name="CERT_NAME" /></translation>
+<translation id="97570902379088759">Tổ chức của bạn chặn thao tác chia sẻ màn hình của <ph name="TAB_NAME" /></translation>
 <translation id="975893173032473675">Ngôn ngữ cần dịch sang</translation>
 <translation id="976572010712028687">Xác minh bạn là cha/mẹ</translation>
 <translation id="977175416263153310">Mở trong Cửa sổ biệt lập</translation>

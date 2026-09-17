@@ -514,7 +514,9 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2996291259634659425">Wachtwoordzin maken</translation>
 <translation id="2996682533106928201">Tik om te sluiten</translation>
 <translation id="2996809686854298943">URL vereist</translation>
+<translation id="3007318536447999974">Als je met Gemini wilt praten, geef je Gemini toestemming om je microfoon te gebruiken. Je kunt dit ook beheren in <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" />.</translation>
 <translation id="3024215143424744261">Voorkeuren voor de leesmodus gesloten</translation>
+<translation id="3024277805447899099">Voorbeeld van afbeelding</translation>
 <translation id="3026955690410463085">Link toevoegen</translation>
 <translation id="3027950907978057636">Van <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Niet vooraf laden</translation>
@@ -787,6 +789,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4162867837470729563">Lijst met deelopties op volledige hoogte.</translation>
 <translation id="4164642020717536140">Browse snel en beveiligd op internet</translation>
 <translation id="4165077084524712774">Meer tools</translation>
+<translation id="4169156312706405526">Bestanden uit Drive bijvoegen</translation>
 <translation id="4170577491341606575">Je gegevens ophalen\u2026</translation>
 <translation id="4172051516777682613">Altijd bekijken</translation>
 <translation id="4176838562184310003">Chrome is niet correct uitgezet en kan proberen je verloren vensters en tabbladen te herstellen. Sommige vensters worden misschien geminimaliseerd als ze worden hersteld.</translation>
@@ -1030,6 +1033,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="504456571576643789">Overwegingen</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> venster geselecteerd}other{<ph name="WINDOW_COUNT_NORMAL" /> vensters geselecteerd}}</translation>
+<translation id="5058506215037547387">Voorbeeld van pagina</translation>
 <translation id="506254248375231072">Geen tabbladen</translation>
 <translation id="5075939510584558547">Opslaan zonder versleuteling</translation>
 <translation id="5078638979202084724">Bookmark toevoegen aan alle tabbladen</translation>
@@ -1255,6 +1259,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="604996488070107836">Download van <ph name="FILE_NAME" /> mislukt vanwege een onbekende fout.</translation>
 <translation id="605721222689873409">JJ</translation>
 <translation id="606985262342505139">Tabblad onderaan op volledige hoogte</translation>
+<translation id="6070608977567243308">Afbeelding shoppen met Google Lens</translation>
 <translation id="6071995715087444295">Log in op je Google-account om te checken op gehackte wachtwoorden</translation>
 <translation id="6078323886959318429">Snelkoppeling toevoegen</translation>
 <translation id="6085886413119427067">Bepaalt hoe verbinding wordt gemaakt met websites via een beveiligde verbinding</translation>
@@ -1302,6 +1307,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6232535412751077445">Als je Niet bijhouden aanzet, wordt hiervoor een verzoek opgenomen in je browseverkeer. Het resultaat daarvan hangt af van of een website reageert op het verzoek en hoe het verzoek wordt geïnterpreteerd.
 
 Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken die niet zijn gebaseerd op andere websites die je hebt bezocht. Toch blijven veel websites je browsegegevens nog verzamelen en gebruiken, bijvoorbeeld om de beveiliging te verbeteren, om content, services, advertenties en aanbevelingen te leveren en om rapportagestatistieken te genereren.</translation>
+<translation id="6235349850462976369">Afbeelding vertalen met Google Lens</translation>
 <translation id="623755660902014047">Leesmodus</translation>
 <translation id="6246073558347462570">Pop-upvenster voor context</translation>
 <translation id="6247557882553405851">Google Wachtwoordmanager</translation>
@@ -1810,7 +1816,9 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8058746566562539958">Openen op nieuw Chrome-tabblad</translation>
 <translation id="8062594758852531064">Uitgebreid vooraf laden:</translation>
 <translation id="8063895661287329888">Kan bookmark niet toevoegen.</translation>
+<translation id="8064081231614696741">Kies een andere map</translation>
 <translation id="8066816452984416180">Bookmark deze pagina snel. Houd je vinger op het scherm om deze snelkoppeling te bewerken.</translation>
+<translation id="8068041627541121907">Gemini wil je microfoon gebruiken</translation>
 <translation id="8072436850275034464">Je kunt tabbladen die je onlangs hebt gesloten opnieuw openen vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="8073388330009372546">Openen op nieuw tabblad</translation>
 <translation id="8076492880354921740">Tabbladen</translation>

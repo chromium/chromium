@@ -923,7 +923,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2527451058878391043">Koda CVC je na sprednji strani kartice. To je 4-mestna koda v zgornjem desnem kotu nad številko kartice.</translation>
 <translation id="2529899080962247600">V tem polju je lahko največ toliko vnosov: <ph name="MAX_ITEMS_LIMIT" />. Vsi nadaljnji vnosi bodo prezrti.</translation>
 <translation id="2530042584066815841">Zaklepanje in uporaba miške</translation>
-<translation id="253493526287553278">Ogled podrobnosti o promocijskih kodah</translation>
 <translation id="2535585790302968248">Odpiranje novega anonimnega zavihka za zasebno brskanje</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{in še 1}one{in še #}two{in še #}few{in še #}other{in še #}}</translation>
 <translation id="2536110899380797252">Dodaj naslov</translation>
@@ -1429,6 +1428,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3432601291244612633">Zapri stran</translation>
 <translation id="3434025015623587566">Googlov upravitelj gesel potrebuje več dostopa</translation>
 <translation id="343474037147570563">Datoteke, ki jih naložite ali pripnete, so poslane v oblak Google Cloud ali drugim ponudnikom v analizo. Lahko so na primer pregledane glede tega, ali vsebujejo občutljive podatke ali zlonamerno programsko opremo, in shranjene glede na pravilnike podjetja ter vidne vašemu skrbniku.</translation>
+<translation id="3435267628744367511">Dvakrat pritisnite Ctrl v katerem koli obrazcu, če želite poiskati in vnesti podatke brez preklapljanja med zavihki</translation>
 <translation id="3435557549311968410">Continuous (Short)</translation>
 <translation id="3435738964857648380">Varnost</translation>
 <translation id="3436125638121079308">Želite samodejno deliti ustrezne zavihke za boljše odgovore v tej niti?</translation>
@@ -2407,7 +2407,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5052488928733955073">Težava pri izpolnjevanju podatkov. Preverite povezavo.</translation>
 <translation id="5053116470141135293">Pri zaključku nakupa s to kartico bo vnesena številka navidezne kartice, da bodo vaši dejanski podatki zaščiteni. Upravljajte v Google Denarnici. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Če želite to datoteko poslati z deljenjem v bližini, sprostite prostor v napravi (<ph name="DISK_SPACE_SIZE" />).}one{Če želite te datoteke poslati z deljenjem v bližini, sprostite prostor v napravi (<ph name="DISK_SPACE_SIZE" />).}two{Če želite te datoteke poslati z deljenjem v bližini, sprostite prostor v napravi (<ph name="DISK_SPACE_SIZE" />).}few{Če želite te datoteke poslati z deljenjem v bližini, sprostite prostor v napravi (<ph name="DISK_SPACE_SIZE" />).}other{Če želite te datoteke poslati z deljenjem v bližini, sprostite prostor v napravi (<ph name="DISK_SPACE_SIZE" />).}}</translation>
-<translation id="5056587122125565772">Ustvari sliko</translation>
 <translation id="505757197798929356">Navedite razlog za odpiranje (obvezno)</translation>
 <translation id="5058282932481719070">preberite več o izboljšanem samodejnem izpolnjevanju v nastavitvah</translation>
 <translation id="5061227663725596739">Ali ste mislili <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2896,6 +2895,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5884465125445718607">Kitajska kuverta št. 6</translation>
 <translation id="5887400589839399685">Kartica je shranjena</translation>
 <translation id="5887687176710214216">Nazadnje obiskano včeraj</translation>
+<translation id="5887791684215121787">Pritisnite ⌘ ⌘ v katerem koli obrazcu, če želite poiskati in vnesti podatke brez preklapljanja med zavihki</translation>
 <translation id="5889251770650310375">Če želite dostopati do zgodovine iz drugih naprav, potrdite, da ste to vi, ter sinhronizirajte zgodovino in zavihke. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
 <translation id="5895187275912066135">Izdano dne</translation>

@@ -268,6 +268,7 @@
 <translation id="17906873777101817">Ofro ruajtjen e fjalëkalimeve dhe çelësave të kalimit</translation>
 <translation id="1794893174442046596">Grupi i skedave</translation>
 <translation id="1807893857950749072">Lejo njoftimet për monitorimin e çmimeve…</translation>
+<translation id="1808142805674973090">Ndërro modalitetet</translation>
 <translation id="1809929083618343438">Kjo heq informacionet e zgjedhura nga Chrome, por nuk i fshin këto informacione nga "Llogaria jote e Google".</translation>
 <translation id="1810976980198522421">Anulo</translation>
 <translation id="1815941218935345331">Kodi i kalimit</translation>
@@ -849,6 +850,7 @@
 <translation id="3779810277399252432">Nuk ka lidhje interneti.</translation>
 <translation id="3782614601387961027">Hiq paralajmërimin</translation>
 <translation id="3789841737615482174">Instalo</translation>
+<translation id="3793603310364129123">Më pak hapa, lidhje më të shpejta</translation>
 <translation id="380329542618494757">Emri</translation>
 <translation id="3803696231112616155">Ofro përkthimin për këtë sajt</translation>
 <translation id="3810973564298564668">Menaxho</translation>
@@ -1380,6 +1382,7 @@
 <translation id="5467163657366219870">Çaktivizo "Variantet paraprake të Maps"</translation>
 <translation id="5474397204728336997">Fjalëkalimet e familjes, personalizime të reja etj. Trokit për të mësuar më shumë.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Nuk u importua asnjë fjalëkalim}=1{U importua {count} fjalëkalim}other{U importuan {count} fjalëkalime}}</translation>
+<translation id="5477188385487393357">Kapërce "Kopjo dhe ngjit"</translation>
 <translation id="5478327362747197944">Krijo drejtpërdrejt ngjarje të "Kalendarit" duke klikuar në një datë në një faqe uebi.</translation>
 <translation id="5482922178977937393">Dëshiron të marrësh njoftime për lajmet, sportet etj. bazuar në interesat e tu?</translation>
 <translation id="5483838506518938965">Je plotësisht gati</translation>
@@ -1746,6 +1749,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6585618849026997638">Mund të kthehesh te një faqe që është e rëndësishme për ty duke shtuar një faqeshënues</translation>
 <translation id="6589001036857939353">Shkri dublikatat</translation>
 <translation id="659407965921887085">Kjo kartë shfaq rëniet e çmimeve në ueb për produktet që ti monitoron aktualisht</translation>
+<translation id="6596324345367949437">Gemini nuk ofrohet në modalitetin "I fshehtë"</translation>
 <translation id="6596481460663245319">Kërko në imazh me Google</translation>
 <translation id="6601302169302852717">Imazhi u ruajt te "Fotografitë e Google" për <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Plotësimi automatik dhe fjalëkalimet</translation>

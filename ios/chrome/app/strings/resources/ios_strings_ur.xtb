@@ -268,6 +268,7 @@
 <translation id="17906873777101817">پاس ورڈز اور پاس کیز محفوظ کرنے کی پیشکش</translation>
 <translation id="1794893174442046596">ٹیب گروپ</translation>
 <translation id="1807893857950749072">قیمت کی ٹریکنگ سے متعلق اطلاعات کی اجازت دیں…</translation>
+<translation id="1808142805674973090">وضع سوئچ کریں</translation>
 <translation id="1809929083618343438">‏اس سے Chrome سے منتخب کردہ معلومات ہٹ جاتی ہیں، لیکن اس سے آپ کے Google اکاؤنٹ سے یہ معلومات حذف نہیں ہوتی ہے۔</translation>
 <translation id="1810976980198522421">منسوخ کریں</translation>
 <translation id="1815941218935345331">پاس کوڈ</translation>
@@ -849,6 +850,7 @@
 <translation id="3779810277399252432">کوئی انٹرنیٹ کنکشن نہیں ہے۔</translation>
 <translation id="3782614601387961027">وارننگ برخاست کریں</translation>
 <translation id="3789841737615482174">انسٹال کریں</translation>
+<translation id="3793603310364129123">کم مراحل، تیز تر لنکس</translation>
 <translation id="380329542618494757">نام</translation>
 <translation id="3803696231112616155">اس سائٹ کا ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="3810973564298564668">نظم کریں</translation>
@@ -1380,6 +1382,7 @@
 <translation id="5467163657366219870">‏‫'Maps کے پیش مناظر' کو آف کریں</translation>
 <translation id="5474397204728336997">فیملی پاس ورڈز، حسب ضرورت بنانے کی نئی سہولتیں اور بہت کچھ۔ مزید جاننے کے لیے تھپتھپائیں۔</translation>
 <translation id="5475793109165786685">{count,plural, =0{کوئی پاس ورڈ درآمد نہیں کیا گیا}=1{‫{count} پاس ورڈ کو درآمد کیا گیا}other{‫{count} پاس ورڈز کو درآمد کیا گیا}}</translation>
+<translation id="5477188385487393357">کاپی اور پیسٹ کو نظر انداز کریں</translation>
 <translation id="5478327362747197944">ویب صفحہ میں کسی تاریخ پر کلک کر کے براہ راست کیلنڈر کے ایونٹس تخلیق کریں۔</translation>
 <translation id="5482922178977937393">کیا آپ اپنی دلچسپیوں کی بنیاد پر خبروں، اسپورٹس اور مزید کے لیے اطلاعات حاصل کرنا چاہیں گے؟</translation>
 <translation id="5483838506518938965">آپ پوری طرح سے تیار ہیں</translation>
@@ -1746,6 +1749,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6585618849026997638">بُک مارک شامل کر کے آپ کسی ایسے صفحے پر واپس جا سکتے ہیں جو آپ کیلئے اہم ہے</translation>
 <translation id="6589001036857939353">ڈپلیکیٹس کو ضم کریں</translation>
 <translation id="659407965921887085">یہ کارڈ ویب پر ان پروڈکٹس کی قیمت میں کمی دکھاتا ہے جنہیں آپ اس وقت ٹریک کر رہے ہیں</translation>
+<translation id="6596324345367949437">‏‫Gemini پوشیدگی وضع میں دستیاب نہیں ہے</translation>
 <translation id="6596481460663245319">‏Google کی مدد سے تصویر تلاش کریں</translation>
 <translation id="6601302169302852717">‏<ph name="USER_EMAIL" /> کے لیے Google تصاویر میں تصویر محفوظ ہو گئی</translation>
 <translation id="6602173570135186741">آٹوفل اور پاس ورڈز</translation>

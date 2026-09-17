@@ -1341,6 +1341,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="2026367923222947564">Celá strana</translation>
 <translation id="2026377162111110983">Hlas oblasti</translation>
 <translation id="2028449514182362831">Funkcie vyžadujúce senzory pohybu nebudú fungovať</translation>
+<translation id="2029064269235798707">Vybrať klávesovú skratku</translation>
 <translation id="202918510990975568">Ak chcete konfigurovať zabezpečenie a prihlásenie, zadajte heslo</translation>
 <translation id="2030455719695904263">Trackpad</translation>
 <translation id="2030803782168502207">Odstránenie odberu zo zariadenia</translation>
@@ -2271,6 +2272,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Tieto heslá sú uložené iba v tomto zariadení. Do vášho účtu Google sa neukladajú.</translation>
 <translation id="2741912629735277980">Zobrazovať používateľské rozhrania na prihlasovacej obrazovke</translation>
+<translation id="274229007420507506">Skratku môžete zmeniť v <ph name="BEGIN_LINK" />Nastaveniach<ph name="END_LINK" /></translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nie je momentálne k dispozícii.</translation>
 <translation id="2743301740238894839">Spustiť</translation>
 <translation id="2743378970365831481">Ak chcete uložiť heslo do Správcu hesiel Google, stlačte ikonu Správcu hesiel na paneli s adresou</translation>
@@ -2620,6 +2622,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3001614333383288217">{COUNT,plural, =0{Nie sú prispôsobené žiadne klávesy}=1{1 prispôsobený kláves}few{{COUNT} prispôsobené klávesy}many{{COUNT} customized keys}other{{COUNT} prispôsobených klávesov}}</translation>
 <translation id="3002864108328203174">Dolný hárok Gemini na polovičnú výšku</translation>
 <translation id="3003144360685731741">Preferované siete</translation>
+<translation id="3003152206838282768">Pracujem na vašej úlohe v aplikácii Gemini v Chrome. Skontrolujte, či sú v Chrome k dispozícii ďalšie aktualizácie.</translation>
 <translation id="3003253259757197230">Webové adresy, ktoré navštevujete, sa odosielajú Googlu, aby mohol predpokladať weby, ktoré navštívite ako ďalšie, a zobrazovať vám ďalšie informácie o navštevovanej stránke</translation>
 <translation id="3003623123441819449">Vyrovnávacia pamäť CSS</translation>
 <translation id="3003967365858406397">Telefón <ph name="PHONE_NAME" /> vytvorí súkromné pripojenie Wi‑Fi.</translation>
@@ -5068,6 +5071,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4864805589453749318">Vyberte rodiča, ktorý udeľuje povolenie pridať školský účet.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokované)</translation>
 <translation id="486505726797718946">Bola uvoľnená pamäť</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Pracujem na vašej úlohe v aplikácii Gemini v Chrome. Skontrolujte, či sú v Chrome k dispozícii ďalšie aktualizácie.</translation>
 <translation id="486635084936119914">Automaticky otvoriť určité typy súborov po ich stiahnutí</translation>
 <translation id="4868284252360267853">Toto dialógové okno nie je momentálne označené. Označíte ho stlačením kombinácie klávesov Command-Shift-Option A.</translation>
 <translation id="4869170227080975044">Čítať informácie o sieťach v systéme ChromeOS</translation>
@@ -7702,6 +7706,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6916818963747321523">Rozbaliť všetko</translation>
 <translation id="6917873303492266709">Ak sa chcete pripojiť k skupinám kariet, zdieľať ich a spolupracovať na nich, otvorte nastavenia a zapnite Povoliť prihlásenie do Chromu</translation>
 <translation id="6919354101107095996">Skúste sa na webe prihlásiť. Potom položku stiahnite znova.</translation>
+<translation id="6919461818524183254">Vyberte odkaz</translation>
 <translation id="6919952941889172531">Chcete zapnúť Zlepšené bezpečné prehliadanie aj pre tento profil Chromu?</translation>
 <translation id="6920989436227028121">Otvoriť ako bežnú kartu</translation>
 <translation id="6921104647315081813">Vymazať aktivity</translation>

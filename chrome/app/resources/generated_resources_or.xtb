@@ -1342,6 +1342,7 @@
 <translation id="2026367923222947564">ପୂର୍ଣ୍ଣ ପୃଷ୍ଠା</translation>
 <translation id="2026377162111110983">ଏରିଆ ଭଏସ</translation>
 <translation id="2028449514182362831">ମୋସନ୍ ସେନ୍ସର୍ ଆବଶ୍ୟକ କରୁଥିବା ଫିଚରଗୁଡ଼ିକ କାମ କରିବ ନାହିଁ</translation>
+<translation id="2029064269235798707">କୀବୋର୍ଡ ସର୍ଟକଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="202918510990975568">ସୁରକ୍ଷା କନଫିଗର୍ କରିବା ଏବଂ ସାଇନ୍-ଇନ୍ କରିବା ପାଇଁ ଆପଣଙ୍କର ପାସୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="2030455719695904263">ଟ୍ରାକପ୍ୟାଡ୍</translation>
 <translation id="2030803782168502207">ଡିଭାଇସରୁ ସଦସ୍ୟତା କାଢ଼ି ଦିଅନ୍ତୁ</translation>
@@ -1433,6 +1434,7 @@
 <translation id="2111670510994270194">ଡାହାଣ ପଟରେ ନୂଆ ଟାବ୍</translation>
 <translation id="2111778868023567359">ଆପଣ ଏହି ପୃଷ୍ଠାରେ ପୁଣି ଟାବ ଗ୍ରୁପଗୁଡ଼ିକୁ ଦେଖିବେ ନାହିଁ</translation>
 <translation id="2112554630428445878"><ph name="USERNAME" />, ଆପଣଙ୍କୁ ସ୍ଵାଗତ</translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">macOSରୁ ଇମ୍ପୋର୍ଟ କରାଯାଇଥିବା ସାର୍ଟିଫିକେଟଗୁଡ଼ିକୁ ଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="21133533946938348">ଟାବ୍ ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="2113479184312716848">&amp;ଫାଇଲ୍ ଖୋଲନ୍ତୁ...</translation>
@@ -1986,6 +1988,7 @@
 <translation id="252513908494776481">ଏହି ଟାବ ବିଷୟରେ ପଚାରନ୍ତୁ</translation>
 <translation id="2525746158911982776">ସିଷ୍ଟମରେ ପର୍ଯ୍ୟାପ୍ତ ଷ୍ଟୋରେଜ ସ୍ପେସ ନଥିବା ଯୋଗୁଁ ଅପଡେଟ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="2525842906387880861">ଆପଣ ଏହି ପୃଷ୍ଠାରେ ପୁଣି ପରାମର୍ଶ ଦେଖିବେ ନାହିଁ</translation>
+<translation id="2526346836766369775">ନୂଆ ଆଇସୋଲେଟେଡ &amp;ଟାବ</translation>
 <translation id="2526590354069164005">ଡେସ୍କଟପ୍</translation>
 <translation id="2526619973349913024">ଅପଡେଟ୍‌ ପାଇଁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2527167509808613699">ଯେକୌଣସି ପ୍ରକାରର ସଂଯୋଜନା</translation>
@@ -2271,6 +2274,7 @@
 <translation id="2740531572673183784">ଠିକ୍ ଅଛି</translation>
 <translation id="2740876196999178364">ଏହି ପାସକୀଗୁଡ଼ିକୁ କେବଳ ଏଇ ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ସେଗୁଡ଼ିକୁ ଆପଣଙ୍କ Google Accountରେ ସେଭ କରାଯାଏ ନାହିଁ।</translation>
 <translation id="2741912629735277980">ଲଗ୍‌ଇନ୍ ସ୍କ୍ରିନ୍‌ରେ UI ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
+<translation id="274229007420507506"><ph name="BEGIN_LINK" />ସେଟିଂସ<ph name="END_LINK" />ରେ ସର୍ଟକଟ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="2743301740238894839">ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="2743378970365831481">Google Password Managerରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ସେଭ କରିବା ପାଇଁ ଲୋକେସନ ବାରରେ Password Manager ଆଇକନ</translation>
@@ -2620,6 +2624,7 @@
 <translation id="3001614333383288217">{COUNT,plural, =0{କୌଣସି କୀ କଷ୍ଟମାଇଜ କରାଯାଇନାହିଁ}=1{1ଟି କଷ୍ଟମାଇଜ କରାଯାଇଥିବା କୀ}other{{COUNT}ଟି କଷ୍ଟମାଇଜ କରାଯାଇଥିବା କୀ}}</translation>
 <translation id="3002864108328203174">Gemini ବଟମ ସିଟ ଅଧା ଖୋଲାଯାଇଛି।</translation>
 <translation id="3003144360685731741">ଅଗ୍ରାଧିକାର ଦିଆଯାଇଥିବା ନେଟ୍‌ୱାର୍କ</translation>
+<translation id="3003152206838282768">Chromeରେ ଆପଣଙ୍କ Gemini ଆପ ଟାସ୍କରେ କାମ କରୁଛି। ଅଧିକ ଅପଡେଟ ପାଇଁ Chromeକୁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3003253259757197230">ପରବର୍ତ୍ତୀ ସମୟରେ ଆପଣ କେଉଁ ସାଇଟଗୁଡ଼ିକୁ ଭିଜିଟ କରିପାରନ୍ତି ତାହାର ପୂର୍ବାନୁମାନ କରିବା ଏବଂ ଆପଣ ଭିଜିଟ କରୁଥିବା ପୃଷ୍ଠା ବିଷୟରେ ଅତିରିକ୍ତ ସୂଚନା ଆପଣଙ୍କୁ ଦେଖାଇବା ପାଇଁ ଆପଣ ଭିଜିଟ କରିଥିବା URLଗୁଡ଼ିକ Googleକୁ ପଠାଯାଏ</translation>
 <translation id="3003623123441819449">CSS କେଚ୍</translation>
 <translation id="3003967365858406397">ଆପଣଙ୍କର <ph name="PHONE_NAME" /> ଏକ ବ୍ୟକ୍ତିଗତ ୱାଇ-ଫାଇ ସଂଯୋଗ ତିଆରି କରିବ।</translation>
@@ -5067,6 +5072,7 @@
 <translation id="4864805589453749318">ସ୍କୁଲ ଆକାଉଣ୍ଟ ଯୋଗ କରିବାକୁ ଅନୁମତି ଦେଉଥିବା ବାପାମାଙ୍କୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (ବ୍ଲକ କରାଯାଇଛି)</translation>
 <translation id="486505726797718946">ମେମୋରୀ ସେଭ କରାଯାଇଛି</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Chromeରେ ଆପଣଙ୍କ Gemini ଆପ ଟାସ୍କରେ କାମ କରୁଛି। ଅଧିକ ଅପଡେଟ ପାଇଁ Chromeକୁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="486635084936119914">ଡାଉନ୍‌ଲୋଡ୍ ହୋଇସାରିବା ପରେ କିଛି ନିର୍ଦ୍ଦିଷ୍ଟ ପ୍ରକାରର ଫାଇଲ୍, ସ୍ୱଚାଳିତରୂପେ ଖୋଲନ୍ତୁ</translation>
 <translation id="4868284252360267853">ବର୍ତ୍ତମାନ ଏହି ଡାଏଲଗକୁ ଫୋକସ୍ କରାଯାଇନାହିଁ। ଏହି ଡାଏଲଗକୁ ଫୋକସ୍ କରିବା ପାଇଁ Command-Shift-Option A ଦବାନ୍ତୁ।</translation>
 <translation id="4869170227080975044">ChromeOS ନେଟୱାର୍କ ସୂଚନା ପଢ଼ନ୍ତୁ</translation>
@@ -7697,6 +7703,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6916818963747321523">ସବୁ ବିସ୍ତାର କରନ୍ତୁ</translation>
 <translation id="6917873303492266709">ଟାବ ଗ୍ରୁପରେ ସେୟାର କରିବା, ଯୋଗ ଦେବା ଏବଂ ସହଯୋଗ କରିବାକୁ ସେଟିଂସ ଖୋଲନ୍ତୁ ଏବଂ 'Chromeରେ ସାଇନ-ଇନ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ'କୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6919354101107095996">ସାଇଟରେ ସାଇନ ଇନ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ। ତା'ପରେ, ପୁଣି ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
+<translation id="6919461818524183254">ସର୍ଟକଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6919952941889172531">ଏହି Chrome ପ୍ରୋଫାଇଲ ପାଇଁ ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ମଧ୍ୟ ଚାଲୁ କରିବେ କି?</translation>
 <translation id="6920989436227028121">ସାଧାରଣ ଟାବ୍ ଭାବରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="6921104647315081813">କାର୍ଯ୍ୟକଳାପ ଖାଲି କରନ୍ତୁ</translation>
@@ -8535,6 +8542,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7578137152457315135">ଟିପଚିହ୍ନ ସେଟିଂସ୍</translation>
 <translation id="7578692661782707876">ଦୟାକରି ଆପଣଙ୍କ ସୁନିଶ୍ଚିତକରଣ କୋଡ୍ ଲେଖନ୍ତୁ।</translation>
 <translation id="757941033127302446">ସାଇନ୍ ଇନ୍ କରିଛନ୍ତି</translation>
+<translation id="7580311608678791180">Windows ଟାସ୍କ ବାରରୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="7581462281756524039">ଏକ କ୍ଲିନ୍‍ଅପ୍ ଟୁଲ୍‌</translation>
 <translation id="7582582252461552277">ଏହି ନେଟ୍‌ୱାର୍କକୁ ଅଗ୍ରାଧିକାର ଦିଅନ୍ତୁ</translation>
 <translation id="7582844466922312471">ମୋବାଇଲ ଡାଟା</translation>
@@ -8548,6 +8556,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7590883480672980941">ଇନପୁଟ୍ ସେଟିଂସ୍</translation>
 <translation id="7592060599656252486">କିଛି</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (ତ୍ରୁଟି କୋଡ୍ <ph name="ERROR_CODE" />)।</translation>
+<translation id="7597816893408026784">Mac ମେନୁ ବାରରୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="7600054753482800821">ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ଏବଂ ସାଇଟ ସର୍ଚ୍ଚକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="7600218158048761260">ଏହି ଆକାଉଣ୍ଟ ପ୍ରକାର ପାଇଁ Google Drive ଅକ୍ଷମ ହୋଇଛି।</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ଆଦୌ ଅନୁବାଦ କରନ୍ତୁ ନାହିଁ</translation>
@@ -9232,6 +9241,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8102139037507939978">System_logs.txtରୁ ବ୍ୟକ୍ତିଗତ ରୂପେ ଚିହ୍ନଟ କରାଯାଇପାରୁଥିବା ସୂଚନାକୁ କାଢ଼ି ଦିଅନ୍ତୁ।</translation>
 <translation id="810362914482827094">ପାସକୀଗୁଡ଼ିକୁ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="8104088837833760645">eSIM ପ୍ରୋଫାଇଲ୍ ଡାଉନଲୋଡ୍ କରନ୍ତୁ</translation>
+<translation id="8104388155778519213">Google Lens ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନରେ କଣ ଅଛି ତାହା ସେୟାର କରନ୍ତୁ</translation>
 <translation id="8104778744208707085">ଆପଣଙ୍କର ଧ୍ୟାନ ଆବଶ୍ୟକ କରେ</translation>
 <translation id="8105273883928376822">ଜାରି ରଖିବାକୁ ଦୟାକରି ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="8106114112474206597">ଏକ ମାଉସ ବଟନକୁ ଦବାଇବା ପାଇଁ “i”କୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>

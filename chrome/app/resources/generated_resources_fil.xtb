@@ -1351,6 +1351,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="2026367923222947564">Buong page</translation>
 <translation id="2026377162111110983">Area voice</translation>
 <translation id="2028449514182362831">Hindi gagana ang mga feature na nangangailangan ng mga sensor ng paggalaw</translation>
+<translation id="2029064269235798707">Pumili ng keyboard shortcut</translation>
 <translation id="202918510990975568">Ilagay ang iyong password para i-configure ang seguridad at pag-sign in</translation>
 <translation id="2030455719695904263">Trackpad</translation>
 <translation id="2030803782168502207">Alisin ang subscription sa device</translation>
@@ -2284,6 +2285,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2740876196999178364">Naka-save lang ang mga passkey na ito sa device na ito. Hindi naka-save ang mga ito sa iyong Google Account.</translation>
 <translation id="2741912629735277980">Ipakita ang UI sa screen sa pag-log in</translation>
+<translation id="274229007420507506">Baguhin ang shortcut sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" /></translation>
 <translation id="2742373789128106053">Hindi available ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sa ngayon.</translation>
 <translation id="2743301740238894839">Simulan</translation>
 <translation id="2743378970365831481">Para i-save ang iyong password sa Google Password Manager, ang icon ng Password Manager sa Bar ng Lokasyon</translation>
@@ -2633,6 +2635,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3001614333383288217">{COUNT,plural, =0{Walang na-customize na key}=1{1 na-customize na key}one{{COUNT} na-customize na key}other{{COUNT} na na-customize na key}}</translation>
 <translation id="3002864108328203174">Binuksan nang kalahati ang Bottom Sheet ng Gemini.</translation>
 <translation id="3003144360685731741">Mga gustong network</translation>
+<translation id="3003152206838282768">Ginagawa ang iyong gawain sa Gemini App sa Chrome. Tingnan ang Chrome para sa higit pang update</translation>
 <translation id="3003253259757197230">Ipinapadala sa Google ang mga URL na binibisita mo para mahulaan kung anong mga site ang posibleng susunod mong bibisitahin at para pakitaan ka ng karagdagang impormasyon tungkol sa page na binibisita mo</translation>
 <translation id="3003623123441819449">Cache ng CSS</translation>
 <translation id="3003967365858406397">Gagawa ang iyong <ph name="PHONE_NAME" /> ng pribadong koneksyon sa Wi-Fi.</translation>
@@ -5082,6 +5085,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4864805589453749318">Piliin ang magulang na nagbibigay ng pahintulot na magdagdag ng pampaaralang account.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (naka-block)</translation>
 <translation id="486505726797718946">Natipid na Memory</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Ginagawa ang iyong gawain sa Gemini App sa Chrome. Tingnan ang Chrome para sa higit pang update</translation>
 <translation id="486635084936119914">Awtomatikong buksan ang ilang partikular na uri ng file pagkatapos ma-download</translation>
 <translation id="4868284252360267853">Kasalukuyang hindi naka-focus ang dialog na ito. Pindutin ang Command-Shift-Option A para i-focus ang dialog na ito.</translation>
 <translation id="4869170227080975044">Basahin ang impormasyon ng network ng ChromeOS</translation>
@@ -7715,6 +7719,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6916818963747321523">I-expand Lahat</translation>
 <translation id="6917873303492266709">Para mag-share ng, sumali sa, at mag-collaborate sa mga grupo ng tab, buksan ang mga setting at i-on ang Payagan ang pag-sign in sa Chrome</translation>
 <translation id="6919354101107095996">Subukang mag-sign in sa site. Pagkatapos, mag-download ulit</translation>
+<translation id="6919461818524183254">Pumili ng shortcut</translation>
 <translation id="6919952941889172531">I-on din ang Pinahusay na Ligtas na Pag-browse para sa profile na ito sa Chrome?</translation>
 <translation id="6920989436227028121">Buksan bilang regular na tab</translation>
 <translation id="6921104647315081813">I-clear ang mga aktibidad</translation>

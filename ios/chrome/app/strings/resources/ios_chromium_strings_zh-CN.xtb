@@ -142,6 +142,7 @@
 <translation id="3855938650519180865">Chromium 中的新变化</translation>
 <translation id="3886689467633467988">登录此网站和 Chromium 即可获取您在所有设备上保存的书签及其他信息。</translation>
 <translation id="3949514465204582407">Chromium 提示：在任意应用中获取您的密码</translation>
+<translation id="3983298990898629929">将 Chromium 设为默认浏览器，只需点按一下即可打开链接</translation>
 <translation id="4005283307739974863">在 Chromium 中打开并运行安全检查。</translation>
 <translation id="4043291146360695975">系统会将密码仅保存到此设备上的密码管理工具中。</translation>
 <translation id="4046625794029820944">无需再复制网址。将 Chromium 设为默认浏览器，即可直接加载网页。</translation>
@@ -273,6 +274,7 @@
 <translation id="6680609900732453726">关闭 Chromium 后，通过设备身份验证确保浏览数据的私密性</translation>
 <translation id="6696512128741076907">将 Chromium 设为默认浏览器，即可直接打开其他应用中的链接。</translation>
 <translation id="6752854822223394465">贵组织正在设置 Chromium…</translation>
+<translation id="6777348401413221846">介绍如何将 Chromium 设为默认浏览器的全屏视频：在 iOS 中打开 Chromium 设置，点按“默认浏览器应用”，然后选择“Chromium”。</translation>
 <translation id="6794054469102824109">打开 Chromium 恐龙游戏。</translation>
 <translation id="6820823224820483452">Chromium 无法检查所有密码。请明天再试。</translation>
 <translation id="6830782797004194206">使用 Chromium 自动填充功能更快地登录</translation>
@@ -302,6 +304,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">系统会将您的密码保存到 <ph name="EMAIL" /> 的密码管理工具中。</translation>
 <translation id="7434848749522628428">此通行密钥将保存到 <ph name="USER_EMAIL" /> 的密码管理工具中</translation>
+<translation id="7453822113116681031">将 Chromium 设为默认浏览器，只需点按一下即可打开链接</translation>
 <translation id="7504829997542308412">打开 Chromium</translation>
 <translation id="7531461704633548377">来自 Chromium</translation>
 <translation id="7554983317097061001">Chromium 提示：将 Chromium 移至程序坞</translation>

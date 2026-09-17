@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Solicitarea permisiunii pentru părinte nu a reușit.</translation>
 <translation id="1803557475693955505">Nu se poate încărca pagina de fundal „<ph name="BACKGROUND_PAGE" />”.</translation>
 <translation id="1875387611427697908">Aceasta poate fi adăugată numai din <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (ID-ul extensiei: <ph name="EXTENSION_ID" />) nu poate fi instalat prin politică în medii cu nivel scăzut de încredere.</translation>
 <translation id="2131077480075264">„<ph name="APP_NAME" />” nu poate fi instalată, deoarece „<ph name="IMPORT_NAME" />” nu permite acest lucru</translation>
 <translation id="2150661552845026580">Adăugați „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2159915644201199628">Imaginea nu a putut fi decodificată: „<ph name="IMAGE_NAME" />”</translation>

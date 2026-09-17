@@ -1341,6 +1341,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="2026367923222947564">Vollständige Seite</translation>
 <translation id="2026377162111110983">Umgebung</translation>
 <translation id="2028449514182362831">Funktionen, die Bewegungssensoren benötigen, funktionieren dann nicht</translation>
+<translation id="2029064269235798707">Tastenkombination auswählen</translation>
 <translation id="202918510990975568">Gib dein Passwort ein, um die Sicherheits- und Anmeldungseinstellungen zu konfigurieren</translation>
 <translation id="2030455719695904263">Touchpad</translation>
 <translation id="2030803782168502207">Abo vom Gerät entfernen</translation>
@@ -1432,6 +1433,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2111670510994270194">Neuer Tab rechts</translation>
 <translation id="2111778868023567359">Auf dieser Seite werden keine Tabgruppen mehr angezeigt</translation>
 <translation id="2112554630428445878">Willkommen, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">Aus macOS importierte Zertifikate ansehen</translation>
 <translation id="21133533946938348">Tab anpinnen</translation>
 <translation id="2113479184312716848">&amp;Datei öffnen...</translation>
@@ -1513,7 +1515,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2166369534954157698">Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich</translation>
 <translation id="2168036794078614559">Meldung gesendet</translation>
 <translation id="2169062631698640254">Trotzdem anmelden</translation>
-<translation id="217120844667431680">Mehr Möglichkeiten mit dem KI-Modus</translation>
+<translation id="217120844667431680">Mit dem KI-Modus mehr erreichen</translation>
 <translation id="2173302385160625112">Bitte überprüfe deine Internetverbindung</translation>
 <translation id="2175384018164129879">Suchmaschinen und die Websitesuche verwalten</translation>
 <translation id="2175526076681939329">Primäre Tasten verwenden</translation>
@@ -1984,6 +1986,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="252513908494776481">Frage zu diesem Tab stellen</translation>
 <translation id="2525746158911982776">Das Update ist fehlgeschlagen, weil im System nicht genügend Speicherplatz vorhanden ist.</translation>
 <translation id="2525842906387880861">Auf dieser Seite werden keine Vorschläge mehr angezeigt</translation>
+<translation id="2526346836766369775">Neuer isolierter &amp;Tab</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2526619973349913024">Nach Updates suchen</translation>
 <translation id="2527167509808613699">Jede Verbindungsart</translation>
@@ -2269,6 +2272,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2740876196999178364">Diese Passkeys sind nur auf diesem Gerät gespeichert. Sie sind nicht in deinem Google-Konto gespeichert.</translation>
 <translation id="2741912629735277980">UI auf dem Anmeldebildschirm anzeigen</translation>
+<translation id="274229007420507506">Tastenkombination in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> ändern</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ist momentan nicht verfügbar.</translation>
 <translation id="2743301740238894839">Starten</translation>
 <translation id="2743378970365831481">Klicke zum Speichern deines Passworts im Google Passwortmanager auf das Passwortmanagersymbol in der Standortleiste</translation>
@@ -2582,7 +2586,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2979893796619951531">Website ausschließen</translation>
 <translation id="2981113813906970160">Großen Cursor verwenden</translation>
 <translation id="2981728693230031897">Diese Seite mit Gemini zusammenfassen</translation>
-<translation id="2983311431122838216">Mit dem KI-Modus in der Google Suche Fragen stellen</translation>
+<translation id="2983311431122838216">KI-Modus in der Google Suche</translation>
 <translation id="2983373101216420412">Akkustand des Case bei <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2983818520079887040">Einstellungen...</translation>
 <translation id="2984727013951557074">Die Datei wird noch mit Google Drive synchronisiert.</translation>
@@ -2618,6 +2622,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Keine benutzerdefinierten Tasten}=1{1 benutzerdefinierte Taste}other{{COUNT} benutzerdefinierte Tasten}}</translation>
 <translation id="3002864108328203174">Gemini-Ansicht am unteren Rand ist halb geöffnet.</translation>
 <translation id="3003144360685731741">Bevorzugte Netzwerke</translation>
+<translation id="3003152206838282768">Deine Gemini-App-Aufgabe wird in Chrome bearbeitet. Suche in Chrome nach weiteren Updates.</translation>
 <translation id="3003253259757197230">URLs von Websites, die du besuchst, werden an Google gesendet, um Prognosen zu erstellen, welche Websites du möglicherweise als Nächstes besuchen wirst, und um dir zusätzliche Informationen über die Seite anzuzeigen, auf der du gerade bist</translation>
 <translation id="3003623123441819449">CSS-Cache</translation>
 <translation id="3003967365858406397">Dein <ph name="PHONE_NAME" /> stellt eine private WLAN-Verbindung her.</translation>
@@ -5064,6 +5069,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4864805589453749318">Es muss ein Elternteil ausgewählt werden, das seine Zustimmung gibt, damit das Konto einer Bildungseinrichtung hinzugefügt werden kann.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blockiert)</translation>
 <translation id="486505726797718946">Arbeitsspeicher gespart</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Deine Gemini-App-Aufgabe wird in Chrome bearbeitet. Suche in Chrome nach weiteren Updates.</translation>
 <translation id="486635084936119914">Bestimmte Dateitypen nach dem Herunterladen automatisch öffnen</translation>
 <translation id="4868284252360267853">Dieses Dialogfeld ist aktuell nicht aktiv. Drücke die Befehlstaste-Umschalt-Optionstaste-A, um dieses Dialogfeld hervorzuheben.</translation>
 <translation id="4869170227080975044">Informationen zum ChromeOS-Netzwerk lesen</translation>
@@ -7691,6 +7697,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6916818963747321523">Alle maximieren</translation>
 <translation id="6917873303492266709">Wenn du Tabgruppen teilen, ihnen beitreten und gemeinsam mit anderen an ihnen arbeiten möchtest, öffne die Einstellungen und aktiviere die Option „Anmeldung in Chrome zulassen“</translation>
 <translation id="6919354101107095996">Versuch, dich auf der Website anzumelden. Lade die Datei dann noch einmal herunter.</translation>
+<translation id="6919461818524183254">Tastenkombination auswählen</translation>
 <translation id="6919952941889172531">Erweitertes Safe Browsing für dieses Chrome-Profil aktivieren?</translation>
 <translation id="6920989436227028121">In normalem Tab öffnen</translation>
 <translation id="6921104647315081813">Aktivitäten löschen</translation>
@@ -8530,6 +8537,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7578137152457315135">Einstellungen für Fingerabdruck</translation>
 <translation id="7578692661782707876">Gib deinen Bestätigungscode ein.</translation>
 <translation id="757941033127302446">Angemeldet</translation>
+<translation id="7580311608678791180">Über die Windows-Taskleiste öffnen</translation>
 <translation id="7581462281756524039">Ein Bereinigungstool</translation>
 <translation id="7582582252461552277">Dieses Netzwerk bevorzugen</translation>
 <translation id="7582844466922312471">Mobilfunk</translation>
@@ -8543,6 +8551,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7590883480672980941">Eingabeeinstellungen</translation>
 <translation id="7592060599656252486">Einige</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (Fehlercode <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Über die Mac-Menüleiste öffnen</translation>
 <translation id="7600054753482800821">Suchmaschinen und die Websitesuche verwalten</translation>
 <translation id="7600218158048761260">Google Drive ist für diesen Kontotyp deaktiviert.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>
@@ -9228,6 +9237,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8102139037507939978">Personenidentifizierbare Informationen aus system_logs.txt entfernen.</translation>
 <translation id="810362914482827094">Passkeys durchsuchen</translation>
 <translation id="8104088837833760645">eSIM-Profil herunterladen</translation>
+<translation id="8104388155778519213">Inhalte auf dem Bildschirm mit Google Lens teilen</translation>
 <translation id="8104778744208707085">Erfordert deine Aufmerksamkeit</translation>
 <translation id="8105273883928376822">Melde dich an, um fortzufahren.</translation>
 <translation id="8106114112474206597">Verwende „i“, um eine Maustaste zu drücken</translation>

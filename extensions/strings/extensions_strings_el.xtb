@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Το αίτημα γονικής άδειας απέτυχε.</translation>
 <translation id="1803557475693955505">Δεν ήταν δυνατή η φόρτωση της σελίδας φόντου "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="1875387611427697908">Η προσθήκη αυτού του στοιχείου είναι δυνατή μόνο από το <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715">Η επέκταση <ph name="EXTENSION_NAME" /> (αναγνωριστικό επέκτασης <ph name="EXTENSION_ID" />) δεν μπορεί να εγκατασταθεί βάσει πολιτικής σε περιβάλλοντα χαμηλής αξιοπιστίας.</translation>
 <translation id="2131077480075264">Δεν είναι δυνατή η εγκατάσταση του "<ph name="APP_NAME" />" επειδή δεν επιτρέπεται από το "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2150661552845026580">Να γίνει προσθήκη του "<ph name="EXTENSION_NAME" />";</translation>
 <translation id="2159915644201199628">Δεν ήταν δυνατή η αποκωδικοποίηση της εικόνας: "<ph name="IMAGE_NAME" />"</translation>

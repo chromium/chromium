@@ -149,6 +149,7 @@
 <translation id="2575822587468774919">'ਚਿੱਤਰ ਖੋਜ' ਨਾਲ ਖੋਜਣ ਲਈ ਕੁਝ ਵੀ ਚੁਣੋ</translation>
 <translation id="2576118232315942160">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chromium 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2587622539943955767">Chromium ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨ ਅਤੇ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਆਪਣੇ ਫ਼ੋਨ ਨਾਲ QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰੋ।</translation>
+<translation id="2587885422541096572">Chromium ਨਾਲ ਖੋਜਣ ਲਈ।</translation>
 <translation id="2592940277904433508">Chromium ਨੂੰ ਵਰਤਣਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="259935314519650377">ਡਾਊਨਲੋਡ ਕੀਤੇ ਸਥਾਪਨਾਕਾਰ ਨੂੰ ਕੈਸ਼ੇ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ। ਗੜਬੜ: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>
 <translation id="2620436844016719705">ਸਿਸਟਮ</translation>
@@ -340,6 +341,7 @@
 <translation id="4621240073146040695">ਲਗਭਗ ਅੱਪ ਟੂ ਡੇਟ! ਅੱਪਡੇਟ ਕਰਨਾ ਪੂਰਾ ਕਰਨ ਲਈ Chromium ਨੂੰ ਦੁਬਾਰਾ ਲਾਂਚ ਕਰੋ।</translation>
 <translation id="4625064703209785397">ਇਸ ਨਾਲ Chromium ਦੇ V8 ਇੰਜਣ ਨਾਲ ਸਾਈਟਾਂ ਦੀ ਗਤੀ ਵਧ ਜਾਂਦੀ ਹੈ, ਪਰ Chromium 'ਤੇ ਅਟੈਕਾਂ ਤੋਂ ਸੁਰੱਖਿਆ ਘਟ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="4626321472657185181">Chromium ਨਾਲ ਖੋਜ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
+<translation id="4654639495249754755">Chromium ਪ੍ਰੋਫਾਈਲ</translation>
 <translation id="4665829708273112819">ਚਿਤਾਵਨੀ: Chromium ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਰਿਕਾਰਡ ਕਰਨ ਤੋਂ ਨਹੀਂ ਰੋਕ ਸਕਦਾ। ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, ਇਸ ਵਿਕਲਪ ਨੂੰ ਅਣਚੁਣਿਆ ਕਰੋ।</translation>
 <translation id="4673151026126227699">ਜੇ ਤੁਸੀਂ Chromium ਵਰਤੋਂ ਸੰਬੰਧੀ ਰਿਪੋਰਟਾਂ ਨੂੰ ਵੀ ਸਾਂਝਾ ਕਰਦੇ ਹੋ, ਤਾਂ ਇਨ੍ਹਾਂ ਰਿਪੋਰਟਾਂ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਖੋਲ੍ਹੇ ਜਾਣ ਵਾਲੇ URL ਵੀ ਸ਼ਾਮਲ ਹੁੰਦੇ ਹਨ</translation>
 <translation id="4673710618874938871"><ph name="USER_NAME" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ, ਮੈਂਬਰਸ਼ਿਪ। ਖਾਤਾ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
@@ -472,6 +474,7 @@
 <translation id="6174920971222007286">ਇਹ ਫ਼ਾਈਲ ਖਤਰਨਾਕ ਹੋ ਸਕਦੀ ਹੈ<ph name="LINE_BREAK" />ਜੇ ਤੁਸੀਂ ਪਾਸਵਰਡ ਮੁਹੱਈਆ ਕਰਵਾਉਂਦੇ ਹੋ, ਤਾਂ Chromium ਤੁਹਾਡੇ ਲਈ ਇਸ ਡਾਊਨਲੋਡ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦਾ ਹੈ। ਫ਼ਾਈਲ ਬਾਰੇ ਜਾਣਕਾਰੀ Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਭੇਜੀ ਜਾਂਦੀ ਹੈ, ਪਰ ਫ਼ਾਈਲ ਦੀ ਸਮੱਗਰੀ ਅਤੇ ਪਾਸਵਰਡ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਹੀ ਰਹਿੰਦੇ ਹਨ।</translation>
 <translation id="6182736845697986886">ਅੱਪਡੇਟ ਸਰਵਰ ਦੀ ਅੰਦਰੂਨੀ ਗੜਬੜ ਕਾਰਨ ਸਥਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="6183079672144801177">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਆਪਣੇ <ph name="TARGET_DEVICE_NAME" /> 'ਤੇ Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ ਅਤੇ ਫਿਰ ਦੁਬਾਰਾ ਭੇਜਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="6192070012454216182">ਕਿਤੇ ਵੀ ਖੋਜੋ ਅਤੇ ਸਵਾਲ ਪੁੱਛੋ, ਭਾਵੇਂ Chromium ਨੂੰ ਛੋਟਾ ਕੀਤਾ ਗਿਆ ਹੋਵੇ। Chromium ਨੂੰ ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਚੱਲਣ ਦੀ ਆਗਿਆ ਦਿੰਦਾ ਹੈ।</translation>
 <translation id="6212496753309875659">ਇਸ ਕੰਪਿਊਟਰ ਵਿੱਚ ਪਹਿਲਾਂ ਹੀ Chromium ਦਾ ਇੱਕ ਬਿਲਕੁਲ ਨਵਾਂ ਵਰਜਨ ਹੈ। ਜੇਕਰ ਸਾਫ਼ਟਵੇਅਰ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ, ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ Chromium ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium ਹੁਣੇ ਮੁੜ-ਲਾਂਚ ਹੋਵੇਗਾ}=1{Chromium 1 ਸਕਿੰਟ ਵਿੱਚ ਮੁੜ-ਲਾਂਚ ਹੋਵੇਗਾ}other{Chromium # ਸਕਿੰਟਾਂ ਵਿੱਚ ਮੁੜ-ਲਾਂਚ ਹੋਵੇਗਾ}}</translation>
 <translation id="6241367896540709610">ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ Chromium ਨੂੰ ਸਟੋਰੋਜ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਸੰਬੰਧੀ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
@@ -598,6 +601,7 @@
 <translation id="7288567540154601580">ਟੈਬਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸਨੂੰ ਹਟਾ ਦਿਓ}one{Chromium ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸਨੂੰ ਹਟਾ ਦਿਓ}other{Chromium ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨੂੰ ਹਟਾ ਦਿਓ}}</translation>
 <translation id="7296334833518879294">ਸਿਸਟਮ ਆਡੀਓ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ, ਸਿਸਟਮ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ ਅਤੇ Chromium ਲਈ 'ਸਿਰਫ਼ ਸਿਸਟਮ ਆਡੀਓ ਰਿਕਾਰਡਿੰਗ' ਦੀ ਆਗਿਆ ਦਿਓ। ਫਿਰ ਤੁਹਾਨੂੰ Chromium ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਪਵੇਗੀ।</translation>
+<translation id="7299899569525778554">ਡੈਸਕਟਾਪ ਤੋਂ ਖੋਜੋ</translation>
 <translation id="731795002583552498">Chromium ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="7318036098707714271">ਤੁਹਾਡੀ ਤਰਜੀਹਾਂ ਵਾਲੀ ਫ਼ਾਈਲ ਖਰਾਬ ਜਾਂ ਅਵੈਧ ਹੈ।
 
@@ -653,6 +657,7 @@ Chromium ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾਸ�
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">ਤੁਹਾਡੇ ਇੰਟਰਨੈੱਟ ਟਰੈਫ਼ਿਕ ਤੱਕ ਪਹੁੰਚ ਰੱਖਣ ਵਾਲੇ ਲੋਕਾਂ ਲਈ ਇਹ ਦੇਖਣਾ ਮੁਸ਼ਕਲ ਬਣਾਓ ਕਿ ਤੁਸੀਂ ਕਿਹੜੀਆਂ ਸਾਈਟਾਂ 'ਤੇ ਜਾਂਦੇ ਹੋ। Chromium, DNS (ਡੋਮੇਨ ਨਾਮ ਪ੍ਰਣਾਲੀ) ਵਿੱਚ ਸਾਈਟ ਦਾ IP ਪਤਾ ਲੱਭਣ ਲਈ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ।</translation>
 <translation id="7810005234485217901">ਤੁਸੀਂ ਆਸਾਨ ਪਹੁੰਚ ਲਈ 'ਚਿੱਤਰ ਖੋਜ' ਨੂੰ ਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="7813626943009612327">Chromium ਤੋਂ ਬਾਹਰ ਦੀ ਸਮੱਗਰੀ ਬਾਰੇ ਪੁੱਛੋ, ਜਿਵੇਂ ਕਿ ਕੋਈ ਹੋਰ ਐਪ ਜਾਂ ਫ਼ਾਈਲ ਜੋ ਤੁਸੀਂ ਖੋਲ੍ਹੀ ਹੈ</translation>
 <translation id="7828527096541974699">ਚੁਣੋ ਕਿ Chromium ਨਾਲ ਕੀ ਸਾਂਝਾ ਕਰਨਾ ਹੈ</translation>
 <translation id="7828947555739565424">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਇਸ ਖਾਤੇ ਨਾਲ ਕੋਈ Chromium ਪ੍ਰੋਫਾਈਲ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="7845233973568007926">ਸਥਾਪਨਾ ਕਰਨ ਲਈ ਧੰਨਵਾਦ। <ph name="BUNDLE_NAME" /> ਦੀ ਵਰਤੋਂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ ਕੰਪਿਊਟਰ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
@@ -743,6 +748,7 @@ Chromium ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾਸ�
 <translation id="8619360774459241877">Chromium ਲਾਂਚ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="8624541899164515475">ਸੈਟਿੰਗਾਂ, ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੁੱਲ੍ਹਦੀਆਂ ਹਨ।</translation>
 <translation id="8648201657708811153">Google Chrome for Testing ਨੂੰ ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ।</translation>
+<translation id="8676101123715131330">ਕਿਤੇ ਵੀ Chromium ਨਾਲ ਖੋਜੋ</translation>
 <translation id="8697124171261953979">ਇਹ ਇਸ ਨੂੰ ਵੀ ਕੰਟਰੋਲ ਕਰਦਾ ਹੈ ਕਿ ਜਦੋਂ ਤੁਸੀਂ Chromium ਨੂੰ ਸ਼ੁਰੂ ਕਰਦੇ ਜਾਂ ਓਮਨੀਬਾਕਸ ਤੋਂ ਖੋਜ ਕਰਦੇ ਹੋ।</translation>
 <translation id="8704119203788522458">ਇਹ ਤੁਹਾਡਾ Chromium ਹੈ</translation>
 <translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
@@ -776,6 +782,7 @@ Chromium ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾਸ�
 <translation id="897581876605952338">Chromium Enterprise ਦਾ ਲੋਗੋ</translation>
 <translation id="8980139959902937527">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ Chromium ਐਪ ਨਾਲ ਤੁਰਦੇ-ਫਿਰਦੇ Google ਦੀ ਸੁਰੱਖਿਆ ਦਾ ਲਾਹਾ ਲਓ</translation>
 <translation id="8981150672034878610">Chromium ਨੂੰ ਚਾਲੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ ਤੁਹਾਡਾ ਪ੍ਰੋਫਾਈਲ ਖੋਲ੍ਹਣ ਦੌਰਾਨ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। Chromium ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="8981886272598860786">Chromium ਨਾਲ ਖੋਜਣ ਲਈ ਜਾਂ <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ</translation>
 <translation id="8988036198400390003">Chromium ਪ੍ਰੋਫਾਈਲਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8993855408334954620">Chromium ਵਿੱਚ Gemini ਅਤੇ ਆਪਣੀ ਖੁੱਲ੍ਹੀ ਟੈਬ ਵਿਚਕਾਰ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਆਪਣੇ ਕੀ-ਬੋਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="9018218886431812662">ਸਥਾਪਨਾ ਮੁਕੰਮਲ ਹੋਈ</translation>

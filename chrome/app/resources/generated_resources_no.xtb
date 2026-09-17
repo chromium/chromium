@@ -1348,6 +1348,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="2026367923222947564">Helside</translation>
 <translation id="2026377162111110983">Områdestemme</translation>
 <translation id="2028449514182362831">Funksjoner som krever bevegelsessensorer, kommer ikke til å virke</translation>
+<translation id="2029064269235798707">Velg hurtigtast</translation>
 <translation id="202918510990975568">Skriv inn passordet ditt for å konfigurere sikkerhet og pålogging</translation>
 <translation id="2030455719695904263">Styreflate</translation>
 <translation id="2030803782168502207">Fjern abonnementet fra enheten</translation>
@@ -1439,6 +1440,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2111670510994270194">Ny fane til høyre</translation>
 <translation id="2111778868023567359">Du kommer ikke til å se fanegrupper på denne siden igjen</translation>
 <translation id="2112554630428445878">Velkommen, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">Se importerte sertifikater fra macOS</translation>
 <translation id="21133533946938348">Fest fanen</translation>
 <translation id="2113479184312716848">Åpne &amp;fil ...</translation>
@@ -1994,6 +1996,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="252513908494776481">Spør om denne fanen</translation>
 <translation id="2525746158911982776">Oppdateringen mislyktes fordi systemet ikke har nok lagringsplass.</translation>
 <translation id="2525842906387880861">Du vil ikke se forslag på denne siden igjen</translation>
+<translation id="2526346836766369775">Ny isolert &amp;fane</translation>
 <translation id="2526590354069164005">Skrivebordet</translation>
 <translation id="2526619973349913024">Se etter oppdateringer</translation>
 <translation id="2527167509808613699">Alle typer tilkobling</translation>
@@ -2279,6 +2282,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Disse tilgangsnøklene lagres bare på denne enheten. De lagres ikke i Google-kontoen din.</translation>
 <translation id="2741912629735277980">Vis UI på påloggingsskjermen</translation>
+<translation id="274229007420507506">Endre snarveien i <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" /></translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> er ikke tilgjengelig akkurat nå.</translation>
 <translation id="2743301740238894839">Start</translation>
 <translation id="2743378970365831481">For å lagre passordet ditt i Google Passordlagring, Passordlagring-ikonet i adressefeltet</translation>
@@ -2628,6 +2632,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3001614333383288217">{COUNT,plural, =0{Ingen taster er tilpasset}=1{1 tilpasset tast}other{{COUNT} tilpassede taster}}</translation>
 <translation id="3002864108328203174">Feltet nederst for Gemini vises i halv høyde.</translation>
 <translation id="3003144360685731741">Foretrukne nettverk</translation>
+<translation id="3003152206838282768">Jobber med Gemini-appoppgaven din i Chrome. Sjekk Chrome for flere oppdateringer</translation>
 <translation id="3003253259757197230">Nettadresser du besøker, sendes til Google for å forutsi hvilke nettsteder du kanskje kommer til å besøke etterpå, og for å vise deg mer informasjon om siden du besøker</translation>
 <translation id="3003623123441819449">CSS-buffer</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" />-enheten din oppretter en privat Wifi-tilkobling.</translation>
@@ -5074,6 +5079,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4864805589453749318">Velg den forelderen som gir tillatelse til å legge til en skolekonto.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokkert)</translation>
 <translation id="486505726797718946">Spart minne</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Jobber med oppgaven din i Gemini-appen i Chrome. Sjekk Chrome for flere oppdateringer</translation>
 <translation id="486635084936119914">Åpne visse filtyper automatisk når de lastes ned</translation>
 <translation id="4868284252360267853">Denne dialogboksen er ikke fokusert for øyeblikket. Trykk på Kommando + Shift + Tilvalg + A for å fokusere på denne dialogboksen.</translation>
 <translation id="4869170227080975044">lese ChromeOS-nettverksinformasjon</translation>
@@ -7703,6 +7709,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6916818963747321523">Utvid alle</translation>
 <translation id="6917873303492266709">For å dele, bli med i og samarbeide i fanegrupper, åpne innstillingene og slå på Tillat Chrome-pålogging</translation>
 <translation id="6919354101107095996">Prøv å logge på nettstedet Last deretter ned filen på nytt</translation>
+<translation id="6919461818524183254">Velg snarvei</translation>
 <translation id="6919952941889172531">Vil du også slå på Safe Browsing med økt beskyttelse for denne Chrome-profilen?</translation>
 <translation id="6920989436227028121">Åpne som vanlig fane</translation>
 <translation id="6921104647315081813">Tøm aktivitetsloggen</translation>
@@ -8542,6 +8549,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7578137152457315135">Innstillinger for fingeravtrykk</translation>
 <translation id="7578692661782707876">Skriv inn bekreftelseskoden.</translation>
 <translation id="757941033127302446">Pålogget</translation>
+<translation id="7580311608678791180">Åpne fra Windows-oppgavelinjen</translation>
 <translation id="7581462281756524039">Et opprydningsverktøy</translation>
 <translation id="7582582252461552277">Foretrekk dette nettverket</translation>
 <translation id="7582844466922312471">Mobildata</translation>
@@ -8555,6 +8563,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7590883480672980941">Inndatainnstillinger</translation>
 <translation id="7592060599656252486">Noe</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (feilkode <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Åpne fra Mac-menylinjen</translation>
 <translation id="7600054753482800821">&amp;Administrer søkemotorer og nettstedsøk</translation>
 <translation id="7600218158048761260">Google Disk er deaktivert for denne kontotypen.</translation>
 <translation id="7600965453749440009">Oversett aldri <ph name="LANGUAGE" /></translation>
@@ -9240,6 +9249,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8102139037507939978">Fjern personlig identifiserende informasjon fra system_logs.txt.</translation>
 <translation id="810362914482827094">Søk blant passnøkler</translation>
 <translation id="8104088837833760645">Last ned eSIM-profilen</translation>
+<translation id="8104388155778519213">Del det som er på skjermen, med Google Lens</translation>
 <translation id="8104778744208707085">Krever handling</translation>
 <translation id="8105273883928376822">Logg på for å fortsette.</translation>
 <translation id="8106114112474206597">Bruk «I» for å trykke på en museknapp</translation>

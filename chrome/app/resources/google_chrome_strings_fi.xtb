@@ -550,6 +550,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6434035853014503219">Kiitos, että valitsit Chromen oletusselaimeksi!</translation>
 <translation id="6438015621983209660">Laajenna Parannettua selaussuojaa Chromen avulla puhelimella</translation>
 <translation id="6442774133615368941">Tee ostoksia, käännä ja tunnista näkemiäsi asioita kameran avulla Chromen iOS-sovelluksen avulla</translation>
+<translation id="6446105560007692480">hakeaksesi Chromella tai muokataksesi <ph name="BEGIN_LINK" />asetuksissa<ph name="END_LINK" /></translation>
 <translation id="6448835208126432197">Voit valita osan näytöstä Gemini in Chromessa pikanäppäimellä.</translation>
 <translation id="6473905796280459355">Siirry Tietoja Chromesta ‐sivulle</translation>
 <translation id="6481963882741794338">Linkitä Chrome ja muita Googlen palveluja esimerkiksi personointia varten</translation>
@@ -571,6 +572,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6612152958212564387">Et lähetä käyttötilastoja ja virheraportteja Googlelle. <ph name="BEGIN_LINK" />Muokkaa<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Pidä salasanat, kirjanmerkit ja historia synkronoituina kaikilla laitteilla asettamalla Chrome oletusselaimeksi.</translation>
 <translation id="6631524303639368205">Jatka siitä, mihin jäit: Chrome palautti välilehdet edellisestä istunnosta. Voit laittaa asetuksen pois päältä täältä:</translation>
+<translation id="6632012506031284914">hakeaksesi Chromella.</translation>
 <translation id="6632473616050862500">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee ChromeOS Flexiä.</translation>
 <translation id="6634299872736643004">Asetukseen tehdyt muutokset tulevat voimaan, kun Chrome käynnistetään uudelleen.</translation>
 <translation id="6660596345553328257">Haluatko kirjautua Chromeen?</translation>

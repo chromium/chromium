@@ -515,6 +515,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2996682533106928201">Tocca per ignorare</translation>
 <translation id="2996809686854298943">URL obbligatorio</translation>
 <translation id="3024215143424744261">Preferenze della modalità Lettura chiuse</translation>
+<translation id="3024277805447899099">Anteprima immagine</translation>
 <translation id="3026955690410463085">Includi link</translation>
 <translation id="3027950907978057636">Da <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Nessun precaricamento</translation>
@@ -787,6 +788,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4162867837470729563">Elenco di opzioni di condivisione a schermo intero.</translation>
 <translation id="4164642020717536140">Navigazione sul web veloce e sicura</translation>
 <translation id="4165077084524712774">Altri strumenti</translation>
+<translation id="4169156312706405526">Allega file da Drive</translation>
 <translation id="4170577491341606575">Recupero dei tuoi dati in corso…</translation>
 <translation id="4172051516777682613">Mostra sempre</translation>
 <translation id="4176838562184310003">Chrome non è stato chiuso correttamente e può tentare di ripristinare le finestre e le schede andate perse. Alcune finestre potrebbero essere ridotte a icona durante il ripristino.</translation>
@@ -1030,6 +1032,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="504456571576643789">Aspetti da considerare</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> finestra selezionata}other{<ph name="WINDOW_COUNT_NORMAL" /> finestre selezionate}}</translation>
+<translation id="5058506215037547387">Anteprima pagina</translation>
 <translation id="506254248375231072">Nessuna scheda</translation>
 <translation id="5075939510584558547">Salva senza crittografia</translation>
 <translation id="5078638979202084724">Aggiungi tutte le schede ai preferiti</translation>
@@ -1255,6 +1258,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="604996488070107836">Download del file <ph name="FILE_NAME" /> non riuscito a causa di un errore sconosciuto.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="606985262342505139">Riquadro inferiore della scheda a schermo intero</translation>
+<translation id="6070608977567243308">Cerca prodotti con Lens</translation>
 <translation id="6071995715087444295">Per controllare la presenza di password compromesse, accedi al tuo Account Google</translation>
 <translation id="6078323886959318429">Aggiungi scorciatoia</translation>
 <translation id="6085886413119427067">Consente di stabilire come connettersi ai siti web tramite una connessione sicura</translation>
@@ -1302,6 +1306,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="6232535412751077445">Se attivi l'opzione "Non tenere traccia", verrà inclusa una richiesta nel tuo traffico di navigazione. Gli effetti dipendono dall'eventuale risposta dei siti web alla richiesta e dall'interpretazione di quest'ultima.
 
 Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annunci non basati su altri siti web visitati. Molti siti web continueranno tuttavia a raccogliere e a utilizzare i dati di navigazione, ad esempio per aumentare la sicurezza, fornire contenuti, annunci e consigli, nonché per generare statistiche sui rapporti.</translation>
+<translation id="6235349850462976369">Traduci immagine con Google Lens</translation>
 <translation id="623755660902014047">Modalità Lettura</translation>
 <translation id="6246073558347462570">Finestra popup contestuale</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>

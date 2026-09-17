@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">രക്ഷിതാവിനുള്ള അനുമതി അഭ്യർത്ഥന നടത്താനായില്ല.</translation>
 <translation id="1803557475693955505">പശ്ചാത്തല പേജ് '<ph name="BACKGROUND_PAGE" />' ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="1875387611427697908"><ph name="CHROME_WEB_STORE" />-ല്‍ നിന്ന് മാത്രമേ ഇത് ചേർക്കാനാവൂ</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (വിപുലീകരണ ഐഡി "<ph name="EXTENSION_ID" />") കുറഞ്ഞ വിശ്വാസ്യതയുള്ള പരിതസ്ഥിതികളിൽ നയപ്രകാരം ഇൻസ്റ്റാൾ ചെയ്യാനാകില്ല.</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />", അനുവദിക്കാത്തതിനാൽ "<ph name="APP_NAME" />" ഇൻസ്‌റ്റാൾ ചെയ്യാനാവില്ല</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" ചേർക്കണോ?</translation>
 <translation id="2159915644201199628">ചിത്രം ഡീകോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല: '<ph name="IMAGE_NAME" />'</translation>

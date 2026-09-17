@@ -928,7 +928,6 @@
 <translation id="2527451058878391043">CVC របស់អ្នកស្ថិតនៅផ្នែកខាងមុខនៃកាតរបស់អ្នក។ វាជាកូដ 4 ខ្ទង់នៅខាងស្ដាំផ្នែកខាងលើពីលើលេខកាតរបស់អ្នក។</translation>
 <translation id="2529899080962247600">កន្លែងបញ្ចូលនេះ​មិន​គួរមានច្រើនជាង <ph name="MAX_ITEMS_LIMIT" /> ធាតុ​ទេ។ ធាតុទាំងអស់​ដែលលើសពីនេះ​នឹងមិនត្រូវបាន​អើពើទេ។</translation>
 <translation id="2530042584066815841">ការចាក់សោ និងការប្រើម៉ៅស៍</translation>
-<translation id="253493526287553278">មើល​ព័ត៌មាន​លម្អិត​អំពី​កូដផ្ដល់ជូន​ពិសេស</translation>
 <translation id="2535585790302968248">បើក​ផ្ទាំងឯកជនថ្មី ដើម្បីរុករក​ជាលក្ខណៈឯកជន</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{និង 1 ​ទៀត}other{និង # ទៀត}}</translation>
 <translation id="2536110899380797252">បញ្ចូល​អាសយដ្ឋាន</translation>
@@ -1524,6 +1523,7 @@
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome នឹងប្រាប់​ឱ្យអ្នកដឹង នៅពេល​ទំព័រនេះ​រួចរាល់។ &lt;a&gt;បោះបង់&lt;/a&gt;</translation>
 <translation id="3581499772329034229">បញ្ចូលផ្ទាំងដោយស្វ័យប្រវត្តិ</translation>
+<translation id="3582670569275100909">ទំនិញដឹកជញ្ជូន</translation>
 <translation id="3582930987043644930">បន្ថែមឈ្មោះ</translation>
 <translation id="3583757800736429874">ធ្វើការផ្លាស់ទីឡើងវិញ</translation>
 <translation id="3584299510153766161">ចោះ​ពីររន្ធ​ខាងក្រោម</translation>
@@ -2417,7 +2417,6 @@
 <translation id="5052488928733955073">មានបញ្ហាក្នុងការបំពេញព័ត៌មានរបស់អ្នក។ សូមពិនិត្យមើលការតភ្ជាប់របស់អ្នក។</translation>
 <translation id="5053116470141135293">លេខកាតនិម្មិត​នឹង​ត្រូវបាន​បំពេញ នៅពេល​អ្នក​បង់ប្រាក់ចេញ​ដោយប្រើ​កាតនេះ ដើម្បី​ការពារ​ព័ត៌មាន​លម្អិត​ជាក់ស្ដែង​របស់អ្នក។ គ្រប់គ្រង​នៅក្នុង Google Wallet។ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ដើម្បីផ្ញើឯកសារនេះដោយប្រើការ​ចែករំលែកនៅ​ជិត សូមបង្កើនទំហំផ្ទុក (<ph name="DISK_SPACE_SIZE" />) នៅលើឧបករណ៍របស់អ្នក}other{ដើម្បីផ្ញើឯកសារទាំងនេះដោយប្រើការ​ចែករំលែកនៅ​ជិត សូមបង្កើនទំហំផ្ទុក (<ph name="DISK_SPACE_SIZE" />) នៅលើឧបករណ៍របស់អ្នក}}</translation>
-<translation id="5056587122125565772">បង្កើត​រូបភាព</translation>
 <translation id="505757197798929356">ផ្ដល់​មូលហេតុ​នៃការបើក (តម្រូវ)</translation>
 <translation id="5058282932481719070">ស្វែងយល់​បន្ថែម​អំពី​ការបំពេញ​ស្វ័យប្រវត្តិ​ដែលបាន​ធ្វើឱ្យ​ប្រសើរឡើង​នៅក្នុង​ការកំណត់</translation>
 <translation id="5061227663725596739">តើ​អ្នក​ចង់​មានន័យ​ថា <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -4019,6 +4018,7 @@
 <translation id="7758069387465995638">កម្មវិធីកំចាត់មេរោគ ឬ Firewall ប្រហែលជាបានរារាំងការតភ្ជាប់</translation>
 <translation id="7759147511335618829">ការគ្រប់គ្រង និងសរសេរកម្មវិធីឧបករណ៍ MIDI ឡើងវិញ</translation>
 <translation id="7759809451544302770">ស្រេចចិត្ត</translation>
+<translation id="7760566304700414795">ទំនិញដឹកជញ្ជូន</translation>
 <translation id="776110834126722255">បានបញ្ឈប់</translation>
 <translation id="7761159795823346334">អនុញ្ញាត​ឱ្យប្រើ​កាមេរ៉ា​ដែរទេ?</translation>
 <translation id="7761701407923456692">វិញ្ញាបនប័ត្ររបស់ម៉ាស៊ីនមេមិនត្រូវគ្នានឹង URL នេះទេ។</translation>
@@ -4365,6 +4365,7 @@
 <translation id="8371841335382565017">បង្ហាញ​បញ្ជីឧបករណ៍​សម្រាប់​បញ្ជូន</translation>
 <translation id="8371889962595521444">វិញ្ញាបនបត្រគោល​ផ្ទាល់ខ្លួន</translation>
 <translation id="8374636051559112948">ខុស​គ្នា</translation>
+<translation id="8377507422902936905">ការបញ្ជា​ទិញ</translation>
 <translation id="837840316697671463">ប្រសិនបើអ្នករកមិនឃើញឯកសារនៅលើឧបករណ៍របស់អ្នកទេ សូមស្វែងរកឯកសារនោះនៅលើ <ph name="CLOUD_PROVIDER" />។</translation>
 <translation id="8378714024927312812">គ្រប់គ្រងដោយ​ស្ថាប័ន​របស់អ្នក</translation>
 <translation id="8380941800586852976">គ្រោះថ្នាក់</translation>

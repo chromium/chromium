@@ -923,7 +923,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2527451058878391043">Nasa harap ng iyong card ang CVC mo. Ito ang 4 na digit na code sa kanang bahagi sa itaas ng numero ng iyong card.</translation>
 <translation id="2529899080962247600">Hindi dapat magkaroon ng higit sa <ph name="MAX_ITEMS_LIMIT" /> (na) entry ang field na ito. Babalewalain ang lahat ng entry na lalampas dito.</translation>
 <translation id="2530042584066815841">Lock at paggamit ng mouse</translation>
-<translation id="253493526287553278">Tingnan ang mga detalye ng promo code</translation>
 <translation id="2535585790302968248">Magbukas ng bagong tab na Incognito para mag-browse nang pribado</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{at 1 pa}one{at # pa}other{at # pa}}</translation>
 <translation id="2536110899380797252">Magdagdag ng Address</translation>
@@ -1518,6 +1517,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3577473026931028326">Nagkaproblema. Subukan ulit.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Aabisuhan ka ng Chrome kapag handa na ang page na ito. &lt;a&gt;Kanselahin&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Awtomatikong magdagdag ng mga tab</translation>
 <translation id="3582930987043644930">Magdagdag ng pangalan</translation>
 <translation id="3583757800736429874">&amp;Gawing Muli ang Paglilipat</translation>
 <translation id="3584299510153766161">Dual punch bottom</translation>
@@ -1593,6 +1593,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Naglo-load...</translation>
 <translation id="3709599264800900598">Text Na Kinopya Mo</translation>
+<translation id="3711223220609269738">Bagong Naka-isolate na Tab</translation>
 <translation id="3711430313228789376">Sinusubukan ng Chrome browser na ipakita ang mga password</translation>
 <translation id="3711895659073496551">Suspendihin</translation>
 <translation id="3712004750972384495">Sine-save ang pag-record ng screen</translation>
@@ -1611,6 +1612,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">Para magamit ang Google Password Manager sa macOS Keychain, ilunsad ulit ang Chrome at payagan ang access sa Keychain. Bubukas ulit ang iyong mga tab pagkatapos malunsad ulit.</translation>
 <translation id="3728173127485570463">Hindi na ire-require ng Chrome browser ang iyong fingerprint para i-autofill ang mga password</translation>
+<translation id="3729811201279509483">Manual na magdagdag ng mga tab</translation>
 <translation id="3736564442532774454">Sinusubukan ng Chrome browser na ilagay ang iyong sensitibong impormasyon sa <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Pinapamahalaan ng iyong administrator ang browser mo.</translation>
 <translation id="3739842843727261045">Nagsusumite ang thumbs up ng feedback na gusto mo ang mga resultang ito</translation>
@@ -2408,7 +2410,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5052488928733955073">Nagkaproblema sa paglalagay ng iyong impormasyon. Suriin ang koneksyon mo.</translation>
 <translation id="5053116470141135293">May ilalagay na numero ng virtual card kapag nag-check out ka gamit ang card na ito para protektahan ang iyong mga aktwal na detalye. Pamahalaan sa Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para ipadala ang file na ito gamit ang Nearby Share, magbakante ng espasyo (<ph name="DISK_SPACE_SIZE" />) sa iyong device}one{Para ipadala ang mga file na ito gamit ang Nearby Share, magbakante ng espasyo (<ph name="DISK_SPACE_SIZE" />) sa iyong device}other{Para ipadala ang mga file na ito gamit ang Nearby Share, magbakante ng espasyo (<ph name="DISK_SPACE_SIZE" />) sa iyong device}}</translation>
-<translation id="5056587122125565772">Gumawa ng larawan</translation>
 <translation id="505757197798929356">Magbigay ng dahilan para sa pagbubukas (nire-require)</translation>
 <translation id="5058282932481719070">matuto pa tungkol sa pinahusay na autofill sa mga setting</translation>
 <translation id="5061227663725596739">Ang ibig mo bang sabihin ay <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2774,6 +2775,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5649053991847567735">Mga awtomatikong pag-download</translation>
 <translation id="5651323159439184939">Tractor Feed</translation>
 <translation id="5653681867130739344">Secure na i-update ang identity card sa Google Wallet</translation>
+<translation id="5653744563415531641">I-save ang iyong impormasyon at mas mabilis na magawa ang mga bagay-bagay, tulad ng pagsagot ng mga form sa mga produkto ng Google. Puwede mong <ph name="MANAGE_WALLET_SETTINGS_LINK" /> para sa <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID ng Na-upload na Ulat ng Pag-crash:</translation>
 <translation id="5654965123204121933">Hindi naglalaman ang URL ng nire-require na pamalit na string na <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Email</translation>
@@ -3220,6 +3222,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6410264514553301377">Ilagay ang petsa ng pag-expire at CVC para sa <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Dialog ng pag-apruba ng magulang</translation>
+<translation id="6413532517183895572">pamahalaan ang iyong mga setting ng Wallet</translation>
 <translation id="6415778972515849510">Makakatulong sa iyo ang Chromium na protektahan ang iyong Google Account at palitan ang password mo.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Tiyaking external na sino-store ang mahahalagang data ng negosyo o personal na data.</translation>

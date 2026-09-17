@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">向家长请求权限失败</translation>
 <translation id="1803557475693955505">无法加载背景页“<ph name="BACKGROUND_PAGE" />”。</translation>
 <translation id="1875387611427697908">只能通过<ph name="CHROME_WEB_STORE" />添加此项内容</translation>
+<translation id="1901182793187376715">无法在低信任环境中通过政策安装“<ph name="EXTENSION_NAME" />”（扩展程序 ID 为“<ph name="EXTENSION_ID" />”）。</translation>
 <translation id="2131077480075264">“<ph name="IMPORT_NAME" />”不允许安装“<ph name="APP_NAME" />”，因为无法进行此项安装</translation>
 <translation id="2150661552845026580">要添加“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="2159915644201199628">无法对图片解码：“<ph name="IMAGE_NAME" />”</translation>

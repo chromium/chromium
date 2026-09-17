@@ -268,6 +268,7 @@
 <translation id="17906873777101817">Propor guardar palavras-passe e chaves de acesso</translation>
 <translation id="1794893174442046596">Grupo de separadores</translation>
 <translation id="1807893857950749072">Permitir notificações de acompanhamento de preço…</translation>
+<translation id="1808142805674973090">Mudar de modo</translation>
 <translation id="1809929083618343438">Esta ação remove as informações selecionadas do Chrome, mas não as elimina da sua Conta Google.</translation>
 <translation id="1810976980198522421">Cancelar</translation>
 <translation id="1815941218935345331">Código secreto</translation>
@@ -849,6 +850,7 @@
 <translation id="3779810277399252432">Sem ligação à Internet.</translation>
 <translation id="3782614601387961027">Ignorar aviso</translation>
 <translation id="3789841737615482174">Instalar</translation>
+<translation id="3793603310364129123">Menos passos, links mais rápidos</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Propor tradução deste site</translation>
 <translation id="3810973564298564668">Administrar</translation>
@@ -1380,6 +1382,7 @@
 <translation id="5467163657366219870">Desativar Pré-visualizações do Maps</translation>
 <translation id="5474397204728336997">Palavras-passe familiares, novas personalizações e muito mais. Toque para saber mais.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Nenhuma palavra-passe importada}=1{{count} palavra-passe importada}other{{count} palavras-passe importadas}}</translation>
+<translation id="5477188385487393357">Evite copiar e colar</translation>
 <translation id="5478327362747197944">Crie eventos do Calendário diretamente ao clicar numa data numa página Web.</translation>
 <translation id="5482922178977937393">Quer receber notificações de notícias, desporto e muito mais com base nos seus interesses?</translation>
 <translation id="5483838506518938965">Está tudo pronto</translation>
@@ -1746,6 +1749,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6585618849026997638">Pode regressar a uma página importante para si ao adicionar um marcador.</translation>
 <translation id="6589001036857939353">Unir duplicados</translation>
 <translation id="659407965921887085">Este cartão mostra as descidas de preços na Web dos produtos que está a acompanhar atualmente</translation>
+<translation id="6596324345367949437">O Gemini não está disponível no Modo de navegação anónima</translation>
 <translation id="6596481460663245319">Pesquisar imagem com o Google</translation>
 <translation id="6601302169302852717">Imagem guardada no Google Fotos de <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Preenchimento automático e palavras-passe</translation>

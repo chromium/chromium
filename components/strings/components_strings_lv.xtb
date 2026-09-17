@@ -923,7 +923,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2527451058878391043">CVC kods ir norādīts kartes priekšpusē. Tas ir četrciparu kods augšējā labajā stūrī virs kartes numura.</translation>
 <translation id="2529899080962247600">Šajā laukā drīkst būt ne vairāk kā <ph name="MAX_ITEMS_LIMIT" /> ierakstu. Visi turpmākie ieraksti tiks ignorēti.</translation>
 <translation id="2530042584066815841">Peles bloķēšana un izmantošana</translation>
-<translation id="253493526287553278">Skatīt akcijas koda informāciju</translation>
 <translation id="2535585790302968248">Atvērt jaunu inkognito cilni privātai pārlūkošanai</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{un vēl 1}zero{un vēl #}one{un vēl #}other{un vēl #}}</translation>
 <translation id="2536110899380797252">Pievienot adresi</translation>
@@ -1429,6 +1428,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3432601291244612633">Aizvērt lapu</translation>
 <translation id="3434025015623587566">Google paroļu pārvaldniekam ir nepieciešama plašāka piekļuve</translation>
 <translation id="343474037147570563">Jūsu augšupielādētie vai pievienotie faili tiek nosūtīti uz Google Cloud vai trešajām pusēm, lai veiktu analīzi. Piemēram, šie faili var tikt pārmeklēti, lai konstatētu, vai tajos ir sensitīvi dati vai ļaunprātīga programmatūra, un uzglabāti saskaņā ar uzņēmuma politikām, turklāt tie var būt redzami jūsu administratoram.</translation>
+<translation id="3435267628744367511">Jebkurā veidlapā divreiz nospiediet taustiņu Ctrl, lai izgūtu un aizpildītu informāciju, nepārslēdzot cilnes</translation>
 <translation id="3435557549311968410">Vienlaidu (īsā mala)</translation>
 <translation id="3435738964857648380">Drošība</translation>
 <translation id="3436125638121079308">Vai automātiski kopīgot atbilstošās cilnes, lai šajā pavedienā saņemtu labākas atbildes?</translation>
@@ -2405,7 +2405,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5052488928733955073">Nevar aizpildīt jūsu informāciju. Pārbaudiet savienojumu.</translation>
 <translation id="5053116470141135293">Kad norēķināsieties, izmantojot šo karti, tiks ievadīts virtuālās kartes numurs, lai aizsargātu jūsu faktiskās kartes informāciju. Pārvaldiet to lietotnē Google maks. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Lai nosūtītu šo failu, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}zero{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}one{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}other{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}}</translation>
-<translation id="5056587122125565772">Izveidot attēlu</translation>
 <translation id="505757197798929356">Norādiet atvēršanas iemeslu (obligāti)</translation>
 <translation id="5058282932481719070">uzzināt vairāk par uzlabotu automātisko aizpildi iestatījumos</translation>
 <translation id="5061227663725596739">Vai domājāt <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2894,6 +2893,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5884465125445718607">Ķīniešu aploksne 6</translation>
 <translation id="5887400589839399685">Kartīte ir saglabāta</translation>
 <translation id="5887687176710214216">Pēdējoreiz apmeklēta vakar</translation>
+<translation id="5887791684215121787">Jebkurā veidlapā nospiediet taustiņu kombināciju ⌘ ⌘, lai izgūtu un aizpildītu informāciju, nepārslēdzot cilnes</translation>
 <translation id="5889251770650310375">Lai iegūtu vēsturi no citām savām ierīcēm, verificējiet savu identitāti un sinhronizējiet vēsturi un cilnes. Jebkurā brīdī iestatījumos varat pārtraukt sinhronizēšanu. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
 <translation id="5895138241574237353">Restartēt</translation>
 <translation id="5895187275912066135">Izsniegšanas datums</translation>

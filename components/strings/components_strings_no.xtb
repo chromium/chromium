@@ -923,7 +923,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2527451058878391043">CVC-koden står på forsiden av kortet. Det er den firesifrede koden øverst til høyre over kortnummeret ditt.</translation>
 <translation id="2529899080962247600">Dette feltet skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> oppføringer. Eventuelle oppføringer som overskrider dette, ignoreres.</translation>
 <translation id="2530042584066815841">Muselås og -bruk</translation>
-<translation id="253493526287553278">Se informasjon om kampanjekoder</translation>
 <translation id="2535585790302968248">Åpne en ny inkognitofane for å surfe privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{og 1 til}other{og # til}}</translation>
 <translation id="2536110899380797252">Legg til adresse</translation>
@@ -1429,6 +1428,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3432601291244612633">Lukk siden</translation>
 <translation id="3434025015623587566">Google Passordlagring trenger mer tilgang</translation>
 <translation id="343474037147570563">Filer du laster opp eller legger ved, sendes til Google Cloud eller tredjeparter for analyse. De kan for eksempel bli skannet for sensitive data eller skadelig programvare, og de kan bli lagret i henhold til bedriftens retningslinjer og være synlige for administratoren din.</translation>
+<translation id="3435267628744367511">Trykk på Ctrl to ganger i et skjema for å finne og fylle ut informasjon uten å bytte fane</translation>
 <translation id="3435557549311968410">Kontinuerlig (kort)</translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="3436125638121079308">Vil du dele relevante faner automatisk for å få bedre svar i denne tråden?</translation>
@@ -1517,6 +1517,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3577473026931028326">Noe gikk galt. Prøv på nytt.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome gir deg beskjed når denne siden er klar. &lt;a&gt;Avbryt&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Legg til faner automatisk</translation>
 <translation id="3582930987043644930">Legg til navn</translation>
 <translation id="3583757800736429874">&amp;Flytt likevel</translation>
 <translation id="3584299510153766161">To hull bunn</translation>
@@ -1592,6 +1593,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Laster inn ...</translation>
 <translation id="3709599264800900598">Teksten du kopierte</translation>
+<translation id="3711223220609269738">Ny isolert fane</translation>
 <translation id="3711430313228789376">Chrome-nettleseren prøver å vise passord</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3712004750972384495">Lagrer skjermopptaket</translation>
@@ -1610,6 +1612,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3727309136762649052">Navneområde</translation>
 <translation id="3727850735097852673">For å bruke Google Passordlagring med en macOS-nøkkelring, start Chrome på nytt og gi tilgang til Nøkkelring. Fanene dine åpnes på nytt når du starter på nytt.</translation>
 <translation id="3728173127485570463">Chrome-nettleseren trenger ikke lenger fingeravtrykket ditt for å autofylle passord</translation>
+<translation id="3729811201279509483">Legg til faner manuelt</translation>
 <translation id="3736564442532774454">Chrome-nettleseren prøver å fylle ut sensitiv informasjon på <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Nettleseren administreres av administratoren din.</translation>
 <translation id="3739842843727261045">Tommel opp sender tilbakemelding om at du liker disse resultatene</translation>
@@ -2407,7 +2410,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5052488928733955073">Kunne ikke fylle ut informasjonen din. Sjekk tilkoblingen.</translation>
 <translation id="5053116470141135293">Når du betaler med dette kortet, fylles et virtuelt kortnummer inn for å beskytte kortopplysningene dine. Administrer dette i Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{For å sende denne filen med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}other{For å sende disse filene med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>
-<translation id="5056587122125565772">Lag bilde</translation>
 <translation id="505757197798929356">Oppgi årsaken til åpningen (obligatorisk)</translation>
 <translation id="5058282932481719070">finn ut mer om utvidet autofyll i innstillingene</translation>
 <translation id="5061227663725596739">Mente du <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2773,6 +2775,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5649053991847567735">Automatiske nedlastinger</translation>
 <translation id="5651323159439184939">Traktorinnmating</translation>
 <translation id="5653681867130739344">Oppdater identitetskortet trygt i Google Wallet</translation>
+<translation id="5653744563415531641">Lagre informasjonen din for å gjøre ting raskere, for eksempel fylle ut skjemaer i ulike Google-produkter. Du kan <ph name="MANAGE_WALLET_SETTINGS_LINK" /> for <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID for opplastet krasjrapport:</translation>
 <translation id="5654965123204121933">Nettadressen inneholder ikke den obligatoriske erstatningsstrengen <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-post</translation>
@@ -2896,6 +2899,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5884465125445718607">Kinesisk konvolutt nr. 6</translation>
 <translation id="5887400589839399685">Kortet er lagret</translation>
 <translation id="5887687176710214216">Sist besøkt i går</translation>
+<translation id="5887791684215121787">Trykk på ⌘ to ganger i et skjema for å finne og fylle ut informasjon uten å bytte fane</translation>
 <translation id="5889251770650310375">For å få loggen din fra de andre enhetene dine, bekreft at det er deg, og synkroniser loggen og fanene. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="5895187275912066135">Utstedt</translation>
@@ -3218,6 +3222,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6410264514553301377">Skriv inn utløpsdatoen og verifiseringskoden for <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Dialogboks for foreldregodkjenning</translation>
+<translation id="6413532517183895572">administrere Wallet-innstillingene dine</translation>
 <translation id="6415778972515849510">Chromium kan hjelpe deg med å beskytte Google-kontoen din og endre passordet ditt.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Sørg for at kritiske bedrifts- og personopplysninger lagres eksternt.</translation>

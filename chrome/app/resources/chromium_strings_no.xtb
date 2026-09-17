@@ -147,6 +147,7 @@
 <translation id="2575822587468774919">Velg hva som helst for å søke med bildesøk</translation>
 <translation id="2576118232315942160">For å få passordene dine med mer på alle enhetene dine, logg på Chromium</translation>
 <translation id="2587622539943955767">Skann QR-koden med telefonen for å laste ned Chromium og logge på Google-kontoen.</translation>
+<translation id="2587885422541096572">for å søke med Chromium.</translation>
 <translation id="2592940277904433508">Fortsett å bruke Chromium</translation>
 <translation id="259935314519650377">Kunne ikke bufre det nedlastede installasjonsprogrammet. Feil: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">System</translation>
@@ -338,6 +339,7 @@
 <translation id="4621240073146040695">Nå er oppdateringen snart ferdig! Start Chromium på nytt for å fullføre oppdateringen.</translation>
 <translation id="4625064703209785397">Gjør nettsteder raskere med V8-motoren i Chromium, men gjør Chromium litt mindre motstandsdyktig mot angrep</translation>
 <translation id="4626321472657185181">Åpne Søk med Chromium</translation>
+<translation id="4654639495249754755">Chromium-profil</translation>
 <translation id="4665829708273112819">Advarsel: Chromium kan ikke forhindre utvidelser fra å registrere nettleserloggen din. For å deaktivere denne utvidelsen i Inkognitomodus, fjern merkingen for dette alternativet.</translation>
 <translation id="4673151026126227699">Hvis du også deler Chromium-bruksrapporter, inneholder disse rapportene nettadressene du besøker</translation>
 <translation id="4673710618874938871">Logget på som <ph name="USER_NAME" />, medlem. Åpne kontomenyen</translation>
@@ -470,6 +472,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="6174920971222007286">Denne filen kan være farlig<ph name="LINE_BREAK" />Chromium kan sjekke denne nedlastingen for deg hvis du oppgir passordet. Informasjon om filen blir sendt til Google Safe Browsing, men filinnholdet og passordet blir værende på enheten.</translation>
 <translation id="6182736845697986886">Installasjonen mislyktes på grunn av en intern feil i oppdateringstjeneren.</translation>
 <translation id="6183079672144801177">Sørg for at du er logget på Chromium på <ph name="TARGET_DEVICE_NAME" />, og prøv å sende på nytt.</translation>
+<translation id="6192070012454216182">Søk og still spørsmål fra hvor som helst, selv om Chromium er minimert. Lar Chromium kjøre i bakgrunnen.</translation>
 <translation id="6212496753309875659">Denne datamaskinen har allerede en nyere versjon av Chromium. Hvis programvaren ikke fungerer, må du avinstallere Chromium og prøve på nytt.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium startes på nytt nå}=1{Chromium startes på nytt om 1 sekund}other{Chromium startes på nytt om # sekunder}}</translation>
 <translation id="6241367896540709610">Chromium må ha lagringstilgang for å kunne laste ned filer</translation>
@@ -596,6 +599,7 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="7288567540154601580">Faner og utvidelser</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium anbefaler at du fjerner den}other{Chromium anbefaler at du fjerner dem}}</translation>
 <translation id="7296334833518879294">For å dele systemlyd, åpne Systeminnstillinger og tillat «Bare opptak av systemlyd» for Chromium. Deretter må du starte Chromium på nytt.</translation>
+<translation id="7299899569525778554">Søk fra datamaskinen</translation>
 <translation id="731795002583552498">Oppdaterer Chromium</translation>
 <translation id="7318036098707714271">Innstillingerfilen din er ødelagt eller ugyldig.
 
@@ -651,6 +655,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Gjør det vanskeligere for folk med tilgang til internettrafikken din å se hvilke nettsteder du besøker. Chromium bruker en sikker tilkobling for å finne IP-adressen til nettsteder i DNS (Domain Name System).</translation>
 <translation id="7810005234485217901">Du kan feste bildesøk for enklere tilgang</translation>
+<translation id="7813626943009612327">Spør om innhold utenfor Chromium, for eksempel en annen app eller fil du har åpen</translation>
 <translation id="7828527096541974699">Velg hva du vil dele med Chromium</translation>
 <translation id="7828947555739565424">Det finnes allerede en Chromium-profil med denne kontoen på denne enheten</translation>
 <translation id="7845233973568007926">Installasjonen er fullført. Start datamaskinen på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
@@ -741,6 +746,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8619360774459241877">Starter Chromium ...</translation>
 <translation id="8624541899164515475">Innstillinger (åpnes i en ny fane).</translation>
 <translation id="8648201657708811153">Google Chrome for testing kan ikke brukes som standardnettleser.</translation>
+<translation id="8676101123715131330">Søk med Chromium fra hvor som helst</translation>
 <translation id="8697124171261953979">Den styrer også hvilken side som vises når du starter Chromium eller søker fra multifunksjonsfeltet.</translation>
 <translation id="8704119203788522458">Dette er din Chromium</translation>
 <translation id="8712637175834984815">Skjønner</translation>
@@ -774,6 +780,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="897581876605952338">Chromium Enterprise-logo</translation>
 <translation id="8980139959902937527">Ta med deg sikkerheten til Google på farten med Chromium-appen på <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Chromium kunne ikke starte, fordi det oppsto en feil ved åpning av profilen din. Prøv å starte Chromium på nytt.</translation>
+<translation id="8981886272598860786">for å søke med Chromium eller tilpasse i <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Administrer Chromium-profiler</translation>
 <translation id="8993855408334954620">Bruk tastaturet til å navigere mellom Gemini i Chromium og den åpne fanen.</translation>
 <translation id="9018218886431812662">Installasjonen er fullført</translation>

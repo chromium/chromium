@@ -1442,6 +1442,7 @@
 <translation id="2111670510994270194">ແຖບໃໝ່ຢູ່ເບື້ອງຂວາ</translation>
 <translation id="2111778868023567359">ທ່ານຈະບໍ່ເຫັນກຸ່ມແຖບຢູ່ໜ້ານີ້ອີກ</translation>
 <translation id="2112554630428445878">ຍິນດີຕ້ອນຮັບ, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">ເບິ່ງໃບຮັບຮອງທີ່ນຳເຂົ້າຈາກ macOS</translation>
 <translation id="21133533946938348">ປັກໝຸດແຖບ</translation>
 <translation id="2113479184312716848">ເປີດໄຟລ໌...</translation>
@@ -1997,6 +1998,7 @@
 <translation id="252513908494776481">ຖາມກ່ຽວກັບແຖບນີ້</translation>
 <translation id="2525746158911982776">ການອັບເດດບໍ່ສຳເລັດເນື່ອງຈາກລະບົບມີພື້ນທີ່ຈັດເກັບຂໍ້ມູນບໍ່ພຽງພໍ.</translation>
 <translation id="2525842906387880861">ທ່ານຈະບໍ່ເຫັນຄຳແນະນຳຢູ່ໜ້ານີ້ອີກ</translation>
+<translation id="2526346836766369775">ແຖບແຍກໃໝ່</translation>
 <translation id="2526590354069164005">ເດັສທັອບ</translation>
 <translation id="2526619973349913024">ກວດຫາອັບເດດ</translation>
 <translation id="2527167509808613699">ການເຊື່ອມຕໍ່ປະເພດໃດໜຶ່ງ</translation>
@@ -8551,6 +8553,7 @@
 <translation id="7578137152457315135">ການຕັ້ງຄ່າລາຍນິ້ວມື</translation>
 <translation id="7578692661782707876">ກະລຸນາປ້ອນລະຫັດການຢືນຢັນຂອງທ່ານ.</translation>
 <translation id="757941033127302446">ເຂົ້າສູ່ລະບົບແລ້ວ</translation>
+<translation id="7580311608678791180">ເປີດຈາກແຖບໜ້າວຽກຂອງ Windows</translation>
 <translation id="7581462281756524039">ເຄື່ອງ​ມື​ທຳ​ຄວາມ​ສະ​ອາດ</translation>
 <translation id="7582582252461552277">ມັກ​ເຄືອ​ຂ່າຍ​ນີ້</translation>
 <translation id="7582844466922312471">ຂໍ້​ມູນ​ມື​ຖື</translation>
@@ -8564,6 +8567,7 @@
 <translation id="7590883480672980941">ການຕັ້ງຄ່າການປ້ອນຂໍ້ມູນ</translation>
 <translation id="7592060599656252486">ບາງສ່ວນ</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (ລະ​ຫັດ​ຄວາມ​ຜິດ​ພ​າດ <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">ເປີດຈາກແຖບເມນູຂອງ Mac</translation>
 <translation id="7600054753482800821">&amp;ຈັດການໂປຣແກຣມຊອກຫາ ແລະ ການຊອກຫາເວັບໄຊ</translation>
 <translation id="7600218158048761260">Google Drive ຖືກປິດການນຳໃຊ້ສຳລັບບັນຊີປະເພດນີ້.</translation>
 <translation id="7600965453749440009">ຢ່າແປ <ph name="LANGUAGE" /></translation>
@@ -9249,6 +9253,7 @@
 <translation id="8102139037507939978">ລຶບຂໍ້ມູນທີ່ລະບຸຕົວຕົນບຸກຄົນໄດ້ອອກຈາກ system_logs.txt.</translation>
 <translation id="810362914482827094">ຊອກຫາກະແຈຜ່ານ</translation>
 <translation id="8104088837833760645">ດາວໂຫຼດໂປຣໄຟລ໌ eSIM</translation>
+<translation id="8104388155778519213">ແບ່ງປັນສິ່ງທີ່ຢູ່ໜ້າຈໍຂອງທ່ານດ້ວຍ Google Lens</translation>
 <translation id="8104778744208707085">ຕ້ອງກວດສອບ</translation>
 <translation id="8105273883928376822">ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອດຳເນີນການຕໍ່.</translation>
 <translation id="8106114112474206597">ໃຊ້ປຸ່ມ “i” ເພື່ອກົດປຸ່ມເມົ້າ</translation>

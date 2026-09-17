@@ -142,6 +142,7 @@ Testa att vänta några minuter innan du byter konto. Om du byter konto nu rader
 <translation id="3855938650519180865">Nyheter i Chromium</translation>
 <translation id="3886689467633467988">Logga in på den här webbplatsen och i Chromium om du vill få dina bokmärken med mera på alla dina enheter.</translation>
 <translation id="3949514465204582407">Tips för Chromium: Få tillgång till dina lösenord i alla appar</translation>
+<translation id="3983298990898629929">Ställ in Chromium som standardwebbläsare för att öppna länkar med ett tryck</translation>
 <translation id="4005283307739974863">Säkerhetskontrollen öppnas och körs i Chromium.</translation>
 <translation id="4043291146360695975">Lösenorden sparas med Lösenordshantering endast på den här enheten.</translation>
 <translation id="4046625794029820944">Slipp kopiera webbadresser. Ange Chromium som standardwebbläsare för att läsa in sidor direkt.</translation>
@@ -273,6 +274,7 @@ Tänk på detta:
 <translation id="6680609900732453726">Håll webbinformationen privat med enhetsautentisering när du stänger Chromium</translation>
 <translation id="6696512128741076907">Ange Chromium som standardwebbläsare för att öppna länkar från andra appar direkt.</translation>
 <translation id="6752854822223394465">Organisationen konfigurerar Chromium …</translation>
+<translation id="6777348401413221846">Video i helskärmsläge om hur du ställer in Chromium som standardwebbläsare: Öppna Chromium-inställningarna i iOS, tryck på Standardwebbläsarapp och välj Chromium.</translation>
 <translation id="6794054469102824109">Öppnar spelet Chromium Dino.</translation>
 <translation id="6820823224820483452">Chromium kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
 <translation id="6830782797004194206">Logga in snabbare med autofyll i Chromium</translation>
@@ -302,6 +304,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Lösenordet sparas med Lösenordshantering för <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Den här nyckeln sparas i Lösenordshantering för <ph name="USER_EMAIL" /></translation>
+<translation id="7453822113116681031">Gör Chromium till din standardwebbläsare för att öppna länkar med ett tryck</translation>
 <translation id="7504829997542308412">Öppna Chromium</translation>
 <translation id="7531461704633548377">Från Chromium</translation>
 <translation id="7554983317097061001">Tips för Chromium: Flytta Chromium till dockan</translation>

@@ -515,6 +515,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2996682533106928201">Dodirnite za odbacivanje</translation>
 <translation id="2996809686854298943">Potreban URL</translation>
 <translation id="3024215143424744261">Postavke prozora za čitanje su zatvorene</translation>
+<translation id="3024277805447899099">Pregled slike</translation>
 <translation id="3026955690410463085">Uključi vezu</translation>
 <translation id="3027950907978057636">Izvor: <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Bez predučitavanja</translation>
@@ -787,6 +788,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4162867837470729563">Popis opcija za dijeljenje u punoj visini.</translation>
 <translation id="4164642020717536140">Brzo i sigurno pregledavanje weba</translation>
 <translation id="4165077084524712774">Više alata</translation>
+<translation id="4169156312706405526">Priložite datoteke s Diska</translation>
 <translation id="4170577491341606575">Dohvaćanje vaših podataka\u2026</translation>
 <translation id="4172051516777682613">Uvijek prikaži</translation>
 <translation id="4176838562184310003">Chrome se nije ispravno zatvorio i može pokušati vratiti izgubljene prozore i kartice. Neki se prozori mogu minimizirati prilikom vraćanja.</translation>
@@ -1030,6 +1032,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5040262127954254034">Privatnost</translation>
 <translation id="504456571576643789">Važne napomene</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Odabran je <ph name="WINDOW_COUNT_ONE" /> prozor}one{Odabran je <ph name="WINDOW_COUNT_NORMAL" /> prozor}few{Odabrana su <ph name="WINDOW_COUNT_NORMAL" /> prozora}other{Odabrano je <ph name="WINDOW_COUNT_NORMAL" /> prozora}}</translation>
+<translation id="5058506215037547387">Pregled stranice</translation>
 <translation id="506254248375231072">Nema kartica</translation>
 <translation id="5075939510584558547">Spremite bez šifriranja</translation>
 <translation id="5078638979202084724">Označi sve kartice</translation>
@@ -1255,6 +1258,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="604996488070107836">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspjelo zbog nepoznate pogreške.</translation>
 <translation id="605721222689873409">GG</translation>
 <translation id="606985262342505139">Kartica donje tablice u punoj visini</translation>
+<translation id="6070608977567243308">Kupujte prema slici pomoću Google objektiva</translation>
 <translation id="6071995715087444295">Da biste provjerili jesu li zaporke ugrožene, prijavite se na Google račun</translation>
 <translation id="6078323886959318429">Dodajte prečac</translation>
 <translation id="6085886413119427067">Određuje kako se povezati na web-lokacije sigurnom vezom</translation>
@@ -1302,6 +1306,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="6232535412751077445">Omogućivanje opcije "Nemoj pratiti" znači da će se u promet pregledavanja uključiti zahtjev. Učinak ovisi o tome odgovara li web-lokacija na taj zahtjev i kako se zahtjev tumači.
 
 Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikažu oglase koji se ne temelje na drugim web-lokacijama koje ste posjetili. Mnoge web-lokacije i dalje će prikupljati i upotrebljavati vaše podatke o pregledavanju, primjerice, za poboljšanje sigurnosti, pružanje sadržaja, oglasa i preporuka, kao i za generiranje statističkih izvješća.</translation>
+<translation id="6235349850462976369">Prevedite sliku pomoću Google objektiva</translation>
 <translation id="623755660902014047">Prozor za čitanje</translation>
 <translation id="6246073558347462570">Kontekstni skočni prozor</translation>
 <translation id="6247557882553405851">Google upravitelj zaporki</translation>

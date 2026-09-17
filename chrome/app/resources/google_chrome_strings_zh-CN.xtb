@@ -227,6 +227,7 @@
 <translation id="3112458742631356345">Chrome 阻止了此项下载操作，因为这不是常下载的文件，可能具有危险性</translation>
 <translation id="3119573284443908657">Chrome 阻止了此项下载操作，因为归档文件包含可能隐藏恶意软件的其他文件</translation>
 <translation id="3124332159330678621">自定义您的 Chrome 浏览器，为它换上全新外观</translation>
+<translation id="3125851611828811913">随时随地搜索和提问，即使 Chrome 已最小化也无妨。允许 Chrome 在后台运行。</translation>
 <translation id="3130333203120345554">新搜索</translation>
 <translation id="3135560418014806498">添加 Chrome 个人资料</translation>
 <translation id="3137969841538672700">拖动即可搜索</translation>
@@ -384,6 +385,7 @@
 <translation id="4793679854893018356">了解 Chrome 如何保障您的安全</translation>
 <translation id="4799870290441980300">开启更多功能，提供 Chrome 最强大的安全防护</translation>
 <translation id="4828579605166583682">Google Chrome 正在尝试替换现有密码。请输入您的 Windows 密码以允许此操作。</translation>
+<translation id="4836321460899997044">Chrome 个人资料</translation>
 <translation id="4842397268809523050">ChromeOS Flex 无法同步您的数据，因为您的网域不支持同步。</translation>
 <translation id="4851866215237571846">目前登录的账号是：<ph name="EXISTING_USER" />。若要单独存储您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。</translation>
 <translation id="4855026984605187434">若要共享屏幕，请在“系统设置”中为 Chrome 启用屏幕录制功能</translation>
@@ -497,6 +499,7 @@
 <translation id="6014316319780893079">借助 <ph name="BEGIN_LINK" />Chrome 中的工具<ph name="END_LINK" />，您可以安全地浏览并掌控个人数据的安全</translation>
 <translation id="6018578474045062808">借助 Chrome 在手机上试用 Google 智能镜头</translation>
 <translation id="6022659036123304283">定制您的专属 Chrome</translation>
+<translation id="6024930613143833266">随时随地使用 Chrome 搜索</translation>
 <translation id="6025087594896450715">Google Chrome 将在 <ph name="REMAINING_TIME" />后重启</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="604424701295382420">已固定！您可以通过工具栏中的新按钮再次使用 Google 智能镜头</translation>
@@ -550,6 +553,7 @@
 <translation id="6434035853014503219">感谢您选择 Chrome 作为默认浏览器！</translation>
 <translation id="6438015621983209660">借助 Chrome 在手机上使用增强型安全浏览功能</translation>
 <translation id="6442774133615368941">在 iOS 版 Chrome 应用中，借助摄像头轻松购买、翻译和识别所见内容</translation>
+<translation id="6446105560007692480">即可使用 Chrome 搜索，也可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中自定义</translation>
 <translation id="6448835208126432197">可以使用键盘快捷键在 Chrome 中的 Gemini 中选择屏幕上的部分内容。</translation>
 <translation id="6473905796280459355">前往“关于 Chrome”页面</translation>
 <translation id="6481963882741794338">关联 Chrome 和其他 Google 服务，以便获得个性化体验和实现其他用途</translation>
@@ -571,6 +575,7 @@
 <translation id="6612152958212564387">您未向 Google 发送使用情况统计信息和崩溃报告。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">将 Chrome 设为默认浏览器，让您的密码、书签和历史记录在所有设备上实时同步。</translation>
 <translation id="6631524303639368205">从上次停下的地方继续：Chrome 已恢复您上次会话中的标签页。如需关闭此功能，请前往</translation>
+<translation id="6632012506031284914">即可使用 Chrome 搜索。</translation>
 <translation id="6632473616050862500">ChromeOS Flex 是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开放源代码软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="6634299872736643004">对此设置的更改将在 Chrome 重启后生效。</translation>
 <translation id="6660596345553328257">登录 Chrome？</translation>
@@ -587,6 +592,7 @@
 <translation id="6750954913813541382">为了修正拼写错误，Chrome 会将您在浏览器中输入的文字发送给 Google</translation>
 <translation id="6760235774835597023">使用 Chrome 的 V8 引擎加速网站，但 Chrome 的防攻击能力会略微降低。此设置已开启。</translation>
 <translation id="677276454032249905">仍要退出 Chrome？</translation>
+<translation id="6777654166489463890">询问 Chrome 之外的内容，例如您已打开的其他应用或文件</translation>
 <translation id="6794858689789885890">始终在关闭 Chrome 时删除设备上的网站数据</translation>
 <translation id="6800285125190089494">在 iOS 版 Chrome 中使用保存的密码更快地登录网站</translation>
 <translation id="6831043979455480757">翻译</translation>
@@ -639,6 +645,7 @@
 <translation id="7285990705317078173">在手机上下载 Chrome，即可跟踪价格并在有网站降价时收到提醒</translation>
 <translation id="7288567540154601580">标签页和扩展程序</translation>
 <translation id="7296210096911315575">重要用途和安全信息</translation>
+<translation id="7299899569525778554">从桌面搜索</translation>
 <translation id="7302361266603927550">部分 Chrome 数据尚未保存到您的 Google 账号。建议等待几分钟，然后再尝试退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="7306401458628386911">即刻开启浏览之旅：Chrome 现在可以在 Windows 启动时启动。</translation>
 <translation id="7308322188646931570">Chrome 需要获得存储空间使用权限，才能下载文件</translation>

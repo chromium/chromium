@@ -923,7 +923,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2527451058878391043">I-CVC yakho ingaphambili kwekhadi lakho. Ikhodi enezinhlamvu ezi-4 phezulu kwesokudla ngaphezu kwenombolo yekhadi lakho.</translation>
 <translation id="2529899080962247600">Le nkambu akufanele ibe nokungena okungaphe kokungu-<ph name="MAX_ITEMS_LIMIT" />. Konke okufakiwe okwengeziwe kuzoshaywa indiva.</translation>
 <translation id="2530042584066815841">Ukukhiya nokusebenzisa imawusi</translation>
-<translation id="253493526287553278">Bona imininingwane yekhodi yephromo</translation>
 <translation id="2535585790302968248">Vula iwindi elisha le-Incognito ukuze ubhrawuze ngokugodliwe</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{nokungu-1 ngaphezulu}one{nokungu-# ngaphezulu}other{nokungu-# ngaphezulu}}</translation>
 <translation id="2536110899380797252">Engeza ikheli</translation>
@@ -2404,7 +2403,6 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="5052488928733955073">Kunenkinga yokugcwalisa imininingwane yakho. Hlola uxhumo lwakho.</translation>
 <translation id="5053116470141135293">Inombolo yekhadi eliku-app izogcwaliswa lapho ukhokha ngaleli khadi ukuze kuvikelwe imininingwane yakho yangempela. Lawula kuGoogle Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Ukuze uthumele leli fayela usebenzisa i-Nearby Share, khulula isikhala (<ph name="DISK_SPACE_SIZE" />) kudivayisi yakho}one{Ukuze uthumele lamafayela usebenzisa i-Nearby Share, khulula isikhala (<ph name="DISK_SPACE_SIZE" />) kudivayisi yakho}other{Ukuze uthumele lamafayela usebenzisa i-Nearby Share, khulula isikhala (<ph name="DISK_SPACE_SIZE" />) kudivayisi yakho}}</translation>
-<translation id="5056587122125565772">Sungula isithombe</translation>
 <translation id="505757197798929356">Nikeza isizathu sokuvula (kuyadingeka)</translation>
 <translation id="5058282932481719070">funda kabanzi mayelana nokuzigcwalisela okuthuthukisiwe kumasethingi</translation>
 <translation id="5061227663725596739">Ingabe ubukade usho i-<ph name="LOOKALIKE_DOMAIN" />?</translation>

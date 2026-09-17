@@ -515,6 +515,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2996682533106928201">Puudutage loobumiseks.</translation>
 <translation id="2996809686854298943">Vaja on URL-i</translation>
 <translation id="3024215143424744261">Lugemisrežiim, eelistused on suletud</translation>
+<translation id="3024277805447899099">Pildi eelvaade</translation>
 <translation id="3026955690410463085">Link on kaasatud</translation>
 <translation id="3027950907978057636">Rakendusest <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Eellaadimine puudub</translation>
@@ -787,6 +788,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4162867837470729563">Jagamisvalikute loend on avatud täiskõrgusele.</translation>
 <translation id="4164642020717536140">Kiire ja turvaline veebisirvimine</translation>
 <translation id="4165077084524712774">Rohkem tööriistu</translation>
+<translation id="4169156312706405526">Drive’ist failide manustamine</translation>
 <translation id="4170577491341606575">Teie asjade toomine…</translation>
 <translation id="4172051516777682613">Kuva alati</translation>
 <translation id="4176838562184310003">Chrome ei sulgunud õigesti ja võib proovida teie kaotatud aknad ja vahelehed taastada. Mõned aknad võivad taastamisel olla minimeeritud.</translation>
@@ -1030,6 +1032,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5040262127954254034">Privaatsus</translation>
 <translation id="504456571576643789">Olulised aspektid</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Valitud on <ph name="WINDOW_COUNT_ONE" /> aken}other{Valitud on <ph name="WINDOW_COUNT_NORMAL" /> akent}}</translation>
+<translation id="5058506215037547387">Lehe eelvaade</translation>
 <translation id="506254248375231072">Vahelehti pole</translation>
 <translation id="5075939510584558547">Ilma krüpteerimata salvestamine</translation>
 <translation id="5078638979202084724">Lisab kõik vahelehed järjehoidjatesse</translation>
@@ -1255,6 +1258,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="604996488070107836">Faili <ph name="FILE_NAME" /> allalaadimine ebaõnnestus tundmatu vea tõttu.</translation>
 <translation id="605721222689873409">aa</translation>
 <translation id="606985262342505139">Vahelehe alumine leht on täispikkuses</translation>
+<translation id="6070608977567243308">Ostke pilt Google Lensi abil</translation>
 <translation id="6071995715087444295">Ohustatud paroolide kontrollimiseks logige sisse oma Google'i kontole</translation>
 <translation id="6078323886959318429">Otsetee lisamine</translation>
 <translation id="6085886413119427067">Määrab, kuidas veebisaitidega turvaline ühendus luua</translation>
@@ -1302,6 +1306,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="6232535412751077445">Kui lubate funktsiooni „Ära jälgi”, kaasatakse see taotlus teie sirvimisliiklusesse. Mõju oleneb sellest, kas veebisait reageerib taotlusele ja kuidas seda tõlgendatakse.
 
 Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teile reklaame, mis ei põhine muudel külastatud veebisaitidel. Paljud veebisaidid koguvad ning kasutavad endiselt teie sirvimisandmeid, näiteks turvalisuse parandamiseks, sisu, reklaamide ja soovituste pakkumiseks ning aruandlusstatistika loomiseks.</translation>
+<translation id="6235349850462976369">Tõlkige pilt Google Lensi abil</translation>
 <translation id="623755660902014047">Lugemisrežiim</translation>
 <translation id="6246073558347462570">Konteksti hüpikaken</translation>
 <translation id="6247557882553405851">Google'i paroolihaldur</translation>

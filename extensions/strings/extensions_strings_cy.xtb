@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Methodd y cais am ganiatâd rhiant.</translation>
 <translation id="1803557475693955505">Ni ellid llwytho'r dudalen gefndir '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="1875387611427697908">Dim ond o'r <ph name="CHROME_WEB_STORE" /> y gellir ychwanegu hyn</translation>
+<translation id="1901182793187376715">Ni ellir gosod <ph name="EXTENSION_NAME" /> (rhif adnabod estyniad "<ph name="EXTENSION_ID" />") yn ôl polisi mewn amgylcheddau ymddiriedaeth isel.</translation>
 <translation id="2131077480075264">Methu â gosod "<ph name="APP_NAME" />" oherwydd na chaniateir gan " <ph name="IMPORT_NAME" />"</translation>
 <translation id="2150661552845026580">Ychwanegu "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Methu â dadgodio'r llun: '<ph name="IMAGE_NAME" />'</translation>

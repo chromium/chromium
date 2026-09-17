@@ -837,6 +837,8 @@
 <translation id="2384307209577226199">السياسة تلقائية في المؤسسة ويمكن إلغاؤها</translation>
 <translation id="2385809941344967209">‏تحديث Chrome من إعداداته</translation>
 <translation id="2386255080630008482">تم إبطال شهادة الخادم.</translation>
+<translation id="2387424091060104123">‏من اقتراح Gemini · <ph name="SRC_LINK" />عرض المصادر<ph name="END_SRC_LINK" />
+يمكنك إزالة هذا الاقتراح من Chrome. ولن يتم حذف المصدر الأصلي. <ph name="MANAGE_LINK" />إدارة ميزة "الملء التلقائي المحسّن"<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">أسلوب مفصَّل</translation>
 <translation id="2392959068659972793">عرض السياسات غير المضبوط قيم لها</translation>
 <translation id="239429038616798445">طريقة الشحن هذه غير متاحة، جرِّب طريقة أخرى.</translation>
@@ -923,7 +925,6 @@
 <translation id="2527451058878391043">‏يظهر رمز التحقّق من البطاقة (CVC) في الجهة الأمامية من بطاقتك. إنّه الرمز المكوّن من 4 أرقام في أعلى يمين رقم البطاقة.</translation>
 <translation id="2529899080962247600">يجب ألا يحتوي هذا الحقل على أكثر من <ph name="MAX_ITEMS_LIMIT" /> إدخال. وسيتم تجاهل جميع الإدخالات الأخرى.</translation>
 <translation id="2530042584066815841">قفل الماوس واستخدامه</translation>
-<translation id="253493526287553278">الاطّلاع على تفاصيل الرمز الترويجي</translation>
 <translation id="2535585790302968248">فتح علامة تبويب جديدة في وضع التصفّح المتخفي للتصفُّح بخصوصية تامة</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{وكلمة مرور واحدة أخرى}zero{و# كلمة مرور أخرى}two{وكلمتا مرور أخريان}few{و# كلمات مرور أخرى}many{و# كلمة مرور أخرى}other{و# كلمة مرور أخرى}}</translation>
 <translation id="2536110899380797252">إضافة عنوان</translation>
@@ -1429,6 +1430,7 @@
 <translation id="3432601291244612633">إغلاق الصفحة</translation>
 <translation id="3434025015623587566">‏يحتاج "مدير كلمات المرور في Google" إلى مزيد من أذونات الوصول</translation>
 <translation id="343474037147570563">‏يتم إرسال الملفات التي تحمِّلها أو ترفقها إلى Google Cloud أو جهات خارجية لتحليلها. على سبيل المثال، قد يتم فحص هذه الملفات بحثًا عن بيانات حسّاسة أو برامج ضارة وتخزينها استنادًا إلى سياسات الشركة، وقد تظهر للمشرف.</translation>
+<translation id="3435267628744367511">‏يمكنك الضغط على Ctrl مرتين في أي نموذج للعثور على المعلومات وملئها بدون تبديل علامات التبويب</translation>
 <translation id="3435557549311968410">غير متقطع (قصير)</translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
 <translation id="3436125638121079308">مشاركة علامات التبويب ذات الصلة تلقائيًا للحصول على ردود أفضل في سلسلة المحادثات هذه؟</translation>
@@ -1517,6 +1519,7 @@
 <translation id="3577473026931028326">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">‏سيخبرك Chrome عندما تكون هذه الصفحة جاهزة. &lt;a&gt;إلغاء&lt;/a&gt;</translation>
+<translation id="3581499772329034229">إضافة علامات تبويب تلقائيًا</translation>
 <translation id="3582930987043644930">إضافة اسم</translation>
 <translation id="3583757800736429874">إ&amp;عادة النقل</translation>
 <translation id="3584299510153766161">عمل ثقبَين بالأسفل</translation>
@@ -1592,6 +1595,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">جارٍ التحميل...</translation>
 <translation id="3709599264800900598">النص الذي نسخته</translation>
+<translation id="3711223220609269738">علامة تبويب تصفّح معزول جديدة</translation>
 <translation id="3711430313228789376">‏يحاول متصفِّح Chrome إظهار كلمات المرور</translation>
 <translation id="3711895659073496551">تعليق</translation>
 <translation id="3712004750972384495">جارٍ حفظ تسجيل الشاشة</translation>
@@ -1610,6 +1614,7 @@
 <translation id="3727309136762649052">مساحة الاسم</translation>
 <translation id="3727850735097852673">‏لاستخدام "مدير كلمات المرور في Google" في تطبيق macOS Keychain، يجب إعادة تشغيل Chrome ومنحه إذن الوصول إلى التطبيق. وستتم إعادة فتح علامات التبويب بعد إعادة التشغيل.</translation>
 <translation id="3728173127485570463">‏لن يطلب متصفِّح Chrome بصمة إصبعك لملء كلمات المرور تلقائيًا</translation>
+<translation id="3729811201279509483">إضافة علامات تبويب يدويًا</translation>
 <translation id="3736564442532774454">‏يحاول متصفِّح Chrome تعبئة معلوماتك الحسّاسة على "<ph name="APP_NAME" />".</translation>
 <translation id="3738166223076830879">يتولّى مشرفك إدارة متصفِّحك.</translation>
 <translation id="3739842843727261045">يمكنك النقر على زر "أعجبني" إذا أعجبتك هذه النتائج</translation>
@@ -2407,7 +2412,6 @@
 <translation id="5052488928733955073">حدثت مشكلة أثناء ملء معلوماتك. يُرجى التحقُّق من الاتصال بالشبكة.</translation>
 <translation id="5053116470141135293">‏سيتم ملء رقم بطاقة افتراضية عند إتمام الدفع باستخدام هذه البطاقة لحماية تفاصيل بطاقتك الفعلية. ويمكنك إدارة البطاقة في "محفظة Google". <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{لإرسال هذا الملف باستخدام ميزة "المشاركة عن قرب"، عليك إخلاء مساحة قدرها (<ph name="DISK_SPACE_SIZE" />) على جهازك.}zero{لإرسال هذه الملفات باستخدام ميزة "المشاركة عن قرب"، عليك إخلاء مساحة قدرها (<ph name="DISK_SPACE_SIZE" />) على جهازك.}two{لإرسال هذين الملفَين باستخدام ميزة "المشاركة عن قرب"، عليك إخلاء مساحة قدرها (<ph name="DISK_SPACE_SIZE" />) على جهازك.}few{لإرسال هذه الملفات باستخدام ميزة "المشاركة عن قرب"، عليك إخلاء مساحة قدرها (<ph name="DISK_SPACE_SIZE" />) على جهازك.}many{لإرسال هذه الملفات باستخدام ميزة "المشاركة عن قرب"، عليك إخلاء مساحة قدرها (<ph name="DISK_SPACE_SIZE" />) على جهازك.}other{لإرسال هذه الملفات باستخدام ميزة "المشاركة عن قرب"، عليك إخلاء مساحة قدرها (<ph name="DISK_SPACE_SIZE" />) على جهازك.}}</translation>
-<translation id="5056587122125565772">إنشاء صورة</translation>
 <translation id="505757197798929356">أدخِل سببًا للفتح (مطلوب).</translation>
 <translation id="5058282932481719070">مزيد من المعلومات عن ميزة "الملء التلقائي المحسّن" في الإعدادات</translation>
 <translation id="5061227663725596739">هل كنت تقصد <ph name="LOOKALIKE_DOMAIN" />؟</translation>
@@ -2773,6 +2777,7 @@
 <translation id="5649053991847567735">عمليات التنزيل التلقائية</translation>
 <translation id="5651323159439184939">إدخال الورق عن طريق جرّار</translation>
 <translation id="5653681867130739344">‏تعديل معلومات بطاقة الهوية بأمان في "محفظة Google"</translation>
+<translation id="5653744563415531641">‏يمكنك حفظ معلوماتك لإنجاز المهام بشكل أسرع، مثل ملء النماذج في جميع منتجات Google. يمكنك <ph name="MANAGE_WALLET_SETTINGS_LINK" /> لحساب <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">مُعرّف تقرير الأعطال الذي تم تحميله:</translation>
 <translation id="5654965123204121933">‏لا يتضمّن عنوان URL سلسلة الاستبدال المطلوبة <ph name="SEARCH_TERMS_REPLACEMENT" />‏: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">البريد الإلكتروني</translation>
@@ -2896,6 +2901,7 @@
 <translation id="5884465125445718607">ظرف صيني رقم 6</translation>
 <translation id="5887400589839399685">تم حفظ البطاقة</translation>
 <translation id="5887687176710214216">تمّت زيارة الموقع الإلكتروني آخر مرة أمس.</translation>
+<translation id="5887791684215121787">يمكنك الضغط على ⌘ ⌘ في أي نموذج للعثور على المعلومات وملئها بدون تبديل علامات التبويب</translation>
 <translation id="5889251770650310375">‏للحصول على السجلّ من أجهزتك الأخرى، يجب إثبات هويتك ومزامنة السجلّ وعلامات التبويب. ويمكنك إيقاف المزامنة في أي وقت من خلال الإعدادات. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
 <translation id="5895187275912066135">تاريخ الإصدار</translation>
@@ -3218,6 +3224,7 @@
 <translation id="6410264514553301377">‏أدخِل تاريخ انتهاء الصلاحية ورمز التحقّق (CVC) لبطاقة <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">مربّع حوار موافقة أحد الوالدَين</translation>
+<translation id="6413532517183895572">‏إدارة إعدادات "محفظة Google"</translation>
 <translation id="6415778972515849510">‏يمكن أن يساعدك Chromium على حماية حسابك على Google وتغيير كلمة المرور.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">يُرجى التأكّد من أنّ البيانات الشخصية أو المتعلّقة بالعمل تم تخزينها خارج الجهاز.</translation>

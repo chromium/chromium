@@ -268,6 +268,7 @@
 <translation id="17906873777101817">提示儲存密碼和密鑰</translation>
 <translation id="1794893174442046596">分頁群組</translation>
 <translation id="1807893857950749072">允許價格追蹤通知…</translation>
+<translation id="1808142805674973090">切換模式</translation>
 <translation id="1809929083618343438">所選資料會 Chrome 移除，但不會從 Google 帳戶中刪除。</translation>
 <translation id="1810976980198522421">取消</translation>
 <translation id="1815941218935345331">密碼</translation>
@@ -849,6 +850,7 @@
 <translation id="3779810277399252432">沒有互聯網連線。</translation>
 <translation id="3782614601387961027">關閉警告</translation>
 <translation id="3789841737615482174">安裝</translation>
+<translation id="3793603310364129123">步驟更少，連結更快</translation>
 <translation id="380329542618494757">名稱</translation>
 <translation id="3803696231112616155">為此網站提供翻譯選項</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -1380,6 +1382,7 @@
 <translation id="5467163657366219870">關閉「地圖預覽」</translation>
 <translation id="5474397204728336997">家庭群組密碼、全新自訂功能等，輕按即可瞭解詳情。</translation>
 <translation id="5475793109165786685">{count,plural, =0{未匯入任何密碼}=1{已匯入 {count} 個密碼}other{已匯入 {count} 個密碼}}</translation>
+<translation id="5477188385487393357">省卻複製貼上的麻煩</translation>
 <translation id="5478327362747197944">按一下網頁上的日期，即可直接建立日曆活動。</translation>
 <translation id="5482922178977937393">想收到與你個人興趣有關的新聞、體育賽事等通知嗎？</translation>
 <translation id="5483838506518938965">您已完成全部設定！</translation>
@@ -1746,6 +1749,7 @@
 <translation id="6585618849026997638">您可新增書籤，以便快速返回您認為重要的網頁</translation>
 <translation id="6589001036857939353">合併重複項目</translation>
 <translation id="659407965921887085">此資訊卡會顯示目前追蹤產品在網絡上的減價資訊</translation>
+<translation id="6596324345367949437">Gemini 不支援無痕模式</translation>
 <translation id="6596481460663245319">透過 Google 搜尋圖片</translation>
 <translation id="6601302169302852717">圖片已儲存至 <ph name="USER_EMAIL" /> 的「Google 相片」</translation>
 <translation id="6602173570135186741">自動填入和密碼</translation>

@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Vanhemman lupapyyntö epäonnistui.</translation>
 <translation id="1803557475693955505">Taustasivun <ph name="BACKGROUND_PAGE" /> lataaminen ei onnistunut.</translation>
 <translation id="1875387611427697908"><ph name="CHROME_WEB_STORE" /> on ainoa lähde, josta tämä voidaan lisätä.</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (laajennuksen tunnus "<ph name="EXTENSION_ID" />") ei ole käytäntöasennettavissa ympäristöissä, joissa luottamus on alhainen.</translation>
 <translation id="2131077480075264">Kohteen <ph name="APP_NAME" /> asentaminen ei onnistu, koska <ph name="IMPORT_NAME" /> ei salli sitä.</translation>
 <translation id="2150661552845026580">Lisätäänkö <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2159915644201199628">Kuvan koodin purkaminen epäonnistui: <ph name="IMAGE_NAME" /></translation>

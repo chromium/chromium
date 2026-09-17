@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">상위 권한 요청에 실패했습니다.</translation>
 <translation id="1803557475693955505">배경 페이지('<ph name="BACKGROUND_PAGE" />')를 로드하지 못했습니다.</translation>
 <translation id="1875387611427697908">이 프로그램은 <ph name="CHROME_WEB_STORE" />에서만 추가할 수 있습니다</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> 확장 프로그램(확장 프로그램 ID "<ph name="EXTENSION_ID" />")은 신뢰도가 낮은 환경에서 정책상 설치할 수 없습니다.</translation>
 <translation id="2131077480075264"><ph name="IMPORT_NAME" />에서 허용하지 않으므로 '<ph name="APP_NAME" />'을(를) 설치할 수 없습니다.</translation>
 <translation id="2150661552845026580">'<ph name="EXTENSION_NAME" />'을(를) 추가하시겠습니까?</translation>
 <translation id="2159915644201199628">'<ph name="IMAGE_NAME" />' 이미지를 디코딩하지 못했습니다.</translation>

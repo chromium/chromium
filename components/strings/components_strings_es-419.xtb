@@ -923,7 +923,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2527451058878391043">El CVC está en el frente de la tarjeta. Es el código de 4 dígitos que se encuentra en la parte superior derecha sobre el número de la tarjeta.</translation>
 <translation id="2529899080962247600">Esta campo no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas. Se ignorarán todas las entradas posteriores.</translation>
 <translation id="2530042584066815841">Bloqueo y uso del mouse</translation>
-<translation id="253493526287553278">Ver los detalles del código promocional</translation>
 <translation id="2535585790302968248">Abre una nueva pestaña de incógnito para navegar de forma privada</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{y 1 más}other{y # más}}</translation>
 <translation id="2536110899380797252">Agregar dirección</translation>
@@ -2408,7 +2407,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5052488928733955073">No se pudo completar tu información. Revisa la conexión.</translation>
 <translation id="5053116470141135293">Cuando pagues con esta tarjeta, se completará un número de tarjeta virtual para proteger tus datos reales. Administra esto en la Billetera de Google. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este archivo mediante Compartir con Nearby, libera espacio (<ph name="DISK_SPACE_SIZE" />) en el dispositivo.}other{Para enviar estos archivos mediante Compartir con Nearby, libera espacio (<ph name="DISK_SPACE_SIZE" />) en el dispositivo.}}</translation>
-<translation id="5056587122125565772">Crear imagen</translation>
 <translation id="505757197798929356">Proporciona el motivo de la apertura (obligatorio)</translation>
 <translation id="5058282932481719070">obtén más información sobre la función de autocompletado mejorado en la configuración</translation>
 <translation id="5061227663725596739">¿Quisiste decir <ph name="LOOKALIKE_DOMAIN" />?</translation>

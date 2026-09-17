@@ -146,6 +146,7 @@
 <translation id="2575822587468774919">Выберите что-нибудь для поиска по изображениям.</translation>
 <translation id="2576118232315942160">Чтобы синхронизировать пароли и другие данные на всех своих устройствах, войдите в Chromium.</translation>
 <translation id="2587622539943955767">Чтобы скачать Chromium и войти в аккаунт Google, отсканируйте QR-код с помощью телефона.</translation>
+<translation id="2587885422541096572">для поиска в Chromium.</translation>
 <translation id="2592940277904433508">Продолжить работу в Chromium</translation>
 <translation id="259935314519650377">Не удалось кешировать скачанный установщик. Ошибка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -335,6 +336,7 @@
 <translation id="4621240073146040695">Чтобы завершить обновление, перезапустите Chromium.</translation>
 <translation id="4625064703209785397">Ускоряет работу сайтов с помощью движка Chromium V8, но делает Chromium чуть менее устойчивым к атакам</translation>
 <translation id="4626321472657185181">Открыть Поиск в Chromium</translation>
+<translation id="4654639495249754755">Профиль Chromium</translation>
 <translation id="4665829708273112819">Внимание! Chromium не может запретить расширениям записывать историю браузера. Чтобы отключить это расширение в режиме инкогнито, снимите этот флажок.</translation>
 <translation id="4673151026126227699">Если вы также отправляете отчеты об использовании Chromium, в них включаются URL посещенных вами страниц.</translation>
 <translation id="4673710618874938871">Вы вошли как <ph name="USER_NAME" />. У вас оформлена подписка. Открыть меню аккаунта</translation>
@@ -467,6 +469,7 @@
 <translation id="6174920971222007286">Этот файл может быть опасен.<ph name="LINE_BREAK" />Chromium проверит его, если вы введете пароль. Информация о файле отправляется в сервис "Google Безопасный просмотр", но содержимое файла и ваш пароль остаются на устройстве.</translation>
 <translation id="6182736845697986886">Выполнить установку не удалось из-за внутренней ошибки сервера.</translation>
 <translation id="6183079672144801177">Убедитесь, что вы вошли в Chromium на устройстве <ph name="TARGET_DEVICE_NAME" />, и попробуйте повторить отправку.</translation>
+<translation id="6192070012454216182">Ищите информацию и задайте вопросы, даже если Chromium свернут. Разрешает Chromium работать в фоновом режиме.</translation>
 <translation id="6212496753309875659">На этом компьютере установлена актуальная версия Chromium. Если программа не работает, удалите Chromium и повторите попытку.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium перезапускается}=1{Chromium перезапустится через 1 секунду}one{Chromium перезапустится через # секунду}few{Chromium перезапустится через # секунды}many{Chromium перезапустится через # секунд}other{Chromium перезапустится через # секунды}}</translation>
 <translation id="6241367896540709610">Для скачивания файлов браузеру Chromium требуется доступ к хранилищу.</translation>
@@ -593,6 +596,7 @@
 <translation id="7288567540154601580">Вкладки и расширения</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium рекомендует удалить его}one{Chromium рекомендует удалить их}few{Chromium рекомендует удалить их}many{Chromium рекомендует удалить их}other{Chromium рекомендует удалить их}}</translation>
 <translation id="7296334833518879294">Чтобы делиться системным аудио, откройте настройки системы и разрешите Chromium записывать только системные звуки. Затем нужно будет перезапустить Chromium.</translation>
+<translation id="7299899569525778554">Поиск на компьютере</translation>
 <translation id="731795002583552498">Обновление Chromium…</translation>
 <translation id="7318036098707714271">Файл настроек поврежден или недействителен. Chromium не может восстановить ваши параметры.</translation>
 <translation id="7324051657739063017">Вы можете снова открыть контекстные задачи, чтобы задавать вопросы во время просмотра сайтов.</translation>
@@ -646,6 +650,7 @@
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Чтобы тем, у кого есть доступ к вашему интернет-трафику, было сложнее видеть, какие сайты вы посещаете, Chromium использует защищенное подключение для поиска IP-адресов сайтов в DNS (системе доменных имен).</translation>
 <translation id="7810005234485217901">Вы можете закрепить поиск по изображениям для быстрого доступа.</translation>
+<translation id="7813626943009612327">Задавайте вопросы о контенте вне Chromium, например в другом открытом приложении или файле.</translation>
 <translation id="7828527096541974699">Выберите, какими данными вы хотите делиться с Chromium</translation>
 <translation id="7828947555739565424">На данном устройстве уже есть профиль Chromium для этого аккаунта.</translation>
 <translation id="7845233973568007926">Спасибо, что установили <ph name="BUNDLE_NAME" />. Чтобы изменения вступили в силу, перезапустите компьютер.</translation>
@@ -736,6 +741,7 @@
 <translation id="8619360774459241877">Запуск Chromium...</translation>
 <translation id="8624541899164515475">Настройки (страница откроется в новой вкладке).</translation>
 <translation id="8648201657708811153">Google Chrome для тестирования нельзя сделать браузером по умолчанию.</translation>
+<translation id="8676101123715131330">Выполняйте поиск в Chromium откуда угодно</translation>
 <translation id="8697124171261953979">Кроме того, расширение изменило стартовую страницу Chromium и поисковую систему, используемую по умолчанию при вводе запроса в омнибокс.</translation>
 <translation id="8704119203788522458">Ваш персональный Chromium</translation>
 <translation id="8712637175834984815">OK</translation>
@@ -769,6 +775,7 @@
 <translation id="897581876605952338">Логотип Chromium Enterprise</translation>
 <translation id="8980139959902937527">Функции безопасности Google всегда под рукой в приложении Chromium на <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Не удалось запустить Chromium. При открытии вашего профиля произошла ошибка. Попробуйте перезапустить Chromium.</translation>
+<translation id="8981886272598860786">для поиска в Chromium или изменения <ph name="BEGIN_LINK" />настроек<ph name="END_LINK" />.</translation>
 <translation id="8988036198400390003">Настроить профили Chromium</translation>
 <translation id="8993855408334954620">Использовать клавиатуру, чтобы переключаться между Gemini в Chromium и открытой вкладкой</translation>
 <translation id="9018218886431812662">Установка завершена</translation>

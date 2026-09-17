@@ -2627,6 +2627,7 @@ Der Nutzer kann sich somit darauf verlassen, dass nach der Anmeldung keine weite
 
 Wenn die Richtlinie deaktiviert ist, verwendet das Gerät kein Remote Attestation für geschützte Inhalte, sodass darauf möglicherweise keine geschützten Inhalte wiedergegeben werden können.</translation>
 <translation id="262740370354162807">Senden von Dokumenten an <ph name="CLOUD_PRINT_NAME" /> aktivieren</translation>
+<translation id="2631498379019108537">Eingabeoptionen in der Ablage anzeigen</translation>
 <translation id="2633084400146331575">Gesprochenes Feedback aktivieren</translation>
 <translation id="2633907568797306353">Aktivieren von Phone Hub-Benachrichtigungen zulassen</translation>
 <translation id="2634265675787412567"><ph name="PRODUCT_NAME" /> kann Passkey-/WebAuthn-Erstellungsanfragen unter macOS 13.5 oder höher direkt an den iCloud-Schlüsselbund weiterleiten. Wenn die iCloud-Schlüsselbundsynchronisierung noch nicht aktiviert ist, wird der Nutzer dadurch gebeten, sich über die iCloud anzumelden. Eventuell wird er stattdessen aufgefordert, die iCloud-Schlüsselbundsynchronisierung zu aktivieren.
@@ -4305,6 +4306,7 @@ Diese Richtlinie wird ab Version 144 von <ph name="PRODUCT_NAME" /> mit der Ein
 <translation id="376375951585423504">Persistentes Kontingent deaktivieren.</translation>
 <translation id="3765260570442823273">Dauer der Warnmeldung zur Abmeldung bei Inaktivität</translation>
 <translation id="3766695867369523703">Drittanbieter-Speicherpartitionierung standardmäßig zulassen.</translation>
+<translation id="3769975508816807531">Tab-Deaktivierung im Hintergrund ist deaktiviert</translation>
 <translation id="377001726927041812">Prozessisolation aktivieren.</translation>
 <translation id="3770044943398389276">Standardmäßig verschiebt Floating‑SSO nur persistente Cookies zwischen Geräten. Mit dieser Richtlinie kann festgelegt werden, ob auch Sitzungscookies einbezogen werden sollen. Sie wird nur angewendet, wenn die Richtlinie „<ph name="FLOATING_SSO_ENABLED_POLICY_NAME" />“ aktiviert ist.
 
@@ -5395,6 +5397,7 @@ Diese Richtlinie ist nicht wirksam, wenn sie aktiviert ist, leer gelassen oder n
 <translation id="4515404363392014383">Safe Browsing für vertrauenswürdige Quellen aktivieren</translation>
 <translation id="4517327050150780380">Einstellungen für die Funktion „Hilfe beim Lesen“</translation>
 <translation id="4518251772179446575">Nachfragen, wenn eine Website den physischen Standort der Nutzer verfolgen möchte</translation>
+<translation id="4521106598519506386">„Tabs im Hintergrund deaktivieren“ ist aktiviert</translation>
 <translation id="4521193243799782295">Bei der Anmeldung kann <ph name="PRODUCT_OS_NAME" /> die Authentifizierung über einen Server (online) oder über ein Passwort im Cache (offline) ausführen.
 
       Wenn diese Richtlinie auf den Wert -1 festgelegt ist, erzwingt sie keine Onlineauthentifizierung und erlaubt dem Nutzer, die Offlineauthentifizierung zu verwenden, bis die Onlineanmeldung durch etwas anderes als diese Richtlinie erzwungen wird. Ist die Richtlinie auf den Wert 0 festgelegt, ist eine Onlineanmeldung immer erforderlich. Wenn die Richtlinie auf einen beliebigen anderen Wert festgelegt ist, wird damit die Zeit seit der letzten Onlineauthentifizierung angegeben, nach der der Nutzer für die nächste Anmeldung wieder eine Onlineauthentifizierung verwenden muss.
@@ -5751,6 +5754,19 @@ Bis Chrome 114 musste für diese Richtlinie die Richtlinie „<ph name="SYNC_DI
 
       Wenn diese Richtlinie nicht konfiguriert oder aktiviert ist, werden die DNS-Abfangprüfungen durchgeführt. Nur wenn sie ausdrücklich deaktiviert ist, finden sie nicht statt.</translation>
 <translation id="4700190441681139987">Keiner Website erlauben, auf Sensoren zuzugreifen</translation>
+<translation id="4700450186549212780">Konfiguriert die Verbindungseinstellungen für <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" />.
+
+Zum Konfigurieren von <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> müssen Administratoren Folgendes angeben:
+* Die URL der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Webanwendung (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) ODER
+* Alle drei Legacy-Parameter zusammen: „<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />“, „<ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />“ und „<ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />“. Wenn nur eine Teilmenge der drei Parameter ohne URL angeben wird, wird die Richtlinie abgelehnt.
+
+Falls sowohl der Parameter „<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />“ als auch die Legacy-Parameter konfiguriert sind, hat der Parameter „<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />“ Vorrang.
+
+Ist diese Richtlinie konfiguriert, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> für Nutzer konfiguriert, die mit einem verwalteten Konto oder einem verwalteten Browser angemeldet sind.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> nicht konfiguriert.
+
+Diese Richtlinie steuert nicht die allgemeine <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-Anbindung, die über die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ gesteuert werden kann.</translation>
 <translation id="4703402283970867140">Intelligentem Dimmmodell erlauben, den Zeitraum bis zum Dimmen des Bildschirms zu verlängern</translation>
 <translation id="4704958130749494760">Websites automatisch die Berechtigung erteilen, eine Verbindung zu seriellen USB-Geräten herzustellen.</translation>
 <translation id="4705329890928008808">Wenn die Richtlinie auf „CopyCaCerts“ gesetzt ist, werden alle über ONC installierten CA-Zertifikate mit <ph name="WEB_TRUSTED_BIT" /> für ARC-Apps verfügbar.
@@ -6834,6 +6850,7 @@ Ist die Richtlinie deaktiviert, können der Browser‑ und der Downloadverlauf n
 <translation id="5323200200131319468">Gesprochenes Feedback auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="5323271643727095577">Dialogfeld zum Abbrechen nicht anzeigen, wenn „event.preventDefault()“ für ein „beforeunload“-Ereignis aufgerufen wird. Dialogfeld zum Abbrechen anzeigen, wenn „beforeunload event.returnValue“ der leere String für ein „beforeunload“-Ereignis ist.</translation>
 <translation id="5324430722441910403">Einstellungen für die Websitesuche</translation>
+<translation id="5324926539444440406">Nutzer entscheiden lassen, ob Tabs im Hintergrund deaktiviert werden sollen</translation>
 <translation id="5326431956495937408">Wenn die Richtlinie aktiviert ist, können Nutzer ihre Passwörter gemäß den Familiendiensten an Familienmitglieder senden und von ihnen empfangen.
 Ist sie aktiviert oder nicht konfiguriert, gibt es im Passwortmanager einen Button, über die ein Passwort gesendet werden kann.
 Empfangene Passwörter werden im Konto des Nutzers gespeichert und sind im Passwortmanager verfügbar.
@@ -6921,6 +6938,21 @@ Ab Version 92 von <ph name="PRODUCT_NAME" /> wird diese Richtlinie auch im moni
 <translation id="5373552304217872025">Wenn diese Richtlinie auf „true“ gesetzt oder nicht konfiguriert ist, können neue Nutzer in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> über die Nutzerverwaltung hinzugefügt werden.
 
       Ist sie auf „false“ gesetzt, können keine neuen Nutzer in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> über die Nutzerverwaltung hinzugefügt werden.</translation>
+<translation id="5373983340859513416">Mit dieser Richtlinie kannst die <ph name="CHROME_DEVTOOLS_NAME" /> für bestimmte URLs zulassen.
+
+Die Verfügbarkeit der <ph name="CHROME_DEVTOOLS_NAME" /> wird auf Zielebene bewertet. URL-Muster werden mit der URL jedes geprüften Ziels abgeglichen (z. B. dem Hauptframe einer Seite, einem eingebetteten Subframe, einer Erweiterung oder einer Webanwendung). Das daraus resultierende Verhalten hängt davon ab, ob die Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />“ ebenfalls konfiguriert ist.
+
+Wenn diese Richtlinie konfiguriert ist und „<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />“ nicht, muss die URL eines Ziels mit einem Muster auf dieser Zulassungsliste übereinstimmen, damit die <ph name="CHROME_DEVTOOLS_NAME" /> für dieses Ziel zulässig sind. Wenn die URL eines Ziels nicht mit dieser Zulassungsliste übereinstimmt, werden die <ph name="CHROME_DEVTOOLS_NAME" /> für dieses Ziel blockiert. Beispielsweise kann ein Subframe, dessen URL nicht auf der Zulassungsliste steht, nicht geprüft werden, die Hauptseite kann jedoch geprüft werden, wenn ihre URL auf der Zulassungsliste steht. Informationen zum URL-Format findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Wenn sowohl diese Richtlinie als auch „<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />“ festgelegt sind, hat diese Zulassungsliste Vorrang. Wenn die URL eines Ziels mit einem Muster auf dieser Zulassungsliste übereinstimmt, ist sie zulässig, auch wenn sie ebenfalls mit einem Muster auf der Sperrliste übereinstimmt. Stimmt die URL eines Ziels mit einem Muster überein, das auf dieser Sperrliste (aber nicht auf der Zulassungsliste) steht, wird sie blockiert. Falls die URL eines Ziels mit keinem Muster der beiden Listen übereinstimmt, wird die Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />“ als Fallback verwendet.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird die Verfügbarkeit der <ph name="CHROME_DEVTOOLS_NAME" /> durch die Richtlinien „<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />“ und „<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />“ bestimmt.
+
+Alles einschließende Platzhalter für den Host (z. B. „*“ oder „[*]“) sind nicht zulässig. Verwende die Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />“, um die Funktion global zu aktivieren.
+
+Diese Richtlinie wirkt sich auf die <ph name="CHROME_DEVTOOLS_NAME" />, den direkten Zugriff auf das Chrome-Entwicklertools-Protokoll (Chrome DevTools Protocol, CDP), z. B. beim Starten mit „--remote-debugging-port“ oder „--remote-debugging-pipe“, und den Zugriff auf das CDP über chrome.debugger-APIs aus. Sowohl diese Richtlinie als auch die Richtlinie „<ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" />“ gelten: „<ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" />“ bestimmt, ob das Remote-Debugging gestartet werden kann, während diese Richtlinie einschränkt, ob einzelne Ziele auch dann geprüft werden können, wenn das Remote-Debugging ausgeführt wird.
+
+Diese Richtlinie ist auf 1.000 Einträge beschränkt.</translation>
 <translation id="5376712696238639532">Mit dieser Richtlinie wird festgelegt, ob Lehrkräfte die Untertitelfunktion verwenden können.
 
 Wenn der Wert auf „true“ gesetzt oder nicht konfiguriert ist, können ausgewählte Lehrkräfte ihre Stimme untertiteln lassen und die Transkripte an Schüler/Studenten senden.
@@ -7469,6 +7501,7 @@ Die Richtlinie wirkt sich sowohl auf die Authentifizierung bei der Anmeldung als
 <translation id="5728154254076636808">Erstellung von Roaming-Kopien für <ph name="PRODUCT_NAME" />-Profildaten aktivieren</translation>
 <translation id="5729308727912841256">Kerberos-Passwort. Der Platzhalter „<ph name="PASSWORD_PLACEHOLDER" />“ wird durch das Anmeldepasswort ersetzt.</translation>
 <translation id="5730610899971390601">„Just Works“-Bluetooth-Kopplungsanfragen ablehnen</translation>
+<translation id="5731883586899464960">Die Webanwendungs-URL der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Instanz für diese Organisation.</translation>
 <translation id="5732972008943405952">Bei erstmaliger Ausführung Autofill-Formulardaten aus Standardbrowser importieren</translation>
 <translation id="5733040281451845496">Wenn die Richtlinie aktiviert ist, wird die erste Aktivität des Nutzers in einer Sitzung als Ausgangspunkt für Verzögerungen bei der Energieverwaltung und Begrenzungen der Sitzungslänge verwendet.
 
@@ -7570,6 +7603,7 @@ Mit der Richtlinie „<ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" />“ 
 <translation id="5804702826910437814">Auf generativer KI basierende Funktionen der <ph name="CHROME_DEVTOOLS_NAME" /> zulassen, ohne KI‑Modelle zu verbessern.</translation>
 <translation id="5804795151506109282">Nutzer nicht zur Migration auffordern.</translation>
 <translation id="5806128552675651249">Drucken nur ohne Hintergrundgrafiken zulassen</translation>
+<translation id="5808888486171670350">Die Nutzung der <ph name="CHROME_DEVTOOLS_NAME" /> in Apps und Erweiterungen, die über die Unternehmensrichtlinie oder ab Version 114 installiert wurden oder in den Browser eines verwalteten Nutzers eingebunden sind, ist nicht zulässig. Ist dies ein verwalteter Nutzer, sind in den Browser integrierte Erweiterungen nicht zulässig. Nutzung der <ph name="CHROME_DEVTOOLS_NAME" /> in anderen Kontexten zulassen</translation>
 <translation id="5809210507920527553">Legt die Einstellungen für den Linux-Container (Crostini) fest.</translation>
 <translation id="5809728392451418079">Anzeigename für lokale Gerätekonten festlegen</translation>
 <translation id="5810916450338110943">Liste der Einstellungen für Chrome Enterprise Connectors-Dienste für den Enterprise Connector „<ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />“. Dieser wird ausgelöst, wenn eine Datei in Chrome heruntergeladen wird.
@@ -7994,6 +8028,15 @@ Ist die Richtlinie aktiviert, wird die API unterstützt.
 Diese Richtlinie kann verwendet werden, wenn die fehlende Unterstützung für diese API Probleme bereitet. Wenn du die Richtlinie verwenden musst, melde auf crbug.com einen Fehler unter Angabe deines Anwendungsfalls und setze {blundell, vasilyt}@chromium.org in Cc. Die Richtlinie kann bis Version 114 von <ph name="PRODUCT_NAME" /> verwendet werden. In den Versionen danach wurde die Unterstützung für diese API vollständig beendet.
 
 HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Richtlinie nur für neu gestartete Rendererprozesse übernommen.</translation>
+<translation id="6083071443488983075">Mit dieser Richtlinie kann festgelegt werden, ob <ph name="PRODUCT_NAME" /> inaktive Hintergrundtabs deaktiviert, um CPU und Arbeitsspeicher zu schonen.
+
+Wenn das Deaktivieren von Tabs im Hintergrund aktiv ist, werden Tabs, die eine Zeit lang im Hintergrund inaktiv waren, deaktiviert. Dazu werden JavaScript-Ausführung und Timer-Aufgaben pausiert. Deaktivierte Tabs bleiben im Arbeitsspeicher und werden sofort fortgesetzt, wenn sie vom Nutzer ausgewählt werden. Tabs mit aktiven Hintergrundaufgaben, z. B. solche, die Audio- oder Videoinhalte wiedergeben, Bildschirm- oder Kamerastreams aufzeichnen, aktive WebRTC-Verbindungen aufrechterhalten oder Web Locks anwenden, können nicht deaktiviert werden und werden weiter ausgeführt. Websites, die in der Richtlinie „<ph name="TAB_DISCARDING_EXCEPTIONS_POLICY_NAME" />“ oder in den Ausnahmen des Nutzers für das Verwerfen von Tabs konfiguriert sind, sind ebenfalls vom Deaktivieren ausgenommen.
+
+Wenn die Richtlinie aktiviert ist, wird das automatische Deaktivieren von Tabs im Hintergrund für passende Tabs im Hintergrund aktiviert. Nutzer können diese Einstellung nicht ändern.
+
+Ist die Richtlinie deaktiviert, werden Tabs im Hintergrund nicht deaktiviert. Nutzer können diese Einstellung nicht ändern.
+
+Wenn die Richtlinie nicht konfiguriert ist, ist das Deaktivieren von Hintergrundtabs standardmäßig aktiviert, Nutzer können die Funktion aber in den <ph name="PRODUCT_NAME" />-Einstellungen aktivieren oder deaktivieren.</translation>
 <translation id="6083281887050888160">„Just Works“-Bluetooth-Kopplung aktivieren</translation>
 <translation id="6083631234867522991">Windows (Windows-Clients):</translation>
 <translation id="6085580138417523410">Anfragen für den Zugriff auf das lokale Netzwerk (Local Network Access, LNA) in Unterframes ohne explizite Delegierung zulassen</translation>
@@ -8291,6 +8334,7 @@ Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, folgt der Browser a
 Wenn diese Richtlinie deaktiviert ist, wird die Änderung rückgängig gemacht und Dokumente ohne den Header „Origin-Agent-Cluster“ werden Agent-Clustern zugewiesen, die an Websites gebunden sind. Die Zugriffsfunktion „document.domain“ lässt sich dann standardmäßig konfigurieren. Dies entspricht dem Verhalten älterer Versionen.
 
 Weitere Informationen findest du unter https://developer.chrome.com/blog/immutable-document-domain/.</translation>
+<translation id="6268941767866119713">Festlegen, wo die <ph name="CHROME_DEVTOOLS_NAME" /> verwendet werden können</translation>
 <translation id="626942726350419209">Websites gestatten, automatisch mehrere Dateien herunterzuladen</translation>
 <translation id="6270615143812355589">Audioeingabe aktivieren</translation>
 <translation id="6270791075656665237">QUIC-Protokoll nicht zulassen</translation>
@@ -8620,6 +8664,7 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, bestimmt die CNAME-
 <translation id="6424486395812679373">Safe Browsing-Überprüfung für alle Dateidownloads ausführen</translation>
 <translation id="6426899507714989471">Grafikbeschleunigung deaktivieren</translation>
 <translation id="6431446111529802555">Europa.</translation>
+<translation id="6431778298276599807">„Tabs im Hintergrund deaktivieren“ aktivieren</translation>
 <translation id="6433697627431665375"><ph name="PRODUCT_NAME" />-Daten nicht in Sicherungen einschließen</translation>
 <translation id="6436052172226685535">Standardverhalten für die Unterstützung älterer Browser.</translation>
 <translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> versucht nach Möglichkeit, einige Navigationen von HTTP auf HTTPS zu aktualisieren. Diese Richtlinie kann verwendet werden, um dieses Verhalten zu deaktivieren. Wenn sie auf „true“ gesetzt oder nicht konfiguriert ist, ist diese Funktion standardmäßig aktiviert.
@@ -9101,6 +9146,11 @@ Wenn die Richtlinie aktiviert ist, werden Daten erhoben und in die <ph name="GOO
 
 Sie wird für <ph name="PRODUCT_NAME" /> nur angewendet, wenn das Gerät mit „<ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />“ registriert ist.
 Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
+<translation id="6718248192281812888">Damit wird festgelegt, ob Nutzer Remote-Debugging verwenden können.
+
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer Remote-Debugging verwenden, indem sie auf Desktop-Plattformen die Befehlszeilenoptionen „--remote-debugging-port“ und „--remote-debugging-pipe“ angeben oder unter <ph name="ANDROID_NAME" /> die Systemeinstellung für USB-Debugging aktivieren.
+
+Wenn diese Richtlinie deaktiviert ist, ist die Verwendung von Remote-Debugging für Nutzer nicht zulässig.</translation>
 <translation id="6720330829631914048">Zahl der seit Beginn des Tages verstrichenen Stunden (im 24-Stunden-Format).</translation>
 <translation id="6720862827454058309">Zuordnungen von IP-Adressbereichen überschreiben</translation>
 <translation id="6721252203593581486">WebSQL ist im Zusammenhang mit Drittanbietern (z. B. websiteübergreifende iFrames) ab M97 standardmäßig deaktiviert und wird in M101 vollständig entfernt.
@@ -10668,6 +10718,7 @@ Diese Richtlinie kann für bestimmte Ursprünge der isolierten Web-App überschr
 <translation id="7696412993033202071">Starten von externen Authentifizierungs-Apps bei Aufruf von URLs</translation>
 <translation id="7696534428021833264">Karte mit SharePoint- und OneDrive-Dateien auf der Seite „Neuer Tab“ aktivieren</translation>
 <translation id="7699644797467448158">„window.name“ löschen, wenn websiteübergreifende Seitenaufrufe auf oberster Ebene stattfinden und einen Wechsel von „BrowsingContextGroup“ herbeiführen.</translation>
+<translation id="7700606318567398251">Verwendung von <ph name="CHROME_DEVTOOLS_NAME" /> nicht zulassen</translation>
 <translation id="7701341006446125684">Cache-Größe für Apps und Erweiterungen in Byte festlegen</translation>
 <translation id="7701825382808690457">Standardwert für den Post-Quanten-Algorithmus für Schlüsselvereinbarungen mit WebRTC verwenden</translation>
 <translation id="7703041979684393741">Erfassen von WebRTC-Ereignisprotokollen aus Google-Diensten nicht zulassen</translation>
@@ -11297,6 +11348,19 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="8102854005031553638">Der PDF-Viewer verwendet den AGG-Renderer.</translation>
 <translation id="8102913158860568230">Standardeinstellung für MediaStream</translation>
 <translation id="8104962233214241919">Client-Zertifikate für diese Websites automatisch auswählen</translation>
+<translation id="810897014119047728">Mit dieser Richtlinie kannst du die <ph name="CHROME_DEVTOOLS_NAME" /> für bestimmte URLs blockieren. Informationen zum URL-Format findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Die Verfügbarkeit der <ph name="CHROME_DEVTOOLS_NAME" /> wird auf Zielebene bewertet. URL-Muster werden mit der URL jedes geprüften Ziels abgeglichen (z. B. dem Hauptframe einer Seite, einem eingebetteten Subframe, einer Erweiterung oder einer Webanwendung). Das daraus resultierende Verhalten hängt davon ab, ob die Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />“ ebenfalls konfiguriert ist.
+
+Wenn diese Richtlinie konfiguriert ist und „<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />“ nicht, werden die <ph name="CHROME_DEVTOOLS_NAME" /> für ein Ziel blockiert, wenn die URL des Ziels mit einem Muster auf dieser Sperrliste übereinstimmt. Beispielsweise kann ein Subframe, dessen URL mit dieser Sperrliste übereinstimmt, nicht geprüft werden, aber die Hauptseite kann weiterhin geprüft werden, wenn ihre URL nicht auf der Sperrliste steht. Wenn die URL eines Ziels mit keinem Muster übereinstimmt, wird die Verfügbarkeit von der Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />“ bestimmt.
+
+Sind sowohl diese Richtlinie als auch „<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />“ festgelegt, hat die Zulassungsliste Vorrang. Wenn die URL eines Ziels mit einem Muster auf der Zulassungsliste übereinstimmt, ist sie zulässig, auch wenn sie ebenfalls mit einem Muster auf dieser Sperrliste übereinstimmt. Stimmt die URL eines Ziels mit einem Muster überein, das auf dieser Sperrliste (aber nicht auf der Zulassungsliste) steht, wird sie blockiert. Falls die URL eines Ziels mit keinem Muster der beiden Listen übereinstimmt, wird die Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />“ als Fallback verwendet.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird die Verfügbarkeit der <ph name="CHROME_DEVTOOLS_NAME" /> durch die Richtlinien „<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />“ und „<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />“ bestimmt.
+
+Diese Richtlinie wirkt sich auf die <ph name="CHROME_DEVTOOLS_NAME" />, den direkten Zugriff auf das Chrome-Entwicklertools-Protokoll (Chrome DevTools Protocol, CDP), z. B. beim Starten mit „--remote-debugging-port“ oder „--remote-debugging-pipe“, und den Zugriff auf das CDP über chrome.debugger-APIs aus. Sowohl diese Richtlinie als auch die Richtlinie „<ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" />“ gelten: „<ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" />“ bestimmt, ob das Remote-Debugging gestartet werden kann, während diese Richtlinie einschränkt, ob einzelne Ziele auch dann geprüft werden können, wenn das Remote-Debugging ausgeführt wird.
+
+Diese Richtlinie ist auf 1.000 Einträge beschränkt.</translation>
 <translation id="8109762054721090517">Vorlage für <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /></translation>
 <translation id="811012672754800797">Datei-Uploads in Gemini in Chrome nicht zulassen.</translation>
 <translation id="8111331908123507719">Dadurch wird festgelegt, wie viele Sekunden das Gerät inaktiv bleibt, bevor der Bildschirmschoner auf dem Sperrbildschirm angezeigt wird.
@@ -11435,6 +11499,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird das Standardverhalten angewen
 <translation id="8199823751103472868">Ist diese Richtlinie festgelegt, wird das InScript-Layout für Hindi unter <ph name="PRODUCT_OS_NAME" /> aktiviert. Ist sie auf „false“ gesetzt oder nicht festgelegt, ist das Layout nicht verfügbar.</translation>
 <translation id="8202566089100454374">Google Maps (wird seit Version 135 unterstützt)</translation>
 <translation id="8202834945144737726">Attestierungsablauf <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> für eine Liste von URLs auf dem Anmeldebildschirm aktivieren</translation>
+<translation id="8204634641358373241">Eingabeoptionen nicht in der Ablage anzeigen</translation>
 <translation id="8213770777756919897">Diese Richtlinie ist veraltet und wird in Version 85 von <ph name="PRODUCT_OS_NAME" /> entfernt. Bitte verwende stattdessen die Richtlinie "<ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />".
 
           Ist diese Richtlinie konfiguriert, wird damit festgelegt, was <ph name="PRODUCT_OS_NAME" /> tun soll, wenn der Nutzer für die Dauer der Inaktivitätsverzögerung inaktiv bleibt. Diese kann gesondert konfiguriert werden.
@@ -11480,6 +11545,23 @@ Eine ausführliche Beschreibung aller Werte findest du unter RFC 8828, Abschnit
 <translation id="8244525275280476362">Maximale Abrufverzögerung nach der Außerkraftsetzung einer Richtlinie</translation>
 <translation id="8247143534027746614">Zugriff auf eine Liste von URL-Mustern während der Authentifizierung blockieren</translation>
 <translation id="824818544897669723">Löschen des Browserverlaufs und des Downloadverlaufs deaktivieren</translation>
+<translation id="8249289413721808395">Wenn die Richtlinie auf 0 gesetzt ist (Standardeinstellung), kannst du auf die <ph name="CHROME_DEVTOOLS_NAME" /> und die JavaScript-Konsole zugreifen. Für Erweiterungen, die über die Unternehmensrichtlinie installiert wurden, oder ab Version 114 für Erweiterungen, die in den Browser eines verwalteten Nutzers eingebunden sind, ist der Zugriff aber nicht möglich. Ist die Richtlinie auf 1 gesetzt, kannst du die <ph name="CHROME_DEVTOOLS_NAME" /> und die JavaScript-Konsole in allen Kontexten aufrufen, also auch bei Erweiterungen, die über die Unternehmensrichtlinie installiert wurden. Wenn die Richtlinie auf 2 gesetzt ist, kann nicht auf die <ph name="CHROME_DEVTOOLS_NAME" /> zugegriffen werden und Websiteelemente können nicht geprüft werden.
+
+Alle Tastenkombinationen und Einträge im Menü oder Kontextmenü, mit denen die <ph name="CHROME_DEVTOOLS_NAME" /> oder die JavaScript-Konsole aufgerufen werden, werden deaktiviert.
+
+Seit Version 99 von <ph name="PRODUCT_NAME" /> werden durch diese Einstellung auch Einstiegspunkte für die Funktion „Seiten-Quelltext anzeigen“ bestimmt. Wenn diese Richtlinie auf „DeveloperToolsDisallowed“ (Wert 2) festgelegt ist, können Nutzer sich den Quelltext nicht über Tastenkombinationen oder das Kontextmenü anzeigen lassen. Soll die Anzeige des Quelltexts komplett blockiert werden, ist es auch erforderlich, der Richtlinie „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ den Eintrag „view-source:*“ hinzuzufügen.
+
+Seit Version 119 von <ph name="PRODUCT_NAME" /> wird durch diese Einstellung außerdem bestimmt, ob der Entwicklermodus für isolierte Web-Apps aktiviert und verwendet werden kann.
+
+Seit Version 128 von <ph name="PRODUCT_NAME" /> lässt sich der Entwicklermodus auf der Seite „Erweiterungen“ nicht mehr mit dieser Einstellung steuern, wenn die Richtlinie „<ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />“ konfiguriert ist.
+
+Diese Richtlinie wirkt sich auf die <ph name="CHROME_DEVTOOLS_NAME" />, den direkten Zugriff auf das Chrome-Entwicklertools-Protokoll (Chrome DevTools Protocol, CDP), z. B. beim Starten mit „--remote-debugging-port“ oder „--remote-debugging-pipe“, und den Zugriff auf das CDP über chrome.debugger-APIs aus. Sowohl diese Richtlinie als auch die Richtlinie „<ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" />“ gelten: „<ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" />“ bestimmt, ob das Remote-Debugging gestartet werden kann, während diese Richtlinie einschränkt, ob einzelne Ziele auch dann geprüft werden können, wenn das Remote-Debugging ausgeführt wird.
+
+Die Richtlinien „<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />“ und „<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />“ haben Vorrang vor dieser Richtlinie. Die Verfügbarkeit der <ph name="CHROME_DEVTOOLS_NAME" /> wird in der folgenden Rangfolge bestimmt:
+1. Wenn eine URL mit einem Muster in der Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />“ übereinstimmt, sind die <ph name="CHROME_DEVTOOLS_NAME" /> zulässig.
+2. Wenn die Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />“ konfiguriert ist und „<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />“ nicht, wird jede URL blockiert, die nicht auf der Zulassungsliste steht.
+3. Wenn eine URL mit einem Muster in der Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />“ übereinstimmt, werden die <ph name="CHROME_DEVTOOLS_NAME" /> blockiert.
+4. Wenn keine der beiden Richtlinien konfiguriert ist oder eine URL mit keiner der beiden Listen übereinstimmt, wird diese Richtlinie (<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />) als Fallback-Mechanismus verwendet.</translation>
 <translation id="8250048892729838843">Diese Richtlinie ist veraltet. Wenn die Richtlinie aktiviert oder nicht konfiguriert wird, darf das Gerät Steuerelemente für detailliertes Reporting erhalten.
       Wird die Richtlinie deaktiviert, dürfen angemeldete Geräte keine Steuerelemente für detailliertes Reporting erhalten.</translation>
 <translation id="82501412047133986">Diese Richtlinie wurde in M88 eingestellt. Flash wird von Chrome nicht mehr unterstützt. Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL‑Mustern erstellen, durch die angegeben wird, welche Websites das <ph name="FLASH_PLUGIN_NAME" />-Plug‑in ausführen dürfen.
@@ -12942,7 +13024,13 @@ Die separate Richtlinie „<ph name="HTTP_ALLOWLIST_POLICY_NAME" />“ kann verw
 
       Wird die Richtlinie nicht festgelegt oder auf "false" gesetzt, folgt AppCache der Standardeinstellung von Chrome.</translation>
 <translation id="931156018951676976">Anzeigen von Werbeinhalten deaktivieren</translation>
+<translation id="935136412769712014">Verwendung der <ph name="CHROME_DEVTOOLS_NAME" /> zulassen</translation>
 <translation id="935779984563655842">Informationen zu Bluetooth melden</translation>
+<translation id="93578254536318656">Wenn die Richtlinie aktiviert ist, wird das Infofeld für die Auswahl von Eingabemethoden in der Ablage angezeigt.
+
+Ist die Richtlinie deaktiviert, wird das Infofeld nicht in der Ablage angezeigt.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Infofeld für die Auswahl von Eingabemethoden standardmäßig nicht in der Ablage angezeigt. Der Nutzer kann auf der Seite „Einstellungen“ auswählen, ob die Infofläche angezeigt werden soll.</translation>
 <translation id="936188865879911137">Wenn diese Richtlinie aktiviert ist, erlaubt <ph name="PRODUCT_NAME" /> die Installation und Aktualisierung von Erweiterungen, die außerhalb des Chrome Web Store gehostet und deren Inhalte möglicherweise nur minimal geschützt sind.
 
       Ist diese Richtlinie deaktiviert, erlaubt <ph name="PRODUCT_NAME" /> die Neuinstallation und Aktualisierung solcher Erweiterungen nicht. Diese Richtlinie hat keine Auswirkung auf <ph name="PRODUCT_NAME" /> 78 und höher.

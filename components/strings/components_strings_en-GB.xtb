@@ -923,7 +923,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2527451058878391043">Your CVC is on the front of your card. It’s the four-digit code at the top right above your card number.</translation>
 <translation id="2529899080962247600">This field should not have more than <ph name="MAX_ITEMS_LIMIT" /> entries. All further entries will be ignored.</translation>
 <translation id="2530042584066815841">Mouse lock and use</translation>
-<translation id="253493526287553278">See promo code details</translation>
 <translation id="2535585790302968248">Open a new incognito tab to browse privately</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{and 1 more}other{and # more}}</translation>
 <translation id="2536110899380797252">Add Address</translation>
@@ -2407,7 +2406,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5052488928733955073">Trouble filling in your info. Check your connection.</translation>
 <translation id="5053116470141135293">A virtual card number will be filled when you check out with this card to protect your actual details. Manage in Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{To send this file using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}other{To send these files using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}}</translation>
-<translation id="5056587122125565772">Create image</translation>
 <translation id="505757197798929356">Provide reason for opening (required)</translation>
 <translation id="5058282932481719070">learn more about enhanced autofill in settings</translation>
 <translation id="5061227663725596739">Did you mean <ph name="LOOKALIKE_DOMAIN" />?</translation>

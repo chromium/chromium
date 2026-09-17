@@ -923,7 +923,6 @@
 <translation id="2527451058878391043">તમારો CVC તમારા કાર્ડની આગળના ભાગ પર હોય છે. તે તમારા કાર્ડ નંબરની ઉપર જમણી બાજુએ 4-અંકનો કોડ છે.</translation>
 <translation id="2529899080962247600">આ ફીલ્ડમાં <ph name="MAX_ITEMS_LIMIT" /> કરતાં વધારે એન્ટ્રી હોવી જોઈએ નહી. વધારાની તમામ એન્ટ્રી અવગણવામાં આવશે.</translation>
 <translation id="2530042584066815841">માઉસ લૉક અને તેનો ઉપયોગ</translation>
-<translation id="253493526287553278">પ્રોમો કોડની વિગતો જુઓ</translation>
 <translation id="2535585790302968248">ખાનગી રીતે બ્રાઉઝ કરવા માટે, નવી છૂપી ટૅબ ખોલો</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{અને અન્ય 1}one{અને વધુ #}other{અને વધુ #}}</translation>
 <translation id="2536110899380797252">સરનામું ઉમેરો</translation>
@@ -1518,6 +1517,7 @@
 <translation id="3577473026931028326">કંઈક ખોટું થયું. ફરી પ્રયાસ કરો.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">આ પેજ તૈયાર થશે, ત્યારે Chrome તમને જણાવશે. &lt;a&gt;રદ કરો&lt;/a&gt;</translation>
+<translation id="3581499772329034229">ઑટોમૅટિક રીતે ટૅબ ઉમેરો</translation>
 <translation id="3582930987043644930">નામ ઉમેરો</translation>
 <translation id="3583757800736429874">&amp;ખસેડવું ફરી કરો</translation>
 <translation id="3584299510153766161">નીચેની બાજુએ બે કાણાં પાડો</translation>
@@ -1593,6 +1593,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">લોડ કરી રહ્યું છે...</translation>
 <translation id="3709599264800900598">તમે કૉપિ કરેલી ટેક્સ્ટ</translation>
+<translation id="3711223220609269738">નવું આઇસોલેટેડ ટૅબ</translation>
 <translation id="3711430313228789376">Chrome બ્રાઉઝર પાસવર્ડ બતાવવાનો પ્રયાસ કરી રહ્યું છે</translation>
 <translation id="3711895659073496551">સસ્પેન્ડ કરો</translation>
 <translation id="3712004750972384495">સ્ક્રીન રેકોર્ડિંગ સાચવી રહ્યાં છીએ</translation>
@@ -1611,6 +1612,7 @@
 <translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">macOS કીચેન સાથે Google Password Managerનો ઉપયોગ કરવા માટે, Chromeને ફરીથી લૉન્ચ કરો અને કીચેનના ઍક્સેસની મંજૂરી આપો. ફરીથી લૉન્ચ થયા પછી, તમારા ટૅબ ફરીથી ખૂલશે.</translation>
 <translation id="3728173127485570463">પાસવર્ડ ઑટોમૅટિક રીતે ભરવા માટે Chrome બ્રાઉઝરને હવેથી તમારી ફિંગરપ્રિન્ટની જરૂર નથી</translation>
+<translation id="3729811201279509483">મેન્યુઅલી ટૅબ ઉમેરો</translation>
 <translation id="3736564442532774454">Chrome બ્રાઉઝર <ph name="APP_NAME" /> પર તમારી સંવેદનશીલ માહિતી ભરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="3738166223076830879">તમારા વ્યવસ્થાપક દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે.</translation>
 <translation id="3739842843727261045">થમ્બ્સ અપ, આ પરિણામો તમને પસંદ આવ્યા એવો પ્રતિસાદ સબમિટ કરે છે</translation>
@@ -2408,7 +2410,6 @@
 <translation id="5052488928733955073">તમારી માહિતી ભરવામાં સમસ્યા આવી. તમારું કનેક્શન ચેક કરો.</translation>
 <translation id="5053116470141135293">તમારી વાસ્તવિક વિગતોનું રક્ષણ કરવા માટે, જ્યારે તમે આ કાર્ડ વડે ચેકઆઉટ કરશો ત્યારે વર્ચ્યુઅલ કાર્ડ નંબર ભરવામાં આવશે. Google Walletમાં મેનેજ કરો. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}one{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}other{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલો મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}}</translation>
-<translation id="5056587122125565772">છબી બનાવો</translation>
 <translation id="505757197798929356">ખોલવાનું કારણ આપો (આવશ્યક છે)</translation>
 <translation id="5058282932481719070">સેટિંગમાં વધુ સારી બનાવેલી ઑટોમૅટિક રીતે ભરવાની સુવિધા વિશે વધુ જાણો</translation>
 <translation id="5061227663725596739">શું તમારો અર્થ <ph name="LOOKALIKE_DOMAIN" /> હતો?</translation>
@@ -2774,6 +2775,7 @@
 <translation id="5649053991847567735">ઑટોમૅટિક રીતે ડાઉનલોડ</translation>
 <translation id="5651323159439184939">ટ્રેક્ટર ફીડ</translation>
 <translation id="5653681867130739344">Google Walletમાં ઓળખ કાર્ડ સુરક્ષિત રીતે અપડેટ કરો</translation>
+<translation id="5653744563415531641">તમારી માહિતી સાચવો અને Googleની તમામ પ્રોડક્ટ પર ફોર્મ ભરવા જેવી બાબતો વધુ ઝડપથી કરો. તમે <ph name="ACCOUNT" /> માટે <ph name="MANAGE_WALLET_SETTINGS_LINK" /> કરી શકો છો.</translation>
 <translation id="5654927323611874862">અપલોડ કરેલા ક્રૅશ રિપોર્ટનું ID:</translation>
 <translation id="5654965123204121933">આ URLમાં બદલવાની આવશ્યક <ph name="SEARCH_TERMS_REPLACEMENT" /> સ્ટ્રિંગ શામેલ નથી: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ઇમેઇલ</translation>
@@ -3220,6 +3222,7 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> માટે સમાપ્તિ તારીખ અને CVC દાખલ કરો</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">માતાપિતાની મંજૂરીનો સંવાદ</translation>
+<translation id="6413532517183895572">તમારા Walletના સેટિંગ મેનેજ કરો</translation>
 <translation id="6415778972515849510">Chromium તમારા Google એકાઉન્ટને સુરક્ષિત કરવામાં અને તમારો પાસવર્ડ બદલવામાં તમારી સહાય કરી શકે છે.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">ખાતરી કરો કે કોઈપણ મહત્ત્વપૂર્ણ વ્યાવસાયિક અથવા વ્યક્તિગત ડેટા બહાર સ્ટોર થયેલો છે.</translation>

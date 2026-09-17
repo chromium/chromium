@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Parent permission request failed.</translation>
 <translation id="1803557475693955505">Could not load background page '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="1875387611427697908">This can only be added from the <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") cannot be policy-installed in low-trust environments.</translation>
 <translation id="2131077480075264">Unable to install "<ph name="APP_NAME" />" because it is not allowed by "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2150661552845026580">Add '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="2159915644201199628">Could not decode image: '<ph name="IMAGE_NAME" />'</translation>

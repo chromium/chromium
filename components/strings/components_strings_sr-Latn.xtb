@@ -923,7 +923,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2527451058878391043">CVC je na prednjoj strani kartice. To je 4-cifreni kôd u gornjem desnom uglu iznad broja kartice.</translation>
 <translation id="2529899080962247600">Ovo polje ne sme da ima više od <ph name="MAX_ITEMS_LIMIT" /> unosa. Svi budući unosi će se zanemariti.</translation>
 <translation id="2530042584066815841">Zaključavanje i korišćenje miša</translation>
-<translation id="253493526287553278">Prikaži detalje o promotivnom kodu</translation>
 <translation id="2535585790302968248">Otvorite novu karticu bez arhiviranja da biste pregledali privatno</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i još 1}one{i još #}few{i još #}other{i još #}}</translation>
 <translation id="2536110899380797252">Dodaj adresu</translation>
@@ -2408,7 +2407,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5052488928733955073">Problem pri popunjavanju informacija. Proverite vezu.</translation>
 <translation id="5053116470141135293">Broj virtuelne kartice će biti popunjen prilikom plaćanja ovom karticom radi zaštite stvarnih podataka. Upravljajte u Google novčaniku. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Da biste poslali ovaj fajl pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}one{Da biste poslali ove fajlove pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}few{Da biste poslali ove fajlove pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}other{Da biste poslali ove fajlove pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}}</translation>
-<translation id="5056587122125565772">Napravi sliku</translation>
 <translation id="505757197798929356">Navedite razlog za otvaranje (obavezno)</translation>
 <translation id="5058282932481719070">saznajte više o poboljšanom automatskom popunjavanju u podešavanjima</translation>
 <translation id="5061227663725596739">Da li ste mislili <ph name="LOOKALIKE_DOMAIN" />?</translation>

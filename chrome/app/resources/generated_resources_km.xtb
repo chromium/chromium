@@ -861,6 +861,7 @@
 <translation id="1656528038316521561">ភាពស្រអាប់​ផ្ទៃខាងក្រោយ</translation>
 <translation id="1657406563541664238">ជួយធ្វើឲ្យ <ph name="PRODUCT_NAME" /> ប្រសើរជាងមុនដោយការផ្ញើស្ថិតិការប្រើប្រាស់ និងរបាយការណ៍គាំងទៅ Google ដោយស្វ័យប្រវត្តិ។</translation>
 <translation id="1657937299377480641">ដើម្បីចូលគណនីម្ដងទៀត ដើម្បី​ចូលប្រើ​ធនធាន​អប់រំ សូមស្នើសុំការអនុញ្ញាតពីមាតាបិតារបស់អ្នក</translation>
+<translation id="1657952527687824398">ផ្ដោតលើ​ក្រុមផ្ទាំង</translation>
 <translation id="1658424621194652532">ទំព័រនេះកំពុងចូលប្រើម៉ៃក្រូហ្វូនរបស់អ្នក។</translation>
 <translation id="1660405268563702784">មានកំណែថ្មីសម្រាប់ <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{ដោះស្រាយ​បញ្ហាផ្ទាំង​ដែលធ្វើឱ្យ​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​ដំណើរការ​យឺត}other{ដោះស្រាយ​បញ្ហាផ្ទាំង​ដែលធ្វើឱ្យ​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​ដំណើរការ​យឺត}}</translation>
@@ -2326,6 +2327,7 @@
 <translation id="2767077837043621282">មិនអាចដំឡើងកំណែ Chromebook របស់អ្នកបានទេ។ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ។</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> នឹងអាចកែ <ph name="FILENAME" /> បាន រហូតទាល់តែអ្នកបិទផ្ទាំងទាំងអស់​សម្រាប់គេហទំព័រនេះ</translation>
 <translation id="2769174155451290427">រូបភាពដែលបានបង្ហោះ</translation>
+<translation id="2769715732905083104">ផ្ដោតលើ​ក្រុមផ្ទាំង</translation>
 <translation id="2770082596325051055">ផ្អាក <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">ដកចេញពីបញ្ជី</translation>
 <translation id="2770690685823456775">នាំចេញ​ពាក្យ​សម្ងាត់​របស់​អ្នក​ទៅ​ថត​ផ្សេង</translation>
@@ -2606,6 +2608,7 @@
 <translation id="2984727013951557074">ឯកសារនេះ​កំពុងតែ​ត្រូវបាន​ធ្វើសម​កាលកម្ម​ទៅថាស​នៅឡើយ។</translation>
 <translation id="2984923316661218534">យក​កូដសម្ងាត់​របស់អ្នក​នៅលើ​ឧបករណ៍នេះ​តាមរយៈ​កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> បានលុប​កម្មវិធីមួយ}other{<ph name="APP_NAME" /> បានលុប​កម្មវិធី #}}</translation>
+<translation id="2987777176328481585">{NUM_TABS,plural, =1{ផ្ដោតលើផ្ទាំង}other{ផ្ដោតលើ # ផ្ទាំង}}</translation>
 <translation id="2988018669686457659">កម្មវិធីបំប្លែងបម្រុង</translation>
 <translation id="2988328607561082373">អ្នកមិនកំពុងប្រើពាក្យសម្ងាត់ណាមួយឡើងវិញទេ</translation>
 <translation id="2989123969927553766">ការបង្កើន​ល្បឿន​រំកិលកណ្ដុរ</translation>
@@ -5669,6 +5672,7 @@
 <translation id="5311304534597152726">កំពុងចូលជា</translation>
 <translation id="5312746996236433535">បញ្ចាំង​អេក្រង់</translation>
 <translation id="5313967007315987356">បន្ថែមគេហទំព័រ</translation>
+<translation id="531500736198839473">{NUM_TABS,plural, =1{ផ្ដោតលើផ្ទាំង}other{ផ្ដោតលើ # ផ្ទាំង}}</translation>
 <translation id="5315738755890845852">លើសឃ្នាបមួយ៖ <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5317781812114905957">ការណែនាំ</translation>
@@ -6550,6 +6554,7 @@
 <translation id="6022659036123304283">ធ្វើឱ្យ Chrome ក្លាយជា​របស់អ្នក</translation>
 <translation id="6024317249717725918">&amp;ស្វែងរក​ហ្វ្រេមវីដេអូ​តាមរយៈ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Stack Trace</translation>
+<translation id="6026436621921471553">ឈប់ផ្ដោតលើ​ក្រុមផ្ទាំង</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - បាន​ភ្ជាប់​ឧបករណ៍​ USB</translation>
 <translation id="6027143200498653403">នៅពេល​អ្នកសួរ​សំណួរ​អំពី​ប្រវត្តិ​របស់អ្នក នោះអ្នកអាច​ទទួលបាន​ចម្លើយ​អំពី​ព័ត៌មាន​ជាក់លាក់ពី​ទំព័រ​ដែលអ្នក​បានចូលមើល</translation>
 <translation id="6027945736510816438">តើ​អ្នក​ចង់​មានន័យ​ថា <ph name="WEBSITE" /> មែនទេ?</translation>
@@ -7018,6 +7023,7 @@
 <translation id="6399675241776343019">បាន​បដិសេធ</translation>
 <translation id="6399774419735315745">អ្នកស៊ើបការ</translation>
 <translation id="6400360390396538896">នៅ​លើ <ph name="ORIGIN" /> ជានិច្ច</translation>
+<translation id="6400714103322134861">ឈប់ផ្ដោតលើ​ក្រុមផ្ទាំង</translation>
 <translation id="6401118106417399952">EID ឧបករណ៍​របស់អ្នក​គឺ <ph name="EID_NUMBER" /> ហើយលេខស៊េរី​ឧបករណ៍គឺ <ph name="SERIAL_NUMBER" />។ លេខ​ទាំង​នេះ​អាច​ត្រូវ​បាន​ប្រើប្រាស់​ដើម្បី​ជួយ​បើក​ដំណើរការ​សេវាកម្ម។</translation>
 <translation id="6401458660421980302">ដើម្បីបញ្ជូន​ផ្ទាំងនេះ​ទៅ​ឧបករណ៍​ផ្សេង សូម​ចូល Chrome នៅ​លើ​នោះ</translation>
 <translation id="6402042774506839496">ដើម្បី​ស្វែងយល់​អំពី​មូលហេតុ សូម​ទាក់ទងទៅ​អ្នក​អភិវឌ្ឍន៍​កម្មវិធី</translation>

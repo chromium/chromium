@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Ombi la ruhusa ya mzazi halijafaulu.</translation>
 <translation id="1803557475693955505">Ukurasa wa mandhari '<ph name="BACKGROUND_PAGE" />' haukuweza kupakiwa.</translation>
 <translation id="1875387611427697908">Hii inaweza tu kuongezwa kutoka <ph name="CHROME_WEB_STORE" />.</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (kitambulisho cha kiendelezi "<ph name="EXTENSION_ID" />") hakiwezi kuwekwa kupitia sera katika mazingira yasioaminika.</translation>
 <translation id="2131077480075264">Imeshindwa kusakinisha "<ph name="APP_NAME" />" kwa sababu hairuhusiwa na "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2150661552845026580">Ungependa kuongeza "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Isingeweza kusimbua picha: '<ph name="IMAGE_NAME" />'</translation>

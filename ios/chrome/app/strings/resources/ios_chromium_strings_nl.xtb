@@ -142,6 +142,7 @@ Wacht een paar minuten voordat je van account wisselt. Als je nu van account wis
 <translation id="3855938650519180865">Nieuw in Chromium</translation>
 <translation id="3886689467633467988">Log in op deze site en bij Chromium om onder andere je bookmarks op al je apparaten te gebruiken.</translation>
 <translation id="3949514465204582407">Chromium-tip: Krijg je wachtwoorden in elke app</translation>
+<translation id="3983298990898629929">Stel Chromium in als je standaardbrowser om links met één tik te openen</translation>
 <translation id="4005283307739974863">Opent de Veiligheidscheck in Chromium en voert deze uit.</translation>
 <translation id="4043291146360695975">Wachtwoorden worden alleen opgeslagen in Wachtwoordmanager op dit apparaat.</translation>
 <translation id="4046625794029820944">Stop met het kopiëren van URL's. Stel Chromium in als standaardbrowser om pagina's rechtstreeks te laden.</translation>
@@ -273,6 +274,7 @@ Aandachtspunten:
 <translation id="6680609900732453726">Houd je browsen privé met apparaatverificatie als je Chromium sluit</translation>
 <translation id="6696512128741076907">Stel Chromium in als standaardbrowser om links meteen te openen vanuit andere apps.</translation>
 <translation id="6752854822223394465">Je organisatie stelt Chromium in…</translation>
+<translation id="6777348401413221846">Video op volledig scherm over hoe je Chromium instelt als standaardbrowser: open de Chromium-instellingen in iOS, tik op Standaard browser-app en selecteer Chromium.</translation>
 <translation id="6794054469102824109">Opent de Chromium Dino-game.</translation>
 <translation id="6820823224820483452">Chromium kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>
 <translation id="6830782797004194206">Log sneller in met automatisch invullen in Chromium</translation>
@@ -302,6 +304,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Je wachtwoord wordt opgeslagen in Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Deze toegangssleutel wordt opgeslagen in Wachtwoordmanager voor <ph name="USER_EMAIL" />.</translation>
+<translation id="7453822113116681031">Stel Chromium in als je standaardbrowser om links met één tik te openen</translation>
 <translation id="7504829997542308412">Open Chromium</translation>
 <translation id="7531461704633548377">Van Chromium</translation>
 <translation id="7554983317097061001">Chromium-tip: verplaats Chromium naar het dock</translation>
@@ -348,6 +351,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="865600487977764604">Beschermt je op Chromium en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd.</translation>
 <translation id="8663480472502753423">Houd Chromium up-to-date</translation>
 <translation id="8685813584220679697">Log in bij deze site en Chromium.</translation>
+<translation id="869832267508702259">Stel Chromium in als je standaardbrowser om Gemini-inzichten te krijgen, waar je ook browst</translation>
 <translation id="8698780336333802489">Importeren naar Chromium</translation>
 <translation id="8730503818204408000">Opent de Chromium-instelling om Chromium in te stellen als standaardbrowser.</translation>
 <translation id="8754966941001340678">Chromium raadt Geoptimaliseerde beveiliging aan</translation>

@@ -918,7 +918,6 @@
 <translation id="2527451058878391043">మీ CVC అనేది మీ కార్డ్ ముందు భాగంలో ఉంది. ఇది ఎగువన కుడి వైపులో మీ కార్డ్ నంబర్ పైన కనిపించే 4 అంకెల కోడ్.</translation>
 <translation id="2529899080962247600">ఈ ఫీల్డ్‌లో <ph name="MAX_ITEMS_LIMIT" /> కంటే ఎక్కువ ఎంట్రీలు ఉండకూడదు. అన్ని తదుపరి ఎంట్రీలు విస్మరించబడతాయి.</translation>
 <translation id="2530042584066815841">మౌస్ లాక్, దాని ఉపయోగం</translation>
-<translation id="253493526287553278">ప్రోమో కోడ్ వివరాలను చూడండి</translation>
 <translation id="2535585790302968248">ప్రైవేట్‌గా బ్రౌజ్ చేయడానికి కొత్త అజ్ఞాత ట్యాబ్‌ను తెరవండి</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{మరియు మరో 1}other{మరియు మరో #}}</translation>
 <translation id="2536110899380797252">అడ్రస్‌ను జోడించండి</translation>
@@ -1424,6 +1423,7 @@
 <translation id="3432601291244612633">పేజీని మూసివేయండి</translation>
 <translation id="3434025015623587566">Google Password Managerకు మరింత యాక్సెస్ అవసరం</translation>
 <translation id="343474037147570563">మీరు అప్‌లోడ్ చేసిన లేదా జోడించిన ఫైల్స్ Google Cloudకు లేదా థర్డ్-పార్టీలకు విశ్లేషణ కోసం పంపబడతాయి. ఉదాహరణకు, అవి సున్నితమైన వ్యక్తిగత సమాచారం లేదా మాల్‌వేర్ కోసం స్కాన్ చేయబడవచ్చు, కంపెనీ పాలసీల ఆధారంగా స్టోర్ చేయబడవచ్చు, మీ అడ్మినిస్ట్రేటర్‌కు కనిపించవచ్చు.</translation>
+<translation id="3435267628744367511">ట్యాబ్‌లు మారే పని లేకుండా, ఏదైనా ఫారమ్‌లో సమాచారాన్ని వెతికి ఫిల్ చేయడానికి Ctrlను రెండుసార్లు నొక్కండి</translation>
 <translation id="3435557549311968410">కంటిన్యువస్ (షార్ట్)</translation>
 <translation id="3435738964857648380">భద్రత</translation>
 <translation id="3436125638121079308">ఈ థ్రెడ్‌లో మరింత మెరుగైన సమాధానాల కోసం, రిలవెంట్ (సందర్భోచిత) ట్యాబ్‌లను ఆటోమేటిక్‌గా షేర్ చేయాలా?</translation>
@@ -1512,6 +1512,7 @@
 <translation id="3577473026931028326">ఏదో తప్పు జరిగింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">ఈ పేజీ సిద్ధమైనప్పుడు Chrome మీకు తెలియజేస్తుంది. &lt;a&gt;రద్దు చేయండి&lt;/a&gt;</translation>
+<translation id="3581499772329034229">ట్యాబ్‌లను ఆటోమేటిక్‌గా యాడ్ చేయండి</translation>
 <translation id="3582930987043644930">పేరు జోడించండి</translation>
 <translation id="3583757800736429874">&amp;తరలించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="3584299510153766161">దిగువ భాగంలో రెండు రంధ్రాలు</translation>
@@ -1587,6 +1588,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">లోడ్ అవుతోంది...</translation>
 <translation id="3709599264800900598">మీరు కాపీ చేసిన వచనం</translation>
+<translation id="3711223220609269738">కొత్త ఐసోలేటెడ్ ట్యాబ్</translation>
 <translation id="3711430313228789376">Chrome బ్రౌజర్ పాస్‌వర్డ్‌లను చూపడానికి ట్రై చేస్తోంది</translation>
 <translation id="3711895659073496551">తాత్కాలికంగా నిలిపివేయడం</translation>
 <translation id="3712004750972384495">స్క్రీన్ రికార్డింగ్ సేవ్ అవుతోంది</translation>
@@ -1605,6 +1607,7 @@
 <translation id="3727309136762649052">నేమ్‌స్పేస్</translation>
 <translation id="3727850735097852673">MacOS కీచెయిన్‌తో Google Password Managerను ఉపయోగించడానికి, Chromeను రీ-లాంచ్ చేసి, కీచెయిన్ యాక్సెస్‌ను అనుమతించండి. మీ ట్యాబ్‌లు రీ-లాంచ్ చేసిన తర్వాత మళ్లీ తెరవబడతాయి.</translation>
 <translation id="3728173127485570463">Chrome బ్రౌజర్‌లో పాస్‌వర్డ్‌లను ఆటోఫిల్ చేయడానికి ఇకపై మీ వేలిముద్ర అవసరం ఉండదు</translation>
+<translation id="3729811201279509483">ట్యాబ్‌లను మాన్యువల్‌గా యాడ్ చేయండి</translation>
 <translation id="3736564442532774454">Chrome బ్రౌజర్ <ph name="APP_NAME" />‌లో మీ గోప్యమైన సమాచారాన్ని పూరించడానికి ట్రై చేస్తోంది.</translation>
 <translation id="3738166223076830879">మీ బ్రౌజర్ మీ అడ్మినిస్ట్రేట‌ర్ ద్వారా మేనేజ్ చేయబడుతోంది.</translation>
 <translation id="3739842843727261045">ఈ ఫలితాలు మీకు నచ్చాయి అనే ఫీడ్‌బ్యాక్‌ను 'బాగుంది' ఆప్షన్ సమర్పిస్తుంది</translation>
@@ -2402,7 +2405,6 @@
 <translation id="5052488928733955073">మీ సమాచారాన్ని ఫిల్ చేసేటప్పుడు సమస్య ఎదురైంది. మీ కనెక్షన్‌ను చెక్ చేయండి.</translation>
 <translation id="5053116470141135293">మీ అసలు వివరాలను రక్షించడానికి మీరు ఈ కార్డ్‌తో చెక్ అవుట్ చేసినప్పుడు వర్చువల్ కార్డ్ నంబర్ ఫిల్ అవుతుంది. Google Walletలో మేనేజ్ చేయండి. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{'సమీప షేరింగ్'ను ఉపయోగించి ఈ ఫైల్‌ను పంపడానికి, మీ పరికరంలో స్పేస్ (<ph name="DISK_SPACE_SIZE" />)ను ఖాళీ చేయండి}other{'సమీప షేరింగ్'ను ఉపయోగించి ఈ ఫైళ్ళను పంపడానికి, మీ పరికరంలో స్పేస్ (<ph name="DISK_SPACE_SIZE" />)ను ఖాళీ చేయండి}}</translation>
-<translation id="5056587122125565772">ఇమేజ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="505757197798929356">తెరవడానికి కారణాన్ని అందించండి (అవసరం)</translation>
 <translation id="5058282932481719070">మెరుగైన ఆటోఫిల్ గురించి సెట్టింగ్‌ల్లో మరింత తెలుసుకోండి</translation>
 <translation id="5061227663725596739">మీరు <ph name="LOOKALIKE_DOMAIN" /> గురించి అడిగారా?</translation>
@@ -2768,6 +2770,7 @@
 <translation id="5649053991847567735">ఆటోమేటిక్ డౌన్‌లోడ్‌లు</translation>
 <translation id="5651323159439184939">ట్రాక్టర్ ఫీడ్</translation>
 <translation id="5653681867130739344">Google Walletలో ఐడెంటిటీ కార్డ్‌ను సురక్షితంగా అప్‌డేట్ చేయండి</translation>
+<translation id="5653744563415531641">మీ సమాచారాన్ని సేవ్ చేయండి. Google ప్రోడక్ట్‌లలో ఫారమ్‌లను ఫిల్ చేయడం వంటి పనులను వేగంగా పూర్తి చేయండి. మీరు <ph name="ACCOUNT" /> కోసం <ph name="MANAGE_WALLET_SETTINGS_LINK" /> చేయవచ్చు.</translation>
 <translation id="5654927323611874862">అప్‌లోడ్ చేసిన క్రాష్ రిపోర్ట్ ID:</translation>
 <translation id="5654965123204121933">URLలో అవసరమైన రీప్లేస్‌మెంట్ స్ట్రింగ్ <ph name="SEARCH_TERMS_REPLACEMENT" /> లేదు: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ఈమెయిల్‌</translation>
@@ -2891,6 +2894,7 @@
 <translation id="5884465125445718607">ఎన్వలప్ చైనీస్ #6</translation>
 <translation id="5887400589839399685">కార్డ్ సేవ్ అయింది</translation>
 <translation id="5887687176710214216">చివరిగా నిన్న సందర్శించారు</translation>
+<translation id="5887791684215121787">ట్యాబ్‌లు మారే పని లేకుండా, ఏదైనా ఫారమ్‌లో సమాచారాన్ని వెతికి ఫిల్ చేయడానికి ⌘ ⌘ అని టైప్ చేయండి</translation>
 <translation id="5889251770650310375">మీ ఇతర డివైజ్‌ల నుండి మీ ట్యాబ్‌లను పొందడానికి, మీ గుర్తింపును వెరిఫై చేసి, మీ హిస్టరీని, ట్యాబ్‌లను సింక్ చేయండి. మీరు సింక్ అవ్వడాన్ని ఏ సమయంలోనైనా సెట్టింగ్‌లలో ఆపివేయవచ్చు. మీ హిస్టరీ ఆధారంగా Searchను, ఇతర సర్వీస్‌లను Google వ్యక్తిగతీకరించవచ్చు.</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించండి</translation>
 <translation id="5895187275912066135">జారీ చేయబడినది</translation>
@@ -3213,6 +3217,7 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> గడువు ముగింపు తేదీ మరియు CVCని నమోదు చేయండి</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">పేరెంట్ ఆమోదం డైలాగ్</translation>
+<translation id="6413532517183895572">మీ Wallet సెట్టింగ్స్‌ను మేనేజ్ చేయండి</translation>
 <translation id="6415778972515849510">మీ Google ఖాతాను సంరక్షించుకోవడంలో, మీ పాస్‌వర్డ్‌ను మార్చడంలో Chromium మీకు సహాయపడగలదు.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">ఏదైనా ముఖ్యమైన బిజినెస్ లేదా వ్యక్తిగత డేటా ఎక్స్‌టర్నల్‌గా స్టోర్ చేయబడిందని నిర్ధారించుకోండి.</translation>

@@ -2732,6 +2732,7 @@ Pengguna dapat memastikan bahwa tidak ada aplikasi tambahan yang dapat merekam l
 
 Jika kebijakan disetel ke Nonaktif, perangkat tidak akan menggunakan pengesahan jarak jauh untuk perlindungan konten dan perangkat tidak boleh memutar konten yang dilindungi.</translation>
 <translation id="262740370354162807">Aktifkan penyerahan dokumen ke <ph name="CLOUD_PRINT_NAME" /></translation>
+<translation id="2631498379019108537">Tampilkan opsi masukan di panel aplikasi</translation>
 <translation id="2633084400146331575">Aktifkan respons lisan</translation>
 <translation id="2633907568797306353">Izinkan pengaktifan notifikasi Phone Hub</translation>
 <translation id="2634265675787412567"><ph name="PRODUCT_NAME" /> dapat mengarahkan
@@ -2833,6 +2834,19 @@ Jika kebijakan ini disetel ke 2 - 'Nonaktif', integrasi Google Developer Program
 <translation id="2702023190395322609">Mengaktifkan Rekomendasi Media</translation>
 <translation id="2702682139813393777">Paksa Host Pesan Native Windows agar diluncurkan melalui cmd.exe</translation>
 <translation id="270582584528242502">Jangan tampilkan dialog peringatan saat pengguna mencoba menutup browser</translation>
+<translation id="2706209533052022524">Fitur Coba untuk Anda adalah fitur berteknologi AI yang memungkinkan pengguna mencoba pakaian dari gambar di web secara virtual. Fitur ini juga akan memberikan analisis belanja di Gemini di Chrome, jika Gemini diaktifkan.
+
+Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup gambar, input, output, materi referensi, dan masukan, bergantung pada fiturnya. Data ini juga mungkin ditinjau secara manual untuk meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
+
+Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan konten pengguna (termasuk gambar, input, output, materi referensi, dan masukan). Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
+
+Catatan: Pembatasan pada peningkatan kualitas model (nilai 1) hanya berlaku jika fitur Coba untuk Anda dipicu melalui alur browser <ph name="CHROME" />. Kebijakan ini tidak berlaku jika fitur digunakan melalui alur lain.
+
+Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />. Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.
+
+Fitur Coba untuk Anda hanya tersedia di negara atau dalam bahasa tertentu. Menyetel kebijakan ini tidak menjamin fitur akan diaktifkan; fitur tetap bergantung pada ketersediaan. Untuk mengetahui info selengkapnya tentang peluncuran, baca Catatan Rilis Enterprise: https://support.google.com/chrome/a/answer/7679408?hl=id</translation>
 <translation id="2706708761587205154">Hanya izinkan pencetakan dengan PIN</translation>
 <translation id="2707733461906745082">Pemisahan Profil</translation>
 <translation id="2707873794476722903">Safe Browsing aktif dalam mode standar.</translation>
@@ -3778,6 +3792,7 @@ Jika <ph name="NTPCARDSVISIBLE" /> disetel ke nonaktif, Kartu Outlook tidak akan
       Catatan: Untuk perangkat yang dikelola oleh <ph name="MS_AD_NAME" />, kebijakan ini mendukung ekspansi <ph name="MACHINE_NAME_VARIABLE" /> ke nama mesin <ph name="MS_AD_NAME" /> atau substring darinya. Misalnya, jika nama mesin adalah <ph name="MACHINE_NAME_EXAMPLE" />, lalu <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> digantikan oleh 4 karakter yang dimulai setelah posisi ke-6, dengan kata lain, <ph name="MACHINE_NAME_PART_EXAMPLE" />. Posisi dimulai dari nol.
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PRINTERS_POLICY_NAME" />.</translation>
+<translation id="3296337890215573972">Nonaktifkan fitur Coba untuk Anda.</translation>
 <translation id="3296560797994110772">Pintasan dengan tombol penelusuran dikirim ke aplikasi terlebih dahulu sebelum ditangani oleh OS.</translation>
 <translation id="3300441638895109781">Memuat ulang alur autentikasi secara otomatis di ChromeOS</translation>
 <translation id="3300784749135986828">Mengaktifkan atau menonaktifkan <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
@@ -4472,6 +4487,7 @@ Kebijakan ini tidak digunakan lagi mulai <ph name="PRODUCT_NAME" /> versi 144 se
 <translation id="376375951585423504">Nonaktifkan kuota persisten.</translation>
 <translation id="3765260570442823273">Durasi pesan peringatan proses keluar nganggur</translation>
 <translation id="3766695867369523703">Izinkan partisi penyimpanan pihak ketiga secara default.</translation>
+<translation id="3769975508816807531">Pembekuan tab latar belakang dinonaktifkan</translation>
 <translation id="377001726927041812">Aktifkan Isolasi Proses.</translation>
 <translation id="3770044943398389276">Secara default, Floating SSO hanya memindahkan cookie persisten antar-perangkat. Kebijakan ini mengontrol apakah cookie sesi juga harus disertakan. Kebijakan ini hanya berlaku jika kebijakan <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> disetel ke Aktif.
 
@@ -5585,6 +5601,7 @@ Kebijakan ini tidak berpengaruh jika disetel ke aktif, dibiarkan kosong, atau ti
 <translation id="4515404363392014383">Aktifkan Safe Browsing untuk sumber tepercaya</translation>
 <translation id="4517327050150780380">Setelan untuk fitur Bantu Baca</translation>
 <translation id="4518251772179446575">Tanyakan setiap kali situs ingin melacak lokasi fisik pengguna</translation>
+<translation id="4521106598519506386">Pembekuan tab latar belakang diaktifkan</translation>
 <translation id="4521193243799782295">Selama proses login, <ph name="PRODUCT_OS_NAME" /> dapat melakukan autentikasi terhadap server (online) atau menggunakan sandi yang tersimpan di cache (offline).
 
       Jika kebijakan ini disetel ke nilai -1, kebijakan ini tidak akan menerapkan autentikasi online dan akan mengizinkan pengguna menggunakan autentikasi offline sampai ada alasan lain, selain kebijakan ini, yang menerapkan login online. Jika kebijakan disetel ke nilai 0, login online akan selalu diperlukan. Menyetel kebijakan ini ke nilai lain akan menentukan durasi waktu sejak autentikasi online terakhir hingga saat pengguna diwajibkan menggunakan autentikasi online lagi untuk login berikutnya.
@@ -5695,6 +5712,7 @@ Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https
 <translation id="4554651132977135445">Mode pemrosesan loopback kebijakan pengguna</translation>
 <translation id="4554991346503872538">Jangan pernah tawarkan terjemahan</translation>
 <translation id="4555850956567117258">Mengaktifkan pengesahan jarak jauh bagi pengguna</translation>
+<translation id="455594321531952386">Setelan fitur Coba untuk Anda.</translation>
 <translation id="4557134566541205630">URL halaman tab baru penyedia penelusuran default</translation>
 <translation id="4557484263538581790">Setelan untuk integrasi Mode AI pihak ketiga di kolom URL dan kotak penelusuran halaman Tab Baru.</translation>
 <translation id="4558166110367609724">Otomatis melewati ToS dan memuat browser.</translation>
@@ -5963,6 +5981,19 @@ Hingga Chrome 114, kebijakan ini mewajibkan kebijakan <ph name="SYNC_DISABLED_PO
 
       Saat kebijakan ini tidak ditetapkan, atau diaktifkan, pemeriksaan intersepsi DNS akan dilakukan. Pemeriksaan tidak dilakukan ketika kebijakan dinonaktifkan secara eksplisit.</translation>
 <translation id="4700190441681139987">Jangan izinkan situs apa pun mengakses sensor</translation>
+<translation id="4700450186549212780">Mengonfigurasi setelan koneksi untuk <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> di <ph name="PRODUCT_NAME" />.
+
+Untuk mengonfigurasi <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, administrator harus memberikan:
+* URL aplikasi web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />), ATAU
+* Ketiga parameter lama secara bersamaan: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />, dan <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Jika hanya menentukan sebagian dari ketiga parameter ini tanpa URL, kebijakan akan ditolak.
+
+Jika parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> dan parameter lama dikonfigurasi, parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> akan diprioritaskan.
+
+Jika kebijakan ini disetel, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> akan dikonfigurasi untuk pengguna yang login dengan akun terkelola atau browser terkelola.
+
+Jika kebijakan ini tidak disetel, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan dikonfigurasi.
+
+Perhatikan bahwa kebijakan ini tidak mengontrol integrasi <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> umum, yang dapat dikontrol oleh kebijakan <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="4703402283970867140">Aktifkan model redup smart untuk memperpanjang waktu hingga layar diredupkan</translation>
 <translation id="4704958130749494760">Otomatis memberikan izin ke situs untuk terhubung ke perangkat serial USB.</translation>
 <translation id="4705329890928008808">Jika kebijakan disetel ke CopyCaCerts, semua sertifikat CA yang diinstal ONC dengan <ph name="WEB_TRUSTED_BIT" /> akan tersedia untuk aplikasi ARC.
@@ -7090,6 +7121,7 @@ Jika kebijakan disetel ke Nonaktif, histori browser dan histori download tidak d
 <translation id="5323200200131319468">Mengaktifkan respons lisan di layar login</translation>
 <translation id="5323271643727095577">Jangan tampilkan dialog pembatalan saat event.preventDefault() dipanggil untuk peristiwa beforeunload. Tampilkan dialog pembatalan jika event.returnValue berisi string kosong untuk peristiwa beforeunload.</translation>
 <translation id="5324430722441910403">Setelan penelusuran situs</translation>
+<translation id="5324926539444440406">Izinkan pengguna memutuskan apakah akan membekukan tab di latar belakang</translation>
 <translation id="5326431956495937408">Jika kebijakan disetel ke Aktif, pengguna akan dapat mengirim sandi kepada dan menerima sandi dari anggota keluarga (sesuai dengan Layanan Keluarga).
 Jika kebijakan disetel ke Aktif atau tidak disetel, akan ada tombol di Pengelola Sandi yang memungkinkan pengiriman sandi.
 Sandi yang diterima disimpan ke akun pengguna dan tersedia di Pengelola Sandi.
@@ -7182,6 +7214,21 @@ Mulai <ph name="PRODUCT_NAME" /> versi 92, kebijakan ini juga didukung dalam mod
 <translation id="5373552304217872025">Jika kebijakan ini disetel ke benar (true) atau tidak dikonfigurasi, <ph name="PRODUCT_NAME" /> dan <ph name="LACROS_NAME" /> akan diizinkan menambahkan pengguna baru dari pengelola pengguna.
 
       Jika kebijakan ini disetel ke salah (false), <ph name="PRODUCT_NAME" /> dan <ph name="LACROS_NAME" /> tidak akan diizinkan menambahkan pengguna baru dari pengelola pengguna.</translation>
+<translation id="5373983340859513416">Kebijakan ini dapat digunakan untuk mengizinkan <ph name="CHROME_DEVTOOLS_NAME" /> di URL tertentu.
+
+Ketersediaan <ph name="CHROME_DEVTOOLS_NAME" /> dievaluasi di tingkat target. Pola URL dicocokkan dengan URL setiap target yang diperiksa (seperti frame utama halaman, subframe yang disematkan, ekstensi, atau aplikasi web). Perilaku yang dihasilkan bergantung pada apakah kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> juga disetel.
+
+Jika kebijakan ini disetel dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> tidak disetel, URL target harus cocok dengan pola di daftar yang diizinkan ini agar <ph name="CHROME_DEVTOOLS_NAME" /> diizinkan untuk target tersebut. Jika URL target tidak cocok dengan daftar yang diizinkan ini, <ph name="CHROME_DEVTOOLS_NAME" /> akan diblokir untuk target tersebut (misalnya, subframe yang URL-nya tidak ada dalam daftar yang diizinkan tidak dapat diperiksa, tetapi halaman utama tetap dapat diperiksa jika URL-nya ada dalam daftar yang diizinkan). Untuk mengetahui informasi tentang format URL, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Jika kebijakan ini dan kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> disetel, daftar yang diizinkan ini akan diprioritaskan. Jika URL target cocok dengan pola di daftar yang diizinkan ini, URL akan tetap diizinkan, meskipun juga cocok dengan pola di daftar yang tidak diizinkan. Jika URL target cocok dengan pola di daftar yang tidak diizinkan ini (tetapi tidak cocok dengan pola di daftar yang diizinkan), URL akan diblokir. Jika URL target tidak cocok dengan keduanya, kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> akan digunakan sebagai gantinya.
+
+Jika kebijakan ini tidak disetel, ketersediaan <ph name="CHROME_DEVTOOLS_NAME" /> akan ditentukan oleh kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Karakter pengganti host menyeluruh (yaitu, "*" atau "[*]") tidak diperbolehkan; gunakan kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> untuk mengaktifkan fitur ini secara global.
+
+Kebijakan ini memengaruhi <ph name="CHROME_DEVTOOLS_NAME" />, akses langsung Chrome DevTools Protocol (CDP) (misalnya, saat diluncurkan dengan --remote-debugging-port atau --remote-debugging-pipe), dan akses Chrome DevTools Protocol (CDP) melalui API chrome.debugger. Kebijakan ini dan kebijakan <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> berlaku: <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> mengontrol apakah proses debug jarak jauh dapat dimulai, sedangkan kebijakan ini membatasi apakah target tertentu dapat diperiksa meskipun proses debug jarak jauh sedang berjalan.
+
+Kebijakan ini terbatas untuk 1.000 entri.</translation>
 <translation id="5376712696238639532">Menyetel kebijakan akan menentukan apakah pengajar dapat menggunakan fitur teks.
 
 Jika nilai disetel ke benar (true) atau tidak disetel, pengajar tertentu dapat memberi teks pada suara mereka dan mengirimkan transkripsinya kepada siswa.
@@ -7743,6 +7790,7 @@ Kebijakan ini memengaruhi alur login dan autentikasi layar kunci.</translation>
 <translation id="5728154254076636808">Mengaktifkan pembuatan salinan roaming untuk data profil <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Sandi Kerberos. Placeholder <ph name="PASSWORD_PLACEHOLDER" /> diganti dengan sandi login.</translation>
 <translation id="5730610899971390601">Tolak permintaan penyambungan Bluetooth "Just Works"</translation>
+<translation id="5731883586899464960">URL aplikasi web instance <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> untuk organisasi ini.</translation>
 <translation id="5732972008943405952">Mengimpor data formulir isi-otomatis dari browser default saat pertama kali dijalankan</translation>
 <translation id="5733040281451845496">Jika kebijakan disetel ke Aktif, penundaan pengelolaan daya dan batas durasi sesi tidak akan dimulai hingga aktivitas pengguna pertama terjadi dalam suatu sesi.
 
@@ -7856,6 +7904,7 @@ Anda dapat menambahkan pembatasan akun lebih lanjut dengan kebijakan <ph name="M
 <translation id="5804702826910437814">Izinkan Fitur AI Generatif <ph name="CHROME_DEVTOOLS_NAME" /> tanpa meningkatkan kualitas model AI.</translation>
 <translation id="5804795151506109282">Jangan meminta pengguna untuk melakukan migrasi.</translation>
 <translation id="5806128552675651249">Izinkan pencetakan hanya tanpa grafis latar belakang</translation>
+<translation id="5808888486171670350">Tidak mengizinkan penggunaan <ph name="CHROME_DEVTOOLS_NAME" /> pada aplikasi dan ekstensi yang diinstal oleh kebijakan perusahaan atau, sejak versi 114 dan jika ini adalah pengguna terkelola, ekstensi akan disertakan dalam browser. Izinkan penggunaan <ph name="CHROME_DEVTOOLS_NAME" /> dalam konteks lainnya</translation>
 <translation id="5809210507920527553">Mengontrol setelan untuk container Linux (Crostini).</translation>
 <translation id="5809728392451418079">Setel nama tampilan untuk akun lokal perangkat</translation>
 <translation id="5810916450338110943">Daftar setelan layanan Chrome Enterprise Connectors yang akan diterapkan ke <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat file didownload di Chrome.
@@ -8296,6 +8345,15 @@ versi 114, setelah itu dukungan untuk API ini akan dihapus tanpa syarat.
 
 CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan pada
 kebijakan ini saat browser berjalan.</translation>
+<translation id="6083071443488983075">Mengontrol apakah <ph name="PRODUCT_NAME" /> membekukan tab latar belakang yang tidak aktif untuk menghemat CPU dan memori.
+
+Saat pembekuan tab latar belakang aktif, tab yang tidak aktif di latar belakang selama jangka waktu tertentu akan dibekukan dengan menjeda eksekusi JavaScript dan tugas timer. Tab yang dibekukan tetap dimuat dalam memori dan langsung dilanjutkan saat dipilih oleh pengguna. Tab dengan tugas latar belakang aktif—seperti tab yang memutar audio atau video, merekam layar atau streaming kamera, mempertahankan koneksi WebRTC aktif, atau menyimpan Web Locks—tidak memenuhi syarat untuk dibekukan dan akan terus berjalan. Situs yang dikonfigurasi dalam kebijakan <ph name="TAB_DISCARDING_EXCEPTIONS_POLICY_NAME" /> atau dalam pengecualian penghapusan tab pengguna juga dikecualikan dari pembekuan.
+
+Jika kebijakan disetel ke Aktif, pembekuan tab latar belakang otomatis akan diaktifkan untuk tab latar belakang yang memenuhi syarat. Pengguna tidak dapat mengubah setelan ini.
+
+Jika kebijakan disetel ke Nonaktif, tab latar belakang tidak akan dibekukan. Pengguna tidak dapat mengubah setelan ini.
+
+Jika kebijakan ini tidak disetel, pembekuan tab latar belakang akan diaktifkan secara default, tetapi pengguna dapat mengaktifkan atau menonaktifkannya di setelan <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6083281887050888160">Aktifkan penyambungan Bluetooth "Just Works"</translation>
 <translation id="6083631234867522991">Windows (klien Windows):</translation>
 <translation id="6085580138417523410">Izinkan permintaan Akses Jaringan Lokal (LNA) di subframe tanpa pendelegasian eksplisit</translation>
@@ -8325,6 +8383,7 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia di instance yang dihu
 
 Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6106258663605167373">Nonaktifkan notifikasi pengelolaan di Footer NTP</translation>
+<translation id="6108531405177298087">Aktifkan fitur Coba untuk Anda dengan peningkatan kualitas model.</translation>
 <translation id="610892566190435199">Aktifkan pelaporan status daya perangkat</translation>
 <translation id="6111936128861357925">Izinkan Game Dinosaur Easter Egg</translation>
 <translation id="6118226055960302400">Pulihkan perilaku permisif.</translation>
@@ -8605,6 +8664,7 @@ tetap dapat disetel secara default. Perilaku ini cocok dengan perilaku lama.
 
 Lihat https://developer.chrome.com/blog/immutable-document-domain/ untuk
 mengetahui detail tambahan.</translation>
+<translation id="6268941767866119713">Mengontrol tempat <ph name="CHROME_DEVTOOLS_NAME" /> dapat digunakan</translation>
 <translation id="626942726350419209">Izinkan situs mendownload beberapa file secara otomatis</translation>
 <translation id="6270615143812355589">Aktifkan input audio</translation>
 <translation id="6270791075656665237">Larang QUIC</translation>
@@ -8993,6 +9053,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, pencarian CNAME akan mene
 <translation id="6424486395812679373">Lakukan pemeriksaan Safe Browsing pada semua file yang didownload</translation>
 <translation id="6426899507714989471">Nonaktifkan akselerasi grafis</translation>
 <translation id="6431446111529802555">Eropa.</translation>
+<translation id="6431778298276599807">Aktifkan pembekuan tab di latar belakang</translation>
 <translation id="6433697627431665375">Cegah data <ph name="PRODUCT_NAME" /> disertakan dalam cadangan</translation>
 <translation id="6436052172226685535">Perilaku default untuk LBS.</translation>
 <translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> mencoba mengupgrade beberapa
@@ -9484,6 +9545,11 @@ Jika kebijakan ini disetel ke Aktif, data akan dikumpulkan dan diupload ke <ph n
 
 Untuk <ph name="PRODUCT_NAME" />, kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Untuk <ph name="PRODUCT_OS_NAME" />, kebijakan ini selalu berlaku.</translation>
+<translation id="6718248192281812888">Mengontrol apakah pengguna dapat menggunakan proses debug jarak jauh.
+
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, pengguna dapat menggunakan proses debug jarak jauh dengan menentukan tombol command line --remote-debugging-port dan --remote-debugging-pipe di platform desktop, atau dengan mengaktifkan setelan sistem mode debug USB di <ph name="ANDROID_NAME" />.
+
+Jika kebijakan ini disetel ke Nonaktif, pengguna tidak diizinkan menggunakan proses debug jarak jauh.</translation>
 <translation id="6720330829631914048">Jam berlalu sejak awal hari dalam format 24 jam.</translation>
 <translation id="6720862827454058309">Ganti pemetaan ruang alamat IP</translation>
 <translation id="6721252203593581486">WebSQL di konteks pihak ketiga (misalnya, iframe lintas situs) nonaktif secara default mulai dari M97 dan akan dihapus sepenuhnya di M101.
@@ -10259,6 +10325,7 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
       Konfigurasi didownload dan disimpan di cache. Gambar akan didownload ulang setiap kali URL atau hash berubah.
 
       Jika Anda menetapkan kebijakan tersebut, pengguna tidak dapat mengubahnya. Jika tidak ditetapkan, pengguna dapat terus menggunakan penampung Crostini default dalam konfigurasinya yang sedang berlangsung jika Crostini diizinkan oleh kebijakan.</translation>
+<translation id="7130092870893836308">Aktifkan fitur Coba untuk Anda tanpa peningkatan kualitas model.</translation>
 <translation id="7132877481099023201">URL yang akan diberi akses ke perangkat perekam video tanpa peringatan</translation>
 <translation id="7134420220355750019">Mengalihkan tombol mouse utama ke tombol kanan.
 
@@ -11143,6 +11210,7 @@ Kebijakan ini dapat diganti untuk origin Aplikasi Web Terisolasi (IWA) tertentu 
 <translation id="7696412993033202071">URL peluncuran aplikasi autentikasi eksternal</translation>
 <translation id="7696534428021833264">Aktifkan Kartu NTP SharePoint dan OneDrive File</translation>
 <translation id="7699644797467448158">Hapus window.name saat navigasi berada di tingkat atas, lintas situs, dan mengganti BrowsingContextGroup.</translation>
+<translation id="7700606318567398251">Jangan izinkan penggunaan <ph name="CHROME_DEVTOOLS_NAME" /></translation>
 <translation id="7701341006446125684">Menyetel ukuran cache Ekstensi dan Aplikasi (dalam byte)</translation>
 <translation id="7701825382808690457">Gunakan nilai default untuk perjanjian kunci pasca-kuantum untuk WebRTC</translation>
 <translation id="7703041979684393741">Jangan izinkan pengumpulan log aktivitas WebRTC dari layanan Google</translation>
@@ -11803,6 +11871,19 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia di instance yang dihu
 <translation id="8102854005031553638">Penampil PDF menggunakan perender AGG.</translation>
 <translation id="8102913158860568230">Setelan streaming media default</translation>
 <translation id="8104962233214241919">Memilih sertifikat klien untuk situs ini secara otomatis</translation>
+<translation id="810897014119047728">Kebijakan ini dapat digunakan untuk memblokir <ph name="CHROME_DEVTOOLS_NAME" /> di URL tertentu. Untuk mengetahui informasi tentang format URL, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Ketersediaan <ph name="CHROME_DEVTOOLS_NAME" /> dievaluasi di tingkat target. Pola URL dicocokkan dengan URL setiap target yang diperiksa (seperti frame utama halaman, subframe yang disematkan, ekstensi, atau aplikasi web). Perilaku yang dihasilkan bergantung pada apakah kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> juga disetel.
+
+Jika kebijakan ini disetel dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> tidak disetel, URL target yang cocok dengan pola di daftar yang tidak diizinkan ini akan memblokir <ph name="CHROME_DEVTOOLS_NAME" /> untuk target tersebut (misalnya, subframe yang URL-nya cocok dengan daftar yang tidak diizinkan ini tidak dapat diperiksa, tetapi halaman utama tetap dapat diperiksa jika URL-nya tidak ada dalam daftar yang tidak diizinkan). Jika URL target tidak cocok dengan pola apa pun, ketersediaan akan ditentukan oleh kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Jika kebijakan ini dan kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> disetel, daftar yang diizinkan akan diprioritaskan. Jika URL target cocok dengan pola di daftar yang diizinkan, URL akan diizinkan, meskipun juga cocok dengan pola di daftar yang tidak diizinkan ini. Jika URL target cocok dengan pola di daftar yang tidak diizinkan ini (tetapi tidak cocok dengan pola di daftar yang diizinkan), URL akan diblokir. Jika URL target tidak cocok dengan keduanya, kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> akan digunakan sebagai gantinya.
+
+Jika kebijakan ini tidak disetel, ketersediaan <ph name="CHROME_DEVTOOLS_NAME" /> akan ditentukan oleh kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Kebijakan ini memengaruhi <ph name="CHROME_DEVTOOLS_NAME" />, akses langsung Chrome DevTools Protocol (CDP) (misalnya, saat diluncurkan dengan --remote-debugging-port atau --remote-debugging-pipe), dan akses Chrome DevTools Protocol (CDP) melalui API chrome.debugger. Kebijakan ini dan kebijakan <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> berlaku: <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> mengontrol apakah proses debug jarak jauh dapat dimulai, sedangkan kebijakan ini membatasi apakah target tertentu dapat diperiksa meskipun proses debug jarak jauh sedang berjalan.
+
+Kebijakan ini terbatas untuk 1.000 entri.</translation>
 <translation id="8109762054721090517">Template untuk <ph name="IPP_ATTRIBUTE" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /></translation>
 <translation id="811012672754800797">Tidak mengizinkan upload file ke Gemini di Chrome.</translation>
 <translation id="8111331908123507719">Mengonfigurasi waktu dalam detik saat perangkat akan menunggu tidak ada aktivitas sebelum menampilkan screensaver untuk layar kunci.
@@ -11941,6 +12022,7 @@ Untuk mengetahui informasi selengkapnya, buka artikel Pusat Bantuan https://supp
 <translation id="8199823751103472868">Menyetel kebijakan ini akan mengaktifkan Tata Letak Inscript Hindi di <ph name="PRODUCT_OS_NAME" />. Jika kebijakan ini disetel ke salah (false) atau tidak disetel, tata letak tidak akan tersedia.</translation>
 <translation id="8202566089100454374">Google Maps (didukung sejak versi 135)</translation>
 <translation id="8202834945144737726">Mengaktifkan alur pengesahan <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> untuk daftar URL di layar login</translation>
+<translation id="8204634641358373241">Sembunyikan opsi input di panel aplikasi</translation>
 <translation id="8213770777756919897">Perhatikan bahwa kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 85. Sebagai gantinya, gunakan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Jika ditetapkan, kebijakan ini akan menentukan tindakan yang diambil <ph name="PRODUCT_OS_NAME" /> saat pengguna tetap tidak beraktivitas selama durasi waktu yang ditentukan oleh penundaan waktu tidak ada aktivitas, yang dapat dikonfigurasi secara terpisah.
@@ -11986,6 +12068,24 @@ Lihat RFC 8828 bagian 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2)
 <translation id="8244525275280476362">Penundaan mengambil maksimum setelah kebijakan invalidasi</translation>
 <translation id="8247143534027746614">Memblokir akses ke daftar pola URL selama autentikasi</translation>
 <translation id="824818544897669723">Nonaktifkan penghapusan histori download dan browser</translation>
+<translation id="8249289413721808395">Jika kebijakan ini disetel ke 0 (default), Anda akan dapat mengakses <ph name="CHROME_DEVTOOLS_NAME" /> dan konsol JavaScript. Namun, hal ini tidak berlaku dalam konteks ekstensi yang diinstal oleh kebijakan perusahaan atau, sejak versi 114 dan jika pengguna adalah pengguna terkelola, ekstensi bawaan browser. Jika kebijakan disetel ke 1, Anda akan dapat mengakses <ph name="CHROME_DEVTOOLS_NAME" /> dan konsol JavaScript di semua konteks, termasuk dalam konteks ekstensi yang diinstal oleh kebijakan perusahaan. Jika kebijakan disetel ke 2, Anda tidak akan dapat mengakses <ph name="CHROME_DEVTOOLS_NAME" />, dan Anda tidak dapat memeriksa elemen situs.
+
+Setelan ini juga menonaktifkan pintasan keyboard dan entri menu atau menu konteks untuk membuka <ph name="CHROME_DEVTOOLS_NAME" /> atau konsol JavaScript.
+
+Mulai <ph name="PRODUCT_NAME" /> versi 99, setelan ini juga mengontrol titik entri untuk fitur 'Lihat sumber halaman'. Jika Anda menyetel kebijakan ini ke 'DeveloperToolsDisallowed' (nilai 2), pengguna tidak dapat mengakses tampilan sumber melalui pintasan keyboard atau menu konteks. Untuk memblokir tampilan sumber sepenuhnya, Anda juga harus menambahkan 'view-source:*' ke kebijakan <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Mulai <ph name="PRODUCT_NAME" /> versi 119, setelan ini juga mengontrol apakah mode developer untuk Aplikasi Web Terisolasi (IWA) dapat diaktifkan dan digunakan.
+
+Mulai <ph name="PRODUCT_NAME" /> versi 128, setelan ini tidak akan mengontrol mode developer di halaman ekstensi jika kebijakan <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> disetel.
+
+Kebijakan ini memengaruhi <ph name="CHROME_DEVTOOLS_NAME" />, akses langsung Chrome DevTools Protocol (CDP) (misalnya, saat diluncurkan dengan --remote-debugging-port atau --remote-debugging-pipe), dan akses Chrome DevTools Protocol (CDP) melalui API chrome.debugger. Kebijakan ini dan kebijakan <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> berlaku: <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> mengontrol apakah proses debug jarak jauh dapat dimulai, sedangkan kebijakan ini membatasi apakah target tertentu dapat diperiksa meskipun proses debug jarak jauh sedang berjalan.
+
+Kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> lebih diprioritaskan daripada kebijakan ini. Ketersediaan <ph name="CHROME_DEVTOOLS_NAME" /> ditentukan dalam urutan prioritas berikut:
+
+1. Jika URL cocok dengan pola di kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />, <ph name="CHROME_DEVTOOLS_NAME" /> akan diizinkan.
+2. Jika <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> disetel dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> tidak disetel, URL apa pun yang tidak ada dalam daftar yang diizinkan akan diblokir.
+3. Jika URL cocok dengan pola di kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, <ph name="CHROME_DEVTOOLS_NAME" /> akan diblokir.
+4. Jika tidak ada kebijakan yang disetel, atau jika URL tidak cocok dengan kedua daftar, kebijakan ini (<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />) akan digunakan sebagai mekanisme penggantian.</translation>
 <translation id="8250048892729838843">Kebijakan ini tidak digunakan lagi. Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat akan diizinkan menerima kontrol pelaporan terperinci.
       Jika kebijakan disetel ke Nonaktif, perangkat terdaftar tidak akan menerima kontrol pelaporan terperinci.</translation>
 <translation id="82501412047133986">Kebijakan ini tidak digunakan lagi di M88, Flash tidak lagi didukung oleh Chrome. Jika kebijakan disetel, Anda akan dapat menetapkan daftar pola URL yang menentukan situs yang tidak dapat menjalankan plugin <ph name="FLASH_PLUGIN_NAME" />.
@@ -13508,7 +13608,13 @@ diupgrade ke HTTPS oleh fitur ini.</translation>
 
       Jika tidak ditetapkan atau ditetapkan ke salah, AppCache akan mengikuti default Chrome.</translation>
 <translation id="931156018951676976">Menonaktifkan tampilan konten promosi</translation>
+<translation id="935136412769712014">Mengizinkan penggunaan <ph name="CHROME_DEVTOOLS_NAME" /></translation>
 <translation id="935779984563655842">Melaporkan info Bluetooth</translation>
+<translation id="93578254536318656">Jika kebijakan disetel ke Aktif, balon pilihan metode input akan ditampilkan di panel aplikasi.
+
+Jika kebijakan disetel ke Nonaktif, balon pilihan metode input akan disembunyikan dari panel aplikasi.
+
+Jika tidak disetel, balon pilihan metode input akan disembunyikan dari panel aplikasi secara default. Pengguna dapat memilih apakah akan menampilkan balon di halaman Setelan atau tidak.</translation>
 <translation id="936188865879911137">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan mengizinkan penginstalan dan update untuk ekstensi yang dihosting di luar Chrome Web Store, yang kontennya hanya dilindungi secara minimal.
 
       Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> tidak akan mengizinkan penginstalan baru (dan update) ekstensi tersebut. Kebijakan tidak berpengaruh di <ph name="PRODUCT_NAME" /> 78 dan yang lebih baru.

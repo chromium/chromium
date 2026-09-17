@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1184166532603925201">Chrome kemur í veg fyrir að vefsvæði geti notað fótspor þriðja aðila þegar þú ert í huliðsstillingu</translation>
+<translation id="1365023215312302966">Vefsvæði geta notað fótspor þriðja aðila til að sérsníða efni og auglýsingar og sjá aðgerðir sem þú framkvæmir á öðrum vefsvæðum</translation>
 <translation id="1569440020357229235">Vefsvæði geta ekki notað fótspor þriðja aðila þegar þú ert í huliðsstillingu. Ef vefsvæði sem reiðir sig á þessi fótspor virkar ekki geturðu <ph name="BEGIN_LINK" />prófað að veita því tímabundinn aðgang að fótsporum þriðja aðila<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Eiginleikar á sumum vefsvæðum virka hugsanlega ekki</translation>
 <translation id="2183376768278472507">Ef vefsvæði virkar ekki sem skyldi geturðu prófað að veita því tiltekna vefsvæði aðgang að fótsporum þriðja aðila</translation>
 <translation id="2235344399760031203">Lokað er á fótspor þriðja aðila</translation>
+<translation id="2360633687155619995">Vefsvæði geta notað fótspor þriðja aðila til að sérsníða efni og auglýsingar og sjá aðgerðir sem þú framkvæmir á öðrum vefsvæðum. Sumir eiginleikar vefsvæða virka hugsanlega ekki sem skyldi.</translation>
 <translation id="2496115946829713659">Vefsvæði geta notað fótspor þriðja aðila til að sérsníða efni og auglýsingar og sjá aðgerðir sem þú framkvæmir á öðrum vefsvæðum</translation>
 <translation id="3045333309254072201">Vefsvæði geta ekki notað fótspor þriðja aðila þegar þú ert í huliðsstillingu. Ef vefsvæði sem reiðir sig á þessi fótspor virkar ekki geturðu <ph name="START_LINK" />prófað að veita því tímabundinn aðgang að fótsporum þriðja aðila<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Vefsvæði sem reiða sig á fótspor þriðja aðila ættu að virka sem skyldi</translation>

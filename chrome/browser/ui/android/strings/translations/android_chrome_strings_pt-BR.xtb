@@ -503,7 +503,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2977350910003566746">Ordenar por último aberto</translation>
 <translation id="297771753501244313">Ordenar por último aberto</translation>
 <translation id="2979639724566107830">Abrir em uma nova janela</translation>
-<translation id="2980545254049127870">Abra links com facilidade de mensagens, documentos e outros apps</translation>
+<translation id="2980545254049127870">Abra com facilidade links de mensagens, documentos e outros apps</translation>
 <translation id="2983398917942897288">Guias inativas (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Sair de "picture in picture"</translation>
 <translation id="2984978667043170458">Incluir o texto ao redor nas pesquisas do Google</translation>
@@ -651,7 +651,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3602290021589620013">Prévia</translation>
 <translation id="3614126103057878858">Informações de preço</translation>
 <translation id="3616113530831147358">Áudio</translation>
-<translation id="3616798734782988169">Confirme se o app <ph name="DOWNLOAD_DOMAIN" /> é confiável</translation>
+<translation id="3616798734782988169">Confirme se <ph name="DOWNLOAD_DOMAIN" /> é confiável</translation>
 <translation id="3619255692378312441">Gerenciar o acesso</translation>
 <translation id="3622349720008044802">Gerenciar janelas</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{e mais 1 site}one{e mais # site}other{e mais # sites}}</translation>
@@ -787,6 +787,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4162867837470729563">Lista de opções de compartilhamento no tamanho máximo.</translation>
 <translation id="4164642020717536140">Navegação na web rápida e segura</translation>
 <translation id="4165077084524712774">Mais ferramentas</translation>
+<translation id="4169156312706405526">Anexar arquivos do Drive</translation>
 <translation id="4170577491341606575">Buscando seus dados\u2026</translation>
 <translation id="4172051516777682613">Sempre mostrar</translation>
 <translation id="4176838562184310003">O Chrome não foi encerrado corretamente e pode tentar restaurar as janelas e guias fechadas. Ao fazer isso, algumas janelas podem ser minimizadas.</translation>
@@ -1256,6 +1257,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="604996488070107836">Falha no download do arquivo <ph name="FILE_NAME" /> devido a um erro desconhecido.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="606985262342505139">Página inferior da guia na altura máxima</translation>
+<translation id="6070608977567243308">Comprar imagem com Google Lens</translation>
 <translation id="6071995715087444295">Para checar se há senhas comprometidas, faça login na sua Conta do Google</translation>
 <translation id="6078323886959318429">Criar atalho</translation>
 <translation id="6085886413119427067">Determina como se conectar a sites por uma conexão segura</translation>
@@ -1303,6 +1305,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6232535412751077445">Ao ativar o recurso "Não rastrear" uma solicitação é incluída no tráfego de navegação. O resultado depende da resposta de um site à solicitação e de como a solicitação é interpretada.
 
 Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que não têm qualquer relação com os sites que você costuma visitar. Mesmo assim, alguns websites ainda vão coletar e usar seus dados de navegação para, por exemplo, melhorar a segurança, gerar conteúdo, anúncios, recomendações e relatórios de estatística.</translation>
+<translation id="6235349850462976369">Traduzir imagem no Google Lens</translation>
 <translation id="623755660902014047">Modo de leitura</translation>
 <translation id="6246073558347462570">Janela pop-up de contexto</translation>
 <translation id="6247557882553405851">Gerenciador de Senhas do Google</translation>
@@ -2133,7 +2136,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="945522503751344254">Enviar comentários</translation>
 <translation id="948276827484905248">Criar QR code</translation>
 <translation id="95817756606698420">O Chrome pode usar o <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para fazer pesquisas na China. É possível alterar essa opção nas <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
-<translation id="961856697154696964">Excluir dados</translation>
+<translation id="961856697154696964">Excluir dados de navegação</translation>
 <translation id="963246339335003378">Abrir o gerenciador de tarefas</translation>
 <translation id="966337994629449077">A conta <ph name="FROM_EMAIL" /> está conectada.\n\nPara continuar no computador, mude para <ph name="TO_EMAIL" />. Você vai receber as senhas, os favoritos e outros itens dessa conta.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutos restantes</translation>

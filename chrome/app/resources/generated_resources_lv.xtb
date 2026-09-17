@@ -1432,6 +1432,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2111670510994270194">Jauna cilne pa labi</translation>
 <translation id="2111778868023567359">Jūs vairs neredzēsiet ciļņu grupas šajā lapā.</translation>
 <translation id="2112554630428445878">Laipni lūdzam, <ph name="USERNAME" />!</translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">Skatīt no operētājsistēmas macOS importētos sertifikātus</translation>
 <translation id="21133533946938348">Piespraust cilni</translation>
 <translation id="2113479184312716848">Atvērt failu...</translation>
@@ -1984,6 +1985,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="252513908494776481">Uzdodiet jautājumus šo cilni</translation>
 <translation id="2525746158911982776">Atjaunināšana neizdevās, jo sistēmā nepietiek vietas krātuvē.</translation>
 <translation id="2525842906387880861">Ieteikumi vairs netiks rādīti šajā lapā.</translation>
+<translation id="2526346836766369775">Jauna izolēta &amp;cilne</translation>
 <translation id="2526590354069164005">Darbvirsma</translation>
 <translation id="2526619973349913024">Pārbaudīt atjauninājumus</translation>
 <translation id="2527167509808613699">Jebkāda veida savienojums</translation>
@@ -8535,6 +8537,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7578137152457315135">Pirkstu nospiedumu iestatījumi</translation>
 <translation id="7578692661782707876">Ievadiet savu apstiprinājuma kodu.</translation>
 <translation id="757941033127302446">Pierakstījies</translation>
+<translation id="7580311608678791180">Atveriet no Windows uzdevumu joslas</translation>
 <translation id="7581462281756524039">Tīrīšanas rīks</translation>
 <translation id="7582582252461552277">Dot priekšroku šim tīklam</translation>
 <translation id="7582844466922312471">Mobile Data</translation>
@@ -8548,6 +8551,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7590883480672980941">Ievades iestatījumi</translation>
 <translation id="7592060599656252486">Dažas</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (kļūdas kods: <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Atveriet no Mac izvēļņu joslas</translation>
 <translation id="7600054753482800821">&amp;Pārvaldīt meklētājprogrammas un meklēšanu vietnē</translation>
 <translation id="7600218158048761260">Google disks ir atspējots šim konta veidam.</translation>
 <translation id="7600965453749440009">Nekad netulkot saturu, kas rakstīts <ph name="LANGUAGE" /> valodā</translation>
@@ -9233,6 +9237,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8102139037507939978">Izņemt personu identificējošu informāciju no faila system_logs.txt.</translation>
 <translation id="810362914482827094">Meklējiet piekļuves atslēgas</translation>
 <translation id="8104088837833760645">Lejupielādēt eSIM profilu</translation>
+<translation id="8104388155778519213">Kopīgojiet ekrānā redzamo saturu, izmantojot Google Lens</translation>
 <translation id="8104778744208707085">Jāizskata</translation>
 <translation id="8105273883928376822">Lūdzu, pierakstieties, lai turpinātu</translation>
 <translation id="8106114112474206597">Lai nospiestu peles pogu, izmantojiet taustiņu “i”</translation>

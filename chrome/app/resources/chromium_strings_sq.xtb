@@ -339,6 +339,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4621240073146040695">Pothuajse i përditësuar! Hape përsëri Chromium për të përfunduar përditësimin.</translation>
 <translation id="4625064703209785397">Shpejton sajtet me motorin V8 të Chromium, por e bën Chromium disi më pak rezistent ndaj sulmeve</translation>
 <translation id="4626321472657185181">Hap kërkimin me Chromium</translation>
+<translation id="4654639495249754755">Profili i Chromium</translation>
 <translation id="4665829708273112819">Paralajmërim: Chromium nuk mund të parandalojë regjistrimin e historikut të shfletimit nga shtesat. Për të çaktivizuar këtë shtesë në modalitetin "e fshehtë", anulo zgjedhjen e këtij opsioni.</translation>
 <translation id="4673151026126227699">Nëse ndan edhe raportet e përdorimit të Chromium, ato raporte përfshijnë URL-të që ti viziton</translation>
 <translation id="4673710618874938871">Identifikuar si <ph name="USER_NAME" />, anëtarësim. Hap menynë e llogarisë</translation>
@@ -471,6 +472,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="6174920971222007286">Ky skedar mund të jetë i rrezikshëm<ph name="LINE_BREAK" />Chromium mund ta kontrollojë këtë shkarkim për ty nëse ti jep fjalëkalimin. Informacionet për skedarin dërgohen te "Shfletimi i sigurt i Google", por përmbajtjet dhe fjalëkalimi i skedarit qëndrojnë në pajisjen tënde.</translation>
 <translation id="6182736845697986886">Instalimi dështoi për shkak të një gabimi të brendshëm të serverit të përditësimit.</translation>
 <translation id="6183079672144801177">Sigurohu që të jesh i identifikuar në Chromium në pajisjen tënde <ph name="TARGET_DEVICE_NAME" /> dhe më pas provo ta dërgosh përsëri.</translation>
+<translation id="6192070012454216182">Kërko dhe bëj pyetje nga kudo, edhe nëse Chromium është minimizuar. Lejon që Chromium të ekzekutohet në sfond.</translation>
 <translation id="6212496753309875659">Ky kompjuter e ka tashmë një version më të ri të Chromium. Nëse softueri nuk punon, çinstaloje Chromium dhe provo përsëri.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium do të hapet përsëri tani}=1{Chromium do të hapet përsëri për 1 sekondë}other{Chromium do të hapet përsëri për # sekonda}}</translation>
 <translation id="6241367896540709610">Chromium ka nevojë për leje qasjeje te hapësira ruajtëse për të shkarkuar skedarë</translation>
@@ -597,6 +599,7 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="7288567540154601580">Skedat dhe shtesat</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium rekomandon që ta heqësh atë}other{Chromium rekomandon që t'i heqësh ato}}</translation>
 <translation id="7296334833518879294">Për të ndarë audion e sistemit, hap "Cilësimet e sistemit" dhe lejo "Vetëm regjistrimin e audios së sistemit" për Chromium. Më pas do të të duhet të rinisësh Chromium.</translation>
+<translation id="7299899569525778554">Kërko nga desktopi</translation>
 <translation id="731795002583552498">Po përditëson Chromium</translation>
 <translation id="7318036098707714271">Skedari i preferencave është i dëmtuar ose i pavlefshëm.
 
@@ -650,6 +653,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Bëj që personat që kanë qasje në trafikun tënd të internetit ta kenë më të vështirë të shikojnë sajtet që viziton ti. Chromium përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajt në sistemin e emrave të domeneve (DNS).</translation>
 <translation id="7810005234485217901">Mund të gozhdosh "Kërkimin nëpërmjet imazheve" për qasje të lehtë</translation>
+<translation id="7813626943009612327">Pyet për përmbajtjet jashtë Chromium, si p.sh. një aplikacion ose skedar tjetër që ke hapur</translation>
 <translation id="7828527096541974699">Zgjidh se çfarë do të ndash me Chromium</translation>
 <translation id="7828947555739565424">Një profil i Chromium me këtë llogari ekziston tashmë në këtë pajisje</translation>
 <translation id="7845233973568007926">Faleminderit që e instalove. Duhet të rinisësh kompjuterin përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
@@ -740,6 +744,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8619360774459241877">Po hapet Chromium...</translation>
 <translation id="8624541899164515475">Cilësimet, hapet në një skedë të re.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
+<translation id="8676101123715131330">Kërko me Chromium nga kudo</translation>
 <translation id="8697124171261953979">Kontrollon po ashtu se cila faqe shfaqet kur nis Chromium ose kur kërkon nga Omnibox.</translation>
 <translation id="8704119203788522458">Ky është Chromium për ty</translation>
 <translation id="8712637175834984815">E kuptova</translation>

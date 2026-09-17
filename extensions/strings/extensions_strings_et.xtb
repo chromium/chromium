@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Vanema loa taotlemine ebaõnnestus.</translation>
 <translation id="1803557475693955505">Tagaplaanilehte <ph name="BACKGROUND_PAGE" /> ei õnnestunud laadida.</translation>
 <translation id="1875387611427697908">Seda on võimalik lisada vaid teenusest <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715">Laiendust <ph name="EXTENSION_NAME" /> (laienduse ID „<ph name="EXTENSION_ID" />“) ei saa madala usaldusega keskkondades reegli alusel installida.</translation>
 <translation id="2131077480075264">Rakendust <ph name="APP_NAME" /> ei saa installida, sest <ph name="IMPORT_NAME" /> ei luba seda</translation>
 <translation id="2150661552845026580">Kas lisada „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2159915644201199628">Ei saanud pilti dekodeerida: „<ph name="IMAGE_NAME" />”</translation>

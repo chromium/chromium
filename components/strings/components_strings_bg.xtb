@@ -923,7 +923,6 @@
 <translation id="2527451058878391043">Кодът за проверка се намира върху лицевата страна на картата ви. Това е 4-цифреният код горе вдясно над номера на картата.</translation>
 <translation id="2529899080962247600">Това поле не трябва да съдържа повече от <ph name="MAX_ITEMS_LIMIT" /> записа. Следващите се пренебрегват.</translation>
 <translation id="2530042584066815841">Заключване и използване на мишката</translation>
-<translation id="253493526287553278">Преглед на подробностите за промоционалния код</translation>
 <translation id="2535585790302968248">Отворете нов раздел в режим „инкогнито“, за да сърфирате частно</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{и още 1}other{и още #}}</translation>
 <translation id="2536110899380797252">Добавяне на адрес</translation>
@@ -1517,6 +1516,7 @@
 <translation id="3577473026931028326">Нещо се обърка. Опитайте отново.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome ще ви съобщи, когато страницата бъде готова. &lt;a&gt;Отказ&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Автоматично добавяне на раздели</translation>
 <translation id="3582930987043644930">Добавете име</translation>
 <translation id="3583757800736429874">&amp;Възстановяване на преместването</translation>
 <translation id="3584299510153766161">Двойно перфориране в долната част</translation>
@@ -1592,6 +1592,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Зарежда се...</translation>
 <translation id="3709599264800900598">Копиран от вас текст</translation>
+<translation id="3711223220609269738">Нов изолиран раздел</translation>
 <translation id="3711430313228789376">Браузърът Chrome се опитва да покаже паролите</translation>
 <translation id="3711895659073496551">Спиране</translation>
 <translation id="3712004750972384495">Записът на екрана се запазва</translation>
@@ -1610,6 +1611,7 @@
 <translation id="3727309136762649052">Пространство от имена</translation>
 <translation id="3727850735097852673">За да използвате Google Мениджър на пароли с Keychain на macOS, стартирайте Chrome отново и разрешете достъпа до Keychain. След повторното стартиране разделите ви ще се отворят отново.</translation>
 <translation id="3728173127485570463">Браузърът Chrome вече няма да изисква отпечатък при автоматично попълване на пароли</translation>
+<translation id="3729811201279509483">Ръчно добавяне на раздели</translation>
 <translation id="3736564442532774454">Браузърът Chrome се опитва да попълни поверителната ви информация в(ъв) <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Браузърът се управлява от администратора ви.</translation>
 <translation id="3739842843727261045">Чрез бутона „Харесва ми“ отбелязвате, че харесвате съответните резултати</translation>
@@ -2407,7 +2409,6 @@
 <translation id="5052488928733955073">При попълването на информацията ви възникна проблем. Проверете връзката си.</translation>
 <translation id="5053116470141135293">Когато плащате с тази карта, ще бъде попълнен номер на виртуална карта, за да се защитят действителните ви данни. Управлявайте настройките в Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{За да изпратите този файл чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}other{За да изпратите тези файлове чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}}</translation>
-<translation id="5056587122125565772">Създаване на изображение</translation>
 <translation id="505757197798929356">Посочете причина за отварянето (задължително)</translation>
 <translation id="5058282932481719070">научете повече за подобреното автоматично попълване в настройките</translation>
 <translation id="5061227663725596739">Може би имахте предвид <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2773,6 +2774,7 @@
 <translation id="5649053991847567735">Автоматични изтегляния</translation>
 <translation id="5651323159439184939">Непрекъснат печат</translation>
 <translation id="5653681867130739344">Актуализиране на документа за самоличност по сигурен начин в Google Wallet</translation>
+<translation id="5653744563415531641">Запазете информацията си и извършвайте по-бързо различни неща, като например попълване на формуляри в продуктите на Google. Можете <ph name="MANAGE_WALLET_SETTINGS_LINK" /> за <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Идентификатор на качения сигнал за срив:</translation>
 <translation id="5654965123204121933">URL адресът не включва задължителния низ за замяна <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Имейл</translation>
@@ -3218,6 +3220,7 @@
 <translation id="6410264514553301377">Въвеждане на датата на валидност и кода за проверка за <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4 x 8</translation>
 <translation id="6412543105195503444">Диалогов прозорец за одобрение от родител</translation>
+<translation id="6413532517183895572">да управлявате настройките за Wallet</translation>
 <translation id="6415778972515849510">Chromium може да ви помогне да защитите профила си в Google и да промените паролата си.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Уверете се, че всички важни бизнес или лични данни се съхраняват извън устройството.</translation>

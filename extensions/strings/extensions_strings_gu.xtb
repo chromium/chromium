@@ -27,6 +27,7 @@
 <translation id="1757786065507923842">માતાપિતાની પરવાનગી વિનંતી નિષ્ફળ થઈ.</translation>
 <translation id="1803557475693955505">બૅકગ્રાઉન્ડ પેજ '<ph name="BACKGROUND_PAGE" />' લોડ કરી શકાયું નથી.</translation>
 <translation id="1875387611427697908">આ ફક્ત <ph name="CHROME_WEB_STORE" />માંથી જ ઉમેરી શકાશે</translation>
+<translation id="1901182793187376715">ઓછા વિશ્વાસવાળા વાતાવરણમાં <ph name="EXTENSION_NAME" /> (એક્સ્ટેન્શન ID "<ph name="EXTENSION_ID" />") પૉલિસી-ઇન્સ્ટૉલ કરી શકાતું નથી.</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" ને ઇન્સ્ટોલ કરવામાં અસમર્થ કારણ કે "<ph name="IMPORT_NAME" />" દ્વારા તેની મંજૂરી નથી</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" ઉમેરીએ?</translation>
 <translation id="2159915644201199628">છબીને ડિકોડ કરી શક્યાં નથી: '<ph name="IMAGE_NAME" />'</translation>

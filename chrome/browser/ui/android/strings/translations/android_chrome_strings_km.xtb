@@ -514,6 +514,7 @@
 <translation id="2996291259634659425">បង្កើតឃ្លាសម្ងាត់</translation>
 <translation id="2996682533106928201">ចុចដើម្បី​ច្រានចោល</translation>
 <translation id="2996809686854298943">តម្រូវឲ្យមាន URL</translation>
+<translation id="3007318536447999974">ដើម្បី​និយាយ​ជាមួយ Gemini សូម​ផ្ដល់ការអនុញ្ញាត​ឱ្យវាប្រើ​មីក្រូហ្វូន​របស់អ្នក។ អ្នកក៏អាចគ្រប់គ្រងការអនុញ្ញាតនេះនៅក្នុង <ph name="BEGIN_LINK" />"ការកំណត់"<ph name="END_LINK" /> ផងដែរ</translation>
 <translation id="3024215143424744261">បានបិទ​ចំណូលចិត្ត​មុខងារអាន</translation>
 <translation id="3024277805447899099">មើលរូបភាពសាកល្បង</translation>
 <translation id="3026955690410463085">រួមបញ្ចូល​តំណ</translation>
@@ -1815,7 +1816,9 @@
 <translation id="8058746566562539958">បើក​នៅក្នុង​ផ្ទាំង​ថ្មី​របស់ Chrome</translation>
 <translation id="8062594758852531064">ការផ្ទុកជាមុន​បន្ថែម៖</translation>
 <translation id="8063895661287329888">បានបរាជ័យក្នុងការបន្ថែមចំណាំ</translation>
+<translation id="8064081231614696741">ជ្រើសរើស​ថត​ផ្សេងទៀត</translation>
 <translation id="8066816452984416180">ចំណាំ​ទំព័រ​នេះ​យ៉ាង​រហ័ស។ ដើម្បីកែផ្លូវកាត់នេះ សូមចុចឱ្យជាប់។</translation>
+<translation id="8068041627541121907">Gemini ចង់ប្រើ​មីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="8072436850275034464">អ្នកអាចបើកផ្ទាំងដែលអ្នកបានបិទថ្មីៗនេះឡើងវិញពីគ្រប់កន្លែងដែលអ្នកប្រើ Chrome</translation>
 <translation id="8073388330009372546">បើករូបភាពនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="8076492880354921740">ផ្ទាំង</translation>

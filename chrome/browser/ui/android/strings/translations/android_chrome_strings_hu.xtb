@@ -787,6 +787,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4162867837470729563">A megosztási lehetőségek listája teljes magasságban van megnyitva.</translation>
 <translation id="4164642020717536140">Gyorsan és biztonságosan böngészhet az interneten</translation>
 <translation id="4165077084524712774">További eszközök</translation>
+<translation id="4169156312706405526">Fájlok csatolása a Drive-ról</translation>
 <translation id="4170577491341606575">Adatok lekérése…</translation>
 <translation id="4172051516777682613">Mindig mutassa</translation>
 <translation id="4176838562184310003">A Chrome nem megfelelően állt le, és megpróbálhatja visszaállítani az elveszett ablakokat és lapokat. Előfordulhat, hogy egyes ablakok a visszaállításkor kis méretre állítódnak.</translation>
@@ -1255,6 +1256,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="604996488070107836">A következő fájl letöltése ismeretlen hiba miatt nem sikerült: <ph name="FILE_NAME" />.</translation>
 <translation id="605721222689873409">ÉÉ</translation>
 <translation id="606985262342505139">A lap alsó lapja teljes magasságban megnyitva.</translation>
+<translation id="6070608977567243308">Képvásárlás a Google Lensszel</translation>
 <translation id="6071995715087444295">Az illetéktelen kézbe került jelszavak előfordulásának ellenőrzéséhez jelentkezzen be Google-fiókjába</translation>
 <translation id="6078323886959318429">Parancsikon hozzáadása</translation>
 <translation id="6085886413119427067">Meghatározza, hogyan lehet csatlakozni webhelyekhez biztonságos kapcsolat használatával</translation>
@@ -1302,6 +1304,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6232535412751077445">A „Nincs nyomon követés” engedélyezése azt jelenti, hogy a böngészési forgalommal együtt kérelmet is küld a rendszer. Ennek hatása attól függ, hogy a webhely reagál-e a kérelemre, és hogyan értelmezi azt.
 
 Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jelenítenek meg, amelyek nem a már felkeresett egyéb webhelyeken alapulnak. Számos webhely ilyenkor is gyűjti és felhasználja a böngészési adatokat (például a biztonság növelése, továbbá tartalom, hirdetések és ajánlatok biztosítása, valamint jelentésekhez használt statisztika előállítása céljából).</translation>
+<translation id="6235349850462976369">Képfordítás a Google Lensszel</translation>
 <translation id="623755660902014047">Olvasási mód</translation>
 <translation id="6246073558347462570">Helyi előugró ablak</translation>
 <translation id="6247557882553405851">Google Jelszókezelő</translation>

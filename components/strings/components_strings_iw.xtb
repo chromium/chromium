@@ -923,7 +923,6 @@
 <translation id="2527451058878391043">‏קוד האימות (CVC) מופיע בצד הקדמי של הכרטיס. זהו הקוד בן 4 הספרות שמופיע בצד ימין מעל למספר הכרטיס.</translation>
 <translation id="2529899080962247600">השדה הזה יכול לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות. המערכת תתעלם מרשומות נוספות.</translation>
 <translation id="2530042584066815841">נעילת העכבר ושימוש בו</translation>
-<translation id="253493526287553278">הצגת הפרטים של קוד ההטבה</translation>
 <translation id="2535585790302968248">כדי לגלוש באופן פרטי, יש לפתוח כרטיסייה פרטית חדשה</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ודומיין אחד נוסף}one{ו-# דומיינים נוספים}two{ו-# דומיינים נוספים}other{ו-# דומיינים נוספים}}</translation>
 <translation id="2536110899380797252">הוספת כתובת</translation>
@@ -2221,6 +2220,7 @@
 <translation id="4750917950439032686">הפרטים שלך (כמו סיסמאות או מספרי כרטיסי אשראי) נשלחים לאתר הזה במצב פרטי.</translation>
 <translation id="4754461935447132332">אין הרשאה באתרים שאינם מאובטחים</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">כדי לעיין במבצעים השמורים ולמלא אותם, צריך ללחוץ על השדה קוד הטבה</translation>
 <translation id="4757740693289347881">הקוד לא תקף</translation>
 <translation id="4757993714154412917">‏הזנת כרגע את הסיסמה שלך באתר מטעה. כדי להגן על החשבונות שלך, ההמלצה של Chromium היא לבדוק את הסיסמאות השמורות.</translation>
 <translation id="4758311279753947758">הוספת פרטים ליצירת קשר</translation>
@@ -2410,7 +2410,6 @@ Del</translation>
 <translation id="5052488928733955073">היתה בעיה במילוי הפרטים. כדאי לבדוק את החיבור.</translation>
 <translation id="5053116470141135293">‏כדי להגן על הפרטים האמיתיים שלך במהלך התשלום בכרטיס הזה, המערכת תמלא אוטומטית מספר כרטיס וירטואלי. אפשר לערוך את ההגדרה הזו ב-Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{כדי לשלוח את הקובץ הזה באמצעות 'שיתוף מהיר', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}one{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף מהיר', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}two{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף מהיר', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}other{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף מהיר', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}}</translation>
-<translation id="5056587122125565772">יצירת תמונה</translation>
 <translation id="505757197798929356">יש לציין את הסיבה לפתיחה (חובה)</translation>
 <translation id="5058282932481719070">מידע נוסף על התכונה "מילוי אוטומטי משופר" בהגדרות</translation>
 <translation id="5061227663725596739">האם התכוונת ל-<ph name="LOOKALIKE_DOMAIN" />?</translation>

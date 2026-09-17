@@ -925,7 +925,6 @@ Anda boleh mengalih keluar cadangan ini daripada Chrome. Sumber asal anda tidak 
 <translation id="2527451058878391043">CVC tertera pada bahagian hadapan kad anda. CVC ialah kod 4 digit pada bahagian atas sebelah kanan, di atas nombor kad anda.</translation>
 <translation id="2529899080962247600">Medan ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> entri. Semua entri berikutnya akan diabaikan.</translation>
 <translation id="2530042584066815841">Kunci dan penggunaan tetikus</translation>
-<translation id="253493526287553278">Lihat butiran kod promosi</translation>
 <translation id="2535585790302968248">Buka tab Inkognito baharu untuk menyemak imbas secara peribadi</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{dan 1 lagi}other{dan # lagi}}</translation>
 <translation id="2536110899380797252">Tambahkan Alamat</translation>
@@ -1521,6 +1520,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome akan memberitahu anda apabila halaman ini sudah sedia. &lt;a&gt;Batalkan&lt;/a&gt;</translation>
 <translation id="3581499772329034229">Tambahkan tab secara automatik</translation>
+<translation id="3582670569275100909">Penghantaran</translation>
 <translation id="3582930987043644930">Tambah nama</translation>
 <translation id="3583757800736429874">&amp;Buat Semula Pindahkan</translation>
 <translation id="3584299510153766161">Dua tebukan bawah</translation>
@@ -2414,7 +2414,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5052488928733955073">Terdapat masalah semasa mengisi maklumat anda. Semak sambungan anda.</translation>
 <translation id="5053116470141135293">Nombor kad maya akan diisi apabila anda menyemak keluar dengan kad ini untuk melindungi butiran sebenar anda. Urus dalam Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}other{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}}</translation>
-<translation id="5056587122125565772">Buat imej</translation>
 <translation id="505757197798929356">Berikan sebab untuk membuka fail (diperlukan)</translation>
 <translation id="5058282932481719070">ketahui autolengkap yang dipertingkatkan dengan lebih lanjut dalam tetapan</translation>
 <translation id="5061227663725596739">Adakah anda maksudkan <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -4016,6 +4015,7 @@ Butiran tambahan:
 <translation id="7758069387465995638">Tembok api atau perisian antivirus mungkin telah menyekat sambungan.</translation>
 <translation id="7759147511335618829">Kawalan &amp; pengaturcaraan semula peranti MIDI</translation>
 <translation id="7759809451544302770">Pilihan</translation>
+<translation id="7760566304700414795">Penghantaran</translation>
 <translation id="776110834126722255">Ditamatkan</translation>
 <translation id="7761159795823346334">Benarkan kamera?</translation>
 <translation id="7761701407923456692">Sijil pelayan tidak sepadan dengan URL.</translation>
@@ -4361,6 +4361,7 @@ Butiran tambahan:
 <translation id="8371841335382565017">Tunjukkan senarai peranti untuk penghantaran</translation>
 <translation id="8371889962595521444">Sijil akar tersuai</translation>
 <translation id="8374636051559112948">Berbeza-beza</translation>
+<translation id="8377507422902936905">Pesanan</translation>
 <translation id="837840316697671463">Jika anda tidak dapat menemukan fail dalam peranti anda, cari fail tersebut pada <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Diurus oleh organisasi anda</translation>
 <translation id="8380941800586852976">Berbahaya</translation>

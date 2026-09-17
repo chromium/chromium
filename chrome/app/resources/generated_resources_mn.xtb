@@ -1350,6 +1350,7 @@
 <translation id="2026367923222947564">Бүтэн хуудас</translation>
 <translation id="2026377162111110983">Хэсгийн дуу хоолой</translation>
 <translation id="2028449514182362831">Хөдөлгөөн мэдрэгч шаардлагатай онцлогууд ажиллахгүй</translation>
+<translation id="2029064269235798707">Гарын товчлол сонгох</translation>
 <translation id="202918510990975568">Аюулгүй байдал болон нэвтрэлтийг тохируулахын тулд нууц үгээ оруулна уу</translation>
 <translation id="2030455719695904263">Мэдрэгч самбар</translation>
 <translation id="2030803782168502207">Захиалгыг төхөөрөмжөөс хасах</translation>
@@ -2283,6 +2284,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Эдгээр passkey-г зөвхөн энэ төхөөрөмж дээр хадгалсан. Тэдгээрийг таны Google Бүртгэлд хадгалаагүй.</translation>
 <translation id="2741912629735277980">Нэвтрэх дэлгэцэд UI-г харуулах</translation>
+<translation id="274229007420507506"><ph name="BEGIN_LINK" />Тохиргооноос<ph name="END_LINK" /> товчлолыг өөрчлөх</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> одоогоор боломжгүй байна.</translation>
 <translation id="2743301740238894839">Эхлүүлэх</translation>
 <translation id="2743378970365831481">Нууц үгээ Google Нууц үгний менежерт хадгалахын тулд Байршлын хэсгийн Нууц үгний менежерийн дүрс тэмдэг дээр товшино уу</translation>
@@ -2632,6 +2634,7 @@
 <translation id="3001614333383288217">{COUNT,plural, =0{Ямар ч товчийг өөрчлөөгүй}=1{Өөрчилсөн 1 товч}other{Өөрчилсөн {COUNT} товч}}</translation>
 <translation id="3002864108328203174">Gemini-н доод хүснэгтийг тал өндрөөр нээсэн.</translation>
 <translation id="3003144360685731741">Давуу эрхтэй сүлжээ</translation>
+<translation id="3003152206838282768">Chrome-д таны Gemini-тай харилцдаг аппын даалгавар дээр ажиллаж байна. Илүү олон шинэчлэлт авах бол Chrome-г шалгана уу</translation>
 <translation id="3003253259757197230">Таныг дараа ямар сайтуудад зочилж магадгүй болохыг таамаглах болон таны зочилж буй хуудасны тухай нэмэлт мэдээлэл харуулахын тулд таны зочилсон URL-уудыг Google-д илгээнэ</translation>
 <translation id="3003623123441819449">CSS кэш</translation>
 <translation id="3003967365858406397">Таны <ph name="PHONE_NAME" /> хувийн Wi-Fi холболт үүсгэнэ.</translation>
@@ -5080,6 +5083,7 @@
 <translation id="4864805589453749318">Сургуулийн бүртгэл нэмэх зөвшөөрөл олгож буй эцэг эхээ сонгоно уу.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (блоклосон)</translation>
 <translation id="486505726797718946">Хэмнэсэн санах ой</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Chrome-д таны Gemini-тай харилцдаг аппын даалгавар дээр ажиллаж байна. Илүү олон шинэчлэлт авах бол Chrome-г шалгана уу</translation>
 <translation id="486635084936119914">Татаж авсны дараа тодорхой файлын хэлбэрийг автоматаар нээх</translation>
 <translation id="4868284252360267853">Энэ харилцаг яриаг одоогоор сонгоогүй байна. Энэ харилцан яриаг сонгохын тулд Command-Shift-Option дээр дарна уу.</translation>
 <translation id="4869170227080975044">ChromeOS-н сүлжээний мэдээллийг унших</translation>
@@ -7711,6 +7715,7 @@
 <translation id="6916818963747321523">Бүгдийг дэлгэх</translation>
 <translation id="6917873303492266709">Табын бүлэг хуваалцах, нэгдэх, хамтран ажиллахын тулд тохиргоог нээж, Chrome-д нэвтрэхийг зөвшөөрөхийг асаана уу</translation>
 <translation id="6919354101107095996">Сайтад нэвтрэхээр оролдоно уу. Дараа нь дахин татна уу</translation>
+<translation id="6919461818524183254">Товчлол сонгох</translation>
 <translation id="6919952941889172531">Мөн Chrome-н энэ профайлд Сайжруулсан аюулгүй хөтчийг асаах уу?</translation>
 <translation id="6920989436227028121">Тогтмол цонхоор нээ</translation>
 <translation id="6921104647315081813">Үйл ажиллагааг устгах</translation>

@@ -1338,6 +1338,7 @@
 <translation id="2026367923222947564">На ўсю старонку</translation>
 <translation id="2026377162111110983">Галасы вакол</translation>
 <translation id="2028449514182362831">Функцыі, якім патрэбны датчыкі руху, не будуць працаваць</translation>
+<translation id="2029064269235798707">Выбраць спалучэнне клавіш</translation>
 <translation id="202918510990975568">Каб наладзіць сістэму бяспекі і працэдуру ўваходу, увядзіце пароль</translation>
 <translation id="2030455719695904263">Сэнсарная панэль</translation>
 <translation id="2030803782168502207">Выдаленне падпіскі з прылады</translation>
@@ -1429,6 +1430,7 @@
 <translation id="2111670510994270194">Новая ўкладка справа</translation>
 <translation id="2111778868023567359">Вы больш не ўбачыце групы ўкладак на гэтай старонцы</translation>
 <translation id="2112554630428445878">Вітаем, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> МБ</translation>
 <translation id="2113314491145966441">Праглядзець сертыфікаты, імпартаваныя з macOS</translation>
 <translation id="21133533946938348">Замацаваць укладку</translation>
 <translation id="2113479184312716848">Адкрыць &amp;файл...</translation>
@@ -1981,6 +1983,7 @@
 <translation id="252513908494776481">Задаць пытанне пра гэту ўкладку</translation>
 <translation id="2525746158911982776">Не ўдалося выканаць абнаўленне, бо ў сістэме недастаткова месца ў сховішчы.</translation>
 <translation id="2525842906387880861">Прапановы на гэтай старонцы больш паказвацца не будуць</translation>
+<translation id="2526346836766369775">Новая асобная &amp;укладка</translation>
 <translation id="2526590354069164005">Працоўны стол</translation>
 <translation id="2526619973349913024">Праверыць наяўнасць абнаўленняў</translation>
 <translation id="2527167509808613699">Падключэнне любога тыпу</translation>
@@ -2266,6 +2269,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Ключы доступу захоўваюцца толькі на гэтай прыладзе, а не ва Уліковым запісе Google.</translation>
 <translation id="2741912629735277980">Паказваць карыстальніцкі інтэрфейс на экране ўваходу</translation>
+<translation id="274229007420507506">Змяніць спалучэнне клавіш можна ў <ph name="BEGIN_LINK" />Наладах<ph name="END_LINK" /></translation>
 <translation id="2742373789128106053">Сэрвіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />" зараз недаступны.</translation>
 <translation id="2743301740238894839">Пачаць</translation>
 <translation id="2743378970365831481">Каб захаваць пароль у Менеджары пароляў Google, націсніце значок "Менеджар пароляў" на панэлі месцазнаходжання</translation>
@@ -2615,6 +2619,7 @@
 <translation id="3001614333383288217">{COUNT,plural, =0{Няма наладжаных клавіш}=1{1 наладжаная клавіша}one{{COUNT} наладжаная клавіша}few{{COUNT} наладжаных клавіш}many{{COUNT} наладжаных клавіш}other{{COUNT} наладжанай клавішы}}</translation>
 <translation id="3002864108328203174">Ніжні аркуш Gemini адкрыты на палову вышыні.</translation>
 <translation id="3003144360685731741">Прыярытэтныя сеткі</translation>
+<translation id="3003152206838282768">У Chrome ідзе выкананне задачы праграмы Gemini. Праверце Chrome на наяўнасць іншых абнаўленняў.</translation>
 <translation id="3003253259757197230">URL-адрасы старонак, якія вы наведваеце, адпраўляюцца ў Google, каб можна было прадказваць, якія сайты вы можаце наведаць далей, і паказваць вам дадатковую інфармацыю пра старонку, на якой вы знаходзіцеся</translation>
 <translation id="3003623123441819449">Кэш CSS</translation>
 <translation id="3003967365858406397">Ваш тэлефон <ph name="PHONE_NAME" /> створыць прыватнае падключэнне Wi-Fi.</translation>
@@ -5064,6 +5069,7 @@
 <translation id="4864805589453749318">Выберыце, хто з бацькоў дае дазвол дадаць навучальны ўліковы запіс.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (заблакіравана)</translation>
 <translation id="486505726797718946">Захавана ў памяці</translation>
+<translation id="4865526064010209178">У Chrome ідзе выкананне задачы праграмы Gemini ("<ph name="TASK_TITLE" />") Праверце Chrome на наяўнасць іншых абнаўленняў.</translation>
 <translation id="486635084936119914">Аўтаматычна адкрываць пэўныя тыпы файлаў пасля спампоўвання</translation>
 <translation id="4868284252360267853">Гэта дыялогавае акно не вылучана. Каб вылучыць яго, націсніце Command + Shift + Option + A.</translation>
 <translation id="4869170227080975044">Прагляд звестак пра сетку ChromeOS</translation>
@@ -7700,6 +7706,7 @@
 <translation id="6916818963747321523">Разгарнуць усё</translation>
 <translation id="6917873303492266709">Каб абагульваць групы ўкладак, далучацца да іх і сумесна працаваць з імі, адкрыйце налады і ўключыце параметр "Дазволіць уваход у Chrome"</translation>
 <translation id="6919354101107095996">Паспрабуйце ўвайсці на сайт, а затым спампуйце файл яшчэ раз</translation>
+<translation id="6919461818524183254">Выберыце спалучэнне клавіш</translation>
 <translation id="6919952941889172531">Уключыць Палепшаны Бяспечны прагляд для гэтага профілю Chrome?</translation>
 <translation id="6920989436227028121">Адкрыць у звычайнай укладцы</translation>
 <translation id="6921104647315081813">Выдаліць дзеянні</translation>
@@ -8538,6 +8545,7 @@
 <translation id="7578137152457315135">Налады аўтэнтыфікацыі з дапамогай адбіткаў пальцаў</translation>
 <translation id="7578692661782707876">Увядзіце код пацвярджэння.</translation>
 <translation id="757941033127302446">Уваход выкананы</translation>
+<translation id="7580311608678791180">Адкрыйце з панэлі задач Windows</translation>
 <translation id="7581462281756524039">Інструмент ачысткі</translation>
 <translation id="7582582252461552277">Прыярытэтная сетка</translation>
 <translation id="7582844466922312471">Мабільная перадача даных</translation>
@@ -8551,6 +8559,7 @@
 <translation id="7590883480672980941">Налады ўводу</translation>
 <translation id="7592060599656252486">Некаторыя знакі пунктуацыі</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (код памылкі <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Адкрыйце з панэлі меню Mac</translation>
 <translation id="7600054753482800821">Кіраваць пошукавымі сістэмамі і пошукам на сайце</translation>
 <translation id="7600218158048761260">Google Дыск адключаны для гэтага тыпу ўліковага запісу.</translation>
 <translation id="7600965453749440009">Ніколі не перакладаць з мовы: <ph name="LANGUAGE" /></translation>
@@ -9236,6 +9245,7 @@
 <translation id="8102139037507939978">Выдаліць інфармацыю, якая дазваляе ідэнтыфікаваць асобу, з файла system_logs.txt.</translation>
 <translation id="810362914482827094">Пошук ключоў доступу</translation>
 <translation id="8104088837833760645">Спампаваць профіль eSIM-карты</translation>
+<translation id="8104388155778519213">Абагульвайце змесціва экрана з Google Аб’ектывам</translation>
 <translation id="8104778744208707085">Патрабуе ўвагі</translation>
 <translation id="8105273883928376822">Увайдзіце, каб працягнуць.</translation>
 <translation id="8106114112474206597">Каб націснуць кнопку мышы, выкарыстайце "i"</translation>

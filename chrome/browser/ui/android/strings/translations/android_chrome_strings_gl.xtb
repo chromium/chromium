@@ -515,6 +515,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2996682533106928201">Toca a notificación para pechala</translation>
 <translation id="2996809686854298943">O URL é obrigatorio</translation>
 <translation id="3024215143424744261">Pecháronse as preferencias do modo de lectura</translation>
+<translation id="3024277805447899099">Mostrar vista previa da imaxe</translation>
 <translation id="3026955690410463085">Incluír ligazón</translation>
 <translation id="3027950907978057636">De <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Sen precarga</translation>
@@ -1031,6 +1032,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="504456571576643789">Cuestións que se deben ter en conta</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> ventá seleccionada}other{<ph name="WINDOW_COUNT_NORMAL" /> ventás seleccionadas}}</translation>
+<translation id="5058506215037547387">Mostrar vista previa da páxina</translation>
 <translation id="506254248375231072">Ningunha pestana</translation>
 <translation id="5075939510584558547">Gardar sen encriptación</translation>
 <translation id="5078638979202084724">Establecer todas as pestanas como marcadores</translation>
@@ -1256,6 +1258,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="604996488070107836">Produciuse un problema coa descarga de <ph name="FILE_NAME" /> debido a un erro descoñecido.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="606985262342505139">Panel inferior da pestana a altura completa</translation>
+<translation id="6070608977567243308">Comprar usando a imaxe con Google Lens</translation>
 <translation id="6071995715087444295">Para comprobar os contrasinais vulnerados, inicia sesión na túa Conta de Google</translation>
 <translation id="6078323886959318429">Engadir atallo</translation>
 <translation id="6085886413119427067">Determina como conectarse a sitios web mediante una conexión segura</translation>
@@ -1303,6 +1306,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="6232535412751077445">Se activas a opción Do Not Track, incluirase unha solicitude no teu tráfico de navegación. O efecto producido depende de se o sitio web responde á solicitude e da interpretación desta.
 
 Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche anuncios que non estean baseados noutros sitios web que visitases. Moitos sitios web seguirán recompilando e utilizando os teus datos de navegación para, por exemplo, mellorar a seguranza, fornecer contido, anuncios e recomendacións e para crear estatísticas de informes.</translation>
+<translation id="6235349850462976369">Traducir texto da imaxe con Google Lens</translation>
 <translation id="623755660902014047">Modo de lectura</translation>
 <translation id="6246073558347462570">Ventá emerxente contextual</translation>
 <translation id="6247557882553405851">Xestor de contrasinais de Google</translation>

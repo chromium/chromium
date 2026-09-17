@@ -923,7 +923,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2527451058878391043">Jou CVC is op die voorkant van jou kaart. Dis die 4-syferkode bo regs bo jou kaartnommer.</translation>
 <translation id="2529899080962247600">Hierdie veld moenie meer as <ph name="MAX_ITEMS_LIMIT" /> inskrywings hê nie. Alle verdere inskrywings sal geïgnoreer word.</translation>
 <translation id="2530042584066815841">Muisslot en -gebruik</translation>
-<translation id="253493526287553278">Sien promosiekodebesonderhede</translation>
 <translation id="2535585790302968248">Maak 'n nuwe Incognito-oortjie oop om privaat te blaai</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{en nog 1}other{en nog #}}</translation>
 <translation id="2536110899380797252">Voeg adres by</translation>
@@ -2407,7 +2406,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5052488928733955073">Kan nie jou inligting invul nie. Gaan jou verbinding na.</translation>
 <translation id="5053116470141135293">’n Virtuelekaartnommer sal ingevul word wanneer jy met hierdie kaart betaal om jou werklike besonderhede te beskerm. Bestuur in Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Maak spasie (<ph name="DISK_SPACE_SIZE" />) op jou toestel beskikbaar as jy hierdie lêer met Nabydeling wil stuur}other{Maak spasie (<ph name="DISK_SPACE_SIZE" />) op jou toestel beskikbaar as jy hierdie lêers met Nabydeling wil stuur}}</translation>
-<translation id="5056587122125565772">Skep prent</translation>
 <translation id="505757197798929356">Verskaf rede vir die oopmaak (vereis)</translation>
 <translation id="5058282932481719070">Vind meer uit oor verbeterde outovul in instellings</translation>
 <translation id="5061227663725596739">Het jy bedoel <ph name="LOOKALIKE_DOMAIN" />?</translation>

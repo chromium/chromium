@@ -923,7 +923,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2527451058878391043">De CVC-code staat voor op je kaart. Het is de 4-cijferige code rechtsboven het kaartnummer.</translation>
 <translation id="2529899080962247600">Dit veld mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> items bevatten. Alle andere items worden genegeerd.</translation>
 <translation id="2530042584066815841">Muisvergrendeling en -gebruik</translation>
-<translation id="253493526287553278">Details van promotiecode bekijken</translation>
 <translation id="2535585790302968248">Een nieuw incognitotabblad openen om privé te browsen</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{en nog 1}other{en nog #}}</translation>
 <translation id="2536110899380797252">Adres toevoegen</translation>
@@ -1426,6 +1425,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3432601291244612633">Pagina sluiten</translation>
 <translation id="3434025015623587566">Google Wachtwoordmanager heeft meer toegang nodig</translation>
 <translation id="343474037147570563">Bestanden die je uploadt of bijvoegt, worden voor analyse naar Google Cloud of derden gestuurd. Ze kunnen bijvoorbeeld worden gescand op gevoelige gegevens of malware en worden opgeslagen op basis van het bedrijfsbeleid en zichtbaar zijn voor je beheerder.</translation>
+<translation id="3435267628744367511">Druk 2 keer op Ctrl in een formulier om informatie te vinden en in te vullen zonder van tabblad te wisselen</translation>
 <translation id="3435557549311968410">Doorlopend (kort)</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
 <translation id="3436125638121079308">Relevante tabbladen automatisch delen voor betere reacties in dit gesprek?</translation>
@@ -1513,6 +1513,8 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3577473026931028326">Er is iets misgegaan. Probeer het opnieuw.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome laat je weten wanneer de pagina klaar is. &lt;a&gt;Annuleren&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Tabbladen automatisch toevoegen</translation>
+<translation id="3582670569275100909">Verzendingen</translation>
 <translation id="3582930987043644930">Voeg naam toe</translation>
 <translation id="3583757800736429874">&amp;Opnieuw verplaatsen</translation>
 <translation id="3584299510153766161">Twee perforaties onder</translation>
@@ -1587,6 +1589,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Bezig met laden...</translation>
 <translation id="3709599264800900598">Tekst die je hebt gekopieerd</translation>
+<translation id="3711223220609269738">Nieuw geïsoleerd tabblad</translation>
 <translation id="3711430313228789376">De Chrome-browser probeert wachtwoorden te tonen</translation>
 <translation id="3711895659073496551">Onderbreken</translation>
 <translation id="3712004750972384495">Schermopname opslaan</translation>
@@ -1605,6 +1608,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3727309136762649052">Naamruimte</translation>
 <translation id="3727850735097852673">Als je Google Wachtwoordmanager wilt gebruiken met macOS-sleutelhanger, herstart je Chrome en sta je sleutelhangertoegang toe. Je tabbladen worden opnieuw geopend na de herstart.</translation>
 <translation id="3728173127485570463">De Chrome-browser heeft je vingerafdruk niet meer nodig om wachtwoorden automatisch in te vullen</translation>
+<translation id="3729811201279509483">Tabbladen handmatig toevoegen</translation>
 <translation id="3736564442532774454">De Chrome-browser probeert je gevoelige informatie in te vullen in <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Je browser wordt beheerd door je beheerder.</translation>
 <translation id="3739842843727261045">Met Leuk stuur je feedback dat je deze resultaten leuk vindt</translation>
@@ -2401,7 +2405,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5052488928733955073">Er is een probleem bij het invullen van je gegevens. Check je verbinding.</translation>
 <translation id="5053116470141135293">Er wordt een virtueel kaartnummer ingevuld als u afrekent met deze kaart om uw daadwerkelijke gegevens te beschermen. Beheren in Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Als je dit bestand wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}other{Als je deze bestanden wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}}</translation>
-<translation id="5056587122125565772">Afbeelding maken</translation>
 <translation id="505757197798929356">Waarom wil je dit openen? (vereist)</translation>
 <translation id="5058282932481719070">meer informatie over verbeterd automatisch invullen in instellingen</translation>
 <translation id="5061227663725596739">Bedoelde je <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2767,6 +2770,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5649053991847567735">Automatische downloads</translation>
 <translation id="5651323159439184939">Geperforeerd</translation>
 <translation id="5653681867130739344">Identiteitskaart beveiligd updaten in Google Wallet</translation>
+<translation id="5653744563415531641">Sla je informatie op en doe sneller dingen, zoals formulieren invullen in Google-producten. Je kunt <ph name="MANAGE_WALLET_SETTINGS_LINK" /> voor <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID van geüpload crashrapport:</translation>
 <translation id="5654965123204121933">De URL bevat niet de vereiste vervangende tekenreeks <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -2890,6 +2894,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5884465125445718607">Envelop Chinees #6</translation>
 <translation id="5887400589839399685">Kaart opgeslagen</translation>
 <translation id="5887687176710214216">Laatst bezocht: gisteren</translation>
+<translation id="5887791684215121787">Druk op ⌘ ⌘ in een formulier om informatie te vinden en in te vullen zonder van tabblad te wisselen</translation>
 <translation id="5889251770650310375">Als je de geschiedenis van je andere apparaten wilt krijgen, laat je verifiëren dat jij het bent en synchroniseer je je geschiedenis en tabbladen. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
 <translation id="5895187275912066135">Verleend op</translation>
@@ -3211,6 +3216,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6410264514553301377">Geef de vervaldatum en CVC-code op voor <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Dialoogvenster voor goedkeuring van ouders</translation>
+<translation id="6413532517183895572">je Wallet-instellingen beheren</translation>
 <translation id="6415778972515849510">Chromium kan je helpen je Google-account te beschermen en je wachtwoord te wijzigen.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Zorg dat belangrijke zakelijke of persoonsgegevens extern worden opgeslagen.</translation>
@@ -3999,6 +4005,7 @@ Aanvullende informatie:
 <translation id="7758069387465995638">De verbinding is mogelijk geblokkeerd door de firewall of antivirussoftware.</translation>
 <translation id="7759147511335618829">MIDI-apparaatbediening en -herprogrammering</translation>
 <translation id="7759809451544302770">Optioneel</translation>
+<translation id="7760566304700414795">Verzending</translation>
 <translation id="776110834126722255">Beëindigd</translation>
 <translation id="7761159795823346334">Camera toestaan?</translation>
 <translation id="7761701407923456692">Het servercertificaat komt niet overeen met de URL.</translation>
@@ -4344,6 +4351,7 @@ Aanvullende informatie:
 <translation id="8371841335382565017">Apparaatlijst tonen voor casten</translation>
 <translation id="8371889962595521444">Custom rootcertificaten</translation>
 <translation id="8374636051559112948">Varieert</translation>
+<translation id="8377507422902936905">Bestellingen</translation>
 <translation id="837840316697671463">Als je een bestand niet kunt vinden op je apparaat, zoek je het in <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Beheerd door je organisatie</translation>
 <translation id="8380941800586852976">Gevaarlijk</translation>

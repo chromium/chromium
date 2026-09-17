@@ -227,6 +227,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="3112458742631356345">Chrome har blokeret denne download, fordi filen normalt ikke downloades og kan være skadelig</translation>
 <translation id="3119573284443908657">Chrome har blokeret denne download, fordi arkivfilen indeholder andre filer, der muligvis skjuler malware</translation>
 <translation id="3124332159330678621">Tilpas Chrome for at give din browser et nyt udseende</translation>
+<translation id="3125851611828811913">Søg og stil spørgsmål hvor som helst, selvom Chrome er minimeret. Tillader, at Chrome kører i baggrunden.</translation>
 <translation id="3130333203120345554">Ny søgning</translation>
 <translation id="3135560418014806498">Tilføj Chrome-profil</translation>
 <translation id="3137969841538672700">Træk for at søge</translation>
@@ -384,6 +385,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="4793679854893018356">Se, hvordan Chrome beskytter dig</translation>
 <translation id="4799870290441980300">Aktiverer yderligere funktioner for at levere Chromes stærkeste beskyttelse</translation>
 <translation id="4828579605166583682">Google Chrome forsøger at erstatte eksisterende adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
+<translation id="4836321460899997044">Chrome-profil</translation>
 <translation id="4842397268809523050">ChromeOS Flex kunne ikke synkronisere dine data, da synkronisering ikke er tilgængelig på dit domæne.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> er allerede logget ind.  Hvis du vil holde din browsing adskilt, skal du logge ind i Chrome på din egen profil som <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Tillad skærmoptagelse for Chrome under Systemindstillinger for at dele din skærm.</translation>
@@ -497,6 +499,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6014316319780893079">Med <ph name="BEGIN_LINK" />værktøjer fra Chrome<ph name="END_LINK" /> kan du søge sikkert på nettet og bevare styringen</translation>
 <translation id="6018578474045062808">Prøv Google Lens med Chrome på din telefon</translation>
 <translation id="6022659036123304283">Gør Chrome til din egen</translation>
+<translation id="6024930613143833266">Søg med Chrome hvor som helst</translation>
 <translation id="6025087594896450715">Google Chrome genstarter om <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="604424701295382420">Funktionen er fastgjort. Du kan tilgå Google Lens igen ved hjælp af den nye knap på værktøjslinjen</translation>
@@ -550,6 +553,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6434035853014503219">Tak, fordi du har valgt Chrome som din standardbrowser.</translation>
 <translation id="6438015621983209660">Udvid anvendelsen af Udvidet beskyttet browsing med Chrome på din telefon</translation>
 <translation id="6442774133615368941">Køb, oversæt og identificer det, du ser gennem dit kamera, i Chrome-appen til iOS</translation>
+<translation id="6446105560007692480">for at søge med Chrome eller tilpasse i <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /></translation>
 <translation id="6448835208126432197">Brug tastaturgenvejen til at markere en del af skærmen i Gemini i Chrome.</translation>
 <translation id="6473905796280459355">Gå til siden Om Chrome</translation>
 <translation id="6481963882741794338">Tilknyt Chrome og andre Google-tjenester med henblik på personlig tilpasning og andre formål</translation>
@@ -571,6 +575,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6612152958212564387">Du sender ikke brugsstatistik og nedbrudsrapporter til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Hold dine adgangskoder, dine bogmærker og din historik perfekt synkroniseret på alle enheder ved at angive Chrome som din standardbrowser.</translation>
 <translation id="6631524303639368205">Fortsæt, hvor du slap: Chrome har gendannet dine faner fra din seneste session. Du kan deaktivere dette i</translation>
+<translation id="6632012506031284914">for at søge med Chrome.</translation>
 <translation id="6632473616050862500">ChromeOS Flex leveres ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Ændringerne af denne indstilling anvendes, når Chrome genstartes.</translation>
 <translation id="6660596345553328257">Vil du logge ind i Chrome?</translation>
@@ -587,6 +592,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6750954913813541382">Chrome sender den tekst, du angiver i browseren, til Google for at rette stavefejl</translation>
 <translation id="6760235774835597023">Gør websites hurtigere ved hjælp af Chromes V8-maskine, men gør Chrome en smule mindre modstandsdygtig over for angreb. Denne indstilling er aktiveret.</translation>
 <translation id="677276454032249905">Vil du afslutte Chrome alligevel?</translation>
+<translation id="6777654166489463890">Stil spørgsmål om indhold uden for Chrome, f.eks. en anden app eller fil, du har åbnet</translation>
 <translation id="6794858689789885890">Slet altid websitedata fra din enhed, når du lukker Chrome</translation>
 <translation id="6800285125190089494">Log hurtigere ind på websites ved hjælp af gemte adgangskoder til Chrome i iOS</translation>
 <translation id="6831043979455480757">Oversæt</translation>
@@ -639,6 +645,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="7285990705317078173">Download Chrome på din telefon for at overvåge priser og få underretninger, når prisen falder på et website</translation>
 <translation id="7288567540154601580">Faner og udvidelser</translation>
 <translation id="7296210096911315575">Vigtige oplysninger om brug og sikkerhed</translation>
+<translation id="7299899569525778554">Søg fra computeren</translation>
 <translation id="7302361266603927550">Nogle af dine Chrome-data er endnu ikke gemt på din Google-konto. Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes disse data.</translation>
 <translation id="7306401458628386911">Begynd at browse med det samme: Chrome kan nu åbnes, når Windows starter.</translation>
 <translation id="7308322188646931570">Chrome skal have lageradgang for at downloade filer</translation>

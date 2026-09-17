@@ -1350,6 +1350,7 @@
 <translation id="2026367923222947564">Koko sivu</translation>
 <translation id="2026377162111110983">Alueen äänet</translation>
 <translation id="2028449514182362831">Liiketunnistimia edellyttävät ominaisuudet eivät enää toimi</translation>
+<translation id="2029064269235798707">Valitse pikanäppäinyhdistelmä</translation>
 <translation id="202918510990975568">Lisää salasana määrittääksesi suojauksen ja sisäänkirjautumisen</translation>
 <translation id="2030455719695904263">Ohjauslevy</translation>
 <translation id="2030803782168502207">Poista tilaus laitteelta</translation>
@@ -2281,6 +2282,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Avainkoodit tallennetaan vain tälle laitteelle. Niitä ei tallenneta Google-tilillesi.</translation>
 <translation id="2741912629735277980">Näytä käyttöliittymä kirjautumisnäytöllä</translation>
+<translation id="274229007420507506">Muuta pikanäppäinyhdistelmää <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" /></translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ei ole juuri nyt käytettävissä.</translation>
 <translation id="2743301740238894839">Aloita</translation>
 <translation id="2743378970365831481">Voit tallentaa salasanasi Google Salasanoihin käyttämällä osoitepalkin Salasanat-kuvaketta</translation>
@@ -2630,6 +2632,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3001614333383288217">{COUNT,plural, =0{Ei muokattuja näppäimiä}=1{1 muokattu näppäin}other{{COUNT} muokattua näppäintä}}</translation>
 <translation id="3002864108328203174">Geminin alapaneeli puoliksi avattuna.</translation>
 <translation id="3003144360685731741">Ensisijaiset verkot</translation>
+<translation id="3003152206838282768">Gemini-sovellustehtävää suoritetaan Chromessa. Tarkista Chromesta, onko päivityksiä saatavilla.</translation>
 <translation id="3003253259757197230">Avaamasi URL-osoitteet lähetetään Googlelle, jotta seuraavaksi mahdollisesti avaamasi sivustot voidaan ennakoida, ja sivusta voidaan näyttää lisätietoa</translation>
 <translation id="3003623123441819449">CSS-välimuisti</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> luo yksityisen Wi-Fi-yhteyden.</translation>
@@ -5076,6 +5079,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4864805589453749318">Valitse vanhempi, joka antaa luvan oppilaitostilin lisäämiseen.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (estetty)</translation>
 <translation id="486505726797718946">Muisto tallennettu</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Gemini-sovellustehtävää suoritetaan Chromessa. Tarkista Chromesta, onko päivityksiä saatavilla.</translation>
 <translation id="486635084936119914">Avaa tietyn tyyppiset tiedostot automaattisesti latauksen jälkeen.</translation>
 <translation id="4868284252360267853">Valintaikkuna ei ole tällä hetkellä kohdistettuna. Kohdista valintaikkunaan painamalla Komento Vaihto A.</translation>
 <translation id="4869170227080975044">Lukea ChromeOS:n verkkotiedot.</translation>
@@ -7707,6 +7711,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6916818963747321523">Laajenna kaikki</translation>
 <translation id="6917873303492266709">Avaa asetukset ja laita Salli Chrome-kirjautuminen päälle, jotta voit jakaa välilehtiryhmiä, liittyä niihin ja yhteiskäyttää niitä</translation>
 <translation id="6919354101107095996">Yritä kirjautua sivustolle. Lataa tiedosto sitten uudelleen</translation>
+<translation id="6919461818524183254">Valitse pikanäppäinyhdistelmä</translation>
 <translation id="6919952941889172531">Laitetaanko Parannettu selaussuoja päälle tässä Chrome-profiilissa?</translation>
 <translation id="6920989436227028121">Avaa tavallisella välilehdellä</translation>
 <translation id="6921104647315081813">Tyhjennä toiminta</translation>

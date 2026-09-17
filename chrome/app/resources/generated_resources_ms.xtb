@@ -861,6 +861,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1656528038316521561">Kelegapan latar</translation>
 <translation id="1657406563541664238">Bantu jadikan <ph name="PRODUCT_NAME" /> lebih baik dengan menghantar statistik dan laporan nahas secara automatik kepada Google</translation>
 <translation id="1657937299377480641">Untuk log masuk sekali lagi bagi mengakses sumber pendidikan, minta ibu/bapa memberi anda kebenaran</translation>
+<translation id="1657952527687824398">Fokuskan Kumpulan Tab</translation>
 <translation id="1658424621194652532">Halaman ini mengakses mikrofon anda.</translation>
 <translation id="1660405268563702784">Kemaskinian tersedia untuk <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Betulkan tab yang memperlahankan penyemak imbas anda}other{Betulkan tab yang memperlahankan penyemak imbas anda}}</translation>
@@ -2326,6 +2327,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2767077837043621282">Tidak dapat mengemas kini Chromebook anda. Sila cuba lagi nanti.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> akan dapat mengedit <ph name="FILENAME" /> sehinggalah anda menutup semua tab bagi tapak ini</translation>
 <translation id="2769174155451290427">Imej dimuat naik</translation>
+<translation id="2769715732905083104">Fokuskan kumpulan tab</translation>
 <translation id="2770082596325051055">Jeda <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Buang dari senarai</translation>
 <translation id="2770690685823456775">Eksport kata laluan anda ke folder lain</translation>
@@ -2606,6 +2608,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2984727013951557074">Fail masih disegerakkan kepada Drive.</translation>
 <translation id="2984923316661218534">Dapatkan kunci laluan anda pada peranti ini dengan Google Password Manager</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> menyahpasang apl}other{<ph name="APP_NAME" /> menyahpasang # apl}}</translation>
+<translation id="2987777176328481585">{NUM_TABS,plural, =1{Fokuskan tab}other{Fokuskan # tab}}</translation>
 <translation id="2988018669686457659">Pemapar Rizab</translation>
 <translation id="2988328607561082373">Anda tidak menggunakan semula apa-apa kata laluan</translation>
 <translation id="2989123969927553766">Pemecutan penatalan tetikus</translation>
@@ -5673,6 +5676,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5311304534597152726">Melog masuk sebagai</translation>
 <translation id="5312746996236433535">cermin skrin</translation>
 <translation id="5313967007315987356">Tambahkan tapak</translation>
+<translation id="531500736198839473">{NUM_TABS,plural, =1{Fokuskan Tab}other{Fokuskan # Tab}}</translation>
 <translation id="5315738755890845852">Tanda kurung keriting: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5317781812114905957">Arahan</translation>
@@ -6553,6 +6557,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6022659036123304283">Peribadikan Chrome anda</translation>
 <translation id="6024317249717725918">&amp;Cari Bingkai Video dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Pengesanan Susunan</translation>
+<translation id="6026436621921471553">Nyahfokus Kumpulan Tab</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - Peranti USB disambungkan</translation>
 <translation id="6027143200498653403">Apabila anda bertanya soalan tentang sejarah anda, anda boleh mendapatkan jawapan tentang maklumat tertentu daripada halaman yang anda lawati</translation>
 <translation id="6027945736510816438">Adakah anda maksudkan <ph name="WEBSITE" />?</translation>
@@ -7021,6 +7026,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6399675241776343019">Ditolak</translation>
 <translation id="6399774419735315745">Perisik</translation>
 <translation id="6400360390396538896">Sentiasa hidupkan <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">Nyahfokus kumpulan tab</translation>
 <translation id="6401118106417399952">EID peranti anda ialah <ph name="EID_NUMBER" /> dan nombor siri peranti ialah <ph name="SERIAL_NUMBER" />. Nombor ini boleh digunakan untuk mengaktifkan perkhidmatan.</translation>
 <translation id="6401458660421980302">Untuk menghantar tab ini ke peranti lain, log masuk ke Chrome pada peranti tersebut</translation>
 <translation id="6402042774506839496">Untuk mengetahui sebab, hubungi pembangun apl</translation>

@@ -40,6 +40,7 @@ Megjegyzések:
 <translation id="1580570086594302477">Megnyitja a Chrome egy új inkognitó lapját.</translation>
 <translation id="1605168141396675642">Nem kell a másolással foglalkoznia. A linkeket közvetlenül a Chrome-ban nyithatja meg.</translation>
 <translation id="1646463005043273333">Megnyitja a Chrome beállításait a Chrome alapértelmezett böngészőként való beállításához.</translation>
+<translation id="1665695109862533986">Állítsa be a Chrome-ot alapértelmezett böngészőként, hogy egyetlen koppintással nyithassa meg a linkeket</translation>
 <translation id="1668930590094369898">A Chrome használata alapértelmezettként</translation>
 <translation id="1670609221633730681">Chrome-tipp: Válassza ki a címsáv helyét</translation>
 <translation id="1683863426423719967">Ha lapokra vonatkozó emlékeztetőket szeretne kapni a Chrome-tól, kapcsolja be az értesítéseket az iOS beállításaiban.</translation>
@@ -149,6 +150,7 @@ Megjegyzések:
 <translation id="4523886039239821078">Bizonyos bővítmények a Chrome összeomlását eredményezik. Távolítsa el a következő(ke)t:</translation>
 <translation id="4568024439284012497">Gyorsabban hozzáférhet a Chrome-hoz az iPhone főképernyőjéről.</translation>
 <translation id="4574806550936185355">Kapcsolja be az „Inkognitó lapok zárolása a Chrome bezárásakor” beállítást.</translation>
+<translation id="457825396414281646">Tegye a Chrome-ot alapértelmezett böngészővé, hogy egyetlen koppintással nyithassa meg a linkeket.</translation>
 <translation id="4633328489441962921">A Chrome nem tud frissítéseket keresni</translation>
 <translation id="4636900170638246267">Jelentkezzen be erre a webhelyre és a Chrome-ba.</translation>
 <translation id="4647910807533196601">A legutóbbi lap megnyitása a Chrome-ban.</translation>
@@ -357,6 +359,7 @@ Adatai titkosítva lettek összetett jelszavával a következő időpontban: <ph
 <translation id="8610372330814566250">Használhatja a Safari jelszavait, előzményeit, könyvjelzőit és bankkártyáit a Chrome-ban</translation>
 <translation id="8630122478628016441">Kapcsolja be az „Inkognitó lapok zárolása a Chrome bezárásakor” beállítást.</translation>
 <translation id="8673726683583791503">Vásárlás a Google Lens segítségével</translation>
+<translation id="869525545193934083">Teljes képernyős videó arról, hogyan állítható be a Chrome alapértelmezettként: Nyissa meg a Chrome beállításait iOS rendszeren, koppintson az „Alapértelmezett böngésző” elemre, és válassza ki a Chrome-ot.</translation>
 <translation id="8765470054473112089">Amikor Ön beír valamit a címsávba vagy a keresőmezőbe, a Chrome a beírt szöveget elküldi az alapértelmezett keresőmotornak, hogy jobb javaslatokat biztosítson. Inkognitóban ki van kapcsolva ez a funkció.</translation>
 <translation id="8772179140489533211">Értesítéseket jelenít meg a Chrome-ba való bejelentkezéshez</translation>
 <translation id="8788269841521769222">Nem kell emlékeznie erre a jelszóra. Elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>

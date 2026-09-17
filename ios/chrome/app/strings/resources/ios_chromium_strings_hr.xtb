@@ -142,6 +142,7 @@ Pokušajte pričekati nekoliko minuta prije prebacivanja na drugi račun. Ako sa
 <translation id="3855938650519180865">Novosti u Chromiumu</translation>
 <translation id="3886689467633467988">Prijavite se na ovu web-lokaciju i Chromium kako biste imali pristup svojim oznakama i još toga na svim svojim uređajima.</translation>
 <translation id="3949514465204582407">Savjet za Chromium: dohvatite svoje zaporke u bilo kojoj aplikaciji</translation>
+<translation id="3983298990898629929">Postavite Chromium kao zadani preglednik da biste veze otvorili jednim dodirom</translation>
 <translation id="4005283307739974863">Otvara i pokreće sigurnosnu provjeru u Chromiumu.</translation>
 <translation id="4043291146360695975">Zaporke se spremaju u Upravitelj zaporki samo na ovom uređaju.</translation>
 <translation id="4046625794029820944">Prestanite kopirati URL-ove. Postavite Chromium kao zadani preglednik da biste izravno učitali stranice.</translation>
@@ -273,6 +274,7 @@ Važne napomene:
 <translation id="6680609900732453726">Zaštitite privatnost pregledavanja autentifikacijom uređaja kad zatvorite Chromium</translation>
 <translation id="6696512128741076907">Postavite Chromium kao zadani preglednik da biste odmah otvorili veze iz drugih aplikacija.</translation>
 <translation id="6752854822223394465">Vaša organizacija postavlja Chromium...</translation>
+<translation id="6777348401413221846">Videozapis na cijelom zaslonu s uputama za postavljanje Chromiuma kao zadanog preglednika: otvorite postavke Chromiuma na iOS-u, dodirnite opciju Zadana aplikacija preglednika i odaberite Chromium.</translation>
 <translation id="6794054469102824109">Otvara igru Dinosaur na Chromiumu.</translation>
 <translation id="6820823224820483452">Chromium nije uspio provjeriti sve zaporke. Pokušajte ponovo sutra.</translation>
 <translation id="6830782797004194206">Brže se prijavite uz automatsko popunjavanje u Chromiumu</translation>
@@ -302,6 +304,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Zaporka će se spremiti u Upravitelj zaporki za <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Ovaj pristupni ključ spremit će se u Upravitelj zaporki za račun <ph name="USER_EMAIL" /></translation>
+<translation id="7453822113116681031">Postavite Chromium kao zadani preglednik da biste veze otvorili jednim dodirom</translation>
 <translation id="7504829997542308412">Otvorite Chromium</translation>
 <translation id="7531461704633548377">S Chromiuma</translation>
 <translation id="7554983317097061001">Savjet za Chromium: premjestite Chromium na donju traku</translation>

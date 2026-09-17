@@ -146,6 +146,7 @@
 <translation id="2575822587468774919">'इमेज सर्च' सुविधा की मदद से जानकारी खोजने के लिए, कोई भी एलिमेंट चुनें</translation>
 <translation id="2576118232315942160">अपने सभी डिवाइसों से पासवर्ड वगैरह ऐक्सेस करने के लिए, Chromium में साइन इन करें</translation>
 <translation id="2587622539943955767">Chromium डाउनलोड करने और अपने Google खाते में साइन इन करने के लिए, अपने फ़ोन से क्यूआर कोड को स्कैन करें.</translation>
+<translation id="2587885422541096572">Chromium की मदद से खोजने के लिए.</translation>
 <translation id="2592940277904433508">Chromium को इस्तेमाल करना जारी रखें</translation>
 <translation id="259935314519650377">डाउनलोड किए गए इंस्टॉलर को कैश मेमोरी में सेव नहीं किया जा सका. गड़बड़ी: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
@@ -778,6 +779,7 @@
 <translation id="897581876605952338">Chromium Enterprise का लोगो</translation>
 <translation id="8980139959902937527">अपने <ph name="DEVICE_TYPE" /> पर Chromium ऐप्लिकेशन की मदद से कभी भी, कहीं भी Google की सुरक्षा सुविधाओं का इस्तेमाल करें</translation>
 <translation id="8981150672034878610">Chromium को शुरू नहीं किया जा सका, क्योंकि आपकी प्रोफ़ाइल खोलते समय कोई गड़बड़ी हुई. Chromium को रीस्टार्ट करके देखें.</translation>
+<translation id="8981886272598860786">Chromium की मदद से खोजने या <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> में जाकर, पसंद के मुताबिक बनाने के लिए</translation>
 <translation id="8988036198400390003">Chromium की प्रोफ़ाइलें मैनेज करें</translation>
 <translation id="8993855408334954620">'Chromium में Gemini' और खुले हुए टैब के बीच स्विच करने के लिए, कीबोर्ड का इस्तेमाल करें.</translation>
 <translation id="9018218886431812662">इंस्टॉल हो गया है</translation>

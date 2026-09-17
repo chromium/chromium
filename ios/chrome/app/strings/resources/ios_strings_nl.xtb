@@ -268,6 +268,7 @@
 <translation id="17906873777101817">Aanbieden om wachtwoorden en toegangssleutels op te slaan</translation>
 <translation id="1794893174442046596">Tabbladgroep</translation>
 <translation id="1807893857950749072">Meldingen voor prijs volgen toestaan…</translation>
+<translation id="1808142805674973090">Modi wisselen</translation>
 <translation id="1809929083618343438">Hiermee verwijder je geselecteerde informatie uit Chrome, maar wordt deze informatie niet uit je Google-account verwijderd.</translation>
 <translation id="1810976980198522421">Annuleren</translation>
 <translation id="1815941218935345331">Toegangscode</translation>
@@ -609,6 +610,7 @@
 <translation id="2902312830803030883">Meer acties</translation>
 <translation id="2904788871580817212">Prijsdaling op je geopende tabblad, van <ph name="PREVIOUS_PRICE" /> naar <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Je hebt <ph name="NUMBER_OF_PASSWORDS" /> hergebruikte wachtwoorden die een beveiligingsrisico kunnen vormen.</translation>
+<translation id="2916433579958049718">Breng de intelligentie van Gemini naar elke link</translation>
 <translation id="291754862089661335">Positioneer de QR-/streepjescode binnen dit kader</translation>
 <translation id="2918688092312652908">Markeren als ongelezen</translation>
 <translation id="2922210239002704889">Ga naar je homepage of toetsenbord</translation>
@@ -849,6 +851,7 @@
 <translation id="3779810277399252432">Geen internetverbinding.</translation>
 <translation id="3782614601387961027">Waarschuwing sluiten</translation>
 <translation id="3789841737615482174">Installeren</translation>
+<translation id="3793603310364129123">Minder stappen, snellere links</translation>
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803696231112616155">Aanbieden om deze site te vertalen</translation>
 <translation id="3810973564298564668">Beheren</translation>
@@ -1380,6 +1383,7 @@
 <translation id="5467163657366219870">Previews van Maps uitzetten</translation>
 <translation id="5474397204728336997">Onder andere gezinswachtwoorden en nieuwe aanpassingsopties. Tik voor meer informatie.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Geen wachtwoord geïmporteerd}=1{{count} wachtwoord geïmporteerd}other{{count} wachtwoorden geïmporteerd}}</translation>
+<translation id="5477188385487393357">Sla kopiëren en plakken over</translation>
 <translation id="5478327362747197944">Maak rechtstreeks Agenda-afspraken door op een datum op een webpagina te klikken.</translation>
 <translation id="5482922178977937393">Wil je meldingen krijgen voor onder andere nieuws en sport op basis van je interesses?</translation>
 <translation id="5483838506518938965">Je bent helemaal klaar</translation>
@@ -1746,6 +1750,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6585618849026997638">Je kunt terugkeren naar een pagina die belangrijk voor je is door een bookmark toe te voegen</translation>
 <translation id="6589001036857939353">Duplicaten samenvoegen</translation>
 <translation id="659407965921887085">Deze kaart toont prijsdalingen op het web voor producten die je op dit moment volgt</translation>
+<translation id="6596324345367949437">Gemini is niet beschikbaar in de incognitomodus</translation>
 <translation id="6596481460663245319">Afbeelding zoeken met Google</translation>
 <translation id="6601302169302852717">Afbeelding in Google Foto's opgeslagen voor <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Automatisch invullen en wachtwoorden</translation>

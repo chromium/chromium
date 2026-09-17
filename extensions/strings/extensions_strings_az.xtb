@@ -24,6 +24,7 @@
 <translation id="1757786065507923842">Valideyn icazəsi sorğusu alınmadı.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' arxa fon səhifəsini yükləmək alınmadı.</translation>
 <translation id="1875387611427697908">Bu, yalnız <ph name="CHROME_WEB_STORE" /> ünvanından əlavə edilə bilər</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (artırma ID-si "<ph name="EXTENSION_ID" />") aşağı etibarlı mühitlərdə siyasət tərəfindən quraşdırıla bilməz.</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" tərəfindən icazə verilmədiyi üçün "<ph name="APP_NAME" />" quraşdırıla bilməz</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" əlavə edilsin?</translation>
 <translation id="2159915644201199628">Təsviri deşifrələmək olmadı: '<ph name="IMAGE_NAME" />'</translation>

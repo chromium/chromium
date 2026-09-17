@@ -923,7 +923,6 @@
 <translation id="2527451058878391043">CVC коды картаңыздың алдыңғы жағында. Бұл – карта нөмірінің жоғарғы оң жағындағы 4 цифрлық код.</translation>
 <translation id="2529899080962247600">Бұл өрістегі жазбалардың максималды саны: <ph name="MAX_ITEMS_LIMIT" />. Қалған жазбалар еленбейтін болады.</translation>
 <translation id="2530042584066815841">Тінтуірді құлыптап пайдалану</translation>
-<translation id="253493526287553278">Промокод туралы мәліметтерді көру</translation>
 <translation id="2535585790302968248">Құпия шарлау үшін жаңа инкогнито қойындысын ашыңыз.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{және тағы 1}other{және тағы #}}</translation>
 <translation id="2536110899380797252">Мекенжай енгізу</translation>
@@ -2406,7 +2405,6 @@
 <translation id="5052488928733955073">Ақпаратыңызды толтыру кезінде қате шықты. Байланысты тексеріңіз.</translation>
 <translation id="5053116470141135293">Нақты мәліметтеріңізді қорғау үшін осы картамен төлеу кезінде виртуалдық карта нөмірі толтырылады. Google Wallet-те реттеңіз. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Бұл файлды Nearby Share арқылы жіберу үшін құрылғыңыздан орын (<ph name="DISK_SPACE_SIZE" />) босатыңыз.}other{Бұл файлдарды Nearby Share арқылы жіберу үшін құрылғыңыздан орын (<ph name="DISK_SPACE_SIZE" />) босатыңыз.}}</translation>
-<translation id="5056587122125565772">Сурет жасау</translation>
 <translation id="505757197798929356">Ашу себебін көрсетіңіз (міндетті)</translation>
 <translation id="5058282932481719070">параметрлердегі дұрысталған автотолтыру функциясы туралы толық ақпарат</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> деп жазғыңыз келді ме?</translation>

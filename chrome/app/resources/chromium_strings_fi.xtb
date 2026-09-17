@@ -147,6 +147,7 @@
 <translation id="2575822587468774919">Valitse, mitä haluat hakea kuvahaulla</translation>
 <translation id="2576118232315942160">Kirjaudu sisään Chromiumiin, niin voit käyttää salasanojasi ja muita tietoja kaikilla laitteillasi</translation>
 <translation id="2587622539943955767">Skannaa QR-koodi puhelimella, niin voit ladata Chromiumin ja kirjautua Google-tilillesi.</translation>
+<translation id="2587885422541096572">hakeaksesi Chromiumilla.</translation>
 <translation id="2592940277904433508">Jatka Chromiumin käyttöä</translation>
 <translation id="259935314519650377">Ladatun asennusohjelman siirtäminen välimuistiin epäonnistui. Virhe: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
@@ -774,6 +775,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="897581876605952338">Chromium Enterprise ‑logo</translation>
 <translation id="8980139959902937527">Chromium-sovelluksella saat Googlen turvallisuuden mukaan minne tahansa laitteellasi (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="8981150672034878610">Chromiumia ei voi käynnistää, koska jotain meni pieleen profiilia avattaessa. Kokeile käynnistää Chromium uudelleen.</translation>
+<translation id="8981886272598860786">hakeaksesi Chromiumilla tai muokataksesi <ph name="BEGIN_LINK" />asetuksissa<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Ylläpidä Chromium-profiileja</translation>
 <translation id="8993855408334954620">Siirry näppäimistöllä Gemini in Chromiumin ja avoimen välilehden välillä.</translation>
 <translation id="9018218886431812662">Asennus valmis</translation>

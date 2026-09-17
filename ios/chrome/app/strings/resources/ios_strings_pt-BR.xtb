@@ -268,6 +268,7 @@
 <translation id="17906873777101817">Oferecer para salvar senhas e chaves de acesso</translation>
 <translation id="1794893174442046596">Grupo de guias</translation>
 <translation id="1807893857950749072">Permitir notificações de monitoramento de preços…</translation>
+<translation id="1808142805674973090">Trocar de modo</translation>
 <translation id="1809929083618343438">Essa ação remove as informações selecionadas do Chrome, mas não as exclui da sua Conta do Google.</translation>
 <translation id="1810976980198522421">Cancelar</translation>
 <translation id="1815941218935345331">Senha</translation>
@@ -849,6 +850,7 @@
 <translation id="3779810277399252432">Sem conexão com a Internet.</translation>
 <translation id="3782614601387961027">Dispensar aviso</translation>
 <translation id="3789841737615482174">Instalar</translation>
+<translation id="3793603310364129123">Links mais rápidos em menos etapas</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Oferecer a opção de traduzir esse site</translation>
 <translation id="3810973564298564668">Gerenciar</translation>
@@ -1380,6 +1382,7 @@
 <translation id="5467163657366219870">Desativar Maps Previews</translation>
 <translation id="5474397204728336997">Senhas da família, novas personalizações e muito mais. Toque para saber mais.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Nenhuma senha foi importada}=1{{count} senha importada}one{{count} senha importada}other{{count} senhas importadas}}</translation>
+<translation id="5477188385487393357">Pule a etapa de copiar e colar</translation>
 <translation id="5478327362747197944">Crie eventos do Google Agenda clicando em uma data em uma página da Web.</translation>
 <translation id="5482922178977937393">Quer receber notificações de notícias, esportes e muito mais com base nos seus interesses?</translation>
 <translation id="5483838506518938965">Está tudo pronto</translation>
@@ -1746,6 +1749,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6585618849026997638">Adicione uma página importante aos favoritos para acessá-la com facilidade</translation>
 <translation id="6589001036857939353">Juntar credenciais duplicadas</translation>
 <translation id="659407965921887085">Este card mostra reduções de preço na Web para produtos que você está monitorando</translation>
+<translation id="6596324345367949437">O Gemini não está disponível no modo de navegação anônima</translation>
 <translation id="6596481460663245319">Pesquisar imagem com o Google</translation>
 <translation id="6601302169302852717">Imagem salva no Google Fotos de <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Preenc. automático e senhas</translation>
@@ -2599,7 +2603,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="956066588046842680">A política da sua organização não permite a importação desses dados.</translation>
 <translation id="956218893102219091">Use sua localização exata para ter resultados mais precisos no Gemini, em vez de uma localização aproximada com base no seu endereço IP. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="960590623979248167">Mostrar hiperlinks</translation>
-<translation id="961856697154696964">Excluir dados</translation>
+<translation id="961856697154696964">Excluir dados de navegação</translation>
 <translation id="963102227019621224">Atividade na Web e de apps</translation>
 <translation id="965259330007686240">Crie uma imagem com o Gemini</translation>
 <translation id="965879457362663186">Adicionar anexo</translation>

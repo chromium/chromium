@@ -923,7 +923,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2527451058878391043">CVCa txartelaren aurrealdean dago. Txartel-zenbakiaren gainean, eskuinaldean dagoen lau digituko kodea da.</translation>
 <translation id="2529899080962247600">Eremu honek ez lituzke <ph name="MAX_ITEMS_LIMIT" /> sarrera baino gehiago izan behar. Sarrera gehiagorik badago, ez ikusi egingo zaie.</translation>
 <translation id="2530042584066815841">Saguaren blokeoa eta erabilera</translation>
-<translation id="253493526287553278">Ikusi promozio-kodearen xehetasunak</translation>
 <translation id="2535585790302968248">Modu pribatuan arakatzeko, ireki ezkutuko moduko fitxa bat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{eta beste bat}other{eta beste #}}</translation>
 <translation id="2536110899380797252">Gehitu helbidea</translation>
@@ -2403,7 +2402,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5052488928733955073">Ezin da egiaztatu zure informazioa. Egiaztatu konektatuta zaudela.</translation>
 <translation id="5053116470141135293">Txartel honekin ordaintzen duzunean, txartel birtualaren zenbaki bat beteko da, zure benetako xehetasunak babesteko. Kudeatu Google Diru-zorroa zerbitzuan. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Fitxategia Nearby Share bidez bidaltzeko, egin tokia (<ph name="DISK_SPACE_SIZE" />) gailuan}other{Fitxategiak Nearby Share bidez bidaltzeko, egin tokia (<ph name="DISK_SPACE_SIZE" />) gailuan}}</translation>
-<translation id="5056587122125565772">Sortu irudi bat</translation>
 <translation id="505757197798929356">Irekitzeko arrazoia (beharrezkoa)</translation>
 <translation id="5058282932481719070">lortu betetze automatiko hobetuari buruzko informazio gehiago ezarpenetan</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> esan nahi al zenuen?</translation>

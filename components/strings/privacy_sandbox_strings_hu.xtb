@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1184166532603925201">Inkognitó módban a Chrome megakadályozza a webhelyek számára, hogy harmadik féltől származó cookie-kat használjanak.</translation>
+<translation id="1365023215312302966">A webhelyek nem használhatnak harmadik féltől származó cookie-kat tartalmak és hirdetések személyre szabásához, valamint az Ön más webhelyeken végzett tevékenységeinek megismeréséhez.</translation>
 <translation id="1569440020357229235">Inkognitó módban a webhelyek nem használhatnak harmadik féltől származó cookie-kat. Ha nem működik egy olyan webhely, amely ezekre a cookie-kra támaszkodik, <ph name="BEGIN_LINK" />megpróbálhat ideiglenes hozzáférést adni a webhelynek a harmadik féltől származó cookie-khoz<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően.</translation>
 <translation id="2183376768278472507">Ha egy webhely nem a vártnak megfelelően működik, megpróbálhatja engedélyezni a harmadik féltől származó cookie-kat az adott felkeresett webhelyen.</translation>
 <translation id="2235344399760031203">A harmadik felektől származó cookie-k le vannak tiltva</translation>
+<translation id="2360633687155619995">A webhelyek használhatnak harmadik féltől származó cookie-kat tartalmak és hirdetések személyre szabásához, valamint az Ön más webhelyeken végzett tevékenységeinek megismeréséhez. Előfordulhat, hogy egyes webhelyfunkciók nem a várt módon működnek.</translation>
 <translation id="2496115946829713659">A webhelyek használhatnak harmadik féltől származó cookie-kat tartalmak és hirdetések személyre szabásához, valamint az Ön más webhelyeken végzett tevékenységeinek megismeréséhez.</translation>
 <translation id="3045333309254072201">Inkognitó módban a webhelyek nem használhatnak harmadik féltől származó cookie-kat. Ha nem működik egy olyan webhely, amely ezekre a cookie-kra támaszkodik, <ph name="START_LINK" />megpróbálhat ideiglenes hozzáférést adni a webhelynek a harmadik féltől származó cookie-khoz<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">A harmadik féltől származó cookie-kra támaszkodó webhelyek a várt módon fognak működni.</translation>

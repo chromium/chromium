@@ -923,7 +923,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2527451058878391043">Der CVC befindet sich auf der Vorderseite deiner Karte. Er ist der vierstellige Code rechts oben über der Kartennummer.</translation>
 <translation id="2529899080962247600">Dieses Feld sollte nicht mehr als <ph name="MAX_ITEMS_LIMIT" /> Einträge enthalten. Alle weiteren Einträge werden ignoriert.</translation>
 <translation id="2530042584066815841">Maussperre und ‑nutzung</translation>
-<translation id="253493526287553278">Details zu Gutscheincode ansehen</translation>
 <translation id="2535585790302968248">Einen neuen Inkognitotab öffnen, um privat zu surfen</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{und 1 weitere}other{und # weitere}}</translation>
 <translation id="2536110899380797252">Adresse hinzufügen</translation>
@@ -1429,6 +1428,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3432601291244612633">Seite schließen</translation>
 <translation id="3434025015623587566">Der Google Passwortmanager benötigt einen umfassenderen Zugriff</translation>
 <translation id="343474037147570563">Dateien, die du hochlädst oder anhängst, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie können beispielsweise auf sensible Daten oder Malware geprüft und gemäß Unternehmensrichtlinien gespeichert und für deinen Administrator sichtbar sein.</translation>
+<translation id="3435267628744367511">In einem beliebigen Formular zweimal die Strg-Taste drücken, um Informationen abzurufen und einzufügen, ohne den Tab zu wechseln</translation>
 <translation id="3435557549311968410">Endlos (kurz)</translation>
 <translation id="3435738964857648380">Sicherheit</translation>
 <translation id="3436125638121079308">Relevante Tabs automatisch teilen, um bessere Antworten in diesem Thread zu erhalten?</translation>
@@ -1516,6 +1516,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3577473026931028326">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome informiert dich, wenn diese Seite bereit ist. &lt;a&gt;Abbrechen&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Tabs automatisch hinzufügen</translation>
 <translation id="3582930987043644930">Namen hinzufügen</translation>
 <translation id="3583757800736429874">&amp;Verschieben wiederholen</translation>
 <translation id="3584299510153766161">Doppelte Lochung unten</translation>
@@ -1590,6 +1591,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Wird geladen...</translation>
 <translation id="3709599264800900598">Von dir kopierter Text</translation>
+<translation id="3711223220609269738">Neuer isolierter Tab</translation>
 <translation id="3711430313228789376">Der Chrome-Browser versucht, Passwörter anzuzeigen</translation>
 <translation id="3711895659073496551">Suspend-Modus</translation>
 <translation id="3712004750972384495">Bildschirmaufzeichnung wird gespeichert</translation>
@@ -1608,6 +1610,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">Wenn du den Google Passwortmanager mit dem macOS-Schlüsselbund verwenden möchtest, starte Chrome neu und erlaube den Zugriff auf den Schlüsselbund. Deine Tabs werden nach dem Neustart wieder geöffnet.</translation>
 <translation id="3728173127485570463">Der Chrome-Browser benötigt deinen Fingerabdruck nicht mehr, um Passwörter automatisch einzufügen</translation>
+<translation id="3729811201279509483">Tabs manuell hinzufügen</translation>
 <translation id="3736564442532774454">Der Chrome-Browser versucht, deine vertraulichen Daten auf <ph name="APP_NAME" /> auszufüllen.</translation>
 <translation id="3738166223076830879">Dein Browser wird von deinem Administrator verwaltet.</translation>
 <translation id="3739842843727261045">Mit „Mag ich“ gibst du an, dass dir diese Ergebnisse gefallen.</translation>
@@ -2405,7 +2408,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5052488928733955073">Deine Informationen können nicht eingegeben werden. Überprüfe deine Verbindung.</translation>
 <translation id="5053116470141135293">Beim Bezahlen mit dieser Karte wird eine virtuelle Kartennummer eingegeben, um deine tatsächlichen Kartendetails zu schützen. Du kannst diese Einstellung in Google Wallet verwalten. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Damit du diese Datei mit Nearby Share senden kannst, musst du auf deinem Gerät Speicherplatz (<ph name="DISK_SPACE_SIZE" />) freigeben}other{Damit du diese Dateien mit Nearby Share senden kannst, musst du auf deinem Gerät Speicherplatz (<ph name="DISK_SPACE_SIZE" />) freigeben}}</translation>
-<translation id="5056587122125565772">Bild erstellen</translation>
 <translation id="505757197798929356">Gib den Grund für das Öffnen an (erforderlich)</translation>
 <translation id="5058282932481719070">weitere Informationen zu erweitertem Autofill in den Einstellungen erhalten</translation>
 <translation id="5061227663725596739">Meintest du <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2771,6 +2773,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5649053991847567735">Automatische Downloads</translation>
 <translation id="5651323159439184939">Endlosdruck</translation>
 <translation id="5653681867130739344">Amtlichen Ausweis sicher in Google Wallet aktualisieren</translation>
+<translation id="5653744563415531641">Wenn du deine Daten speicherst, lassen sich viele Dinge schneller erledigen, z. B. das Ausfüllen von Formularen in Google-Produkten. Du kannst für <ph name="ACCOUNT" /> <ph name="MANAGE_WALLET_SETTINGS_LINK" />.</translation>
 <translation id="5654927323611874862">ID für hochgeladenen Absturzbericht:</translation>
 <translation id="5654965123204121933">Die URL enthält nicht den erforderlichen Ersatzstring „<ph name="SEARCH_TERMS_REPLACEMENT" />“: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-Mail</translation>
@@ -2894,6 +2897,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5884465125445718607">Umschlag Chinesisch Nr. 6</translation>
 <translation id="5887400589839399685">Karte gespeichert</translation>
 <translation id="5887687176710214216">Gestern zuletzt besucht</translation>
+<translation id="5887791684215121787">In einem beliebigen Formular ⌘ ⌘ drücken, um Informationen abzurufen und einzufügen, ohne den Tab zu wechseln</translation>
 <translation id="5889251770650310375">Wenn du deinen Verlauf von deinen anderen Geräten abrufen möchtest, bestätige deine Identität und synchronisiere dann deinen Verlauf und deine Tabs. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5895187275912066135">Ausgestellt am</translation>
@@ -3216,6 +3220,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6410264514553301377">Ablaufdatum und CVC für <ph name="CREDIT_CARD" /> eingeben</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Dialogfeld für die Genehmigung auf der übergeordneten Website</translation>
+<translation id="6413532517183895572">Wallet-Einstellungen verwalten</translation>
 <translation id="6415778972515849510">Mithilfe von Chromium kannst du dein Google-Konto schützen und dein Passwort ändern.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Achte darauf, dass alle wichtigen geschäftlichen oder privaten Daten extern gespeichert sind.</translation>

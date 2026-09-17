@@ -923,7 +923,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2527451058878391043">O CVC está na parte dianteira da tarxeta. É un código de 4 díxitos que está no recanto superior dereito, enriba do número da tarxeta.</translation>
 <translation id="2529899080962247600">Este campo non debe ter máis de <ph name="MAX_ITEMS_LIMIT" /> entradas. Unha vez alcanzada esa cantidade, ignoraranse as demais entradas.</translation>
 <translation id="2530042584066815841">Bloqueo e uso do rato</translation>
-<translation id="253493526287553278">Ver detalles do código promocional</translation>
 <translation id="2535585790302968248">Abrir unha nova pestana do modo de incógnito para navegar de forma privada</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e 1 máis}other{e # máis}}</translation>
 <translation id="2536110899380797252">Engadir enderezo</translation>
@@ -1518,6 +1517,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3577473026931028326">Produciuse un erro. Téntao de novo.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome permitirache saber cando está lista esta páxina. &lt;a&gt;Cancelar&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Engadir as pestanas automaticamente</translation>
 <translation id="3582930987043644930">Engadir nome</translation>
 <translation id="3583757800736429874">&amp;Refacer movemento</translation>
 <translation id="3584299510153766161">Dúas perforacións na parte inferior</translation>
@@ -1593,6 +1593,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> (<ph name="RESULT_PRODUCT_SOURCE" />)</translation>
 <translation id="370665806235115550">Cargando...</translation>
 <translation id="3709599264800900598">Texto que copiaches</translation>
+<translation id="3711223220609269738">Nova pestana illada</translation>
 <translation id="3711430313228789376">O navegador Chrome está intentando mostrar os contrasinais</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3712004750972384495">Gardando gravación de pantalla</translation>
@@ -1611,6 +1612,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3727309136762649052">Espazo do nome</translation>
 <translation id="3727850735097852673">Para poder usar o xestor de contrasinais de Google con Keychain de macOS, reinicia Chrome e dálle acceso a Keychain. Despois do reinicio volverán abrirse as pestanas.</translation>
 <translation id="3728173127485570463">O navegador Chrome xa non necesitará a túa impresión dixital para autocompletar os contrasinais</translation>
+<translation id="3729811201279509483">Engadir as pestanas manualmente</translation>
 <translation id="3736564442532774454">O navegador Chrome está tentando completar a túa información confidencial en <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">O teu administrador xestiona o teu navegador.</translation>
 <translation id="3739842843727261045">Coa opción Gústame indicas que che gustan estes resultados</translation>
@@ -2408,7 +2410,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5052488928733955073">Produciuse un problema ao completar a túa información. Comproba a conexión.</translation>
 <translation id="5053116470141135293">Cando pagues con esta tarxeta, introducirase un número de tarxeta virtual para protexer os teus datos reais. Xestiona esta opción en Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}other{Para enviar estes ficheiros usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}}</translation>
-<translation id="5056587122125565772">Crear imaxe</translation>
 <translation id="505757197798929356">Indica o motivo polo que queres abrir o ficheiro (obrigatorio)</translation>
 <translation id="5058282932481719070">máis información sobre a función de autocompletar mellorada en Configuración</translation>
 <translation id="5061227663725596739">Querías dicir "<ph name="LOOKALIKE_DOMAIN" />"?</translation>
@@ -2774,6 +2775,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5649053991847567735">Descargas automáticas</translation>
 <translation id="5651323159439184939">Avance por tracción</translation>
 <translation id="5653681867130739344">Actualiza o documento de identidade en Google Wallet</translation>
+<translation id="5653744563415531641">Garda a túa información e realiza tarefas máis rápido, como completar formularios nos produtos de Google. Podes <ph name="MANAGE_WALLET_SETTINGS_LINK" /> para <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Código do informe de fallos cargado:</translation>
 <translation id="5654965123204121933">O URL non inclúe a cadea de substitución necesaria <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Correo electrónico</translation>
@@ -3220,6 +3222,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6410264514553301377">Introduce a data de caducidade e o código CVC da tarxeta <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Cadro de diálogo de aprobación parental</translation>
+<translation id="6413532517183895572">xestionar a configuración de Wallet</translation>
 <translation id="6415778972515849510">Chromium pode axudarche a protexer a túa Conta de Google e a cambiar o teu contrasinal.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Se tes algún dato persoal ou empresarial importante, asegúrate de gardalo externamente.</translation>

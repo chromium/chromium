@@ -338,6 +338,7 @@
 <translation id="4621240073146040695">Hampir selesai diperbarui! Luncurkan ulang Chromium untuk menyelesaikan pembaruan.</translation>
 <translation id="4625064703209785397">Mempercepat situs dengan mesin V8 Chromium, tetapi membuat Chromium sedikit lebih rentan terhadap serangan</translation>
 <translation id="4626321472657185181">Buka Penelusuran dengan Chromium</translation>
+<translation id="4654639495249754755">Profil Chromium</translation>
 <translation id="4665829708273112819">Peringatan: Chromium tidak dapat mencegah ekstensi merekam histori penjelajahan Anda. Untuk menonaktifkan ekstensi ini dalam mode Samaran, batalkan pilihan opsi ini.</translation>
 <translation id="4673151026126227699">Jika Anda juga membagikan laporan penggunaan Chromium, laporan tersebut akan menyertakan URL yang Anda buka</translation>
 <translation id="4673710618874938871">Login sebagai <ph name="USER_NAME" />, langganan. Buka menu akun</translation>
@@ -470,6 +471,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6174920971222007286">File ini mungkin berbahaya<ph name="LINE_BREAK" />Chromium dapat memeriksa hasil download ini untuk Anda jika Anda memberikan sandi. Info tentang file ini akan dikirim ke Google Safe Browsing, tetapi konten dan sandi file tidak dikirim ke luar perangkat Anda.</translation>
 <translation id="6182736845697986886">Penginstalan gagal karena server update mengalami error internal.</translation>
 <translation id="6183079672144801177">Pastikan Anda login ke Chromium di <ph name="TARGET_DEVICE_NAME" /> Anda, lalu coba kirimkan lagi.</translation>
+<translation id="6192070012454216182">Telusuri dan ajukan pertanyaan dari mana saja, termasuk saat Chromium sedang diminimalkan. Mengizinkan Chromium berjalan di latar belakang.</translation>
 <translation id="6212496753309875659">Komputer ini sudah memiliki versi Chromium yang lebih baru. Jika software tidak bekerja, harap coba uninstal Chromium, lalu cobalah kembali.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium akan diluncurkan ulang sekarang}=1{Chromium akan diluncurkan ulang dalam 1 detik}other{Chromium akan diluncurkan ulang dalam # detik}}</translation>
 <translation id="6241367896540709610">Chromium memerlukan izin akses penyimpanan untuk mendownload file</translation>
@@ -596,6 +598,7 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="7288567540154601580">Tab &amp; ekstensi</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium merekomendasikan agar Anda menghapusnya}other{Chromium merekomendasikan agar Anda menghapusnya}}</translation>
 <translation id="7296334833518879294">Untuk membagikan audio sistem, buka Setelan Sistem dan izinkan 'Hanya Perekaman Audio Sistem' untuk Chromium. Kemudian, Anda harus memulai ulang Chromium.</translation>
+<translation id="7299899569525778554">Melakukan penelusuran dari desktop</translation>
 <translation id="731795002583552498">Memperbarui Chromium</translation>
 <translation id="7318036098707714271">File preferensi Anda rusak atau tidak valid.
 
@@ -649,6 +652,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Persulit orang yang memiliki akses ke traffic internet Anda untuk melihat situs yang Anda kunjungi. Chromium menggunakan koneksi aman untuk mencari alamat IP situs di Domain Name System (DNS).</translation>
 <translation id="7810005234485217901">Anda dapat menyematkan Penelusuran Gambar agar mudah diakses</translation>
+<translation id="7813626943009612327">Tanyakan tentang konten di luar Chromium, seperti aplikasi atau file lain yang Anda buka</translation>
 <translation id="7828527096541974699">Pilih informasi yang akan dibagikan ke Chromium</translation>
 <translation id="7828947555739565424">Profil Chromium dengan akun ini sudah ada di perangkat ini</translation>
 <translation id="7845233973568007926">Terima kasih telah menginstal. Anda harus memulai ulang komputer sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
@@ -739,6 +743,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8619360774459241877">Meluncurkan Chromium...</translation>
 <translation id="8624541899164515475">Setelan, terbuka di tab baru.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing tidak dapat dijadikan sebagai browser default.</translation>
+<translation id="8676101123715131330">Telusuri dengan Chromium dari mana saja</translation>
 <translation id="8697124171261953979">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chromium atau menelusuri dari Omnibox.</translation>
 <translation id="8704119203788522458">Ini Chromium Anda</translation>
 <translation id="8712637175834984815">Mengerti</translation>

@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">تعذّر إرسال طلب الحصول على إذن أحد الوالدَين.</translation>
 <translation id="1803557475693955505">تعذر تحميل صفحة الخلفية '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="1875387611427697908">لا يمكن إضافة ذلك إلا من <ph name="CHROME_WEB_STORE" />.</translation>
+<translation id="1901182793187376715">يتعذّر فرض تثبيت الإضافة "<ph name="EXTENSION_NAME" />" (رقم تعريفها <ph name="EXTENSION_ID" />) في البيئات المنخفضة الموثوقية.</translation>
 <translation id="2131077480075264">تعذّر تثبيت "<ph name="APP_NAME" />" لأنه لم يُسمح به من قبل "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2150661552845026580">هل تريد إضافة "<ph name="EXTENSION_NAME" />"؟</translation>
 <translation id="2159915644201199628">تعذر فك ترميز الصورة: '<ph name="IMAGE_NAME" />'</translation>

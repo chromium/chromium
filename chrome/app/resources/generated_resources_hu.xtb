@@ -1440,6 +1440,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2111670510994270194">Új lap jobbra</translation>
 <translation id="2111778868023567359">Ezen az oldalon többé nem jelennek meg lapcsoportok</translation>
 <translation id="2112554630428445878">Üdvözöljük, <ph name="USERNAME" />!</translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">macOS-ről importált tanúsítványok megtekintése</translation>
 <translation id="21133533946938348">Lap rögzítése</translation>
 <translation id="2113479184312716848">&amp;Fájl megnyitása...</translation>
@@ -1995,6 +1996,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="252513908494776481">Kérdés erről a lapról</translation>
 <translation id="2525746158911982776">A frissítés nem sikerült, mert a rendszer nem rendelkezik elegendő tárhellyel.</translation>
 <translation id="2525842906387880861">Ezen az oldalon többé nem jelennek meg javaslatok.</translation>
+<translation id="2526346836766369775">Új izolált &amp;lap</translation>
 <translation id="2526590354069164005">Asztal</translation>
 <translation id="2526619973349913024">Frissítés keresése</translation>
 <translation id="2527167509808613699">Bármilyen kapcsolódás</translation>
@@ -8547,6 +8549,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7578137152457315135">Ujjlenyomat-beállítások</translation>
 <translation id="7578692661782707876">Kérjük, adja meg a megerősítő kódot.</translation>
 <translation id="757941033127302446">Bejelentkezve</translation>
+<translation id="7580311608678791180">Megnyitás a Windows tálcájáról</translation>
 <translation id="7581462281756524039">Egy karbantartó eszköz</translation>
 <translation id="7582582252461552277">Ezt a hálózatot részesítse előnyben</translation>
 <translation id="7582844466922312471">Mobiladatok</translation>
@@ -8560,6 +8563,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7590883480672980941">Beviteli beállítások</translation>
 <translation id="7592060599656252486">Néhány</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (hibakód: <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Megnyitás a Mac menüsorából</translation>
 <translation id="7600054753482800821">&amp;Keresőmotorok és webhelyeken történő keresés kezelése</translation>
 <translation id="7600218158048761260">A Google Drive le van tiltva ennél a fióktípusnál.</translation>
 <translation id="7600965453749440009">Soha ne fordítsa le a(z) <ph name="LANGUAGE" /> nyelvű szöveget</translation>
@@ -9245,6 +9249,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8102139037507939978">Személyazonosításra alkalmas adatok eltávolítása a system_logs.txt fájlból.</translation>
 <translation id="810362914482827094">Azonosítókulcsok keresése</translation>
 <translation id="8104088837833760645">eSIM-profil letöltése</translation>
+<translation id="8104388155778519213">Megoszthatja a képernyője tartalmát a Google Lens segítségével</translation>
 <translation id="8104778744208707085">További teendők szükségesek</translation>
 <translation id="8105273883928376822">Kérjük, jelentkezzen be a folytatáshoz</translation>
 <translation id="8106114112474206597">Az „i” billentyűvel megnyomhat egy egérgombot.</translation>

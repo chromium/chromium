@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Forespørselen om tillatelse fra foreldre mislyktes.</translation>
 <translation id="1803557475693955505">Kan ikke laste inn bakgrunnssiden <ph name="BACKGROUND_PAGE" />.</translation>
 <translation id="1875387611427697908">Dette kan bare legges til fra <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (utvidelses-ID «<ph name="EXTENSION_ID" />») kan ikke installeres via regler i miljøer med lav tillit.</translation>
 <translation id="2131077480075264">Kunne ikke installere «<ph name="APP_NAME" />» fordi det ikke er tillatt av «<ph name="IMPORT_NAME" />»</translation>
 <translation id="2150661552845026580">Vil du legge til «<ph name="EXTENSION_NAME" />»?</translation>
 <translation id="2159915644201199628">Kunne ikke dekode bilde: «<ph name="IMAGE_NAME" />»</translation>

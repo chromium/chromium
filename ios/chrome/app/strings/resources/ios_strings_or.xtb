@@ -268,6 +268,7 @@
 <translation id="17906873777101817">ପାସୱାର୍ଡ ଏବଂ ପାସକୀଗୁଡ଼ିକୁ ସେଭ କରିବାର ଅଫର</translation>
 <translation id="1794893174442046596">ଟାବ ଗ୍ରୁପ</translation>
 <translation id="1807893857950749072">ମୂଲ୍ୟ ଟ୍ରାକିଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ…</translation>
+<translation id="1808142805674973090">ମୋଡ ସ୍ୱିଚ କର</translation>
 <translation id="1809929083618343438">ଏହା Chromeରୁ ଚୟନିତ ସୂଚନାକୁ କାଢ଼ି ଦିଏ, କିନ୍ତୁ ଏହା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ଏହି ସୂଚନାକୁ ଡିଲିଟ କରେ ନାହିଁ।</translation>
 <translation id="1810976980198522421">ବାତିଲ କରନ୍ତୁ</translation>
 <translation id="1815941218935345331">ପାସକୋଡ୍</translation>
@@ -849,6 +850,7 @@
 <translation id="3779810277399252432">କୌଣସି ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ନାହିଁ।</translation>
 <translation id="3782614601387961027">ଚେତାବନୀକୁ ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="3789841737615482174">ସଂସ୍ଥାପନ</translation>
+<translation id="3793603310364129123">କମ ଷ୍ଟେପ, ଦ୍ରୁତ ଲିଙ୍କ</translation>
 <translation id="380329542618494757">ନାମ</translation>
 <translation id="3803696231112616155">ଏହି ସାଇଟ୍ ଅନୁବାଦ କରିବାକୁ ଅଫର୍ କରନ୍ତୁ</translation>
 <translation id="3810973564298564668">ପରିଚାଳନା</translation>
@@ -1380,6 +1382,7 @@
 <translation id="5467163657366219870">Mapsର ପ୍ରିଭ୍ୟୁକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5474397204728336997">ପରିବାର ପାସୱାର୍ଡ, ନୂଆ କଷ୍ଟମାଇଜେସନ ଏବଂ ଆହୁରି ଅନେକ କିଛି। ଅଧିକ ଜାଣିବାକୁ ଟାପ କରନ୍ତୁ।</translation>
 <translation id="5475793109165786685">{count,plural, =0{କୌଣସି ପାସୱାର୍ଡ ଇମ୍ପୋର୍ଟ କରାଯାଇନାହିଁ}=1{{count} ପାସୱାର୍ଡ ଇମ୍ପୋର୍ଟ କରାଯାଇଛି}other{{count} ପାସୱାର୍ଡ ଇମ୍ପୋର୍ଟ କରାଯାଇଛି}}</translation>
+<translation id="5477188385487393357">କପି ଓ ପେଷ୍ଟକୁ ବାଦ ଦିଅନ୍ତୁ</translation>
 <translation id="5478327362747197944">ଏକ ୱେବ ପୃଷ୍ଠାରେ ଏକ ତାରିଖ ଉପରେ କ୍ଲିକ କରି ସିଧାସଳଖ Calendar ଇଭେଣ୍ଟଗୁଡ଼ିକ ତିଆରି କରନ୍ତୁ।</translation>
 <translation id="5482922178977937393">ଆପଣଙ୍କ ରୁଚି ଆଧାରରେ ଆପଣ ସମାଚାର, ସ୍ପୋର୍ଟ୍ସ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇଁ ବିଜ୍ଞପ୍ତି ପାଇବାକୁ ଚାହିଁବେ?</translation>
 <translation id="5483838506518938965">ଆପଣ ସମ୍ପୂର୍ଣ୍ଣ ଭାବରେ ପ୍ରସ୍ତୁତ ଅଛନ୍ତି</translation>
@@ -1746,6 +1749,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="6585618849026997638">ଆପଣ ଏକ ବୁକମାର୍କ ଯୋଗ କରି ଆପଣଙ୍କ ପାଇଁ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଥିବା ଏକ ପୃଷ୍ଠାକୁ ଫେରି ପାରିବେ</translation>
 <translation id="6589001036857939353">ଡୁପ୍ଲିକେଟଗୁଡ଼ିକ ମର୍ଜ କରନ୍ତୁ</translation>
 <translation id="659407965921887085">ଏହି କାର୍ଡ ଆପଣ ବର୍ତ୍ତମାନ ଟ୍ରାକ କରୁଥିବା ପ୍ରଡକ୍ଟର ମୂଲ୍ୟ ହ୍ରାସକୁ ସମଗ୍ର ୱେବରେ ଦେଖାଏ</translation>
+<translation id="6596324345367949437">ଇନକଗ୍ନିଟୋ ମୋଡରେ Gemini ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="6596481460663245319">Google ମାଧ୍ୟମରେ ଇମେଜ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> ପାଇଁ Google Photosରେ ଇମେଜ ସେଭ କରାଯାଇଛି</translation>
 <translation id="6602173570135186741">ଅଟୋଫିଲ ଓ ପାସୱାର୍ଡଗୁଡ଼ିକ</translation>

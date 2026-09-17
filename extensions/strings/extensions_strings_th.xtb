@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">ขอสิทธิ์จากผู้ปกครองไม่สำเร็จ</translation>
 <translation id="1803557475693955505">ไม่สามารถโหลดหน้าพื้นหลัง "<ph name="BACKGROUND_PAGE" />"</translation>
 <translation id="1875387611427697908">ต้องเพิ่มจาก <ph name="CHROME_WEB_STORE" /> เท่านั้น</translation>
+<translation id="1901182793187376715">ติดตั้ง <ph name="EXTENSION_NAME" /> (รหัสส่วนขยาย "<ph name="EXTENSION_ID" />") ตามนโยบายในสภาพแวดล้อมที่มีความน่าเชื่อถือต่ำไม่ได้</translation>
 <translation id="2131077480075264">ไม่สามารถติดตั้ง "<ph name="APP_NAME" />" เนื่องจากไม่ได้รับอนุญาตจาก "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2150661552845026580">เพิ่ม "<ph name="EXTENSION_NAME" />" หรือไม่</translation>
 <translation id="2159915644201199628">ไม่สามารถถอดรหัสภาพ: '<ph name="IMAGE_NAME" />'</translation>

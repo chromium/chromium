@@ -142,6 +142,7 @@ Chromium を使いやすくするためにデータを使用するその他の�
 <translation id="3855938650519180865">Chromium の新機能</translation>
 <translation id="3886689467633467988">このサイトと Chromium にログインすると、すべてのデバイスで同じブックマークやその他の設定を使用できます。</translation>
 <translation id="3949514465204582407">Chromium のヒント: 他のアプリでパスワードを使用</translation>
+<translation id="3983298990898629929">Chromium を既定のブラウザに設定すると、ワンタップでリンクを開くことができます</translation>
 <translation id="4005283307739974863">Chromium で安全チェックを開いて実行します。</translation>
 <translation id="4043291146360695975">パスワードは、このデバイスのパスワード マネージャーにのみ保存されます。</translation>
 <translation id="4046625794029820944">URL をコピーしなくても、Chromium を既定に設定すると、ページを直接読み込むことができます。</translation>
@@ -273,6 +274,7 @@ Chromium を使いやすくするためにデータを使用するその他の�
 <translation id="6680609900732453726">Chromium を終了するときにデバイス認証でブラウジングのプライバシーを保護</translation>
 <translation id="6696512128741076907">Chromium を既定に設定すると、他のアプリからリンクをすぐに開くことができます。</translation>
 <translation id="6752854822223394465">組織で Chromium を設定しています...</translation>
+<translation id="6777348401413221846">Chromium を既定に設定する方法を説明したフルスクリーン動画: iOS で Chromium の設定を開き、[デフォルトのブラウザアプリ] をタップして [Chromium] を選択します。</translation>
 <translation id="6794054469102824109">Chromium Dino ゲームを開きます。</translation>
 <translation id="6820823224820483452">Chromium ですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
 <translation id="6830782797004194206">Chromium の自動入力機能ですばやくログイン</translation>
@@ -302,6 +304,7 @@ Chromium を使いやすくするためにデータを使用するその他の�
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">パスワードは、<ph name="EMAIL" /> のパスワード マネージャーに保存されます。</translation>
 <translation id="7434848749522628428">このパスキーは <ph name="USER_EMAIL" /> のパスワード マネージャーに保存されます</translation>
+<translation id="7453822113116681031">Chromium を既定のブラウザに設定すると、ワンタップでリンクを開くことができます</translation>
 <translation id="7504829997542308412">Chromium を開く</translation>
 <translation id="7531461704633548377">Chromium から</translation>
 <translation id="7554983317097061001">Chromium のヒント: Chromium をドックに移動</translation>

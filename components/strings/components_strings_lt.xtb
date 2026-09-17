@@ -923,7 +923,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2527451058878391043">Jūsų kortelės saugos kodas (CVC) yra priekinėje kortelės pusėje. Tai yra keturių skaitmenų kodas, pateiktas viršuje dešinėje virš kortelės numerio.</translation>
 <translation id="2529899080962247600">Šiame lauke gali būti ne daugiau nei <ph name="MAX_ITEMS_LIMIT" /> įraš. Į visus kitus įrašus nebus atsižvelgiama.</translation>
 <translation id="2530042584066815841">Pelės užrakinimas ir naudojimas</translation>
-<translation id="253493526287553278">Žr. išsamią reklamos kredito kodo informaciją</translation>
 <translation id="2535585790302968248">Naršykite privačiai, atidarę naują inkognito skirtuką</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ir dar 1}one{ir dar #}few{ir dar #}many{ir dar #}other{ir dar #}}</translation>
 <translation id="2536110899380797252">Pridėti adresą</translation>
@@ -2412,7 +2411,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5052488928733955073">Kilo problemų pildant informaciją. Patikrinkite ryšį.</translation>
 <translation id="5053116470141135293">Atsiskaitant šia kortele bus užpildytas virtualios kortelės numeris, kad būtų apsaugota jūsų tikroji informacija. Tvarkykite „Google Wallet“. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Jei norite siųsti šį failą naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}one{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}few{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}many{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}other{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}}</translation>
-<translation id="5056587122125565772">Sukurti vaizdą</translation>
 <translation id="505757197798929356">Nurodykite atidarymo priežastį (būtina)</translation>
 <translation id="5058282932481719070">sužinokite daugiau apie patobulintą automatinį pildymą nustatymų puslapyje</translation>
 <translation id="5061227663725596739">Turėjote omenyje <ph name="LOOKALIKE_DOMAIN" />?</translation>

@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">অভিভাবকের অনুমতির অনুরোধ সংক্রান্ত কারণে এটি করা যায়নি।</translation>
 <translation id="1803557475693955505">পৃষ্ঠভূমি পৃষ্ঠা '<ph name="BACKGROUND_PAGE" />' লোড করা যায়নি৷</translation>
 <translation id="1875387611427697908">এটি কেবলমাত্র <ph name="CHROME_WEB_STORE" /> থেকেই যোগ করা যেতে পারে</translation>
+<translation id="1901182793187376715">কম-বিশ্বস্ত পরিবেশে নীতি মেনে <ph name="EXTENSION_NAME" /> (এক্সটেনশন আইডি "<ph name="EXTENSION_ID" />") ইনস্টল করা যাবে না।</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" ইনস্টল করা যায়নি কারণ এটি "<ph name="IMPORT_NAME" />" এর দ্বারা অনুমোদিত নয়</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" জুড়বেন?</translation>
 <translation id="2159915644201199628">ছবি ডিকোড করা যায়নি: '<ph name="IMAGE_NAME" />'</translation>

@@ -149,6 +149,7 @@
 <translation id="2575822587468774919">აირჩიეთ ის, რისი მოძებნაც გსურთ სურათების ძიებით</translation>
 <translation id="2576118232315942160">თქვენს ყველა მოწყობილობაზე პაროლებისა და სხვა კონტენტის მისაღებად შედით Chromium-ში</translation>
 <translation id="2587622539943955767">დაასკანირეთ QR კოდი თქვენი ტელეფონით, რომ ჩამოტვირთოთ Chromium და შეხვიდეთ თქვენს Google ანგარიშში.</translation>
+<translation id="2587885422541096572">Chromium-ით ძიებისთვის.</translation>
 <translation id="2592940277904433508">Chromium-ის გამოყენების გაგრძელება</translation>
 <translation id="259935314519650377">ჩამოტვირთული ინსტალატორის ქეშირება ვერ მოხერხდა. შეცდომა: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">სისტემა</translation>
@@ -781,6 +782,7 @@ Chromium ვერ შეძლებს თქვენი პარამე�
 <translation id="897581876605952338">Chromium Enterprise-ის ლოგო</translation>
 <translation id="8980139959902937527">თან იქონიეთ Google-ის უსაფრთხოება Chromium აპის მეშვეობით თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="8981150672034878610">Chromium-ის გაშვება შეუძლებელია, რადგან თქვენი პროფილის გახსნისას მოხდა შეცდომა. ცადეთ Chromium-ის გადატვირთვა.</translation>
+<translation id="8981886272598860786">Chromium-ით ძიებისთვის ან მორგებისთვის <ph name="BEGIN_LINK" />პარამეტრებში<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Chromium-ის პროფილების მართვა</translation>
 <translation id="8993855408334954620">Gemini Chromium-სა და გახსნილ ჩანართს შორის გადაადგილდით კლავიატურის მეშვეობით.</translation>
 <translation id="9018218886431812662">ინსტალაცია დასრულდა</translation>

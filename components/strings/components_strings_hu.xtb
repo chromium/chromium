@@ -923,7 +923,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2527451058878391043">A CVC-kód a kártyája elején található. Ez egy négyjegyű kód a kártyaszám jobb felső sarkában.</translation>
 <translation id="2529899080962247600">Ebben a mezőben legfeljebb <ph name="MAX_ITEMS_LIMIT" /> bejegyzés szerepelhet. A további bejegyzéseket figyelmen kívül hagyja a rendszer.</translation>
 <translation id="2530042584066815841">Egér zárolása és használata</translation>
-<translation id="253493526287553278">A promóciós kód részleteinek megtekintése</translation>
 <translation id="2535585790302968248">Privát böngészéshez nyisson új inkognitó lapot</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{és 1 további}other{és # további}}</translation>
 <translation id="2536110899380797252">Cím hozzáadása</translation>
@@ -1427,6 +1426,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3432601291244612633">Oldal bezárása</translation>
 <translation id="3434025015623587566">A Google Jelszókezelőnek további hozzáférésre van szüksége</translation>
 <translation id="343474037147570563">A böngésző elemzés céljából a Google Cloudnak vagy harmadik feleknek továbbítja a feltöltött és a csatolt fájlokat. A Google Cloud vagy a harmadik fél például bizalmas adatokat vagy rosszindulatú programokat kereshet a fájlokban, és az is előfordulhat, hogy a vállalati irányelvek alapján tárolni fogják majd őket, illetve láthatók lesznek a rendszergazda számára.</translation>
+<translation id="3435267628744367511">Nyomja le kétszer a Ctrl billentyűt bármely űrlapon az adatok lapváltás nélküli kereséséhez és kitöltéséhez</translation>
 <translation id="3435557549311968410">Folyamatos (rövid)</translation>
 <translation id="3435738964857648380">Biztonság</translation>
 <translation id="3436125638121079308">Megosztja automatikusan a releváns lapokat, hogy jobb válaszokat kaphasson ebben az üzenetszálban?</translation>
@@ -2404,7 +2404,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5052488928733955073">Probléma adódott az adatok kitöltésekor. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="5053116470141135293">A tényleges adatok védelme érdekében a rendszer egy virtuális kártyaszámot ír be, amikor ezzel a kártyával fizet. Ezt a Google Walletben kezelheti. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Ha a Közeli megosztás funkcióval szeretné elküldeni a fájlt, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet eszközén}other{Ha a Közeli megosztás funkcióval szeretné elküldeni a fájlokat, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet eszközén}}</translation>
-<translation id="5056587122125565772">Kép létrehozása</translation>
 <translation id="505757197798929356">Adja meg a megnyitás okát (kötelező)</translation>
 <translation id="5058282932481719070">További információ a továbbfejlesztett automatikus kitöltésről a beállításokban</translation>
 <translation id="5061227663725596739">Erre gondolt: <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2893,6 +2892,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5884465125445718607">6. kínai boríték</translation>
 <translation id="5887400589839399685">Kártya elmentve</translation>
 <translation id="5887687176710214216">Utolsó látogatás: tegnap</translation>
+<translation id="5887791684215121787">Nyomja le a ⌘ ⌘ billentyűkombinációt bármely űrlapon az adatok lapváltás nélküli kereséséhez és kitöltéséhez</translation>
 <translation id="5889251770650310375">Ha a többi eszközén lévő előzményeihez is szeretne hozzáférni, igazolja személyazonosságát, majd szinkronizálja az előzményeit és a lapjait. A beállítások között bármikor leállíthatja a szinkronizálást. A Google az Ön előzményei alapján személyre szabhatja a Keresőt és más szolgáltatásokat.</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
 <translation id="5895187275912066135">Kiállítva</translation>

@@ -29,6 +29,7 @@
 <translation id="1757786065507923842">பெற்றோர் அனுமதிக்குக் கோரிக்கை விடுக்க முடியவில்லை.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' என்ற பின்புலப் பக்கத்தை ஏற்ற முடியவில்லை.</translation>
 <translation id="1875387611427697908"><ph name="CHROME_WEB_STORE" /> இலிருந்து மட்டுமே இதைச் சேர்க்க முடியும்</translation>
+<translation id="1901182793187376715">குறைந்த நம்பகத்தன்மை உள்ள சூழல்களில் கொள்கை மூலம் <ph name="EXTENSION_NAME" /> (நீட்டிப்பு ஐடி "<ph name="EXTENSION_ID" />") ஐ நிறுவ முடியாது.</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" ஆல் அனுமதிக்கப்படாததால், "<ph name="APP_NAME" />"ஐ நிறுவ முடியவில்லை</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" சேர்க்க வேண்டுமா?</translation>
 <translation id="2159915644201199628">இந்தப் படத்தை குறிநீக்க முடியவில்லை: '<ph name="IMAGE_NAME" />'</translation>

@@ -923,7 +923,6 @@
 <translation id="2527451058878391043">Codul CVC se află pe partea din față a cardului. Este codul din patru cifre din dreapta sus, deasupra numărului cardului.</translation>
 <translation id="2529899080962247600">Acest câmp nu poate să conțină mai mult de <ph name="MAX_ITEMS_LIMIT" /> intrări. Intrările suplimentare vor fi ignorate.</translation>
 <translation id="2530042584066815841">Blocarea și utilizarea mouse-ului</translation>
-<translation id="253493526287553278">Vezi detaliile codului promoțional</translation>
 <translation id="2535585790302968248">Deschide o nouă filă incognito pentru a naviga în privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{și încă una}few{și încă #}other{și încă #}}</translation>
 <translation id="2536110899380797252">Adaugă o adresă</translation>
@@ -2408,7 +2407,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5052488928733955073">Eroare la completarea informațiilor. Verifică-ți conexiunea.</translation>
 <translation id="5053116470141135293">Un număr de card virtual va fi completat când finalizezi achiziția cu acest card pentru a-ți proteja detaliile reale. Gestionează în Portofelul Google. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pentru a trimite fișierul prin Trimitere în apropiere, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}few{Pentru a trimite fișierele prin Trimitere în apropiere, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}other{Pentru a trimite fișierele prin Trimitere în apropiere, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}}</translation>
-<translation id="5056587122125565772">Creează o imagine</translation>
 <translation id="505757197798929356">Specifică motivul deschiderii (obligatoriu)</translation>
 <translation id="5058282932481719070">află mai multe despre completarea automată îmbunătățită în setări</translation>
 <translation id="5061227663725596739">Ai vrut să scrii <ph name="LOOKALIKE_DOMAIN" />?</translation>

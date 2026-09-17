@@ -147,6 +147,7 @@
 <translation id="2575822587468774919">Vælg det, du vil søge efter med billedsøgning</translation>
 <translation id="2576118232315942160">For at kunne se dine adgangskoder m.m. på alle dine enheder skal du logge ind på Chromium</translation>
 <translation id="2587622539943955767">Scan QR-koden med din telefon for at downloade Chromium og logge ind på din Google-konto.</translation>
+<translation id="2587885422541096572">for at søge med Chromium.</translation>
 <translation id="2592940277904433508">Fortsæt med at bruge Chromium</translation>
 <translation id="259935314519650377">Det downloadede installationsprogram kunne ikke gemmes i cache. Fejl: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">System</translation>
@@ -338,6 +339,7 @@
 <translation id="4621240073146040695">Næsten opdateret. Genstart Chromium for at afslutte opdateringen.</translation>
 <translation id="4625064703209785397">Gør websites hurtigere ved hjælp af Chromiums V8-maskine, men gør Chromium en smule mindre modstandsdygtig over for angreb</translation>
 <translation id="4626321472657185181">Åbn søgning med Chromium</translation>
+<translation id="4654639495249754755">Chromium-profil</translation>
 <translation id="4665829708273112819">Advarsel! Chromium kan ikke forhindre udvidelser i at registrere din browserhistorik. Fjern markeringen af denne valgmulighed for at deaktivere denne udvidelse i inkognitotilstand.</translation>
 <translation id="4673151026126227699">Hvis du også deler Chromium-brugsrapporter, omfatter de pågældende rapporter de webadresser, du besøger</translation>
 <translation id="4673710618874938871">Logget ind som <ph name="USER_NAME" />, medlemskab. Åbn kontomenuen</translation>
@@ -470,6 +472,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6174920971222007286">Denne fil kan være skadelig<ph name="LINE_BREAK" />Chromium kan tjekke denne download for dig, hvis du angiver adgangskoden. Oplysninger om filen sendes til Google Beskyttet browsing, men filens indhold og adgangskoden forbliver på din enhed.</translation>
 <translation id="6182736845697986886">Installationen mislykkedes på grund af en intern fejl i opdateringsserveren.</translation>
 <translation id="6183079672144801177">Sørg for, at du er logget ind på Chromium på din <ph name="TARGET_DEVICE_NAME" />, og prøv derefter at sende igen.</translation>
+<translation id="6192070012454216182">Søg og stil spørgsmål overalt, selvom Chromium er minimeret. Tillader, at Chromium kører i baggrunden.</translation>
 <translation id="6212496753309875659">Computeren har allerede en nyere version af Chromium. Hvis softwaren ikke virker, skal du afinstallere Chromium og prøve igen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium genstarter nu}=1{Chromium genstarter om 1 sekund}one{Chromium genstarter om # sekund}other{Chromium genstarter om # sekunder}}</translation>
 <translation id="6241367896540709610">Chromium skal have adgangstilladelse til lagerplads for at downloade filer</translation>
@@ -596,6 +599,7 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="7288567540154601580">Faner og udvidelser</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium anbefaler, at du fjerner den}one{Chromium anbefaler, at du fjerner den}other{Chromium anbefaler, at du fjerner dem}}</translation>
 <translation id="7296334833518879294">Hvis du vil dele systemlyd, skal du åbne Systemindstillinger og tillade "Kun optagelse af systemlyd" for Chromium. Genstart derefter Chromium.</translation>
+<translation id="7299899569525778554">Søg fra computeren</translation>
 <translation id="731795002583552498">Chromium opdateres</translation>
 <translation id="7318036098707714271">Din præferencefil er beskadiget eller ugyldig.
 
@@ -651,6 +655,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Gør det sværere for brugere med adgang til din internettrafik at se, hvilke websites du besøger. Chromium anvender en sikker forbindelse til at slå et websites IP-adresse op i domænenavnesystemet (DNS, Domain Name System).</translation>
 <translation id="7810005234485217901">Du kan fastgøre billedsøgning for at få nem adgang</translation>
+<translation id="7813626943009612327">Stil spørgsmål om indhold uden for Chromium, f.eks. en anden app eller fil, du har åbnet</translation>
 <translation id="7828527096541974699">Vælg, hvad du vil dele med Chromium</translation>
 <translation id="7828947555739565424">Der findes allerede en Chromium-profil med denne konto på enheden</translation>
 <translation id="7845233973568007926">Tak for installationen. Du skal genstarte computeren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
@@ -741,6 +746,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8619360774459241877">Starter Chromium...</translation>
 <translation id="8624541899164515475">Indstillinger (åbnes på en ny fane).</translation>
 <translation id="8648201657708811153">Google Chrome for Testing kan ikke angives som din standardbrowser.</translation>
+<translation id="8676101123715131330">Søg med Chromium hvor som helst</translation>
 <translation id="8697124171261953979">Den styrer også, hvilken side der vises, når du åbner Chromium eller søger via omnifeltet.</translation>
 <translation id="8704119203788522458">Dette er din Chromium-browser</translation>
 <translation id="8712637175834984815">Forstået</translation>
@@ -774,6 +780,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="897581876605952338">Chromium Enterprise-logo</translation>
 <translation id="8980139959902937527">Tag Googles sikkerhedsfunktioner med på farten med Chromium-appen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Chromium kan ikke startes, da der gik noget galt ved åbningen af din profil. Prøv at genstarte Chromium.</translation>
+<translation id="8981886272598860786">for at søge med Chromium eller tilpasse i <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Administrer Chromium-profiler</translation>
 <translation id="8993855408334954620">Brug dit tastatur til at navigere mellem Gemini i Chromium og din åbne fane.</translation>
 <translation id="9018218886431812662">Installationen er fuldført</translation>

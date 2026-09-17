@@ -227,6 +227,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="3112458742631356345">O Chrome bloqueou o download porque o arquivo não é baixado com frequência e pode ser perigoso</translation>
 <translation id="3119573284443908657">O Chrome bloqueou o download porque o arquivo inclui outros arquivos que podem estar ocultando malware</translation>
 <translation id="3124332159330678621">Personalize o Chrome para mudar o visual do navegador</translation>
+<translation id="3125851611828811913">Pesquise e faça perguntas de qualquer lugar, mesmo com o Chrome minimizado. Isso permite que o Chrome seja executado em segundo plano.</translation>
 <translation id="3130333203120345554">Nova pesquisa</translation>
 <translation id="3135560418014806498">Adicionar perfil do Chrome</translation>
 <translation id="3137969841538672700">Arraste para pesquisar</translation>
@@ -384,6 +385,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="4793679854893018356">Saiba como o Chrome protege você</translation>
 <translation id="4799870290441980300">Ativa recursos extras para oferecer a proteção mais segura do Chrome.</translation>
 <translation id="4828579605166583682">O Google Chrome está tentando substituir senhas já existentes. Digite sua senha do Windows para conceder essa permissão.</translation>
+<translation id="4836321460899997044">Perfil do Chrome</translation>
 <translation id="4842397268809523050">O ChromeOS Flex não pôde sincronizar seus dados porque a sincronização não está disponível para seu domínio.</translation>
 <translation id="4851866215237571846">A conta <ph name="EXISTING_USER" /> já está conectada. Para manter sua navegação separada, faça login no Chrome em seu perfil como <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Para compartilhar a tela, use os Ajustes do Sistema para permitir a gravação de tela do Chrome</translation>
@@ -497,6 +499,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6014316319780893079">Com as <ph name="BEGIN_LINK" />ferramentas do Chrome<ph name="END_LINK" />, você pode navegar com segurança e ficar no controle</translation>
 <translation id="6018578474045062808">Teste o Google Lens com o Chrome no seu celular</translation>
 <translation id="6022659036123304283">Deixe o Chrome do seu jeito</translation>
+<translation id="6024930613143833266">Pesquise com o Chrome de qualquer lugar</translation>
 <translation id="6025087594896450715">O Google Chrome será reiniciado em <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="604424701295382420">Fixado. Você pode acessar o Google Lens de novo usando o novo botão na barra de ferramentas</translation>
@@ -587,6 +590,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6750954913813541382">Para corrigir erros de ortografia, o Chrome envia o texto digitado no navegador para o Google</translation>
 <translation id="6760235774835597023">Deixa os sites mais rápidos com o mecanismo V8 do Chrome, mas o navegador fica um pouco menos resistente a ataques. Esta configuração está ativada.</translation>
 <translation id="677276454032249905">Sair do Chrome mesmo assim?</translation>
+<translation id="6777654166489463890">Pergunte sobre conteúdo fora do Chrome, como outro app ou arquivo aberto</translation>
 <translation id="6794858689789885890">Sempre excluir os dados do site do seu dispositivo ao fechar o Chrome</translation>
 <translation id="6800285125190089494">Faça login em sites com mais rapidez usando as senhas salvas no Chrome para iOS</translation>
 <translation id="6831043979455480757">Traduzir</translation>
@@ -639,6 +643,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="7285990705317078173">Baixe o Chrome no seu celular para monitorar preços e receber alertas quando houver uma redução em algum site</translation>
 <translation id="7288567540154601580">Guias e extensões</translation>
 <translation id="7296210096911315575">Informações importantes sobre uso e segurança</translation>
+<translation id="7299899569525778554">Pesquisar no computador</translation>
 <translation id="7302361266603927550">Alguns dos seus dados do Chrome ainda não foram salvos na sua Conta do Google. Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão excluídos.</translation>
 <translation id="7306401458628386911">Comece a navegar instantaneamente: o Chrome agora pode ser iniciado com o Windows.</translation>
 <translation id="7308322188646931570">O Chrome precisa de acesso para fazer o download e armazenar arquivos</translation>

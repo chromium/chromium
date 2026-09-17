@@ -27,6 +27,7 @@
 <translation id="1757786065507923842">पालकांची परवानगी मागणारी विनंती करता आली नाही.</translation>
 <translation id="1803557475693955505">'बॅकग्राउंड पेज '<ph name="BACKGROUND_PAGE" />'  लोड करता आले नाही.</translation>
 <translation id="1875387611427697908">हे केवळ <ph name="CHROME_WEB_STORE" /> वरून जोडले जाऊ शकते</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (एक्स्टेंशन आयडी "<ph name="EXTENSION_ID" />") कमी विश्वास असलेल्या वातावरणामध्ये धोरणाद्वारे इंस्टॉल केले जाऊ शकत नाही.</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" द्वारे "<ph name="APP_NAME" />" ला अनुमती नसल्‍याने तो स्‍थापित करण्‍यात अक्षम</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" जोडायचे ?</translation>
 <translation id="2159915644201199628">इमेज डीकोड करणे शक्य झाले नाही: '<ph name="IMAGE_NAME" />'</translation>

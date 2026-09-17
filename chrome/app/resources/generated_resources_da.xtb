@@ -1352,6 +1352,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2026367923222947564">Hel side</translation>
 <translation id="2026377162111110983">Områdestemme</translation>
 <translation id="2028449514182362831">Funktioner, der skal bruge bevægelsessensorer, fungerer ikke</translation>
+<translation id="2029064269235798707">Vælg tastaturgenvej</translation>
 <translation id="202918510990975568">Angiv din adgangskode for at konfigurere sikkerhed og login</translation>
 <translation id="2030455719695904263">Touchplade</translation>
 <translation id="2030803782168502207">Fjern abonnementet fra enheden</translation>
@@ -1443,6 +1444,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2111670510994270194">Ny fane til højre</translation>
 <translation id="2111778868023567359">Du vil ikke længere se fanegrupper på denne side</translation>
 <translation id="2112554630428445878">Velkommen, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">Se importerede certifikater fra macOS</translation>
 <translation id="21133533946938348">Fastgør fane</translation>
 <translation id="2113479184312716848">Åbn &amp;fil...</translation>
@@ -1998,6 +2000,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="252513908494776481">Stil spørgsmål om denne fane</translation>
 <translation id="2525746158911982776">Opdateringen mislykkedes, fordi systemet ikke har tilstrækkelig lagerplads.</translation>
 <translation id="2525842906387880861">Du får ikke længere vist forslag på denne side</translation>
+<translation id="2526346836766369775">Ny isoleret &amp;fane</translation>
 <translation id="2526590354069164005">Skrivebord</translation>
 <translation id="2526619973349913024">Søg efter opdatering</translation>
 <translation id="2527167509808613699">Enhver form for forbindelse</translation>
@@ -2283,6 +2286,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Disse adgangsnøgler gemmes kun på denne enhed. De gemmes ikke på din Google-konto.</translation>
 <translation id="2741912629735277980">Vis brugerflade på loginskærmen</translation>
+<translation id="274229007420507506">Skift genvej i <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /></translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> er ikke tilgængelig lige nu.</translation>
 <translation id="2743301740238894839">Start</translation>
 <translation id="2743378970365831481">Hvis du vil gemme din adgangskode i Google Adgangskodeadministrator, skal du klikke på ikonet for Adgangskodeadministrator i adresselinjen</translation>
@@ -2632,6 +2636,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3001614333383288217">{COUNT,plural, =0{Ingen nøgler er tilpasset}=1{1 tilpasset nøgle}one{{COUNT} tilpasset nøgle}other{{COUNT} tilpassede nøgler}}</translation>
 <translation id="3002864108328203174">Gemini-feltet i bunden er åbent i halv højde.</translation>
 <translation id="3003144360685731741">Favoritter netværk</translation>
+<translation id="3003152206838282768">Arbejder på din Gemini-appopgave i Chrome. Tjek Chrome for at se flere opdateringer</translation>
 <translation id="3003253259757197230">De webadresser, du besøger, sendes til Google for at forudsige, hvilke websites du kunne have lyst til at besøge som det næste, og for at vise dig oplysninger om den side, du besøger</translation>
 <translation id="3003623123441819449">CSS-cache</translation>
 <translation id="3003967365858406397">Din <ph name="PHONE_NAME" /> opretter en privat Wi-Fi-forbindelse.</translation>
@@ -5081,6 +5086,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4864805589453749318">Vælg den forælder, der giver tilladelse til at tilføje en skolekonto.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokeret)</translation>
 <translation id="486505726797718946">Mindet er gemt</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Arbejder på din Gemini-appopgave i Chrome. Tjek Chrome for at se flere opdateringer</translation>
 <translation id="486635084936119914">Åbn bestemte filtyper automatisk efter download</translation>
 <translation id="4868284252360267853">Denne dialogboks er ikke fremhævet i øjeblikket. Tryk på Command-tasten+Shift+Valgmulighed A for at fremhæve denne dialogboks.</translation>
 <translation id="4869170227080975044">Læs netværksoplysninger for ChromeOS</translation>
@@ -7714,6 +7720,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6916818963747321523">Udvid alle</translation>
 <translation id="6917873303492266709">Åbn indstillingerne, og aktivér Tillad login via Chrome for at dele, deltage i og samarbejde i fanegrupper</translation>
 <translation id="6919354101107095996">Prøv at logge ind på websitet. Download derefter igen</translation>
+<translation id="6919461818524183254">Vælg genvej</translation>
 <translation id="6919952941889172531">Vil du også aktivere Udvidet beskyttet browsing for denne Chrome-profil?</translation>
 <translation id="6920989436227028121">Åbn som almindelig fane</translation>
 <translation id="6921104647315081813">Ryd aktiviteter</translation>
@@ -8553,6 +8560,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7578137152457315135">Indstillinger for fingeraftryk</translation>
 <translation id="7578692661782707876">Angiv din verificeringskode.</translation>
 <translation id="757941033127302446">Logget ind</translation>
+<translation id="7580311608678791180">Åbn via proceslinjen i Windows</translation>
 <translation id="7581462281756524039">Et oprydningsværktøj</translation>
 <translation id="7582582252461552277">Foretræk dette netværk</translation>
 <translation id="7582844466922312471">Mobildata</translation>
@@ -8566,6 +8574,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7590883480672980941">Indstillinger for indtastning</translation>
 <translation id="7592060599656252486">Udvalgte</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (fejlkode <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Åbn via Mac-menulinjen</translation>
 <translation id="7600054753482800821">&amp;Administrer søgemaskiner og Site Search</translation>
 <translation id="7600218158048761260">Google Drev er deaktiveret for denne kontotype.</translation>
 <translation id="7600965453749440009">Oversæt aldrig <ph name="LANGUAGE" /></translation>
@@ -9251,6 +9260,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8102139037507939978">Fjern personhenførbare oplysninger fra system_logs.txt.</translation>
 <translation id="810362914482827094">Søg efter adgangskoder</translation>
 <translation id="8104088837833760645">Download eSIM-kortprofilen</translation>
+<translation id="8104388155778519213">Del det, der vises på din skærm, med Google Lens</translation>
 <translation id="8104778744208707085">Kræver gennemgang</translation>
 <translation id="8105273883928376822">Log ind for at fortsætte.</translation>
 <translation id="8106114112474206597">Brug "i" til at trykke på en museknap</translation>

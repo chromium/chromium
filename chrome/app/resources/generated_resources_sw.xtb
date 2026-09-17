@@ -1350,6 +1350,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="2026367923222947564">Ukurasa kamili</translation>
 <translation id="2026377162111110983">Sauti ya eneo</translation>
 <translation id="2028449514182362831">Vipengele vinavyohitaji vitambuzi vya mwendo havitafanya kazi</translation>
+<translation id="2029064269235798707">Chagua mikato ya kibodi</translation>
 <translation id="202918510990975568">Andika nenosiri lako ili uweke mipangilio ya usalama na ya kuingia katika akaunti</translation>
 <translation id="2030455719695904263">Padi ya kusogeza</translation>
 <translation id="2030803782168502207">Ondoa usajili kwenye kifaa</translation>
@@ -2283,6 +2284,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2740531572673183784">Sawa</translation>
 <translation id="2740876196999178364">Funguo hizi za siri zimehifadhiwa kwenye kifaa hiki pekee. Hazijahifadhiwa kwenye Akaunti yako ya Google.</translation>
 <translation id="2741912629735277980">Onyesha kiolesura kwenye skrini ya kuingia katika akaunti</translation>
+<translation id="274229007420507506">Badilisha njia ya mkato katika <ph name="BEGIN_LINK" />Mipangilio<ph name="END_LINK" /></translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> haipatikani kwa sasa.</translation>
 <translation id="2743301740238894839">Anza</translation>
 <translation id="2743378970365831481">Ili uhifadhi nenosiri lako katika Kidhibiti cha Manenosiri cha Google, bofya aikoni ya Kidhibiti cha Manenosiri kwenye Upau wa Mahali</translation>
@@ -2632,6 +2634,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3001614333383288217">{COUNT,plural, =0{Hakuna vitufe vilivyowekewa mapendeleo}=1{Kitufe 1 kilichowekewa mapendeleo}other{Vitufe {COUNT} vilivyowekewa mapendeleo}}</translation>
 <translation id="3002864108328203174">Safu ya Chini ya Gemini katika skrini nusu.</translation>
 <translation id="3003144360685731741">Mitandao inayopendelewa</translation>
+<translation id="3003152206838282768">Inashughulikia jukumu lako la Programu ya Gemini kwenye Chrome. Angalia Chrome ili upate taarifa zaidi</translation>
 <translation id="3003253259757197230">URL unazotembelea hutumwa kwa Google ili kutabiri tovuti ambazo huenda ukazitembelea baadaye na kukuonyesha maelezo ya ziada kuhusu ukurasa unaoutembelea</translation>
 <translation id="3003623123441819449">Akiba ya CSS</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> yako itaunda muunganisho wa Wi-Fi wa faragha.</translation>
@@ -5079,6 +5082,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4864805589453749318">Chagua mzazi anayetoa ruhusa ya kuweka akaunti ya shuleni.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (imezuiwa)</translation>
 <translation id="486505726797718946">Kumbukumbu Imehifadhiwa</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Inashughulikia jukumu lako la Programu ya Gemini kwenye Chrome. Angalia Chrome ili upate taarifa zaidi</translation>
 <translation id="486635084936119914">Fungua baadhi ya aina za faili kiotomatiki baada ya kupakua</translation>
 <translation id="4868284252360267853">Kidirisha hiki hakijaangaziwa kwa sasa. Bonyeza Command-Shift-Option na herufi A ili uangazie kidirisha hiki.</translation>
 <translation id="4869170227080975044">Kusoma maelezo ya mtandao ya ChromeOS</translation>
@@ -7710,6 +7714,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6916818963747321523">Panua Zote</translation>
 <translation id="6917873303492266709">Fungua mipangilio na uwashe ‘Ruhusu kuingia katika akaunti ukitumia Chrome’ ili uruhusu ufikiaji, ujiunge na ushirikiane katika vikundi vya vichupo</translation>
 <translation id="6919354101107095996">Jaribu kuingia katika akaunti ya tovuti. Kisha, pakua tena</translation>
+<translation id="6919461818524183254">Chagua njia ya mkato</translation>
 <translation id="6919952941889172531">Ungependa pia kuwasha Kipengele cha Kuvinjari Salama Kilichoboreshwa kwa ajili ya wasifu huu wa Chrome?</translation>
 <translation id="6920989436227028121">Fungua kama kichupo cha kawaida</translation>
 <translation id="6921104647315081813">Futa shughuli</translation>

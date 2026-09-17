@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Nepodarilo sa požiadať o povolenie rodiča.</translation>
 <translation id="1803557475693955505">Nepodarilo sa načítať stránku na pozadí „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="1875387611427697908">Dá sa pridať iba zo služby <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715">Rozšírenie <ph name="EXTENSION_NAME" /> (identifikátor rozšírenia: <ph name="EXTENSION_ID" />) sa nedá nainštalovať na základe pravidiel v prostrediach s nízkou úrovňou dôvery.</translation>
 <translation id="2131077480075264">Aplikáciu <ph name="APP_NAME" /> nie je možné nainštalovať, pretože nie je povolená v importe <ph name="IMPORT_NAME" /></translation>
 <translation id="2150661552845026580">Pridať rozšírenie <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2159915644201199628">Nepodarilo sa dekódovať obrázok: <ph name="IMAGE_NAME" /></translation>

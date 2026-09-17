@@ -923,7 +923,6 @@
 <translation id="2527451058878391043">तपाईंको CVC तपाईंको कार्डको अगाडिको भागमा छ। यो तपाईंको कार्ड नम्बरको सिरानको दायाँतिर रहेको ४ अङ्कको कोड हो।</translation>
 <translation id="2529899080962247600">यो फिल्डमा <ph name="MAX_ITEMS_LIMIT" /> भन्दा बढी प्रविष्टि हुनु हुँदैन। थप सबै प्रविष्टि बेवास्ता गरिने छन्।</translation>
 <translation id="2530042584066815841">माउस लक र यसको प्रयोग</translation>
-<translation id="253493526287553278">प्रोमो कोडसम्बन्धी विवरण हेर्नुहोस्</translation>
 <translation id="2535585790302968248">तपाईं गोप्य रूपमा ब्राउज गर्न चाहनुहुन्छ भने नयाँ इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{र थप १}other{र थप #}}</translation>
 <translation id="2536110899380797252">ठेगाना थप्नुहोस्</translation>
@@ -1426,6 +1425,7 @@
 <translation id="3432601291244612633">पृष्ठ बन्द गर्नुहोस्</translation>
 <translation id="3434025015623587566">Google पासवर्ड म्यानेजरलाई थप कुराको अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="343474037147570563">तपाईंले अपलोड वा एट्याच गर्ने फाइलहरू विश्लेषण गर्ने प्रयोजनका लागि Google क्लाउडमा वा तेस्रो पक्षकहाँ पठाइन्छ। उदाहरणका लागि, ती फाइलमा संवेदनशील डेटा वा मालवेयर छन् कि छैनन् भनी जाँच गरिन सक्छ र कम्पनीका नीतिका आधारमा फाइल भण्डारण गरिन सक्छ र ती फाइलहरू एडमिनले हेर्न मिल्छ।</translation>
+<translation id="3435267628744367511">ट्याबहरू अदलबदल नगरिकनै जानकारी भेट्टाउन र भर्न जुनसुकै फाराममा दुई पटक Ctrl थिच्नुहोस्</translation>
 <translation id="3435557549311968410">कन्टिन्युअस (सर्ट)</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3436125638121079308">यो थ्रेडमा अझ राम्रा जवाफहरू प्राप्त गर्न सान्दर्भिक ट्याबहरू स्वतः सेयर गर्ने हो?</translation>
@@ -1514,6 +1514,7 @@
 <translation id="3577473026931028326">कुनै समस्या आयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">यो पृष्ठ तयार भएपछि Chrome ले तपाईंलाई यसबारे सूचित गर्ने छ। &lt;a&gt;रद्द गर्नुहोस्&lt;/a&gt;</translation>
+<translation id="3581499772329034229">ट्याबहरू स्वतः हाल्नुहोस्</translation>
 <translation id="3582930987043644930">नाम थप्नुहोस्</translation>
 <translation id="3583757800736429874">&amp;रिडु सार्ने</translation>
 <translation id="3584299510153766161">फेदमा दुई प्वाल</translation>
@@ -1589,6 +1590,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" />, <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">लोड गर्दै...</translation>
 <translation id="3709599264800900598">तपाईंले प्रतिलिपि गर्नुभएको पाठ</translation>
+<translation id="3711223220609269738">नयाँ आइसोलेटेड ट्याब</translation>
 <translation id="3711430313228789376">Chrome ब्राउजरले पासवर्डहरू देखाउन खोज्दै छ</translation>
 <translation id="3711895659073496551">निलम्बन</translation>
 <translation id="3712004750972384495">स्क्रिन रेकर्डिङ सेभ गरिँदै छ</translation>
@@ -1607,6 +1609,7 @@
 <translation id="3727309136762649052">namespace</translation>
 <translation id="3727850735097852673">macOS Keychain का सहायताले Google पासवर्ड म्यानेजर प्रयोग गर्न Chrome रिलन्च गर्नुहोस् र Keychain प्रयोग गर्ने अनुमति दिनुहोस्। रिलन्च गरेपछि तपाईंका ट्याबहरू फेरि खुल्ने छन्।</translation>
 <translation id="3728173127485570463">अबदेखि Chrome ब्राउजरलाई पासवर्डहरू अटोफिल गर्न तपाईंको फिंगरप्रिन्ट चाहिँदैन</translation>
+<translation id="3729811201279509483">म्यानुअल रूपमा ट्याबहरू हाल्नुहोस्</translation>
 <translation id="3736564442532774454">Chrome ब्राउजरले <ph name="APP_NAME" /> मा तपाईंको संवेदनशील जानकारी हाल्न खोज्दै छ।</translation>
 <translation id="3738166223076830879">तपाईंका एड्मिन तपाईंको ब्राउजर व्यवस्थापन गर्नुहुन्छ।</translation>
 <translation id="3739842843727261045">थम्ज अपले तपाईंलाई यी परिणामहरू मन पर्छ भन्ने प्रतिक्रिया पेस गर्छ</translation>
@@ -2405,7 +2408,6 @@
 <translation id="5052488928733955073">तपाईंको जानकारी भर्ने क्रममा समस्या आयो। आफ्नो इन्टरनेट जाँच्नुहोस्।</translation>
 <translation id="5053116470141135293">तपाईंको वास्तविक विवरण सुरक्षित राख्न तपाईंले यो कार्ड प्रयोग गरी चेकआउट गर्दा भर्चुअल कार्ड नम्बर हालिने छ। Google Wallet मा गई व्यवस्थापन गर्नुहोस्। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{नजिकैका डिभाइससँग सेयर गर्ने सुविधा प्रयोग गरी यो फाइल पठाउन आफ्नो डिभाइसको भण्डारणमा ठाउँ (<ph name="DISK_SPACE_SIZE" />) खाली गर्नुहोस्}other{नजिकैका डिभाइससँग सेयर गर्ने सुविधा प्रयोग गरी यी फाइलहरू पठाउन आफ्नो डिभाइसको भण्डारणमा ठाउँ (<ph name="DISK_SPACE_SIZE" />) खाली गर्नुहोस्}}</translation>
-<translation id="5056587122125565772">फोटो बनाउनुहोस्</translation>
 <translation id="505757197798929356">खोल्नुको कारण उल्लेख गर्नुहोस् (अनिवार्य)</translation>
 <translation id="5058282932481719070">सेटिङमा गई अटोफिल गर्ने परिष्कृत सुविधाका बारेमा थप जान्नुहोस्</translation>
 <translation id="5061227663725596739">तपाईंले <ph name="LOOKALIKE_DOMAIN" /> भन्न चाहनुभएको हो?</translation>
@@ -2771,6 +2773,7 @@
 <translation id="5649053991847567735">स्वचालित डाउनलोडहरू</translation>
 <translation id="5651323159439184939">ट्र्याक्टर फिड</translation>
 <translation id="5653681867130739344">Google Wallet मा परिचयपत्रसम्बन्धी जानकारी सुरक्षित रूपमा अपडेट गर्नुहोस्</translation>
+<translation id="5653744563415531641">आफ्नो जानकारी सेभ गर्नुहोस् र Google का विभिन्न उत्पादनमा फाराम भर्ने जस्ता कामहरू अझ छिटो पूरा गर्नुहोस्। तपाईं <ph name="ACCOUNT" /> का लागि <ph name="MANAGE_WALLET_SETTINGS_LINK" /> सक्नुहुन्छ।</translation>
 <translation id="5654927323611874862">अपलोड गरिएको क्र्यास रिपोर्टको ID:</translation>
 <translation id="5654965123204121933">URL मा बदल्नु पर्ने स्ट्रिङ <ph name="SEARCH_TERMS_REPLACEMENT" /> समावेश हुँदैन: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">इमेल</translation>
@@ -2894,6 +2897,7 @@
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">कार्ड सेभ गरियो</translation>
 <translation id="5887687176710214216">पछिल्लो पटक हिजो खोलिएको</translation>
+<translation id="5887791684215121787">ट्याबहरू अदलबदल नगरिकनै जानकारी भेट्टाउन र भर्न जुनसुकै फाराममा ⌘ ⌘ थिच्नुहोस्</translation>
 <translation id="5889251770650310375">तपाईंका अन्य डिभाइसमा रहेको हिस्ट्री प्राप्त गर्न आफ्नो पहिचान पुष्टि गर्नुहोस् र आफ्ना ट्याब तथा हिस्ट्री सिंक गर्नुहोस्। तपाईं जुनसुकै बेला सेटिङमा गई सिंक गर्ने कार्य रोक्न सक्नुहुन्छ। Google ले तपाईंको हिस्ट्रीका आधारमा Search तथा अन्य सेवाहरू पर्सनलाइज गर्न सक्छ।</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
 <translation id="5895187275912066135">मा प्रकाशित</translation>
@@ -3216,6 +3220,7 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> को म्याद सकिने मिति र CVC प्रविष्टि गर्नुहोस्</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">अभिभावकको अनुमति लिने डायलग</translation>
+<translation id="6413532517183895572">Wallet सम्बन्धी सेटिङ मिलाउनुहोस्</translation>
 <translation id="6415778972515849510">Chromium ले तपाईंलाई आफ्नो Google खाता सुरक्षित गर्न र पासवर्ड बदल्न मद्दत गर्न सक्छ।</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">अति महत्त्वपूर्ण प्रकृतिका सबै व्यावसायिक वा व्यक्तिगत जानकारी बाह्य रूपमा सेभ गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>

@@ -923,7 +923,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2527451058878391043">Váš kód CVC je na přední straně karty. Je to 4místný kód vpravo nahoře nad číslem vaší karty.</translation>
 <translation id="2529899080962247600">Toto pole nesmí mít více než <ph name="MAX_ITEMS_LIMIT" /> položek. Všechny další položky budou ignorovány.</translation>
 <translation id="2530042584066815841">Zámek a používání myši</translation>
-<translation id="253493526287553278">Zobrazit podrobnosti propagačního kódu</translation>
 <translation id="2535585790302968248">Otevřete novou anonymní kartu a prohlížejte v soukromí</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{a 1 další}few{a # další}many{a # další}other{a # dalších}}</translation>
 <translation id="2536110899380797252">Přidat adresu</translation>
@@ -1426,6 +1425,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3432601291244612633">Zavřít stránku</translation>
 <translation id="3434025015623587566">Správce hesel Google potřebuje širší přístupová oprávnění</translation>
 <translation id="343474037147570563">Soubory, které nahrajete nebo připojíte, se odesílají k analýze do služby Google Cloud nebo třetím stranám. Může se u nich například kontrolovat přítomnost citlivých údajů nebo malwaru, mohou být uchovávány v souladu se zásadami společnosti a může k nim mít přístup váš administrátor.</translation>
+<translation id="3435267628744367511">Dvojitým stisknutím klávesy Ctrl v libovolném formuláři můžete najít a vyplnit informace bez přepínání karet</translation>
 <translation id="3435557549311968410">Nepřetržité (spojené kratšími okraji)</translation>
 <translation id="3435738964857648380">Zabezpečení</translation>
 <translation id="3436125638121079308">Automaticky v tomto vláknu sdílet relevantní karty pro lepší odpovědi?</translation>
@@ -2403,7 +2403,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="5052488928733955073">Při vyplňování údajů došlo k potížím. Zkontrolujte připojení.</translation>
 <translation id="5053116470141135293">Při placení touto kartou se vyplní číslo virtuální karty, aby byly vaše skutečné údaje chráněny. Tuto funkci můžete spravovat v Peněžence Google. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pokud tento soubor chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}few{Pokud tyto soubory chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}many{Pokud tyto soubory chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}other{Pokud tyto soubory chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}}</translation>
-<translation id="5056587122125565772">Vytvořit obrázek</translation>
 <translation id="505757197798929356">Uveďte důvod otevření (povinné)</translation>
 <translation id="5058282932481719070">další informace o vylepšeném automatickém vyplňování v nastavení</translation>
 <translation id="5061227663725596739">Měli jste na mysli <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2892,6 +2891,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5884465125445718607">Obálka čínská č. 6</translation>
 <translation id="5887400589839399685">Karta byla uložena</translation>
 <translation id="5887687176710214216">Naposledy navštíveno včera</translation>
+<translation id="5887791684215121787">Stisknutím ⌘ ⌘ v libovolném formuláři můžete najít a vyplnit informace bez přepínání karet</translation>
 <translation id="5889251770650310375">Pokud chcete mít k dispozici historii ze svých ostatních zařízení, ověřte svou totožnost a synchronizujte historii a karty. Synchronizaci můžete v nastavení kdykoli zastavit. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>
 <translation id="5895138241574237353">Restartovat</translation>
 <translation id="5895187275912066135">Datum vydání</translation>
