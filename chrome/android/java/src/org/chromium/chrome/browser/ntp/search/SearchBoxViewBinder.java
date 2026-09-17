@@ -60,6 +60,11 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK == propertyKey) {
             var searchBoxClickListener = model.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK);
             view.mHintTextView.setOnClickListener(searchBoxClickListener);
+            // Protect against focus-theft by temporarily disabling focusability on the EditText
+            // during inflation and attachment.
+            view.mHintTextView.setFocusable(false);
+            // Restore focusability on the next frame after the initial focus pass has completed.
+            view.mHintTextView.post(() -> view.mHintTextView.setFocusable(true));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 if (searchBoxClickListener != null) {
                     view.mHintTextView.setHandwritingDelegatorCallback(
