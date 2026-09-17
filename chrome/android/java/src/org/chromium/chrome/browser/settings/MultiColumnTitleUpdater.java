@@ -144,15 +144,24 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     private @Nullable List<SettingsIndexData.Entry> mCachedDeepLinkPath;
     private final @Nullable Runnable mOnSearchVisibilityChanged;
 
+    /**
+     * Whether settings is being shown in a tab. Injected by the host so that the value stays
+     * constant for the lifetime of this object, even if the screen width changes (e.g. the device
+     * is folded or unfolded).
+     */
+    private final boolean mShownInTab;
+
     MultiColumnTitleUpdater(
             @Nullable Bundle savedInstanceState,
             MultiColumnSettings multiColumnSettings,
+            boolean shownInTab,
             LinearLayout container,
             Callback<String> mainTitleSetter,
             Callback<@Nullable String> titleTapCallback,
             @Nullable List<SettingsIndexData.Entry> initialBreadcrumbPath,
             @Nullable Runnable onSearchVisibilityChanged) {
         mMultiColumnSettings = multiColumnSettings;
+        mShownInTab = shownInTab;
         mContext = container.getContext();
         mContainer = container;
         mMainTitleSetter = mainTitleSetter;
@@ -351,7 +360,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     }
 
     private void updateDetailedPageTitle() {
-        if (SettingsInTab.isEnabled()) {
+        if (mShownInTab) {
             closeSearch();
         }
 
@@ -381,7 +390,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         float scaleX = LocalizationUtils.isLayoutRtl() ? -1f : 1f;
 
         int prevIndex = titles.size() - 2;
-        mHasBackButton = SettingsInTab.isEnabled() && prevIndex >= mFirstVisibleTitleIndex;
+        mHasBackButton = mShownInTab && prevIndex >= mFirstVisibleTitleIndex;
         // Do not show the back button if the previous title is hidden (e.g. Search results).
         if (mHasBackButton) {
             // Set up a back button to go to the section for the previous title.
@@ -421,7 +430,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
 
         // SettingsInTab only shows the last title, not the full breadcrumb path.
         int startIndex =
-                SettingsInTab.isEnabled()
+                mShownInTab
                         ? Math.max(mFirstVisibleTitleIndex, titles.size() - 1)
                         : mFirstVisibleTitleIndex;
         DetailedTitle lastTitleView = null;
@@ -454,7 +463,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         }
 
         mHasSearchButton = false;
-        if (SettingsInTab.isEnabled() && lastTitleView != null) {
+        if (mShownInTab && lastTitleView != null) {
             Fragment detailFragment =
                     mMultiColumnSettings
                             .getChildFragmentManager()
@@ -546,7 +555,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     }
 
     private void openSearch() {
-        assert SettingsInTab.isEnabled();
+        assert mShownInTab;
 
         if (mActiveTitleView != null) {
             mActiveTitleView.setVisibility(View.GONE);
@@ -571,7 +580,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     }
 
     void closeSearch() {
-        assert SettingsInTab.isEnabled();
+        assert mShownInTab;
 
         if (!isSearchOpen()) return;
 
@@ -614,7 +623,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     }
 
     private void ensureBackPressedCallback() {
-        assert SettingsInTab.isEnabled();
+        assert mShownInTab;
 
         // Nothing to do if callback is already set.
         if (mBackPressedCallback != null) return;

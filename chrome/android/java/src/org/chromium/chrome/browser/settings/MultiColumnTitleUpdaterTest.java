@@ -169,8 +169,9 @@ public class MultiColumnTitleUpdaterTest {
      * Creates a MultiColumnTitleUpdater with null savedInstanceState and no breadcrumb path. Exists
      * to keep tests concise.
      */
-    private MultiColumnTitleUpdater createMultiColumnTitleUpdater() {
+    private MultiColumnTitleUpdater createMultiColumnTitleUpdater(boolean shownInTab) {
         return createMultiColumnTitleUpdater(
+                shownInTab,
                 /* savedInstanceState= */ null,
                 /* initialBreadcrumbPath= */ null,
                 /* onSearchVisibilityChanged= */ null);
@@ -178,12 +179,14 @@ public class MultiColumnTitleUpdaterTest {
 
     /** Creates a MultiColumnTitleUpdater. Exists to keep tests concise. */
     private MultiColumnTitleUpdater createMultiColumnTitleUpdater(
+            boolean shownInTab,
             @Nullable Bundle savedInstanceState,
             @Nullable List<SettingsIndexData.Entry> initialBreadcrumbPath,
             @Nullable Runnable onSearchVisibilityChanged) {
         return new MultiColumnTitleUpdater(
                 savedInstanceState,
                 mMultiColumnSettings,
+                shownInTab,
                 mContainer,
                 /* mainTitleSetter= */ (t) -> {},
                 /* titleTapCallback= */ mTitleTapCallback,
@@ -199,7 +202,7 @@ public class MultiColumnTitleUpdaterTest {
                 new MultiColumnSettings.Title("uuid1", createTitleSupplier("Appearance"), 0, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
 
         updater.onTitleUpdated();
 
@@ -218,7 +221,7 @@ public class MultiColumnTitleUpdaterTest {
         titles.add(new MultiColumnSettings.Title("uuid2", createTitleSupplier("Theme"), 1, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
 
         updater.onTitleUpdated();
 
@@ -251,7 +254,7 @@ public class MultiColumnTitleUpdaterTest {
         titles.add(new MultiColumnSettings.Title("uuid2", createTitleSupplier("Theme"), 1, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ false);
 
         updater.onTitleUpdated();
 
@@ -287,7 +290,7 @@ public class MultiColumnTitleUpdaterTest {
                         "uuid2", createTitleSupplier("Search results"), 1, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
 
         updater.setFirstVisibleTitleIndex(1);
         updater.onTitleUpdated();
@@ -312,7 +315,7 @@ public class MultiColumnTitleUpdaterTest {
         titles.add(new MultiColumnSettings.Title("uuid3", createTitleSupplier("Theme"), 2, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
 
         updater.setFirstVisibleTitleIndex(1);
         updater.onTitleUpdated();
@@ -328,7 +331,7 @@ public class MultiColumnTitleUpdaterTest {
     @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     public void testSelectSettingsElementAfterSearch_showsTitle() {
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
 
         // Focusing or tapping the search box triggers SettingsSearchCoordinator.enterSearchState(),
         // which calls mUpdateFirstVisibleTitle.onResult(stackCount + 1). In two-column mode with
@@ -374,7 +377,7 @@ public class MultiColumnTitleUpdaterTest {
         mMultiColumnSettings.setFakeTitles(titles);
 
         // Create the updater after the detail pane is empty, so it starts with no cached state.
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
 
         // Must not crash when there is no detail fragment. https://crbug.com/559531378
         updater.onHeaderLayoutUpdated();
@@ -456,7 +459,7 @@ public class MultiColumnTitleUpdaterTest {
                         "uuid1", createTitleSupplier("Select language"), 0, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
 
         updater.onTitleUpdated();
 
@@ -485,7 +488,7 @@ public class MultiColumnTitleUpdaterTest {
                 new MultiColumnSettings.Title("uuid1", createTitleSupplier("All Sites"), 0, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
 
         updater.onTitleUpdated();
 
@@ -522,7 +525,7 @@ public class MultiColumnTitleUpdaterTest {
                 new MultiColumnSettings.Title("uuid2", createTitleSupplier("JavaScript"), 1, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
         updater.onTitleUpdated();
 
         // 1 back button + 1 DetailedTitle ("JavaScript") + 1 search button + 1 search view = 4
@@ -568,7 +571,7 @@ public class MultiColumnTitleUpdaterTest {
                 new MultiColumnSettings.Title("uuid1", createTitleSupplier("All Sites"), 0, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
         updater.onTitleUpdated();
 
         View titleView = mContainer.getChildAt(0);
@@ -604,7 +607,7 @@ public class MultiColumnTitleUpdaterTest {
                 new MultiColumnSettings.Title("uuid1", createTitleSupplier("All Sites"), 0, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
         updater.onTitleUpdated();
         mActivity.setContentView(mContainer);
 
@@ -651,6 +654,7 @@ public class MultiColumnTitleUpdaterTest {
         AtomicInteger visibilityChangeCount = new AtomicInteger(0);
         MultiColumnTitleUpdater updater =
                 createMultiColumnTitleUpdater(
+                        /* shownInTab= */ true,
                         /* savedInstanceState= */ null,
                         /* initialBreadcrumbPath= */ null,
                         visibilityChangeCount::incrementAndGet);
@@ -689,7 +693,7 @@ public class MultiColumnTitleUpdaterTest {
                 new MultiColumnSettings.Title("uuid1", createTitleSupplier("All Sites"), 0, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
         updater.onTitleUpdated();
 
         View titleView = mContainer.getChildAt(0);
@@ -725,7 +729,7 @@ public class MultiColumnTitleUpdaterTest {
                 new MultiColumnSettings.Title("uuid1", createTitleSupplier("All Sites"), 0, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
         updater.onTitleUpdated();
 
         View titleView = mContainer.getChildAt(0);
@@ -771,7 +775,7 @@ public class MultiColumnTitleUpdaterTest {
                 new MultiColumnSettings.Title("uuid1", createTitleSupplier("Appearance"), 0, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
         updater.onTitleUpdated();
 
         var paramsWithoutBack = (RelativeLayout.LayoutParams) titleScrollView.getLayoutParams();
@@ -819,7 +823,7 @@ public class MultiColumnTitleUpdaterTest {
                 new MultiColumnSettings.Title("uuid1", createTitleSupplier("Appearance"), 0, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
         updater.onTitleUpdated();
 
         var paramsWithoutSearch = (RelativeLayout.LayoutParams) titleScrollView.getLayoutParams();
@@ -873,7 +877,7 @@ public class MultiColumnTitleUpdaterTest {
                 new MultiColumnSettings.Title("uuid1", createTitleSupplier("Appearance"), 0, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
         updater.onTitleUpdated();
 
         var params = (RelativeLayout.LayoutParams) titleScrollView.getLayoutParams();

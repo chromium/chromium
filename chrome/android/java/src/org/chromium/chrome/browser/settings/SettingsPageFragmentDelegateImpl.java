@@ -548,6 +548,7 @@ public class SettingsPageFragmentDelegateImpl
                 new MultiColumnTitleUpdater(
                         savedInstanceState,
                         multiColumnSettings,
+                        /* shownInTab= */ true,
                         titleContainer,
                         mToolbar::setTitle,
                         this::onTitleTapped,
