@@ -21,6 +21,7 @@ suite('OrganizerPanelAppTest', () => {
       cjkWordBoundaryEnabled: false,
       clearSearch: 'Clear search',
       closeTab: 'Close tab',
+      noResults: 'No results',
       openTabs: 'Open Tabs',
       recentlyClosed: 'Recently Closed',
       searchTabs: 'Search Tabs',

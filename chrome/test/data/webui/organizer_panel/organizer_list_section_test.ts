@@ -226,6 +226,7 @@ suite('OrganizerListSectionTest', () => {
     let listItems =
         listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
     assertEquals(2, listItems.length);
+    assertEquals(null, listSection.shadowRoot.querySelector('#noResults'));
 
     async function setSearchQuery(query: string) {
       listSection.searchQuery = query;
@@ -237,23 +238,80 @@ suite('OrganizerListSectionTest', () => {
         listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
     assertEquals(1, listItems.length);
     assertDeepEquals(['YouTube'], listItems[0]!.item.title);
+    assertEquals(null, listSection.shadowRoot.querySelector('#noResults'));
 
     await setSearchQuery('google.com');
     listItems =
         listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
     assertEquals(1, listItems.length);
     assertDeepEquals(['Google'], listItems[0]!.item.title);
+    assertEquals(null, listSection.shadowRoot.querySelector('#noResults'));
 
     await setSearchQuery('nomatch');
     listItems =
         listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
     assertEquals(0, listItems.length);
+    const noResults = listSection.shadowRoot.querySelector('#noResults');
+    assertTrue(!!noResults);
+    assertEquals('No results', noResults.textContent.trim());
 
     await setSearchQuery('');
     listItems =
         listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
     assertEquals(2, listItems.length);
+    assertEquals(null, listSection.shadowRoot.querySelector('#noResults'));
   });
+
+  test(
+      'shows no results message only when search query has no matches',
+      async () => {
+        listSection.delegate = new TestSectionDelegate('Open Tabs', []);
+        await microtasksFinished();
+
+        assertEquals(null, listSection.shadowRoot.querySelector('#noResults'));
+
+        listSection.searchQuery = 'query';
+        await microtasksFinished();
+
+        const noResults = listSection.shadowRoot.querySelector('#noResults');
+        assertTrue(!!noResults);
+        assertEquals('No results', noResults.textContent.trim());
+      });
+
+  test(
+      'shows all matching items without expand button when searching',
+      async () => {
+        const items: Array<OrganizerListSectionItem<unknown>> = [
+          {title: ['Tab 1'], description: [{text: 'tab1.com'}]},
+          {title: ['Tab 2'], description: [{text: 'tab2.com'}]},
+          {title: ['Tab 3'], description: [{text: 'tab3.com'}]},
+          {title: ['Tab 4'], description: [{text: 'tab4.com'}]},
+        ];
+        listSection.delegate = new TestSectionDelegate('Open Tabs', items);
+        await microtasksFinished();
+
+        let listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(INITIAL_ITEM_COUNT, listItems.length);
+        assertTrue(!!listSection.shadowRoot.querySelector('cr-expand-button'));
+
+        listSection.searchQuery = 'Tab';
+        await microtasksFinished();
+
+        listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(4, listItems.length);
+        assertEquals(
+            null, listSection.shadowRoot.querySelector('cr-expand-button'));
+
+        listSection.searchQuery = '';
+        await microtasksFinished();
+
+        listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(INITIAL_ITEM_COUNT, listItems.length);
+        assertTrue(!!listSection.shadowRoot.querySelector('cr-expand-button'));
+      });
 
   test('highlights matching text when searching', async () => {
     const delegateItems = [

@@ -26,7 +26,6 @@ export const INITIAL_ITEM_COUNT = 3;
 export interface OrganizerListSectionElement {
   $: {
     header: HTMLElement,
-    items: HTMLElement,
   };
 }
 
@@ -51,6 +50,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
       expanded_: {type: Boolean},
       searchQuery: {type: String},
       filteredItems_: {type: Array},
+      filteredSearchQuery_: {type: String},
     };
   }
 
@@ -60,6 +60,10 @@ export class OrganizerListSectionElement extends CrLitElement implements
   accessor searchQuery: string = '';
   protected accessor filteredItems_:
       Array<HighlightableOrganizerListSectionItem<unknown>> = [];
+  // This is the search query that `filteredItems_` currently matches. This
+  // ensures that we don't show the full list of elements until after the search
+  // has been applied and the list of items has been filtered.
+  protected accessor filteredSearchQuery_: string = '';
 
   private searchOptions_: SearchOptions<
       HighlightableOrganizerListSectionItem<unknown>> = {
@@ -134,29 +138,47 @@ export class OrganizerListSectionElement extends CrLitElement implements
 
   private async updateFilteredItems_() {
     const query = this.searchQuery;
+    if (query.length === 0) {
+      this.filteredSearchQuery_ = '';
+      this.filteredItems_ = [...this.items];
+      return;
+    }
     const filteredItems = await search(query, this.items, this.searchOptions_);
     // Confirm that the search query hasn't changed before updating the filtered
     // items.
     if (this.searchQuery === query) {
+      this.filteredSearchQuery_ = query;
       this.filteredItems_ = filteredItems;
     }
   }
 
+  private isSearching_(): boolean {
+    return this.filteredSearchQuery_.length > 0;
+  }
+
   protected getInitialItems_():
       Array<HighlightableOrganizerListSectionItem<unknown>> {
+    if (this.isSearching_()) {
+      return this.getFilteredItems_();
+    }
     return this.getFilteredItems_().slice(0, INITIAL_ITEM_COUNT);
   }
 
   protected getRemainingItems_():
       Array<HighlightableOrganizerListSectionItem<unknown>> {
-    if (!this.expanded_) {
+    if (!this.expanded_ || this.isSearching_()) {
       return [];
     }
     return this.getFilteredItems_().slice(INITIAL_ITEM_COUNT);
   }
 
   protected hasMoreItems_(): boolean {
-    return this.getFilteredItems_().length > INITIAL_ITEM_COUNT;
+    return !this.isSearching_() &&
+        this.getFilteredItems_().length > INITIAL_ITEM_COUNT;
+  }
+
+  protected hasNoSearchResults_(): boolean {
+    return this.isSearching_() && this.getFilteredItems_().length === 0;
   }
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {

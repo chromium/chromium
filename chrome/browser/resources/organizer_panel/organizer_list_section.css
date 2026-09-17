@@ -21,3 +21,9 @@
   margin: 8px 16px;
   text-transform: uppercase;
 }
+
+#noResults {
+  color: var(--cr-secondary-text-color);
+  font-size: 12px;
+  margin: 8px 16px;
+}
