@@ -39,6 +39,7 @@ void TtsExtensionEngineChromeOS::SendAudioBuffer(
 
 void TtsExtensionEngineChromeOS::Speak(content::TtsUtterance* utterance,
                                        const content::VoiceData& voice) {
+  set_current_utterance_engine(utterance->GetEngineId());
   Profile* profile =
       Profile::FromBrowserContext(utterance->GetBrowserContext());
   const std::string& engine_id = utterance->GetEngineId();
@@ -156,12 +157,15 @@ void TtsExtensionEngineChromeOS::OnTimepoint(int32_t char_index) {
 }
 
 void TtsExtensionEngineChromeOS::OnEnd() {
+  set_current_utterance_engine("");
   content::TtsController::GetInstance()->OnTtsEvent(
       current_utterance_id_, content::TTS_EVENT_END, current_utterance_length_,
       -1 /* length */, std::string());
 }
 
-void TtsExtensionEngineChromeOS::OnError() {}
+void TtsExtensionEngineChromeOS::OnError() {
+  set_current_utterance_engine("");
+}
 
 void TtsExtensionEngineChromeOS::OnProfileWillBeDestroyed(Profile* profile) {
   current_utterance_profile_observer_.Reset();

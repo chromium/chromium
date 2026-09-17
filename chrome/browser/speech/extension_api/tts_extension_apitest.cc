@@ -810,6 +810,49 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, OnSpeakWithAudioStreamAudioOptions) {
       "tts_engine/on_speak_with_audio_stream_using_audio_options"))
       << message_;
 }
-#endif  // IS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_P(TtsApiTest, SendTtsEventUnauthorizedCaller) {
+  TtsExtensionEngine* engine = TtsExtensionEngine::GetInstance();
+  ASSERT_TRUE(engine);
+
+  // When no utterance is speaking, IsCurrentUtteranceEngine should return false
+  // for any caller.
+  EXPECT_FALSE(engine->IsCurrentUtteranceEngine("unauthorized_extension"));
+
+  // Create an utterance and simulate it being spoken by an engine.
+  std::unique_ptr<content::TtsUtterance> utterance =
+      content::TtsUtterance::Create(profile());
+  utterance->SetEngineId("legitimate_engine");
+  content::VoiceData voice;
+  voice.engine_id = "legitimate_engine";
+  engine->Speak(utterance.get(), voice);
+
+  // While speaking, legitimate engine is current, unauthorized engine is not.
+  EXPECT_TRUE(engine->IsCurrentUtteranceEngine("legitimate_engine"));
+  EXPECT_FALSE(engine->IsCurrentUtteranceEngine("unauthorized_extension"));
+
+  // Stopping a queued utterance belonging to another engine does not
+  // de-authorize the active speaking engine.
+  std::unique_ptr<content::TtsUtterance> other_utterance =
+      content::TtsUtterance::Create(profile());
+  other_utterance->SetEngineId("other_engine");
+  engine->Stop(other_utterance.get());
+  EXPECT_TRUE(engine->IsCurrentUtteranceEngine("legitimate_engine"));
+  other_utterance->ClearBrowserContext();
+
+  // Clearing the active utterance engine resets authorization state.
+  engine->set_current_utterance_engine("");
+  EXPECT_FALSE(engine->IsCurrentUtteranceEngine("legitimate_engine"));
+  EXPECT_FALSE(engine->IsCurrentUtteranceEngine("unauthorized_extension"));
+
+  // Explicitly setting the active utterance engine establishes authorization.
+  engine->set_current_utterance_engine("direct_engine");
+  EXPECT_TRUE(engine->IsCurrentUtteranceEngine("direct_engine"));
+  EXPECT_FALSE(engine->IsCurrentUtteranceEngine("other_engine"));
+  engine->set_current_utterance_engine("");
+
+  utterance->ClearBrowserContext();
+}
 
 }  // namespace extensions
