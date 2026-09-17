@@ -310,7 +310,7 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     phonehub::PhoneHubManagerFactory::GetForProfile(profile);
     eche_app::EcheAppManagerFactory::GetForProfile(profile);
 
-    VmCameraMicManager::Get()->OnPrimaryUserSessionStarted(primary_profile_);
+    VmCameraMicManager::Get()->OnPrimaryUserSessionStarted();
 
     // Pciguard can only be set by non-guest, primary users. By default,
     // Pciguard is turned on.

@@ -18,15 +18,7 @@ include_rules = [
   "+chrome/browser/ash/borealis",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/video_conference",
-  "+chrome/browser/notifications",
-  "+chrome/browser/profiles/profile.h",
   "+chrome/grit",
-  "+chrome/test/base",
-]
 
-specific_include_rules = {
-  # Testing
-  ".*_unittest\\.cc": [
-    "+ui/message_center/message_center.h"
-  ],
-}
+  "+ui/message_center/message_center.h",
+]

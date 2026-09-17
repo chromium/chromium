@@ -19,20 +19,14 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/containers/flat_map.h"
-#include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/message_center/message_center.h"
@@ -59,37 +53,6 @@ constexpr NotificationType kCameraAndMicNotification =
     VmCameraMicManager::kCameraAndMicNotification;
 
 constexpr auto kDebounceTime = VmCameraMicManager::kDebounceTime;
-
-class FakeNotificationDisplayService : public NotificationDisplayService {
- public:
-  FakeNotificationDisplayService() = default;
-  ~FakeNotificationDisplayService() override = default;
-
-  void Display(
-      NotificationHandler::Type notification_type,
-      const message_center::Notification& notification,
-      std::unique_ptr<NotificationCommon::Metadata> metadata) override {
-    notification_ids_.insert(notification.id());
-  }
-
-  void Close(NotificationHandler::Type notification_type,
-             const std::string& notification_id) override {
-    size_t count = notification_ids_.erase(notification_id);
-    CHECK(count == 1);
-  }
-
-  void GetDisplayed(DisplayedNotificationsCallback callback) override {}
-  void GetDisplayedForOrigin(const GURL& origin,
-                             DisplayedNotificationsCallback callback) override {
-  }
-  void AddObserver(Observer* observer) override {}
-  void RemoveObserver(Observer* observer) override {}
-
-  const std::set<std::string>& notification_ids() { return notification_ids_; }
-
- private:
-  std::set<std::string> notification_ids_;
-};
 
 using DeviceActiveMap = base::flat_map<DeviceType, bool>;
 using ActiveMap = base::flat_map<VmType, DeviceActiveMap>;
@@ -144,22 +107,14 @@ class VmCameraMicManagerTest : public testing::Test {
   VmCameraMicManagerTest() {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
-    // Make the profile the primary one.
-    fake_user_manager_->AddUser(AccountId::FromUserEmailGaiaId(
-        testing_profile_.GetProfileUserName(), GaiaId("id")));
-
-    // Inject a fake notification display service.
-    fake_display_service_ = static_cast<FakeNotificationDisplayService*>(
-        NotificationDisplayServiceFactory::GetInstance()
-            ->SetTestingFactoryAndUse(
-                &testing_profile_,
-                base::BindRepeating([](content::BrowserContext* context)
-                                        -> std::unique_ptr<KeyedService> {
-                  return std::make_unique<FakeNotificationDisplayService>();
-                })));
+    // `VmCameraMicManager` associates its notifications with the primary user,
+    // so log one in before starting the session.
+    const AccountId account_id = AccountId::FromUserEmail("test@example.com");
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
 
     vm_camera_mic_manager_ = std::make_unique<VmCameraMicManager>();
-    vm_camera_mic_manager_->OnPrimaryUserSessionStarted(&testing_profile_);
+    vm_camera_mic_manager_->OnPrimaryUserSessionStarted();
   }
 
   VmCameraMicManagerTest(const VmCameraMicManagerTest&) = delete;
@@ -245,9 +200,7 @@ class VmCameraMicManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
-  TestingProfile testing_profile_;
 
-  raw_ptr<FakeNotificationDisplayService> fake_display_service_;
   std::unique_ptr<VmCameraMicManager> vm_camera_mic_manager_;
 
   base::test::ScopedFeatureList scoped_feature_list_;

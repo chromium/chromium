@@ -8,26 +8,19 @@
 #include <bitset>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
-#include "ui/message_center/public/cpp/notification.h"
-#include "ui/message_center/public/cpp/notification_delegate.h"
-
-class Profile;
 
 namespace ash {
 
 // This class manages camera/mic access (and the access notifications) for VMs.
-// All of the notifications are sent to the
-// primary profile since all VMs support only the primary profile. We might need
-// to change this if we extend this class to support the browser, in which case
-// we will also need to make the notification ids different for different
-// profiles.
+// All of the notifications are associated with the primary user since all VMs
+// support only the primary user. We might need to change this if we extend this
+// class to support the browser, in which case we will also need to make the
+// notification ids different for different users.
 class VmCameraMicManager : public media::CameraPrivacySwitchObserver,
                            public CrasAudioHandler::AudioObserver {
  public:
@@ -61,7 +54,7 @@ class VmCameraMicManager : public media::CameraPrivacySwitchObserver,
   VmCameraMicManager();
   ~VmCameraMicManager() override;
 
-  void OnPrimaryUserSessionStarted(Profile* primary_profile);
+  void OnPrimaryUserSessionStarted();
 
   VmCameraMicManager(const VmCameraMicManager&) = delete;
   VmCameraMicManager& operator=(const VmCameraMicManager&) = delete;
@@ -104,7 +97,6 @@ class VmCameraMicManager : public media::CameraPrivacySwitchObserver,
   void UpdateVmInfo(VmType vm, void (VmInfo::*updator)(bool), bool value);
   void NotifyActiveChanged();
 
-  raw_ptr<Profile, LeakedDanglingUntriaged> primary_profile_ = nullptr;
   std::map<VmType, VmInfo> vm_info_map_;
 
   base::ObserverList<Observer> observers_;
