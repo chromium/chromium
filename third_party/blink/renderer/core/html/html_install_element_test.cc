@@ -250,7 +250,7 @@ TEST_F(HTMLInstallElementTestBase, InstalledStateHiddenInCanvasSubtree) {
   ScopedCanvasDrawElementForTest canvas_draw_element_enabled(true);
 
   auto* canvas = GetDocument().CreateRawElement(html_names::kCanvasTag);
-  canvas->setAttribute(html_names::kLayoutsubtreeAttr, g_empty_atom);
+  canvas->setAttribute(html_names::kContentAttr, AtomicString("drawable"));
   HTMLInstallElement* element =
       MakeGarbageCollected<HTMLInstallElement>(GetDocument());
   canvas->AppendChild(element);
@@ -285,7 +285,7 @@ TEST_F(HTMLInstallElementTestBase,
   ASSERT_TRUE(element->show_as_launch());
 
   auto* canvas = GetDocument().CreateRawElement(html_names::kCanvasTag);
-  canvas->setAttribute(html_names::kLayoutsubtreeAttr, g_empty_atom);
+  canvas->setAttribute(html_names::kContentAttr, AtomicString("drawable"));
   GetDocument().body()->AppendChild(canvas);
   canvas->AppendChild(element);
 

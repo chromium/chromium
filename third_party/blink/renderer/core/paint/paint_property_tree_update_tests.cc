@@ -2395,7 +2395,7 @@ TEST_P(PaintPropertyTreeUpdateTest, CanvasSubtreePseudoElementFilter) {
         filter: drop-shadow(0px 0px 0px rgba(0,0,0,0));
       }
     </style>
-    <canvas id="canvas" layoutsubtree>
+    <canvas id="canvas" content=drawable>
       <div id="target"></div>
     </canvas>
   )HTML");
@@ -2405,7 +2405,7 @@ TEST_P(PaintPropertyTreeUpdateTest, CanvasSubtreePseudoElementFilter) {
   LayoutObject* before_layout = before->GetLayoutObject();
   const auto* properties = before_layout->FirstFragment().PaintProperties();
 
-  // Initially, the pseudo-element is inside the layoutsubtree canvas,
+  // Initially, the pseudo-element is inside the content=drawable canvas,
   // so its filter effect node should have is_in_canvas_subtree set to true.
   const auto* filter_effect = properties->Filter();
   EXPECT_TRUE(filter_effect->IsInDrawableCanvasSubtree());
@@ -2427,7 +2427,7 @@ TEST_P(PaintPropertyTreeUpdateTest, CanvasScriptsDisabled) {
   GetDocument().GetSettings()->SetScriptEnabled(false);
 
   SetBodyInnerHTML(R"HTML(
-    <canvas layoutsubtree style="display: inline;">
+    <canvas content=drawable style="display: inline;">
       <div id="target">Hello</div>
     </canvas>
   )HTML");
@@ -2446,7 +2446,7 @@ TEST_P(PaintPropertyTreeUpdateTest, CanvasSubtreeScrollbarInIframe) {
         height: 200px;
       }
     </style>
-    <canvas id="canvas" layoutsubtree></canvas>
+    <canvas id="canvas" content=drawable></canvas>
     <iframe id="iframe"></iframe>
   )HTML");
   SetChildFrameHTML(R"HTML(

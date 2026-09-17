@@ -398,7 +398,7 @@ TEST_F(StyleAdjusterTest, AdjustForCanvasDrawableDescendant) {
     <style>
       div { width: 100px; height: 100px; }
     </style>
-    <canvas id="canvas" width="300" height="300" layoutsubtree>
+    <canvas id="canvas" width="300" height="300" content=drawable>
       <div id="a">
         <div id="aa" drawable style="background: red;">
           <div id="aaa">a1</div>

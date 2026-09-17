@@ -3922,6 +3922,7 @@ interface HTMLCameraElement : HTMLElement
     setter ontrack
 interface HTMLCanvasElement : HTMLElement
     attribute @@toStringTag
+    getter content
     getter height
     getter layoutSubtree
     getter onelementgeometryupdate
@@ -3939,6 +3940,7 @@ interface HTMLCanvasElement : HTMLElement
     method toDataURL
     method transferControlToOffscreen
     method updateElementGeometry
+    setter content
     setter height
     setter layoutSubtree
     setter onelementgeometryupdate

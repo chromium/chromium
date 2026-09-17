@@ -1182,7 +1182,7 @@ class CORE_EXPORT Element : public ContainerNode {
   void VerifySubtreeIsInCanvas(bool value);
 #endif
 
-  // Returns the nearest ancestor <canvas layoutsubtree> if this element is
+  // Returns the nearest ancestor <canvas content=drawable> if this element is
   // eligible for drawing into it (i.e. is connected, is in a canvas subtree,
   // is not a pseudo-element, and is an immediate child of the canvas or has
   // the 'drawable' attribute). Returns nullptr otherwise.

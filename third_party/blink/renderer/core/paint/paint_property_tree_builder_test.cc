@@ -8240,7 +8240,7 @@ TEST_P(PaintPropertyTreeBuilderTest, ScrollAxisLockPropagatesToCc) {
 
 TEST_P(PaintPropertyTreeBuilderTest, ElementCanvasTransformPropertyTree) {
   SetBodyInnerHTML(R"HTML(
-    <canvas layoutsubtree id="canvas">
+    <canvas content=drawable id="canvas">
       <div id="target" style="translate: 10px 20px"></div>
     </canvas>
   )HTML");

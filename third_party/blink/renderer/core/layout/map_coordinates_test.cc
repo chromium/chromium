@@ -1977,7 +1977,7 @@ TEST_P(MapCoordinatesTest,
 
 TEST_P(MapCoordinatesTest, ElementCanvasTransform) {
   SetBodyInnerHTML(R"HTML(
-    <canvas layoutsubtree id="canvas" style="width: 200px; height: 200px">
+    <canvas content=drawable id="canvas" style="width: 200px; height: 200px">
       <div id="target" style="width: 100px; height: 100px"></div>
     </canvas>
   )HTML");
@@ -1997,7 +1997,7 @@ TEST_P(MapCoordinatesTest, ElementCanvasTransform) {
 
 TEST_P(MapCoordinatesTest, NestedElementCanvasTransform) {
   SetBodyInnerHTML(R"HTML(
-    <canvas layoutsubtree id="canvas" style="width: 400px; height: 200px">
+    <canvas content=drawable id="canvas" style="width: 400px; height: 200px">
       <div id="a" drawable style="width: 100px; height: 100px; background: blue;">
         <div id="b" drawable style="width: 50px; height: 50px; background: green;"></div>
       </div>
@@ -2021,7 +2021,7 @@ TEST_P(MapCoordinatesTest, NestedElementCanvasTransform) {
 
 TEST_P(MapCoordinatesTest, NestedElementCanvasTransformWithOffset) {
   SetBodyInnerHTML(R"HTML(
-    <canvas layoutsubtree id="canvas" style="width: 400px; height: 200px">
+    <canvas content=drawable id="canvas" style="width: 400px; height: 200px">
       <div id="a" drawable style="width: 100px; height: 100px; background: blue;">
         <div id="b" drawable style="margin-top: 20px; width: 50px; height: 50px; background: green;"></div>
       </div>
@@ -2046,7 +2046,7 @@ TEST_P(MapCoordinatesTest, NestedElementCanvasTransformWithOffset) {
 TEST_P(MapCoordinatesTest,
        NestedElementCanvasTransformChildWithoutCanvasTransform) {
   SetBodyInnerHTML(R"HTML(
-    <canvas layoutsubtree id="canvas" style="width: 400px; height: 200px">
+    <canvas content=drawable id="canvas" style="width: 400px; height: 200px">
       <div id="a" drawable style="width: 100px; height: 100px; background: blue;">
         <div id="b" drawable style="width: 50px; height: 50px; background: green;"></div>
       </div>
@@ -2067,7 +2067,7 @@ TEST_P(MapCoordinatesTest,
 
 TEST_P(MapCoordinatesTest, NestedElementCanvasTransformNonDrawableChild) {
   SetBodyInnerHTML(R"HTML(
-    <canvas layoutsubtree id="canvas" style="width: 400px; height: 200px">
+    <canvas content=drawable id="canvas" style="width: 400px; height: 200px">
       <div id="a" drawable style="width: 100px; height: 100px; background: blue;">
         <div id="b" style="width: 50px; height: 50px; background: green;"></div>
       </div>
@@ -2092,7 +2092,7 @@ TEST_P(MapCoordinatesTest, NestedElementCanvasTransformInline) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>span { font: 50px/1 Ahem; }</style>
-    <canvas layoutsubtree id="canvas" style="width: 400px; height: 200px">
+    <canvas content=drawable id="canvas" style="width: 400px; height: 200px">
       <div id="a" drawable style="width: 100px; height: 100px; background: blue;">
         <span id="b" drawable style="color: green;">X</span>
       </div>

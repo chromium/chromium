@@ -564,7 +564,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
 #endif
 
   // Set or get the ElementId used to identify this layer as the direct child
-  // of a canvas with layoutsubtree, which can be used for DrawElementImage.
+  // of a canvas with content=drawable, which can be used for DrawElementImage.
   void SetCanvasChildId(ElementId id);
   ElementId canvas_child_id() const {
     if (const auto& rare_inputs = inputs_.Read(*this).rare_inputs) {

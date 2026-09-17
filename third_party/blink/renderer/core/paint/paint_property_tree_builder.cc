@@ -646,7 +646,7 @@ static bool NeedsPaintOffsetTranslation(
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
           object.GetDocument().GetExecutionContext())) {
     if (const auto* canvas = DynamicTo<HTMLCanvasElement>(object.GetNode())) {
-      if (canvas->layoutSubtree()) {
+      if (canvas->IsContentDrawable()) {
         return true;
       }
     }
@@ -4161,7 +4161,7 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
           object_.GetDocument().GetExecutionContext())) {
     const auto* canvas = DynamicTo<HTMLCanvasElement>(object_.GetNode());
-    if (canvas && canvas->layoutSubtree()) {
+    if (canvas && canvas->IsContentDrawable()) {
       // Invalidate the child's paint properties so that its cached
       // CanvasChildPaintState is updated with the new canvas size.
       for (LayoutObject* child = object_.SlowFirstChild(); child;

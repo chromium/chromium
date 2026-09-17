@@ -88,17 +88,17 @@ TEST_F(HTMLCanvasAccessibilityManagerTest, TooSmall) {
       HTMLCanvasAccessibilityManager::HeuristicResult::kTooSmall, 1);
 }
 
-TEST_F(HTMLCanvasAccessibilityManagerTest, HasLayoutSubtree) {
+TEST_F(HTMLCanvasAccessibilityManagerTest, HasContentDrawable) {
   base::HistogramTester histogram_tester;
   SetUpCanvas(
-      "<body><canvas id='c' width=300 height=200 layoutsubtree></"
+      "<body><canvas id='c' width=300 height=200 content=drawable></"
       "canvas></body>");
   canvas_element_->OnAxObjectIgnoredStateChanged(/*is_ignored=*/false);
   WaitForAccessibilityManagerUpdate();
 
   histogram_tester.ExpectUniqueSample(
       "Accessibility.Canvas.HeuristicResult",
-      HTMLCanvasAccessibilityManager::HeuristicResult::kHasLayoutSubtree, 1);
+      HTMLCanvasAccessibilityManager::HeuristicResult::kHasContentDrawable, 1);
 }
 
 TEST_F(HTMLCanvasAccessibilityManagerTest, HasNonElementFallbackContent) {

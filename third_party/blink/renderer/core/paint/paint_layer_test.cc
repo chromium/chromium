@@ -2634,7 +2634,7 @@ TEST_P(PaintLayerTest, PaintLayerCanvasTransformUpdated) {
   ScopedElementCanvasTransformForTest forced_canvas_transform_feature(true);
 
   SetBodyInnerHTML(R"HTML(
-    <canvas id='canvas' width='200' height='200' layoutsubtree>
+    <canvas id='canvas' width='200' height='200' content=drawable>
       <div id='target' style='width: 100px; height: 100px;'></div>
     </canvas>
   )HTML");

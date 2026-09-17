@@ -2464,10 +2464,10 @@ TEST_P(PaintLayerScrollableAreaTest, SingleAxisScrollableAxes) {
 }
 
 TEST_P(PaintLayerScrollableAreaTest,
-       CanvasLayoutSubtreeOverlayScrollbarShowHide) {
+       CanvasContentDrawableOverlayScrollbarShowHide) {
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
   SetBodyInnerHTML(R"HTML(
-    <canvas id="canvas" style="width: 200px; height: 200px" layoutsubtree>
+    <canvas id="canvas" style="width: 200px; height: 200px" content=drawable>
       <div id="scroller" style="width: 100px; height: 100px; overflow: scroll">
         <div style="width: 200px; height: 200px; background: white"></div>
       </div>

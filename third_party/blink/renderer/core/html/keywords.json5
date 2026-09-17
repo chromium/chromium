@@ -294,5 +294,10 @@
     // https://github.com/explainers-by-googlers/inline-script-cache-hint
     "never",
     "default",
+
+    // Values of content attribute for <canvas> element.
+    // https://github.com/WICG/html-in-canvas
+    "drawable",
+    "fallback",
   ],
 }

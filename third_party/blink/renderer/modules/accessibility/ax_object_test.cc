@@ -2683,7 +2683,7 @@ TEST_F(AccessibilityTest, UnslottedIsInCanvasSubtreeWithoutCanvasTransform) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id="slotHost">
       <template shadowrootmode="open">
-        <canvas layoutsubtree>
+        <canvas content=drawable>
           <slot name="slot">
             <button id="unslotted">fallback</button>
           </slot>

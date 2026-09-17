@@ -7580,7 +7580,7 @@ const Node* AXObject::GetParentNodeAcrossFrames(const Node* node) {
   return node->GetDocument().LocalOwner();
 }
 
-// Elements under a <canvas layoutsubtree> should only have geometry/layout
+// Elements under a <canvas content=drawable> should only have geometry/layout
 // bounds in the accessibility tree if they have a set canvas element
 // transform, or are descendants of a drawable element with a set canvas
 // element transform.
@@ -7606,7 +7606,7 @@ bool AXObject::IsInCanvasSubtreeWithoutCanvasTransform() const {
       }
     }
     if (auto* canvas = DynamicTo<HTMLCanvasElement>(curr)) {
-      return canvas->layoutSubtree();
+      return canvas->IsContentDrawable();
     }
   }
   NOTREACHED();

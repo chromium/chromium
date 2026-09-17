@@ -57,7 +57,7 @@ HTMLCanvasAccessibilityManager::HTMLCanvasAccessibilityManager(
       canvas_element_(canvas_element) {
   UpdateHasFallbackElementContent();
 
-  has_layoutsubtree_ = canvas_element->layoutSubtree();
+  has_content_drawable_ = canvas_element->IsContentDrawable();
 
   ReadAriaAttributes();
 
@@ -127,12 +127,12 @@ void HTMLCanvasAccessibilityManager::ReadAriaAttributes() {
   OnUpdate();
 }
 
-void HTMLCanvasAccessibilityManager::SetHasLayoutSubtree(
-    bool has_layoutsubtree) {
-  if (has_layoutsubtree_ == has_layoutsubtree) {
+void HTMLCanvasAccessibilityManager::SetHasContentDrawable(
+    bool has_content_drawable) {
+  if (has_content_drawable_ == has_content_drawable) {
     return;
   }
-  has_layoutsubtree_ = has_layoutsubtree;
+  has_content_drawable_ = has_content_drawable;
   OnUpdate();
 }
 
@@ -160,8 +160,8 @@ void HTMLCanvasAccessibilityManager::OnUpdate() {
     return;
   }
 
-  if (has_layoutsubtree_) {
-    SetHeuristicResult(HeuristicResult::kHasLayoutSubtree);
+  if (has_content_drawable_) {
+    SetHeuristicResult(HeuristicResult::kHasContentDrawable);
     return;
   }
 

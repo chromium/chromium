@@ -96,6 +96,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/hit_test_canvas_result.h"
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
@@ -373,14 +374,28 @@ void HTMLCanvasElement::AttributeChanged(
     }
   }
 
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
-      params.name == html_names::kLayoutsubtreeAttr) {
-    bool had_layoutsubtree = !params.old_value.IsNull();
-    bool has_layoutsubtree = !params.new_value.IsNull();
-    if (had_layoutsubtree != has_layoutsubtree) {
-      setLayoutSubtree(has_layoutsubtree);
-      if (accessibility_manager_) {
-        accessibility_manager_->SetHasLayoutSubtree(has_layoutsubtree);
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext())) {
+    if (params.name == html_names::kContentAttr ||
+        params.name == html_names::kLayoutsubtreeAttr) {
+      const AtomicString& content_attr =
+          FastGetAttribute(html_names::kContentAttr);
+      bool has_content_drawable =
+          !content_attr.IsNull()
+              ? EqualIgnoringAsciiCase(content_attr, keywords::kDrawable)
+              // TODO(crbug.com/561849343): Remove support for layoutsubtree.
+              : FastHasAttribute(html_names::kLayoutsubtreeAttr);
+      if (is_content_drawable_ != has_content_drawable) {
+        is_content_drawable_ = has_content_drawable;
+        SetNeedsStyleRecalc(kSubtreeStyleChange,
+                            StyleChangeReasonForTracing::Create(
+                                style_change_reason::kAttribute));
+        SetForceReattachLayoutTree();
+        if (auto* object = GetLayoutObject()) {
+          object->SetNeedsLayout(layout_invalidation_reason::kAttributeChanged);
+        }
+        if (accessibility_manager_) {
+          accessibility_manager_->SetHasContentDrawable(has_content_drawable);
+        }
       }
     }
   }
@@ -431,19 +446,14 @@ void HTMLCanvasElement::setWidth(unsigned value,
   }
 }
 
+// TODO(crbug.com/561849343): Remove support for layoutsubtree.
 void HTMLCanvasElement::setLayoutSubtree(bool value) {
   SetBooleanAttribute(html_names::kLayoutsubtreeAttr, value);
-  SetNeedsStyleRecalc(
-      kSubtreeStyleChange,
-      StyleChangeReasonForTracing::Create(style_change_reason::kAttribute));
-  SetForceReattachLayoutTree();
-  if (auto* object = GetLayoutObject()) {
-    object->SetNeedsLayout(layout_invalidation_reason::kAttributeChanged);
-  }
 }
 
+// TODO(crbug.com/561849343): Remove support for layoutsubtree.
 bool HTMLCanvasElement::layoutSubtree() const {
-  return FastHasAttribute(html_names::kLayoutsubtreeAttr);
+  return IsContentDrawable();
 }
 
 void HTMLCanvasElement::requestPaint() {
@@ -754,8 +764,8 @@ void HTMLCanvasElement::OnAccelerationDisabled() {
 }
 
 void HTMLCanvasElement::SetNeedsCompositingUpdate() {
-  if (IsInCanvasSubtree() && layoutSubtree()) {
-    // Nested layoutsubtree canvases cannot be composited and do not need
+  if (IsInCanvasSubtree() && IsContentDrawable()) {
+    // Nested content=drawable canvases cannot be composited and do not need
     // repainting when their resource provider or context updates.
     return;
   }
@@ -918,7 +928,7 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
 
     if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
             GetExecutionContext()) &&
-        layoutSubtree()) {
+        IsContentDrawable()) {
       // Invalidate the child's paint properties so that its cached
       // CanvasChildPaintState is updated with the new canvas size.
       for (LayoutObject* child = layout_object->SlowFirstChild(); child;
@@ -997,11 +1007,11 @@ bool HTMLCanvasElement::VerifyDrawElementImageEligibility(
     Element* element,
     const String& func_name,
     ExceptionState& exception_state) const {
-  if (!layoutSubtree()) {
+  if (!IsContentDrawable()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         func_name +
-            " requires the canvas to have the layoutsubtree attribute.");
+            " requires the canvas to have the content=drawable attribute.");
     return false;
   }
 
@@ -1317,7 +1327,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
   // it's difficult to handle texture-backed PaintImage's correctly. This
   // could be fixed, but it's unclear whether it's worth the effort to
   // enable vector scaling of content while printing.
-  if (IsPrinting() && IsRenderingContext2D() && !layoutSubtree()) {
+  if (IsPrinting() && IsRenderingContext2D() && !IsContentDrawable()) {
     RenderingContext()->FlushCanvas(FlushReason::kPrinting);
     // `FlushRecording` might be a no-op if a flush already happened before.
     // Fortunately, the last flush recording was kept by the context.
@@ -1655,7 +1665,7 @@ bool HTMLCanvasElement::ShouldAccelerate() const {
 }
 
 bool HTMLCanvasElement::CanStartSelection() const {
-  if (!layoutSubtree()) {
+  if (!IsContentDrawable()) {
     return false;
   }
   return HTMLElement::CanStartSelection();

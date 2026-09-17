@@ -588,6 +588,7 @@ html element canvas
     property captureStream
     property clearElementGeometry
     property configureHighDynamicRange
+    property content
     property getContext
     property getElementTransform
     property height

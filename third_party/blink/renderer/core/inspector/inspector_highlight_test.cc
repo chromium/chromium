@@ -981,7 +981,7 @@ TEST_F(InspectorHighlightTest, CanvasInlineChildHighlight) {
         font: 25px/1 Ahem;
       }
     </style>
-    <canvas id="canvas" layoutsubtree>
+    <canvas id="canvas" content=drawable>
       <div drawable id="drawable-container">
         <span id="a">X</span><span id="drawable-span" drawable>X</span>
       </div>

@@ -128,7 +128,7 @@ constexpr auto kReasonMetadata = std::to_array<ReasonMetadata>({
      "Is an accelerated canvas, or is a display list backed canvas that was "
      "promoted to a layer based on a performance heuristic."},
     {CompositingReason::kCanvasChild, "CanvasChild",
-     "Is the direct child of a canvas with 'layoutSubtree' attribute."},
+     "Is the direct child of a canvas with 'content=drawable' attribute."},
     {CompositingReason::kPlugin, "Plugin", "Is an accelerated plugin."},
     {CompositingReason::kScrollbar, "Scrollbar",
      "Is an accelerated scrollbar."},

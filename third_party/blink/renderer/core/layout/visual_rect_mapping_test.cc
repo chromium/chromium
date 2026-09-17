@@ -2144,7 +2144,7 @@ TEST_P(VisualRectMappingTest,
 TEST_P(VisualRectMappingTest, ElementCanvasTransformVisualRectMapping) {
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0; }</style>
-    <canvas layoutsubtree id="canvas" style="width: 200px; height: 200px">
+    <canvas content=drawable id="canvas" style="width: 200px; height: 200px">
       <div id="target" style="width: 100px; height: 100px"></div>
     </canvas>
   )HTML");
@@ -2172,7 +2172,7 @@ TEST_P(VisualRectMappingTest, ElementCanvasTransformVisualRectMapping) {
 TEST_P(VisualRectMappingTest, NestedElementCanvasTransformVisualRectMapping) {
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0; }</style>
-    <canvas layoutsubtree id="canvas" style="width: 400px; height: 200px">
+    <canvas content=drawable id="canvas" style="width: 400px; height: 200px">
       <div id="a" drawable style="width: 100px; height: 100px; background: blue;">
         <div id="b" drawable style="width: 50px; height: 50px; background: green;"></div>
       </div>
@@ -2205,7 +2205,7 @@ TEST_P(VisualRectMappingTest,
        NestedElementCanvasTransformWithOffsetVisualRectMapping) {
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0; }</style>
-    <canvas layoutsubtree id="canvas" style="width: 400px; height: 200px">
+    <canvas content=drawable id="canvas" style="width: 400px; height: 200px">
       <div id="a" drawable style="width: 100px; height: 100px; background: blue;">
         <div id="b" drawable style="margin-top: 20px; width: 50px; height: 50px; background: green;"></div>
       </div>
@@ -2239,7 +2239,7 @@ TEST_P(
     NestedElementCanvasTransformChildWithoutCanvasTransformVisualRectMapping) {
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0; }</style>
-    <canvas layoutsubtree id="canvas" style="width: 400px; height: 200px">
+    <canvas content=drawable id="canvas" style="width: 400px; height: 200px">
       <div id="a" drawable style="width: 100px; height: 100px; background: blue;">
         <div id="b" drawable style="width: 50px; height: 50px; background: green;"></div>
       </div>
@@ -2271,7 +2271,7 @@ TEST_P(VisualRectMappingTest,
        NestedElementCanvasTransformNonDrawableChildVisualRectMapping) {
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0; }</style>
-    <canvas layoutsubtree id="canvas" style="width: 400px; height: 200px">
+    <canvas content=drawable id="canvas" style="width: 400px; height: 200px">
       <div id="a" drawable style="width: 100px; height: 100px; background: blue;">
         <div id="b" style="width: 50px; height: 50px; background: green;"></div>
       </div>
@@ -2307,7 +2307,7 @@ TEST_P(VisualRectMappingTest,
       body { margin: 0; }
       span { font: 50px/1 Ahem; }
     </style>
-    <canvas layoutsubtree id="canvas" style="width: 400px; height: 200px">
+    <canvas content=drawable id="canvas" style="width: 400px; height: 200px">
       <div id="a" drawable style="width: 100px; height: 100px; background: blue;">
         <span id="b" drawable style="color: green;">X</span>
       </div>

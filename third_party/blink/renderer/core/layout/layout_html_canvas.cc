@@ -78,7 +78,7 @@ PhysicalNaturalSizingInfo LayoutHTMLCanvas::GetNaturalDimensions() const {
 bool LayoutHTMLCanvas::DrawsBackgroundOntoContentLayer() const {
   NOT_DESTROYED();
   auto* canvas = To<HTMLCanvasElement>(GetNode());
-  if (canvas->IsInCanvasSubtree() && canvas->layoutSubtree()) {
+  if (canvas->IsInCanvasSubtree() && canvas->IsContentDrawable()) {
     return false;
   }
   if (canvas->SurfaceLayerBridge())
@@ -141,7 +141,7 @@ bool LayoutHTMLCanvas::IsChildAllowed(LayoutObject* child,
   }
 
   const auto* canvas = To<HTMLCanvasElement>(GetNode());
-  return canvas->layoutSubtree();
+  return canvas->IsContentDrawable();
 }
 
 }  // namespace blink

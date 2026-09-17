@@ -217,7 +217,7 @@ TEST_F(WebFormControlElementTest, TextControlSlottedPreviewDisabledInCanvas) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
     <div>
       <template shadowrootmode="open">
-        <canvas layoutsubtree>
+        <canvas content=drawable>
           <slot name="slot1"></slot>
         </canvas>
       </template>
@@ -253,7 +253,7 @@ TEST_F(WebFormControlElementTest, TextControlPreviewDisabledWhenMovingToSlot) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
     <div id=slotHost>
       <template shadowrootmode="open">
-        <canvas layoutsubtree>
+        <canvas content=drawable>
           <slot name="slot1"></slot>
         </canvas>
       </template>
@@ -303,7 +303,7 @@ TEST_F(WebFormControlElementTest,
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
     <div id="host">
       <template shadowrootmode="open">
-        <canvas layoutsubtree>
+        <canvas content=drawable>
           <div id="slotwrapper">
             <slot></slot>
           </div>
@@ -347,7 +347,7 @@ TEST_F(WebFormControlElementTest,
         <div id="normal_div">
           <slot name="s1"></slot>
         </div>
-        <canvas id="canvas" layoutsubtree>
+        <canvas id="canvas" content=drawable>
           <slot name="s2"></slot>
         </canvas>
       </template>
@@ -395,7 +395,7 @@ TEST_F(WebFormControlElementTest,
   top_doc->body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
     <div id="host">
       <template shadowrootmode="open">
-        <canvas layoutsubtree>
+        <canvas content=drawable>
           <div id="slotwrapper">
             <slot></slot>
           </div>
@@ -446,7 +446,7 @@ TEST_F(WebFormControlElementTest,
         <div id="normal_div">
           <slot name="s1"></slot>
         </div>
-        <canvas id="canvas" layoutsubtree>
+        <canvas id="canvas" content=drawable>
           <div id="slotwrapper">
             <slot name="s2"></slot>
           </div>
@@ -507,7 +507,7 @@ TEST_F(WebFormControlElementTest,
         <div id="normal_div">
           <slot name="s1"></slot>
         </div>
-        <canvas id="canvas" layoutsubtree>
+        <canvas id="canvas" content=drawable>
           <div id="slotwrapper">
             <slot name="s2"></slot>
           </div>
@@ -559,7 +559,7 @@ TEST_F(WebFormControlElementTest,
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
     <div id="host">
       <template shadowrootmode="open">
-        <canvas layoutsubtree>
+        <canvas content=drawable>
           <div id="slotwrapper">
             <slot></slot>
           </div>
@@ -598,7 +598,7 @@ TEST_F(WebFormControlElementTest,
         <div id="normal_div">
           <slot name="s1"></slot>
         </div>
-        <canvas id="canvas" layoutsubtree>
+        <canvas id="canvas" content=drawable>
           <slot name="s2"></slot>
         </canvas>
       </template>
@@ -639,13 +639,13 @@ TEST_F(WebFormControlElementTest,
         <div id="outer_normal_div">
           <slot name="s1"></slot>
         </div>
-        <canvas id="outer_canvas" layoutsubtree>
+        <canvas id="outer_canvas" content=drawable>
           <slot name="s2"></slot>
         </canvas>
       </template>
       <div id="inner_host" slot="s2">
         <template shadowrootmode="open">
-          <canvas id="inner_canvas" layoutsubtree>
+          <canvas id="inner_canvas" content=drawable>
             <slot name="s3"></slot>
           </canvas>
         </template>
@@ -685,7 +685,7 @@ TEST_F(WebFormControlElementTest,
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
     <div>
       <template shadowrootmode="open">
-        <canvas layoutsubtree>
+        <canvas content=drawable>
           <div id="slotHost">
             <slot name="slot1"></slot>
           </div>

@@ -805,7 +805,7 @@ TEST_P(HTMLVideoElementTest, CanvasSubtreeChangeTriggersEvents) {
   EXPECT_CALL((*MockMediaPlayer()), RequestVideoFrameCallback()).Times(0);
 
   SetBodyInnerHTML(R"HTML(
-    <canvas id='canvas' layoutsubtree>
+    <canvas id='canvas' content=drawable>
     </canvas>
     <video id='video_elmt' src='http://example.com/foo.mp4'></video>
     )HTML");

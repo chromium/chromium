@@ -1936,7 +1936,8 @@ PaintLayer* PaintLayer::HitTestChildren(
             GetLayoutObject().GetDocument().GetExecutionContext())) {
       return nullptr;
     }
-    if (!To<HTMLCanvasElement>(GetLayoutObject().GetNode())->layoutSubtree()) {
+    if (!To<HTMLCanvasElement>(GetLayoutObject().GetNode())
+             ->IsContentDrawable()) {
       return nullptr;
     }
     if (children_to_visit != kNormalFlowChildren) {

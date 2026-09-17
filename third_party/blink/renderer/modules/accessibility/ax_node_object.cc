@@ -1313,7 +1313,7 @@ bool AXNodeObject::ComputeIsIgnoredAsInsideInactiveScrollMarkerTab() const {
   return ParentObject() && ParentObject()->InsideInactiveScrollMarkerTab();
 }
 
-static bool ShouldIgnoreTextUnderLayoutSubtreeCanvas(const Text& text) {
+static bool ShouldIgnoreTextUnderContentDrawableCanvas(const Text& text) {
   if (!text.ContainsOnlyWhitespaceOrEmpty()) {
     return false;
   }
@@ -1324,7 +1324,7 @@ static bool ShouldIgnoreTextUnderLayoutSubtreeCanvas(const Text& text) {
   for (const Node* curr = element; curr;
        curr = AXObject::GetParentNodeAcrossFrames(curr)) {
     if (auto* canvas = DynamicTo<HTMLCanvasElement>(curr)) {
-      return canvas->layoutSubtree();
+      return canvas->IsContentDrawable();
     }
   }
   return false;
@@ -1386,7 +1386,7 @@ bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
     // Text without a layout object that has reached this point is not
     // explicitly hidden, e.g. is in a <canvas> fallback or is display locked.
     if (auto* text = DynamicTo<Text>(node)) {
-      if (ShouldIgnoreTextUnderLayoutSubtreeCanvas(*text)) {
+      if (ShouldIgnoreTextUnderContentDrawableCanvas(*text)) {
         if (ignored_reasons) {
           ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
         }

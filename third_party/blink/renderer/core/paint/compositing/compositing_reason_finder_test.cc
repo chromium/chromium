@@ -704,7 +704,7 @@ TEST_P(CompositingReasonFinderTest, CanvasChild) {
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
   GetDocument().GetSettings()->SetScriptEnabled(true);
   SetBodyInnerHTML(R"HTML(
-    <canvas id=canvas layoutsubtree>
+    <canvas id=canvas content=drawable>
       <div id=child style="width: 10px; height: 10px;">
        <div id=grandchild style="width: 10px; height: 10px;"
        </div>
@@ -739,7 +739,7 @@ TEST_P(CompositingReasonFinderTest, CanvasChildWithWillChange) {
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
   GetDocument().GetSettings()->SetScriptEnabled(true);
   SetBodyInnerHTML(R"HTML(
-    <canvas id=canvas layoutsubtree>
+    <canvas id=canvas content=drawable>
       <div drawable id=child style="width: 10px; height: 10px; will-change: -webkit-filter;">
         <div id=grandchild style="width: 10px; height: 10px; will-change: -webkit-filter;"></div>
       </div>
@@ -766,7 +766,7 @@ TEST_P(CompositingReasonFinderTest, CanvasChildSlotted) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
     <div id=slotHost>
       <template shadowrootmode=open>
-        <canvas layoutsubtree>
+        <canvas content=drawable>
           <slot name="slot1"></slot>
         </canvas>
       </template>

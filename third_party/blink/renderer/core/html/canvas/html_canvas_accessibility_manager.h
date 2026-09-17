@@ -88,7 +88,7 @@ class CORE_EXPORT HTMLCanvasAccessibilityManager
     kDeprecatedIsNotVisible,  // Not used anymore.
     kIsIgnored,
     kTooSmall,
-    kHasLayoutSubtree,
+    kHasContentDrawable,
     kHasFallbackContent,
     kHasAriaAttributes,
     kNeedsA11ySupport,
@@ -105,7 +105,7 @@ class CORE_EXPORT HTMLCanvasAccessibilityManager
   void SetIsIgnored(bool is_ignored);
   void EnableUpdatingHeuristicResults();
 
-  void SetHasLayoutSubtree(bool has_layoutsubtree);
+  void SetHasContentDrawable(bool has_content_drawable);
 
   void UpdateHasFallbackElementContent();
 
@@ -157,7 +157,7 @@ class CORE_EXPORT HTMLCanvasAccessibilityManager
 
   // If canvas is drawn by html-in-canvas API, it should have accessibility
   // support.
-  bool has_layoutsubtree_ = false;
+  bool has_content_drawable_ = false;
 
   // If canvas is ignored, accessibility support is not needed.
   bool is_ignored_ = false;

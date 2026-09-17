@@ -4391,7 +4391,7 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayers) {
     <style>
       div { width: 100px; height: 100px; }
     </style>
-    <canvas id="canvas" width="200" height="200" layoutsubtree>
+    <canvas id="canvas" width="200" height="200" content=drawable>
       <div id="child_a">
         <div id="grandchild_a">a1</div>
         <div id="grandchild_a_wct" style="will-change: transform;">a2</div>
@@ -4450,8 +4450,9 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayers) {
   EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a_wct"));
   EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a_bdf"));
 
-  // Removing layoutsubtree from canvas should remove the corresponding layers.
-  canvas_element->removeAttribute(html_names::kLayoutsubtreeAttr);
+  // Removing content=drawable from canvas should remove the corresponding
+  // layers.
+  canvas_element->removeAttribute(html_names::kContentAttr);
   Compositor().BeginFrame();
   EXPECT_FALSE(CcLayerByDOMElementId("child_a"));
   EXPECT_FALSE(CcLayerByDOMElementId("child_b"));
@@ -4469,7 +4470,7 @@ TEST_P(CompositingSimTest, CanvasDrawDescendantsLayers) {
     <style>
       div { width: 100px; height: 100px; will-change: transform; }
     </style>
-    <canvas id="canvas" width="300" height="300" layoutsubtree>
+    <canvas id="canvas" width="300" height="300" content=drawable>
       <div id="a">
         <div id="aa" drawable style="background: red;">
           <div id="aaa">a1</div>
@@ -4565,7 +4566,7 @@ TEST_P(CompositingSimTest, NestedDrawableOverlapPaintRecordLoss) {
 
   InitializeWithHTML(R"HTML(
     <!DOCTYPE html>
-    <canvas id="canvas" width="300" height="300" layoutsubtree>
+    <canvas id="canvas" width="300" height="300" content=drawable>
       <div id="parent" drawable style="width: 200px; height: 200px; background: red;">
         <div id="child" drawable style="width: 100px; height: 100px; background: green;"></div>
         <div id="sibling" style="width: 100px; height: 100px; background: blue; position: relative; margin-top: -50px;"></div>
@@ -4612,10 +4613,10 @@ TEST_P(CompositingSimTest, NestedCanvasDrawElementLayers) {
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
 
   InitializeWithHTML(R"HTML(
-    <canvas id="canvas" layoutsubtree width="200" height="300">
+    <canvas id="canvas" content=drawable width="200" height="300">
       <div id="target" style="width: 100px; height: 300px;">
         <div id="sibling_div_a" style="width: 100px; height: 100px; background: #0f0;"></div>
-        <canvas id="nested_canvas" layoutsubtree width="100" height="100">
+        <canvas id="nested_canvas" content=drawable width="100" height="100">
           <div id="nested_canvas_target_a" style="width: 50px; height: 50px; background: #00f;"></div>
           <div id="nested_canvas_target_b" style="width: 50px; height: 50px; background: #0ff;">
             <div id="nested_canvas_target_b_child" style="width: 10px; height: 10px; background: #000; will-change: transform;"></div>
@@ -4675,9 +4676,9 @@ TEST_P(CompositingSimTest, CanvasChildPaintRecordWithNestedCanvas) {
       #parent_child { width: 100px; height: 100px; background: blue; }
       #nested_child { width: 50px; height: 50px; background: green; }
     </style>
-    <canvas id="parent_canvas" width="200" height="200" layoutsubtree>
+    <canvas id="parent_canvas" width="200" height="200" content=drawable>
       <div id="parent_child">
-        <canvas id="nested_canvas" width="100" height="100" layoutsubtree>
+        <canvas id="nested_canvas" width="100" height="100" content=drawable>
           <div id="nested_child"></div>
         </canvas>
       </div>
@@ -4722,8 +4723,8 @@ TEST_P(CompositingSimTest, DirectChildNestedCanvasDrawElementLayers) {
 
   InitializeWithHTML(R"HTML(
     <!DOCTYPE html>
-    <canvas id="parent_canvas" width="200" height="200" layoutsubtree>
-      <canvas id="nested_canvas" width="100" height="100" layoutsubtree>
+    <canvas id="parent_canvas" width="200" height="200" content=drawable>
+      <canvas id="nested_canvas" width="100" height="100" content=drawable>
         <div id="nested_child" style="width: 50px; height: 50px; background: green;"></div>
       </canvas>
     </canvas>
@@ -4767,7 +4768,7 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayersWithWillChange) {
         background: blue;
       }
     </style>
-    <canvas id="canvas" width="200" height="200" layoutsubtree>
+    <canvas id="canvas" width="200" height="200" content=drawable>
       <div id="target">
         <div id="willchange"></div>
       </div>
@@ -4809,7 +4810,7 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayersWithScrolling) {
         background: darkblue;
       }
     </style>
-    <canvas id="canvas" width="200" height="200" layoutsubtree>
+    <canvas id="canvas" width="200" height="200" content=drawable>
       <div id="target">
         <div id="scroller">
           <div id="scrolled"></div>
@@ -4879,7 +4880,7 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayersWithCaret) {
         background: lightblue;
       }
     </style>
-    <canvas id="canvas" width="200" height="200" layoutsubtree>
+    <canvas id="canvas" width="200" height="200" content=drawable>
       <div id="target">
         <input id="input">
       </div>
@@ -4925,7 +4926,7 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayersWithAnonymousCaret) {
         background: lightblue;
       }
     </style>
-    <canvas id="canvas" width="200" height="200" layoutsubtree>
+    <canvas id="canvas" width="200" height="200" content=drawable>
       <div id="target" contenteditable="true">
         Text
         <div>Block</div>
@@ -4972,7 +4973,7 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayersWithScrollableDrawnElement) {
         background: darkblue;
       }
     </style>
-    <canvas id="canvas" width="200" height="200" layoutsubtree>
+    <canvas id="canvas" width="200" height="200" content=drawable>
       <div id="scroller">
         <div id="scrolled"></div>
       </div>

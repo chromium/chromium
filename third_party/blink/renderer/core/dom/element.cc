@@ -10615,7 +10615,7 @@ HTMLCanvasElement* Element::CanvasForDrawing() const {
   // immediate children as well.
   Element* ancestor = FlatTreeTraversal::ParentElementSkippingSlots(*this);
   if (auto* ancestor_canvas = DynamicTo<HTMLCanvasElement>(ancestor)) {
-    return ancestor_canvas->layoutSubtree() ? ancestor_canvas : nullptr;
+    return ancestor_canvas->IsContentDrawable() ? ancestor_canvas : nullptr;
   }
   if (!FastHasAttribute(html_names::kDrawableAttr)) {
     return nullptr;
@@ -10623,7 +10623,7 @@ HTMLCanvasElement* Element::CanvasForDrawing() const {
   while (ancestor) {
     ancestor = FlatTreeTraversal::ParentElementSkippingSlots(*ancestor);
     if (auto* ancestor_canvas = DynamicTo<HTMLCanvasElement>(ancestor)) {
-      return ancestor_canvas->layoutSubtree() ? ancestor_canvas : nullptr;
+      return ancestor_canvas->IsContentDrawable() ? ancestor_canvas : nullptr;
     }
   }
   return nullptr;

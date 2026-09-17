@@ -627,7 +627,7 @@ PaintResult PaintLayerPainter::PaintChildren(
   if (canvas) {
     if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
             canvas->GetExecutionContext()) &&
-        canvas->layoutSubtree()) {
+        canvas->IsContentDrawable()) {
       // We need to paint the children for later use by drawElementImage, but
       // make sure we enforce privacy-preserving paint behavior.
       paint_flags |= PaintFlag::kPrivacyPreserving;
