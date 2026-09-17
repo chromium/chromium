@@ -133,11 +133,24 @@ constexpr char kRuleId1[] = "testid1";
 constexpr char kRuleId2[] = "testid2";
 constexpr char kRuleId3[] = "testid3";
 constexpr char kRuleId4[] = "testid4";
-const DlpRulesManager::RuleMetadata kRuleMetadata1(kRuleName1, kRuleId1);
-const DlpRulesManager::RuleMetadata kRuleMetadata2(kRuleName2, kRuleId2);
-const DlpRulesManager::RuleMetadata kRuleMetadata3(kRuleName3, kRuleId3);
-const DlpRulesManager::RuleMetadata kRuleMetadata4(kRuleName4, kRuleId4);
 
+// Returned by value: `RuleMetadata` holds std::strings, so namespace-scope
+// instances would register exit-time destructors.
+DlpRulesManager::RuleMetadata RuleMetadata1() {
+  return DlpRulesManager::RuleMetadata(kRuleName1, kRuleId1);
+}
+
+DlpRulesManager::RuleMetadata RuleMetadata2() {
+  return DlpRulesManager::RuleMetadata(kRuleName2, kRuleId2);
+}
+
+DlpRulesManager::RuleMetadata RuleMetadata3() {
+  return DlpRulesManager::RuleMetadata(kRuleName3, kRuleId3);
+}
+
+DlpRulesManager::RuleMetadata RuleMetadata4() {
+  return DlpRulesManager::RuleMetadata(kRuleName4, kRuleId4);
+}
 
 // For a given |root| converts the given virtual |path| to a GURL.
 GURL ToGURL(const base::FilePath& root, const std::string& path) {
@@ -1100,18 +1113,18 @@ TEST_F(DlpFilesControllerAshTest, FilePromptForDownloadNoSource) {
 TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsDlpPolicyMatched) {
   EXPECT_CALL(*rules_manager(), IsRestrictedByAnyRule)
       .WillOnce(testing::DoAll(testing::SetArgPointee<2>(kExampleSourceUrl1),
-                               testing::SetArgPointee<3>(kRuleMetadata1),
+                               testing::SetArgPointee<3>(RuleMetadata1()),
                                testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(
           testing::DoAll(testing::SetArgPointee<2>(kExampleSourceUrl2),
-                         testing::SetArgPointee<3>(kRuleMetadata2),
+                         testing::SetArgPointee<3>(RuleMetadata2()),
                          testing::Return(DlpRulesManager::Level::kReport)))
       .WillOnce(testing::DoAll(testing::SetArgPointee<2>(kExampleSourceUrl3),
-                               testing::SetArgPointee<3>(kRuleMetadata3),
+                               testing::SetArgPointee<3>(RuleMetadata3()),
                                testing::Return(DlpRulesManager::Level::kWarn)))
       .WillOnce(
           testing::DoAll(testing::SetArgPointee<2>(kExampleSourceUrl4),
-                         testing::SetArgPointee<3>(kRuleMetadata4),
+                         testing::SetArgPointee<3>(RuleMetadata4()),
                          testing::Return(DlpRulesManager::Level::kAllow)));
 
   EXPECT_CALL(*rules_manager(), GetReportingManager)
@@ -1154,45 +1167,45 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsFilesTransferRestricted) {
 
   EXPECT_CALL(*rules_manager(), IsRestrictedDestination(_, _, _, _, _, _))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<5>(kRuleMetadata1),
+                               testing::SetArgPointee<5>(RuleMetadata1()),
                                testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                               testing::SetArgPointee<5>(kRuleMetadata2),
+                               testing::SetArgPointee<5>(RuleMetadata2()),
                                testing::Return(DlpRulesManager::Level::kAllow)))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<5>(kRuleMetadata1),
+                               testing::SetArgPointee<5>(RuleMetadata1()),
                                testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                               testing::SetArgPointee<5>(kRuleMetadata2),
+                               testing::SetArgPointee<5>(RuleMetadata2()),
                                testing::Return(DlpRulesManager::Level::kAllow)))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<5>(kRuleMetadata1),
+                               testing::SetArgPointee<5>(RuleMetadata1()),
                                testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(
           testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                         testing::SetArgPointee<5>(kRuleMetadata2),
+                         testing::SetArgPointee<5>(RuleMetadata2()),
                          testing::Return(DlpRulesManager::Level::kAllow)));
 
   EXPECT_CALL(*rules_manager(),
               IsRestrictedComponent(_, data_controls::Component::kUsb, _, _, _))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<4>(kRuleMetadata1),
+                               testing::SetArgPointee<4>(RuleMetadata1()),
                                testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                               testing::SetArgPointee<4>(kRuleMetadata2),
+                               testing::SetArgPointee<4>(RuleMetadata2()),
                                testing::Return(DlpRulesManager::Level::kAllow)))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<4>(kRuleMetadata1),
+                               testing::SetArgPointee<4>(RuleMetadata1()),
                                testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                               testing::SetArgPointee<4>(kRuleMetadata2),
+                               testing::SetArgPointee<4>(RuleMetadata2()),
                                testing::Return(DlpRulesManager::Level::kAllow)))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<4>(kRuleMetadata1),
+                               testing::SetArgPointee<4>(RuleMetadata1()),
                                testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(
           testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                         testing::SetArgPointee<4>(kRuleMetadata2),
+                         testing::SetArgPointee<4>(RuleMetadata2()),
                          testing::Return(DlpRulesManager::Level::kAllow)));
 
   EXPECT_CALL(*rules_manager(), GetReportingManager())
@@ -1265,11 +1278,11 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnMixedCalls) {
 
   EXPECT_CALL(*rules_manager(), IsRestrictedDestination(_, _, _, _, _, _))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<5>(kRuleMetadata1),
+                               testing::SetArgPointee<5>(RuleMetadata1()),
                                testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(
           testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                         testing::SetArgPointee<5>(kRuleMetadata2),
+                         testing::SetArgPointee<5>(RuleMetadata2()),
                          testing::Return(DlpRulesManager::Level::kAllow)));
 
   EXPECT_CALL(*rules_manager(), GetReportingManager())
@@ -1316,11 +1329,11 @@ TEST_F(DlpFilesControllerAshTest, DoNotReportOnSystemApps) {
 
   EXPECT_CALL(*rules_manager(), IsRestrictedDestination(_, _, _, _, _, _))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleSourceUrl1),
-                               testing::SetArgPointee<5>(kRuleMetadata1),
+                               testing::SetArgPointee<5>(RuleMetadata1()),
                                testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(
           testing::DoAll(testing::SetArgPointee<3>(kExampleSourceUrl1),
-                         testing::SetArgPointee<5>(kRuleMetadata1),
+                         testing::SetArgPointee<5>(RuleMetadata1()),
                          testing::Return(DlpRulesManager::Level::kBlock)));
 
   files_controller_->IsFilesTransferRestricted(
@@ -1360,7 +1373,7 @@ TEST_F(DlpFilesControllerAshTest, BlockWarningFilesOnSystemApps) {
       .Times(2)
       .WillRepeatedly(
           testing::DoAll(testing::SetArgPointee<3>(kExampleSourceUrl1),
-                         testing::SetArgPointee<5>(kRuleMetadata1),
+                         testing::SetArgPointee<5>(RuleMetadata1()),
                          testing::Return(DlpRulesManager::Level::kWarn)));
 
   files_controller_->IsFilesTransferRestricted(
@@ -1467,14 +1480,14 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
   EXPECT_CALL(*rules_manager(),
               IsRestrictedComponent(_, expected_component, _, _, _))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<4>(kRuleMetadata1),
+                               testing::SetArgPointee<4>(RuleMetadata1()),
                                testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                               testing::SetArgPointee<4>(kRuleMetadata2),
+                               testing::SetArgPointee<4>(RuleMetadata2()),
                                testing::Return(DlpRulesManager::Level::kAllow)))
       .WillOnce(
           testing::DoAll(testing::SetArgPointee<3>(kExampleUrl3),
-                         testing::SetArgPointee<4>(kRuleMetadata3),
+                         testing::SetArgPointee<4>(RuleMetadata3()),
                          testing::Return(DlpRulesManager::Level::kBlock)));
 
   EXPECT_CALL(*rules_manager(), GetReportingManager())
@@ -1514,7 +1527,7 @@ TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
               IsRestrictedComponent(_, expected_component, _, _, _))
       .WillOnce(
           testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                         testing::SetArgPointee<4>(kRuleMetadata1),
+                         testing::SetArgPointee<4>(RuleMetadata1()),
                          testing::Return(DlpRulesManager::Level::kBlock)));
 
   EXPECT_CALL(*rules_manager(), GetReportingManager())
@@ -1635,15 +1648,15 @@ TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
   EXPECT_CALL(*rules_manager(), IsRestrictedDestination(_, _, _, _, _, _))
       .WillOnce(testing::DoAll(
           testing::SetArgPointee<3>(transferred_files[0].source_url.spec()),
-          testing::SetArgPointee<5>(kRuleMetadata1),
+          testing::SetArgPointee<5>(RuleMetadata1()),
           testing::Return(levels[0])))
       .WillOnce(testing::DoAll(
           testing::SetArgPointee<3>(transferred_files[1].source_url.spec()),
-          testing::SetArgPointee<5>(kRuleMetadata2),
+          testing::SetArgPointee<5>(RuleMetadata2()),
           testing::Return(levels[1])))
       .WillOnce(testing::DoAll(
           testing::SetArgPointee<3>(transferred_files[2].source_url.spec()),
-          testing::SetArgPointee<5>(kRuleMetadata3),
+          testing::SetArgPointee<5>(RuleMetadata3()),
           testing::Return(levels[2])));
 
   EXPECT_CALL(*rules_manager(), GetReportingManager())
@@ -1708,7 +1721,7 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
   EXPECT_CALL(*rules_manager(),
               IsRestrictedComponent(_, data_controls::Component::kUsb, _, _, _))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<4>(kRuleMetadata1),
+                               testing::SetArgPointee<4>(RuleMetadata1()),
                                testing::Return(DlpRulesManager::Level::kWarn)));
 
   EXPECT_CALL(*rules_manager(), GetReportingManager())
