@@ -143,7 +143,7 @@ void CanvasResourceDispatcher::PrepareFrame(
 
   if (base::FeatureList::IsEnabled(kVerifySyncTokensInCRD)) {
     exported_resource->PrepareTransferableResource(
-        &resource,
+        resource,
         /*needs_verified_synctoken=*/false);
 
     gpu::SharedImageInterface* sii = nullptr;
@@ -163,7 +163,7 @@ void CanvasResourceDispatcher::PrepareFrame(
     }
   } else {
     exported_resource->PrepareTransferableResource(
-        &resource,
+        resource,
         /*needs_verified_synctoken=*/true);
   }
 

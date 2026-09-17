@@ -81,7 +81,7 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
 
   // Provides a TransferableResource representation of this resource to share it
   // with the compositor.
-  bool PrepareTransferableResource(viz::TransferableResource*,
+  bool PrepareTransferableResource(viz::TransferableResource&,
                                    bool needs_verified_synctoken);
 
   // Issues a wait for this sync token on the context used by this resource for

@@ -292,7 +292,7 @@ bool HTMLCanvasElement::PrepareTransferableResource(
       base::MakeRefCounted<ExportedCanvasResource>(std::move(frame));
 
   if (!exported_resource->PrepareTransferableResource(
-          out_resource,
+          CHECK_DEREF(out_resource),
           /*needs_verified_synctoken=*/false)) {
     return false;
   }

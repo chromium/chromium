@@ -121,16 +121,8 @@ void CanvasResource::DropRefOnOwningThread(
 }
 
 bool CanvasResource::PrepareTransferableResource(
-    viz::TransferableResource* out_resource,
+    viz::TransferableResource& out_resource,
     bool needs_verified_synctoken) {
-  if (!out_resource)
-    return true;
-
-  auto client_shared_image = GetSharedImage();
-  if (!client_shared_image) {
-    return false;
-  }
-
   TRACE_EVENT0("blink", "CanvasResource::PrepareTransferableResource");
 
   if (CreatesAcceleratedTransferableResources() && !ContextProviderWrapper()) {
@@ -141,10 +133,10 @@ bool CanvasResource::PrepareTransferableResource(
     VerifySyncToken();
   }
 
-  *out_resource = viz::TransferableResource::Make(
-      client_shared_image, GetTransferableResourceSource(), sync_token());
+  out_resource = viz::TransferableResource::Make(
+      GetSharedImage(), GetTransferableResourceSource(), sync_token());
 
-  out_resource->hdr_metadata = GetHdrMetadata();
+  out_resource.hdr_metadata = GetHdrMetadata();
 
   // When the compositor returns an accelerated resource, it provides a sync
   // token to allow subsequent accelerated raster operations to properly
@@ -157,7 +149,7 @@ bool CanvasResource::PrepareTransferableResource(
   // synchronization with the GPU service.
   if (!UsesAcceleratedRaster() && CreatesAcceleratedTransferableResources()) {
     DCHECK(SharedGpuContext::IsGpuCompositingEnabled());
-    out_resource->synchronization_type =
+    out_resource.synchronization_type =
         viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   }
 

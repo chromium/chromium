@@ -75,7 +75,7 @@ void ExportedCanvasResource::EndDisplayCompositorAccess(
 }
 
 bool ExportedCanvasResource::PrepareTransferableResource(
-    viz::TransferableResource* transferable_resource,
+    viz::TransferableResource& transferable_resource,
     bool needs_verified_synctoken) {
   return resource_->PrepareTransferableResource(transferable_resource,
                                                 needs_verified_synctoken);
