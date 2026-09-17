@@ -9,9 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -22,18 +19,17 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Size;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -42,10 +38,12 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.animation.AnimationHandler;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -60,11 +58,11 @@ public class PinnedTabStripItemViewTest {
     private static final int TAB_ID = 129837;
 
     @Rule
-    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule
-    public RenderTestRule mRenderTestRule =
+    public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             RenderTestRule.Component
@@ -72,9 +70,8 @@ public class PinnedTabStripItemViewTest {
                     .setRevision(2)
                     .build();
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private TabActionListener mMockTabActionListener;
+    private final PayloadCallbackHelper<Integer> mClickedTabIdHelper =
+            new PayloadCallbackHelper<>();
 
     private Activity mActivity;
     private PinnedTabStripItemView mView;
@@ -237,13 +234,27 @@ public class PinnedTabStripItemViewTest {
     @Test
     @SmallTest
     public void testSetContextClickListener() {
+        TabActionListener listener =
+                new TabActionListener() {
+                    @Override
+                    public void run(
+                            View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
+                        assertEquals(mView, view);
+                        assertNull(triggeringMotion);
+                        mClickedTabIdHelper.notifyCalled(tabId);
+                    }
+
+                    @Override
+                    public void run(
+                            View view, String syncId, @Nullable MotionEventInfo triggeringMotion) {}
+                };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mView.setNullableContextClickListener(mMockTabActionListener, mView, TAB_ID);
+                    mView.setNullableContextClickListener(listener, mView, TAB_ID);
                     assertTrue(mView.isContextClickable());
                     mView.performContextClick();
-                    verify(mMockTabActionListener).run(eq(mView), eq(TAB_ID), isNull());
                 });
+        assertEquals(Integer.valueOf(TAB_ID), mClickedTabIdHelper.getOnlyPayloadBlocking());
     }
 
     @Test

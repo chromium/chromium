@@ -12,7 +12,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.UiTypeHelper.isMessageCard;
 import static org.chromium.chrome.browser.tasks.tab_management.UiTypeHelper.isValidUiType;
@@ -30,22 +29,18 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.Message;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageData;
+import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
@@ -66,25 +61,20 @@ public class MessageCardProviderTest {
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
+    private final ServiceDismissActionProvider<@MessageType Integer> mServiceDismissActionProvider =
+            (messageType) -> {};
+    private final AtomicBoolean mReviewed = new AtomicBoolean();
+    private final AtomicBoolean mDismissed = new AtomicBoolean();
+
     private static Activity sActivity;
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     private TabListRecyclerView mRecyclerView;
-
     private TabListModel mModelList;
     private SimpleRecyclerViewAdapter mAdapter;
-
     private MessageCardProvider<@MessageType Integer, @UiType Integer> mCoordinator;
     private MessageService<@MessageType Integer, @UiType Integer> mTestingService;
     private MessageService<@MessageType Integer, @UiType Integer> mPriceService;
-
-    private final ServiceDismissActionProvider<@MessageType Integer> mServiceDismissActionProvider =
-            (messageType) -> {};
-
-    @Mock private PriceMessageData mPriceMessageData;
-
-    @Mock private Profile mProfile;
+    private PriceMessageData mPriceMessageData;
 
     @BeforeClass
     public static void setupSuite() {
@@ -93,6 +83,15 @@ public class MessageCardProviderTest {
 
     @Before
     public void setUp() throws Exception {
+        mReviewed.set(false);
+        mDismissed.set(false);
+        mPriceMessageData =
+                new PriceMessageData(
+                        PriceMessageType.PRICE_WELCOME,
+                        /* priceTabData= */ null,
+                        () -> mReviewed.set(true),
+                        () -> mDismissed.set(true));
+
         // TODO(meiliang): Replace with TabSwitcher instead when ready to integrate with
         // TabSwitcher.
         ThreadUtils.runOnUiThreadBlocking(
@@ -178,9 +177,6 @@ public class MessageCardProviderTest {
     @Test
     @SmallTest
     public void testReviewPriceMessage() {
-        AtomicBoolean reviewed = new AtomicBoolean();
-        when(mPriceMessageData.getAcceptActionProvider()).thenReturn(() -> reviewed.set(true));
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sendAvailabilityNotification();
@@ -189,9 +185,9 @@ public class MessageCardProviderTest {
 
         onViewWaiting(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
 
-        assertFalse(reviewed.get());
+        assertFalse(mReviewed.get());
         onView(withId(R.id.action_button)).perform(click());
-        assertTrue(reviewed.get());
+        assertTrue(mReviewed.get());
     }
 
     @Test
@@ -199,9 +195,6 @@ public class MessageCardProviderTest {
     @DisableIf.Device(
             DeviceFormFactor.DESKTOP) // TODO(crbug.com/493814627): Test failing on Desktop bot
     public void testDismissPriceMessage() {
-        AtomicBoolean dismissed = new AtomicBoolean();
-        when(mPriceMessageData.getDismissActionProvider()).thenReturn(() -> dismissed.set(true));
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sendAvailabilityNotification();
@@ -210,9 +203,9 @@ public class MessageCardProviderTest {
 
         onViewWaiting(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
 
-        assertFalse(dismissed.get());
+        assertFalse(mDismissed.get());
         onView(withId(R.id.close_button)).perform(click());
-        assertTrue(dismissed.get());
+        assertTrue(mDismissed.get());
     }
 
     private void addMessageCards() {
@@ -236,6 +229,6 @@ public class MessageCardProviderTest {
                                 sActivity,
                                 c -> {},
                                 mPriceMessageData,
-                                new PriceDropNotificationManagerImpl(mProfile)));
+                                new PriceDropNotificationManagerImpl(null)));
     }
 }
