@@ -16,7 +16,10 @@ enum class RequestType;
 struct PermissionPromptDecision;
 }  // namespace permissions
 
-class GURL;
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace custom_handlers {
 class ProtocolHandlerRegistry;
 
@@ -28,7 +31,7 @@ class RegisterProtocolHandlerPermissionRequest
   RegisterProtocolHandlerPermissionRequest(
       custom_handlers::ProtocolHandlerRegistry* registry,
       const ProtocolHandler& handler,
-      GURL url,
+      const url::Origin& requesting_origin,
       base::ScopedClosureRunner fullscreen_block);
 
   RegisterProtocolHandlerPermissionRequest(

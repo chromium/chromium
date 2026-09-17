@@ -89,6 +89,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/image_downloader/image_downloader.mojom.h"
@@ -102,6 +103,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+#include "url/url_util.h"
 
 namespace content {
 namespace {
@@ -3277,6 +3279,98 @@ TEST_F(WebContentsImplTest, RegisterProtocolHandlerDataURL) {
     contents()->RegisterProtocolHandler(main_test_rfh(), "mailto", data_handler,
                                         /*user_gesture=*/true);
   }
+
+  contents()->SetDelegate(nullptr);
+}
+
+// Test suite for registering protocol handlers with an extension scheme.
+// A dedicated fixture is needed because `scoped_registry_` must outlive the
+// test harness teardown (`RenderViewHostTestHarness::TearDown()`), ensuring the
+// scheme remains registered while `WebContents` is destroyed and pending
+// IPC/Mojo messages are drained.
+//
+// This is a bit unusual, because we're (kind of) injecting knowledge of
+// extensions into the //content layer, which is normally a code smell. However,
+// in this case, the handling code lives in web_contents_impl.cc, so it makes
+// sense to have the test be coincident with that code.
+class WebContentsImplExtensionSchemeTest : public WebContentsImplTest {
+ public:
+  WebContentsImplExtensionSchemeTest() {
+    url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
+    url::AddSecureScheme("chrome-extension");
+    blink::CommonSchemeRegistry::RegisterURLSchemeAsExtension(
+        "chrome-extension");
+  }
+
+  ~WebContentsImplExtensionSchemeTest() override {
+    blink::CommonSchemeRegistry::RemoveURLSchemeAsExtensionForTest(
+        "chrome-extension");
+  }
+
+ private:
+  url::ScopedSchemeRegistryForTests scoped_registry_;
+};
+
+// Exercises schemes with increased protocol handler security levels registering
+// cross-origin handlers.
+TEST_F(WebContentsImplExtensionSchemeTest,
+       RegisterProtocolHandlerExtensionScheme) {
+  MockWebContentsDelegate delegate(
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures);
+  contents()->SetDelegate(&delegate);
+
+  GURL extension_url("chrome-extension://ext-id-1/page.html");
+  GURL same_extension_handler("chrome-extension://ext-id-1/handler/%s");
+  GURL other_extension_handler("chrome-extension://ext-id-2/handler/%s");
+  GURL https_handler("https://www.example.com/handler/%s");
+
+  contents()->NavigateAndCommit(extension_url);
+
+  // A same-origin extension handler is allowed.
+  EXPECT_CALL(delegate, RegisterProtocolHandler(main_test_rfh(), "mailto",
+                                                same_extension_handler, true))
+      .Times(1);
+  // An extension may register a cross-origin HTTPS handler under
+  // kExtensionFeatures.
+  EXPECT_CALL(delegate, RegisterProtocolHandler(main_test_rfh(), "mailto",
+                                                https_handler, true))
+      .Times(1);
+  // A cross-origin extension handler must be rejected.
+  EXPECT_CALL(delegate, RegisterProtocolHandler(main_test_rfh(), "mailto",
+                                                other_extension_handler, true))
+      .Times(0);
+
+  contents()->RegisterProtocolHandler(main_test_rfh(), "mailto",
+                                      same_extension_handler,
+                                      /*user_gesture=*/true);
+  contents()->RegisterProtocolHandler(main_test_rfh(), "mailto", https_handler,
+                                      /*user_gesture=*/true);
+  contents()->RegisterProtocolHandler(main_test_rfh(), "mailto",
+                                      other_extension_handler,
+                                      /*user_gesture=*/true);
+
+  contents()->SetDelegate(nullptr);
+}
+
+TEST_F(WebContentsImplTest, RegisterProtocolHandlerOpaqueOrigin) {
+  MockWebContentsDelegate delegate(
+      blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins);
+  contents()->SetDelegate(&delegate);
+
+  GURL data_url("data:text/html,<html><body>hello</body></html>");
+  GURL handler_url("https://www.google.com/handler/%s");
+
+  contents()->NavigateAndCommit(data_url);
+  EXPECT_TRUE(main_test_rfh()->GetLastCommittedOrigin().opaque());
+
+  // An opaque requesting origin must not be allowed to register a protocol
+  // handler, even at elevated security levels (kUntrustedOrigins).
+  EXPECT_CALL(delegate, RegisterProtocolHandler(main_test_rfh(), "mailto",
+                                                handler_url, true))
+      .Times(0);
+
+  contents()->RegisterProtocolHandler(main_test_rfh(), "mailto", handler_url,
+                                      /*user_gesture=*/true);
 
   contents()->SetDelegate(nullptr);
 }

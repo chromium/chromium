@@ -70,8 +70,11 @@ static bool VerifyCustomHandlerURLSecurity(
   }
 
   // The specification says that the API throws SecurityError exception if the
-  // URL's origin differs from the window's origin.
-  if (security_level < ProtocolHandlerSecurityLevel::kUntrustedOrigins &&
+  // URL's origin differs from the window's origin. At elevated security levels,
+  // the same-origin requirement may be relaxed, but only for HTTP(S) handler
+  // URLs.
+  if ((security_level < ProtocolHandlerSecurityLevel::kUntrustedOrigins ||
+       !full_url.ProtocolIsInHttpFamily()) &&
       !window.GetSecurityOrigin()->CanRequest(full_url)) {
     error_message =
         "Can only register custom handler in the document's origin.";

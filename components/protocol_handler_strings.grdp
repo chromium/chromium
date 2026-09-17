@@ -20,8 +20,14 @@
   <message name="IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM_FRAGMENT" desc="The permission fragment to display when asking a user to confirm the registration of a protocol handler in a permission bubble. Follows a prompt 'This site would like to:'.">
     Open <ph name="PROTOCOL">$1<ex>search</ex></ph> links
   </message>
+  <message name="IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM_FRAGMENT_CROSS_ORIGIN" desc="The permission fragment to display when asking a user to confirm the registration of a cross-origin protocol handler in a permission bubble. Follows a prompt 'This site would like to:' or '[Extension] would like to:'.">
+    Open <ph name="PROTOCOL">$1<ex>search</ex></ph> links through <ph name="HANDLER_HOSTNAME">$2<ex>google.com</ex></ph>
+  </message>
   <message name="IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM_REPLACE_FRAGMENT" desc="The permission fragment to display when asking a user to confirm the registration of a protocol handler. Follows a prompt 'This site would like to:'.">
     Open <ph name="PROTOCOL">$1<ex>search</ex></ph> links instead of <ph name="REPLACED_HANDLER_TITLE">$2<ex>Elgoog Search</ex></ph>
+  </message>
+  <message name="IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM_REPLACE_FRAGMENT_CROSS_ORIGIN" desc="The permission fragment to display when asking a user to confirm the registration of a cross-origin protocol handler in a permission bubble when there is already a registered handler. Follows a prompt 'This site would like to:' or '[Extension] would like to:'.">
+    Open <ph name="PROTOCOL">$1<ex>search</ex></ph> links through <ph name="HANDLER_HOSTNAME">$2<ex>google.com</ex></ph> instead of <ph name="REPLACED_HANDLER_TITLE">$3<ex>Elgoog Search</ex></ph>
   </message>
   <message name="IDS_REGISTER_PROTOCOL_HANDLER_ACCEPT" desc="Text to show for the accept button for the register protocol handler request infobar.">
     Allow

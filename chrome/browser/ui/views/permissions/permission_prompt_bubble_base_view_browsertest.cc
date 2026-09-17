@@ -50,6 +50,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/cursor_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -58,6 +59,13 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "url/gurl.h"
+#include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "extensions/common/extension.h"
+#include "extensions/test/test_extension_dir.h"
+#endif
 
 // To run the pixel tests of this file run: browser_tests
 // --gtest_filter=BrowserUiTest.Invoke --test-launcher-interactive
@@ -139,19 +147,43 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
 
  private:
   std::unique_ptr<custom_handlers::RegisterProtocolHandlerPermissionRequest>
-  MakeRegisterProtocolHandlerRequest() {
+  MakeRegisterProtocolHandlerRequest(const GURL& handler_url,
+                                     const url::Origin& requesting_origin) {
     std::string protocol = "mailto";
     custom_handlers::ProtocolHandler handler =
         custom_handlers::ProtocolHandler::CreateProtocolHandler(protocol,
-                                                                GetTestUrl());
+                                                                handler_url);
     custom_handlers::ProtocolHandlerRegistry* registry =
         ProtocolHandlerRegistryFactory::GetForBrowserContext(
             browser()->GetProfile());
     // Deleted in RegisterProtocolHandlerPermissionRequest::RequestFinished().
     return std::make_unique<
         custom_handlers::RegisterProtocolHandlerPermissionRequest>(
-        registry, handler, GetTestUrl(), base::ScopedClosureRunner());
+        registry, handler, requesting_origin, base::ScopedClosureRunner());
   }
+
+  std::unique_ptr<custom_handlers::RegisterProtocolHandlerPermissionRequest>
+  MakeRegisterProtocolHandlerRequest() {
+    return MakeRegisterProtocolHandlerRequest(
+        GetTestUrl(), url::Origin::Create(GetTestUrl()));
+  }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  url::Origin GetTestExtensionOrigin() {
+    if (!test_extension_) {
+      test_extension_dir_.WriteManifest(
+          R"({
+               "name": "Test Extension",
+               "version": "0.1",
+               "manifest_version": 3
+             })");
+      test_extension_ =
+          extensions::ChromeTestExtensionLoader(browser()->GetProfile())
+              .LoadExtension(test_extension_dir_.UnpackedPath());
+    }
+    return test_extension_ ? test_extension_->origin() : url::Origin();
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   void AddRequestForContentSetting(const std::string& name) {
     constexpr const char* kMultipleName = "multiple";
@@ -166,6 +198,12 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
          {"mic", ContentSettingsType::MEDIASTREAM_MIC},
          {"camera", ContentSettingsType::MEDIASTREAM_CAMERA},
          {"protocol_handlers", ContentSettingsType::PROTOCOL_HANDLERS},
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+         {"extension_protocol_handlers_cross_origin",
+          ContentSettingsType::PROTOCOL_HANDLERS},
+         {"extension_protocol_handlers_cross_origin_replace",
+          ContentSettingsType::PROTOCOL_HANDLERS},
+#endif
          {"midi", ContentSettingsType::MIDI_SYSEX},
          {"storage_access", ContentSettingsType::STORAGE_ACCESS},
          {"downloads", ContentSettingsType::AUTOMATIC_DOWNLOADS},
@@ -189,6 +227,33 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
 
     switch (it->type) {
       case ContentSettingsType::PROTOCOL_HANDLERS:
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+        if (name == "extension_protocol_handlers_cross_origin") {
+          manager->AddRequest(source_frame,
+                              MakeRegisterProtocolHandlerRequest(
+                                  GURL("https://example.com/handler?q=%s"),
+                                  GetTestExtensionOrigin()));
+          break;
+        }
+
+        if (name == "extension_protocol_handlers_cross_origin_replace") {
+          // Pre-register an existing handler for mailto.
+          custom_handlers::ProtocolHandlerRegistry* registry =
+              ProtocolHandlerRegistryFactory::GetForBrowserContext(
+                  browser()->GetProfile());
+          custom_handlers::ProtocolHandler old_handler =
+              custom_handlers::ProtocolHandler::CreateProtocolHandler(
+                  "mailto", GURL("https://old.com/handler?q=%s"));
+          registry->OnAcceptRegisterProtocolHandler(old_handler);
+
+          manager->AddRequest(source_frame,
+                              MakeRegisterProtocolHandlerRequest(
+                                  GURL("https://example.com/handler?q=%s"),
+                                  GetTestExtensionOrigin()));
+          break;
+        }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
         manager->AddRequest(source_frame, MakeRegisterProtocolHandlerRequest());
         break;
       case ContentSettingsType::AUTOMATIC_DOWNLOADS:
@@ -233,6 +298,11 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
   GURL embedding_origin_ = GURL("https://www.origin.test.com");
   GURL test_url_ = GURL("https://example.com");
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  extensions::TestExtensionDir test_extension_dir_;
+  scoped_refptr<const extensions::Extension> test_extension_;
+#endif
 };
 
 // Flaky on Mac: http://crbug.com/40942996
@@ -349,6 +419,22 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        InvokeUi_protocol_handlers) {
   ShowAndVerifyUi();
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+// Host wants to open email links through an external handler URL.
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
+                       InvokeUi_extension_protocol_handlers_cross_origin) {
+  ShowAndVerifyUi();
+}
+
+// Host wants to open email links through an external handler URL, replacing an
+// existing handler.
+IN_PROC_BROWSER_TEST_F(
+    PermissionPromptBubbleBaseViewBrowserTest,
+    InvokeUi_extension_protocol_handlers_cross_origin_replace) {
+  ShowAndVerifyUi();
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // Host wants to use your MIDI devices.
 IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,

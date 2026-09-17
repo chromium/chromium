@@ -28,7 +28,9 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/custom_handlers/protocol_handler.h"
+#include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -43,6 +45,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -445,6 +449,187 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest,
   UninstallExtension(extension_id);
   EXPECT_FALSE(registry->IsHandledProtocol("geo"));
   EXPECT_TRUE(registry->GetExtensionProtocolHandlers().empty());
+}
+
+// An extension may register a handler URL inside its own origin, but must not
+// be able to register a handler URL that belongs to a different extension.
+IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest,
+                       CrossExtensionHandlerURLRejected) {
+#if BUILDFLAG(IS_MAC)
+  ASSERT_TRUE(test::RegisterAppWithLaunchServices());
+#endif
+
+  const extensions::Extension* requesting_extension =
+      LoadExtension(test_data_dir_.AppendASCII("protocol_handler"));
+  ASSERT_NE(nullptr, requesting_extension);
+  const extensions::Extension* other_extension =
+      LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
+  ASSERT_NE(nullptr, other_extension);
+  EXPECT_NE(requesting_extension->id(), other_extension->id());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), requesting_extension->GetResourceURL("test.html")));
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ProtocolHandlerRegistry* registry =
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  registry->SetRphRegistrationMode(
+      custom_handlers::RphRegistrationMode::kAutoAccept);
+
+  // A handler URL in a different extension's origin must be rejected.
+  std::string other_extension_handler_url =
+      other_extension->GetResourceURL("file.html").spec() + "?q=%s";
+  EXPECT_THAT(
+      content::EvalJs(
+          web_contents,
+          content::JsReplace("navigator.registerProtocolHandler('mailto', $1)",
+                             other_extension_handler_url)),
+      content::EvalJsResult::ErrorIs(testing::HasSubstr("SecurityError")));
+
+  // A handler URL in the requesting extension's own origin is still accepted.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      "navigator.registerProtocolHandler('mailto', 'test.html?%s')"));
+}
+
+class PermissionPromptWaiter
+    : public permissions::PermissionRequestManager::Observer {
+ public:
+  explicit PermissionPromptWaiter(
+      permissions::PermissionRequestManager* manager)
+      : manager_(manager) {
+    observation_.Observe(manager);
+  }
+  ~PermissionPromptWaiter() override = default;
+
+  void Wait() {
+    if (prompt_added_) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+  void OnPromptAdded() override {
+    prompt_added_ = true;
+    run_loop_.Quit();
+  }
+
+ private:
+  raw_ptr<permissions::PermissionRequestManager> manager_;
+  base::ScopedObservation<permissions::PermissionRequestManager,
+                          permissions::PermissionRequestManager::Observer>
+      observation_{this};
+  base::RunLoop run_loop_;
+  bool prompt_added_ = false;
+};
+
+// Verify that when an extension registers a custom protocol handler pointing
+// to a cross-origin HTTP(S) URL as a new registration, the permission prompt UI
+// attributes the request to the extension's own origin and displays the target
+// host in the prompt phrasing.
+IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest,
+                       PromptUI_NewHandler) {
+#if BUILDFLAG(IS_MAC)
+  ASSERT_TRUE(test::RegisterAppWithLaunchServices());
+#endif
+
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("protocol_handler"));
+  ASSERT_NE(nullptr, extension);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("test.html")));
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  ASSERT_NE(nullptr, permission_request_manager);
+
+  PermissionPromptWaiter waiter(permission_request_manager);
+
+  // Do not set auto-accept mode so that the request is displayed in the UI.
+  EXPECT_TRUE(
+      content::ExecJs(web_contents,
+                      "navigator.registerProtocolHandler('geo', "
+                      "'https://example.com/handler?q=%s', 'Geo Handler');"));
+
+  waiter.Wait();
+  ASSERT_EQ(1u, permission_request_manager->Requests().size());
+  EXPECT_EQ(extension->origin().GetURL(),
+            permission_request_manager->Requests()[0]->requesting_origin());
+  EXPECT_EQ(
+      u"Open geo links through example.com",
+      permission_request_manager->Requests()[0]->GetMessageTextFragment());
+
+  test::PermissionRequestManagerTestApi test_api(permission_request_manager);
+  views::Widget* prompt_window = test_api.GetPromptWindow();
+  ASSERT_TRUE(prompt_window);
+  EXPECT_TRUE(prompt_window->IsVisible());
+  EXPECT_THAT(base::UTF16ToUTF8(
+                  prompt_window->widget_delegate()->GetAccessibleWindowTitle()),
+              testing::HasSubstr("Open geo links through example.com"));
+}
+
+// Verify that when an extension registers a custom protocol handler pointing
+// to a cross-origin HTTP(S) URL that replaces an existing handler, the
+// permission prompt UI attributes the request to the extension's own origin and
+// displays both the target host and the old handler host in the prompt
+// phrasing.
+IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest,
+                       PromptUI_ReplaceHandler) {
+#if BUILDFLAG(IS_MAC)
+  ASSERT_TRUE(test::RegisterAppWithLaunchServices());
+#endif
+
+  // Pre-register an existing handler for geo.
+  custom_handlers::ProtocolHandlerRegistry* registry =
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  custom_handlers::ProtocolHandler old_handler =
+      custom_handlers::ProtocolHandler::CreateProtocolHandler(
+          "geo", GURL("https://old.com/handler?q=%s"));
+  registry->OnAcceptRegisterProtocolHandler(old_handler);
+
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("protocol_handler"));
+  ASSERT_NE(nullptr, extension);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("test.html")));
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  ASSERT_NE(nullptr, permission_request_manager);
+
+  PermissionPromptWaiter waiter(permission_request_manager);
+
+  // Do not set auto-accept mode so that the request is displayed in the UI.
+  EXPECT_TRUE(
+      content::ExecJs(web_contents,
+                      "navigator.registerProtocolHandler('geo', "
+                      "'https://example.com/handler?q=%s', 'Geo Handler');"));
+
+  waiter.Wait();
+  ASSERT_EQ(1u, permission_request_manager->Requests().size());
+  EXPECT_EQ(extension->origin().GetURL(),
+            permission_request_manager->Requests()[0]->requesting_origin());
+  EXPECT_EQ(
+      u"Open geo links through example.com instead of old.com",
+      permission_request_manager->Requests()[0]->GetMessageTextFragment());
+
+  test::PermissionRequestManagerTestApi test_api(permission_request_manager);
+  views::Widget* prompt_window = test_api.GetPromptWindow();
+  ASSERT_TRUE(prompt_window);
+  EXPECT_TRUE(prompt_window->IsVisible());
+  EXPECT_THAT(base::UTF16ToUTF8(
+                  prompt_window->widget_delegate()->GetAccessibleWindowTitle()),
+              testing::HasSubstr(
+                  "Open geo links through example.com instead of old.com"));
 }
 
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {

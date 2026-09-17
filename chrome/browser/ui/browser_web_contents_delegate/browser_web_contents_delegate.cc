@@ -1384,10 +1384,17 @@ void BrowserWebContentsDelegate::RegisterProtocolHandler(
       return;
     }
 
+    // The permission prompt must attribute the request to the initiator frame
+    // that called navigator.registerProtocolHandler, rather than the target
+    // handler URL. For web pages these are always same-origin, but extensions
+    // can register cross-origin HTTPS endpoints; attributing the prompt to the
+    // target URL would allow an extension to spoof the prompt as coming from
+    // the target origin.
     permission_request_manager->AddRequest(
         rfh, std::make_unique<
                  custom_handlers::RegisterProtocolHandlerPermissionRequest>(
-                 registry, handler, url, std::move(*blocker)));
+                 registry, handler, rfh->GetLastCommittedOrigin(),
+                 std::move(*blocker)));
   }
 }
 

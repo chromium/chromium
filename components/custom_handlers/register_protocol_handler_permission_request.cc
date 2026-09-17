@@ -19,6 +19,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace custom_handlers {
 
@@ -26,13 +27,13 @@ RegisterProtocolHandlerPermissionRequest::
     RegisterProtocolHandlerPermissionRequest(
         custom_handlers::ProtocolHandlerRegistry* registry,
         const ProtocolHandler& handler,
-        GURL url,
+        const url::Origin& requesting_origin,
         base::ScopedClosureRunner fullscreen_block)
     : PermissionRequest(
           std::make_unique<permissions::PermissionRequestData>(
               permissions::RequestType::kRegisterProtocolHandler,
               /*user_gesture=*/false,
-              url.DeprecatedGetOriginAsURL()),
+              requesting_origin.GetURL()),
           base::BindRepeating(
               &RegisterProtocolHandlerPermissionRequest::PermissionDecided,
               base::Unretained(this))),
@@ -57,6 +58,21 @@ bool RegisterProtocolHandlerPermissionRequest::IsDuplicateOf(
 std::u16string
 RegisterProtocolHandlerPermissionRequest::GetMessageTextFragment() const {
   ProtocolHandler old_handler = registry_->GetHandlerFor(handler_.protocol());
+  bool is_cross_origin =
+      !url::IsSameOriginWith(handler_.url(), requesting_origin());
+  if (is_cross_origin) {
+    return old_handler.IsEmpty()
+               ? l10n_util::GetStringFUTF16(
+                     IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM_FRAGMENT_CROSS_ORIGIN,
+                     handler_.GetProtocolDisplayName(),
+                     base::UTF8ToUTF16(handler_.url().host()))
+               : l10n_util::GetStringFUTF16(
+                     IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM_REPLACE_FRAGMENT_CROSS_ORIGIN,
+                     handler_.GetProtocolDisplayName(),
+                     base::UTF8ToUTF16(handler_.url().host()),
+                     base::UTF8ToUTF16(old_handler.url().host()));
+  }
+
   return old_handler.IsEmpty()
              ? l10n_util::GetStringFUTF16(
                    IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM_FRAGMENT,

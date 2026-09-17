@@ -415,11 +415,22 @@ bool AreValidRegisterProtocolHandlerArguments(
     return false;
   }
   url::Origin url_origin = url::Origin::Create(url);
-  if (url_origin.opaque()) {
+  // Opaque handler URLs (e.g. data:, blob:) and opaque requesting origins (e.g.
+  // sandboxed iframes) are not allowed to register protocol handlers. In the
+  // case of web pages, the requesting origin and target origin have to be the
+  // same; however, this is not true for other contexts (e.g. extensions).
+  // Checking both `origin.opaque()` ensures that opaque origins cannot register
+  // handlers.
+  if (url_origin.opaque() || origin.opaque()) {
     return false;
   }
-  if (security_level < blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins &&
-      !origin.IsSameOriginWith(url)) {
+  // At elevated levels the same-origin requirement may be relaxed only for
+  // HTTP(S) handler URLs; non-HTTP(S) handler URLs (e.g. extension or
+  // isolated-app schemes) must always be same-origin with the requester.
+  if (!origin.IsSameOriginWith(url) &&
+      (security_level <
+           blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins ||
+       !url.SchemeIsHTTPOrHTTPS())) {
     return false;
   }
 
