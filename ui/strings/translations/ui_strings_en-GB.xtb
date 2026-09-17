@@ -30,7 +30,7 @@
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/s</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 hour and }other{# hours and }}</translation>
 <translation id="185013357618350178">&amp;Select</translation>
-<translation id="1859234291848436338">Writing Direction</translation>
+<translation id="1859234291848436338">Writing direction</translation>
 <translation id="1860796786778352021">Notification close</translation>
 <translation id="186476001994626254">Web smart paste content</translation>
 <translation id="1871244248791675517">Ins</translation>
@@ -131,7 +131,7 @@
 <translation id="528468243742722775">End</translation>
 <translation id="5329858601952122676">&amp;Delete</translation>
 <translation id="5361107212971249203">text</translation>
-<translation id="5463830097259460683">Emoji &amp;&amp; Symbols</translation>
+<translation id="5463830097259460683">Emoji and symbols</translation>
 <translation id="5505748296268090374">Remove <ph name="ITEM_TEXT" />.</translation>
 <translation id="5528053674512161860">Page load failed because the developer UI module (dev_ui) is not installed</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> system</translation>

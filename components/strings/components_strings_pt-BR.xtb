@@ -2016,7 +2016,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4377869186417956230">Mudar para todos os cartões fidelidade neste item de menu.</translation>
 <translation id="4378154925671717803">Telefone</translation>
 <translation id="4378221908737133050">Faça uma checklist para faxina pesada em casa</translation>
-<translation id="4379357028567121852">De <ph name="APP_NAME" /></translation>
 <translation id="4381997246130185847">Continue de onde parou ou crie novos grupos de guias em qualquer lugar</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">De agora em diante, salve seus arquivos no armazenamento em nuvem</translation>
@@ -4849,7 +4848,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="958952958906914932">Mais guias de outros dispositivos</translation>
 <translation id="961372935451193190">Guias e arquivos</translation>
 <translation id="961663415146723894">Encadernação na parte inferior</translation>
-<translation id="961856697154696964">Excluir dados</translation>
+<translation id="961856697154696964">Excluir dados de navegação</translation>
 <translation id="961930410699694996">Localização permitida apenas desta vez</translation>
 <translation id="962484866189421427">Este conteúdo pode tentar instalar apps enganosos que fingem ser outra coisa ou coletam dados que podem ser usados para rastrear você. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Com base na legislação da sua região, o Chromium pede que você escolha o mecanismo de pesquisa padrão. Esses mecanismos são famosos na sua região e estão em ordem aleatória.</translation>
