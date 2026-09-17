@@ -82,10 +82,11 @@ void InitWalletSyncBridgesOnDBSequence(
 void InitValuableSyncBridgeOnDBSequence(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner,
     const scoped_refptr<autofill::AutofillWebDataService>& autofill_web_data,
+    const std::string& app_locale,
     autofill::AutofillWebDataBackend* autofill_backend) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
   autofill::ValuableSyncBridge::CreateForWebDataServiceAndBackend(
-      autofill_backend, autofill_web_data.get());
+      app_locale, autofill_backend, autofill_web_data.get());
 }
 
 void InitValuableMetadataSyncBridgeOnDBSequence(
@@ -202,7 +203,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   {
     profile_autofill_web_data_->GetAutofillBackend(
         base::BindOnce(&InitValuableSyncBridgeOnDBSequence, db_task_runner,
-                       profile_autofill_web_data_));
+                       profile_autofill_web_data_, application_locale));
   }
 
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata)) {

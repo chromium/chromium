@@ -52,6 +52,7 @@ class ValuableSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   };
   ValuableSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+      const std::string& app_locale,
       AutofillWebDataBackend* backend);
   ~ValuableSyncBridge() override;
 
@@ -59,6 +60,7 @@ class ValuableSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   ValuableSyncBridge& operator=(const ValuableSyncBridge&) = delete;
 
   static void CreateForWebDataServiceAndBackend(
+      const std::string& app_locale,
       AutofillWebDataBackend* web_data_backend,
       AutofillWebDataService* web_data_service);
 
@@ -147,6 +149,9 @@ class ValuableSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   // The bridge should be used on the same sequence where it has been
   // constructed.
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // The application locale, used to gate locale-restricted valuable types.
+  const std::string app_locale_;
 
   // ValuableSyncBridge is owned by `web_data_backend_` through
   // SupportsUserData, so it's guaranteed to outlive `this`.

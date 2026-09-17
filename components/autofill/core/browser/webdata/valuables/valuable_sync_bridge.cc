@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/webdata/valuables/valuable_sync_bridge.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -21,6 +22,7 @@
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -35,6 +37,7 @@
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -99,6 +102,28 @@ bool AreAutofillLoyaltyCardSpecificsValid(
          HasEmptyOrValidProgramLogo(specifics);
 }
 
+// Tests if the valuable `specifics` are valid and can be converted into an
+// AutofillOfferData instance using `CreateOfferDataFromValuableSpecifics()`.
+bool AreAutofillOfferSpecificsValid(
+    const sync_pb::AutofillValuableSpecifics& specifics) {
+  CHECK(specifics.has_offer());
+  const sync_pb::Offer& offer = specifics.offer();
+  const bool has_valid_issuer_domains =
+      !offer.issuer_domains().empty() &&
+      std::ranges::all_of(offer.issuer_domains(),
+                          [](const std::string& domain) {
+                            return !domain.empty() && GURL(domain).is_valid();
+                          });
+  // `AutofillOfferData` identifies offers by an int64. Offers whose id cannot
+  // be represented as a positive int64 are dropped.
+  int64_t offer_id = 0;
+  return base::StringToInt64(specifics.id(), &offer_id) && offer_id > 0 &&
+         !offer.offer_code().empty() && !offer.description().empty() &&
+         !offer.offer_short_title().empty() &&
+         offer.expiration_time_unix_epoch_micros() > 0 &&
+         GURL(specifics.pass_view_url()).is_valid() && has_valid_issuer_domains;
+}
+
 // Tests whether the `EntityInstance` represented by the `specifics` meets the
 // AutofillAi import constraints.
 bool AreAutofillAiSpecificsValid(
@@ -144,6 +169,13 @@ bool IsSyncWalletPrivatePassesEnabled() {
 
 bool IsSyncWalletShoppingEnabled() {
   return base::FeatureList::IsEnabled(features::kAutofillAiWalletShopping);
+}
+
+bool IsSyncWalletDirectOffersEnabled(std::string_view app_locale) {
+  return (app_locale == "en-US" || app_locale == "en-CA" ||
+          app_locale == "en-GB") &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnableWalletDirectOffers);
 }
 
 // Returns if the entity `change` should be uploaded to AUTOFILL_VALUABLE.
@@ -233,8 +265,10 @@ LoyaltyCard CreateLoyaltyCardFromSpecificsAndLoadMetadata(
 
 ValuableSyncBridge::ValuableSyncBridge(
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+    const std::string& app_locale,
     AutofillWebDataBackend* backend)
     : DataTypeSyncBridge(std::move(change_processor)),
+      app_locale_(app_locale),
       web_data_backend_(backend) {
   if (!web_data_backend_ || !web_data_backend_->GetDatabase() ||
       !GetValuablesTable()) {
@@ -256,6 +290,7 @@ ValuableSyncBridge::~ValuableSyncBridge() = default;
 
 // static
 void ValuableSyncBridge::CreateForWebDataServiceAndBackend(
+    const std::string& app_locale,
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
   web_data_service->GetDBUserData().SetUserData(
@@ -264,7 +299,7 @@ void ValuableSyncBridge::CreateForWebDataServiceAndBackend(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::AUTOFILL_VALUABLE,
               /*dump_stack=*/base::DoNothing()),
-          web_data_backend));
+          app_locale, web_data_backend));
 }
 
 // static
@@ -350,6 +385,9 @@ ValuableDatabaseOperationResult ValuableSyncBridge::HandleDeleteRequest(
     return ValuableDatabaseOperationResult::kDataChanged;
   }
 
+  // TODO(crbug.com/546252995): `storage_key` may belong to an offer. Offers
+  // aren't persisted yet, so there is nothing to delete. Once they are stored,
+  // remove the offer with this id from `PaymentsAutofillTable`.
   return ValuableDatabaseOperationResult::kNoChange;
 }
 
@@ -417,10 +455,15 @@ ValuableSyncBridge::ApplyIncrementalSyncChanges(
               }
             }
             break;
-          // Event ticket, transit pass and offer are not supported by Chrome.
+          // Offers pass `IsEntityDataValid()` but are dropped here, so nothing
+          // is written to disk yet.
+          // TODO(crbug.com/546252995): Convert the specifics with
+          // `CreateOfferDataFromValuableSpecifics()` and add or update the
+          // resulting `AutofillOfferData` in `PaymentsAutofillTable`.
+          case sync_pb::AutofillValuableSpecifics::kOffer:
+          // Event ticket and transit pass are not supported by Chrome.
           case sync_pb::AutofillValuableSpecifics::kEventTicket:
           case sync_pb::AutofillValuableSpecifics::kTransitPass:
-          case sync_pb::AutofillValuableSpecifics::kOffer:
           // Ignore new entry types that the client doesn't know about.
           case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
             break;
@@ -476,6 +519,9 @@ std::unique_ptr<syncer::MutableDataBatch> ValuableSyncBridge::GetData() {
     }
   }
 
+  // TODO(crbug.com/546252995): Add the offers from `PaymentsAutofillTable`.
+  // Without them, offers don't show up in chrome://sync-internals, which reads
+  // this batch through `GetAllDataForDebugging()`.
   return batch;
 }
 
@@ -540,9 +586,11 @@ bool ValuableSyncBridge::IsEntityDataValid(
     case sync_pb::AutofillValuableSpecifics::kShipment:
       return IsSyncWalletShoppingEnabled() &&
              AreAutofillAiSpecificsValid(autofill_valuable);
+    case sync_pb::AutofillValuableSpecifics::kOffer:
+      return IsSyncWalletDirectOffersEnabled(app_locale_) &&
+             AreAutofillOfferSpecificsValid(autofill_valuable);
     case sync_pb::AutofillValuableSpecifics::kEventTicket:
     case sync_pb::AutofillValuableSpecifics::kTransitPass:
-    case sync_pb::AutofillValuableSpecifics::kOffer:
     // Ignore new entry types that the client doesn't know about.
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       return false;
@@ -709,10 +757,15 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
               entities.push_back(std::move(*entity));
             }
             break;
-          // Event ticket, transit pass and offer are not supported by Chrome.
+          // Offers pass `IsEntityDataValid()` but are dropped here, so the
+          // initial sync doesn't write them to disk.
+          // TODO(crbug.com/546252995): Collect the offers converted with
+          // `CreateOfferDataFromValuableSpecifics()` and replace the ones in
+          // `PaymentsAutofillTable`, like `SetLoyaltyCards()` does for cards.
+          case sync_pb::AutofillValuableSpecifics::kOffer:
+          // Event ticket and transit pass are not supported by Chrome.
           case sync_pb::AutofillValuableSpecifics::kEventTicket:
           case sync_pb::AutofillValuableSpecifics::kTransitPass:
-          case sync_pb::AutofillValuableSpecifics::kOffer:
           // Ignore new entry types that the client doesn't know about.
           case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
             break;

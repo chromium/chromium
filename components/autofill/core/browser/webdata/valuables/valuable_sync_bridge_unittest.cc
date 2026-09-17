@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -117,8 +118,13 @@ class ValuableSyncBridgeTest : public testing::Test {
     ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
         .WillByDefault(ReturnRef(sync_pb::EntitySpecifics::default_instance()));
 
+    ResetBridge();
+  }
+
+  // (Re)creates the `bridge()` with the given `app_locale`.
+  void ResetBridge(const std::string& app_locale = "en-US") {
     bridge_ = std::make_unique<ValuableSyncBridge>(
-        mock_processor_.CreateForwardingProcessor(), &backend_);
+        mock_processor_.CreateForwardingProcessor(), app_locale, &backend_);
   }
 
 #if !BUILDFLAG(IS_IOS)
@@ -213,7 +219,8 @@ TEST_F(ValuableSyncBridgeTest, InitializationFailure) {
   ON_CALL(backend(), GetDatabase()).WillByDefault(Return(nullptr));
   EXPECT_CALL(mock_processor(), ReportError);
   // The `bridge()` was already initialized during `SetUp()`. Recreate it.
-  ValuableSyncBridge(mock_processor().CreateForwardingProcessor(), &backend());
+  ValuableSyncBridge(mock_processor().CreateForwardingProcessor(), "en-US",
+                     &backend());
 }
 
 // Tests that for specifics that represent AutofillAi entities, import
@@ -295,6 +302,144 @@ TEST_F(ValuableSyncBridgeTest, IsLoyaltyCardEntityDataInvalid) {
   empty_merchant_name_specifics.mutable_loyalty_card()->clear_merchant_name();
   EXPECT_FALSE(bridge().IsEntityDataValid(
       *CreateEntityDataFromSpecifics(empty_merchant_name_specifics)));
+}
+
+TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataValid) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
+  sync_pb::AutofillValuableSpecifics specifics = TestOfferSpecifics(kId1);
+  EXPECT_TRUE(
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+
+  // The offer title image url is not used and doesn't affect validity.
+  specifics.mutable_offer()->clear_offer_title_image_url();
+  EXPECT_TRUE(
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+  EXPECT_TRUE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
+      TestOfferSpecifics(kId1, /*offer_code=*/"SAFEWAY50",
+                         /*description=*/"50% off your next purchase",
+                         /*pass_view_url=*/"https://safeway.com/offer-details",
+                         /*offer_title_image_url=*/""))));
+  EXPECT_TRUE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
+      TestOfferSpecifics(kId1, /*offer_code=*/"SAFEWAY50",
+                         /*description=*/"50% off your next purchase",
+                         /*pass_view_url=*/"https://safeway.com/offer-details",
+                         /*offer_title_image_url=*/"invalid_url"))));
+}
+
+TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
+  // Invalid id.
+  EXPECT_FALSE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(TestOfferSpecifics(kInvalidId))));
+
+  // Invalid offer code.
+  EXPECT_FALSE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(TestOfferSpecifics(
+          kId1, /*offer_code=*/"",
+          /*description=*/"50% off your next purchase",
+          /*pass_view_url=*/"https://safeway.com/offer-details"))));
+
+  // Invalid description.
+  EXPECT_FALSE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(TestOfferSpecifics(
+          kId1, /*offer_code=*/"SAFEWAY50",
+          /*description=*/"",
+          /*pass_view_url=*/"https://safeway.com/offer-details"))));
+
+  // Missing description.
+  sync_pb::AutofillValuableSpecifics empty_description_specifics =
+      TestOfferSpecifics(kId1);
+  empty_description_specifics.mutable_offer()->clear_description();
+  EXPECT_FALSE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(empty_description_specifics)));
+
+  // Invalid offer details url.
+  EXPECT_FALSE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
+      TestOfferSpecifics(kId1, /*offer_code=*/"SAFEWAY50",
+                         /*description=*/"50% off your next purchase",
+                         /*pass_view_url=*/"invalid_url"))));
+
+  // Empty offer details url.
+  EXPECT_FALSE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
+      TestOfferSpecifics(kId1, /*offer_code=*/"SAFEWAY50",
+                         /*description=*/"50% off your next purchase",
+                         /*pass_view_url=*/""))));
+
+  // Missing offer details url.
+  sync_pb::AutofillValuableSpecifics missing_pass_view_url_specifics =
+      TestOfferSpecifics(kId1);
+  missing_pass_view_url_specifics.clear_pass_view_url();
+  EXPECT_FALSE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(missing_pass_view_url_specifics)));
+
+  // Missing issuer domains.
+  sync_pb::AutofillValuableSpecifics empty_issuer_domains_specifics =
+      TestOfferSpecifics(kId1);
+  empty_issuer_domains_specifics.mutable_offer()->clear_issuer_domains();
+  EXPECT_FALSE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(empty_issuer_domains_specifics)));
+
+  // Empty issuer domain entry.
+  sync_pb::AutofillValuableSpecifics empty_issuer_domain_entry_specifics =
+      TestOfferSpecifics(kId1);
+  empty_issuer_domain_entry_specifics.mutable_offer()->add_issuer_domains("");
+  EXPECT_FALSE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(empty_issuer_domain_entry_specifics)));
+
+  // Invalid issuer domain entry.
+  sync_pb::AutofillValuableSpecifics invalid_issuer_domain_specifics =
+      TestOfferSpecifics(kId1);
+  invalid_issuer_domain_specifics.mutable_offer()->add_issuer_domains(
+      "invalid_url");
+  EXPECT_FALSE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(invalid_issuer_domain_specifics)));
+
+  // Invalid offer short title.
+  EXPECT_FALSE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
+      TestOfferSpecifics(kId1, /*offer_code=*/"SAFEWAY50",
+                         /*description=*/"50% off your next purchase",
+                         /*pass_view_url=*/"https://safeway.com/offer-details",
+                         /*offer_title_image_url=*/"https://image.com/logo.png",
+                         /*offer_short_title=*/""))));
+
+  // Missing offer short title.
+  sync_pb::AutofillValuableSpecifics empty_short_title_specifics =
+      TestOfferSpecifics(kId1);
+  empty_short_title_specifics.mutable_offer()->clear_offer_short_title();
+  EXPECT_FALSE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(empty_short_title_specifics)));
+
+  // Invalid expiry (<= 0).
+  EXPECT_FALSE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
+      TestOfferSpecifics(kId1, /*offer_code=*/"SAFEWAY50",
+                         /*description=*/"50% off your next purchase",
+                         /*pass_view_url=*/"https://safeway.com/offer-details",
+                         /*offer_title_image_url=*/"https://image.com/logo.png",
+                         /*offer_short_title=*/"50% off",
+                         /*expiration_time_unix_epoch_micros=*/0))));
+
+  // Missing expiry.
+  sync_pb::AutofillValuableSpecifics missing_expiry_specifics =
+      TestOfferSpecifics(kId1);
+  missing_expiry_specifics.mutable_offer()
+      ->clear_expiration_time_unix_epoch_micros();
+  EXPECT_FALSE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(missing_expiry_specifics)));
+}
+
+TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_FeatureDisabled) {
+  EXPECT_FALSE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(TestOfferSpecifics(kId1))));
+}
+
+TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_LocaleNotSupported) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
+  ResetBridge("fr-FR");
+  EXPECT_FALSE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(TestOfferSpecifics(kId1))));
 }
 
 // Tests that during the initial sync, `MergeFullSyncData()` incorporates remote
@@ -854,8 +999,11 @@ class ValuableSyncBridgeWithIncrementalUpdates : public ValuableSyncBridge {
  public:
   ValuableSyncBridgeWithIncrementalUpdates(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+      const std::string& app_locale,
       AutofillWebDataBackend* web_data_backend)
-      : ValuableSyncBridge(std::move(change_processor), web_data_backend) {}
+      : ValuableSyncBridge(std::move(change_processor),
+                           app_locale,
+                           web_data_backend) {}
 
   // syncer::DataTypeSyncBridge:
   bool SupportsIncrementalUpdates() const override { return true; }
@@ -866,7 +1014,7 @@ class ValuableSyncBridgeIncrementalUpdatesTest : public ValuableSyncBridgeTest {
   void SetUp() override {
     ValuableSyncBridgeTest::SetUp();
     bridge_ = std::make_unique<ValuableSyncBridgeWithIncrementalUpdates>(
-        mock_processor().CreateForwardingProcessor(), &backend());
+        mock_processor().CreateForwardingProcessor(), "en-US", &backend());
   }
 };
 

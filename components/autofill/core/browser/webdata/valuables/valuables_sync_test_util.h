@@ -23,6 +23,16 @@ sync_pb::AutofillValuableSpecifics TestLoyaltyCardSpecifics(
     std::string_view program_logo = "http://foobar.com/logo.png",
     std::string_view number = "80974934820245");
 
+// Creates a test `AutofillValuableSpecifics` for an offer.
+sync_pb::AutofillValuableSpecifics TestOfferSpecifics(
+    std::string_view id = "1",
+    std::string_view offer_code = "SAFEWAY50",
+    std::string_view description = "50% off your next purchase",
+    std::string_view pass_view_url = "https://safeway.com/offer-details",
+    std::string_view offer_title_image_url = "https://image.com/logo.png",
+    std::string_view offer_short_title = "50% off",
+    int64_t expiration_time_unix_epoch_micros = 123456789);
+
 // Creates a test `ValuableMetadata`.
 ValuableMetadata TestValuableMetadata(std::string_view id = "1");
 

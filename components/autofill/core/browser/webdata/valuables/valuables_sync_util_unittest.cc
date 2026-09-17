@@ -153,10 +153,42 @@ TEST(OfferSyncUtilTest, TrimAutofillValuableSpecificsDataForCaching) {
       "https://image.com/logo.png");
   specifics.mutable_offer()->add_issuer_domains("safeway.com");
   specifics.mutable_offer()->set_description("50% off your next purchase");
+  specifics.set_pass_view_url("https://safeway.com/offer-details");
 
   EXPECT_EQ(
       TrimAutofillValuableSpecificsDataForCaching(specifics).ByteSizeLong(),
       0u);
+}
+
+TEST(OfferSyncUtilTest, CreateOfferDataFromValuableSpecifics) {
+  sync_pb::AutofillValuableSpecifics specifics;
+  specifics.set_id("999");
+  specifics.set_is_editable(true);
+  specifics.mutable_offer()->set_issuer_name("Safeway");
+  specifics.mutable_offer()->set_provider_name("coupon.com");
+  specifics.mutable_offer()->set_offer_short_title("50% off");
+  specifics.mutable_offer()->set_expiration_time_unix_epoch_micros(123456789);
+  specifics.mutable_offer()->set_offer_code("SAFEWAY50");
+  specifics.mutable_offer()->set_offer_title_image_url(
+      "https://image.com/logo.png");
+  specifics.mutable_offer()->add_issuer_domains("https://safeway.com");
+  specifics.mutable_offer()->set_description("50% off your next purchase");
+  specifics.set_pass_view_url("https://safeway.com/offer-details");
+
+  AutofillOfferData offer = CreateOfferDataFromValuableSpecifics(specifics);
+  EXPECT_EQ(999, offer.GetOfferId());
+  // The expiry is truncated to millisecond precision, matching the precision
+  // `PaymentsAutofillTable` persists.
+  EXPECT_EQ(base::Time::UnixEpoch() + base::Milliseconds(123456),
+            offer.GetExpiry());
+  EXPECT_EQ("SAFEWAY50", offer.GetPromoCode());
+  EXPECT_EQ("50% off your next purchase",
+            offer.GetDisplayStrings().value_prop_text);
+  EXPECT_EQ("50% off", offer.GetOfferRewardAmount());
+  EXPECT_EQ(GURL("https://safeway.com/offer-details"),
+            offer.GetOfferDetailsUrl());
+  EXPECT_THAT(offer.GetMerchantOrigins(),
+              testing::ElementsAre(GURL("https://safeway.com")));
 }
 
 TEST(ValuableMetadataSyncUtilTest, CreateEntityDataFromValuableMetadata) {
