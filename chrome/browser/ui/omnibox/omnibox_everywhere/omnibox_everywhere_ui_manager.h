@@ -121,6 +121,13 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   // dialog is open.
   bool HasOpenModalDialog() const;
 
+  // Returns true while a screenshot capture flow owns the screen: the native
+  // OS screen picker, Chrome's default desktop media picker, the region
+  // selection overlay, or the capture that immediately follows the user's
+  // selection. The widget is intentionally hidden for the duration of that
+  // flow, so invocation entry points must be ignored while this is true.
+  bool IsScreenshareCaptureInProgress() const;
+
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetVisibilityOnScreenChanged(views::Widget* widget,

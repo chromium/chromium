@@ -698,6 +698,10 @@ bool OmniboxEverywhereUIManager::HasOpenModalDialog() const {
          is_hotkey_dropdown_open_;
 }
 
+bool OmniboxEverywhereUIManager::IsScreenshareCaptureInProgress() const {
+  return is_screenshare_picker_open_ || region_select_overlay_ != nullptr;
+}
+
 void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {

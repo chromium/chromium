@@ -229,6 +229,54 @@ TEST_F(OmniboxEverywhereControllerTest, OnInvokeEphemeralModeToggling) {
   EXPECT_TRUE(controller.IsVisible());
 }
 
+// Tests that invocations are ignored while a screenshot picker (the native OS
+// screen picker or Chrome's default desktop media picker) is on screen, so the
+// widget cannot be summoned on top of the picker.
+TEST_F(OmniboxEverywhereControllerTest,
+       OnInvokeIgnoredDuringScreensharePicker) {
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+
+  FakeGlobalAcceleratorListener fake_listener;
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }),
+      &fake_listener);
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  ASSERT_TRUE(controller.IsVisible());
+
+  // Opening the picker hides the widget for the duration of the capture flow.
+  controller.ui_manager()->OnScreensharePickerOpened();
+  ASSERT_TRUE(controller.ui_manager()->IsScreenshareCaptureInProgress());
+  EXPECT_FALSE(controller.IsVisible());
+
+  // No entry point may re-show the widget while the picker is up.
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  EXPECT_FALSE(controller.IsVisible());
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kStatusTrayIcon,
+                      profile_.get(), GetContext());
+  EXPECT_FALSE(controller.IsVisible());
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kCommandLine,
+                      profile_.get(), GetContext());
+  EXPECT_FALSE(controller.IsVisible());
+
+  // Closing the picker restores the widget and re-enables invocations.
+  controller.ui_manager()->OnScreensharePickerClosed();
+  EXPECT_FALSE(controller.ui_manager()->IsScreenshareCaptureInProgress());
+  EXPECT_TRUE(controller.IsVisible());
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  EXPECT_FALSE(controller.IsVisible());
+}
+
 // Tests that invoking in persistent mode toggles between floating active and
 // normal demoted.
 #if BUILDFLAG(IS_WIN)
