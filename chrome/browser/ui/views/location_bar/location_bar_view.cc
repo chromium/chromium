@@ -1455,17 +1455,11 @@ bool LocationBarView::RefreshContentSettingViews() {
   for (ContentSettingImageView* v : content_setting_views_) {
     const bool was_visible = v->GetVisible();
 
-    bool is_lhs_indicator = false;
-    if (!web_app::AppBrowserController::IsWebApp(browser_)) {
-      if (v->GetType() == ContentSettingImageModel::ImageType::kMediaStream) {
-        is_lhs_indicator = base::FeatureList::IsEnabled(
-            content_settings::features::kLeftHandSideActivityIndicators);
-      } else if (v->GetType() ==
-                 ContentSettingImageModel::ImageType::kSensors) {
-        is_lhs_indicator = base::FeatureList::IsEnabled(
-            content_settings::features::kLeftHandSideSensorActivityIndicators);
-      }
-    }
+    // Web app windows have no permission dashboard, so activity indicators
+    // stay on the right-hand side there.
+    const bool is_lhs_indicator =
+        !web_app::AppBrowserController::IsWebApp(browser_) &&
+        ContentSettingImageModel::IsLeftHandSideIndicatorEnabled(v->GetType());
 
     if (is_lhs_indicator) {
       // Prioritize Media Stream (kMediaStream) over Sensors (kSensors) by

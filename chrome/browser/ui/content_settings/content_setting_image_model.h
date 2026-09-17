@@ -71,6 +71,16 @@ class ContentSettingImageModel {
   // Returns all element identifiers for all content setting image models.
   static std::vector<ui::ElementIdentifier> GetAllElementIdentifiers();
 
+  // Returns whether `image_type` is drawn as a left-hand-side activity
+  // indicator by the permission dashboard, rather than as a right-hand-side
+  // content setting image. This is the single source of truth for that mapping;
+  // every location bar implementation must route through it so that exactly one
+  // of the two containers draws the indicator.
+  //
+  // Callers must additionally apply any window-specific conditions. For
+  // instance, web app windows never show the permission dashboard.
+  static bool IsLeftHandSideIndicatorEnabled(ImageType image_type);
+
   // Returns the corresponding index into the above vector for the given
   // ContentSettingsType. For testing.
   static size_t GetContentSettingImageModelIndexForTesting(

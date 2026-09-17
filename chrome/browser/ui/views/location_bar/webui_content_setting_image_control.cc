@@ -93,10 +93,13 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
   }
 
   for (auto& model : models_) {
-    // The activity indicators (camera, mic) are drawn on the left side of the
-    // location bar, managed by the Permissions Dashboard, so we don't include
-    // them in the right hand side content setting images here.
-    if (model->image_type() == ImageType::kMediaStream) {
+    // Activity indicators (camera, mic and sensors) are drawn on the left side
+    // of the location bar by the Permissions Dashboard while the corresponding
+    // feature is enabled, so they must not also appear as right-hand-side
+    // content setting images. The model is still updated, because the dashboard
+    // reads it.
+    if (ContentSettingImageModel::IsLeftHandSideIndicatorEnabled(
+            model->image_type())) {
       model->Update(setting_view_delegate_->ShouldHideContentSettingImage()
                         ? nullptr
                         : web_contents);

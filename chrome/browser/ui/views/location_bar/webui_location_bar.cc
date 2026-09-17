@@ -312,8 +312,8 @@ bool WebUILocationBar::UpdateContentSettingModels() {
   bool permission_dashboard_changed = false;
   bool dashboard_updated = false;
 
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kLeftHandSideActivityIndicators)) {
+  if (ContentSettingImageModel::IsLeftHandSideIndicatorEnabled(
+          ContentSettingImageModel::ImageType::kMediaStream)) {
     ContentSettingImageModel* media_stream_model =
         content_setting_image_control_.GetModel(
             ContentSettingImageModel::ImageType::kMediaStream);
@@ -327,8 +327,8 @@ bool WebUILocationBar::UpdateContentSettingModels() {
   }
 
   if (!dashboard_updated &&
-      base::FeatureList::IsEnabled(
-          content_settings::features::kLeftHandSideSensorActivityIndicators)) {
+      ContentSettingImageModel::IsLeftHandSideIndicatorEnabled(
+          ContentSettingImageModel::ImageType::kSensors)) {
     ContentSettingImageModel* sensors_model =
         content_setting_image_control_.GetModel(
             ContentSettingImageModel::ImageType::kSensors);

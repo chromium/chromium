@@ -9,12 +9,14 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_view_delegate.h"
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/content_settings/core/common/features.h"
 #include "content/public/browser/page.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -208,6 +210,55 @@ TEST_F(WebUIContentSettingImageControlTest,
   EXPECT_EQ(ImageType::kPopups, popup_state->type);
   EXPECT_FALSE(popup_state->is_blocked);
   EXPECT_EQ(u"Popup Tooltip", popup_state->tooltip);
+}
+
+// The camera/mic and sensor indicators are drawn by the Permissions Dashboard
+// on the left-hand side only while the corresponding feature is enabled. When
+// it is disabled they must fall back to being right-hand-side content setting
+// images, like in the Views location bar.
+TEST_F(WebUIContentSettingImageControlTest,
+       ProcessContentSettingState_ActivityIndicators) {
+  const struct TestCase {
+    bool enable_lhs_indicators;
+    std::vector<ImageType> expected_types;
+  } kTestCases[] = {
+      {false, {ImageType::kMediaStream, ImageType::kSensors}},
+      {true, {}},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.enable_lhs_indicators);
+
+    // A `ScopedFeatureList` can only be initialized once, so it has to be
+    // re-created on every iteration.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureStates(
+        {{content_settings::features::kLeftHandSideActivityIndicators,
+          test_case.enable_lhs_indicators},
+         {content_settings::features::kLeftHandSideSensorActivityIndicators,
+          test_case.enable_lhs_indicators}});
+
+    std::vector<std::unique_ptr<ContentSettingImageModel>> models;
+    auto media_model_ptr = std::make_unique<FakeContentSettingImageModel>(
+        ImageType::kMediaStream, ContentSettingsType::MEDIASTREAM_CAMERA);
+    auto* media_model = media_model_ptr.get();
+    models.push_back(std::move(media_model_ptr));
+    auto sensors_model_ptr = std::make_unique<FakeContentSettingImageModel>(
+        ImageType::kSensors, ContentSettingsType::SENSORS);
+    auto* sensors_model = sensors_model_ptr.get();
+    models.push_back(std::move(sensors_model_ptr));
+
+    control_->InitForTesting(std::move(models));
+
+    media_model->set_visible(true);
+    sensors_model->set_visible(true);
+
+    auto state = control_->ProcessContentSettingState(web_contents());
+    ASSERT_EQ(test_case.expected_types.size(), state.size());
+    for (size_t i = 0; i < state.size(); ++i) {
+      EXPECT_EQ(test_case.expected_types[i], state[i]->type);
+    }
+  }
 }
 
 TEST_F(WebUIContentSettingImageControlTest, ShowContentSettingsBubble) {

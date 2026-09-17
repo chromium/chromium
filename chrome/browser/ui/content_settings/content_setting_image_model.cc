@@ -1619,3 +1619,20 @@ size_t ContentSettingImageModel::GetContentSettingImageModelIndexForTesting(
   }
   NOTREACHED();
 }
+
+// static
+bool ContentSettingImageModel::IsLeftHandSideIndicatorEnabled(
+    ImageType image_type) {
+  // Only the permission activity indicators are ever hosted by the dashboard;
+  // every other image type is always a right-hand-side content setting image.
+  switch (image_type) {
+    case ImageType::kMediaStream:
+      return base::FeatureList::IsEnabled(
+          content_settings::features::kLeftHandSideActivityIndicators);
+    case ImageType::kSensors:
+      return base::FeatureList::IsEnabled(
+          content_settings::features::kLeftHandSideSensorActivityIndicators);
+    default:
+      return false;
+  }
+}
