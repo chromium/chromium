@@ -17,28 +17,13 @@ namespace gemini {
 
 namespace {
 
-// Helper to check if model execution features are allowed for the given account
-// under the updated eligibility constraints.
-bool CheckModelExecutionEligibility(bool feature_flag_enabled,
-                                    const AccountInfo& account_info) {
-  if (!feature_flag_enabled) {
-    return false;
-  }
-  if (!IsGeminiUpdatedEligibilityEnabled()) {
-    return true;
-  }
-  return HasModelExecutionCapability(account_info);
-}
-
 // Returns whether the specified feature is available for the given account.
 bool IsFeatureAvailable(Feature feature, const AccountInfo& account_info) {
   switch (feature) {
     case Feature::kImageRemix:
-      return CheckModelExecutionEligibility(/*feature_flag_enabled=*/true,
-                                            account_info);
+      return HasModelExecutionCapability(account_info);
     case Feature::kLive:
-      return CheckModelExecutionEligibility(IsGeminiLiveEnabled(),
-                                            account_info);
+      return IsGeminiLiveEnabled() && HasModelExecutionCapability(account_info);
   }
 }
 
@@ -76,13 +61,8 @@ bool HasGeminiInChromeCapability(const AccountInfo& account_info) {
   const AccountCapabilities capabilities =
       account_info.GetAccountCapabilities();
 
-  if (IsGeminiUpdatedEligibilityEnabled()) {
-    return signin::TriboolToBoolOr(capabilities.can_use_gemini_in_chrome(),
-                                   false);
-  }
-
-  return signin::TriboolToBoolOr(
-      capabilities.can_use_model_execution_features(), false);
+  return signin::TriboolToBoolOr(capabilities.can_use_gemini_in_chrome(),
+                                 false);
 }
 
 bool HasModelExecutionCapability(const AccountInfo& account_info) {

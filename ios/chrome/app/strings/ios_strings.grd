@@ -1563,27 +1563,6 @@
       <message name="IDS_IOS_BWG_ASK_GEMINI_ACCESSIBILITY_LABEL" desc="Accessibility label for the direct Gemini entry point button.">
         Ask Gemini
       </message>
-      <message name="IDS_IOS_BWG_CONSENT_FIRST_BOX_TITLE" desc="First box title text for the Gemini Consent page for managed accounts.">
-          Get more relevant answers by sharing your tabs
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_MANAGED_FIRST_BOX_BODY" desc="First box body text for the Gemini Consent page for managed accounts.">
-          By default, your current tab is shared when you start a new chat. When tabs are shared, their contents and URLs are sent to Google but won’t be used to improve generative AI models. You can change this setting anytime.
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_BODY" desc="Second box body text for the Gemini Consent page for managed accounts.">
-          Neither your conversations with Gemini nor your <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Workspace data<ph name="END_LINK">END_LINK</ph> will be reviewed by human reviewers or used to improve generative AI models.
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_TITLE" desc="Second box title text for the Gemini Consent page for managed accounts.">
-          Your organization's data is private and secure
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_NON_MANAGED_FIRST_BOX_BODY" desc="First box body text for the Gemini Consent page for non managed accounts.">
-          By default, your current tab is shared when you start a new chat. When tabs are shared, their contents and URLs are sent to Google. You can change this setting anytime.
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_BODY" desc="Second box body text for the Gemini Consent page for non managed accounts.">
-          Chats are reviewed and used to improve Google AI. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn about your choices.<ph name="END_LINK">END_LINK</ph> <ph name="BEGIN_LINK">BEGIN_LINK</ph>Info about your location<ph name="END_LINK">END_LINK</ph> is also stored with your activity.
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_TITLE" desc="Second box title text for the Gemini Consent page for non managed accounts.">
-          Your activity improves Google AI
-      </message>
       <message name="IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON" desc="Primary button text for the Gemini Consent page.">
           Yes, I'm in
       </message>

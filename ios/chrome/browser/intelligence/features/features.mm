@@ -370,21 +370,6 @@ bool IsPageContextExtractorRefactoredEnabled() {
   return base::FeatureList::IsEnabled(kPageContextExtractorRefactored);
 }
 
-BASE_FEATURE(kGeminiUpdatedEligibility, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsGeminiUpdatedEligibilityEnabled() {
-  if (!IsPageActionMenuEnabled()) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kGeminiUpdatedEligibility);
-}
-
-BASE_FEATURE(kGeminiUpdatedConsent, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsGeminiUpdatedConsentEnabled() {
-  return base::FeatureList::IsEnabled(kGeminiUpdatedConsent);
-}
-
 BASE_FEATURE(kGeminiEligibilityAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiEligibilityAblationEnabled() {

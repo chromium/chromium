@@ -89,19 +89,6 @@ const char kChoicesLinkURL[] =
 const char kConnectedServicesLinkURL[] =
     "https://support.google.com/gemini/answer/13594961";
 
-// Consent row links for the old FRE.
-// TODO(crbug.com/393204662): Remove these links once the old FRE is removed.
-const char kSecondBoxLinkURLManagedAccount[] =
-    "https://support.google.com/a/answer/15706919";
-const char kSecondBoxLink1URLNonManagedAccount[] =
-    "https://support.google.com/gemini/answer/"
-    "13594961?visit_id=638773303691545173-4156329828&p=activity_settings&rd=1#"
-    "config_settings";
-const char kSecondBoxLink2URLNonManagedAccount[] =
-    "https://support.google.com/gemini/answer/"
-    "13594961?hl=en#location_info&zippy=%2Cwhat-location-information-do-gemini-"
-    "apps-collect-why-and-how-is-it-used";
-
 // Consent row links for Live FRE.
 const char kLivePrivacyNoticeLinkURL[] =
     "https://support.google.com/gemini/answer/13594961";
@@ -120,21 +107,13 @@ const char kKoreanTermsFootnoteLinkURL[] =
     "https://www.google.com/intl/ko/policies/terms/location";
 const char kWatchLinkURL[] = "https://support.google.com/gemini?p=about_ai";
 
-// Action identifiers for links in the new FRE Gemini consent rows.
+// Action identifiers for links in the FRE Gemini consent rows.
 NSString* const kGeminiDataGovernanceManagedLinkAction =
     @"GeminiDataGovernanceManagedLinkAction";
 NSString* const kGeminiActivityLinkAction = @"GeminiActivityLinkAction";
 NSString* const kGeminiChoicesLinkAction = @"GeminiChoicesLinkAction";
 NSString* const kGeminiConnectedServicesLinkAction =
     @"GeminiConnectedServicesLinkAction";
-
-// Action identifiers for links in the old FRE Gemini consent rows.
-NSString* const kGeminiSecondBoxLinkActionManagedAccount =
-    @"GeminiSecondBoxLinkActionManagedAccount";
-NSString* const kGeminiSecondBoxLink1ActionNonManagedAccount =
-    @"GeminiSecondBoxLink1ActionNonManagedAccount";
-NSString* const kGeminiSecondBoxLink2ActionNonManagedAccount =
-    @"GeminiSecondBoxLink2ActionNonManagedAccount";
 
 // Action identifiers for links in the Live FRE Gemini consent rows.
 NSString* const kGeminiLivePrivacyNoticeLinkAction =

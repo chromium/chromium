@@ -190,18 +190,6 @@ BASE_DECLARE_FEATURE(kPageContextExtractorRefactored);
 // Returns true if the refactored page context extractor is enabled.
 bool IsPageContextExtractorRefactoredEnabled();
 
-// Feature flag to enable the updated eligibility checks for Gemini.
-BASE_DECLARE_FEATURE(kGeminiUpdatedEligibility);
-
-// Returns true if the updated eligibiliy checks for Gemini are enabled.
-bool IsGeminiUpdatedEligibilityEnabled();
-
-// Feature flag to enable the updated Gemini consent.
-BASE_DECLARE_FEATURE(kGeminiUpdatedConsent);
-
-// Returns true if the updated Gemini consent is enabled.
-bool IsGeminiUpdatedConsentEnabled();
-
 // Feature flag for enabling the Gemini eligibility ablation experiment.
 BASE_DECLARE_FEATURE(kGeminiEligibilityAblation);
 bool IsGeminiEligibilityAblationEnabled();

@@ -100,12 +100,7 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
     }
     case GeminiFirstRunType::kNewUser: {
       NSArray<GeminiConsentRow*>* rows =
-          IsGeminiUpdatedConsentEnabled()
-              ? [self standardRowsForManaged:isManaged useStrict:useStrict]
-              : @[
-                  [self standardFirstRowForManaged:isManaged],
-                  [self standardSecondRowForManaged:isManaged],
-                ];
+          [self standardRowsForManaged:isManaged useStrict:useStrict];
       NSAttributedString* footnote = [self footnoteForCountry:country
                                                     useStrict:useStrict];
       BOOL collapsible = useStrict || IsGeminiFREExperimentEnabled();
@@ -165,11 +160,6 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   return attributes;
 }
 
-// Gets the second SF Symbol based on accounts type.
-+ (Symbol)secondSymbolForManaged:(BOOL)isManaged {
-  return isManaged ? SymbolBuilding2 : SymbolCounterClockWise;
-}
-
 // Helper to construct body text using embedded link delimiters.
 + (NSAttributedString*)attributedTextForBody:(NSString*)text
                                      actions:(NSArray<NSString*>*)actions {
@@ -188,7 +178,7 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   return AttributedStringFromStringWithLinks(text, attributes, linkAttributes);
 }
 
-#pragma mark - New Standard FRE
+#pragma mark - Standard FRE
 
 // Builds, formats and orders the FRE consent rows.
 //
@@ -277,7 +267,7 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   UIImage* icon =
       IsGeminiFREExperimentEnabled()
           ? nil
-          : SymbolWithConfiguration([self secondSymbolForManaged:NO],
+          : SymbolWithConfiguration(SymbolCounterClockWise,
                                     [self defaultSymbolConfiguration]);
   NSString* title = l10n_util::GetNSString(
       IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_NON_MANAGED_TITLE);
@@ -374,64 +364,6 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
                                                            title:title
                                                             body:body];
   row.collapsed = YES;
-  return row;
-}
-
-#pragma mark - Old Standard FRE
-
-// Builds the first standard FRE consent row.
-+ (GeminiConsentRow*)standardFirstRowForManaged:(BOOL)isManaged {
-  UIImage* icon =
-      IsGeminiFREExperimentEnabled()
-          ? nil
-          : SymbolWithConfiguration(SymbolPhoneSparkle,
-                                    [self defaultSymbolConfiguration]);
-  NSString* title = l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FIRST_BOX_TITLE);
-  NSString* bodyText = l10n_util::GetNSString(
-      isManaged ? IDS_IOS_BWG_CONSENT_MANAGED_FIRST_BOX_BODY
-                : IDS_IOS_BWG_CONSENT_NON_MANAGED_FIRST_BOX_BODY);
-  NSAttributedString* body =
-      [[NSAttributedString alloc] initWithString:bodyText
-                                      attributes:[self defaultTextAttributes]];
-  GeminiConsentRow* row = [[GeminiConsentRow alloc] initWithIcon:icon
-                                                           title:title
-                                                            body:body];
-  row.collapsed = NO;
-  return row;
-}
-
-// Builds the second standard FRE consent row.
-+ (GeminiConsentRow*)standardSecondRowForManaged:(BOOL)isManaged {
-  UIImage* icon =
-      IsGeminiFREExperimentEnabled()
-          ? nil
-          : SymbolWithConfiguration([self secondSymbolForManaged:isManaged],
-                                    [self defaultSymbolConfiguration]);
-  NSString* title = l10n_util::GetNSString(
-      isManaged ? IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_TITLE
-                : IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_TITLE);
-
-  NSAttributedString* body;
-  if (isManaged) {
-    NSString* text =
-        l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_BODY);
-    body = [self
-        attributedTextForBody:text
-                      actions:@[ kGeminiSecondBoxLinkActionManagedAccount ]];
-  } else {
-    NSString* text =
-        l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_BODY);
-    body = [self attributedTextForBody:text
-                               actions:@[
-                                 kGeminiSecondBoxLink1ActionNonManagedAccount,
-                                 kGeminiSecondBoxLink2ActionNonManagedAccount
-                               ]];
-  }
-
-  GeminiConsentRow* row = [[GeminiConsentRow alloc] initWithIcon:icon
-                                                           title:title
-                                                            body:body];
-  row.collapsed = IsGeminiFREExperimentEnabled();
   return row;
 }
 

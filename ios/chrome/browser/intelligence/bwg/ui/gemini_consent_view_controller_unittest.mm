@@ -5,13 +5,11 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller.h"
 
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_step.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -120,9 +118,6 @@ TEST_F(GeminiConsentViewControllerTest, SecondaryButtonCallsMutator) {
 // Tests that buttonStackConfiguration returns the appropriate primary button
 // string for standard and strict consent.
 TEST_F(GeminiConsentViewControllerTest, ButtonStackConfigurationStrings) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kGeminiUpdatedConsent);
-
   GeminiConsentViewController* normal_controller = CreateViewController(
       /*is_account_managed=*/NO, @"us", /*use_strict_consent=*/NO);
   ButtonStackConfiguration* normal_config =

@@ -78,11 +78,9 @@ const CGFloat kHeaderIconSizeMultiplier = 0.55;
     (GeminiConsentConfiguration*)configuration {
   ButtonStackConfiguration* buttonConfiguration =
       [[ButtonStackConfiguration alloc] init];
-  BOOL useStrictButton =
-      IsGeminiUpdatedConsentEnabled() && configuration.useStrict;
   buttonConfiguration.primaryActionString = l10n_util::GetNSString(
-      useStrictButton ? IDS_IOS_GEMINI_CONSENT_PRIMARY_BUTTON_STRICT
-                      : IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON);
+      configuration.useStrict ? IDS_IOS_GEMINI_CONSENT_PRIMARY_BUTTON_STRICT
+                              : IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON);
   buttonConfiguration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON);
   return buttonConfiguration;
