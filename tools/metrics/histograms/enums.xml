@@ -7386,6 +7386,7 @@ shown properly on the user-facing crash UI.
   <int value="12" label="BlockList"/>
   <int value="13" label="NoRemoteConnection"/>
   <int value="14" label="NotGenerated"/>
+  <int value="15" label="NotScrolled"/>
 </enum>
 
 <enum name="LinkGenerationSharedStatus">

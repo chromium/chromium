@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -174,6 +175,17 @@ void TextFragmentHandler::RequestSelectorForViewportCenter(
   response_callback_ = std::move(callback);
   selector_ready_status_ =
       shared_highlighting::LinkGenerationReadyStatus::kRequestedBeforeReady;
+
+  // Skip selector generation if the page has not been scrolled.
+  LocalFrameView* view = GetFrame()->View();
+  ScrollableArea* scrollable_area = view ? view->GetScrollableArea() : nullptr;
+  if (!scrollable_area || scrollable_area->GetScrollOffset().y() <= 0) {
+    error_ = shared_highlighting::LinkGenerationError::kNotScrolled;
+    InvokeReplyCallback(
+        TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid),
+        error_);
+    return;
+  }
 
   if (!shared_highlighting::ShouldOfferLinkToText(
           GURL(GetFrame()->GetDocument()->Url()))) {

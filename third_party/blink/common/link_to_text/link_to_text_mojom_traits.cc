@@ -45,6 +45,8 @@ EnumTraits<blink::mojom::LinkGenerationError,
       return blink::mojom::LinkGenerationError::kNoRemoteConnection;
     case shared_highlighting::LinkGenerationError::kNotGenerated:
       return blink::mojom::LinkGenerationError::kNotGenerated;
+    case shared_highlighting::LinkGenerationError::kNotScrolled:
+      return blink::mojom::LinkGenerationError::kNotScrolled;
   }
 
   NOTREACHED();
@@ -87,6 +89,8 @@ EnumTraits<blink::mojom::LinkGenerationError,
       return shared_highlighting::LinkGenerationError::kNoRemoteConnection;
     case blink::mojom::LinkGenerationError::kNotGenerated:
       return shared_highlighting::LinkGenerationError::kNotGenerated;
+    case blink::mojom::LinkGenerationError::kNotScrolled:
+      return shared_highlighting::LinkGenerationError::kNotScrolled;
   }
 
   NOTREACHED();

@@ -77,7 +77,10 @@ enum class LinkGenerationError {
   // requests link to text when generation was never started.
   kNotGenerated = 14,
 
-  kMaxValue = kNotGenerated
+  // The page has not been scrolled or is at the top.
+  kNotScrolled = 15,
+
+  kMaxValue = kNotScrolled
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

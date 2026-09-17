@@ -413,6 +413,8 @@ class SendTabToSelfScrollPositionBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Tests that the scroll position is successfully generated and propagated
+// when sending a tab from a scrolled page.
 IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
                        ScrollPositionPropagated_HappyPath) {
   // Using a page with significant content ensures the renderer can generate
@@ -422,6 +424,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
 
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
+
+  // Scroll the page so that the scroll offset is greater than 0.
+  EXPECT_TRUE(content::ExecJs(web_contents, "window.scrollTo(0, 100);"));
 
   StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
   ASSERT_TRUE(sync_service);
