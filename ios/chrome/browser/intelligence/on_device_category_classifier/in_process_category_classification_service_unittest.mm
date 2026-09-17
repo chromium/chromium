@@ -63,6 +63,9 @@ class InProcessCategoryClassificationServiceTest : public PlatformTest {
   }
 
   void TearDown() override {
+    if (service_) {
+      service_->Shutdown();
+    }
     service_.reset();
     model_provider_.reset();
     PlatformTest::TearDown();
@@ -369,6 +372,34 @@ TEST_F(InProcessCategoryClassificationServiceTest, CacheClearedOnModelReload) {
   // Loading a new model clears stale cached embeddings from the old version.
   service_->OnPassageEmbedderLoadedForTesting(2, 768, /*success=*/true);
   EXPECT_FALSE(service_->HasCachedEmbeddings(url));
+}
+
+// Tests that Shutdown() cancels pending requests, clears cached embeddings, and
+// safely unregisters model observers so the model provider can be destroyed
+// after Shutdown() without UAF.
+TEST_F(InProcessCategoryClassificationServiceTest,
+       ShutdownCleansUpObserversAndCancelsPendingRequests) {
+  GURL url("https://example.com");
+  service_->SetCachedEmbeddingsForTesting(
+      url, InProcessCategoryClassificationService::CachedEmbeddings{});
+  EXPECT_TRUE(service_->HasCachedEmbeddings(url));
+
+  base::test::TestFuture<const std::vector<page_content_annotations::Category>&>
+      future;
+  service_->ClassifyPageContext(GURL("https://pending.com"), "Title", "Content",
+                                ukm::SourceId(), future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+
+  service_->Shutdown();
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+  EXPECT_FALSE(service_->HasCachedEmbeddings(url));
+
+  // Destroying model_provider_ before service_ after Shutdown() must be safe
+  // because all observers were unregistered during Shutdown().
+  model_provider_.reset();
+  service_.reset();
 }
 
 }  // namespace

@@ -37,6 +37,10 @@ class PassageEmbedderModelLoader
   PassageEmbedderModelLoader& operator=(const PassageEmbedderModelLoader&) =
       delete;
 
+  // Unregisters model observers and invalidates pending callbacks. Safe to call
+  // multiple times.
+  void Shutdown();
+
   // Returns true if the model has been loaded and metadata is available.
   bool IsModelLoaded() const;
 
