@@ -11,8 +11,6 @@
 #include "ash/app_list/app_list_bubble_event_filter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_event_targeter.h"
-#include "ash/app_list/apps_collections_controller.h"
-#include "ash/app_list/views/app_list_bubble_apps_collections_page.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/search_box_view.h"
@@ -192,9 +190,7 @@ void AppListBubblePresenter::Show(int64_t display_id) {
 
   is_target_visibility_show_ = true;
 
-  target_page_ = AppsCollectionsController::Get()->ShouldShowAppsCollection()
-                     ? AppListBubblePage::kAppsCollections
-                     : AppListBubblePage::kApps;
+  target_page_ = AppListBubblePage::kApps;
 
   controller_->OnVisibilityWillChange(/*visible=*/true, display_id);
 

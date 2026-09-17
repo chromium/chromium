@@ -14,7 +14,6 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
-#include "ash/app_list/views/app_list_bubble_apps_collections_page.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
@@ -334,13 +333,6 @@ AppListBubbleAppsPage* AppListTestHelper::GetBubbleAppsPage() {
       ->apps_page_;
 }
 
-AppListBubbleAppsCollectionsPage*
-AppListTestHelper::GetBubbleAppsCollectionsPage() {
-  return app_list_controller_->bubble_presenter_for_test()
-      ->bubble_view_for_test()
-      ->apps_collections_page_;
-}
-
 ContinueSectionView* AppListTestHelper::GetBubbleContinueSectionView() {
   return GetBubbleAppsPage()->continue_section_;
 }
@@ -351,10 +343,6 @@ RecentAppsView* AppListTestHelper::GetBubbleRecentAppsView() {
 
 ScrollableAppsGridView* AppListTestHelper::GetScrollableAppsGridView() {
   return GetBubbleAppsPage()->scrollable_apps_grid_view_;
-}
-
-views::View* AppListTestHelper::GetAppCollectionsSectionsContainer() {
-  return GetBubbleAppsCollectionsPage()->sections_container_;
 }
 
 AppListBubbleSearchPage* AppListTestHelper::GetBubbleSearchPage() {

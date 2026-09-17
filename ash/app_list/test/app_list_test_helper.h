@@ -29,7 +29,6 @@ class View;
 namespace ash {
 
 class AppListBubbleAppsPage;
-class AppListBubbleAppsCollectionsPage;
 class AppListBubbleSearchPage;
 class AppListBubbleView;
 class AppListControllerImpl;
@@ -170,11 +169,9 @@ class AppListTestHelper {
   SearchBoxView* GetBubbleSearchBoxView();
   AppListFolderView* GetBubbleFolderView();
   AppListBubbleAppsPage* GetBubbleAppsPage();
-  AppListBubbleAppsCollectionsPage* GetBubbleAppsCollectionsPage();
   ContinueSectionView* GetBubbleContinueSectionView();
   RecentAppsView* GetBubbleRecentAppsView();
   ScrollableAppsGridView* GetScrollableAppsGridView();
-  views::View* GetAppCollectionsSectionsContainer();
   AppListBubbleSearchPage* GetBubbleSearchPage();
   SearchResultPageAnchoredDialog* GetBubbleSearchPageDialog();
   SearchModel::SearchResults* GetSearchResults();

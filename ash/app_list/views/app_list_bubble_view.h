@@ -27,7 +27,6 @@ namespace ash {
 
 class AppListA11yAnnouncer;
 class AppListBubbleAppsPage;
-class AppListBubbleAppsCollectionsPage;
 class AppListBubbleSearchPage;
 class AppListFolderItem;
 class AppListFolderView;
@@ -177,7 +176,6 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   raw_ptr<views::View> separator_ = nullptr;
   raw_ptr<AppListBubbleAppsPage> apps_page_ = nullptr;
   raw_ptr<AppListBubbleSearchPage> search_page_ = nullptr;
-  raw_ptr<AppListBubbleAppsCollectionsPage> apps_collections_page_ = nullptr;
 
   // Lives in this class because it can overlap the search box.
   raw_ptr<AppListFolderView, DanglingUntriaged> folder_view_ = nullptr;
