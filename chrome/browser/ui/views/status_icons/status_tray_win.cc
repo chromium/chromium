@@ -111,7 +111,7 @@ StatusTrayWin::StatusTrayWin()
       NULL, NULL, NULL, NULL, NULL, &window_class);
   instance_ = window_class.hInstance;
   atom_ = RegisterClassEx(&window_class);
-  CHECK(atom_);
+  PCHECK(atom_);
 
   // If the taskbar is re-created after we start up, we have to rebuild all of
   // our icons.
