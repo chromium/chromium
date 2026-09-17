@@ -180,6 +180,10 @@ class CORE_EXPORT ProfilerTraceBuilder final
   FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest, AddEmbedderStateMarker);
   FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest,
                            AddEmbedderStateMarkerFeatureDisabled);
+  FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest,
+                           SampleTimestampClampingNonCrossOriginIsolated);
+  FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest,
+                           SampleTimestampClampingCrossOriginIsolated);
 };
 
 }  // namespace blink
