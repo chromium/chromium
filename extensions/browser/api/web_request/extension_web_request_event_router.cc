@@ -427,10 +427,11 @@ void OnDNRActionMatched(content::BrowserContext* browser_context,
 // The `use_dynamic_url` feature for web accessible resources requires that the
 // requested url be a dynamic url. A dynamic url is one where a session GUID is
 // used for the host instead of the static extension id.
-GURL GetNewUrl(const GURL& redirect_url,
+GURL GetNewUrl(const ExtensionId& extension_id,
+               const GURL& redirect_url,
                content::BrowserContext* browser_context) {
-  auto dynamic_url =
-      TransformToDynamicURLIfNecessary(redirect_url, browser_context);
+  auto dynamic_url = TransformToDynamicURLIfNecessary(
+      extension_id, redirect_url, browser_context);
   return dynamic_url.value_or(redirect_url);
 }
 
@@ -1069,7 +1070,8 @@ int WebRequestEventRouter::OnBeforeRequest(
           DCHECK_EQ(1u, actions.size());
           DCHECK(action.redirect_url);
           OnDNRActionMatched(browser_context, *request, action);
-          *new_url = GetNewUrl(action.redirect_url.value(), browser_context);
+          *new_url = GetNewUrl(action.extension_id, action.redirect_url.value(),
+                               browser_context);
           // Collect redirect action data for the Extension Telemetry Service.
           if (action.type == DNRRequestAction::Type::REDIRECT) {
             ExtensionsBrowserClient::Get()
@@ -1303,7 +1305,8 @@ int WebRequestEventRouter::OnHeadersReceived(
 
           extension_web_request_api_helpers::
               RedirectRequestAfterHeadersReceived(
-                  GetNewUrl(action.redirect_url.value(), browser_context),
+                  GetNewUrl(action.extension_id, action.redirect_url.value(),
+                            browser_context),
                   **override_response_headers,
                   preserve_fragment_on_redirect_url);
           return net::OK;

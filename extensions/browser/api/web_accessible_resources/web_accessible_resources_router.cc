@@ -6,23 +6,19 @@
 
 #include <optional>
 
-#include "base/feature_list.h"
-#include "base/types/optional_util.h"
-#include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "url/gurl.h"
 
 namespace extensions {
 
 std::optional<GURL> TransformToDynamicURLIfNecessary(
+    const ExtensionId& extension_id,
     const GURL& url,
     content::BrowserContext* browser_context) {
-  // Verify that the feature is enabled and the host is a valid extension id.
-  if (!url.SchemeIs(kExtensionScheme) ||
-      !crx_file::id_util::IdIsValid(url.GetHost())) {
+  // Verify that the host matches the extension that initiated the action.
+  if (!url.SchemeIs(kExtensionScheme) || url.host() != extension_id) {
     return std::nullopt;
   }
 
@@ -30,7 +26,7 @@ std::optional<GURL> TransformToDynamicURLIfNecessary(
   auto* registry = ExtensionRegistry::Get(browser_context);
   DCHECK(registry);
   const Extension* extension =
-      registry->enabled_extensions().GetByID(url.GetHost());
+      registry->enabled_extensions().GetByID(extension_id);
   if (!extension || extension->manifest_version() < 3 ||
       !WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension,
                                                        url.GetPath())) {

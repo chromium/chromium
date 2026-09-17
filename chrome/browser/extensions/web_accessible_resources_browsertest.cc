@@ -737,6 +737,208 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
   EXPECT_EQ("ok\n", result.ExtractString());
 }
 
+// Verify that a DNR rule from one extension redirecting to a static URL of
+// a different extension does not transform the destination into the target's
+// dynamic URL.
+IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
+                       DNRRedirectDifferentExtensionDynamicUrl) {
+  // Load target extension with use_dynamic_url: true and its own DNR rules.
+  TestExtensionDir target_dir;
+  static constexpr char kTargetManifest[] = R"({
+    "name": "Target Extension",
+    "version": "0.1",
+    "manifest_version": 3,
+    "permissions": ["declarativeNetRequest"],
+    "host_permissions": ["*://example.com/*"],
+    "web_accessible_resources": [
+      {
+        "resources": ["dynamic_resource.js", "dynamic_page.html"],
+        "matches": ["*://example.com/*"],
+        "use_dynamic_url": true
+      }
+    ],
+    "declarative_net_request": {
+      "rule_resources": [
+        {
+          "id": "ruleset_1",
+          "path": "rules_1.json",
+          "enabled": true
+        }
+      ]
+    }
+  })";
+  static constexpr char kTargetRules[] = R"([
+    {
+      "id": 1,
+      "priority": 1,
+      "action": {
+        "type": "redirect",
+        "redirect": {
+          "extensionPath": "/dynamic_resource.js"
+        }
+      },
+      "condition": {
+        "regexFilter": ".*/own_resource.js",
+        "resourceTypes": ["script"]
+      }
+    },
+    {
+      "id": 2,
+      "priority": 1,
+      "action": {
+        "type": "redirect",
+        "redirect": {
+          "extensionPath": "/dynamic_page.html"
+        }
+      },
+      "condition": {
+        "regexFilter": ".*/own_subframe.html",
+        "resourceTypes": ["sub_frame"]
+      }
+    }
+  ])";
+  target_dir.WriteManifest(kTargetManifest);
+  target_dir.WriteFile(FILE_PATH_LITERAL("rules_1.json"), kTargetRules);
+  target_dir.WriteFile(FILE_PATH_LITERAL("dynamic_resource.js"),
+                       "window.dynamicResourceLoaded = true;");
+  target_dir.WriteFile(FILE_PATH_LITERAL("dynamic_page.html"),
+                       "<body>dynamic page content</body>");
+  const Extension* target_extension = LoadExtension(target_dir.UnpackedPath());
+  ASSERT_TRUE(target_extension);
+
+  // Load a separate extension with DNR redirect rules pointing to the target
+  // extension's static resource URLs.
+  TestExtensionDir redirecting_dir;
+  static constexpr char kRedirectingManifest[] = R"({
+    "name": "Redirecting Extension",
+    "version": "0.1",
+    "manifest_version": 3,
+    "permissions": ["declarativeNetRequest"],
+    "host_permissions": ["*://example.com/*"],
+    "declarative_net_request": {
+      "rule_resources": [
+        {
+          "id": "ruleset_1",
+          "path": "rules_1.json",
+          "enabled": true
+        }
+      ]
+    }
+  })";
+  std::string redirecting_rules = base::StringPrintf(
+      R"([
+    {
+      "id": 1,
+      "priority": 1,
+      "action": {
+        "type": "redirect",
+        "redirect": {
+          "url": "chrome-extension://%s/dynamic_resource.js"
+        }
+      },
+      "condition": {
+        "regexFilter": ".*/cross_resource.js",
+        "resourceTypes": ["script"]
+      }
+    },
+    {
+      "id": 2,
+      "priority": 1,
+      "action": {
+        "type": "redirect",
+        "redirect": {
+          "url": "chrome-extension://%s/dynamic_page.html"
+        }
+      },
+      "condition": {
+        "regexFilter": ".*/cross_subframe.html",
+        "resourceTypes": ["sub_frame"]
+      }
+    }
+  ])",
+      target_extension->id().c_str(), target_extension->id().c_str());
+
+  redirecting_dir.WriteManifest(kRedirectingManifest);
+  redirecting_dir.WriteFile(FILE_PATH_LITERAL("rules_1.json"),
+                            redirecting_rules);
+  const Extension* redirecting_extension =
+      LoadExtension(redirecting_dir.UnpackedPath());
+  ASSERT_TRUE(redirecting_extension);
+
+  // Navigate to a webpage on example.com with an iframe.
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL page_url =
+      embedded_test_server()->GetURL("example.com", "/iframe_blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, page_url));
+
+  // 1. Subresource (script): Verify that the target extension's own DNR
+  // redirect properly resolves to its dynamic URL and executes the script.
+  auto own_script_result = EvalJs(web_contents, R"(
+    new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = '/own_resource.js';
+      script.onload = () => resolve(window.dynamicResourceLoaded === true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  )");
+  EXPECT_EQ(true, own_script_result);
+
+  // 2. Subresource (script): Verify that a different extension's DNR redirect
+  // to the target's static URL is not transformed to the dynamic URL and fails.
+  ASSERT_TRUE(ExecJs(web_contents, "window.dynamicResourceLoaded = false;"));
+  auto cross_script_result = EvalJs(web_contents, R"(
+    new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = '/cross_resource.js';
+      script.onload = () => resolve('LOADED');
+      script.onerror = () => resolve('BLOCKED');
+      document.body.appendChild(script);
+    });
+  )");
+  EXPECT_EQ("BLOCKED", cross_script_result);
+  EXPECT_EQ(false, EvalJs(web_contents, "window.dynamicResourceLoaded"));
+
+  // 3. Subframe navigation: Verify that the target extension's own DNR redirect
+  // succeeds and commits the expected page.
+  {
+    GURL own_subframe_trigger =
+        embedded_test_server()->GetURL("example.com", "/own_subframe.html");
+    content::TestNavigationObserver nav_observer(web_contents);
+    EXPECT_TRUE(content::NavigateIframeToURL(web_contents, "test",
+                                             own_subframe_trigger));
+    nav_observer.Wait();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::OK, nav_observer.last_net_error_code());
+    content::RenderFrameHost* iframe =
+        content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+    ASSERT_TRUE(iframe);
+    EXPECT_EQ(target_extension->GetResourceURL("dynamic_page.html"),
+              iframe->GetLastCommittedURL());
+    EXPECT_EQ("dynamic page content",
+              EvalJs(iframe, "document.body.innerText"));
+  }
+
+  // 4. Subframe navigation: Verify that a different extension's DNR redirect to
+  // the target's static URL is not rewritten to the target's dynamic URL and
+  // is blocked by ExtensionNavigationThrottle. Note that failed cross-origin
+  // subframe redirects sanitize the URL to its origin
+  // (target_extension->url()).
+  {
+    GURL cross_subframe_trigger =
+        embedded_test_server()->GetURL("example.com", "/cross_subframe.html");
+    content::TestNavigationObserver nav_observer(web_contents);
+    EXPECT_TRUE(content::NavigateIframeToURL(web_contents, "test",
+                                             cross_subframe_trigger));
+    nav_observer.Wait();
+    EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
+    EXPECT_EQ(target_extension->url(), nav_observer.last_navigation_url());
+    EXPECT_NE(target_extension->dynamic_url(),
+              nav_observer.last_navigation_url());
+  }
+}
+
 class WebAccessibleResourcesServiceWorkerBrowserTest
     : public WebAccessibleResourcesBrowserTest {
  public:

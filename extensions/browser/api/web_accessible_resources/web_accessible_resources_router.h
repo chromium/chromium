@@ -7,6 +7,8 @@
 
 #include <optional>
 
+#include "extensions/common/extension_id.h"
+
 class GURL;
 
 namespace content {
@@ -17,8 +19,9 @@ namespace extensions {
 
 // `use_dynamic_url` as true requires that web accessible resources be loaded
 // from a dynamic URL. Return the dynamic URL for the provided static url if it
-// points to resources using `use_dynamic_url`.
+// points to resources of the given `extension_id` using `use_dynamic_url`.
 std::optional<GURL> TransformToDynamicURLIfNecessary(
+    const ExtensionId& extension_id,
     const GURL& url,
     content::BrowserContext* browser_context);
 
