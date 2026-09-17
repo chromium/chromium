@@ -15,8 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/printing/browser/print_manager_utils.h"
@@ -34,8 +32,7 @@ namespace {
 uint32_t SaveDataToFd(base::ScopedFD fd,
                       uint32_t page_count,
                       scoped_refptr<base::RefCountedSharedMemoryMapping> data) {
-  bool did_write_successfully =
-      fd.is_valid() && base::IsValueInRangeForNumericType<int>(data->size());
+  bool did_write_successfully = fd.is_valid();
   if (did_write_successfully) {
     did_write_successfully = base::WriteFileDescriptor(fd.get(), *data);
   }
