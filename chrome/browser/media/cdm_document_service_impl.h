@@ -48,7 +48,6 @@ class CdmDocumentServiceImpl final
 #if BUILDFLAG(IS_WIN)
   void GetMediaFoundationCdmData(
       GetMediaFoundationCdmDataCallback callback) final;
-  void SetCdmClientToken(const std::vector<uint8_t>& client_token) final;
   void OnCdmEvent(media::CdmEvent event, uint32_t hresult) final;
 
   static void ClearCdmData(

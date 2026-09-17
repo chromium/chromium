@@ -83,7 +83,6 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
                        const std::string& content_type,
                        IsTypeSupportedResultCB is_type_supported_result_cb);
 
-  void StoreClientToken(const std::vector<uint8_t>& client_token);
   void OnCdmEvent(CdmEvent event, HRESULT hresult);
 
   // Creates `mf_cdm` based on the input parameters. Same as
@@ -91,7 +90,6 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
   // can bind it to a repeating callback using weak pointer.
   void CreateMfCdm(const CdmConfig& cdm_config,
                    const base::UnguessableToken& cdm_origin_id,
-                   const std::optional<std::vector<uint8_t>>& cdm_client_token,
                    const base::FilePath& cdm_store_path_root,
                    HRESULT& hresult,
                    Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm);

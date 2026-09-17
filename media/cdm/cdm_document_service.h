@@ -87,12 +87,6 @@ class MEDIA_EXPORT CdmDocumentService {
   virtual void GetMediaFoundationCdmData(
       GetMediaFoundationCdmDataCB callback) = 0;
 
-  // Sets the client token for the origin associated with the CDM. The token is
-  // set by the content during license exchange. The token is then saved in the
-  // Pref Service so that it can be reused next time the CDM request a new
-  // license for that origin.
-  virtual void SetCdmClientToken(const std::vector<uint8_t>& client_token) = 0;
-
   // Reports a CDM event. This can be used for metrics reporting or fallback
   // logic, e.g. disable the CDM in the current robustness level. For error
   // events, the `hresult` provides more details about the error.

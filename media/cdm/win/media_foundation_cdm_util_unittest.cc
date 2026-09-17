@@ -202,7 +202,7 @@ TEST_F(CreateMediaFoundationCdmTest, Success) {
   ComPtr<IMFContentDecryptionModule> result_cdm;
   HRESULT hr =
       CreateMediaFoundationCdm(mf_cdm_factory_, kTestCdmConfig, kTestOriginId,
-                               std::nullopt, kTestStorePath, result_cdm);
+                               kTestStorePath, result_cdm);
 
   EXPECT_EQ(hr, S_OK);
   EXPECT_EQ(result_cdm.Get(), mf_cdm_.Get());
@@ -215,7 +215,7 @@ TEST_F(CreateMediaFoundationCdmTest, KeySystemNotSupported) {
   ComPtr<IMFContentDecryptionModule> result_cdm;
   HRESULT hr =
       CreateMediaFoundationCdm(mf_cdm_factory_, kTestCdmConfig, kTestOriginId,
-                               std::nullopt, kTestStorePath, result_cdm);
+                               kTestStorePath, result_cdm);
 
   EXPECT_EQ(hr, (HRESULT)MF_NOT_SUPPORTED_ERR);
   EXPECT_EQ(result_cdm.Get(), nullptr);
@@ -231,7 +231,7 @@ TEST_F(CreateMediaFoundationCdmTest, CreateAccessFailed) {
   ComPtr<IMFContentDecryptionModule> result_cdm;
   HRESULT hr =
       CreateMediaFoundationCdm(mf_cdm_factory_, kTestCdmConfig, kTestOriginId,
-                               std::nullopt, kTestStorePath, result_cdm);
+                               kTestStorePath, result_cdm);
 
   EXPECT_EQ(hr, E_FAIL);
   EXPECT_EQ(result_cdm.Get(), nullptr);
@@ -251,7 +251,7 @@ TEST_F(CreateMediaFoundationCdmTest, CreateCdmFailed) {
   ComPtr<IMFContentDecryptionModule> result_cdm;
   HRESULT hr =
       CreateMediaFoundationCdm(mf_cdm_factory_, kTestCdmConfig, kTestOriginId,
-                               std::nullopt, kTestStorePath, result_cdm);
+                               kTestStorePath, result_cdm);
 
   EXPECT_EQ(hr, E_FAIL);
   EXPECT_EQ(result_cdm.Get(), nullptr);
@@ -268,7 +268,7 @@ TEST_F(CreateMediaFoundationCdmTest, OsCdmWithPmpHost) {
   ComPtr<IMFContentDecryptionModule> result_cdm;
   HRESULT hr =
       CreateMediaFoundationCdm(mf_cdm_factory_, kTestCdmConfig, kTestOriginId,
-                               std::nullopt, kTestStorePath, result_cdm);
+                               kTestStorePath, result_cdm);
 
   EXPECT_EQ(hr, S_OK);
   EXPECT_EQ(result_cdm.Get(), mf_cdm_.Get());
@@ -285,24 +285,7 @@ TEST_F(CreateMediaFoundationCdmTest, OsCdmWithPmpHostApp) {
   ComPtr<IMFContentDecryptionModule> result_cdm;
   HRESULT hr =
       CreateMediaFoundationCdm(mf_cdm_factory_, kTestCdmConfig, kTestOriginId,
-                               std::nullopt, kTestStorePath, result_cdm);
-
-  EXPECT_EQ(hr, S_OK);
-  EXPECT_EQ(result_cdm.Get(), mf_cdm_.Get());
-}
-
-TEST_F(CreateMediaFoundationCdmTest, WithClientToken) {
-  // Set up mock for successful CDM creation
-  SetUpMockCdmFactoryExpectations(true);
-  SetUpMockCdmAccessExpectations(true);
-  MediaFoundationCdmModule::GetInstance()->SetIsOsCdmForTesting(false);
-
-  std::vector<uint8_t> client_token = {1, 2, 3, 4, 5};
-
-  ComPtr<IMFContentDecryptionModule> result_cdm;
-  HRESULT hr =
-      CreateMediaFoundationCdm(mf_cdm_factory_, kTestCdmConfig, kTestOriginId,
-                               client_token, kTestStorePath, result_cdm);
+                               kTestStorePath, result_cdm);
 
   EXPECT_EQ(hr, S_OK);
   EXPECT_EQ(result_cdm.Get(), mf_cdm_.Get());

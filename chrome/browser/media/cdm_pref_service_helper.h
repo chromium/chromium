@@ -31,20 +31,12 @@ class CdmPrefData {
 
   const base::UnguessableToken& origin_id() const;
   base::Time origin_id_creation_time() const;
-  const std::optional<std::vector<uint8_t>> client_token() const;
-  base::Time client_token_creation_time() const;
   std::vector<base::Time> hw_secure_decryption_disable_times() const;
-
-  void SetClientToken(const std::vector<uint8_t>& client_token,
-                      const base::Time creation_time);
 
  private:
   base::UnguessableToken origin_id_;
   base::Time origin_id_creation_time_;
   std::vector<base::Time> hw_secure_decryption_disable_times_;
-
-  std::optional<std::vector<uint8_t>> client_token_;
-  base::Time client_token_creation_time_;
 };
 
 // Manages reads and writes to the user prefs service related to CDM usage.
@@ -68,18 +60,16 @@ class CdmPrefServiceHelper {
 
   // Gets the CDM preference data associated with the current origin. If no
   // preference data exist for the current origin, an entry is created with a
-  // new origin id and an empty client token. Returns nullptr if the preference
-  // could not be retrieved.
+  // new origin id. Returns nullptr if the preference could not be retrieved.
   static std::unique_ptr<CdmPrefData> GetCdmPrefData(
       PrefService* user_prefs,
       const url::Origin& cdm_origin);
 
-  // Sets the client token for the origin associated with the CDM. The token is
-  // set by the CDM. If no entry exist for the current origin, the client token
-  // will not be saved.
-  static void SetCdmClientToken(PrefService* user_prefs,
-                                const url::Origin& cdm_origin,
-                                const std::vector<uint8_t>& client_token);
+  // Added 09/2026.
+  // Iterates over all origin entries in `prefs::kMediaCdmOriginData` and
+  // removes obsolete Provider Client Token keys ("client_token" and
+  // "client_token_creation_time").
+  static void MigrateObsoleteProfilePrefs(PrefService* profile_prefs);
 
   // Return a mapping of Origin ID to url::Origin. The string representation
   // for the origin id is used in the mapping so that it can be more easily used

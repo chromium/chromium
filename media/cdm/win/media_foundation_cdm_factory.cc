@@ -153,12 +153,9 @@ void MediaFoundationCdmFactory::InitializeMediaFoundationCdm(
       base::BindRepeating(&MediaFoundationCdmFactory::CreateMfCdm,
                           weak_factory_.GetWeakPtr(), cdm_config,
                           media_foundation_cdm_data->origin_id,
-                          media_foundation_cdm_data->client_token,
                           media_foundation_cdm_data->cdm_store_path_root),
       base::BindRepeating(&MediaFoundationCdmFactory::IsTypeSupported,
                           weak_factory_.GetWeakPtr(), cdm_config.key_system),
-      base::BindRepeating(&MediaFoundationCdmFactory::StoreClientToken,
-                          weak_factory_.GetWeakPtr()),
       base::BindRepeating(&MediaFoundationCdmFactory::OnCdmEvent,
                           weak_factory_.GetWeakPtr()),
       session_message_cb, session_closed_cb, session_keys_change_cb,
@@ -233,11 +230,6 @@ void MediaFoundationCdmFactory::IsTypeSupported(
       std::move(is_type_supported_result_cb));
 }
 
-void MediaFoundationCdmFactory::StoreClientToken(
-    const std::vector<uint8_t>& client_token) {
-  helper_->SetCdmClientToken(client_token);
-}
-
 void MediaFoundationCdmFactory::OnCdmEvent(CdmEvent event, HRESULT hresult) {
   helper_->OnCdmEvent(event, hresult);
 }
@@ -245,7 +237,6 @@ void MediaFoundationCdmFactory::OnCdmEvent(CdmEvent event, HRESULT hresult) {
 void MediaFoundationCdmFactory::CreateMfCdm(
     const CdmConfig& cdm_config,
     const base::UnguessableToken& cdm_origin_id,
-    const std::optional<std::vector<uint8_t>>& cdm_client_token,
     const base::FilePath& cdm_store_path_root,
     HRESULT& hresult,
     Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm) {
@@ -256,9 +247,8 @@ void MediaFoundationCdmFactory::CreateMfCdm(
     return;
   }
 
-  hresult =
-      CreateMediaFoundationCdm(cdm_factory, cdm_config, cdm_origin_id,
-                               cdm_client_token, cdm_store_path_root, mf_cdm);
+  hresult = CreateMediaFoundationCdm(cdm_factory, cdm_config, cdm_origin_id,
+                                     cdm_store_path_root, mf_cdm);
 }
 
 }  // namespace media

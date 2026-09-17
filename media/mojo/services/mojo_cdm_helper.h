@@ -53,7 +53,6 @@ class MEDIA_MOJO_EXPORT MojoCdmHelper final : public CdmAuxiliaryHelper,
   void GetStorageId(uint32_t version, StorageIdCB callback) final;
 #if BUILDFLAG(IS_WIN)
   void GetMediaFoundationCdmData(GetMediaFoundationCdmDataCB callback) final;
-  void SetCdmClientToken(const std::vector<uint8_t>& client_token) final;
   void OnCdmEvent(CdmEvent event, HRESULT hresult) final;
   void GetContentProtectionWindow(GetContentProtectionWindowCB callback) final;
 #endif  // BUILDFLAG(IS_WIN)

@@ -87,7 +87,6 @@ class MediaFoundationCdmTest : public testing::Test {
             base::BindRepeating(
                 &IsTypedSupportedCallbackHandler::Run,
                 base::Unretained(&is_type_supported_cb_handler_)),
-            store_client_token_cb_.Get(),
             cdm_event_cb_.Get(),
             base::BindRepeating(&MockCdmClient::OnSessionMessage,
                                 base::Unretained(&cdm_client_)),
@@ -177,8 +176,6 @@ class MediaFoundationCdmTest : public testing::Test {
 
   StrictMock<MockCdmClient> cdm_client_;
   IsTypedSupportedCallbackHandler is_type_supported_cb_handler_;
-  base::MockCallback<MediaFoundationCdm::StoreClientTokenCB>
-      store_client_token_cb_;
   StrictMock<base::MockCallback<MediaFoundationCdm::CdmEventCB>> cdm_event_cb_;
   ComPtr<StrictMock<MockMFCdm>> mf_cdm_;
   ComPtr<StrictMock<MockMFCdmSession>> mf_cdm_session_;
@@ -533,9 +530,6 @@ TEST_F(MediaFoundationCdmTest, LoadSession) {
 TEST_F(MediaFoundationCdmTest, UpdateSession) {
   Initialize();
   CreateSessionAndGenerateRequest();
-
-  COM_EXPECT_CALL(mf_cdm_, QueryInterface(IID_IMFAttributes, _))
-      .WillOnce(Return(E_FAIL));
 
   std::vector<uint8_t> response = StringToVector("response");
   COM_EXPECT_CALL(mf_cdm_session_, Update(NotNull(), response.size()))

@@ -25,22 +25,6 @@
 
 namespace media {
 
-// Key to the client token. The same value is also used in MediaFoundation CDMs.
-// Do NOT change this value!
-DEFINE_PROPERTYKEY(EME_CONTENTDECRYPTIONMODULE_CLIENT_TOKEN,
-                   0xa4abc308,
-                   0xd249,
-                   0x4150,
-                   0x90,
-                   0x37,
-                   0xc9,
-                   0x97,
-                   0xf8,
-                   0xcf,
-                   0x8d,
-                   0x0f,
-                   PID_FIRST_USABLE);
-
 class MediaFoundationCdmSession;
 
 // A CDM implementation based on Media Foundation IMFContentDecryptionModule on
@@ -66,10 +50,6 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
       base::RepeatingCallback<void(const std::string& content_type,
                                    IsTypeSupportedResultCB)>;
 
-  // Callback to MediaFoundationCdmFactory::StoreClientToken
-  using StoreClientTokenCB =
-      base::RepeatingCallback<void(const std::vector<uint8_t>&)>;
-
   // Callback to notify the CDM of an event, with an optional HRESULT associated
   // with that event (e.g. errors).
   using CdmEventCB = base::RepeatingCallback<void(CdmEvent, HRESULT hresult)>;
@@ -82,7 +62,6 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
       HWND content_protection_hwnd,
       const CreateMFCdmCB& create_mf_cdm_cb,
       const IsTypeSupportedCB& is_type_supported_cb,
-      const StoreClientTokenCB& store_client_token_cb,
       const CdmEventCB& cdm_event_cb,
       const SessionMessageCB& session_message_cb,
       const SessionClosedCB& session_closed_cb,
@@ -146,8 +125,6 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
   void OnGetStatusForPolicyResult(std::unique_ptr<KeyStatusCdmPromise> promise,
                                   IsTypeSupportedValueOrError value_or_error);
 
-  void StoreClientTokenIfNeeded();
-
   // Prefix for UMA reported in `this` and the `sessions_`.
   const std::string uma_prefix_;
 
@@ -163,9 +140,6 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
 
   // Callback to MFCdmFactory's IsTypeSupported().
   IsTypeSupportedCB is_type_supported_cb_;
-
-  // Callback to MFCdmFactory's StoreClientToken().
-  StoreClientTokenCB store_client_token_cb_;
 
   // Callback to report fatal errors.
   CdmEventCB cdm_event_cb_;
@@ -191,9 +165,6 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
       sessions_;
 
   scoped_refptr<MediaFoundationCdmProxy> cdm_proxy_;
-
-  // Copy of the last client token we stored.
-  std::vector<uint8_t> cached_client_token_;
 
   // Whether SetServerCertificate() has been called successfully.
   bool server_certificate_set_ = false;

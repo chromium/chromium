@@ -68,12 +68,6 @@ void MojoCdmHelper::GetMediaFoundationCdmData(
   cdm_document_service_->GetMediaFoundationCdmData(std::move(callback));
 }
 
-void MojoCdmHelper::SetCdmClientToken(
-    const std::vector<uint8_t>& client_token) {
-  ConnectToCdmDocumentService();
-  cdm_document_service_->SetCdmClientToken(client_token);
-}
-
 void MojoCdmHelper::OnCdmEvent(CdmEvent event, HRESULT hresult) {
   ConnectToCdmDocumentService();
   cdm_document_service_->OnCdmEvent(event, hresult);

@@ -27,7 +27,6 @@ MEDIA_EXPORT HRESULT CreateMediaFoundationCdm(
     Microsoft::WRL::ComPtr<IMFContentDecryptionModuleFactory> cdm_factory,
     const CdmConfig& cdm_config,
     const base::UnguessableToken& cdm_origin_id,
-    const std::optional<std::vector<uint8_t>>& cdm_client_token,
     const base::FilePath& cdm_store_path_root,
     Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm);
 

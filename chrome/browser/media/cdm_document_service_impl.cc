@@ -230,8 +230,8 @@ GetMediaFoundationCdmDataInternal(const base::FilePath profile_path,
     return nullptr;
   }
 
-  return std::make_unique<media::MediaFoundationCdmData>(
-      pref_data->origin_id(), pref_data->client_token(), cdm_store_path_root);
+  return std::make_unique<media::MediaFoundationCdmData>(pref_data->origin_id(),
+                                                         cdm_store_path_root);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -403,20 +403,6 @@ void CdmDocumentServiceImpl::GetMediaFoundationCdmData(
       base::BindOnce(&GetMediaFoundationCdmDataInternal, profile->GetPath(),
                      std::move(pref_data)),
       std::move(callback));
-}
-
-void CdmDocumentServiceImpl::SetCdmClientToken(
-    const std::vector<uint8_t>& client_token) {
-  const url::Origin cdm_origin = origin();
-  if (cdm_origin.opaque()) {
-    mojo::ReportBadMessage("EME use is not allowed on opaque origin");
-    return;
-  }
-
-  PrefService* user_prefs =
-      Profile::FromBrowserContext(render_frame_host().GetBrowserContext())
-          ->GetPrefs();
-  CdmPrefServiceHelper::SetCdmClientToken(user_prefs, cdm_origin, client_token);
 }
 
 void CdmDocumentServiceImpl::OnCdmEvent(media::CdmEvent event,

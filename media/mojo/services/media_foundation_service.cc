@@ -285,7 +285,6 @@ HRESULT CreateDummyMediaFoundationCdm(
   // Create the dummy CDM.
   Microsoft::WRL::ComPtr<IMFContentDecryptionModule> mf_cdm;
   auto hr = CreateMediaFoundationCdm(cdm_factory, cdm_config, cdm_origin_id,
-                                     /*cdm_client_token=*/std::nullopt,
                                      dummy_cdm_store_path_root, mf_cdm);
   DLOG_IF(ERROR, FAILED(hr)) << __func__ << ": Failed for " << key_system;
   mf_cdm.Reset();

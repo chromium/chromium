@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/base64.h"
 #include "base/containers/to_value_list.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
@@ -26,9 +25,6 @@ namespace {
 
 const char kOriginId[] = "origin_id";
 const char kOriginIdCreationTime[] = "origin_id_creation_time";
-
-const char kClientToken[] = "client_token";
-const char kClientTokenCreationTime[] = "client_token_creation_time";
 
 bool TimeIsBetween(const base::Time& time,
                    const base::Time& start,
@@ -59,8 +55,6 @@ std::vector<base::Time> ListToTimes(const base::ListValue& time_list) {
 //         "origin_id_creation_time": $origin_id_creation_time
 //         "hardware_secure_decryption_disable_times":
 //         $hw_secure_decryption_disable_times
-//         "client_token": $client_token (optional)
-//         "client_token_creation_time": $client_token_creation_time (optional)
 //     },
 //     more origin_string map...
 // }
@@ -72,15 +66,6 @@ base::DictValue ToDictValue(const CdmPrefData& pref_data) {
           .Set(kOriginIdCreationTime,
                base::TimeToValue(pref_data.origin_id_creation_time()));
 
-  // Optional Client Token
-  const std::optional<std::vector<uint8_t>> client_token =
-      pref_data.client_token();
-  if (client_token.has_value() && !client_token->empty()) {
-    std::string encoded_client_token = base::Base64Encode(client_token.value());
-    dict.Set(kClientToken, encoded_client_token);
-    dict.Set(kClientTokenCreationTime,
-             base::TimeToValue(pref_data.client_token_creation_time()));
-  }
   dict.Set(prefs::kHardwareSecureDecryptionDisabledTimes,
            base::ToValueList(pref_data.hw_secure_decryption_disable_times(),
                              &base::TimeToValue));
@@ -88,9 +73,8 @@ base::DictValue ToDictValue(const CdmPrefData& pref_data) {
 }
 
 // Convert `cdm_data_dict` to CdmPrefData. `cdm_data_dict` contains the origin
-// id and the time it was first created as well as the client token and the time
-// it was set/updated. Return nullptr if `cdm_data_dict` has any corruption,
-// e.g. format error, missing fields, invalid value.
+// id and the time it was first created. Return nullptr if `cdm_data_dict` has
+// any corruption, e.g. format error, missing fields, invalid value.
 std::unique_ptr<CdmPrefData> FromDictValue(
     const base::DictValue& cdm_data_dict) {
   // Origin ID
@@ -124,41 +108,12 @@ std::unique_ptr<CdmPrefData> FromDictValue(
   }
   hw_secure_disabled_times = ListToTimes(*hw_secure_disabled_time_values);
 
-  auto cdm_pref_data = std::make_unique<CdmPrefData>(
+  return std::make_unique<CdmPrefData>(
       origin_id.value(), origin_id_time.value(), hw_secure_disabled_times);
 #else
-  auto cdm_pref_data =
-      std::make_unique<CdmPrefData>(origin_id.value(), origin_id_time.value());
+  return std::make_unique<CdmPrefData>(origin_id.value(),
+                                       origin_id_time.value());
 #endif  // BUILDFLAG(IS_WIN)
-
-  // Client Token
-  const std::string* encoded_client_token =
-      cdm_data_dict.FindString(kClientToken);
-  if (encoded_client_token) {
-    std::string decoded_client_token;
-    if (!base::Base64Decode(*encoded_client_token, &decoded_client_token)) {
-      return nullptr;
-    }
-
-    std::vector<uint8_t> client_token(decoded_client_token.begin(),
-                                      decoded_client_token.end());
-
-    time_value = cdm_data_dict.Find(kClientTokenCreationTime);
-
-    // If we have a client token but no creation time, this is an error.
-    if (!time_value) {
-      return nullptr;
-    }
-
-    std::optional<base::Time> client_token_time = base::ValueToTime(time_value);
-    if (!client_token_time) {
-      return nullptr;
-    }
-
-    cdm_pref_data->SetClientToken(client_token, client_token_time.value());
-  }
-
-  return cdm_pref_data;
 }
 }  // namespace
 
@@ -188,24 +143,9 @@ base::Time CdmPrefData::origin_id_creation_time() const {
   return origin_id_creation_time_;
 }
 
-const std::optional<std::vector<uint8_t>> CdmPrefData::client_token() const {
-  return client_token_;
-}
-
-base::Time CdmPrefData::client_token_creation_time() const {
-  return client_token_creation_time_;
-}
-
 std::vector<base::Time> CdmPrefData::hw_secure_decryption_disable_times()
     const {
   return hw_secure_decryption_disable_times_;
-}
-
-void CdmPrefData::SetClientToken(const std::vector<uint8_t>& client_token,
-                                 const base::Time creation_time) {
-  VLOG(1) << __func__;
-  client_token_ = client_token;
-  client_token_creation_time_ = creation_time;
 }
 
 CdmPrefServiceHelper::CdmPrefServiceHelper() = default;
@@ -219,9 +159,7 @@ void CdmPrefServiceHelper::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 // time falls in [`start`, `end`] and `filter` returns true on its origin.
 // `start` can be null, which would indicate that we should delete everything
 // since the beginning of time. `end` can also be null, in which case we can
-// just ignore it. If only `client_token_creation_time` falls between `start`
-// and `end`, we only clear that field. If `origin_id_creation_time` falls
-// between `start` and `end`, we clear the whole entry.
+// just ignore it.
 void CdmPrefServiceHelper::ClearCdmPreferenceData(
     PrefService* user_prefs,
     base::Time start,
@@ -255,10 +193,6 @@ void CdmPrefServiceHelper::ClearCdmPreferenceData(
     if (TimeIsBetween(cdm_pref_data->origin_id_creation_time(), start, end)) {
       DVLOG(1) << "Clearing cdm pref data for " << origin;
       origins_to_delete.push_back(origin);
-    } else if (TimeIsBetween(cdm_pref_data->client_token_creation_time(), start,
-                             end)) {
-      origin_dict->Remove(kClientToken);
-      origin_dict->Remove(kClientTokenCreationTime);
     }
   }
 
@@ -320,41 +254,42 @@ std::unique_ptr<CdmPrefData> CdmPrefServiceHelper::GetCdmPrefData(
   return cdm_pref_data;
 }
 
-void CdmPrefServiceHelper::SetCdmClientToken(
-    PrefService* user_prefs,
-    const url::Origin& cdm_origin,
-    const std::vector<uint8_t>& client_token) {
-  VLOG(1) << __func__;
-  // Access to the PrefService must be made from the UI thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  DCHECK(!cdm_origin.opaque());
-
-  const std::string serialized_cdm_origin = cdm_origin.Serialize();
-  DCHECK(!serialized_cdm_origin.empty());
-
-  ScopedDictPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
-  base::DictValue& dict = update.Get();
-
-  base::DictValue* dict_value = dict.FindDict(serialized_cdm_origin);
-  if (!dict_value) {
-    // If there is no preference associated with the origin at this point, this
-    // means that the preference data was deleted by the user recently. No need
-    // to save the client token in that case.
+// static
+void CdmPrefServiceHelper::MigrateObsoleteProfilePrefs(
+    PrefService* profile_prefs) {
+  if (!profile_prefs->HasPrefPath(prefs::kMediaCdmOriginData)) {
     return;
   }
 
-  std::unique_ptr<CdmPrefData> cdm_pref_data = FromDictValue(*dict_value);
-  if (!cdm_pref_data) {
-    DVLOG(ERROR) << "The CDM preference data for origin \""
-                 << serialized_cdm_origin
-                 << "\" could not be parsed. Removing entry from preferences.";
-    dict.Remove(serialized_cdm_origin);
+  // Check if any obsolete keys exist before creating a ScopedDictPrefUpdate.
+  // Creating a ScopedDictPrefUpdate unconditionally marks the pref as dirty and
+  // notifies observers, which would trigger unnecessary disk writes on every
+  // browser startup once migrated.
+  const base::DictValue& dict =
+      profile_prefs->GetDict(prefs::kMediaCdmOriginData);
+  bool needs_migration = false;
+  for (auto [origin, origin_value] : dict) {
+    if (const auto* origin_dict = origin_value.GetIfDict()) {
+      if (origin_dict->Find("client_token") ||
+          origin_dict->Find("client_token_creation_time")) {
+        needs_migration = true;
+        break;
+      }
+    }
+  }
+
+  if (!needs_migration) {
     return;
   }
 
-  cdm_pref_data->SetClientToken(client_token, base::Time::Now());
-  dict.Set(serialized_cdm_origin, ToDictValue(*cdm_pref_data));
+  ScopedDictPrefUpdate update(profile_prefs, prefs::kMediaCdmOriginData);
+  for (auto [origin, origin_value] : *update) {
+    if (auto* origin_dict = origin_value.GetIfDict()) {
+      // Added 09/2026.
+      origin_dict->Remove("client_token");
+      origin_dict->Remove("client_token_creation_time");
+    }
+  }
 }
 
 std::map<std::string, url::Origin> CdmPrefServiceHelper::GetOriginIdMapping(

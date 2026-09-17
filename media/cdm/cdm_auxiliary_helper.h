@@ -117,7 +117,6 @@ class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
   void GetStorageId(uint32_t version, StorageIdCB callback) override;
 #if BUILDFLAG(IS_WIN)
   void GetMediaFoundationCdmData(GetMediaFoundationCdmDataCB callback) override;
-  void SetCdmClientToken(const std::vector<uint8_t>& client_token) override;
   void OnCdmEvent(CdmEvent event, HRESULT hresult) override;
 
   // Returns an HWND owned by the browser process for Media Foundation GPU

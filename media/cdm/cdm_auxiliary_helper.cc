@@ -65,11 +65,8 @@ void CdmAuxiliaryHelper::GetStorageId(uint32_t version, StorageIdCB callback) {
 void CdmAuxiliaryHelper::GetMediaFoundationCdmData(
     GetMediaFoundationCdmDataCB callback) {
   std::move(callback).Run(std::make_unique<MediaFoundationCdmData>(
-      base::UnguessableToken::Null(), std::nullopt, base::FilePath()));
+      base::UnguessableToken::Null(), base::FilePath()));
 }
-
-void CdmAuxiliaryHelper::SetCdmClientToken(
-    const std::vector<uint8_t>& client_token) {}
 
 void CdmAuxiliaryHelper::OnCdmEvent(CdmEvent event, HRESULT hresult) {}
 

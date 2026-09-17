@@ -126,7 +126,6 @@ HRESULT BuildCdmAccessConfigurations(const CdmConfig& cdm_config,
 
 HRESULT BuildCdmProperties(
     const base::UnguessableToken& origin_id,
-    const std::optional<std::vector<uint8_t>>& client_token,
     const base::FilePath& store_path,
     ComPtr<IPropertyStore>& properties) {
   CHECK(!origin_id.is_empty());
@@ -139,20 +138,6 @@ HRESULT BuildCdmProperties(
       base::UTF8ToWide(origin_id.ToString()).c_str(), origin_id_var.Receive()));
   RETURN_IF_FAILED(temp_properties->SetValue(
       EME_CONTENTDECRYPTIONMODULE_ORIGIN_ID, origin_id_var.get()));
-
-  if (client_token) {
-    base::win::ScopedPropVariant client_token_var;
-    PROPVARIANT* client_token_propvar = client_token_var.Receive();
-    client_token_propvar->vt = VT_VECTOR | VT_UI1;
-    client_token_propvar->caub.cElems = client_token->size();
-    client_token_propvar->caub.pElems = reinterpret_cast<unsigned char*>(
-        CoTaskMemAlloc(client_token->size() * sizeof(char)));
-    UNSAFE_TODO(memcpy(client_token_propvar->caub.pElems, client_token->data(),
-                       client_token->size()));
-
-    RETURN_IF_FAILED(temp_properties->SetValue(
-        EME_CONTENTDECRYPTIONMODULE_CLIENT_TOKEN, client_token_var.get()));
-  }
 
   base::win::ScopedPropVariant store_path_var;
   RETURN_IF_FAILED(InitPropVariantFromString(store_path.value().c_str(),
@@ -170,7 +155,6 @@ HRESULT CreateMediaFoundationCdm(
     ComPtr<IMFContentDecryptionModuleFactory> cdm_factory,
     const CdmConfig& cdm_config,
     const base::UnguessableToken& cdm_origin_id,
-    const std::optional<std::vector<uint8_t>>& cdm_client_token,
     const base::FilePath& cdm_store_path_root,
     ComPtr<IMFContentDecryptionModule>& mf_cdm) {
   DVLOG(1) << __func__ << ": cdm_config=" << cdm_config
@@ -209,8 +193,8 @@ HRESULT CreateMediaFoundationCdm(
 
   ComPtr<IPropertyStore> cdm_properties;
   ComPtr<IMFContentDecryptionModule> cdm;
-  RETURN_IF_FAILED(BuildCdmProperties(cdm_origin_id, cdm_client_token,
-                                      store_path, cdm_properties));
+  RETURN_IF_FAILED(
+      BuildCdmProperties(cdm_origin_id, store_path, cdm_properties));
   RETURN_IF_FAILED(
       cdm_access->CreateContentDecryptionModule(cdm_properties.Get(), &cdm));
 
