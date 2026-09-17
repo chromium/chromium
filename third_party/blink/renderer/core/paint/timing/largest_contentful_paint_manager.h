@@ -46,8 +46,9 @@ class CORE_EXPORT LargestContentfulPaintManager
 
   // PaintTimingClient:
   void OnElementFirstContentfulPaint(ImageRecord*) override;
-  void OnPaintFinished(const HeapVector<Member<ImageRecord>>&,
-                       const HeapVector<Member<TextRecord>>&) override;
+  void OnElementLastContentfulPaint(ImageRecord*) override;
+  void OnElementLastContentfulPaint(TextRecord*,
+                                    bool was_previously_reported) override;
   void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
                         const HeapVector<Member<TextRecord>>&,
                         const HeapVector<Member<ElementTimingInfo>>&,

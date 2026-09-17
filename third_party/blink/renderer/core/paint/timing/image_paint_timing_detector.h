@@ -126,6 +126,8 @@ class CORE_EXPORT ImagePaintTimingDetector final
   friend class ImagePaintTimingDetectorTestBase;
   friend class LargestContentfulPaintCalculatorTest;
 
+  void SendRectsToHud();
+
   // Returns the viewport size, initializing the cached `viewport_size_` if
   // needed.
   uint64_t ViewportSize();

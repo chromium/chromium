@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/paint/timing/web_vitals_hud_helper.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -884,17 +884,16 @@ void LayoutShiftTracker::AttributionsToTracedValue(TracedValue& value) const {
 
 void LayoutShiftTracker::SendLayoutShiftRectsToHud(
     const Vector<gfx::Rect>& int_rects) {
-  WebVitalsHudHelper hud_helper(cc::WebVitalMetricType::kLayoutShift,
-                                frame_view_);
-  if (!hud_helper.IsEnabled()) {
-    return;
-  }
-  cc::Region blink_region;
-  for (const gfx::Rect& rect : int_rects) {
-    blink_region.Union(rect);
-  }
-  for (gfx::Rect rect : blink_region) {
-    hud_helper.AddWebVitalsDebugRect(rect);
+  if (auto* hud_layer =
+          paint_timing::GetHUDLayerIfLayoutShiftRectsEnabled(frame_view_)) {
+    cc::Region blink_region;
+    for (const gfx::Rect& rect : int_rects) {
+      blink_region.Union(rect);
+    }
+    for (gfx::Rect rect : blink_region) {
+      hud_layer->AddWebVitalsDebugRect(
+          {cc::WebVitalMetricType::kLayoutShift, rect});
+    }
   }
 }
 
