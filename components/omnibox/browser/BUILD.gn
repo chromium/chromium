@@ -483,13 +483,15 @@ static_library("browser") {
     public_deps += [
       "//components/keyed_service/content",
       "//components/permissions",
-      "//content/public/browser",
       "//services/device/public/mojom",
     ]
     sources += [
       "geolocation_header_service.cc",
       "geolocation_header_service.h",
     ]
+  }
+  if (use_blink) {
+    public_deps += [ "//content/public/browser" ]
   }
 
   if ((!is_android || enable_vr) && !is_ios) {
@@ -1059,9 +1061,13 @@ source_set("unit_tests") {
       ":fusebox_action_mojo_test_utils",
       ":fusebox_action_mojo_utils",
       "//components/permissions:test_support",
-      "//content/test:test_support",
       "//services/device/public/cpp:test_support",
       "//services/device/public/mojom",
+    ]
+  }
+  if (use_blink) {
+    deps += [
+      "//content/test:test_support",
       "//ui/base/clipboard:clipboard_test_support",
     ]
   }
