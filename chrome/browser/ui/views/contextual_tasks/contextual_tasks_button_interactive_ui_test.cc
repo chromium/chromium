@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -373,11 +374,17 @@ class ContextualTasksEphemeralButtonInteractiveTestMixin
     return {};
   }
 
+  // Side panel animations hide the timing windows that rapid clicks expose, so
+  // tests that exercise those windows have to keep animations on.
+  virtual bool ShouldDisableSidePanelAnimations() const { return true; }
+
   void SetUpOnMainThread() override {
     Base::SetUpOnMainThread();
     this->host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(this->embedded_test_server()->Start());
-    SidePanelUI::From(this->browser())->DisableAnimationsForTesting();
+    if (ShouldDisableSidePanelAnimations()) {
+      SidePanelUI::From(this->browser())->DisableAnimationsForTesting();
+    }
   }
 
   auto CreateTaskForTab(int tab_index) {
@@ -740,6 +747,39 @@ IN_PROC_BROWSER_TEST_F(
       // task. The ephemeral button shows because the side panel was closed.
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+}
+
+// Keeps the side panel's open/close animations running so that a rapid double
+// tap of the pinned button leaves a show in flight while the panel closes.
+class ContextualTasksEphemeralButtonAnimatedPinnedInteractiveTest
+    : public ContextualTasksEphemeralButtonFeatureEnabledInteractiveTest {
+ public:
+  bool ShouldDisableSidePanelAnimations() const override { return false; }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksEphemeralButtonAnimatedPinnedInteractiveTest,
+    ButtonStaysVisibleAfterDoubleTappingPinnedButton) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0), CreateTaskForTab(0), Do([&]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      // Double tap: the first press opens the panel, the second closes it
+      // again before the open has settled.
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      // The button takes over as soon as the panel starts leaving.
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      // ...and it has to survive the cleanup that lands afterwards. The
+      // zero-state task has no thread yet, so it is torn down once the panel
+      // stops holding it, which used to retire the button along with it.
+      WaitForEvent(kSidePanelElementId,
+                   SidePanel::kCloseAnimationCompletedEvent),
+      EnsurePresent(kContextualTasksEphemeralToolbarButtonElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
