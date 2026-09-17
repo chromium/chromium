@@ -1522,7 +1522,7 @@
     {
         "name": "googleid",
         "group": "com.google.android.libraries.identity.googleid",
-        "version": "1.2.0"
+        "version": "1.2.1"
     },
     {
         "name": "material",
