@@ -17,6 +17,7 @@ source_set("organizer") {
     ":organizer_panel_host",
     "//base",
     "//chrome/app/vector_icons",
+    "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs/organizer",
     "//ui/base",
     "//ui/views",
