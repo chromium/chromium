@@ -997,6 +997,22 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autocomplete.{MatchingType}BasedSuggestions"
+    enum="AutocompleteEvents" expires_after="2027-02-14">
+  <owner>mikhe@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Events recorded when the user interacts with {MatchingType} suggestions
+    served from Autocomplete. The histogram is recorded when a suggestion is
+    shown, selected or deleted.
+  </summary>
+  <token key="MatchingType">
+    <variant name="BothNameAndLabel" summary="both name- and label-based"/>
+    <variant name="Label" summary="label-based"/>
+    <variant name="Name" summary="name-based"/>
+  </token>
+</histogram>
+
 <histogram
     name="Autofill.Ablation.FillDurationSinceInteraction.{FormType}.{Group}"
     units="ms" expires_after="2026-12-14">

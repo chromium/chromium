@@ -655,7 +655,8 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
       break;
     case FillingProduct::kAutocomplete:
       AutofillMetrics::LogAutocompleteEvent(
-          AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED);
+          AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED,
+          suggestion);
       break;
     case FillingProduct::kCreditCard:
       // TODO(crbug.com/41482065): Add metrics for credit cards.

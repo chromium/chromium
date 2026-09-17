@@ -681,7 +681,8 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
       break;
     case FillingProduct::kAutocomplete:
       AutofillMetrics::LogAutocompleteEvent(
-          AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED);
+          AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED,
+          GetSuggestions()[list_index]);
       if (view_) {
         view_->AxAnnounce(l10n_util::GetStringFUTF16(
             IDS_AUTOFILL_AUTOCOMPLETE_ENTRY_DELETED_A11Y_HINT,

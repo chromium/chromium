@@ -69,6 +69,7 @@
 #include "components/autofill/core/browser/test_utils/valuables_data_test_util.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -2714,10 +2715,170 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
 
 TEST_F(AutofillMetricsTest, OnAutocompleteSuggestionsShown) {
   base::HistogramTester histogram_tester;
-  AutofillMetrics::OnAutocompleteSuggestionsShown();
+  AutofillMetrics::OnAutocompleteSuggestionsShown({});
   histogram_tester.ExpectBucketCount(
       "Autocomplete.Events3", AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
       /*expected_count=*/1);
+}
+
+// Tests that when `kAutofillLabelSensitiveAutocomplete` is enabled,
+// `OnAutocompleteSuggestionsShown` records `AUTOCOMPLETE_SUGGESTIONS_SHOWN` to
+// `Autocomplete.Events3` and once for each distinct `MatchingType` present in
+// the suggestions list.
+TEST_F(AutofillMetricsTest, OnAutocompleteSuggestionsShown_MatchingTypes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillLabelSensitiveAutocomplete);
+
+  base::HistogramTester histogram_tester;
+  auto create_suggestion = [](std::u16string value,
+                              MatchingType matching_type) {
+    Suggestion suggestion(value, SuggestionType::kAutocompleteEntry);
+    suggestion.payload = AutocompleteSearchResultLabelSensitive(
+        value, matching_type, /*query_name=*/u"name",
+        /*query_label=*/u"label", /*count=*/1);
+    return suggestion;
+  };
+
+  std::vector<Suggestion> suggestions = {
+      create_suggestion(u"val1", MatchingType::kName),
+      create_suggestion(u"val2", MatchingType::kName),
+      create_suggestion(u"val3", MatchingType::kLabel),
+      create_suggestion(u"val4", MatchingType::kNameAndLabel),
+      Suggestion(u"address", SuggestionType::kAddressEntry),
+  };
+
+  AutofillMetrics::OnAutocompleteSuggestionsShown(suggestions);
+
+  histogram_tester.ExpectBucketCount(
+      "Autocomplete.Events3", AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Autocomplete.NameBasedSuggestions",
+      AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Autocomplete.LabelBasedSuggestions",
+      AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Autocomplete.BothNameAndLabelBasedSuggestions",
+      AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
+      /*expected_count=*/1);
+}
+
+// Tests that when `kAutofillLabelSensitiveAutocomplete` is disabled,
+// `OnAutocompleteSuggestionsShown` records only to `Autocomplete.Events3` and
+// not to any matching-type histograms.
+TEST_F(AutofillMetricsTest, OnAutocompleteSuggestionsShown_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillLabelSensitiveAutocomplete);
+
+  base::HistogramTester histogram_tester;
+  Suggestion suggestion(u"val", SuggestionType::kAutocompleteEntry);
+  suggestion.payload = AutocompleteSearchResultLabelSensitive(
+      u"val", MatchingType::kLabel, /*query_name=*/u"name",
+      /*query_label=*/u"label", /*count=*/1);
+
+  AutofillMetrics::OnAutocompleteSuggestionsShown({suggestion});
+
+  histogram_tester.ExpectBucketCount(
+      "Autocomplete.Events3", AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Autocomplete.LabelBasedSuggestions", 0);
+}
+
+// Tests that `LogAutocompleteEvent` with an explicit `MatchingType` records the
+// event to both `Autocomplete.Events3` and the corresponding matching-type
+// histogram.
+TEST_F(AutofillMetricsTest, LogAutocompleteEvent_WithMatchingType) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillLabelSensitiveAutocomplete);
+
+  {
+    base::HistogramTester histogram_tester;
+    AutofillMetrics::LogAutocompleteEvent(
+        AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED,
+        MatchingType::kLabel);
+    histogram_tester.ExpectBucketCount(
+        "Autocomplete.Events3",
+        AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autocomplete.LabelBasedSuggestions",
+        AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED, 1);
+    histogram_tester.ExpectTotalCount("Autocomplete.NameBasedSuggestions", 0);
+    histogram_tester.ExpectTotalCount(
+        "Autocomplete.BothNameAndLabelBasedSuggestions", 0);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    AutofillMetrics::LogAutocompleteEvent(
+        AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED, MatchingType::kName);
+    histogram_tester.ExpectBucketCount(
+        "Autocomplete.Events3",
+        AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autocomplete.NameBasedSuggestions",
+        AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED, 1);
+    histogram_tester.ExpectTotalCount("Autocomplete.LabelBasedSuggestions", 0);
+    histogram_tester.ExpectTotalCount(
+        "Autocomplete.BothNameAndLabelBasedSuggestions", 0);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    AutofillMetrics::LogAutocompleteEvent(
+        AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED,
+        MatchingType::kNameAndLabel);
+    histogram_tester.ExpectBucketCount(
+        "Autocomplete.Events3",
+        AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autocomplete.BothNameAndLabelBasedSuggestions",
+        AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED, 1);
+    histogram_tester.ExpectTotalCount("Autocomplete.LabelBasedSuggestions", 0);
+    histogram_tester.ExpectTotalCount("Autocomplete.NameBasedSuggestions", 0);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    AutofillMetrics::LogAutocompleteEvent(
+        AutofillMetrics::AUTOCOMPLETE_SUGGESTION_DELETED, MatchingType::kLabel);
+    histogram_tester.ExpectBucketCount(
+        "Autocomplete.Events3",
+        AutofillMetrics::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autocomplete.LabelBasedSuggestions",
+        AutofillMetrics::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
+  }
+}
+
+// Tests that `LogAutocompleteEvent` extracting `MatchingType` from a
+// `Suggestion` payload records the event to both `Autocomplete.Events3` and the
+// corresponding matching-type histogram.
+TEST_F(AutofillMetricsTest, LogAutocompleteEvent_WithSuggestion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillLabelSensitiveAutocomplete);
+
+  base::HistogramTester histogram_tester;
+  Suggestion suggestion(u"val", SuggestionType::kAutocompleteEntry);
+  suggestion.payload = AutocompleteSearchResultLabelSensitive(
+      u"val", MatchingType::kLabel, /*query_name=*/u"name",
+      /*query_label=*/u"label", /*count=*/1);
+
+  AutofillMetrics::LogAutocompleteEvent(
+      AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED, suggestion);
+
+  histogram_tester.ExpectBucketCount(
+      "Autocomplete.Events3", AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Autocomplete.LabelBasedSuggestions",
+      AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED, 1);
+  histogram_tester.ExpectTotalCount("Autocomplete.NameBasedSuggestions", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autocomplete.BothNameAndLabelBasedSuggestions", 0);
 }
 
 TEST_F(AutofillMetricsTest, LogServerCardLinkClicked) {

@@ -686,7 +686,7 @@ void AutofillExternalDelegate::OnSuggestionsShown(
       OnAutofillAvailabilityEvent(
           mojom::AutofillSuggestionAvailability::kAutocompleteAvailable);
       if (autofill_metrics::ShouldLogAutofillSuggestionShown(trigger_source_)) {
-        AutofillMetrics::OnAutocompleteSuggestionsShown();
+        AutofillMetrics::OnAutocompleteSuggestionsShown(suggestions);
       }
     }
 
@@ -981,7 +981,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case SuggestionType::kAutocompleteEntry:
       AutofillMetrics::LogAutocompleteEvent(
-          AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_SELECTED);
+          AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_SELECTED,
+          suggestion);
       autofill_metrics::LogSuggestionAcceptedIndex(
           metadata.row(), FillingProduct::kAutocomplete,
           manager_->client().IsOffTheRecord(), shown_suggestion_types_);

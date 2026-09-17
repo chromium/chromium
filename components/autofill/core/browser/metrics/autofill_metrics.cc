@@ -58,6 +58,7 @@
 #include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/metrics_enums.h"
@@ -775,8 +776,9 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
             days_since_last_use);
         num_local_cards += 1;
         num_disused_local_cards += disused_delta;
-        if (card->HasNonEmptyValidNickname())
+        if (card->HasNonEmptyValidNickname()) {
           num_local_cards_with_nickname += 1;
+        }
         if (!card->HasValidCardNumber()) {
           num_local_cards_with_invalid_number += 1;
         }
@@ -787,8 +789,9 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
             days_since_last_use);
         num_server_cards += 1;
         num_disused_server_cards += disused_delta;
-        if (card->HasNonEmptyValidNickname())
+        if (card->HasNonEmptyValidNickname()) {
           num_server_cards_with_nickname += 1;
+        }
         break;
       // These card types are not persisted in Chrome.
       case CreditCard::RecordType::kFullServerCard:
@@ -1269,17 +1272,91 @@ void AutofillMetrics::LogAutocompleteDaysSinceLastUse(size_t days) {
   UMA_HISTOGRAM_COUNTS_1000("Autocomplete.DaysSinceLastUse", days);
 }
 
+namespace {
+
+void LogAutocompleteMatchingTypeEvent(AutofillMetrics::AutocompleteEvent event,
+                                      MatchingType matching_type) {
+  DCHECK_LT(event, AutofillMetrics::AutocompleteEvent::NUM_AUTOCOMPLETE_EVENTS);
+  std::string_view histogram_name;
+  switch (matching_type) {
+    case MatchingType::kLabel:
+      histogram_name = "Autocomplete.LabelBasedSuggestions";
+      break;
+    case MatchingType::kName:
+      histogram_name = "Autocomplete.NameBasedSuggestions";
+      break;
+    case MatchingType::kNameAndLabel:
+      histogram_name = "Autocomplete.BothNameAndLabelBasedSuggestions";
+      break;
+    case MatchingType::kUnknown:
+      return;
+  }
+  base::UmaHistogramEnumeration(histogram_name, event,
+                                AutofillMetrics::NUM_AUTOCOMPLETE_EVENTS);
+}
+
+}  // namespace
+
 // static
-void AutofillMetrics::OnAutocompleteSuggestionsShown() {
+void AutofillMetrics::OnAutocompleteSuggestionsShown(
+    base::span<const Suggestion> suggestions) {
   AutofillMetrics::LogAutocompleteEvent(
       AutocompleteEvent::AUTOCOMPLETE_SUGGESTIONS_SHOWN);
+
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillLabelSensitiveAutocomplete)) {
+    return;
+  }
+
+  DenseSet<MatchingType> seen_matching_types;
+  for (const Suggestion& suggestion : suggestions) {
+    if (suggestion.type != SuggestionType::kAutocompleteEntry) {
+      continue;
+    }
+    const auto* entry = std::get_if<AutocompleteSearchResultLabelSensitive>(
+        &suggestion.payload);
+    if (!entry) {
+      continue;
+    }
+    seen_matching_types.insert(entry->matching_type());
+  }
+
+  for (MatchingType matching_type : seen_matching_types) {
+    LogAutocompleteMatchingTypeEvent(
+        AutocompleteEvent::AUTOCOMPLETE_SUGGESTIONS_SHOWN, matching_type);
+  }
 }
 
 // static
 void AutofillMetrics::LogAutocompleteEvent(AutocompleteEvent event) {
+  LogAutocompleteEvent(event, std::nullopt);
+}
+
+// static
+void AutofillMetrics::LogAutocompleteEvent(
+    AutocompleteEvent event,
+    std::optional<MatchingType> matching_type) {
   DCHECK_LT(event, AutocompleteEvent::NUM_AUTOCOMPLETE_EVENTS);
   base::UmaHistogramEnumeration("Autocomplete.Events3", event,
                                 NUM_AUTOCOMPLETE_EVENTS);
+  if (matching_type && base::FeatureList::IsEnabled(
+                           features::kAutofillLabelSensitiveAutocomplete)) {
+    LogAutocompleteMatchingTypeEvent(event, *matching_type);
+  }
+}
+
+// static
+void AutofillMetrics::LogAutocompleteEvent(AutocompleteEvent event,
+                                           const Suggestion& suggestion) {
+  std::optional<MatchingType> matching_type;
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLabelSensitiveAutocomplete)) {
+    if (const auto* entry = std::get_if<AutocompleteSearchResultLabelSensitive>(
+            &suggestion.payload)) {
+      matching_type = entry->matching_type();
+    }
+  }
+  LogAutocompleteEvent(event, matching_type);
 }
 
 // static
@@ -1404,8 +1481,9 @@ void AutofillMetrics::LogWebOTPPhoneCollectionMetricStateUkm(
     ukm::SourceId source_id,
     uint32_t phone_collection_metric_state) {
   // UKM recording is not supported for WebViews.
-  if (!recorder || source_id == ukm::kInvalidSourceId)
+  if (!recorder || source_id == ukm::kInvalidSourceId) {
     return;
+  }
 
   ukm::builders::WebOTPImpact builder(source_id);
   builder.SetPhoneCollection(phone_collection_metric_state);

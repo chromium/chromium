@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
@@ -777,8 +778,11 @@ class AutofillMetrics {
   // used.
   static void LogAutocompleteDaysSinceLastUse(size_t days);
 
-  // Logs the fact that an autocomplete popup was shown.
-  static void OnAutocompleteSuggestionsShown();
+  // Logs the fact that an autocomplete popup was shown, recording
+  // `AUTOCOMPLETE_SUGGESTIONS_SHOWN` to `Autocomplete.Events3` and for each
+  // distinct `MatchingType` present in `suggestions`.
+  static void OnAutocompleteSuggestionsShown(
+      base::span<const Suggestion> suggestions);
 
   // This should be called each time a server response is parsed for a form.
   static void LogServerResponseHasDataForForm(bool has_data);
@@ -934,7 +938,19 @@ class AutofillMetrics {
       bool delete_confirmed,
       AutofillProfile::RecordType record_type);
 
+  // Logs an autocomplete interaction `event` to Autocomplete.Events3.
   static void LogAutocompleteEvent(AutocompleteEvent event);
+
+  // Logs an autocomplete interaction `event` to Autocomplete.Events3, and if
+  // `matching_type` is provided, also to
+  // Autocomplete.{MatchingType}BasedSuggestions.
+  static void LogAutocompleteEvent(AutocompleteEvent event,
+                                   std::optional<MatchingType> matching_type);
+
+  // Overload that extracts `MatchingType` from `suggestion` payload if
+  // available.
+  static void LogAutocompleteEvent(AutocompleteEvent event,
+                                   const Suggestion& suggestion);
 
   // TODO(crbug.com/316143236): Remove all datalist related metrics once
   // debugging is complete.
