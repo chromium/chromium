@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Sec-GPC",
+  "version": "1.0",
+  "description": "Sets the Sec-GPC header to 1 and navigator.globalPrivacyControl to true on all URLs.",
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "sec_gpc_rules",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "gpc_js_feature.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
+      "all_frames": true,
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ]
+}

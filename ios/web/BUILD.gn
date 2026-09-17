@@ -159,6 +159,7 @@ bundle_data("ios_web_unittests_bundle_data") {
   testonly = true
   sources = [
     "test/data/chrome.html",
+    "test/data/dummy_extension/manifest.json",
     "test/data/testbadpass.pkpass",
     "test/data/testfavicon.png",
     "test/data/testpass.pkpass",
@@ -185,6 +186,8 @@ test("ios_web_unittests") {
     "//ios/web/browsing_data:browsing_data_unittests",
     "//ios/web/common:unittests",
     "//ios/web/download:download_unittests",
+    "//ios/web/extension:unittests",
+    "//ios/web/extension/gpc_web_extension:unittests",
     "//ios/web/favicon:unittests",
     "//ios/web/find_in_page:find_in_page_unittests",
     "//ios/web/js_features/clipboard:unittests",

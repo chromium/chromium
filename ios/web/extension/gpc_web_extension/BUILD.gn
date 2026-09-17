@@ -1,0 +1,49 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+optimize_ts("gpc_feature_js") {
+  sources = [ "resources/gpc_js_feature.ts" ]
+  output_dir = "extensions/gpc_web_extension"
+}
+
+bundle_data("gpc_web_extension_bundle_data") {
+  public_deps = [ ":gpc_feature_js" ]
+  sources = [
+    "resources/manifest.json",
+    "resources/rules.json",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/extensions/gpc_web_extension/{{source_file_part}}" ]
+}
+
+source_set("gpc_web_extension") {
+  sources = [
+    "gpc_web_extension.h",
+    "gpc_web_extension.mm",
+  ]
+
+  deps = [
+    ":gpc_web_extension_bundle_data",
+    "//base",
+    "//ios/web/extension",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "WebKit.framework",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [ "gpc_web_extension_unittest.mm" ]
+  deps = [
+    ":gpc_web_extension",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+  frameworks = [ "WebKit.framework" ]
+}

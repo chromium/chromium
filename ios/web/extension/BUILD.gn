@@ -1,0 +1,29 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("extension") {
+  sources = [
+    "built_in_web_extension.h",
+    "built_in_web_extension.mm",
+  ]
+
+  deps = [ "//base" ]
+
+  frameworks = [
+    "Foundation.framework",
+    "WebKit.framework",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [ "built_in_web_extension_unittest.mm" ]
+  deps = [
+    ":extension",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+  frameworks = [ "WebKit.framework" ]
+}
