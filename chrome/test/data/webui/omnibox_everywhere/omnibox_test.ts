@@ -2162,7 +2162,12 @@ suite('OmniboxEverywhereProfileIconTest', () => {
         const container = profileIcon.shadowRoot.querySelector<HTMLElement>(
             '#profileContainer');
         assertTrue(!!container);
+        assertEquals('BUTTON', container.tagName);
         assertFalse(container.classList.contains('clickable'));
+        assertEquals('true', container.getAttribute('aria-disabled'));
+        assertEquals(
+            'Chrome profile Test Profile test@example.com',
+            container.getAttribute('aria-label'));
         assertEquals(
             'Chrome profile\nTest Profile\ntest@example.com',
             container.getAttribute('title'));
@@ -2174,7 +2179,7 @@ suite('OmniboxEverywhereProfileIconTest', () => {
         profileIcon.shadowRoot.querySelector<HTMLElement>('#profileContainer');
     assertTrue(!!container);
     assertTrue(container.classList.contains('clickable'));
-    assertEquals('pointer', window.getComputedStyle(container).cursor);
+    assertEquals('false', container.getAttribute('aria-disabled'));
     assertEquals(
         'Chrome profile\nTest Profile\ntest@example.com',
         container.getAttribute('title'));

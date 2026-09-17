@@ -99,6 +99,15 @@ export class OmniboxEverywhereProfileIconElement extends
         .join('\n');
   }
 
+  protected getProfileAriaLabel_(): string {
+    return [
+      this.i18n('profileTooltipHeader'),
+      this.profileName_,
+      this.profileEmail_,
+    ].filter(Boolean)
+        .join(' ');
+  }
+
   protected onProfileIconClick_() {
     if (!this.profilePickerEnabled_) {
       return;

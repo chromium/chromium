@@ -18,13 +18,21 @@
 
 #profileContainer {
   align-items: center;
+  background: transparent;
+  border: none;
   border-radius: 50%;
   box-sizing: border-box;
   display: flex;
   height: 28px;
   justify-content: center;
+  outline: none;
+  padding: 0;
   pointer-events: auto;
   width: 28px;
+}
+
+#profileContainer:focus-visible {
+  box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
 }
 
 #profileContainer.clickable {
