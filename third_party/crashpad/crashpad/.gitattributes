@@ -24,6 +24,7 @@
 *.gni text eol=lf
 *.go text eol=lf
 *.h text eol=lf
+*.lock text eol=lf
 *.m text eol=lf
 *.md text eol=lf
 *.mm text eol=lf
@@ -33,12 +34,12 @@
 *.py text eol=lf
 *.sh text eol=lf
 *.sym text eol=lf
+*.toml text eol=lf
 *.txt text eol=lf
 *.yaml text eol=lf
 .clang-format text eol=lf
 .gitattributes text eol=lf
 .gitignore text eol=lf
-.vpython text eol=lf
 /AUTHORS text eol=lf
 /CONTRIBUTORS text eol=lf
 /LICENSE text eol=lf

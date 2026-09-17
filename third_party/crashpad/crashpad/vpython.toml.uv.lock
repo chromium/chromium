@@ -1,0 +1,6 @@
+pywin32==306 ; sys_platform == 'win32' \
+    --hash=sha256:2fcf87bb2fd23fc3deea95c4c4237bf8541a6fdd8bf58df29c8d60cd451f568e \
+    --hash=sha256:73a0ccb4b4e4349c02af292bd5883d47d706987e5dee3a9ee294e82ecc1a2177 \
+    --hash=sha256:c18077c1b22baa6d45202d1edfe14afe7f0e5d747aad00fc5789b01cd24b817d \
+    --hash=sha256:e4c092e2589b5cf0d365849e73e02c391c1349958c5ac3e9d5ccb9a28e017b3a \
+    --hash=sha256:f8b6c5ed5af3af392785fc4aac51c5cb6cfaa75ba804c1d488b23ab1a1c04e00
