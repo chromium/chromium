@@ -623,8 +623,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
       web_contents, StorageAccessAPIServiceFactory::GetForBrowserContext(
                         web_contents->GetBrowserContext()));
 #if BUILDFLAG(IS_CHROMEOS)
-  // Do not create for Incognito mode.
-  if (!profile->IsIncognitoProfile()) {
+  // Do not create for Incognito and Isolated  mode.
+  if (!profile->IsPrimaryOTRProfileWithRegularParent()) {
     SupervisedUserNavigationObserver::CreateForWebContents(web_contents);
   }
 #else
