@@ -674,15 +674,6 @@ IN_PROC_BROWSER_TEST_P(SendTabToSelfContextMenuParamsTest, VerifyMenuType) {
       enhanced_ui_enabled &&
       display_reason == EntryPointDisplayReason::kOfferFeature;
 
-#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // The 'Offer Sign-In' flow is only relevant on platforms with DICE support.
-  // Skip this parameter on other platforms (like ChromeOS) where this state
-  // is not applicable in production.
-  if (display_reason == EntryPointDisplayReason::kOfferSignIn) {
-    GTEST_SKIP() << "Sign-in promo not supported on this platform.";
-  }
-#endif
-
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::NavigateToURL(web_contents, GURL("about:blank")));
 
@@ -713,7 +704,9 @@ INSTANTIATE_TEST_SUITE_P(
     SendTabToSelfContextMenuParamsTest,
     Combine(Bool(),  // enhanced_ui_enabled
             Values(EntryPointDisplayReason::kOfferFeature,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
                    EntryPointDisplayReason::kOfferSignIn,
+#endif
                    EntryPointDisplayReason::kInformNoTargetDevice)),
     [](const TestParamInfo<SendTabToSelfContextMenuParamsTest::ParamType>&
            info) {
