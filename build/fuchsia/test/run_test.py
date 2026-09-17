@@ -132,7 +132,7 @@ def main():
     use_orchestrate = (
         runner_args.orchestrate
         and not runner_args.device
-        and get_host_arch() == 'x64'
+        and get_host_arch() in {'x64', 'arm64'}
         and support_orchestrate(runner_args.test_type)
     )
 

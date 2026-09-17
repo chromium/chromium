@@ -1,0 +1,12 @@
+{
+  "emulator": {
+    "comment": "Relative paths are resolved relative to the build directory (e.g. out/Release) because orchestrate is run with CWD set to the build directory.",
+    "device": "arm64-emu-large",
+    "engine": "qemu",
+    "ffx_config": {
+      "sdk.overrides.qemu_internal": "../../third_party/qemu-linux-arm64/bin/qemu-system-aarch64"
+    },
+    "ffx_path": "../../third_party/fuchsia-sdk/sdk/tools/arm64/ffx",
+    "local_pb": "../../third_party/fuchsia-sdk/images/terminal/qemu-arm64/"
+  }
+}
