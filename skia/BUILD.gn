@@ -30,6 +30,7 @@ buildflag_header("buildflags") {
   flags = [
     "SKIA_SUPPORT_SKOTTIE=$skia_support_skottie",
     "SKIA_USE_DAWN=$skia_use_dawn",
+    "SKIA_USE_GRAPHITE_VULKAN=$skia_use_graphite_vulkan",
   ]
 }
 
@@ -1236,6 +1237,9 @@ if (skia_support_gpu) {
         "//third_party/dawn/src/dawn:proc",
       ]
     }
+    if (skia_use_graphite_vulkan) {
+      public += skia_graphite_vk_public
+    }
     deps = [ "//gpu/config:workaround_list" ]
   }
 
@@ -1244,12 +1248,13 @@ if (skia_support_gpu) {
   skia_source_set("skia_graphite_private") {
     sources = skia_graphite_sources + skia_graphite_precompile_sources +
               skia_sksl_graphite_modules_sources
-    if (skia_use_dawn) {
-      sources += skia_graphite_dawn_sources
-    }
     deps = [ "//gpu/config:workaround_list" ]
     if (skia_use_dawn) {
+      sources += skia_graphite_dawn_sources
       deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
+    }
+    if (skia_use_graphite_vulkan) {
+      sources += skia_graphite_vk_sources
     }
     visibility = [ ":skia" ]
   }

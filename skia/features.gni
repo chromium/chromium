@@ -6,13 +6,16 @@ import("//build/config/features.gni")
 import("//printing/buildflags/buildflags.gni")
 
 declare_args() {
-  # Enable experimental Skia Graphite Dawn backend. Enabled on platforms where
-  # the team has verified that at least basic rendering to the screen is
-  # working.
+  # Enable Skia Graphite Dawn backend. Enabled on platforms where the team has
+  # verified that at least basic rendering to the screen is working.
   skia_use_dawn =
       is_mac || is_win ||
       (is_android && target_cpu != "x86" && target_cpu != "x64") ||
       (is_ios && use_blink) || (is_linux && !is_castos) || is_desktop_android
+
+  # Enable experimental Graphite Vulkan backend.
+  skia_use_graphite_vulkan =
+      is_android && target_cpu != "x86" && target_cpu != "x64"
 }
 
 # Skia only needs to support GPU rasterization if we use the full Chromium
