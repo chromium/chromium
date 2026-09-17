@@ -558,9 +558,13 @@ void URLRequestHttpJob::CloseConnectionOnDestruction() {
 }
 
 int URLRequestHttpJob::NotifyConnectedCallback(
+    base::WeakPtr<URLRequestHttpJob> job,
     const TransportInfo& info,
     CompletionOnceCallback callback) {
-  return URLRequestJob::NotifyConnected(info, std::move(callback));
+  if (!job) {
+    return ERR_ABORTED;
+  }
+  return job->NotifyConnected(info, std::move(callback));
 }
 
 PrivacyMode URLRequestHttpJob::DeterminePrivacyMode() const {
@@ -747,8 +751,9 @@ void URLRequestHttpJob::StartTransactionInternal() {
     }
 
     if (rv == OK) {
-      transaction_->SetConnectedCallback(base::BindRepeating(
-          &URLRequestHttpJob::NotifyConnectedCallback, base::Unretained(this)));
+      transaction_->SetConnectedCallback(
+          base::BindRepeating(&URLRequestHttpJob::NotifyConnectedCallback,
+                              weak_factory_.GetWeakPtr()));
       transaction_->SetRequestHeadersCallback(request_headers_callback_);
       transaction_->SetEarlyResponseHeadersCallback(
           early_response_headers_callback_);

@@ -158,9 +158,11 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
       const std::optional<HttpRequestHeaders>& headers);
   // This just forwards the call to URLRequestJob::NotifyConnected().
   // We need it because that method is protected and cannot be bound in a
-  // callback in this class.
-  int NotifyConnectedCallback(const TransportInfo& info,
-                              CompletionOnceCallback callback);
+  // callback in this class. It is static because base::BindRepeating only
+  // supports binding WeakPtr directly to methods with a void return type.
+  static int NotifyConnectedCallback(base::WeakPtr<URLRequestHttpJob> job,
+                                     const TransportInfo& info,
+                                     CompletionOnceCallback callback);
 
   void RestartTransaction();
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)

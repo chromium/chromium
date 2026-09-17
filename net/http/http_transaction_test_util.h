@@ -264,6 +264,10 @@ class MockNetworkTransaction final : public HttpTransaction {
 
   RequestPriority priority() const { return priority_; }
 
+  const ConnectedCallback& connected_callback() const {
+    return connected_callback_;
+  }
+
   base::WeakPtr<MockNetworkTransaction> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }

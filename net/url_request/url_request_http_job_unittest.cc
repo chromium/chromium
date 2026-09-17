@@ -1194,6 +1194,18 @@ TEST_F(URLRequestHttpJobTest, SetTransactionPriority) {
   EXPECT_EQ(HIGHEST, network_layer().last_transaction()->priority());
 }
 
+TEST_F(URLRequestHttpJobTest, ConnectedCallbackAfterDestruction) {
+  req_->Start();
+  ASSERT_TRUE(network_layer().last_transaction());
+  HttpTransaction::ConnectedCallback callback =
+      network_layer().last_transaction()->connected_callback();
+  ASSERT_TRUE(callback);
+
+  req_.reset();
+
+  EXPECT_EQ(ERR_ABORTED, callback.Run(TransportInfo(), base::DoNothing()));
+}
+
 TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectTest) {
   // Setup HSTS state.
   context_->transport_security_state()->AddHSTS(
