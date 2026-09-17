@@ -17,6 +17,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
@@ -60,6 +61,9 @@ ContentSettingSiteRowView::ContentSettingSiteRowView(
 
   auto* title_label = AddChildView(std::make_unique<views::Label>(title));
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  // Elide from the head to ensure the registrable-domain suffix stays visible
+  // next to the permission toggle (see docs/security/url_display_guidelines).
+  title_label->SetElideBehavior(gfx::ELIDE_HEAD);
   title_label->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
