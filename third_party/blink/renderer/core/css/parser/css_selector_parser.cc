@@ -1116,7 +1116,8 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
   }
 
   PseudoId pseudo_id = result.GetPseudoId(result.GetPseudoType());
-  if (!PseudoElement::IsWebExposed(pseudo_id, parent)) {
+  if (pseudo_id == kPseudoIdNone ||
+      !PseudoElement::IsWebExposed(pseudo_id, parent)) {
     return kPseudoIdInvalid;
   }
 

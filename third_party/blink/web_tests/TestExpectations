@@ -1262,8 +1262,6 @@ crbug.com/491166375 external/wpt/css/css-variables/variable-supports-64.html [ F
 crbug.com/384930424 [ Win ] external/wpt/css/css-values/ident-function-substitution.html [ Pass Timeout ]
 crbug.com/384930424 external/wpt/css/css-values/using-font-relative-units-in-font-properties.html [ Crash ]
 
-crbug.com/562643747 external/wpt/css/cssom/getComputedStyle-pseudo-shadow.html [ Failure ]
-
 # ====== Style team owned tests to here ======
 
 crbug.com/384523570 fast/animation/scroll-animations/scroll-timeline-snapshotting.html [ Failure ]
