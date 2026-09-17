@@ -103,11 +103,7 @@ if (host_os == "mac" || is_apple) {
   assert(host_os == "mac" || !use_system_xcode)
 }
 
-# ChromeOS cros-test containers lack bundled uv until CHROMEOS_LKGM rolls past
-# https://crrev.com/c/8404605. Keep .vpython3 on ChromeOS until then.
-if (target_os != "chromeos") {
-  vpython_spec_files = [
-    "//vpython.toml",
-    "//vpython.toml.uv.lock",
-  ]
-}
+vpython_spec_files = [
+  "//vpython.toml",
+  "//vpython.toml.uv.lock",
+]
