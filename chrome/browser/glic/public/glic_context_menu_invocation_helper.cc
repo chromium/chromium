@@ -90,7 +90,17 @@ void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
       }
 #endif
 
-      glic_service->Invoke(std::move(options));
+      if (features::kGlicTextSelectionContextMenuAutoSubmit.Get()) {
+        // The selection itself is sent as additional context, so the prompt
+        // only provides the accompanying user message.
+        options.prompts.push_back(l10n_util::GetStringUTF8(
+            IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_TELL_ME));
+        glic_service->InvokeWithAutoSubmit(
+            glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+            std::move(options));
+      } else {
+        glic_service->Invoke(std::move(options));
+      }
       return;
     }
 

@@ -134,6 +134,8 @@ BASE_FEATURE(kGlicDynamicChromeTools, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicTextSelectionContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kGlicTextSelectionContextMenuMessageFirstFre{
     &kGlicTextSelectionContextMenu, "message_first_fre", false};
+const base::FeatureParam<bool> kGlicTextSelectionContextMenuAutoSubmit{
+    &kGlicTextSelectionContextMenu, "auto_submit", false};
 
 BASE_FEATURE(kGlicTieredRolloutV2, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kGlicTieredRolloutV2EligibleTiers{
