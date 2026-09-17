@@ -4055,6 +4055,7 @@ if (enable_java_templates) {
           forward_variables_from(invoker,
                                  "*",
                                  TESTONLY_AND_VISIBILITY + [ "deps" ])
+          forward_variables_from(invoker, [ "visibility" ])
           deps = _header_classpath_deps
           if (defined(invoker.deps)) {
             deps += invoker.deps
@@ -4073,7 +4074,12 @@ if (enable_java_templates) {
           }
 
           if (_enable_errorprone) {
-            source_files = _errorprone_source_files
+            # Sharded ErrorProne targets pass their own subset of
+            # `source_files`. Fall back to `_errorprone_source_files` for
+            # non-sharded targets.
+            if (!defined(source_files)) {
+              source_files = _errorprone_source_files
+            }
           } else {
             source_files = _source_files
             srcjar_deps = _srcjar_deps
@@ -4081,7 +4087,12 @@ if (enable_java_templates) {
           }
 
           if (source_files != []) {
-            target_sources_file = _target_sources_file
+            # Sharded ErrorProne targets pass a shard-specific
+            # `target_sources_file`. Fall back to `_target_sources_file` for
+            # non-sharded targets.
+            if (!defined(target_sources_file)) {
+              target_sources_file = _target_sources_file
+            }
           }
           if (!use_turbine) {
             chromium_code = _chromium_code
@@ -4166,21 +4177,84 @@ if (enable_java_templates) {
       }
 
       if (_enable_errorprone) {
-        compile_java_helper(_errorprone_target_name) {
-          forward_variables_from(invoker, _compile_java_forward_variables)
-          enable_errorprone = true
-          if (defined(invoker.errorprone_args)) {
-            if (!defined(xep_args)) {
-              xep_args = []
+        # Large Java targets (e.g. chrome_java with ~1,750 files) take over
+        # 150 seconds of CPU time when ErrorProne runs as a single monolithic
+        # action. To allow Ninja/Siso to schedule ErrorProne checks with fine-
+        # grained parallelism (and distribute them across remote RBE workers)
+        # while keeping enough files per shard to amortize JVM startup overhead,
+        # dynamically scale the shard count based on target size.
+        # `!_skip_header_jar` is required so each shard can resolve intra-target
+        # symbols compiled in other shards via the turbine header jar.
+        _num_ep_shards = 1
+        if (!_skip_header_jar) {
+          _num_ep_files = len(_errorprone_source_files)
+          if (_num_ep_files > 1600) {
+            _num_ep_shards = 8
+          } else if (_num_ep_files > 800) {
+            _num_ep_shards = 4
+          } else if (_num_ep_files > 200) {
+            _num_ep_shards = 2
+          }
+        }
+        _ep_use_sharding = _num_ep_shards > 1
+        if (_ep_use_sharding) {
+          # Generate independent compile_java_helper targets
+          # (__errorprone_shard0..N), each writing its own .sources file and
+          # running as a single-process javac action. Note that srcjar_deps are
+          # intentionally omitted for ErrorProne (generated types are resolved
+          # via header_jar_path/turbine, and warnings in generated code are
+          # disabled via -XepDisableWarningsInGeneratedCode), so sharding does
+          # not duplicate any srcjar extraction or compilation.
+          _ep_shards = split_list(_errorprone_source_files, _num_ep_shards)
+          _ep_shard_targets = []
+        } else {
+          _ep_shards = [ _errorprone_source_files ]
+        }
+
+        _s_idx = 0
+        foreach(_s_files, _ep_shards) {
+          if (_ep_use_sharding) {
+            _s_target = "${_errorprone_target_name}_shard${_s_idx}"
+            _ep_shard_targets += [ ":$_s_target" ]
+            _s_sources_file = "$target_gen_dir/${_s_target}.sources"
+            write_file(_s_sources_file, rebase_path(_s_files, root_build_dir))
+          } else {
+            not_needed([ "_s_files" ])
+            _s_target = _errorprone_target_name
+          }
+
+          compile_java_helper(_s_target) {
+            forward_variables_from(invoker, _compile_java_forward_variables)
+            enable_errorprone = true
+            if (_ep_use_sharding) {
+              visibility = [ ":$_errorprone_target_name" ]
+              source_files = _s_files
+              target_sources_file = _s_sources_file
             }
-            xep_args += invoker.errorprone_args
+            if (defined(invoker.errorprone_args)) {
+              if (!defined(xep_args)) {
+                xep_args = []
+              }
+              xep_args += invoker.errorprone_args
+            }
+            if (_kt_files != []) {
+              kotlin_jar_path = _kotlinc_jar_path
+            }
+            if (!_skip_header_jar) {
+              deps = [ ":$_header_target_name" ]
+              header_jar_path = _header_jar_path
+            }
           }
-          if (_kt_files != []) {
-            kotlin_jar_path = _kotlinc_jar_path
-          }
-          if (!_skip_header_jar) {
-            deps = [ ":$_header_target_name" ]
-            header_jar_path = _header_jar_path
+          _s_idx += 1
+        }
+
+        if (_ep_use_sharding) {
+          # Keep a group target under the original
+          # `${_main_target_name}__errorprone` name so Ninja validation edges
+          # transitively depend on all shards and external dependents continue
+          # to work.
+          group(_errorprone_target_name) {
+            deps = _ep_shard_targets
           }
         }
       }

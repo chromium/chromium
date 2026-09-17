@@ -560,7 +560,9 @@ def _RunCompiler(
     finally:
         # preserve temp_dir for rsp fie when --print-javac-command-line
         if not options.print_javac_command_line:
-            shutil.rmtree(temp_dir)
+            # Use ignore_errors=True so that any missing file during cleanup
+            # does not raise FileNotFoundError and mask the real javac failure.
+            shutil.rmtree(temp_dir, ignore_errors=True)
 
 
 def _ParseOptions(argv):
