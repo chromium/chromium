@@ -84,8 +84,11 @@ class JavascriptOptimizerBrowserTestMixin : public T {
     this->host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(&this->embedded_https_test_server());
 
+    // c.com is needed by iframe_cross_site.html, which embeds both b.com and
+    // c.com. Without a valid certificate, the c.com subframe would commit an
+    // error page rather than a real document.
     this->embedded_https_test_server().SetCertHostnames(
-        {"a.com", "*.a.com", "b.com", "*.b.com", "unrelated.com"});
+        {"a.com", "*.a.com", "b.com", "*.b.com", "c.com", "unrelated.com"});
     ASSERT_TRUE(this->embedded_https_test_server().Start());
   }
 
@@ -623,6 +626,12 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest, ProcessLimitWorks) {
   content::RenderFrameHost* a_com_frame = web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* b_com_frame = content::ChildFrameAt(a_com_frame, 0);
   content::RenderFrameHost* c_com_frame = content::ChildFrameAt(a_com_frame, 1);
+
+  // Both subframes must have committed real documents. An error page would be
+  // placed in the error page process when subframe error page isolation is
+  // enabled, which would defeat the process placement checks below.
+  ASSERT_FALSE(b_com_frame->IsErrorDocument());
+  ASSERT_FALSE(c_com_frame->IsErrorDocument());
 
   if (content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
     // When all sites are isolated, each frame should be in its own process.
