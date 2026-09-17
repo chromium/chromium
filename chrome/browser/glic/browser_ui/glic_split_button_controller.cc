@@ -136,7 +136,8 @@ void GlicSplitButtonController::OnGlicButtonClicked() {
     tabs::TabInterface* active_tab =
         TabListInterface::From(browser_)->GetActiveTab();
     if (!is_panel_showing && prompt_suggestion && !prompt_suggestion->empty() &&
-        active_tab) {
+        active_tab &&
+        GlicEnabling::IsEnabledForProfile(browser_->GetProfile())) {
       glic::GlicInvokeOptions options(glic::Target(*active_tab),
                                       GetInvocationSource(*view_delegate));
       options.prompts.push_back(std::move(*prompt_suggestion));

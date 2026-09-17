@@ -195,6 +195,41 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kProfileNotEnabled);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       ToggleOpensSidePanelForAnchoredIneligibleUser) {
+  GlicHistogramTester histogram_tester;
+  ScopedGlicCapability scoped_glic_capability(GetProfile(), false);
+  ASSERT_TRUE(GlicEnabling::HasConsentedForProfile(GetProfile()));
+  ASSERT_TRUE(GlicEnabling::ShouldShowGlicButton(GetProfile()));
+  ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(GetProfile()));
+  ASSERT_EQ(GlicEnabling::GetProfileReadyState(GetProfile()),
+            mojom::ProfileReadyState::kIneligibleAccount);
+
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  service()->ToggleUI(tab->GetBrowserWindowInterface(),
+                      /*prevent_close=*/false,
+                      mojom::InvocationSource::kTopChromeButton);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return coordinator().IsPanelShowingForBrowser(
+        *tab->GetBrowserWindowInterface());
+  }));
+  histogram_tester.ExpectBucketCount("Glic.InvokeResult",
+                                     GlicInvokeError::kProfileNotEnabled, 0);
+
+  // Toggling a second time should close the side panel cleanly.
+  service()->ToggleUI(tab->GetBrowserWindowInterface(),
+                      /*prevent_close=*/false,
+                      mojom::InvocationSource::kTopChromeButton);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !coordinator().IsPanelShowingForBrowser(
+        *tab->GetBrowserWindowInterface());
+  }));
+}
+
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithInvalidInstanceId) {
   base::test::TestFuture<GlicInvokeError> error_future;
   InstanceId invalid_id("non-existent-instance-id");
