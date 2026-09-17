@@ -120,34 +120,44 @@ std::vector<std::string> ReplaceUnavailableEntries(
 
 void FillGaps(std::vector<std::string>& ranking,
               const std::vector<std::string>& available,
+              base::span<const std::string> old_above_fold,
               size_t length) {
-  // Take the tail of the ranking (the part that won't be shown on the screen),
-  // remove items that aren't available on the system. These will be the first
-  // apps used for empty slots.
-  std::vector<std::string> unused_available =
-      base::ToVector(base::span(ranking).subspan(length));
-  std::erase_if(unused_available, [&](const std::string& e) {
-    return !std::ranges::contains(available, e);
-  });
-
-  // Now, append the rest of the system apps (those not already included) to
-  // unused_available. These will be the apps that can handle the share type and
-  // that are available on the system but not included in the old ranking at
-  // all, so these are the lowest priority targets, because they are likely to
-  // be things like "Bluetooth" which users almost never share to.
-  for (const auto& app : available) {
-    if (!std::ranges::contains(unused_available, app)) {
+  // Only above-the-fold slots have position stability. Harvest available
+  // candidates from below the fold first (in rank order), then remaining system
+  // apps (lowest priority targets like "Bluetooth").
+  auto above = base::span(ranking).first(old_above_fold.size());
+  std::vector<std::string> unused_available;
+  auto add_candidate = [&](const std::string& app) {
+    if (!app.empty() && !std::ranges::contains(above, app) &&
+        !std::ranges::contains(unused_available, app)) {
       unused_available.push_back(app);
     }
+  };
+  for (const auto& app : base::span(ranking).subspan(old_above_fold.size())) {
+    add_candidate(app);
   }
+  for (const auto& app : available) {
+    add_candidate(app);
+  }
+  ranking.resize(old_above_fold.size());
+  ranking.resize(length);
 
-  base::span<std::string> candidates(unused_available);
-
-  for (size_t i = 0; i < length && !candidates.empty(); ++i) {
-    std::string& candidate = candidates.front();
-    if (ranking[i].empty() && !candidate.empty()) {
-      ranking[i] = std::move(candidate);
-      candidates = candidates.subspan<1>();
+  for (size_t i = 0; i < length; ++i) {
+    if (!ranking[i].empty()) {
+      continue;
+    }
+    auto it = unused_available.begin();
+    if (i < old_above_fold.size()) {
+      it = std::ranges::find(unused_available, old_above_fold[i]);
+      if (it == unused_available.end()) {
+        it = std::ranges::find_if(unused_available, [&](const std::string& c) {
+          return !std::ranges::contains(old_above_fold, c);
+        });
+      }
+    }
+    if (it != unused_available.end()) {
+      ranking[i] = std::move(*it);
+      unused_available.erase(it);
     }
   }
 }
@@ -207,24 +217,6 @@ std::vector<std::string> MaybeUpdateRankingFromHistory(
   return new_ranking;
 }
 
-ShareRanking::Ranking AppendUpToLength(
-    const ShareRanking::Ranking& ranking,
-    const std::map<std::string, int>& history,
-    size_t length) {
-  std::vector<std::string> history_keys;
-  for (const auto& it : history)
-    history_keys.push_back(it.first);
-  ShareRanking::Ranking all = OrderByUses(history_keys, history);
-  ShareRanking::Ranking result = ranking;
-  while (result.size() < length && !all.empty()) {
-    if (!std::ranges::contains(result, all.front())) {
-      result.push_back(all.front());
-      all.erase(all.begin());
-    }
-  }
-  return result;
-}
-
 #if BUILDFLAG(IS_ANDROID)
 void RunJniRankCallback(base::android::ScopedJavaGlobalRef<jobject> callback,
                         JNIEnv* env,
@@ -238,7 +230,7 @@ void RunJniRankCallback(base::android::ScopedJavaGlobalRef<jobject> callback,
 bool EveryElementInList(const std::vector<std::string>& ranking,
                         const std::vector<std::string>& available) {
   for (const auto& e : ranking) {
-    if (!std::ranges::contains(available, e)) {
+    if (!e.empty() && !std::ranges::contains(available, e)) {
       return false;
     }
   }
@@ -249,7 +241,8 @@ bool ElementIndexesAreUnchanged(const std::vector<std::string>& display,
                                 const std::vector<std::string>& old,
                                 size_t length) {
   for (size_t i = 0u; i < display.size() && i < length; ++i) {
-    if (std::ranges::contains(base::span(old).subspan(/*offset=*/0u, length),
+    if (!display[i].empty() &&
+        std::ranges::contains(base::span(old).subspan(/*offset=*/0u, length),
                               display[i]) &&
         display[i] != old[i]) {
       return false;
@@ -409,29 +402,21 @@ void ShareRanking::ComputeRanking(
   CHECK_LE(fold, length);
   CHECK_GE(old_ranking.size(), length - 1);
 
+  const size_t above_fold = std::min(fold, length - 1);
+
   Ranking augmented_old_ranking = AddMissingItemsFromHistory(
       AddMissingItemsFromHistory(old_ranking, all_share_history),
       recent_share_history);
 
-  // If the fold and the length are equal, fill up to length - 1 from history,
-  // leaving the last slot for $more. If they aren't equal, the fold must be
-  // lower, so fill all the way up to the fold. After that, the code right below
-  // will fill the slots between fold and length - 1 with more entries, leaving
-  // the length - 1 slot for $more.
-  std::vector<std::string> new_ranking = MaybeUpdateRankingFromHistory(
-      augmented_old_ranking, all_share_history, recent_share_history,
-      fold < length ? fold : length - 1);
-
-  if (fold != length) {
-    new_ranking =
-        AppendUpToLength(new_ranking, recent_share_history, length - 1);
-    new_ranking = AppendUpToLength(new_ranking, all_share_history, length - 1);
-  }
+  std::vector<std::string> new_ranking =
+      MaybeUpdateRankingFromHistory(augmented_old_ranking, recent_share_history,
+                                    all_share_history, above_fold);
 
   Ranking computed_display_ranking =
       ReplaceUnavailableEntries(new_ranking, available_on_system);
 
-  FillGaps(computed_display_ranking, available_on_system, length - 1);
+  FillGaps(computed_display_ranking, available_on_system,
+           base::span(old_ranking).first(above_fold), length - 1);
 
   computed_display_ranking.resize(length);
   computed_display_ranking[length - 1] = kMoreTarget;
@@ -447,8 +432,9 @@ void ShareRanking::ComputeRanking(
     available.push_back(kMoreTarget);
 
     DCHECK(EveryElementInList(*display_ranking, available));
-    DCHECK(ElementIndexesAreUnchanged(*display_ranking, old_ranking, fold - 1));
-    DCHECK(AtMostOneSlotChanged(old_ranking, *persisted_ranking, fold - 1));
+    DCHECK(
+        ElementIndexesAreUnchanged(*display_ranking, old_ranking, above_fold));
+    DCHECK(AtMostOneSlotChanged(old_ranking, *persisted_ranking, above_fold));
 
     DCHECK(std::ranges::contains(*display_ranking, kMoreTarget));
   }

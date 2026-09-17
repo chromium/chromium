@@ -448,4 +448,263 @@ TEST_F(ShareRankingTest, TooFewTiles) {
   EXPECT_EQ(*ranking, std::vector<std::string>({"$more"}));
 }
 
+TEST_F(ShareRankingStaticTest, FillGapsDoesNotDuplicateAlreadyShownApps) {
+  const ShareRanking::Ranking current{
+      "aaa", "bbb", "ccc", "ddd", "eee",
+  };
+  // "aaa" and "ccc" are already above the fold; "bbb", "ddd", "eee" are
+  // unavailable. Available list starts with "aaa" and "ccc".
+  const std::vector<std::string> available{
+      "aaa",
+      "ccc",
+      "zzz",
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::ComputeRanking({}, {}, current, available, 4, 4, &displayed,
+                               &persisted);
+
+  ShareRanking::Ranking expected_displayed{"aaa", "zzz", "ccc", "$more"};
+  EXPECT_EQ(displayed, expected_displayed);
+}
+
+TEST_F(ShareRankingStaticTest, FewerAvailableAppsThanSlots) {
+  const ShareRanking::Ranking current{
+      "aaa", "bbb", "ccc", "ddd", "eee",
+  };
+  // Only 2 apps available on the system for 3 display slots.
+  const std::vector<std::string> available{
+      "aaa",
+      "ccc",
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::ComputeRanking({}, {}, current, available, 4, 4, &displayed,
+                               &persisted);
+
+  ShareRanking::Ranking expected_displayed{"aaa", "", "ccc", "$more"};
+  EXPECT_EQ(displayed, expected_displayed);
+}
+
+TEST_F(ShareRankingStaticTest, SwappedItemDoesNotShiftAboveFoldIndex) {
+  const ShareRanking::Ranking current{
+      "unavail",
+      "bbb",
+      "ccc",
+      "ddd",
+  };
+  const std::vector<std::string> available{
+      "bbb",
+      "ccc",
+      "ddd",
+      "zzz",
+  };
+  std::map<std::string, int> history = {
+      {"unavail", 2},
+      {"bbb", 5},
+      {"ccc", 1},
+      {"ddd", 10},
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::ComputeRanking(history, history, current, available, 4, 4,
+                               &displayed, &persisted);
+
+  // "ddd" replaces "ccc" at slot 2. Slot 0 ("unavail") must be filled by "zzz"
+  // rather than shifting "ccc" from slot 2 to slot 0.
+  ShareRanking::Ranking expected_displayed{"zzz", "bbb", "ddd", "$more"};
+  EXPECT_EQ(displayed, expected_displayed);
+}
+
+TEST_F(ShareRankingStaticTest,
+       DuplicateEntriesInAvailableDoNotDuplicateDisplay) {
+  const ShareRanking::Ranking current{
+      "aaa",
+      "unavail1",
+      "unavail2",
+      "ddd",
+  };
+  // "zzz" appears twice in available (e.g. handling both text and file
+  // intents).
+  const std::vector<std::string> available{
+      "aaa",
+      "zzz",
+      "zzz",
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::ComputeRanking({}, {}, current, available, 4, 4, &displayed,
+                               &persisted);
+
+  ShareRanking::Ranking expected_displayed{"aaa", "zzz", "", "$more"};
+  EXPECT_EQ(displayed, expected_displayed);
+}
+
+TEST_F(ShareRankingStaticTest,
+       UnavailablePromotedTargetRestoresDemotedToOwnSlot) {
+  const ShareRanking::Ranking current{
+      "unavail",
+      "bbb",
+      "ccc",
+      "unavail_high",
+  };
+  const std::vector<std::string> available{
+      "bbb",
+      "ccc",
+      "zzz",
+  };
+  std::map<std::string, int> history = {
+      {"unavail", 2},
+      {"bbb", 5},
+      {"ccc", 1},
+      {"unavail_high", 10},
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::ComputeRanking(history, history, current, available, 4, 4,
+                               &displayed, &persisted);
+
+  // "unavail_high" replaces "ccc" at slot 2 in new_ranking, but is unavailable.
+  // "ccc" must return to its original slot 2 rather than shifting to slot 0.
+  ShareRanking::Ranking expected_displayed{"zzz", "bbb", "ccc", "$more"};
+  EXPECT_EQ(displayed, expected_displayed);
+}
+
+TEST_F(ShareRankingStaticTest, FoldLessThanLengthPreservesAllAboveFoldSlots) {
+  const ShareRanking::Ranking current{
+      "unavail", "bbb", "ccc", "ddd", "eee",
+  };
+  const std::vector<std::string> available{
+      "bbb", "ccc", "ddd", "eee", "zzz",
+  };
+  std::map<std::string, int> history = {
+      {"unavail", 2}, {"bbb", 5}, {"ccc", 5}, {"ddd", 1}, {"eee", 10},
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::ComputeRanking(history, history, current, available, 4, 5,
+                               &displayed, &persisted);
+
+  // With fold=4 < length=5, slot 3 ("ddd") is above the fold. When "eee"
+  // replaces "ddd" at slot 3, "ddd" must not shift to slot 0.
+  ShareRanking::Ranking expected_displayed{"zzz", "bbb", "ccc", "eee", "$more"};
+  EXPECT_EQ(displayed, expected_displayed);
+}
+
+TEST_F(ShareRankingStaticTest,
+       UnavailablePromotedTargetDoesNotStarveOtherEmptySlots) {
+  const ShareRanking::Ranking current{
+      "aaa", "ccc", "unavail", "zzz", "unavail_high",
+  };
+  const std::vector<std::string> available{"aaa", "ccc", "zzz"};
+  std::map<std::string, int> history = {
+      {"aaa", 5}, {"ccc", 1}, {"unavail", 2}, {"zzz", 0}, {"unavail_high", 10},
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::ComputeRanking(history, history, current, available, 4, 4,
+                               &displayed, &persisted);
+
+  ShareRanking::Ranking expected_displayed{"aaa", "ccc", "zzz", "$more"};
+  EXPECT_EQ(displayed, expected_displayed);
+}
+
+TEST_F(ShareRankingStaticTest, BelowFoldAvailableAppFillsAboveFoldGap) {
+  const ShareRanking::Ranking current{
+      "unavail",
+      "bbb",
+      "ccc",
+      "ddd",
+  };
+  const std::vector<std::string> available{"bbb", "ccc", "ddd"};
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::ComputeRanking({}, {}, current, available, 3, 5, &displayed,
+                               &persisted);
+
+  // With fold=3 and length=5 (above_fold=3 < display_slots=4), "ddd" at slot 3
+  // (below the fold) must fill the empty above-the-fold slot 0 rather than
+  // leaving a blank gap above the fold.
+  ShareRanking::Ranking expected_displayed{"ddd", "bbb", "ccc", "", "$more"};
+  EXPECT_EQ(displayed, expected_displayed);
+}
+
+TEST_F(ShareRankingStaticTest,
+       BelowFoldUnavailablePromotedTargetRestoresDemotedToOwnSlot) {
+  const ShareRanking::Ranking current{
+      "aaa",
+      "bbb",
+      "ccc",
+      "unavail_high",
+  };
+  const std::vector<std::string> available{"aaa", "bbb", "ccc", "zzz"};
+  std::map<std::string, int> history = {
+      {"aaa", 5},
+      {"bbb", 5},
+      {"ccc", 1},
+      {"unavail_high", 10},
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::ComputeRanking(history, history, current, available, 3, 5,
+                               &displayed, &persisted);
+
+  // With fold=3 and length=5, "unavail_high" at below-the-fold slot 3 swaps
+  // with "ccc" at above-the-fold slot 2. Because "unavail_high" is unavailable,
+  // "ccc" must be restored to slot 2 rather than remaining demoted at slot 3.
+  ShareRanking::Ranking expected_displayed{"aaa", "bbb", "ccc", "zzz", "$more"};
+  EXPECT_EQ(displayed, expected_displayed);
+}
+
+TEST_F(ShareRankingStaticTest, EmptyStringsInAvailableIgnored) {
+  const ShareRanking::Ranking current{
+      "unavail",
+      "bbb",
+      "ccc",
+      "ddd",
+  };
+  const std::vector<std::string> available{"", "bbb", "ccc", "zzz"};
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::ComputeRanking({}, {}, current, available, 4, 4, &displayed,
+                               &persisted);
+
+  ShareRanking::Ranking expected_displayed{"zzz", "bbb", "ccc", "$more"};
+  EXPECT_EQ(displayed, expected_displayed);
+}
+
+TEST_F(ShareRankingStaticTest, EmptyStringsInOldRankingIgnored) {
+  const ShareRanking::Ranking current{"", "bbb", "ccc", "ddd"};
+  const std::vector<std::string> available{"bbb"};
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::ComputeRanking({}, {}, current, available, 4, 4, &displayed,
+                               &persisted);
+
+  ShareRanking::Ranking expected_displayed{"", "bbb", "", "$more"};
+  EXPECT_EQ(displayed, expected_displayed);
+}
+
+TEST_F(ShareRankingStaticTest, RecentHistoryTakesPrecedenceOverAllHistory) {
+  const ShareRanking::Ranking current{
+      "foo", "bar", "baz", "recent_app", "all_app",
+  };
+  const std::vector<std::string> available{
+      "foo", "bar", "baz", "recent_app", "all_app",
+  };
+  std::map<std::string, int> all_history = {
+      {"foo", 10}, {"bar", 10}, {"baz", 2}, {"recent_app", 1}, {"all_app", 20},
+  };
+  std::map<std::string, int> recent_history = {
+      {"foo", 5}, {"bar", 5}, {"baz", 1}, {"recent_app", 5}, {"all_app", 0},
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::ComputeRanking(all_history, recent_history, current, available,
+                               4, 4, &displayed, &persisted);
+
+  ShareRanking::Ranking expected_displayed{"foo", "bar", "recent_app", "$more"};
+  EXPECT_EQ(displayed, expected_displayed);
+}
+
 }  // namespace sharing
