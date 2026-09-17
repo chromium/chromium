@@ -1172,7 +1172,10 @@ TEST_F(WebContentsViewAuraTest, StartDragFromPrivilegedWebContents) {
   EXPECT_TRUE(exchange_data->IsFromPrivileged());
 }
 
-TEST_F(WebContentsViewAuraTest, RejectDragFromHiddenWebContents) {
+// Disabled because these tests CHECK fail if EndDrag is called, and
+// drags from hidden web contents trigger an EndDrag.
+// TODO(https://crbug.com/522564418): Figure out how to test this.
+TEST_F(WebContentsViewAuraTest, DISABLED_RejectDragFromHiddenWebContents) {
   const char kGoogleUrl[] = "https://google.com/";
 
   std::u16string url_string = u"https://google.com/";

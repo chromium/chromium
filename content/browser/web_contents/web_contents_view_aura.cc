@@ -822,12 +822,6 @@ void WebContentsViewAura::PrepareDropData(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void WebContentsViewAura::ClearDragStateOnStartFailure(
-    RenderWidgetHostImpl* source_rwh) {
-  drag_security_info_.OnDragEnded();
-  web_contents_->SystemDragEnded(source_rwh);
-}
-
 void WebContentsViewAura::EndDrag(
     base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
     DragOperation op) {
@@ -1231,7 +1225,7 @@ void WebContentsViewAura::StartDragging(
     return;
   }
   if (!aura::client::GetDragDropClient(root_window)) {
-    ClearDragStateOnStartFailure(source_rwh);
+    web_contents_->SystemDragEnded(source_rwh);
     return;
   }
 
@@ -1249,7 +1243,7 @@ void WebContentsViewAura::StartDragging(
   // Synchronous policy check.
   // If drag is not allowed, it means the policy blocked the action.
   if (!IsDragAllowedByDataControlPolicy(source_endpoint, drop_data)) {
-    ClearDragStateOnStartFailure(source_rwh);
+    web_contents_->SystemDragEnded(source_rwh);
     return;
   }
 
@@ -1282,7 +1276,7 @@ void WebContentsViewAura::StartDragging(
 
   // We need to enable recursive tasks on the message loop so we can get
   // updates while in the system DoDragDrop loop.
-  DragOperation result_op;
+  DragOperation result_op = DragOperation::kNone;
   {
     gfx::NativeView content_native_view = GetContentNativeView();
     // The renderer-supplied `event_info.location` is untrusted. On Windows, a
@@ -1297,7 +1291,7 @@ void WebContentsViewAura::StartDragging(
          !env->is_touch_down()) ||
         (event_info.source == ui::mojom::DragEventSource::kMouse &&
          !env->IsMouseButtonDown())) {
-      ClearDragStateOnStartFailure(source_rwh);
+      EndDrag(std::move(source_rwh_weak_ptr), result_op);
       return;
     }
     if (event_info.source == ui::mojom::DragEventSource::kTouch) {
@@ -1311,7 +1305,7 @@ void WebContentsViewAura::StartDragging(
     // visible.
     if (!content_native_view->GetBoundsInScreen().Contains(trusted_location) ||
         !content_native_view->IsVisible()) {
-      ClearDragStateOnStartFailure(source_rwh);
+      EndDrag(std::move(source_rwh_weak_ptr), result_op);
       return;
     }
     base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
