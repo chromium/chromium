@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_SHARE_THIS_TAB_SOURCE_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -20,6 +21,10 @@ class ShareThisTabSourceView : public views::View {
   METADATA_HEADER(ShareThisTabSourceView, views::View)
 
  public:
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  static bool IsTabSharingBlocked(content::WebContents* web_contents);
+#endif
+
   explicit ShareThisTabSourceView(
       base::WeakPtr<content::WebContents> web_contents);
   ShareThisTabSourceView(const ShareThisTabSourceView&) = delete;
@@ -28,6 +33,12 @@ class ShareThisTabSourceView : public views::View {
 
   void Activate();
   void StopRefreshing();
+  void UpdateBlockedState();
+
+  views::ImageView* GetImageViewForTesting() const { return image_view_; }
+  views::ImageView* GetFaviconViewForTesting() const { return favicon_view_; }
+  views::Label* GetBlockedLabelForTesting() const { return blocked_label_; }
+  bool IsRefreshingForTesting() const { return refreshing_; }
 
   // views::View:
   gfx::Size CalculatePreferredSize(
@@ -47,6 +58,7 @@ class ShareThisTabSourceView : public views::View {
 
   raw_ptr<views::Throbber> throbber_ = nullptr;
   raw_ptr<views::ImageView> image_view_ = nullptr;
+  raw_ptr<views::Label> blocked_label_ = nullptr;
   raw_ptr<views::ImageView> favicon_view_ = nullptr;
   raw_ptr<views::Label> tab_title_label_ = nullptr;
 
@@ -63,6 +75,8 @@ class ShareThisTabSourceView : public views::View {
 
   // Blocks refreshing when the dialog is closed.
   bool refreshing_ = false;
+
+  bool activated_ = false;
 
   base::WeakPtrFactory<ShareThisTabSourceView> weak_factory_{this};
 };

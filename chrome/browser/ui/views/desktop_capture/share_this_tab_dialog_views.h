@@ -7,11 +7,13 @@
 
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_source_view.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -44,6 +46,12 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
   bool Accept() override;
   bool Cancel() override;
   bool ShouldShowCloseButton() const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
+
+  void ActivateForTesting();
+  ShareThisTabSourceView* GetSourceViewForTesting() const {
+    return source_view_;
+  }
 
  private:
   void SetupSourceView();
@@ -53,6 +61,12 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
 
   bool ShouldAutoAccept() const;
   bool ShouldAutoReject() const;
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  void OnScreenshotAllowedUpdated(bool screenshot_allowed);
+
+  base::CallbackListSubscription screenshot_callback_subscription_;
+#endif
 
   const base::WeakPtr<content::WebContents> web_contents_;
   const std::u16string app_name_;
@@ -96,6 +110,8 @@ class ShareThisTabMediaPicker : public DesktopMediaPicker {
   void Show(const DesktopMediaPicker::Params& params,
             std::vector<std::unique_ptr<DesktopMediaList>> source_lists,
             DoneCallback done_callback) override;
+
+  ShareThisTabDialogView* GetDialogViewForTesting() const { return dialog_; }
 
  private:
   DoneCallback callback_;

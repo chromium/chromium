@@ -170,6 +170,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui:view_ids",
     "//chrome/browser/ui/views:title_origin_label",
     "//chrome/test:test_support",
+    "//components/enterprise/data_controls/core/browser:test_support",
     "//components/web_modal",
     "//content/public/browser",
     "//content/test:test_support",

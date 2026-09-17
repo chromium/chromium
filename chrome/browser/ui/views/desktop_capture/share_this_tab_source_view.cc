@@ -5,21 +5,33 @@
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_source_view.h"
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_page_user_data.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/favicon/content/content_favicon_util.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "media/base/video_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/background.h"
 #include "ui/views/layout/layout_provider.h"
 
 namespace {
@@ -73,6 +85,25 @@ void HandleCapturedBitmap(
 
 }  // namespace
 
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+// static
+bool ShareThisTabSourceView::IsTabSharingBlocked(
+    content::WebContents* web_contents) {
+  if (!base::FeatureList::IsEnabled(
+          enterprise_data_protection::kEnableTabSharingProtection) ||
+      !web_contents) {
+    return false;
+  }
+  if (enterprise_data_protection::IsScreenShareBlocked(web_contents)) {
+    return true;
+  }
+  auto* page_user_data =
+      enterprise_data_protection::DataProtectionPageUserData::GetForPage(
+          web_contents->GetPrimaryPage());
+  return page_user_data && !page_user_data->settings().allow_screenshots;
+}
+#endif
+
 ShareThisTabSourceView::ShareThisTabSourceView(
     base::WeakPtr<content::WebContents> web_contents)
     : web_contents_(web_contents),
@@ -98,6 +129,20 @@ ShareThisTabSourceView::ShareThisTabSourceView(
   image_view_->SetVisible(false);
   image_view_->SetBoundsRect(kPreviewRect);
 
+  blocked_label_ = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_BLOCKED_PREVIEW)));
+  blocked_label_->SetBoundsRect(kPreviewRect);
+  blocked_label_->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_CENTER);
+  blocked_label_->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
+  blocked_label_->SetEnabledColor(ui::kColorSysOnTonalContainer);
+  blocked_label_->SetBackground(views::CreateRoundedRectBackground(
+      ui::kColorSysTonalContainer,
+      views::LayoutProvider::Get()->GetCornerRadiusMetric(
+          views::Emphasis::kMedium)));
+  blocked_label_->SetBackgroundColor(ui::kColorSysTonalContainer);
+  blocked_label_->SetVisible(false);
+
   favicon_view_ = AddChildView(std::make_unique<views::ImageView>());
   favicon_view_->SetBoundsRect(kFaviconRect);
 
@@ -117,14 +162,38 @@ void ShareThisTabSourceView::Activate() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   throbber_->Stop();
   throbber_->SetVisible(false);
-  image_view_->SetVisible(true);
-  refreshing_ = true;
-  Refresh();
+  activated_ = true;
+  UpdateBlockedState();
 }
 
 void ShareThisTabSourceView::StopRefreshing() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   refreshing_ = false;
+}
+
+void ShareThisTabSourceView::UpdateBlockedState() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  UpdateFaviconAndTabTitle();
+
+  if (!activated_) {
+    return;
+  }
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  if (IsTabSharingBlocked(web_contents_.get())) {
+    StopRefreshing();
+    image_view_->SetVisible(false);
+    blocked_label_->SetVisible(true);
+    return;
+  }
+#endif
+
+  blocked_label_->SetVisible(false);
+  image_view_->SetVisible(true);
+  if (!refreshing_) {
+    refreshing_ = true;
+    Refresh();
+  }
 }
 
 gfx::Size ShareThisTabSourceView::CalculatePreferredSize(
@@ -141,6 +210,20 @@ void ShareThisTabSourceView::UpdateFaviconAndTabTitle() {
     return;
   }
 
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  if (IsTabSharingBlocked(web_contents_.get())) {
+    favicon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                          : vector_icons::kBusinessOldIcon,
+        ui::kColorIcon, kFaviconWidth));
+    favicon_view_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_TITLE));
+    tab_title_label_->SetText(web_contents_->GetTitle());
+    return;
+  }
+#endif
+
+  favicon_view_->SetTooltipText(std::u16string());
   const gfx::Image favicon =
       favicon::GetTabFaviconMaybeDesaturatedOnError(web_contents_.get());
   favicon_view_->SetImage(ui::ImageModel::FromImage(
@@ -159,6 +242,12 @@ void ShareThisTabSourceView::Refresh() {
   if (!web_contents_) {
     return;
   }
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  if (IsTabSharingBlocked(web_contents_.get())) {
+    return;
+  }
+#endif
 
   content::RenderFrameHost* const host = web_contents_->GetPrimaryMainFrame();
   if (!host) {
@@ -185,6 +274,16 @@ void ShareThisTabSourceView::OnCaptureHandled(
     const std::optional<gfx::ImageSkia>& image) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK((hash != last_hash_) == image.has_value());  // Only new frames passed.
+
+  if (!refreshing_) {
+    return;
+  }
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  if (IsTabSharingBlocked(web_contents_.get())) {
+    return;
+  }
+#endif
 
   UpdateFaviconAndTabTitle();
 

@@ -7,17 +7,29 @@
 #include <memory>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/functional/callback.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/desktop_capture/share_this_tab_dialog_views.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/data_controls/core/browser/test_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -204,3 +216,185 @@ IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
                         GetGenericScreenStyle().label_rect.height();
   EXPECT_EQ(scroll_view->bounds().height(), expected_height);
 }
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+class ShareThisTabDialogViewsProtectionBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  ShareThisTabDialogViewsProtectionBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        enterprise_data_protection::kEnableTabSharingProtection);
+  }
+
+  ~ShareThisTabDialogViewsProtectionBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/title1.html")));
+  }
+
+  void TearDownOnMainThread() override {
+    picker_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  ShareThisTabDialogView* dialog() {
+    return picker_ ? picker_->GetDialogViewForTesting() : nullptr;
+  }
+
+  ShareThisTabSourceView* source_view() {
+    return dialog() ? dialog()->GetSourceViewForTesting() : nullptr;
+  }
+
+  void SetScreenshotBlocked(bool blocked) {
+    if (blocked) {
+      data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
+            "name": "block",
+            "rule_id": "1234",
+            "sources": {"urls": ["*"]},
+            "restrictions": [{"class": "SCREENSHOT", "level": "BLOCK"}]
+          })"});
+    } else {
+      data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {});
+    }
+    GURL url = embedded_test_server()->GetURL(
+        base::StringPrintf("/title1.html#%d", ++nav_counter_));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  }
+
+  void ShowPicker() {
+    ASSERT_TRUE(web_contents());
+    DesktopMediaPicker::Params params{
+        DesktopMediaPicker::Params::RequestSource::kGetDisplayMedia};
+    params.web_contents = web_contents();
+    params.context = browser()->GetWindow()->GetNativeWindow();
+    params.app_name = u"Test App";
+    params.target_name = u"Target";
+    params.request_audio = true;
+
+    done_loop_.emplace();
+    picker_ = std::make_unique<ShareThisTabMediaPicker>();
+    picker_->Show(params, {},
+                  base::BindOnce(
+                      [](bool* done, base::RepeatingClosure quit_closure,
+                         DesktopMediaPicker::DoneCallbackArgumentType result) {
+                        *done = true;
+                        quit_closure.Run();
+                      },
+                      &picker_done_, done_loop_->QuitClosure()));
+    ASSERT_TRUE(dialog());
+    ASSERT_TRUE(source_view());
+  }
+
+ protected:
+  int nav_counter_ = 0;
+  bool picker_done_ = false;
+  std::optional<base::RunLoop> done_loop_;
+  std::unique_ptr<ShareThisTabMediaPicker> picker_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ShareThisTabDialogViewsProtectionBrowserTest,
+                       BlockedTabSuppressesPreviewAndDisablesOkButton) {
+  SetScreenshotBlocked(true);
+  ShowPicker();
+
+  // Before activation, OK button is disabled and blocked tooltip is present.
+  EXPECT_FALSE(dialog()->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  EXPECT_EQ(
+      source_view()->GetFaviconViewForTesting()->GetTooltipText(),
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_TITLE));
+
+  dialog()->ActivateForTesting();
+
+  // After activation, OK button remains disabled.
+  EXPECT_FALSE(dialog()->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+
+  // Blocked label is displayed in place of the live thumbnail.
+  EXPECT_TRUE(source_view()->GetBlockedLabelForTesting()->GetVisible());
+  EXPECT_EQ(
+      source_view()->GetBlockedLabelForTesting()->GetText(),
+      l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_BLOCKED_PREVIEW));
+  EXPECT_FALSE(source_view()->GetImageViewForTesting()->GetVisible());
+  EXPECT_FALSE(source_view()->IsRefreshingForTesting());
+
+  // Attempting to accept the dialog fails.
+  EXPECT_FALSE(dialog()->Accept());
+  EXPECT_FALSE(picker_done_);
+
+  // Dynamically unblock the tab via DataProtectionNavigationController
+  // callback.
+  SetScreenshotBlocked(false);
+
+  // OK button should now be enabled and preview restored.
+  EXPECT_TRUE(dialog()->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  EXPECT_FALSE(source_view()->GetBlockedLabelForTesting()->GetVisible());
+  EXPECT_TRUE(source_view()->GetImageViewForTesting()->GetVisible());
+  EXPECT_TRUE(source_view()->IsRefreshingForTesting());
+  EXPECT_TRUE(
+      source_view()->GetFaviconViewForTesting()->GetTooltipText().empty());
+
+  // Accepting the dialog should now succeed.
+  EXPECT_TRUE(dialog()->Accept());
+  done_loop_->Run();
+  EXPECT_TRUE(picker_done_);
+}
+
+IN_PROC_BROWSER_TEST_F(ShareThisTabDialogViewsProtectionBrowserTest,
+                       AllowedTabBecomesBlockedDynamically) {
+  ShowPicker();
+
+  dialog()->ActivateForTesting();
+
+  EXPECT_TRUE(dialog()->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  EXPECT_FALSE(source_view()->GetBlockedLabelForTesting()->GetVisible());
+  EXPECT_TRUE(source_view()->GetImageViewForTesting()->GetVisible());
+  EXPECT_TRUE(source_view()->IsRefreshingForTesting());
+
+  // Dynamically block the tab via DataProtectionNavigationController callback.
+  SetScreenshotBlocked(true);
+
+  EXPECT_FALSE(dialog()->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  EXPECT_TRUE(source_view()->GetBlockedLabelForTesting()->GetVisible());
+  EXPECT_FALSE(source_view()->GetImageViewForTesting()->GetVisible());
+  EXPECT_FALSE(source_view()->IsRefreshingForTesting());
+  EXPECT_EQ(
+      source_view()->GetFaviconViewForTesting()->GetTooltipText(),
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_TITLE));
+
+  EXPECT_FALSE(dialog()->Accept());
+  EXPECT_FALSE(picker_done_);
+
+  dialog()->CancelDialog();
+  done_loop_->Run();
+  EXPECT_TRUE(picker_done_);
+}
+
+IN_PROC_BROWSER_TEST_F(ShareThisTabDialogViewsProtectionBrowserTest,
+                       AutoAcceptBlockedWhenTabSharingBlocked) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kThisTabCaptureAutoAccept);
+
+  SetScreenshotBlocked(true);
+  ShowPicker();
+
+  dialog()->ActivateForTesting();
+
+  // Auto-accept must be suppressed when blocked.
+  EXPECT_FALSE(picker_done_);
+  EXPECT_FALSE(dialog()->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  EXPECT_TRUE(source_view()->GetBlockedLabelForTesting()->GetVisible());
+  EXPECT_FALSE(dialog()->Accept());
+  EXPECT_FALSE(picker_done_);
+
+  dialog()->CancelDialog();
+  done_loop_->Run();
+  EXPECT_TRUE(picker_done_);
+}
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
