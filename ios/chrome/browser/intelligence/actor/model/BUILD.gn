@@ -18,8 +18,6 @@ source_set("model") {
     "actor_service_factory.mm",
     "actor_task.h",
     "actor_task.mm",
-    "snackbar_actor_task_updates_observer.h",
-    "snackbar_actor_task_updates_observer.mm",
   ]
   public_deps = [ "//components/sessions:session_id" ]
   deps = [
@@ -44,20 +42,15 @@ source_set("model") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser:utils",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
-
-    # TODO(crbug.com/512521102): Remove these deps once the snackbar prototype
-    # is removed.
-    "//ios/chrome/browser/intelligence/bwg/ui",
-    "//ios/chrome/browser/shared/model/browser:utils",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/snackbar",
     "//url",
   ]
 
@@ -104,7 +97,6 @@ source_set("unit_tests") {
     "actor_service_unittest.mm",
     "actor_tab_helper_unittest.mm",
     "actor_task_unittest.mm",
-    "snackbar_actor_task_updates_observer_unittest.mm",
   ]
   deps = [
     ":model",
@@ -131,7 +123,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model:snapshot_source",
     "//ios/chrome/browser/snapshots/model:test_utils",
