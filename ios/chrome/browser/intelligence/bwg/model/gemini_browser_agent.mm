@@ -1756,9 +1756,23 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
     return;
   }
 
+  // `HideFloatyIfInvoked()` may be called when a view controller
+  // dismisses. If a view controller dismisses as part of presenting another
+  // view controller, the floaty should not show.
+  base::TimeDelta time_since_last_hidden =
+      base::TimeTicks::Now() - floaty_hidden_timestamp_;
+  bool triggered_during_transition =
+      time_since_last_hidden <= base::Seconds(kViewTransitionTime);
+
   if (IsInGeminiLiveMode()) {
     UpdateLiveModeUIAndMaybeContext();
     if (source == gemini::FloatyUpdateSource::WebNavigation) {
+      return;
+    }
+    // The persistent Live overlay must stay hidden while another view
+    // controller (e.g. Settings) is being presented.
+    if (source == gemini::FloatyUpdateSource::ViewTransition &&
+        triggered_during_transition) {
       return;
     }
     ForceShowFloatyIfInvoked();
@@ -1768,14 +1782,6 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
   if (!ShouldShowFloatyForSource(source)) {
     return;
   }
-
-  // `HideFloatyIfInvoked()` may be called when a view controller
-  // dismisses. If a view controller dismisses as part of presenting another
-  // view controller, the floaty should not show.
-  base::TimeDelta time_since_last_hidden =
-      base::TimeTicks::Now() - floaty_hidden_timestamp_;
-  bool triggered_during_transition =
-      time_since_last_hidden <= base::Seconds(kViewTransitionTime);
 
   // Web navigations should not be seen as a transition as an old WebState can
   // be hidden quickly followed by a new WebState being shown where
