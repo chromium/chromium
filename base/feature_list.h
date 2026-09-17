@@ -387,7 +387,9 @@ class BASE_EXPORT FeatureList {
       std::string_view feature_name) const;
 
   // Returns the names of all features associated with the field trial described
-  // by `controlling_trial_info`.
+  // by `controlling_trial_info`. Must be called after the instance has been
+  // initialized, since the lookup for non-runtime trials is served by an index
+  // built during initialization.
   base::flat_set<std::string> GetFeaturesAssociatedWithTrial(
       const ControllingTrialInfo& controlling_trial_info) const;
 
@@ -617,6 +619,11 @@ class BASE_EXPORT FeatureList {
     // An optional associated field trial, which will be activated when the
     // state of the feature is queried for the first time. Weak pointer to the
     // FieldTrial object that is owned by the FieldTrialList singleton.
+    //
+    // Must not be modified once the FeatureList is initialized: it is indexed
+    // by `trial_to_features_`, which is built during initialization and not
+    // updated afterwards. The mutators (RegisterOverride() and
+    // AssociateReportingFieldTrial()) CHECK(!initialized_) for this reason.
     raw_ptr<base::FieldTrial> field_trial;
 
     // Specifies whether the feature's state is overridden by |field_trial|.
@@ -646,6 +653,11 @@ class BASE_EXPORT FeatureList {
   // overrides can be registered. This is called by SetInstance() on the
   // singleton feature list that is being registered.
   void FinalizeInitialization();
+
+  // Builds `trial_to_features_` from `overrides_`. Called by
+  // FinalizeInitialization(), i.e. at the point where `overrides_` becomes
+  // immutable, so that the index stays valid for the lifetime of this object.
+  void BuildTrialToFeaturesIndex();
 
   // Returns whether the given |feature| is enabled. This is invoked by the
   // public FeatureList::IsEnabled() static function on the global singleton.
@@ -747,6 +759,22 @@ class BASE_EXPORT FeatureList {
   // Map from feature name to an OverrideEntry struct for the feature, if it
   // exists. These overrides are logically const after initialization.
   base::flat_map<std::string, OverrideEntry> overrides_;
+
+  // Reverse index of `overrides_`: maps a field trial name to the names of the
+  // features associated with that trial. Features with no associated field
+  // trial are not present. Built by BuildTrialToFeaturesIndex() during
+  // FinalizeInitialization() and const afterwards.
+  //
+  // The values are views into the keys of `overrides_`, which is safe because
+  // `overrides_` is not modified once `initialized_` is true: all mutators
+  // CHECK(!initialized_), and `overrides_size_when_indexed_` guards against the
+  // backing storage being reallocated.
+  base::flat_map<std::string, std::vector<std::string_view>> trial_to_features_;
+
+  // Size of `overrides_` when `trial_to_features_` was built. Used to CHECK
+  // that `overrides_` has not been mutated since, which would potentially
+  // leave the views in `trial_to_features_` dangling.
+  size_t overrides_size_when_indexed_ = 0;
 
   // Map from feature name to the state of the feature, if it is a runtime
   // mutable feature and has been enabled for runtime mutability.

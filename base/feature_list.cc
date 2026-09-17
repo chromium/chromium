@@ -11,6 +11,8 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <utility>
+#include <vector>
 
 #include "base/base_switches.h"
 #include "base/check_is_test.h"
@@ -703,11 +705,16 @@ FeatureList::GetControllingTrialInfoByFeatureName(
 
 base::flat_set<std::string> FeatureList::GetFeaturesAssociatedWithTrial(
     const ControllingTrialInfo& controlling_trial_info) const {
-  // TODO(crbug.com/482450632): Implement this more efficiently by maintaining
-  // a map of trials to associated features.
+  // The non-runtime lookup is served by `trial_to_features_`, which is only
+  // built once initialization is complete.
+  CHECK(initialized_);
+
   base::flat_set<std::string> associated_features;
   if (controlling_trial_info.is_runtime_override) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // TODO(crbug.com/482450632): Optimize this code path. This iterates over
+    // every runtime mutable features, so may become slow as more and more
+    // features are enabled for runtime mutability.
     for (const auto& [feature_name, runtime_override_info] :
          runtime_mutable_overrides_) {
       if (runtime_override_info.field_trial_name ==
@@ -716,12 +723,14 @@ base::flat_set<std::string> FeatureList::GetFeaturesAssociatedWithTrial(
       }
     }
   } else {
-    for (const auto& [feature_name, override_info] : overrides_) {
-      if (override_info.field_trial &&
-          override_info.field_trial->trial_name() ==
-              controlling_trial_info.trial_name) {
-        associated_features.insert(feature_name);
-      }
+    // `trial_to_features_` holds views into the keys of `overrides_`, so verify
+    // that `overrides_` has not been mutated since the index was built.
+    CHECK_EQ(overrides_.size(), overrides_size_when_indexed_);
+
+    auto it = trial_to_features_.find(controlling_trial_info.trial_name);
+    if (it != trial_to_features_.end()) {
+      associated_features =
+          base::flat_set<std::string>(it->second.begin(), it->second.end());
     }
   }
   return associated_features;
@@ -749,7 +758,10 @@ void FeatureList::AssociateReportingFieldTrial(
     const std::string& feature_name,
     OverrideState for_overridden_state,
     FieldTrial* field_trial) {
-  DCHECK(!initialized_);
+  // Mutating an entry's field trial after initialization would make
+  // `trial_to_features_` stale.
+  CHECK(!initialized_);
+
   DCHECK(
       IsFeatureOverriddenFromCommandLine(feature_name, for_overridden_state));
 
@@ -1153,7 +1165,24 @@ void FeatureList::FinalizeInitialization() {
   DCHECK(!initialized_);
   // Store the field trial list pointer for DCHECKing.
   field_trial_list_ = FieldTrialList::GetInstance();
+  BuildTrialToFeaturesIndex();
   initialized_ = true;
+}
+
+void FeatureList::BuildTrialToFeaturesIndex() {
+  // The index is built exactly once, from the final contents of `overrides_`.
+  CHECK(!initialized_);
+  CHECK(trial_to_features_.empty());
+
+  for (const auto& [feature_name, override_entry] : overrides_) {
+    if (!override_entry.field_trial) {
+      continue;
+    }
+    trial_to_features_[override_entry.field_trial->trial_name()].push_back(
+        feature_name);
+  }
+
+  overrides_size_when_indexed_ = overrides_.size();
 }
 
 bool FeatureList::IsFeatureEnabled(const Feature& feature) const {
@@ -1399,7 +1428,10 @@ void FeatureList::RegisterOverride(std::string_view feature_name,
                                    OverrideState overridden_state,
                                    FieldTrial* field_trial,
                                    bool replace_use_default_overrides) {
-  DCHECK(!initialized_);
+  // Registering an override after initialization would make
+  // `trial_to_features_` stale.
+  CHECK(!initialized_);
+
   DCheckOverridesAllowed();
   if (field_trial) {
     DCHECK(IsValidFeatureOrFieldTrialName(field_trial->trial_name()))
