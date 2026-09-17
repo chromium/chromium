@@ -757,13 +757,19 @@ WebUIReadOnlyOmnibox::OnKey(
       break;
 
     case ui::DomKey::ARROW_UP:
+      DCHECK(!control);
+      DCHECK(!alt);
       DCHECK(!shift);
+      DCHECK(!command);
       controller()->edit_model()->OnUpOrDownPressed(/*down=*/false,
                                                     /*page=*/false);
       break;
 
     case ui::DomKey::ARROW_DOWN:
+      DCHECK(!control);
+      DCHECK(!alt);
       DCHECK(!shift);
+      DCHECK(!command);
       controller()->edit_model()->OnUpOrDownPressed(/*down=*/true,
                                                     /*page=*/false);
       break;

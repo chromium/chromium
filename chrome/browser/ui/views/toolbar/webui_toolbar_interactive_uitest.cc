@@ -1874,6 +1874,9 @@ class WebUIToolbarFocusInteractiveUiTestBase
  public:
   void SetUpOnMainThread() override {
     WebUIAndViewsToolbarInteractiveUiTestBase::SetUpOnMainThread();
+    // Ignore window activation/deactivation changes to make Chrome-internal
+    // focus unaffected by OS events during test execution.
+    views::DisableActivationChangeHandlingForTests();
     // Enable/pin home and split-tabs buttons so they can be focused.
     browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
                                                     true);
@@ -2253,6 +2256,29 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
       // Press End -> focuses last pane element (Chrome Menu).
       SendKeyPress(WebUIToolbarId(), ui::VKEY_END),
       ExpectFocusedView(kToolbarAppMenuButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
+                       FocusNextPaneFromOmnibox) {
+  RunTestSequence(
+      WaitForToolbarLoaded(),
+      WaitForElementVisible(WebUIToolbarId(),
+                            DeepQuery({"toolbar-app", "#back"})),
+      // Focus the omnibox using IDC_FOCUS_LOCATION (Cmd+L / Ctrl+L).
+      Do(base::BindLambdaForTesting([this]() {
+        chrome::BrowserCommandController::From(browser())->ExecuteCommand(
+            IDC_FOCUS_LOCATION);
+      })),
+      ExpectFocusedWebUIElement("omnibox-text-input"),
+  // Press IDC_FOCUS_PREVIOUS_PANE shortcut (Cmd+Option+UpArrow on Mac,
+  // Shift+F6 elsewhere) to wrap from ToolbarView to ContentsWebView.
+#if BUILDFLAG(IS_MAC)
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_UP,
+                   ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN),
+#else
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_F6, ui::EF_SHIFT_DOWN),
+#endif
+      ExpectFocusedView(ContentsWebView::kContentsWebViewElementId));
 }
 
 class WebUIToolbarFocusFullRtlInteractiveUiTest

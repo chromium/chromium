@@ -4,7 +4,7 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
-import {assertEquals, assertGE, assertLE, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGE, assertLE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {BrowserProxyImpl, OmniboxTextColor, SearchboxBrowserProxy} from 'chrome://webui-toolbar.top-chrome/app.js';
@@ -1308,4 +1308,68 @@ suite('ReadonlyOmnibox', function() {
     assertEquals('', args[0].textInput.text);
     assertEquals(omnibox.$.textInput, omnibox.shadowRoot.activeElement);
   });
+
+  test(
+      'Arrow and Page keys with modifiers do not forward or preventDefault',
+      async () => {
+        uiHandler.reset();
+        const input = getTextInput();
+        const arrowModifiersList = [
+          {ctrlKey: true},
+          {altKey: true},
+          {shiftKey: true},
+          {metaKey: true},
+          {metaKey: true, altKey: true},
+        ];
+
+        for (const key of ['ArrowUp', 'ArrowDown']) {
+          for (const modifiers of arrowModifiersList) {
+            const ev = new KeyboardEvent('keydown', {
+              key,
+              cancelable: true,
+              ...modifiers,
+            });
+            input.dispatchEvent(ev);
+            await microtasksFinished();
+            assertFalse(ev.defaultPrevented);
+            assertEquals(0, uiHandler.getCallCount('onOmniboxAction'));
+          }
+        }
+
+        const pageModifiersList = [
+          {ctrlKey: true},
+          {altKey: true},
+          {shiftKey: true},
+        ];
+
+        for (const key of ['PageUp', 'PageDown']) {
+          for (const modifiers of pageModifiersList) {
+            const ev = new KeyboardEvent('keydown', {
+              key,
+              cancelable: true,
+              ...modifiers,
+            });
+            input.dispatchEvent(ev);
+            await microtasksFinished();
+            assertFalse(ev.defaultPrevented);
+            assertEquals(0, uiHandler.getCallCount('onOmniboxAction'));
+          }
+        }
+
+        // Plain keys without modifiers should preventDefault and forward.
+        for (const key of ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown']) {
+          uiHandler.reset();
+          const ev = new KeyboardEvent('keydown', {
+            key,
+            cancelable: true,
+          });
+          input.dispatchEvent(ev);
+          await microtasksFinished();
+          assertTrue(ev.defaultPrevented);
+          assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
+          const lastArgs = uiHandler.getArgs('onOmniboxAction').at(-1);
+          assertTrue(!!lastArgs.key);
+          assertEquals(key, lastArgs.key.key);
+        }
+      });
 });

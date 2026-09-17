@@ -101,8 +101,9 @@ class MojoOmniboxInputDelegate implements OmniboxInputDelegate {
     }
 
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-      // Shift+Down/Up does selection, plain Down/Up navigates suggestions.
-      if (!event.shiftKey) {
+      // Arrow keys navigate suggestions unless modifiers are pressed.
+      if (!event.ctrlKey && !event.altKey && !event.shiftKey &&
+          !event.metaKey) {
         event.preventDefault();
       } else {
         return;
