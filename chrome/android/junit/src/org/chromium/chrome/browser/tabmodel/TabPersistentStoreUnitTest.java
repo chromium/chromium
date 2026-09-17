@@ -1721,4 +1721,97 @@ public class TabPersistentStoreUnitTest {
         assertNull(mPersistentStore.getSeenTabUrlMapForTesting());
         mPersistentStore.restoreTab(details, /* tabState= */ null, /* setAsActive= */ false);
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testRestoreTabs_restoresRemainingBackgroundTabsAtEnd() {
+        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
+        when(mBackgroundTabPool.claimTabIdsWithoutPlaceholders()).thenReturn(Set.of(201));
+        when(mBackgroundTabPool.getLiveTab(201)).thenReturn(null);
+        BackgroundPoolTab remainingTab = mock(BackgroundPoolTab.class);
+        Tab restoredTab = mock(Tab.class);
+        when(restoredTab.getId()).thenReturn(201);
+        when(mBackgroundTabPool.loadTabByOriginalId(201)).thenReturn(remainingTab);
+        when(mNormalTabModel.getCount()).thenReturn(2);
+        when(remainingTab.attachTab(eq(mNormalTabModel), eq(2))).thenReturn(restoredTab);
+
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabOrchestratorType.TABBED,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ true,
+                        /* recordLegacyTabCountMetrics= */ true);
+
+        mPersistentStore.initializeRestoreVars(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+        mPersistentStore.restoreTabs(/* setActiveTab= */ false);
+
+        verify(mBackgroundTabPool).claimTabIdsWithoutPlaceholders();
+        verify(mBackgroundTabPool).loadTabByOriginalId(201);
+        verify(remainingTab).attachTab(eq(mNormalTabModel), eq(2));
+        verify(mBackgroundTabPool).cleanupPostRestore();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testRestoreTabs_claimsRemainingBackgroundTabsAndRestoresAtEnd() {
+        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
+        when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(101));
+        when(mBackgroundTabPool.claimTabIdsWithoutPlaceholders()).thenReturn(Set.of(201));
+        when(mBackgroundTabPool.getLiveTab(201)).thenReturn(null);
+
+        // Placeholder tab for 101
+        BackgroundPoolTab placeholderTab101 = mock(BackgroundPoolTab.class);
+        Tab restoredTab101 = mock(Tab.class);
+        when(restoredTab101.getId()).thenReturn(101);
+        when(mBackgroundTabPool.loadTabByPlaceholderId(101)).thenReturn(placeholderTab101);
+        when(placeholderTab101.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(restoredTab101);
+
+        // Remaining tab for 201
+        BackgroundPoolTab remainingTab201 = mock(BackgroundPoolTab.class);
+        Tab restoredTab201 = mock(Tab.class);
+        when(restoredTab201.getId()).thenReturn(201);
+        when(mBackgroundTabPool.loadTabByOriginalId(201)).thenReturn(remainingTab201);
+        when(mNormalTabModel.getCount()).thenReturn(1).thenReturn(2);
+        when(remainingTab201.attachTab(eq(mNormalTabModel), eq(1))).thenReturn(restoredTab201);
+
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabOrchestratorType.TABBED,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ true,
+                        /* recordLegacyTabCountMetrics= */ true);
+
+        mPersistentStore.initializeRestoreVars(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+
+        // Metadata restoration restores placeholder 101
+        TabRestoreDetails details101 =
+                new TabRestoreDetails(101, 0, TriState.FALSE, "https://google.com/", false);
+        mPersistentStore.restoreTabs(/* setActiveTab= */ false);
+        mPersistentStore.restoreTab(details101, null, /* setAsActive= */ false);
+
+        verify(mBackgroundTabPool).getAllPlaceholderTabIds();
+        verify(mBackgroundTabPool).loadTabByPlaceholderId(101);
+        verify(placeholderTab101).attachTab(eq(mNormalTabModel), eq(0));
+
+        // Remaining tab 201 claimed and restored at end of restore
+        verify(mBackgroundTabPool).claimTabIdsWithoutPlaceholders();
+        verify(mBackgroundTabPool).loadTabByOriginalId(201);
+        verify(remainingTab201).attachTab(eq(mNormalTabModel), eq(1));
+
+        // Calling restoreTab with 201 should be ignored because it is in mSeenTabIds
+        TabRestoreDetails details201 =
+                new TabRestoreDetails(201, 1, TriState.FALSE, "https://example.com/", false);
+        mPersistentStore.restoreTab(details201, null, /* setAsActive= */ false);
+        verify(mNormalTabCreator, never()).createNewTab(any(), eq(201), any(), anyInt());
+    }
 }

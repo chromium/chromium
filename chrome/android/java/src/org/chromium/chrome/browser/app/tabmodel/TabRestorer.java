@@ -137,6 +137,7 @@ class TabRestorer {
     private final TabModelSelector mTabModelSelector;
     private final Set<@TabId Integer> mTabIdsToIgnore = new HashSet<>();
     private Set<@TabId Integer> mBackgroundTabIds = Collections.emptySet();
+    private Set<@TabId Integer> mRemainingBackgroundTabIds = Collections.emptySet();
     private final boolean mIsFromRecreating;
 
     private @State int mState = State.EMPTY;
@@ -230,6 +231,9 @@ class TabRestorer {
 
         mBackgroundTabIds =
                 BackgroundTabRestorationHelper.fetchBackgroundTabIds(
+                        mOrchestratorType, mTabModelSelector, mIncognito, mIsAuthoritative);
+        mRemainingBackgroundTabIds =
+                BackgroundTabRestorationHelper.claimRemainingBackgroundTabIds(
                         mOrchestratorType, mTabModelSelector, mIncognito, mIsAuthoritative);
 
         // Special case for when cancellation happened during loading. In this case we cancel as
@@ -345,6 +349,7 @@ class TabRestorer {
 
     private void cancelInternal() {
         mBackgroundTabIds = Collections.emptySet();
+        mRemainingBackgroundTabIds = Collections.emptySet();
         if (mData != null) {
             // Delegate still needs access to the StorageLoadedData before it is cleaned up.
             mDelegate.onCancelled(mIncognito);
@@ -364,7 +369,11 @@ class TabRestorer {
         assert mState == State.FINISHING;
         mState = State.FINISHED;
 
+        BackgroundTabRestorationHelper.restoreRemainingBackgroundTabs(
+                mOrchestratorType, mTabModelSelector, mRemainingBackgroundTabIds, mIsAuthoritative);
+
         mBackgroundTabIds = Collections.emptySet();
+        mRemainingBackgroundTabIds = Collections.emptySet();
 
         // Delegate still needs access to the StorageLoadedData before it is cleaned up.
         mDelegate.onFinished(mIncognito);
