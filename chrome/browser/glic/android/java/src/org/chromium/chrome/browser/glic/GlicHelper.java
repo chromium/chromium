@@ -7,17 +7,15 @@ package org.chromium.chrome.browser.glic;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.provider.Settings;
 
 import androidx.annotation.IntDef;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -29,6 +27,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -74,14 +73,7 @@ public class GlicHelper {
                     public void onAction(@Nullable Object actionData) {
                         RecordUserAction.record(
                                 "Glic.Interaction.MicDisabledSnackbar.SettingsClicked");
-                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        intent.setData(
-                                Uri.parse(
-                                        "package:"
-                                                + ContextUtils.getApplicationContext()
-                                                        .getPackageName()));
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        IntentUtils.safeStartActivity(ContextUtils.getApplicationContext(), intent);
+                        GlicUiUtils.openAppDetailsSettings(ContextUtils.getApplicationContext());
                     }
 
                     @Override
@@ -94,6 +86,32 @@ public class GlicHelper {
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_GLIC_MIC_DISABLED)
                         .setAction(activity.getString(R.string.settings), null));
+    }
+
+    /**
+     * Shows a Chrome-owned modal dialog asking the user for microphone permission for Gemini.
+     *
+     * <p>This is a pre-prompt shown before the Android OS permission dialog so that the user
+     * understands why Gemini needs the microphone.
+     *
+     * @param windowAndroid The window hosting the activity.
+     * @param callback Invoked exactly once with true if the user taps "Allow", or false if the
+     *     dialog is rejected or dismissed for any other reason. The dialog can outlive the object
+     *     that requested it, so the native callback must be bound to a weak pointer (see
+     *     glic_helper_android.h).
+     */
+    @CalledByNative
+    static void showMicPermissionDialog(
+            WindowAndroid windowAndroid,
+            @JniType("base::OnceCallback<void(bool)>&&") Callback<Boolean> callback) {
+        Activity activity = windowAndroid.getActivity().get();
+        ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
+        if (activity == null || modalDialogManager == null) {
+            callback.onResult(false);
+            return;
+        }
+
+        new GlicMicPermissionDialogCoordinator(activity, modalDialogManager).show(callback);
     }
 
     /**

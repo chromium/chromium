@@ -4,7 +4,9 @@
 
 #include "chrome/browser/glic/android/glic_helper_android.h"
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
+#include "base/functional/callback.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -14,8 +16,19 @@ namespace glic {
 
 void ShowMicDisabledSnackbar(ui::WindowAndroid* window_android) {
   if (window_android && window_android->GetJavaObject()) {
-    Java_GlicHelper_showMicDisabledSnackbar(
-        base::android::AttachCurrentThread(), window_android->GetJavaObject());
+    Java_GlicHelper_showMicDisabledSnackbar(jni_zero::AttachCurrentThread(),
+                                            window_android->GetJavaObject());
+  }
+}
+
+void ShowMicPermissionDialog(ui::WindowAndroid* window_android,
+                             base::OnceCallback<void(bool)> callback) {
+  if (window_android && window_android->GetJavaObject()) {
+    Java_GlicHelper_showMicPermissionDialog(jni_zero::AttachCurrentThread(),
+                                            window_android->GetJavaObject(),
+                                            std::move(callback));
+  } else {
+    std::move(callback).Run(false);
   }
 }
 
