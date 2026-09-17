@@ -14,9 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
-#include "base/notreached.h"
 #include "base/supports_user_data.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -482,12 +480,6 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
 void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
     chrome::startup::IsProcessStartup process_startup,
     bool restore_tabbed_browser) {
-  if (StartupBrowserCreator::ShouldLoadProfileWithoutWindow(*command_line_)) {
-    // Checking the flags this late in the launch should be redundant.
-    // TODO(crbug.com/40216113): Remove by M104.
-    NOTREACHED();
-  }
-
   const bool is_incognito_or_guest = profile_->IsOffTheRecord();
   bool is_post_crash_launch = HasPendingUncleanExit(profile_);
 
