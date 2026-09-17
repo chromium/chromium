@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
+#include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/grit/generated_resources.h"
@@ -34,6 +35,26 @@
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_util.h"
 #endif
+
+namespace {
+
+// Respond to vertical tab strip collapse by hiding the panel.
+void OnVerticalTabStripAnimation(
+    OrganizerPanelController* panel_controller,
+    const BrowserAnimationController* animation_controller,
+    BrowserAnimationUpdate update) {
+  if (update != BrowserAnimationUpdate::kStarted) {
+    return;
+  }
+  const auto motion = animation_controller->GetCurrentMotion(
+      TabStripAnimations::kVerticalTabStrip);
+  if (motion == TabStripAnimations::kCollapseOnHover ||
+      motion == TabStripAnimations::kCollapse) {
+    panel_controller->SetOrganizerVisible(false);
+  }
+}
+
+}  // namespace
 
 DEFINE_USER_DATA(OrganizerPanelController);
 
@@ -127,6 +148,14 @@ OrganizerPanelController::OrganizerPanelController(
       scoped_unowned_user_data_(browser_window.GetUnownedUserDataHost(),
                                 *this) {
   UpdateOrganizerActionItem();
+
+  if (organizer_panel::ShouldShowOrganizerPanelInVerticalTabStrip()) {
+    vertical_tab_strip_animation_subscription_ =
+        BrowserAnimationController::From(&browser_window)
+            ->Subscribe(TabStripAnimations::kVerticalTabStrip,
+                        base::BindRepeating(&OnVerticalTabStripAnimation,
+                                            base::Unretained(this)));
+  }
 }
 
 OrganizerPanelController::~OrganizerPanelController() = default;

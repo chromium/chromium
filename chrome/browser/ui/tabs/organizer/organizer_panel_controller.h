@@ -89,7 +89,8 @@ class OrganizerPanelController {
   const raw_ptr<actions::ActionItem> root_action_item_;
 
   class PanelViewManager;
-  std::unique_ptr<PanelViewManager> panel_view_manager_;
+  const std::unique_ptr<PanelViewManager> panel_view_manager_;
+  base::CallbackListSubscription vertical_tab_strip_animation_subscription_;
 
   // Records the last time the panel was opened. Used for recording how long the
   // panel was open.
