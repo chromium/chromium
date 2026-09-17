@@ -28,6 +28,7 @@ android_library("ui_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/sync/SyncSettingsUtils.java",
     "java/src/org/chromium/chrome/browser/sync/ui/BatchUploadDialogCoordinator.java",
+    "java/src/org/chromium/chrome/browser/sync/ui/IdentityErrorCardViewBinder.java",
     "java/src/org/chromium/chrome/browser/sync/ui/batch_upload_card/BatchUploadCardBinder.java",
     "java/src/org/chromium/chrome/browser/sync/ui/batch_upload_card/BatchUploadCardCoordinator.java",
     "java/src/org/chromium/chrome/browser/sync/ui/batch_upload_card/BatchUploadCardMediator.java",
@@ -55,6 +56,7 @@ android_library("ui_java") {
     "//components/trusted_vault/android:java",
     "//google_apis/gaia/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_preference_preference_java",

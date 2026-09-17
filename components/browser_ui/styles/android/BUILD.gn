@@ -186,6 +186,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_drive_file_24dp.xml",
     "java/res/drawable/ic_drive_image_24dp.xml",
     "java/res/drawable/ic_edit_24dp.xml",
+    "java/res/drawable/ic_error.xml",
     "java/res/drawable/ic_extension_24dp.xml",
     "java/res/drawable/ic_fast_forward_white_24dp.xml",
     "java/res/drawable/ic_fast_rewind_white_24dp.xml",

@@ -4,16 +4,9 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -24,8 +17,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.SyncSettingsUtils;
-import org.chromium.chrome.browser.sync.SyncSettingsUtils.ErrorCardDetails;
 import org.chromium.chrome.browser.sync.SyncSettingsUtils.ErrorUiAction;
+import org.chromium.chrome.browser.sync.ui.IdentityErrorCardViewBinder;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
@@ -92,7 +85,11 @@ public class IdentityErrorCardPreference extends ChromeBasePreference
             return;
         }
         holder.setDividerAllowedAbove(false);
-        setupIdentityErrorCardView(holder.findViewById(R.id.signin_settings_card));
+        IdentityErrorCardViewBinder.bind(
+                getContext(),
+                holder.findViewById(R.id.signin_settings_card),
+                mIdentityError,
+                () -> mListener.onIdentityErrorCardButtonClicked(mIdentityError));
     }
 
     private void update() {
@@ -119,33 +116,6 @@ public class IdentityErrorCardPreference extends ChromeBasePreference
                 mListener.onIdentityErrorCardVisibilityChanged();
             }
         }
-    }
-
-    private void setupIdentityErrorCardView(View card) {
-        Context context = getContext();
-
-        ImageView image = card.findViewById(R.id.signin_settings_card_icon);
-        image.setContentDescription(
-                context.getString(R.string.accessibility_account_management_row_account_error));
-        image.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_error));
-
-        TextView error = card.findViewById(R.id.signin_settings_card_description);
-        Button button = card.findViewById(R.id.signin_settings_card_button);
-
-        ErrorCardDetails errorCardDetails =
-                assumeNonNull(SyncSettingsUtils.getIdentityErrorErrorCardDetails(mIdentityError));
-        error.setText(context.getString(errorCardDetails.message));
-        button.setText(context.getString(errorCardDetails.buttonLabel));
-
-        button.setOnClickListener(
-                v -> {
-                    RecordHistogram.recordEnumeratedHistogram(
-                            "Sync.IdentityErrorCard"
-                                    + SyncSettingsUtils.getHistogramSuffixForError(mIdentityError),
-                            ErrorUiAction.BUTTON_CLICKED,
-                            ErrorUiAction.NUM_ENTRIES);
-                    mListener.onIdentityErrorCardButtonClicked(mIdentityError);
-                });
     }
 
     /** {@link SyncService.SyncStateChangedListener} implementation. */

@@ -11,7 +11,6 @@ import android.content.IntentSender;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -71,17 +70,6 @@ public class SyncSettingsUtils {
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncErrorUiAction)
-
-    // Class to wrap the details of an error card.
-    public static class ErrorCardDetails {
-        public @StringRes int message;
-        public @StringRes int buttonLabel;
-
-        public ErrorCardDetails(@StringRes int message, @StringRes int buttonLabel) {
-            this.message = message;
-            this.buttonLabel = buttonLabel;
-        }
-    }
 
     /** Returns the type of the sync error */
     public static @UserActionableError int getSyncError(@Nullable Profile profile) {
@@ -313,59 +301,6 @@ public class SyncSettingsUtils {
         }
         // The preference cannot be fulfilled, use the other displayable string.
         return canShowFullName ? fullName : accountEmail;
-    }
-
-    /**
-     * Gets text for the identity error card.
-     *
-     * @param error The identity error.
-     * @return A ErrorCardDetails instance containing the error message and the button text for the
-     *     identity error.
-     */
-    public static @Nullable ErrorCardDetails getIdentityErrorErrorCardDetails(
-            @UserActionableError int error) {
-        switch (error) {
-            case UserActionableError.NEEDS_PASSPHRASE:
-                return new ErrorCardDetails(
-                        R.string.identity_error_card_passphrase_required,
-                        R.string.identity_error_card_button_passphrase_required);
-            case UserActionableError.NEEDS_CLIENT_UPGRADE:
-                return new ErrorCardDetails(
-                        R.string.identity_error_card_client_out_of_date,
-                        R.string.identity_error_card_button_client_out_of_date);
-            case UserActionableError.SIGN_IN_NEEDS_UPDATE:
-                return new ErrorCardDetails(
-                        R.string.identity_error_card_auth_error,
-                        R.string.identity_error_card_button_verify);
-            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
-                return new ErrorCardDetails(
-                        R.string.identity_error_card_sync_retrieve_keys_for_everything,
-                        R.string.identity_error_card_button_verify);
-            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
-                return new ErrorCardDetails(
-                        R.string.identity_error_card_sync_retrieve_keys_for_passwords,
-                        R.string.identity_error_card_button_verify);
-            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-                return new ErrorCardDetails(
-                        R.string.identity_error_card_sync_recoverability_degraded_for_everything,
-                        R.string.identity_error_card_button_verify);
-            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                return new ErrorCardDetails(
-                        R.string.identity_error_card_sync_recoverability_degraded_for_passwords,
-                        R.string.identity_error_card_button_verify);
-            case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
-                return new ErrorCardDetails(
-                        R.string.sync_error_card_outdated_gms,
-                        R.string.password_manager_outdated_gms_positive_button);
-            case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
-                return new ErrorCardDetails(
-                        R.string.bookmark_sync_limit_error_description, R.string.learn_more);
-            case UserActionableError.NONE:
-                assert false; // NOTREACHED()
-            // fall through
-            default:
-                return null;
-        }
     }
 
     /**
