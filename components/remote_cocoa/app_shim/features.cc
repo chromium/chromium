@@ -21,4 +21,11 @@ BASE_FEATURE(kImmersiveFullscreenOverlayWindowDebug,
 
 BASE_FEATURE(kSuppressAppKitFrameAdjustmentsDuringMoveLoop,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, file dialogs opened from companion or auxiliary windows
+// (windows with NSWindowCollectionBehaviorFullScreenAuxiliary) are presented
+// as sheets attached to the parent window. This allows the file chooser to
+// display reliably when floating over native macOS fullscreen spaces.
+BASE_FEATURE(kMacFullScreenAuxiliaryFileDialog,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace remote_cocoa::features

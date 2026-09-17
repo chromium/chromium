@@ -185,7 +185,10 @@ test("shell_dialogs_unittests") {
   }
 
   if (is_mac) {
-    deps += [ "//components/remote_cocoa/app_shim" ]
+    deps += [
+      "//components/remote_cocoa/app_shim",
+      "//components/remote_cocoa/app_shim:features",
+    ]
   }
 
   # TODO: Remove once http://crbug.com/951419 is fixed.
