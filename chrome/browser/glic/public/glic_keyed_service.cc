@@ -98,6 +98,7 @@
 #include "chrome/browser/glic/android/glic_keyed_service_android.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_delegate_impl.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #else
 #include "chrome/browser/glic/glic_metrics.h"
@@ -587,7 +588,10 @@ GlicNudgeController* GlicKeyedService::GetOrCreateNudgeController(
     return it->second->nudge_controller();
   }
 
-  auto controller = std::make_unique<GlicSplitButtonController>(browser, this);
+  auto button_delegate =
+      std::make_unique<GlicSplitButtonDelegateImpl>(browser, this);
+  auto controller = std::make_unique<GlicSplitButtonController>(
+      browser, std::move(button_delegate));
   GlicNudgeController* nudge_controller = controller->nudge_controller();
   button_controllers_[browser] = std::move(controller);
 

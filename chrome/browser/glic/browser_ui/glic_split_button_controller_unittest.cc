@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/browser_ui/glic_button_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 
 #include <memory>
 #include <utility>
@@ -10,12 +10,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_delegate_impl.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_view_delegate.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -57,11 +61,9 @@ class TestingGlicInstanceCoordinator
 
   void NotifyShowHide() { global_show_hide_subscriptions_.Notify(); }
 
-
  private:
   base::RepeatingClosureList global_show_hide_subscriptions_;
 };
-
 
 // We subclass here since we mock functions that need to return references
 // to concrete instances that not all unit tests may want to provide.
@@ -93,7 +95,6 @@ class MockGlicKeyedServiceForButtonController : public MockGlicKeyedService {
     return *window_controller_;
   }
 
-
   // For these tests, pretend only one browser can show the panel at a time.
   void SimulatePanelShownForBrowser(BrowserWindowInterface* bwi) {
     browser_with_open_panel_ = bwi;
@@ -105,7 +106,7 @@ class MockGlicKeyedServiceForButtonController : public MockGlicKeyedService {
   std::unique_ptr<TestingGlicInstanceCoordinator> window_controller_;
 };
 
-class MockGlicButtonControllerDelegate
+class MockGlicSplitButtonViewDelegate
     : public glic::GlicSplitButtonViewDelegate {
  public:
   void SetGlicShowState(bool show) override { show_state_ = show; }
@@ -123,8 +124,10 @@ class MockGlicButtonControllerDelegate
 
 }  // namespace
 
-class GlicButtonControllerTest : public testing::Test {
+class GlicSplitButtonControllerTest : public testing::Test {
  public:
+  GlicSplitButtonControllerTest() = default;
+
   void SetUp() override {
     // Enable kGlic by default for testing.
     scoped_feature_list_.InitWithFeatures(
@@ -132,37 +135,49 @@ class GlicButtonControllerTest : public testing::Test {
             features::kGlic,
             features::kGlicRollout,
         },
-        {});
+        {
+            features::kGlicActor,
+            features::kGlicActorUi,
+        });
 
     raw_ptr<TestingProfileManager> testing_profile_manager =
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
             /*profile_manager=*/true);
 
 #if BUILDFLAG(IS_CHROMEOS)
+    // glic can run only in User session, so it needs to set up user session
+    // manually on ChromeOS.
     glic_user_session_test_helper_.PreProfileSetUp(
         testing_profile_manager->profile_manager());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     profile_ = testing_profile_manager->CreateTestingProfile("profile");
 
-    actor_keyed_service_ =
-        std::make_unique<actor::ActorKeyedServiceFake>(profile_);
+    actor::ActorKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        profile_, base::BindRepeating([](content::BrowserContext* context)
+                                          -> std::unique_ptr<KeyedService> {
+          return std::make_unique<actor::ActorKeyedServiceFake>(
+              static_cast<Profile*>(context));
+        }));
 
     mock_glic_service_ =
         std::make_unique<MockGlicKeyedServiceForButtonController>(
             profile_, identity_test_environment.identity_manager(),
             testing_profile_manager->profile_manager(), &glic_profile_manager_,
-            /*contextual_cueing_service=*/nullptr, actor_keyed_service_.get());
+            /*contextual_cueing_service=*/nullptr,
+            actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_));
 
     mock_browser_window_interface_ =
-        std::make_unique<MockBrowserWindowInterface>();
+        std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
     ON_CALL(*mock_browser_window_interface_, GetProfile())
         .WillByDefault(testing::Return(profile_));
 
     histograms_ = std::make_unique<base::HistogramTester>();
 
     glic_split_button_controller_ = std::make_unique<GlicSplitButtonController>(
-        mock_browser_window_interface_.get(), mock_glic_service_.get());
+        mock_browser_window_interface_.get(),
+        std::make_unique<GlicSplitButtonDelegateImpl>(
+            mock_browser_window_interface_.get(), mock_glic_service_.get()));
     glic_split_button_controller_->SetHorizontalTabsDelegate(
         &mock_tab_strip_glic_controller_delegate_);
     glic_split_button_controller_->SetVerticalTabsDelegate(
@@ -175,6 +190,8 @@ class GlicButtonControllerTest : public testing::Test {
         optimization_guide::prefs::kGeminiSettings,
         std::to_underlying(
             optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
+    // TODO(crbug.com/393226462): Move pref initialization before controller
+    // creation so pref changes fire callbacks properly.
     prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
   }
 
@@ -183,7 +200,6 @@ class GlicButtonControllerTest : public testing::Test {
     mock_browser_window_interface_.reset();
 
     mock_glic_service_.reset();
-    actor_keyed_service_.reset();
     profile_ = nullptr;
 
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
@@ -194,19 +210,21 @@ class GlicButtonControllerTest : public testing::Test {
     scoped_feature_list_.Reset();
   }
 
-  GlicButtonController* controller() {
-    return GlicButtonController::From(browser_window_interface());
+  GlicSplitButtonController* controller() {
+    return GlicSplitButtonController::From(browser_window_interface());
   }
 
-  MockGlicButtonControllerDelegate* tab_strip_controller_delegate() {
+  MockGlicSplitButtonViewDelegate* tab_strip_controller_delegate() {
     return &mock_tab_strip_glic_controller_delegate_;
   }
 
-  MockGlicButtonControllerDelegate* toolbar_controller_delegate() {
+  MockGlicSplitButtonViewDelegate* toolbar_controller_delegate() {
     return &mock_toolbar_glic_controller_delegate_;
   }
 
   base::HistogramTester& histograms() { return *histograms_; }
+
+  void reset_controller() { glic_split_button_controller_.reset(); }
 
   Profile* profile() { return profile_; }
   MockGlicKeyedServiceForButtonController* glic_keyed_service() {
@@ -218,9 +236,8 @@ class GlicButtonControllerTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
   GlicUnitTestEnvironment glic_test_env_;
-  content::BrowserTaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // glic can run only in User session, so it needs to set up user session
@@ -231,8 +248,8 @@ class GlicButtonControllerTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_environment;
 
   GlicProfileManager glic_profile_manager_;
-  MockGlicButtonControllerDelegate mock_tab_strip_glic_controller_delegate_;
-  MockGlicButtonControllerDelegate mock_toolbar_glic_controller_delegate_;
+  MockGlicSplitButtonViewDelegate mock_tab_strip_glic_controller_delegate_;
+  MockGlicSplitButtonViewDelegate mock_toolbar_glic_controller_delegate_;
   std::unique_ptr<base::HistogramTester> histograms_;
   std::unique_ptr<actor::ActorKeyedServiceFake> actor_keyed_service_;
   std::unique_ptr<MockGlicKeyedServiceForButtonController> mock_glic_service_;
@@ -242,7 +259,7 @@ class GlicButtonControllerTest : public testing::Test {
 
 // Test that settings changes are reflected in the show state of the controller
 // delegate.
-TEST_F(GlicButtonControllerTest, GlicSettings) {
+TEST_F(GlicSplitButtonControllerTest, GlicSettings) {
   PrefService* prefs = profile()->GetPrefs();
 
   prefs->SetInteger(
@@ -278,7 +295,7 @@ TEST_F(GlicButtonControllerTest, GlicSettings) {
   EXPECT_FALSE(toolbar_controller_delegate()->show_state());
 }
 
-TEST_F(GlicButtonControllerTest, PanelStateChangedSameBrowser) {
+TEST_F(GlicSplitButtonControllerTest, PanelStateChangedSameBrowser) {
   EXPECT_TRUE(tab_strip_controller_delegate()->show_state());
   EXPECT_TRUE(toolbar_controller_delegate()->show_state());
   EXPECT_FALSE(tab_strip_controller_delegate()->panel_open());
@@ -294,7 +311,7 @@ TEST_F(GlicButtonControllerTest, PanelStateChangedSameBrowser) {
   EXPECT_FALSE(toolbar_controller_delegate()->panel_open());
 }
 
-TEST_F(GlicButtonControllerTest, RecordStartupMetrics) {
+TEST_F(GlicSplitButtonControllerTest, RecordStartupMetrics) {
   // Initial state: IsEnabled() is false because of lack sign in.
   histograms().ExpectUniqueSample("Glic.ProfileEnablement.IsEnabled.Startup",
                                   false, 1);
@@ -308,10 +325,18 @@ TEST_F(GlicButtonControllerTest, RecordStartupMetrics) {
                                   false, 1);
 }
 
-TEST_F(GlicButtonControllerTest, FromBrowserWindowInterface) {
-  EXPECT_EQ(GlicButtonController::From(browser_window_interface()),
+TEST_F(GlicSplitButtonControllerTest, FromBrowserWindowInterface) {
+  EXPECT_EQ(GlicSplitButtonController::From(browser_window_interface()),
             controller());
-  EXPECT_EQ(GlicButtonController::From(nullptr), nullptr);
+  EXPECT_EQ(GlicSplitButtonController::From(nullptr), nullptr);
+}
+
+TEST_F(GlicSplitButtonControllerTest, SetActorNudgeControllerForTesting) {
+  auto mock_actor_nudge = std::make_unique<GlicActorNudgeController>(
+      browser_window_interface(), controller());
+  GlicActorNudgeController* raw_nudge = mock_actor_nudge.get();
+  controller()->SetActorNudgeControllerForTesting(std::move(mock_actor_nudge));
+  EXPECT_EQ(controller()->actor_nudge_controller(), raw_nudge);
 }
 
 }  // namespace glic
