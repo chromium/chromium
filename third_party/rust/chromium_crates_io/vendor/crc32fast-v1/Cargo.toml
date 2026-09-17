@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63"
 name = "crc32fast"
-version = "1.5.1"
+version = "1.5.2"
 authors = [
     "Sam Rijs <srijs@airpost.net>",
     "Alex Crichton <alex@alexcrichton.com>",

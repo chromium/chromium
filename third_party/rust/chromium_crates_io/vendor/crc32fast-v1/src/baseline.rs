@@ -27,6 +27,31 @@ impl State {
     }
 }
 
+/// Folds the first 16 bytes of `block` into `crc`.
+///
+/// `block` must be at least 16 bytes long. The decode is explicitly
+/// little-endian, so the result is identical on big-endian targets.
+#[inline(always)]
+fn fold_16(crc: u32, block: &[u8]) -> u32 {
+    let w0 = u32::from_le_bytes([block[0], block[1], block[2], block[3]]) ^ crc;
+    CRC32_TABLE[0x0][block[0xf] as usize]
+        ^ CRC32_TABLE[0x1][block[0xe] as usize]
+        ^ CRC32_TABLE[0x2][block[0xd] as usize]
+        ^ CRC32_TABLE[0x3][block[0xc] as usize]
+        ^ CRC32_TABLE[0x4][block[0xb] as usize]
+        ^ CRC32_TABLE[0x5][block[0xa] as usize]
+        ^ CRC32_TABLE[0x6][block[0x9] as usize]
+        ^ CRC32_TABLE[0x7][block[0x8] as usize]
+        ^ CRC32_TABLE[0x8][block[0x7] as usize]
+        ^ CRC32_TABLE[0x9][block[0x6] as usize]
+        ^ CRC32_TABLE[0xa][block[0x5] as usize]
+        ^ CRC32_TABLE[0xb][block[0x4] as usize]
+        ^ CRC32_TABLE[0xc][(w0 >> 24) as usize]
+        ^ CRC32_TABLE[0xd][((w0 >> 16) & 0xFF) as usize]
+        ^ CRC32_TABLE[0xe][((w0 >> 8) & 0xFF) as usize]
+        ^ CRC32_TABLE[0xf][(w0 & 0xFF) as usize]
+}
+
 pub(crate) fn update_fast_16(prev: u32, mut buf: &[u8]) -> u32 {
     const UNROLL: usize = 4;
     const BYTES_AT_ONCE: usize = 16 * UNROLL;
@@ -35,25 +60,16 @@ pub(crate) fn update_fast_16(prev: u32, mut buf: &[u8]) -> u32 {
 
     while buf.len() >= BYTES_AT_ONCE {
         for _ in 0..UNROLL {
-            let w0 = u32::from_le_bytes([buf[0], buf[1], buf[2], buf[3]]) ^ crc;
-            crc = CRC32_TABLE[0x0][buf[0xf] as usize]
-                ^ CRC32_TABLE[0x1][buf[0xe] as usize]
-                ^ CRC32_TABLE[0x2][buf[0xd] as usize]
-                ^ CRC32_TABLE[0x3][buf[0xc] as usize]
-                ^ CRC32_TABLE[0x4][buf[0xb] as usize]
-                ^ CRC32_TABLE[0x5][buf[0xa] as usize]
-                ^ CRC32_TABLE[0x6][buf[0x9] as usize]
-                ^ CRC32_TABLE[0x7][buf[0x8] as usize]
-                ^ CRC32_TABLE[0x8][buf[0x7] as usize]
-                ^ CRC32_TABLE[0x9][buf[0x6] as usize]
-                ^ CRC32_TABLE[0xa][buf[0x5] as usize]
-                ^ CRC32_TABLE[0xb][buf[0x4] as usize]
-                ^ CRC32_TABLE[0xc][(w0 >> 24) as usize]
-                ^ CRC32_TABLE[0xd][((w0 >> 16) & 0xFF) as usize]
-                ^ CRC32_TABLE[0xe][((w0 >> 8) & 0xFF) as usize]
-                ^ CRC32_TABLE[0xf][(w0 & 0xFF) as usize];
+            crc = fold_16(crc, buf);
             buf = &buf[16..];
         }
+    }
+
+    // Fold whatever whole 16-byte blocks remain rather than handing them to the
+    // byte-at-a-time loop.
+    while buf.len() >= 16 {
+        crc = fold_16(crc, buf);
+        buf = &buf[16..];
     }
 
     update_slow(!crc, buf)

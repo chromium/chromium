@@ -80,6 +80,8 @@ jobs:
         target:
           - i686-unknown-linux-gnu
           - aarch64-unknown-linux-gnu
+          - riscv64gc-unknown-linux-gnu
+          - s390x-unknown-linux-gnu
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust
