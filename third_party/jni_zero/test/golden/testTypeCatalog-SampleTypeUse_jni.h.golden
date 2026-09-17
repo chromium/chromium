@@ -21,9 +21,9 @@
 // * JNIEnv* parameters are optional.
 // * Types do not have to be exact; they must accept rvalues of the examples.
 //
-// static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleTypeUse_MakeOwned(JNIEnv* env);
+// static ::jni_zero::JniUniquePtr<::my::cpp::Define> JNI_SampleTypeUse_MakeOwned(JNIEnv* env);
 //
-// static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleTypeUse_MakeRaw(JNIEnv* env);
+// static ::jni_zero::JniRawPtr<::my::cpp::Define> JNI_SampleTypeUse_MakeRaw(JNIEnv* env);
 //
 
 // Triggers a compiler warning if DEFINE_JNI(SampleTypeUse) is forgotten (requires -Wunused-function).
@@ -55,7 +55,8 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleTypeUse() {}
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
-    return return_value.ReleaseLocal();                                                            \
+    auto _deleter = return_value.deleter_address();                                                \
+    return ::jni_zero::internal::CreateJavaJniUniquePtr(env, reinterpret_cast<jlong>(return_value.release()), _deleter).ReleaseLocal(); \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleTypeUse_1makeRaw( \
@@ -77,7 +78,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleTypeUse() {}
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
-    return return_value.ReleaseLocal();                                                            \
+    return ::jni_zero::internal::CreateJavaJniRawPtr(env, reinterpret_cast<jlong>(return_value.get())).ReleaseLocal(); \
   }                                                                                                \
                                                                                                    \
                                                                                                    \
@@ -95,7 +96,7 @@ inline jclass org_jni_1zero_SampleTypeUse_clazz(JNIEnv* env) {
 
 
 // Native to Java functions
-static void Java_SampleTypeUse_bar(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& ptr) {
+static void Java_SampleTypeUse_bar(JNIEnv* env, ::jni_zero::JniRawPtr<::my::cpp::Define> ptr) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleTypeUse_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz);
@@ -106,10 +107,11 @@ static void Java_SampleTypeUse_bar(JNIEnv* env, const ::jni_zero::JavaRef<jobjec
       "bar",
       "(Lorg/jni_zero/JniRawPtr;)V",
       &cached_method_id);
-  env->CallStaticVoidMethod(clazz, call_context.method_id(), ptr.obj());
+  ::jni_zero::ScopedJavaLocalRef<jobject> converted_ptr = ::jni_zero::internal::CreateJavaJniRawPtr(env, reinterpret_cast<jlong>(ptr.get()));
+  env->CallStaticVoidMethod(clazz, call_context.method_id(), converted_ptr.obj());
 }
 
-static void Java_SampleTypeUse_baz(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& ptr) {
+static void Java_SampleTypeUse_baz(JNIEnv* env, ::my::cpp::Nested* ptr) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleTypeUse_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz);
@@ -120,10 +122,12 @@ static void Java_SampleTypeUse_baz(JNIEnv* env, const ::jni_zero::JavaRef<jobjec
       "baz",
       "(Lorg/jni_zero/JniPtr;)V",
       &cached_method_id);
-  env->CallStaticVoidMethod(clazz, call_context.method_id(), ptr.obj());
+  ::jni_zero::ScopedJavaLocalRef<jobject> converted_ptr = ::jni_zero::internal::CreateJavaJniPtr(env, reinterpret_cast<jlong>(ptr));
+  env->CallStaticVoidMethod(clazz, call_context.method_id(), converted_ptr.obj());
+  ::jni_zero::internal::ReleaseJavaJniPtr(env, converted_ptr);
 }
 
-static void Java_SampleTypeUse_foo(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& ptr) {
+static void Java_SampleTypeUse_foo(JNIEnv* env, ::my::cpp::Define* ptr) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleTypeUse_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz);
@@ -134,7 +138,39 @@ static void Java_SampleTypeUse_foo(JNIEnv* env, const ::jni_zero::JavaRef<jobjec
       "foo",
       "(Lorg/jni_zero/JniPtr;)V",
       &cached_method_id);
-  env->CallStaticVoidMethod(clazz, call_context.method_id(), ptr.obj());
+  ::jni_zero::ScopedJavaLocalRef<jobject> converted_ptr = ::jni_zero::internal::CreateJavaJniPtr(env, reinterpret_cast<jlong>(ptr));
+  env->CallStaticVoidMethod(clazz, call_context.method_id(), converted_ptr.obj());
+  ::jni_zero::internal::ReleaseJavaJniPtr(env, converted_ptr);
+}
+
+static ::jni_zero::JniRawPtr<::my::cpp::Define> Java_SampleTypeUse_giveRaw(JNIEnv* env) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = org_jni_1zero_SampleTypeUse_clazz(env);
+  CHECK_CLAZZ(env, clazz, clazz, nullptr);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "giveRaw",
+      "()Lorg/jni_zero/JniRawPtr;",
+      &cached_method_id);
+  auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id());
+  return ::jni_zero::MakeRaw(reinterpret_cast<::my::cpp::Define*>(::jni_zero::internal::GetJavaJniPtrRawValue(env, ::jni_zero::AdoptRef(env, _ret))));
+}
+
+static ::my::cpp::Define* Java_SampleTypeUse_lendIt(JNIEnv* env) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = org_jni_1zero_SampleTypeUse_clazz(env);
+  CHECK_CLAZZ(env, clazz, clazz, nullptr);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "lendIt",
+      "()Lorg/jni_zero/JniPtr;",
+      &cached_method_id);
+  auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id());
+  return reinterpret_cast<::my::cpp::Define*>(::jni_zero::internal::GetJavaJniPtrRawValue(env, ::jni_zero::AdoptRef(env, _ret)));
 }
 
 
@@ -144,16 +180,24 @@ namespace jni_zero_internal {
 template<>
 class _CalledByNativesStatics<::org::jni_zero::JSampleTypeUse> {
   public:
-  static void bar(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& ptr) {
+  static void bar(JNIEnv* env, ::jni_zero::JniRawPtr<::my::cpp::Define> ptr) {
     Java_SampleTypeUse_bar(env, ptr);
   }
 
-  static void baz(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& ptr) {
+  static void baz(JNIEnv* env, ::my::cpp::Nested* ptr) {
     Java_SampleTypeUse_baz(env, ptr);
   }
 
-  static void foo(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& ptr) {
+  static void foo(JNIEnv* env, ::my::cpp::Define* ptr) {
     Java_SampleTypeUse_foo(env, ptr);
+  }
+
+  static ::jni_zero::JniRawPtr<::my::cpp::Define> giveRaw(JNIEnv* env) {
+    return Java_SampleTypeUse_giveRaw(env);
+  }
+
+  static ::my::cpp::Define* lendIt(JNIEnv* env) {
+    return Java_SampleTypeUse_lendIt(env);
   }
 
 };

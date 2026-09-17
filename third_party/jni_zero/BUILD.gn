@@ -21,6 +21,9 @@ config("jni_zero_chromium_defines") {
 generate_jni("generate_jni") {
   sources = [
     "java/src/org/jni_zero/CommonApis.java",
+    "java/src/org/jni_zero/JniPtrImpl.java",
+    "java/src/org/jni_zero/JniRawPtrImpl.java",
+    "java/src/org/jni_zero/JniUniquePtrImpl.java",
     "java/src/org/jni_zero/JniZero.java",
   ]
   visibility = [
@@ -143,6 +146,7 @@ if (enable_java_templates && is_android) {
       "java/src/org/jni_zero/JniUniquePtr.java",
       "java/src/org/jni_zero/JniUniquePtrImpl.java",
       "java/src/org/jni_zero/JniZero.java",
+      "java/src/org/jni_zero/JniZeroInternal.java",
       "java/src/org/jni_zero/NativeClassQualifiedName.java",
       "java/src/org/jni_zero/NativeMethods.java",
       "java/src/org/jni_zero/UsedReflectively.java",

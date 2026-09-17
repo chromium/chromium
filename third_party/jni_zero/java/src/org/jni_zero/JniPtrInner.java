@@ -5,8 +5,10 @@
 package org.jni_zero;
 
 /**
- * An interface for obtaining the raw pointer value. This is intended to be used internally by
- * generated JNI code and the JNI bridge itself, not by typical users.
+ * An interface for obtaining the raw pointer value.
+ *
+ * <p>External packages and generated code must access native pointers via {@link
+ * JniZeroInternal#getNativePtr(JniPtr)}.
  */
 interface JniPtrInner<T extends JniTypeToken> extends JniPtr<T> {
     long getNativePtr();

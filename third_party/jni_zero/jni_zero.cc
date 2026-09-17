@@ -11,6 +11,9 @@
 #include <cassert>
 #include <type_traits>
 
+#include "third_party/jni_zero/generate_jni/JniPtrImpl_jni.h"
+#include "third_party/jni_zero/generate_jni/JniRawPtrImpl_jni.h"
+#include "third_party/jni_zero/generate_jni/JniUniquePtrImpl_jni.h"
 #include "third_party/jni_zero/generate_jni/JniZero_jni.h"
 #include "third_party/jni_zero/jni_methods.h"
 #include "third_party/jni_zero/jni_zero_internal.h"
@@ -386,6 +389,56 @@ jclass LazyGetClass(JNIEnv* env,
     }
   }
   return ret;
+}
+
+ScopedJavaLocalRef<jobject> CreateJavaJniPtr(JNIEnv* env, jlong ptr) {
+  if (!ptr) {
+    return nullptr;
+  }
+  return Java_JniPtrImpl_Constructor(env, ptr);
+}
+
+ScopedJavaLocalRef<jobject> CreateJavaJniUniquePtr(JNIEnv* env,
+                                                   jlong ptr,
+                                                   jlong deleter) {
+  if (!ptr) {
+    return nullptr;
+  }
+  return Java_JniUniquePtrImpl_Constructor(env, ptr, deleter);
+}
+
+ScopedJavaLocalRef<jobject> CreateJavaJniRawPtr(JNIEnv* env, jlong ptr) {
+  if (!ptr) {
+    return nullptr;
+  }
+  if (internal::g_raw_ptr_wrap_fn) {
+    internal::g_raw_ptr_wrap_fn(static_cast<uintptr_t>(ptr));
+  }
+  return Java_JniRawPtrImpl_Constructor(env, ptr);
+}
+
+void ReleaseJavaJniPtr(JNIEnv* env, const JavaRef<jobject>& obj) {
+  if (obj.is_null()) {
+    return;
+  }
+  // Called straight after the Java method returns, so an exception may still be
+  // pending. Generated calls treat a pending exception as fatal, so stash it.
+  ScopedJavaLocalRef<jthrowable> pending;
+  if (env->ExceptionCheck()) {
+    pending = AdoptRef(env, env->ExceptionOccurred());
+    env->ExceptionClear();
+  }
+  Java_JniPtrImpl_release(env, obj);
+  if (pending) {
+    env->Throw(pending.obj());
+  }
+}
+
+jlong GetJavaJniPtrRawValue(JNIEnv* env, const JavaRef<jobject>& obj) {
+  if (obj.is_null()) {
+    return 0;
+  }
+  return Java_JniZero_getNativePtr(env, obj);
 }
 
 }  // namespace internal

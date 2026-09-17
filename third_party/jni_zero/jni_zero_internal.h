@@ -27,6 +27,24 @@ namespace jni_zero::internal {
 extern JNI_ZERO_COMPONENT_BUILD_EXPORT RawPtrWrapFn g_raw_ptr_wrap_fn;
 extern JNI_ZERO_COMPONENT_BUILD_EXPORT RawPtrReleaseFn g_raw_ptr_release_fn;
 
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> CreateJavaJniPtr(
+    JNIEnv* env,
+    jlong ptr);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject>
+CreateJavaJniUniquePtr(JNIEnv* env, jlong ptr, jlong deleter);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> CreateJavaJniRawPtr(
+    JNIEnv* env,
+    jlong ptr);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT void ReleaseJavaJniPtr(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT jlong
+GetJavaJniPtrRawValue(JNIEnv* env, const JavaRef<jobject>& obj);
+
 inline void HandleRegistrationError(JNIEnv* env,
                                     jclass clazz,
                                     const char* filename) {

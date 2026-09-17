@@ -12,6 +12,7 @@ package org.jni_zero;
 class JniRawPtrImpl<T extends JniTypeToken> implements JniRawPtr<T>, JniPtrInner<T> {
     private long mNativePointer;
 
+    @CalledByNative
     JniRawPtrImpl(long nativePointer) {
         assert nativePointer != 0;
         mNativePointer = nativePointer;

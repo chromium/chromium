@@ -6,9 +6,14 @@
 from codegen import convert_type
 from codegen import header_common
 import common
+import java_types
 
 
 def _return_type_cpp_non_mirror(java_type):
+  if java_type.is_safe_pointer():
+    # Marshalled to a Java wrapper object at the JNI boundary; see
+    # entry_point_method().
+    return java_type.to_backend_cpp_type()
   if converted_type := java_type.converted_type:
     return converted_type
   if java_type.is_primitive():
@@ -223,6 +228,25 @@ def entry_point_method(sb,
       sb('dependent_context(0)')
 
     if return_type.is_void():
+      return
+
+    if return_type.is_safe_pointer():
+      # Construct the Java wrapper object on the native side and return it as
+      # a local ref.
+      if return_type.java_class == java_types.JNI_UNIQUE_PTR_CLASS:
+        sb('auto _deleter = return_value.deleter_address();\n')
+        with sb.statement():
+          sb('return ::jni_zero::internal::CreateJavaJniUniquePtr(env, '
+             'reinterpret_cast<jlong>(return_value.release()), '
+             '_deleter).ReleaseLocal()')
+      elif return_type.java_class == java_types.JNI_RAW_PTR_CLASS:
+        with sb.statement():
+          sb('return ::jni_zero::internal::CreateJavaJniRawPtr(env, '
+             'reinterpret_cast<jlong>(return_value.get())).ReleaseLocal()')
+      else:
+        raise ValueError(
+            'JniPtr cannot be a @NativeMethods return type; this should have '
+            'been rejected during parsing.')
       return
 
     if not return_type.converted_type:

@@ -27,6 +27,11 @@ public class JniZero {
     }
 
     @CalledByNative
+    private static long getNativePtr(JniPtrInner<?> ptr) {
+        return JniZeroInternal.getNativePtr(ptr);
+    }
+
+    @CalledByNative
     private static Object[] init(boolean rawPtrHooksEnabled) {
         sInitialized = true;
         sRawPtrHooksEnabled = rawPtrHooksEnabled;

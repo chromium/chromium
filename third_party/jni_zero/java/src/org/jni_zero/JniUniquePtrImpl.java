@@ -14,6 +14,7 @@ class JniUniquePtrImpl<T extends JniTypeToken> implements JniUniquePtr<T>, JniPt
     private final long mDeleter;
     private long mNativePointer;
 
+    @CalledByNative
     JniUniquePtrImpl(long nativePointer, long deleter) {
         assert nativePointer != 0;
         mNativePointer = nativePointer;
