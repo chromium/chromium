@@ -40,6 +40,8 @@ blink_core_sources_scheduler = [
   "web_scheduling_task_state.h",
   "window_idle_tasks.cc",
   "window_idle_tasks.h",
+  "window_idle_tasks_manager.cc",
+  "window_idle_tasks_manager.h",
 ]
 
 blink_core_tests_scheduler = [
@@ -49,4 +51,5 @@ blink_core_tests_scheduler = [
   "scripted_idle_task_controller_test.cc",
   "task_attribution_task_state_test.cc",
   "task_attribution_tracker_impl_test.cc",
+  "window_idle_tasks_manager_test.cc",
 ]

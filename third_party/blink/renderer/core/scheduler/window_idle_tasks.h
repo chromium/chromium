@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_WINDOW_IDLE_TASKS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_WINDOW_IDLE_TASKS_H_
 
+#include <cstdint>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -17,10 +19,10 @@ class CORE_EXPORT WindowIdleTasks {
   STATIC_ONLY(WindowIdleTasks);
 
  public:
-  static int requestIdleCallback(LocalDOMWindow&,
-                                 V8IdleRequestCallback*,
-                                 const IdleRequestOptions*);
-  static void cancelIdleCallback(LocalDOMWindow&, int id);
+  static uint32_t requestIdleCallback(LocalDOMWindow&,
+                                      V8IdleRequestCallback*,
+                                      const IdleRequestOptions*);
+  static void cancelIdleCallback(LocalDOMWindow&, uint32_t id);
 };
 
 }  // namespace blink

@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "base/check_deref.h"
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -101,7 +100,7 @@ bool IdleSpellCheckController::IsSpellCheckingEnabled() const {
 
 void IdleSpellCheckController::DisposeIdleCallback() {
   if (idle_callback_handle_ != kInvalidHandle && GetExecutionContext()) {
-    ScriptedIdleTaskController::From(*GetExecutionContext())
+    ScriptedIdleTaskController::From(GetWindow())
         .CancelCallback(idle_callback_handle_);
   }
   idle_callback_handle_ = kInvalidHandle;
@@ -232,7 +231,7 @@ void IdleSpellCheckController::SetNeedsInvocation() {
   IdleRequestOptions* options = IdleRequestOptions::Create();
   options->setTimeout(kHotModeRequestTimeoutMS);
   idle_callback_handle_ =
-      ScriptedIdleTaskController::From(CHECK_DEREF(GetExecutionContext()))
+      ScriptedIdleTaskController::From(GetWindow())
           .RegisterCallback(MakeGarbageCollected<IdleCallback>(this), options);
   state_ = State::kHotModeRequested;
 }
@@ -264,7 +263,7 @@ void IdleSpellCheckController::ColdModeTimerFired() {
   }
 
   idle_callback_handle_ =
-      ScriptedIdleTaskController::From(CHECK_DEREF(GetExecutionContext()))
+      ScriptedIdleTaskController::From(GetWindow())
           .RegisterCallback(MakeGarbageCollected<IdleCallback>(this),
                             IdleRequestOptions::Create());
   state_ = State::kColdModeRequested;
@@ -395,7 +394,7 @@ void IdleSpellCheckController::ForceInvocationForTesting() {
     case State::kHotModeRequested:
     case State::kColdModeRequested:
       if (GetExecutionContext()) {
-        ScriptedIdleTaskController::From(*GetExecutionContext())
+        ScriptedIdleTaskController::From(GetWindow())
             .CancelCallback(idle_callback_handle_);
       }
       Invoke(deadline);

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/scheduler/window_idle_tasks_manager.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -88,25 +89,15 @@ IdleTask::~IdleTask() {
   CHECK(!delayed_task_handle_.IsValid());
 }
 
-const char ScriptedIdleTaskController::kSupplementName[] =
-    "ScriptedIdleTaskController";
-
 // static
 ScriptedIdleTaskController& ScriptedIdleTaskController::From(
-    ExecutionContext& context) {
-  ScriptedIdleTaskController* controller =
-      Supplement<ExecutionContext>::From<ScriptedIdleTaskController>(&context);
-  if (!controller) {
-    controller = MakeGarbageCollected<ScriptedIdleTaskController>(&context);
-    Supplement<ExecutionContext>::ProvideTo(context, controller);
-  }
-  return *controller;
+    LocalDOMWindow& window) {
+  return WindowIdleTasksManager::From(window).GetScriptedIdleTaskController();
 }
 
 ScriptedIdleTaskController::ScriptedIdleTaskController(
     ExecutionContext* context)
     : ExecutionContextLifecycleStateObserver(context),
-      Supplement<ExecutionContext>(*context),
       scheduler_(ThreadScheduler::Current()) {
   UpdateStateIfNeeded();
 }
@@ -118,7 +109,6 @@ ScriptedIdleTaskController::~ScriptedIdleTaskController() {
 void ScriptedIdleTaskController::Trace(Visitor* visitor) const {
   visitor->Trace(idle_tasks_);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
-  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 int ScriptedIdleTaskController::NextCallbackId() {
@@ -227,9 +217,9 @@ void ScriptedIdleTaskController::CancelCallback(CallbackId id) {
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "CancelIdleCallback", inspector_idle_callback_cancel_event::Data,
       GetExecutionContext(), id);
-  if (!IsValidCallbackId(id)) {
-    return;
-  }
+  // The web-exposed layer (WindowIdleTasksManager) should never send invalid
+  // IDs, nor should other internal clients.
+  CHECK(IsValidCallbackId(id));
 
   RemoveIdleTask(id);
 

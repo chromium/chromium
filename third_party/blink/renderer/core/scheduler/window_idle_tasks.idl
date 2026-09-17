@@ -7,6 +7,6 @@
 [
   ImplementedAs=WindowIdleTasks
 ] partial interface Window {
-  [Measure] long requestIdleCallback(IdleRequestCallback callback, optional IdleRequestOptions options = {});
-  void cancelIdleCallback(long handle);
+  [Measure] unsigned long requestIdleCallback(IdleRequestCallback callback, optional IdleRequestOptions options = {});
+  void cancelIdleCallback(unsigned long handle);
 };

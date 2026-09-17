@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -1080,7 +1081,7 @@ void PreloadHelper::FetchCompressionDictionaryIfNeeded(
         document.GetExecutionContext()->GetSecurityOrigin(), cross_origin);
   }
   IdleRequestOptions* idle_options = IdleRequestOptions::Create();
-  ScriptedIdleTaskController::From(*document.GetExecutionContext())
+  ScriptedIdleTaskController::From(CHECK_DEREF(document.domWindow()))
       .RegisterCallback(MakeGarbageCollected<LoadDictionaryWhenIdleTask>(
                             std::move(link_fetch_params), document.Fetcher(),
                             pending_preload),
