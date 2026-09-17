@@ -4931,6 +4931,12 @@ You can restart anytime.
       <message name="IDS_IOS_LOCATION_BAR_SIGN_IN" desc="Text shown in the location bar while an HTTP authentication dialog is displayed.">
         Sign in to website
       </message>
+      <message name="IDS_IOS_LOCATION_SETTINGS_HELP_BUTTON_SETTINGS" desc="Button label directing user to open iOS Settings for geolocation permission.">
+        Settings
+      </message>
+      <message name="IDS_IOS_LOCATION_SETTINGS_HELP_TITLE" desc="Title of alert shown when geolocation permissions/services are disabled in iOS settings.">
+        Location Access Disabled
+      </message>
       <message name="IDS_IOS_LOCKDOWN_MODE_FOOTER" desc="Title for Lockdown Mode.">
         When turned on, certain web technologies are blocked, which might cause some websites to load more slowly or not operate correctly.
       </message>

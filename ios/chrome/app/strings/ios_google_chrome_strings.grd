@@ -726,6 +726,9 @@ Things to consider:
       <message name="IDS_IOS_LEVEL_UP_PROMO_SUBTITLE" desc="Text for the Level Up promo subtitle. [iOS only]">
         Complete quick tasks and discover ways to get the most out of Chrome:
       </message>
+      <message name="IDS_IOS_LOCATION_SETTINGS_HELP_DETAIL" desc="Body of modal dialog shown when the user browses to a page trying to use location but we lack permission to use the geolocation. This body tells the user he'll be redirected to the Settings app. [iOS only].">
+        To share your location with websites, tap on Settings to let Chrome use your location.
+      </message>
       <message name="IDS_IOS_LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's location information while the app is in use [Length: unlimited] [iOS only].">
         Chrome shares your location with sites you allow.
       </message>
