@@ -1229,8 +1229,4 @@ bool SupportsNamingWithChildContent(const ax::mojom::Role role) {
   }
 }
 
-bool IsRoleFinal(ax::mojom::Role role) {
-  return role == ax::mojom::Role::kInlineTextBox;
-}
-
 }  // namespace ui
