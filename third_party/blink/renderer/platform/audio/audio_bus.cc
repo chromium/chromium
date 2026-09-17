@@ -139,17 +139,6 @@ void AudioBus::SetChannelMemory(unsigned channel_index,
   }
 }
 
-void AudioBus::ResizeSmaller(uint32_t new_length) {
-  DCHECK_LE(new_length, length_);
-  if (new_length <= length_) {
-    length_ = new_length;
-  }
-
-  for (AudioChannel& channel : channels_) {
-    channel.ResizeSmaller(new_length);
-  }
-}
-
 void AudioBus::Zero() {
   for (AudioChannel& channel : channels_) {
     channel.Zero();
@@ -276,22 +265,6 @@ scoped_refptr<AudioBus> AudioBus::CreateBufferFromRange(
   }
 
   return audio_bus;
-}
-
-float AudioBus::MaxAbsValue() const {
-  float max = 0.0f;
-  for (const AudioChannel& channel : channels_) {
-    max = std::max(max, channel.MaxAbsValue());
-  }
-
-  return max;
-}
-
-void AudioBus::Normalize() {
-  float max = MaxAbsValue();
-  if (max) {
-    Scale(1.0f / max);
-  }
 }
 
 void AudioBus::Scale(float scale) {

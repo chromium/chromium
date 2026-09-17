@@ -111,10 +111,6 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
   // Number of sample-frames
   uint32_t length() const { return length_; }
 
-  // resizeSmaller() can only be called with a new length <= the current length.
-  // The data stored in the bus will remain undisturbed.
-  void ResizeSmaller(uint32_t new_length);
-
   // Sample-rate : 0.0 if unknown or "don't care"
   float SampleRate() const { return sample_rate_; }
   void SetSampleRate(float sample_rate) { sample_rate_ = sample_rate; }
@@ -181,13 +177,6 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
   void CopyWithSampleAccurateGainValuesFrom(
       const AudioBus& source_bus,
       base::span<const float> gain_values);
-
-  // Returns maximum absolute value across all channels (useful for
-  // normalization).
-  float MaxAbsValue() const;
-
-  // Makes maximum absolute value == 1.0 (if possible).
-  void Normalize();
 
   static scoped_refptr<AudioBus> GetDataResource(int resource_id,
                                                  float sample_rate);
