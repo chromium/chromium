@@ -129,7 +129,7 @@ include_rules = [
   # //ash/session and the state in //chromeos/ash/components/login/login_state
   # are both derived from the canonical state in the browser. Using both sources
   # could create subtle inconsistencies based on when observers are called.
-  "-chromeos/ash/compoments/login/login_state",
+  "-chromeos/ash/components/login/login_state",
   "+chromeos/ash/components/network",
   # //ash can use resources from the internal ash resources repo.
   "+chromeos/ash/resources/internal",

@@ -3,7 +3,7 @@ include_rules = [
   "+components/leveldb_proto",
   "+components/prefs",
   "+ui/gfx/codec",
-  "+ui/gfx/geomtery",
+  "+ui/gfx/geometry",
   "+ui/gfx/image",
   "+third_party/skia/include",
 ]
