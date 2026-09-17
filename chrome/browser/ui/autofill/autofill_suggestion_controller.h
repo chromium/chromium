@@ -114,6 +114,7 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
   virtual bool MayRecycle(
       base::WeakPtr<AutofillSuggestionDelegate> delegate,
       content::WebContents* web_contents,
+      const LocalFrameToken& anchor_frame_token,
       AutofillSuggestionTriggerSource trigger_source) const = 0;
 
   // Reuses the controller with the new parameters.

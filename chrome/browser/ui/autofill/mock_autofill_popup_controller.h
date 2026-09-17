@@ -119,6 +119,7 @@ class MockAutofillPopupController : public AutofillPopupController {
               MayRecycle,
               (base::WeakPtr<AutofillSuggestionDelegate> delegate,
                content::WebContents* web_contents,
+               const LocalFrameToken& anchor_frame_token,
                AutofillSuggestionTriggerSource trigger_source),
               (const override));
   MOCK_METHOD(void,

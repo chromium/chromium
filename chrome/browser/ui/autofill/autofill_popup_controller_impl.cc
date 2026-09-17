@@ -258,13 +258,14 @@ std::optional<AutofillPopupView::SubPopupConfig> GetSubPopupConfig(
 
 }  // namespace
 
-
 bool AutofillPopupControllerImpl::MayRecycle(
     base::WeakPtr<AutofillSuggestionDelegate> delegate,
     content::WebContents* web_contents,
+    const LocalFrameToken& anchor_frame_token,
     AutofillSuggestionTriggerSource trigger_source) const {
   return delegate_.get() == delegate.get() &&
          container_view() == web_contents->GetNativeView() &&
+         GetAnchorFrameToken() == anchor_frame_token &&
          GetSuggestionTriggerSource() == trigger_source;
 }
 

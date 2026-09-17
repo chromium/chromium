@@ -98,6 +98,7 @@ class AutofillKeyboardAccessoryControllerImpl
   bool MayRecycle(
       base::WeakPtr<AutofillSuggestionDelegate> delegate,
       content::WebContents* web_contents,
+      const LocalFrameToken& anchor_frame_token,
       AutofillSuggestionTriggerSource trigger_source) const override;
   void Recycle(PopupControllerCommon controller_common,
                int32_t form_control_ax_id) override;

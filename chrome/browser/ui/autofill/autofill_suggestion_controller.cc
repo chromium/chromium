@@ -77,8 +77,9 @@ AutofillSuggestionController::GetOrCreate(
     PopupControllerCommon controller_common,
     int32_t form_control_ax_id,
     AutofillSuggestionTriggerSource trigger_source) {
-  if (previous &&
-      previous->MayRecycle(delegate, web_contents, trigger_source)) {
+  if (previous && previous->MayRecycle(delegate, web_contents,
+                                       controller_common.anchor_frame_token,
+                                       trigger_source)) {
     previous->Recycle(std::move(controller_common), form_control_ax_id);
     return previous;
   }
