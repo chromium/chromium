@@ -9,10 +9,7 @@ import static org.chromium.ui.animation.AnimationListeners.onAnimationEnd;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -91,14 +88,12 @@ public class WebViewResizingHelper {
 
     private final Context mContext;
     private final FrameLayout mResizingContainer;
-    private final View mResizingPlaceholder;
+    private final @Nullable View mResizingPlaceholder;
     private final View mExpandedContentGroup;
     private final WindowAndroid mWindowAndroid;
     private final @Nullable InsetObserver mInsetObserver;
     private final boolean mIsSidePanel;
-    private final View mResizingContent;
-    private final @Px int mResizingFadeOffset;
-    private final @Px int mMinHeight;
+    private final @Nullable ResizingPlaceholderCoordinator mPlaceholderCoordinator;
     private final View.OnLayoutChangeListener mOnLayoutChangeListener;
     private final @Nullable CoBrowseComponentProvider mComponentProvider;
 
@@ -141,21 +136,16 @@ public class WebViewResizingHelper {
                         });
         mResizingContainer.addOnLayoutChangeListener(mOnLayoutChangeListener);
 
+        mPlaceholderCoordinator =
+                mComponentProvider != null
+                        ? mComponentProvider.createResizingPlaceholderCoordinator(
+                                mContext, backgroundColor)
+                        : null;
         mResizingPlaceholder =
-                LayoutInflater.from(mContext)
-                        .inflate(R.layout.tab_bottom_sheet_resizing_view, null);
-        mResizingContent =
-                mResizingPlaceholder.findViewById(R.id.tab_bottom_sheet_resizing_content);
-        Resources res = mContext.getResources();
-        mResizingFadeOffset =
-                res.getDimensionPixelSize(R.dimen.tab_bottom_sheet_resizing_fade_offset);
-        mMinHeight = res.getDimensionPixelSize(R.dimen.tab_bottom_sheet_peek_height_total);
-        mResizingContainer.addView(mResizingPlaceholder);
-        mResizingPlaceholder.setVisibility(View.INVISIBLE);
-
-        ColorDrawable background = new ColorDrawable();
-        background.setColor(backgroundColor);
-        mResizingPlaceholder.setBackground(background);
+                mPlaceholderCoordinator != null ? mPlaceholderCoordinator.getView() : null;
+        if (mResizingPlaceholder != null) {
+            mResizingContainer.addView(mResizingPlaceholder);
+        }
 
         if (mInsetObserver != null) {
             mInsetObserver.addWindowInsetsAnimationListener(mInsetAnimationListener);
@@ -169,32 +159,17 @@ public class WebViewResizingHelper {
      * @param visibleHeight The visible height of the sheet in pixels.
      */
     public void updatePlaceholderHeight(@Px int visibleHeight) {
-        ViewGroup.LayoutParams params = mResizingPlaceholder.getLayoutParams();
-        if (params != null && params.height != visibleHeight) {
-            params.height = visibleHeight;
-            mResizingPlaceholder.setLayoutParams(params);
-        }
-
-        float minHeight = mMinHeight;
-        int contentHeight = mResizingContent.getMeasuredHeight();
-        float maxHeight = contentHeight + mResizingFadeOffset;
-
-        float alpha;
-        if (visibleHeight <= minHeight) {
-            alpha = 0.0f;
-        } else if (maxHeight <= minHeight || visibleHeight >= maxHeight) {
-            alpha = 1.0f;
-        } else {
-            alpha = (visibleHeight - minHeight) / (maxHeight - minHeight);
-        }
-        if (mResizingContent.getAlpha() != alpha) {
-            mResizingContent.setAlpha(alpha);
+        if (mPlaceholderCoordinator != null) {
+            mPlaceholderCoordinator.updateVisibleHeight(visibleHeight);
         }
     }
 
     /** Destroys the helper and releases the WebContents. */
     public void destroy() {
         reset();
+        if (mPlaceholderCoordinator != null) {
+            mPlaceholderCoordinator.destroy();
+        }
         mWebContents = null;
         if (mInsetObserver != null) {
             mInsetObserver.removeWindowInsetsAnimationListener(mInsetAnimationListener);
@@ -207,8 +182,10 @@ public class WebViewResizingHelper {
     public void reset() {
         mAnimationHandler.forceFinishAnimation();
         mResizingContainer.removeAllViews();
-        mResizingContainer.addView(mResizingPlaceholder);
-        mResizingPlaceholder.setVisibility(View.INVISIBLE);
+        if (mResizingPlaceholder != null) {
+            mResizingContainer.addView(mResizingPlaceholder);
+            mResizingPlaceholder.setVisibility(View.INVISIBLE);
+        }
         mThinWebView = null;
         mIsViewportSizeFixed = false;
         mPauseInsetUpdates = false;
@@ -297,7 +274,9 @@ public class WebViewResizingHelper {
         valueAnimator.addUpdateListener(
                 animator -> {
                     float value = (float) animator.getAnimatedValue();
-                    mResizingPlaceholder.setAlpha(1f - value);
+                    if (mResizingPlaceholder != null) {
+                        mResizingPlaceholder.setAlpha(1f - value);
+                    }
                     webView.setAlpha(value);
                 });
         valueAnimator.addListener(
@@ -312,8 +291,10 @@ public class WebViewResizingHelper {
 
         mIsViewportSizeFixed = true;
 
-        mResizingPlaceholder.setVisibility(View.VISIBLE);
-        mResizingPlaceholder.setAlpha(0f);
+        if (mResizingPlaceholder != null) {
+            mResizingPlaceholder.setVisibility(View.VISIBLE);
+            mResizingPlaceholder.setAlpha(0f);
+        }
     }
 
     private void disableResizingMode() {
@@ -354,13 +335,17 @@ public class WebViewResizingHelper {
         valueAnimator.addUpdateListener(
                 animator -> {
                     float value = (float) animator.getAnimatedValue();
-                    mResizingPlaceholder.setAlpha(1f - value);
+                    if (mResizingPlaceholder != null) {
+                        mResizingPlaceholder.setAlpha(1f - value);
+                    }
                     webView.setAlpha(value);
                 });
         valueAnimator.addListener(
                 onAnimationEnd(
                         () -> {
-                            mResizingPlaceholder.setVisibility(View.INVISIBLE);
+                            if (mResizingPlaceholder != null) {
+                                mResizingPlaceholder.setVisibility(View.INVISIBLE);
+                            }
                             webView.setVisibility(View.VISIBLE);
                             webView.setAlpha(1f);
                         }));
@@ -437,5 +422,10 @@ public class WebViewResizingHelper {
     /** Returns the {@link CoBrowseComponentProvider}. */
     @Nullable CoBrowseComponentProvider getComponentProviderForTesting() {
         return mComponentProvider;
+    }
+
+    /** Returns the {@link ResizingPlaceholderCoordinator} managing the placeholder view. */
+    @Nullable ResizingPlaceholderCoordinator getPlaceholderCoordinator() {
+        return mPlaceholderCoordinator;
     }
 }

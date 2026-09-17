@@ -59,9 +59,11 @@ public class TestCoBrowseComponentProvider implements CoBrowseComponentProvider 
     }
 
     @Override
-    public @Nullable ResizingPlaceholderCoordinator createResizingPlaceholderCoordinator(
+    public ResizingPlaceholderCoordinator createResizingPlaceholderCoordinator(
             Context context, @ColorInt int backgroundColor) {
-        return sResizingPlaceholderCoordinator;
+        return sResizingPlaceholderCoordinator != null
+                ? sResizingPlaceholderCoordinator
+                : new LegacyResizingPlaceholderCoordinator(context, backgroundColor);
     }
 
     @Override
