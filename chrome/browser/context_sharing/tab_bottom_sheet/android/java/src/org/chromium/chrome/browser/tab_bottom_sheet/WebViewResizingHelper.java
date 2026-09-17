@@ -100,6 +100,7 @@ public class WebViewResizingHelper {
     private final @Px int mResizingFadeOffset;
     private final @Px int mMinHeight;
     private final View.OnLayoutChangeListener mOnLayoutChangeListener;
+    private final @Nullable CoBrowseComponentProvider mComponentProvider;
 
     private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
@@ -107,23 +108,24 @@ public class WebViewResizingHelper {
     private boolean mPauseInsetUpdates;
 
     /**
-     * @param containerView The root view for the co-browse content.
-     * @param windowAndroid The WindowAndroid of the activity.
-     * @param backgroundColor The background color used for the placeholder.
+     * Constructs a {@link WebViewResizingHelper} with a nullable {@link CoBrowseComponentProvider}.
+     *
+     * @param containerView The parent view containing the bottom sheet WebUI.
+     * @param windowAndroid The window hosting the sheet.
+     * @param backgroundColor The background color of the placeholder.
+     * @param isSidePanel Whether the container is hosted in a side panel.
+     * @param componentProvider Provider for custom co-browse components, or null.
      */
-    public WebViewResizingHelper(
-            View containerView, WindowAndroid windowAndroid, @ColorInt int backgroundColor) {
-        this(containerView, windowAndroid, backgroundColor, /* isSidePanel= */ false);
-    }
-
     public WebViewResizingHelper(
             View containerView,
             WindowAndroid windowAndroid,
             @ColorInt int backgroundColor,
-            boolean isSidePanel) {
+            boolean isSidePanel,
+            @Nullable CoBrowseComponentProvider componentProvider) {
         mContext = containerView.getContext();
         mWindowAndroid = windowAndroid;
         mIsSidePanel = isSidePanel;
+        mComponentProvider = componentProvider;
 
         mInsetObserver = windowAndroid.getInsetObserver();
         mExpandedContentGroup = containerView.findViewById(R.id.expanded_content_group);
@@ -430,5 +432,10 @@ public class WebViewResizingHelper {
 
     private static boolean isApproxEqual(int a, int b, int epsilon) {
         return Math.abs(a - b) <= epsilon;
+    }
+
+    /** Returns the {@link CoBrowseComponentProvider}. */
+    @Nullable CoBrowseComponentProvider getComponentProviderForTesting() {
+        return mComponentProvider;
     }
 }

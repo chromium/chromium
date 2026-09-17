@@ -84,7 +84,8 @@ public class TabBottomSheetWebUi {
             @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
             @Nullable BiConsumer<GURL, String> ephemeralTabOpener,
-            @Nullable BiConsumer<GURL, String> readLaterOpener) {
+            @Nullable BiConsumer<GURL, String> readLaterOpener,
+            @Nullable CoBrowseComponentProvider componentProvider) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
@@ -100,7 +101,8 @@ public class TabBottomSheetWebUi {
                         containerView,
                         windowAndroid,
                         backgroundColor,
-                        containerType == CoBrowseContainerType.SIDE_PANEL);
+                        containerType == CoBrowseContainerType.SIDE_PANEL,
+                        componentProvider);
     }
 
     @SuppressLint("ClickableViewAccessibility")

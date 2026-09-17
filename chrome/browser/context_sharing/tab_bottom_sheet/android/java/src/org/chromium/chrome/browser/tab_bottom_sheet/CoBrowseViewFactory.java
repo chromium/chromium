@@ -129,7 +129,13 @@ public class CoBrowseViewFactory {
                 LayoutInflater.from(mActivity).inflate(R.layout.tab_bottom_sheet, null);
 
         TabBottomSheetWebUi webUi =
-                createWebUi(containerView, backgroundColor, clientType, containerType, webContents);
+                createWebUi(
+                        containerView,
+                        backgroundColor,
+                        clientType,
+                        containerType,
+                        webContents,
+                        bottomSheetContentProvider);
 
         webUi.setWebContents(webContents, requestFocus);
 
@@ -168,12 +174,24 @@ public class CoBrowseViewFactory {
                 bottomSheetContentProvider);
     }
 
+    /**
+     * Creates a {@link TabBottomSheetWebUi} instance.
+     *
+     * @param containerView The container view.
+     * @param backgroundColor The background color of the sheet.
+     * @param clientType The client type for the tab bottom sheet.
+     * @param containerType The type of container hosting the sheet.
+     * @param webContents The web contents to display, or null.
+     * @param bottomSheetContentProvider The provider for bottom sheet content, or null.
+     * @return A new {@link TabBottomSheetWebUi} instance.
+     */
     private TabBottomSheetWebUi createWebUi(
             View containerView,
             @ColorInt int backgroundColor,
             @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
-            @Nullable WebContents webContents) {
+            @Nullable WebContents webContents,
+            @Nullable CoBrowseComponentProvider bottomSheetContentProvider) {
         return new TabBottomSheetWebUi(
                 mActivity,
                 containerView,
@@ -187,7 +205,8 @@ public class CoBrowseViewFactory {
                 // avoiding a circular dependency since the components layer cannot depend
                 // on chrome/ UI coordinators directly.
                 (GURL url, String title) -> openInEphemeralTab(url, title, webContents),
-                this::addToReadingList);
+                this::addToReadingList,
+                bottomSheetContentProvider);
     }
 
     private void openInEphemeralTab(GURL url, String title, @Nullable WebContents webContents) {

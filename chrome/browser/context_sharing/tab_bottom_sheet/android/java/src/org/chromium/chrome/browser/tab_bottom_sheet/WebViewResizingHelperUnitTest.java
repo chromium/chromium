@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,6 +65,7 @@ public class WebViewResizingHelperUnitTest {
     @Mock private WindowAndroid mMockWindowAndroid;
     @Mock private InsetObserver mMockInsetObserver;
     @Mock private Window mMockWindow;
+    @Mock private CoBrowseComponentProvider mMockComponentProvider;
     @Mock private View mMockDecorView;
     @Captor private ArgumentCaptor<WindowInsetsAnimationListener> mAnimationListenerCaptor;
 
@@ -91,7 +93,13 @@ public class WebViewResizingHelperUnitTest {
         when(mMockDecorView.getHeight()).thenReturn(1000);
 
         mContainerView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
-        mHelper = new WebViewResizingHelper(mContainerView, mMockWindowAndroid, Color.WHITE);
+        mHelper =
+                new WebViewResizingHelper(
+                        mContainerView,
+                        mMockWindowAndroid,
+                        Color.WHITE,
+                        false,
+                        mMockComponentProvider);
     }
 
     @Test
@@ -99,6 +107,24 @@ public class WebViewResizingHelperUnitTest {
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
         assertEquals(1, container.getChildCount());
         verify(mMockInsetObserver).addWindowInsetsAnimationListener(any());
+        assertEquals(mMockComponentProvider, mHelper.getComponentProviderForTesting());
+    }
+
+    @Test
+    public void testComponentProvider_PassedThroughConstructor() {
+        CoBrowseComponentProvider mockProvider = mock(CoBrowseComponentProvider.class);
+        WebViewResizingHelper helper =
+                new WebViewResizingHelper(
+                        mContainerView, mMockWindowAndroid, Color.WHITE, false, mockProvider);
+        assertEquals(mockProvider, helper.getComponentProviderForTesting());
+    }
+
+    @Test
+    public void testComponentProvider_NullPassedThroughConstructor() {
+        WebViewResizingHelper helper =
+                new WebViewResizingHelper(
+                        mContainerView, mMockWindowAndroid, Color.WHITE, false, null);
+        assertNull(helper.getComponentProviderForTesting());
     }
 
     @Test
@@ -376,7 +402,13 @@ public class WebViewResizingHelperUnitTest {
 
     @Test
     public void testUpdateBounds_SidePanel_FallbackSizing() {
-        mHelper = new WebViewResizingHelper(mContainerView, mMockWindowAndroid, Color.WHITE, true);
+        mHelper =
+                new WebViewResizingHelper(
+                        mContainerView,
+                        mMockWindowAndroid,
+                        Color.WHITE,
+                        true,
+                        mMockComponentProvider);
         mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
 
@@ -399,7 +431,13 @@ public class WebViewResizingHelperUnitTest {
 
     @Test
     public void testUpdateBounds_SidePanel_FallbackSizing_WebContentsOnly() {
-        mHelper = new WebViewResizingHelper(mContainerView, mMockWindowAndroid, Color.WHITE, true);
+        mHelper =
+                new WebViewResizingHelper(
+                        mContainerView,
+                        mMockWindowAndroid,
+                        Color.WHITE,
+                        true,
+                        mMockComponentProvider);
         mHelper.setThinWebView(null, mMockWebContents);
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
 

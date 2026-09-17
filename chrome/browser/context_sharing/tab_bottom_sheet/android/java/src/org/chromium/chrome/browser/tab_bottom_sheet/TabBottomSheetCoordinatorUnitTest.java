@@ -156,7 +156,12 @@ public class TabBottomSheetCoordinatorUnitTest {
                 .when(containerViewSpy)
                 .post(any(Runnable.class));
         mWebViewResizingHelper =
-                new WebViewResizingHelper(containerViewSpy, mWindowAndroid, Color.WHITE);
+                new WebViewResizingHelper(
+                        containerViewSpy,
+                        mWindowAndroid,
+                        Color.WHITE,
+                        false,
+                        new TestCoBrowseComponentProvider());
         when(mMockWebUi.getWebViewResizingHelper()).thenReturn(mWebViewResizingHelper);
         View webUiView = new View(mContext);
         when(mMockWebUi.getWebUiView()).thenReturn(webUiView);

@@ -129,6 +129,54 @@ public class TabBottomSheetWebUiUnitTest {
     }
 
     @Test
+    public void testConstructor_WithComponentProvider() {
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        CoBrowseComponentProvider mockProvider = mock(CoBrowseComponentProvider.class);
+        View containerView = new View(context);
+        TabBottomSheetWebUi webUi =
+                new TabBottomSheetWebUi(
+                        context,
+                        containerView,
+                        mWindowAndroid,
+                        mContextMenuPopulatorFactory,
+                        mSelectionDropdownMenuDelegate,
+                        Color.WHITE,
+                        TabBottomSheetClientType.UNKNOWN,
+                        CoBrowseContainerType.BOTTOM_SHEET,
+                        null,
+                        null,
+                        mockProvider);
+        assertEquals(
+                mockProvider, webUi.getWebViewResizingHelper().getComponentProviderForTesting());
+    }
+
+    @Test
+    public void testConstructor_WithNullComponentProvider() {
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        View containerView = new View(context);
+        TabBottomSheetWebUi webUi =
+                new TabBottomSheetWebUi(
+                        context,
+                        containerView,
+                        mWindowAndroid,
+                        mContextMenuPopulatorFactory,
+                        mSelectionDropdownMenuDelegate,
+                        Color.WHITE,
+                        TabBottomSheetClientType.UNKNOWN,
+                        CoBrowseContainerType.BOTTOM_SHEET,
+                        null,
+                        null,
+                        null);
+        assertNull(webUi.getWebViewResizingHelper().getComponentProviderForTesting());
+    }
+
+    @Test
     public void testSetWebContents_SameWebContents_Noop() {
         mWebUi.setWebContents(mWebContents, true);
         verify(mWebContents, times(1)).setDelegates(any(), any(), any(), eq(mWindowAndroid), any());
@@ -792,7 +840,8 @@ public class TabBottomSheetWebUiUnitTest {
                     clientType,
                     containerType,
                     ephemeralTabOpener,
-                    readLaterOpener);
+                    readLaterOpener,
+                    mock(CoBrowseComponentProvider.class));
             mMockContentView = mockContentView;
         }
 
