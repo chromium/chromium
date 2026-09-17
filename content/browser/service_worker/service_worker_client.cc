@@ -537,6 +537,14 @@ ServiceWorkerClient::CommitResponse(
       policy_container_policies, std::move(coep_reporter),
       std::move(dip_reporter), std::move(ukm_source_id));
 
+  // Pre-commit request interception may attach a controller before the real
+  // response arrive. If the final policies make the client ineligible, shed any
+  // attached controller and matching registrations.
+  if (!IsEligibleForServiceWorkerController()) {
+    SetControllerRegistration(nullptr, /*notify_controllerchange=*/false);
+    RemoveAllMatchingRegistrations();
+  }
+
   // `network_url_loader_factory_for_prefetch_` is no longer used after commit.
   network_url_loader_factory_for_prefetch_.reset();
 

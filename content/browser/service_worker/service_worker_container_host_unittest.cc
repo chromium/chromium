@@ -385,6 +385,22 @@ TEST_F(ServiceWorkerContainerHostTest, ContextSecurity) {
                    ->IsEligibleForServiceWorkerController());
 }
 
+TEST_F(ServiceWorkerContainerHostTest,
+       CommitResponse_IneligibleClientClearsMatchingRegistrations) {
+  ScopedServiceWorkerClient client = CreateServiceWorkerClient(
+      context_.get(), GURL("https://www.example.com/example1"));
+  ASSERT_EQ(registration2_, client->MatchRegistration());
+
+  client->SetDisallowsServiceWorkerControl();
+  EXPECT_FALSE(client->IsEligibleForServiceWorkerController());
+
+  CommittedServiceWorkerClient committed_client(
+      std::move(client),
+      GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                              /*mock frame_routing_id=*/1));
+  EXPECT_EQ(nullptr, committed_client->MatchRegistration());
+}
+
 TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_SameOriginRedirect) {
   const GURL url1("https://origin1.example.com/page1.html");
   const GURL url2("https://origin1.example.com/page2.html");
