@@ -66,6 +66,7 @@ try_.builder(
     #         "build/fuchsia/sdk_override.txt",
     #     ],
     # ),
+    execution_timeout = 6 * time.hour,
     experiments = {
         "luci.buildbucket.run_in_turboci": 100,
     },
