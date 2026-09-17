@@ -1,0 +1,95 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package trusted_vault_pb;
+
+// TODO(crbug.com/542895033): Eventually local_trusted_vault.proto will be
+// deprecated and removed. Relevant messages (LocalTrustedVaultKey and
+// LocalTrustedVaultDegradedRecoverabilityState) should be moved directly into
+// this file or a shared base proto, and local_trusted_vault.proto removed.
+import "local_trusted_vault.proto";
+
+// Physical device key pair details shared across ALL security domains for a
+// user.
+message SharedRecoveryFactorData {
+  // Physical device key pair for this Chrome client.
+  // Note: SecureBox encodes the public key of the key pair in the byte
+  // representation of the private key, so storing the private key is
+  // sufficient.
+  optional bytes private_key_material = 1;
+}
+
+// Generic per-domain registration status for any local recovery factor.
+message RecoveryFactorRegistrationInfo {
+  // LocalRecoveryFactorType enum value.
+  optional int32 factor_type = 1;
+
+  // Indicates whether this recovery factor has successfully registered in
+  // (joined) this security domain on the server.
+  optional bool registered = 2;
+}
+
+// Domain-scoped data for a specific security domain (e.g. ChromeSync,
+// Passkeys).
+message DomainData {
+  // SecurityDomainId enum value.
+  optional int32 domain_id = 1;
+
+  // All vault keys known for this user within this domain.
+  repeated LocalTrustedVaultKey vault_key = 2;
+
+  // Version (epoch) of the last vault key in `vault_key`.
+  optional int32 last_vault_key_version = 3;
+
+  // Whether local vault keys have been marked as stale by consumers.
+  optional bool keys_marked_as_stale_by_consumer = 4;
+
+  // Per-domain recovery factor registration records (e.g. physical device
+  // membership, iCloud keychain).
+  repeated RecoveryFactorRegistrationInfo recovery_factor_registration_info = 5;
+
+  // Domain-scoped recoverability state (indicating whether recoverability is
+  // degraded).
+  optional LocalTrustedVaultDegradedRecoverabilityState
+      degraded_recoverability_state = 6;
+
+  // Domain-scoped request throttling timestamp in UNIX epoch milliseconds.
+  // Kept per-domain so domain errors on domain A do not throttle domain B.
+  optional int64 last_failed_request_millis_since_unix_epoch = 7;
+
+  // Indicates whether the last registration attempt for this domain returned
+  // that the local data is obsolete.
+  optional bool last_registration_returned_local_data_obsolete = 8;
+}
+
+// Multi-domain storage record for a single authenticated user (Gaia ID).
+message UserDomainData {
+  // Gaia ID string identifying the user account.
+  optional bytes gaia_id = 1;
+
+  // Shared recovery factor identity (physical device key pair).
+  optional SharedRecoveryFactorData shared_recovery_factor_data = 2;
+
+  // Per-domain vault keys, domain membership statuses, and domain factor
+  // states.
+  repeated DomainData domain_data = 3;
+
+  // Flag indicating whether local keys for this user account should be deleted
+  // when the account is no longer the primary account.
+  optional bool should_delete_keys_when_non_primary = 4;
+}
+
+// Root snapshot message stored on disk containing all multi-domain local
+// trusted vault state across accounts.
+message LocalDomainsData {
+  // List of per-user multi-domain records stored in local vault storage.
+  repeated UserDomainData user = 1;
+
+  // Schema format version to support future schema evolution and migration.
+  optional int32 data_version = 2;
+}

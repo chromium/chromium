@@ -9,7 +9,7 @@
 namespace trusted_vault {
 
 std::optional<SecurityDomainId> GetSecurityDomainByName(std::string_view name) {
-  static_assert(static_cast<int>(SecurityDomainId::kMaxValue) == 1,
+  static_assert(static_cast<int>(SecurityDomainId::kMaxValue) == 2,
                 "Update GetSecurityDomainByName and its unit tests when adding "
                 "SecurityDomainId enum values");
   static constexpr auto kSecurityDomainNames =
