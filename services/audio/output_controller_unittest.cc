@@ -568,6 +568,8 @@ TEST_F(OutputControllerTest, ProcessDeviceChangeTimeHistogram) {
       "Media.AudioOutputController.ProcessDeviceChangeTime.Suspended", 0);
   histogram_tester.ExpectTotalCount(
       "Media.AudioOutputController.ProcessDeviceChangeTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "Media.AudioOutputController.CloseStreamTime", 1);
 
   // Simulate a device change while the system is suspended.
   base::test::ScopedPowerMonitorTestSource power_monitor_source;
@@ -580,6 +582,8 @@ TEST_F(OutputControllerTest, ProcessDeviceChangeTimeHistogram) {
       "Media.AudioOutputController.ProcessDeviceChangeTime2", 1);
   histogram_tester.ExpectTotalCount(
       "Media.AudioOutputController.ProcessDeviceChangeTime.Suspended", 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.AudioOutputController.CloseStreamTime", 2);
 
   power_monitor_source.Resume();
   ChangeDevice();
@@ -588,8 +592,12 @@ TEST_F(OutputControllerTest, ProcessDeviceChangeTimeHistogram) {
       "Media.AudioOutputController.ProcessDeviceChangeTime2", 2);
   histogram_tester.ExpectTotalCount(
       "Media.AudioOutputController.ProcessDeviceChangeTime.Suspended", 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.AudioOutputController.CloseStreamTime", 3);
 
   Close();
+  histogram_tester.ExpectTotalCount(
+      "Media.AudioOutputController.CloseStreamTime", 4);
 }
 
 TEST_F(OutputControllerTest, PlayPauseDeviceChangeClose) {

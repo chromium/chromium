@@ -600,6 +600,14 @@ void OutputController::OnError(ErrorType type) {
   }
 }
 
+void OutputController::CloseStream() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  SCOPED_UMA_HISTOGRAM_TIMER("Media.AudioOutputController.CloseStreamTime");
+  TRACE_EVENT0("audio", "OutputController::CloseStream");
+  stream_->Close();
+  stream_ = nullptr;
+}
+
 void OutputController::StopCloseAndClearStream() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("audio", "OutputController::StopCloseAndClearStream");
@@ -607,8 +615,7 @@ void OutputController::StopCloseAndClearStream() {
   // Allow calling unconditionally and bail if we don't have a stream_ to close.
   if (stream_) {
     StopStream();
-    stream_->Close();
-    stream_ = nullptr;
+    CloseStream();
   }
 
   state_ = kEmpty;
