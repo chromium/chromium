@@ -1153,3 +1153,92 @@ TEST_F(OmniboxEverywhereControllerTest, MAYBE_InvocationSourceMetricRecorded) {
 
   histogram_tester.ExpectTotalCount("OmniboxEverywhere.InvocationSource", 4);
 }
+
+TEST_F(OmniboxEverywhereControllerTest, EnablesBackgroundModeOnFirstInvoke) {
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  ASSERT_TRUE(local_state);
+
+  const PrefService::Preference* bg_mode_pref = local_state->FindPreference(
+      omnibox_everywhere::prefs::kOmniboxEverywhereBackgroundMode);
+  const PrefService::Preference* launch_pref = local_state->FindPreference(
+      omnibox_everywhere::prefs::kOmniboxEverywhereLaunchOnStartup);
+  ASSERT_TRUE(bg_mode_pref);
+  ASSERT_TRUE(launch_pref);
+
+  // Initially disabled by default.
+  EXPECT_TRUE(bg_mode_pref->IsDefaultValue());
+  EXPECT_FALSE(local_state->GetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereBackgroundMode));
+  EXPECT_TRUE(launch_pref->IsDefaultValue());
+  EXPECT_FALSE(local_state->GetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereLaunchOnStartup));
+
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  // First invocation enables background mode and launch on startup.
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kStatusTrayIcon,
+                      profile_.get(), GetContext());
+  EXPECT_FALSE(bg_mode_pref->IsDefaultValue());
+  EXPECT_TRUE(local_state->GetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereBackgroundMode));
+  EXPECT_FALSE(launch_pref->IsDefaultValue());
+  EXPECT_TRUE(local_state->GetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereLaunchOnStartup));
+
+  // If user subsequently disables background mode / launch on startup in
+  // settings, subsequent invocations must not re-enable them.
+  local_state->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereBackgroundMode, false);
+  local_state->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereLaunchOnStartup, false);
+  EXPECT_FALSE(bg_mode_pref->IsDefaultValue());
+  EXPECT_FALSE(launch_pref->IsDefaultValue());
+
+  controller.Hide();
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kStatusTrayIcon,
+                      profile_.get(), GetContext());
+  EXPECT_FALSE(local_state->GetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereBackgroundMode));
+  EXPECT_FALSE(local_state->GetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereLaunchOnStartup));
+}
+
+TEST_F(OmniboxEverywhereControllerTest,
+       DoesNotOverrideExplicitBackgroundModePrefOnInvoke) {
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  ASSERT_TRUE(local_state);
+
+  // User explicitly disables background mode and launch on startup before ever
+  // invoking Omnibox Everywhere.
+  local_state->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereBackgroundMode, false);
+  local_state->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereLaunchOnStartup, false);
+  const PrefService::Preference* bg_mode_pref = local_state->FindPreference(
+      omnibox_everywhere::prefs::kOmniboxEverywhereBackgroundMode);
+  const PrefService::Preference* launch_pref = local_state->FindPreference(
+      omnibox_everywhere::prefs::kOmniboxEverywhereLaunchOnStartup);
+  ASSERT_TRUE(bg_mode_pref);
+  ASSERT_TRUE(launch_pref);
+  EXPECT_FALSE(bg_mode_pref->IsDefaultValue());
+  EXPECT_FALSE(launch_pref->IsDefaultValue());
+
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kStatusTrayIcon,
+                      profile_.get(), GetContext());
+  EXPECT_FALSE(local_state->GetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereBackgroundMode));
+  EXPECT_FALSE(local_state->GetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereLaunchOnStartup));
+}
