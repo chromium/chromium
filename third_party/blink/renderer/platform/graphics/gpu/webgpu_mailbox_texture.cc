@@ -85,12 +85,16 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     return nullptr;
   }
 
+  scoped_refptr<gpu::ClientSharedImage> dest_shared_image =
+      lease->GetSharedImage();
+  if (!dest_shared_image) {
+    return nullptr;
+  }
+
   if (!is_dummy_mailbox_texture) {
     bool copy_success = false;
     if (image->IsTextureBacked()) {
-      auto dest_shared_image = lease->GetSharedImage();
-      if (auto shared_image = image->GetSharedImage();
-          shared_image && dest_shared_image) {
+      if (auto shared_image = image->GetSharedImage()) {
         gfx::Rect copy_rect(image_sub_rect.x(), image_sub_rect.y(),
                             mailbox_texture_width, mailbox_texture_height);
         auto result = context_provider_wrapper->ContextProvider()
@@ -109,8 +113,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
       if (sk_sp<SkImage> skia_image = paint_image.GetSwSkImage()) {
         SkPixmap pixmap;
         SkPixmap subset;
-        auto dest_shared_image = lease->GetSharedImage();
-        if (dest_shared_image && skia_image->peekPixels(&pixmap) &&
+        if (skia_image->peekPixels(&pixmap) &&
             pixmap.extractSubset(
                 &subset, SkIRect::MakeXYWH(
                              image_sub_rect.x(), image_sub_rect.y(),
@@ -132,16 +135,15 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     }
   }
 
-  scoped_refptr<gpu::ClientSharedImage> shared_image = lease->GetSharedImage();
-  if (!shared_image) {
+  if (!lease->GetSharedImage()) {
     return nullptr;
   }
 
   gpu::SyncToken sync_token = lease->GetSyncToken();
 
   return WebGPUMailboxTexture::FromCanvasResource(
-      dawn_control_client, device, usage, std::move(shared_image), sync_token,
-      std::move(lease));
+      dawn_control_client, device, usage, std::move(dest_shared_image),
+      sync_token, std::move(lease));
 }
 
 // static
