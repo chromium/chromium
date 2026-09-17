@@ -51,8 +51,13 @@ bool BinaryFeatureExtractor::ExtractImageFeatures(
 #endif
 
   {
-    base::File source_file(file_path,
-                           base::File::FLAG_OPEN | base::File::FLAG_READ);
+    // FLAG_WIN_SHARE_DELETE allows the download's rename to its final name to
+    // proceed on Windows while this read handle is still open, since the
+    // rename can otherwise take several retries to succeed on large files
+    // (https://crbug.com/545877431).
+    base::File source_file(file_path, base::File::FLAG_OPEN |
+                                          base::File::FLAG_READ |
+                                          base::File::FLAG_WIN_SHARE_DELETE);
     if (!source_file.IsValid()) {
       return false;
     }
@@ -86,7 +91,9 @@ bool BinaryFeatureExtractor::ExtractImageFeaturesFromFile(
 void BinaryFeatureExtractor::ExtractDigest(
     const base::FilePath& file_path,
     ClientDownloadRequest_Digests* digests) {
-  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  // See the comment in ExtractImageFeatures() about FLAG_WIN_SHARE_DELETE.
+  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                 base::File::FLAG_WIN_SHARE_DELETE);
   if (file.IsValid()) {
     auto buf = base::HeapArray<uint8_t>::Uninit(1 << 12);
     crypto::hash::Hasher hasher(crypto::hash::HashKind::kSha256);

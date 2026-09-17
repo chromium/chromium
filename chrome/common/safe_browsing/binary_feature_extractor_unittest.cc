@@ -16,11 +16,12 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -134,6 +135,46 @@ TEST_F(BinaryFeatureExtractorTest, ExtractBigBlockDigest) {
   WriteFileToHash(data);
   ExpectFileDigestEq(kDigest);
 }
+
+#if BUILDFLAG(IS_WIN)
+// Platform sanity check for https://crbug.com/545877431: verifies that
+// Windows allows base::Move() to succeed on a file while another handle
+// opened with FLAG_WIN_SHARE_DELETE (the flag ExtractImageFeatures and
+// ExtractDigest now pass when opening a download for scanning) is still open
+// on it, instead of failing with a sharing violation. This does not assert
+// that ExtractDigest/ExtractImageFeatures hold such a handle open
+// concurrently with the move: both functions open, read, and close their
+// file handle synchronously before returning, so there is no seam in the
+// current implementation to observe or race a move against that in-progress
+// read. The calls below only confirm that both functions still work
+// correctly on the file once it has been renamed.
+TEST_F(BinaryFeatureExtractorTest, ShareDeleteAllowsRenameOfOpenFile) {
+  constexpr char kTestData[] = "some file content";
+  WriteFileToHash(base::as_byte_span(std::string_view(kTestData)));
+
+  base::File open_handle(path_, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                    base::File::FLAG_WIN_SHARE_DELETE);
+  ASSERT_TRUE(open_handle.IsValid());
+
+  base::FilePath renamed_path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("renamed.dll"));
+  EXPECT_TRUE(base::Move(path_, renamed_path));
+
+  // Verify that ExtractDigest and ExtractImageFeatures execute successfully
+  // on the renamed file while an open handle is held.
+  ClientDownloadRequest_Digests digests;
+  extractor_->ExtractDigest(renamed_path, &digests);
+  EXPECT_TRUE(digests.has_sha256());
+
+  auto mock_extractor = base::MakeRefCounted<MockBinaryFeatureExtractor>();
+  EXPECT_CALL(*mock_extractor, ExtractImageFeaturesFromData(_, _, _, _))
+      .WillOnce(testing::Return(true));
+  ClientDownloadRequest_ImageHeaders image_headers;
+  EXPECT_TRUE(mock_extractor->ExtractImageFeatures(
+      renamed_path, BinaryFeatureExtractor::kDefaultOptions, &image_headers,
+      nullptr));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(BinaryFeatureExtractorTest, CanRemoveFileDuringExecution) {
   // mmap fails if the length parameter is 0, so we need a non-empty file.
