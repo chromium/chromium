@@ -23,11 +23,6 @@ namespace ash {
 
 namespace {
 
-const AccountId account_id_1 =
-    AccountId::FromUserEmailGaiaId("user1@test.com", GaiaId("1111"));
-const AccountId account_id_2 =
-    AccountId::FromUserEmailGaiaId("user2@test.com", GaiaId("2222"));
-
 // Creates an image of size |size|.
 gfx::ImageSkia CreateImage(int width, int height, SkColor color) {
   SkBitmap bitmap;
@@ -95,6 +90,11 @@ class KeyboardBacklightColorControllerTest : public NoSessionAshTestBase {
   }
 
  protected:
+  const AccountId account_id_1 =
+      AccountId::FromUserEmailGaiaId("user1@test.com", GaiaId("1111"));
+  const AccountId account_id_2 =
+      AccountId::FromUserEmailGaiaId("user2@test.com", GaiaId("2222"));
+
   SkColor displayed_color() const {
     return controller_->displayed_color_for_testing_;
   }

@@ -44,15 +44,12 @@ constexpr int kNumberIconFontSize = 11;
 
 constexpr auto kSeparatorPadding = gfx::Insets::VH(6, 4);
 
-const gfx::FontList& GetNumberIconFontList() {
+gfx::FontList GetNumberIconFontList() {
   // |kNumberIconFontSize| is hard-coded as 11, which should be updated when
   // the tray icon size is changed.
   DCHECK_EQ(18, kUnifiedTrayIconSize);
-
-  static gfx::FontList font_list({"Roboto"}, gfx::Font::NORMAL,
-                                 kNumberIconFontSize,
-                                 gfx::Font::Weight::MEDIUM);
-  return font_list;
+  return gfx::FontList({"Roboto"}, gfx::Font::NORMAL, kNumberIconFontSize,
+                       gfx::Font::Weight::MEDIUM);
 }
 
 ui::ColorId SeparatorIconColorId(session_manager::SessionState state) {

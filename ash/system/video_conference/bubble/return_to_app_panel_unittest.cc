@@ -40,6 +40,11 @@ namespace ash::video_conference {
 
 namespace {
 
+// Used for verifying displayed url.
+constexpr char kMeetTestUrl[] = "https://meet.google.com/abc-xyz/ab-123";
+constexpr char16_t kExpectedMeetDisplayedUrl[] =
+    u"meet.google.com/abc-xyz/ab-123";
+
 VideoConferenceMediaAppInfo CreateFakeMediaApp(
     bool is_capturing_camera,
     bool is_capturing_microphone,
@@ -71,11 +76,6 @@ void VerifyReturnToAppButtonInfo(ReturnToAppButton* button,
   EXPECT_EQ(is_capturing_screen, button->is_capturing_screen());
   EXPECT_EQ(display_text, button->label()->GetText());
 }
-
-// Used for verifying displayed url.
-const std::string kMeetTestUrl = "https://meet.google.com/abc-xyz/ab-123";
-const std::u16string kExpectedMeetDisplayedUrl =
-    u"meet.google.com/abc-xyz/ab-123";
 
 }  // namespace
 

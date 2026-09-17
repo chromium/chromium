@@ -417,7 +417,7 @@ void AnchoredNudgeManagerImpl::Cancel(const std::string& id) {
 
 void AnchoredNudgeManagerImpl::MaybeRecordNudgeAction(
     NudgeCatalogName catalog_name) {
-  auto& nudge_registry = GetNudgeRegistry();
+  auto& nudge_registry = nudge_registry_;
   auto it = std::find_if(
       std::begin(nudge_registry), std::end(nudge_registry),
       [catalog_name](
@@ -527,15 +527,7 @@ AnchoredNudge* AnchoredNudgeManagerImpl::GetNudgeIfShown(
 }
 
 void AnchoredNudgeManagerImpl::ResetNudgeRegistryForTesting() {
-  GetNudgeRegistry().clear();
-}
-
-// static
-std::vector<std::pair<NudgeCatalogName, base::TimeTicks>>&
-AnchoredNudgeManagerImpl::GetNudgeRegistry() {
-  static auto nudge_registry =
-      std::vector<std::pair<NudgeCatalogName, base::TimeTicks>>();
-  return nudge_registry;
+  nudge_registry_.clear();
 }
 
 void AnchoredNudgeManagerImpl::RecordNudgeShown(NudgeCatalogName catalog_name) {
@@ -543,7 +535,7 @@ void AnchoredNudgeManagerImpl::RecordNudgeShown(NudgeCatalogName catalog_name) {
       chromeos::kNotifierFrameworkNudgeShownCountHistogram, catalog_name);
 
   // Record nudge shown time in the nudge registry.
-  auto& nudge_registry = GetNudgeRegistry();
+  auto& nudge_registry = nudge_registry_;
   auto it = std::find_if(
       std::begin(nudge_registry), std::end(nudge_registry),
       [catalog_name](

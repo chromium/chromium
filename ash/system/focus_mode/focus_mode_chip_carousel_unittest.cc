@@ -24,16 +24,17 @@
 
 namespace {
 
+constexpr int kWidgetWidth = 320;
+constexpr float kGradientWidth = 16;
+
 MATCHER_P(LabelMatcher, task, "") {
   return static_cast<views::LabelButton*>(arg)->GetText() == task;
 }
 
-std::vector<std::string> kTestTaskTitles = {"Preparing for I485 form",
-                                            "Podcast interview Script",
-                                            "Book a flight to Seoul"};
-
-constexpr int kWidgetWidth = 320;
-constexpr float kGradientWidth = 16;
+std::vector<std::string> GetTestTaskTitles() {
+  return {"Preparing for I485 form", "Podcast interview Script",
+          "Book a flight to Seoul"};
+}
 
 }  // namespace
 
@@ -120,7 +121,7 @@ TEST_F(FocusModeChipCarouselTest, ChipCarouselPopulates) {
   };
 
   validate_tasks({});
-  validate_tasks(kTestTaskTitles);
+  validate_tasks(GetTestTaskTitles());
   validate_tasks({"Only one task"});
   validate_tasks({"Maximum", "of", "five", "tasks", "populated"});
 }
@@ -155,7 +156,7 @@ TEST_F(FocusModeChipCarouselTest, GradientOnScroll) {
   EXPECT_FALSE(GetScrollView()->layer()->HasGradientMask());
 
   // Three tasks should overflow the scroll view and the gradient should appear.
-  focus_mode_chip_carousel()->SetTasks(GetTasks(kTestTaskTitles));
+  focus_mode_chip_carousel()->SetTasks(GetTasks(GetTestTaskTitles()));
   views::test::RunScheduledLayout(focus_mode_chip_carousel());
   EXPECT_TRUE(GetScrollView()->layer()->HasGradientMask());
 
@@ -198,7 +199,7 @@ TEST_F(FocusModeChipCarouselTest, GradientOnScroll) {
 TEST_F(FocusModeChipCarouselTest, GradientInRTL) {
   base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
-  focus_mode_chip_carousel()->SetTasks(GetTasks(kTestTaskTitles));
+  focus_mode_chip_carousel()->SetTasks(GetTasks(GetTestTaskTitles()));
   views::test::RunScheduledLayout(focus_mode_chip_carousel());
   EXPECT_TRUE(GetScrollView()->layer()->HasGradientMask());
 

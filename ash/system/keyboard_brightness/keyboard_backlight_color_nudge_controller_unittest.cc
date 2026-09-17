@@ -19,8 +19,6 @@ namespace ash {
 namespace {
 
 constexpr char kUser1[] = "user1@test.com";
-const AccountId account_id_1 =
-    AccountId::FromUserEmailGaiaId(kUser1, GaiaId("1111"));
 
 }  // namespace
 
@@ -48,6 +46,8 @@ class KeyboardBacklightColorNudgeControllerTest : public AshTestBase {
   }
 
   KeyboardBacklightColorNudgeController controller_;
+  const AccountId account_id_1_ =
+      AccountId::FromUserEmailGaiaId(kUser1, GaiaId("1111"));
 };
 
 TEST_F(KeyboardBacklightColorNudgeControllerTest, ShowEducationNudge) {
@@ -55,7 +55,7 @@ TEST_F(KeyboardBacklightColorNudgeControllerTest, ShowEducationNudge) {
   views::View anchor_view;
   anchor_view.SetBounds(200, 200, 10, 10);
 
-  SimulateUserLogin(account_id_1);
+  SimulateUserLogin(account_id_1_);
   EXPECT_TRUE(can_show_nudge());
   controller_.MaybeShowEducationNudge(&anchor_view);
 
@@ -68,7 +68,7 @@ TEST_F(KeyboardBacklightColorNudgeControllerTest, ShowEducationNudge) {
 
 TEST_F(KeyboardBacklightColorNudgeControllerTest,
        WontShowNudgeAfterUserSelectsColor) {
-  SimulateUserLogin(account_id_1);
+  SimulateUserLogin(account_id_1_);
   EXPECT_TRUE(can_show_nudge());
 
   controller_.SetUserPerformedAction();

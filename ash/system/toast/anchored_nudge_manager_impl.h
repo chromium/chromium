@@ -95,9 +95,8 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   class NudgeWidgetObserver;
   class PausableTimer;
 
-  // Returns the registry which keeps track of when a nudge was last shown.
-  static std::vector<std::pair<NudgeCatalogName, base::TimeTicks>>&
-  GetNudgeRegistry();
+  // Keeps track of when a nudge was last shown.
+  std::vector<std::pair<NudgeCatalogName, base::TimeTicks>> nudge_registry_;
 
   // Records the nudge `ShownCount` metric, and stores the time the nudge was
   // shown in the nudge registry.
