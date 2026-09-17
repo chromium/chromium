@@ -2,8 +2,13 @@
 
 **Parent:** [AGENTS.md](../AGENTS.md)
 
-Physical source directories and entry points across Web Apps. Read the linked
-READMEs for architecture details and design docs.
+Physical source directories and entry points across Web Apps. Architecture
+follows downward layering: Embedders (`chrome/browser/web_applications/`,
+`chrome/android/`) depend on Shared Components (`components/webapps/`), which
+depend on `content/` and `third_party/blink/`. Lower layers never depend on
+higher layers.
+
+Read the linked READMEs for architecture details and design docs.
 
 ## 1. Shared Components (`components/webapps/`)
 

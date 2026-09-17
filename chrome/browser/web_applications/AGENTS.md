@@ -13,6 +13,19 @@ storage, sync, and OS integration.
 - [Jobs](jobs/README.md)
 - [Desktop Testing Guide](docs/testing.md)
 
+## Layering & Decoupling Invariants
+
+- **App Service Decoupling (crbug.com/523338828):** App Service sits *above* Web
+  Apps as a downstream consumer/publisher. `WebAppProvider` must not call into
+  App Service. Do NOT add new dependencies on
+  `//components/services/app_service` or `apps::` types in `web_applications/`.
+  Always define or use `webapps::` types.
+- **Extensions Decoupling:** Web Apps is decoupled from Extensions. All
+  interactions with the extension system (e.g. for legacy preinstalled app
+  migration) must go through the fakeable
+  [`ExtensionsManager`](extensions_manager.h) abstraction. Never introduce
+  direct `extensions/` dependencies into Web Apps.
+
 ## Command Scheduling & Locking Rules
 
 1. **State modification requires a Command:** Operations modifying or reading

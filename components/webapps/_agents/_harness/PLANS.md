@@ -32,8 +32,8 @@ step-by-step across reviewable Gerrit Changelists (CLs).
    complete. Document surprises, bugs, and architectural decisions discovered
    along the way.
 5. **Harness Freshness Audit:** The final milestone must explicitly audit and
-   update `_agents/` (e.g., `CODE_STRUCTURE.md`, `DEPENDENCIES.md`, `AGENTS.md`)
-   to reflect any architectural shifts made during development.
+   update `_agents/` (e.g., `CODE_STRUCTURE.md`, `AGENTS.md`) to reflect any
+   architectural shifts made during development.
 
 ## Authoring an Execution Plan
 
@@ -124,8 +124,9 @@ Record decisions made while working on the plan, including rationale and date.
     - Run full target test suite with `tools/autotest.py` or `autoninja`.
     - Run presubmit checks with `git cl presubmit -u --force`.
     - **Harness Freshness Audit:** Inspect code changes and update
-      `_agents/CODE_STRUCTURE.md`, `_agents/DEPENDENCIES.md`, or `_agents/rules/`
-      if architecture, boundaries, or guidelines shifted.
+      `_agents/CODE_STRUCTURE.md` or `AGENTS.md`
+      if architecture, layering, or guidelines shifted.
+
 *   **Validation and Acceptance:**
     - All tests green, presubmit passes, harness updated and accurate.
 
