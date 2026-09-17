@@ -2272,7 +2272,7 @@ void XRSession::OnFrame(double timestamp,
 
     if (should_update_layers_backend_) {
       should_update_layers_backend_ = false;
-      if (layers_enabled_) {
+      if (LayerManager()) {
         // This means that the page has updated the layers since it last
         // received a new frame, but we haven't updated the backend yet, so the
         // page won't be able to use those layers just yet as they expect. For
@@ -2292,10 +2292,11 @@ void XRSession::OnFrame(double timestamp,
       }
     }
 
-    // If the 'layers' feature is disabled, the shared image lacks an associated
+    // If LayerManager is not available, the shared image lacks an associated
     // layer ID. The shared image must then be bound to the first layer.
     layer_shared_image_manager_.SetSharedImages(
-        layers_enabled_ ? nullptr : render_state_->GetFirstLayer(),
+        LayerManager() ? render_state_->baseLayer()
+                       : render_state_->GetFirstLayer(),
         std::move(shared_images));
 
     // Dispatch the "redraw" event for layers that should be updated.
