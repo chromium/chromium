@@ -76,7 +76,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
 }  // namespace
 
 // Tests DevToolsURLLoaderInterceptor and DevToolsURLLoaderFactoryProxy,
-// verifying request ID uniqueness per process, bad message enforcement, and
+// verifying request ID collision handling and restart behavior, and
 // auth challenge routing across daisy-chained interceptors.
 class DevToolsURLLoaderInterceptorTest : public testing::Test {
  public:
@@ -96,6 +96,7 @@ class DevToolsURLLoaderInterceptorTest : public testing::Test {
             [this](std::unique_ptr<InterceptedRequestInfo> info) {
               ASSERT_TRUE(info);
               last_interception_id_ = info->interception_id;
+              last_intercepted_info_ = std::move(info);
               if (on_intercepted_) {
                 std::move(on_intercepted_).Run();
               }
@@ -152,6 +153,7 @@ class DevToolsURLLoaderInterceptorTest : public testing::Test {
   network::TestURLLoaderFactory target_factory_;
   std::unique_ptr<DevToolsURLLoaderInterceptor> interceptor_;
   std::string last_interception_id_;
+  std::unique_ptr<InterceptedRequestInfo> last_intercepted_info_;
   base::OnceClosure on_intercepted_;
 };
 
@@ -166,10 +168,115 @@ class TestContinueRequestCallback
   void fallThrough() override {}
 };
 
-// Verifies that a renderer process attempting to reuse an in-flight request ID
-// is terminated via mojo::ReportBadMessage to prevent request hijacking.
+// Verifies that a browser-initiated request using a renderer process ID
+// (such as a dedicated worker main script fetch via WorkerScriptFetcher)
+// with a negative request ID succeeds and is intercepted without error.
 TEST_F(DevToolsURLLoaderInterceptorTest,
-       DuplicateRequestIdFromRendererKillsProcess) {
+       WorkerMainScriptFetchWithNegativeRequestIdSucceeds) {
+  constexpr int kRendererProcessId = 42;
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      CreateFactoryForProcess(kRendererProcessId);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  StartedLoader loader = StartRequestAndExpectInterception(
+      factory.get(), /*request_id=*/-2, GURL("http://example.com/worker.js"));
+
+  EXPECT_FALSE(loader.interception_id.empty());
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+
+  interceptor_->ContinueInterceptedRequest(
+      loader.interception_id,
+      std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(),
+      std::make_unique<TestContinueRequestCallback>());
+
+  target_factory_.WaitForRequest(GURL("http://example.com/worker.js"));
+  target_factory_.SimulateResponseForPendingRequest(
+      "http://example.com/worker.js", "console.log('worker');");
+  loader.client->RunUntilComplete();
+
+  EXPECT_EQ(net::OK, loader.client->completion_status().error_code);
+}
+
+// Verifies that when a request ID collides with an in-flight request (such
+// as a colliding request reusing the negative request ID of an in-flight worker
+// script fetch, as in crbug.com/497350668), the previous job is immediately
+// shut down upon collision, and subsequent auth challenges route to the new
+// request.
+TEST_F(DevToolsURLLoaderInterceptorTest,
+       CollidingRequestIdShutsDownPreviousJobAndRoutesAuthToNewJob) {
+  constexpr int kRendererProcessId = 42;
+
+  // Configure interceptor to handle auth challenges.
+  std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns;
+  patterns.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+                        DevToolsURLLoaderInterceptor::kRequest);
+  interceptor_->SetPatterns(std::move(patterns), /*handle_auth=*/true);
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      CreateFactoryForProcess(kRendererProcessId);
+
+  // 1. First request initiated with a negative request ID (e.g. worker fetch).
+  StartedLoader first_loader = StartRequestAndExpectInterception(
+      factory.get(), /*request_id=*/-2,
+      GURL("http://example.com/victim_worker.js"));
+  EXPECT_FALSE(first_loader.interception_id.empty());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  // 2. Second request reuses request_id = -2.
+  StartedLoader colliding_loader = StartRequestAndExpectInterception(
+      factory.get(), /*request_id=*/-2, GURL("http://attacker.com/exploit"));
+
+  EXPECT_FALSE(colliding_loader.interception_id.empty());
+  EXPECT_NE(first_loader.interception_id, colliding_loader.interception_id);
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+
+  // Regression check 1 (b/497350668): In the vulnerability, the previous job
+  // remained active in the interceptor map. Verifying that the first client
+  // disconnects proves that existing_job->Shutdown() immediately tore down
+  // the previous loader upon collision.
+  first_loader.client->RunUntilDisconnect();
+
+  // Forward the colliding request to the network so its job enters
+  // kRequestSent.
+  interceptor_->ContinueInterceptedRequest(
+      colliding_loader.interception_id,
+      std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(),
+      std::make_unique<TestContinueRequestCallback>());
+
+  // Simulate an HTTP auth challenge for the collided GlobalRequestID.
+  net::AuthChallengeInfo challenge;
+  challenge.scheme = "basic";
+  challenge.realm = "attacker_realm";
+
+  base::RunLoop auth_loop;
+  on_intercepted_ = auth_loop.QuitClosure();
+
+  DevToolsURLLoaderInterceptor::HandleAuthRequest(
+      GlobalRequestID(ToOriginatingProcessIdUnsafe(kRendererProcessId),
+                      /*request_id=*/-2),
+      challenge, base::DoNothing());
+
+  auth_loop.Run();
+
+  // Regression check 2 (b/497350668): In the vulnerability, HandleAuthRequest()
+  // routed the auth challenge to the previous job rather than the new request.
+  // Verifying that the challenge is delivered to colliding_loader proves that
+  // auth is not redirected through to the previous job.
+  ASSERT_TRUE(last_intercepted_info_);
+  EXPECT_EQ(colliding_loader.interception_id,
+            last_intercepted_info_->interception_id);
+  EXPECT_NE(first_loader.interception_id,
+            last_intercepted_info_->interception_id);
+  ASSERT_TRUE(last_intercepted_info_->auth_challenge);
+  EXPECT_EQ("attacker_realm", last_intercepted_info_->auth_challenge->realm);
+}
+
+// Verifies that when a renderer restarts a request (e.g. Critical Client Hints
+// or cross-scheme redirects) with the same request ID while the previous loader
+// is still registered, the previous job is cleanly shut down and the new
+// request succeeds and completes.
+TEST_F(DevToolsURLLoaderInterceptorTest,
+       DuplicateRequestIdFromRendererShutsDownExistingJobAndSucceeds) {
   constexpr int kRendererProcessId = 42;
   mojo::Remote<network::mojom::URLLoaderFactory> factory =
       CreateFactoryForProcess(kRendererProcessId);
@@ -178,22 +285,30 @@ TEST_F(DevToolsURLLoaderInterceptorTest,
       factory.get(), /*request_id=*/1, GURL("http://example.com/first"));
   EXPECT_FALSE(first.interception_id.empty());
 
-  // Second request reusing request_id = 1 from the same process must fail.
-  network::ResourceRequest request2;
-  request2.url = GURL("http://example.com/second");
-  request2.method = "GET";
-
-  mojo::Remote<network::mojom::URLLoader> loader2;
-  network::TestURLLoaderClient client2;
   mojo::test::BadMessageObserver bad_message_observer;
+  // Second request reusing request_id = 1 from the same process.
+  StartedLoader second = StartRequestAndExpectInterception(
+      factory.get(), /*request_id=*/1, GURL("http://example.com/second"));
 
-  factory->CreateLoaderAndStart(
-      loader2.BindNewPipeAndPassReceiver(), /*request_id=*/1,
-      network::mojom::kURLLoadOptionNone, request2, client2.CreateRemote(),
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  EXPECT_FALSE(second.interception_id.empty());
+  EXPECT_NE(first.interception_id, second.interception_id);
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
 
-  EXPECT_EQ("DevTools: Duplicate request ID",
-            bad_message_observer.WaitForBadMessage());
+  // The first loader must be disconnected when its job was shut down.
+  first.client->RunUntilDisconnect();
+
+  // Continue the second request and verify end-to-end completion.
+  interceptor_->ContinueInterceptedRequest(
+      second.interception_id,
+      std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(),
+      std::make_unique<TestContinueRequestCallback>());
+
+  target_factory_.WaitForRequest(GURL("http://example.com/second"));
+  target_factory_.SimulateResponseForPendingRequest("http://example.com/second",
+                                                    "second response body");
+  second.client->RunUntilComplete();
+
+  EXPECT_EQ(net::OK, second.client->completion_status().error_code);
 }
 
 // Verifies that distinct request IDs from the same process both succeed.
@@ -262,10 +377,13 @@ TEST_F(DevToolsURLLoaderInterceptorTest,
   EXPECT_FALSE(bad_message_observer.got_bad_message());
 }
 
-// Verifies that a renderer attempting to reuse an in-flight request ID for a
-// data: scheme request is still terminated via mojo::ReportBadMessage.
-TEST_F(DevToolsURLLoaderInterceptorTest,
-       DuplicateRequestIdWithDataSchemeFromRendererKillsProcess) {
+// Verifies that when a renderer restarts a request to a data: scheme with
+// the same request ID while the previous loader is still registered, the
+// previous job is shut down and the data request forwards directly to the
+// target factory without error.
+TEST_F(
+    DevToolsURLLoaderInterceptorTest,
+    DuplicateRequestIdWithDataSchemeFromRendererShutsDownExistingJobAndSucceeds) {
   constexpr int kRendererProcessId = 42;
   mojo::Remote<network::mojom::URLLoaderFactory> factory =
       CreateFactoryForProcess(kRendererProcessId);
@@ -287,8 +405,18 @@ TEST_F(DevToolsURLLoaderInterceptorTest,
       network::mojom::kURLLoadOptionNone, data_request, client2.CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
-  EXPECT_EQ("DevTools: Duplicate request ID",
-            bad_message_observer.WaitForBadMessage());
+  target_factory_.WaitForRequest(GURL("data:text/plain,hello"));
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+  EXPECT_EQ(1, target_factory_.NumPending());
+
+  // The first loader must be disconnected when its job was shut down.
+  first.client->RunUntilDisconnect();
+
+  // Simulate completion of the data URL and verify it completes cleanly.
+  target_factory_.SimulateResponseForPendingRequest("data:text/plain,hello",
+                                                    "hello");
+  client2.RunUntilComplete();
+  EXPECT_EQ(net::OK, client2.completion_status().error_code);
 }
 
 // Verifies that a browser-initiated request (process_id = 0) colliding with an

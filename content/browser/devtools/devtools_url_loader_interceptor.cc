@@ -439,6 +439,7 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
       std::unique_ptr<Modifications> modifications,
       std::unique_ptr<ContinueInterceptedRequestCallback> callback);
   void Detach();
+  void Shutdown();
 
   void OnAuthRequest(
       const net::AuthChallengeInfo& auth_info,
@@ -473,7 +474,6 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   void StartRequest();
   void CancelRequest();
   void CompleteRequest(const network::URLLoaderCompletionStatus& status);
-  void Shutdown();
 
   std::unique_ptr<InterceptedRequestInfo> BuildRequestInfo(
       const network::mojom::URLResponseHeadPtr& head);
@@ -811,24 +811,40 @@ void DevToolsURLLoaderFactoryProxy::CreateLoaderAndStart(
     return;
   }
 
-  // Each active request for a given process must have a unique request_id
-  // so that network service callbacks (e.g. OnLoaderCreated) can unambiguously
-  // route back to the matching InterceptionJob, and to prevent compromised
-  // renderers from colliding with and hijacking active requests (b/497350668).
   GlobalRequestID global_req_id(ToOriginatingProcessIdUnsafe(process_id_),
                                 request_id);
-  if (interceptor->FindJobByGlobalId(global_req_id)) {
-    if (process_id_ > 0) {
-      mojo::ReportBadMessage("DevTools: Duplicate request ID");
+  if (InterceptionJob* existing_job =
+          interceptor->FindJobByGlobalId(global_req_id)) {
+    // Genuine child/renderer processes strictly have process IDs >= 1
+    // (content::ChildProcessId starts generating IDs at 1). Values <= 0
+    // represent browser-initiated contexts (0 for navigations, or -1 for
+    // invalid child IDs). Multiple concurrent browser requests may share these
+    // non-renderer IDs; shutting down the existing job would abort an active,
+    // independent load. Therefore, if a collision occurs on process_id_ <= 0,
+    // skip interception and forward directly to the target factory without
+    // touching the existing job (crbug.com/40276949).
+    if (process_id_ <= 0) {
+      target_factory_->CreateLoaderAndStart(std::move(loader), request_id,
+                                            options, request, std::move(client),
+                                            traffic_annotation);
       return;
     }
-    // Browser-initiated requests (e.g. navigations) may share process ID 0.
-    // If a collision occurs, skip interception and forward directly to the
-    // target factory to avoid crashing the browser (crbug.com/40276949).
-    target_factory_->CreateLoaderAndStart(std::move(loader), request_id,
-                                          options, request, std::move(client),
-                                          traffic_annotation);
-    return;
+
+    // A collision occurs in two scenarios:
+    // 1. Legitimate Blink restarts: An in-flight request is restarted (e.g.
+    //    Critical Client Hints, cross-scheme redirects, or Service Worker
+    //    fallback to network) while the previous loader's Mojo disconnection is
+    //    still in flight across IPC.
+    // 2. Attack vector (crbug.com/497350668): A compromised renderer attempts
+    // to reuse
+    //    an in-flight request ID (e.g. guessing the negative ID of a browser-
+    //    initiated worker script fetch) to hijack authentication challenges and
+    //    misdirect credentials to an attacker server.
+    // In both cases, shutting down the obsolete job safely handles the
+    // collision: for restarts, it allows the new loader to proceed cleanly; for
+    // attacks, it destroys the victim job, cancels its pending auth callbacks,
+    // and prevents credential theft.
+    existing_job->Shutdown();
   }
 
   if (request.url.SchemeIs(url::kDataScheme)) {
@@ -1917,6 +1933,10 @@ void InterceptionJob::CompleteRequest(
 }
 
 void InterceptionJob::Shutdown() {
+  if (waiting_for_resolution_ != ResolutionState::kNone) {
+    // Corresponds to the TRACE_EVENT_BEGIN in NotifyClient.
+    TRACE_EVENT_END("devtools", GetNamedTrack());
+  }
   if (interceptor_)
     interceptor_->RemoveJob(global_req_id_, current_id_);
   delete this;
