@@ -742,6 +742,26 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
     return nullptr;
   }
 
+  // Leave the conversation in the floaty instead of pulling it into the
+  // targeted tab's side panel.
+  if (options.preserve_active_surface && tab &&
+      instance->IsActiveEmbedder(FloatingEmbedderKey{})) {
+    // A `DefaultConversation` only resolves to a floating instance when the tab
+    // is already bound to it. An explicitly targeted one may still need to
+    // adopt the tab.
+    if (GetInstanceImplForTab(tab) != instance) {
+      // Bind first: rewriting the surface below discards the tab.
+      // TODO(b/562983414): Infer a more specific pin trigger from the
+      // invocation source.
+      instance->BindTabWithoutShowing(tab, GlicPinTrigger::kInstanceCreation,
+                                      options.pin_on_bind);
+    }
+    options.target.surface = Floating();
+    if (!resolve_surface()) {
+      return nullptr;
+    }
+  }
+
   // Now that the instance is fully resolved, we can safely resolve the
   // `LastActiveOrNew` surface and mutate `options.target.surface` to point to
   // the appropriate final target, before running the surface resolver.

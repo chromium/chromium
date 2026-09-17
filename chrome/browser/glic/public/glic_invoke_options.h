@@ -278,6 +278,15 @@ struct GlicInvokeOptions {
   // Defines the target for the invocation (surface and conversation).
   Target target;
 
+  // Whether an invocation that targets a tab should leave the conversation on
+  // the surface it is already showing on, rather than moving it into that
+  // tab's side panel. Currently only applies to the floating panel.
+  //
+  // Targeting a specific conversation (`ConversationId`/`InstanceId`) also
+  // binds the tab to it. `DefaultConversation` does not: an unbound tab still
+  // gets its own conversation in its own side panel.
+  bool preserve_active_surface = false;
+
   // The feature mode to use for the invocation, triggering specific client
   // behaviours like actuation or image generation.
   std::optional<glic::mojom::FeatureMode> feature_mode;

@@ -45,6 +45,8 @@ ShowOptions CreateShowOptions(
       absl::Overload{[&](const GlicInvokeHandler::TabSurface& tab_surface) {
                        SidePanelShowOptions side_panel_options{
                            *tab_surface.tab};
+                       // TODO(b/562983414): Infer a more specific pin trigger
+                       // from the invocation source.
                        side_panel_options.pin_trigger =
                            GlicPinTrigger::kInstanceCreation;
                        side_panel_options.pin_on_bind = options.pin_on_bind;
