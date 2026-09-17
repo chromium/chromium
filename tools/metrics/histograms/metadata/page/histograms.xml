@@ -6230,7 +6230,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"
-    units="ms" expires_after="2027-01-31">
+    units="ms" expires_after="2027-08-10">
   <owner>iclelland@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -6265,7 +6265,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.Background.HttpsOrDataOrFileScheme"
-    units="ms" expires_after="2027-04-14">
+    units="ms" expires_after="2027-08-10">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -6293,7 +6293,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.CrossSiteSubFrame"
-    units="ms" expires_after="2027-01-03">
+    units="ms" expires_after="2027-08-10">
   <owner>sisidovski@google.com</owner>
   <owner>kouhei@chromium.org</owner>
   <summary>
@@ -6306,7 +6306,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.ExcludeReloadAfterDiscard"
-    units="ms" expires_after="2027-01-17">
+    units="ms" expires_after="2027-08-10">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -6318,7 +6318,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame"
-    units="ms" expires_after="2027-02-07">
+    units="ms" expires_after="2027-08-10">
   <owner>iclelland@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -6333,7 +6333,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.NonTabWebUI{WebUIName}"
-    units="ms" expires_after="2027-02-07">
+    units="ms" expires_after="2027-08-10">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -6348,7 +6348,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.SetSpeculationRulesPrerender"
-    units="ms" expires_after="2026-01-18">
+    units="ms" expires_after="2027-08-10">
   <owner>yoichio@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <summary>
@@ -6363,7 +6363,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.{Scheme}"
-    units="ms" expires_after="2026-09-22">
+    units="ms" expires_after="2027-08-10">
   <owner>iclelland@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -6390,7 +6390,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2AtFirstOnHidden"
-    units="ms" expires_after="2027-03-01">
+    units="ms" expires_after="2027-08-10">
   <owner>lanwei@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -6414,7 +6414,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2{NavigationScenario}"
-    units="ms" expires_after="2027-08-06">
+    units="ms" expires_after="2027-08-10">
   <owner>mych@chromium.org</owner>
   <owner>iclelland@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
