@@ -122,6 +122,7 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
   ReportRepeatingCallback report_repeating_callback_;
   ReportOnceCallback report_once_callback_;
   bool should_delete_ = false;
+  bool has_finished_observing_ = false;
   std::optional<CompositorMetricsTracker> compositor_metrics_tracker_;
 
   // These are always recorded in pairs. Specifically,

@@ -43,13 +43,17 @@ TotalAnimationThroughputReporter::~TotalAnimationThroughputReporter() {
   if (compositor_metrics_tracker_) {
     compositor_metrics_tracker_->Cancel();
   }
-  if (compositor_)
+  if (compositor_) {
     compositor_->RemoveObserver(this);
-  compositor_ = nullptr;
+    compositor_ = nullptr;
+  }
 }
 
 void TotalAnimationThroughputReporter::OnFirstAnimationStarted(
     ui::Compositor* compositor) {
+  if (has_finished_observing_) {
+    return;
+  }
   if (!compositor_metrics_tracker_) {
     timestamp_first_animation_started_at_ = base::TimeTicks::Now();
 
@@ -62,16 +66,27 @@ void TotalAnimationThroughputReporter::OnFirstAnimationStarted(
 
 void TotalAnimationThroughputReporter::OnFirstNonAnimatedFrameStarted(
     ui::Compositor* compositor) {
-  if (IsBlocked())
+  if (has_finished_observing_ || IsBlocked()) {
     return;
+  }
 
   timestamp_last_animation_finished_at_ = base::TimeTicks::Now();
 
-  compositor_metrics_tracker_->Stop();
+  bool will_report = compositor_metrics_tracker_->Stop();
   compositor_metrics_tracker_.reset();
   // Stop observing if no need to report multiple times.
-  if (report_repeating_callback_.is_null())
-    compositor_->RemoveObserver(this);
+  if (report_repeating_callback_.is_null()) {
+    has_finished_observing_ = true;
+    if (!will_report) {
+      if (compositor_) {
+        compositor_->RemoveObserver(this);
+        compositor_ = nullptr;
+      }
+      if (should_delete_) {
+        delete this;
+      }
+    }
+  }
 }
 
 void TotalAnimationThroughputReporter::OnCompositingShuttingDown(
@@ -80,8 +95,10 @@ void TotalAnimationThroughputReporter::OnCompositingShuttingDown(
     compositor_metrics_tracker_->Cancel();
     compositor_metrics_tracker_.reset();
   }
-  compositor->RemoveObserver(this);
-  compositor_ = nullptr;
+  if (compositor_) {
+    compositor_->RemoveObserver(this);
+    compositor_ = nullptr;
+  }
   if (should_delete_)
     delete this;
 }
@@ -119,7 +136,10 @@ TotalAnimationThroughputReporter::TotalAnimationThroughputReporter(
 void TotalAnimationThroughputReporter::Report(
     const cc::FrameSequenceMetrics::CustomReportData& data) {
   if (!report_once_callback_.is_null()) {
-    compositor_->RemoveObserver(this);
+    if (compositor_) {
+      compositor_->RemoveObserver(this);
+      compositor_ = nullptr;
+    }
     std::move(report_once_callback_)
         .Run(data, timestamp_first_animation_started_at_,
              timestamp_last_animation_finished_at_);
