@@ -907,6 +907,61 @@ void UpdateHeaderFooterRoleForSameLineRun(
   }
 }
 
+// Returns whether to break the current block at the header or footer boundary
+// `next_run` crosses, or `std::nullopt` when the transition says nothing about
+// breaking. Demotes `block_node` back to a paragraph when a block already
+// classified as a header or footer turns out to be body content.
+std::optional<bool> BreakAtHeaderFooterBoundary(
+    const chrome_pdf::AccessibilityTextRunInfo& next_run,
+    const chrome_pdf::AccessibilityTextRunInfo* next_next_run,
+    base::span<const chrome_pdf::AccessibilityCharInfo> next_run_chars,
+    const HeuristicPageProperties& page_properties,
+    bool is_large_line_spacing_break,
+    ui::AXNodeData* block_node) {
+  CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+
+  HeaderFooterRole current_role = HeaderFooterRole::kNone;
+  if (block_node->role == ax::mojom::Role::kSectionHeader) {
+    current_role = HeaderFooterRole::kHeader;
+  } else if (block_node->role == ax::mojom::Role::kSectionFooter) {
+    current_role = HeaderFooterRole::kFooter;
+  }
+  PageNumberKind next_page_number_kind = PageNumberKind::kNone;
+  HeaderFooterRole next_role =
+      GetHeaderFooterRole(next_run, next_next_run, next_run_chars,
+                          page_properties, &next_page_number_kind);
+
+  if (current_role != HeaderFooterRole::kNone) {
+    // Without a large gap, the next run continues the current line or opens one
+    // at ordinary paragraph spacing, so this block was really the first line of
+    // body text, or of a multi-line footnote in a margin. Demote it back to a
+    // paragraph so it keeps growing.
+    if (next_role == HeaderFooterRole::kNone && !is_large_line_spacing_break) {
+      block_node->role = ax::mojom::Role::kParagraph;
+      return false;
+    }
+    // Otherwise break when transitioning away from the active header or footer
+    // block.
+    return current_role != next_role;
+  }
+
+  // A header should never be part of a preceding body paragraph.
+  if (next_role == HeaderFooterRole::kHeader) {
+    return true;
+  }
+
+  // Only break into a footer on a paragraph-sized gap, or when the footer is a
+  // page number. Otherwise, fall through to let normal paragraph or heading
+  // rules decide.
+  if (next_role == HeaderFooterRole::kFooter &&
+      (is_large_line_spacing_break ||
+       next_page_number_kind != PageNumberKind::kNone)) {
+    return true;
+  }
+
+  return std::nullopt;
+}
+
 bool BreakParagraphByLineSpacing(
     const chrome_pdf::AccessibilityTextRunInfo& current_run,
     const chrome_pdf::AccessibilityTextRunInfo& next_run,
@@ -924,7 +979,7 @@ bool BreakParagraphByLineSpacing(
 }
 
 bool BreakParagraph(uint32_t text_run_index,
-                    const ui::AXNodeData* block_node,
+                    ui::AXNodeData* block_node,
                     HeadingClassifier heading_classifier,
                     const PageLayoutData& layout,
                     const HeuristicPageProperties& page_properties) {
@@ -932,13 +987,28 @@ bool BreakParagraph(uint32_t text_run_index,
       layout.text_runs[text_run_index];
   const chrome_pdf::AccessibilityTextRunInfo& next_run =
       layout.text_runs[text_run_index + 1];
+  const chrome_pdf::AccessibilityTextRunInfo* next_next_run =
+      GetRunAfterIndex(layout.text_runs, text_run_index + 1);
+  base::span<const chrome_pdf::AccessibilityCharInfo> next_run_chars =
+      GetTextRunChars(layout, text_run_index + 1);
+
+  bool is_large_line_spacing_break = BreakParagraphByLineSpacing(
+      current_run, next_run, page_properties.paragraph_spacing_threshold);
+
+  // Header and footer boundaries take precedence over the rules below.
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    std::optional<bool> header_footer_break = BreakAtHeaderFooterBoundary(
+        next_run, next_next_run, next_run_chars, page_properties,
+        is_large_line_spacing_break, block_node);
+    if (header_footer_break.has_value()) {
+      return header_footer_break.value();
+    }
+  }
 
   // Use line spacing to determine where to break body text.
   if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled() ||
       heading_classifier == HeadingClassifier::kNone) {
-    return BreakParagraphByLineSpacing(
-        current_run, next_run,
-        page_properties.paragraph_spacing_threshold);
+    return is_large_line_spacing_break;
   }
 
   // Always break headings at style changes.
@@ -958,11 +1028,8 @@ bool BreakParagraph(uint32_t text_run_index,
 
   // For styled headings (e.g. bold, uppercase, font name), break if the next
   // run has a different classifier.
-  const chrome_pdf::AccessibilityTextRunInfo* next_next_run =
-      GetRunAfterIndex(layout.text_runs, text_run_index + 1);
   HeadingClassifier next_classifier = GetHeadingClassifier(
-      next_run, next_next_run, GetTextRunChars(layout, text_run_index + 1),
-      page_properties);
+      next_run, next_next_run, next_run_chars, page_properties);
   return heading_classifier != next_classifier;
 }
 

@@ -2150,6 +2150,45 @@ TEST_F(PdfAccessibilityTreeTest,
 }
 
 TEST_F(PdfAccessibilityTreeTest,
+       HeuristicHeaderContinuedByBodyTextDemotedToParagraph) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+
+  // Page 2 of a document, so page-relative y is the document y minus 5000.
+  // The top margin ends at y = 100, 10% of the 1000px page height.
+  page_info_.bounds = gfx::Rect(0, 5000, 800, 1000);
+
+  // Runs 0-1: A line in the top margin that the page number promotes to a
+  // header.
+  // Runs 2-4: Body text continuing at the same 20px line spacing, which shows
+  // the first line was body content rather than a running head.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"RunningHeadText", "42", "BodyTextLineOne",
+                      "BodyTextLineTwo", "BodyTextLineThree"}),
+      {gfx::RectF(50.0f, 60.0f, 100.0f, 20.0f),
+       gfx::RectF(300.0f, 60.0f, 20.0f, 20.0f),
+       gfx::RectF(50.0f, 80.0f, 200.0f, 20.0f),
+       gfx::RectF(50.0f, 100.0f, 200.0f, 20.0f),
+       gfx::RectF(50.0f, 120.0f, 200.0f, 20.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, block->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
        HeuristicMultiPageParagraphNotPromotedToHeaderOnPageNumberRun) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2455,6 +2494,84 @@ TEST_F(PdfAccessibilityTreeTest,
   const ui::AXNode* footer_block = page->GetChildAtIndex(1u);
   ASSERT_NE(nullptr, footer_block);
   EXPECT_EQ(ax::mojom::Role::kSectionFooter, footer_block->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicTopMarginHeaderDemotedToParagraphOnNormalLineSpacing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  // Run 0: Number at page top inside margin (y = 50, bottom = 65 <= 100).
+  // Initially classified as a header in CreateBlockLevelNode.
+  // Runs 1-4: Subsequent lines of the body paragraph continuing with tight,
+  // regular line spacing (15pt). Because there is no line spacing break between
+  // Run 0 and Run 1, the block must be demoted to a paragraph and continue
+  // growing rather than being severed as an isolated header.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"42", "line2", "line3", "line4", "end"}),
+      {gfx::RectF(50.0f, 50.0f, 20.0f, 15.0f),
+       gfx::RectF(50.0f, 65.0f, 200.0f, 15.0f),
+       gfx::RectF(50.0f, 80.0f, 200.0f, 15.0f),
+       gfx::RectF(50.0f, 95.0f, 200.0f, 15.0f),
+       gfx::RectF(50.0f, 110.0f, 200.0f, 15.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  // All runs should be grouped into a single body paragraph block.
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, block->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicBottomMarginFooterDemotedToParagraphOnNormalLineSpacing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  // Run 0: Pure number starting a footnote inside bottom 10% margin (y = 920 >=
+  // 900). Initially classified as a footer in CreateBlockLevelNode.
+  // Run 1: Footnote text on the same line at y = 920.
+  // Runs 2-4: Subsequent lines of the footnote continuing with tight, regular
+  // line spacing (15pt). Because there is no line spacing break between the
+  // first line and Run 2, the block must be demoted to a paragraph and continue
+  // growing rather than being severed as an isolated footer.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"8", "footnote line 1", "footnote line 2",
+                      "footnote line 3", "end"}),
+      {gfx::RectF(50.0f, 920.0f, 20.0f, 15.0f),
+       gfx::RectF(75.0f, 920.0f, 200.0f, 15.0f),
+       gfx::RectF(50.0f, 935.0f, 200.0f, 15.0f),
+       gfx::RectF(50.0f, 950.0f, 200.0f, 15.0f),
+       gfx::RectF(50.0f, 965.0f, 200.0f, 15.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  // All runs should be grouped into a single paragraph block.
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, block->GetRole());
 }
 
 TEST_F(PdfAccessibilityTreeTest,
@@ -2890,6 +3007,53 @@ TEST_F(PdfAccessibilityTreeTest,
   const ui::AXNode* second_block = page->GetChildAtIndex(1u);
   ASSERT_NE(nullptr, second_block);
   EXPECT_EQ(ax::mojom::Role::kParagraph, second_block->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicParagraphBreaksBeforeTopMarginHeader) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  // Run 0: Body text in top margin (y = 20, bottom = 35 <= 100) at median font
+  // size 10.
+  // Run 1: Running header "Section Title" at font size 8 in top margin
+  // (y = 35, bottom = 50 <= 100), placed immediately below Run 0 with tight
+  // line spacing (15pt).
+  // Runs 2-4: Body text establishing median font size 10.
+  // Even without a large line spacing break, transitioning into a header
+  // must break the paragraph so the header is not absorbed into the body text.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 8.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"body text", "Section Title", "body1", "body2", "end"}),
+      {gfx::RectF(50.0f, 20.0f, 200.0f, 15.0f),
+       gfx::RectF(50.0f, 35.0f, 100.0f, 15.0f),
+       gfx::RectF(50.0f, 150.0f, 200.0f, 15.0f),
+       gfx::RectF(50.0f, 165.0f, 200.0f, 15.0f),
+       gfx::RectF(50.0f, 180.0f, 200.0f, 15.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  const ui::AXNode* body_block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, body_block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, body_block->GetRole());
+
+  const ui::AXNode* header_block = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, header_block);
+  EXPECT_EQ(ax::mojom::Role::kSectionHeader, header_block->GetRole());
+
+  const ui::AXNode* second_body_block = page->GetChildAtIndex(2u);
+  ASSERT_NE(nullptr, second_body_block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, second_body_block->GetRole());
 }
 
 class PdfAccessibilityTreeStructuredModeTest
