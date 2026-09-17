@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/scanner_feedback_dialog/scanner_feedback_dialog.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
