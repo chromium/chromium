@@ -47,7 +47,7 @@ enum class TPMOperation {
   // An operation to verify the signature of a restricted signing key.
   kRestrictedMessageVerify,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:TpmOperation)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/crypto/histograms.xml:TpmOperation)
 
 // Converts the given `operation` to a string representation.
 CRYPTO_EXPORT std::string OperationToString(TPMOperation operation);

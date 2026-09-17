@@ -54,7 +54,7 @@ enum class SpareKeyPoolRetrievalResult {
   kAlgorithmNotSupported = 5,
   kMaxValue = kAlgorithmNotSupported,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/net/enums.xml:SpareKeyPoolRetrievalResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/crypto/enums.xml:SpareKeyPoolRetrievalResult)
 
 class UnexportableKeyTaskManager;
 

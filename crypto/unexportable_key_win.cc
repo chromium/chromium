@@ -1150,7 +1150,7 @@ enum class SrkRecoveryResult {
   kSuccess = 3,
   kMaxValue = kSuccess,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SrkRecoveryResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/crypto/enums.xml:SrkRecoveryResult)
 
 // Recovers from a TPM2_Create that failed with `error`, if `error` reports that
 // the parent handle does not exist, by recreating the Storage Root Key as a

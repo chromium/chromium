@@ -21,7 +21,7 @@ std::string_view GetBackgroundTaskOriginSuffixForHistograms(
     case BackgroundTaskOrigin::kOrphanedKeyGarbageCollection:
       return ".OrphanedKeyGarbageCollection";
   }
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:UnexportableKeysBackgroundTaskOrigin)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/crypto/histograms.xml:UnexportableKeysBackgroundTaskOrigin)
 }
 
 }  // namespace unexportable_keys

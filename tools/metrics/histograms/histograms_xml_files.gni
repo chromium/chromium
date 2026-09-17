@@ -81,6 +81,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/cross_device/histograms.xml",
   "//tools/metrics/histograms/metadata/crostini/enums.xml",
   "//tools/metrics/histograms/metadata/crostini/histograms.xml",
+  "//tools/metrics/histograms/metadata/crypto/enums.xml",
+  "//tools/metrics/histograms/metadata/crypto/histograms.xml",
   "//tools/metrics/histograms/metadata/cryptohome/enums.xml",
   "//tools/metrics/histograms/metadata/cryptohome/histograms.xml",
   "//tools/metrics/histograms/metadata/custom_tabs/enums.xml",

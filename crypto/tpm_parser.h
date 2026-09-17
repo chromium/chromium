@@ -78,7 +78,7 @@ void AbslStringify(Sink& sink, TpmCommand command) {
 
   NOTREACHED();
 }
-// LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:TpmCommand)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/crypto/histograms.xml:TpmCommand)
 
 // Various errors returned during TPM response parsing.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -98,7 +98,7 @@ struct CRYPTO_EXPORT TpmParseError {
     // parser.
     kMaxValue = kWrongType,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:TpmParseResult)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/crypto/enums.xml:TpmParseResult)
 
   const Type type = Type::kBufferTooSmall;
   // Only populated if `type` is `Type::kTpmErrorResponse`.

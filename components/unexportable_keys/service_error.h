@@ -43,7 +43,7 @@ enum class ServiceError : uint8_t {
 };
 // LINT.ThenChange(
 //     /components/unexportable_keys/mojom/unexportable_key_service.mojom:ServiceError,
-//     /tools/metrics/histograms/metadata/net/enums.xml:UnexportableKeyServiceResult
+//     //tools/metrics/histograms/metadata/crypto/enums.xml:UnexportableKeyServiceResult
 // )
 
 // Fake `ServiceError` value that can be used for metrics to signify that no
