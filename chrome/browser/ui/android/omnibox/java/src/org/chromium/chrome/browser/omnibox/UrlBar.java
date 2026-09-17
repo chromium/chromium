@@ -422,6 +422,10 @@ public class UrlBar extends AutocompleteEditText {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Cursor movement across wrapped lines takes precedence over key listeners (which use the
+        // vertical DPAD keys to navigate the suggestions list).
+        if (moveCursorVerticallyInWrappedText(keyCode, event)) return true;
+
         return ((KeyNavigationUtil.isEnter(event)
                                 || KeyNavigationUtil.isGoAnyDirection(event)
                                 || KeyNavigationUtil.isTabNavigation(event)
@@ -540,9 +544,77 @@ public class UrlBar extends AutocompleteEditText {
     }
 
     private void updateUrlBarForMultilineInput() {
-        boolean wantWrap = mAllowMultilineInput && mFocused && mCurrentInputCanBeWrapped;
+        boolean wantWrap = isMultilineInputActive();
         if (wantWrap == !isHorizontallyScrollable()) return;
         setHorizontallyScrolling(!wantWrap);
+    }
+
+    /** Returns whether the {@link UrlBar} is presently configured to wrap long user input. */
+    private boolean isMultilineInputActive() {
+        return mAllowMultilineInput && mFocused && mCurrentInputCanBeWrapped;
+    }
+
+    /** Returns whether the currently laid out text spans more than a single line. */
+    private boolean isTextWrapped() {
+        Layout layout = getLayout();
+        return layout != null && layout.getLineCount() > 1;
+    }
+
+    /**
+     * Gives the underlying {@link android.widget.EditText} a chance to move the text cursor
+     * vertically across the lines of wrapped, multiline user input before the vertical DPAD keys
+     * are offered to the key listeners (which use them to navigate the suggestions list).
+     *
+     * <p>Mimics the behavior of a conventional multiline text editor: the cursor first travels
+     * between the wrapped lines (entirely handled by the EditText's movement method), and once the
+     * top or the bottom line is reached, it snaps to the very beginning or the very end of the
+     * text. When the cursor already rests at that edge, the key event is not consumed here,
+     * allowing it to reach the key listeners.
+     *
+     * @param keyCode the code of the pressed key
+     * @param event the key event to evaluate
+     * @return whether the cursor was moved, meaning the key event has been consumed
+     */
+    private boolean moveCursorVerticallyInWrappedText(int keyCode, KeyEvent event) {
+        if (!KeyNavigationUtil.isGoUpOrDown(event)) return false;
+
+        boolean hasNoModifiers = event.hasNoModifiers();
+        boolean isShiftOnly = event.hasModifiers(KeyEvent.META_SHIFT_ON);
+        if (!hasNoModifiers && !isShiftOnly) return false;
+        if (!isMultilineInputActive() || !isTextWrapped()) return false;
+
+        // Convert NUMPAD keys to DPAD keys so the underlying TextView movement method handles them.
+        boolean goDown = KeyNavigationUtil.isGoDown(event);
+        int dpadKeyCode = goDown ? KeyEvent.KEYCODE_DPAD_DOWN : KeyEvent.KEYCODE_DPAD_UP;
+        KeyEvent dpadEvent =
+                (keyCode == dpadKeyCode)
+                        ? event
+                        : new KeyEvent(
+                                event.getDownTime(),
+                                event.getEventTime(),
+                                event.getAction(),
+                                dpadKeyCode,
+                                event.getRepeatCount(),
+                                event.getMetaState());
+
+        // Let the EditText move or extend the selection across the wrapped lines.
+        if (super_onKeyDown(dpadKeyCode, dpadEvent)) return true;
+
+        // The topmost / bottommost line is reached: place the cursor or extend selection to the
+        // matching end of the text.
+        int edgeOffset = goDown ? length() : 0;
+        int activeEnd = getSelectionEnd();
+        if (activeEnd == edgeOffset) {
+            // When selecting with Shift, do not spill over into suggestions list navigation.
+            return isShiftOnly;
+        }
+
+        if (isShiftOnly) {
+            Selection.extendSelection(getText(), edgeOffset);
+        } else {
+            setSelection(edgeOffset);
+        }
+        return true;
     }
 
     /**
@@ -644,8 +716,7 @@ public class UrlBar extends AutocompleteEditText {
 
     private void detectAndNotifyOnTextWrappingChanges() {
         mWrapDetectionScheduled = false;
-        var layout = getLayout();
-        boolean textIsWrapped = layout != null && layout.getLineCount() > 1;
+        boolean textIsWrapped = isTextWrapped();
 
         if (mTextIsWrapped == textIsWrapped) return;
         mTextIsWrapped = textIsWrapped;
