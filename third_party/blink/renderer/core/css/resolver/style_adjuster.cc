@@ -747,9 +747,7 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
 }
 
 static bool IsCanvasWithDrawElements(const Element* element) {
-  if (!element || !element->IsCanvasOrInCanvasSubtree() ||
-      !RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          element->GetExecutionContext())) {
+  if (!element || !element->IsCanvasOrInCanvasSubtree()) {
     return false;
   }
 
