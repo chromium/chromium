@@ -3,39 +3,39 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {PrivacyGuideMsbbFragmentElement} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl, PrefService, PrefsBrowserProxy, PrivacyGuideSettingsStates} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 // clang-format on
-
 
 suite('MsbbFragment', function() {
   let fragment: PrivacyGuideMsbbFragmentElement;
-  let settingsPrefs: SettingsPrefsElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let prefService: PrefService;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
-    fragment = document.createElement('privacy-guide-msbb-fragment');
-    fragment.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(fragment);
+    const prefsBrowserProxy = new TestPrefsBrowserProxy([{
+      key: 'url_keyed_anonymized_data_collection.enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    }]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
-    return flushTasks();
+    fragment = document.createElement('privacy-guide-msbb-fragment');
+    document.body.appendChild(fragment);
   });
 
   async function assertMsbbMetrics({
@@ -47,9 +47,8 @@ suite('MsbbFragment', function() {
     changeSetting: boolean,
     expectedMetric: PrivacyGuideSettingsStates,
   }) {
-    fragment.set(
-        'prefs.url_keyed_anonymized_data_collection.enabled.value',
-        msbbStartOn);
+    prefService.setPrefValue(
+        'url_keyed_anonymized_data_collection.enabled', msbbStartOn);
 
     // The fragment is informed that it becomes visible by a receiving
     // a view-enter-start event.
@@ -57,9 +56,11 @@ suite('MsbbFragment', function() {
         new CustomEvent('view-enter-start', {bubbles: true, composed: true}));
 
     if (changeSetting) {
-      fragment.shadowRoot!.querySelector<HTMLElement>(
-                              '#urlCollectionToggle')!.click();
-      flush();
+      const toggle = fragment.shadowRoot.querySelector<HTMLElement>(
+          '#urlCollectionToggle');
+      assertTrue(!!toggle);
+      toggle.click();
+      await microtasksFinished();
       const actionResult =
           await testMetricsBrowserProxy.whenCalled('recordAction');
       assertEquals(

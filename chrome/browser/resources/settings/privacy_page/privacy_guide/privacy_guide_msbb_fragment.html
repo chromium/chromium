@@ -1,4 +1,3 @@
-<style include="privacy-guide-fragment-shared"></style>
 <div class="settings-fragment-header" focus-element tabindex="-1">
   <picture>
     <source
@@ -13,9 +12,9 @@
 <div class="fragment-content">
   <div class="embedded-setting-wrapper">
     <settings-toggle-button id="urlCollectionToggle"
-        pref="{{prefs.url_keyed_anonymized_data_collection.enabled}}"
+        pref-key="url_keyed_anonymized_data_collection.enabled"
         label="$i18n{urlKeyedAnonymizedDataCollection}"
-        on-change="onMsbbToggleClick_">
+        @change="${this.onMsbbToggleChange_}">
     </settings-toggle-button>
   </div>
   <div class="settings-columned-section">

@@ -3,41 +3,41 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {PrivacyGuideSafeBrowsingFragmentElement, SettingsCollapseRadioButtonElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import {SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, resetRouterForTesting} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl, PrefService, PrefsBrowserProxy, PrivacyGuideSettingsStates, resetRouterForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // clang-format on
 
 suite('SafeBrowsingFragment', function() {
   let fragment: PrivacyGuideSafeBrowsingFragmentElement;
-  let settingsPrefs: SettingsPrefsElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let prefService: PrefService;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
-    fragment = document.createElement('privacy-guide-safe-browsing-fragment');
-    fragment.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(fragment);
+    const prefsBrowserProxy = new TestPrefsBrowserProxy([{
+      key: 'generated.safe_browsing',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: SafeBrowsingSetting.STANDARD,
+    }]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
-    return flushTasks();
+    fragment = document.createElement('privacy-guide-safe-browsing-fragment');
+    document.body.appendChild(fragment);
   });
 
   async function assertSafeBrowsingMetrics({
@@ -52,7 +52,7 @@ suite('SafeBrowsingFragment', function() {
     const safeBrowsingStartState = safeBrowsingStartsEnhanced ?
         SafeBrowsingSetting.ENHANCED :
         SafeBrowsingSetting.STANDARD;
-    fragment.set('prefs.generated.safe_browsing.value', safeBrowsingStartState);
+    prefService.setPrefValue('generated.safe_browsing', safeBrowsingStartState);
 
     // The fragment is informed that it becomes visible by a receiving
     // a view-enter-start event.
@@ -60,12 +60,12 @@ suite('SafeBrowsingFragment', function() {
         new CustomEvent('view-enter-start', {bubbles: true, composed: true}));
 
     if (changeSetting) {
-      fragment.shadowRoot!
-          .querySelector<HTMLElement>(
-              safeBrowsingStartsEnhanced ?
-                  '#safeBrowsingRadioStandard' :
-                  '#safeBrowsingRadioEnhanced')!.click();
-      flush();
+      const radio = fragment.shadowRoot.querySelector<HTMLElement>(
+          safeBrowsingStartsEnhanced ? '#safeBrowsingRadioStandard' :
+                                       '#safeBrowsingRadioEnhanced');
+      assertTrue(!!radio);
+      radio.click();
+      await microtasksFinished();
       const actionResult =
           await testMetricsBrowserProxy.whenCalled('recordAction');
       assertEquals(
@@ -87,18 +87,17 @@ suite('SafeBrowsingFragment', function() {
 
   test('EnhancedProtectionPrivacyGuide', async () => {
     const enhancedProtection =
-        fragment.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
+        fragment.shadowRoot.querySelector<SettingsCollapseRadioButtonElement>(
             '#safeBrowsingRadioEnhanced');
     assertTrue(!!enhancedProtection);
     const epSubLabel =
         loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
     assertEquals(epSubLabel, enhancedProtection.subLabel);
 
-    const group = fragment.shadowRoot!.querySelector<HTMLElement>(
+    const group = fragment.shadowRoot.querySelector<HTMLElement>(
         '#safeBrowsingRadioGroup');
     assertTrue(!!group);
-    fragment.shadowRoot!
-        .querySelector<HTMLElement>('#safeBrowsingRadioEnhanced')!.click();
+    enhancedProtection.click();
     await eventToPromise('change', group);
     // The updated description item container should be visible.
     assertTrue(isChildVisible(fragment, '#updatedDescItemContainer'));
@@ -140,19 +139,21 @@ suite('SafeBrowsingFragment', function() {
     });
   });
 
-  test('fragmentUpdatesFromSafeBrowsingChanges', function() {
+  test('fragmentUpdatesFromSafeBrowsingChanges', async function() {
     const radioButtonGroup =
-        fragment.shadowRoot!.querySelector<SettingsRadioGroupElement>(
+        fragment.shadowRoot.querySelector<SettingsRadioGroupElement>(
             '#safeBrowsingRadioGroup');
     assertTrue(!!radioButtonGroup);
 
-    fragment.set(
-        'prefs.generated.safe_browsing.value', SafeBrowsingSetting.ENHANCED);
+    prefService.setPrefValue(
+        'generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
+    await microtasksFinished();
     assertEquals(
         Number(radioButtonGroup.selected), SafeBrowsingSetting.ENHANCED);
 
-    fragment.set(
-        'prefs.generated.safe_browsing.value', SafeBrowsingSetting.STANDARD);
+    prefService.setPrefValue(
+        'generated.safe_browsing', SafeBrowsingSetting.STANDARD);
+    await microtasksFinished();
     assertEquals(
         Number(radioButtonGroup.selected), SafeBrowsingSetting.STANDARD);
   });
@@ -167,9 +168,8 @@ suite('SafeBrowsingFragment', function() {
 
     test('StandardProtectionDescription', function() {
       const standardProtection =
-          fragment.shadowRoot!
-              .querySelector<SettingsCollapseRadioButtonElement>(
-                  '#safeBrowsingRadioStandard');
+          fragment.shadowRoot.querySelector<SettingsCollapseRadioButtonElement>(
+              '#safeBrowsingRadioStandard');
       assertTrue(!!standardProtection);
       const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');
       assertEquals(spSubLabel, standardProtection.subLabel);
@@ -190,9 +190,8 @@ suite('SafeBrowsingFragment', function() {
 
     test('StandardProtectionDescriptionWithProxy', function() {
       const standardProtection =
-          fragment.shadowRoot!
-              .querySelector<SettingsCollapseRadioButtonElement>(
-                  '#safeBrowsingRadioStandard');
+          fragment.shadowRoot.querySelector<SettingsCollapseRadioButtonElement>(
+              '#safeBrowsingRadioStandard');
       assertTrue(!!standardProtection);
       const spSubLabel =
           loadTimeData.getString('safeBrowsingStandardDescProxy');

@@ -1,4 +1,7 @@
-<style include="privacy-guide-fragment-shared"></style>
+<!-- #html_wrapper_imports_start
+import {SafeBrowsingSetting} from '../security/safe_browsing_types.js';
+#html_wrapper_imports_end -->
+
 <div class="settings-fragment-header" focus-element tabindex="-1">
   <picture>
     <source
@@ -12,15 +15,15 @@
 </div>
 <div class="fragment-content">
   <settings-radio-group id="safeBrowsingRadioGroup"
-      pref="{{prefs.generated.safe_browsing}}"
+      pref-key="generated.safe_browsing"
       selectable-elements="settings-collapse-radio-button">
     <settings-collapse-radio-button id="safeBrowsingRadioEnhanced"
-        pref="[[prefs.generated.safe_browsing]]"
-        name="[[safeBrowsingSettingEnum_.ENHANCED]]"
+        pref-key="generated.safe_browsing"
+        name="${SafeBrowsingSetting.ENHANCED}"
         label="$i18n{safeBrowsingEnhanced}"
         sub-label="$i18n{safeBrowsingEnhancedDescUpdated}"
         expand-aria-label="$i18n{safeBrowsingEnhancedExpandA11yLabel}"
-        on-click="onSafeBrowsingEnhancedClick_">
+        @click="${this.onSafeBrowsingEnhancedClick_}">
           <div slot="collapse" class="settings-columned-section">
             <div class="column">
               <h3 class="description-header">
@@ -89,13 +92,12 @@
     </settings-collapse-radio-button>
     <settings-collapse-radio-button id="safeBrowsingRadioStandard"
         no-collapse
-        pref="[[prefs.generated.safe_browsing]]"
-        name="[[safeBrowsingSettingEnum_.STANDARD]]"
+        pref-key="generated.safe_browsing"
+        name="${SafeBrowsingSetting.STANDARD}"
         label="$i18n{safeBrowsingStandard}"
-        sub-label="[[getSafeBrowsingStandardSubLabel_(
-                    enableHashPrefixRealTimeLookups_)]]"
+        sub-label="${this.getSafeBrowsingStandardSubLabel_()}"
         expand-aria-label="$i18n{safeBrowsingStandardExpandA11yLabel}"
-        on-click="onSafeBrowsingStandardClick_">
+        @click="${this.onSafeBrowsingStandardClick_}">
     </settings-collapse-radio-button>
   </settings-radio-group>
 </div>

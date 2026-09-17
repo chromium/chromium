@@ -1,0 +1,46 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./privacy_guide_fragment_shared_lit.css.js
+ * #import=../../settings_shared_lit.css.js
+ * #include=privacy-guide-fragment-shared-lit settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-flow: column;
+  min-height: calc(400px - var(--privacy-guide-footer-total-height));
+}
+
+.welcome-completion-header {
+  padding: 24px 0 16px 0;
+}
+
+cr-link-row {
+  --cr-link-row-icon-width: 24px;
+  --iron-icon-height: 24px;
+  border-radius: 4px;
+  padding-inline-end: 8px;
+  padding-inline-start: 4px;
+}
+
+cr-link-row::part(icon) {
+  --cr-icon-button-icon-size: 24px;
+}
+
+.label {
+  font-size: 0.875rem; /* 14px */
+}
+
+.footer {
+  align-items: center;
+  bottom: calc(-1 * var(--privacy-guide-footer-total-height));
+  display: flex;
+  justify-content: space-between;
+  padding: var(--privacy-guide-footer-vertical-padding) 0;
+  position: absolute;
+  width: calc(100% - 48px);  /* 48px = 2x :host horizontal padding */
+}

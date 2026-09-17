@@ -7,7 +7,6 @@ import {loadTimeData} from 'chrome://settings/settings.js';
 import type {PrivacyGuideWelcomeFragmentElement} from 'chrome://settings/lazy_load.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 // clang-format on
 
@@ -20,11 +19,6 @@ suite('WelcomeFragment', function() {
     assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
     fragment = document.createElement('privacy-guide-welcome-fragment');
     document.body.appendChild(fragment);
-    return flushTasks();
-  });
-
-  teardown(function() {
-    fragment.remove();
   });
 
   test('nextNavigation', async function() {

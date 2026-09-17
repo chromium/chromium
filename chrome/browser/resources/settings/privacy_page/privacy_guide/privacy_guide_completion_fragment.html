@@ -1,40 +1,3 @@
-<style include="privacy-guide-fragment-shared settings-shared">
-  :host {
-    display: flex;
-    flex-flow: column;
-    min-height: calc(400px - var(--privacy-guide-footer-total-height));
-  }
-
-  .welcome-completion-header {
-    padding: 24px 0 16px 0;
-  }
-
-  cr-link-row {
-    --cr-link-row-icon-width: 24px;
-    --iron-icon-height: 24px;
-    border-radius: 4px;
-    padding-inline-end: 8px;
-    padding-inline-start: 4px;
-  }
-
-  cr-link-row::part(icon) {
-    --cr-icon-button-icon-size: 24px;
-  }
-
-  .label {
-    font-size: 0.875rem; /* 14px */
-  }
-
-  .footer {
-    align-items: center;
-    bottom: calc(-1 * var(--privacy-guide-footer-total-height));
-    display: flex;
-    justify-content: space-between;
-    padding: var(--privacy-guide-footer-vertical-padding) 0;
-    position: absolute;
-    width: calc(100% - 48px);  /* 48px = 2x :host horizontal padding */
-  }
-</style>
 <div class="welcome-completion-header">
   <picture>
     <source
@@ -45,35 +8,35 @@
   <h2 class="welcome-completion-header-label" tabindex="-1">
     $i18n{privacyGuideCompletionCardHeader}
   </h2>
-  <div class="cr-secondary-text">[[getSubheader_(isNoLinkLayout_)]]</div>
+  <div class="cr-secondary-text">${this.getSubheader_()}</div>
 </div>
-<template is="dom-if" if="[[shouldShowAiSettings_]]">
+${this.shouldShowAiSettings_ ? html`
   <cr-link-row id="aiRow" using-slotted-label
       sub-label="$i18n{privacyGuideCompletionCardAiSettingsLabel}"
-      start-icon="settings20:button-magic" external on-click="onAiRowClick_">
+      start-icon="settings20:button-magic" external @click="${this.onAiRowClick_}">
     <div slot="label" class="label">$i18n{aiPageTitle}</div>
   </cr-link-row>
   <div aria-disabled="true" role="none">
     <a id="aiRowLink" href="ai" target="_blank" tabindex="-1"
         aria-disabled="true" role="none"></a>
   </div>
-</template>
-<template is="dom-if" if="[[shouldShowWaa_]]">
+` : ''}
+${this.shouldShowWaa_ ? html`
   <cr-link-row id="waaRow" using-slotted-label
       sub-label="$i18n{privacyGuideCompletionCardWaaSubLabel}"
       start-icon="settings:devices" external
-      on-click="onWaaClick_">
+      @click="${this.onWaaClick_}">
       <div slot="label" class="label">
         $i18n{privacyGuideCompletionCardWaaLabel}
       </div>
   </cr-link-row>
-</template>
+` : ''}
 <div class="footer">
-  <cr-button id="backButton" role="button" on-click="onBackButtonClick_">
+  <cr-button id="backButton" role="button" @click="${this.onBackButtonClick_}">
     $i18n{privacyGuideBackButton}
   </cr-button>
   <cr-button class="action-button" id="leaveButton"
-      on-click="onLeaveButtonClick_">
+      @click="${this.onLeaveButtonClick_}">
     $i18n{privacyGuideCompletionCardLeaveButton}
   </cr-button>
 </div>

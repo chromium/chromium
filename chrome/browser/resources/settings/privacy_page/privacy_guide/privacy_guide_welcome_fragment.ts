@@ -8,12 +8,12 @@
  * card that contains the welcome screen and its description.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import './privacy_guide_fragment_shared.css.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './privacy_guide_welcome_fragment.html.js';
+import {getCss} from './privacy_guide_welcome_fragment.css.js';
+import {getHtml} from './privacy_guide_welcome_fragment.html.js';
 
 export interface PrivacyGuideWelcomeFragmentElement {
   $: {
@@ -21,26 +21,29 @@ export interface PrivacyGuideWelcomeFragmentElement {
   };
 }
 
-export class PrivacyGuideWelcomeFragmentElement extends PolymerElement {
+export class PrivacyGuideWelcomeFragmentElement extends CrLitElement {
   static get is() {
     return 'privacy-guide-welcome-fragment';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   override focus() {
-    const header = this.shadowRoot!.querySelector<HTMLElement>(
+    const header = this.shadowRoot.querySelector<HTMLElement>(
         '.welcome-completion-header-label');
     assert(header);
     header.focus();
   }
 
-  private onStartButtonClick_(e: Event) {
+  protected onStartButtonClick_(e: Event) {
     e.stopPropagation();
-    this.dispatchEvent(
-        new CustomEvent('start-button-click', {bubbles: true, composed: true}));
+    this.fire('start-button-click');
   }
 }
 

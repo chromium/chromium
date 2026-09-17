@@ -61,9 +61,7 @@ export class StepIndicatorElement extends StepIndicatorElementBase {
     }
   }
 
-  /**
-   * @return the screenreader label for this element.
-   */
+  /** @return the screenreader label for this element. */
   protected computeA11yLabel_(): string {
     if (!this.model) {
       return '';

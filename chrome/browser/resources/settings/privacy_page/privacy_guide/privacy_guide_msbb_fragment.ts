@@ -9,37 +9,39 @@
  */
 
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import '/shared/settings/prefs/prefs.js';
 import '../../controls/settings_toggle_button.js';
 import '../../icons.html.js';
-import './privacy_guide_fragment_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
 
-import {getTemplate} from './privacy_guide_msbb_fragment.html.js';
+import {getCss as getPrivacyGuideFragmentSharedCss} from './privacy_guide_fragment_shared_lit.css.js';
+import {getHtml} from './privacy_guide_msbb_fragment.html.js';
 
-const PrivacyGuideMsbbFragmentBase = PrefsMixin(PolymerElement);
-
-export class PrivacyGuideMsbbFragmentElement extends
-    PrivacyGuideMsbbFragmentBase {
+export class PrivacyGuideMsbbFragmentElement extends CrLitElement {
   static get is() {
     return 'privacy-guide-msbb-fragment';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getPrivacyGuideFragmentSharedCss(),
+    ];
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private startStateMsbbOn_: boolean;
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
     this.addEventListener('view-exit-finish', this.onViewExitFinish_);
   }
@@ -50,12 +52,13 @@ export class PrivacyGuideMsbbFragmentElement extends
     // is downwards from the focus position. This allows users of screen readers
     // to continue navigating the screen reader position downwards through the
     // newly visible content.
-    this.shadowRoot!.querySelector<HTMLElement>('[focus-element]')!.focus();
+    this.shadowRoot.querySelector<HTMLElement>('[focus-element]')!.focus();
   }
 
   private onViewEnterStart_() {
     this.startStateMsbbOn_ =
-        this.getPref<boolean>('url_keyed_anonymized_data_collection.enabled')
+        PrefService.getInstance()
+            .getPref<boolean>('url_keyed_anonymized_data_collection.enabled')
             .value;
     this.metricsBrowserProxy_
         .recordPrivacyGuideStepsEligibleAndReachedHistogram(
@@ -64,7 +67,8 @@ export class PrivacyGuideMsbbFragmentElement extends
 
   private onViewExitFinish_() {
     const endStateMsbbOn =
-        this.getPref<boolean>('url_keyed_anonymized_data_collection.enabled')
+        PrefService.getInstance()
+            .getPref<boolean>('url_keyed_anonymized_data_collection.enabled')
             .value;
 
     let state: PrivacyGuideSettingsStates|null = null;
@@ -78,8 +82,10 @@ export class PrivacyGuideMsbbFragmentElement extends
     this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state);
   }
 
-  private onMsbbToggleClick_() {
-    if (this.getPref('url_keyed_anonymized_data_collection.enabled').value) {
+  protected onMsbbToggleChange_() {
+    if (PrefService.getInstance()
+            .getPref<boolean>('url_keyed_anonymized_data_collection.enabled')
+            .value) {
       this.metricsBrowserProxy_.recordAction(
           'Settings.PrivacyGuide.ChangeMSBBOn');
     } else {
