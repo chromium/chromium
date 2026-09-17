@@ -157,9 +157,12 @@ const std::u16string& PageActionModel::GetText() const {
 }
 
 const std::u16string& PageActionModel::GetAccessibleName() const {
-  return override_accessible_name_.has_value()
-             ? override_accessible_name_.value()
-             : text_;
+  const std::u16string& from_name_or_text =
+      override_accessible_name_.has_value() ? override_accessible_name_.value()
+                                            : text_;
+  // If nothing useful is in explicitly set accessible name or the text,
+  // match Button::GetAlternativeAccessibleName() and use the tooltip.
+  return from_name_or_text.empty() ? GetTooltipText() : from_name_or_text;
 }
 
 const std::u16string& PageActionModel::GetTooltipText() const {
