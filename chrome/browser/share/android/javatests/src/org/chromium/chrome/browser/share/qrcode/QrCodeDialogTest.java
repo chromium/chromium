@@ -17,10 +17,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -37,14 +35,12 @@ import java.util.ArrayList;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.UNIT_TESTS)
 public class QrCodeDialogTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    public static class CustomQrCodeDialog extends QrCodeDialog {
-        public void setTabs(ArrayList<QrCodeDialogTab> tabs) {
+    private static class CustomQrCodeDialog extends QrCodeDialog {
+        private void setTabs(ArrayList<QrCodeDialogTab> tabs) {
             mTabs = tabs;
         }
 
@@ -52,7 +48,7 @@ public class QrCodeDialogTest {
         public void setWindowAndroid(WindowAndroid windowAndroid) {}
     }
 
-    public static class CustomQrCodeDialogTab implements QrCodeDialogTab {
+    private static class CustomQrCodeDialogTab implements QrCodeDialogTab {
         private final View mView;
         private final boolean mEnabled;
 
@@ -94,22 +90,27 @@ public class QrCodeDialogTest {
     public void testGetDialogView_disabledTabIsNotInDialog() {
         mActivityTestRule.launchActivity(null);
 
-        CustomQrCodeDialog qrCodeDialog = new CustomQrCodeDialog();
-        ArrayList<QrCodeDialogTab> tabs = new ArrayList<>();
-        View tab = Mockito.mock(View.class);
-        tabs.add(new CustomQrCodeDialogTab(tab, false));
-        qrCodeDialog.setTabs(tabs);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    CustomQrCodeDialog qrCodeDialog = new CustomQrCodeDialog();
+                    ArrayList<QrCodeDialogTab> tabs = new ArrayList<>();
+                    View tab = new View(mActivityTestRule.getActivity());
+                    tabs.add(new CustomQrCodeDialogTab(tab, false));
+                    qrCodeDialog.setTabs(tabs);
 
-        View dialog = qrCodeDialog.getDialogView(mActivityTestRule.getActivity());
-        ViewPager viewPager = dialog.findViewById(R.id.qrcode_view_pager);
-        TabLayout tabLayout = dialog.findViewById(R.id.tab_layout);
+                    View dialog = qrCodeDialog.getDialogView(mActivityTestRule.getActivity());
+                    ViewPager viewPager = dialog.findViewById(R.id.qrcode_view_pager);
+                    TabLayout tabLayout = dialog.findViewById(R.id.tab_layout);
 
-        assertEquals(
-                "Tab is disabled and should not be in adapter.",
-                0,
-                viewPager.getAdapter().getCount());
-        assertEquals(
-                "Tab is disabled and should not be in tab layout.", 0, tabLayout.getTabCount());
+                    assertEquals(
+                            "Tab is disabled and should not be in adapter.",
+                            0,
+                            viewPager.getAdapter().getCount());
+                    assertEquals(
+                            "Tab is disabled and should not be in tab layout.",
+                            0,
+                            tabLayout.getTabCount());
+                });
     }
 
     @Test
@@ -117,17 +118,23 @@ public class QrCodeDialogTest {
     public void testGetDialogView() {
         mActivityTestRule.launchActivity(null);
 
-        CustomQrCodeDialog qrCodeDialog = new CustomQrCodeDialog();
-        ArrayList<QrCodeDialogTab> tabs = new ArrayList<>();
-        View tab = Mockito.mock(View.class);
-        tabs.add(new CustomQrCodeDialogTab(tab, true));
-        qrCodeDialog.setTabs(tabs);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    CustomQrCodeDialog qrCodeDialog = new CustomQrCodeDialog();
+                    ArrayList<QrCodeDialogTab> tabs = new ArrayList<>();
+                    View tab = new View(mActivityTestRule.getActivity());
+                    tabs.add(new CustomQrCodeDialogTab(tab, true));
+                    qrCodeDialog.setTabs(tabs);
 
-        View dialog = qrCodeDialog.getDialogView(mActivityTestRule.getActivity());
-        ViewPager viewPager = dialog.findViewById(R.id.qrcode_view_pager);
-        TabLayout tabLayout = dialog.findViewById(R.id.tab_layout);
+                    View dialog = qrCodeDialog.getDialogView(mActivityTestRule.getActivity());
+                    ViewPager viewPager = dialog.findViewById(R.id.qrcode_view_pager);
+                    TabLayout tabLayout = dialog.findViewById(R.id.tab_layout);
 
-        assertEquals("Tab views should be in the viewPager.", 1, viewPager.getAdapter().getCount());
-        assertEquals("Tabs should be in the tabLayout.", 1, tabLayout.getTabCount());
+                    assertEquals(
+                            "Tab views should be in the viewPager.",
+                            1,
+                            viewPager.getAdapter().getCount());
+                    assertEquals("Tabs should be in the tabLayout.", 1, tabLayout.getTabCount());
+                });
     }
 }

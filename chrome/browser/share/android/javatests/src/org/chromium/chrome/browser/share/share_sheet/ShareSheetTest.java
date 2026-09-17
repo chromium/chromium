@@ -6,16 +6,13 @@ package org.chromium.chrome.browser.share.share_sheet;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +42,7 @@ import org.chromium.chrome.browser.share.ShareHistoryBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -65,11 +63,12 @@ import java.util.Map;
 @Batch(Batch.PER_CLASS)
 public class ShareSheetTest {
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
+    public final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private Profile mProfile;
     private List<ResolveInfo> mAvailableResolveInfos;
+    private WebPageStation mPage;
 
     // foo.bar.baz -> baz
     private String labelFromPackageName(String packageName) {
@@ -96,8 +95,19 @@ public class ShareSheetTest {
         assertThat(packageName).doesNotContain("/");
         assertThat(packageName).contains(".");
 
-        ResolveInfo resolveInfo = mock(ResolveInfo.class);
-        ActivityInfo activityInfo = mock(ActivityInfo.class);
+        ResolveInfo resolveInfo =
+                new ResolveInfo() {
+                    @Override
+                    public CharSequence loadLabel(PackageManager pm) {
+                        return labelFromPackageName(packageName);
+                    }
+
+                    @Override
+                    public Drawable loadIcon(PackageManager pm) {
+                        return null;
+                    }
+                };
+        ActivityInfo activityInfo = new ActivityInfo();
 
         activityInfo.packageName = packageName;
         activityInfo.name = packageName;
@@ -109,11 +119,6 @@ public class ShareSheetTest {
         // because the ResolveInfo is a stub.
         resolveInfo.activityInfo.icon = R.drawable.sharing_more;
         resolveInfo.icon = R.drawable.sharing_more;
-
-        // We need to mock these two methods out so that they don't try to invoke
-        // platform APIs - the stub object isn't complete enough.
-        when(resolveInfo.loadLabel(any())).thenReturn(labelFromPackageName(packageName));
-        when(resolveInfo.loadIcon(any())).thenReturn(null);
 
         return resolveInfo;
     }
@@ -151,7 +156,7 @@ public class ShareSheetTest {
         ContextUtils.initApplicationContextForTests(
                 new PackageManagerReplacingContext(ContextUtils.getApplicationContext(), this));
 
-        mActivityTestRule.startOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile = ProfileManager.getLastUsedRegularProfile();

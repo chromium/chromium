@@ -19,10 +19,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
@@ -35,18 +33,12 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Tests for the {@link SaveBitmapDelegate}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class SaveBitmapDelegateTest {
-    private SaveBitmapDelegate mSaveBitmapDelegate;
-
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Rule
-    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Mock private Runnable mCloseDialogRunnable;
-
+    private SaveBitmapDelegate mSaveBitmapDelegate;
     private TestWindowAndroid mPermissionDelegate;
-
     private boolean mBitmapSaved;
 
     @Before
@@ -61,7 +53,7 @@ public class SaveBitmapDelegateTest {
                         activity,
                         bitmap,
                         R.string.screenshot_filename_prefix,
-                        mCloseDialogRunnable,
+                        CallbackUtils.emptyRunnable(),
                         mPermissionDelegate) {
                     @Override
                     protected void finishDownloadWithPermission(boolean granted) {
@@ -109,12 +101,12 @@ public class SaveBitmapDelegateTest {
 
     /** Test implementation of {@link WindowAndroid}. */
     private static class TestWindowAndroid extends WindowAndroid {
+        private final int mPermissionResult = PackageManager.PERMISSION_GRANTED;
+
         private boolean mHasPermission;
         private boolean mCanRequestPermission;
-
         private boolean mCalledHasPermission;
         private boolean mCalledCanRequestPermission;
-        private final int mPermissionResult = PackageManager.PERMISSION_GRANTED;
 
         public TestWindowAndroid(Context context) {
             super(context, /* occlusionTrackingAllowed= */ true);
