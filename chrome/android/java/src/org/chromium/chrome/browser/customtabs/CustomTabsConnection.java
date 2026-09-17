@@ -1483,14 +1483,28 @@ public class CustomTabsConnection {
     /**
      * Shows a toast about any possible sign in issues encountered during custom tab startup.
      *
-     * @param session The session that the corresponding custom tab is assigned to.
+     * @param session Unused.
+     * @param intent The intent that launched the custom tab.
+     * @param profileProviderSupplier The supplier of the current profile.
+     * @deprecated Use {@link #showSignInToastIfNecessary(Intent, Supplier)} instead.
+     */
+    // TODO(crbug.com/562120570): Remove once downstream overrides the session-less version.
+    @Deprecated
+    void showSignInToastIfNecessary(
+            SessionHolder<?> session,
+            Intent intent,
+            Supplier<ProfileProvider> profileProviderSupplier) {
+        showSignInToastIfNecessary(intent, profileProviderSupplier);
+    }
+
+    /**
+     * Shows a toast about any possible sign in issues encountered during custom tab startup.
+     *
      * @param intent The intent that launched the custom tab.
      * @param profileProviderSupplier The supplier of the current profile.
      */
     void showSignInToastIfNecessary(
-            SessionHolder<?> session,
-            Intent intent,
-            Supplier<ProfileProvider> profileProviderSupplier) {}
+            Intent intent, Supplier<ProfileProvider> profileProviderSupplier) {}
 
     /**
      * Returns whether the app launching the CCT may display account mismatch notification UI.
