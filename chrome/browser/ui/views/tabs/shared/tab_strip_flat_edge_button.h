@@ -42,7 +42,7 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   void UpdateIcon(const ui::ImageModel& icon_image);
   void SetInsets(const gfx::Insets& insets);
   void SetIconOpacity(float opacity);
-  void SetPaintTransparentForGlass(bool paint_transparent);
+  void SetPaintTransparent(bool paint_transparent);
 
   void SetExpansionFactor(float factor);
   float GetExpansionFactor() const { return expansion_factor_; }
@@ -65,9 +65,7 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   gfx::RoundedCornersF GetButtonCornerRadiiForTesting() const {
     return GetButtonCornerRadii();
   }
-  bool paint_transparent_for_glass_for_testing() const {
-    return paint_transparent_for_glass_;
-  }
+  bool paint_transparent_for_testing() const { return paint_transparent_; }
 
  private:
   // views::View:
@@ -96,7 +94,7 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   float flat_edge_factor_ = 1.0f;
   FlatEdge flat_edge_ = FlatEdge::kNone;
   std::optional<float> corner_radius_;
-  bool paint_transparent_for_glass_ = false;
+  bool paint_transparent_ = false;
   base::CallbackListSubscription paint_as_active_subscription_;
 
   base::RepeatingClosureList will_invoke_action_callback_list_;
