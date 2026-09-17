@@ -79,6 +79,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
     private @Nullable Supplier<TabModel> mArchivedHistoricalObserverSupplier;
     private @Nullable Destroyable mDeclutterLease;
+    private @Nullable TabContentManager mTabContentManager;
     private boolean mIsDestroyed;
 
     private @MonotonicNonNull RecordingTabCreatorManager mRecordingTabCreatorManager;
@@ -116,6 +117,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         mIsDestroyed = true;
 
         releaseDeclutterLease();
+        mTabContentManager = null;
 
         Profile profile = getOriginalProfile();
         if (profile != null && ArchivedTabModelOrchestrator.isInstantiatedForProfile(profile)) {
@@ -323,6 +325,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
         Profile profile = getOriginalProfile();
         assert profile != null;
+        mTabContentManager = tabContentManager;
 
         PersistentStoreCleanerFactory.getForProfile(profile)
                 .scheduleCleanUnusedData(tabContentManager);
@@ -390,17 +393,29 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
     /** Called when the declutter pass finishes executing. */
     public void onDeclutterPassCompleted() {
+        cleanUnusedData();
         releaseDeclutterLease();
     }
 
     /** Called when the rescue pass finishes executing. */
     public void onRescueArchivedTabsCompleted() {
+        cleanUnusedData();
         releaseDeclutterLease();
     }
 
+    private void cleanUnusedData() {
+        @Nullable Profile profile = getOriginalProfile();
+        TabContentManager tabContentManager = mTabContentManager;
+        if (profile != null && tabContentManager != null) {
+            PersistentStoreCleanerFactory.getForProfile(profile)
+                    .scheduleCleanUnusedData(tabContentManager);
+        }
+    }
+
     private void releaseDeclutterLease() {
-        if (mDeclutterLease != null) {
-            mDeclutterLease.destroy();
+        Destroyable lease = mDeclutterLease;
+        if (lease != null) {
+            lease.destroy();
             mDeclutterLease = null;
         }
     }

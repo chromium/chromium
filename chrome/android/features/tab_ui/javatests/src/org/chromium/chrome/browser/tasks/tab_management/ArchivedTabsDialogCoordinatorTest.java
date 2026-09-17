@@ -186,9 +186,9 @@ public class ArchivedTabsDialogCoordinatorTest {
                     mProfile = cta.getProfileProviderSupplier().get().getOriginalProfile();
                     mRegularTabCreator = cta.getTabCreator(false);
                     mRegularTabModel = cta.getTabModelSelectorSupplier().get().getModel(false);
+                    mArchivedTabModelOrchestrator =
+                            ArchivedTabModelOrchestrator.getForProfile(mProfile);
                 });
-
-        mArchivedTabModelOrchestrator = ArchivedTabModelOrchestrator.getForProfile(mProfile);
         waitForArchivedTabModelsToLoad(mArchivedTabModelOrchestrator);
         mArchivedTabModel = mArchivedTabModelOrchestrator.getTabModelSelector().getModel(false);
         mUserActionTester = new UserActionTester();
@@ -205,7 +205,9 @@ public class ArchivedTabsDialogCoordinatorTest {
                                 .getTabRemover()
                                 .forceCloseTabs(TabClosureParams.closeAllTabs().build());
                     }
-                    mTabArchiveSettings.resetSettingsForTesting();
+                    if (mTabArchiveSettings != null) {
+                        mTabArchiveSettings.resetSettingsForTesting();
+                    }
                 });
     }
 

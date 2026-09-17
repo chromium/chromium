@@ -5,9 +5,13 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,14 +28,18 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.LeaseReason;
 import org.chromium.chrome.browser.app.tabmodel.TabStateStore.TabStateStoreCleaner;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -39,6 +47,7 @@ import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.Stor
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl.TabPersistentStoreImplCleaner;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
@@ -64,6 +73,8 @@ public class PersistentStoreCleanerUnitTest {
     @Mock private Profile mProfile;
     @Mock private TabPersistentStoreImplCleaner mLegacyStoreCleaner;
     @Mock private TabStateStoreCleaner mTabStateStoreCleaner;
+    @Mock private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
+    @Mock private Destroyable mLease;
 
     @Mock private TabContentManager mTabContentManager;
     @Mock private TabWindowManager mTabWindowManager;
@@ -78,6 +89,7 @@ public class PersistentStoreCleanerUnitTest {
     @Mock private TabStateStorageService mTabStateStorageService;
 
     @Captor private ArgumentCaptor<TabWindowManager.Observer> mObserverCaptor;
+    @Captor private ArgumentCaptor<TabModelSelectorObserver> mSelectorObserverCaptor;
     @Captor private ArgumentCaptor<int[]> mTabIdsCaptor;
     @Captor private ArgumentCaptor<List<String>> mWindowTagsCaptor;
 
@@ -88,6 +100,10 @@ public class PersistentStoreCleanerUnitTest {
         when(mOrchestrator.getTabModelSelector()).thenReturn(mSelector);
         when(mSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
+
+        ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
+        when(mArchivedTabModelOrchestrator.acquireLeaseInternal(any())).thenReturn(mLease);
+        when(mArchivedTabModelOrchestrator.isTabModelInitialized()).thenReturn(true);
 
         mCleaner = new PersistentStoreCleaner(mProfile, mTabStateStoreCleaner, mLegacyStoreCleaner);
 
@@ -129,6 +145,8 @@ public class PersistentStoreCleanerUnitTest {
 
     @After
     public void tearDown() {
+        ArchivedTabModelOrchestrator.setInstanceForTesting(null);
+        new TabArchiveSettings(ChromeSharedPreferences.getInstance()).resetSettingsForTesting();
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
     }
 
@@ -155,13 +173,21 @@ public class PersistentStoreCleanerUnitTest {
         when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(false);
 
         mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+        verify(mArchivedTabModelOrchestrator, never()).acquireLeaseInternal(any());
+
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
         verify(mTabStateStorageService, never()).clearAllWindowsExcept(any());
 
         verify(mTabWindowManager).addObserver(mObserverCaptor.capture());
-        mObserverCaptor.getValue().onAllTabModelStateInitialized();
+        TabWindowManager.Observer observer = mObserverCaptor.getValue();
+        observer.onAllTabModelStateInitialized();
+
+        assertNotNull(mCleaner.getArchivedTabsLeaseForTesting());
+        verify(mArchivedTabModelOrchestrator)
+                .acquireLeaseInternal(eq(LeaseReason.PERSISTENT_STORE_CLEANER));
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
@@ -174,6 +200,33 @@ public class PersistentStoreCleanerUnitTest {
         assertArrayEquals(
                 new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "2"},
                 windowTags.toArray());
+
+        verify(mLease).destroy();
+        verify(mTabWindowManager).removeObserver(observer);
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+        assertFalse(mCleaner.hasUnusedDataDepsForTesting());
+    }
+
+    @Test
+    public void testCleanUnusedDeps_RemovesTabWindowManagerObserver() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(false);
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+
+        verify(mTabWindowManager).addObserver(mObserverCaptor.capture());
+        TabWindowManager.Observer observer = mObserverCaptor.getValue();
+
+        when(mTabContentManager.isDestroyed()).thenReturn(true);
+        observer.onAllTabModelStateInitialized();
+
+        assertNotNull(mCleaner.getArchivedTabsLeaseForTesting());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabWindowManager).removeObserver(observer);
+        verify(mLease).destroy();
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+        assertFalse(mCleaner.hasUnusedDataDepsForTesting());
     }
 
     @Test
@@ -197,12 +250,15 @@ public class PersistentStoreCleanerUnitTest {
         when(mTabContentManager.isDestroyed()).thenReturn(true);
 
         mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        assertNotNull(mCleaner.getArchivedTabsLeaseForTesting());
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
+        verify(mLease).destroy();
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testCleanUnusedWindows_ArchivedSelectorNull() {
         when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
         when(mTabWindowManager.getArchivedTabModelSelector()).thenReturn(null);
@@ -211,17 +267,226 @@ public class PersistentStoreCleanerUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
+
+        verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
+        List<String> windowTags = mWindowTagsCaptor.getValue();
+        assertArrayEquals(
+                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "2"},
+                windowTags.toArray());
+        verify(mLease).destroy();
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
     }
 
     @Test
-    public void testCleanUnusedWindows_SelectorsNotInitialized() {
+    public void testCleanUnusedWindows_SelectorsNotInitialized_RetainsLeaseUntilInit() {
         when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        assertNotNull(mCleaner.getArchivedTabsLeaseForTesting());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
+        verify(mLease, never()).destroy();
+        assertNotNull(mCleaner.getArchivedTabsLeaseForTesting());
+
+        // Verify observer was registered on the uninitialized selector.
+        verify(mTabModelSelector, atLeastOnce()).addObserver(mSelectorObserverCaptor.capture());
+
+        // Now initialize the selector and notify observer.
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        for (TabModelSelectorObserver observer : mSelectorObserverCaptor.getAllValues()) {
+            observer.onTabStateInitialized();
+        }
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabContentManager).removeAllTabThumbnailsExceptForIds(any());
+        verify(mLease).destroy();
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+    }
+
+    @Test
+    public void testCleanUnusedWindows_SelectorDestroyedBeforeInit_AbortsAndReleasesLease() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+        when(mTabWindowManager.getArchivedTabModelSelector()).thenReturn(null);
+        when(mTabWindowManager.getCustomTabsTabModelSelectors())
+                .thenReturn(Collections.emptyList());
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        assertNotNull(mCleaner.getArchivedTabsLeaseForTesting());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabModelSelector, atLeastOnce()).addObserver(mSelectorObserverCaptor.capture());
+        when(mTabWindowManager.getAllTabModelSelectors()).thenReturn(Collections.emptyList());
+        for (TabModelSelectorObserver observer : mSelectorObserverCaptor.getAllValues()) {
+            observer.onDestroyed();
+        }
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
+        verify(mTabStateStorageService, never()).clearAllWindowsExcept(any());
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+        assertFalse(mCleaner.hasUnusedDataDepsForTesting());
+        verify(mLease).destroy();
+    }
+
+    @Test
+    public void
+            testCleanUnusedWindows_SelectorDestroyedBeforeInit_OtherSelectorsRemain_ProceedsWithCleanup() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        assertNotNull(mCleaner.getArchivedTabsLeaseForTesting());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
+        verify(mLease, never()).destroy();
+
+        verify(mTabModelSelector, atLeastOnce()).addObserver(mSelectorObserverCaptor.capture());
+        when(mTabWindowManager.getAllTabModelSelectors()).thenReturn(Collections.emptyList());
+        for (TabModelSelectorObserver observer : mSelectorObserverCaptor.getAllValues()) {
+            observer.onDestroyed();
+        }
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabContentManager).removeAllTabThumbnailsExceptForIds(mTabIdsCaptor.capture());
+        assertArrayEquals(new int[] {ARCHIVED_TAB_ID, CUSTOM_TAB_ID}, mTabIdsCaptor.getValue());
+
+        verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
+        List<String> windowTags = mWindowTagsCaptor.getValue();
+        assertArrayEquals(
+                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "2"}, windowTags.toArray());
+
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+        assertFalse(mCleaner.hasUnusedDataDepsForTesting());
+        verify(mLease).destroy();
+    }
+
+    @Test
+    public void testScheduleCleanUnusedData_ZeroArchivedTabs_NotInstantiated() {
+        ArchivedTabModelOrchestrator.setInstanceForTesting(/* instance= */ null);
+        new TabArchiveSettings(ChromeSharedPreferences.getInstance()).resetSettingsForTesting();
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabContentManager).removeAllTabThumbnailsExceptForIds(mTabIdsCaptor.capture());
+        assertArrayEquals(
+                new int[] {ARCHIVED_TAB_ID, TAB_ID, CUSTOM_TAB_ID}, mTabIdsCaptor.getValue());
+
+        verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
+        List<String> windowTags = mWindowTagsCaptor.getValue();
+        assertArrayEquals(
+                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "2"},
+                windowTags.toArray());
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+    }
+
+    @Test
+    public void testScheduleCleanUnusedData_HasArchivedTabs_AcquiresAndReleasesLease() {
+        ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
+        new TabArchiveSettings(ChromeSharedPreferences.getInstance())
+                .setArchivedTabCount(/* count= */ 3);
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        verify(mArchivedTabModelOrchestrator)
+                .acquireLeaseInternal(eq(LeaseReason.PERSISTENT_STORE_CLEANER));
+        assertNotNull(mCleaner.getArchivedTabsLeaseForTesting());
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mLease).destroy();
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+    }
+
+    @Test
+    public void
+            testScheduleCleanUnusedData_InstantiatedLater_AcquiresLeaseInMaybeCleanUnusedWindows() {
+        ArchivedTabModelOrchestrator.setInstanceForTesting(/* instance= */ null);
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(false);
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+
+        ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
+        verify(mTabWindowManager).addObserver(mObserverCaptor.capture());
+        TabWindowManager.Observer observer = mObserverCaptor.getValue();
+        observer.onAllTabModelStateInitialized();
+
+        assertNotNull(mCleaner.getArchivedTabsLeaseForTesting());
+        verify(mArchivedTabModelOrchestrator)
+                .acquireLeaseInternal(eq(LeaseReason.PERSISTENT_STORE_CLEANER));
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mLease).destroy();
+        verify(mTabWindowManager).removeObserver(observer);
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+        assertFalse(mCleaner.hasUnusedDataDepsForTesting());
+    }
+
+    @Test
+    public void
+            testScheduleCleanUnusedData_HasArchivedTabs_ArchivedSelectorNull_SkipsThumbnailCleanup() {
+        ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
+        new TabArchiveSettings(ChromeSharedPreferences.getInstance())
+                .setArchivedTabCount(/* count= */ 3);
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+        when(mTabWindowManager.getArchivedTabModelSelector()).thenReturn(null);
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        assertNotNull(mCleaner.getArchivedTabsLeaseForTesting());
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
+        verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
+        List<String> windowTags = mWindowTagsCaptor.getValue();
+        assertArrayEquals(
+                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "2"},
+                windowTags.toArray());
+        verify(mLease).destroy();
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+    }
+
+    @Test
+    public void testCleanUnusedWindows_EmptySelectors_AbortsWithoutDeletingData() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+        when(mTabWindowManager.getArchivedTabModelSelector()).thenReturn(null);
+        when(mTabWindowManager.getAllTabModelSelectors()).thenReturn(Collections.emptyList());
+        when(mTabWindowManager.getCustomTabsTabModelSelectors())
+                .thenReturn(Collections.emptyList());
 
         mCleaner.scheduleCleanUnusedData(mTabContentManager);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
+        verify(mTabStateStorageService, never()).clearAllWindowsExcept(any());
+        assertFalse(mCleaner.hasUnusedDataDepsForTesting());
+    }
+
+    @Test
+    public void testCleanUnusedWindows_OnlyArchivedSelector_AbortsWithoutDeletingData() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+        when(mTabWindowManager.getArchivedTabModelSelector()).thenReturn(mArchivedTabModelSelector);
+        when(mTabWindowManager.getAllTabModelSelectors()).thenReturn(Collections.emptyList());
+        when(mTabWindowManager.getCustomTabsTabModelSelectors())
+                .thenReturn(Collections.emptyList());
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
+        verify(mTabStateStorageService, never()).clearAllWindowsExcept(any());
+        verify(mLease).destroy();
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+        assertFalse(mCleaner.hasUnusedDataDepsForTesting());
     }
 
     @Test

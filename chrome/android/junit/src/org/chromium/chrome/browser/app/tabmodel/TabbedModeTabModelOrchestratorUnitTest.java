@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +30,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Holder;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.AsyncTask;
@@ -50,6 +52,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -82,6 +85,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     @Mock private MismatchedIndicesHandler mMismatchedIndicesHandler;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
+    @Mock private Destroyable mDeclutterLease;
     @Mock private TabContentManager mTabContentManager;
     @Mock private DeferredStartupHandler mDeferredStartupHandler;
     @Mock private TabModelJniBridge.Natives mTabModelJniBridgeJni;
@@ -124,6 +128,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         when(mTabModelSelector.getCurrentTabModelSupplier())
                 .thenReturn(ObservableSuppliers.createMonotonic(mTabModel));
         when(mTabModelSelector.getProfile(anyBoolean())).thenReturn(mProfile);
+        when(mArchivedTabModelOrchestrator.acquireLeaseInternal(any())).thenReturn(mDeclutterLease);
         mCipherFactory = new CipherFactory();
         TabModelJniBridgeJni.setInstanceForTesting(mTabModelJniBridgeJni);
         RecentlyClosedBridgeJni.setInstanceForTesting(mRecentlyClosedBridgeJni);
@@ -137,6 +142,8 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         // TabbedModeTabModelOrchestrator gets a new TabModelSelector from TabWindowManagerSingleton
         // for every test case, so TabWindowManagerSingleton has to be reset to avoid running out of
         // assignment slots.
+        ArchivedTabModelOrchestrator.setInstanceForTesting(null);
+        new TabArchiveSettings(ChromeSharedPreferences.getInstance()).resetSettingsForTesting();
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
         MultiWindowTestUtils.resetInstanceInfo();
     }
@@ -288,6 +295,8 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ARCHIVED_TABS_TEARDOWN)
     public void testDeclutterPassCompletionReleasesLease() {
+        new TabArchiveSettings(ChromeSharedPreferences.getInstance())
+                .setArchiveEnabled(/* enabled= */ true);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
@@ -317,6 +326,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
 
         orchestrator.onDeclutterPassCompleted();
         assertNull(orchestrator.getDeclutterLeaseForTesting());
+        verify(mPersistentStoreCleaner, atLeastOnce()).scheduleCleanUnusedData(mTabContentManager);
     }
 
     @Test
@@ -351,6 +361,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
 
         orchestrator.onRescueArchivedTabsCompleted();
         assertNull(orchestrator.getDeclutterLeaseForTesting());
+        verify(mPersistentStoreCleaner, atLeastOnce()).scheduleCleanUnusedData(mTabContentManager);
     }
 
     @Test
@@ -381,5 +392,6 @@ public class TabbedModeTabModelOrchestratorUnitTest {
 
         mRunnableCaptor.getValue().run();
         assertNull(orchestrator.getDeclutterLeaseForTesting());
+        verify(mPersistentStoreCleaner).scheduleCleanUnusedData(mTabContentManager);
     }
 }

@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.app.tabmodel.PersistentStoreMigrationM
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.createNewChromeTabbedActivity;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_STORE_MANAGER_VERSION;
+import static org.chromium.chrome.browser.tabwindow.TabWindowManager.ARCHIVED_WINDOW_TAG;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.os.Build.VERSION_CODES;
@@ -45,6 +46,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
@@ -53,9 +55,11 @@ import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.HeadlessTabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -63,6 +67,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Integration tests for {@link PersistentStoreCleaner} via {@link TabModelOrchestrator} clearState.
@@ -71,7 +76,8 @@ import java.io.File;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures({
     ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE,
-    ChromeFeatureList.SCHEDULE_WINDOW_CLEANING
+    ChromeFeatureList.SCHEDULE_WINDOW_CLEANING,
+    ChromeFeatureList.ARCHIVED_TABS_TEARDOWN
 })
 public class PersistentStoreCleanerTest {
     private static final int WINDOW_ID = 0;
@@ -329,6 +335,297 @@ public class PersistentStoreCleanerTest {
         CriteriaHelper.pollInstrumentationThread(() -> !legacyMetadataFile.exists());
         StorageLoadedData finalData = loadAllDataSync(WINDOW_TAG, false);
         assertEquals(0, finalData.getLoadedTabStates().length);
+    }
+
+    @Test
+    @MediumTest
+    public void
+            cleanUnusedData_ArchivedOrchestratorInstantiated_AcquiresLeaseAndPreservesArchivedData()
+                    throws Exception {
+        startActivityAndInitialize();
+        CriteriaHelper.pollUiThread(
+                () -> TabWindowManagerSingleton.getInstance().isAllTabStateInitialized());
+        PersistentStoreCleaner cleaner = PersistentStoreCleanerFactory.getForProfile(mProfile);
+        CriteriaHelper.pollUiThread(() -> !cleaner.hasUnusedDataDepsForTesting());
+
+        CriteriaHelper.pollUiThread(
+                () -> ArchivedTabModelOrchestrator.isInstantiatedForProfile(mProfile));
+        ArchivedTabModelOrchestrator orchestrator =
+                runOnUiThreadBlocking(() -> ArchivedTabModelOrchestrator.getForProfile(mProfile));
+        CriteriaHelper.pollUiThread(orchestrator::areTabModelsInitialized);
+        CriteriaHelper.pollUiThread(orchestrator::isTabStateInitialized);
+
+        Tab regularTab1 =
+                runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().getActivityTab());
+        TabContentManager tabContentManager =
+                runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().getTabContentManager());
+
+        // Cache thumbnail for regular tab 1 while it is the active tab.
+        runOnUiThreadBlocking(
+                () ->
+                        tabContentManager.cacheTabThumbnailWithCallback(
+                                regularTab1,
+                                /* returnBitmap= */ false,
+                                CallbackUtils.emptyCallback()));
+        File regularTab1Thumbnail = TabContentManager.getTabThumbnailFileJpeg(regularTab1.getId());
+        CriteriaHelper.pollInstrumentationThread(regularTab1Thumbnail::exists);
+
+        // Open a second tab so we have a tab that stays in the regular tab model.
+        Tab regularTab2 =
+                runOnUiThreadBlocking(
+                        () ->
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getTabCreator(/* incognito= */ false)
+                                        .launchUrl("about:blank", TabLaunchType.FROM_CHROME_UI));
+        runOnUiThreadBlocking(
+                () ->
+                        tabContentManager.cacheTabThumbnailWithCallback(
+                                regularTab2,
+                                /* returnBitmap= */ false,
+                                CallbackUtils.emptyCallback()));
+        File regularTab2Thumbnail = TabContentManager.getTabThumbnailFileJpeg(regularTab2.getId());
+        CriteriaHelper.pollInstrumentationThread(regularTab2Thumbnail::exists);
+
+        // Archive regular tab 1.
+        TabModel regularTabModel =
+                mActivityTestRule
+                        .getActivity()
+                        .getTabModelSelector()
+                        .getModel(/* incognito= */ false);
+        runOnUiThreadBlocking(
+                () ->
+                        orchestrator
+                                .getTabArchiver()
+                                .archiveAndRemoveTabs(regularTabModel, List.of(regularTab1)));
+        TabModel archivedTabModel =
+                orchestrator.getTabModelSelector().getModel(/* incognito= */ false);
+        CriteriaHelper.pollUiThread(() -> archivedTabModel.getCount() == 1);
+        CriteriaHelper.pollUiThread(() -> regularTabModel.getCount() == 1);
+
+        // Save state for archived tab model.
+        runOnUiThreadBlocking(orchestrator::saveState);
+        File baseStateDir = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
+        File archivedMetadataFile =
+                new File(
+                        baseStateDir,
+                        TabMetadataFileManager.getMetadataFileName(ARCHIVED_WINDOW_TAG));
+        CriteriaHelper.pollInstrumentationThread(archivedMetadataFile::exists);
+
+        // Create orphaned thumbnail and orphaned window metadata file.
+        File orphanedThumbnailFile = TabContentManager.getTabThumbnailFileJpeg(99999);
+        if (!orphanedThumbnailFile.exists()) {
+            assertTrue(orphanedThumbnailFile.createNewFile());
+        }
+        assertTrue(orphanedThumbnailFile.exists());
+
+        File orphanedWindowFile = new File(baseStateDir, "tab_state999");
+        if (!orphanedWindowFile.exists()) {
+            assertTrue(orphanedWindowFile.createNewFile());
+        }
+        assertTrue(orphanedWindowFile.exists());
+
+        // Trigger scheduleCleanUnusedData().
+        runOnUiThreadBlocking(() -> cleaner.scheduleCleanUnusedData(tabContentManager));
+
+        // Poll until cleanup completes and lease is released.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        !cleaner.hasUnusedDataDepsForTesting()
+                                && cleaner.getArchivedTabsLeaseForTesting() == null);
+
+        // Verify orphaned thumbnail and unused window file are deleted.
+        CriteriaHelper.pollInstrumentationThread(() -> !orphanedThumbnailFile.exists());
+        CriteriaHelper.pollInstrumentationThread(() -> !orphanedWindowFile.exists());
+
+        // Verify regular thumbnail, archived thumbnail, and archived window metadata file are
+        // preserved.
+        assertTrue(regularTab2Thumbnail.exists());
+        assertTrue(regularTab1Thumbnail.exists());
+        assertTrue(archivedMetadataFile.exists());
+    }
+
+    @Test
+    @MediumTest
+    public void cleanUnusedData_ArchivedOrchestratorTornDown_NoCrashAndPreservesArchivedFiles()
+            throws Exception {
+        startActivityAndInitialize();
+        CriteriaHelper.pollUiThread(
+                () -> TabWindowManagerSingleton.getInstance().isAllTabStateInitialized());
+        PersistentStoreCleaner cleaner = PersistentStoreCleanerFactory.getForProfile(mProfile);
+        CriteriaHelper.pollUiThread(() -> !cleaner.hasUnusedDataDepsForTesting());
+
+        CriteriaHelper.pollUiThread(
+                () -> ArchivedTabModelOrchestrator.isInstantiatedForProfile(mProfile));
+        ArchivedTabModelOrchestrator orchestrator =
+                runOnUiThreadBlocking(() -> ArchivedTabModelOrchestrator.getForProfile(mProfile));
+        CriteriaHelper.pollUiThread(orchestrator::areTabModelsInitialized);
+        CriteriaHelper.pollUiThread(orchestrator::isTabStateInitialized);
+
+        Tab regularTab1 =
+                runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().getActivityTab());
+        TabContentManager tabContentManager =
+                runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().getTabContentManager());
+
+        // Cache thumbnail for regular tab 1 while it is active.
+        runOnUiThreadBlocking(
+                () ->
+                        tabContentManager.cacheTabThumbnailWithCallback(
+                                regularTab1,
+                                /* returnBitmap= */ false,
+                                CallbackUtils.emptyCallback()));
+        File regularTab1Thumbnail = TabContentManager.getTabThumbnailFileJpeg(regularTab1.getId());
+        CriteriaHelper.pollInstrumentationThread(regularTab1Thumbnail::exists);
+
+        // Open a second tab.
+        Tab regularTab2 =
+                runOnUiThreadBlocking(
+                        () ->
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getTabCreator(/* incognito= */ false)
+                                        .launchUrl("about:blank", TabLaunchType.FROM_CHROME_UI));
+        runOnUiThreadBlocking(
+                () ->
+                        tabContentManager.cacheTabThumbnailWithCallback(
+                                regularTab2,
+                                /* returnBitmap= */ false,
+                                CallbackUtils.emptyCallback()));
+        File regularTab2Thumbnail = TabContentManager.getTabThumbnailFileJpeg(regularTab2.getId());
+        CriteriaHelper.pollInstrumentationThread(regularTab2Thumbnail::exists);
+
+        // Archive regular tab 1.
+        TabModel regularTabModel =
+                mActivityTestRule
+                        .getActivity()
+                        .getTabModelSelector()
+                        .getModel(/* incognito= */ false);
+        runOnUiThreadBlocking(
+                () ->
+                        orchestrator
+                                .getTabArchiver()
+                                .archiveAndRemoveTabs(regularTabModel, List.of(regularTab1)));
+        TabModel archivedTabModel =
+                orchestrator.getTabModelSelector().getModel(/* incognito= */ false);
+        CriteriaHelper.pollUiThread(() -> archivedTabModel.getCount() == 1);
+
+        // Save state for archived tab model.
+        runOnUiThreadBlocking(orchestrator::saveState);
+        File baseStateDir = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
+        File archivedMetadataFile =
+                new File(
+                        baseStateDir,
+                        TabMetadataFileManager.getMetadataFileName(ARCHIVED_WINDOW_TAG));
+        CriteriaHelper.pollInstrumentationThread(archivedMetadataFile::exists);
+
+        // Create orphaned window metadata file.
+        File orphanedWindowFile = new File(baseStateDir, "tab_state999");
+        if (!orphanedWindowFile.exists()) {
+            assertTrue(orphanedWindowFile.createNewFile());
+        }
+        assertTrue(orphanedWindowFile.exists());
+
+        // Perform teardown on ArchivedTabModelOrchestrator.
+        runOnUiThreadBlocking(orchestrator::performTeardownForTesting);
+
+        // Verify orchestrator is uninstantiated.
+        CriteriaHelper.pollUiThread(
+                () -> !ArchivedTabModelOrchestrator.isInstantiatedForProfile(mProfile));
+
+        // Trigger scheduleCleanUnusedData().
+        runOnUiThreadBlocking(() -> cleaner.scheduleCleanUnusedData(tabContentManager));
+
+        // Verify cleanup runs without crashing and lease is null.
+        assertNull(cleaner.getArchivedTabsLeaseForTesting());
+        CriteriaHelper.pollUiThread(
+                () ->
+                        !cleaner.hasUnusedDataDepsForTesting()
+                                && cleaner.getArchivedTabsLeaseForTesting() == null);
+
+        // Verify orphaned window metadata is deleted.
+        CriteriaHelper.pollInstrumentationThread(() -> !orphanedWindowFile.exists());
+
+        // Verify archived metadata file is preserved.
+        assertTrue(archivedMetadataFile.exists());
+
+        // Verify thumbnails are protected (archived and regular thumbnails preserved).
+        assertTrue(regularTab2Thumbnail.exists());
+        assertTrue(regularTab1Thumbnail.exists());
+    }
+
+    @Test
+    @MediumTest
+    public void
+            cleanUnusedData_ArchivedOrchestratorNeverInstantiated_PrunesThumbnailsAndPreservesArchivedTag()
+                    throws Exception {
+        startActivityAndInitialize();
+        CriteriaHelper.pollUiThread(
+                () -> TabWindowManagerSingleton.getInstance().isAllTabStateInitialized());
+        PersistentStoreCleaner cleaner = PersistentStoreCleanerFactory.getForProfile(mProfile);
+        CriteriaHelper.pollUiThread(() -> !cleaner.hasUnusedDataDepsForTesting());
+
+        // Destroy ProfileKeyedMap to simulate orchestrator being uninstantiated with 0 archived
+        // tabs.
+        runOnUiThreadBlocking(
+                () -> {
+                    ArchivedTabModelOrchestrator.destroyProfileKeyedMap();
+                    new TabArchiveSettings(ChromeSharedPreferences.getInstance())
+                            .resetSettingsForTesting();
+                });
+        CriteriaHelper.pollUiThread(
+                () -> !ArchivedTabModelOrchestrator.isInstantiatedForProfile(mProfile));
+        runOnUiThreadBlocking(
+                () -> {
+                    TabArchiveSettings archiveSettings =
+                            new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+                    assertEquals(0, archiveSettings.getArchivedTabCount());
+                });
+
+        File baseStateDir = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
+        File archivedMetadataFile =
+                new File(
+                        baseStateDir,
+                        TabMetadataFileManager.getMetadataFileName(ARCHIVED_WINDOW_TAG));
+        if (!archivedMetadataFile.exists()) {
+            assertTrue(archivedMetadataFile.createNewFile());
+        }
+        assertTrue(archivedMetadataFile.exists());
+
+        File orphanedWindowFile = new File(baseStateDir, "tab_state999");
+        if (!orphanedWindowFile.exists()) {
+            assertTrue(orphanedWindowFile.createNewFile());
+        }
+        assertTrue(orphanedWindowFile.exists());
+
+        Tab tab = runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().getActivityTab());
+        TabContentManager tabContentManager =
+                runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().getTabContentManager());
+        runOnUiThreadBlocking(
+                () ->
+                        tabContentManager.cacheTabThumbnailWithCallback(
+                                tab, /* returnBitmap= */ false, CallbackUtils.emptyCallback()));
+        File regularThumbnailFile = TabContentManager.getTabThumbnailFileJpeg(tab.getId());
+        CriteriaHelper.pollInstrumentationThread(regularThumbnailFile::exists);
+
+        File orphanedThumbnailFile = TabContentManager.getTabThumbnailFileJpeg(99999);
+        if (!orphanedThumbnailFile.exists()) {
+            assertTrue(orphanedThumbnailFile.createNewFile());
+        }
+        assertTrue(orphanedThumbnailFile.exists());
+
+        // Trigger scheduleCleanUnusedData().
+        runOnUiThreadBlocking(() -> cleaner.scheduleCleanUnusedData(tabContentManager));
+
+        // Poll until cleanup completes.
+        CriteriaHelper.pollUiThread(() -> !cleaner.hasUnusedDataDepsForTesting());
+
+        // Verify orphaned window file and orphaned thumbnail are deleted.
+        CriteriaHelper.pollInstrumentationThread(() -> !orphanedWindowFile.exists());
+        CriteriaHelper.pollInstrumentationThread(() -> !orphanedThumbnailFile.exists());
+
+        // Verify regular thumbnail and archived metadata file are preserved.
+        assertTrue(regularThumbnailFile.exists());
+        assertTrue(archivedMetadataFile.exists());
     }
 
     private void startActivityAndInitialize() {

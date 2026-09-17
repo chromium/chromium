@@ -43,7 +43,7 @@ public class PersistentStoreCleanerFactory {
     /**
      * @param cleaner The cleaner to override with. Pass null to remove override.
      */
-    public static void setForTesting(PersistentStoreCleaner cleaner) {
+    public static void setForTesting(@Nullable PersistentStoreCleaner cleaner) {
         sCleanerForTesting = cleaner;
         ResettersForTesting.register(() -> sCleanerForTesting = null);
     }
