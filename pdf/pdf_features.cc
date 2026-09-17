@@ -18,9 +18,8 @@ bool g_is_oopif_pdf_policy_enabled = true;
 
 // Enables PDFium to support the experimental PDF 2.0 /BrotliDecode filter
 // allowing for PDFs encoded with Brotli to be viewable by Chrome's PDF
-// viewer. This flag would be enabled by default when the spec for
-// /BrotliDecode is finalized and support for the feature becomes official.
-BASE_FEATURE(kPdfBrotliDecode, base::FEATURE_DISABLED_BY_DEFAULT);
+// viewer.
+BASE_FEATURE(kPdfBrotliDecode, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Reuse buffers in PaintManager.
 BASE_FEATURE(kPdfBufferedPaintManager, base::FEATURE_DISABLED_BY_DEFAULT);
