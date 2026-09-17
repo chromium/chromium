@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_mutator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_table_view_controller.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_table_view_controller_delegate.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
@@ -193,6 +195,10 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
 
   self.navigationItem.leftBarButtonItem.enabled = YES;
   self.modalInPresentation = NO;
+}
+
+- (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages {
+  [_tableViewController setLegalMessages:legalMessages];
 }
 
 #pragma mark - Actions

@@ -24,6 +24,7 @@ source_set("ui") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/public",
+    "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor/cells",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/autofill/autofill_ai/utils",
@@ -43,6 +44,7 @@ source_set("ui") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "autofill_ai_save_entity_container_view_controller_unittest.mm",
     "autofill_ai_save_entity_table_view_controller_unittest.mm",
     "autofill_ai_sources_util_unittest.mm",
     "autofill_ai_sources_view_controller_unittest.mm",
@@ -50,9 +52,11 @@ source_set("unit_tests") {
   deps = [
     ":ui",
     "//base",
+    "//components/autofill/core/browser:legal_message_line",
     "//components/autofill/core/browser:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/public",
+    "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",

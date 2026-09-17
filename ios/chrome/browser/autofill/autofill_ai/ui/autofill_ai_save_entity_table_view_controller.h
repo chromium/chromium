@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_table_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
+@class AutofillLegalMessageLine;
 @protocol AutofillCommands;
 @protocol AutofillAISaveEntityMutator;
 
@@ -24,6 +25,9 @@
 - (void)setNewEntity:(autofill::EntityInstance)newEntity
            oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
            userEmail:(const std::u16string&)userEmail;
+
+// Sets the legal message lines to be displayed in the footer.
+- (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages;
 
 @end
 

@@ -12,6 +12,8 @@
 
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 
+@class AutofillLegalMessageLine;
+
 // Consumer for the Autofill AI entity save and update UI.
 @protocol AutofillAISaveEntityConsumer <NSObject>
 
@@ -20,6 +22,9 @@
             oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
             userEmail:(const std::u16string&)userEmail
     saveIsSynchronous:(BOOL)saveIsSynchronous;
+
+// Sets the legal message lines for the disclosure.
+- (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages;
 
 // Updates the UI to show the progress of the entity upload via the loading
 // state.
