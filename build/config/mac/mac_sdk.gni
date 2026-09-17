@@ -48,12 +48,12 @@ declare_args() {
   # The SDK version used when making official builds. This is a single exact
   # version, not a minimum. If this version isn't available, official builds
   # will fail.
-  mac_sdk_official_version = "27.0"
+  mac_sdk_official_version = "26.5"
 
   # The SDK build version used when making official builds.  This is a single
   # exact version found at "System/Library/CoreServices/SystemVersion.plist"
   # inside the SDK.
-  mac_sdk_official_build_version = "26A425"
+  mac_sdk_official_build_version = "25F70"
 
   # The SDK version and build used for universal Xcode (e.g., Xcode 26.6), which
   # is required on Intel x86 hosts since Xcode 27+ is ARM-only.
