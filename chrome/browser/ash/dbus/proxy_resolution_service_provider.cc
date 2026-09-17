@@ -105,8 +105,7 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
   // local proxy connection fails. System-proxy itself does proxy resolution
   // trough the same Chrome proxy resolution service to connect to the
   // remote proxy server. The availability of this feature is controlled by the
-  // |SystemProxySettings| policy and the feature flag
-  // `features::kSystemProxyForSystemServices`.
+  // |SystemProxySettings| policy.
   void AppendSystemProxyIfActive(std::string* pac_proxy_list) {
     SystemProxyManager* system_proxy_manager = SystemProxyManager::Get();
     // |system_proxy_manager| may be missing in tests.

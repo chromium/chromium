@@ -1728,11 +1728,6 @@ const base::FeatureParam<SystemShortcutBehaviorParam>
 // Enables or disables the shadows of system tray bubbles.
 BASE_FEATURE(kSystemTrayShadow, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the ChromeOS system-proxy daemon, only for system services. This
-// means that system services like tlsdate, update engine etc. can opt to be
-// authenticated to a remote HTTP web proxy via system-proxy.
-BASE_FEATURE(kSystemProxyForSystemServices, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the UI to allow Chromebook hotspot functionality for experimental
 // carriers, modem and modem FW.
 BASE_FEATURE(kTetheringExperimentalFunctionality,

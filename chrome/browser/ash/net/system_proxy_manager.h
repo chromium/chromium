@@ -58,11 +58,8 @@ class SystemProxyNotification;
 class SystemProxyManager : public NetworkStateHandlerObserver {
  public:
   enum class SystemProxyState {
-    // System-proxy is not enabled by feature nor policy.
+    // System-proxy is not enabled by policy.
     kDisabled = 0,
-    // System proxy is enabled via feature flag; only available to system
-    // services which explicitly opt to use system-proxy.
-    kEnabledForSystemServices,
     // System proxy is enabled via policy for all system services and the
     // PlayStore.
     kEnabledForAll

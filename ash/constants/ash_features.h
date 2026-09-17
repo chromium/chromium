@@ -785,8 +785,6 @@ extern const base::FeatureParam<SystemShortcutBehaviorParam>
     kSystemShortcutBehaviorParam;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSystemNudgeMigration);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSystemTrayShadow);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kSystemProxyForSystemServices);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kTelemetryExtension);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kTetheringExperimentalFunctionality);

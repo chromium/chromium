@@ -6387,10 +6387,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilitySwitchAccessText)},
-    {"enable-system-proxy-for-system-services",
-     flag_descriptions::kSystemProxyForSystemServicesName,
-     flag_descriptions::kSystemProxyForSystemServicesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSystemProxyForSystemServices)},
     {"system-shortcut-behavior", flag_descriptions::kSystemShortcutBehaviorName,
      flag_descriptions::kSystemShortcutBehaviorDescription, kOsCrOS,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kSystemShortcutBehavior,

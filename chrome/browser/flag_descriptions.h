@@ -3500,13 +3500,6 @@ inline constexpr char kWebNNOnnxRuntimeDescription[] =
     "Enables using ONNX Runtime for CPU, GPU and NPU inference with the WebNN "
     "API. Disabling this flag enables a fallback to TFLite.";
 
-inline constexpr char kSystemProxyForSystemServicesName[] =
-    "Enable system-proxy for selected system services";
-inline constexpr char kSystemProxyForSystemServicesDescription[] =
-    "Enabling this flag will allow ChromeOS system service which require "
-    "network connectivity to use the system-proxy daemon for authentication to "
-    "remote HTTP web proxies.";
-
 inline constexpr char kSystemShortcutBehaviorName[] =
     "Modifies the default behavior of system shortcuts.";
 inline constexpr char kSystemShortcutBehaviorDescription[] =

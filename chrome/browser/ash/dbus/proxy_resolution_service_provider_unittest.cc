@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -218,8 +216,7 @@ TEST_F(ProxyResolutionServiceProviderTest,
       mock_network_context_.last_network_anonymization_key().IsTransient());
 }
 
-// Tests the behaviour of system-proxy when enabled via the feature flag
-// `features::kSystemProxyForSystemServices` and via the device policy
+// Tests the behaviour of system-proxy when enabled via the device policy
 // SystemProxySettings.
 class ProxyResolutionServiceWithSystemProxyTest
     : public ProxyResolutionServiceProviderTest {
@@ -229,8 +226,6 @@ class ProxyResolutionServiceWithSystemProxyTest
 
   // testing::Test
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSystemProxyForSystemServices);
     ProxyResolutionServiceProviderTest::SetUp();
 
     SystemProxyClient::InitializeFake();
@@ -271,46 +266,30 @@ class ProxyResolutionServiceWithSystemProxyTest
 
  private:
   NetworkHandlerTestHelper network_handler_test_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// When system-proxy is enabled via the flag and the caller explicitly opt into
-// using system-proxy for authentication, the network address of system-proxy
-// should be added first in the PAC style list of proxies.
-TEST_F(ProxyResolutionServiceWithSystemProxyTest, FlagOptIn) {
-  mock_network_context_.SetNextProxyResult({net::OK, "PROXY localhost:8080"});
-
-  ResolveProxyResult result;
-  CallMethod("http://www.gmail.com/", &result,
-             chromeos::SystemProxyOverride::kOptIn);
-
-  // The response should contain the system-proxy address and an empty error.
-  EXPECT_EQ("PROXY system-proxy:3128; PROXY localhost:8080", result.proxy_info);
-  EXPECT_EQ("", result.error);
-}
-
-// If there's no proxy configured in Chrome, the address of system-proxy should
-// not be returned by the proxy resolution service.
-TEST_F(ProxyResolutionServiceWithSystemProxyTest, DirectProxy) {
-  mock_network_context_.SetNextProxyResult({net::OK, "DIRECT"});
-  ResolveProxyResult result;
-  CallMethod("http://www.gmail.com/", &result,
-             chromeos::SystemProxyOverride::kOptIn);
-
-  EXPECT_EQ("DIRECT", result.proxy_info);
-  EXPECT_EQ("", result.error);
-}
-
-// When system-proxy is enabled via the flag and the caller doesn't explicitly
-// opt into using system-proxy for authentication, the address of system-proxy
-// should not be returned by the proxy resolution service.
-TEST_F(ProxyResolutionServiceWithSystemProxyTest, FlagDefault) {
+// When system-proxy is disabled, the address of system-proxy should not be
+// returned by the proxy resolution service.
+TEST_F(ProxyResolutionServiceWithSystemProxyTest, DisabledDefault) {
   mock_network_context_.SetNextProxyResult({net::OK, "PROXY localhost:8080"});
   ResolveProxyResult result;
   CallMethod("http://www.gmail.com/", &result,
              chromeos::SystemProxyOverride::kDefault);
 
   EXPECT_EQ("PROXY localhost:8080", result.proxy_info);
+  EXPECT_EQ("", result.error);
+}
+
+// If there's no proxy configured in Chrome, the address of system-proxy should
+// not be returned by the proxy resolution service.
+TEST_F(ProxyResolutionServiceWithSystemProxyTest, DirectProxy) {
+  SystemProxyManager::Get()->SetSystemProxyEnabledForTest(true);
+  mock_network_context_.SetNextProxyResult({net::OK, "DIRECT"});
+  ResolveProxyResult result;
+  CallMethod("http://www.gmail.com/", &result,
+             chromeos::SystemProxyOverride::kOptIn);
+
+  EXPECT_EQ("DIRECT", result.proxy_info);
   EXPECT_EQ("", result.error);
 }
 
