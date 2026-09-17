@@ -193,6 +193,7 @@ class OmniboxEverywhereUI
                                const RegionCaptureSource& source,
                                RegionSelectedCallback callback) override;
   void OnScreenshotMenuClosed();
+  bool CancelChromeDefaultPicker();
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;

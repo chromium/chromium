@@ -1011,9 +1011,52 @@ void OmniboxEverywhereUIManager::OnScreensharePickerOpened() {
 void OmniboxEverywhereUIManager::OnScreensharePickerClosed() {
   is_screenshare_picker_open_ = false;
   UpdateModalInteractionState();
-  if (widget_) {
+  if (widget_ && !suppress_restore_on_screenshare_picker_closed_) {
     ActivateAndFocus();
   }
+}
+
+bool OmniboxEverywhereUIManager::CancelChromeDefaultPicker(
+    Profile* target_profile) {
+  // Never cancel during region selection overlay: it already owns the screen
+  // with fullscreen overlays across all displays, so it cannot be occluded by
+  // another window, and invocations should continue to be ignored.
+  if (region_select_overlay_) {
+    return false;
+  }
+
+  // If the invocation was targeted for a different profile, suppress
+  // restoring and focusing the current profile's widget when the picker closes
+  // to prevent visual flicker before the new profile is shown.
+  std::optional<base::AutoReset<bool>> suppress_restore;
+  if (target_profile && target_profile != profile_) {
+    suppress_restore.emplace(&suppress_restore_on_screenshare_picker_closed_,
+                             true);
+  }
+
+  auto* web_contents = this->web_contents();
+  auto* webui = web_contents ? web_contents->GetWebUI() : nullptr;
+  auto* ui = (webui && webui->GetController())
+                 ? webui->GetController()->GetAs<OmniboxEverywhereUI>()
+                 : nullptr;
+
+  if (ui && ui->CancelChromeDefaultPicker()) {
+    if (is_screenshare_picker_open_) {
+      OnScreensharePickerClosed();
+    } else if (widget_ && !widget_->IsVisible() &&
+               !suppress_restore_on_screenshare_picker_closed_) {
+      ActivateAndFocus();
+    }
+    return true;
+  }
+
+  // Fallback for test harnesses (e.g. TestWebUIContentsWrapper) where WebUI is
+  // mocked and OnScreensharePickerOpened() was called directly.
+  if (is_screenshare_picker_open_) {
+    OnScreensharePickerClosed();
+    return true;
+  }
+  return false;
 }
 
 void OmniboxEverywhereUIManager::ShowScreenshotDisclosureDialog(

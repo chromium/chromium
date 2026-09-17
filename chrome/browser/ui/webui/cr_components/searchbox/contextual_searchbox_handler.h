@@ -214,6 +214,7 @@ class ContextualSearchboxHandler
   void CaptureRegionScreenshot(
       CaptureRegionScreenshotCallback callback) override;
   void ShowScreenshotMenu(const gfx::Rect& anchor_rect) override;
+  bool CancelChromeDefaultPicker();
 
   // ContextualSearchboxScreenshareController::Host:
   void UploadScreenshot(

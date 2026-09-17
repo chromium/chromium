@@ -186,6 +186,33 @@ void ContextualSearchboxScreenshareController::CaptureRegionScreenshot(
 #endif
 }
 
+bool ContextualSearchboxScreenshareController::CancelChromeDefaultPicker() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!screenshare_picker_controller_) {
+    return false;
+  }
+
+  // Resetting `screenshare_picker_controller_` destroys its `done_callback_`,
+  // which invokes the `mojo::WrapCallbackWithDefaultInvokeIfNotRun` wrapper
+  // created in `StartScreenshareInternal` with `std::nullopt`.
+  screenshare_picker_controller_.reset();
+  chrome_default_picker_destroyed_ = false;
+  pending_screenshare_source_.reset();
+  pending_region_capture_source_.reset();
+
+  auto callback = std::move(pending_screenshare_callback_);
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  if (callback) {
+    std::move(callback).Run(std::nullopt);
+  }
+
+  NotifyScreensharePickerClosed();
+  return true;
+#else
+  return false;
+#endif
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void ContextualSearchboxScreenshareController::StartScreenshareInternal(
     bool prefer_entire_screen,

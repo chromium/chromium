@@ -2546,6 +2546,13 @@ void ContextualSearchboxHandler::CaptureRegionScreenshot(
   }
 }
 
+bool ContextualSearchboxHandler::CancelChromeDefaultPicker() {
+  if (screenshare_controller_) {
+    return screenshare_controller_->CancelChromeDefaultPicker();
+  }
+  return false;
+}
+
 void ContextualSearchboxHandler::UploadScreenshot(
     std::string file_name,
     std::string mime_type,

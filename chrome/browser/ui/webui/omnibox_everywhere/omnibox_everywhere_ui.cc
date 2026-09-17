@@ -573,6 +573,13 @@ void OmniboxEverywhereUI::ShowRegionSelectOverlay(
   std::move(callback).Run(SkBitmap());
 }
 
+bool OmniboxEverywhereUI::CancelChromeDefaultPicker() {
+  if (auto* handler = GetContextualSearchboxHandler()) {
+    return handler->CancelChromeDefaultPicker();
+  }
+  return false;
+}
+
 void OmniboxEverywhereUI::BindInterface(
     mojo::PendingReceiver<omnibox_everywhere_debug::mojom::PageHandlerFactory>
         receiver) {

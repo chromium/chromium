@@ -2239,6 +2239,56 @@ TEST_F(OmniboxEverywhereUIManagerTest, ScreensharePickerStateTracking) {
   EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 }
 
+TEST_F(OmniboxEverywhereUIManagerTest,
+       CancelChromeDefaultPickerRestoresWidget) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(ui_manager->widget()->IsVisible());
+
+  ui_manager->OnScreensharePickerOpened();
+  EXPECT_TRUE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsScreenshareCaptureInProgress());
+  EXPECT_FALSE(ui_manager->widget()->IsVisible());
+
+  EXPECT_TRUE(ui_manager->CancelChromeDefaultPicker());
+  EXPECT_FALSE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsScreenshareCaptureInProgress());
+  EXPECT_TRUE(ui_manager->widget()->IsVisible());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       CancelChromeDefaultPickerReturnsFalseWhenNotOpen) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(ui_manager->widget()->IsVisible());
+
+  EXPECT_FALSE(ui_manager->CancelChromeDefaultPicker());
+  EXPECT_TRUE(ui_manager->widget()->IsVisible());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       CancelChromeDefaultPickerSuppressesRestoreWhenTargetProfileDiffers) {
+  TestingProfile other_profile;
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(ui_manager->widget()->IsVisible());
+
+  ui_manager->OnScreensharePickerOpened();
+  EXPECT_TRUE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsScreenshareCaptureInProgress());
+  EXPECT_FALSE(ui_manager->widget()->IsVisible());
+
+  // When invoked for a different profile, the picker is cancelled but the old
+  // profile's widget is not restored/focused (preventing visual flicker).
+  EXPECT_TRUE(ui_manager->CancelChromeDefaultPicker(&other_profile));
+  EXPECT_FALSE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsScreenshareCaptureInProgress());
+  EXPECT_FALSE(ui_manager->widget()->IsVisible());
+}
+
 TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringScreensharePicker) {
   if (g_browser_process && g_browser_process->local_state()) {
     g_browser_process->local_state()->SetBoolean(
@@ -2896,6 +2946,35 @@ TEST_F(OmniboxEverywhereUIManagerTest, HasOpenModalDialog_RegionSelectOverlay) {
   EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       CancelChromeDefaultPickerDoesNotCancelRegionSelectOverlay) {
+  using RegionCaptureSource = OmniboxEverywhereUIManager::RegionCaptureSource;
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->web_contents());
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorRED);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  ui_manager->ShowRegionSelectOverlay(
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback());
+  EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+  EXPECT_TRUE(ui_manager->IsScreenshareCaptureInProgress());
+
+  // Region selection overlay covers the entire screen and is unaffected by
+  // CancelChromeDefaultPicker().
+  EXPECT_FALSE(ui_manager->CancelChromeDefaultPicker());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+  EXPECT_TRUE(ui_manager->IsScreenshareCaptureInProgress());
+
+  ui_manager->Shutdown();
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
