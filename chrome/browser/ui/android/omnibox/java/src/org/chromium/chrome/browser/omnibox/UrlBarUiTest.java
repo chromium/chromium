@@ -13,8 +13,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.ui.test.util.MockitoHelper.clearInvocations;
-
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -43,7 +41,6 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -953,20 +950,29 @@ public class UrlBarUiTest {
     @Test
     @SmallTest
     @Feature("Omnibox")
-    public void testUrlTextChangeListener() {
-        @SuppressWarnings("unchecked")
-        Callback<String> listener = Mockito.mock(Callback.class);
-        mUrlBar.setTextChangeListener(listener);
+    public void testUrlTextChangeListener() throws TimeoutException {
+        CallbackHelper textChangeHelper = new CallbackHelper();
+        AtomicReference<String> lastText = new AtomicReference<>();
+        mUrlBar.setTextChangeListener(
+                (text) -> {
+                    lastText.set(text);
+                    textChangeHelper.notifyCalled();
+                });
 
+        int callCount = textChangeHelper.getCallCount();
         setText("onomatop");
-        Mockito.verify(listener).onResult("onomatop");
+        textChangeHelper.waitForCallback(callCount);
+        assertEquals("onomatop", lastText.get());
 
         // Setting autocomplete does not send a change update.
+        callCount = textChangeHelper.getCallCount();
         setAutocompleteText("oeia", null);
+        assertEquals(callCount, textChangeHelper.getCallCount());
 
-        clearInvocations(listener);
         setText("");
-        Mockito.verify(listener).onResult("");
+        textChangeHelper.waitForCallback(callCount);
+        assertEquals("", lastText.get());
+
         mUrlBar.setTextChangeListener(null);
     }
 
