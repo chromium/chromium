@@ -576,6 +576,36 @@ TEST_F(GlicWebContentsWarmingPoolTest,
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest,
+       MemoryPressureRecoversAfterExpiryReload) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{base::kStatefulMemoryPressure,
+                            kGlicReloadWebContentsAfterExpiry},
+      /*disabled_features=*/{});
+  TestGlicWebContentsWarmingPool warming_pool(&profile_,
+                                              &web_contents_factory_);
+
+  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+
+  // Fast-forward to trigger OnContainerExpired() and reload once.
+  task_environment_.FastForwardBy(
+      features::kGlicWebContentsWarmingPoolExpiryDelay.Get());
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_TRUE(warming_pool.IsExpiryTimerRunningForTesting());
+
+  // Under critical memory pressure, the reloaded container is cleared.
+  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
+
+  // When memory pressure subsides, delayed refill must start because the pool
+  // remained active through the reload.
+  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+  EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest,
        MaybeStartWarmingUnderStatefulMemoryPressure) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);

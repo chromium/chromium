@@ -162,16 +162,17 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
   base::TimeDelta expiry_delay_ = base::Hours(23);
   base::TimeDelta warming_delay_ = base::Seconds(20);
 
-  // Tracks whether the pool is active and should maintain a warmed container.
-  // Set to true when initial warming starts or when a container is consumed.
-  // Set to false when the pool is cleared permanently (e.g., on container
-  // expiry, explicit clearing, or shutdown), but remains true if cleared
-  // temporarily due to critical memory pressure.
+  // Tracks whether warming is enabled for this session and the pool should
+  // maintain a warmed container. Set to true when initial warming starts or
+  // when a container is consumed. Set to false when the pool is shut down or
+  // when a container expires without reloading (e.g. reload limit reached or
+  // feature disabled), but remains true if cleared due to critical memory
+  // pressure.
   //
   // In stateful memory pressure mode, when memory pressure drops below
   // CRITICAL, this flag ensures the pool only refills if it was previously
   // active.
-  bool is_active_ = false;
+  bool should_warm_when_memory_allows_ = false;
 };
 
 }  // namespace glic
