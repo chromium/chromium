@@ -21,7 +21,7 @@ import org.chromium.components.omnibox.InputTypeProto.InputType;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.SectionConfigProto.SectionConfig;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
-import org.chromium.components.omnibox.ToolModeProto.ToolMode;
+import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 
 import java.util.Map;
 
@@ -38,15 +38,12 @@ public class InputStateTest {
                                 InputType.INPUT_TYPE_BROWSER_TAB_VALUE)
                         .withDisabledInputTypes(InputType.INPUT_TYPE_BROWSER_TAB_VALUE)
                         .withMaxTotalInputs(16)
-                        .withMaxInputsByType(
-                                Map.of(InputType.INPUT_TYPE_LENS_IMAGE_VALUE, 3))
+                        .withMaxInputsByType(Map.of(InputType.INPUT_TYPE_LENS_IMAGE_VALUE, 3))
                         .withInputTypeConfigs(
                                 new byte[][] {InputTypeConfig.getDefaultInstance().toByteArray()})
-                        .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
-                        .withAllowedTools(
-                                ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE,
-                                ToolMode.TOOL_MODE_CANVAS_VALUE)
-                        .withDisabledTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH, ToolMode.TOOL_MODE_CANVAS)
+                        .withDisabledTools(ToolMode.TOOL_MODE_CANVAS)
                         .withImageGenUploadActive(true)
                         .withToolConfigs(
                                 new byte[][] {ToolConfig.getDefaultInstance().toByteArray()})
@@ -80,22 +77,22 @@ public class InputStateTest {
     public void testVisibilityAndEnablement() {
         InputState state =
                 new InputState.Builder()
-                        .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
-                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
-                        .withDisabledTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
+                        .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .withDisabledTools(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
                         .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE)
                         .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE)
                         .build();
 
-        assertTrue(state.isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
-        assertTrue(state.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+        assertTrue(state.isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN));
+        assertTrue(state.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN));
 
-        assertTrue(state.isToolVisible(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE));
-        assertFalse(state.isToolEnabled(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE));
+        assertTrue(state.isToolVisible(ToolMode.TOOL_MODE_DEEP_SEARCH));
+        assertFalse(state.isToolEnabled(ToolMode.TOOL_MODE_DEEP_SEARCH));
 
-        assertFalse(state.isToolVisible(ToolMode.TOOL_MODE_CANVAS_VALUE));
-        assertFalse(state.isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
+        assertFalse(state.isToolVisible(ToolMode.TOOL_MODE_CANVAS));
+        assertFalse(state.isToolEnabled(ToolMode.TOOL_MODE_CANVAS));
 
         assertTrue(state.isModelVisible(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE));
         assertTrue(state.isModelEnabled(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE));
@@ -111,43 +108,41 @@ public class InputStateTest {
     public void testIsToolEnabled() {
         InputState activeAllowedDisabled =
                 new InputState.Builder()
-                        .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
-                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
-                        .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                        .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .build();
-        assertTrue(activeAllowedDisabled.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+        assertTrue(activeAllowedDisabled.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN));
 
         InputState activeNotAllowedDisabled =
                 new InputState.Builder()
-                        .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
-                        .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                        .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .build();
-        assertTrue(activeNotAllowedDisabled.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+        assertTrue(activeNotAllowedDisabled.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN));
 
         InputState allowedNotDisabled =
-                new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
-                        .build();
-        assertTrue(allowedNotDisabled.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+                new InputState.Builder().withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN).build();
+        assertTrue(allowedNotDisabled.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN));
 
         InputState allowedDisabled =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
-                        .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .build();
-        assertFalse(allowedDisabled.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+        assertFalse(allowedDisabled.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN));
 
         InputState notAllowedNotDisabled = new InputState.Builder().build();
-        assertFalse(notAllowedNotDisabled.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+        assertFalse(notAllowedNotDisabled.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN));
     }
 
     @Test
     public void testEitherImageGenToolVisibilityAndEnablement() {
         InputState state =
                 new InputState.Builder()
-                        .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
-                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE)
-                        .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE)
+                        .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
+                        .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
                         .build();
 
         assertTrue(state.isImageGenToolVisible());
@@ -155,7 +150,7 @@ public class InputStateTest {
 
         InputState stateOnlyUploadAllowed =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
                         .build();
         assertTrue(stateOnlyUploadAllowed.isImageGenToolVisible());
         assertTrue(stateOnlyUploadAllowed.isImageGenToolEnabled());
@@ -167,11 +162,9 @@ public class InputStateTest {
         InputState stateBothDisabled =
                 new InputState.Builder()
                         .withAllowedTools(
-                                ToolMode.TOOL_MODE_IMAGE_GEN_VALUE,
-                                ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE)
+                                ToolMode.TOOL_MODE_IMAGE_GEN, ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
                         .withDisabledTools(
-                                ToolMode.TOOL_MODE_IMAGE_GEN_VALUE,
-                                ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE)
+                                ToolMode.TOOL_MODE_IMAGE_GEN, ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
                         .build();
         assertTrue(stateBothDisabled.isImageGenToolVisible());
         assertFalse(stateBothDisabled.isImageGenToolEnabled());
@@ -186,7 +179,7 @@ public class InputStateTest {
                         .build();
         ToolConfig toolConfig =
                 ToolConfig.newBuilder()
-                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setToolValue(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .setMenuLabel("Deep Search")
                         .setChipLabel("Deep Search Chip")
                         .build();

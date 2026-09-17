@@ -27,7 +27,7 @@ import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassificati
 import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
-import org.chromium.components.omnibox.ToolModeProto.ToolMode;
+import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -382,11 +382,11 @@ public class AutocompleteInputUnitTest {
 
     @Test
     public void testGetToolMode() {
-        assertEquals(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE, mInput.getToolMode());
+        assertEquals(ToolMode.TOOL_MODE_UNSPECIFIED, mInput.getToolMode());
         mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
-        assertEquals(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE, mInput.getToolMode());
+        assertEquals(ToolMode.TOOL_MODE_IMAGE_GEN, mInput.getToolMode());
         mInput.setHasAttachments(true);
-        assertEquals(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE, mInput.getToolMode());
+        assertEquals(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD, mInput.getToolMode());
     }
 
     @Test
@@ -396,8 +396,7 @@ public class AutocompleteInputUnitTest {
                 .addSyncObserver(
                         requestType -> {
                             if (requestType == AutocompleteRequestType.IMAGE_GENERATION) {
-                                assertEquals(
-                                        ToolMode.TOOL_MODE_IMAGE_GEN_VALUE, mInput.getToolMode());
+                                assertEquals(ToolMode.TOOL_MODE_IMAGE_GEN, mInput.getToolMode());
                                 called[0] = true;
                             }
                         });
@@ -575,7 +574,7 @@ public class AutocompleteInputUnitTest {
         assertEquals(focusReason, input2.getFocusReason());
         assertEquals(modelMode, input2.getModelMode());
         assertEquals(requestType, input2.getRequestType());
-        assertEquals(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE, input2.getToolMode());
+        assertEquals(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD, input2.getToolMode());
         assertEquals(siteSearchData, input2.getSiteSearchData());
     }
 

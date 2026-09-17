@@ -57,7 +57,7 @@ import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
-import org.chromium.components.omnibox.ToolModeProto.ToolMode;
+import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link HintTextUpdater}. */
@@ -234,22 +234,22 @@ public class HintTextUpdaterUnitTest {
 
         ToolConfig aiModeConfig =
                 ToolConfig.newBuilder()
-                        .setTool(ToolMode.TOOL_MODE_UNSPECIFIED)
+                        .setToolValue(ToolMode.TOOL_MODE_UNSPECIFIED)
                         .setHintText(aiModeHint)
                         .build();
         ToolConfig imageGenConfig =
                 ToolConfig.newBuilder()
-                        .setTool(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .setHintText(imageGenHint)
                         .build();
         ToolConfig deepSearchConfig =
                 ToolConfig.newBuilder()
-                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setToolValue(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .setHintText(deepSearchHint)
                         .build();
         ToolConfig canvasConfig =
                 ToolConfig.newBuilder()
-                        .setTool(ToolMode.TOOL_MODE_CANVAS)
+                        .setToolValue(ToolMode.TOOL_MODE_CANVAS)
                         .setHintText(canvasHint)
                         .build();
         byte[][] toolConfigs =

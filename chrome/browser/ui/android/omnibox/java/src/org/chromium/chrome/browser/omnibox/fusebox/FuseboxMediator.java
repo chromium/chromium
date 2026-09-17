@@ -1307,7 +1307,7 @@ import java.util.function.Supplier;
         }
 
         for (ToolConfig toolConfig : inputState.getToolConfigs()) {
-            int toolMode = toolConfig.getToolValue();
+            @ToolMode int toolMode = toolConfig.getToolValue();
             if (!inputState.isToolVisible(toolMode)) continue;
 
             String label = toolConfig.getMenuLabel();

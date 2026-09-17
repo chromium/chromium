@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.omnibox.ToolModeProto.ToolMode;
+import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 
 /** Tests for {@link ToolModeUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -42,42 +42,42 @@ public class ToolModeUtilsUnitTest {
     @Test
     public void testGetToolModeForRequestType() {
         assertEquals(
-                ToolMode.TOOL_MODE_IMAGE_GEN_VALUE,
+                ToolMode.TOOL_MODE_IMAGE_GEN,
                 ToolModeUtils.getToolModeForRequestType(
                         AutocompleteRequestType.IMAGE_GENERATION, /* hasAttachments= */ false));
         assertEquals(
-                ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE,
+                ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD,
                 ToolModeUtils.getToolModeForRequestType(
                         AutocompleteRequestType.IMAGE_GENERATION, /* hasAttachments= */ true));
 
         assertEquals(
-                ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE,
+                ToolMode.TOOL_MODE_DEEP_SEARCH,
                 ToolModeUtils.getToolModeForRequestType(
                         AutocompleteRequestType.DEEP_SEARCH, /* hasAttachments= */ false));
         assertEquals(
-                ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE,
+                ToolMode.TOOL_MODE_DEEP_SEARCH,
                 ToolModeUtils.getToolModeForRequestType(
                         AutocompleteRequestType.DEEP_SEARCH, /* hasAttachments= */ true));
 
         assertEquals(
-                ToolMode.TOOL_MODE_CANVAS_VALUE,
+                ToolMode.TOOL_MODE_CANVAS,
                 ToolModeUtils.getToolModeForRequestType(
                         AutocompleteRequestType.CANVAS, /* hasAttachments= */ false));
         assertEquals(
-                ToolMode.TOOL_MODE_CANVAS_VALUE,
+                ToolMode.TOOL_MODE_CANVAS,
                 ToolModeUtils.getToolModeForRequestType(
                         AutocompleteRequestType.CANVAS, /* hasAttachments= */ true));
 
         assertEquals(
-                ToolMode.TOOL_MODE_UNSPECIFIED_VALUE,
+                ToolMode.TOOL_MODE_UNSPECIFIED,
                 ToolModeUtils.getToolModeForRequestType(
                         AutocompleteRequestType.SEARCH, /* hasAttachments= */ false));
         assertEquals(
-                ToolMode.TOOL_MODE_UNSPECIFIED_VALUE,
+                ToolMode.TOOL_MODE_UNSPECIFIED,
                 ToolModeUtils.getToolModeForRequestType(
                         AutocompleteRequestType.SEARCH_PREFETCH, /* hasAttachments= */ false));
         assertEquals(
-                ToolMode.TOOL_MODE_UNSPECIFIED_VALUE,
+                ToolMode.TOOL_MODE_UNSPECIFIED,
                 ToolModeUtils.getToolModeForRequestType(
                         AutocompleteRequestType.AI_MODE, /* hasAttachments= */ false));
     }
