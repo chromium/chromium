@@ -429,6 +429,16 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
     host->image_embedder_ = std::move(embedder);
   }
 
+  safe_browsing::PhishingClassifier* classifier(
+      ClientSideDetectionHostIOS* host) {
+    return host->classifier_.get();
+  }
+
+  safe_browsing::PhishingImageEmbedder* image_embedder(
+      ClientSideDetectionHostIOS* host) {
+    return host->image_embedder_.get();
+  }
+
   base::TimeTicks image_embedding_start_time(ClientSideDetectionHostIOS* host) {
     return host->image_embedding_start_time();
   }
@@ -3746,6 +3756,45 @@ TEST_F(ClientSideDetectionHostIOSTest,
   [fake_wrapper respondWithInnerText:kTestInnerText];
 
   EXPECT_FALSE(future.IsReady());
+}
+
+// Test that swapping the `Scorer` on the service drops the raw `Scorer`
+// pointers cached by the classifier and the image embedder. The service hands
+// the previous `Scorer` to a background thread for destruction before notifying
+// observers, so a cached pointer would be dereferenced while the `Scorer`'s
+// memory-mapped model is being unmapped. See crbug.com/561910278.
+TEST_F(ClientSideDetectionHostIOSTest, ScorerChangeClearsCachedScorer) {
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  set_last_request_type(host.get(),
+                        safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+
+  OnSnapshotReceived(host.get(), GURL(kExampleUrl), CreateTestImage());
+  ASSERT_TRUE(classifier(host.get())->is_ready());
+  ASSERT_TRUE(image_embedder(host.get())->is_ready());
+
+  mock_service_.SetScorerForTesting(std::make_unique<safe_browsing::Scorer>());
+
+  EXPECT_FALSE(classifier(host.get())->is_ready());
+  EXPECT_FALSE(image_embedder(host.get())->is_ready());
+}
+
+// Test that a `Scorer` change cancels in-flight image embedding. Cancellation
+// deliberately does not consult `is_ready()`, because that reads the very
+// `Scorer` pointer that the service just handed to a background thread for
+// destruction. See crbug.com/561910278.
+TEST_F(ClientSideDetectionHostIOSTest, ScorerChangeCancelsImageEmbedding) {
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  auto mock_embedder = std::make_unique<MockPhishingImageEmbedder>();
+  MockPhishingImageEmbedder* mock_embedder_ptr = mock_embedder.get();
+  set_image_embedder(host.get(), std::move(mock_embedder));
+
+  EXPECT_CALL(*mock_embedder_ptr, CancelPendingImageEmbedding())
+      .Times(testing::AtLeast(1));
+
+  mock_service_.SetScorerForTesting(nullptr);
+
+  // Verify now rather than at host destruction, which also cancels.
+  testing::Mock::VerifyAndClearExpectations(mock_embedder_ptr);
 }
 
 // Tests that destroying `ClientSideDetectionHostIOS` while `PageContextWrapper`
