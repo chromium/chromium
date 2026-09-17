@@ -107,6 +107,7 @@ blink::WebMessagePayload ConvertToWebMessagePayloadFromJava(
           Java_MessagePayloadJni_getAsArrayBuffer(env, java_message);
       return std::make_unique<JavaArrayBuffer>(byte_array);
     }
+    case MessagePayloadType::kSharedArrayBuffer:
     case MessagePayloadType::kInvalid:
       break;
   }

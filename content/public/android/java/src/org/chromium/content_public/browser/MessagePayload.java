@@ -10,24 +10,25 @@ import org.chromium.build.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * Represents a JavaScript message payload.
- * Currently only String and ArrayBuffer is supported.
+ * Represents a JavaScript message payload. Currently only String, ArrayBuffer and SharedArrayBuffer
+ * are supported.
  */
 @NullMarked
 public final class MessagePayload {
     @MessagePayloadType private final int mType;
     private final @Nullable String mString;
     private final byte @Nullable [] mArrayBuffer;
+    private final @Nullable SharedArrayBuffer mSharedArrayBuffer;
 
     /**
-     * Create a MessagePayload String type.
-     * To keep backward compatibility, string can be null, then it's replaced to empty string in
-     * JNI.
+     * Create a MessagePayload String type. To keep backward compatibility, string can be null, then
+     * it's replaced to empty string in JNI.
      */
     public MessagePayload(@Nullable String string) {
         mType = MessagePayloadType.STRING;
         mString = string;
         mArrayBuffer = null;
+        mSharedArrayBuffer = null;
     }
 
     /** Create a MessagePayload ArrayBuffer type. */
@@ -36,6 +37,16 @@ public final class MessagePayload {
         mType = MessagePayloadType.ARRAY_BUFFER;
         mArrayBuffer = arrayBuffer;
         mString = null;
+        mSharedArrayBuffer = null;
+    }
+
+    /** Create a MessagePayload SharedArrayBuffer type. */
+    public MessagePayload(SharedArrayBuffer sharedArrayBuffer) {
+        Objects.requireNonNull(sharedArrayBuffer, "sharedArrayBuffer cannot be null.");
+        mType = MessagePayloadType.SHARED_ARRAY_BUFFER;
+        mSharedArrayBuffer = sharedArrayBuffer;
+        mString = null;
+        mArrayBuffer = null;
     }
 
     @MessagePayloadType
@@ -54,6 +65,12 @@ public final class MessagePayload {
         return mArrayBuffer;
     }
 
+    public SharedArrayBuffer getAsSharedArrayBuffer() {
+        checkType(MessagePayloadType.SHARED_ARRAY_BUFFER);
+        Objects.requireNonNull(mSharedArrayBuffer, "mSharedArrayBuffer cannot be null.");
+        return mSharedArrayBuffer;
+    }
+
     private void checkType(@MessagePayloadType int expectedType) {
         if (mType != expectedType) {
             throw new IllegalStateException(
@@ -70,6 +87,8 @@ public final class MessagePayload {
                 return "String";
             case MessagePayloadType.ARRAY_BUFFER:
                 return "ArrayBuffer";
+            case MessagePayloadType.SHARED_ARRAY_BUFFER:
+                return "SharedArrayBuffer";
             case MessagePayloadType.INVALID:
                 return "Invalid";
         }

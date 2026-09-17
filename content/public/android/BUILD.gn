@@ -435,6 +435,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/SelectionEventProcessor.java",
     "java/src/org/chromium/content_public/browser/SelectionMenuItem.java",
     "java/src/org/chromium/content_public/browser/SelectionPopupController.java",
+    "java/src/org/chromium/content_public/browser/SharedArrayBuffer.java",
     "java/src/org/chromium/content_public/browser/SiteZoomInfo.java",
     "java/src/org/chromium/content_public/browser/SmartClipProvider.java",
     "java/src/org/chromium/content_public/browser/SpeechRecognition.java",
@@ -568,6 +569,7 @@ generate_jni("content_jni_headers") {
     "java/src/org/chromium/content_public/browser/LoadCommittedDetails.java",
     "java/src/org/chromium/content_public/browser/LoadUrlParams.java",
     "java/src/org/chromium/content_public/browser/NavigationHandle.java",
+    "java/src/org/chromium/content_public/browser/SharedArrayBuffer.java",
   ]
 
   if (enable_screen_capture) {
@@ -596,6 +598,7 @@ android_library("content_javatests") {
     "//base:flagged_apis_java",
     "//base:process_launcher_java",
     "//base:tristate_java",
+    "//base/test:test_support_java",
     "//cc/mojom:mojom_java",
     "//components/payments/mojom:mojom_java",
     "//content/common:common_java",
@@ -724,6 +727,7 @@ android_library("content_javatests") {
     "javatests/src/org/chromium/content/browser/scheduler/UncaughtExceptionTest.java",
     "javatests/src/org/chromium/content/browser/webcontents/WebContentsTest.java",
     "javatests/src/org/chromium/content_public/browser/ClientDataJsonTest.java",
+    "javatests/src/org/chromium/content_public/browser/SharedArrayBufferTest.java",
   ]
 
   data = [

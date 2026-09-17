@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser;
 
+import android.system.ErrnoException;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,8 +23,6 @@ public class MessagePayloadTest {
         final String testStr = "TestStr";
         MessagePayload messagePayload = new MessagePayload(testStr);
         Assert.assertEquals(testStr, messagePayload.getAsString());
-        Assert.assertEquals(MessagePayloadType.STRING, messagePayload.getType());
-
         Assert.assertEquals(MessagePayloadType.STRING, messagePayload.getType());
     }
 
@@ -52,11 +52,36 @@ public class MessagePayloadTest {
     }
 
     @Test
+    public void testSharedArrayBuffer() throws ErrnoException {
+        try (SharedArrayBuffer buffer = SharedArrayBuffer.allocate("", 1024)) {
+            MessagePayload messagePayload = new MessagePayload(buffer);
+            Assert.assertEquals(buffer, messagePayload.getAsSharedArrayBuffer());
+            Assert.assertEquals(MessagePayloadType.SHARED_ARRAY_BUFFER, messagePayload.getType());
+        }
+    }
+
+    @Test
+    public void testSharedArrayBufferCannotBeNull() {
+        try {
+            new MessagePayload((SharedArrayBuffer) null);
+            Assert.fail("Should throw exception");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    @Test
     public void testWrongValueTypeString() throws UnsupportedEncodingException {
         MessagePayload jsValue = new MessagePayload("TestStr".getBytes(StandardCharsets.UTF_8));
         Assert.assertEquals(MessagePayloadType.ARRAY_BUFFER, jsValue.getType());
         try {
             jsValue.getAsString();
+            Assert.fail("Should throw exception");
+        } catch (IllegalStateException e) {
+            // Expected
+        }
+        try {
+            jsValue.getAsSharedArrayBuffer();
             Assert.fail("Should throw exception");
         } catch (IllegalStateException e) {
             // Expected
@@ -73,5 +98,42 @@ public class MessagePayloadTest {
         } catch (IllegalStateException e) {
             // Expected
         }
+        try {
+            jsValue.getAsSharedArrayBuffer();
+            Assert.fail("Should throw exception");
+        } catch (IllegalStateException e) {
+            // Expected
+        }
+    }
+
+    @Test
+    public void testWrongValueTypeSharedArrayBuffer() throws ErrnoException {
+        try (SharedArrayBuffer buffer = SharedArrayBuffer.allocate("", 1024)) {
+            MessagePayload jsValue = new MessagePayload(buffer);
+            Assert.assertEquals(MessagePayloadType.SHARED_ARRAY_BUFFER, jsValue.getType());
+            try {
+                jsValue.getAsString();
+                Assert.fail("Should throw exception");
+            } catch (IllegalStateException e) {
+                // Expected
+            }
+            try {
+                jsValue.getAsArrayBuffer();
+                Assert.fail("Should throw exception");
+            } catch (IllegalStateException e) {
+                // Expected
+            }
+        }
+    }
+
+    @Test
+    public void testTypeToString() {
+        Assert.assertEquals("String", MessagePayload.typeToString(MessagePayloadType.STRING));
+        Assert.assertEquals(
+                "ArrayBuffer", MessagePayload.typeToString(MessagePayloadType.ARRAY_BUFFER));
+        Assert.assertEquals(
+                "SharedArrayBuffer",
+                MessagePayload.typeToString(MessagePayloadType.SHARED_ARRAY_BUFFER));
+        Assert.assertEquals("Invalid", MessagePayload.typeToString(MessagePayloadType.INVALID));
     }
 }

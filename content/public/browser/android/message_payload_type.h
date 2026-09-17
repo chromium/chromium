@@ -14,6 +14,7 @@ enum class MessagePayloadType {
   kInvalid = -1,
   kString,
   kArrayBuffer,
+  kSharedArrayBuffer,
 };
 
 }  // namespace content::android

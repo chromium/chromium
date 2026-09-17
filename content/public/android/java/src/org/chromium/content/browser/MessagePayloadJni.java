@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePayloadType;
+import org.chromium.content_public.browser.SharedArrayBuffer;
 
 /** Helper class to call MessagePayload methods from native. */
 @JNINamespace("content")
@@ -42,5 +43,10 @@ final class MessagePayloadJni {
     @CalledByNative
     private static byte[] getAsArrayBuffer(MessagePayload payload) {
         return payload.getAsArrayBuffer();
+    }
+
+    @CalledByNative
+    private static SharedArrayBuffer getAsSharedArrayBuffer(MessagePayload payload) {
+        return payload.getAsSharedArrayBuffer();
     }
 }
