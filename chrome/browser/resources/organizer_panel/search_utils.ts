@@ -4,7 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
-import type {Range} from '/tab_search/shared/search.js';
+import type {Range} from '/tab_group_shared/search.js';
 
 /**
  * Renders |text| with <b> wrappers around matches if |ranges| are provided, or

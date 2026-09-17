@@ -13,7 +13,7 @@ import {createTab} from './tab_search_test_data.js';
  * Assert search results return in specific order.
  */
 async function assertSearchOrders(
-    input: string, items: TabData[], options: SearchOptions,
+    input: string, items: TabData[], options: SearchOptions<TabData>,
     expectedIndices: number[]) {
   const results = await search(input, items, options);
   assertEquals(results.length, expectedIndices.length);

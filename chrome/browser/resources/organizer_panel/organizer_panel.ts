@@ -4,11 +4,9 @@
 
 import './app.js';
 
-export {colorName, getTabGroupColorVar} from '/tab_group_shared/tab_group_color_helper.js';
-export {TabGroupDotElement} from '/tab_group_shared/tab_group_dot.js';
-export type {Range} from '/tab_search/shared/search.js';
-export type {SearchApiProxy} from '/tab_search/shared/search_api_proxy.js';
-export {SearchApiProxyImpl} from '/tab_search/shared/search_api_proxy.js';
+export type {Range} from '/tab_group_shared/search.js';
+export type {SearchApiProxy} from '/tab_group_shared/search_api_proxy.js';
+export {SearchApiProxyImpl} from '/tab_group_shared/search_api_proxy.js';
 export {OrganizerPanelAppElement} from './app.js';
 export {isSplitTab, OpenTabsDelegate, OpenTabsItemType} from './delegates/open_tabs_delegate.js';
 export type {OpenTabsItem} from './delegates/open_tabs_delegate.js';

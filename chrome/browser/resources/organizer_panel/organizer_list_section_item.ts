@@ -15,7 +15,7 @@ import type {CrUrlListItemElement, CrUrlListItemSize} from '//resources/cr_eleme
 import {MouseHoverableMixinLit} from '//resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {Range} from '/tab_search/shared/search.js';
+import type {Range} from '/tab_group_shared/search.js';
 
 import {getCss} from './organizer_list_section_item.css.js';
 import {getHtml} from './organizer_list_section_item.html.js';

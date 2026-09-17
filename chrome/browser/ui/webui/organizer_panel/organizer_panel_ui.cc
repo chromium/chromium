@@ -31,8 +31,6 @@
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
 #include "chrome/grit/tab_group_shared_resources.h"
 #include "chrome/grit/tab_group_shared_resources_map.h"
-#include "chrome/grit/tab_search_shared_resources.h"
-#include "chrome/grit/tab_search_shared_resources_map.h"
 #endif  // !BUILDFLAG(OPTIMIZE_WEBUI)
 
 OrganizerPanelUIConfig::OrganizerPanelUIConfig()
@@ -71,7 +69,6 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
                               IDR_ORGANIZER_PANEL_ORGANIZER_PANEL_HTML);
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
   source->AddResourcePaths(kTabGroupSharedResources);
-  source->AddResourcePaths(kTabSearchSharedResources);
 #endif
 
   content::URLDataSource::Add(

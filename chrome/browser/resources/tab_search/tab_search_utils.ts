@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Range} from '/tab_search/shared/search.js';
+import type {Range} from '/tab_group_shared/search.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {highlight} from 'chrome://resources/js/search_highlight_utils.js';
 

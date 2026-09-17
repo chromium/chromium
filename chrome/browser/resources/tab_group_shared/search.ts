@@ -25,13 +25,13 @@ function getSegmenter(): Intl.Segmenter {
   return segmenter;
 }
 
-export interface OptionKeyObject<T = any> {
+export interface OptionKeyObject<T> {
   name: string;
   getter: (data: T) => string | undefined;
   weight: number;
 }
 
-export interface SearchOptions<T = any> {
+export interface SearchOptions<T> {
   includeScore?: boolean;
   includeMatches?: boolean;
   ignoreLocation?: boolean;

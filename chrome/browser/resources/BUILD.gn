@@ -97,7 +97,6 @@ group("resources") {
       "tab_group_home:resources",
       "tab_group_shared:resources",
       "tab_search:resources",
-      "tab_search/shared:resources",
       "web_app_internals:resources",
       "webnn_internals:resources",
       "webui_browser:resources",

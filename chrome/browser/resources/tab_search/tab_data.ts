@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Range} from '/tab_search/shared/search.js';
+import type {Range} from '/tab_group_shared/search.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 

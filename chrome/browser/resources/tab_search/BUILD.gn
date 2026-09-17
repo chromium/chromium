@@ -75,7 +75,6 @@ build_webui("build") {
   ]
   ts_deps = [
     "//chrome/browser/resources/tab_group_shared:build_ts",
-    "//chrome/browser/resources/tab_search/shared:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",
@@ -84,14 +83,10 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  ts_path_mappings = [
-    "/tab_group_shared/*|" + rebase_path(
+  ts_path_mappings =
+      [ "/tab_group_shared/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/tab_group_shared/tsc/*",
-            target_gen_dir),
-    "/tab_search/shared/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/tab_search/shared/tsc/*",
-            target_gen_dir),
-  ]
+            target_gen_dir) ]
 
   webui_context_type = "trusted"
   optimize = optimize_webui
@@ -101,13 +96,9 @@ build_webui("build") {
       "split_new_tab_page.js",
       "tab_search.js",
     ]
-    optimize_webui_external_paths = [
-      "/tab_group_shared|" + rebase_path(
+    optimize_webui_external_paths =
+        [ "/tab_group_shared|" + rebase_path(
               "$root_gen_dir/chrome/browser/resources/tab_group_shared/tsc",
-              root_build_dir),
-      "/tab_search/shared|" + rebase_path(
-              "$root_gen_dir/chrome/browser/resources/tab_search/shared/tsc",
-              root_build_dir),
-    ]
+              root_build_dir) ]
   }
 }

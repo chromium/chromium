@@ -8,8 +8,8 @@ import './organizer_list_section_item.js';
 import {assert} from '//resources/js/assert.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {SearchOptions} from '/tab_search/shared/search.js';
-import {search} from '/tab_search/shared/search.js';
+import type {SearchOptions} from '/tab_group_shared/search.js';
+import {search} from '/tab_group_shared/search.js';
 
 import {getCss} from './organizer_list_section.css.js';
 import {getHtml} from './organizer_list_section.html.js';

@@ -12,8 +12,8 @@ import './tab_search_split_item.js';
 import './title_item.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {SearchOptions} from '/tab_search/shared/search.js';
-import {search} from '/tab_search/shared/search.js';
+import type {SearchOptions} from '/tab_group_shared/search.js';
+import {search} from '/tab_group_shared/search.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrSearchFieldMixinLit} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_mixin_lit.js';
 import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
@@ -138,31 +138,32 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   protected accessor activeDescendantEnabled_: boolean = false;
   protected accessor filteredItems_:
       Array<TitleItem|TabData|TabGroupData|SplitViewData> = [];
-  private accessor searchOptions_: SearchOptions = {
-    includeScore: true,
-    includeMatches: true,
-    ignoreLocation: false,
-    threshold: 0.0,
-    distance: 200,
-    keys:
-        [
-          {
-            name: 'tab.title',
-            getter: getTitle,
-            weight: 2,
-          },
-          {
-            name: 'hostname',
-            getter: getHostname,
-            weight: 1,
-          },
-          {
-            name: 'tabGroup.title',
-            getter: getTabGroupTitle,
-            weight: 1.5,
-          },
-        ],
-  };
+  private accessor searchOptions_:
+      SearchOptions<TabData|TabGroupData|SplitViewData> = {
+        includeScore: true,
+        includeMatches: true,
+        ignoreLocation: false,
+        threshold: 0.0,
+        distance: 200,
+        keys:
+            [
+              {
+                name: 'tab.title',
+                getter: getTitle,
+                weight: 2,
+              },
+              {
+                name: 'hostname',
+                getter: getHostname,
+                weight: 1,
+              },
+              {
+                name: 'tabGroup.title',
+                getter: getTabGroupTitle,
+                weight: 1.5,
+              },
+            ],
+      };
   private accessor recentlyClosedDefaultItemDisplayCount_: number =
       loadTimeData.getValue('recentlyClosedDefaultItemDisplayCount');
   protected accessor searchResultText_: string = '';

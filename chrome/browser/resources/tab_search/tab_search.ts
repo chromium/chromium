@@ -4,10 +4,10 @@
 
 import './app.js';
 
-export type {OptionKeyObject, Range, SearchOptions} from '/tab_search/shared/search.js';
-export {search} from '/tab_search/shared/search.js';
-export type {SearchApiProxy} from '/tab_search/shared/search_api_proxy.js';
-export {SearchApiProxyImpl} from '/tab_search/shared/search_api_proxy.js';
+export type {OptionKeyObject, Range, SearchOptions} from '/tab_group_shared/search.js';
+export {search} from '/tab_group_shared/search.js';
+export type {SearchApiProxy} from '/tab_group_shared/search_api_proxy.js';
+export {SearchApiProxyImpl} from '/tab_group_shared/search_api_proxy.js';
 export {getInstance as getAnnouncerInstance, TIMEOUT_MS} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {TabSearchAppElement} from './app.js';
