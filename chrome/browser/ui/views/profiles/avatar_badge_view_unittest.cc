@@ -8,8 +8,13 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/ui/profiles/profile_view_avatar_decoration_specs.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/internal/profiles/profile_view_avatar_decoration_specs_branded.h"
+#else
+#include "chrome/browser/ui/profiles/profile_view_avatar_decoration_specs.h"
+#endif
 
 using AvatarBadgeViewTest = testing::Test;
 
