@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_header_view.h"
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
+#import "ios/chrome/browser/intelligence/actor/ui/gradient_activity_indicator_view.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -21,6 +22,7 @@ using intelligence::actor::kSpacingTiny;
 // Layout dimensions.
 const CGFloat kInnerContentSize = 32.0;
 const CGFloat kLogoSize = 24.0;
+const CGFloat kSpinnerSize = 32.0;
 const CGFloat kHeaderMinHeight = 44.0;
 
 // Shadow styling.
@@ -41,6 +43,7 @@ UIImage* DefaultGeminiLogo() {
 
 @implementation ActuationHeaderView {
   UIImageView* _imageView;
+  GradientActivityIndicatorView* _activityIndicator;
 
   UILabel* _titleLabel;
   UILabel* _subtitleLabel;
@@ -116,8 +119,11 @@ UIImage* DefaultGeminiLogo() {
     return;
   }
   _actuating = actuating;
-  // TODO(crbug.com/552512657): Add animated spinner layer around the Gemini
-  // logo when actuating.
+  if (_actuating) {
+    [_activityIndicator startAnimating];
+  } else {
+    [_activityIndicator stopAnimating];
+  }
 }
 
 - (void)setPrimaryAccessoryButton:(UIButton*)primaryAccessoryButton {
@@ -185,6 +191,11 @@ UIImage* DefaultGeminiLogo() {
   _contentStackView.layoutMarginsRelativeArrangement = YES;
   _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:_contentStackView];
+
+  _activityIndicator =
+      [[GradientActivityIndicatorView alloc] initWithFrame:CGRectZero];
+  _activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+  [self insertSubview:_activityIndicator belowSubview:_contentStackView];
 }
 
 // Configures layout constraints.
@@ -193,6 +204,8 @@ UIImage* DefaultGeminiLogo() {
   [self.heightAnchor constraintGreaterThanOrEqualToConstant:kHeaderMinHeight]
       .active = YES;
   AddSquareConstraints(_imageView, kLogoSize);
+  AddSameCenterConstraints(_activityIndicator, _imageView);
+  AddSquareConstraints(_activityIndicator, kSpinnerSize);
 }
 
 // Rebuilds the accessory buttons stack in deterministic order:

@@ -34,6 +34,8 @@ source_set("ui") {
     "actuation_worklog_view_controller.mm",
     "actuation_worklog_view_data.h",
     "actuation_worklog_view_data.mm",
+    "gradient_activity_indicator_view.h",
+    "gradient_activity_indicator_view.mm",
   ]
   deps = [
     "//base",
@@ -49,7 +51,10 @@ source_set("ui") {
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
-  frameworks = [ "UIKit.framework" ]
+  frameworks = [
+    "QuartzCore.framework",
+    "UIKit.framework",
+  ]
 }
 
 source_set("unit_tests") {
