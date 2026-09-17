@@ -436,6 +436,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxAutocomplete) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxDropdown) {
+  RunTest("cr_components/composebox/composebox_dropdown_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxMatch) {
   RunTest("cr_components/composebox/composebox_match_test.js", "mocha.run()");
 }
