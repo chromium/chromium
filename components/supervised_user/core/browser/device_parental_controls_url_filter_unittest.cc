@@ -6,7 +6,6 @@
 
 #include "base/test/bind.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
-#include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,10 +36,6 @@ class DeviceParentalControlsTestImpl : public DeviceParentalControls {
   }
 
   void SetSafeSearchForced(bool enabled) { is_safe_search_enabled_ = enabled; }
-
-  void RegisterDeviceLevelSyntheticFieldTrials(
-      SynteticFieldTrialDelegate& synthetic_field_trial_delegate)
-      const override {}
 
  private:
   bool is_web_filtering_enabled_ = false;

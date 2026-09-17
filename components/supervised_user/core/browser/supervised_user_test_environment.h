@@ -20,7 +20,6 @@
 #include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -111,19 +110,6 @@ class SupervisedUserMetricsServiceExtensionDelegateFake
   bool RecordExtensionsMetrics() override;
 };
 
-class SynteticFieldTrialDelegateMock : public SynteticFieldTrialDelegate {
- public:
-  SynteticFieldTrialDelegateMock();
-  ~SynteticFieldTrialDelegateMock() override;
-  MOCK_METHOD(void,
-              RegisterSyntheticFieldTrial,
-              (std::string_view trial_name, std::string_view group_name),
-              (override));
-
- private:
-  base::WeakPtrFactory<SynteticFieldTrialDelegateMock> weak_ptr_factory_{this};
-};
-
 // Configures a handy set of components that form supervised user features, for
 // unit testing. This is a lightweight, unit-test oriented alternative to a
 // TestingProfile with enabled supervision.
@@ -132,11 +118,6 @@ class SynteticFieldTrialDelegateMock : public SynteticFieldTrialDelegate {
 class SupervisedUserTestEnvironment {
  public:
   explicit SupervisedUserTestEnvironment(
-      InitialSupervisionState initial_state =
-          InitialSupervisionState::kUnsupervised);
-  explicit SupervisedUserTestEnvironment(
-      std::unique_ptr<SynteticFieldTrialDelegateMock>
-          synthetic_field_trial_delegate,
       InitialSupervisionState initial_state =
           InitialSupervisionState::kUnsupervised);
 

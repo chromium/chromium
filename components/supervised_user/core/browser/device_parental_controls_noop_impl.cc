@@ -5,7 +5,6 @@
 #include "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
 
 #include "base/callback_list.h"
-#include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 
 namespace supervised_user {
 
@@ -27,7 +26,4 @@ bool DeviceParentalControlsNoOpImpl::IsSafeSearchForced() const {
 bool DeviceParentalControlsNoOpImpl::IsEnabled() const {
   return false;
 }
-
-void DeviceParentalControlsNoOpImpl::RegisterDeviceLevelSyntheticFieldTrials(
-    SynteticFieldTrialDelegate& synthetic_field_trial_delegate) const {}
 }  // namespace supervised_user

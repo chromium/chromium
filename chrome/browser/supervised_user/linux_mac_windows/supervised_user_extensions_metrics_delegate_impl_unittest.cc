@@ -53,8 +53,7 @@ class SupervisedUserExtensionsMetricsDelegateImplTest
                 GetForProfile(profile()),
             device_parental_controls_,
             std::make_unique<SupervisedUserExtensionsMetricsDelegateImpl>(
-                extensions::ExtensionRegistry::Get(profile()), profile()),
-            /*metrics_service_accessor_delegate=*/nullptr);
+                extensions::ExtensionRegistry::Get(profile()), profile()));
     CHECK(supervised_user_metrics_service_);
   }
 

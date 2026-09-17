@@ -108,14 +108,11 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
     SupervisedUserUrlFilteringService& url_filtering_service,
     DeviceParentalControls& device_parental_controls,
     std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
-        extensions_metrics_delegate,
-    std::unique_ptr<SynteticFieldTrialDelegate> synthetic_field_trial_delegate)
+        extensions_metrics_delegate)
     : pref_service_(pref_service),
       url_filtering_service_(url_filtering_service),
       device_parental_controls_(device_parental_controls),
-      extensions_metrics_delegate_(std::move(extensions_metrics_delegate)),
-      synthetic_field_trial_delegate_(
-          std::move(synthetic_field_trial_delegate)) {
+      extensions_metrics_delegate_(std::move(extensions_metrics_delegate)) {
   DCHECK(pref_service_);
   url_filtering_service_observation_.Observe(&url_filtering_service);
 
@@ -128,17 +125,6 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
   // Check for a new day every |kTimerInterval| as well.
   timer_.Start(FROM_HERE, kTimerInterval, this,
                &SupervisedUserMetricsService::CheckForNewDay);
-
-#if BUILDFLAG(IS_ANDROID)
-  // Platforms that support parental controls must also provide a delegate to
-  // register synthetic field trials.
-  CHECK(synthetic_field_trial_delegate_)
-      << "Synthetic field trial delegate must exist on Android";
-  device_parental_controls_subscription_ =
-      device_parental_controls.Subscribe(base::BindRepeating(
-          &SupervisedUserMetricsService::OnDeviceParentalControlsChanged,
-          base::Unretained(this)));
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 SupervisedUserMetricsService::~SupervisedUserMetricsService() = default;
@@ -172,12 +158,6 @@ void SupervisedUserMetricsService::CheckForNewDay() {
 void SupervisedUserMetricsService::RecordCurrentDay() {
   pref_service_->SetInteger(prefs::kSupervisedUserMetricsDayId,
                             GetDayId(base::Time::Now()));
-}
-
-void SupervisedUserMetricsService::OnDeviceParentalControlsChanged(
-    const DeviceParentalControls& device_parental_controls) {
-  device_parental_controls.RegisterDeviceLevelSyntheticFieldTrials(
-      *synthetic_field_trial_delegate_);
 }
 
 void SupervisedUserMetricsService::OnUrlFilteringServiceChanged() {

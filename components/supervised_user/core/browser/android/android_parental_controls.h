@@ -11,7 +11,6 @@
 #include "base/scoped_observation.h"
 #include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
-#include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 namespace supervised_user {
@@ -34,9 +33,6 @@ class AndroidParentalControls : public DeviceParentalControls,
   bool IsIncognitoModeDisabled() const override;
   bool IsSafeSearchForced() const override;
   bool IsEnabled() const override;
-  void RegisterDeviceLevelSyntheticFieldTrials(
-      SynteticFieldTrialDelegate& synthetic_field_trial_delegate)
-      const override;
 
   // Low-level interface for state of the underlying settings.
   bool IsBrowserContentFiltersEnabled() const;

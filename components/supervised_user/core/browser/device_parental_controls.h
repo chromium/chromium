@@ -6,7 +6,6 @@
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_DEVICE_PARENTAL_CONTROLS_H_
 
 #include "base/callback_list.h"
-#include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 
 namespace supervised_user {
 
@@ -46,11 +45,6 @@ class DeviceParentalControls {
 
   // Returns true if device-level parental controls are enabled on the device.
   virtual bool IsEnabled() const = 0;
-
-  // Registers synthetic field trials that are used to annotate metrics
-  // collection.
-  virtual void RegisterDeviceLevelSyntheticFieldTrials(
-      SynteticFieldTrialDelegate& synthetic_field_trial_delegate) const = 0;
 
   // Subscribes to parental controls state changes. Immediately calls the
   // callback with the current state.

@@ -7,7 +7,6 @@
 
 #include "base/callback_list.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
-#include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 
 namespace supervised_user {
 
@@ -27,9 +26,6 @@ class DeviceParentalControlsNoOpImpl : public DeviceParentalControls {
   bool IsIncognitoModeDisabled() const override;
   bool IsSafeSearchForced() const override;
   bool IsEnabled() const override;
-  void RegisterDeviceLevelSyntheticFieldTrials(
-      SynteticFieldTrialDelegate& synthetic_field_trial_delegate)
-      const override;
 };
 
 }  // namespace supervised_user

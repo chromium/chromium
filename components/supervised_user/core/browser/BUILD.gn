@@ -27,7 +27,6 @@ source_set("test_support") {
   deps = [
     ":browser",
     ":device_parental_controls",
-    ":synthetic_field_trial_delegate",
     "//base",
     "//base/test:test_support",
     "//components/content_settings/core/browser:test_support",
@@ -156,7 +155,6 @@ static_library("browser") {
     ":device_parental_controls",
     ":fetcher",
     ":fetcher_config",
-    ":synthetic_field_trial_delegate",
     "//base",
     "//components/content_settings/core/browser",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
@@ -196,7 +194,6 @@ static_library("device_parental_controls") {
     "device_parental_controls_noop_impl.h",
   ]
   deps = [
-    ":synthetic_field_trial_delegate",
     "//base",
   ]
 }
@@ -239,7 +236,6 @@ source_set("unit_tests") {
     ":device_parental_controls",
     ":fetcher",
     ":fetcher_config",
-    ":synthetic_field_trial_delegate",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -275,7 +271,3 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
-# TODO(crbug.com/474015323): Consider merging with :device_parental_controls
-source_set("synthetic_field_trial_delegate") {
-  sources = [ "supervised_user_synthetic_field_trial_service_delegate.h" ]
-}

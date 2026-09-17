@@ -40,6 +40,5 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
       *supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
           profile),
       GetApplicationContext()->GetDeviceParentalControls(),
-      /*extensions_metrics_delegate=*/nullptr,
-      /*metrics_service_accessor_delegate=*/nullptr);
+      /*extensions_metrics_delegate=*/nullptr);
 }

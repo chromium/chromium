@@ -10,7 +10,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/metrics_service_accessor_delegate.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
@@ -82,8 +81,7 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
       CHECK_DEREF(supervised_user::SupervisedUserUrlFilteringServiceFactory::
                       GetForProfile(profile)),
       g_browser_process->device_parental_controls(),
-      std::move(extensions_metrics_delegate),
-      std::make_unique<supervised_user::MetricsServiceAccessorDelegateImpl>());
+      std::move(extensions_metrics_delegate));
 }
 
 bool SupervisedUserMetricsServiceFactory::ServiceIsCreatedWithBrowserContext()

@@ -15,7 +15,6 @@
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
-#include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 
 class PrefRegistrySimple;
@@ -77,9 +76,7 @@ class SupervisedUserMetricsService
       SupervisedUserUrlFilteringService& url_filtering_service,
       DeviceParentalControls& device_parental_controls,
       std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
-          extensions_metrics_delegate,
-      std::unique_ptr<SynteticFieldTrialDelegate>
-          synthetic_field_trial_delegate);
+          extensions_metrics_delegate);
   SupervisedUserMetricsService(const SupervisedUserMetricsService&) = delete;
   SupervisedUserMetricsService& operator=(const SupervisedUserMetricsService&) =
       delete;
@@ -91,9 +88,6 @@ class SupervisedUserMetricsService
  private:
   // SupervisedUserUrlFilteringService::Observer:
   void OnUrlFilteringServiceChanged() override;
-
-  void OnDeviceParentalControlsChanged(
-      const DeviceParentalControls& device_parental_controls);
 
   // Helper function to check if a new day has arrived.
   void CheckForNewDay();
@@ -115,7 +109,6 @@ class SupervisedUserMetricsService
   const raw_ref<const DeviceParentalControls> device_parental_controls_;
   std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
       extensions_metrics_delegate_;
-  std::unique_ptr<SynteticFieldTrialDelegate> synthetic_field_trial_delegate_;
 
   // A periodic timer that checks if a new day has arrived.
   base::RepeatingTimer timer_;
