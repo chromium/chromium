@@ -432,3 +432,99 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEventsWithFeatureParams) {
 
   EXPECT_EQ(response.size(), 3u);
 }
+
+TEST_F(GoogleCalendarPageHandlerTest, GetEventsFiltersPrivilegedSchemes) {
+  auto create_event = []() {
+    return base::DictValue()
+        .Set("kind", "calendar#event")
+        .Set("status", "confirmed")
+        .Set("htmlLink", "https://foo.com/valid")
+        .Set("created", "2018-05-14T18:55:59.000Z")
+        .Set("updated", "2021-03-17T10:42:53.637Z")
+        .Set("summary", "Test Event")
+        .Set("start", CreateEventTime(/*is_all_day_event=*/false,
+                                      /*is_end_time=*/false))
+        .Set("end", CreateEventTime(/*is_all_day_event=*/false,
+                                    /*is_end_time=*/true))
+        .Set("conferenceData", CreateConferenceData())
+        .Set("attendees", CreateAttendees(0));
+  };
+
+  auto test_invalid_event = [this](base::DictValue event) {
+    base::ListValue events;
+    events.Append(std::move(event));
+
+    base::DictValue result_dict =
+        base::DictValue()
+            .Set("kind", "calendar#events")
+            .Set("etag", "\"p32ofplf5q6gf20g\"")
+            .Set("summary", "test1@google.com")
+            .Set("updated", "2021-06-18T07:17:10.718Z")
+            .Set("timeZone", "America/Los_Angeles")
+            .Set("accessRole", "owner")
+            .Set("items", std::move(events));
+    std::string json;
+    JSONStringValueSerializer serializer(&json);
+    ASSERT_TRUE(serializer.Serialize(result_dict));
+
+    std::unique_ptr<GoogleCalendarPageHandler> handler =
+        CreateHandlerWithTestData(std::move(json));
+
+    std::vector<ntp::calendar::mojom::CalendarEventPtr> response;
+    base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
+    EXPECT_CALL(callback, Run(testing::_))
+        .Times(1)
+        .WillOnce(
+            [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
+              response = std::move(events);
+            });
+
+    base::RunLoop run_loop;
+    handler->GetEvents(
+        google_apis::test_util::CreateQuitCallback(&run_loop, callback.Get()));
+    run_loop.Run();
+
+    // If any event or attachment has an invalid URL, the entire request fails
+    // and returns an empty list so the module is not displayed.
+    EXPECT_TRUE(response.empty());
+  };
+
+  // 1. Test invalid htmlLink.
+  {
+    base::DictValue event = create_event();
+    event.Set("htmlLink", "chrome://settings");
+    event.Set("attachments", CreateAttachments());
+    test_invalid_event(std::move(event));
+  }
+
+  // 2. Test invalid attachment fileUrl (with a valid iconLink).
+  {
+    base::DictValue invalid_attachment =
+        base::DictValue()
+            .Set("fileUrl", "chrome://settings")
+            .Set("title", "Attachment With Invalid File URL")
+            .Set("iconLink", "https://foo-icon.com/valid");
+    base::ListValue attachments;
+    attachments.Append(std::move(invalid_attachment));
+
+    base::DictValue event = create_event();
+    event.Set("attachments", std::move(attachments));
+    test_invalid_event(std::move(event));
+  }
+
+  // 3. Test invalid attachment iconLink (with a valid fileUrl).
+  {
+    base::DictValue invalid_attachment =
+        base::DictValue()
+            .Set("fileUrl", "https://foo-file.com/valid")
+            .Set("title", "Attachment With Invalid Icon Link")
+            .Set("iconLink", "chrome://image?url=https://attacker.example");
+    base::ListValue attachments;
+    attachments.Append(std::move(invalid_attachment));
+
+    base::DictValue event = create_event();
+    event.Set("attachments", std::move(attachments));
+    test_invalid_event(std::move(event));
+  }
+}
+
