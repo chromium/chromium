@@ -89,8 +89,8 @@ class GeolocationImpl : public mojom::Geolocation {
   bool high_accuracy_hint_;
 
   // Caches the last effective high accuracy value sent to the provider. A new
-  // subscription is initiated only if this value changes. `std::optional`
-  // ensures a subscription is always created on the very first update request.
+  // subscription is initiated when there is no active subscription or when this
+  // value changes.
   std::optional<bool> effective_high_accuracy_;
 
   // True if requesting precise geolocation accuracy is permitted by the current
