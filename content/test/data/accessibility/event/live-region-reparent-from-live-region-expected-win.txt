@@ -1,0 +1,7 @@
+EVENT_OBJECT_LIVEREGIONCHANGED on <div#live2> role=ROLE_SYSTEM_GROUPING
+EVENT_OBJECT_LOCATIONCHANGE on <#document> role=ROLE_SYSTEM_DOCUMENT value~=[doc-url] FOCUSED,FOCUSABLE
+EVENT_OBJECT_REORDER on <div#contained-in-different-live-region> role=ROLE_SYSTEM_GROUPING
+EVENT_OBJECT_REORDER on <div#live2> role=ROLE_SYSTEM_GROUPING
+IA2_EVENT_TEXT_INSERTED on <div#live2> role=ROLE_SYSTEM_GROUPING new_text={'Text beforeMore Text' start=0 end=20}
+IA2_EVENT_TEXT_REMOVED on <div#contained-in-different-live-region> role=ROLE_SYSTEM_GROUPING old_text={'More Text' start=0 end=9}
+IA2_EVENT_TEXT_REMOVED on <div#live2> role=ROLE_SYSTEM_GROUPING old_text={'Text before' start=0 end=11}

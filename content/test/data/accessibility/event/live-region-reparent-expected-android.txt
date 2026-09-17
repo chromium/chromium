@@ -1,0 +1,3 @@
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=SUBTREE] on [Text before] class_name=android.widget.TextView
+=== END INITIAL PAGE LOAD ===
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=SUBTREE] on [Text beforeLive region succeeded] class_name=android.widget.TextView

@@ -1,0 +1,3 @@
+LayoutInvalidated on role=document
+StructureChanged/ChildrenReordered on role=group
+StructureChanged/ChildrenReordered on role=group

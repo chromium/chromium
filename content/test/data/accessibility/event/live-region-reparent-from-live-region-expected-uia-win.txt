@@ -1,0 +1,4 @@
+LayoutInvalidated on role=document
+LiveRegionChanged on role=group
+StructureChanged/ChildrenReordered on role=group
+StructureChanged/ChildrenReordered on role=group

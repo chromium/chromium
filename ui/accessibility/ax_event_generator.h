@@ -329,6 +329,10 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   // Return true if this node can fire live region events when it's removed.
   bool IsRemovalRelevantInLiveRegion(AXNode* node);
 
+  // Returns true if this node has been reparented to a live region it was
+  // previously not contained by.
+  bool IsReparentedSubtreeNewToLiveRegion(AXNode* node);
+
   void FireLiveRegionEvents(AXNode* node, bool is_removal);
   void FireActiveDescendantEvents();
   // If the given target node is inside a text field and the node's modification
@@ -370,6 +374,9 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   // `Event::PARENT_CHANGED` on any of their children because they were
   // previously unknown to ATs.
   std::set<AXNodeID> nodes_to_suppress_parent_changed_on_;
+
+  // Maps reparented nodes to their old live region root's ID.
+  std::map<AXNodeID, AXNodeID> reparented_node_to_old_live_root_id_;
 
   // Registered events for a given node.
   std::map<Event, std::set<AXNodeID>> registered_event_to_node_ids_;

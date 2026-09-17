@@ -1005,6 +1005,22 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("live-region-remove.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsLiveRegionReparent) {
+  RunEventTest(FILE_PATH_LITERAL("live-region-reparent.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsLiveRegionReparentFromLiveRegion) {
+  RunEventTest(FILE_PATH_LITERAL("live-region-reparent-from-live-region.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsLiveRegionReparentWithinLiveRegion) {
+  RunEventTest(
+      FILE_PATH_LITERAL("live-region-reparent-within-live-region.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(
     DumpAccessibilityEventsTest,
     AccessibilityEventsLiveRegionChangeOnFreshlyUnignoredNode) {

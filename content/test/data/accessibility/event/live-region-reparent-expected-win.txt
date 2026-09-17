@@ -1,0 +1,6 @@
+EVENT_OBJECT_LIVEREGIONCHANGED on <div#live> role=ROLE_SYSTEM_GROUPING
+EVENT_OBJECT_REORDER on <div#live> role=ROLE_SYSTEM_GROUPING
+EVENT_OBJECT_REORDER on <div#offscreen> role=ROLE_SYSTEM_GROUPING
+IA2_EVENT_TEXT_INSERTED on <div#live> role=ROLE_SYSTEM_GROUPING new_text={'Text beforeLive region succeeded' start=0 end=32}
+IA2_EVENT_TEXT_REMOVED on <div#live> role=ROLE_SYSTEM_GROUPING old_text={'Text before' start=0 end=11}
+IA2_EVENT_TEXT_REMOVED on <div#offscreen> role=ROLE_SYSTEM_GROUPING old_text={'Live region succeeded' start=0 end=21}

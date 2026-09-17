@@ -1,0 +1,4 @@
+AriaProperties changed on role=description, name=Live region succeeded
+LiveRegionChanged on role=group
+StructureChanged/ChildrenReordered on role=document
+StructureChanged/ChildrenReordered on role=group

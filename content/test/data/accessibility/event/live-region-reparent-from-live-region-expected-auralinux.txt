@@ -1,0 +1,4 @@
+PARENT-CHANGED PARENT:(role=ROLE_SECTION name='(null)') role=ROLE_STATIC name='More Text' ENABLED,SENSITIVE,SHOWING,VISIBLE
+TEXT-INSERT (start=0 length=20 'Text beforeMore Text') role=ROLE_SECTION name='(null)' ENABLED,SENSITIVE,SHOWING,VISIBLE
+TEXT-REMOVE (start=0 length=11 'Text before') role=ROLE_SECTION name='(null)' ENABLED,SENSITIVE,SHOWING,VISIBLE
+TEXT-REMOVE (start=0 length=9 'More Text') role=ROLE_SECTION name='(null)' ENABLED,SENSITIVE,SHOWING,VISIBLE

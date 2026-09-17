@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="live2" aria-live="polite">Text before</div>
+<div id="live3" aria-live="polite">
+  <div id="contained-in-different-live-region">More Text</div>
+</div>
+
+<script>
+  function go() {
+    document.getElementById('live2').appendChild(
+      document.getElementById('contained-in-different-live-region').firstChild
+    );
+  }
+</script>
+</body>
+</html>

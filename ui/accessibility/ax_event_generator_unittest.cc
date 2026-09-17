@@ -2668,6 +2668,8 @@ TEST(AXEventGeneratorTest, LiveRegionNodeReparentedAdditionsRelevant) {
   EXPECT_THAT(
       event_generator,
       UnorderedElementsAre(
+          HasEventAtNode(AXEventGenerator::Event::LIVE_REGION_CHANGED, 3),
+          HasEventAtNode(AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED, 4),
           HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 4),
           HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 2),
           HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 3)));

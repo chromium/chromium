@@ -322,6 +322,11 @@ struct AX_BASE_EXPORT AXNodeData final {
   bool IsClickable() const;
 
   // Helper to determine if the data belongs to a node that is part of an active
+  // ARIA live region regardless if it has a name. Used for detecting structural
+  // changes like reparenting nameless elements in a live region.
+  bool IsStructuralElementContainedInActiveLiveRegion() const;
+
+  // Helper to determine if the data belongs to a node that is part of an active
   // ARIA live region, and for which live announcements should be made.
   bool IsContainedInActiveLiveRegion() const;
 

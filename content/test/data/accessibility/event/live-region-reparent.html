@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="live" aria-live="polite">Text before</div>
+<div id='offscreen' style='position: absolute; left: -99999px;'>Live region succeeded</div>
+<script>
+  function go() {
+    document.getElementById('live').appendChild(
+      document.getElementById('offscreen').firstChild
+    );
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div aria-live="polite">
+  <div id="div1">Foo</div>
+  <div id="div2">Bar</div>
+</div>
+
+<script>
+  function go() {
+    document.getElementById('div2').appendChild(
+      document.getElementById('div1').firstChild
+    );
+  }
+</script>
+</body>
+</html>

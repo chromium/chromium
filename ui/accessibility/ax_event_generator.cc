@@ -977,6 +977,17 @@ void AXEventGenerator::OnNodeWillBeReparented(AXTree* tree, AXNode* node) {
 
 void AXEventGenerator::OnSubtreeWillBeReparented(AXTree* tree, AXNode* node) {
   DCHECK_EQ(tree_, tree);
+  // Capture the current live region root ID so we can detect subtrees that
+  // are moved within the same live region and not announce them.
+  if (node->data().IsStructuralElementContainedInActiveLiveRegion()) {
+    AXNode* live_root = node;
+    while (live_root && !live_root->data().IsActiveLiveRegionRoot()) {
+      live_root = live_root->parent();
+    }
+    if (live_root) {
+      reparented_node_to_old_live_root_id_[node->id()] = live_root->id();
+    }
+  }
 }
 
 void AXEventGenerator::OnNodeDeleted(AXTree* tree, AXNodeID node_id) {
@@ -1003,6 +1014,30 @@ void AXEventGenerator::OnNodeCreated(AXTree* tree, AXNode* node) {
   FireValueInTextFieldChangedEventIfNecessary(tree, node);
 }
 
+bool AXEventGenerator::IsReparentedSubtreeNewToLiveRegion(AXNode* node) {
+  if (node->data().IsStructuralElementContainedInActiveLiveRegion()) {
+    AXNodeID old_root_id = kInvalidAXNodeID;
+    auto it = reparented_node_to_old_live_root_id_.find(node->id());
+    if (it != reparented_node_to_old_live_root_id_.end()) {
+      old_root_id = it->second;
+    } else {
+      // This node was not previously in a live region, but is now.
+      return true;
+    }
+
+    AXNode* new_live_root = node;
+    while (new_live_root && !new_live_root->data().IsActiveLiveRegionRoot()) {
+      new_live_root = new_live_root->parent();
+    }
+    if (new_live_root->id() != old_root_id) {
+      // This node was moved from an different live region to a new live region.
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void AXEventGenerator::OnAtomicUpdateFinished(
     AXTree* tree,
     bool root_changed,
@@ -1017,6 +1052,13 @@ void AXEventGenerator::OnAtomicUpdateFinished(
       AddEvent(change.node, Event::SUBTREE_CREATED);
     } else if (change.type != NODE_CREATED) {
       FireRelationSourceEvents(tree, change.node);
+      // If a subtree is reparented into a live region, treat it the same
+      // as if a new subtree/node was added to a live region, unless that
+      // subtree is reparented within the same live region.
+      if (change.type == SUBTREE_REPARENTED &&
+          IsReparentedSubtreeNewToLiveRegion(change.node)) {
+        FireLiveRegionEvents(change.node, /* is_removal */ false);
+      }
       continue;
     }
 
@@ -1044,6 +1086,7 @@ void AXEventGenerator::OnAtomicUpdateFinished(
 
   FireActiveDescendantEvents();
   nodes_to_suppress_parent_changed_on_.clear();
+  reparented_node_to_old_live_root_id_.clear();
 
   PostprocessEvents();
 }

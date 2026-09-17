@@ -1,0 +1,3 @@
+PARENT-CHANGED PARENT:(role=ROLE_SECTION name='(null)') role=ROLE_STATIC name='Live region succeeded' ENABLED,SENSITIVE,SHOWING,VISIBLE
+TEXT-INSERT (start=0 length=32 'Text beforeLive region succeeded') role=ROLE_SECTION name='(null)' ENABLED,SENSITIVE,SHOWING,VISIBLE
+TEXT-REMOVE (start=0 length=11 'Text before') role=ROLE_SECTION name='(null)' ENABLED,SENSITIVE,SHOWING,VISIBLE

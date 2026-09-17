@@ -1256,6 +1256,24 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_liveRegionReparent() {
+        performTest("live-region-reparent.html", "live-region-reparent-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    public void test_liveRegionReparentFromLiveRegion() {
+        performTest("live-region-reparent-from-live-region.html", "live-region-reparent-from-live-region-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    public void test_liveRegionReparentWithinLiveRegion() {
+        performTest("live-region-reparent-within-live-region.html", "live-region-reparent-within-live-region-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
     public void test_menuBarShowHideMenus() {
         performTest("menubar-show-hide-menus.html", "menubar-show-hide-menus-expected-android.txt");
     }
