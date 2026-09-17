@@ -163,6 +163,7 @@ if (!is_android) {
         "//chrome/browser/ash/login/test:test_support",
         "//chromeos/ash/components/cryptohome",
         "//chromeos/components/kiosk",
+        "//components/enterprise/isolated_mode",
       ]
     }
   }

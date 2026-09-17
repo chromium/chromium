@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_task_environment.h"
@@ -183,3 +184,60 @@ IN_PROC_BROWSER_TEST_F(SigninDataCollectorBrowserTestAsh, FailInIncognitoMode) {
             "SigninDataCollector: Status is empty. Can't export empty status.");
   EXPECT_EQ(error->error_code, SupportToolErrorCode::kDataCollectorError);
 }
+
+class SigninDataCollectorIsolatedModeBrowserTestAsh
+    : public SigninDataCollectorBrowserTestAsh {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SigninDataCollectorBrowserTestAsh::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SigninDataCollectorIsolatedModeBrowserTestAsh,
+                       FailInIsolatedMode) {
+  // Create isolated mode browser for testing.
+  BrowserWindowInterface* isolated_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
+                                    /*create_if_needed=*/true),
+                                /*from_user_gesture=*/true));
+
+  ASSERT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+
+  // `SigninDataCollector` for testing.
+  SigninDataCollector data_collector(isolated_browser->GetProfile());
+
+  // Attempt to collect sign-in data and verify that an error is returned.
+  base::test::TestFuture<std::optional<SupportToolError>>
+      test_future_collect_data;
+  data_collector.CollectDataAndDetectPII(test_future_collect_data.GetCallback(),
+                                         task_runner_for_redaction_tool_,
+                                         redaction_tool_container_);
+  std::optional<SupportToolError> error = test_future_collect_data.Get();
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ(
+      error->error_message,
+      "SigninDataCollector can't work without profile or in isolated mode.");
+  EXPECT_EQ(error->error_code, SupportToolErrorCode::kDataCollectorError);
+
+  // Attempt to export the collected data and verify that error is returned.
+  base::FilePath output_path = temp_dir_.GetPath();
+  auto output_file = output_path.Append(FILE_PATH_LITERAL("signin.json"));
+
+  base::test::TestFuture<std::optional<SupportToolError>>
+      test_future_export_data;
+  data_collector.ExportCollectedDataWithPII(
+      /*pii_types_to_keep=*/{}, output_path,
+      /*task_runner_for_redaction_tool=*/task_runner_for_redaction_tool_,
+      /*redaction_tool_container=*/redaction_tool_container_,
+      test_future_export_data.GetCallback());
+  error = test_future_export_data.Get();
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ(error->error_message,
+            "SigninDataCollector: Status is empty. Can't export empty status.");
+  EXPECT_EQ(error->error_code, SupportToolErrorCode::kDataCollectorError);
+}
+

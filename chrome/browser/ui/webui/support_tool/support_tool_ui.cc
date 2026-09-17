@@ -229,7 +229,8 @@ base::ListValue SupportToolMessageHandler::GetAccountsList() {
 
   // Guest session and incognito mode do not have a primary account (or an
   // IdentityManager).
-  if (profile->IsGuestSession() || profile->IsIncognitoProfile()) {
+  if (profile->IsGuestSession()
+      || profile->IsPrimaryOTRProfileWithRegularParent()) {
     return account_list;
   }
 

@@ -83,6 +83,14 @@ void SigninDataCollector::CollectDataAndDetectPII(
     return;
   }
 
+  if (profile_->IsEnterpriseIsolatedModeProfile()) {
+    SupportToolError error = {
+        SupportToolErrorCode::kDataCollectorError,
+        "SigninDataCollector can't work without profile or in isolated mode."};
+    std::move(on_data_collected_callback).Run(error);
+    return;
+  }
+
   AboutSigninInternals* about_signin_internals =
       AboutSigninInternalsFactory::GetForProfile(profile_);
   // See AboutSigninInternals::SigninStatus::ToValue.

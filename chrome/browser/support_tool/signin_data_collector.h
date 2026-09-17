@@ -24,7 +24,7 @@ class Profile;
 
 // `SigninDataCollector` collects authentication, sign in and token information
 // from `AboutSigninInternals`. It will return an error if the user is not
-// signed in or is incognito.
+// signed in, is in incognito mode or is in isolated mode.
 class SigninDataCollector : public DataCollector {
  public:
   explicit SigninDataCollector(Profile* profile);
