@@ -3217,6 +3217,28 @@ TEST_F(TabStripModelTest, RotateFocusedGroup) {
   EXPECT_EQ(group2, tabstrip()->GetFocusedGroup());
 }
 
+TEST_F(TabStripModelTest, RotateFocusedGroup_TemporaryGroup) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+
+  PrepareTabs(tabstrip(), 3);
+  tabstrip()->AddToNewGroup({0});
+  tab_groups::TabGroupId temp_group =
+      tabstrip()->AddToNewGroup({1}, /*is_temporary=*/true);
+
+  // When focused on a temporary group, rotating forward or backward should not
+  // switch focus away from the temporary group.
+  tabstrip()->SetFocusedGroup(temp_group);
+  EXPECT_EQ(temp_group, tabstrip()->GetFocusedGroup());
+
+  tabstrip()->RotateFocusedGroup(/*forward=*/true);
+  EXPECT_EQ(temp_group, tabstrip()->GetFocusedGroup());
+
+  tabstrip()->RotateFocusedGroup(/*forward=*/false);
+  EXPECT_EQ(temp_group, tabstrip()->GetFocusedGroup());
+}
+
 TEST_F(TabStripModelTest, AddToNewSplit_MultipleIndices_Active) {
   PrepareTabs(tabstrip(), 5);
   tabstrip()->ActivateTabAt(2);

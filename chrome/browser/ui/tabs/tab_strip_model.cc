@@ -2285,6 +2285,14 @@ void TabStripModel::RotateFocusedGroup(bool forward) {
     return;
   }
 
+  std::optional<tab_groups::TabGroupId> current_focused_group =
+      GetFocusedGroup();
+  if (current_focused_group.has_value()) {
+    if (IsTabGroupTemporary(current_focused_group.value())) {
+      return;
+    }
+  }
+
   std::vector<tab_groups::TabGroupId> groups_in_order =
       group_model_->ListTabGroups();
   if (groups_in_order.empty()) {
@@ -2294,9 +2302,6 @@ void TabStripModel::RotateFocusedGroup(bool forward) {
   std::ranges::sort(groups_in_order, {}, [&](const tab_groups::TabGroupId& id) {
     return group_model_->GetTabGroup(id)->ListTabs().start();
   });
-
-  std::optional<tab_groups::TabGroupId> current_focused_group =
-      GetFocusedGroup();
 
   if (!current_focused_group.has_value()) {
     SetFocusedGroup(forward ? groups_in_order.front() : groups_in_order.back());

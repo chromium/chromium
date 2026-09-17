@@ -660,6 +660,27 @@ IN_PROC_BROWSER_TEST_F(
                   }));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    TabStripCollectionControllerTabGroupFocusingInteractiveUiTest,
+    FocusNextAndPreviousTabGroup_TemporaryGroup) {
+  RunTestSequence(WaitForShow(kNewTabButtonElementId),
+                  PressButton(kNewTabButtonElementId), Do([&]() {
+                    TabStripModel* model = browser()->GetTabStripModel();
+                    ASSERT_EQ(model->count(), 2);
+                    model->AddToNewGroup({0});
+                    tab_groups::TabGroupId temp_group =
+                        model->AddToNewGroup({1}, /*is_temporary=*/true);
+                    model->SetFocusedGroup(temp_group);
+                    EXPECT_EQ(model->GetFocusedGroup(), temp_group);
+
+                    chrome::FocusNextTabGroup(browser());
+                    EXPECT_EQ(model->GetFocusedGroup(), temp_group);
+
+                    chrome::FocusPreviousTabGroup(browser());
+                    EXPECT_EQ(model->GetFocusedGroup(), temp_group);
+                  }));
+}
+
 // TODO(crbug.com/481392191) Fix these flaky hovercard tests.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_VerticalTabHoverCardShowUnpinned \
