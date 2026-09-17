@@ -458,16 +458,29 @@ void AutofillClient::ShowAutofillAiPrivateInferenceNotice() {
   NOTIMPLEMENTED();
 }
 
-void AutofillClient::ShowEmailVerifiedToast(const GURL& issuer) {
-  NOTIMPLEMENTED();
-}
-
 void AutofillClient::ShowEmailVerificationPopup(
     const gfx::RectF& element_bounds,
     const net::SchemefulSite& issuer_site,
     const std::u16string& email,
     base::OnceCallback<void(EmailVerificationPermissionUiStatus)> callback) {
+  NOTIMPLEMENTED();
   std::move(callback).Run(EmailVerificationPermissionUiStatus::kOther);
+}
+
+void AutofillClient::HideEmailVerificationPopup() {
+  NOTIMPLEMENTED();
+}
+
+void AutofillClient::ShowEmailVerificationLoadingToast() {
+  NOTIMPLEMENTED();
+}
+
+void AutofillClient::ShowEmailVerifiedToast(const GURL& issuer) {
+  NOTIMPLEMENTED();
+}
+
+void AutofillClient::ShowEmailVerificationErrorToast() {
+  NOTIMPLEMENTED();
 }
 
 OtpFieldDetector* AutofillClient::GetOtpFieldDetector() {

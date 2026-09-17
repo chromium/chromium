@@ -140,6 +140,9 @@ class MockAutofillClient : public TestContentAutofillClient {
                base::OnceCallback<
                    void(AutofillClient::EmailVerificationPermissionUiStatus)>),
               (override));
+  MOCK_METHOD(void, HideEmailVerificationPopup, (), (override));
+  MOCK_METHOD(void, ShowEmailVerificationLoadingToast, (), (override));
+  MOCK_METHOD(void, ShowEmailVerificationErrorToast, (), (override));
 
   EmailVerifierDelegate& delegate() { return *delegate_; }
 
@@ -274,20 +277,22 @@ class EmailVerifierDelegateTestBase
               blink::mojom::EmailVerificationRequestResult::kSuccess,
               base::Milliseconds(200)));
 
+      EXPECT_CALL(client(), HideEmailVerificationPopup);
+      EXPECT_CALL(client(),
+                  ShowEmailVerifiedToast(GURL("https://example.com")));
       EXPECT_CALL(driver(),
                   SendEmailVerificationToken(form.field(0)->global_id(), email,
                                              "test_token"));
     } else {
       EXPECT_CALL(email_verifier(), Verify).Times(0);
       EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
+      EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
     }
 
     EXPECT_CALL(client(), ShowEmailVerificationPopup)
         .WillOnce(
             DoAll(base::test::RunClosure(popup_shown_run_loop_.QuitClosure()),
                   RunOnceCallback<3>(ui_status)));
-
-    EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
   }
 
  protected:
@@ -374,10 +379,11 @@ TEST_F(EmailVerifierDelegateTest, TokenSharedSuccess) {
                   kEntryName)
           .size());
 
-  // Clear expectations on client to avoid conflict with ShowEmailVerifiedToast.
+  // Clear expectations on client.
   testing::Mock::VerifyAndClearExpectations(&client());
 
-  EXPECT_CALL(client(), ShowEmailVerifiedToast(GURL("https://example.com")));
+  // Verify that form submission records metrics without re-showing the toast.
+  EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
   delegate().OnBeforeFormWithEmailVerificationTokenSubmitted(
       manager(), form->ToFormData(), form->field(0)->global_id());
 
@@ -636,9 +642,12 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
       .WillOnce(RunOnceCallback<3>(
           AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
 
-  // When the verification fails, the event is not dispatched.
+  // Simulating token verification failure by returning std::nullopt and
+  // kTokenNoResponse ensures that the token is not dispatched to the renderer,
+  // no success toast is shown, and the error toast is displayed instead.
   EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
   EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerificationErrorToast);
 
   AutofillProfile profile = test::GetFullProfile();
   profile.SetInfoWithVerificationStatus(EMAIL_ADDRESS, u"test@example.com",
@@ -1089,6 +1098,10 @@ TEST_F(EmailVerifierDelegateTest, ClearsNotSignedInStrikesWhenAlreadyAllowed) {
           std::optional<std::string>("test_token"),
           blink::mojom::EmailVerificationRequestResult::kSuccess,
           base::Milliseconds(200)));
+
+  EXPECT_CALL(client(), ShowEmailVerificationLoadingToast());
+  EXPECT_CALL(client(), HideEmailVerificationPopup);
+  EXPECT_CALL(client(), ShowEmailVerifiedToast(GURL("https://example.com")));
 
   EXPECT_CALL(driver(),
               SendEmailVerificationToken(field_id, email, "test_token"));
@@ -1818,7 +1831,12 @@ TEST_F(EmailVerifierDelegateTest, FlowResultFailed) {
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
       .WillOnce(RunOnceCallback<3>(
           AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
+  EXPECT_CALL(client(), HideEmailVerificationPopup);
+  EXPECT_CALL(client(), ShowEmailVerificationErrorToast);
 
+  // Verify returning std::nullopt simulates token retrieval failure, which
+  // dismisses the first-run prompt and triggers
+  // ShowEmailVerificationErrorToast.
   EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
       .WillOnce(RunOnceCallback<2>(
           std::nullopt,
@@ -2106,8 +2124,10 @@ TEST_F(EmailVerifierDelegateTest, UkmMetricsRecorded) {
 }
 
 // Verifies that when a user has already allowed EVP (already_allowed == true),
-// the permission popup is skipped and verification is performed directly.
-TEST_F(EmailVerifierDelegateTest, AlreadyAllowedSkipsPopupAndVerifies) {
+// the permission popup is skipped, the loading toast is shown, and the success
+// toast is displayed upon token receipt.
+TEST_F(EmailVerifierDelegateTest,
+       SubsequentRunShowsLoadingToastAndTransitionsToSuccess) {
   FormStructure* form = SetUpValidForm();
   FieldGlobalId field_id = form->field(0)->global_id();
   std::string email = "johndoe@hades.com";
@@ -2132,7 +2152,13 @@ TEST_F(EmailVerifierDelegateTest, AlreadyAllowedSkipsPopupAndVerifies) {
             base::Milliseconds(100));
       });
 
+  // Verify loading toast is shown and popup is not shown.
+  EXPECT_CALL(client(), ShowEmailVerificationLoadingToast());
   EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+
+  // Success toast and popup hide are called on token receipt.
+  EXPECT_CALL(client(), HideEmailVerificationPopup);
+  EXPECT_CALL(client(), ShowEmailVerifiedToast(GURL("https://example.com")));
 
   EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
       .WillOnce(RunOnceCallback<2>(
@@ -2142,6 +2168,107 @@ TEST_F(EmailVerifierDelegateTest, AlreadyAllowedSkipsPopupAndVerifies) {
 
   EXPECT_CALL(driver(),
               SendEmailVerificationToken(field_id, email, "test_token"));
+
+  TriggerDefaultFormFill(*form);
+}
+
+// Verifies that on subsequent runs, a loading toast is shown, and if token
+// retrieval fails, ShowEmailVerificationErrorToast is called.
+TEST_F(EmailVerifierDelegateTest,
+       SubsequentRunShowsLoadingToastAndTransitionsToError) {
+  FormStructure* form = SetUpValidForm();
+  FieldGlobalId field_id = form->field(0)->global_id();
+  std::string email = "johndoe@hades.com";
+
+  // Mark email as already allowed in prefs.
+  PrefService* prefs = client().GetPrefs();
+  ScopedDictPrefUpdate update(prefs, prefs::kAutofillEmailVerificationState);
+  base::DictValue email_dict;
+  email_dict.Set("allowed", true);
+  email_dict.Set("issuer_site", "https://example.com");
+  email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
+  update->Set(email, std::move(email_dict));
+
+  EXPECT_CALL(driver(), GetNonceForEmailVerification(field_id, _))
+      .WillOnce(RunOnceCallback<1>("test_nonce"));
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _, _))
+      .WillOnce([this](const std::string& email_arg,
+                       base::OnceClosure on_dns_resolved,
+                       EmailVerifier::IsVerifiableCallback callback) {
+        std::move(on_dns_resolved).Run();
+        std::move(callback).Run(
+            CreateVerifiableResult(email_arg),
+            blink::mojom::EmailVerificationRequestResult::kSuccess,
+            base::Milliseconds(100));
+      });
+
+  // Verify loading toast is shown and popup is not shown.
+  EXPECT_CALL(client(), ShowEmailVerificationLoadingToast());
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+
+  // On error, popup hide and error toast are called.
+  EXPECT_CALL(client(), HideEmailVerificationPopup);
+  EXPECT_CALL(client(), ShowEmailVerificationErrorToast());
+  EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
+
+  // Returning std::nullopt and kTokenNoResponse from Verify simulates token
+  // retrieval failure, verifying that the loading toast transitions to the
+  // error toast.
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>(
+          std::nullopt,
+          blink::mojom::EmailVerificationRequestResult::kTokenNoResponse,
+          base::Milliseconds(200)));
+
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
+
+  TriggerDefaultFormFill(*form);
+}
+
+// Verifies that HideEmailVerificationPopup is called on token arrival to
+// dismiss the first-run prompt (which was displaying an in-button loading
+// spinner) as soon as verification completes.
+TEST_F(EmailVerifierDelegateTest, HideEmailVerificationPopupOnTokenArrival) {
+  FormStructure* form = SetUpValidForm();
+  SetUpVerificationExpectations(*form);
+  TriggerDefaultFormFill(*form);
+  popup_shown_run_loop_.Run();
+}
+
+// Verifies that HideEmailVerificationPopup is called when token retrieval
+// fails so that the first-run prompt's loading spinner does not linger.
+TEST_F(EmailVerifierDelegateTest, HideEmailVerificationPopupOnTokenFailure) {
+  FormStructure* form = SetUpValidForm();
+  FieldGlobalId field_id = form->field(0)->global_id();
+
+  EXPECT_CALL(driver(), GetNonceForEmailVerification(field_id, _))
+      .WillOnce(RunOnceCallback<1>("test_nonce"));
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _, _))
+      .WillOnce([this](const std::string& email_arg,
+                       base::OnceClosure on_dns_resolved,
+                       EmailVerifier::IsVerifiableCallback callback) {
+        std::move(on_dns_resolved).Run();
+        std::move(callback).Run(
+            CreateVerifiableResult(email_arg),
+            blink::mojom::EmailVerificationRequestResult::kSuccess,
+            base::Milliseconds(100));
+      });
+
+  EXPECT_CALL(client(), ShowEmailVerificationPopup)
+      .WillOnce(RunOnceCallback<3>(
+          AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
+  EXPECT_CALL(client(), HideEmailVerificationPopup);
+  EXPECT_CALL(client(), ShowEmailVerificationErrorToast);
+
+  // Verify returning std::nullopt simulates token retrieval failure, ensuring
+  // that the prompt popup is dismissed and the error toast is shown.
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>(
+          std::nullopt,
+          blink::mojom::EmailVerificationRequestResult::kTokenNoResponse,
+          base::Milliseconds(50)));
 
   TriggerDefaultFormFill(*form);
 }

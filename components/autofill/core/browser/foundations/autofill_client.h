@@ -913,8 +913,6 @@ class AutofillClient {
   // default.
   virtual void ShowAutofillAiPrivateInferenceNotice();
 
-  virtual void ShowEmailVerifiedToast(const GURL& issuer);
-
   // Shows a yes/no prompt asking the user to confirm that they want to verify
   // their email. The prompt is anchored on the field at `element_bounds`.
   // `issuer_site` is the site that issued the assertion.
@@ -925,6 +923,26 @@ class AutofillClient {
       const net::SchemefulSite& issuer_site,
       const std::u16string& email,
       base::OnceCallback<void(EmailVerificationPermissionUiStatus)> callback);
+
+  // Dismisses the email verification permission prompt popup if currently
+  // showing. Called when token verification completes (on success or error) to
+  // dismiss the first-run prompt while its verify button was displaying an
+  // in-button loading spinner.
+  virtual void HideEmailVerificationPopup();
+
+  // Displays a loading toast indicating that email verification is in progress.
+  // Called for subsequent-run requests where permission was already granted,
+  // so the permission prompt popup is bypassed while the token request is in
+  // flight.
+  virtual void ShowEmailVerificationLoadingToast();
+
+  // Displays a toast notifying the user that email verification succeeded for
+  // `issuer`. Called upon receiving a valid verification token.
+  virtual void ShowEmailVerifiedToast(const GURL& issuer);
+
+  // Displays an error toast notifying the user that email verification failed.
+  // Called when token verification fails or returns an error.
+  virtual void ShowEmailVerificationErrorToast();
 
   // May return null on platforms where OTPs are not supported.
   virtual OtpFieldDetector* GetOtpFieldDetector();

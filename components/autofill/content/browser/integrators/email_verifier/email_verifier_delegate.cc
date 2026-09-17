@@ -168,14 +168,26 @@ void EmailVerifierDelegate::OnVerificationResponseReceived(
   }
   if (manager->driver().GetLifecycleState() !=
       AutofillDriver::LifecycleState::kActive) {
+    // Dismiss the first-run permission popup if it was kept open with a
+    // loading spinner, since the frame is no longer active.
+    manager->client().HideEmailVerificationPopup();
     NotifyFlowCompleted(email_field_id, EvpAutofillFlowResult::kDriverInactive);
     return;
   }
   if (!token) {
+    // Dismiss the first-run permission prompt popup on verification failure
+    // so that the in-button loading spinner does not linger, and display the
+    // error toast.
+    manager->client().HideEmailVerificationPopup();
+    manager->client().ShowEmailVerificationErrorToast();
     NotifyFlowCompleted(email_field_id,
                         EvpAutofillFlowResult::kVerificationFailed);
     return;
   }
+  // On successful verification, dismiss the first-run permission popup if
+  // showing and display the email verified toast.
+  manager->client().HideEmailVerificationPopup();
+  manager->client().ShowEmailVerifiedToast(issuer_site.GetURL());
   issuers_[email_field_id] = issuer_site.GetURL();
   manager->driver().SendEmailVerificationToken(email_field_id, email, *token);
   NotifyFlowCompleted(email_field_id,
@@ -331,6 +343,11 @@ void EmailVerifierDelegate::OnIsVerifiable(
       not_signed_in_strike_db->ClearStrikes(
           GetEmailVerificationStrikeDatabaseId(normalized_email));
     }
+    // For subsequent-run requests where permission was already granted
+    // previously, the permission prompt popup is bypassed. Display a loading
+    // toast to inform the user that background email verification is in
+    // progress while the token request is in flight.
+    manager->client().ShowEmailVerificationLoadingToast();
     Verify(manager, email_field_id, email_utf8, nonce, *result);
     return;
   }
@@ -540,9 +557,8 @@ void EmailVerifierDelegate::OnBeforeFormWithEmailVerificationTokenSubmitted(
     return;
   }
   if (auto it = issuers_.find(email_field_id); it != issuers_.end()) {
-    GURL issuer_url = it->second;
     issuers_.erase(it);
-    manager.client().ShowEmailVerifiedToast(issuer_url);
+    // Record form submission metrics for verified email fields.
     base::UmaHistogramBoolean("Blink.Evp.Autofill.FormSubmitted", true);
     ukm::builders::Blink_EmailVerificationProtocol_FormSubmission(
         manager.driver().GetPageUkmSourceId())
