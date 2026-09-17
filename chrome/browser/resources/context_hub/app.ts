@@ -18,11 +18,17 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 
-export type ViewType =
-    'launchpad'|'memory-banks'|'tab-groups'|'memory-bank-chat'|'topics'|'jumpstart';
+export type ViewType = 'launchpad'|'memory-banks'|'tab-groups'|
+    'memory-bank-chat'|'topics'|'jumpstart';
 
-const VALID_VIEWS: Set<ViewType> =
-    new Set(['launchpad', 'memory-banks', 'tab-groups', 'topics', 'jumpstart']);
+const VALID_VIEWS: Set<ViewType> = new Set([
+  'launchpad',
+  'memory-banks',
+  'tab-groups',
+  'memory-bank-chat',
+  'topics',
+  'jumpstart',
+]);
 const STORAGE_KEY = 'context_hub_current_view';
 
 function normalizeView(view: string|null): ViewType|null {

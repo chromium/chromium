@@ -98,6 +98,18 @@ const MAX_SUGGESTIONS = 10;
 /** Candidate values suggested for "type:". */
 const TYPE_CANDIDATES: readonly string[] = ['tab', 'selected_text'];
 
+/** The qualifiers whose values come from a known set and can be completed. */
+const ENUMERABLE_QUALIFIERS: ReadonlySet<string> =
+    new Set(['tag', 'collection', 'type']);
+
+/**
+ * Returns whether values can be suggested for `qualifier` (e.g. 'tag'). The
+ * rest are free text, matching whatever the user types.
+ */
+export function hasEnumerableValues(qualifier: string): boolean {
+  return ENUMERABLE_QUALIFIERS.has(qualifier);
+}
+
 /**
  * Parses a raw search query string into structured filter fields.
  *
@@ -245,6 +257,19 @@ export function computeSuggestions(
       return [];
     }
 
+    if (!hasEnumerableValues(qualifier)) {
+      // Free-text qualifiers (title:, url:, note:, text:) retain format
+      // guidance while empty so the suggestions menu remains helpful.
+      if (cleanValue === '') {
+        return [{
+          query: `${base}${qualifierDef.prefix}`,
+          label: qualifierDef.prefix,
+          description: qualifierDef.description,
+        }];
+      }
+      return [];
+    }
+
     let candidates: readonly string[];
     switch (qualifier) {
       case 'tag':
@@ -257,15 +282,7 @@ export function computeSuggestions(
         candidates = TYPE_CANDIDATES;
         break;
       default:
-        // Free-text qualifiers (title:, url:, note:, text:) retain format
-        // guidance while empty so the suggestions menu remains helpful.
-        if (cleanValue === '') {
-          return [{
-            query: `${base}${qualifierDef.prefix}`,
-            label: qualifierDef.prefix,
-            description: qualifierDef.description,
-          }];
-        }
+        // Unreachable: every enumerable qualifier is handled above.
         return [];
     }
 
