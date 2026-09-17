@@ -106,20 +106,10 @@ class TestRenderingContext2D final
   Color GetCurrentColor() const override { return Color::kBlack; }
 
   MemoryManagedPaintCanvas* GetOrCreatePaintCanvas() override {
-    // Context child classes uses `GetOrCreatePaintCanvas` to check for context
-    // loss.
-    if (isContextLost()) [[unlikely]] {
-      return nullptr;
-    }
-
-    return &Recorder()->getRecordingCanvas();
+    return GetPaintCanvas();
   }
   using BaseRenderingContext2D::CreateRecorder;
   using BaseRenderingContext2D::FlushIfRecordingLimitExceeded;
-  using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
-  const MemoryManagedPaintCanvas* GetPaintCanvas() const override {
-    return &Recorder()->getRecordingCanvas();
-  }
   void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) override {}
 

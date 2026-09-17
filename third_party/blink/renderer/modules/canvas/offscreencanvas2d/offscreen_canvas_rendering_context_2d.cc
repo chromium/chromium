@@ -440,15 +440,6 @@ OffscreenCanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   return GetPaintCanvas();
 }
 
-const MemoryManagedPaintCanvas*
-OffscreenCanvasRenderingContext2D::GetPaintCanvas() const {
-  if (isContextLost()) [[unlikely]] {
-    return nullptr;
-  }
-  auto* recorder = Recorder();
-  return recorder ? &recorder->getRecordingCanvas() : nullptr;
-}
-
 void OffscreenCanvasRenderingContext2D::RecordingCleared() {
   BaseRenderingContext2D::RecordingCleared();
   if (shared_image_provider_) {

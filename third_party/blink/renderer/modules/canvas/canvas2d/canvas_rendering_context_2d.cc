@@ -501,18 +501,6 @@ MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   return &Recorder()->getRecordingCanvas();
 }
 
-const MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetPaintCanvas()
-    const {
-  if (isContextLost()) [[unlikely]] {
-    return nullptr;
-  }
-  const MemoryManagedPaintRecorder* recorder = Recorder();
-  if (!recorder) [[unlikely]] {
-    return nullptr;
-  }
-  return &recorder->getRecordingCanvas();
-}
-
 std::unique_ptr<MemoryManagedPaintRecorder>
 CanvasRenderingContext2D::ReleaseRecorder() {
   return BaseRenderingContext2D::ReleaseRecorder();

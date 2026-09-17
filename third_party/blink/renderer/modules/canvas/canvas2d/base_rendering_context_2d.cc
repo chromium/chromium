@@ -163,6 +163,17 @@ const MemoryManagedPaintRecorder* BaseRenderingContext2D::Recorder() const {
   return recorder_.get();
 }
 
+const MemoryManagedPaintCanvas* BaseRenderingContext2D::GetPaintCanvas() const {
+  if (isContextLost()) [[unlikely]] {
+    return nullptr;
+  }
+  const MemoryManagedPaintRecorder* recorder = Recorder();
+  if (!recorder) [[unlikely]] {
+    return nullptr;
+  }
+  return &recorder->getRecordingCanvas();
+}
+
 void BaseRenderingContext2D::CreateRecorder(const gfx::Size& size,
                                             bool is_graphite) {
   recorder_ = std::make_unique<MemoryManagedPaintRecorder>(size, this);

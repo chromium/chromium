@@ -208,8 +208,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   Color GetCurrentColor() const final;
 
   MemoryManagedPaintCanvas* GetOrCreatePaintCanvas() final;
-  using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
-  const MemoryManagedPaintCanvas* GetPaintCanvas() const final;
 
   void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;
