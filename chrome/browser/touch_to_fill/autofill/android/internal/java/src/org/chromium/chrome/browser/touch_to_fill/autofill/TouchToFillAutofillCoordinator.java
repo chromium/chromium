@@ -21,8 +21,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /**
- * Implements the TouchToFillAutofillComponent. It uses a bottom sheet to prompt the user with the
- * Personal Context Notice.
+ * Implements the TouchToFillAutofillComponent. It uses a bottom sheet to prompt the user with an
+ * Autofill notice.
  */
 @NullMarked
 public class TouchToFillAutofillCoordinator implements TouchToFillAutofillComponent {
@@ -75,8 +75,8 @@ public class TouchToFillAutofillCoordinator implements TouchToFillAutofillCompon
     }
 
     @Override
-    public void show() {
-        mMediator.show();
+    public void showPersonalContextNotice() {
+        mMediator.showPersonalContextNotice();
     }
 
     @Override

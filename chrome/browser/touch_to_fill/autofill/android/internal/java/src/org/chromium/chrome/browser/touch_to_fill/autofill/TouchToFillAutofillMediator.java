@@ -41,7 +41,7 @@ class TouchToFillAutofillMediator {
         mModel = createModel();
     }
 
-    void show() {
+    void showPersonalContextNotice() {
         mWasDismissed = false;
 
         ModelList sheetItems = mModel.get(SHEET_ITEMS);

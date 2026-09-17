@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.touch_to_fill.autofill;
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * This component allows prompting the user with the Ambient Autofill notice bottom sheet (Personal
- * Context Notice) and managing its lifecycle.
+ * This component allows prompting the user with an Autofill notice bottom sheet and managing its
+ * lifecycle.
  */
 @NullMarked
 public interface TouchToFillAutofillComponent {
@@ -25,7 +25,7 @@ public interface TouchToFillAutofillComponent {
     }
 
     /** Displays the Personal Context Notice bottom sheet. */
-    void show();
+    void showPersonalContextNotice();
 
     /** Hides the bottom sheet if shown. */
     void hide();

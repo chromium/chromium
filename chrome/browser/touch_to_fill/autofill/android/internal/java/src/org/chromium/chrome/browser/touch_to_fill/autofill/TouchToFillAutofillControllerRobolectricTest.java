@@ -82,7 +82,7 @@ public class TouchToFillAutofillControllerRobolectricTest {
                         TouchToFillAutofillMediator.NOTICE_INTERACTIONS_HISTOGRAM,
                         PopupNoticeInteractions.SHOWN);
 
-        mCoordinator.show();
+        mCoordinator.showPersonalContextNotice();
 
         ModelList sheetItems = mCoordinator.getModelForTesting().get(SHEET_ITEMS);
         assertThat(sheetItems.size(), is(3));
@@ -111,7 +111,7 @@ public class TouchToFillAutofillControllerRobolectricTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         TouchToFillAutofillMediator.NOTICE_INTERACTIONS_HISTOGRAM,
                         PopupNoticeInteractions.SHOWN);
-        mCoordinator.show();
+        mCoordinator.showPersonalContextNotice();
         shownWatcher.assertExpected();
 
         verify(mBottomSheetController).requestShowContent(mContentCaptor.capture(), eq(true));
@@ -143,7 +143,7 @@ public class TouchToFillAutofillControllerRobolectricTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         TouchToFillAutofillMediator.NOTICE_INTERACTIONS_HISTOGRAM,
                         PopupNoticeInteractions.SHOWN);
-        mCoordinator.show();
+        mCoordinator.showPersonalContextNotice();
         shownWatcher.assertExpected();
 
         verify(mBottomSheetController).requestShowContent(mContentCaptor.capture(), eq(true));
@@ -175,7 +175,7 @@ public class TouchToFillAutofillControllerRobolectricTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         TouchToFillAutofillMediator.NOTICE_INTERACTIONS_HISTOGRAM,
                         PopupNoticeInteractions.SHOWN);
-        mCoordinator.show();
+        mCoordinator.showPersonalContextNotice();
         shownWatcher.assertExpected();
 
         HistogramWatcher dismissedWatcher =
@@ -191,7 +191,7 @@ public class TouchToFillAutofillControllerRobolectricTest {
 
     @Test
     public void testGetVerticalScrollOffset() {
-        mCoordinator.show();
+        mCoordinator.showPersonalContextNotice();
         verify(mBottomSheetController).requestShowContent(mContentCaptor.capture(), eq(true));
         BottomSheetContent content = mContentCaptor.getValue();
         RecyclerView recyclerView = content.getContentView().findViewById(R.id.sheet_item_list);

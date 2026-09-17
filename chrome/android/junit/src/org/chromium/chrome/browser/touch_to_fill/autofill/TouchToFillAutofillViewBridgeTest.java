@@ -76,7 +76,7 @@ public class TouchToFillAutofillViewBridgeTest {
 
     @Test
     public void testShow_RegistersObserver() {
-        mBridge.show();
+        mBridge.showPersonalContextNotice();
         ArgumentCaptor<BottomSheetObserver> captor =
                 ArgumentCaptor.forClass(BottomSheetObserver.class);
         verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
@@ -85,7 +85,7 @@ public class TouchToFillAutofillViewBridgeTest {
 
     @Test
     public void testDestroy_RemovesObserver() {
-        mBridge.show();
+        mBridge.showPersonalContextNotice();
         ArgumentCaptor<BottomSheetObserver> captor =
                 ArgumentCaptor.forClass(BottomSheetObserver.class);
         verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
@@ -97,8 +97,8 @@ public class TouchToFillAutofillViewBridgeTest {
 
     @Test
     public void testShow_RegistersObserverOnlyOnce() {
-        mBridge.show();
-        mBridge.show();
+        mBridge.showPersonalContextNotice();
+        mBridge.showPersonalContextNotice();
         ArgumentCaptor<BottomSheetObserver> captor =
                 ArgumentCaptor.forClass(BottomSheetObserver.class);
         verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
@@ -121,7 +121,7 @@ public class TouchToFillAutofillViewBridgeTest {
 
     @Test
     public void testOnSheetClosed_NotifiesNative() {
-        mBridge.show();
+        mBridge.showPersonalContextNotice();
         ArgumentCaptor<BottomSheetObserver> captor =
                 ArgumentCaptor.forClass(BottomSheetObserver.class);
         verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
@@ -134,7 +134,7 @@ public class TouchToFillAutofillViewBridgeTest {
 
     @Test
     public void testOnSheetClosed_HandlesDestroyedBridgeGracefully() {
-        mBridge.show();
+        mBridge.showPersonalContextNotice();
         ArgumentCaptor<BottomSheetObserver> captor =
                 ArgumentCaptor.forClass(BottomSheetObserver.class);
         verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
@@ -148,7 +148,7 @@ public class TouchToFillAutofillViewBridgeTest {
 
     @Test
     public void testOnSheetClosed_TriggersKeyboardRestore() {
-        mBridge.show();
+        mBridge.showPersonalContextNotice();
         ArgumentCaptor<BottomSheetObserver> captor =
                 ArgumentCaptor.forClass(BottomSheetObserver.class);
         verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
@@ -163,7 +163,7 @@ public class TouchToFillAutofillViewBridgeTest {
 
     @Test
     public void testOnSheetClosed_RestoresKeyboardBeforeNotifyingNative() {
-        mBridge.show();
+        mBridge.showPersonalContextNotice();
         ArgumentCaptor<BottomSheetObserver> captor =
                 ArgumentCaptor.forClass(BottomSheetObserver.class);
         verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
@@ -179,7 +179,7 @@ public class TouchToFillAutofillViewBridgeTest {
 
     @Test
     public void testOnSheetClosed_DoesNotRestoreIfOmniboxFocused() {
-        mBridge.show();
+        mBridge.showPersonalContextNotice();
         ArgumentCaptor<BottomSheetObserver> captor =
                 ArgumentCaptor.forClass(BottomSheetObserver.class);
         verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
@@ -194,7 +194,7 @@ public class TouchToFillAutofillViewBridgeTest {
 
     @Test
     public void testOnSheetClosed_DoesNotRestoreIfWebContentsDestroyed() {
-        mBridge.show();
+        mBridge.showPersonalContextNotice();
         ArgumentCaptor<BottomSheetObserver> captor =
                 ArgumentCaptor.forClass(BottomSheetObserver.class);
         verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());

@@ -42,7 +42,8 @@ bool TouchToFillAutofillViewImpl::ShowPersonalContextNotice(
       return false;
     }
   }
-  Java_TouchToFillAutofillViewBridge_show(env, java_object_);
+  Java_TouchToFillAutofillViewBridge_showPersonalContextNotice(env,
+                                                               java_object_);
   return true;
 }
 

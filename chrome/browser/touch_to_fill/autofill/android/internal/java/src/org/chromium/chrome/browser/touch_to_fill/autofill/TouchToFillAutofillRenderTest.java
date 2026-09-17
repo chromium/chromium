@@ -128,7 +128,7 @@ public class TouchToFillAutofillRenderTest {
     public void testShowsPersonalContextNotice() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.show();
+                    mCoordinator.showPersonalContextNotice();
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
