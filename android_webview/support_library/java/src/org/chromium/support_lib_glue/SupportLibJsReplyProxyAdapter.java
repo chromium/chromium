@@ -31,7 +31,7 @@ class SupportLibJsReplyProxyAdapter implements JsReplyProxyBoundaryInterface {
     @Override
     public void postMessage(String message) {
         try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.AndroidX.JS_REPLY_POST_MESSAGE")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.JS_REPLY_POST_MESSAGE", message)) {
             recordApiCall(ApiCall.JS_REPLY_POST_MESSAGE);
             mReplyProxy.postMessage(new MessagePayload(message));
         }
@@ -50,7 +50,8 @@ class SupportLibJsReplyProxyAdapter implements JsReplyProxyBoundaryInterface {
     public void executeJavaScript(
             String javaScript, /* ExecuteJavaScriptCallbackBoundaryInterface */
             InvocationHandler callback) {
-        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.JS_REPLY_EXECUTE_JS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.JS_REPLY_EXECUTE_JS", javaScript)) {
             recordApiCall(ApiCall.JS_REPLY_EXECUTE_JS);
             mReplyProxy.executeJavaScript(javaScript, createExecutionCallback(callback));
         }
