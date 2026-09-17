@@ -20,7 +20,8 @@ private protocol OverflowMenuSizing: AnyObject, Sendable {
 
 // UIHostingController subclass for the overflow menu. Mostly used to set
 // preferredContentSize in compact height environments.
-class OverflowMenuHostingController<Content>: UIHostingController<Content>, OverflowMenuSizing
+class OverflowMenuHostingController<Content>: UIHostingController<Content>, OverflowMenuSizing,
+  @unchecked Sendable
 where Content: View {
   let uiConfiguration: OverflowMenuUIConfiguration
   private var contentSizeObservation: NSKeyValueObservation?
