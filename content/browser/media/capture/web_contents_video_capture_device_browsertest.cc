@@ -13,6 +13,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
 #include "content/browser/media/capture/content_capture_device_browsertest_base.h"
@@ -74,9 +76,27 @@ class WebContentsVideoCaptureDeviceBrowserTest
   // failure. This allows the callers to tighten the tolerance on the frames
   // they are willing to accept (since specifying `tolerate_color` causes the
   // test to fail in case we encounter something else).
+  //
+  // A capturer only produces a new frame when it observes damage. Damage
+  // originating in a cross-process child frame has to travel through the child
+  // frame sink, the surface aggregator and finally the capturer, and a delayed
+  // or lost signal anywhere along that path used to wedge this loop until the
+  // test harness killed the browser, with no diagnostics whatsoever. Two
+  // mitigations are applied here:
+  //  * Real capture clients do not rely on damage alone; they ask the device
+  //    for a refresh frame when they need up-to-date content. Do the same once
+  //    frames stop showing up for `kRefreshFrameInterval`.
+  //  * Give up after `TestTimeouts::action_max_timeout()` with an actionable
+  //    failure (including a PNG dump of the last frame seen) instead of
+  //    hanging until the suite-level timeout kills the process.
   void WaitForFrameWithColor(
       SkColor color,
       std::optional<SkColor> tolerate_color = std::nullopt) {
+    // Frames normally arrive within a few capture periods, so this only kicks
+    // in when something has gone wrong.
+    static constexpr base::TimeDelta kRefreshFrameInterval =
+        base::Milliseconds(250);
+
     const std::string color_string =
         base::StringPrintf("red=%d, green=%d, blue=%d", SkColorGetR(color),
                            SkColorGetG(color), SkColorGetB(color));
@@ -89,6 +109,14 @@ class WebContentsVideoCaptureDeviceBrowserTest
     VLOG(1) << "Waiting for frame content area filled with color: "
             << color_string << ", tolerated color: " << tolerated_color_string;
 
+    const base::TimeTicks start_time = base::TimeTicks::Now();
+    const base::TimeTicks deadline =
+        start_time + TestTimeouts::action_max_timeout();
+    base::TimeTicks next_refresh_frame_time =
+        start_time + kRefreshFrameInterval;
+    // Kept around so that a timeout can report what was actually on screen.
+    SkBitmap last_frame;
+
     while (!testing::Test::HasFailure()) {
       EXPECT_FALSE(capture_stack()->ErrorOccurred());
       capture_stack()->ExpectNoLogMessages();
@@ -100,6 +128,7 @@ class WebContentsVideoCaptureDeviceBrowserTest
         // bitmap for analysis.
         const SkBitmap rgb_frame = capture_stack()->NextCapturedFrame();
         EXPECT_FALSE(rgb_frame.empty());
+        last_frame = rgb_frame;
 
         // Three regions of the frame will be analyzed:
         // 1. The upper-left quadrant of the content region where the iframe
@@ -220,6 +249,33 @@ class WebContentsVideoCaptureDeviceBrowserTest
 
         // Otherwise, we weren't told to tolerate colors other than the expected
         // one, and the frame did not match. Keep waiting.
+      }
+
+      const base::TimeTicks now = base::TimeTicks::Now();
+      if (now >= deadline) {
+        ADD_FAILURE() << "Timed out after "
+                      << (now - start_time).InMilliseconds()
+                      << " ms waiting for a frame with color=" << color_string
+                      << ", tolerated_color=" << tolerated_color_string << ". "
+                      << (last_frame.empty()
+                              ? std::string("No frame was captured at all.")
+                              : base::StrCat(
+                                    {"Last captured frame, PNG dump:\n",
+                                     cc::GetPNGDataUrl(last_frame)}));
+        return;
+      }
+
+      // Nothing usable showed up in time, so the damage signal that should
+      // have produced it was either delayed or lost. Ask the device for a
+      // refresh frame, the same way a real capture client would.
+      if (now >= next_refresh_frame_time) {
+        next_refresh_frame_time = now + kRefreshFrameInterval;
+        VLOG(1) << "No matching frame after "
+                << (now - start_time).InMilliseconds()
+                << " ms; requesting a refresh frame.";
+        if (device()) {
+          device()->RequestRefreshFrame();
+        }
       }
 
       // Wait for at least the minimum capture period before checking for more

@@ -12,7 +12,3 @@
 
 # TODO(crbug.com/529326479): Temporarily disabled due to DrDc race condition.
 -All/NavigationEntryScreenshotBrowserTest*
-
-# TODO(crbug.com/562441464): Temporarily disabled on Android 14 devices.
--All/WebContentsVideoCaptureDeviceBrowserTestP.CapturesContentChanges/GPU_Fixed_CrossSite_I420
--All/WebContentsVideoCaptureDeviceBrowserTestP.CapturesContentChanges/GPU_Variable_CrossSite_I420
