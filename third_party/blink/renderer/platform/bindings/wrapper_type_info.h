@@ -62,8 +62,7 @@ static constexpr std::underlying_type_t<v8::CppHeapPointerTag>
     kLastGeneratedScriptWrappableTag = 2000;
 // LINT.ThenChange(gin/public/wrappable_pointer_tags.h)
 
-enum class CppHeapPointerTag : std::underlying_type_t<
-    v8::CppHeapPointerTag> {
+enum class CppHeapPointerTag : std::underlying_type_t<v8::CppHeapPointerTag> {
   kFirst = kLastGeneratedScriptWrappableTag,
   kDOMArrayBufferTag,
   // Start of DOMArrayBufferView subclasses
@@ -85,12 +84,14 @@ enum class CppHeapPointerTag : std::underlying_type_t<
   kDOMSharedArrayBufferTag,
   kFrozenArrayTag,
   kScriptFunctionHolderTag,
-  kScriptStateTag,
   // Start of ObservableArrayExoticObject subclasses
   kObservableArrayExoticObjectTag,
   kV8ObservableArrayCSSStyleSheetTag,
   kV8ObservableArraySpeechRecognitionPhraseTag,
   // End of ObservableArrayExoticObject subclasses
+  kLastScriptWrappableTag,
+  // Additional tags for classes that are not ScriptWrappable
+  kScriptStateTag,
   kLastTag,
 };
 
@@ -99,9 +100,10 @@ enum class CppHeapPointerTag : std::underlying_type_t<
 // accordingly. Ideally this upper bound would be generated automatically, but
 // that may be difficult.
 static constexpr v8::CppHeapPointerTag kLastScriptWrappableTag =
-    static_cast<v8::CppHeapPointerTag>(CppHeapPointerTag::kLastTag);
+    static_cast<v8::CppHeapPointerTag>(
+        CppHeapPointerTag::kLastScriptWrappableTag);
 
-static_assert(static_cast<uint16_t>(kLastScriptWrappableTag) <
+static_assert(static_cast<uint16_t>(CppHeapPointerTag::kLastTag) <
                   static_cast<uint16_t>(gin::kFirstPointerTag),
               "The tag range of ScriptWrappable and gin::Wrappable should be "
               "disjoint. If they overlap, then the gin:Wrappable range should "

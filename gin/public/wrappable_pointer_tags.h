@@ -40,7 +40,6 @@ enum WrappablePointerTag : uint16_t {
   kGamepadControllerBindings,        // content::GameControllerBindings
   kGCController,                     // content::GCController
   kGinJavaBridgeObject,              // content::GinJavaBridgeObject
-  kGinPerContextData,                // gin::PerContextData
   kGinPort,                          // extensions::GinPort
   kGpuBenchmarking,                  // content::GpuBenchmarking
   kIndigoContext,                    // indigo::IndigoContext
@@ -53,9 +52,6 @@ enum WrappablePointerTag : uint16_t {
   kLoadTimesBindings,                // LoadTimesBindings
   kLocalStorageArea,                 // extensions::LocalStorageArea
   kManagedStorageArea,               // extensions::ManagedStorageArea
-  kMojo,                             // ax::Mojo
-  kMojoHandle,                       // ax::MojoHandle
-  kMojoWatcher,                      // ax::MojoWatcher
   kMyInterceptor,                    // gin::MyInterceptor
   kNetErrorPageController,           // NetErrorPageController
   kNewTabPageBindings,               // NewTabPageBindings
@@ -77,12 +73,15 @@ enum WrappablePointerTag : uint16_t {
   kTestObject2,                         // gin::MyObject2
   kTestPluginScriptableObject,   // content::(anonymous)::ScriptableObject
   kTestRunnerBindings,           // content::TestRunnerBindings
-  kTextDecoder,                  // ax::TextDecoder
-  kTextEncoder,                  // ax::TextEncoder
   kTextInputControllerBindings,  // content::TextInputControllerBindings
   kWebAXObjectProxy,             // content::WebAXObjectProxy
   kWrappedExceptionHandler,      // extensions::WrappedExceptionHandler
   kWrappedHandlerFunction,       // extensions::WrappedHandlerFunction
+  // keep-sorted end
+  kLastWrappablePointerTag,
+  // Pointer tags for non-gin::Wrappable classes.
+  // keep-sorted start case=no
+  kGinPerContextData,  // gin::PerContextData
   // keep-sorted end
   kLastPointerTag,
 };
