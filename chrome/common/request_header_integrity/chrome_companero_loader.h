@@ -51,12 +51,20 @@ class ChromeCompaneroLoader {
   void SetMojoRemote(
       mojo::PendingRemote<mojom::ChromeCompanero> pending_remote);
 
+ protected:
+  // Production code reaches the single instance through GetInstance(). Tests
+  // that need an isolated instance to inject derive from this class instead of
+  // constructing one directly.
+  ChromeCompaneroLoader();
+  ~ChromeCompaneroLoader();
+
+  // Sets the cached header name and value without requiring IPC. Only
+  // reachable from derived test helpers.
+  void SetCacheForTesting(const std::string& name, const std::string& value);
+
  private:
   friend class base::NoDestructor<ChromeCompaneroLoader>;
   friend class ChromeCompaneroLoaderTest;
-
-  ChromeCompaneroLoader();
-  ~ChromeCompaneroLoader();
 
   void RefreshValue();
   void OnValueReceived(network::mojom::HttpRequestHeaderKeyValuePairPtr result);

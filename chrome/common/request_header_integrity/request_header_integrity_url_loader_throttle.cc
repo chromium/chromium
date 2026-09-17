@@ -21,6 +21,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/platform_runtime/platform_runtime_impl.h"
+#include "chrome/common/request_header_integrity/chrome_companero_loader.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/google/core/common/google_util.h"
 #include "content/public/common/content_switches.h"
@@ -104,7 +105,8 @@ std::string GetChannelName() {
   return channel_name;
 }
 
-void AddRequestIntegrityHeaders(net::HttpRequestHeaders* headers) {
+void AddRequestIntegrityHeaders(net::HttpRequestHeaders* headers,
+                                ChromeCompaneroLoader& companero_loader) {
   const std::string digest =
       base::Base64Encode(base::SHA1Hash(base::as_byte_span(
           std::string(kIntegritySeed) + google_apis::GetAPIKey() +
@@ -116,13 +118,32 @@ void AddRequestIntegrityHeaders(net::HttpRequestHeaders* headers) {
   headers->SetHeader(LASTCHANGE_YEAR_HEADER_NAME, LASTCHANGE_YEAR);
   headers->SetHeader(VALIDATE_HEADER_NAME, digest);
   headers->SetHeader(COPYRIGHT_HEADER_NAME, CHROME_COPYRIGHT);
+
+  auto companero_header = companero_loader.GetHeaderNameAndValue();
+  if (companero_header) {
+    headers->SetHeader(companero_header->name, companero_header->value);
+  }
 }
 
-void AddRequestIntegrityHeaderNamesToVector(std::vector<std::string>* vector) {
+void AddRequestIntegrityHeaderNamesToVector(
+    std::vector<std::string>* vector,
+    ChromeCompaneroLoader& companero_loader) {
   vector->push_back(CHANNEL_NAME_HEADER_NAME);
   vector->push_back(LASTCHANGE_YEAR_HEADER_NAME);
   vector->push_back(VALIDATE_HEADER_NAME);
   vector->push_back(COPYRIGHT_HEADER_NAME);
+#if defined(INTEGRITY_DYNAMIC_HEADER_1)
+  vector->push_back(INTEGRITY_DYNAMIC_HEADER_1);
+#endif
+#if defined(INTEGRITY_DYNAMIC_HEADER_2)
+  vector->push_back(INTEGRITY_DYNAMIC_HEADER_2);
+#endif
+  auto header = companero_loader.GetHeaderNameAndValue();
+  if (header) {
+    if (std::ranges::find(*vector, header->name) == vector->end()) {
+      vector->push_back(header->name);
+    }
+  }
 }
 
 void SetHeader(void* headers, const char* name, const char* value) {
@@ -192,7 +213,14 @@ void ProcessRequestHeaders(net::HttpRequestHeaders* headers, const GURL& url) {
 }  // namespace
 
 RequestHeaderIntegrityURLLoaderThrottle::
-    RequestHeaderIntegrityURLLoaderThrottle() = default;
+    RequestHeaderIntegrityURLLoaderThrottle()
+    : RequestHeaderIntegrityURLLoaderThrottle(
+          ChromeCompaneroLoader::GetInstance()) {}
+
+RequestHeaderIntegrityURLLoaderThrottle::
+    RequestHeaderIntegrityURLLoaderThrottle(
+        ChromeCompaneroLoader& companero_loader)
+    : companero_loader_(companero_loader) {}
 
 RequestHeaderIntegrityURLLoaderThrottle::
     ~RequestHeaderIntegrityURLLoaderThrottle() = default;
@@ -203,7 +231,8 @@ void RequestHeaderIntegrityURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
   if (google_util::IsGoogleAssociatedDomainUrl(request->url)) {
-    AddRequestIntegrityHeaders(&(request->cors_exempt_headers));
+    AddRequestIntegrityHeaders(&(request->cors_exempt_headers),
+                               *companero_loader_);
   }
   ProcessRequestHeaders(&(request->cors_exempt_headers), request->url);
 }
@@ -215,10 +244,11 @@ void RequestHeaderIntegrityURLLoaderThrottle::WillRedirectRequest(
     network::HttpRequestHeadersUpdateParams* headers_update_params) {
   if (google_util::IsGoogleAssociatedDomainUrl(redirect_info->new_url)) {
     AddRequestIntegrityHeaders(
-        &headers_update_params->modified_cors_exempt_headers);
+        &headers_update_params->modified_cors_exempt_headers,
+        *companero_loader_);
   } else {
     AddRequestIntegrityHeaderNamesToVector(
-        &headers_update_params->removed_headers);
+        &headers_update_params->removed_headers, *companero_loader_);
   }
   ProcessRequestHeaders(&headers_update_params->modified_cors_exempt_headers,
                         redirect_info->new_url);
@@ -232,7 +262,8 @@ bool RequestHeaderIntegrityURLLoaderThrottle::IsFeatureEnabled() {
 // static
 void RequestHeaderIntegrityURLLoaderThrottle::UpdateCorsExemptHeaders(
     network::mojom::NetworkContextParams* params) {
-  AddRequestIntegrityHeaderNamesToVector(&(params->cors_exempt_header_list));
+  AddRequestIntegrityHeaderNamesToVector(&(params->cors_exempt_header_list),
+                                         ChromeCompaneroLoader::GetInstance());
 }
 
 // static
@@ -243,9 +274,11 @@ void RequestHeaderIntegrityURLLoaderThrottle::
         net::HttpRequestHeaders& cors_exempt_headers) {
   CHECK(IsFeatureEnabled());
   if (google_util::IsGoogleAssociatedDomainUrl(url)) {
-    AddRequestIntegrityHeaders(&cors_exempt_headers);
+    AddRequestIntegrityHeaders(&cors_exempt_headers,
+                               ChromeCompaneroLoader::GetInstance());
   } else {
-    AddRequestIntegrityHeaderNamesToVector(&removed_headers);
+    AddRequestIntegrityHeaderNamesToVector(
+        &removed_headers, ChromeCompaneroLoader::GetInstance());
   }
   ProcessRequestHeaders(&cors_exempt_headers, url);
 }

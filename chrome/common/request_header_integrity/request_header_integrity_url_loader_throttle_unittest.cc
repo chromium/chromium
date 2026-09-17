@@ -7,9 +7,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/common/request_header_integrity/chrome_companero_loader.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/http_request_headers_update_params.h"
@@ -26,13 +28,31 @@
 
 namespace request_header_integrity {
 
-namespace {
+// Test seams for the protected constructors. Neither class is meant to be
+// instantiated outside of tests, so the injection points are only reachable
+// through these subclasses.
+class TestChromeCompaneroLoader : public ChromeCompaneroLoader {
+ public:
+  TestChromeCompaneroLoader() = default;
+  ~TestChromeCompaneroLoader() = default;
+
+  using ChromeCompaneroLoader::SetCacheForTesting;
+};
+
+class TestRequestHeaderIntegrityURLLoaderThrottle
+    : public RequestHeaderIntegrityURLLoaderThrottle {
+ public:
+  explicit TestRequestHeaderIntegrityURLLoaderThrottle(
+      ChromeCompaneroLoader& companero_loader)
+      : RequestHeaderIntegrityURLLoaderThrottle(companero_loader) {}
+  ~TestRequestHeaderIntegrityURLLoaderThrottle() override = default;
+};
 
 class RequestHeaderIntegrityURLLoaderThrottleTest : public testing::Test {
  public:
   RequestHeaderIntegrityURLLoaderThrottleTest()
-      : throttle_(std::make_unique<RequestHeaderIntegrityURLLoaderThrottle>()) {
-  }
+      : throttle_(std::make_unique<TestRequestHeaderIntegrityURLLoaderThrottle>(
+            loader_)) {}
   RequestHeaderIntegrityURLLoaderThrottleTest(
       const RequestHeaderIntegrityURLLoaderThrottleTest&) = delete;
   RequestHeaderIntegrityURLLoaderThrottleTest& operator=(
@@ -41,13 +61,15 @@ class RequestHeaderIntegrityURLLoaderThrottleTest : public testing::Test {
   ~RequestHeaderIntegrityURLLoaderThrottleTest() override = default;
 
  protected:
+  TestChromeCompaneroLoader& loader() { return loader_; }
   RequestHeaderIntegrityURLLoaderThrottle& throttle() { return *throttle_; }
 
  private:
-  std::unique_ptr<RequestHeaderIntegrityURLLoaderThrottle> throttle_;
+  TestChromeCompaneroLoader loader_;
+  std::unique_ptr<TestRequestHeaderIntegrityURLLoaderThrottle> throttle_;
 };
 
-}  // namespace
+namespace {
 
 TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, NonGoogleSite) {
   network::ResourceRequest request;
@@ -149,13 +171,22 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest,
 
   throttle().WillRedirectRequest(&redirect_info, response_head, &defer,
                                  &headers_update_params);
+
+  std::vector<std::string> expected_removed = {
+      CHANNEL_NAME_HEADER_NAME,
+      COPYRIGHT_HEADER_NAME,
+      LASTCHANGE_YEAR_HEADER_NAME,
+      VALIDATE_HEADER_NAME,
+  };
+#if defined(INTEGRITY_DYNAMIC_HEADER_1)
+  expected_removed.push_back(INTEGRITY_DYNAMIC_HEADER_1);
+#endif
+#if defined(INTEGRITY_DYNAMIC_HEADER_2)
+  expected_removed.push_back(INTEGRITY_DYNAMIC_HEADER_2);
+#endif
+
   EXPECT_THAT(headers_update_params.removed_headers,
-              testing::UnorderedElementsAreArray({
-                  CHANNEL_NAME_HEADER_NAME,
-                  COPYRIGHT_HEADER_NAME,
-                  LASTCHANGE_YEAR_HEADER_NAME,
-                  VALIDATE_HEADER_NAME,
-              }));
+              testing::UnorderedElementsAreArray(expected_removed));
   EXPECT_EQ(0u,
             headers_update_params.modified_headers.GetHeaderVector().size());
   EXPECT_EQ(0u,
@@ -198,4 +229,63 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS) && \
         // !BUILDFLAG(IS_ANDROID)
 
+constexpr char kTestHeaderName[] = "X-Integrity-Header";
+constexpr char kTestHeaderValue[] = "mocked_token_value_12345678";
+
+class RequestHeaderIntegrityURLLoaderThrottleWithCompaneroTest
+    : public RequestHeaderIntegrityURLLoaderThrottleTest {
+ protected:
+  void SetUp() override {
+    loader().SetCacheForTesting(kTestHeaderName, kTestHeaderValue);
+  }
+};
+
+TEST_F(RequestHeaderIntegrityURLLoaderThrottleWithCompaneroTest,
+       GoogleSiteWithChromeCompanero) {
+  network::ResourceRequest request;
+  request.url = GURL("https://www.google.com/");
+
+  ASSERT_TRUE(request.cors_exempt_headers.IsEmpty());
+  bool ignored = false;
+  throttle().WillStartRequest(&request, &ignored);
+
+  // Dynamic ChromeCompanero header must be present.
+  EXPECT_TRUE(request.cors_exempt_headers.HasHeader(kTestHeaderName));
+  EXPECT_EQ(kTestHeaderValue,
+            request.cors_exempt_headers.GetHeader(kTestHeaderName));
+}
+
+TEST_F(RequestHeaderIntegrityURLLoaderThrottleWithCompaneroTest,
+       RedirectToNonGoogleWithChromeCompanero) {
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = GURL("https://www.somesite.com/");
+  network::mojom::URLResponseHead response_head;
+  bool defer = false;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+
+  throttle().WillRedirectRequest(&redirect_info, response_head, &defer,
+                                 &headers_update_params);
+  EXPECT_THAT(headers_update_params.removed_headers,
+              testing::Contains(kTestHeaderName));
+}
+
+TEST_F(RequestHeaderIntegrityURLLoaderThrottleWithCompaneroTest,
+       RedirectToGoogleWithChromeCompanero) {
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = GURL("https://www.google.com/");
+  network::mojom::URLResponseHead response_head;
+  bool defer = false;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+
+  throttle().WillRedirectRequest(&redirect_info, response_head, &defer,
+                                 &headers_update_params);
+  EXPECT_EQ(0u, headers_update_params.removed_headers.size());
+  EXPECT_TRUE(headers_update_params.modified_cors_exempt_headers.HasHeader(
+      kTestHeaderName));
+  EXPECT_EQ(kTestHeaderValue,
+            headers_update_params.modified_cors_exempt_headers.GetHeader(
+                kTestHeaderName));
+}
+
+}  // namespace
 }  // namespace request_header_integrity

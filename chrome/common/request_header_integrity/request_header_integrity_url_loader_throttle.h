@@ -5,17 +5,22 @@
 #ifndef CHROME_COMMON_REQUEST_HEADER_INTEGRITY_REQUEST_HEADER_INTEGRITY_URL_LOADER_THROTTLE_H_
 #define CHROME_COMMON_REQUEST_HEADER_INTEGRITY_REQUEST_HEADER_INTEGRITY_URL_LOADER_THROTTLE_H_
 
+#include <string>
+#include <vector>
+
+#include "base/memory/raw_ref.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+
+class GURL;
 
 namespace net {
 class HttpRequestHeaders;
 }
 
-namespace network::mojom {
-class NetworkContextParams;
-}
-
 namespace request_header_integrity {
+
+class ChromeCompaneroLoader;
 
 class RequestHeaderIntegrityURLLoaderThrottle
     : public blink::URLLoaderThrottle {
@@ -51,6 +56,16 @@ class RequestHeaderIntegrityURLLoaderThrottle
       const GURL& url,
       std::vector<std::string>& removed_headers,
       net::HttpRequestHeaders& modified_cors_exempt_headers);
+
+ protected:
+  // Test seam. Production code uses the default constructor, which binds
+  // ChromeCompaneroLoader::GetInstance(); tests derive from this class to
+  // inject their own loader. `companero_loader` must outlive `this`.
+  explicit RequestHeaderIntegrityURLLoaderThrottle(
+      ChromeCompaneroLoader& companero_loader);
+
+ private:
+  const raw_ref<ChromeCompaneroLoader> companero_loader_;
 };
 
 }  // namespace request_header_integrity

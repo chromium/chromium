@@ -54,6 +54,7 @@ source_set("request_header_integrity") {
     "//components/google/core/common",
     "//content/public/common",
     "//google_apis",
+    "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//third_party/blink/public/common:headers",

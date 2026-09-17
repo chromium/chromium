@@ -95,4 +95,13 @@ ChromeCompaneroLoader::GetHeaderNameAndValue() {
   return std::nullopt;
 }
 
+void ChromeCompaneroLoader::SetCacheForTesting(const std::string& name,
+                                               const std::string& value) {
+  base::AutoLock lock(cache_lock_);
+  cached_header_name_ = name;
+  cached_value_ = value;
+  cached_value_time_ = name.empty() && value.empty() ? base::TimeTicks()
+                                                     : base::TimeTicks::Now();
+}
+
 }  // namespace request_header_integrity
