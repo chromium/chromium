@@ -96,7 +96,13 @@ class StringResourceBase {
     }
   }
 
-  virtual ~StringResourceBase() = default;
+  virtual ~StringResourceBase() {
+    if (!parkable_string_.IsNull()) {
+      // TODO(crbug/562847435): This is temporary hardening until an architectural fix for
+      // resource lifetimes is developed.
+      CHECK_EQ(parkable_string_.Impl()->lock_depth(), 0);
+    }
+  }
 
   String GetWTFString() {
     if (!parkable_string_.IsNull()) {
