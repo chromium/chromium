@@ -101,6 +101,14 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
 
   AssociatedGroup* associated_group();
 
+  // Returns the ID of the endpoint this client is bound to, or
+  // kInvalidInterfaceId if the handle is still pending association.
+  InterfaceId interface_id() const { return handle_.id(); }
+
+  base::WeakPtr<InterfaceEndpointClient> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   scoped_refptr<ThreadSafeProxy> CreateThreadSafeProxy(
       scoped_refptr<ThreadSafeProxy::Target> target,
       const base::Location& location);
