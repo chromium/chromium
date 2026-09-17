@@ -788,6 +788,8 @@ public abstract class ChromeFeatureList {
             "SendTabToSelfRecordSnackbarActivation";
     public static final String SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID =
             "SendTabToSelfSupportAutoOpenInTabGrid";
+    public static final String SEND_TAB_TO_SELF_SWITCH_TO_PARENT_ON_BACK =
+            "SendTabToSelfSwitchToParentOnBack";
     public static final String SENSITIVE_CONTENT = "SensitiveContent";
     public static final String SENSITIVE_CONTENT_WHILE_SWITCHING_TABS =
             "SensitiveContentWhileSwitchingTabs";
@@ -1840,6 +1842,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SEND_TAB_TO_SELF_RECORD_SNACKBAR_ACTIVATION, true);
     public static final MutableFlagWithSafeDefault sSendTabToSelfSupportAutoOpenInTabGrid =
             newMutableFlagWithSafeDefault(SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID, false);
+    public static final MutableFlagWithSafeDefault sSendTabToSelfSwitchToParentOnBack =
+            newMutableFlagWithSafeDefault(SEND_TAB_TO_SELF_SWITCH_TO_PARENT_ON_BACK, false);
     public static final MutableFlagWithSafeDefault sShowTabListAnimations =
             newMutableFlagWithSafeDefault(SHOW_TAB_LIST_ANIMATIONS, false);
     public static final MutableFlagWithSafeDefault sSidePanelTopHairlineRefactorAndroid =

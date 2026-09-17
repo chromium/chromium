@@ -5070,7 +5070,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 || type == TabLaunchType.FROM_RECENT_TABS
                 || type == TabLaunchType.FROM_RECENT_TABS_FOREGROUND
                 || (type == TabLaunchType.FROM_CHROME_UI && tab.getParentId() != Tab.INVALID_TAB_ID)
-                || (type == TabLaunchType.FROM_RESTORE && tab.getParentId() != Tab.INVALID_TAB_ID);
+                || (type == TabLaunchType.FROM_RESTORE && tab.getParentId() != Tab.INVALID_TAB_ID)
+                || (type == TabLaunchType.FROM_SYNC_BACKGROUND
+                        && tab.getParentId() != Tab.INVALID_TAB_ID
+                        && ChromeFeatureList.sSendTabToSelfSwitchToParentOnBack.isEnabled());
     }
 
     /**
