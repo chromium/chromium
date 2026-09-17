@@ -37,10 +37,22 @@ if (is_android) {
     ]
   }
 
+  android_library("test_support_java") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/components/contextual_search/InputStateBuilder.java" ]
+    deps = [
+      ":components_contextual_search_java",
+      "//build/android:build_java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
+      "//third_party/omnibox_proto:omnibox_proto_java",
+    ]
+  }
+
   robolectric_library("junit") {
     sources = [ "android/java/src/org/chromium/components/contextual_search/InputStateTest.java" ]
     deps = [
       ":components_contextual_search_java",
+      ":test_support_java",
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",

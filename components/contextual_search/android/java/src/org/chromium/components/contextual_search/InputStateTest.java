@@ -30,8 +30,8 @@ import java.util.Map;
 public class InputStateTest {
     @Test
     public void testEqualsAndHashCode() {
-        InputState.Builder builder =
-                new InputState.Builder()
+        InputStateBuilder builder =
+                new InputStateBuilder()
                         .withHintText("hint1")
                         .withAllowedInputTypes(
                                 InputType.INPUT_TYPE_LENS_IMAGE_VALUE,
@@ -76,7 +76,7 @@ public class InputStateTest {
     @Test
     public void testVisibilityAndEnablement() {
         InputState state =
-                new InputState.Builder()
+                new InputStateBuilder()
                         .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .withDisabledTools(ToolMode.TOOL_MODE_DEEP_SEARCH)
@@ -107,7 +107,7 @@ public class InputStateTest {
     @Test
     public void testIsToolEnabled() {
         InputState activeAllowedDisabled =
-                new InputState.Builder()
+                new InputStateBuilder()
                         .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN)
@@ -115,31 +115,31 @@ public class InputStateTest {
         assertTrue(activeAllowedDisabled.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN));
 
         InputState activeNotAllowedDisabled =
-                new InputState.Builder()
+                new InputStateBuilder()
                         .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .build();
         assertTrue(activeNotAllowedDisabled.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN));
 
         InputState allowedNotDisabled =
-                new InputState.Builder().withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN).build();
+                new InputStateBuilder().withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN).build();
         assertTrue(allowedNotDisabled.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN));
 
         InputState allowedDisabled =
-                new InputState.Builder()
+                new InputStateBuilder()
                         .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .build();
         assertFalse(allowedDisabled.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN));
 
-        InputState notAllowedNotDisabled = new InputState.Builder().build();
+        InputState notAllowedNotDisabled = new InputStateBuilder().build();
         assertFalse(notAllowedNotDisabled.isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN));
     }
 
     @Test
     public void testEitherImageGenToolVisibilityAndEnablement() {
         InputState state =
-                new InputState.Builder()
+                new InputStateBuilder()
                         .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
                         .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
@@ -149,18 +149,18 @@ public class InputStateTest {
         assertTrue(state.isImageGenToolEnabled());
 
         InputState stateOnlyUploadAllowed =
-                new InputState.Builder()
+                new InputStateBuilder()
                         .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
                         .build();
         assertTrue(stateOnlyUploadAllowed.isImageGenToolVisible());
         assertTrue(stateOnlyUploadAllowed.isImageGenToolEnabled());
 
-        InputState stateNeitherVisible = new InputState.Builder().build();
+        InputState stateNeitherVisible = new InputStateBuilder().build();
         assertFalse(stateNeitherVisible.isImageGenToolVisible());
         assertFalse(stateNeitherVisible.isImageGenToolEnabled());
 
         InputState stateBothDisabled =
-                new InputState.Builder()
+                new InputStateBuilder()
                         .withAllowedTools(
                                 ToolMode.TOOL_MODE_IMAGE_GEN, ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
                         .withDisabledTools(
@@ -194,7 +194,7 @@ public class InputStateTest {
                 SectionConfig.newBuilder().setHeader("Models Header").build();
 
         InputState state =
-                new InputState.Builder()
+                new InputStateBuilder()
                         .withInputTypeConfigs(new byte[][] {inputTypeConfig.toByteArray()})
                         .withToolConfigs(new byte[][] {toolConfig.toByteArray()})
                         .withToolsSectionConfig(toolsSectionConfig.toByteArray())
@@ -226,7 +226,7 @@ public class InputStateTest {
 
     @Test
     public void testEmptyAndNullConfigs() {
-        InputState state = new InputState.Builder().build();
+        InputState state = new InputStateBuilder().build();
 
         assertNotNull(state.getInputTypeConfigs());
         assertTrue(state.getInputTypeConfigs().isEmpty());
@@ -245,7 +245,7 @@ public class InputStateTest {
 
         // Test with null elements inside arrays
         InputState stateWithNullElements =
-                new InputState.Builder()
+                new InputStateBuilder()
                         .withInputTypeConfigs(new byte[][] {null})
                         .withToolConfigs(new byte[][] {null})
                         .withModelConfigs(new byte[][] {null})
@@ -259,7 +259,7 @@ public class InputStateTest {
     public void testInvalidProtoBytesGracefulFallback() {
         byte[] invalidBytes = new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
         InputState state =
-                new InputState.Builder()
+                new InputStateBuilder()
                         .withInputTypeConfigs(new byte[][] {invalidBytes})
                         .withToolConfigs(new byte[][] {invalidBytes})
                         .withToolsSectionConfig(invalidBytes)

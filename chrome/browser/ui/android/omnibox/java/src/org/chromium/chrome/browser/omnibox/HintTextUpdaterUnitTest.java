@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.contextual_search.InputState;
+import org.chromium.components.contextual_search.InputStateBuilder;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -264,7 +265,7 @@ public class HintTextUpdaterUnitTest {
         verify(mUpdateHintTextCallback).onResult(eq(searchEngineHint));
         clearInvocations(mUpdateHintTextCallback);
 
-        InputState inputState = new InputState.Builder().withToolConfigs(toolConfigs).build();
+        InputState inputState = new InputStateBuilder().withToolConfigs(toolConfigs).build();
         mInputStateSupplier.set(inputState);
 
         mAutocompleteInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
@@ -291,7 +292,7 @@ public class HintTextUpdaterUnitTest {
                 .thenReturn(mComposeboxQueryControllerBridge);
 
         clearInvocations(mUpdateHintTextCallback);
-        InputState emptyHintState = new InputState.Builder().withHintText("").build();
+        InputState emptyHintState = new InputStateBuilder().withHintText("").build();
         mInputStateSupplier.set(emptyHintState);
         mUpdater.onTitleChanged();
         verify(mUpdateHintTextCallback).onResult(eq(searchEngineHint));
