@@ -7887,10 +7887,6 @@ const FeatureEntry kFeatureEntries[] = {
          kReportNotificationContentDetectionDataVariations,
          "ReportNotificationContentDetectionData")},
 
-    {"report-unsafe-site", flag_descriptions::kReportUnsafeSiteName,
-     flag_descriptions::kReportUnsafeSiteDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kReportUnsafeSite)},
-
     {"show-warnings-for-suspicious-notifications",
      flag_descriptions::kShowWarningsForSuspiciousNotificationsName,
      flag_descriptions::kShowWarningsForSuspiciousNotificationsDescription,

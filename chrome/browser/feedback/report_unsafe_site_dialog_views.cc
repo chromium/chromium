@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/feedback/report_unsafe_site/screenshot_taker.h"
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
@@ -75,8 +74,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ReportUnsafeSiteDialogViews,
 // static
 bool ReportUnsafeSiteDialog::IsEnabled(const Profile& profile) {
   const PrefService* prefs = profile.GetPrefs();
-  return base::FeatureList::IsEnabled(features::kReportUnsafeSite) &&
-         !profile.IsOffTheRecord() && chrome::CanShowFeedback(&profile) &&
+  return !profile.IsOffTheRecord() && chrome::CanShowFeedback(&profile) &&
          safe_browsing::IsSafeBrowsingEnabled(*prefs);
 }
 

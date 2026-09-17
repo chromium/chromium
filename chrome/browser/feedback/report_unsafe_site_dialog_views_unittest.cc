@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -33,47 +31,18 @@ class ReportUnsafeSiteDialogViewsTest : public testing::Test {
   TestingProfile profile_;
 };
 
-class ReportUnsafeSiteDialogViewsTest_FeatureEnabled
-    : public ReportUnsafeSiteDialogViewsTest {
- public:
-  ReportUnsafeSiteDialogViewsTest_FeatureEnabled() = default;
-  ~ReportUnsafeSiteDialogViewsTest_FeatureEnabled() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_{features::kReportUnsafeSite};
-};
-
-class ReportUnsafeSiteDialogViewsTest_FeatureDisabled
-    : public ReportUnsafeSiteDialogViewsTest {
- public:
-  ReportUnsafeSiteDialogViewsTest_FeatureDisabled() {
-    feature_list_.InitAndDisableFeature(features::kReportUnsafeSite);
-  }
-  ~ReportUnsafeSiteDialogViewsTest_FeatureDisabled() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ReportUnsafeSiteDialogViewsTest_FeatureDisabled,
-       IsEnabled_FeatureDisabled) {
-  EXPECT_FALSE(ReportUnsafeSiteDialog::IsEnabled(profile_));
-}
-
-TEST_F(ReportUnsafeSiteDialogViewsTest_FeatureEnabled, IsEnabled_Enabled) {
+TEST_F(ReportUnsafeSiteDialogViewsTest, IsEnabled) {
   EXPECT_TRUE(ReportUnsafeSiteDialog::IsEnabled(profile_));
 }
 
-TEST_F(ReportUnsafeSiteDialogViewsTest_FeatureEnabled,
-       IsEnabled_FeedbackDisallowed) {
+TEST_F(ReportUnsafeSiteDialogViewsTest, IsEnabled_FeedbackDisallowed) {
   EXPECT_TRUE(ReportUnsafeSiteDialog::IsEnabled(profile_));
 
   profile_.GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed, false);
   EXPECT_FALSE(ReportUnsafeSiteDialog::IsEnabled(profile_));
 }
 
-TEST_F(ReportUnsafeSiteDialogViewsTest_FeatureEnabled,
-       IsEnabled_SafeBrowsingDisabled) {
+TEST_F(ReportUnsafeSiteDialogViewsTest, IsEnabled_SafeBrowsingDisabled) {
   EXPECT_TRUE(ReportUnsafeSiteDialog::IsEnabled(profile_));
 
   safe_browsing::SetSafeBrowsingState(
@@ -81,7 +50,7 @@ TEST_F(ReportUnsafeSiteDialogViewsTest_FeatureEnabled,
   EXPECT_FALSE(ReportUnsafeSiteDialog::IsEnabled(profile_));
 }
 
-TEST_F(ReportUnsafeSiteDialogViewsTest_FeatureEnabled, IsEnabled_Incognito) {
+TEST_F(ReportUnsafeSiteDialogViewsTest, IsEnabled_Incognito) {
   EXPECT_TRUE(ReportUnsafeSiteDialog::IsEnabled(profile_));
 
   Profile* incognito_profile = profile_.GetOffTheRecordProfile(

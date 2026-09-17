@@ -10,9 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -95,10 +93,6 @@ class ReportUnsafeSiteDialogBrowserTest : public PlatformBrowserTest {
         css_selector.c_str());
     EXPECT_TRUE(content::EvalJs(web_contents, script).ExtractBool());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kReportUnsafeSite};
 };
 
 // Test that chrome://feedback/report-unsafe-site cannot be navigated to when it
