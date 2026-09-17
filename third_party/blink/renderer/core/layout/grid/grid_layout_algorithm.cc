@@ -509,7 +509,9 @@ const GridLayoutSubtree* GridLayoutAlgorithm::ComputeGridGeometry(
   }
 
   // Calculate final alignment baselines of the entire grid sizing tree.
-  CompleteFinalBaselineAlignment(&grid_sizing_tree);
+  if (grid_sizing_tree.HasBaselines()) {
+    CompleteFinalBaselineAlignment(&grid_sizing_tree);
+  }
 
   *grid_items = &grid_sizing_tree.GetGridItems();
 
@@ -1265,9 +1267,11 @@ void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
 
   ValidateMinMaxSizesCache(Node(), sizing_subtree, track_direction);
 
-  ComputeBaselineAlignment(sizing_tree->FinalizeTree(), sizing_subtree,
-                           /*opt_subgrid_data=*/kNoSubgriddedItemData,
-                           track_direction, sizing_constraint);
+  if (sizing_tree->HasBaselines()) {
+    ComputeBaselineAlignment(sizing_tree->FinalizeTree(), sizing_subtree,
+                             /*opt_subgrid_data=*/kNoSubgriddedItemData,
+                             track_direction, sizing_constraint);
+  }
 
   CompleteTrackSizingAlgorithm(sizing_subtree,
                                /*opt_subgrid_data=*/kNoSubgriddedItemData,

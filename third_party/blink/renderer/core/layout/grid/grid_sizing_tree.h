@@ -163,6 +163,9 @@ class CORE_EXPORT GridSizingTree {
     return At(index).subtree_size;
   }
 
+  // Includes baseline alignment in descendant subgrids, not just the root.
+  bool HasBaselines() const { return tree_has_baselines_; }
+
   bool HasSubgridWithIndefiniteStandaloneAxis() const {
     return has_subgrid_with_indefinite_standalone_axis_;
   }
