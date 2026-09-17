@@ -87,6 +87,7 @@ SidePanelHeaderController::SidePanelHeaderController(
   CHECK(side_panel_entry_);
   actions::ActionItem* const action_item =
       SidePanelHelper::GetActionItem(browser, side_panel_entry->key());
+  action_item_ = action_item->GetAsWeakPtr();
   action_item_controller_subscription_ = action_item->AddActionChangedCallback(
       base::BindRepeating(&SidePanelHeaderController::OnActionItemChanged,
                           base::Unretained(this)));
@@ -245,19 +246,24 @@ SidePanelHeaderController::CreateCloseButton() {
 }
 
 void SidePanelHeaderController::OnPinStateChanged() {
-  if (side_panel_entry_) {
+  // `action_item_` may already be gone even though `side_panel_entry_` is
+  // still valid: uninstalling the extension that owns the open side panel
+  // deregisters the entry (destroying the action item) and then synchronously
+  // notifies pinned-action observers, all before this controller is torn down.
+  if (side_panel_entry_ && action_item_) {
     UpdateSidePanelHeader();
   }
 }
 
 void SidePanelHeaderController::OnActionItemChanged() {
-  if (side_panel_entry_) {
+  if (side_panel_entry_ && action_item_) {
     UpdateSidePanelHeader();
   }
 }
 
 void SidePanelHeaderController::UpdateSidePanelHeader() {
   CHECK(side_panel_entry_);
+  CHECK(action_item_);
   panel_title_->SetText(GetTitleText());
   const bool show_icon =
       side_panel_entry_->key().id() == SidePanelEntryId::kExtension;
@@ -274,8 +280,7 @@ void SidePanelHeaderController::UpdateSidePanelHeader() {
 
 void SidePanelHeaderController::UpdatePinButton() {
   CHECK(side_panel_entry_);
-  actions::ActionItem* const action_item =
-      SidePanelHelper::GetActionItem(&*browser_, side_panel_entry_->key());
+  CHECK(action_item_);
   Profile* const profile = browser_->GetProfile();
   const bool current_pinned_state =
       side_panel_toolbar_pinning_controller_->GetPinnedStateFor(
@@ -284,7 +289,7 @@ void SidePanelHeaderController::UpdatePinButton() {
   pin_button_->SetVisible(
       !profile->IsPrimaryOTRProfileWithRegularParent() &&
       !profile->IsGuestSession() &&
-      action_item->GetProperty(actions::kActionItemPinnableKey) ==
+      action_item_->GetProperty(actions::kActionItemPinnableKey) ==
           static_cast<int>(actions::ActionPinnableState::kPinnable));
 
   if (!current_pinned_state) {
@@ -295,9 +300,8 @@ void SidePanelHeaderController::UpdatePinButton() {
 
 ui::ImageModel SidePanelHeaderController::GetIconImage() {
   CHECK(side_panel_entry_);
-  ui::ImageModel icon =
-      SidePanelHelper::GetActionItem(&*browser_, side_panel_entry_->key())
-          ->GetImage();
+  CHECK(action_item_);
+  ui::ImageModel icon = action_item_->GetImage();
   if (icon.IsVectorIcon()) {
     icon = ui::ImageModel::FromVectorIcon(*icon.GetVectorIcon().vector_icon(),
                                           kColorSidePanelEntryIcon,
@@ -310,8 +314,11 @@ std::u16string_view SidePanelHeaderController::GetTitleText() {
   CHECK(side_panel_entry_);
   return SidePanelUtil::GetTitleText(side_panel_entry_.get(), &*browser_);
 }
+
 void SidePanelHeaderController::UpdatePinState() {
-  if (!side_panel_entry_) {
+  // SidePanelToolbarPinningController::UpdatePinState() dereferences the
+  // entry's action item, so bail out if it is already gone.
+  if (!side_panel_entry_ || !action_item_) {
     return;
   }
 

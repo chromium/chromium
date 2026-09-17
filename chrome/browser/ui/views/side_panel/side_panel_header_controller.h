@@ -21,6 +21,10 @@
 class BrowserWindowInterface;
 class SidePanelEntry;
 
+namespace actions {
+class ActionItem;
+}  // namespace actions
+
 namespace ui {
 class ImageModel;
 class MenuModel;
@@ -76,6 +80,15 @@ class SidePanelHeaderController
   raw_ptr<SidePanelToolbarPinningController>
       side_panel_toolbar_pinning_controller_ = nullptr;
   base::WeakPtr<SidePanelEntry> side_panel_entry_;
+
+  // The action item backing `side_panel_entry_`. Held weakly because it has a
+  // shorter lifetime than the entry: extension side panel action items are
+  // reference counted across windows and destroyed as soon as the last
+  // SidePanelEntry referencing them is *deregistered*. Deregistration is not
+  // destruction, so when the extension owning the open side panel is
+  // uninstalled the action item is gone while `side_panel_entry_` is still
+  // valid and this controller is still alive. Always null-check before use.
+  base::WeakPtr<actions::ActionItem> action_item_;
 
   raw_ptr<views::ImageView> panel_icon_ = nullptr;
   raw_ptr<views::Label> panel_title_ = nullptr;
