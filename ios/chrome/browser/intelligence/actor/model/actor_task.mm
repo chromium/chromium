@@ -99,16 +99,19 @@ ActorTask::ActorTask(ActorTaskId task_id,
                      bool allow_incognito_web_states,
                      AggregatedJournal* journal,
                      ActorToolFactory* tool_factory,
-                     BrowserList* browser_list)
+                     BrowserList* browser_list,
+                     origin_gating::OriginGatingChecker* gating_checker)
     : task_id_(task_id),
       browser_list_(browser_list),
       title_(title),
       allow_incognito_web_states_(allow_incognito_web_states),
       journal_(journal),
-      tool_factory_(tool_factory) {
+      tool_factory_(tool_factory),
+      gating_checker_(gating_checker) {
   CHECK(journal);
   CHECK(tool_factory);
   CHECK(browser_list);
+  CHECK(gating_checker);
   // TODO(crbug.com/504704411): Allow incognito WebStates.
   CHECK(!allow_incognito_web_states_);
   engine_ = std::make_unique<ActorEngine>(/*execution_updates_delegate=*/this,
@@ -617,5 +620,9 @@ void ActorTask::OnHeartbeatPingResponse(web::WebStateID web_state_id,
   }
 }
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+
+origin_gating::OriginGatingChecker* ActorTask::GetOriginGatingChecker() const {
+  return gating_checker_;
+}
 
 }  // namespace actor

@@ -12,6 +12,10 @@ namespace web {
 class WebState;
 }  // namespace web
 
+namespace origin_gating {
+class OriginGatingChecker;
+}  // namespace origin_gating
+
 namespace actor {
 class ActorToolFactory;
 class ActorTaskFormFillingHandler;
@@ -57,6 +61,11 @@ class ToolDelegate {
       int32_t window_id,
       const web::NavigationManager::WebLoadParams& load_params,
       bool in_background) = 0;
+
+  // Returns the origin gating checker used for evaluating navigation and
+  // actuation policies, or nullptr if unavailable.
+  virtual origin_gating::OriginGatingChecker* GetOriginGatingChecker()
+      const = 0;
 };
 
 }  // namespace actor

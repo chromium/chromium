@@ -119,6 +119,7 @@ class ActorEngine : public ToolDelegate {
       int32_t window_id,
       const web::NavigationManager::WebLoadParams& load_params,
       bool in_background) override;
+  origin_gating::OriginGatingChecker* GetOriginGatingChecker() const override;
 
  private:
   friend class ActorEngineTest;

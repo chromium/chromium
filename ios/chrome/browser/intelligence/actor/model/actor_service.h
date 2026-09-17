@@ -132,6 +132,10 @@ class ActorService : public KeyedService {
   // Journal used for logging task tools, state transitions, and results.
   std::unique_ptr<AggregatedJournal> journal_;
 
+  // Delegate and checker for origin gating.
+  ActorOriginGatingCheckerDelegateIOS origin_gating_delegate_;
+  std::unique_ptr<origin_gating::OriginGatingChecker> origin_gating_checker_;
+
   // Map of active tasks, keyed by their task ID.
   std::map<ActorTaskId, std::unique_ptr<ActorTask>> active_tasks_;
 
@@ -177,10 +181,6 @@ class ActorService : public KeyedService {
 
   // Helper to build the configuration and custom predicates for the checker.
   static origin_gating::OriginGatingConfiguration CreateOriginGatingConfig();
-
-  // Delegate and checker for origin gating.
-  ActorOriginGatingCheckerDelegateIOS origin_gating_delegate_;
-  std::unique_ptr<origin_gating::OriginGatingChecker> origin_gating_checker_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<ActorService> weak_ptr_factory_{this};

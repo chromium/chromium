@@ -191,6 +191,9 @@ class ToolControllerTest : public PlatformTest, public ToolDelegate {
   }
   void InterruptFromTool() override {}
   void UninterruptFromTool() override {}
+  origin_gating::OriginGatingChecker* GetOriginGatingChecker() const override {
+    return nullptr;
+  }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

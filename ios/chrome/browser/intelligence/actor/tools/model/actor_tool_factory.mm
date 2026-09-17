@@ -93,8 +93,10 @@ ActorToolFactory::CreateTool(const ActorToolRequest& request,
           tab_resolution && tab_resolution->has_value()
               ? tab_resolution->value().url_loader
               : nullptr;
+      origin_gating::OriginGatingChecker* gating_checker =
+          tool_delegate ? tool_delegate->GetOriginGatingChecker() : nullptr;
       return NavigateTool::Create(target_web_state, request.action().navigate(),
-                                  url_loader);
+                                  url_loader, gating_checker);
     }
     case optimization_guide::proto::Action::kClick:
       return ClickTool::Create(target_web_state, request.action().click());

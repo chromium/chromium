@@ -4,11 +4,15 @@
 
 #import "ios/chrome/browser/intelligence/actor/tools/model/navigate_tool.h"
 
+#import "base/check.h"
+#import "base/feature_list.h"
 #import "base/functional/callback.h"
 #import "base/types/expected.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "components/origin_gating/core/origin_gating_checker.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -21,13 +25,14 @@ namespace actor {
 std::unique_ptr<NavigateTool> NavigateTool::Create(
     base::WeakPtr<web::WebState> web_state,
     const optimization_guide::proto::NavigateAction& action,
-    base::WeakPtr<UrlLoadingBrowserAgent> url_loader) {
+    base::WeakPtr<UrlLoadingBrowserAgent> url_loader,
+    origin_gating::OriginGatingChecker* gating_checker) {
   std::optional<std::string> url = std::nullopt;
   if (action.has_url()) {
     url = action.url();
   }
   return std::unique_ptr<NavigateTool>(
-      new NavigateTool(web_state, url, url_loader));
+      new NavigateTool(web_state, url, url_loader, gating_checker));
 }
 
 void NavigateTool::Validate(ToolExecutionCallback callback) {
@@ -41,8 +46,12 @@ void NavigateTool::Validate(ToolExecutionCallback callback) {
 
 NavigateTool::NavigateTool(base::WeakPtr<web::WebState> web_state,
                            std::optional<std::string> url,
-                           base::WeakPtr<UrlLoadingBrowserAgent> url_loader)
-    : url_(url), web_state_(web_state), url_loader_(url_loader) {}
+                           base::WeakPtr<UrlLoadingBrowserAgent> url_loader,
+                           origin_gating::OriginGatingChecker* gating_checker)
+    : url_(url),
+      web_state_(web_state),
+      url_loader_(url_loader),
+      gating_checker_(gating_checker) {}
 
 NavigateTool::~NavigateTool() = default;
 
@@ -55,8 +64,8 @@ void NavigateTool::Execute(ToolExecutionCallback callback) {
     return;
   }
 
-  GURL url(url_.value_or(""));
-  if (!url.is_valid()) {
+  const GURL destination_url(url_.value_or(""));
+  if (!destination_url.is_valid()) {
     std::move(callback).Run(
         ToolExecutionResult(InternalToolErrorCode::kNavigationInvalidURL));
     return;
@@ -67,13 +76,52 @@ void NavigateTool::Execute(ToolExecutionCallback callback) {
   if (!web_state_->IsRealized()) {
     std::move(callback).Run(
         ToolExecutionResult(InternalToolErrorCode::kNavigationTabNotRealized));
-
     return;
   }
 
-  // These params are selected to align with
-  // chrome/browser/actor/tools/navigate_tool.cc.
-  UrlLoadParams params = UrlLoadParams::InCurrentTab(url);
+  if (!base::FeatureList::IsEnabled(kActorOriginGatingForNavigation)) {
+    // If the feature is disabled, bypass origin gating.
+    LoadUrl(destination_url, std::move(callback));
+    return;
+  }
+
+  // Feature is enabled: checker is required.
+  CHECK(gating_checker_);
+
+  const GURL source_url = web_state_->GetLastCommittedURL();
+  auto context = std::make_unique<origin_gating::GatingDecisionContext>();
+  gating_checker_->ComputeGatingDecision(
+      std::move(context), origin_gating::GateableEvent::kNavigationRequest,
+      source_url, destination_url,
+      base::BindOnce(&NavigateTool::OnGatingDecisionComputed,
+                     weak_ptr_factory_.GetWeakPtr(), destination_url,
+                     std::move(callback)));
+  return;
+}
+
+void NavigateTool::OnGatingDecisionComputed(
+    const GURL& destination_url,
+    ToolExecutionCallback callback,
+    std::unique_ptr<origin_gating::GatingDecisionContext> context,
+    origin_gating::GatingDecision decision) {
+  if (!decision.is_allowed) {
+    std::move(callback).Run(ToolExecutionResult(
+        mojom::ActionResultCode::kTriggeredNavigationBlocked));
+    return;
+  }
+  LoadUrl(destination_url, std::move(callback));
+}
+
+void NavigateTool::LoadUrl(const GURL& destination_url,
+                           ToolExecutionCallback callback) {
+  // Guard dependencies in case they were invalidated during the async check.
+  if (!web_state_ || !url_loader_) {
+    std::move(callback).Run(ToolExecutionResult(
+        InternalToolErrorCode::kExecutionMissingDependencies));
+    return;
+  }
+
+  UrlLoadParams params = UrlLoadParams::InCurrentTab(destination_url);
   params.from_chrome = true;
   params.user_initiated = false;
   params.web_params.transition_type =

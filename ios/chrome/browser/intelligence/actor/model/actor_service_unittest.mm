@@ -18,6 +18,7 @@
 #import "base/test/values_test_util.h"
 #import "base/types/expected.h"
 #import "components/actor/core/safety_list_manager.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
 #import "components/origin_gating/core/types.h"
@@ -27,6 +28,7 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/navigate_tool.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
@@ -38,7 +40,10 @@
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -125,13 +130,15 @@ class MockActorTask : public ActorTask {
                 AggregatedJournal* journal,
                 ActorToolFactory* tool_factory,
                 BrowserList* browser_list,
+                origin_gating::OriginGatingChecker* gating_checker,
                 bool* stop_called)
       : ActorTask(task_id,
                   title,
                   allow_incognito_web_states,
                   journal,
                   tool_factory,
-                  browser_list),
+                  browser_list,
+                  gating_checker),
         stop_called_(stop_called) {}
 
   void Stop(ActorTaskStoppedReason stop_reason) override {
@@ -615,13 +622,13 @@ TEST_F(ActorServiceTest, StopTask) {
 
   // Swap the task with our MockActorTask.
   bool stop_called = false;
-  SwapTask(
-      service, task_id,
-      std::make_unique<MockActorTask>(
-          task_id, "Test Task",
-          /*allow_incognito_web_states=*/false, GetJournal(service),
-          GetToolFactory(service),
-          BrowserListFactory::GetForProfile(profile_.get()), &stop_called));
+  SwapTask(service, task_id,
+           std::make_unique<MockActorTask>(
+               task_id, "Test Task",
+               /*allow_incognito_web_states=*/false, GetJournal(service),
+               GetToolFactory(service),
+               BrowserListFactory::GetForProfile(profile_.get()),
+               service->GetOriginGatingChecker(), &stop_called));
 
   // Stop the task.
   service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
@@ -977,5 +984,110 @@ TEST_F(ActorServiceOriginGatingTest, HandlesEmptySourceUrl) {
   const origin_gating::GatingDecision& decision = future.Get<1>();
   EXPECT_FALSE(decision.is_allowed);
   EXPECT_EQ(decision.attribution, ActorCustomPredicate::kSafetyList);
+}
+
+// Test that a NavigateAction executed through ActorService is blocked when
+// disallowed by the OriginGatingChecker safety list.
+TEST_F(ActorServiceOriginGatingTest,
+       PerformActions_NavigationBlockedByOriginGating) {
+  // Enable the Actor Origin Gating feature flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorOriginGatingForNavigation);
+
+  // Configure the SafetyListManager with a blocked navigation rule.
+  const std::string mock_rules_json = R"json({
+    "navigation_blocked": [
+      {"from": "https://safe.com", "to": "https://malicious.com"}
+    ]
+  })json";
+  actor::ParseSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                    mock_rules_json);
+
+  // Create an ActorTask.
+  ActorTaskId task_id =
+      service_->CreateTask("Blocked Navigation Task",
+                           /*allow_incognito_web_states=*/false);
+
+  // Set up a browser and required BrowserAgents.
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+  UrlLoadingNotifierBrowserAgent::CreateForBrowser(test_browser.get());
+  UrlLoadingBrowserAgent::CreateForBrowser(test_browser.get());
+
+  // Set up the WebState with a FakeNavigationManager.
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetBrowserState(profile_.get());
+  fake_web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  fake_web_state->SetCurrentURL(GURL("https://safe.com"));
+  int tab_id = fake_web_state->GetUniqueIdentifier().identifier();
+  test_browser->GetWebStateList()->InsertWebState(
+      std::move(fake_web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  // Build the NavigateAction targeting the blocked destination URL.
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url("https://malicious.com");
+  action.mutable_navigate()->set_tab_id(tab_id);
+
+  // Execute the action via ActorService.
+  PerformActionsResult result = PerformActions(service_, task_id, {action});
+
+  // Verify the action was blocked by the OriginGatingChecker.
+  ASSERT_EQ(1u, result.action_results.size());
+  EXPECT_FALSE(result.action_results[0].tool_result.IsOk());
+  EXPECT_EQ(actor::mojom::ActionResultCode::kTriggeredNavigationBlocked,
+            result.action_results[0].tool_result.code());
+}
+
+// Test that a NavigateAction executed through ActorService succeeds when
+// allowed by the OriginGatingChecker
+TEST_F(ActorServiceOriginGatingTest,
+       PerformActions_NavigationAllowedByOriginGating) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorOriginGatingForNavigation);
+
+  const std::string mock_rules_json = R"json({
+    "navigation_allowed": [
+      {"from": "https://safe.com", "to": "https://trusted.com"}
+    ]
+  })json";
+  actor::ParseSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                    mock_rules_json);
+
+  ActorTaskId task_id =
+      service_->CreateTask("Allowed Navigation Task",
+                           /*allow_incognito_web_states=*/false);
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+  UrlLoadingNotifierBrowserAgent::CreateForBrowser(test_browser.get());
+  UrlLoadingBrowserAgent::CreateForBrowser(test_browser.get());
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetBrowserState(profile_.get());
+  auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  web::FakeNavigationManager* fake_navigation_manager_ptr =
+      fake_navigation_manager.get();
+  fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
+  fake_web_state->SetCurrentURL(GURL("https://safe.com"));
+  int tab_id = fake_web_state->GetUniqueIdentifier().identifier();
+  test_browser->GetWebStateList()->InsertWebState(
+      std::move(fake_web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url("https://trusted.com");
+  action.mutable_navigate()->set_tab_id(tab_id);
+
+  PerformActionsResult result = PerformActions(service_, task_id, {action});
+
+  ASSERT_EQ(1u, result.action_results.size());
+  EXPECT_TRUE(result.action_results[0].tool_result.IsOk());
+  EXPECT_TRUE(fake_navigation_manager_ptr->LoadURLWithParamsWasCalled());
+  EXPECT_EQ(GURL("https://trusted.com"),
+            fake_navigation_manager_ptr->GetLastLoadURLWithParams()->url);
 }
 }  // namespace actor

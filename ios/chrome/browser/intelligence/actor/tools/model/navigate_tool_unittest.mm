@@ -5,11 +5,17 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/navigate_tool.h"
 
 #import "base/memory/weak_ptr.h"
+#import "base/test/gtest_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "components/origin_gating/core/origin_gating_checker.h"
+#import "components/origin_gating/core/origin_gating_configuration.h"
+#import "components/origin_gating/core/types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -42,6 +48,48 @@ class TestUrlLoadingObserver : public UrlLoadingObserver {
   base::WeakPtr<web::WebState> last_web_state_;
 };
 
+class TestOriginGatingCheckerDelegate
+    : public origin_gating::OriginGatingChecker::Delegate {
+ public:
+  explicit TestOriginGatingCheckerDelegate(bool is_allowed)
+      : is_allowed_(is_allowed) {}
+
+  void DoesOriginRequireUserConfirmation(
+      origin_gating::GatingDecisionContext* context,
+      origin_gating::GateableEvent event,
+      const GURL& source,
+      const GURL& destination,
+      DoesOriginRequireUserConfirmationCallback callback) const override {
+    std::move(callback).Run(false);
+  }
+
+  void EvaluateEnterprisePolicy(
+      const GURL& destination,
+      EvaluateEnterprisePolicyCallback callback) const override {
+    std::move(callback).Run({.decision = origin_gating::Decision::kNoDecision});
+  }
+
+  void OnNoVerdict(
+      origin_gating::GatingDecisionContext* context,
+      origin_gating::GateableEvent event,
+      const GURL& source,
+      const GURL& destination,
+      bool requires_user_confirmation,
+      base::OnceCallback<void(NoVerdictResult)> callback) override {
+    std::move(callback).Run({.is_allowed = is_allowed_,
+                             .did_prompt_user = false,
+                             .bypass_cache = true});
+  }
+
+  base::WeakPtr<TestOriginGatingCheckerDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  bool is_allowed_ = true;
+  base::WeakPtrFactory<TestOriginGatingCheckerDelegate> weak_ptr_factory_{this};
+};
+
 }  // namespace
 
 class NavigateToolTest : public PlatformTest {
@@ -56,6 +104,11 @@ class NavigateToolTest : public PlatformTest {
     UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get())
         ->AddObserver(&url_loading_observer_);
     UrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
+    default_gating_checker_ =
+        std::make_unique<origin_gating::OriginGatingChecker>(
+            default_gating_delegate_.GetWeakPtr(),
+            origin_gating::OriginGatingConfiguration(
+                {}, /*use_site_keyed_cache=*/false));
   }
 
   ~NavigateToolTest() override {
@@ -68,13 +121,20 @@ class NavigateToolTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   TestUrlLoadingObserver url_loading_observer_;
+  TestOriginGatingCheckerDelegate default_gating_delegate_{/*is_allowed=*/true};
+  std::unique_ptr<origin_gating::OriginGatingChecker> default_gating_checker_;
 
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
   CreateToolAndValidate(const optimization_guide::proto::NavigateAction& action,
-                        web::WebState* web_state) {
+                        web::WebState* web_state,
+                        std::optional<origin_gating::OriginGatingChecker*>
+                            gating_checker = std::nullopt) {
+    origin_gating::OriginGatingChecker* checker =
+        gating_checker.value_or(default_gating_checker_.get());
     std::unique_ptr<NavigateTool> tool = NavigateTool::Create(
         web_state ? web_state->GetWeakPtr() : nullptr, action,
-        UrlLoadingBrowserAgent::FromBrowser(browser_.get())->AsWeakPtr());
+        UrlLoadingBrowserAgent::FromBrowser(browser_.get())->AsWeakPtr(),
+        checker);
     CHECK(tool);
     base::test::TestFuture<ToolExecutionResult> validate_future;
     tool->Validate(validate_future.GetCallback());
@@ -309,6 +369,149 @@ TEST_F(NavigateToolTest, GetToolType) {
       CreateToolAndValidate(action.navigate(), /*web_state=*/nullptr);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value()->GetToolType(), ToolType::kNavigate);
+}
+
+// Test that navigation is blocked when origin gating policy denies it.
+TEST_F(NavigateToolTest, Execute_OriginGatingBlocksNavigation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorOriginGatingForNavigation);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::WebState* web_state_ptr = web_state.get();
+  web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  // Delegate configured to block.
+  TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
+  origin_gating::OriginGatingChecker checker(
+      delegate.GetWeakPtr(), origin_gating::OriginGatingConfiguration(
+                                 {}, /*use_site_keyed_cache=*/false));
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url("https://malicious.example.com/");
+  action.mutable_navigate()->set_tab_id(tab_id);
+
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool =
+          CreateToolAndValidate(action.navigate(), web_state_ptr, &checker);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  ToolExecutionResult result = future.Get();
+  EXPECT_FALSE(result.IsOk());
+
+  EXPECT_EQ(mojom::ActionResultCode::kTriggeredNavigationBlocked,
+            result.code());
+
+  // Verify that the URL was NOT loaded.
+  EXPECT_EQ(GURL(), url_loading_observer_.last_url_);
+}
+
+// Test that navigation succeeds when origin gating policy allows it.
+TEST_F(NavigateToolTest, Execute_OriginGatingAllowsNavigation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorOriginGatingForNavigation);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::WebState* web_state_ptr = web_state.get();
+  web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  // Delegate configured to allow.
+  TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/true);
+  origin_gating::OriginGatingChecker checker(
+      delegate.GetWeakPtr(), origin_gating::OriginGatingConfiguration(
+                                 {}, /*use_site_keyed_cache=*/false));
+  const std::string kUrl = "https://safe.example.com/";
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url(kUrl);
+  action.mutable_navigate()->set_tab_id(tab_id);
+
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool =
+          CreateToolAndValidate(action.navigate(), web_state_ptr, &checker);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  ToolExecutionResult result = future.Get();
+  EXPECT_TRUE(result.IsOk());
+  EXPECT_EQ(GURL(kUrl), url_loading_observer_.last_url_);
+}
+
+// Test that when the feature flag is disabled (default), origin gating is
+// bypassed.
+TEST_F(NavigateToolTest, Execute_OriginGatingFeatureDisabled_BypassesCheck) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::WebState* web_state_ptr = web_state.get();
+  web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  // Delegate configured to block, but the feature flag is OFF.
+  TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
+  origin_gating::OriginGatingChecker checker(
+      delegate.GetWeakPtr(), origin_gating::OriginGatingConfiguration(
+                                 {}, /*use_site_keyed_cache=*/false));
+
+  const std::string kUrl = "https://example.com/";
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url(kUrl);
+  action.mutable_navigate()->set_tab_id(tab_id);
+
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool =
+          CreateToolAndValidate(action.navigate(), web_state_ptr, &checker);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  ToolExecutionResult result = future.Get();
+  EXPECT_TRUE(result.IsOk());
+  EXPECT_EQ(GURL(kUrl), url_loading_observer_.last_url_);
+}
+
+// Test that navigation CHECK crashes when the feature is enabled but no
+// gating checker is provided.
+TEST_F(NavigateToolTest, Execute_MissingChecker_Crashes) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorOriginGatingForNavigation);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::WebState* web_state_ptr = web_state.get();
+  web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  const std::string kUrl = "https://example.com/";
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url(kUrl);
+  action.mutable_navigate()->set_tab_id(tab_id);
+
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = CreateToolAndValidate(action.navigate(), web_state_ptr,
+                                         /*gating_checker=*/nullptr);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  EXPECT_CHECK_DEATH(maybe_tool.value()->Execute(future.GetCallback()));
 }
 
 }  // namespace actor

@@ -9,6 +9,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/actor/core/aggregated_journal.h"
+#import "components/origin_gating/core/origin_gating_checker.h"
+#import "components/origin_gating/core/origin_gating_configuration.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
@@ -177,19 +179,69 @@ class TestKeepAliveWebState : public web::FakeWebState {
   bool keep_render_process_alive_ = false;
 };
 
+class TestOriginGatingCheckerDelegate
+    : public origin_gating::OriginGatingChecker::Delegate {
+ public:
+  explicit TestOriginGatingCheckerDelegate(bool is_allowed = true)
+      : is_allowed_(is_allowed) {}
+
+  void DoesOriginRequireUserConfirmation(
+      origin_gating::GatingDecisionContext* context,
+      origin_gating::GateableEvent event,
+      const GURL& source,
+      const GURL& destination,
+      DoesOriginRequireUserConfirmationCallback callback) const override {
+    std::move(callback).Run(false);
+  }
+
+  void EvaluateEnterprisePolicy(
+      const GURL& destination,
+      EvaluateEnterprisePolicyCallback callback) const override {
+    std::move(callback).Run({.decision = origin_gating::Decision::kNoDecision});
+  }
+
+  void OnNoVerdict(
+      origin_gating::GatingDecisionContext* context,
+      origin_gating::GateableEvent event,
+      const GURL& source,
+      const GURL& destination,
+      bool requires_user_confirmation,
+      base::OnceCallback<void(NoVerdictResult)> callback) override {
+    std::move(callback).Run({.is_allowed = is_allowed_,
+                             .did_prompt_user = false,
+                             .bypass_cache = true});
+  }
+
+  base::WeakPtr<TestOriginGatingCheckerDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  bool is_allowed_ = true;
+  base::WeakPtrFactory<TestOriginGatingCheckerDelegate> weak_ptr_factory_{this};
+};
+
 }  // namespace
 
 class ActorTaskTest : public PlatformTest {
  protected:
+  TestOriginGatingCheckerDelegate gating_delegate_{/*is_allowed=*/true};
+  std::unique_ptr<origin_gating::OriginGatingChecker> gating_checker_;
   void SetUp() override {
     PlatformTest::SetUp();
     profile_ = TestProfileIOS::Builder().Build();
     journal_ = std::make_unique<AggregatedJournal>();
     tool_factory_ = std::make_unique<ActorToolFactory>(profile_.get());
+    gating_checker_ = std::make_unique<origin_gating::OriginGatingChecker>(
+        gating_delegate_.GetWeakPtr(),
+        origin_gating::OriginGatingConfiguration(
+            /*predicates=*/{}, /*use_site_keyed_cache=*/false));
+
     task_ = std::make_unique<ActorTask>(
         ActorTaskId(1), "Test Task",
         /*allow_incognito_web_states=*/false, journal_.get(),
-        tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()));
+        tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()),
+        gating_checker_.get());
   }
 
   void TearDown() override {
@@ -863,7 +915,7 @@ TEST_F(ActorTaskTest, SetKeepRenderProcessAliveOnControlledWebStates) {
   auto scoped_task = std::make_unique<ActorTask>(
       ActorTaskId(42), "Scoped Task",
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
-      BrowserListFactory::GetForProfile(profile_.get()));
+      BrowserListFactory::GetForProfile(profile_.get()), gating_checker_.get());
   scoped_task->AddControlledWebState(web_state3.get());
   EXPECT_TRUE(web_state3->keep_render_process_alive());
 
@@ -1019,7 +1071,7 @@ TEST_F(ActorTaskTest, DestructorFinalizesBackgroundTask) {
   auto task = std::make_unique<ActorTask>(
       ActorTaskId(1), "Test Task",
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
-      BrowserListFactory::GetForProfile(profile_.get()));
+      BrowserListFactory::GetForProfile(profile_.get()), gating_checker_.get());
   task->SetBackgroundTaskContext(context);
   EXPECT_FALSE(context.completed);
 

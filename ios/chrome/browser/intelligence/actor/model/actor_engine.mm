@@ -180,6 +180,12 @@ web::WebState* ActorEngine::InsertWebState(
   return owner_task_->InsertWebState(window_id, load_params, in_background);
 }
 
+origin_gating::OriginGatingChecker* ActorEngine::GetOriginGatingChecker()
+    const {
+  CHECK(owner_task_);
+  return owner_task_->GetOriginGatingChecker();
+}
+
 #pragma mark - Private
 
 void ActorEngine::ExecuteNextAction() {

@@ -9,6 +9,8 @@
 #import "base/test/test_future.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
+#import "components/origin_gating/core/origin_gating_checker.h"
+#import "components/origin_gating/core/origin_gating_configuration.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
@@ -50,11 +52,56 @@ class MockActorEngineExecutionUpdatesDelegate
   bool on_will_execute_called_ = false;
 };
 
+class TestOriginGatingCheckerDelegate
+    : public origin_gating::OriginGatingChecker::Delegate {
+ public:
+  explicit TestOriginGatingCheckerDelegate(bool is_allowed = true)
+      : is_allowed_(is_allowed) {}
+
+  void DoesOriginRequireUserConfirmation(
+      origin_gating::GatingDecisionContext* context,
+      origin_gating::GateableEvent event,
+      const GURL& source,
+      const GURL& destination,
+      DoesOriginRequireUserConfirmationCallback callback) const override {
+    std::move(callback).Run(false);
+  }
+
+  void EvaluateEnterprisePolicy(
+      const GURL& destination,
+      EvaluateEnterprisePolicyCallback callback) const override {
+    std::move(callback).Run({.decision = origin_gating::Decision::kNoDecision});
+  }
+
+  void OnNoVerdict(
+      origin_gating::GatingDecisionContext* context,
+      origin_gating::GateableEvent event,
+      const GURL& source,
+      const GURL& destination,
+      bool requires_user_confirmation,
+      base::OnceCallback<void(NoVerdictResult)> callback) override {
+    std::move(callback).Run({.is_allowed = is_allowed_,
+                             .did_prompt_user = false,
+                             .bypass_cache = true});
+  }
+
+  base::WeakPtr<TestOriginGatingCheckerDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  bool is_allowed_ = true;
+  base::WeakPtrFactory<TestOriginGatingCheckerDelegate> weak_ptr_factory_{this};
+};
+
 }  // namespace
 
 // Test fixture for ActorEngine.
 class ActorEngineTest : public PlatformTest {
  protected:
+  TestOriginGatingCheckerDelegate gating_delegate_{/*is_allowed=*/true};
+  std::unique_ptr<origin_gating::OriginGatingChecker> gating_checker_;
+
   ActorEngineTest() { scoped_feature_list_.InitAndEnableFeature(kActorTools); }
 
   void SetUp() override {
@@ -62,10 +109,15 @@ class ActorEngineTest : public PlatformTest {
     profile_ = TestProfileIOS::Builder().Build();
     journal_ = std::make_unique<AggregatedJournal>();
     tool_factory_ = std::make_unique<ActorToolFactory>(profile_.get());
+    gating_checker_ = std::make_unique<origin_gating::OriginGatingChecker>(
+        gating_delegate_.GetWeakPtr(),
+        origin_gating::OriginGatingConfiguration(
+            /*predicates=*/{}, /*use_site_keyed_cache=*/false));
     task_ = std::make_unique<ActorTask>(
         ActorTaskId(1), "Test Task",
         /*allow_incognito_web_states=*/false, journal_.get(),
-        tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()));
+        tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()),
+        gating_checker_.get());
     engine_ = std::make_unique<ActorEngine>(&execution_updates_delegate_,
                                             task_.get());
   }

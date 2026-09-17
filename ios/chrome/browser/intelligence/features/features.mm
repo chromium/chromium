@@ -558,6 +558,9 @@ bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool) {
   return false;
 }
 
+BASE_FEATURE(kActorOriginGatingForNavigation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kModelBasedPageClassification, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kModelBasedPageClassificationExecutionRateParam[] = "execution_rate";

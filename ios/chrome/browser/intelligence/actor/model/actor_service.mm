@@ -102,7 +102,7 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
   auto task = std::make_unique<ActorTask>(
       task_id, title, allow_incognito_web_states, journal_.get(),
-      tool_factory_.get(), browser_list);
+      tool_factory_.get(), browser_list, origin_gating_checker_.get());
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   RegisterBackgroundTask(task.get());
@@ -453,7 +453,10 @@ ActorService::CreateOriginGatingConfig() {
                   base::BindRepeating(&EvaluateSafetyListPredicate),
                   ActorCustomPredicate::kSafetyList),
               /*events=*/
-              {// Gate navigations to prevent the actor from navigating to
+              {// Gate explicit navigation requests to prevent the actor from
+               // navigating to unapproved or dangerous destinations.
+               origin_gating::GateableEvent::kNavigationRequest,
+               // Gate navigations to prevent the actor from navigating to
                // unapproved or dangerous destinations.
                origin_gating::GateableEvent::kNavigationResponse,
                // Gate user/actor page interactions (clicks, from inputs,
