@@ -1161,10 +1161,12 @@ void CanvasRenderingContext2D::CreateProvider() {
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
     // Configure this SharedImage for scanout and concurrent read/write as
-    // appropriate.
-    bool low_latency_supported =
-        canvas()->LowLatencyEnabled() &&
-        LowLatencyUsageSupportedForCanvas2D(raster_mode);
+    // appropriate. Concurrent read/write only makes sense if raster writes are
+    // happening via the GPU.
+
+    bool low_latency_supported = canvas()->LowLatencyEnabled() &&
+                                 raster_mode == RasterMode::kGPU &&
+                                 LowLatencyUsageSupportedForCanvas2D();
     if (low_latency_supported || UseOverlaysForCanvas2D()) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       if (low_latency_supported) {

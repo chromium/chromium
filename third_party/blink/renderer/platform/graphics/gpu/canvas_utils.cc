@@ -146,15 +146,9 @@ void SetLowLatencyUsageSupportedForCanvas2DForTesting(bool enable) {
   g_low_latency_usage_supported_for_canvas_2d_for_testing = enable;
 }
 
-bool LowLatencyUsageSupportedForCanvas2D(RasterMode raster_mode) {
+bool LowLatencyUsageSupportedForCanvas2D() {
   if (g_low_latency_usage_supported_for_canvas_2d_for_testing) {
     return g_low_latency_usage_supported_for_canvas_2d_for_testing.value();
-  }
-
-  // Concurrent read/write only makes sense if raster writes are happening via
-  // the GPU.
-  if (raster_mode == RasterMode::kCPU) {
-    return false;
   }
 
 #if BUILDFLAG(IS_WIN)

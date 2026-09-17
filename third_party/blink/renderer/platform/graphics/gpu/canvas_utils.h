@@ -47,11 +47,9 @@ PLATFORM_EXPORT void SetUseMappableSharedImagesForCanvas2DForTesting(
 // overlays.
 PLATFORM_EXPORT bool UseOverlaysForCanvas2D();
 
-// Whether SharedImages used for canvas2D content that is rasterized according
-// to `raster_mode` may be given usage optimized for low-latency (SCANOUT and
-// CONCURRENT_READ_WRITE).
-PLATFORM_EXPORT bool LowLatencyUsageSupportedForCanvas2D(
-    RasterMode raster_mode);
+// Whether SharedImages used for canvas2D content may be given usage optimized
+// for low-latency (SCANOUT and CONCURRENT_READ_WRITE).
+PLATFORM_EXPORT bool LowLatencyUsageSupportedForCanvas2D();
 
 // Whether SharedImages used for WebGL content may be given usage optimized
 // for low-latency (SCANOUT and CONCURRENT_READ_WRITE).
