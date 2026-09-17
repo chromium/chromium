@@ -5,12 +5,34 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_page_view_controller.h"
 
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_step.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+
+namespace {
+// Logo top gap constant matching the page view controller.
+const CGFloat kLogoTopGap = 32.0;
+
+// Recursively searches for a view matching the accessibility identifier.
+UIStackView* FindWrapperStackView(UIView* view) {
+  for (UIView* subview in view.subviews) {
+    if ([subview.accessibilityIdentifier
+            isEqualToString:
+                kGeminiFirstRunWrapperStackAccessibilityIdentifier]) {
+      return static_cast<UIStackView*>(subview);
+    }
+    UIStackView* result = FindWrapperStackView(subview);
+    if (result) {
+      return result;
+    }
+  }
+  return nil;
+}
+}  // namespace
 
 // Fake step view controller for lightweight unit testing of the container.
 @interface FakeStepViewController : UIViewController <GeminiFirstRunStep>
@@ -46,6 +68,19 @@
 - (void)didTapSecondaryButton {
   self.secondaryTapped = YES;
 }
+@end
+
+// Fake step view controller that opts into fullscreen presentation.
+@interface FakeFullscreenStepViewController
+    : FakeStepViewController <GeminiFirstRunStep>
+@end
+
+@implementation FakeFullscreenStepViewController
+
+- (BOOL)shouldUseFullscreenPresentation {
+  return YES;
+}
+
 @end
 
 // Test fixture for `GeminiFirstRunPageViewController`.
@@ -133,4 +168,29 @@ TEST_F(GeminiFirstRunPageViewControllerTest, SecondaryActionDelegatesToStep) {
   SecondaryAction(view_controller);
   EXPECT_TRUE(steps_[0].secondaryTapped);
   EXPECT_EQ(view_controller.currentStep, steps_[0]);
+}
+
+// Tests that a non-fullscreen step without branding header receives kLogoTopGap
+// top margin.
+TEST_F(GeminiFirstRunPageViewControllerTest, NonFullscreenStepTopMargin) {
+  GeminiFirstRunPageViewController* view_controller =
+      CreateController(1, /*show_header=*/false);
+  UIStackView* wrapper_stack = FindWrapperStackView(view_controller.view);
+  ASSERT_NE(wrapper_stack, nil);
+  EXPECT_EQ(wrapper_stack.directionalLayoutMargins.top, kLogoTopGap);
+}
+
+// Tests that a fullscreen step without branding header receives zero top margin
+// since it manages its own padding.
+TEST_F(GeminiFirstRunPageViewControllerTest, FullscreenStepTopMargin) {
+  FakeFullscreenStepViewController* fullscreen_step =
+      [[FakeFullscreenStepViewController alloc] init];
+  GeminiFirstRunPageViewController* view_controller =
+      [[GeminiFirstRunPageViewController alloc]
+               initWithSteps:@[ fullscreen_step ]
+          showBrandingHeader:NO];
+  [view_controller view];
+  UIStackView* wrapper_stack = FindWrapperStackView(view_controller.view);
+  ASSERT_NE(wrapper_stack, nil);
+  EXPECT_EQ(wrapper_stack.directionalLayoutMargins.top, 0.0);
 }

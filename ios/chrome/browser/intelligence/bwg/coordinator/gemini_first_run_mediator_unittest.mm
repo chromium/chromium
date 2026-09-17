@@ -11,6 +11,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_step.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -29,6 +30,8 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -211,4 +214,23 @@ TEST_F(GeminiFirstRunMediatorTest, LightweightPromoTitle_Variants) {
     EXPECT_NSEQ([mediator_ lightweightPromoTitle],
                 l10n_util::GetNSString(test_case.expected_title_id));
   }
+}
+
+// Tests that consenting to Live Gemini updates both the Live consent pref and
+// the Chrome-level Live microphone setting, and notifies the delegate.
+TEST_F(GeminiFirstRunMediatorTest, TestDidConsentToLiveGemini) {
+  id mock_delegate = OCMProtocolMock(@protocol(GeminiFirstRunMediatorDelegate));
+  mediator_.delegate = mock_delegate;
+
+  PrefService* prefs = profile_->GetPrefs();
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kIOSGeminiLiveConsent));
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting));
+
+  OCMExpect([mock_delegate dismissGeminiConsentUIWithCompletion:[OCMArg any]]);
+
+  [mediator_ didConsentToLiveGemini];
+
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kIOSGeminiLiveConsent));
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting));
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
 }

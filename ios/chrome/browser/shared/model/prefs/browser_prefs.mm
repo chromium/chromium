@@ -911,7 +911,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kIOSGeminiCameraSetting, false);
   registry->RegisterBooleanPref(prefs::kIOSGeminiLiveClosedCaptioningSetting,
                                 false);
-  registry->RegisterBooleanPref(prefs::kIOSGeminiLiveMicrophoneSetting, false);
+  registry->RegisterBooleanPref(prefs::kIOSGeminiLiveMicrophoneSetting, true);
   registry->RegisterTimePref(prefs::kLastGeminiInteractionTimestamp,
                              base::Time());
   registry->RegisterTimePref(prefs::kLastGeminiContextualChipDisplayedTimestamp,

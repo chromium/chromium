@@ -304,7 +304,8 @@ const CGFloat kInsetAdjustment = 20;
   wrapperStackView.axis = UILayoutConstraintAxisVertical;
   wrapperStackView.layoutMarginsRelativeArrangement = YES;
   wrapperStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  CGFloat topMargin = _showBrandingHeader ? kLogoTopGap : 0;
+  CGFloat topMargin =
+      [self shouldUseFullscreenForStep:_currentStep] ? 0 : kLogoTopGap;
   wrapperStackView.directionalLayoutMargins =
       NSDirectionalEdgeInsetsMake(topMargin, 0, 0, 0);
   wrapperStackView.accessibilityIdentifier =

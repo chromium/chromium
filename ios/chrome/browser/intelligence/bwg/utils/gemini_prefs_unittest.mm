@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -67,6 +69,31 @@ TEST_F(GeminiPrefsTest, TestGetConversationId_Expired_CustomDuration) {
   // Fast forward by another 1 minute + 1 second -> should expire.
   task_environment_.FastForwardBy(base::Minutes(1) + base::Seconds(1));
   ASSERT_FALSE(GetConversationId(profile_->GetPrefs()).has_value());
+}
+
+// Tests that granting Live consent sets the Live consent pref.
+TEST_F(GeminiPrefsTest, TestUpdateUserConsentToLivePrefs_ConsentGiven) {
+  PrefService* prefs = profile_->GetPrefs();
+  EXPECT_FALSE(DidUserConsentToGeminiLive(prefs));
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting));
+
+  UpdateUserConsentToLivePrefs(/*consent=*/true, prefs);
+
+  EXPECT_TRUE(DidUserConsentToGeminiLive(prefs));
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting));
+}
+
+// Tests that refusing Live consent updates the Live consent pref while keeping
+// the default microphone setting.
+TEST_F(GeminiPrefsTest, TestUpdateUserConsentToLivePrefs_ConsentRefused) {
+  PrefService* prefs = profile_->GetPrefs();
+  EXPECT_FALSE(DidUserConsentToGeminiLive(prefs));
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting));
+
+  UpdateUserConsentToLivePrefs(/*consent=*/false, prefs);
+
+  EXPECT_FALSE(DidUserConsentToGeminiLive(prefs));
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting));
 }
 
 }  // namespace gemini
