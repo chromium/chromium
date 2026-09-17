@@ -538,9 +538,15 @@ TEST_F(SpellcheckCustomDictionaryTest, DictionaryTooBigToContiueSyncing) {
                    .has_value());
   EXPECT_TRUE(custom_dictionary->IsSyncing());
 
+  auto change = std::make_unique<SpellcheckCustomDictionary::Change>();
   for (size_t i = 0; i < spellcheck::kMaxSyncableDictionaryWords - 1; ++i) {
-    custom_dictionary->AddWord("foo" + base::NumberToString(i));
+    change->AddWord("foo" + base::NumberToString(i));
   }
+  change->Sanitize(custom_dictionary->GetWords());
+  Apply(custom_dictionary, *change);
+  Notify(custom_dictionary, *change);
+  Sync(custom_dictionary, *change);
+  Save(custom_dictionary, std::move(change));
   EXPECT_TRUE(custom_dictionary->IsSyncing());
 
   custom_dictionary->AddWord("bar");
