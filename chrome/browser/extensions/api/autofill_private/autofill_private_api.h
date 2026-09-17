@@ -38,6 +38,7 @@ class AutofillPrivateExtensionFunction : public ExtensionFunction {
 
   autofill::AddressDataManager* address_data_manager();
   autofill::ContentAutofillClient* autofill_client();
+  autofill::EntityDataManager* entity_data_manager();
   autofill::PaymentsDataManager* payments_data_manager();
 };
 

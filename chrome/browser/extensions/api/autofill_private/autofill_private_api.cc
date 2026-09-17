@@ -258,6 +258,18 @@ AutofillPrivateExtensionFunction::autofill_client() {
       GetSenderWebContents());
 }
 
+autofill::EntityDataManager*
+AutofillPrivateExtensionFunction::entity_data_manager() {
+  content::BrowserContext* context = browser_context();
+  if (!context) {
+    return nullptr;
+  }
+  Profile* profile = Profile::FromBrowserContext(context);
+  return profile ? autofill::AutofillEntityDataManagerFactory::GetForProfile(
+                       profile)
+                 : nullptr;
+}
+
 autofill::PaymentsDataManager*
 AutofillPrivateExtensionFunction::payments_data_manager() {
   autofill::ContentAutofillClient* client = autofill_client();
@@ -1140,12 +1152,8 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
         {"Add or update entity instance - ", kErrorAutofillAiInvalidData})));
   }
 
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  EntityDataManager* entity_data_manager =
-      profile ? AutofillEntityDataManagerFactory::GetForProfile(profile)
-              : nullptr;
-
-  if (!entity_data_manager) {
+  EntityDataManager* edm = entity_data_manager();
+  if (!edm) {
     return RespondNow(Error(base::StrCat(
         {"Add or update entity instance - ", kErrorAutofillAiUnavailable})));
   }
@@ -1171,7 +1179,7 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
       return RespondLater();
     }
 
-    SavePrivatePassLocallyAndNotifyAsFallback(*entity_data_manager,
+    SavePrivatePassLocallyAndNotifyAsFallback(*edm,
                                               std::move(*entity_instance));
     return RespondNow(NoArguments());
   }
@@ -1179,7 +1187,7 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
   // Handles the following scenarios:
   // 1. Save/Update entity locally.
   // 2. Save entity to Wallet via Chrome sync.
-  entity_data_manager->AddOrUpdateEntityInstance(entity_instance.value());
+  edm->AddOrUpdateEntityInstance(entity_instance.value());
   if (private_api_entity_instance.stored_in_wallet.value_or(false) &&
       !is_eligible_for_wallet_storage && autofill_client()) {
     autofill_client()->ShowAutofillAiLocalSaveNotification();
@@ -1229,25 +1237,15 @@ void AutofillPrivateAddOrUpdateEntityInstanceFunction::
     OnSavePrivatePassToWalletFinished(
         autofill::EntityInstance original_entity,
         std::optional<EntityInstance> saved_entity) {
-  content::BrowserContext* context = browser_context();
-  if (!context) {
-    Respond(Error(kErrorAutofillAiUnavailable));
-    return;
-  }
-  Profile* profile = Profile::FromBrowserContext(context);
-  EntityDataManager* entity_data_manager =
-      profile ? AutofillEntityDataManagerFactory::GetForProfile(profile)
-              : nullptr;
-
-  if (!entity_data_manager) {
+  EntityDataManager* edm = entity_data_manager();
+  if (!edm) {
     Respond(Error(kErrorAutofillAiUnavailable));
     return;
   }
   if (saved_entity.has_value()) {
-    entity_data_manager->AddOrUpdateEntityInstance(std::move(*saved_entity));
+    edm->AddOrUpdateEntityInstance(std::move(*saved_entity));
   } else {
-    SavePrivatePassLocallyAndNotifyAsFallback(*entity_data_manager,
-                                              std::move(original_entity));
+    SavePrivatePassLocallyAndNotifyAsFallback(*edm, std::move(original_entity));
   }
   Respond(NoArguments());
 }
@@ -1275,21 +1273,17 @@ AutofillPrivateRemoveEntityInstanceFunction::Run() {
       autofill_private::RemoveEntityInstance::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  EntityDataManager* entity_data_manager =
-      profile ? AutofillEntityDataManagerFactory::GetForProfile(profile)
-              : nullptr;
-
-  if (!entity_data_manager) {
+  EntityDataManager* edm = entity_data_manager();
+  if (!edm) {
     return RespondNow(Error(base::StrCat(
         {"Remove entity instance - ", kErrorAutofillAiUnavailable})));
   }
 
   const autofill::EntityInstance::EntityId guid(parameters->guid);
-  if (auto entity = entity_data_manager->GetEntityInstance(guid)) {
+  if (auto entity = edm->GetEntityInstance(guid)) {
     autofill::LogEntityDeletedFromSettings(entity->type(),
                                            entity->record_type());
-    entity_data_manager->RemoveEntityInstance(guid);
+    edm->RemoveEntityInstance(guid);
   }
 
   return RespondNow(NoArguments());
@@ -1300,12 +1294,8 @@ AutofillPrivateRemoveEntityInstanceFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AutofillPrivateLoadEntityInstancesFunction::Run() {
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  EntityDataManager* entity_data_manager =
-      profile ? AutofillEntityDataManagerFactory::GetForProfile(profile)
-              : nullptr;
-
-  if (!entity_data_manager) {
+  EntityDataManager* edm = entity_data_manager();
+  if (!edm) {
     return RespondNow(Error(base::StrCat(
         {"Load entity instances - ", kErrorAutofillAiUnavailable})));
   }
@@ -1314,8 +1304,7 @@ AutofillPrivateLoadEntityInstancesFunction::Run() {
           autofill_client()->GetPrefs());
   std::vector<autofill_private::EntityInstanceWithLabels> result =
       autofill_ai_util::EntityInstancesToPrivateApiEntityInstancesWithLabels(
-          autofill::GetEntityInstancesForSettings(
-              entity_data_manager->GetEntityInstances()),
+          autofill::GetEntityInstancesForSettings(edm->GetEntityInstances()),
           obfuscate_sensitive_types, g_browser_process->GetApplicationLocale());
   return RespondNow(ArgumentList(
       autofill_private::LoadEntityInstances::Results::Create(result)));
@@ -1336,18 +1325,13 @@ AutofillPrivateGetEntityInstanceByGuidFunction::Run() {
       autofill_private::GetEntityInstanceByGuid::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  EntityDataManager* entity_data_manager =
-      profile ? AutofillEntityDataManagerFactory::GetForProfile(profile)
-              : nullptr;
-
-  if (!entity_data_manager) {
+  EntityDataManager* edm = entity_data_manager();
+  if (!edm) {
     return RespondNow(Error(base::StrCat(
         {"Get entity instance by guid - ", kErrorAutofillAiUnavailable})));
   }
   base::optional_ref<const EntityInstance> entity_instance =
-      entity_data_manager->GetEntityInstance(
-          EntityInstance::EntityId(parameters->guid));
+      edm->GetEntityInstance(EntityInstance::EntityId(parameters->guid));
   if (!entity_instance.has_value()) {
     return RespondNow(
         Error(base::StrCat({"Get entity instance by guid - ",
