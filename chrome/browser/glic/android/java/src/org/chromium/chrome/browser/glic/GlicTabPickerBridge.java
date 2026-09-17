@@ -46,6 +46,21 @@ class GlicTabPickerBridge {
             return;
         }
 
+        // Tab ids returned by the picker are resolved against the tab model selector of
+        // |windowAndroid|, so this client only supports picking tabs from the current window's tab
+        // model. That holds today because ChromeItemPickerActivity#resolveTargetWindowId() scans
+        // for the host activity in the same Android task before falling back to
+        // MultiWindowUtils#getLastAccessedWindowId(), and the picker is always launched into the
+        // host activity's task via WindowAndroid#showIntent() below.
+        // TODO(crbug.com/562627025): If the picker ever supports selecting tabs across windows,
+        // pass the target window id explicitly instead of relying on the picker's detection logic.
+        TabModelSelector tabModelSelector =
+                TabModelSelectorSupplier.getValueOrNullFrom(windowAndroid);
+        if (tabModelSelector == null) {
+            callback.onResult(null);
+            return;
+        }
+
         List<@TabId Integer> preselectedTabIds = new ArrayList<>(alreadySelectedTabs.size());
         for (Tab tab : alreadySelectedTabs) {
             preselectedTabIds.add(tab.getId());
@@ -69,13 +84,6 @@ class GlicTabPickerBridge {
                             List<Integer> selectedTabIds =
                                     ChromeItemPickerUtils.getSelectedTabIdsFromIntent(resultIntent);
                             if (selectedTabIds == null) {
-                                callback.onResult(null);
-                                return;
-                            }
-
-                            TabModelSelector tabModelSelector =
-                                    TabModelSelectorSupplier.getValueOrNullFrom(windowAndroid);
-                            if (tabModelSelector == null) {
                                 callback.onResult(null);
                                 return;
                             }
