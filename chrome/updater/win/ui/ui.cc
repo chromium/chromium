@@ -316,28 +316,40 @@ LRESULT OmahaWnd::OnDpiChanged(UINT, WPARAM wparam, LPARAM lparam) {
   return 0;
 }
 
-LRESULT OmahaWnd::OnSettingChange(UINT msg, WPARAM wparam, LPARAM /*lparam*/) {
-  if (CouldBeThemeSettingChange(wparam)) {
-    UpdateThemeState();
-    // `lparam` is sender-controlled and no descendant handler reads it, so
-    // zero is substituted rather than forwarded.
-    SendMessageToDescendants(hwnd(), msg, wparam, /*lparam=*/0);
-    ::RedrawWindow(
-        hwnd(), nullptr, nullptr,
-        RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+void OmahaWnd::RepaintForThemeChange(bool notify_descendants,
+                                     UINT msg,
+                                     WPARAM wparam,
+                                     LPARAM lparam) {
+  // Subclasses reload before anything paints, so `is_dark_mode()`-derived
+  // bitmaps are current when the parent and descendant layouts repaint.
+  OnThemeStateChanged();
+  if (notify_descendants) {
+    SendMessageToDescendants(hwnd(), msg, wparam, lparam);
   }
+  ::RedrawWindow(hwnd(), nullptr, nullptr,
+                 RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+}
+
+LRESULT OmahaWnd::OnSettingChange(UINT msg, WPARAM wparam, LPARAM) {
+  // Ignore setting changes that are not theme-related or produced no state
+  // change.
+  if (!CouldBeThemeSettingChange(wparam) || !UpdateThemeState()) {
+    return 0;
+  }
+
+  RepaintForThemeChange(/*notify_descendants=*/true, msg, wparam,
+                        /*lparam=*/0);
   return 0;
 }
 
 LRESULT OmahaWnd::OnThemeChanged(UINT msg, WPARAM wparam, LPARAM lparam) {
   SetMsgHandled(FALSE);
+  // Unconditionally reload theme resources on WM_THEMECHANGED /
+  // WM_SYSCOLORCHANGE.
   UpdateThemeState();
-  if (msg != WM_THEMECHANGED) {
-    // Windows delivers WM_THEMECHANGED to every child itself.
-    SendMessageToDescendants(hwnd(), msg, wparam, lparam);
-  }
-  ::RedrawWindow(hwnd(), nullptr, nullptr,
-                 RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+  // Windows delivers WM_THEMECHANGED to every child itself.
+  RepaintForThemeChange(/*notify_descendants=*/msg != WM_THEMECHANGED, msg,
+                        wparam, lparam);
   return 0;
 }
 

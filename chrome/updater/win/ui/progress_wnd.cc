@@ -131,10 +131,7 @@ ProgressWnd::ProgressWnd(MessageLoop* message_loop, HWND parent)
                   ICC_STANDARD_CLASSES | ICC_PROGRESS_CLASS,
                   message_loop,
                   parent,
-                  base::UTF8ToWide(GetTagLanguage())),
-      applied_dark_mode_(is_dark_mode()),
-      applied_system_dark_mode_(IsSystemDarkModeOn()),
-      applied_high_contrast_(is_high_contrast()) {}
+                  base::UTF8ToWide(GetTagLanguage())) {}
 
 ProgressWnd::~ProgressWnd() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -297,7 +294,7 @@ void ProgressWnd::UpdateAppLogo(UINT target_dpi) {
   // versa), using the corresponding theme logo for each target prevents dark
   // logos on light taskbars or vice versa.
   const bool is_titlebar_dark = is_dark_mode();
-  const bool is_taskbar_dark = IsSystemDarkModeOn();
+  const bool is_taskbar_dark = is_system_dark_mode();
 
   const HBITMAP small_logo = SelectLogoForTheme(is_titlebar_dark);
   const HBITMAP big_logo = SelectLogoForTheme(is_taskbar_dark);
@@ -629,14 +626,11 @@ void ProgressWnd::UpdateErrorIllustration() {
   ::InvalidateRect(error_ctl, nullptr, TRUE);
 }
 
-void ProgressWnd::ResetThemeResources() {
+void ProgressWnd::OnThemeStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Refresh theme state early so `UpdateAppLogo()` and
-  // `UpdateErrorIllustration()` (via `is_dark_mode()`) evaluate the new theme
-  // before parent and descendant layouts repaint in `OmahaWnd`. Calling
-  // `UpdateThemeState()` here is safe and idempotent, even though `OmahaWnd`
-  // will invoke it again when the message bubbles up.
-  UpdateThemeState();
+  // Theme-derived resources only. Fonts and system metrics are rebuilt from
+  // `ApplyDpiScaling()` on WM_DPICHANGED, not here.
+  ++theme_refresh_count_for_testing_;
   light_bg_bmp_.reset();
   dark_bg_bmp_.reset();
   if (HWND error_ctl = ::GetDlgItem(hwnd(), IDC_ERROR_ILLUSTRATION)) {
@@ -650,32 +644,6 @@ void ProgressWnd::ResetThemeResources() {
   // titlebar icons to match the new theme.
   UpdateAppLogo();
   UpdateErrorIllustration();
-  applied_dark_mode_ = is_dark_mode();
-  applied_system_dark_mode_ = IsSystemDarkModeOn();
-  applied_high_contrast_ = is_high_contrast();
-}
-
-LRESULT ProgressWnd::OnSettingChange(UINT, WPARAM wparam, LPARAM) {
-  SetMsgHandled(FALSE);
-  if (!CouldBeThemeSettingChange(wparam)) {
-    return 0;
-  }
-
-  // Skip rebuilding resources if dark mode and high contrast are unchanged.
-  if (IsDarkModeOn() == applied_dark_mode_ &&
-      IsSystemDarkModeOn() == applied_system_dark_mode_ &&
-      IsHighContrastOn() == applied_high_contrast_) {
-    return 0;
-  }
-
-  ResetThemeResources();
-  return 0;
-}
-
-LRESULT ProgressWnd::OnThemeChanged(UINT, WPARAM, LPARAM) {
-  SetMsgHandled(FALSE);
-  ResetThemeResources();
-  return 0;
 }
 
 HBRUSH ProgressWnd::OnCtlColorStatic(HDC dc, HWND) {

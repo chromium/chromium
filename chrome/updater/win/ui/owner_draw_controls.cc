@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <limits>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
@@ -689,9 +690,12 @@ CustomDlgColors::CustomDlgColors() {
 }
 CustomDlgColors::~CustomDlgColors() = default;
 
-void CustomDlgColors::UpdateThemeState() {
-  is_high_contrast_ = IsHighContrastOn();
-  is_dark_mode_ = IsDarkModeOn();
+bool CustomDlgColors::UpdateThemeState() {
+  const bool was_high_contrast =
+      std::exchange(is_high_contrast_, IsHighContrastOn());
+  const bool was_dark_mode = std::exchange(is_dark_mode_, IsDarkModeOn());
+  const bool was_system_dark_mode =
+      std::exchange(is_system_dark_mode_, IsSystemDarkModeOn());
   if (is_dark_mode_ && !is_high_contrast_) {
     if (!dark_bk_brush_.is_valid()) {
       dark_bk_brush_.reset(::CreateSolidBrush(kBgColorDark));
@@ -699,6 +703,9 @@ void CustomDlgColors::UpdateThemeState() {
   } else {
     dark_bk_brush_.reset();
   }
+  return is_high_contrast_ != was_high_contrast ||
+         is_dark_mode_ != was_dark_mode ||
+         is_system_dark_mode_ != was_system_dark_mode;
 }
 
 void CustomDlgColors::SetCustomDlgColors(COLORREF text_color,

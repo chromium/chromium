@@ -64,9 +64,6 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
     CR_MESSAGE_HANDLER_EX(WM_INITDIALOG, OnInitDialog)
     CR_MESSAGE_HANDLER_EX(WM_SIZE, OnSize)
     CR_MESSAGE_HANDLER_EX(WM_ERASEBKGND, OnEraseBkgnd)
-    CR_MESSAGE_HANDLER_EX(WM_SYSCOLORCHANGE, OnThemeChanged)
-    CR_MESSAGE_HANDLER_EX(WM_SETTINGCHANGE, OnSettingChange)
-    CR_MESSAGE_HANDLER_EX(WM_THEMECHANGED, OnThemeChanged)
     CR_MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
     CR_COMMAND_HANDLER_EX(IDC_BUTTON1, BN_CLICKED, OnClickedButton)
     CR_COMMAND_HANDLER_EX(IDC_BUTTON2, BN_CLICKED, OnClickedButton)
@@ -101,6 +98,10 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   FRIEND_TEST_ALL_PREFIXES(
       ProgressWndTest,
       GetCurrentAppLogoBitmapDarkModeSingleLightBitmapFallback);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest,
+                           SettingChangeWithoutTransitionDoesNotRefresh);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest,
+                           ThemeChangedRefreshesWithoutTransition);
 
   enum class States {
     STATE_INIT = 0,
@@ -152,8 +153,6 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   LRESULT OnSize(UINT msg, WPARAM wparam, LPARAM lparam);
   void OnClickedButton(UINT notify_code, int id, HWND wnd_ctl);
   LRESULT OnEraseBkgnd(UINT msg, WPARAM wparam, LPARAM lparam);
-  LRESULT OnSettingChange(UINT msg, WPARAM wparam, LPARAM lparam);
-  LRESULT OnThemeChanged(UINT msg, WPARAM wparam, LPARAM lparam);
   HBRUSH OnCtlColorStatic(HDC dc, HWND ctl_hwnd);
 
   void SetControlText(int id, const std::wstring& text);
@@ -171,7 +170,7 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   // Returns the cached error illustration bitmap for the specified theme,
   // loading it from resources on first request.
   HBITMAP GetErrorIllustrationBitmap(bool is_dark_mode);
-  void ResetThemeResources();
+  void OnThemeStateChanged() override;
 
   // Returns true if this window is closed.
   bool MaybeCloseWindow() override;
@@ -215,11 +214,9 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   base::win::ScopedGDIObject<HBITMAP> light_error_illustration_bmp_;
   base::win::ScopedGDIObject<HBITMAP> dark_error_illustration_bmp_;
 
-  // The theme `ResetThemeResources()` last rebuilt the caches above for. Not
-  // read back from `CustomDlgColors`, whose state other handlers also refresh.
-  bool applied_dark_mode_;
-  bool applied_system_dark_mode_;
-  bool applied_high_contrast_;
+  // Number of `OnThemeStateChanged()` calls, so a test can tell a suppressed
+  // refresh from one that ran and changed nothing visible.
+  int theme_refresh_count_for_testing_ = 0;
 
   // Cached original app logo bitmaps for light and dark themes received via
   // WM_SET_APP_LOGO.

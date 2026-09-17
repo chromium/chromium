@@ -99,6 +99,16 @@ class OmahaWnd : public DialogImpl,
 
   virtual void ApplyDpiScaling(UINT dpi);
 
+  // Called after the cached theme flags were refreshed and before descendants
+  // are notified and the tree repaints. Subclasses drop and reload
+  // theme-dependent resources here.
+  virtual void OnThemeStateChanged() {}
+
+  void RepaintForThemeChange(bool notify_descendants,
+                             UINT msg,
+                             WPARAM wparam,
+                             LPARAM lparam);
+
   // Returns true if the window is closed.
   virtual bool MaybeCloseWindow() = 0;
 

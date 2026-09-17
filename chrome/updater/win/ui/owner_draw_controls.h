@@ -230,10 +230,14 @@ class CustomDlgColors {
                             LRESULT& result,
                             DWORD msg_map_id = 0);
 
-  void UpdateThemeState();
+  // Refreshes the cached theme flags from the system. Returns true if any
+  // flag changed, i.e. if anything painted from them is now stale. The
+  // constructor and the WM_THEMECHANGED path legitimately ignore the result.
+  bool UpdateThemeState();
 
   bool is_high_contrast() const { return is_high_contrast_; }
   bool is_dark_mode() const { return is_dark_mode_; }
+  bool is_system_dark_mode() const { return is_system_dark_mode_; }
 
  private:
   COLORREF text_color_ = RGB(0xFF, 0xFF, 0xFF);
@@ -242,6 +246,7 @@ class CustomDlgColors {
   base::win::ScopedGDIObject<HBRUSH> dark_bk_brush_;
   bool is_high_contrast_ = false;
   bool is_dark_mode_ = false;
+  bool is_system_dark_mode_ = false;
 };
 
 // Subclassed (via `SetWindowSubclass`) progress bar control providing a

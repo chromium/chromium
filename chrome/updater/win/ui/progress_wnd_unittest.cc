@@ -758,41 +758,32 @@ TEST_F(ProgressWndTest, SettingChangeFiltering) {
   progress_wnd->DestroyWindow();
 }
 
-// An accepted WM_SETTINGCHANGE that did not change the theme must not rebuild
-// the cached bitmaps, while WM_THEMECHANGED must, since it is also the retry
-// path after a failed load.
-TEST_F(ProgressWndTest, SettingChangeWithoutThemeChangeSkipsReload) {
+// The regression test for the suppression itself: a broadcast that changed
+// no theme flag must not reach the refresh at all.
+TEST_F(ProgressWndTest, SettingChangeWithoutTransitionDoesNotRefresh) {
   MessageLoop ui_message_loop;
   std::unique_ptr<ProgressWnd> progress_wnd =
       MakeProgressWindow(&ui_message_loop);
-  const HWND hwnd = progress_wnd->hwnd();
-  const HWND app_bitmap_ctl = ::GetDlgItem(hwnd, IDC_APP_BITMAP);
-  ASSERT_NE(app_bitmap_ctl, nullptr);
 
-  base::win::ScopedGetDC dc(hwnd);
-  base::win::ScopedGDIObject<HBITMAP> light_logo = CreateTestDIB24(dc, 32, 32);
-  base::win::ScopedGDIObject<HBITMAP> dark_logo = CreateTestDIB24(dc, 32, 32);
-  ASSERT_TRUE(light_logo.is_valid() && dark_logo.is_valid());
-  ::SendMessage(hwnd, WM_SET_APP_LOGO,
-                reinterpret_cast<WPARAM>(light_logo.release()),
-                reinterpret_cast<LPARAM>(dark_logo.release()));
-
-  // The scaled copy is rebuilt from scratch on every reload, so its handle
-  // identity is "the resources were rebuilt".
-  auto scaled_logo = [&] {
-    return reinterpret_cast<HBITMAP>(
-        ::SendMessage(app_bitmap_ctl, STM_GETIMAGE, IMAGE_BITMAP, 0));
-  };
-  const HBITMAP before = scaled_logo();
-  ASSERT_NE(before, nullptr);
-
-  // Accepted by the predicate, but the theme is whatever it already was.
-  ::SendMessage(hwnd, WM_SETTINGCHANGE, 0,
+  const int before = progress_wnd->theme_refresh_count_for_testing_;
+  ::SendMessage(progress_wnd->hwnd(), WM_SETTINGCHANGE, 0,
                 reinterpret_cast<LPARAM>(L"ImmersiveColorSet"));
-  EXPECT_EQ(scaled_logo(), before);
+  EXPECT_EQ(progress_wnd->theme_refresh_count_for_testing_, before);
 
-  ::SendMessage(hwnd, WM_THEMECHANGED, 0, 0);
-  EXPECT_NE(scaled_logo(), before);
+  progress_wnd->DestroyWindow();
+}
+
+// WM_THEMECHANGED means "reload", not "the flags moved": it is also the retry
+// path after a bitmap load that failed. Pinned so the two paths do not get
+// unified back together.
+TEST_F(ProgressWndTest, ThemeChangedRefreshesWithoutTransition) {
+  MessageLoop ui_message_loop;
+  std::unique_ptr<ProgressWnd> progress_wnd =
+      MakeProgressWindow(&ui_message_loop);
+
+  const int before = progress_wnd->theme_refresh_count_for_testing_;
+  ::SendMessage(progress_wnd->hwnd(), WM_THEMECHANGED, 0, 0);
+  EXPECT_EQ(progress_wnd->theme_refresh_count_for_testing_, before + 1);
 
   progress_wnd->DestroyWindow();
 }
