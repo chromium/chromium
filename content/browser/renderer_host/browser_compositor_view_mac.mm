@@ -57,6 +57,7 @@ BrowserCompositorMac::BrowserCompositorMac(
   GetBrowserCompositors().insert(this);
 
   root_layer_ = std::make_unique<ui::LayerSurface>();
+  root_layer_->SetName("BrowserCompositorMac:Root");
   // Ensure that this layer draws nothing when it does not not have delegated
   // content (otherwise this solid color will be flashed during navigation).
   root_layer_->SetFallbackBackgroundColor(SkColors::kTransparent);

@@ -68,6 +68,7 @@ DelegatedFrameHost::DelegatedFrameHost(const viz::FrameSinkId& frame_sink_id,
   frame_evictor_->SetVisible(client_->DelegatedFrameHostIsVisible());
 
   stale_content_layer_ = std::make_unique<ui::LayerWithExternalTexture>();
+  stale_content_layer_->SetName("DelegatedFrameHost:StaleContent");
   stale_content_layer_->SetVisible(false);
   stale_content_layer_->SetFillsBoundsOpaquely(false);
 }

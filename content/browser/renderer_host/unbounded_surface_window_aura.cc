@@ -316,6 +316,7 @@ bool UnboundedSurfaceWindowAura::InitWindow(const gfx::Rect& bounds_in_screen) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUnboundedWindowDebug)) {
     debug_border_layer_ = std::make_unique<ui::LayerTextured>();
+    debug_border_layer_->SetName("UnboundedSurfaceWindow:DebugBorder");
     debug_border_delegate_ =
         std::make_unique<DebugBorderDelegate>(debug_border_layer_.get());
     debug_border_layer_->set_delegate(debug_border_delegate_.get());
