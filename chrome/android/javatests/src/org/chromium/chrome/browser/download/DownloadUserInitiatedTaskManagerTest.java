@@ -13,13 +13,8 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
@@ -43,16 +38,36 @@ public final class DownloadUserInitiatedTaskManagerTest {
 
     private static final String FAKE_NOTIFICATION_CHANNEL = "DownloadUserInitiatedTaskManagerTest";
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    private final TestTaskFinishedCallback mCallback1 = new TestTaskFinishedCallback();
+    private final TestTaskFinishedCallback mCallback2 = new TestTaskFinishedCallback();
 
     private MockDownloadUserInitiatedTaskManager mDownloadUiTaskManager;
     private Notification mNotification;
     private Context mContext;
 
-    @Mock private TaskFinishedCallback mCallback1;
-    @Mock private TaskFinishedCallback mCallback2;
+    private static class TestTaskFinishedCallback implements TaskFinishedCallback {
+        private int mLastNotificationId = -1;
+        private Notification mLastNotification;
+        private int mCallCount;
 
-    public static class MockDownloadUserInitiatedTaskManager
+        @Override
+        public void taskFinished(boolean needsReschedule) {}
+
+        @Override
+        public void setNotification(int notificationId, Notification notification) {
+            mLastNotificationId = notificationId;
+            mLastNotification = notification;
+            mCallCount++;
+        }
+
+        public void reset() {
+            mLastNotificationId = -1;
+            mLastNotification = null;
+            mCallCount = 0;
+        }
+    }
+
+    private static class MockDownloadUserInitiatedTaskManager
             extends DownloadUserInitiatedTaskManager {
         public MockDownloadUserInitiatedTaskManager() {}
 
@@ -68,6 +83,8 @@ public final class DownloadUserInitiatedTaskManagerTest {
 
     @Before
     public void setUp() {
+        mCallback1.reset();
+        mCallback2.reset();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContext = new AdvancedMockContext(ApplicationProvider.getApplicationContext());
@@ -96,8 +113,7 @@ public final class DownloadUserInitiatedTaskManagerTest {
                 DownloadNotificationService.DownloadStatus.FAILED,
                 FAKE_DOWNLOAD_1,
                 mNotification);
-        Mockito.verify(mCallback1, Mockito.times(0))
-                .setNotification(FAKE_DOWNLOAD_1, mNotification);
+        Assert.assertEquals(0, mCallback1.mCallCount);
         mDownloadUiTaskManager.assertPinnedNotificationId(-1);
     }
 
@@ -116,8 +132,12 @@ public final class DownloadUserInitiatedTaskManagerTest {
                 FAKE_DOWNLOAD_1,
                 mNotification);
         mDownloadUiTaskManager.assertPinnedNotificationId(FAKE_DOWNLOAD_1);
-        Mockito.verify(mCallback1).setNotification(FAKE_DOWNLOAD_1, mNotification);
-        Mockito.verify(mCallback2).setNotification(FAKE_DOWNLOAD_1, mNotification);
+        Assert.assertEquals(1, mCallback1.mCallCount);
+        Assert.assertEquals(FAKE_DOWNLOAD_1, mCallback1.mLastNotificationId);
+        Assert.assertEquals(mNotification, mCallback1.mLastNotification);
+        Assert.assertEquals(1, mCallback2.mCallCount);
+        Assert.assertEquals(FAKE_DOWNLOAD_1, mCallback2.mLastNotificationId);
+        Assert.assertEquals(mNotification, mCallback2.mLastNotification);
     }
 
     @Test
@@ -136,8 +156,7 @@ public final class DownloadUserInitiatedTaskManagerTest {
                 DownloadNotificationService.DownloadStatus.IN_PROGRESS,
                 FAKE_DOWNLOAD_1,
                 mNotification);
-        Mockito.verify(mCallback1, Mockito.times(0))
-                .setNotification(FAKE_DOWNLOAD_1, mNotification);
+        Assert.assertEquals(0, mCallback1.mCallCount);
         mDownloadUiTaskManager.assertPinnedNotificationId(-1);
     }
 
@@ -154,28 +173,28 @@ public final class DownloadUserInitiatedTaskManagerTest {
                 FAKE_DOWNLOAD_1,
                 mNotification);
         mDownloadUiTaskManager.assertPinnedNotificationId(FAKE_DOWNLOAD_1);
-        Mockito.verify(mCallback1).setNotification(FAKE_DOWNLOAD_1, mNotification);
+        Assert.assertEquals(1, mCallback1.mCallCount);
+        Assert.assertEquals(FAKE_DOWNLOAD_1, mCallback1.mLastNotificationId);
+        Assert.assertEquals(mNotification, mCallback1.mLastNotification);
 
-        Mockito.clearInvocations(mCallback1);
+        mCallback1.reset();
         mDownloadUiTaskManager.updateDownloadStatus(
                 mContext,
                 DownloadNotificationService.DownloadStatus.COMPLETED,
                 FAKE_DOWNLOAD_1,
                 mNotification);
         mDownloadUiTaskManager.assertPinnedNotificationId(FAKE_DOWNLOAD_1);
-        Mockito.verify(mCallback1, Mockito.times(0))
-                .setNotification(FAKE_DOWNLOAD_1, mNotification);
+        Assert.assertEquals(0, mCallback1.mCallCount);
 
         // Service does not get affected by addition of inactive download.
-        Mockito.clearInvocations(mCallback1);
+        mCallback1.reset();
         mDownloadUiTaskManager.updateDownloadStatus(
                 mContext,
                 DownloadNotificationService.DownloadStatus.CANCELLED,
                 FAKE_DOWNLOAD_2,
                 mNotification);
         mDownloadUiTaskManager.assertPinnedNotificationId(FAKE_DOWNLOAD_1);
-        Mockito.verify(mCallback1, Mockito.times(0))
-                .setNotification(FAKE_DOWNLOAD_1, mNotification);
+        Assert.assertEquals(0, mCallback1.mCallCount);
     }
 
     @Test
@@ -191,7 +210,9 @@ public final class DownloadUserInitiatedTaskManagerTest {
                 FAKE_DOWNLOAD_1,
                 mNotification);
         mDownloadUiTaskManager.assertPinnedNotificationId(FAKE_DOWNLOAD_1);
-        Mockito.verify(mCallback1).setNotification(FAKE_DOWNLOAD_1, mNotification);
+        Assert.assertEquals(1, mCallback1.mCallCount);
+        Assert.assertEquals(FAKE_DOWNLOAD_1, mCallback1.mLastNotificationId);
+        Assert.assertEquals(mNotification, mCallback1.mLastNotification);
 
         // Start another job (due to network interruption).
         mDownloadUiTaskManager.setTaskNotificationCallback(TASK_ID_1, mCallback2);
@@ -201,6 +222,8 @@ public final class DownloadUserInitiatedTaskManagerTest {
                 FAKE_DOWNLOAD_1,
                 mNotification);
         mDownloadUiTaskManager.assertPinnedNotificationId(FAKE_DOWNLOAD_1);
-        Mockito.verify(mCallback2).setNotification(FAKE_DOWNLOAD_1, mNotification);
+        Assert.assertEquals(1, mCallback2.mCallCount);
+        Assert.assertEquals(FAKE_DOWNLOAD_1, mCallback2.mLastNotificationId);
+        Assert.assertEquals(mNotification, mCallback2.mLastNotification);
     }
 }
