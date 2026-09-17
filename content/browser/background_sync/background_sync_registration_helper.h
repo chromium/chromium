@@ -14,9 +14,9 @@
 #include "content/public/browser/background_sync_registration.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 
-namespace url {
-class Origin;
-}  // namespace url
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace content {
 
@@ -46,7 +46,7 @@ class BackgroundSyncRegistrationHelper {
   ~BackgroundSyncRegistrationHelper();
 
   bool ValidateSWRegistrationID(int64_t sw_registration_id,
-                                const url::Origin& origin);
+                                const blink::StorageKey& storage_key);
 
   void Register(blink::mojom::SyncRegistrationOptionsPtr options,
                 int64_t sw_registration_id,

@@ -11,7 +11,7 @@
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
-#include "url/origin.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -27,7 +27,7 @@ BackgroundSyncRegistrationHelper::~BackgroundSyncRegistrationHelper() = default;
 
 bool BackgroundSyncRegistrationHelper::ValidateSWRegistrationID(
     int64_t sw_registration_id,
-    const url::Origin& origin) {
+    const blink::StorageKey& storage_key) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   BackgroundSyncManager* background_sync_manager =
@@ -38,7 +38,7 @@ bool BackgroundSyncRegistrationHelper::ValidateSWRegistrationID(
       background_sync_manager->service_worker_context()->GetLiveRegistration(
           sw_registration_id);
   return service_worker_registration &&
-         service_worker_registration->key().origin().IsSameOriginWith(origin);
+         service_worker_registration->key() == storage_key;
 }
 
 void BackgroundSyncRegistrationHelper::Register(

@@ -16,11 +16,11 @@ namespace content {
 
 OneShotBackgroundSyncServiceImpl::OneShotBackgroundSyncServiceImpl(
     BackgroundSyncContextImpl* background_sync_context,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     RenderProcessHost* render_process_host,
     mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService> receiver)
     : background_sync_context_(background_sync_context),
-      origin_(origin),
+      storage_key_(storage_key),
       receiver_(this, std::move(receiver)) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(background_sync_context_, base::NotFatalUntil::M159);
@@ -55,7 +55,7 @@ void OneShotBackgroundSyncServiceImpl::Register(
   }
 
   if (!registration_helper_->ValidateSWRegistrationID(sw_registration_id,
-                                                      origin_)) {
+                                                      storage_key_)) {
     std::move(callback).Run(blink::mojom::BackgroundSyncError::STORAGE,
                             /* registrations= */ nullptr);
     return;
@@ -69,6 +69,12 @@ void OneShotBackgroundSyncServiceImpl::DidResolveRegistration(
     blink::mojom::BackgroundSyncRegistrationInfoPtr registration_info) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
+  if (!registration_info ||
+      !registration_helper_->ValidateSWRegistrationID(
+          registration_info->service_worker_registration_id, storage_key_)) {
+    return;
+  }
+
   registration_helper_->DidResolveRegistration(std::move(registration_info));
 }
 
@@ -78,7 +84,7 @@ void OneShotBackgroundSyncServiceImpl::GetRegistrations(
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (!registration_helper_->ValidateSWRegistrationID(sw_registration_id,
-                                                      origin_)) {
+                                                      storage_key_)) {
     std::move(callback).Run(blink::mojom::BackgroundSyncError::STORAGE,
                             /* options= */ {});
     return;

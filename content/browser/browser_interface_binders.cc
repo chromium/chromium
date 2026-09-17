@@ -1271,16 +1271,16 @@ void PopulateBinderMapWithContext(
       [](RenderFrameHost* host,
          mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
              receiver) {
-        host->GetProcess()->CreateOneShotSyncService(
-            host->GetStorageKey().origin(), std::move(receiver));
+        host->GetProcess()->CreateOneShotSyncService(host->GetStorageKey(),
+                                                     std::move(receiver));
       }));
 
   map->Add<blink::mojom::PeriodicBackgroundSyncService>(base::BindRepeating(
       [](RenderFrameHost* host,
          mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
              receiver) {
-        host->GetProcess()->CreatePeriodicSyncService(
-            host->GetStorageKey().origin(), std::move(receiver));
+        host->GetProcess()->CreatePeriodicSyncService(host->GetStorageKey(),
+                                                      std::move(receiver));
       }));
 
   map->Add<media::mojom::VideoDecodePerfHistory>(base::BindRepeating(
@@ -1629,6 +1629,17 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
           &RenderProcessHostImpl::BindIndexedDB, host));
   map->Add<blink::mojom::QuotaManagerHost>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindQuotaManagerHost, host));
+  if (base::FeatureList::IsEnabled(
+          blink::features::kServiceWorkerInDedicatedWorker) &&
+      base::FeatureList::IsEnabled(
+          blink::features::kServiceWorkerBackgroundSyncInDedicatedWorker)) {
+    map->Add<blink::mojom::OneShotBackgroundSyncService>(
+        BindWorkerReceiverForStorageKey(
+            &RenderProcessHostImpl::CreateOneShotSyncService, host));
+    map->Add<blink::mojom::PeriodicBackgroundSyncService>(
+        BindWorkerReceiverForStorageKey(
+            &RenderProcessHostImpl::CreatePeriodicSyncService, host));
+  }
   map->Add<blink::mojom::NotificationService>(BindNotificationService(
       host->GetAncestorRenderFrameHostId(),
       RenderProcessHost::NotificationServiceCreatorType::kDedicatedWorker,
@@ -1670,18 +1681,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePermissionService, host));
   map->Add<blink::mojom::FileBackedBlobFactory>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindFileBackedBlobFactory, host));
-
-  if (base::FeatureList::IsEnabled(
-          blink::features::kServiceWorkerInDedicatedWorker) &&
-      base::FeatureList::IsEnabled(
-          blink::features::kServiceWorkerBackgroundSyncInDedicatedWorker)) {
-    map->Add<blink::mojom::OneShotBackgroundSyncService>(
-        BindWorkerReceiverForOrigin(
-            &RenderProcessHostImpl::CreateOneShotSyncService, host));
-    map->Add<blink::mojom::PeriodicBackgroundSyncService>(
-        BindWorkerReceiverForOrigin(
-            &RenderProcessHostImpl::CreatePeriodicSyncService, host));
-  }
 }
 
 void PopulateBinderMap(DedicatedWorkerHost* host, mojo::BinderMap* map) {
@@ -1963,14 +1962,14 @@ void PopulateBinderMapWithContext(
       BindServiceWorkerReceiverForStorageKey(
           &RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker,
           host));
-  map->Add<blink::mojom::OneShotBackgroundSyncService>(
-      BindServiceWorkerReceiverForOrigin(
-          &RenderProcessHostImpl::CreateOneShotSyncService, host));
-  map->Add<blink::mojom::PeriodicBackgroundSyncService>(
-      BindServiceWorkerReceiverForOrigin(
-          &RenderProcessHostImpl::CreatePeriodicSyncService, host));
 
   // RenderProcessHost binders taking a storage key
+  map->Add<blink::mojom::OneShotBackgroundSyncService>(
+      BindServiceWorkerReceiverForStorageKey(
+          &RenderProcessHostImpl::CreateOneShotSyncService, host));
+  map->Add<blink::mojom::PeriodicBackgroundSyncService>(
+      BindServiceWorkerReceiverForStorageKey(
+          &RenderProcessHostImpl::CreatePeriodicSyncService, host));
   map->Add<blink::mojom::IDBFactory>(
       BindServiceWorkerReceiverForStorageKeyAndBucketContext(
           &RenderProcessHostImpl::BindIndexedDB, host));

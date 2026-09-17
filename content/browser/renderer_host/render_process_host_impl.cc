@@ -2830,21 +2830,21 @@ void RenderProcessHostImpl::BindAecDumpManager(
 }
 
 void RenderProcessHostImpl::CreateOneShotSyncService(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
         receiver) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
   storage_partition_impl_->GetBackgroundSyncContext()->CreateOneShotSyncService(
-      origin, this, std::move(receiver));
+      storage_key, this, std::move(receiver));
 }
 
 void RenderProcessHostImpl::CreatePeriodicSyncService(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
         receiver) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
   storage_partition_impl_->GetBackgroundSyncContext()
-      ->CreatePeriodicSyncService(origin, this, std::move(receiver));
+      ->CreatePeriodicSyncService(storage_key, this, std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindPushMessaging(

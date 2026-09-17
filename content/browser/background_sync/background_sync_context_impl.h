@@ -18,6 +18,10 @@
 #include "content/public/browser/background_sync_context.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 
 class BackgroundSyncManager;
@@ -57,14 +61,14 @@ class CONTENT_EXPORT BackgroundSyncContextImpl
 
   // Creates a OneShotBackgroundSyncServiceImpl that is owned by `this`.
   void CreateOneShotSyncService(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       RenderProcessHost* render_process_host,
       mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
           receiver);
 
   // Creates a PeriodicBackgroundSyncServiceImpl that is owned by `this`.
   void CreatePeriodicSyncService(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       RenderProcessHost* render_process_host,
       mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
           receiver);

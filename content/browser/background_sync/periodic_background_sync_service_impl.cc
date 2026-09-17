@@ -10,17 +10,17 @@
 #include "content/browser/background_sync/background_sync_context_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_thread.h"
-#include "url/origin.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
 PeriodicBackgroundSyncServiceImpl::PeriodicBackgroundSyncServiceImpl(
     BackgroundSyncContextImpl* background_sync_context,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     RenderProcessHost* render_process_host,
     mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService> receiver)
     : background_sync_context_(background_sync_context),
-      origin_(origin),
+      storage_key_(storage_key),
       receiver_(this, std::move(receiver)) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(background_sync_context_, base::NotFatalUntil::M159);
@@ -56,7 +56,7 @@ void PeriodicBackgroundSyncServiceImpl::Register(
   }
 
   if (!registration_helper_->ValidateSWRegistrationID(sw_registration_id,
-                                                      origin_)) {
+                                                      storage_key_)) {
     std::move(callback).Run(blink::mojom::BackgroundSyncError::STORAGE,
                             /* options= */ nullptr);
     return;
@@ -73,7 +73,7 @@ void PeriodicBackgroundSyncServiceImpl::Unregister(
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (!registration_helper_->ValidateSWRegistrationID(sw_registration_id,
-                                                      origin_)) {
+                                                      storage_key_)) {
     std::move(callback).Run(blink::mojom::BackgroundSyncError::STORAGE);
     return;
   }
@@ -93,7 +93,7 @@ void PeriodicBackgroundSyncServiceImpl::GetRegistrations(
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (!registration_helper_->ValidateSWRegistrationID(sw_registration_id,
-                                                      origin_)) {
+                                                      storage_key_)) {
     std::move(callback).Run(blink::mojom::BackgroundSyncError::STORAGE,
                             /* registrations= */ {});
     return;

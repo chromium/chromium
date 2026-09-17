@@ -7,6 +7,9 @@
 #include "base/memory/raw_ptr.h"
 #include "content/browser/background_sync/background_sync_service_impl_test_harness.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "net/base/schemeful_site.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
@@ -33,7 +36,8 @@ class OneShotBackgroundSyncServiceImplTest
         one_shot_sync_service_remote_.BindNewPipeAndPassReceiver();
     // Create a new OneShotBackgroundSyncServiceImpl bound to the dummy channel.
     background_sync_context_->CreateOneShotSyncService(
-        url::Origin::Create(GURL(kServiceWorkerOrigin)),
+        blink::StorageKey::CreateFirstParty(
+            url::Origin::Create(GURL(kServiceWorkerOrigin))),
         render_process_host_.get(), std::move(receiver));
     base::RunLoop().RunUntilIdle();
 
@@ -127,6 +131,69 @@ TEST_F(OneShotBackgroundSyncServiceImplTest,
   ASSERT_TRUE(get_registrations_called);
   EXPECT_EQ(blink::mojom::BackgroundSyncError::NONE, get_registrations_error);
   EXPECT_EQ(1UL, array_size);
+}
+
+TEST_F(OneShotBackgroundSyncServiceImplTest,
+       RegisterOneShotSync_DifferentStorageKey) {
+  mojo::Remote<blink::mojom::OneShotBackgroundSyncService> remote;
+  background_sync_context_->CreateOneShotSyncService(
+      blink::StorageKey::Create(url::Origin::Create(GURL(kServiceWorkerOrigin)),
+                                net::SchemefulSite(GURL("https://other.com")),
+                                blink::mojom::AncestorChainBit::kCrossSite),
+      render_process_host_.get(), remote.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+
+  bool called = false;
+  blink::mojom::BackgroundSyncError error;
+  blink::mojom::SyncRegistrationOptionsPtr reg;
+  remote->Register(
+      default_sync_registration_.Clone(), sw_registration_id_,
+      base::BindOnce(&ErrorAndRegistrationCallback, &called, &error, &reg));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(called);
+  EXPECT_EQ(blink::mojom::BackgroundSyncError::STORAGE, error);
+  EXPECT_FALSE(reg);
+}
+
+TEST_F(OneShotBackgroundSyncServiceImplTest,
+       GetOneShotSyncRegistrations_DifferentStorageKey) {
+  mojo::Remote<blink::mojom::OneShotBackgroundSyncService> remote;
+  background_sync_context_->CreateOneShotSyncService(
+      blink::StorageKey::Create(url::Origin::Create(GURL(kServiceWorkerOrigin)),
+                                net::SchemefulSite(GURL("https://other.com")),
+                                blink::mojom::AncestorChainBit::kCrossSite),
+      render_process_host_.get(), remote.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+
+  bool called = false;
+  blink::mojom::BackgroundSyncError error;
+  unsigned long array_size = 0UL;
+  remote->GetRegistrations(sw_registration_id_,
+                           base::BindOnce(&ErrorAndRegistrationListCallback,
+                                          &called, &error, &array_size));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(called);
+  EXPECT_EQ(blink::mojom::BackgroundSyncError::STORAGE, error);
+  EXPECT_EQ(0UL, array_size);
+}
+
+TEST_F(OneShotBackgroundSyncServiceImplTest,
+       DidResolveRegistration_DifferentStorageKey) {
+  mojo::Remote<blink::mojom::OneShotBackgroundSyncService> remote;
+  background_sync_context_->CreateOneShotSyncService(
+      blink::StorageKey::Create(url::Origin::Create(GURL(kServiceWorkerOrigin)),
+                                net::SchemefulSite(GURL("https://other.com")),
+                                blink::mojom::AncestorChainBit::kCrossSite),
+      render_process_host_.get(), remote.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+
+  auto registration_info = blink::mojom::BackgroundSyncRegistrationInfo::New(
+      sw_registration_id_, "sample_tag",
+      blink::mojom::BackgroundSyncType::ONE_SHOT);
+  remote->DidResolveRegistration(std::move(registration_info));
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace content

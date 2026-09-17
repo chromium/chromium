@@ -18,6 +18,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 #include "url/origin.h"
 
@@ -69,7 +70,7 @@ void BackgroundSyncContextImpl::Shutdown() {
 }
 
 void BackgroundSyncContextImpl::CreateOneShotSyncService(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     RenderProcessHost* render_process_host,
     mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
         receiver) {
@@ -77,11 +78,11 @@ void BackgroundSyncContextImpl::CreateOneShotSyncService(
   CHECK(background_sync_manager_, base::NotFatalUntil::M159);
   one_shot_sync_services_.insert(
       std::make_unique<OneShotBackgroundSyncServiceImpl>(
-          this, origin, render_process_host, std::move(receiver)));
+          this, storage_key, render_process_host, std::move(receiver)));
 }
 
 void BackgroundSyncContextImpl::CreatePeriodicSyncService(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     RenderProcessHost* render_process_host,
     mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
         receiver) {
@@ -89,7 +90,7 @@ void BackgroundSyncContextImpl::CreatePeriodicSyncService(
   CHECK(background_sync_manager_, base::NotFatalUntil::M159);
   periodic_sync_services_.insert(
       std::make_unique<PeriodicBackgroundSyncServiceImpl>(
-          this, origin, render_process_host, std::move(receiver)));
+          this, storage_key, render_process_host, std::move(receiver)));
 }
 
 void BackgroundSyncContextImpl::OneShotSyncServiceHadConnectionError(

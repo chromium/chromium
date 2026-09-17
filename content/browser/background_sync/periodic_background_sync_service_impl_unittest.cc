@@ -7,6 +7,10 @@
 #include "base/memory/raw_ptr.h"
 #include "content/browser/background_sync/background_sync_service_impl_test_harness.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "net/base/schemeful_site.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -36,7 +40,8 @@ class PeriodicBackgroundSyncServiceImplTest
     // Create a new PeriodicBackgroundSyncServiceImpl bound to the dummy
     // channel.
     background_sync_context_->CreatePeriodicSyncService(
-        url::Origin::Create(GURL(kServiceWorkerOrigin)),
+        blink::StorageKey::CreateFirstParty(
+            url::Origin::Create(GURL(kServiceWorkerOrigin))),
         render_process_host_.get(), std::move(receiver));
     base::RunLoop().RunUntilIdle();
 
@@ -199,6 +204,73 @@ TEST_F(PeriodicBackgroundSyncServiceImplTest, Unregister) {
     EXPECT_EQ(blink::mojom::BackgroundSyncError::NONE, error);
     EXPECT_EQ(0UL, array_size);
   }
+}
+
+TEST_F(PeriodicBackgroundSyncServiceImplTest,
+       RegisterPeriodicSync_DifferentStorageKey) {
+  mojo::Remote<blink::mojom::PeriodicBackgroundSyncService> remote;
+  background_sync_context_->CreatePeriodicSyncService(
+      blink::StorageKey::Create(url::Origin::Create(GURL(kServiceWorkerOrigin)),
+                                net::SchemefulSite(GURL("https://other.com")),
+                                blink::mojom::AncestorChainBit::kCrossSite),
+      render_process_host_.get(), remote.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+
+  bool called = false;
+  blink::mojom::BackgroundSyncError error;
+  blink::mojom::SyncRegistrationOptionsPtr reg;
+  auto to_register = default_sync_registration_.Clone();
+  to_register->min_interval = 3600;
+  remote->Register(
+      std::move(to_register), sw_registration_id_,
+      base::BindOnce(&ErrorAndRegistrationCallback, &called, &error, &reg));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(called);
+  EXPECT_EQ(blink::mojom::BackgroundSyncError::STORAGE, error);
+  EXPECT_FALSE(reg);
+}
+
+TEST_F(PeriodicBackgroundSyncServiceImplTest,
+       GetPeriodicSyncRegistrations_DifferentStorageKey) {
+  mojo::Remote<blink::mojom::PeriodicBackgroundSyncService> remote;
+  background_sync_context_->CreatePeriodicSyncService(
+      blink::StorageKey::Create(url::Origin::Create(GURL(kServiceWorkerOrigin)),
+                                net::SchemefulSite(GURL("https://other.com")),
+                                blink::mojom::AncestorChainBit::kCrossSite),
+      render_process_host_.get(), remote.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+
+  bool called = false;
+  blink::mojom::BackgroundSyncError error;
+  unsigned long array_size = 0UL;
+  remote->GetRegistrations(sw_registration_id_,
+                           base::BindOnce(&ErrorAndRegistrationListCallback,
+                                          &called, &error, &array_size));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(called);
+  EXPECT_EQ(blink::mojom::BackgroundSyncError::STORAGE, error);
+  EXPECT_EQ(0UL, array_size);
+}
+
+TEST_F(PeriodicBackgroundSyncServiceImplTest, Unregister_DifferentStorageKey) {
+  mojo::Remote<blink::mojom::PeriodicBackgroundSyncService> remote;
+  background_sync_context_->CreatePeriodicSyncService(
+      blink::StorageKey::Create(url::Origin::Create(GURL(kServiceWorkerOrigin)),
+                                net::SchemefulSite(GURL("https://other.com")),
+                                blink::mojom::AncestorChainBit::kCrossSite),
+      render_process_host_.get(), remote.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+
+  bool called = false;
+  blink::mojom::BackgroundSyncError error;
+  remote->Unregister(sw_registration_id_, "shared_tag",
+                     base::BindOnce(&ErrorCallback, &called, &error));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(called);
+  EXPECT_EQ(blink::mojom::BackgroundSyncError::STORAGE, error);
 }
 
 }  // namespace content
