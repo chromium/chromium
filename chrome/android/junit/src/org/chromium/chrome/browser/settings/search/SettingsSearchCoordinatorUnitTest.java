@@ -332,6 +332,7 @@ public class SettingsSearchCoordinatorUnitTest {
     public void testSingleColumnSearchUiWidth_withSettingsInTab_accountsForToolbarPadding() {
         setUpMultiColumnSettings();
         mUseMultiColumn = false;
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
 
         // Give toolbar padding, insets, and an initial non-zero end margin.
         mToolbar.setPaddingRelative(16, 0, 16, 0);
@@ -384,6 +385,7 @@ public class SettingsSearchCoordinatorUnitTest {
     public void testSingleColumnSearchUiWidth_withSettingsInTab_narrowScreen_includesItemMargin() {
         setUpMultiColumnSettings();
         mUseMultiColumn = false;
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
 
         mToolbar.setPaddingRelative(16, 0, 16, 0);
         mToolbar.setContentInsetsRelative(16, 16);
@@ -561,6 +563,7 @@ public class SettingsSearchCoordinatorUnitTest {
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     @Config(qualifiers = "w800dp-h1280dp")
     public void testUpdateHelpMenuVisibility_withSettingsInTab_withMenuItems_showsMenu() {
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
         mToolbar.getMenu().add(Menu.NONE, R.id.delete_menu_id, Menu.NONE, "Delete");
         mCoordinator.updateHelpMenuVisibility();
         ShadowLooper.idleMainLooper();
@@ -572,6 +575,7 @@ public class SettingsSearchCoordinatorUnitTest {
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     @Config(qualifiers = "w800dp-h1280dp")
     public void testUpdateHelpMenuVisibility_withSettingsInTab_withoutMenuItems_hidesMenu() {
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
         mToolbar.getMenu().clear();
         mCoordinator.updateHelpMenuVisibility();
         ShadowLooper.idleMainLooper();
@@ -583,6 +587,7 @@ public class SettingsSearchCoordinatorUnitTest {
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     @Config(qualifiers = "w800dp-h1280dp")
     public void testUpdateHelpMenuVisibility_withSettingsInTab_inSearchState_hidesMenu() {
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
         mToolbar.getMenu().add(Menu.NONE, R.id.delete_menu_id, Menu.NONE, "Delete");
         mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_SEARCH);
         mCoordinator.updateHelpMenuVisibility();

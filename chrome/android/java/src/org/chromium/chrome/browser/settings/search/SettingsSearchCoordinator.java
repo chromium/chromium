@@ -1092,8 +1092,7 @@ public class SettingsSearchCoordinator
     public void updateHelpMenuVisibility() {
         ViewGroup menuView = (ViewGroup) getHelpMenuView();
         if (menuView == null) {
-            if (SettingsInTab.isEnabled()
-                    && (mActionBar == null || !hasVisibleMenuItems(mActionBar.getMenu()))) {
+            if (mShownInTab && (mActionBar == null || !hasVisibleMenuItems(mActionBar.getMenu()))) {
                 updateSearchUiWidth();
                 return;
             }
@@ -1283,7 +1282,7 @@ public class SettingsSearchCoordinator
             // contentInsetEnd and padding that must be accounted for so the search box aligns
             // with the preference items in the detail pane.
             int actionBarEndMargin =
-                    SettingsInTab.isEnabled() && !hasMenuIcon()
+                    mShownInTab && !hasMenuIcon()
                             ? gapPx - actionBar.getContentInsetEnd() - actionBar.getPaddingEnd()
                             : gapPx - getPixelSize(R.dimen.settings_menu_icon_margin);
             updateView(actionBar, 0, actionBarEndMargin, LayoutParams.MATCH_PARENT);
@@ -1372,7 +1371,7 @@ public class SettingsSearchCoordinator
         int endMargin = margin;
         // On wide screens and in SettingsInTab (e.g. tablet in split-screen mode), preference items
         // always include itemMargin. Include itemMargin here so the search UI aligns.
-        if (isOnWideScreen || SettingsInTab.isEnabled()) {
+        if (isOnWideScreen || mShownInTab) {
             int itemMargin = getPixelSize(R.dimen.settings_item_margin);
             margin += itemMargin;
             if (menuWidth > 0) {
@@ -1638,7 +1637,7 @@ public class SettingsSearchCoordinator
     private boolean shouldShowHelpMenu() {
         if (mFragmentState != FS_SETTINGS) return false;
 
-        if (SettingsInTab.isEnabled()) {
+        if (mShownInTab) {
             return mActionBar != null && hasVisibleMenuItems(mActionBar.getMenu());
         }
 
