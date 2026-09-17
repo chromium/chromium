@@ -24,16 +24,13 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
@@ -55,18 +52,14 @@ public class DiscountsBottomSheetContentRenderTest {
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    private static Activity sActivity;
-
     @Rule
-    public RenderTestRule mRenderTestRule =
+    public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setRevision(1)
                     .setBugComponent(UI_BROWSER_SHOPPING)
                     .build();
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private Tab mMockTab;
+    private static Activity sActivity;
 
     private ModelList mModelList;
     private View mContentView;
@@ -83,7 +76,8 @@ public class DiscountsBottomSheetContentRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
-                            new DiscountsBottomSheetContentCoordinator(sActivity, () -> mMockTab);
+                            new DiscountsBottomSheetContentCoordinator(
+                                    sActivity, SupplierUtils.ofNull());
                     mContentView = mCoordinator.getContentViewForTesting();
                     mRecyclerView = mCoordinator.getRecyclerViewForTesting();
                     mModelList = mCoordinator.getModelListForTesting();
