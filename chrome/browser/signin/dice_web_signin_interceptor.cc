@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -1366,10 +1365,7 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
   // `DiceWebSigninInterceptor::OnExtendedAccountInfoRemoved()`, which will
   // cause the account_id (originating from `DiceSignedInProfileCreator`) being
   // passed around to be in turn destroyed and cause a UAF issue.
-  // TODO(crbug.com/435076172): The issue is potentially already fixed, change
-  // this to a regular `CHECK()` if no crashes are reported.
-  CHECK(!account_info_update_observation_.IsObserving(),
-        base::NotFatalUntil::M144);
+  CHECK(!account_info_update_observation_.IsObserving());
 
   DCHECK(state_->interception_bubble_handle_);
   // base::Unretained(this) is safe here because the callback is owned by
@@ -1505,10 +1501,7 @@ void DiceWebSigninInterceptor::OnProfileSwitchChoice(
   // `DiceWebSigninInterceptor::OnExtendedAccountInfoRemoved()`, which will
   // cause the account_id (originating from `DiceSignedInProfileCreator`) being
   // passed around to be in turn destroyed and cause a UAF issue.
-  // TODO(crbug.com/435076172): The issue is potentially already fixed, change
-  // this to a regular `CHECK()` if no crashes are reported.
-  CHECK(!account_info_update_observation_.IsObserving(),
-        base::NotFatalUntil::M144);
+  CHECK(!account_info_update_observation_.IsObserving());
 
   DCHECK(state_->interception_bubble_handle_);
   DCHECK(!state_->dice_signed_in_profile_creator_);

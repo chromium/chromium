@@ -183,8 +183,7 @@ TurnSyncOnHelper::TurnSyncOnHelper(
 
   // This class should be unreachable if `kReplaceSyncPromosWithSignInPromos` is
   // enabled.
-  CHECK(!syncer::IsReplaceSyncPromosWithSignInPromosEnabled(),
-        base::NotFatalUntil::M144);
+  CHECK(!syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
 
   // Cancel any existing helper.
   AttachToProfile();
