@@ -12,10 +12,12 @@
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -256,9 +258,31 @@ void GlicE2ETest::TearDownOnMainThread() {
   if (HasFailure()) {
     base::FilePath snapshot_path = SaveDesktopSnapshot();
     if (!snapshot_path.empty()) {
+      // SaveDesktopSnapshot() names files by timestamp only. A single swarming
+      // task runs many tests, each retried, and uploads every snapshot to the
+      // same ISOLATED_OUTDIR, so prefix the test name to make the failing
+      // test's snapshot identifiable.
+      if (const testing::TestInfo* test_info =
+              testing::UnitTest::GetInstance()->current_test_info()) {
+        std::string prefix = base::StringPrintf(
+            "%s.%s_", test_info->test_suite_name(), test_info->name());
+        // Parameterized test names contain '/', which is not path-safe.
+        base::ReplaceChars(prefix, "/", "_", &prefix);
+        const std::string base_name = snapshot_path.BaseName().MaybeAsASCII();
+        if (!base_name.empty()) {
+          base::FilePath renamed =
+              snapshot_path.DirName().AppendASCII(prefix + base_name);
+          base::ScopedAllowBlockingForTesting allow_blocking;
+          if (base::Move(snapshot_path, renamed)) {
+            snapshot_path = renamed;
+          }
+        }
+      }
+
       LOG(WARNING) << "Saved desktop snapshot to: " << snapshot_path;
     }
   }
+
   for (auto& client : devtools_clients_) {
     client.second->DetachProtocolClient();
   }
