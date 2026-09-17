@@ -9220,6 +9220,14 @@
     "expiry_milestone": 155
   },
   {
+    "name": "skills-app-menu",
+    "owners": [
+      "xinlongyi@google.com",
+      "skills-eng@google.com"
+    ],
+    "expiry_milestone": 180
+  },
+  {
     "name": "smart-suggestion-for-large-downloads",
     "owners": [ "shaktisahu@chromium.org" ],
     "expiry_milestone": 100

@@ -207,6 +207,8 @@
     IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS) \
   E(kActionExtensionsSubmenuVisitChromeWebStore, \
     IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE) \
+  E(kActionManageSkills, IDC_MANAGE_SKILLS) \
+  E(kActionBrowseSkills, IDC_BROWSE_SKILLS) \
   E(kActionReadingListMenuAddTab, IDC_READING_LIST_MENU_ADD_TAB) \
   E(kActionRecentTabsLoginForDeviceTabs, \
     IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS) \
@@ -570,7 +572,8 @@
   E(kActionSavedTabGroupsSubmenu, IDC_SAVED_TAB_GROUPS_MENU)               \
   E(kActionRecentTabsSubmenu, IDC_RECENT_TABS_MENU)                       \
   E(kActionDeveloperSubmenu, IDC_DEVELOPER_MENU)                               \
-  E(kActionExtensionsSubmenu, IDC_EXTENSIONS_SUBMENU)
+  E(kActionExtensionsSubmenu, IDC_EXTENSIONS_SUBMENU)                          \
+  E(kActionSkillsSubmenu, IDC_SKILLS_MENU)
 
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \

@@ -1972,6 +1972,10 @@ inline constexpr char kSkillsEnabledName[] = "Skills";
 inline constexpr char kSkillsEnabledDescription[] =
     "Enables Skills in Gemini in Chrome";
 
+inline constexpr char kSkillsAppMenuName[] = "Skills App Menu";
+inline constexpr char kSkillsAppMenuDescription[] =
+    "Shows the Skills sub-menu item in the Chrome app menu.";
+
 inline constexpr char kContextualSearchWithCredentialsForDebugName[] =
     "Contextual Search within credentials for debug";
 inline constexpr char kContextualSearchWithCredentialsForDebugDescription[] =

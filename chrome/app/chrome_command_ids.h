@@ -549,6 +549,10 @@
 #define IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU               54019
 #define IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING                 54020
 
+// Skills commands
+#define IDC_MANAGE_SKILLS                                     54021
+#define IDC_BROWSE_SKILLS                                     54022
+
 // Omnibox Everywhere status tray icon menu
 #define IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE                      54030
 #define IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT 54031
@@ -592,6 +596,7 @@
 #define IDC_SAVED_TAB_GROUPS_MENU 57332
 #define IDC_MORE_TOOLS_MENU 57331
 #define IDC_HELP_MENU 57330
+#define IDC_SKILLS_MENU 57310
 
 // Context Menu submenus
 #define IDC_SPELLCHECK_MENU 57329

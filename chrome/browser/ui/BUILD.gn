@@ -2141,6 +2141,7 @@ static_library("ui") {
       "//components/password_manager/core/browser/leak_detection",
       "//components/private_ai",
       "//components/services/app_service",
+      "//components/skills:features",
       "//components/ui_metrics",
       "//components/url_formatter",
       "//components/user_education/webui",

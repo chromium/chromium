@@ -1245,6 +1245,12 @@ void BrowserCommandController::HandleCommandWithDisposition(
     case IDC_SHOW_BOOKMARK_MANAGER:
       ShowBookmarkManager(webui::GetBrowserForOpeningWebUi(browser_));
       break;
+    case IDC_MANAGE_SKILLS:
+      ShowSkillsYourSkills(webui::GetBrowserForOpeningWebUi(browser_));
+      break;
+    case IDC_BROWSE_SKILLS:
+      ShowSkillsBrowse(webui::GetBrowserForOpeningWebUi(browser_));
+      break;
     case IDC_SHOW_BOOKMARK_SIDE_PANEL:
       SidePanelUI::From(browser_)->Show(SidePanelEntryId::kBookmarks,
                                         SidePanelOpenTrigger::kAppMenu);
@@ -1740,6 +1746,11 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_SHOW_GOOGLE_LENS_SHORTCUT, true);
   command_updater_->UpdateCommandEnabled(IDC_SHOW_SEARCH_TOOLS, true);
   command_updater_->UpdateCommandEnabled(IDC_SHOW_AI_MODE_OMNIBOX_BUTTON, true);
+
+  // Skills menu commands
+  command_updater_->UpdateCommandEnabled(IDC_SKILLS_MENU, true);
+  command_updater_->UpdateCommandEnabled(IDC_MANAGE_SKILLS, true);
+  command_updater_->UpdateCommandEnabled(IDC_BROWSE_SKILLS, true);
 
   // Window management commands
   command_updater_->UpdateCommandEnabled(IDC_CLOSE_WINDOW, true);

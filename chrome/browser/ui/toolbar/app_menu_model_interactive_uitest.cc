@@ -49,6 +49,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/skills/features.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "components/vector_icons/vector_icons.h"
@@ -387,6 +388,41 @@ IN_PROC_BROWSER_TEST_P(AppMenuModelExtensionsInteractiveTest,
                                 MENU_ACTION_FIND_EXTENSIONS, collapse ? 1 : 0);
   histograms_.ExpectBucketCount("WrenchMenu.MenuAction",
                                 MENU_ACTION_MANAGE_EXTENSIONS, 0);
+}
+
+class AppMenuModelSkillsInteractiveTest : public AppMenuModelInteractiveTest {
+ public:
+  AppMenuModelSkillsInteractiveTest() {
+    feature_list_.InitWithFeatures(
+        {features::kSkillsEnabled, features::kSkillsAppMenu}, {});
+  }
+
+  ~AppMenuModelSkillsInteractiveTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelSkillsInteractiveTest, ManageSkills) {
+  RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
+                  PressButton(kToolbarAppMenuButtonElementId),
+                  SelectMenuItem(AppMenuModel::kSkillsMenuItem),
+                  SelectMenuItem(SkillsMenuModel::kManageSkillsMenuItem),
+                  WaitForWebContentsNavigation(
+                      kPrimaryTabPageElementId,
+                      GURL(chrome::kChromeUISkillsURL)
+                          .Resolve(chrome::kChromeUISkillsYourSkillsPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelSkillsInteractiveTest, BrowseSkills) {
+  RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
+                  PressButton(kToolbarAppMenuButtonElementId),
+                  SelectMenuItem(AppMenuModel::kSkillsMenuItem),
+                  SelectMenuItem(SkillsMenuModel::kBrowseSkillsMenuItem),
+                  WaitForWebContentsNavigation(
+                      kPrimaryTabPageElementId,
+                      GURL(chrome::kChromeUISkillsURL)
+                          .Resolve(chrome::kChromeUISkillsBrowsePath)));
 }
 
 class PasswordManagerMenuItemInteractiveTest

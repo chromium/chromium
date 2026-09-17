@@ -733,6 +733,16 @@ void ShowWebAppSettings(Profile* profile,
                         web_app::AppSettingsPageEntryPoint entry_point) {
   ShowWebAppSettingsImpl(/*browser=*/nullptr, profile, app_id, entry_point);
 }
+
+void ShowSkillsYourSkills(BrowserWindowInterface* browser) {
+  ShowSingletonTabIgnorePathOverwriteNTP(
+      browser, GURL(kChromeUISkillsURL).Resolve(kChromeUISkillsYourSkillsPath));
+}
+
+void ShowSkillsBrowse(BrowserWindowInterface* browser) {
+  ShowSingletonTabIgnorePathOverwriteNTP(
+      browser, GURL(kChromeUISkillsURL).Resolve(kChromeUISkillsBrowsePath));
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace chrome

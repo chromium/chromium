@@ -169,6 +169,8 @@ void ShowWebAppSettings(BrowserWindowInterface* browser,
 void ShowWebAppSettings(Profile* profile,
                         const std::string& app_id,
                         web_app::AppSettingsPageEntryPoint entry_point);
+void ShowSkillsYourSkills(BrowserWindowInterface* browser);
+void ShowSkillsBrowse(BrowserWindowInterface* browser);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace chrome

@@ -136,6 +136,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/skills/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/sync_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -199,6 +200,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kTabGroupsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kDownloadsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kHistoryMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kExtensionsMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kSkillsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kClearBrowsingDataMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kMoreToolsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIncognitoMenuItem);
@@ -1010,6 +1012,31 @@ void HelpMenuModel::Build(BrowserWindowInterface* browser) {
     }
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// SkillsMenuModel
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SkillsMenuModel, kManageSkillsMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SkillsMenuModel, kBrowseSkillsMenuItem);
+
+SkillsMenuModel::SkillsMenuModel(ui::SimpleMenuModel::Delegate* delegate)
+    : SimpleMenuModel(delegate) {
+  Build();
+}
+
+SkillsMenuModel::~SkillsMenuModel() = default;
+
+void SkillsMenuModel::Build() {
+  AddItemWithStringIdAndVectorIcon(
+      this, IDC_MANAGE_SKILLS, IDS_SKILLS_MENU_MANAGE_SKILLS,
+      features::IsRoundedIconsEnabled() ? kSettingsIcon : kSettingsMenuOldIcon);
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_MANAGE_SKILLS).value(),
+                         kManageSkillsMenuItem);
+  AddItemWithStringIdAndVectorIcon(this, IDC_BROWSE_SKILLS,
+                                   IDS_SKILLS_MENU_BROWSE_SKILLS, kExploreIcon);
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_BROWSE_SKILLS).value(),
+                         kBrowseSkillsMenuItem);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2078,10 +2105,10 @@ void AppMenuModel::Build() {
   }
   int new_tab_string_id = IDS_NEW_TAB;
   if (browser_->GetProfile()->IsEnterpriseIsolatedModeProfile() &&
-              !browser_->GetProfile()->IsGuestSession()) {
+      !browser_->GetProfile()->IsGuestSession()) {
     new_tab_string_id = IDS_NEW_ISOLATED_TAB;
   } else if (browser_->GetProfile()->IsIncognitoProfile() &&
-              !browser_->GetProfile()->IsGuestSession()) {
+             !browser_->GetProfile()->IsGuestSession()) {
     new_tab_string_id = IDS_NEW_INCOGNITO_TAB;
   }
   AddItemWithStringIdAndVectorIcon(
@@ -2217,6 +2244,17 @@ void AppMenuModel::Build() {
     SetElementIdentifierAt(
         GetIndexOfCommandId(kExtensionsSubmenuPlaceholder).value(),
         kExtensionsMenuItem);
+  }
+
+  if (browser_->GetProfile()->IsRegularProfile() &&
+      base::FeatureList::IsEnabled(features::kSkillsEnabled) &&
+      base::FeatureList::IsEnabled(features::kSkillsAppMenu)) {
+    sub_menus_.push_back(std::make_unique<SkillsMenuModel>(this));
+    AddSubMenuWithStringIdAndVectorIcon(this, kSkillsMenuPlaceholder,
+                                        IDS_SKILLS_MENU,
+                                        sub_menus_.back().get(), kContractIcon);
+    SetElementIdentifierAt(GetIndexOfCommandId(kSkillsMenuPlaceholder).value(),
+                           kSkillsMenuItem);
   }
 
   AddItemWithStringIdAndVectorIcon(

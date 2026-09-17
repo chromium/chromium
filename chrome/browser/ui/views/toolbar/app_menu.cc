@@ -1312,6 +1312,10 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
     return true;
   }
 
+  if (command_id == AppMenuModel::kSkillsMenuPlaceholder) {
+    return true;
+  }
+
   if (command_id == AppMenuModel::kMoreToolsMenuPlaceholder) {
     return true;
   }
