@@ -625,9 +625,34 @@ public class SearchActivityUtilsUnitTest {
                 mTabModelSelector,
                 tabWindowInfo,
                 GOOD_URL,
+                TabSelectionType.FROM_OMNIBOX,
                 () -> callbackCalled[0] = true);
 
         verify(mTabModel).setIndex(0, TabSelectionType.FROM_OMNIBOX);
+        assertTrue(callbackCalled[0]);
+    }
+
+    @Test
+    public void bringTabToFront_sameModel_customSelectionType() {
+        int tabId = 123;
+        when(mTab.getId()).thenReturn(tabId);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getTabAt(0)).thenReturn(mTab);
+        when(mTabModel.iterator()).thenReturn(List.of(mTab).iterator());
+
+        TabWindowInfo tabWindowInfo = new TabWindowInfo(1, mTabModelSelector, mTabModel, mTab);
+        boolean[] callbackCalled = new boolean[1];
+
+        SearchActivityUtils.bringTabToFront(
+                mActivity,
+                mTabModelSelector,
+                tabWindowInfo,
+                GOOD_URL,
+                TabSelectionType.FROM_USER,
+                () -> callbackCalled[0] = true);
+
+        verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
         assertTrue(callbackCalled[0]);
     }
 
@@ -647,6 +672,7 @@ public class SearchActivityUtilsUnitTest {
                 mTabModelSelector,
                 tabWindowInfo,
                 GOOD_URL,
+                TabSelectionType.FROM_OMNIBOX,
                 () -> callbackCalled[0] = true);
 
         Intent intent = Shadows.shadowOf(mActivity).getNextStartedActivity();

@@ -663,6 +663,7 @@ public class TabSearchOverlayCoordinator
                 mTabModelSelectorSupplier.get(),
                 tabWindowInfo,
                 url,
+                TabSelectionType.FROM_USER,
                 () -> hide(TabSearchDismissalReason.TAB_SELECTED));
     }
 

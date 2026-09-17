@@ -169,6 +169,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObscuringHandlerSupplier;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
@@ -3005,6 +3006,7 @@ public class RootUiCoordinator
                 mTabModelSelectorSupplier.get(),
                 tabWindowInfo,
                 url,
+                TabSelectionType.FROM_OMNIBOX,
                 /* onTabSwitched= */ null);
     }
 

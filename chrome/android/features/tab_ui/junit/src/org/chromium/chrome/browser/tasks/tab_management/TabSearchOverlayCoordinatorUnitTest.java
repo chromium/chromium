@@ -69,6 +69,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -82,6 +83,7 @@ import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxControls;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.searchwidget.SearchUiCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
@@ -91,6 +93,9 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
+import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabSearchOverlayCoordinator.TabSearchDismissalReason;
 import org.chromium.chrome.browser.tasks.tab_management.TabSearchOverlayCoordinator.TabSearchEntryPoint;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -107,6 +112,7 @@ import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
 
 import java.util.Collections;
 import java.util.List;
@@ -148,6 +154,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Mock private AppHeaderState mAppHeaderState;
     @Mock private FuseboxControls mFuseboxControls;
     @Mock private AutocompleteCoordinator mAutocompleteCoordinator;
+    @Mock private TabWindowManager mTabWindowManager;
 
     private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
             new OneshotSupplierImpl<>();
@@ -163,6 +170,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
 
     @Captor private ArgumentCaptor<OverrideUrlLoadingDelegate> mOverrideUrlLoadingDelegateCaptor;
     @Captor private ArgumentCaptor<Callback<String>> mBringTabGroupToFrontCallbackCaptor;
+    @Captor private ArgumentCaptor<OmniboxActionDelegateImpl> mOmniboxActionDelegateCaptor;
 
     @Before
     @SuppressWarnings("unchecked")
@@ -174,6 +182,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         mTabModelSelectorSupplier.set(mTabModelSelector);
         mProfileSupplier.set(mProfile);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
         mTabGroupUiActionHandlerSupplier.set(mTabGroupUiActionHandler);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mTabModel);
@@ -234,6 +243,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
 
     @After
     public void tearDown() {
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(null);
         mCoordinator.destroy();
         assertNull(mCoordinator.getPanelContainerForTesting());
         assertNull(mCoordinator.getPopupWindowForTesting());
@@ -582,6 +592,36 @@ public class TabSearchOverlayCoordinatorUnitTest {
         verify(mTabModel).setIndex(2, TabSelectionType.FROM_USER);
     }
 
+    @Test
+    public void testBringTabToFront_switchesTabWithFromUser() {
+        showOverlay();
+        verifySearchUiCoordinatorInitialized();
+
+        int tabId = 123;
+        when(mTab.getId()).thenReturn(tabId);
+        when(mTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getTabAt(0)).thenReturn(mTab);
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+        when(mTabModel.iterator()).thenReturn(List.of(mTab).iterator());
+
+        TabWindowInfo tabWindowInfo = new TabWindowInfo(0, mTabModelSelector, mTabModel, mTab);
+        when(mTabWindowManager.getTabWindowInfoById(tabId)).thenReturn(tabWindowInfo);
+
+        OmniboxActionDelegateImpl actionDelegate = mOmniboxActionDelegateCaptor.getValue();
+        assertNotNull(actionDelegate);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason", TabSearchDismissalReason.TAB_SELECTED);
+        assertTrue(actionDelegate.switchToTab(tabId, new GURL("https://example.com")));
+        watcher.assertExpected();
+        assertFalse(mCoordinator.isVisible());
+
+        verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
+    }
+
     private void showOverlay() {
         mCoordinator.show(TabSearchEntryPoint.HORIZONTAL_TAB_STRIP);
         assertOverlayShown();
@@ -619,7 +659,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
                         mOverrideUrlLoadingDelegateCaptor.capture(),
                         any(),
                         mBringTabGroupToFrontCallbackCaptor.capture(),
-                        any(),
+                        mOmniboxActionDelegateCaptor.capture(),
                         any(),
                         any(),
                         any());
