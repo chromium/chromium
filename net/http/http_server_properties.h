@@ -340,6 +340,12 @@ class NET_EXPORT HttpServerProperties
                                       int alternate_port,
                                       bool is_suffix = false);
 
+  // Configures whether to try QUIC by default for all HTTPS origins when no
+  // specific alternative service or known QUIC hint is found. If enabled,
+  // candidate QUIC alternative services will be returned for HTTPS requests
+  // on the destination's port, unless the service is currently marked broken.
+  void SetTryQuicByDefault(bool enable);
+
   // Marks |alternative_service| as broken in the context of
   // |network_anonymization_key|. |alternative_service.host| must not be empty.
   void MarkAlternativeServiceBroken(
@@ -506,6 +512,8 @@ class NET_EXPORT HttpServerProperties
   HttpServerPropertiesManager* properties_manager_for_testing() {
     return properties_manager_.get();
   }
+
+  bool try_quic_by_default_for_testing() const { return try_quic_by_default_; }
 
  private:
   // TODO (wangyix): modify HttpServerProperties unit tests so this
@@ -680,6 +688,11 @@ class NET_EXPORT HttpServerProperties
   // services. Suffixes are reversed to allow for efficient comparison.
   KnownAlternativeServiceSuffixSet
       reversed_known_alternative_service_suffixes_set_;
+
+  // When true, requests to HTTPS servers that do not have a specific or
+  // known alternative service configured will attempt to use QUIC by default
+  // on the server's port, unless the alternative service is marked broken.
+  bool try_quic_by_default_ = false;
 
   // Contains a map of servers which could share the same alternate protocol.
   // Map from a Canonical scheme/host/port/NAK (host is some postfix of host

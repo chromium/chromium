@@ -471,6 +471,11 @@ void HttpServerProperties::SetKnownQuicAlternativeService(
   reversed_known_alternative_service_suffixes_set_.insert(reversed_host);
 }
 
+void HttpServerProperties::SetTryQuicByDefault(bool enable) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  try_quic_by_default_ = enable;
+}
+
 void HttpServerProperties::MarkAlternativeServiceBroken(
     const AlternativeService& alternative_service,
     const NetworkAnonymizationKey& network_anonymization_key) {
@@ -868,8 +873,9 @@ HttpServerProperties::GetAlternativeServiceInfosInternal(
     if (service_info->empty()) {
       map_it->second.alternative_services.reset();
       server_info_map_.EraseIfEmpty(map_it);
+    } else {
+      return valid_alternative_service_infos;
     }
-    return valid_alternative_service_infos;
   }
 
   // If a more specific alternative service has not been found, look for
@@ -887,55 +893,75 @@ HttpServerProperties::GetAlternativeServiceInfosInternal(
           AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
               *known_alternative_service, base::Time::Max(),
               DefaultSupportedQuicVersions()));
-      return valid_alternative_service_infos;
     }
+    return valid_alternative_service_infos;
   }
 
   auto canonical = GetCanonicalAltSvcHost(origin, network_anonymization_key);
-  if (canonical == canonical_alt_svc_map_.end()) {
-    return AlternativeServiceInfoVector();
-  }
-  map_it = server_info_map_.Get(
-      CreateServerInfoKey(canonical->second, network_anonymization_key));
-  if (map_it == server_info_map_.end() ||
-      !map_it->second.alternative_services.has_value()) {
-    return AlternativeServiceInfoVector();
-  }
-  AlternativeServiceInfoVector* service_info =
-      &map_it->second.alternative_services.value();
-  for (auto it = service_info->begin(); it != service_info->end();) {
-    if (it->expiration() < now) {
-      it = service_info->erase(it);
-      continue;
-    }
-    AlternativeService alternative_service(it->alternative_service());
-    if (alternative_service.host.empty()) {
-      alternative_service.host = canonical->second.host();
-      if (IsAlternativeServiceBroken(alternative_service,
-                                     network_anonymization_key)) {
+  if (canonical != canonical_alt_svc_map_.end()) {
+    map_it = server_info_map_.Get(
+        CreateServerInfoKey(canonical->second, network_anonymization_key));
+    if (map_it != server_info_map_.end() &&
+        map_it->second.alternative_services.has_value()) {
+      AlternativeServiceInfoVector* service_info =
+          &map_it->second.alternative_services.value();
+      for (auto it = service_info->begin(); it != service_info->end();) {
+        if (it->expiration() < now) {
+          it = service_info->erase(it);
+          continue;
+        }
+        AlternativeService alternative_service(it->alternative_service());
+        if (alternative_service.host.empty()) {
+          alternative_service.host = canonical->second.host();
+          if (IsAlternativeServiceBroken(alternative_service,
+                                         network_anonymization_key)) {
+            ++it;
+            continue;
+          }
+          alternative_service.host = origin.host();
+        } else if (IsAlternativeServiceBroken(alternative_service,
+                                              network_anonymization_key)) {
+          ++it;
+          continue;
+        }
+        if (alternative_service.protocol == NextProto::kProtoQUIC) {
+          valid_alternative_service_infos.push_back(
+              AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
+                  alternative_service, it->expiration(),
+                  it->advertised_versions()));
+        } else {
+          valid_alternative_service_infos.push_back(
+              AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
+                  alternative_service, it->expiration()));
+        }
         ++it;
-        continue;
       }
-      alternative_service.host = origin.host();
-    } else if (IsAlternativeServiceBroken(alternative_service,
-                                          network_anonymization_key)) {
-      ++it;
-      continue;
+      if (service_info->empty()) {
+        map_it->second.alternative_services.reset();
+        server_info_map_.EraseIfEmpty(map_it);
+      } else {
+        return valid_alternative_service_infos;
+      }
     }
-    if (alternative_service.protocol == NextProto::kProtoQUIC) {
+  }
+
+  // If no alternative service was found from `server_info_map_`, known hints,
+  // wildcard suffix hints, or canonical maps, and `try_quic_by_default_` is
+  // enabled, attempt QUIC on the destination host and port for HTTPS origins
+  // (unless already marked broken).
+  if (try_quic_by_default_ && origin.scheme() == url::kHttpsScheme &&
+      origin.port() != 0 && !origin.host().empty()) {
+    AlternativeService default_alternative_service(
+        NextProto::kProtoQUIC, origin.host(), origin.port());
+    if (!IsAlternativeServiceBroken(default_alternative_service,
+                                    network_anonymization_key)) {
       valid_alternative_service_infos.push_back(
           AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
-              alternative_service, it->expiration(),
-              it->advertised_versions()));
-    } else {
-      valid_alternative_service_infos.push_back(
-          AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
-              alternative_service, it->expiration()));
+              default_alternative_service, base::Time::Max(),
+              DefaultSupportedQuicVersions()));
     }
-    ++it;
   }
-  if (service_info->empty())
-    server_info_map_.EraseIfEmpty(map_it);
+
   return valid_alternative_service_infos;
 }
 
