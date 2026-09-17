@@ -55,6 +55,33 @@ enum class ViewDownloadedFileJourneySteps {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:ViewDownloadedFileJourneySteps)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(CustomizeChromeJourneySteps)
+enum class CustomizeChromeJourneySteps {
+  kSidePanelShown = 1,
+  kThemeOrColorSelected = 2,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:CustomizeChromeJourneySteps)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ReadAnythingJourneySteps)
+enum class ReadAnythingJourneySteps {
+  kOpenReadAnything = 1,
+  kReadAnythingViewShown = 2,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:ReadAnythingJourneySteps)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(TabSearchJourneySteps)
+enum class TabSearchJourneySteps {
+  kOpenTabSearch = 1,
+  kTabSearchBubbleShown = 2,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:TabSearchJourneySteps)
+
 // Registry for all defined Critical User Journeys.
 // Used to store and retrieve journey definitions by their starting element.
 class CriticalUserJourneyRegistry {

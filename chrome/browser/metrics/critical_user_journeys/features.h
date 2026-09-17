@@ -17,6 +17,9 @@ BASE_DECLARE_FEATURE(kViewDownloadedFileJourney);
 BASE_DECLARE_FEATURE(kViewDownloadedFileFromAppMenuJourney);
 BASE_DECLARE_FEATURE(kPinExtensionJourney);
 BASE_DECLARE_FEATURE(kSettingsGlowupJourneys);
+BASE_DECLARE_FEATURE(kCustomizeChromeJourney);
+BASE_DECLARE_FEATURE(kReadAnythingJourney);
+BASE_DECLARE_FEATURE(kTabSearchJourney);
 
 // HaTS Survey feature flags.
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForDownloadJourney);
@@ -27,6 +30,15 @@ extern const char kHatsSurveyTriggerPinExtensionJourney[];
 
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForClearBrowsingHistory);
 extern const char kHatsSurveyTriggerClearBrowsingHistory[];
+
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForCustomizeChromeJourney);
+extern const char kHatsSurveyTriggerCustomizeChromeJourney[];
+
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForReadAnythingJourney);
+extern const char kHatsSurveyTriggerReadAnythingJourney[];
+
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForTabSearchJourney);
+extern const char kHatsSurveyTriggerTabSearchJourney[];
 
 }  // namespace metrics
 

@@ -31,6 +31,18 @@ void CriticalUserJourneyRegistry::AddJourneys() {
   clear_browsing_history_hats_params.trigger =
       metrics::kHatsSurveyTriggerClearBrowsingHistory;
 
+  HatsParams customize_chrome_hats_params;
+  customize_chrome_hats_params.trigger =
+      metrics::kHatsSurveyTriggerCustomizeChromeJourney;
+
+  HatsParams read_anything_hats_params;
+  read_anything_hats_params.trigger =
+      metrics::kHatsSurveyTriggerReadAnythingJourney;
+
+  HatsParams tab_search_hats_params;
+  tab_search_hats_params.trigger =
+      metrics::kHatsSurveyTriggerTabSearchJourney;
+
   // ---------------------------------------------------------------------------
   // Existing Browser Journeys
   // ---------------------------------------------------------------------------
@@ -110,6 +122,49 @@ void CriticalUserJourneyRegistry::AddJourneys() {
               ui::InteractionSequence::StepType::kCustomEvent,
               ClearBrowsingHistoryJourneySteps::kClearBrowsingDataHistoryEvent)
           .LaunchHatsSurveyOnCompletion(clear_browsing_history_hats_params)
+          .Build());
+
+  // Customize Chrome (Themes & Colors)
+  AddJourney(
+      CriticalUserJourney::Builder(&kCustomizeChromeJourney)
+          .AddStep(kCustomizeChromeSidePanelWebViewElementId,
+                   ui::InteractionSequence::StepType::kShown,
+                   CustomizeChromeJourneySteps::kSidePanelShown)
+          .AddStep(kBrowserThemeChangedEventId,
+                   ui::InteractionSequence::StepType::kCustomEvent,
+                   CustomizeChromeJourneySteps::kThemeOrColorSelected)
+          .LaunchHatsSurveyOnCompletion(customize_chrome_hats_params)
+          .Build());
+
+  // Reading Mode (Read Anything)
+  AddJourney(
+      CriticalUserJourney::Builder(&kReadAnythingJourney)
+          .AddAnyOf(
+              {Branch(kToolbarSidePanelButtonElementId,
+                      ui::InteractionSequence::StepType::kActivated,
+                      ReadAnythingJourneySteps::kOpenReadAnything),
+               Branch(kReadAnythingPageActionElementId,
+                      ui::InteractionSequence::StepType::kActivated,
+                      ReadAnythingJourneySteps::kOpenReadAnything),
+               Branch(kSidePanelComboboxElementId,
+                      ui::InteractionSequence::StepType::kActivated,
+                      ReadAnythingJourneySteps::kOpenReadAnything)})
+          .AddStep(kReadAnythingViewModeElementId,
+                   ui::InteractionSequence::StepType::kShown,
+                   ReadAnythingJourneySteps::kReadAnythingViewShown)
+          .LaunchHatsSurveyOnCompletion(read_anything_hats_params)
+          .Build());
+
+  // Tab Search
+  AddJourney(
+      CriticalUserJourney::Builder(&kTabSearchJourney)
+          .AddStep(kTabSearchButtonElementId,
+                   ui::InteractionSequence::StepType::kActivated,
+                   TabSearchJourneySteps::kOpenTabSearch)
+          .AddStep(kTabSearchBubbleElementId,
+                   ui::InteractionSequence::StepType::kShown,
+                   TabSearchJourneySteps::kTabSearchBubbleShown)
+          .LaunchHatsSurveyOnCompletion(tab_search_hats_params)
           .Build());
 
   // ---------------------------------------------------------------------------

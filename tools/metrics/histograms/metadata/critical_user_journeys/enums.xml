@@ -47,6 +47,15 @@ This file defines enums used in Critical User Journey histograms.
 
 <!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h:JourneyResult) -->
 
+<!-- LINT.IfChange(CustomizeChromeJourneySteps) -->
+
+<enum name="CustomizeChromeJourneySteps">
+  <int value="1" label="Customize Chrome side panel shown"/>
+  <int value="2" label="Theme or color selected"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:CustomizeChromeJourneySteps) -->
+
 <!-- LINT.IfChange(PinExtensionJourneySteps) -->
 
 <enum name="PinExtensionJourneySteps">
@@ -56,6 +65,24 @@ This file defines enums used in Critical User Journey histograms.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:PinExtensionJourneySteps) -->
+
+<!-- LINT.IfChange(ReadAnythingJourneySteps) -->
+
+<enum name="ReadAnythingJourneySteps">
+  <int value="1" label="Open Reading Mode"/>
+  <int value="2" label="Reading Mode view shown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:ReadAnythingJourneySteps) -->
+
+<!-- LINT.IfChange(TabSearchJourneySteps) -->
+
+<enum name="TabSearchJourneySteps">
+  <int value="1" label="Open Tab Search"/>
+  <int value="2" label="Tab Search bubble shown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:TabSearchJourneySteps) -->
 
 <!-- LINT.IfChange(ViewDownloadedFileFromAppMenuJourneySteps) -->
 
