@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_controller_impl.h"
-#include "chrome/browser/ui/ash/editor_menu/editor_menu_promo_card_view.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_textfield_view.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_view.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_manager_impl.h"
@@ -85,8 +84,6 @@ class EditorMenuBrowserTest : public InProcessBrowserTest {
   using EditorMenuControllerImpl =
       chromeos::editor_menu::EditorMenuControllerImpl;
   using EditorMenuView = chromeos::editor_menu::EditorMenuView;
-  using EditorMenuPromoCardView =
-      chromeos::editor_menu::EditorMenuPromoCardView;
 
   EditorMenuControllerImpl* GetControllerImpl() {
     auto* read_write_manager =
@@ -116,18 +113,15 @@ class EditorMenuBrowserFeatureDisabledTest : public EditorMenuBrowserTest {
   ~EditorMenuBrowserFeatureDisabledTest() override = default;
 };
 
-class EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest
-    : public EditorMenuBrowserTest {
+class EditorMenuBrowserFeatureEnabledTest : public EditorMenuBrowserTest {
  public:
-  EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest() {
+  EditorMenuBrowserFeatureEnabledTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{ash::features::kLobsterDogfood,
-                               chromeos::features::kMagicBoostRevamp});
+        /*enabled_features=*/{chromeos::features::kFeatureManagementOrca},
+        /*disabled_features=*/{ash::features::kLobsterDogfood});
   }
 
-  ~EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest() override =
-      default;
+  ~EditorMenuBrowserFeatureEnabledTest() override = default;
 
 // TODO(crbug.com/41486387): Tentatively disable the failing tests.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -142,16 +136,13 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureDisabledTest,
   EXPECT_EQ(nullptr, GetControllerImpl());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest,
-    ShouldCreateWhenFeatureEnabled) {
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       ShouldCreateWhenFeatureEnabled) {
   EXPECT_TRUE(chromeos::features::IsOrcaEnabled());
   EXPECT_NE(nullptr, GetControllerImpl());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest,
-    CanShowEditorMenu) {
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest, CanShowEditorMenu) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
@@ -165,9 +156,8 @@ IN_PROC_BROWSER_TEST_F(
   GetEditorMenuView()->GetWidget()->Close();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest,
-    ShowsRewriteUIWithChips) {
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       ShowsRewriteUIWithChips) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
@@ -186,9 +176,8 @@ IN_PROC_BROWSER_TEST_F(
                           ::testing::Pointee(ChildrenSizeIs(2))));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest,
-    ShowsWideRewriteUIWithChips) {
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       ShowsWideRewriteUIWithChips) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   // Show editor menu with a wide anchor.
@@ -207,25 +196,8 @@ IN_PROC_BROWSER_TEST_F(
               ElementsAre(::testing::Pointee(ChildrenSizeIs(5))));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest,
-    CanShowPromoCard) {
-  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
-
-  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
-      kAnchorBounds,
-      CreateTestEditorPanelContext(EditorMode::kConsentNeeded,
-                                   EditorTextSelectionMode::kNoSelection,
-                                   /*consent_status_settled=*/false));
-
-  EXPECT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
-
-  GetEditorMenuView()->GetWidget()->Close();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest,
-    DoesNotShowWhenSoftBlocked) {
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       DoesNotShowWhenSoftBlocked) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
@@ -237,9 +209,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetControllerImpl()->editor_menu_widget_for_testing(), nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest,
-    ShowEditorMenuAboveAnchor) {
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       ShowEditorMenuAboveAnchor) {
   EXPECT_TRUE(chromeos::features::IsOrcaEnabled());
   EXPECT_NE(nullptr, GetControllerImpl());
 
@@ -258,9 +229,8 @@ IN_PROC_BROWSER_TEST_F(
   GetEditorMenuView()->GetWidget()->Close();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest,
-    ShowEditorMenuBelowAnchor) {
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       ShowEditorMenuBelowAnchor) {
   EXPECT_TRUE(chromeos::features::IsOrcaEnabled());
   EXPECT_NE(nullptr, GetControllerImpl());
 
@@ -280,9 +250,8 @@ IN_PROC_BROWSER_TEST_F(
   GetEditorMenuView()->GetWidget()->Close();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest,
-    AlignsEditorMenuRightEdgeWithAnchor) {
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       AlignsEditorMenuRightEdgeWithAnchor) {
   ASSERT_NE(GetControllerImpl(), nullptr);
 
   // Place the anchor near the right edge of the screen.
@@ -303,9 +272,8 @@ IN_PROC_BROWSER_TEST_F(
   GetEditorMenuView()->GetWidget()->Close();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest,
-    MatchesAnchorWidth) {
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       MatchesAnchorWidth) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   // Show editor menu.
@@ -322,9 +290,8 @@ IN_PROC_BROWSER_TEST_F(
   GetEditorMenuView()->GetWidget()->Close();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest,
-    MatchesUpdatedAnchorWidth) {
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       MatchesUpdatedAnchorWidth) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   // Show editor menu.
@@ -343,9 +310,8 @@ IN_PROC_BROWSER_TEST_F(
   GetEditorMenuView()->GetWidget()->Close();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest,
-    AdjustsPositionWhenAnchorBoundsUpdate) {
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       AdjustsPositionWhenAnchorBoundsUpdate) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   // Show editor menu.
@@ -370,9 +336,8 @@ IN_PROC_BROWSER_TEST_F(
   GetEditorMenuView()->GetWidget()->Close();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest,
-    PressingEscClosesEditorMenuWidget) {
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
+                       PressingEscClosesEditorMenuWidget) {
   ASSERT_NE(GetControllerImpl(), nullptr);
 
   GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
@@ -393,8 +358,7 @@ class EditorMenuBrowserI18nTest : public EditorMenuBrowserTest {
   EditorMenuBrowserI18nTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kFeatureManagementOrca},
-        /*disabled_features=*/{ash::features::kLobsterDogfood,
-                               chromeos::features::kMagicBoostRevamp});
+        /*disabled_features=*/{ash::features::kLobsterDogfood});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -423,52 +387,11 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserI18nTest, ShowWriteCardTitleInFrench) {
                 IDS_EDITOR_MENU_FREEFORM_PROMPT_INPUT_FIELD_PLACEHOLDER));
 }
 
-IN_PROC_BROWSER_TEST_F(EditorMenuBrowserI18nTest, ShowPromoCardTitleInFrench) {
-  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
-
-  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
-      kAnchorBounds,
-      CreateTestEditorPanelContext(EditorMode::kConsentNeeded,
-                                   EditorTextSelectionMode::kNoSelection,
-                                   /*consent_status_settled=*/false));
-
-  ASSERT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
-
-  EXPECT_EQ(views::AsViewClass<EditorMenuPromoCardView>(GetEditorMenuView())
-                ->title_for_testing()
-                ->GetDisplayTextForTesting(),
-            l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE));
-}
-
-IN_PROC_BROWSER_TEST_F(EditorMenuBrowserI18nTest,
-                       EditorMenuPromoCardViewAccessibleProperties) {
-  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
-
-  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
-      kAnchorBounds,
-      CreateTestEditorPanelContext(EditorMode::kConsentNeeded,
-                                   EditorTextSelectionMode::kNoSelection,
-                                   /*consent_status_settled=*/false));
-  auto* promo_card =
-      views::AsViewClass<EditorMenuPromoCardView>(GetEditorMenuView());
-  ui::AXNodeData data;
-
-  ASSERT_TRUE(promo_card);
-  promo_card->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
-  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE));
-}
-
 class EditorMenuBrowserWithMagicBoostRevampTest : public EditorMenuBrowserTest {
  public:
   EditorMenuBrowserWithMagicBoostRevampTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {
-            chromeos::features::kFeatureManagementOrca,
-            chromeos::features::kMagicBoostRevamp,
-        },
+        /*enabled_features=*/{chromeos::features::kFeatureManagementOrca},
         /*disabled_features=*/{ash::features::kLobsterDogfood});
   }
 
@@ -485,8 +408,6 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserWithMagicBoostRevampTest,
                                    EditorTextSelectionMode::kHasSelection,
                                    /*consent_status_settled=*/false));
 
-  EXPECT_FALSE(
-      views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
   EXPECT_TRUE(views::IsViewClass<EditorMenuView>(GetEditorMenuView()));
 
   GetEditorMenuView()->GetWidget()->Close();

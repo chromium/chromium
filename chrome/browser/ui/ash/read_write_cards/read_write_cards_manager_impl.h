@@ -90,12 +90,6 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
   bool ShouldShowQuickAnswers(const content::ContextMenuParams& params);
   bool ShouldShowMahi(const content::ContextMenuParams& params);
 
-  // Gets the opt-in features that Magic Boost should opt-in. Returns a nullopt
-  // if we should not initiate an opt-in flow.
-  std::optional<ash::magic_boost::OptInFeatures> GetMagicBoostOptInFeatures(
-      const content::ContextMenuParams& params,
-      const editor_menu::EditorMenuCardContext& editor_menu_card_context);
-
   // `chromeos::ReadWriteCardsUiController` MUST be destructed after
   // `QuickAnswersUiController`, which is owned by `QuickAnswersControllerImpl`.
   // A destructor of `QuickAnswersUiController` accesses

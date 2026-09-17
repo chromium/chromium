@@ -19,7 +19,6 @@ enum class LobsterMode {
 
 enum class TextAndImageMode {
   kBlocked,
-  kPromoCard,
   kEditorWriteOnly,
   kEditorRewriteOnly,
   kLobsterWithNoSelectedText,

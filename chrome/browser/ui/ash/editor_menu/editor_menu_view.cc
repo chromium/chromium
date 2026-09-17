@@ -306,7 +306,6 @@ gfx::Insets EditorMenuView::GetTitleContainerInsets() const {
     case TextAndImageMode::kEditorRewriteAndLobster:
       return kNoTabsTitleContainerInsets;
     case TextAndImageMode::kBlocked:
-    case TextAndImageMode::kPromoCard:
       return gfx::Insets();
   }
 }

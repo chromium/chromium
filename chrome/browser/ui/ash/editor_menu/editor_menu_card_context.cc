@@ -6,7 +6,6 @@
 
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace chromeos::editor_menu {
 
@@ -24,10 +23,6 @@ TextAndImageMode EditorMenuCardContext::text_and_image_mode() const {
     case EditorMode::kRewrite:
     case EditorMode::kWrite:
     case EditorMode::kConsentNeeded:
-      if (editor_mode_ == EditorMode::kConsentNeeded &&
-          !chromeos::features::IsMagicBoostRevampEnabled()) {
-        return TextAndImageMode::kPromoCard;
-      }
       if (lobster_mode_ == LobsterMode::kBlocked) {
         return text_selection_mode_ ==
                        EditorMenuCardTextSelectionMode::kHasSelection
@@ -52,10 +47,6 @@ TextAndImageMode EditorMenuCardContext::text_and_image_mode() const {
   }
 }
 
-bool EditorMenuCardContext::consent_status_settled() const {
-  return consent_status_settled_;
-}
-
 EditorMode EditorMenuCardContext::editor_mode() const {
   return editor_mode_;
 }
@@ -65,7 +56,6 @@ PresetTextQueries EditorMenuCardContext::preset_queries() const {
 
   switch (text_and_image_mode()) {
     case TextAndImageMode::kBlocked:
-    case TextAndImageMode::kPromoCard:
     case TextAndImageMode::kEditorWriteOnly:
       return {};
     case TextAndImageMode::kEditorRewriteOnly:
@@ -85,12 +75,6 @@ PresetTextQueries EditorMenuCardContext::preset_queries() const {
           PresetQueryCategory::kLobster)});
       return preset_queries;
   }
-}
-
-EditorMenuCardContext& EditorMenuCardContext::set_consent_status_settled(
-    bool consent_status_settled) {
-  consent_status_settled_ = consent_status_settled;
-  return *this;
 }
 
 EditorMenuCardContext& EditorMenuCardContext::set_editor_preset_queries(

@@ -23,9 +23,6 @@ class EditorMenuViewDelegate {
 
   virtual void OnTextfieldArrowButtonPressed(std::u16string_view text) = 0;
 
-  virtual void OnPromoCardWidgetClosed(
-      views::Widget::ClosedReason closed_reason) = 0;
-
   virtual void OnEditorMenuVisibilityChanged(bool visible,
                                              bool destroy_session = true) = 0;
 };

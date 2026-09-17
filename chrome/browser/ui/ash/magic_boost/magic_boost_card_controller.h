@@ -72,19 +72,10 @@ class MagicBoostCardController
 
   base::WeakPtr<MagicBoostCardController> GetWeakPtr();
 
-  void set_transition_action(ash::magic_boost::TransitionAction action) {
-    transition_action_ = action;
-  }
-  ash::magic_boost::TransitionAction transition_action_for_test() {
-    return transition_action_;
-  }
-
   views::Widget* opt_in_widget_for_test() { return opt_in_widget_.get(); }
 
  private:
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
-  ash::magic_boost::TransitionAction transition_action_ =
-      ash::magic_boost::TransitionAction::kDoNothing;
   views::UniqueWidgetPtr opt_in_widget_;
   ash::magic_boost::OptInFeatures opt_in_features_;
   base::WeakPtrFactory<MagicBoostCardController> weak_factory_{this};

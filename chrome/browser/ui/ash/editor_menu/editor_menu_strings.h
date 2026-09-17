@@ -13,14 +13,6 @@ std::u16string GetEditorMenuLobsterTitle();
 
 std::u16string GetEditorMenuLobsterChipLabel();
 
-std::u16string GetEditorMenuPromoCardTitle();
-
-std::u16string GetEditorMenuPromoCardDescription();
-
-std::u16string GetEditorMenuPromoCardDismissButtonText();
-
-std::u16string GetEditorMenuPromoCardTryItButtonText();
-
 std::u16string GetEditorMenuWriteCardTitle();
 
 std::u16string GetEditorMenuRewriteCardTitle();

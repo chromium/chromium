@@ -29,7 +29,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_manager_factory.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
-#include "chrome/browser/ui/ash/editor_menu/editor_menu_promo_card_view.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_view.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
@@ -37,7 +36,6 @@
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/text_input_client.h"
@@ -128,9 +126,6 @@ void EditorMenuControllerImpl::OnAnchorBoundsChanged(
   if (views::IsViewClass<EditorMenuView>(editor_menu_view)) {
     views::AsViewClass<EditorMenuView>(editor_menu_view)
         ->UpdateBounds(anchor_bounds);
-  } else if (views::IsViewClass<EditorMenuPromoCardView>(editor_menu_view)) {
-    views::AsViewClass<EditorMenuPromoCardView>(editor_menu_view)
-        ->UpdateBounds(anchor_bounds);
   }
 }
 
@@ -139,9 +134,6 @@ void EditorMenuControllerImpl::OnDismiss(bool is_other_command_executed) {
     auto* const editor_menu_view = editor_menu_widget_->GetContentsView();
     if (views::IsViewClass<EditorMenuView>(editor_menu_view)) {
       views::AsViewClass<EditorMenuView>(editor_menu_view)
-          ->OnAnchorMenuDismissed();
-    } else if (views::IsViewClass<EditorMenuPromoCardView>(editor_menu_view)) {
-      views::AsViewClass<EditorMenuPromoCardView>(editor_menu_view)
           ->OnAnchorMenuDismissed();
     }
 
@@ -186,27 +178,6 @@ void EditorMenuControllerImpl::OnTextfieldArrowButtonPressed(
   DisableEditorMenu();
 
   card_session_->StartFlowWithFreeformText(base::UTF16ToUTF8(text));
-}
-
-void EditorMenuControllerImpl::OnPromoCardWidgetClosed(
-    views::Widget::ClosedReason closed_reason) {
-  if (!card_session_ || card_session_->editor_manager() == nullptr) {
-    return;
-  }
-
-  switch (closed_reason) {
-    case views::Widget::ClosedReason::kAcceptButtonClicked:
-      card_session_->editor_manager()->StartEditingFlow();
-      break;
-    case views::Widget::ClosedReason::kCloseButtonClicked:
-      card_session_->editor_manager()->OnPromoCardDeclined();
-      break;
-    default:
-      card_session_->editor_manager()->OnPromoCardDismissed();
-      break;
-  }
-
-  OnEditorCardHidden();
 }
 
 void EditorMenuControllerImpl::OnEditorMenuVisibilityChanged(
@@ -295,7 +266,6 @@ void EditorMenuControllerImpl::OnGetEditorCardMenuContext(
     const EditorContext& editor_context) {
   std::move(callback).Run(
       EditorMenuCardContext()
-          .set_consent_status_settled(editor_context.consent_status_settled)
           .set_editor_preset_queries(editor_context.preset_queries)
           .set_editor_mode(editor_context.mode)
           .set_lobster_mode(lobster_mode)
@@ -313,7 +283,6 @@ void EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext(
     const EditorContext& editor_context) {
   EditorMenuCardContext editor_menu_card_context =
       EditorMenuCardContext()
-          .set_consent_status_settled(editor_context.consent_status_settled)
           .set_editor_preset_queries(editor_context.preset_queries)
           .set_editor_mode(editor_context.mode)
           .set_lobster_mode(lobster_mode)
@@ -329,14 +298,6 @@ void EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext(
 
   switch (text_and_image_mode) {
     case TextAndImageMode::kBlocked:
-      break;
-    case TextAndImageMode::kPromoCard:
-      if (chromeos::features::IsMagicBoostRevampEnabled()) {
-        NOTREACHED();
-      }
-      editor_menu_widget_ = EditorMenuPromoCardView::CreateWidget(
-          &application_locale_storage_.get(), anchor_bounds, this);
-      editor_menu_widget_->ShowInactive();
       break;
     case TextAndImageMode::kEditorWriteOnly:
     case TextAndImageMode::kEditorRewriteOnly:

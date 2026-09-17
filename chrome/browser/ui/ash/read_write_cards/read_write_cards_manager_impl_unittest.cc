@@ -103,11 +103,9 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase {
   void OnGetEditorMenuCardContext(
       editor_menu::FetchControllersCallback callback,
       const content::ContextMenuParams& context_menu_params,
-      editor_menu::EditorMode editor_mode,
-      bool editor_consent_status_settled) {
+      editor_menu::EditorMode editor_mode) {
     const editor_menu::EditorMenuCardContext editor_menu_card_context =
         editor_menu::EditorMenuCardContext()
-            .set_consent_status_settled(editor_consent_status_settled)
             .set_editor_mode(editor_mode)
             .build();
 
@@ -117,11 +115,9 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase {
 
   std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> GetControllers(
       content::ContextMenuParams params,
-      editor_menu::EditorMode editor_mode = editor_menu::EditorMode::kWrite,
-      bool editor_consent_status_settled = true) {
+      editor_menu::EditorMode editor_mode = editor_menu::EditorMode::kWrite) {
     const editor_menu::EditorMenuCardContext editor_menu_card_context =
         editor_menu::EditorMenuCardContext()
-            .set_consent_status_settled(editor_consent_status_settled)
             .set_editor_mode(editor_mode)
             .build();
 
@@ -173,12 +169,11 @@ class ReadWriteCardsManagerImplWithAndWithoutMahiTest
               chromeos::features::kFeatureManagementMahi,
               chromeos::features::kFeatureManagementOrca,
           },
-          /*disabled_features=*/{chromeos::features::kMagicBoostRevamp});
+          /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{chromeos::features::kFeatureManagementOrca},
-          /*disabled_features=*/{chromeos::features::kFeatureManagementMahi,
-                                 chromeos::features::kMagicBoostRevamp});
+          /*disabled_features=*/{chromeos::features::kFeatureManagementMahi});
     }
     ReadWriteCardsManagerImplTest::SetUp();
   }
@@ -315,212 +310,30 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
       GetControllers(params));
 }
 
+// Tests that no card is shown when the editor is blocked and neither Mahi nor
+// Quick Answers is eligible (the page is not distillable and no text is
+// selected). `kSoftBlocked` and `kHardBlocked` are handled identically by
+// `EditorMenuCardContext::text_and_image_mode()`, so only one is exercised
+// here.
 TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
-       MagicBoostOptInQuickAnswerAndMahiNoSelectedText) {
-  QuickAnswersState::Get()->SetEligibilityForTesting(true);
-
-  magic_boost_state_->AsyncWriteConsentStatus(HMRConsentStatus::kUnset);
-
-  content::ContextMenuParams params;
-
-  // When Mahi is enabled and consent status is unset, the opt in card
-  // controller should be fetched.
+       OnGetEditorContextBlockedShowsNoCard) {
   if (IsMahiEnabled()) {
-    mahi_menu_controller()->set_is_distillable_for_testing(true);
-
-    ExpectControllersEqual(
-        "Wrong quick answers/mahi controller is fetched when "
-        "consent status is unset on unselected text and Mahi is enabled",
-        std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
-        GetControllers(params));
-
-    EXPECT_EQ(ash::magic_boost::OptInFeatures::kHmrOnly,
-              magic_boost_card_controller()->GetOptInFeatures());
-    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowHmrPanel,
-              magic_boost_card_controller()->transition_action_for_test());
-
-    // When editor mode is kPromoCard, Magic Boost should opt in both Hmr and
-    // Orca.
-    ExpectControllersEqual(
-        "",
-        std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
-        GetControllers(params, editor_menu::EditorMode::kConsentNeeded,
-                       /*editor_consent_status_settled=*/false));
-
-    EXPECT_EQ(ash::magic_boost::OptInFeatures::kOrcaAndHmr,
-              magic_boost_card_controller()->GetOptInFeatures());
-    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowHmrPanel,
-              magic_boost_card_controller()->transition_action_for_test());
-    return;
+    // Mahi is the only card that could still be shown here, so mark the page
+    // as non-distillable. This is also required because
+    // `MahiMenuController::IsFocusedPageDistillable()` otherwise falls back to
+    // the global `MahiWebContentsManager`, which unit tests do not set up.
+    mahi_menu_controller()->set_is_distillable_for_testing(false);
   }
 
-  EXPECT_TRUE(GetControllers(params).empty())
-      << "Wrong quick answers/mahi controller is fetched when consent status "
-         "is unset on unselected text and Mahi is disabled";
-}
-
-TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
-       MagicBoostOptInQuickAnswerAndMahiSelectedText) {
-  QuickAnswersState::Get()->SetEligibilityForTesting(true);
-
-  content::ContextMenuParams params;
-  params.selection_text = u"text";
-
-  if (IsMahiEnabled()) {
-    mahi_menu_controller()->set_is_distillable_for_testing(true);
-
-    ExpectControllersEqual(
-        "Wrong quick answers/mahi controller is fetched when "
-        "consent status is unset on selected text and Mahi is enabled",
-        std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
-        GetControllers(params));
-
-    EXPECT_EQ(ash::magic_boost::OptInFeatures::kHmrOnly,
-              magic_boost_card_controller()->GetOptInFeatures());
-    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowHmrPanel,
-              magic_boost_card_controller()->transition_action_for_test());
-
-    // When editor mode is kPromoCard, Magic Boost should opt in both Hmr and
-    // Orca.
-    auto controllers =
-        GetControllers(params, editor_menu::EditorMode::kConsentNeeded,
-                       /*editor_consent_status_settled=*/false);
-
-    ExpectControllersEqual(
-        "",
-        std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
-        controllers);
-
-    EXPECT_EQ(ash::magic_boost::OptInFeatures::kOrcaAndHmr,
-              magic_boost_card_controller()->GetOptInFeatures());
-    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowHmrPanel,
-              magic_boost_card_controller()->transition_action_for_test());
-
-    return;
-  }
-
-  ExpectControllersEqual(
-      "Wrong quick answers/mahi controller is fetched when consent status "
-      "is unset on selected text and Mahi is disabled",
-      std::vector<ReadWriteCardController*>{quick_answers_controller()},
-      GetControllers(params));
-}
-
-// Tests that the appropriate controller is returned given the editor mode
-// provided in each case.
-TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
-       OnGetEditorContextSoftBlockedAndConsentStatusAlreadySet) {
   content::ContextMenuParams params;
   params.is_editable = true;
-  // If no text is selected, editor mode is kSoftBlocked and editor consent
-  // status is already set, no card is shown.
+
   OnGetEditorMenuCardContext(
       base::BindOnce(
           &ExpectControllersEqual,
           "Wrong controller is fetched when editor mode is kSoftBlocked",
           std::vector<ReadWriteCardController*>{}),
-      params, editor_menu::EditorMode::kSoftBlocked,
-      /*editor_consent_status_settled=*/true);
-
-  if (IsMahiEnabled()) {
-    EXPECT_EQ(ash::magic_boost::TransitionAction::kDoNothing,
-              magic_boost_card_controller()->transition_action_for_test());
-  }
-}
-
-TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
-       OnGetEditorContextHardBlockedAndEditorConsentStatusUnset) {
-  content::ContextMenuParams params;
-  params.is_editable = true;
-  // If no text is selected and editor mode is kHardBlocked, no card is shown
-  OnGetEditorMenuCardContext(
-      base::BindOnce(
-          &ExpectControllersEqual,
-          "Wrong controller is fetched when editor mode is kHardBlocked",
-          std::vector<ReadWriteCardController*>{}),
-      params, editor_menu::EditorMode::kHardBlocked,
-      /*editor_consent_status_settled=*/false);
-
-  if (IsMahiEnabled()) {
-    EXPECT_EQ(ash::magic_boost::TransitionAction::kDoNothing,
-              magic_boost_card_controller()->transition_action_for_test());
-  }
-}
-
-TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
-       OnGetEditorContextSoftBlockedAndEditorConsentStatusUnset) {
-  content::ContextMenuParams params;
-  params.is_editable = true;
-  OnGetEditorMenuCardContext(
-      base::BindOnce(
-          &ExpectControllersEqual,
-          "Wrong controller is fetched when editor mode is kSoftBlocked",
-          IsMahiEnabled()
-              ? std::vector<
-                    ReadWriteCardController*>{magic_boost_card_controller()}
-              : std::vector<ReadWriteCardController*>{}),
-      params, editor_menu::EditorMode::kSoftBlocked,
-      /*editor_consent_status_settled=*/false);
-
-  if (IsMahiEnabled()) {
-    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowEditorPanel,
-              magic_boost_card_controller()->transition_action_for_test());
-    EXPECT_EQ(ash::magic_boost::OptInFeatures::kOrcaAndHmr,
-              magic_boost_card_controller()->GetOptInFeatures());
-  }
-}
-
-TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
-       OnGetEditorContextPromoCard) {
-  content::ContextMenuParams params;
-  params.is_editable = true;
-
-  OnGetEditorMenuCardContext(
-      base::BindOnce(
-          &ExpectControllersEqual,
-          "Wrong controller is fetched when editor mode is kPromoCard",
-          IsMahiEnabled()
-              ? std::vector<
-                    ReadWriteCardController*>{magic_boost_card_controller()}
-              : std::vector<
-                    ReadWriteCardController*>{editor_menu_controller()}),
-      params, editor_menu::EditorMode::kConsentNeeded,
-      /*editor_consent_status_settled=*/false);
-
-  if (IsMahiEnabled()) {
-    // Should show opt-in for both Hmr and Orca.
-    EXPECT_EQ(ash::magic_boost::OptInFeatures::kOrcaAndHmr,
-              magic_boost_card_controller()->GetOptInFeatures());
-    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowEditorPanel,
-              magic_boost_card_controller()->transition_action_for_test());
-  }
-}
-
-TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
-       OnGetEditorContextWrite) {
-  content::ContextMenuParams params;
-  params.is_editable = true;
-
-  OnGetEditorMenuCardContext(
-      base::BindOnce(
-          &ExpectControllersEqual,
-          "Wrong controller is fetched when editor mode is kWrite",
-          std::vector<ReadWriteCardController*>{editor_menu_controller()}),
-      params, editor_menu::EditorMode::kWrite,
-      /*editor_consent_status_settled=*/true);
-}
-
-TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
-       OnGetEditorContextRewrite) {
-  content::ContextMenuParams params;
-  params.is_editable = true;
-  OnGetEditorMenuCardContext(
-      base::BindOnce(
-          &ExpectControllersEqual,
-          "Wrong controller is fetched when editor mode is kRewrite",
-          std::vector<ReadWriteCardController*>{editor_menu_controller()}),
-      params, editor_menu::EditorMode::kRewrite,
-      /*editor_consent_status_settled=*/true);
+      params, editor_menu::EditorMode::kSoftBlocked);
 }
 
 class ReadWriteCardsManagerImplWithMagicBoostRevampTest
@@ -535,8 +348,7 @@ class ReadWriteCardsManagerImplWithMagicBoostRevampTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kFeatureManagementMahi,
-                              chromeos::features::kFeatureManagementOrca,
-                              chromeos::features::kMagicBoostRevamp},
+                              chromeos::features::kFeatureManagementOrca},
         /*disabled_features=*/{});
 
     ReadWriteCardsManagerImplTest::SetUp();
@@ -624,9 +436,7 @@ TEST_P(ReadWriteCardsManagerImplWithMagicBoostRevampTest, GetControllers) {
       base::BindOnce(&ExpectControllersEqual, GetTestFailureMessage(),
                      GetExpectedListOfControllers()),
       context_menu_params,
-      /*editor_mode=*/GetEditorModeTestValue(),
-      /*editor_consent_status_settled=*/
-      GetEditorModeTestValue() != editor_menu::EditorMode::kConsentNeeded);
+      /*editor_mode=*/GetEditorModeTestValue());
 }
 
 INSTANTIATE_TEST_SUITE_P(

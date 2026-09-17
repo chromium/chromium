@@ -39,11 +39,7 @@ const std::string& GetApplicationLocale() {
 
 class MagicBoostCardControllerTest : public ChromeViewsTestBase {
  public:
-  MagicBoostCardControllerTest() {
-    // The magic boost card only exists when Magic Boost Revamp logic is
-    // disabled.
-    features_.InitAndDisableFeature(chromeos::features::kMagicBoostRevamp);
-  }
+  MagicBoostCardControllerTest() = default;
 
   // ChromeViewsTestBase:
   void SetUp() override {
@@ -59,12 +55,16 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
   }
 
   void TearDown() override {
+    // The testing `MagicBoostController` is stored in a process global, so it
+    // must be cleared here. Otherwise it dangles for any test that runs later
+    // in the same process and reaches `GetMagicBoostController()`.
+    card_controller_.SetMagicBoostControllerForTesting(nullptr);
+
     magic_boost_state_.reset();
     ChromeViewsTestBase::TearDown();
   }
 
  protected:
-  base::test::ScopedFeatureList features_;
   // Providing a mock MahiMediaAppEvnetsProxy to satisfy
   // MagicBoostCardController.
   testing::NiceMock<::ash::MockMahiMediaAppEventsProxy>
@@ -134,10 +134,10 @@ TEST_F(MagicBoostCardControllerTest, BoundsChanged) {
 
 TEST_F(MagicBoostCardControllerTest, DisclaimerUi) {
   int expected_display_id = 2;
-  auto expected_action = ash::magic_boost::TransitionAction::kShowEditorPanel;
+  // The opt-in card flow never requests a transition to another surface.
+  auto expected_action = ash::magic_boost::TransitionAction::kDoNothing;
   auto expected_features = ash::magic_boost::OptInFeatures::kOrcaAndHmr;
 
-  card_controller_.set_transition_action(expected_action);
   card_controller_.SetOptInFeature(expected_features);
 
   EXPECT_CALL(controller_, ShowDisclaimerUi)
@@ -225,7 +225,7 @@ TEST_F(MagicBoostCardControllerTest, PdfContextMenuConsentStatus) {
 
 TEST_F(MagicBoostCardControllerTest, PdfContextMenuIncludeOrca) {
   magic_boost_state_->AsyncWriteConsentStatus(
-      chromeos::HMRConsentStatus::kUnset);
+      chromeos::HMRConsentStatus::kDeclined);
 
   ON_CALL(*magic_boost_state_, ShouldIncludeOrcaInOptIn)
       .WillByDefault([](base::OnceCallback<void(bool)> callback) {
@@ -240,7 +240,7 @@ TEST_F(MagicBoostCardControllerTest, PdfContextMenuIncludeOrca) {
 
 TEST_F(MagicBoostCardControllerTest, PdfContextMenuNotIncludeOrca) {
   magic_boost_state_->AsyncWriteConsentStatus(
-      chromeos::HMRConsentStatus::kUnset);
+      chromeos::HMRConsentStatus::kDeclined);
 
   ON_CALL(*magic_boost_state_, ShouldIncludeOrcaInOptIn)
       .WillByDefault([](base::OnceCallback<void(bool)> callback) {

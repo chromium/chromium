@@ -58,10 +58,6 @@ class MockEditorMenuViewDelegate : public EditorMenuViewDelegate {
               (std::u16string_view text),
               (override));
   MOCK_METHOD(void,
-              OnPromoCardWidgetClosed,
-              (views::Widget::ClosedReason closed_reason),
-              (override));
-  MOCK_METHOD(void,
               OnEditorMenuVisibilityChanged,
               (bool visible, bool destroy_session),
               (override));

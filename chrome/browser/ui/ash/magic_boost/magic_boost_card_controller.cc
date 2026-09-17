@@ -129,8 +129,9 @@ void MagicBoostCardController::CloseOptInUi() {
 }
 
 void MagicBoostCardController::ShowDisclaimerUi(int64_t display_id) {
-  GetMagicBoostController().ShowDisclaimerUi(display_id, transition_action_,
-                                             opt_in_features_);
+  GetMagicBoostController().ShowDisclaimerUi(
+      display_id, ash::magic_boost::TransitionAction::kDoNothing,
+      opt_in_features_);
 }
 
 void MagicBoostCardController::CloseDisclaimerUi() {

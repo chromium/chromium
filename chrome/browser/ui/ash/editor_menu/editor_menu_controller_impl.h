@@ -56,8 +56,6 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
   void OnChipButtonPressed(std::string_view text_query_id) override;
   void OnTabSelected(int index) override;
   void OnTextfieldArrowButtonPressed(std::u16string_view text) override;
-  void OnPromoCardWidgetClosed(
-      views::Widget::ClosedReason closed_reason) override;
   void OnEditorMenuVisibilityChanged(bool visible,
                                      bool destroy_session) override;
 

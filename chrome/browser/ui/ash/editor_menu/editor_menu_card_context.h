@@ -22,11 +22,8 @@ struct EditorMenuCardContext {
   ~EditorMenuCardContext();
 
   TextAndImageMode text_and_image_mode() const;
-  bool consent_status_settled() const;
   PresetTextQueries preset_queries() const;
   EditorMode editor_mode() const;
-  EditorMenuCardContext& set_consent_status_settled(
-      bool consent_status_settled);
   EditorMenuCardContext& set_editor_preset_queries(
       const PresetTextQueries& preset_queries);
   EditorMenuCardContext& set_editor_mode(EditorMode editor_mode);
@@ -36,9 +33,6 @@ struct EditorMenuCardContext {
   EditorMenuCardContext& build();
 
  private:
-  // indicating whether the shared consent status is already determined or still
-  // unset.
-  bool consent_status_settled_ = false;
   PresetTextQueries editor_preset_queries_;
   EditorMode editor_mode_ = EditorMode::kHardBlocked;
   LobsterMode lobster_mode_ = LobsterMode::kBlocked;

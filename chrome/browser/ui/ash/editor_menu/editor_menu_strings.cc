@@ -17,22 +17,6 @@ std::u16string GetEditorMenuLobsterChipLabel() {
   return l10n_util::GetStringUTF16(IDS_LOBSTER_EDITOR_MENU_CARD_CHIP_LABEL);
 }
 
-std::u16string GetEditorMenuPromoCardTitle() {
-  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE);
-}
-
-std::u16string GetEditorMenuPromoCardDescription() {
-  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_DESC);
-}
-
-std::u16string GetEditorMenuPromoCardDismissButtonText() {
-  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_DISMISS_BUTTON);
-}
-
-std::u16string GetEditorMenuPromoCardTryItButtonText() {
-  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TRY_IT_BUTTON);
-}
-
 std::u16string GetEditorMenuWriteCardTitle() {
   return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_WRITE_CARD_TITLE);
 }
