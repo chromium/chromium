@@ -164,9 +164,15 @@ OutputConfig ComputeHardwareOutputConfig(
   // mixer will attempt to up-mix stereo source streams to just the left/right
   // speaker of the 5.1 setup, nulling out the other channels
   // (http://crbug.com/177872).
+  // IAMF is exempt from the DISCRETE downmixed to stereo case. Its decoder
+  // renders directly to the requested layout, so squashing to stereo here would
+  // permanently down-mix the stream.
+  const bool downmix_discrete_to_stereo =
+      hw_params.channel_layout() == CHANNEL_LAYOUT_DISCRETE &&
+      stream_config.codec() != AudioCodec::kIAMF;
+
   ChannelLayoutConfig hw_channel_layout;
-  if (hw_params.channel_layout() == CHANNEL_LAYOUT_DISCRETE ||
-      try_supported_channel_layouts) {
+  if (try_supported_channel_layouts || downmix_discrete_to_stereo) {
     hw_channel_layout = ChannelLayoutConfig::Stereo();
   } else {
     hw_channel_layout = hw_params.channel_layout_config();
