@@ -78,6 +78,7 @@ class WebUIPageActionControl {
   // Handles chip showing changed notification from WebUI.
   void OnPageActionChipShowingChanged(
       toolbar_ui_api::mojom::PageActionId action_id,
+      bool is_showing,
       toolbar_ui_api::mojom::ToolbarUIService::
           OnPageActionChipShowingChangedCallback callback);
 
@@ -132,10 +133,10 @@ class WebUIPageActionControl {
       delegates_;
   std::map<actions::ActionId, std::unique_ptr<WebUIPageActionView>> views_;
 
-  // Incremented on active controller (tab) changes. Used to track active tab
-  // changes and propagate a token to WebUI to suppress tab-switching icon
-  // animations.
-  uint32_t icon_animation_token_ = 0;
+  // Incremented on active controller (tab) changes and navigations. Used to
+  // track active tab changes and propagate a token to WebUI to suppress
+  // tab-switching icon animations and synchronize chip state.
+  uint32_t tab_switch_token_ = 0;
 
   // The URL spec of the last active tab's web contents, used to detect
   // navigations and suppress icon animations on the same tab.

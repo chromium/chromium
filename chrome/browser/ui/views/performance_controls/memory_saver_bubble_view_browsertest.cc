@@ -133,6 +133,11 @@ class MemorySaverBubbleViewTest
           PreDiscardResourceUsage::CreateForWebContents(new_contents, savings,
                                                         reason);
     }
+    if (browser()->GetTabStripModel()->active_index() == tab_index) {
+      new_contents->GetController().Reload(content::ReloadType::NORMAL,
+                                           /*check_for_repost=*/true);
+      content::WaitForLoadStop(new_contents);
+    }
   }
 
   page_actions::PageActionViewInterface* GetPageActionView(

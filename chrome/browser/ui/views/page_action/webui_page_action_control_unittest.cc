@@ -124,11 +124,15 @@ class WebUIPageActionControlTest : public ChromeRenderViewHostTestHarness {
     // Create dummy ActionItem tree.
     root_action_item_ =
         actions::ActionItem::Builder()
-            .AddChild(actions::ActionItem::Builder().SetActionId(kActionAiMode))
-            .AddChild(actions::ActionItem::Builder().SetActionId(
-                kActionShowTranslate))
-            .AddChild(actions::ActionItem::Builder().SetActionId(
-                kActionSidePanelShowLensOverlayResults))
+            .AddChild(actions::ActionItem::Builder()
+                          .SetActionId(kActionAiMode)
+                          .SetText(u"AI Mode"))
+            .AddChild(actions::ActionItem::Builder()
+                          .SetActionId(kActionShowTranslate)
+                          .SetText(u"Translate"))
+            .AddChild(actions::ActionItem::Builder()
+                          .SetActionId(kActionSidePanelShowLensOverlayResults)
+                          .SetText(u"Lens"))
             .Build();
 
     control_ =
@@ -347,6 +351,11 @@ TEST_F(WebUIPageActionControlTest, ChipShowingChangedForwarding) {
       observation(&observer);
   controller->AddObserver(target_action_id, observation);
 
+  // Before WebUI notifies chip showing changed, IsChipShowing is false.
+  const auto* model = control_->GetObservedModel(target_action_id);
+  ASSERT_TRUE(model);
+  EXPECT_FALSE(model->IsChipShowing());
+
   EXPECT_CALL(observer, OnPageActionModelChanged(_))
       .WillOnce([](const page_actions::PageActionModelInterface& model) {
         EXPECT_TRUE(model.IsChipShowing());
@@ -354,7 +363,7 @@ TEST_F(WebUIPageActionControlTest, ChipShowingChangedForwarding) {
 
   base::RunLoop run_loop;
   control_->OnPageActionChipShowingChanged(
-      target_mojom_id,
+      target_mojom_id, /*is_showing=*/true,
       base::BindOnce(
           [](base::RunLoop* run_loop,
              base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
@@ -364,6 +373,93 @@ TEST_F(WebUIPageActionControlTest, ChipShowingChangedForwarding) {
           },
           &run_loop));
   run_loop.Run();
+
+  EXPECT_TRUE(model->IsChipShowing());
+
+  // Verify the expectation for showing was satisfied and clear before
+  // testing hide.
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Hiding the chip updates ShouldShowSuggestionChip(), but IsChipShowing()
+  // remains true until WebUI completes the transition and reports
+  // OnPageActionChipShowingChanged().
+  controller->HideSuggestionChip(target_action_id);
+  EXPECT_TRUE(model->IsChipShowing());
+
+  EXPECT_CALL(observer, OnPageActionModelChanged(_))
+      .WillOnce([](const page_actions::PageActionModelInterface& model) {
+        EXPECT_FALSE(model.IsChipShowing());
+      });
+
+  base::RunLoop hide_run_loop;
+  control_->OnPageActionChipShowingChanged(
+      target_mojom_id, /*is_showing=*/false,
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
+                 result) {
+            EXPECT_OK(result);
+            run_loop->Quit();
+          },
+          &hide_run_loop));
+  hide_run_loop.Run();
+
+  EXPECT_FALSE(model->IsChipShowing());
+}
+
+TEST_F(WebUIPageActionControlTest,
+       SwitchingControllerDoesNotForceChipShowingStatus) {
+  control_->UpdateController(web_contents());
+
+  tabs::TabInterface* tab1 =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  ASSERT_TRUE(tab1);
+  page_actions::PageActionController* controller1 =
+      page_actions::PageActionController::From(tab1);
+  ASSERT_TRUE(controller1);
+
+  actions::ActionId target_action_id = kActionAiMode;
+  toolbar_ui_api::mojom::PageActionId target_mojom_id =
+      toolbar_ui_api::mojom::PageActionId::kActionAiMode;
+
+  controller1->Show(target_action_id);
+  controller1->ShowSuggestionChip(target_action_id);
+
+  // Simulate WebUI notifying chip showing for tab 1.
+  {
+    base::test::TestFuture<
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        future;
+    control_->OnPageActionChipShowingChanged(target_mojom_id,
+                                             /*is_showing=*/true,
+                                             future.GetCallback());
+    EXPECT_OK(future.Get());
+  }
+  EXPECT_TRUE(control_->GetObservedModel(target_action_id)->IsChipShowing());
+
+  // Create a second tab context where the action chip should also be shown,
+  // but has not yet received confirmation from WebUI.
+  auto tab2 = CreateTestTabContext();
+  tab2->controller->Show(target_action_id);
+  tab2->controller->ShowSuggestionChip(target_action_id);
+
+  // Switch to tab 2. Switching controller should NOT force IsChipShowing on
+  // the new controller's model.
+  control_->UpdateController(tab2->web_contents.get());
+  EXPECT_FALSE(control_->GetObservedModel(target_action_id)->IsChipShowing());
+
+  // Once WebUI signals OnPageActionChipShowingChanged, the new controller's
+  // model is updated.
+  {
+    base::test::TestFuture<
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        future;
+    control_->OnPageActionChipShowingChanged(target_mojom_id,
+                                             /*is_showing=*/true,
+                                             future.GetCallback());
+    EXPECT_OK(future.Get());
+  }
+  EXPECT_TRUE(control_->GetObservedModel(target_action_id)->IsChipShowing());
 }
 
 TEST_F(WebUIPageActionControlTest, SlideAndCrossfadeState) {
@@ -741,8 +837,7 @@ TEST_F(WebUIPageActionControlTest, AnchoredMessageState) {
   EXPECT_FALSE(control_->IsAnchoredMessageShowing(target_action_id));
 }
 
-TEST_F(WebUIPageActionControlTest, IconAnimationTokenUpdatesOnTabSwitch) {
-  scoped_feature_list_.InitAndEnableFeature(features::kToolbarGlowUp);
+TEST_F(WebUIPageActionControlTest, TabSwitchTokenUpdatesOnTabSwitch) {
   control_->UpdateController(web_contents());
 
   // Show an action so we can get states.
@@ -754,13 +849,13 @@ TEST_F(WebUIPageActionControlTest, IconAnimationTokenUpdatesOnTabSwitch) {
 
   auto states = control_->GetPageActionStates();
   ASSERT_EQ(1u, states.size());
-  const uint32_t initial_token = states[0]->icon_animation_token;
+  const uint32_t initial_token = states[0]->tab_switch_token;
 
   // Update controller with the same web contents. Token should not change.
   control_->UpdateController(web_contents());
   states = control_->GetPageActionStates();
   ASSERT_EQ(1u, states.size());
-  EXPECT_EQ(initial_token, states[0]->icon_animation_token);
+  EXPECT_EQ(initial_token, states[0]->tab_switch_token);
 
   // Set up a second tab.
   std::unique_ptr<content::WebContents> web_contents2 = CreateTestWebContents();
@@ -807,14 +902,14 @@ TEST_F(WebUIPageActionControlTest, IconAnimationTokenUpdatesOnTabSwitch) {
                     std::vector<toolbar_ui_api::mojom::PageActionStatePtr>
                         action_states) {
         ASSERT_FALSE(action_states.empty());
-        notified_token = action_states[0]->icon_animation_token;
+        notified_token = action_states[0]->tab_switch_token;
       });
   control_->UpdateController(web_contents2.get());
   EXPECT_NE(initial_token, notified_token);
   states = control_->GetPageActionStates();
   ASSERT_EQ(1u, states.size());
-  EXPECT_EQ(notified_token, states[0]->icon_animation_token);
-  const uint32_t second_token = states[0]->icon_animation_token;
+  EXPECT_EQ(notified_token, states[0]->tab_switch_token);
+  const uint32_t second_token = states[0]->tab_switch_token;
 
   // Switch back to first tab. Token should increment again and delegates should
   // be notified with the new token.
@@ -824,18 +919,17 @@ TEST_F(WebUIPageActionControlTest, IconAnimationTokenUpdatesOnTabSwitch) {
           [&third_token](std::vector<toolbar_ui_api::mojom::PageActionStatePtr>
                              action_states) {
             ASSERT_FALSE(action_states.empty());
-            third_token = action_states[0]->icon_animation_token;
+            third_token = action_states[0]->tab_switch_token;
           });
   control_->UpdateController(web_contents());
   EXPECT_NE(second_token, third_token);
   EXPECT_NE(initial_token, third_token);
   states = control_->GetPageActionStates();
   ASSERT_EQ(1u, states.size());
-  EXPECT_EQ(third_token, states[0]->icon_animation_token);
+  EXPECT_EQ(third_token, states[0]->tab_switch_token);
 }
 
-TEST_F(WebUIPageActionControlTest, IconAnimationTokenUpdatesOnNavigation) {
-  scoped_feature_list_.InitAndEnableFeature(features::kToolbarGlowUp);
+TEST_F(WebUIPageActionControlTest, TabSwitchTokenUpdatesOnNavigation) {
   control_->UpdateController(web_contents());
 
   // Show an action so we can get states.
@@ -847,7 +941,7 @@ TEST_F(WebUIPageActionControlTest, IconAnimationTokenUpdatesOnNavigation) {
 
   auto states = control_->GetPageActionStates();
   ASSERT_EQ(1u, states.size());
-  const uint32_t initial_token = states[0]->icon_animation_token;
+  const uint32_t initial_token = states[0]->tab_switch_token;
 
   // Navigate to a new page in the same tab.
   NavigateAndCommit(GURL("https://example.com/new_page"));
@@ -857,7 +951,7 @@ TEST_F(WebUIPageActionControlTest, IconAnimationTokenUpdatesOnNavigation) {
                     std::vector<toolbar_ui_api::mojom::PageActionStatePtr>
                         action_states) {
         ASSERT_FALSE(action_states.empty());
-        notified_token = action_states[0]->icon_animation_token;
+        notified_token = action_states[0]->tab_switch_token;
       });
   control_->UpdateController(web_contents());
   EXPECT_NE(initial_token, notified_token);
@@ -865,44 +959,8 @@ TEST_F(WebUIPageActionControlTest, IconAnimationTokenUpdatesOnNavigation) {
   states = control_->GetPageActionStates();
   ASSERT_EQ(1u, states.size());
   // Token should have incremented.
-  EXPECT_EQ(notified_token, states[0]->icon_animation_token);
-  EXPECT_NE(initial_token, states[0]->icon_animation_token);
-}
-
-class WebUIPageActionControlDisabledGlowUpTest
-    : public WebUIPageActionControlTest {
- public:
-  WebUIPageActionControlDisabledGlowUpTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kToolbarGlowUp, features::kDesktopGlowUp});
-  }
-};
-
-TEST_F(WebUIPageActionControlDisabledGlowUpTest,
-       NoNavigationUpdateWhenGlowUpDisabled) {
-  control_->UpdateController(web_contents());
-
-  // Show an action so we can get states.
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents());
-  page_actions::PageActionController* controller =
-      page_actions::PageActionController::From(tab);
-  controller->Show(kActionAiMode);
-
-  auto states = control_->GetPageActionStates();
-  ASSERT_EQ(1u, states.size());
-  EXPECT_EQ(0u, states[0]->icon_animation_token);
-
-  // When glow up is disabled, navigating in the same tab should NOT notify
-  // delegates or update the token.
-  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_)).Times(0);
-
-  NavigateAndCommit(GURL("https://example.com/new_page"));
-  control_->UpdateController(web_contents());
-
-  states = control_->GetPageActionStates();
-  ASSERT_EQ(1u, states.size());
-  EXPECT_EQ(0u, states[0]->icon_animation_token);
+  EXPECT_EQ(notified_token, states[0]->tab_switch_token);
+  EXPECT_NE(initial_token, states[0]->tab_switch_token);
 }
 
 TEST_F(WebUIPageActionControlTest,

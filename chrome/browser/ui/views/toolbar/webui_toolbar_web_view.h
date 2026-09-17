@@ -241,6 +241,7 @@ class WebUIToolbarWebView
           callback) override;
   void OnPageActionChipShowingChanged(
       ::toolbar_ui_api::mojom::PageActionId action_id,
+      bool is_showing,
       ::toolbar_ui_api::mojom::ToolbarUIService::
           OnPageActionChipShowingChangedCallback callback) override;
   void OnPageInitialized() override;

@@ -206,9 +206,11 @@ void ToolbarUIService::OnPageActionClick(
 
 void ToolbarUIService::OnPageActionChipShowingChanged(
     ::toolbar_ui_api::mojom::PageActionId action_id,
+    bool is_showing,
     OnPageActionChipShowingChangedCallback callback) {
   if (delegate_) {
-    delegate_->OnPageActionChipShowingChanged(action_id, std::move(callback));
+    delegate_->OnPageActionChipShowingChanged(action_id, is_showing,
+                                              std::move(callback));
   } else {
     std::move(callback).Run(base::unexpected(Error::New(
         Code::kFailedPrecondition,

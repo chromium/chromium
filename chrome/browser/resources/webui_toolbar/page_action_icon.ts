@@ -79,7 +79,7 @@ export class PageActionIconElement extends PageActionIconElementBase {
       secondaryIdentifier: '',
     },
     isActive: false,
-    iconAnimationToken: 0,
+    tabSwitchToken: 0,
     animationStyle: PageActionAnimationStyle.kStandard,
     trailingIcon: null,
     showTrailingIcon: false,
@@ -129,11 +129,11 @@ export class PageActionIconElement extends PageActionIconElementBase {
       this.wasShowingChip_ =
           oldState?.pageActionId === this.state.pageActionId &&
           (oldState?.shouldShowChip ?? false);
-      // If the icon animation token changed, it indicates a tab switch or
+      // If the tab switch token changed, it indicates a tab switch or
       // navigation. In this case, we suppress any transition icon animations
       // and reset the animation state to avoid carrying over animations.
-      const isTabSwitch = !oldState ||
-          this.state.iconAnimationToken !== oldState.iconAnimationToken;
+      const isTabSwitch =
+          !oldState || this.state.tabSwitchToken !== oldState.tabSwitchToken;
 
       if (isTabSwitch) {
         this.cleanupAnimationListener_();
@@ -225,13 +225,17 @@ export class PageActionIconElement extends PageActionIconElementBase {
           'show-trailing-icon',
           this.hasTrailingIcon_() && this.state.showTrailingIcon);
       const oldState = changedProperties.get('state');
-      if (!oldState || oldState.shouldShowChip !== this.state.shouldShowChip) {
+      const isTabSwitch =
+          !oldState || this.state.tabSwitchToken !== oldState.tabSwitchToken;
+      if (isTabSwitch ||
+          oldState?.shouldShowChip !== this.state.shouldShowChip) {
         const fireIpc = () => {
           this.browserProxy_.toolbarUIHandler.onPageActionChipShowingChanged(
-              this.state.pageActionId);
+              this.state.pageActionId, this.shouldShowLabel_());
         };
 
-        if (!AnimationTracker.showAnimations) {
+        if (isTabSwitch || !this.shouldAnimate_() ||
+            !AnimationTracker.showAnimations) {
           fireIpc();
         } else {
           const button = this.$.button;

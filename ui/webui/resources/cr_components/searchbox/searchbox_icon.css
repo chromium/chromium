@@ -98,12 +98,12 @@
 }
 
 :host([in-searchbox]) #icon {
-  -webkit-mask-size: var(--cr-searchbox-icon-size-in-searchbox);
+  -webkit-mask-size: var(--cr-searchbox-icon-size-in-searchbox, 16px);
 }
 
 :host([in-searchbox]) #faviconImage {
-  width: var(--cr-searchbox-icon-size-in-searchbox);
-  height: var(--cr-searchbox-icon-size-in-searchbox);
+  width: var(--cr-searchbox-icon-size-in-searchbox, 16px);
+  height: var(--cr-searchbox-icon-size-in-searchbox, 16px);
 }
 
 :host([has-icon-container-background]:not([in-searchbox])) #icon {

@@ -130,14 +130,15 @@ interface ToolbarUIService {
   // Called when a page action chip is pressed (e.g. pointerdown).
   OnPageActionPointerDown(PageActionId action_id);
 
-  // Called after an interaction with the icon, with `trigger` specifying
-  // the input modality.
+  // Called after an interaction with the page action identified by `action_id`.
+  // `trigger` specifies the input modality (mouse, keyboard, or gesture).
   OnPageActionClick(PageActionId action_id, PageActionTrigger trigger)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Called after the chip show / hide transition completes (called after the
-  // animation, if there was one).
-  OnPageActionChipShowingChanged(PageActionId action_id)
+  // animation, if there was one). `is_showing` is true if the chip is showing,
+  // and false if it is hidden.
+  OnPageActionChipShowingChanged(PageActionId action_id, bool is_showing)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Invoke the pinned toolbar action for `action_id`. It's expected that the

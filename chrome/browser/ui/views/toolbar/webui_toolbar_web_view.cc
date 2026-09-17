@@ -783,11 +783,12 @@ void WebUIToolbarWebView::OnPageActionClick(
 
 void WebUIToolbarWebView::OnPageActionChipShowingChanged(
     ::toolbar_ui_api::mojom::PageActionId action_id,
+    bool is_showing,
     ::toolbar_ui_api::mojom::ToolbarUIService::
         OnPageActionChipShowingChangedCallback callback) {
   if (location_bar_) {
     location_bar_->page_action_control().OnPageActionChipShowingChanged(
-        action_id, std::move(callback));
+        action_id, is_showing, std::move(callback));
   } else {
     std::move(callback).Run(base::unexpected(Error::New(
         Code::kFailedPrecondition,

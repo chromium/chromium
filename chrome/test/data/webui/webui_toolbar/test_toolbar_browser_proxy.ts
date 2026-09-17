@@ -110,8 +110,8 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
     return Promise.resolve({result: {}});
   }
 
-  onPageActionChipShowingChanged(actionId: PageActionId) {
-    this.methodCalled('onPageActionChipShowingChanged', actionId);
+  onPageActionChipShowingChanged(actionId: PageActionId, isShowing: boolean) {
+    this.methodCalled('onPageActionChipShowingChanged', [actionId, isShowing]);
     return Promise.resolve({result: {}});
   }
 

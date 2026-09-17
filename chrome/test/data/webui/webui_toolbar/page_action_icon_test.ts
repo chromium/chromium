@@ -45,7 +45,7 @@ suite('PageActionIconTest', function() {
         secondaryIdentifier: '',
       },
       isActive: false,
-      iconAnimationToken: 0,
+      tabSwitchToken: 0,
       animationStyle: PageActionAnimationStyle.kStandard,
       trailingIcon: null,
       showTrailingIcon: false,
@@ -652,19 +652,19 @@ suite('PageActionIconTest', function() {
           ...createBaseState(),
           pageActionId: PageActionId.kActionBookmarkThisTab,
           icon: {handleId: 1n},
-          iconAnimationToken: 1,
+          tabSwitchToken: 1,
         };
         await microtasksFinished();
 
         assertTrue(!!icon.shadowRoot.querySelector('icon-from-table'));
         assertTrue(!icon.shadowRoot.querySelector('#animatedIcon'));
 
-        // Transition to starred, but with a different icon animation token (tab
+        // Transition to starred, but with a different tab switch token (tab
         // switch/navigation)
         icon.state = {
           ...icon.state,
           icon: {handleId: 2n},
-          iconAnimationToken: 2,
+          tabSwitchToken: 2,
         };
         await icon.updateComplete;
 
@@ -782,6 +782,41 @@ suite('PageActionIconTest', function() {
         const iconEl = icon.shadowRoot.querySelector<HTMLElement>('#icon')!;
         assertEquals('16px', window.getComputedStyle(iconEl).width);
       });
+
+  test(
+      'onPageActionChipShowingChanged reports chip showing state',
+      async function() {
+        toolbarUiHandler.resetResolver('onPageActionChipShowingChanged');
+
+        // Show chip with text (no animation)
+        icon.state = {
+          ...createBaseState(),
+          text: 'Chip text',
+          shouldShowChip: true,
+          shouldAnimateChipIn: false,
+        };
+        await microtasksFinished();
+
+        let [actionId, isShowing] =
+            await toolbarUiHandler.whenCalled('onPageActionChipShowingChanged');
+        assertEquals(PageActionId.kActionShowTranslate, actionId);
+        assertTrue(isShowing);
+
+        toolbarUiHandler.resetResolver('onPageActionChipShowingChanged');
+
+        // Hide chip
+        icon.state = {
+          ...icon.state,
+          shouldShowChip: false,
+          shouldAnimateChipOut: false,
+        };
+        await microtasksFinished();
+
+        [actionId, isShowing] =
+            await toolbarUiHandler.whenCalled('onPageActionChipShowingChanged');
+        assertEquals(PageActionId.kActionShowTranslate, actionId);
+        assertFalse(isShowing);
+      });
 });
 
 suite('PageActionIconsTest', function() {
@@ -801,7 +836,7 @@ suite('PageActionIconsTest', function() {
         secondaryIdentifier: '',
       },
       isActive: false,
-      iconAnimationToken: 0,
+      tabSwitchToken: 0,
       animationStyle: PageActionAnimationStyle.kStandard,
       trailingIcon: null,
       showTrailingIcon: false,

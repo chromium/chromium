@@ -283,12 +283,14 @@ export class SearchboxIconElement extends CrLitElement {
 
     if (changedProperties.has('match') || changedProperties.has('pageUrl') ||
         changedProperties.has('defaultIcon') ||
-        changedProperties.has('inKeywordMode')) {
+        changedProperties.has('inKeywordMode') ||
+        changedProperties.has('inSearchbox')) {
       this.maskImage = this.computeMaskImage_();
     }
 
     if (changedProperties.has('match') || changedProperties.has('pageUrl') ||
         changedProperties.has('defaultIcon') ||
+        changedProperties.has('inSearchbox') ||
         changedPrivateProperties.has('isTopChromeSearchbox_')) {
       const oldFaviconImage = this.faviconImage_;
       this.faviconImage_ = this.computeFaviconImage_();
@@ -304,6 +306,7 @@ export class SearchboxIconElement extends CrLitElement {
     if (changedProperties.has('match') || changedProperties.has('pageUrl') ||
         changedProperties.has('defaultIcon') ||
         changedProperties.has('inKeywordMode') ||
+        changedProperties.has('inSearchbox') ||
         changedPrivateProperties.has('isLensSearchbox_') ||
         changedPrivateProperties.has('isTopChromeSearchbox_') ||
         changedPrivateProperties.has('faviconImage_') ||

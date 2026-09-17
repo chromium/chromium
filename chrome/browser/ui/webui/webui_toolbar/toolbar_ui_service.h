@@ -59,6 +59,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
         OnPageActionClickCallback callback) = 0;
     virtual void OnPageActionChipShowingChanged(
         ::toolbar_ui_api::mojom::PageActionId action_id,
+        bool is_showing,
         OnPageActionChipShowingChangedCallback callback) = 0;
     virtual void OnPageInitialized() = 0;
     virtual void InvokePinnedToolbarAction(
@@ -168,6 +169,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
                          OnPageActionClickCallback callback) override;
   void OnPageActionChipShowingChanged(
       ::toolbar_ui_api::mojom::PageActionId action_id,
+      bool is_showing,
       OnPageActionChipShowingChangedCallback callback) override;
   void InvokePinnedToolbarAction(
       toolbar_ui_api::mojom::PinnedToolbarAction action_id) override;
