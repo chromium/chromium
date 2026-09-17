@@ -12,6 +12,8 @@ import '/shared/settings/prefs/prefs.js';
 import './ai_info_card.js';
 import './ai_mode_search_page.js';
 import './ai_page.js';
+import '../geic_page/geic_page.js';
+import '../geic_page/geic_subpage.js';
 import '../glic_page/glic_page.js';
 import '../glic_page/glic_subpage.js';
 import './inline_cue_menu_page.js';
@@ -61,6 +63,11 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
       showGlicSettings_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showGlicSettings'),
+      },
+
+      showGeicSettings_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showGeicSettings'),
       },
 
       showAiPageAiFeatureSection_: {
@@ -114,6 +121,7 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
   declare prefs: Record<string, unknown>;
   declare private routes_: SettingsRoutes;
   declare private showGlicSettings_: boolean;
+  declare private showGeicSettings_: boolean;
   declare private showAiPageAiFeatureSection_: boolean;
   declare private showComposeControl_: boolean;
   declare private showHistorySearchControl_: boolean;
@@ -137,6 +145,10 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
 
     if (this.showGlicSettings_) {
       defaultViews.push('glic');
+    }
+
+    if (this.showGeicSettings_) {
+      defaultViews.push('geic');
     }
 
     this.$.viewManager.switchViews(
@@ -183,6 +195,11 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
           assert(this.actorLoginFederatedLoginSupportEnabled_);
           this.$.viewManager.switchView(
               'geminiLoginPermissions', 'no-animation', 'no-animation');
+          break;
+        case routes.GEMINI_ENTERPRISE:
+          assert(this.showGeicSettings_);
+          this.$.viewManager.switchView(
+              'geminiEnterprise', 'no-animation', 'no-animation');
           break;
         case routes.AI_SUGGESTIONS:
           assert(this.showAiSuggestionsControl_);

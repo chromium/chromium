@@ -3266,6 +3266,12 @@ Google Chrome is unable to recover your settings.
           Show Gemini in Chrome in system tray
         </message>
       </if>
+
+      <!-- GEiC (Gemini Enterprise in Chrome) settings -->
+      <message name="IDS_SETTINGS_GEIC_SECTION_TITLE" desc="Text of the Gemini Enterprise section header on the AI settings page. Also used as the label of the row button leading to the Gemini Enterprise subpage, and as the title of that subpage.">
+        Gemini Enterprise in Chrome
+      </message>
+
       <if expr="is_macosx">
         <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE" desc="In Title Case: Label for the toggle item in the Search in Chrome status tray context menu.">
           Open Search with Chrome

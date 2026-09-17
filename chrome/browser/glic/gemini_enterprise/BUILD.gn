@@ -4,6 +4,8 @@
 
 source_set("gemini_enterprise") {
   sources = [
+    "geic_pref_names.cc",
+    "geic_pref_names.h",
     "glic_gemini_enterprise_manager.cc",
     "glic_gemini_enterprise_manager.h",
   ]
@@ -17,6 +19,8 @@ source_set("gemini_enterprise") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/navigator",
     "//chrome/common:constants",
+    "//components/pref_registry",
+    "//components/prefs",
     "//components/tabs:public",
     "//content/public/browser",
     "//google_apis",

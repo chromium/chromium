@@ -192,6 +192,9 @@ function createRoutes(): SettingsRoutes {
         r.GEMINI_LOGIN = r.GEMINI.createChild('/ai/gemini/login');
       }
     }
+    if (loadTimeData.getBoolean('showGeicSettings')) {
+      r.GEMINI_ENTERPRISE = r.AI.createChild('/ai/geminienterprise');
+    }
     if (loadTimeData.getBoolean('showAiSuggestionsControl')) {
       r.AI_SUGGESTIONS = r.AI.createChild('/ai/suggestions');
     }

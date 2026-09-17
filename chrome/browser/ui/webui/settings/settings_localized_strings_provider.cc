@@ -865,6 +865,13 @@ bool IsWebActuationDisabledForEnterprise(Profile* profile) {
              glic::GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy;
 }
 
+void AddGeicStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"geicSectionTitle", IDS_SETTINGS_GEIC_SECTION_TITLE},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+
 void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"glicPageTitle", IDS_SETTINGS_GLIC_PAGE_TITLE},
@@ -4633,6 +4640,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddCommonStrings(html_source, profile);
   AddDownloadsStrings(html_source);
   AddExtensionsStrings(html_source);
+  AddGeicStrings(html_source);
   AddGlicStrings(html_source, profile);
   AddPerformanceStrings(html_source);
   AddLanguagesStrings(html_source, profile);

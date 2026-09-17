@@ -39,6 +39,7 @@ suite('AiPageIndex', function() {
       showComposeControl: true,
       showHistorySearchControl: true,
       showGlicSettings: true,
+      showGeicSettings: true,
       enableAiModeSearchSetting: true,
       actorLoginFederatedLoginSupportEnabled: true,
       showAiSuggestionsControl: true,
@@ -54,6 +55,7 @@ suite('AiPageIndex', function() {
       'aiInfoCard',
       'aiModeSearch',
       'glic',
+      'geic',
       'parent',
     ];
 
@@ -71,6 +73,10 @@ suite('AiPageIndex', function() {
     Router.getInstance().navigateTo(routes.OFFER_WRITING_HELP);
     await microtasksFinished();
     assertActiveViews(['compose']);
+
+    Router.getInstance().navigateTo(routes.GEMINI_ENTERPRISE);
+    await microtasksFinished();
+    assertActiveViews(['geminiEnterprise']);
 
     Router.getInstance().navigateTo(routes.GEMINI);
     await microtasksFinished();
@@ -118,6 +124,18 @@ suite('AiPageIndex', function() {
         !!index.$.viewManager.querySelector('#aiModeSearch[slot=view]'));
   });
 
+  test('geicSectionVisibility', async function() {
+    assertTrue(!!index.$.viewManager.querySelector('#geic[slot=view]'));
+
+    loadTimeData.overrideValues({
+      showAiPage: true,
+      showGeicSettings: false,
+    });
+    resetRouterForTesting();
+    await createAiPageIndex();
+    assertFalse(!!index.$.viewManager.querySelector('#geic[slot=view]'));
+  });
+
   test('glicSectionVisibility', async function() {
     assertTrue(!!index.$.viewManager.querySelector('#glic[slot=view]'));
 
@@ -158,6 +176,9 @@ suite('AiPageIndex', function() {
 
     assertTrue(!!index.$.viewManager.querySelector(
         '#gemini[slot=view][data-parent-view-id=glic]'));
+
+    assertTrue(!!index.$.viewManager.querySelector(
+        '#geminiEnterprise[slot=view][data-parent-view-id=geic]'));
     assertTrue(!!index.$.viewManager.querySelector(
         '#geminiLoginPermissions[slot=view][data-parent-view-id=gemini]'));
   });

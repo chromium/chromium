@@ -26,6 +26,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
+#include "chrome/browser/geic/geic_enabling.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -584,6 +585,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   }
 
   html_source->AddBoolean("showGlicSettings", show_glic_section);
+  html_source->AddBoolean("showGeicSettings", geic::IsGeicEnabled(profile));
   html_source->AddBoolean("glicDisallowedByAdmin", glic_disallowed_by_admin);
 
   const auto& autofill_client =
@@ -652,12 +654,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   show_ai_features_section |= show_on_device_ai_settings;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  // Within the AI subpage are separate sections for Glic and for all other AI
-  // features, the visibility of these are separately controlled but we want to
-  // show the subpage if any of the AI features or Glic are enabled.
-  html_source->AddBoolean("showAiPage", show_glic_section ||
-                                            show_ai_features_section ||
-                                            enable_ai_mode_search);
+  // Within the AI subpage are separate sections for Glic, for GEIC, and for all
+  // other AI features. The visibility of these is separately controlled, but
+  // we want to show the subpage if any of them are enabled.
+  html_source->AddBoolean(
+      "showAiPage", show_glic_section || show_ai_features_section ||
+                        enable_ai_mode_search || geic::IsGeicEnabled(profile));
   html_source->AddBoolean("showAiPageAiFeatureSection",
                           show_ai_features_section);
 

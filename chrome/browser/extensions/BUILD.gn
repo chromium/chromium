@@ -941,6 +941,7 @@ source_set("extensions") {
       "//chrome/browser/device_identity",
       "//chrome/browser/feedback",
       "//chrome/browser/glic",
+      "//chrome/browser/glic/gemini_enterprise",
       "//chrome/browser/importer",
       "//chrome/browser/language",
       "//chrome/browser/lifetime:termination_notification",

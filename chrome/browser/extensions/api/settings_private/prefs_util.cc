@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/api/settings_private/generated_prefs.h"
 #include "chrome/browser/extensions/api/settings_private/generated_prefs_factory.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
@@ -1396,6 +1397,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
   (*s_allowlist)[contextual_tasks::kContextualTasksSmartTabSharingSettings] =
       settings_api::PrefType::kNumber;
+
+  // Geic prefs
+  (*s_allowlist)[geic::prefs::kGeicPinnedToTabstrip] =
+      settings_api::PrefType::kBoolean;
 
   // Glic prefs
   (*s_allowlist)[glic::prefs::kGlicPinnedToTabstrip] =
