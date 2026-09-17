@@ -33,6 +33,7 @@ export function getHtml(this: CrToolbarElement) {
 
 <div id="centeredContent" ?hidden="${!this.showSearch}">
   <cr-toolbar-search-field id="search" ?narrow="${this.narrow}"
+      part="search-field" exportparts="search-input"
       label="${this.searchPrompt}" clear-label="${this.clearLabel}"
       ?spinner-active="${this.spinnerActive}"
       ?showing-search="${this.showingSearch_}"

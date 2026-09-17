@@ -16,6 +16,17 @@
         --settings-menu-width: 250px;
       }
 
+      :host-context([settings-refresh-2026]) cr-toolbar::part(search-field) {
+        height: 28px;
+        padding: 4px 10px;
+      }
+
+      :host-context([settings-refresh-2026]) cr-toolbar::part(search-input) {
+        color: var(--color-toolbar-search-field-text-color);
+        font-weight: 400;
+        line-height: 167%;
+      }
+
       cr-toolbar {
         min-height: 56px;
         --cr-toolbar-center-basis: var(--settings-main-basis);
