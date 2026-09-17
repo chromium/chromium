@@ -159,7 +159,7 @@ public class AccountMenuMediatorTest {
                         eq(mContext),
                         eq(mProfile),
                         any(),
-                        eq(SigninAccessPoint.NTP_SIGNED_OUT_ICON));
+                        eq(SigninAccessPoint.ACCOUNT_MENU_SIGNED_OUT_STATE));
     }
 
     @Test

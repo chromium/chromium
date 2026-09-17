@@ -53,6 +53,7 @@ public interface SigninAndHistorySyncActivityLauncher {
         SigninAccessPoint.GLIC_LAUNCH_BUTTON,
         SigninAccessPoint.SETTINGS_AUTOFILL_AND_PASSWORDS,
         SigninAccessPoint.DEEP_LINK_DEFAULT,
+        SigninAccessPoint.ACCOUNT_MENU_SIGNED_OUT_STATE,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface AccessPoint {}

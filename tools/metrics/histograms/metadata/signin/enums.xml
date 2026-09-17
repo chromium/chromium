@@ -1206,6 +1206,8 @@ chromium-metrics-reviews@google.com.
   <int value="108" label="Undo button from the signout snackbar (iOS only)"/>
   <int value="109" label="Composebox Drive context menu option (Desktop only)"/>
   <int value="110" label="Skills (Desktop only)"/>
+  <int value="111"
+      label="Account menu signed out state (Android desktop only)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

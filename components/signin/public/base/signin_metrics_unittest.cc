@@ -269,6 +269,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "ComposeboxDriveContextMenuOptionBubble";
       case AccessPoint::kSkills:
         return "Skills";
+      case AccessPoint::kAccountMenuSignedOutState:
+        return "AccountMenuSignedOutState";
     }
   }
 };
