@@ -8,7 +8,6 @@
 
 #include "base/functional/callback.h"
 #include "base/process/process_info.h"
-#include "base/sanitizer_buildflags.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -21,7 +20,6 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
-#include "components/sessions/core/command_storage_features.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
@@ -187,10 +185,6 @@ class CookieEncryptionProviderBrowserTest
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
         disabled_features.push_back(features::kDbusSecretPortal);
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
-#if BUILDFLAG(IS_ASAN)
-        // TODO(crbug.com/479420496): Resolve encryptor issues in ASAN.
-        disabled_features.push_back(sessions::kEncryptSessionStorage);
-#endif  // BUILDFLAG(IS_ASAN)
         break;
 #if BUILDFLAG(IS_WIN)
       case kOSCryptAsyncNoService:
@@ -223,10 +217,6 @@ class CookieEncryptionProviderBrowserTest
         enabled_features.push_back(features::kDbusSecretPortal);
         enabled_features.push_back(
             features::kSecretPortalKeyProviderUseForEncryption);
-#if BUILDFLAG(IS_ASAN)
-        // TODO(crbug.com/479420496): Resolve encryptor issues in ASAN.
-        disabled_features.push_back(sessions::kEncryptSessionStorage);
-#endif  // BUILDFLAG(IS_ASAN)
         break;
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
     }

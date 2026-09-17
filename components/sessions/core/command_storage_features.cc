@@ -10,13 +10,13 @@
 
 namespace sessions {
 
-BASE_FEATURE(kEncryptSessionStorage, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEncryptSessionStorage, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(std::string,
                    kEncryptSessionStorageStageParam,
                    &kEncryptSessionStorage,
                    "stage",
-                   "write_both_read_only_clear");
+                   "");
 
 using ::sessions::internal::kEncryptSessionStorageStageWriteBothReadOnlyClear;
 using ::sessions::internal::
