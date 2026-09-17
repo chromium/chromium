@@ -38,7 +38,7 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
   }
 
   std::vector<Suggestion> suggestions;
-  suggestions.reserve(promo_code_offers.size());
+  suggestions.reserve(promo_code_offers.size() + 2);
   for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
     // For each promo code, create a suggestion.
     std::u16string main_text = base::UTF8ToUTF16(
@@ -67,6 +67,12 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
         Suggestion::Guid(base::NumberToString(promo_code_offer->GetOfferId()));
   }
 
+  suggestions.emplace_back(SuggestionType::kSeparator);
+  suggestions.emplace_back(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_OFFERS_FOOTER_TEXT),
+      SuggestionType::kManageOffers);
+  Suggestion& manage_offers_suggestion = suggestions.back();
+  manage_offers_suggestion.icon = Suggestion::Icon::kSettings;
   return suggestions;
 }
 

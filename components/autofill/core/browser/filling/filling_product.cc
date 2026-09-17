@@ -76,6 +76,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kVirtualCreditCardEntry:
       return FillingProduct::kCreditCard;
     case SuggestionType::kMerchantPromoCodeEntry:
+    case SuggestionType::kManageOffers:
       return FillingProduct::kMerchantPromoCode;
     case SuggestionType::kIbanEntry:
     case SuggestionType::kManageIban:

@@ -124,6 +124,7 @@ bool IsManagementFooterOption(const Suggestion& suggestion) {
     case SuggestionType::kManageIban:
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kManageEnhancedAutofill:
+    case SuggestionType::kManageOffers:
     case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
       return true;

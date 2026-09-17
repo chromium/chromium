@@ -105,6 +105,10 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
 
   Suggestion promo_code_suggestion =
       Suggestion(u"5% off (€10 max)", SuggestionType::kMerchantPromoCodeEntry);
+  Suggestion separator_suggestion = Suggestion(SuggestionType::kSeparator);
+  Suggestion footer_suggestion = Suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_OFFERS_FOOTER_TEXT),
+      SuggestionType::kManageOffers);
 
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
@@ -116,8 +120,10 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
       suggestions_generated_callback,
       Run(testing::Pair(
           SuggestionGenerator::SuggestionDataSource::kMerchantPromoCode,
-          UnorderedElementsAre(Field(&Suggestion::main_text,
-                                     promo_code_suggestion.main_text)))));
+          UnorderedElementsAre(
+              Field(&Suggestion::main_text, promo_code_suggestion.main_text),
+              Field(&Suggestion::type, SuggestionType::kSeparator),
+              Field(&Suggestion::type, footer_suggestion.type)))));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
                                 client(), suggestions_generated_callback.Get());
 }
@@ -185,7 +191,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
 
   std::vector<Suggestion> promo_code_suggestions = GetPromoCodeSuggestions();
 
-  ASSERT_EQ(promo_code_suggestions.size(), 2u);
+  ASSERT_EQ(promo_code_suggestions.size(), 4u);
 
   EXPECT_EQ(promo_code_suggestions[0].main_text.value,
             u"test_value_prop_text_1");
@@ -223,6 +229,13 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
   EXPECT_EQ(promo_code_suggestions[1].icon, Suggestion::Icon::kOfferTag);
   EXPECT_EQ(promo_code_suggestions[1].type,
             SuggestionType::kMerchantPromoCodeEntry);
+
+  EXPECT_EQ(promo_code_suggestions[2].type, SuggestionType::kSeparator);
+
+  EXPECT_EQ(promo_code_suggestions[3].main_text.value,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_OFFERS_FOOTER_TEXT));
+  EXPECT_EQ(promo_code_suggestions[3].type, SuggestionType::kManageOffers);
+  EXPECT_EQ(promo_code_suggestions[3].icon, Suggestion::Icon::kSettings);
 }
 
 }  // namespace

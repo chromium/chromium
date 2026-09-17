@@ -148,12 +148,15 @@ TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
       u"5% off on shoes. Up to $50.", SuggestionType::kMerchantPromoCodeEntry);
 
   // Setting up mock to verify that the handler is returned a list of
-  // promo-code-based suggestions.
+  // promo-code-based suggestions, followed by a separator and the "Manage
+  // offers" footer.
   MockSuggestionsReturnedCallback mock_callback;
   EXPECT_CALL(
       mock_callback,
-      Run(_, UnorderedElementsAre(Field(&Suggestion::main_text,
-                                        promo_code_suggestion.main_text))))
+      Run(_, UnorderedElementsAre(
+                 Field(&Suggestion::main_text, promo_code_suggestion.main_text),
+                 Field(&Suggestion::type, SuggestionType::kSeparator),
+                 Field(&Suggestion::type, SuggestionType::kManageOffers))))
       .Times(3);
 
   // Simulate request for suggestions.

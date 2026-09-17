@@ -836,6 +836,9 @@ void ChromeAutofillClient::ShowAutofillSettings(
         return;
       case SuggestionType::kManageCreditCard:
       case SuggestionType::kManageIban:
+      // TODO(crbug.com/546252995): Open up the shopping leaf for Wallet Direct
+      // Offers when navigating to settings.
+      case SuggestionType::kManageOffers:
         base::UmaHistogramEnumeration(
             "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
             autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);

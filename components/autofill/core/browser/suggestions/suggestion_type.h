@@ -256,9 +256,12 @@ enum class SuggestionType {
   // entity source info.
   kAutofillAiSourceAttribution = 99,
 
-  // Next ID: 102
+  // Suggestion to manage Wallet Direct Offers.
+  kManageOffers = 102,
 
-  kMaxValue = kOpenGmailForOtps
+  // Next ID: 103
+
+  kMaxValue = kManageOffers
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

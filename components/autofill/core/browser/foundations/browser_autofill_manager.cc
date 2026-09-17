@@ -320,6 +320,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:
     case SuggestionType::kManageLoyaltyCard:
+    case SuggestionType::kManageOffers:
     case SuggestionType::kManageEnhancedAutofill:
     case SuggestionType::kMaximizeCreditCardBenefitsEntry:
     case SuggestionType::kOneTimePasswordEntry:

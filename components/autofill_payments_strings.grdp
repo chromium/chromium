@@ -1361,6 +1361,9 @@
   <message name="IDS_AUTOFILL_PROMO_CODE_SUGGESTION_CODE_LABEL" desc="Label for the promo code in the autofill suggestions popup.">
     Code: <ph name="PROMO_CODE">$1<ex>WELCOME15</ex></ph>
   </message>
+  <message name="IDS_AUTOFILL_MANAGE_OFFERS_FOOTER_TEXT" desc="Label for the footer text of the autofill suggestions popup when a user clicks on a promo code field and Wallet Direct Offers are available. It redirects the user to the Chrome settings page to manage their offers.">
+    Manage offers
+  </message>
   <message name="IDS_AUTOFILL_OFFERS_EXPIRES_ON" desc="Text shown on the third line of the suggestion dropdown for Wallet Direct Offers indicating when the offer expires.">
     Expires: <ph name="EXPIRATION_DATE">$1<ex>Sept 20, 2026</ex></ph>
   </message>

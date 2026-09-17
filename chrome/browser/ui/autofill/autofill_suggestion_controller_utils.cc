@@ -52,6 +52,7 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     case SuggestionType::kManageEnhancedAutofill:
     case SuggestionType::kManageIban:
     case SuggestionType::kManageLoyaltyCard:
+    case SuggestionType::kManageOffers:
     case SuggestionType::kOpenGmailForOtps:
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kRemoveAutofillAi:
@@ -225,6 +226,7 @@ bool ShouldApplyDeactivatedStyle(const Suggestion& suggestion) {
     case SuggestionType::kManageEnhancedAutofill:
     case SuggestionType::kManageIban:
     case SuggestionType::kManageLoyaltyCard:
+    case SuggestionType::kManageOffers:
     case SuggestionType::kMaximizeCreditCardBenefitsEntry:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kOneTimePasswordEntry:

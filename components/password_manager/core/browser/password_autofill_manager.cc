@@ -157,6 +157,7 @@ bool IsSuggestionHandledInPasswordManager(SuggestionType type) {
     case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kAutocompleteAtMemoryButton:
+    case SuggestionType::kManageOffers:
     case SuggestionType::kMaximizeCreditCardBenefitsEntry:
       return false;
   }

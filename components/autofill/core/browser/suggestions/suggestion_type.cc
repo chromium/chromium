@@ -41,6 +41,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kManageIban";
     case SuggestionType::kManageLoyaltyCard:
       return "kManageLoyaltyCard";
+    case SuggestionType::kManageOffers:
+      return "kManageOffers";
     case SuggestionType::kComposeResumeNudge:
       return "kComposeResumeNudge";
     case SuggestionType::kComposeDisable:

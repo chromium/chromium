@@ -1135,6 +1135,7 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kManageAutofillAiTravel:
     case SuggestionType::kManageIban:
     case SuggestionType::kManageLoyaltyCard:
+    case SuggestionType::kManageOffers:
     case SuggestionType::kManageEnhancedAutofill:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kOneTimePasswordEntry:

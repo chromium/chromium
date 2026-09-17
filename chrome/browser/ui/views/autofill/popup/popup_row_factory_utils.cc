@@ -92,6 +92,7 @@ constexpr int kCloseIconSize = 16;
 constexpr int kAtMemoryLabelHorizontalSpacing = 4;
 
 // Popup items that use a leading icon instead of a trailing one.
+// TODO(crbug.com/40100455): Rename to `kSuggestionTypesUsingLeadingIcons`.
 constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
     {SuggestionType::kAllLoyaltyCardsEntry,
      SuggestionType::kAllSavedPasswordsEntry, SuggestionType::kManageAddress,
@@ -99,7 +100,7 @@ constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
      SuggestionType::kManageAutofillAiIdentityDocs,
      SuggestionType::kManageAutofillAiShopping,
      SuggestionType::kManageAutofillAiTravel, SuggestionType::kManageIban,
-     SuggestionType::kManageLoyaltyCard,
+     SuggestionType::kManageLoyaltyCard, SuggestionType::kManageOffers,
      SuggestionType::kManageEnhancedAutofill, SuggestionType::kOpenGmailForOtps,
      SuggestionType::kPendingStateSignin, SuggestionType::kRemoveAutofillAi,
      SuggestionType::kUndo, SuggestionType::kViewPasswordDetails,
@@ -1139,6 +1140,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kManageEnhancedAutofill:
     case SuggestionType::kManageIban:
     case SuggestionType::kManageLoyaltyCard:
+    case SuggestionType::kManageOffers:
     case SuggestionType::kMaximizeCreditCardBenefitsEntry:
     case SuggestionType::kMerchantPromoCodeEntry: {
       if (base::FeatureList::IsEnabled(
