@@ -119,12 +119,6 @@ tast.secagentd.NetworkEvents.relaxed_udp@chromeos-betty-cfi-thin-lto-chrome
 # b/488388275
 tast.health.RunCameraFrameAnalysisRoutine
 
-# b/505776070
-tast.hwsec.CrossVersionChromeLogin.ti50_r112
-tast.hwsec.CrossVersionChromeLogin.ti50_r114
-tast.hwsec.CrossVersionChromeLogin.ti50_r120
-tast.hwsec.CrossVersionChromeLogin.ti50_r125
-
 # b/559243046: Consistent failures with no obvious cause
 tast.crostini.AudioPlaybackConfigurations.bookworm_stable@brya
 
