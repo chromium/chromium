@@ -37,6 +37,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "ipc/constants.mojom.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
@@ -737,6 +738,14 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
       WebViewGuest::FromRenderFrameHost(render_frame_host);
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
+  // Note: web_contents are null in unit tests :(
+  if (extension && web_contents) {
+    if (auto* granter =
+            ActiveTabPermissionGranter::FromWebContents(web_contents)) {
+      granter->GrantIfRequested(extension);
+    }
+  }
+
   base::ListValue args;
   args.Append(std::move(properties));
 
@@ -747,15 +756,17 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
     // Note: web_contents are null in unit tests :(
     if (web_contents) {
       int frame_id = ExtensionApiFrameIdMap::GetFrameId(render_frame_host);
-      if (frame_id != ExtensionApiFrameIdMap::kInvalidFrameId)
+      if (frame_id != ExtensionApiFrameIdMap::kInvalidFrameId) {
         args[0].GetDict().Set("frameId", frame_id);
+      }
 
-      // We intentionally don't scrub the tab data here, since the user chose to
-      // invoke the extension on the page.
-      // TODO(tjudkins) Potentially use GetScrubTabBehavior here to gate based
-      // on permissions.
-      ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior = {
-          ExtensionTabUtil::kDontScrubTab, ExtensionTabUtil::kDontScrubTab};
+      // The contextMenus API is only available to privileged extension
+      // contexts.
+      constexpr mojom::ContextType context_type =
+          mojom::ContextType::kPrivilegedExtension;
+      ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+          ExtensionTabUtil::GetScrubTabBehavior(extension, context_type,
+                                                web_contents);
       args.Append(ExtensionTabUtil::CreateTabObject(
                       web_contents, scrub_tab_behavior, extension)
                       .ToValue());
@@ -776,15 +787,9 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
     item->SetChecked(checked);
     args[0].GetDict().Set("checked", item->checked());
 
-    if (extension)
+    if (extension) {
       WriteToStorage(extension, item->id().extension_key);
-  }
-
-  // Note: web_contents are null in unit tests :(
-  if (web_contents &&
-      ActiveTabPermissionGranter::FromWebContents(web_contents)) {
-    ActiveTabPermissionGranter::FromWebContents(web_contents)
-        ->GrantIfRequested(extension);
+    }
   }
   {
     // Dispatch to menu item's .onclick handler (this is the legacy API, from

@@ -4,14 +4,20 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,8 +35,12 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/models/menu_model.h"
 
@@ -290,6 +300,314 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest, ContextMenusNoPerms) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest, ContextMenusMultipleIds) {
   ASSERT_TRUE(RunExtensionTest("context_menus/item_ids")) << message_;
+}
+
+namespace {
+
+// The background script used by the tab scrubbing tests below. Rather than
+// asserting on the click data itself, it echoes the `info` and `tab` objects
+// it was given back to the browser process, so that the expectations can live
+// in the tests themselves. `%s` is the context the menu item is shown in.
+constexpr char kScrubbingScriptTemplate[] = R"(
+  chrome.contextMenus.onClicked.addListener((info, tab) => {
+    chrome.test.sendMessage(JSON.stringify({info: info, tab: tab}));
+  });
+
+  chrome.contextMenus.create(
+      {id: 'test_item', title: 'Test Item', contexts: ['%s']},
+      () => chrome.test.sendMessage('created'));
+)";
+
+// Verifies that the sensitive metadata the extension is not allowed to see was
+// removed from `tab`.
+void ExpectTabScrubbed(const base::DictValue& tab) {
+  EXPECT_FALSE(tab.contains("url"));
+  EXPECT_FALSE(tab.contains("title"));
+  EXPECT_FALSE(tab.contains("favIconUrl"));
+  EXPECT_FALSE(tab.contains("pendingUrl"));
+  // Non-sensitive properties should still be present. This also guards against
+  // an unexpected object trivially satisfying the checks above.
+  EXPECT_TRUE(tab.FindInt("id").has_value());
+}
+
+// Verifies that `tab` still has the metadata for the page at `url`.
+void ExpectTabNotScrubbed(const base::DictValue& tab, const GURL& url) {
+  const std::string* tab_url = tab.FindString("url");
+  ASSERT_TRUE(tab_url);
+  EXPECT_EQ(url.spec(), *tab_url);
+  const std::string* title = tab.FindString("title");
+  ASSERT_TRUE(title);
+  // simple.html has a title of "OK".
+  EXPECT_EQ("OK", *title);
+  EXPECT_TRUE(tab.FindInt("id").has_value());
+}
+
+// Verifies the `pageUrl` the extension was given for the click.
+void ExpectPageUrl(const base::DictValue& info, const GURL& url) {
+  const std::string* page_url = info.FindString("pageUrl");
+  ASSERT_TRUE(page_url);
+  EXPECT_EQ(url.spec(), *page_url);
+}
+
+}  // namespace
+
+class ContextMenusTabScrubbingTest : public ExtensionContextMenuApiTest {
+ public:
+  // The context the extension's menu item is shown in.
+  enum class MenuContext {
+    kPage,
+    kAction,
+  };
+
+  // The `info` and `tab` objects an extension was given for a menu click.
+  struct ClickData {
+    base::DictValue info;
+    base::DictValue tab;
+  };
+
+  void SetUpOnMainThread() override {
+    ExtensionContextMenuApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  // Loads an extension with a single context menu item shown in
+  // `menu_context`, granted the contextMenus permission along with any
+  // `extra_permissions` and `host_permissions`. Returns nullptr on failure.
+  const Extension* LoadScrubbingExtension(
+      MenuContext menu_context,
+      const std::vector<std::string>& extra_permissions = {},
+      const std::vector<std::string>& host_permissions = {}) {
+    base::ListValue permissions;
+    permissions.Append("contextMenus");
+    for (const std::string& permission : extra_permissions) {
+      permissions.Append(permission);
+    }
+
+    base::DictValue manifest =
+        base::DictValue()
+            .Set("name", "ContextMenus Tab Scrubbing Test")
+            .Set("version", "1")
+            .Set("manifest_version", 3)
+            .Set("permissions", std::move(permissions))
+            .Set("background",
+                 base::DictValue().Set("service_worker", "sw.js"));
+
+    if (!host_permissions.empty()) {
+      base::ListValue hosts;
+      for (const std::string& host : host_permissions) {
+        hosts.Append(host);
+      }
+      manifest.Set("host_permissions", std::move(hosts));
+    }
+
+    const char* context_name = nullptr;
+    switch (menu_context) {
+      case MenuContext::kPage:
+        context_name = "page";
+        break;
+      case MenuContext::kAction:
+        // Items shown in the action context require the extension to have an
+        // action to show them on.
+        manifest.Set("action", base::DictValue());
+        context_name = "action";
+        break;
+    }
+
+    test_dir_.WriteManifest(manifest);
+    test_dir_.WriteFile(
+        FILE_PATH_LITERAL("sw.js"),
+        base::StringPrintf(kScrubbingScriptTemplate, context_name));
+
+    // Wait for the item to be created, otherwise it won't be in the menu when
+    // one of the Click*ContextMenuItem() methods shows it.
+    ExtensionTestMessageListener created_listener("created");
+    const Extension* extension = LoadExtension(test_dir_.UnpackedPath());
+    if (!extension || !created_listener.WaitUntilSatisfied()) {
+      return nullptr;
+    }
+    return extension;
+  }
+
+  GURL GetTestUrl(std::string_view host) {
+    return embedded_test_server()->GetURL(host, "/simple.html");
+  }
+
+  // Shows a page context menu on the active tab and activates the extension's
+  // item in it, returning the data the extension received for the click.
+  std::optional<ClickData> ClickPageContextMenuItem() {
+    content::RenderFrameHost* frame =
+        GetActiveWebContents()->GetPrimaryMainFrame();
+    content::ContextMenuParams params;
+    params.page_url = frame->GetLastCommittedURL();
+
+    const int command_id =
+        ContextMenuMatcher::ConvertToExtensionsCustomCommandId(/*id=*/0);
+
+    ExtensionTestMessageListener click_listener;
+#if BUILDFLAG(IS_ANDROID)
+    ExtensionMenuModel menu(*frame, params);
+    menu.PopulateModel();
+#else
+    TestRenderViewContextMenu menu(*frame, params);
+    menu.Init();
+#endif
+    EXPECT_TRUE(menu.IsCommandIdVisible(command_id));
+    EXPECT_TRUE(menu.IsCommandIdEnabled(command_id));
+    menu.ExecuteCommand(command_id, /*event_flags=*/0);
+
+    return WaitForClickData(click_listener);
+  }
+
+  // Shows the context menu for the extension's toolbar action and activates
+  // the extension's item in it, returning the data the extension received for
+  // the click.
+  std::optional<ClickData> ClickActionContextMenuItem(
+      const Extension& extension) {
+    const int command_id =
+        ContextMenuMatcher::ConvertToExtensionsCustomCommandId(/*id=*/0);
+    ExtensionContextMenuModel menu(
+        &extension, browser_window_interface(),
+        /*is_pinned=*/true, /*delegate=*/nullptr,
+        /*can_show_icon_in_toolbar=*/true,
+        ExtensionContextMenuModel::ContextMenuSource::kToolbarAction);
+    EXPECT_TRUE(menu.GetIndexOfCommandId(command_id).has_value());
+
+    ExtensionTestMessageListener click_listener;
+    menu.ExecuteCommand(command_id, /*event_flags=*/0);
+
+    return WaitForClickData(click_listener);
+  }
+
+ private:
+  // Waits for the extension to echo back the data for a menu item click.
+  std::optional<ClickData> WaitForClickData(
+      ExtensionTestMessageListener& listener) {
+    if (!listener.WaitUntilSatisfied()) {
+      ADD_FAILURE() << "Never received a click from the extension.";
+      return std::nullopt;
+    }
+
+    std::optional<base::DictValue> click_data =
+        base::JSONReader::ReadDict(listener.message(), base::JSON_PARSE_RFC);
+    base::DictValue* info = click_data ? click_data->FindDict("info") : nullptr;
+    base::DictValue* tab = click_data ? click_data->FindDict("tab") : nullptr;
+    if (!info || !tab) {
+      ADD_FAILURE() << "Unexpected click data: " << listener.message();
+      return std::nullopt;
+    }
+    return ClickData{std::move(*info), std::move(*tab)};
+  }
+
+  // The files for the extension loaded by LoadScrubbingExtension(). Owned by
+  // the fixture so that they outlive the loaded extension.
+  TestExtensionDir test_dir_;
+};
+
+// An extension without tab or host permissions should have sensitive tab
+// metadata scrubbed when its menu item is invoked from the toolbar action.
+IN_PROC_BROWSER_TEST_F(ContextMenusTabScrubbingTest,
+                       ActionContextMenuWithoutPermissionsScrubsTab) {
+  const Extension* extension = LoadScrubbingExtension(MenuContext::kAction);
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(), GetTestUrl("example.test")));
+
+  std::optional<ClickData> click_data = ClickActionContextMenuItem(*extension);
+  ASSERT_TRUE(click_data);
+  // `pageUrl` is only provided for items invoked on a page.
+  EXPECT_FALSE(click_data->info.contains("pageUrl"));
+  ExpectTabScrubbed(click_data->tab);
+}
+
+// An extension with the activeTab permission is granted access to the tab when
+// its menu item is invoked, so the tab should not be scrubbed.
+IN_PROC_BROWSER_TEST_F(ContextMenusTabScrubbingTest,
+                       ActionContextMenuWithActiveTabDoesNotScrubTab) {
+  const Extension* extension =
+      LoadScrubbingExtension(MenuContext::kAction, {"activeTab"});
+  ASSERT_TRUE(extension);
+  const GURL url = GetTestUrl("example.test");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+
+  std::optional<ClickData> click_data = ClickActionContextMenuItem(*extension);
+  ASSERT_TRUE(click_data);
+  EXPECT_FALSE(click_data->info.contains("pageUrl"));
+  ExpectTabNotScrubbed(click_data->tab, url);
+}
+
+// An extension without tab or host permissions should have sensitive tab
+// metadata scrubbed when its menu item is invoked from a page context menu,
+// though it is still told which page the click happened on.
+IN_PROC_BROWSER_TEST_F(ContextMenusTabScrubbingTest,
+                       PageContextMenuWithoutPermissionsScrubsTab) {
+  ASSERT_TRUE(LoadScrubbingExtension(MenuContext::kPage));
+  const GURL url = GetTestUrl("example.test");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+
+  std::optional<ClickData> click_data = ClickPageContextMenuItem();
+  ASSERT_TRUE(click_data);
+  ExpectPageUrl(click_data->info, url);
+  ExpectTabScrubbed(click_data->tab);
+}
+
+// An extension with the activeTab permission is granted access to the tab when
+// its menu item is invoked, so the tab should not be scrubbed.
+IN_PROC_BROWSER_TEST_F(ContextMenusTabScrubbingTest,
+                       PageContextMenuWithActiveTabDoesNotScrubTab) {
+  ASSERT_TRUE(LoadScrubbingExtension(MenuContext::kPage, {"activeTab"}));
+  const GURL url = GetTestUrl("example.test");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+
+  std::optional<ClickData> click_data = ClickPageContextMenuItem();
+  ASSERT_TRUE(click_data);
+  ExpectPageUrl(click_data->info, url);
+  ExpectTabNotScrubbed(click_data->tab, url);
+}
+
+// An extension with the tabs permission can see tab metadata for any tab, so
+// the tab should not be scrubbed.
+IN_PROC_BROWSER_TEST_F(ContextMenusTabScrubbingTest,
+                       PageContextMenuWithTabsPermissionDoesNotScrubTab) {
+  ASSERT_TRUE(LoadScrubbingExtension(MenuContext::kPage, {"tabs"}));
+  const GURL url = GetTestUrl("example.test");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+
+  std::optional<ClickData> click_data = ClickPageContextMenuItem();
+  ASSERT_TRUE(click_data);
+  ExpectPageUrl(click_data->info, url);
+  ExpectTabNotScrubbed(click_data->tab, url);
+}
+
+// An extension with explicit host permissions should only see tab metadata for
+// origins it has access to.
+IN_PROC_BROWSER_TEST_F(ContextMenusTabScrubbingTest,
+                       PageContextMenuWithHostPermissionsScrubsPerOrigin) {
+  ASSERT_TRUE(LoadScrubbingExtension(MenuContext::kPage,
+                                     /*extra_permissions=*/{},
+                                     {"*://example.test/*"}));
+
+  {
+    SCOPED_TRACE("Invoked on an origin the extension cannot access.");
+    const GURL url = GetTestUrl("other.test");
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+
+    std::optional<ClickData> click_data = ClickPageContextMenuItem();
+    ASSERT_TRUE(click_data);
+    ExpectPageUrl(click_data->info, url);
+    ExpectTabScrubbed(click_data->tab);
+  }
+
+  {
+    SCOPED_TRACE("Invoked on an origin the extension can access.");
+    const GURL url = GetTestUrl("example.test");
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+
+    std::optional<ClickData> click_data = ClickPageContextMenuItem();
+    ASSERT_TRUE(click_data);
+    ExpectPageUrl(click_data->info, url);
+    ExpectTabNotScrubbed(click_data->tab, url);
+  }
 }
 
 class ExtensionContextMenuVisibilityApiTest
