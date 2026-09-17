@@ -87,7 +87,8 @@
 #input,
 #error-container {
   box-sizing: border-box;
-  color: var(--color-composebox-voice-search-font, rgba(71, 71, 71, 1));
+  color: var(--color-composebox-voice-search-font,
+      var(--color-composebox-font-light, #1F1F1F));
   flex-grow: 1;
   font-family: inherit;
   line-height: 24px;
@@ -194,6 +195,12 @@
   #stopButton {
     --cr-icon-button-fill-color: #E3E3E3;
     background-color: #444746;
+  }
+
+  #input,
+  #error-container {
+    color: var(--color-composebox-voice-search-font,
+        var(--color-composebox-font-light, #E3E3E3));
   }
 }
 
