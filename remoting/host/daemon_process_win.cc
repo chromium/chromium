@@ -27,7 +27,9 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
+#include "base/win/object_watcher.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
@@ -108,7 +110,8 @@ namespace remoting {
 
 class WtsTerminalMonitor;
 
-class DaemonProcessWin : public DaemonProcess {
+class DaemonProcessWin : public DaemonProcess,
+                         public base::win::ObjectWatcher::Delegate {
  public:
   DaemonProcessWin(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
                    scoped_refptr<AutoThreadTaskRunner> io_task_runner,
@@ -154,7 +157,17 @@ class DaemonProcessWin : public DaemonProcess {
   // Opens the pairing registry keys.
   bool OpenPairingRegistry();
 
+  void OnSessionCountChanged(size_t session_count) override;
+
+  // base::win::ObjectWatcher::Delegate implementation.
+  void OnObjectSignaled(HANDLE object) override;
+
  private:
+  void InitializeUpdateEvents();
+  void InitializeSessionActiveEvent();
+  void InitializeUpdatePendingEvent();
+  void OnUpdatePendingTimeout();
+
   // Handle of the network process.
   ScopedHandle network_process_;
 
@@ -166,6 +179,23 @@ class DaemonProcessWin : public DaemonProcess {
   base::SequenceBound<MinidumpHandler> minidump_handler_;
 
   std::optional<bool> use_peer_connection_process_;
+
+  // Global named events used for coordination with the installer.
+  ScopedHandle session_active_event_;
+  ScopedHandle update_pending_event_;
+  base::win::ObjectWatcher update_pending_watcher_;
+
+  // DaemonProcess overrides.
+  void Stop(int exit_code) override;
+
+  // Set when an update is pending.
+  bool update_pending_ = false;
+
+  // Set when Stop() has been called.
+  bool stopping_ = false;
+
+  // Max grace period timer before restarting the host for a pending update.
+  base::OneShotTimer update_pending_timer_;
 };
 
 DaemonProcessWin::DaemonProcessWin(
@@ -174,9 +204,15 @@ DaemonProcessWin::DaemonProcessWin(
     StoppedCallback stopped_callback)
     : DaemonProcess(caller_task_runner,
                     io_task_runner,
-                    std::move(stopped_callback)) {}
+                    std::move(stopped_callback)) {
+  InitializeUpdateEvents();
+}
 
-DaemonProcessWin::~DaemonProcessWin() = default;
+DaemonProcessWin::~DaemonProcessWin() {
+  if (session_active_event_.is_valid()) {
+    ::ResetEvent(session_active_event_.Get());
+  }
+}
 
 bool DaemonProcessWin::OnInitAfterChannelConnected(int32_t peer_pid) {
   // Obtain the handle of the network process.
@@ -504,6 +540,141 @@ void DaemonProcessWin::ConfigurePeerConnectionProcess() {
   use_peer_connection_process_ = (enabled != 0);
   HOST_LOG << (*use_peer_connection_process_ ? "Enabling" : "Disabling")
            << " PeerConnection process via registry configuration.";
+}
+
+void DaemonProcessWin::InitializeUpdateEvents() {
+  InitializeSessionActiveEvent();
+  InitializeUpdatePendingEvent();
+}
+
+void DaemonProcessWin::InitializeSessionActiveEvent() {
+  // SDDL breakdown:
+  // - O:BAG:BA: Owner and primary group set to Built-in Administrators (BA).
+  // - (A;;GA;;;SY): Grant Generic All (GA) to LocalSystem (SY).
+  // - (A;;GA;;;BA): Grant Generic All (GA) to Built-in Administrators (BA).
+  // - (A;;GR;;;AU): Grant Generic Read (GR) to Authenticated Users (AU) so
+  //   non-elevated processes can query or wait on the event without modifying
+  //   it.
+  ScopedSd session_active_sd =
+      ConvertSddlToSd("O:BAG:BAD:(A;;GA;;;SY)(A;;GA;;;BA)(A;;GR;;;AU)");
+  if (!session_active_sd) {
+    PLOG(ERROR) << "Failed to create SD for session active event";
+    return;
+  }
+
+  SECURITY_ATTRIBUTES sa = {sizeof(sa), session_active_sd.get(), FALSE};
+  session_active_event_.Set(::CreateEventW(&sa, /*bManualReset=*/TRUE,
+                                           /*bInitialState=*/FALSE,
+                                           kHostSessionActiveEventName));
+  if (!session_active_event_.is_valid()) {
+    PLOG(ERROR) << "Failed to create " << kHostSessionActiveEventName;
+    return;
+  }
+
+  // Explicitly reset in case an existing event handle was kept alive by an
+  // updater process across a previous daemon crash.
+  ::ResetEvent(session_active_event_.Get());
+}
+
+void DaemonProcessWin::InitializeUpdatePendingEvent() {
+  // SDDL breakdown:
+  // - O:BAG:BA: Owner and primary group set to Built-in Administrators (BA).
+  // - (A;;GA;;;SY): Grant Generic All (GA) to LocalSystem (SY).
+  // - (A;;GA;;;BA): Grant Generic All (GA) to Built-in Administrators (BA).
+  // Unprivileged users have no access so they cannot signal a fake update.
+  ScopedSd update_pending_sd =
+      ConvertSddlToSd("O:BAG:BAD:(A;;GA;;;SY)(A;;GA;;;BA)");
+  if (!update_pending_sd) {
+    PLOG(ERROR) << "Failed to create SD for update pending event";
+    return;
+  }
+
+  SECURITY_ATTRIBUTES sa = {sizeof(sa), update_pending_sd.get(), FALSE};
+  update_pending_event_.Set(::CreateEventW(&sa, /*bManualReset=*/TRUE,
+                                           /*bInitialState=*/FALSE,
+                                           kHostUpdatePendingEventName));
+  if (!update_pending_event_.is_valid()) {
+    PLOG(ERROR) << "Failed to create " << kHostUpdatePendingEventName;
+    return;
+  }
+
+  if (!update_pending_watcher_.StartWatchingOnce(update_pending_event_.Get(),
+                                                 this)) {
+    PLOG(ERROR) << "Failed to watch " << kHostUpdatePendingEventName;
+  }
+}
+
+void DaemonProcessWin::Stop(int exit_code) {
+  if (stopping_) {
+    return;
+  }
+  stopping_ = true;
+  update_pending_timer_.Stop();
+  update_pending_watcher_.StopWatching();
+  if (session_active_event_.is_valid()) {
+    ::ResetEvent(session_active_event_.Get());
+  }
+  DaemonProcess::Stop(exit_code);
+}
+
+void DaemonProcessWin::OnSessionCountChanged(size_t session_count) {
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+
+  if (session_active_event_.is_valid()) {
+    if (session_count > 0) {
+      ::SetEvent(session_active_event_.Get());
+    } else {
+      ::ResetEvent(session_active_event_.Get());
+    }
+  }
+
+  if (session_count == 0 && update_pending_ && !stopping_) {
+    HOST_LOG
+        << "All desktop sessions closed with update pending; stopping host.";
+    Stop(kSuccessExitCode);
+  }
+}
+
+void DaemonProcessWin::OnObjectSignaled(HANDLE object) {
+  DCHECK_EQ(object, update_pending_event_.Get());
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+
+  if (stopping_) {
+    return;
+  }
+
+  update_pending_ = true;
+  HOST_LOG << "Host update pending event signaled.";
+
+  if (desktop_sessions().empty()) {
+    HOST_LOG << "No active desktop sessions; stopping host for update.";
+    Stop(kSuccessExitCode);
+  } else {
+    HOST_LOG << "Active desktop sessions present; starting 24h grace timer.";
+    update_pending_timer_.Start(
+        FROM_HERE, base::Hours(24),
+        base::BindOnce(&DaemonProcessWin::OnUpdatePendingTimeout,
+                       base::Unretained(this)));
+  }
+}
+
+void DaemonProcessWin::OnUpdatePendingTimeout() {
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+  LOG(WARNING) << "24h grace period for pending update expired; stopping host.";
+
+  // Disconnect active sessions with ErrorCode::SOFTWARE_UPGRADED so clients
+  // receive a specific disconnect reason before the host shuts down.
+  std::vector<int> session_ids;
+  for (const auto& [id, _] : desktop_sessions()) {
+    session_ids.push_back(id);
+  }
+  for (int id : session_ids) {
+    CloseDesktopSessionWithError(id, protocol::ErrorCode::SOFTWARE_UPGRADED,
+                                 "Host restarting for pending update.",
+                                 FROM_HERE);
+  }
+
+  Stop(kSuccessExitCode);
 }
 
 }  // namespace remoting

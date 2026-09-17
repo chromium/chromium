@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -57,7 +58,20 @@ namespace remoting {
 
 #if BUILDFLAG(IS_WIN)
 const wchar_t kWindowsServiceName[] = L"chromoting";
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+const wchar_t kHostSessionActiveEventName[] =
+    L"Global\\GoogleChromeRemoteDesktopHostSessionActive";
+const wchar_t kHostUpdatePendingEventName[] =
+    L"Global\\GoogleChromeRemoteDesktopHostUpdatePending";
+#else
+const wchar_t kHostSessionActiveEventName[] =
+    L"Global\\ChromotingHostSessionActive";
+const wchar_t kHostUpdatePendingEventName[] =
+    L"Global\\ChromotingHostUpdatePending";
 #endif
+
+#endif  // BUILDFLAG(IS_WIN)
 
 base::FilePath GetConfigDir() {
 #if BUILDFLAG(IS_LINUX)

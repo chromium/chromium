@@ -160,7 +160,7 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   void Initialize();
 
   // Invokes |stopped_callback_| to ask the owner to delete |this|.
-  void Stop(int exit_code);
+  virtual void Stop(int exit_code);
 
   // Returns true if |terminal_id| is in the range of allocated IDs. I.e. it is
   // less or equal to the highest ID we have seen so far.
@@ -217,6 +217,9 @@ class DaemonProcess : public ConfigWatcher::Delegate,
 
   // Requests the network process to crash. Virtual for testing.
   virtual void DoCrashNetworkProcess(const base::Location& location);
+
+  // Called when the count of active desktop sessions changes.
+  virtual void OnSessionCountChanged(size_t session_count);
 
   scoped_refptr<AutoThreadTaskRunner> caller_task_runner() {
     return caller_task_runner_;

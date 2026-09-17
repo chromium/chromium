@@ -207,6 +207,7 @@ source_set("base") {
     ":remoting_base_version",
     ":session_policies",
     "//base:i18n",
+    "//build:branding_buildflags",
     "//crypto",
     "//google_apis",
     "//google_apis/common:request_util",

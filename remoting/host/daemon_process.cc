@@ -205,6 +205,7 @@ void DaemonProcess::CloseDesktopSessionWithError(
 
   delete i->second;
   desktop_sessions_.erase(i);
+  OnSessionCountChanged(desktop_sessions_.size());
 
   VLOG(1) << "Daemon: closed desktop session " << terminal_id;
 }
@@ -356,6 +357,7 @@ void DaemonProcess::CreateDesktopSession(
   session->SetEventsRemote(std::move(events_remote));
   VLOG(1) << "Daemon: opened desktop session " << terminal_id;
   desktop_sessions_[terminal_id] = session.release();
+  OnSessionCountChanged(desktop_sessions_.size());
 }
 
 void DaemonProcess::ReconnectDesktopSession(
@@ -577,6 +579,8 @@ void DaemonProcess::OnHostShutdown() {
     observer.OnHostShutdown();
   }
 }
+
+void DaemonProcess::OnSessionCountChanged(size_t session_count) {}
 
 void DaemonProcess::DeleteAllDesktopSessions() {
   for (auto& [id, session] : desktop_sessions_) {

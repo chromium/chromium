@@ -103,6 +103,10 @@ class MockDaemonProcess : public DaemonProcess {
               CreatePeerConnectionProcessLauncherDelegate,
               (),
               (override));
+
+  MOCK_METHOD(void, OnSessionCountChanged, (size_t), (override));
+
+  using DaemonProcess::Stop;
 };
 
 FakeDesktopSession::FakeDesktopSession(DaemonProcess* daemon_process, int id)
@@ -116,7 +120,9 @@ MockDaemonProcess::MockDaemonProcess(
     StoppedCallback stopped_callback)
     : DaemonProcess(caller_task_runner,
                     io_task_runner,
-                    std::move(stopped_callback)) {}
+                    std::move(stopped_callback)) {
+  EXPECT_CALL(*this, OnSessionCountChanged(_)).Times(AnyNumber());
+}
 
 MockDaemonProcess::~MockDaemonProcess() = default;
 
@@ -193,7 +199,9 @@ void DaemonProcessTest::SetUp() {
 }
 
 void DaemonProcessTest::TearDown() {
-  daemon_process_->Stop(kSuccessExitCode);
+  if (daemon_process_) {
+    daemon_process_->Stop(kSuccessExitCode);
+  }
   run_loop_.Run();
 }
 
@@ -257,6 +265,49 @@ TEST_F(DaemonProcessTest, CallCloseDesktopSession) {
 
   daemon_process_->CloseDesktopSession(id);
   EXPECT_TRUE(desktop_sessions().empty());
+}
+
+TEST_F(DaemonProcessTest, OnSessionCountChanged) {
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_))
+      .Times(AnyNumber());
+  EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_, _, _, _))
+      .Times(AnyNumber());
+
+  StartDaemonProcess();
+
+  InSequence s;
+  EXPECT_CALL(*daemon_process_, OnSessionCountChanged(1));
+  EXPECT_CALL(*daemon_process_, OnSessionCountChanged(2));
+  EXPECT_CALL(*daemon_process_, OnSessionCountChanged(1));
+  EXPECT_CALL(*daemon_process_, OnSessionCountChanged(0));
+
+  int id1 = terminal_id_++;
+  daemon_process_->CreateDesktopSession(
+      id1, mojo::NullReceiver(), mojo::NullRemote(), CreateSessionOptions());
+
+  int id2 = terminal_id_++;
+  daemon_process_->CreateDesktopSession(
+      id2, mojo::NullReceiver(), mojo::NullRemote(), CreateSessionOptions());
+
+  daemon_process_->CloseDesktopSession(id1);
+  daemon_process_->CloseDesktopSession(id2);
+}
+
+TEST_F(DaemonProcessTest, StopDoesNotCallOnSessionCountChanged) {
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_))
+      .Times(AnyNumber());
+
+  StartDaemonProcess();
+
+  EXPECT_CALL(*daemon_process_, OnSessionCountChanged(1)).Times(1);
+  EXPECT_CALL(*daemon_process_, OnSessionCountChanged(0)).Times(0);
+
+  int id = terminal_id_++;
+  daemon_process_->CreateDesktopSession(
+      id, mojo::NullReceiver(), mojo::NullRemote(), CreateSessionOptions());
+  EXPECT_EQ(desktop_sessions().size(), 1u);
+
+  daemon_process_->Stop(kSuccessExitCode);
 }
 
 // Sends two CloseDesktopSession messages and expects the second one to be

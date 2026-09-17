@@ -13,6 +13,11 @@ namespace remoting {
 #if BUILDFLAG(IS_WIN)
 // Windows chromoting service name.
 extern const wchar_t kWindowsServiceName[];
+
+// Windows global event names used for coordinating host updates with running
+// sessions.
+extern const wchar_t kHostSessionActiveEventName[];
+extern const wchar_t kHostUpdatePendingEventName[];
 #endif
 
 // Returns the a directory for storing chromoting config files. Depending on the
