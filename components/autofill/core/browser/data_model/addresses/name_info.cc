@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <concepts>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -22,7 +23,6 @@
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -74,21 +74,33 @@ bool FinalizeNameAddressComponent(AddressComponent* component) {
   return result;
 }
 
+// The name trees stored in a `NameInfo`.
+template <typename T>
+concept NameType =
+    std::same_as<T, NameFull> || std::same_as<T, AlternativeFullName>;
+
+// Returns the root type of the name tree `T`.
+template <NameType T>
+consteval FieldType GetFieldType() {
+  if constexpr (std::same_as<T, NameFull>) {
+    return NAME_FULL;
+  } else {
+    return ALTERNATIVE_FULL_NAME;
+  }
+}
+
+template <NameType T>
 std::u16string GetNameForComparison(
     const NameInfo& name_info,
-    const AddressCountryCode& common_country_code,
-    const FieldType name_type) {
-  switch (name_type) {
-    case ALTERNATIVE_FULL_NAME:
-      return name_info.GetValueForComparisonForType(name_type,
-                                                    common_country_code);
-    case NAME_FULL:
-      // Using GetValue() directly to prevent normalization that would remove
-      // diacritics. Normalization happens in
-      // `AutofillProfileComparator::Compare()`.
-      return name_info.GetRawInfo(name_type);
-    default:
-      NOTREACHED();
+    const AddressCountryCode& common_country_code) {
+  if constexpr (std::same_as<T, AlternativeFullName>) {
+    return name_info.GetValueForComparisonForType(GetFieldType<T>(),
+                                                  common_country_code);
+  } else {
+    // Using GetValue() directly to prevent normalization that would remove
+    // diacritics. Normalization happens in
+    // `AutofillProfileComparator::Compare()`.
+    return name_info.GetRawInfo(GetFieldType<T>());
   }
 }
 
@@ -315,25 +327,24 @@ bool IsNormalizedNameVariantOf(std::u16string_view full_name_1,
   return IsNormalizedNameVariantOfExponential(full_name_1, full_name_2);
 }
 
+template <NameType T>
 bool AreNameComponentsMergeable(const NameInfo& name_1,
                                 const AddressCountryCode country_code_1,
                                 const NameInfo& name_2,
-                                const AddressCountryCode country_code_2,
-                                const FieldType name_type) {
-  DCHECK(name_type == NAME_FULL || name_type == ALTERNATIVE_FULL_NAME);
+                                const AddressCountryCode country_code_2) {
   const AddressCountryCode common_country_code =
       AddressComponent::GetCommonCountry(country_code_1, country_code_2);
   const std::u16string comparison_name_1 =
-      GetNameForComparison(name_1, common_country_code, name_type);
+      GetNameForComparison<T>(name_1, common_country_code);
   const std::u16string comparison_name_2 =
-      GetNameForComparison(name_2, common_country_code, name_type);
+      GetNameForComparison<T>(name_2, common_country_code);
 
   if (normalization::HasOnlySkippableCharacters(comparison_name_1) ||
       normalization::HasOnlySkippableCharacters(comparison_name_2) ||
       AutofillProfileComparator::Compare(
           comparison_name_1, comparison_name_2,
-          normalization::WhitespaceSpec::kDiscard, name_type, country_code_1,
-          country_code_2)) {
+          normalization::WhitespaceSpec::kDiscard, GetFieldType<T>(),
+          country_code_1, country_code_2)) {
     return true;
   }
 
@@ -357,22 +368,22 @@ bool AreNameComponentsMergeable(const NameInfo& name_1,
   return result;
 }
 
+template <NameType T>
 void MergeNameComponents(const NameInfo& new_name_info,
                          const AddressCountryCode new_country_code,
                          const NameInfo& old_name_info,
                          const AddressCountryCode old_country_code,
-                         const FieldType name_type,
-                         AddressComponent& name_component,
+                         T& name_component,
                          bool newer_was_more_recently_used) {
-  DCHECK(name_type == NAME_FULL || name_type == ALTERNATIVE_FULL_NAME);
+  constexpr FieldType kNameType = GetFieldType<T>();
 
   const AddressCountryCode common_country_code =
       AddressComponent::GetCommonCountry(new_country_code, old_country_code);
   const std::u16string name_new = NormalizeForComparison(
-      GetNameForComparison(new_name_info, common_country_code, name_type),
+      GetNameForComparison<T>(new_name_info, common_country_code),
       normalization::WhitespaceSpec::kRetain, new_country_code);
   const std::u16string name_old = NormalizeForComparison(
-      GetNameForComparison(old_name_info, common_country_code, name_type),
+      GetNameForComparison<T>(old_name_info, common_country_code),
       normalization::WhitespaceSpec::kRetain, old_country_code);
 
   // At this state it is already determined that the two names are mergeable.
@@ -383,7 +394,7 @@ void MergeNameComponents(const NameInfo& new_name_info,
   // * One name is a variant of the other. In this scenario, use the non-variant
   // name.
   // First, set info to the original profile.
-  name_component.CopyFrom(*old_name_info.GetRootForType(name_type));
+  name_component.CopyFrom(*old_name_info.GetRootForType(kNameType));
   // If the name of the `new_profile` is empty, just keep the state of
   // `old_profile`.
   if (normalization::HasOnlySkippableCharacters(name_new)) {
@@ -392,21 +403,21 @@ void MergeNameComponents(const NameInfo& new_name_info,
   // Vice versa set name to the one of `new_profile` if `old_profile` has an
   // empty name
   if (normalization::HasOnlySkippableCharacters(name_old)) {
-    name_component.CopyFrom(*new_name_info.GetRootForType(name_type));
+    name_component.CopyFrom(*new_name_info.GetRootForType(kNameType));
     return;
   }
   // Try to apply a direct merging.
   if (name_component.MergeWithComponent(
-          *new_name_info.GetRootForType(name_type),
+          *new_name_info.GetRootForType(kNameType),
           newer_was_more_recently_used)) {
     return;
   }
   // If the name in `old_profile` is a variant of `new_profile` use the one in
   // `new_profile`.
   if (IsNormalizedNameVariantOf(name_new, name_old)) {
-    name_component.CopyFrom(*new_name_info.GetRootForType(name_type));
+    name_component.CopyFrom(*new_name_info.GetRootForType(kNameType));
   } else {
-    name_component.CopyFrom(*old_name_info.GetRootForType(name_type));
+    name_component.CopyFrom(*old_name_info.GetRootForType(kNameType));
   }
 }
 
@@ -469,14 +480,14 @@ bool NameInfo::MergeNames(const NameInfo& new_name_info,
 
   // TODO(crbug.com/375383124): Update `MergeNames` to provide meaningful
   // return values.
-  MergeNameComponents(new_name_info, new_country_code, old_name_info,
-                      old_country_code, NAME_FULL, *name_full,
-                      newer_was_more_recently_used);
+  MergeNameComponents<NameFull>(new_name_info, new_country_code, old_name_info,
+                                old_country_code, *name_full,
+                                newer_was_more_recently_used);
   if (new_name_info.IsAlternativeNameSupported()) {
     alternative_full_name = std::make_unique<AlternativeFullName>();
-    MergeNameComponents(new_name_info, new_country_code, old_name_info,
-                        old_country_code, ALTERNATIVE_FULL_NAME,
-                        *alternative_full_name, newer_was_more_recently_used);
+    MergeNameComponents<AlternativeFullName>(
+        new_name_info, new_country_code, old_name_info, old_country_code,
+        *alternative_full_name, newer_was_more_recently_used);
   }
   result_name_info =
       NameInfo(std::move(name_full), std::move(alternative_full_name));
@@ -488,8 +499,8 @@ bool NameInfo::AreNamesMergeable(const NameInfo& name_info_1,
                                  const AddressCountryCode country_code_1,
                                  const NameInfo& name_info_2,
                                  const AddressCountryCode country_code_2) {
-  return AreNameComponentsMergeable(name_info_1, country_code_1, name_info_2,
-                                    country_code_2, NAME_FULL);
+  return AreNameComponentsMergeable<NameFull>(name_info_1, country_code_1,
+                                              name_info_2, country_code_2);
 }
 
 // static
@@ -507,8 +518,8 @@ bool NameInfo::AreAlternativeNamesMergeable(
     return false;
   }
 
-  return AreNameComponentsMergeable(name_info_1, country_code_1, name_info_2,
-                                    country_code_2, ALTERNATIVE_FULL_NAME);
+  return AreNameComponentsMergeable<AlternativeFullName>(
+      name_info_1, country_code_1, name_info_2, country_code_2);
 }
 
 bool NameInfo::MergeStructuredName(const NameInfo& newer,
