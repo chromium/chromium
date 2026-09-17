@@ -700,7 +700,7 @@ void WebFrameWidgetImpl::DragTargetDragLeave(
                      screen_point, operations_allowed_,
                      /*force_default_action=*/false);
 
-  GetPage()->GetDragController().DragExited(&drag_data,
+  GetPage()->GetDragController().DragExited(drag_data,
                                             *local_root_->GetFrame());
 
   // FIXME: why is the drag scroll timer not stopped here?
@@ -743,7 +743,7 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
                      ViewportToRootFrame(point_in_viewport), screen_point,
                      operations_allowed_, web_drag_data.ForceDefaultAction());
   GetPage()->GetDragController().PerformDrop(
-      &drag_data, *local_root_->GetFrame(), drag_operation_);
+      drag_data, *local_root_->GetFrame(), drag_operation_);
   // Drops that initiated in the browser get reported via `DragSourceEndedAt`.
   if (!GetPage()->GetDragController().did_initiate_drag()) {
     local_root_->GetFrame()->GetEventHandler().ReportDragEnd();
@@ -1515,7 +1515,7 @@ void WebFrameWidgetImpl::DragTargetDragEnterOrOver(
                      /*force_default_action=*/false);
 
   drag_operation_ = GetPage()->GetDragController().DragEnteredOrUpdated(
-      &drag_data, *local_root_->GetFrame());
+      drag_data, *local_root_->GetFrame());
 
   // Mask the drag operation against the drag source's allowed
   // operations.

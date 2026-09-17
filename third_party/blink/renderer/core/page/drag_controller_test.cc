@@ -106,10 +106,10 @@ class DragControllerTest : public RenderingTest {
                       drop_client_point),
                   drop_client_point,
                   static_cast<DragOperationsMask>(kDragOperationMove), false);
-    GetFrame().GetPage()->GetDragController().DragEnteredOrUpdated(&data,
+    GetFrame().GetPage()->GetDragController().DragEnteredOrUpdated(data,
                                                                    GetFrame());
     GetFrame().GetPage()->GetDragController().PerformDrop(
-        &data, GetFrame(), DragController::Operation());
+        data, GetFrame(), DragController::Operation());
   }
 
   // Injects a fully decoded 6 MP (3000x2000) image into an <img> and starts an
@@ -263,7 +263,7 @@ TEST_F(DragControllerSimTest, ThrottledDocumentHandled) {
       false);
 
   WebView().GetPage()->GetDragController().DragEnteredOrUpdated(
-      &data, *GetDocument().GetFrame());
+      data, *GetDocument().GetFrame());
 
   // Throttle updates, which prevents hit testing from yielding a node.
   WebView()
@@ -272,7 +272,7 @@ TEST_F(DragControllerSimTest, ThrottledDocumentHandled) {
       ->SetLifecycleUpdatesThrottledForTesting();
 
   WebView().GetPage()->GetDragController().PerformDrop(
-      &data, *GetDocument().GetFrame(), DragController::Operation());
+      data, *GetDocument().GetFrame(), DragController::Operation());
 
   // Test passes if we don't crash.
 }

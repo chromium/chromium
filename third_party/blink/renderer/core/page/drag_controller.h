@@ -92,9 +92,9 @@ class CORE_EXPORT DragController final
     bool document_is_handling_drag = false;
   };
 
-  Operation DragEnteredOrUpdated(const DragData*, LocalFrame& local_root);
-  void DragExited(const DragData*, LocalFrame& local_root);
-  void PerformDrop(DragData*,
+  Operation DragEnteredOrUpdated(const DragData&, LocalFrame& local_root);
+  void DragExited(const DragData&, LocalFrame& local_root);
+  void PerformDrop(DragData&,
                    LocalFrame& local_root,
                    const Operation& browser_drag_operation);
 
@@ -145,24 +145,24 @@ class CORE_EXPORT DragController final
 
  private:
   DispatchEventResult DispatchTextInputEventFor(LocalFrame*,
-                                                const DragData*) const;
-  bool CanProcessDrag(const DragData*, LocalFrame& local_root) const;
-  bool ConcludeEditDrag(DragData*);
+                                                const DragData&) const;
+  bool CanProcessDrag(const DragData&, LocalFrame& local_root) const;
+  bool ConcludeEditDrag(DragData&);
   ui::mojom::blink::DragOperation OperationForLoad(
-      const DragData*,
+      const DragData&,
       LocalFrame& local_root) const;
-  bool TryDocumentDrag(const DragData*,
+  bool TryDocumentDrag(const DragData&,
                        DragDestinationAction,
                        ui::mojom::blink::DragOperation&,
                        LocalFrame& local_root);
-  bool TryDHTMLDrag(const DragData*,
+  bool TryDHTMLDrag(const DragData&,
                     ui::mojom::blink::DragOperation&,
                     LocalFrame& local_root) const;
-  ui::mojom::blink::DragOperation GetDragOperation(const DragData*) const;
+  ui::mojom::blink::DragOperation GetDragOperation(const DragData&) const;
   // Clear the selection from the document this drag is exiting.
   void ClearDragCaret() const;
-  bool DragIsMove(const FrameSelection&, const DragData*) const;
-  bool IsCopyKeyDown(const DragData*) const;
+  bool DragIsMove(const FrameSelection&, const DragData&) const;
+  bool IsCopyKeyDown(const DragData&) const;
 
   void MouseMovedIntoDocument(Document*);
 
