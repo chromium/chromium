@@ -1273,22 +1273,19 @@ class DevToolsProtocolTest_BounceTrackingMitigations
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-testing::AssertionResult SimulateBtmBounce(content::WebContents* web_contents,
+testing::AssertionResult SimulateBtmBounce(BrowserWindowInterface* browser,
                                            const GURL& initial_url,
                                            const GURL& bounce_url,
                                            const GURL& final_url) {
-  web_contents = web_contents->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          initial_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PageTransition::PAGE_TRANSITION_TYPED),
-      {});
-  if (!web_contents) {
-    return testing::AssertionFailure() << "OpenURL() returned nullptr";
+  if (!ui_test_utils::NavigateToURLWithDisposition(
+          browser, initial_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+              ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP)) {
+    return testing::AssertionFailure()
+           << "Failed to navigate to " << initial_url;
   }
-
-  if (!content::WaitForLoadStop(web_contents)) {
-    return testing::AssertionFailure() << "Failed to wait for loading to stop";
-  }
+  content::WebContents* web_contents =
+      browser->GetTabStripModel()->GetActiveWebContents();
 
   content::BtmService* btm_service =
       content::BtmService::Get(web_contents->GetBrowserContext());
@@ -1356,7 +1353,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_BounceTrackingMitigations,
 
   // Record a stateful bounce for `bouncer`.
   ASSERT_TRUE(SimulateBtmBounce(
-      web_contents(), embedded_test_server()->GetURL("a.test", "/empty.html"),
+      browser(), embedded_test_server()->GetURL("a.test", "/empty.html"),
       bouncer, embedded_test_server()->GetURL("b.test", "/empty.html")));
 
   SendCommandSync("Storage.runBounceTrackingMitigations");
