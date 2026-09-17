@@ -635,6 +635,13 @@ def _parse_called_by_natives_or_javap(contents,
                        name=name,
                        signature=signature))
     else:
+      if (return_type.is_safe_pointer()
+          and return_type.java_class != java_types.JNI_PTR_CLASS):
+        raise ParseError(
+            f'Method "{name}" has return type {return_type.java_class.name}, '
+            f'but @CalledByNative return types must use JniPtr<T>. '
+            f'(JniUniquePtr and JniRawPtr implement JniPtr and can be returned).'
+        )
       unchecked = not is_javap and 'Unchecked' in match.group('Unchecked')
       parsed_class.called_by_natives.append(
           ParsedCalledByNative(name=name,

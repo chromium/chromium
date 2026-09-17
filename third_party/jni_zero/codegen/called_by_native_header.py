@@ -457,15 +457,12 @@ def method_definition(sb,
       raw = (f'reinterpret_cast<{inner_cpp}*>('
              f'::jni_zero::internal::GetJavaJniPtrRawValue(env, '
              f'::jni_zero::AdoptRef(env, {return_rvalue})))')
+      if return_type.java_class != java_types.JNI_PTR_CLASS:
+        raise ValueError(
+            f'{return_type.java_class.name} cannot be a @CalledByNative '
+            f'return type; this should have been rejected during parsing.')
       with sb.statement():
-        if return_type.java_class == java_types.JNI_PTR_CLASS:
-          sb(f'return {raw}')
-        elif return_type.java_class == java_types.JNI_RAW_PTR_CLASS:
-          sb(f'return ::jni_zero::MakeRaw({raw})')
-        else:
-          raise ValueError(
-              'JniUniquePtr cannot be a @CalledByNative return type: Java has '
-              'no way to give ownership back.')
+        sb(f'return {raw}')
     elif return_type.is_primitive() or return_type.converted_type:
       with sb.statement():
         sb('return ')

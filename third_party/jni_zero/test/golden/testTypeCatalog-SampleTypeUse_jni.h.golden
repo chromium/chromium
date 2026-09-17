@@ -143,21 +143,6 @@ static void Java_SampleTypeUse_foo(JNIEnv* env, ::my::cpp::Define* ptr) {
   ::jni_zero::internal::ReleaseJavaJniPtr(env, converted_ptr);
 }
 
-static ::jni_zero::JniRawPtr<::my::cpp::Define> Java_SampleTypeUse_giveRaw(JNIEnv* env) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = org_jni_1zero_SampleTypeUse_clazz(env);
-  CHECK_CLAZZ(env, clazz, clazz, nullptr);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
-      env,
-      clazz,
-      "giveRaw",
-      "()Lorg/jni_zero/JniRawPtr;",
-      &cached_method_id);
-  auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id());
-  return ::jni_zero::MakeRaw(reinterpret_cast<::my::cpp::Define*>(::jni_zero::internal::GetJavaJniPtrRawValue(env, ::jni_zero::AdoptRef(env, _ret))));
-}
-
 static ::my::cpp::Define* Java_SampleTypeUse_lendIt(JNIEnv* env) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleTypeUse_clazz(env);
@@ -190,10 +175,6 @@ class _CalledByNativesStatics<::org::jni_zero::JSampleTypeUse> {
 
   static void foo(JNIEnv* env, ::my::cpp::Define* ptr) {
     Java_SampleTypeUse_foo(env, ptr);
-  }
-
-  static ::jni_zero::JniRawPtr<::my::cpp::Define> giveRaw(JNIEnv* env) {
-    return Java_SampleTypeUse_giveRaw(env);
   }
 
   static ::my::cpp::Define* lendIt(JNIEnv* env) {

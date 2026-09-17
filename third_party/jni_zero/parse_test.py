@@ -520,7 +520,7 @@ public class ProxyReturnTest {
                             contents,
                             enable_safe_pointers=True)
 
-  def testParseCalledByNativeSafePointerReturn(self):
+  def testParseCalledByNativeUniquePtrReturn(self):
     contents = """
 package org.jni_zero;
 public class ProxyReturnTest {
@@ -529,6 +529,40 @@ public class ProxyReturnTest {
 
   @CalledByNative
   public static JniUniquePtr<NativeFoo> get() { return null; }
+}
+"""
+    with self.assertRaisesRegex(
+        parse.ParseError, r'@CalledByNative return types must use JniPtr'):
+      _parse_java_file_data('ProxyReturnTest.java',
+                            contents,
+                            enable_safe_pointers=True)
+
+  def testParseCalledByNativeRawPtrReturn(self):
+    contents = """
+package org.jni_zero;
+public class ProxyReturnTest {
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {}
+
+  @CalledByNative
+  public static JniRawPtr<NativeFoo> get() { return null; }
+}
+"""
+    with self.assertRaisesRegex(
+        parse.ParseError, r'@CalledByNative return types must use JniPtr'):
+      _parse_java_file_data('ProxyReturnTest.java',
+                            contents,
+                            enable_safe_pointers=True)
+
+  def testParseCalledByNativeJniPtrReturn(self):
+    contents = """
+package org.jni_zero;
+public class ProxyReturnTest {
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {}
+
+  @CalledByNative
+  public static JniPtr<NativeFoo> get() { return null; }
 }
 """
     parsed_file = _parse_java_file_data('ProxyReturnTest.java',
