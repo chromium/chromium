@@ -88,20 +88,19 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
   if (!is_dummy_mailbox_texture) {
     bool copy_success = false;
     if (image->IsTextureBacked()) {
-      if (auto shared_image = image->GetSharedImage()) {
-        gpu::raster::RasterInterface* raster = lease->RasterInterface();
-        if (raster && !lease->IsGpuContextLost()) {
-          gfx::Rect copy_rect(image_sub_rect.x(), image_sub_rect.y(),
-                              lease->shared_image()->size().width(),
-                              lease->shared_image()->size().height());
-          auto result = raster->CopySharedImage(
-              shared_image, image->GetSyncToken(), lease->shared_image(),
-              lease->sync_token(), copy_rect, gfx::Point());
-          lease->SetSyncToken(result.dest_sync_token);
-          lease->SetCleared();
-          image->UpdateSyncToken(result.source_sync_token);
-          copy_success = true;
-        }
+      auto dest_shared_image = lease->GetSharedImage();
+      if (auto shared_image = image->GetSharedImage();
+          shared_image && dest_shared_image) {
+        gfx::Rect copy_rect(image_sub_rect.x(), image_sub_rect.y(),
+                            dest_shared_image->size().width(),
+                            dest_shared_image->size().height());
+        auto result = lease->RasterInterface()->CopySharedImage(
+            shared_image, image->GetSyncToken(), dest_shared_image,
+            lease->GetSyncToken(), copy_rect, gfx::Point());
+        lease->SetSyncToken(result.dest_sync_token);
+        lease->SetCleared();
+        image->UpdateSyncToken(result.source_sync_token);
+        copy_success = true;
       }
     } else {
       PaintImage paint_image = image->PaintImageForCurrentFrame();
