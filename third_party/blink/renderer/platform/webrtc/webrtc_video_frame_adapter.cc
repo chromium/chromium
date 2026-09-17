@@ -444,11 +444,17 @@ WebRtcVideoFrameAdapter::~WebRtcVideoFrameAdapter() {
   // the capturer that premapped frames are required.
   // Don't send the feedback if accelerated scaling is enabled because the
   // feature takes care of mapping outside of encoder anyway.
+  // Also, only send feedback if the frame was actually accessed (either adapted
+  // or accessed directly via getMediaVideoFrame()), so dropped frames do not
+  // overwrite the previous feedback.
 
   if (shared_resources_ &&
       !base::FeatureList::IsEnabled(kWebrtcAcceleratedScaling)) {
-    shared_resources_->SetFeedback(
-        media::VideoCaptureFeedback().RequireMapped(!adapted_frames_.empty()));
+    const bool frame_was_adapted = !adapted_frames_.empty();
+    if (frame_was_adapted || was_media_frame_accessed_) {
+      shared_resources_->SetFeedback(
+          media::VideoCaptureFeedback().RequireMapped(frame_was_adapted));
+    }
   }
 }
 

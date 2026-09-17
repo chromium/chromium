@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_WEBRTC_VIDEO_FRAME_ADAPTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_WEBRTC_VIDEO_FRAME_ADAPTER_H_
 
+#include <atomic>
 #include <span>
 
 #include "base/logging.h"
@@ -229,6 +230,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
       scoped_refptr<SharedResources> shared_resources);
 
   scoped_refptr<media::VideoFrame> getMediaVideoFrame() const override {
+    was_media_frame_accessed_ = true;
     return frame_;
   }
 
@@ -301,6 +303,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
   const ScaledBufferSize full_size_;
   // Frames that have been adapted, i.e. that were "hard-applied" and mapped.
   Vector<AdaptedFrame> adapted_frames_ GUARDED_BY(adapted_frames_lock_);
+  mutable std::atomic<bool> was_media_frame_accessed_{false};
 };
 
 }  // namespace blink
