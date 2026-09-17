@@ -110,6 +110,9 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
 
   const gpu::SyncToken& sync_token() const { return GetSyncToken(); }
 
+  virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+  ContextProviderWrapper() const = 0;
+
  protected:
   explicit CanvasResource(scoped_refptr<gpu::ClientSharedImage> shared_image);
 
@@ -122,9 +125,6 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
   GetTransferableResourceSource() const {
     return viz::TransferableResource::ResourceSource::kCanvas;
   }
-
-  virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-  ContextProviderWrapper() const = 0;
 
   const base::PlatformThreadRef owning_thread_ref_;
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
@@ -222,9 +222,10 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   // Should be called only if the resource is using software raster.
   void UploadSoftwareRenderingResults(SkSurface* sk_surface);
 
- private:
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
+
+ private:
   void VerifySyncToken() override;
   bool UsesAcceleratedRaster() const final { return is_accelerated_; }
 

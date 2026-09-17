@@ -435,6 +435,7 @@ void Canvas2DResourceProvider::EndWriteAccess() {
   }
 
   current_resource_has_write_access_ = false;
+  CHECK(resource()->ContextProviderWrapper());
 }
 
 scoped_refptr<StaticBitmapImage> Canvas2DResourceProvider::Snapshot(
