@@ -56,6 +56,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/tab_context_menu_command.h"
+#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/context_menu_params.h"
@@ -462,7 +463,9 @@ void TabMenuModel::Build(int index) {
   }
 
   for (const auto& selection : indices) {
-    if (tab_strip_->GetTabGroupForTab(selection).has_value()) {
+    std::optional<tab_groups::TabGroupId> group =
+        tab_strip_->GetTabGroupForTab(selection);
+    if (group.has_value() && !tab_strip_->IsTabGroupTemporary(group.value())) {
       AddItemWithStringId(TabStripModel::CommandRemoveFromGroup,
                           IDS_TAB_CXMENU_REMOVE_TAB_FROM_GROUP);
       break;

@@ -70,6 +70,9 @@ class TabGroup {
   void SetGroupIsClosing(bool is_closing);
   bool IsGroupClosing() { return is_closing_; }
 
+  void SetIsTemporary(bool is_temporary);
+  bool is_temporary() const { return is_temporary_; }
+
   // Updates internal bookkeeping for group contents.
   void AddTab();
   void RemoveTab();
@@ -143,6 +146,7 @@ class TabGroup {
 
   bool is_closing_ = false;
   bool is_customized_ = false;
+  bool is_temporary_ = false;
 
   mutable base::WeakPtrFactory<TabGroup> weak_ptr_factory_{this};
 };

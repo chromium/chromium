@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/menu_model_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
@@ -253,3 +254,40 @@ TEST_F(TabMenuModelTest, ExtensionItems) {
   EXPECT_FALSE(menu_base->IsItemCheckedAt(ext_index));
 }
 #endif
+
+TEST_F(TabMenuModelTest, TemporaryGroupOmitsRemoveFromGroup) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Initialize MenuManager for the TestingProfile.
+  extensions::MenuManagerFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(), base::BindOnce([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+        return std::make_unique<extensions::MenuManager>(context, nullptr);
+      }));
+#endif
+
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip_model(&delegate, profile());
+  tab_strip_model.AppendWebContents(
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile())),
+      true);
+
+  // When tab 0 is in a standard group, CommandRemoveFromGroup is present.
+  tab_strip_model.AddToNewGroup({0});
+  TabMenuModel standard_group_menu(&delegate_, &menu_model_delegate(),
+                                   &tab_strip_model, 0);
+  EXPECT_TRUE(standard_group_menu
+                  .GetIndexOfCommandId(TabStripModel::CommandRemoveFromGroup)
+                  .has_value());
+
+  // Remove tab 0 from the standard group.
+  tab_strip_model.RemoveFromGroup({0});
+
+  // When tab 0 is in a temporary group, CommandRemoveFromGroup is omitted.
+  tab_strip_model.AddToNewGroup({0}, /*is_temporary=*/true);
+  TabMenuModel temporary_group_menu(&delegate_, &menu_model_delegate(),
+                                    &tab_strip_model, 0);
+  EXPECT_FALSE(temporary_group_menu
+                   .GetIndexOfCommandId(TabStripModel::CommandRemoveFromGroup)
+                   .has_value());
+}

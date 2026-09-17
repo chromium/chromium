@@ -56,6 +56,10 @@ void TabGroup::SetGroupIsClosing(bool is_closing) {
   is_closing_ = is_closing;
 }
 
+void TabGroup::SetIsTemporary(bool is_temporary) {
+  is_temporary_ = is_temporary;
+}
+
 void TabGroup::AddTab() {
   ++tab_count_;
   group_changed_callbacks_.Notify();

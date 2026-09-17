@@ -62,6 +62,13 @@ void SavedTabGroupModelListener::OnTabGroupAdded(
     return;
   }
 
+  BrowserWindowInterface* browser =
+      tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
+  if (browser && browser->GetTabStripModel() &&
+      browser->GetTabStripModel()->IsTabGroupTemporary(group_id)) {
+    return;
+  }
+
   auto group_and_tab_guid_mapping = CreateSavedTabGroupAndTabMapping(group_id);
 
   SavedTabGroup copy_group = group_and_tab_guid_mapping.first;

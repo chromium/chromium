@@ -1962,7 +1962,7 @@ void UnfocusTabGroup(BrowserWindowInterface* browser,
                      TabGroupFocusExitReason exit_reason) {
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
     base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason", exit_reason);
-    browser->GetTabStripModel()->SetFocusedGroup(std::nullopt);
+    browser->GetTabStripModel()->UnfocusGroup();
   }
 }
 

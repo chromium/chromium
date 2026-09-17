@@ -679,7 +679,8 @@ class TabStripModel {
   // so they are contiguous and do not split an existing group in half. Returns
   // the new group. This may unsplit split tabs if they are only partially
   // contained in `indices`. `indices` must be sorted in ascending order.
-  tab_groups::TabGroupId AddToNewGroup(const std::vector<int> indices);
+  tab_groups::TabGroupId AddToNewGroup(const std::vector<int> indices,
+                                       bool is_temporary = false);
 
   // Add the set of tabs pointed to by `indices` to the given tab group `group`.
   // The tabs take on the pinnedness of the tabs already in the group. Tabs
@@ -711,12 +712,20 @@ class TabStripModel {
 
   bool SupportsTabGroups() const { return group_model_.get() != nullptr; }
 
+  // When tabs are in focus selection mode, they can present as non-grouped
+  // but be part of a group architecturally.
+  bool IsTabGroupTemporary(const tab_groups::TabGroupId& group_id) const;
+
   // Returns the ID of the group that is focused. If no group is focused,
   // returns nullopt.
   std::optional<tab_groups::TabGroupId> GetFocusedGroup() const;
 
   // Sets the group to be focused.
   void SetFocusedGroup(std::optional<tab_groups::TabGroupId> group);
+
+  // Unfocuses the currently focused group, dissolving it if it is a temporary
+  // group.
+  void UnfocusGroup();
 
   // Rotates the focused tab group between the unfocused state and active tab
   // groups in the strip. Requires `features::kTabGroupsFocusing` to be enabled
@@ -1218,10 +1227,9 @@ class TabStripModel {
 
   // Adds tabs to newly-allocated group id `new_group`. This group must be new
   // and have no tabs in it.
-  void AddToNewGroupImpl(
-      const std::vector<int>& indices,
-      const tab_groups::TabGroupId& new_group,
-      std::optional<tab_groups::TabGroupVisualData> visual_data = std::nullopt);
+  void AddToNewGroupImpl(const std::vector<int>& indices,
+                         const tab_groups::TabGroupId& new_group,
+                         bool is_temporary = false);
 
   void MoveGroupToImpl(const tab_groups::TabGroupId& group, int to_index);
 

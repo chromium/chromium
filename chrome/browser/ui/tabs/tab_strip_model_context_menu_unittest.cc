@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -14,6 +15,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/split_tabs/split_tab_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -269,13 +271,14 @@ TEST_F(TabStripModelContextMenuTest, NonGroupFocusEnabledSingleTab) {
   EXPECT_TRUE(tab_strip_model()->IsContextMenuCommandEnabled(
       0, TabStripModel::CommandToggleFocusGroup));
 
-  // Executing the command creates a group and focuses it.
+  // Executing the command creates a temporary group and focuses it.
   tab_strip_model()->ExecuteContextMenuCommand(
       0, TabStripModel::CommandToggleFocusGroup);
   std::optional<tab_groups::TabGroupId> focused_group =
       tab_strip_model()->GetFocusedGroup();
-  EXPECT_TRUE(focused_group.has_value());
+  ASSERT_TRUE(focused_group.has_value());
   EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), focused_group);
+  EXPECT_TRUE(tab_strip_model()->IsTabGroupTemporary(focused_group.value()));
 
   histogram_tester.ExpectUniqueSample(
       "TabGroups.Focus.EntryPoint",
@@ -284,6 +287,22 @@ TEST_F(TabStripModelContextMenuTest, NonGroupFocusEnabledSingleTab) {
                                       1);
   EXPECT_EQ(
       user_action_tester.GetActionCount("TabContextMenu_FocusNonGroupTabs"), 1);
+
+  EXPECT_TRUE(tab_strip_model()->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandToggleFocusGroup));
+
+  // Executing the command unfocuses the group, thus deleting it.
+  tab_strip_model()->ExecuteContextMenuCommand(
+      0, TabStripModel::CommandToggleFocusGroup);
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), std::nullopt);
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), std::nullopt);
+  EXPECT_FALSE(tab_strip_model()->group_model()->ContainsTabGroup(
+      focused_group.value()));
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.ExitReason",
+                                      TabGroupFocusExitReason::kTabContextMenu,
+                                      1);
+  EXPECT_EQ(user_action_tester.GetActionCount("TabContextMenu_UnfocusTabGroup"),
+            1);
 }
 
 TEST_F(TabStripModelContextMenuTest, NonGroupFocusEnabledMultipleTabs) {
@@ -309,9 +328,10 @@ TEST_F(TabStripModelContextMenuTest, NonGroupFocusEnabledMultipleTabs) {
       0, TabStripModel::CommandToggleFocusGroup);
   std::optional<tab_groups::TabGroupId> focused_group =
       tab_strip_model()->GetFocusedGroup();
-  EXPECT_TRUE(focused_group.has_value());
+  ASSERT_TRUE(focused_group.has_value());
   EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), focused_group);
   EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(1), focused_group);
+  EXPECT_TRUE(tab_strip_model()->IsTabGroupTemporary(focused_group.value()));
 
   histogram_tester.ExpectUniqueSample(
       "TabGroups.Focus.EntryPoint",
@@ -320,6 +340,23 @@ TEST_F(TabStripModelContextMenuTest, NonGroupFocusEnabledMultipleTabs) {
                                       1);
   EXPECT_EQ(
       user_action_tester.GetActionCount("TabContextMenu_FocusNonGroupTabs"), 1);
+
+  EXPECT_TRUE(tab_strip_model()->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandToggleFocusGroup));
+
+  // Executing the command unfocuses the group, thus deleting it.
+  tab_strip_model()->ExecuteContextMenuCommand(
+      0, TabStripModel::CommandToggleFocusGroup);
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), std::nullopt);
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), std::nullopt);
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(1), std::nullopt);
+  EXPECT_FALSE(tab_strip_model()->group_model()->ContainsTabGroup(
+      focused_group.value()));
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.ExitReason",
+                                      TabGroupFocusExitReason::kTabContextMenu,
+                                      1);
+  EXPECT_EQ(user_action_tester.GetActionCount("TabContextMenu_UnfocusTabGroup"),
+            1);
 }
 
 TEST_F(TabStripModelContextMenuTest, NonGroupFocusGreyedOutWhenMixture) {
