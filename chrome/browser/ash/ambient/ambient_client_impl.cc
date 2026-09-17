@@ -14,10 +14,10 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -81,9 +81,8 @@ bool IsPrimaryUser() {
   return GetActiveUser() == GetPrimaryUser();
 }
 
-bool HasPrimaryAccount(const Profile* profile) {
-  auto* identity_manager =
-      IdentityManagerFactory::GetForProfileIfExists(profile);
+bool HasPrimaryAccount(const AccountId& account_id) {
+  auto* identity_manager = ash::IdentityManagerProvider::Get().Find(account_id);
   if (!identity_manager)
     return false;
 
@@ -129,13 +128,15 @@ bool AmbientClientImpl::IsAmbientModeAllowed() {
   if (!IsEmailDomainSupported(active_user))
     return false;
 
-  auto* profile = GetProfileForActiveUser();
-  if (!profile)
-    return false;
-
   // Primary account might be missing during unittests.
-  if (!HasPrimaryAccount(profile))
+  if (!HasPrimaryAccount(active_user->GetAccountId())) {
     return false;
+  }
+
+  auto* profile = GetProfileForActiveUser();
+  if (!profile) {
+    return false;
+  }
 
   if (profile->IsOffTheRecord())
     return false;
@@ -148,11 +149,11 @@ void AmbientClientImpl::SetAmbientModeAllowedForTesting(bool allowed) {
 }
 
 void AmbientClientImpl::RequestAccessToken(GetAccessTokenCallback callback) {
-  auto* profile = GetProfileForActiveUser();
-  DCHECK(profile);
+  const user_manager::User* const active_user = GetActiveUser();
+  DCHECK(active_user);
 
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+      ash::IdentityManagerProvider::Get().Find(active_user->GetAccountId());
   DCHECK(identity_manager);
 
   CoreAccountInfo account_info =
