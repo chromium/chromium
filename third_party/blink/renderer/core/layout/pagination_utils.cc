@@ -208,19 +208,20 @@ void ResolvePageBorderBoxGeometry(const BlockNode& page_border_box,
 PhysicalSize CalculateInitialContainingBlockSizeForPagination(
     Document& document) {
   const LayoutView& layout_view = *document.GetLayoutView();
-  const ComputedStyle* page_style;
+
   // The initial containing block is the size of the first page area.
-  if (const PhysicalBoxFragment* first_page =
-          GetPageContainer(layout_view, 0)) {
-    // We have already laid out. Grab the page style off the first page
-    // fragment. It may have been adjusted due to named pages or unusable sizes
-    // requested, which means that recomputing style here would not always give
-    // the correct results.
-    page_style = &first_page->Style();
-  } else {
-    page_style =
-        document.GetStyleResolver().StyleForPage(0, /*page_name=*/g_null_atom);
-  }
+  const ComputedStyle& page_style = ([&]() -> const ComputedStyle& {
+    if (const PhysicalBoxFragment* first_page =
+            GetPageContainer(layout_view, 0)) {
+      // We have already laid out. Grab the page style off the first page
+      // fragment. It may have been adjusted due to named pages or unusable
+      // sizes requested, which means that recomputing style here would not
+      // always give the correct results.
+      return first_page->Style();
+    }
+    return document.GetStyleResolver().StyleForPage(0,
+                                                    /*page_name=*/g_null_atom);
+  })();
 
   // Simply reading out the size of the page container fragment (if it exists at
   // all) won't do, since we don't know if page scaling has been accounted for
@@ -229,12 +230,12 @@ PhysicalSize CalculateInitialContainingBlockSizeForPagination(
   // (to resolve viewport units) are set up before entering layout (and, after
   // layout, the sizes may need to be adjusted, if the initial estimate turned
   // out to be wrong). Create a temporary node and resolve the size.
-  auto* page_box = LayoutBlockFlow::CreateAnonymous(document, *page_style);
+  auto* page_box = LayoutBlockFlow::CreateAnonymous(document, page_style);
   BlockNode temporary_page_node(page_box);
 
   FragmentGeometry geometry;
   LogicalSize containing_block_size =
-      DesiredPageContainingBlockSize(document, *page_style);
+      DesiredPageContainingBlockSize(document, page_style);
   LayoutUnit safe_printable_inset = CalculateSafePrintableInset(document);
   ResolvePageBorderBoxGeometry(temporary_page_node, containing_block_size,
                                safe_printable_inset, &geometry);
@@ -244,7 +245,7 @@ PhysicalSize CalculateInitialContainingBlockSizeForPagination(
   // Note: Don't get the writing mode directly from the LayoutView, since that
   // one is untrustworthy unless we have entered layout (which we might not have
   // at this point). See StyleResolver::StyleForViewport() and how it's called.
-  WritingMode writing_mode = page_style->GetWritingMode();
+  WritingMode writing_mode = page_style.GetWritingMode();
 
   // So long, and thanks for all the size.
   page_box->Destroy();

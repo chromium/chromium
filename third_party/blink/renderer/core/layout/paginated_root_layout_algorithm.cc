@@ -197,12 +197,12 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
     const PageAreaLayoutParams& page_area_params,
     const PhysicalBoxFragment* existing_page_container) {
   Document& document = root_node.GetDocument();
-  const ComputedStyle* page_container_style =
+  const ComputedStyle& page_container_style =
       document.GetStyleResolver().StyleForPage(page_index, page_name);
 
   LayoutBlockFlow* page_container =
       document.View()->GetPaginationState()->CreateAnonymousPageLayoutObject(
-          document, *page_container_style);
+          document, page_container_style);
   BlockNode page_container_node(page_container);
 
   // Calculate the page border box size based on @page properties, such as
@@ -227,7 +227,7 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
   FragmentGeometry geometry;
   BoxStrut margins;
   LogicalSize page_containing_block_size =
-      DesiredPageContainingBlockSize(document, *page_container_style);
+      DesiredPageContainingBlockSize(document, page_container_style);
 
   ResolvePageContainerGeometry(page_container_node, page_containing_block_size,
                                &geometry, &margins);
@@ -248,12 +248,13 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
     // tests that currently expect this behavior. But see
     // https://github.com/w3c/csswg-drafts/issues/8335
     ignore_author_page_style = true;
-    page_container_style = document.GetStyleResolver().StyleForPage(
-        page_index, page_name, 1.0, ignore_author_page_style);
-    page_container->SetStyle(*page_container_style,
+    const ComputedStyle& fallback_style =
+        document.GetStyleResolver().StyleForPage(page_index, page_name, 1.0,
+                                                 ignore_author_page_style);
+    page_container->SetStyle(fallback_style,
                              LayoutObject::ApplyStyleChanges::kNo);
     page_containing_block_size =
-        DesiredPageContainingBlockSize(document, *page_container_style);
+        DesiredPageContainingBlockSize(document, fallback_style);
     ResolvePageContainerGeometry(
         page_container_node, page_containing_block_size, &geometry, &margins);
   }
@@ -268,7 +269,7 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
       document, page_container_node.Style(), margin_box_size);
 
   ConstraintSpaceBuilder space_builder(
-      parent_space, page_container_style->GetWritingDirection(),
+      parent_space, page_container_style.GetWritingDirection(),
       /*is_new_fc=*/true);
   SetUpSpaceBuilderForPageBox(page_container_size, &space_builder);
   space_builder.SetShouldPropagateChildBreakValues();

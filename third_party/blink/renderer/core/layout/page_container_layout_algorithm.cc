@@ -261,7 +261,6 @@ void PageContainerLayoutAlgorithm::LayoutPageBorderBox(
 
   Document& document = Node().GetDocument();
   const LayoutView& layout_view = *document.GetLayoutView();
-  const ComputedStyle* content_scaled_style = &Style();
   float layout_scale = layout_view.PaginationScaleFactor();
 
   // If the document contents are scaled (because there's wide content and/or
@@ -269,16 +268,19 @@ void PageContainerLayoutAlgorithm::LayoutPageBorderBox(
   // to follow this, since it's supposed to be in document coordinates.
   safe_printable_inset_in_document_coords *= layout_scale;
 
-  if (layout_scale != 1 && !ignore_author_page_style_) {
-    // Scaling shouldn't apply to @page borders etc. Apply a zoom property to
-    // cancel out the effect of layout scaling.
-    content_scaled_style = document.GetStyleResolver().StyleForPage(
-        page_index_, page_name_, layout_scale);
-  }
+  const ComputedStyle& content_scaled_style = ([&]() -> const ComputedStyle& {
+    if (layout_scale != 1 && !ignore_author_page_style_) {
+      // Scaling shouldn't apply to @page borders etc. Apply a zoom property to
+      // cancel out the effect of layout scaling.
+      return document.GetStyleResolver().StyleForPage(page_index_, page_name_,
+                                                      layout_scale);
+    }
+    return Style();
+  })();
 
   LayoutBlockFlow* page_border_box =
       document.View()->GetPaginationState()->CreateAnonymousPageLayoutObject(
-          document, *content_scaled_style);
+          document, content_scaled_style);
   BlockNode page_border_box_node(page_border_box);
 
   FragmentGeometry geometry;
