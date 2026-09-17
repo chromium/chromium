@@ -4,7 +4,6 @@
 
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 
-#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -343,8 +342,6 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerBeforeWarmingComplete) {
 
 TEST_F(GlicWebContentsWarmingPoolTest,
        TakeContainerRecordsPendingBackfillAfterMemoryPressureRelieved) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
   base::HistogramTester histogram_tester;
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
@@ -453,8 +450,6 @@ TEST_F(GlicWebContentsWarmingPoolTest, ShutdownClearsContainer) {
 
 TEST_F(GlicWebContentsWarmingPoolTest,
        OnMemoryPressureDoesNotRefillWithoutCritical) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
@@ -470,8 +465,6 @@ TEST_F(GlicWebContentsWarmingPoolTest,
 
 TEST_F(GlicWebContentsWarmingPoolTest,
        OnMemoryPressureDoesNotRefillIfInitialWarmingNeverAttempted) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
@@ -497,8 +490,6 @@ TEST_F(GlicWebContentsWarmingPoolTest,
 
 TEST_F(GlicWebContentsWarmingPoolTest,
        OnMemoryPressureDoesNotRefillIfShutDownPriorToMemoryPressure) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
   ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
@@ -516,9 +507,7 @@ TEST_F(GlicWebContentsWarmingPoolTest,
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest,
-       TakeContainerUnderStatefulMemoryPressure) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+       TakeContainerUnderCriticalMemoryPressure) {
   base::HistogramTester histogram_tester;
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
@@ -527,12 +516,13 @@ TEST_F(GlicWebContentsWarmingPoolTest,
 
   warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+  histogram_tester.ExpectUniqueSample(
+      "Glic.WarmingPool.WarmedContainerFate",
+      WarmedContainerFate::kDeletedOnMemoryPressure, 1);
 
   // TakeContainer() should still create and return a container synchronously
   // so UI launch doesn't fail, but should NOT schedule a background refill.
-  std::unique_ptr<GlicWebContentsManager> container =
-      warming_pool.TakeContainer();
-  EXPECT_NE(nullptr, container);
+  ASSERT_TRUE(warming_pool.TakeContainer());
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
   EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
   histogram_tester.ExpectUniqueSample(
@@ -548,10 +538,7 @@ TEST_F(GlicWebContentsWarmingPoolTest,
 TEST_F(GlicWebContentsWarmingPoolTest,
        ExpiryTimerStoppedUnderCriticalMemoryPressure) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{base::kStatefulMemoryPressure,
-                            kGlicReloadWebContentsAfterExpiry},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(kGlicReloadWebContentsAfterExpiry);
   base::HistogramTester histogram_tester;
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
@@ -584,10 +571,7 @@ TEST_F(GlicWebContentsWarmingPoolTest,
 TEST_F(GlicWebContentsWarmingPoolTest,
        MemoryPressureRecoversAfterExpiryReload) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{base::kStatefulMemoryPressure,
-                            kGlicReloadWebContentsAfterExpiry},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(kGlicReloadWebContentsAfterExpiry);
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
 
@@ -612,9 +596,7 @@ TEST_F(GlicWebContentsWarmingPoolTest,
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest,
-       MaybeStartWarmingUnderStatefulMemoryPressure) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+       MaybeStartWarmingUnderCriticalMemoryPressure) {
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
 
@@ -627,55 +609,6 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
   ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
   EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
-}
-
-TEST_F(GlicWebContentsWarmingPoolTest,
-       MaybeStartWarmingUnderStatelessMemoryPressure) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(base::kStatefulMemoryPressure);
-  TestGlicWebContentsWarmingPool warming_pool(&profile_,
-                                              &web_contents_factory_);
-
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
-
-  EXPECT_FALSE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
-  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
-}
-
-TEST_F(GlicWebContentsWarmingPoolTest, OnMemoryPressureStateless) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(base::kStatefulMemoryPressure);
-  base::HistogramTester histogram_tester;
-  TestGlicWebContentsWarmingPool warming_pool(&profile_,
-                                              &web_contents_factory_);
-  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
-  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
-
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
-  histogram_tester.ExpectUniqueSample(
-      "Glic.WarmingPool.WarmedContainerFate",
-      WarmedContainerFate::kDeletedOnMemoryPressure, 1);
-
-  // Calling OnMemoryPressure(NONE) in stateless mode does nothing.
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
-
-  // TakeContainer() should create a container and schedule a background refill
-  // because the pool was not disabled. Since the warmed container was cleared
-  // due to memory pressure, HitStatus should record kMemoryPressure.
-  ASSERT_TRUE(warming_pool.TakeContainer());
-  EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
-  histogram_tester.ExpectUniqueSample(
-      "Glic.WarmingPool.HitStatus",
-      GlicWebContentsWarmingPool::WarmingPoolStatus::kMemoryPressure, 1);
-
-  // Subsequent TakeContainer() while the backfill delay timer is running
-  // should log kPendingBackfill.
-  ASSERT_TRUE(warming_pool.TakeContainer());
-  histogram_tester.ExpectBucketCount(
-      "Glic.WarmingPool.HitStatus",
-      GlicWebContentsWarmingPool::WarmingPoolStatus::kPendingBackfill, 1);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest,

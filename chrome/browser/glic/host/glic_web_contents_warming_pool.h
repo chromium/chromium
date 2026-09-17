@@ -137,11 +137,8 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
   // Starts a timer to preload a WebContents after a delay.
   void EnsurePreloadDelayed(ContainerCreationReason reason);
 
-  // Returns true if pre-warming is permitted to run. When the stateful memory
-  // pressure feature (kStatefulMemoryPressure) is enabled, pre-warming is
-  // suspended while the system remains under critical memory pressure. When the
-  // feature is disabled (stateless mode), pre-warming is never blocked by
-  // memory pressure state.
+  // Returns true if pre-warming is permitted to run (i.e. not currently under
+  // critical memory pressure).
   bool IsWarmingAllowedByMemoryPressure() const;
 
   // ProfileObserver:
@@ -170,9 +167,8 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
   // feature disabled), but remains true if cleared due to critical memory
   // pressure.
   //
-  // In stateful memory pressure mode, when memory pressure drops below
-  // CRITICAL, this flag ensures the pool only refills if it was previously
-  // active.
+  // When memory pressure drops below CRITICAL, this flag ensures the pool only
+  // refills if it was previously active.
   bool should_warm_when_memory_allows_ = false;
 };
 

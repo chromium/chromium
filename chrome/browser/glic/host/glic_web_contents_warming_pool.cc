@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -268,27 +267,23 @@ void GlicWebContentsWarmingPool::OnMemoryPressure(
     base::MemoryPressureLevel level) {
   memory_pressure_level_ = level;
 
-  // Clear the warmed container when receiving critical memory pressure. In
-  // stateful mode, IsWarmingAllowedByMemoryPressure() also prevents future
-  // pre-warming while memory pressure remains critical.
+  // Clear the warmed container when receiving critical memory pressure.
+  // Pre-warming is suspended while the system remains under critical pressure.
   if (level >= base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     Clear(ClearReason::kMemoryPressure);
     return;
   }
 
-  // Refill the pool when memory pressure drops below critical in stateful mode,
-  // provided the pool is active and doesn't already have a container or timer.
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    if (should_warm_when_memory_allows_ && !warmed_container_ &&
-        !delay_timer_.IsRunning()) {
-      EnsurePreloadDelayed(ContainerCreationReason::kMemoryPressureRecovery);
-    }
+  // Refill the pool when memory pressure drops below critical, provided the
+  // pool should maintain a container and doesn't already have one or a timer.
+  if (should_warm_when_memory_allows_ && !warmed_container_ &&
+      !delay_timer_.IsRunning()) {
+    EnsurePreloadDelayed(ContainerCreationReason::kMemoryPressureRecovery);
   }
 }
 
 bool GlicWebContentsWarmingPool::IsWarmingAllowedByMemoryPressure() const {
-  return !base::FeatureList::IsEnabled(base::kStatefulMemoryPressure) ||
-         memory_pressure_level_ < base::MEMORY_PRESSURE_LEVEL_CRITICAL;
+  return memory_pressure_level_ < base::MEMORY_PRESSURE_LEVEL_CRITICAL;
 }
 
 void GlicWebContentsWarmingPool::EnsurePreloadDelayed(
