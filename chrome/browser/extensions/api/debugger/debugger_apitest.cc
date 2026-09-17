@@ -77,6 +77,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
@@ -1376,8 +1377,24 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
-                       AttachRejectedWhenScreenshotsDisabled) {
+// Test fixture for verifying chrome.debugger screenshot policy behavior when
+// the kExtensionDebuggerStrictPolicyRestrictions feature flag is explicitly
+// enabled (crbug.com/561948316).
+class SitePerProcessDebuggerExtensionApiStrictPolicyEnabledTest
+    : public SitePerProcessDebuggerExtensionApiTest {
+ public:
+  SitePerProcessDebuggerExtensionApiStrictPolicyEnabledTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionDebuggerStrictPolicyRestrictions);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SitePerProcessDebuggerExtensionApiStrictPolicyEnabledTest,
+    AttachRejectedWhenScreenshotsDisabled) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
   ASSERT_TRUE(NavigateToURL(web_contents(), url));
@@ -1393,8 +1410,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
 #if BUILDFLAG(IS_CHROMEOS)
 // Target-level screenshot restrictions via Data Leak Prevention (DLP) are
 // currently only supported on ChromeOS.
-IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
-                       AttachRejectedWhenScreenshotsRestrictedByDlp) {
+IN_PROC_BROWSER_TEST_F(
+    SitePerProcessDebuggerExtensionApiStrictPolicyEnabledTest,
+    AttachRejectedWhenScreenshotsRestrictedByDlp) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
   ASSERT_TRUE(NavigateToURL(web_contents(), url));
@@ -1417,7 +1435,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
 // restrictions and can attach to the browser target even when enterprise
 // policy disables screenshots.
 IN_PROC_BROWSER_TEST_F(
-    SitePerProcessDebuggerExtensionApiTest,
+    SitePerProcessDebuggerExtensionApiStrictPolicyEnabledTest,
     BrowserTargetAllowedForTrustedExtensionWhenScreenshotsDisabled) {
   profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
 
@@ -1444,13 +1462,28 @@ IN_PROC_BROWSER_TEST_F(
       detach_function.get(), R"([{"targetId": "browser"}])", profile()));
 }
 
-class DebuggerExtensionManagementPolicyTest
+class DebuggerExtensionManagementPolicyTestBase
     : public ExtensionApiTestWithManagementPolicy {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTestWithManagementPolicy::SetUpCommandLine(command_line);
     content::IsolateAllSitesForTesting(command_line);
   }
+};
+
+// Test fixture for verifying chrome.debugger runtime_blocked_hosts policy
+// behavior when the kExtensionDebuggerStrictPolicyRestrictions feature flag is
+// explicitly enabled (crbug.com/561948316).
+class DebuggerExtensionManagementPolicyTest
+    : public DebuggerExtensionManagementPolicyTestBase {
+ public:
+  DebuggerExtensionManagementPolicyTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionDebuggerStrictPolicyRestrictions);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that attaching the debugger to a blocked host is rejected when
@@ -1684,6 +1717,123 @@ IN_PROC_BROWSER_TEST_F(
       attach_function.get(), R"([{"targetId": "browser"}, "1.1"])", profile());
 
   EXPECT_EQ("Host access is restricted by policy.", actual_error);
+}
+
+// Test fixture for verifying chrome.debugger screenshot policy behavior when
+// the kExtensionDebuggerStrictPolicyRestrictions feature flag is disabled
+// (crbug.com/561948316).
+class SitePerProcessDebuggerExtensionApiStrictPolicyDisabledTest
+    : public SitePerProcessDebuggerExtensionApiTest {
+ public:
+  SitePerProcessDebuggerExtensionApiStrictPolicyDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        extensions_features::kExtensionDebuggerStrictPolicyRestrictions);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that when kExtensionDebuggerStrictPolicyRestrictions is disabled
+// (crbug.com/561948316), attaching the debugger is allowed even if enterprise
+// policy disables screenshots globally.
+IN_PROC_BROWSER_TEST_F(
+    SitePerProcessDebuggerExtensionApiStrictPolicyDisabledTest,
+    AttachAllowedWhenScreenshotsDisabled) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
+
+  ASSERT_TRUE(RunExtensionTest("debugger_disable_screenshots",
+                               {.custom_arg = "debuggerAllowed"}))
+      << message_;
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests that when kExtensionDebuggerStrictPolicyRestrictions is disabled
+// (crbug.com/561948316), attaching the debugger is allowed even if DLP
+// restricts screenshots on the target.
+IN_PROC_BROWSER_TEST_F(
+    SitePerProcessDebuggerExtensionApiStrictPolicyDisabledTest,
+    AttachAllowedWhenScreenshotsRestrictedByDlp) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  policy::MockDlpContentManager mock_dlp_content_manager;
+  policy::ScopedDlpContentObserverForTesting scoped_dlp_content_observer(
+      &mock_dlp_content_manager);
+  EXPECT_CALL(mock_dlp_content_manager,
+              IsScreenshotApiRestricted(web_contents()))
+      .WillRepeatedly(testing::Return(true));
+
+  ASSERT_TRUE(RunExtensionTest("debugger_disable_screenshots",
+                               {.custom_arg = "debuggerAllowed"}))
+      << message_;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Test fixture for verifying chrome.debugger runtime_blocked_hosts policy
+// behavior when the kExtensionDebuggerStrictPolicyRestrictions feature flag is
+// disabled (crbug.com/561948316).
+class DebuggerExtensionManagementPolicyStrictPolicyDisabledTest
+    : public DebuggerExtensionManagementPolicyTestBase {
+ public:
+  DebuggerExtensionManagementPolicyStrictPolicyDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        extensions_features::kExtensionDebuggerStrictPolicyRestrictions);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that when kExtensionDebuggerStrictPolicyRestrictions is disabled
+// (crbug.com/561948316), attaching the debugger to an unblocked host succeeds
+// even when enterprise policy blocks another host (restoring legacy per-URL
+// behavior).
+IN_PROC_BROWSER_TEST_F(
+    DebuggerExtensionManagementPolicyStrictPolicyDisabledTest,
+    AttachAllowedWithPolicyBlockedHostsGlobal_UnblockedHost) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  GURL url = embedded_test_server()->GetURL("b.test", "/english_page.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  // Set up runtime blocked hosts globally for all extensions (blocking a.test).
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://a.test");
+  }
+
+  // Attempting to attach to an unblocked host (b.test) succeeds.
+  ASSERT_TRUE(RunExtensionTest("debugger_policy_blocked_hosts")) << message_;
+}
+
+// Tests that when kExtensionDebuggerStrictPolicyRestrictions is disabled
+// (crbug.com/561948316), attaching the debugger directly to a policy-blocked
+// host is still rejected with the legacy per-URL policy error.
+IN_PROC_BROWSER_TEST_F(
+    DebuggerExtensionManagementPolicyStrictPolicyDisabledTest,
+    AttachRejectedWithPolicyBlockedHostsGlobal_BlockedHost) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  // Set up runtime blocked hosts globally for all extensions (blocking a.test).
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://a.test");
+  }
+
+  // Attempting to attach to the blocked host (a.test) fails with the legacy
+  // per-URL error message.
+  ASSERT_TRUE(RunExtensionTest(
+      "debugger_policy_blocked_hosts",
+      {.custom_arg =
+           "This page cannot be scripted due to an ExtensionsSettings policy."}))
+      << message_;
 }
 
 }  // namespace extensions
