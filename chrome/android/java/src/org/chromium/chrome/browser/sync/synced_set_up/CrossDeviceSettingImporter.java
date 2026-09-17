@@ -269,7 +269,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         if (currentTab == null) return;
 
         @Nullable Profile profile = currentTab.getProfile();
-        if (profile == null) return;
+        if (profile == null || profile.isOffTheRecord()) return;
 
         boolean localStateReady = LocalStatePrefs.areNativePrefsLoaded();
 

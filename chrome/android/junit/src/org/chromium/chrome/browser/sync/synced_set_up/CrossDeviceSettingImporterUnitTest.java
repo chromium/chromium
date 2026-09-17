@@ -238,6 +238,16 @@ public class CrossDeviceSettingImporterUnitTest {
     }
 
     @Test
+    public void testOnTabChangeOrGainFocus_incognitoProfile_ignored() {
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        CrossDeviceSettingImporter importer = initializeCrossDeviceSettingImporter();
+
+        verify(mCrossDevicePrefTracker, never()).getServiceStatus();
+        verify(mSnackbarManager, never()).showSnackbar(any());
+        importer.destroy();
+    }
+
+    @Test
     public void testAskToApplyNtpSettingImportIfNeeded_differs() {
         Map<String, Object> preferencesToApply = new HashMap<>();
         preferencesToApply.put(Pref.MAGIC_STACK_HOME_MODULE_ENABLED, false);
