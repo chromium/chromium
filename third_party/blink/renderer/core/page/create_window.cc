@@ -167,14 +167,14 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
           StringToInt(value_string, NumberParsingOptions::Loose()).value_or(0);
     }
 
-    const bool attribution_reporting_enabled =
+    const bool window_open_attribution_src_enabled =
         dom_window &&
-        RuntimeEnabledFeatures::AttributionReportingEnabled(dom_window);
-
+        RuntimeEnabledFeatures::WindowOpenAttributionSrcEnabled(dom_window);
     if (!ui_features_were_disabled && key_string != "noopener" &&
         (!explicit_opener_enabled || key_string != "opener") &&
         key_string != "noreferrer" &&
-        (!attribution_reporting_enabled || key_string != "attributionsrc")) {
+        (!window_open_attribution_src_enabled ||
+         key_string != "attributionsrc")) {
       ui_features_were_disabled = true;
       menu_bar = false;
       status_bar = false;
@@ -219,10 +219,11 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       window_features.background = true;
     } else if (key_string == "persistent") {
       window_features.persistent = true;
-    } else if (attribution_reporting_enabled &&
+    } else if (window_open_attribution_src_enabled &&
                key_string == "attributionsrc") {
-      UseCounter::Count(dom_window,
-                        mojom::blink::WebFeature::kAttributionReportingAPIAll);
+      UseCounter::Count(
+          dom_window,
+          mojom::blink::WebFeature::kAttributionReportingWindowOpen);
     }
   }
 
