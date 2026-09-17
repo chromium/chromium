@@ -604,8 +604,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       if (path.length === 0) {
         return true;
       }
-      return path.includes(this.getInputElement()) ||
-          path.includes(this.getDropdownElement()) || path.some(el => {
+      const inputEl = this.getInputElement()?.inputElement;
+      const isInput = inputEl ? path.includes(inputEl) : false;
+      return isInput || path.includes(this.getDropdownElement()) ||
+          path.some(el => {
             const node = el as HTMLElement;
             return node.tagName === 'CR-SEARCHBOX-COMPOSE-BUTTON';
           });
