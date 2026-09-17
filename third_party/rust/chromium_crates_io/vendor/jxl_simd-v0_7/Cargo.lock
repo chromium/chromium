@@ -19,7 +19,7 @@ dependencies = [
 
 [[package]]
 name = "jxl_simd"
-version = "0.7.3"
+version = "0.7.4"
 dependencies = [
  "arbtest",
  "paste",

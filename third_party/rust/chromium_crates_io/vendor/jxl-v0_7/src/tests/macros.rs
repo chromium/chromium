@@ -17,7 +17,10 @@ macro_rules! declare_test_file_common {
             fn [<test_decode_test_file_chunks_ $ident>]() {
                 let path = std::path::Path::new("resources/test/").join($path);
                 let file = std::fs::read(&path).unwrap();
-                crate::tests::decode::decode_internal(&file, 1, false, false, None, None, None, false).unwrap();
+                crate::tests::decode::decode_internal(&file, crate::tests::decode::DecodeParams {
+                    chunk_size: 1,
+                    ..Default::default()
+                }).unwrap();
             }
 
             #[test]
@@ -38,7 +41,10 @@ macro_rules! declare_test_file_common {
             fn [<test_compare_pipelines_ $ident>]() {
                 let path = std::path::Path::new("resources/test/").join($path);
                 let file = std::fs::read(&path).unwrap();
-                let simple_frames = crate::tests::decode::decode_internal(&file, usize::MAX, true, false, None, None, None, false).unwrap().1;
+                let simple_frames = crate::tests::decode::decode_internal(&file, crate::tests::decode::DecodeParams {
+                    use_simple_pipeline: true,
+                    ..Default::default()
+                }).unwrap().1;
                 let frames = crate::tests::decode::decode(&file).unwrap().1;
                 assert_eq!(frames.len(), simple_frames.len());
                 for (fc, (f, sf)) in frames.into_iter().zip(simple_frames).enumerate() {
@@ -56,6 +62,12 @@ macro_rules! declare_test_file_common {
             fn [<test_compare_incremental_ $ident>]() {
                 let path = std::path::Path::new("resources/test/").join($path);
                 crate::tests::compare_incremental::run(&path, $checkpoints);
+            }
+
+            #[test]
+            fn [<test_compare_prefix_ $ident>]() {
+                let path = std::path::Path::new("resources/test/").join($path);
+                crate::tests::compare_prefix::run(&path);
             }
 
             #[cfg(not(any(target_family = "wasm", target_arch = "wasm32")))]
