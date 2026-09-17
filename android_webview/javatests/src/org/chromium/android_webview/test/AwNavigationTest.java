@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview.test;
 
+import android.os.SystemClock;
 import android.util.Pair;
 
 import androidx.test.filters.SmallTest;
@@ -350,5 +351,31 @@ public class AwNavigationTest extends AwParameterizedTest {
         Assert.assertNotNull(navigation);
         Assert.assertEquals(fragmentUrl, navigation.getUrl());
         Assert.assertTrue(navigation.isSameDocument());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNavigationStartTime() throws Throwable {
+        long timeBeforeStart = SystemClock.uptimeMillis();
+        final String url =
+                mWebServer.setResponse("/time.html", "<html><body>Time</body></html>", null);
+
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper(), url);
+
+        AwNavigation navigation = mNavigationListener.getLastCompletedNavigation();
+        Assert.assertNotNull(navigation);
+
+        long startTime = navigation.getNavigationStartUptimeMillis();
+        long timeAfterFinished = SystemClock.uptimeMillis();
+
+        Assert.assertTrue("Start time should be positive", startTime > 0);
+        Assert.assertTrue(
+                "Start time should be after test start",
+                startTime >= timeBeforeStart);
+        Assert.assertTrue(
+                "Start time should be before or equal to finish time",
+                startTime <= timeAfterFinished);
     }
 }

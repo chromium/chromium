@@ -934,6 +934,7 @@ chromium-metrics-reviews@google.com.
   <int value="205" label="Profile.getCrossOriginIsolatedAllowList"/>
   <int value="206" label="Navigation.getResponseHeaders"/>
   <int value="207" label="WebViewProviderFactory.buildWebContent"/>
+  <int value="208" label="Navigation.getNavigationStartUptimeMillis"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

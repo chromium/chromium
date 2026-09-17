@@ -35,6 +35,8 @@ public interface WebViewNavigationBoundaryInterface extends IsomorphicObjectBoun
 
     int getStatusCode();
 
+    long getNavigationStartUptimeMillis();
+
     /* WebViewPage */ @Nullable InvocationHandler getPage();
 
     /* WebResourceError */ @Nullable InvocationHandler getWebResourceError();

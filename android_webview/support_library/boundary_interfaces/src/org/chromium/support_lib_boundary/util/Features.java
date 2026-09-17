@@ -515,4 +515,8 @@ public class Features {
 
     // Navigation.getResponseHeaders
     public static final String NAVIGATION_GET_RESPONSE_HEADERS = "NAVIGATION_GET_RESPONSE_HEADERS";
+
+    // WebViewNavigation.getNavigationStartUptimeMillis
+    public static final String NAVIGATION_GET_NAVIGATION_START_UPTIME_MILLIS =
+            "NAVIGATION_GET_NAVIGATION_START_UPTIME_MILLIS";
 }

@@ -83,6 +83,10 @@ public class AwNavigation extends AwSupportLibIsomorphic {
         return mNavigationHandle.httpStatusCode();
     }
 
+    public long getNavigationStartUptimeMillis() {
+        return mNavigationHandle.getNavigationStartMs();
+    }
+
     public @Nullable AwWebResourceError getWebResourceError() {
         if (mNavigationHandle.errorCode() == NetError.OK) return null;
         return AwWebResourceError.createFromNetError(
