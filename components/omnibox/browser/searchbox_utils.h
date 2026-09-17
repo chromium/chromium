@@ -8,7 +8,9 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -111,6 +113,26 @@ class InteractionMetricsTracker {
   base::TimeTicks match_selection_timestamp_;
 };
 
+// Associates an AutocompleteInput with the AutocompleteResult generated for it.
+struct AutocompleteSnapshot {
+  AutocompleteSnapshot();
+  AutocompleteSnapshot(const AutocompleteInput& input,
+                       AutocompleteResult result);
+  AutocompleteSnapshot(const AutocompleteSnapshot&) = delete;
+  AutocompleteSnapshot& operator=(const AutocompleteSnapshot&) = delete;
+  AutocompleteSnapshot(AutocompleteSnapshot&&) noexcept;
+  AutocompleteSnapshot& operator=(AutocompleteSnapshot&&) noexcept;
+  ~AutocompleteSnapshot();
+
+  AutocompleteInput input;
+  AutocompleteResult result;
+};
+
+// Constructs an AutocompleteSnapshot from the current input and published
+// autocomplete result of `controller`.
+AutocompleteSnapshot MakeAutocompleteSnapshot(
+    const AutocompleteController* controller);
+
 // Handles the acceptance of a match from a WebUI searchbox.
 // Generates a URL_WHAT_YOU_TYPED match with ".com" appended.
 // If |generated_input| is provided, it will be updated with the new input used
@@ -132,7 +154,8 @@ void OpenMatch(AutocompleteController* autocomplete_controller,
                const InteractionMetricsTracker& metrics_tracker,
                metrics::OmniboxEventProto::KeywordModeEntryMethod
                    keyword_mode_entry_method,
-               const std::u16string& pasted_text);
+               const std::u16string& pasted_text,
+               const AutocompleteSnapshot* snapshot = nullptr);
 
 // Classifies `text` using the AutocompleteClassifier to generate a match and an
 // optional alternate navigation URL.

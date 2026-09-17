@@ -2182,7 +2182,8 @@ export const ComposeboxEmbedderMixin =
                 this.smartComposeStats);
             const viaKeyboard = !!e && e instanceof KeyboardEvent;
             this.getSearchboxHandler().openAutocompleteMatch(
-                this.selectedMatchIndex, match.destinationUrl,
+                this.result!.sequenceId, this.selectedMatchIndex,
+                match.destinationUrl,
                 /*areMatchesShowing=*/ true,
                 /*mouseButton=*/ mouseButton, {
                   altKey: altKey,

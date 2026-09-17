@@ -1316,6 +1316,9 @@ class WebuiOmniboxHandlerPublic : public WebuiOmniboxHandler {
   using SearchboxHandler::autocomplete_controller_observation_;
   using SearchboxHandler::client;
   using SearchboxHandler::CreateAutocompleteMatch;
+  using SearchboxHandler::GetInput;
+  using SearchboxHandler::GetMatchWithUrl;
+  using SearchboxHandler::GetSnapshot;
   using SearchboxHandler::omnibox_controller;
   using SearchboxHandler::OpenMatch;
   using SearchboxHandler::SetAutocompleteControllerForTesting;
@@ -1724,10 +1727,277 @@ TEST_F(WebuiOmniboxHandlerTest, OpenAutocompleteMatch_KeyboardModifiers) {
 
   auto modifiers = searchbox::mojom::ActionModifiers::New();
   modifiers->shift_key = true;
-  handler_->OpenAutocompleteMatch(0, GURL("https://example.com"),
+  handler_->OpenAutocompleteMatch(
+      handler_->autocomplete_controller()->result().sequence_id(), 0,
+      GURL("https://example.com"), /*are_matches_showing=*/false,
+      /*mouse_button=*/0, std::move(modifiers),
+      /*via_keyboard=*/true);
+}
+
+TEST_F(WebuiOmniboxHandlerTest, OpenAutocompleteMatch_HistoricalSnapshot) {
+  page_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&page_);
+  EXPECT_CALL(page_, AutocompleteResultChanged(testing::_))
+      .Times(testing::AnyNumber());
+
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::TYPE_SEARCH);
+  AutocompleteMatch match1(provider.get(), 1000, false,
+                           AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match1.destination_url = GURL("https://snapshot-match.com");
+
+  auto fake_autocomplete_controller =
+      std::make_unique<FakeAutocompleteController>(&task_environment_);
+  fake_autocomplete_controller->providers_.push_back(provider);
+  fake_autocomplete_controller->internal_result_.AppendMatches({match1});
+  fake_autocomplete_controller->published_result_.AppendMatches({match1});
+  handler_->autocomplete_controller_observation_.Reset();
+  auto* controller_ptr = fake_autocomplete_controller.get();
+  handler_->SetAutocompleteControllerForTesting(
+      std::move(fake_autocomplete_controller));
+
+  controller_ptr->input_ =
+      FakeAutocompleteController::CreateInput(u"snapshot input");
+  uint32_t seq1 = controller_ptr->result().sequence_id();
+  // Send match1 to the page so it is recorded in
+  // autocomplete_result_snapshots_.
+  handler_->OnResultChanged(controller_ptr, true);
+
+  // Verify that the snapshot captured the input.
+  ASSERT_NE(handler_->GetInput(seq1), nullptr);
+  EXPECT_EQ(handler_->GetInput(seq1)->text(), u"snapshot input");
+  ASSERT_NE(handler_->GetSnapshot(seq1), nullptr);
+  EXPECT_EQ(handler_->GetSnapshot(seq1)->input.text(), u"snapshot input");
+  EXPECT_EQ(handler_->GetSnapshot(seq1)->result.size(), 1u);
+  EXPECT_EQ(handler_->GetSnapshot(seq1)->result.match_at(0).destination_url,
+            GURL("https://snapshot-match.com"));
+
+  // Now mutate the controller's active result and input (simulating an
+  // asynchronous update after snapshot was sent to the renderer).
+  AutocompleteMatch match2(provider.get(), 1000, false,
+                           AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match2.destination_url = GURL("https://newer-match.com");
+  controller_ptr->internal_result_.Reset();
+  controller_ptr->internal_result_.AppendMatches({match2});
+  controller_ptr->internal_result_.sequence_id_ = seq1 + 1;
+  controller_ptr->published_result_.Reset();
+  controller_ptr->published_result_.AppendMatches({match2});
+  controller_ptr->published_result_.sequence_id_ = seq1 + 1;
+  controller_ptr->input_ =
+      FakeAutocompleteController::CreateInput(u"newer input");
+
+  TestOmniboxClient* client =
+      static_cast<TestOmniboxClient*>(omnibox_controller_->client());
+  EXPECT_CALL(*client, OnAutocompleteAccept(
+                           GURL("https://snapshot-match.com"), _,
+                           WindowOpenDisposition::CURRENT_TAB, _, _, _, _, _,
+                           std::u16string(u"snapshot input"), _, _))
+      .Times(1);
+
+  base::HistogramTester histogram_tester;
+  auto modifiers = searchbox::mojom::ActionModifiers::New();
+  // Activating the historical match at index 0 should succeed using the
+  // snapshot matching seq1.
+  handler_->OpenAutocompleteMatch(seq1, 0, GURL("https://snapshot-match.com"),
                                   /*are_matches_showing=*/false,
                                   /*mouse_button=*/0, std::move(modifiers),
                                   /*via_keyboard=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      SearchboxHandler::kMatchActivationStatusHistogram,
+      SearchboxHandler::MatchActivationStatus::kSnapshotMatch, 1);
+  histogram_tester.ExpectUniqueSample(
+      SearchboxHandler::kSnapshotMatchSequenceDistanceHistogram, 1, 1);
+}
+
+TEST_F(WebuiOmniboxHandlerTest, OpenAutocompleteMatch_LiveResultMatch) {
+  page_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&page_);
+  EXPECT_CALL(page_, AutocompleteResultChanged(testing::_))
+      .Times(testing::AnyNumber());
+
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::TYPE_SEARCH);
+  AutocompleteMatch match(provider.get(), 1000, false,
+                          AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match.destination_url = GURL("https://live-match.com");
+
+  auto fake_autocomplete_controller =
+      std::make_unique<FakeAutocompleteController>(&task_environment_);
+  fake_autocomplete_controller->providers_.push_back(provider);
+  fake_autocomplete_controller->internal_result_.AppendMatches({match});
+  fake_autocomplete_controller->published_result_.AppendMatches({match});
+  handler_->autocomplete_controller_observation_.Reset();
+  auto* controller_ptr = fake_autocomplete_controller.get();
+  handler_->SetAutocompleteControllerForTesting(
+      std::move(fake_autocomplete_controller));
+
+  controller_ptr->input_ =
+      FakeAutocompleteController::CreateInput(u"live input");
+  handler_->OnResultChanged(controller_ptr, true);
+  const uint32_t seq = controller_ptr->result().sequence_id();
+
+  TestOmniboxClient* client =
+      static_cast<TestOmniboxClient*>(omnibox_controller_->client());
+  EXPECT_CALL(*client, OnAutocompleteAccept(GURL("https://live-match.com"), _,
+                                            WindowOpenDisposition::CURRENT_TAB,
+                                            _, _, _, _, _, _, _, _))
+      .Times(1);
+
+  base::HistogramTester histogram_tester;
+  auto modifiers = searchbox::mojom::ActionModifiers::New();
+  handler_->OpenAutocompleteMatch(seq, 0, GURL("https://live-match.com"),
+                                  /*are_matches_showing=*/false,
+                                  /*mouse_button=*/0, std::move(modifiers),
+                                  /*via_keyboard=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      SearchboxHandler::kMatchActivationStatusHistogram,
+      SearchboxHandler::MatchActivationStatus::kLiveResultMatch, 1);
+  histogram_tester.ExpectTotalCount(
+      SearchboxHandler::kSnapshotMatchSequenceDistanceHistogram, 0);
+}
+
+TEST_F(WebuiOmniboxHandlerTest,
+       OpenAutocompleteMatch_SnapshotNotFoundOrEvicted) {
+  page_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&page_);
+  EXPECT_CALL(page_, AutocompleteResultChanged(testing::_))
+      .Times(testing::AnyNumber());
+
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::TYPE_SEARCH);
+  AutocompleteMatch match(provider.get(), 1000, false,
+                          AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match.destination_url = GURL("https://live-match.com");
+
+  auto fake_autocomplete_controller =
+      std::make_unique<FakeAutocompleteController>(&task_environment_);
+  fake_autocomplete_controller->providers_.push_back(provider);
+  fake_autocomplete_controller->internal_result_.AppendMatches({match});
+  fake_autocomplete_controller->published_result_.AppendMatches({match});
+  handler_->autocomplete_controller_observation_.Reset();
+  auto* controller_ptr = fake_autocomplete_controller.get();
+  handler_->SetAutocompleteControllerForTesting(
+      std::move(fake_autocomplete_controller));
+
+  controller_ptr->input_ =
+      FakeAutocompleteController::CreateInput(u"live input");
+  handler_->OnResultChanged(controller_ptr, true);
+  const uint32_t live_seq = controller_ptr->result().sequence_id();
+
+  TestOmniboxClient* client =
+      static_cast<TestOmniboxClient*>(omnibox_controller_->client());
+  EXPECT_CALL(*client, OnAutocompleteAccept).Times(0);
+
+  base::HistogramTester histogram_tester;
+  auto modifiers = searchbox::mojom::ActionModifiers::New();
+  // Request with a stale sequence ID that was never snapshotted (or evicted).
+  handler_->OpenAutocompleteMatch(live_seq - 99, 0,
+                                  GURL("https://live-match.com"),
+                                  /*are_matches_showing=*/false,
+                                  /*mouse_button=*/0, std::move(modifiers),
+                                  /*via_keyboard=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      SearchboxHandler::kMatchActivationStatusHistogram,
+      SearchboxHandler::MatchActivationStatus::kSnapshotNotFoundOrEvicted, 1);
+  histogram_tester.ExpectTotalCount(
+      SearchboxHandler::kSnapshotMatchSequenceDistanceHistogram, 0);
+}
+
+TEST_F(WebuiOmniboxHandlerTest, OpenAutocompleteMatch_UrlMismatch) {
+  page_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&page_);
+  EXPECT_CALL(page_, AutocompleteResultChanged(testing::_))
+      .Times(testing::AnyNumber());
+
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::TYPE_SEARCH);
+  AutocompleteMatch match(provider.get(), 1000, false,
+                          AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match.destination_url = GURL("https://expected-match.com");
+
+  auto fake_autocomplete_controller =
+      std::make_unique<FakeAutocompleteController>(&task_environment_);
+  fake_autocomplete_controller->providers_.push_back(provider);
+  fake_autocomplete_controller->internal_result_.AppendMatches({match});
+  fake_autocomplete_controller->published_result_.AppendMatches({match});
+  handler_->autocomplete_controller_observation_.Reset();
+  auto* controller_ptr = fake_autocomplete_controller.get();
+  handler_->SetAutocompleteControllerForTesting(
+      std::move(fake_autocomplete_controller));
+
+  controller_ptr->input_ =
+      FakeAutocompleteController::CreateInput(u"live input");
+  handler_->OnResultChanged(controller_ptr, true);
+  const uint32_t live_seq = controller_ptr->result().sequence_id();
+
+  TestOmniboxClient* client =
+      static_cast<TestOmniboxClient*>(omnibox_controller_->client());
+  EXPECT_CALL(*client, OnAutocompleteAccept).Times(0);
+
+  base::HistogramTester histogram_tester;
+  auto modifiers = searchbox::mojom::ActionModifiers::New();
+  // Provide a different URL than the match's destination URL.
+  handler_->OpenAutocompleteMatch(live_seq, 0,
+                                  GURL("https://different-url.com"),
+                                  /*are_matches_showing=*/false,
+                                  /*mouse_button=*/0, std::move(modifiers),
+                                  /*via_keyboard=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      SearchboxHandler::kMatchActivationStatusHistogram,
+      SearchboxHandler::MatchActivationStatus::kUrlMismatch, 1);
+  histogram_tester.ExpectTotalCount(
+      SearchboxHandler::kSnapshotMatchSequenceDistanceHistogram, 0);
+}
+
+TEST_F(WebuiOmniboxHandlerTest, OpenAutocompleteMatch_IndexOutOfBounds) {
+  page_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&page_);
+  EXPECT_CALL(page_, AutocompleteResultChanged(testing::_))
+      .Times(testing::AnyNumber());
+
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::TYPE_SEARCH);
+  AutocompleteMatch match(provider.get(), 1000, false,
+                          AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match.destination_url = GURL("https://expected-match.com");
+
+  auto fake_autocomplete_controller =
+      std::make_unique<FakeAutocompleteController>(&task_environment_);
+  fake_autocomplete_controller->providers_.push_back(provider);
+  fake_autocomplete_controller->internal_result_.AppendMatches({match});
+  fake_autocomplete_controller->published_result_.AppendMatches({match});
+  handler_->autocomplete_controller_observation_.Reset();
+  auto* controller_ptr = fake_autocomplete_controller.get();
+  handler_->SetAutocompleteControllerForTesting(
+      std::move(fake_autocomplete_controller));
+
+  controller_ptr->input_ =
+      FakeAutocompleteController::CreateInput(u"live input");
+  handler_->OnResultChanged(controller_ptr, true);
+  const uint32_t live_seq = controller_ptr->result().sequence_id();
+
+  TestOmniboxClient* client =
+      static_cast<TestOmniboxClient*>(omnibox_controller_->client());
+  EXPECT_CALL(*client, OnAutocompleteAccept).Times(0);
+
+  base::HistogramTester histogram_tester;
+  auto modifiers = searchbox::mojom::ActionModifiers::New();
+  // Request index 10 when only 1 match exists at index 0.
+  handler_->OpenAutocompleteMatch(live_seq, 10,
+                                  GURL("https://expected-match.com"),
+                                  /*are_matches_showing=*/false,
+                                  /*mouse_button=*/0, std::move(modifiers),
+                                  /*via_keyboard=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      SearchboxHandler::kMatchActivationStatusHistogram,
+      SearchboxHandler::MatchActivationStatus::kIndexOutOfBounds, 1);
+  histogram_tester.ExpectTotalCount(
+      SearchboxHandler::kSnapshotMatchSequenceDistanceHistogram, 0);
 }
 
 TEST_F(WebuiOmniboxHandlerTest, OpenLensSearch) {

@@ -103,8 +103,9 @@ suite('ComposeboxMatch', () => {
 
     matchElement.click();
 
-    const [index, url] =
+    const [resultSequenceId, index, url] =
         await searchboxHandler.whenCalled('openAutocompleteMatch');
+    assertEquals(0, resultSequenceId);
     assertEquals(1, index);
     assertEquals(match.destinationUrl, url);
   });

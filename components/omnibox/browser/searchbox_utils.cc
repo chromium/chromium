@@ -108,6 +108,27 @@ AutocompleteMatch GenerateDotComMatch(
   return match;
 }
 
+AutocompleteSnapshot::AutocompleteSnapshot() = default;
+
+AutocompleteSnapshot::AutocompleteSnapshot(const AutocompleteInput& input,
+                                           AutocompleteResult result)
+    : input(input), result(std::move(result)) {}
+
+AutocompleteSnapshot::AutocompleteSnapshot(AutocompleteSnapshot&&) noexcept =
+    default;
+
+AutocompleteSnapshot& AutocompleteSnapshot::operator=(
+    AutocompleteSnapshot&&) noexcept = default;
+
+AutocompleteSnapshot::~AutocompleteSnapshot() = default;
+
+AutocompleteSnapshot MakeAutocompleteSnapshot(
+    const AutocompleteController* controller) {
+  DCHECK(controller);
+  return AutocompleteSnapshot(controller->input(),
+                              controller->result().CopyForSnapshot());
+}
+
 void OpenMatch(
     AutocompleteController* autocomplete_controller,
     OmniboxClient* client,
@@ -117,9 +138,11 @@ void OpenMatch(
     WindowOpenDisposition disposition,
     const InteractionMetricsTracker& metrics_tracker,
     OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method,
-    const std::u16string& pasted_text) {
+    const std::u16string& pasted_text,
+    const AutocompleteSnapshot* snapshot) {
   const base::TimeTicks now = base::TimeTicks::Now();
-  const AutocompleteResult& result = autocomplete_controller->result();
+  const AutocompleteResult& result =
+      snapshot ? snapshot->result : autocomplete_controller->result();
 
   // If the user is executing an action, this will be non-null and some match
   // opening and metrics behavior will be adjusted accordingly.

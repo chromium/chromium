@@ -911,10 +911,12 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
                 WindowOpenDisposition::CURRENT_TAB, via_keyboard);
 }
 
-void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
-                                     base::TimeTicks timestamp,
-                                     WindowOpenDisposition disposition,
-                                     bool via_keyboard) {
+void OmniboxEditModel::OpenSelection(
+    OmniboxPopupSelection selection,
+    base::TimeTicks timestamp,
+    WindowOpenDisposition disposition,
+    bool via_keyboard,
+    const searchbox::AutocompleteSnapshot* snapshot) {
   controller_->StopAutocomplete(/*clear_result=*/false);
 
   base::UmaHistogramMicrosecondsTimes("Omnibox.InputToOpenSelection",
@@ -932,9 +934,9 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
   // the appropriate AI Mode UMA metrics.
   RecordAiModeMetrics(/*query=*/u"", AimActivation::kNotActivated);
 
-  // Intentionally accept input when selection has no line.
-  // This will usually reach `OpenMatch` indirectly.
-  if (selection.line >= autocomplete_controller()->result().size()) {
+  const AutocompleteResult& result =
+      snapshot ? snapshot->result : autocomplete_controller()->result();
+  if (selection.line >= result.size()) {
     AcceptInput(disposition, timestamp);
     return;
   }
@@ -945,8 +947,9 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
     return;
   }
 
-  const AutocompleteMatch& match =
-      autocomplete_controller()->result().match_at(selection.line);
+  const AutocompleteMatch& match = result.match_at(selection.line);
+
+  const AutocompleteInput& input = snapshot ? snapshot->input : input_;
 
   // For Ctrl+Enter selections triggered via a WebUI searchbox, the event
   // bypasses `AcceptInput` and arrives here directly. The match is mutated here
@@ -958,11 +961,11 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
       text_for_tld = match.fill_into_edit;
     }
     AutocompleteMatch url_match = searchbox::GenerateDotComMatch(
-        controller_->client(), autocomplete_controller(), input_, text_for_tld,
+        controller_->client(), autocomplete_controller(), input, text_for_tld,
         nullptr);
     if (url_match.destination_url.is_valid()) {
       OpenMatch(selection, url_match, disposition, GURL(), std::u16string(),
-                timestamp);
+                timestamp, snapshot);
       return;
     }
   }
@@ -991,10 +994,10 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
   } else {
     // Open the match.
     GURL alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
-        input_, match,
+        input, match,
         autocomplete_controller()->autocomplete_provider_client());
     OpenMatch(selection, match, disposition, alternate_nav_url,
-              std::u16string(), timestamp);
+              std::u16string(), timestamp, snapshot);
   }
 }
 
@@ -2691,12 +2694,14 @@ void OmniboxEditModel::OnDefaultSearchExtensionDialogDone(
   }
 }
 
-void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
-                                 AutocompleteMatch match,
-                                 WindowOpenDisposition disposition,
-                                 const GURL& alternate_nav_url,
-                                 const std::u16string& pasted_text,
-                                 base::TimeTicks match_selection_timestamp) {
+void OmniboxEditModel::OpenMatch(
+    OmniboxPopupSelection selection,
+    AutocompleteMatch match,
+    WindowOpenDisposition disposition,
+    const GURL& alternate_nav_url,
+    const std::u16string& pasted_text,
+    base::TimeTicks match_selection_timestamp,
+    const searchbox::AutocompleteSnapshot* snapshot) {
   // When `ShowConfirmationDialogIfDefaultSearchExtensionControlled` is called
   // for the first time and that the Dialog is shown, it early returns and
   // asynchronously waits until the Dialog is resolved. Once the Dialog is
@@ -2776,14 +2781,18 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   // Save the result of the interaction, but do not record the histogram yet.
   metrics_tracker_.set_focus_resulted_in_navigation(true);
 
-  omnibox::RecordActionShownForAllActions(autocomplete_controller()->result(),
-                                          selection);
-  HistoryFuzzyProvider::RecordOpenMatchMetrics(
-      autocomplete_controller()->result(), match);
+  const AutocompleteResult& result =
+      snapshot ? snapshot->result : autocomplete_controller()->result();
+  omnibox::RecordActionShownForAllActions(result, selection);
+  HistoryFuzzyProvider::RecordOpenMatchMetrics(result, match);
+
+  const AutocompleteInput& input = snapshot ? snapshot->input : input_;
 
   std::u16string input_text(pasted_text);
   if (input_text.empty()) {
-    input_text = user_input_in_progress_ ? user_text_ : url_for_editing_;
+    input_text =
+        snapshot ? input.text()
+                 : (user_input_in_progress_ ? user_text_ : url_for_editing_);
   }
   // Create a dummy AutocompleteInput for use in calling VerbatimMatchForInput()
   // to create an alternate navigational match.
@@ -2807,7 +2816,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   // cases when this happens, the user never modified the omnibox.)
   const bool popup_open = controller_->IsPopupOpen();
   const base::TimeDelta default_time_delta = base::Milliseconds(-1);
-  if (input_.IsZeroSuggest() || !pasted_text.empty()) {
+  if (input.IsZeroSuggest() || !pasted_text.empty()) {
     elapsed_time_since_user_first_modified_omnibox = default_time_delta;
     elapsed_time_since_last_change_to_default_match = default_time_delta;
   }
@@ -2819,7 +2828,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
     // Only record focus to open time when a focus actually happened (as
     // opposed to, say, dragging a link onto the omnibox).
     omnibox::LogFocusToOpenTime(
-        elapsed_time_since_user_focused_omnibox, input_.IsZeroSuggest(),
+        elapsed_time_since_user_focused_omnibox, input.IsZeroSuggest(),
         GetPageClassification(), match,
         selection.IsAction() ? selection.action_index : -1);
   }
@@ -2836,15 +2845,14 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   //     are ignored regardless).
   const bool dropdown_ignored =
       (!popup_open && !omnibox::IsWebUISearchbox(GetPageClassification())) ||
-      selection.line >= autocomplete_controller()->result().size() ||
-      !pasted_text.empty();
+      selection.line >= result.size() || !pasted_text.empty();
   ACMatches fake_single_entry_matches;
   fake_single_entry_matches.push_back(match);
   AutocompleteResult fake_single_entry_result;
   fake_single_entry_result.AppendMatches(fake_single_entry_matches);
 
   std::u16string user_text =
-      input_.IsZeroSuggest() ? std::u16string() : input_text;
+      input.IsZeroSuggest() ? std::u16string() : input_text;
   size_t completed_length = match.allowed_to_be_default_match
                                 ? match.inline_autocompletion.length()
                                 : std::u16string::npos;
@@ -2852,16 +2860,15 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
                           ->autocomplete_provider_client()
                           ->IsOffTheRecord();
   OmniboxLog log(
-      user_text, just_deleted_text_, input_.type(), is_keyword_selected(),
+      user_text, just_deleted_text_, input.type(), is_keyword_selected(),
       keyword_mode_entry_method_, popup_open,
       dropdown_ignored ? OmniboxPopupSelection(0) : selection, disposition,
       !pasted_text.empty(),
       SessionID::InvalidValue(),  // don't know tab ID; set later if appropriate
       GetPageClassification(), elapsed_time_since_user_first_modified_omnibox,
       completed_length, elapsed_time_since_last_change_to_default_match,
-      dropdown_ignored ? fake_single_entry_result
-                       : autocomplete_controller()->result(),
-      destination_url, is_incognito, input_.IsZeroSuggest(), match.session);
+      dropdown_ignored ? fake_single_entry_result : result, destination_url,
+      is_incognito, input.IsZeroSuggest(), match.session);
   DCHECK(dropdown_ignored ||
          (log.elapsed_time_since_user_first_modified_omnibox >=
           log.elapsed_time_since_last_change_to_default_match))
@@ -2871,7 +2878,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   log.elapsed_time_since_user_focused_omnibox =
       elapsed_time_since_user_focused_omnibox;
   log.ukm_source_id = controller_->client()->GetUKMSourceId();
-  log.input_state = autocomplete_controller()->input().input_state();
+  log.input_state = input.input_state();
 
   if ((disposition == WindowOpenDisposition::CURRENT_TAB) &&
       controller_->client()->CurrentPageExists()) {
@@ -2985,8 +2992,8 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
           ui::PageTransitionFromInt(match.transition |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           match.type, match_selection_timestamp,
-          input_.added_default_scheme_to_typed_url(),
-          input_.typed_url_had_http_scheme() &&
+          input.added_default_scheme_to_typed_url(),
+          input.typed_url_had_http_scheme() &&
               match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED,
           input_text, match,
           VerbatimMatchForInput(

@@ -419,6 +419,27 @@ TEST_F(AutocompleteResultTimeTest, ResultReadyTimeSwapAndCopy) {
   EXPECT_EQ(r3.result_ready_time(), r1.result_ready_time());
 }
 
+TEST_F(AutocompleteResultTest, CopyForSnapshot) {
+  AutocompleteResult original;
+  ACMatches matches;
+  AutocompleteMatch match;
+  match.relevance = 100;
+  match.destination_url = GURL("https://example.com");
+  matches.push_back(match);
+  original.AppendMatches(matches);
+  original.set_smart_compose_inline_hint("hint");
+  original.RefreshReadyState();
+
+  AutocompleteResult snapshot = original.CopyForSnapshot();
+  EXPECT_EQ(snapshot.size(), original.size());
+  EXPECT_EQ(snapshot.match_at(0)->destination_url,
+            original.match_at(0)->destination_url);
+  EXPECT_EQ(snapshot.smart_compose_inline_hint(),
+            original.smart_compose_inline_hint());
+  EXPECT_EQ(snapshot.sequence_id(), original.sequence_id());
+  EXPECT_EQ(snapshot.result_ready_time(), original.result_ready_time());
+}
+
 // Assertion testing for AutocompleteResult::SwapMatchesWith.
 TEST_F(AutocompleteResultTest, SwapMatches) {
   AutocompleteResult r1;

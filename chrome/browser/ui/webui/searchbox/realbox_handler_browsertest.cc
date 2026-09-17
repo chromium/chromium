@@ -375,9 +375,10 @@ IN_PROC_BROWSER_TEST_F(RealboxHandlerTest, RealboxUpdatesEditModelInput) {
   EXPECT_EQ(input.focus_type(), metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   auto modifiers = searchbox::mojom::ActionModifiers::New();
-  handler_->OpenAutocompleteMatch(2, url, /*are_matches_showing=*/true,
-                                  /*mouse_button=*/1, std::move(modifiers),
-                                  /*via_keyboard=*/false);
+  handler_->OpenAutocompleteMatch(
+      autocomplete_controller_->result().sequence_id(), 2, url,
+      /*are_matches_showing=*/true, /*mouse_button=*/1, std::move(modifiers),
+      /*via_keyboard=*/false);
 
   // Assert that the input gets correctly updated for the realbox.
   EXPECT_TRUE(omnibox_edit_model_->GetInputForTesting().IsZeroSuggest());

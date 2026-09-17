@@ -2311,6 +2311,9 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertEquals(SelectionLineState.kNormal, element.selection.state);
         assertEquals('hello world', mockInput.inputElement.value);
         assertEquals(1, testProxy.handler.getCallCount('onNavigationLikely'));
+        assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
+        assertFalse(
+            testProxy.handler.getArgs('stopAutocomplete')[0].clearResult);
 
         // ArrowDown navigates to second match (line 1).
         mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));

@@ -5637,6 +5637,21 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.WebUI.MatchActivationStatus"
+    enum="OmniboxWebUIMatchActivationStatus" expires_after="2027-03-15">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Logged each time a match is activated from the WebUI searchbox (e.g.
+    clicking or pressing Enter on a suggestion). Records whether the match was
+    found in the live autocomplete result, recovered from the historical
+    snapshot cache, or failed due to cache miss (snapshot not found or evicted),
+    URL mismatch, or index out of bounds. This is used to evaluate the
+    effectiveness of the autocomplete result snapshot cache in preventing
+    dropped stale match activations.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.WebUI.ResultChangedToRepaintLatency.ToPaint"
     units="ms" expires_after="2026-12-22">
   <owner>mahmadi@chromium.org</owner>
@@ -5660,6 +5675,20 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Logged each time a selection is opened from the WebUI omnibox popup. Records
     whether or not the selection specified by the page (WebUI popup) matched the
     current OmniboxEditModel popup selection.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.WebUI.SnapshotMatchSequenceDistance" units="counts"
+    expires_after="2027-03-15">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Logged when a match is activated from a cached historical snapshot in the
+    WebUI searchbox. Records the difference between the live AutocompleteResult
+    sequence ID and the snapshot sequence ID (live_sequence_id -
+    result_sequence_id). This helps evaluate how many updates behind the
+    renderer was when activating a match, informing the sizing of the snapshot
+    cache.
   </summary>
 </histogram>
 

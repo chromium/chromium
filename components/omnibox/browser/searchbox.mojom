@@ -425,7 +425,8 @@ interface PageHandler {
   // Note: |url| is only used to confirm the match |line| selection.
   // |mouse_button| indicates which mouse button was pressed on the match. See
   // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
-  OpenAutocompleteMatch(uint8 line,
+  OpenAutocompleteMatch(uint32 result_sequence_id,
+                        uint8 line,
                         url.mojom.Url url,
                         bool are_matches_showing,
                         uint8 mouse_button,
