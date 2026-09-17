@@ -796,11 +796,6 @@ void OptimizationGuideStore::OnLoadHint(
     return;
   }
 
-  StoreEntryType store_entry_type =
-      static_cast<StoreEntryType>(entry->entry_type());
-  UMA_HISTOGRAM_ENUMERATION("OptimizationGuide.HintCache.HintType.Loaded",
-                            store_entry_type);
-
   std::optional<base::Time> expiry_time;
   if (entry->has_expiry_time_secs()) {
     expiry_time = base::Time::FromDeltaSinceWindowsEpoch(

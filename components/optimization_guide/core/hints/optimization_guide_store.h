@@ -78,8 +78,6 @@ class OptimizationGuideStore {
   //     ==> "2_55_foo.com"
   // NOTE: The order and value of the existing store entry types within the enum
   // cannot be changed, but new types can be added to the end.
-  // StoreEntryType should remain synchronized with the
-  // HintCacheStoreEntryType in enums.xml.
   enum class StoreEntryType {
     kEmpty = 0,
     kMetadata = 1,

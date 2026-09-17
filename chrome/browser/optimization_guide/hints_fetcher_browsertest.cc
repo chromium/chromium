@@ -46,7 +46,6 @@
 #include "components/optimization_guide/core/hints/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/hints/fake_hints_fetcher.h"
 #include "components/optimization_guide/core/hints/hints_manager.h"
-#include "components/optimization_guide/core/hints/optimization_guide_store.h"
 #include "components/optimization_guide/core/hints/top_host_provider.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -411,9 +410,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
 
       optimization_guide::proto::Hint* hint = get_hints_response.add_hints();
       hint->set_key_representation(optimization_guide::proto::HOST);
-      hint->set_key(search_results_page_url_.GetHost());
-      hint->add_allowlisted_optimizations()->set_optimization_type(
-          optimization_guide::proto::OptimizationType::NOSCRIPT);
+      hint->set_key(https_url_.GetHost());
       optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
       page_hint->set_page_pattern("page pattern");
 
@@ -638,10 +635,16 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url()));
 
-  // Verifies that the fetched hint is just used in memory and nothing is
-  // loaded.
+  // Verifies that the fetched hint is active in memory and overrides the
+  // component hint, and no fetched hint is loaded from store.
+  EXPECT_EQ(optimization_guide::OptimizationGuideDecision::kFalse,
+            OptimizationGuideKeyedServiceFactory::GetForProfile(
+                browser()->GetProfile())
+                ->CanApplyOptimization(https_url(),
+                                       optimization_guide::proto::NOSCRIPT,
+                                       /*optimization_metadata=*/nullptr));
   histogram_tester->ExpectTotalCount(
-      "OptimizationGuide.HintCache.HintType.Loaded", 0);
+      "OptimizationGuide.HintCache.FetchedHint.TimeToExpiration", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
@@ -823,10 +826,17 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url()));
 
-  // Verifies that the fetched hint is used in-memory and no hint is loaded
-  // from store.
+  // The fetched hint is active in memory and overrides the component hint, and
+  // https_url() does not match its "page pattern" page pattern, and no fetched
+  // hint is loaded from store.
+  EXPECT_EQ(optimization_guide::OptimizationGuideDecision::kFalse,
+            OptimizationGuideKeyedServiceFactory::GetForProfile(
+                browser()->GetProfile())
+                ->CanApplyOptimization(https_url(),
+                                       optimization_guide::proto::NOSCRIPT,
+                                       /*optimization_metadata=*/nullptr));
   histogram_tester->ExpectTotalCount(
-      "OptimizationGuide.HintCache.HintType.Loaded", 0);
+      "OptimizationGuide.HintCache.FetchedHint.TimeToExpiration", 0);
 
   // Wipe the browser history - clear all the fetched hints.
   browser()->GetProfile()->Wipe();
@@ -840,11 +850,16 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url()));
 
-  histogram_tester->ExpectUniqueSample(
-      "OptimizationGuide.HintCache.HintType.Loaded",
-      static_cast<int>(optimization_guide::OptimizationGuideStore::
-                           StoreEntryType::kComponentHint),
-      1);
+  // The fetched hint was wiped and HintCache fell back to the component hint
+  // whose "*" page pattern matches https_url().
+  EXPECT_EQ(optimization_guide::OptimizationGuideDecision::kTrue,
+            OptimizationGuideKeyedServiceFactory::GetForProfile(
+                browser()->GetProfile())
+                ->CanApplyOptimization(https_url(),
+                                       optimization_guide::proto::NOSCRIPT,
+                                       /*optimization_metadata=*/nullptr));
+  histogram_tester->ExpectTotalCount(
+      "OptimizationGuide.HintCache.FetchedHint.TimeToExpiration", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherOverrideTimer) {
@@ -885,9 +900,16 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherOverrideTimer) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url()));
 
-  // Verifies that the fetched hint is used from memory and no hints are loaded.
+  // Verifies that the fetched hint is used from memory and overrides the
+  // component hint, and no fetched hints are loaded from store.
+  EXPECT_EQ(optimization_guide::OptimizationGuideDecision::kFalse,
+            OptimizationGuideKeyedServiceFactory::GetForProfile(
+                browser()->GetProfile())
+                ->CanApplyOptimization(https_url(),
+                                       optimization_guide::proto::NOSCRIPT,
+                                       /*optimization_metadata=*/nullptr));
   histogram_tester->ExpectTotalCount(
-      "OptimizationGuide.HintCache.HintType.Loaded", 0);
+      "OptimizationGuide.HintCache.FetchedHint.TimeToExpiration", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherFetches) {

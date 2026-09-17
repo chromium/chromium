@@ -106,18 +106,6 @@ chromium-metrics-reviews@google.com.
       label="Not visible because the device is unsupported by the feature."/>
 </enum>
 
-<enum name="HintCacheStoreEntryType">
-  <summary>
-    Possible store entry types contained within the HintCacheStore.
-  </summary>
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Metadata"/>
-  <int value="2" label="Component Hint"/>
-  <int value="3" label="Fetched Hint"/>
-  <int value="4" label="Prediction Model"/>
-  <int value="5" label="[Deprecated] Host Model Features"/>
-</enum>
-
 <!-- LINT.IfChange(OnDeviceBaseModelEnum) -->
 
 <enum name="InstalledModel">
