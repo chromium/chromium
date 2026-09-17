@@ -10,6 +10,7 @@
 #include "base/base_switches.h"
 #include "base/byte_size.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
@@ -95,6 +96,13 @@ bool IsSmallScreen(const gfx::Size& size) {
     return false;
   return area < kSmallScreenPixelThreshold;
 }
+
+bool ShouldUseDesktopLimits(Platform* platform) {
+  return !platform->IsSynchronousCompositingEnabledForAndroidWebView() &&
+         base::android::device_info::is_desktop() &&
+         base::FeatureList::IsEnabled(
+             ::features::kDesktopAndroidUnifiedCompositorLimits);
+}
 #endif
 
 std::pair<int, int> GetTilingInterestAreaSizes() {
@@ -148,13 +156,17 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::SysInfo::IsLowEndDevice() ||
-      base::SysInfo::AmountOfTotalPhysicalMemory().InMiB() < 2000) {
-    actual.bytes_limit_when_visible = 96 * 1024 * 1024;
-  } else {
-    actual.bytes_limit_when_visible = 256 * 1024 * 1024;
+  if (!ShouldUseDesktopLimits(Platform::Current())) {
+    if (base::SysInfo::IsLowEndDevice() ||
+        base::SysInfo::AmountOfTotalPhysicalMemory().InMiB() < 2000) {
+      actual.bytes_limit_when_visible = 96 * 1024 * 1024;
+    } else {
+      actual.bytes_limit_when_visible = 256 * 1024 * 1024;
+    }
+    return actual;
   }
-#else
+#endif  // BUILDFLAG(IS_ANDROID)
+
   static constexpr size_t kLargeResolutionMemoryMB = 1152;
   static constexpr size_t kDefaultMemoryMB = 512;
 
@@ -188,7 +200,6 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
   }
 
   actual.bytes_limit_when_visible = mb_limit_when_visible * 1024 * 1024;
-#endif
   return actual;
 }
 
@@ -217,13 +228,18 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       !cmd.HasSwitch(::switches::kDisableCheckerImaging) && is_threaded;
 
 #if BUILDFLAG(IS_ANDROID)
-  // We can use a more aggressive limit on Android since decodes tend to take
-  // longer on these devices.
-  settings.min_image_bytes_to_checker = 512 * 1024;  // 512kB
+  const bool is_webview =
+      platform->IsSynchronousCompositingEnabledForAndroidWebView();
+  const bool use_desktop_limits = ShouldUseDesktopLimits(platform);
+  if (!use_desktop_limits) {
+    // We can use a more aggressive limit on Android since decodes tend to take
+    // longer on these devices.
+    settings.min_image_bytes_to_checker = 512 * 1024;  // 512kB
 
-  // Re-rasterization of checker-imaged content with software raster can be too
-  // costly on Android.
-  settings.only_checker_images_with_gpu_raster = true;
+    // Re-rasterization of checker-imaged content with software raster can be
+    // too costly on Android.
+    settings.only_checker_images_with_gpu_raster = true;
+  }
 #endif
 
   auto switch_value_as_int = [](const base::CommandLine& command_line,
@@ -427,13 +443,10 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
 
 #if BUILDFLAG(IS_ANDROID)
   // Synchronous compositing is used only for the outermost main frame.
-  bool use_synchronous_compositor =
-      platform->IsSynchronousCompositingEnabledForAndroidWebView() &&
-      !is_for_embedded_frame;
+  bool use_synchronous_compositor = is_webview && !is_for_embedded_frame;
   // Do not use low memory policies for Android WebView.
-  bool using_low_memory_policy =
-      base::SysInfo::IsLowEndDevice() && !IsSmallScreen(screen_size) &&
-      !platform->IsSynchronousCompositingEnabledForAndroidWebView();
+  bool using_low_memory_policy = base::SysInfo::IsLowEndDevice() &&
+                                 !IsSmallScreen(screen_size) && !is_webview;
 
   settings.using_synchronous_renderer_compositor = use_synchronous_compositor;
   if (using_low_memory_policy) {
@@ -441,7 +454,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     // apps. So initially we use 50% more memory to avoid flickering
     // or raster-on-demand.
     settings.max_memory_for_prepaint_percentage = 67;
-  } else {
+  } else if (!use_desktop_limits) {
     // On other devices we have increased memory excessively to avoid
     // raster-on-demand already, so now we reserve 50% _only_ to avoid
     // raster-on-demand, and use 50% of the memory otherwise.
@@ -505,9 +518,16 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     settings.scrollbar_fade_duration = base::TimeDelta();
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  settings.decoded_image_working_set_budget_bytes =
+      is_webview ? cc::ImageDecodeCacheUtils::kDefaultWorkingSet.InBytes()
+                 : cc::ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
+                       /*for_renderer=*/true);
+#else
   settings.decoded_image_working_set_budget_bytes =
       cc::ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
           /*for_renderer=*/true);
+#endif
 
   if (using_low_memory_policy) {
     // RGBA_4444 textures are only enabled:
