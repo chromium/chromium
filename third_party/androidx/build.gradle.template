@@ -202,7 +202,6 @@ dependencies {
     // pulls in files from these dependencies without actually depending on
     // them. This breaks some of our assumptions in the code so adding these
     // explicitly to fix the asserts.  Remove when no longer needed.
-    androidTestCompile 'org.checkerframework:checker-compat-qual:2.5.5'
     androidTestCompile 'com.google.errorprone:error_prone_annotations:2.3.4'
     androidTestCompile 'com.google.j2objc:j2objc-annotations:1.3'
 
