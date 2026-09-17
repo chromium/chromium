@@ -4394,6 +4394,53 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 item.model.get(AppMenuItemProperties.TITLE));
     }
 
+    private boolean isPrintVisible(boolean isDesktop) {
+        DeviceInfo.setIsDesktopForTesting(isDesktop);
+        setUpMocksForPageMenu();
+        return isMenuVisible(mTabbedAppMenuPropertiesDelegate.getMenuItems(), R.id.print_id);
+    }
+
+    @Test
+    public void testPrintMenuItem_Desktop() {
+        when(mPrefService.getBoolean(Pref.PRINTING_ENABLED)).thenReturn(true);
+        assertTrue(isPrintVisible(/* isDesktop= */ true));
+
+        when(mTab.getUrl()).thenReturn(new GURL("chrome://version"));
+        assertTrue(isPrintVisible(/* isDesktop= */ true));
+
+        when(mTab.getWebContents()).thenReturn(null);
+        assertFalse(isPrintVisible(/* isDesktop= */ true));
+
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        when(mNativePage.isPdf()).thenReturn(false);
+        assertFalse(isPrintVisible(/* isDesktop= */ true));
+
+        when(mNativePage.isPdf()).thenReturn(true);
+        assertTrue(isPrintVisible(/* isDesktop= */ true));
+
+        when(mPrefService.getBoolean(Pref.PRINTING_ENABLED)).thenReturn(false);
+        assertFalse(isPrintVisible(/* isDesktop= */ true));
+    }
+
+    @Test
+    public void testPrintMenuItem_Mobile() {
+        when(mPrefService.getBoolean(Pref.PRINTING_ENABLED)).thenReturn(true);
+        assertFalse(isPrintVisible(/* isDesktop= */ false));
+
+        when(mTab.getUrl()).thenReturn(new GURL("chrome://version"));
+        assertFalse(isPrintVisible(/* isDesktop= */ false));
+
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        when(mNativePage.isPdf()).thenReturn(true);
+        assertTrue(isPrintVisible(/* isDesktop= */ false));
+
+        when(mPrefService.getBoolean(Pref.PRINTING_ENABLED)).thenReturn(false);
+        assertFalse(isPrintVisible(/* isDesktop= */ false));
+    }
+
     private MenuItem getExpectedBookmarksParentMenuTitle() {
         return item(
                 R.string.menu_bookmarks_and_lists,
