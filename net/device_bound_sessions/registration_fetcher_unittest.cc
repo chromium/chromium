@@ -4012,6 +4012,105 @@ TEST_F(RegistrationTest, FederatedNotRegistrableDoesNotCount) {
   EXPECT_EQ(session_or_error.SessionForTesting().unexportable_key_id(), key);
 }
 
+TEST_F(RegistrationTest, FederatedInvalidRelyingOriginDoesNotBypassLabelLimit) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  // "https://sneaky.a.test:99999" is not a valid URL (port out of range), but
+  // `GURL` still exposes "sneaky.a.test" as its host, so it must not be able to
+  // spend -- or bypass -- the relying origin label budget.
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnForHostAndPath, "provider.a.test",
+                          "/.well-known/device-bound-sessions",
+                          base::BindRepeating(&ReturnWellKnown,
+                                              R"json({
+                                                "relying_origins": [
+                                                  "https://sneaky.a.test:99999",
+                                                  "https://rp.b1.test:$1",
+                                                  "https://rp.b2.test:$1",
+                                                  "https://rp.b3.test:$1",
+                                                  "https://rp.b4.test:$1",
+                                                  "https://rp.b5.test:$1",
+                                                  "https://rp.a.test:$1"
+                                                ]
+                                              })json")));
+  ASSERT_TRUE(server_.Start());
+
+  UnexportableSigningKeyId key = CreateSigningKey();
+  auto param = RegistrationRequestParam::CreateForTesting(
+      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
+  auto session_or_error =
+      FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
+  EXPECT_EQ(session_or_error.SessionErrorForTesting()->type,
+            SessionError::kTooManyRelyingOriginLabels);
+}
+
+TEST_F(RegistrationTest, FederatedFifthLabelAllowed) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  // Verifies that when the target origin's label ("a") is the 5th distinct
+  // label (`kMaxLabels`), CheckRelyingOrigin matches on the label and allows
+  // registration even when another origin with the same label appears earlier
+  // and additional distinct labels follow.
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnForHostAndPath, "provider.a.test",
+                          "/.well-known/device-bound-sessions",
+                          base::BindRepeating(&ReturnWellKnown,
+                                              R"json({
+                                                "relying_origins": [
+                                                  "https://rp.b1.test:$1",
+                                                  "https://rp.b2.test:$1",
+                                                  "https://rp.b3.test:$1",
+                                                  "https://rp.b4.test:$1",
+                                                  "https://other.a.test:$1",
+                                                  "https://rp.b5.test:$1",
+                                                  "https://rp.a.test:$1"
+                                                ]
+                                              })json")));
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnForHostAndPath, "rp.a.test", "/.well-known/device-bound-sessions",
+      base::BindRepeating(&ReturnWellKnown,
+                          R"json({
+                            "provider_origin": "https://provider.a.test:$1"
+                          })json")));
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  ASSERT_TRUE(server_.Start());
+
+  UnexportableSigningKeyId key = CreateSigningKey();
+  auto param = RegistrationRequestParam::CreateForTesting(
+      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
+  auto session_or_error =
+      FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
+  EXPECT_EQ(session_or_error.SessionForTesting().unexportable_key_id(), key);
+}
+
+TEST_F(RegistrationTest, FederatedTargetOriginNonRegistrableRejected) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  // An IP address origin has no registrable domain label, so it cannot satisfy
+  // the label limit check even if explicitly listed in relying_origins.
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnForHostAndPath, "provider.a.test",
+                          "/.well-known/device-bound-sessions",
+                          base::BindRepeating(&ReturnWellKnown,
+                                              R"json({
+                                                "relying_origins": [
+                                                  "https://127.0.0.1:$1"
+                                                ]
+                                              })json")));
+  ASSERT_TRUE(server_.Start());
+
+  UnexportableSigningKeyId key = CreateSigningKey();
+  auto param = RegistrationRequestParam::CreateForTesting(
+      server_.GetURL("127.0.0.1", "/"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
+  auto session_or_error =
+      FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
+  EXPECT_EQ(session_or_error.SessionErrorForTesting()->type,
+            SessionError::kTooManyRelyingOriginLabels);
+}
+
 TEST_F(RegistrationTest, RegistrationFailsIfCantSetCookies) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
 

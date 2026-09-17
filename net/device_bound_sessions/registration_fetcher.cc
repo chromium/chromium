@@ -18,8 +18,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/rand_util.h"
+#include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
@@ -48,6 +48,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request_context.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/origin.h"
 
@@ -335,48 +336,65 @@ void SignChallengeWithAttestationKey(
       StoreAndRun(state_ref.attestation_statement, std::move(barrier_closure)));
 }
 
-// Returns the registrable origin label for `origin_str`, or empty if the origin
-// is invalid or not registrable.
-std::string GetOriginLabel(const std::string& origin_str) {
-  GURL url(origin_str);
-  if (!url.is_valid()) {
-    return "";
-  }
-
-  std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
-      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  const std::string::size_type dot_index = domain.find('.');
-  if (dot_index == std::string::npos) {
-    return "";
-  }
-
-  return domain.substr(0, dot_index);
+// Returns the registrable origin label for `origin`, or `std::nullopt` if the
+// origin is opaque or has no registrable domain.
+std::optional<std::string> GetOriginLabel(const url::Origin& origin) {
+  const std::string domain =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  return base::SplitStringOnce(domain, '.').transform([](auto parts) {
+    return std::string(parts.first);
+  });
 }
 
-bool WithinOriginLabelLimit(const std::vector<std::string>& relying_origins,
-                            const std::string& target_origin) {
+// Returns the registrable origin label for `url`, or `std::nullopt` if the URL
+// is invalid or has no registrable domain. Note that `GURL` exposes a host
+// even when `is_valid()` is false, so the validity check is load-bearing.
+std::optional<std::string> GetOriginLabel(const GURL& url) {
+  return url.is_valid() ? GetOriginLabel(url::Origin::Create(url))
+                        : std::nullopt;
+}
+
+// Verifies that `target_origin` is authorized by `relying_origins` and that its
+// registrable origin label is among the first `kMaxLabels` (5) distinct
+// registrable origin labels in `relying_origins`. Invalid or non-registrable
+// origins are ignored and do not count toward the limit.
+SessionErrorOr<void> CheckRelyingOrigin(
+    const std::optional<std::vector<std::string>>& relying_origins,
+    const url::Origin& target_origin) {
+  if (!relying_origins ||
+      !std::ranges::contains(*relying_origins, target_origin.Serialize())) {
+    return base::unexpected(SessionError::kFederatedNotAuthorizedByProvider);
+  }
+
+  // Origins without a registrable label (e.g. IP addresses or localhost)
+  // cannot satisfy the label-limit check. Reporting
+  // `kTooManyRelyingOriginLabels` here preserves pre-existing behavior where
+  // a non-registrable target origin could never match any registrable label
+  // in `relying_origins`.
+  ASSIGN_OR_RETURN(std::string target_label, GetOriginLabel(target_origin),
+                   [] { return SessionError::kTooManyRelyingOriginLabels; });
+
   constexpr size_t kMaxLabels = 5;
-  base::flat_set<std::string> labels_seen;
-  for (const std::string& origin_str : relying_origins) {
-    std::string label = GetOriginLabel(origin_str);
-    if (label.empty()) {
+  absl::flat_hash_set<std::string> labels_seen;
+  for (std::string_view origin_str : *relying_origins) {
+    std::optional<std::string> label = GetOriginLabel(GURL(origin_str));
+    if (!label) {
       continue;
     }
-
-    if (!labels_seen.contains(label)) {
-      if (labels_seen.size() >= kMaxLabels) {
-        continue;
-      }
-
-      labels_seen.insert(std::move(label));
+    if (*label == target_label) {
+      return base::ok();
     }
-
-    if (origin_str == target_origin) {
-      return true;
+    labels_seen.insert(*std::move(label));
+    if (labels_seen.size() >= kMaxLabels) {
+      return base::unexpected(SessionError::kTooManyRelyingOriginLabels);
     }
   }
 
-  return false;
+  // Unreachable in practice: `target_origin` is in `relying_origins`, so the
+  // loop matches its label above. Fail closed rather than crash, since this
+  // data comes from the network.
+  return base::unexpected(SessionError::kTooManyRelyingOriginLabels);
 }
 
 RegistrationFetcher::FetcherType* g_mock_fetcher = nullptr;
@@ -413,10 +431,10 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       base::OnceClosure closure,
       unexportable_keys::ServiceErrorOr<
           unexportable_keys::UnexportableSigningKeyId> key_id_or_error) {
+    // Returns early on error, which runs the callback and may delete `this`.
     ASSIGN_OR_RETURN(key_id_, key_id_or_error, [this](auto) {
       RunCallback(CreateErrorRegistrationResult(
           SessionError(SessionError::kSigningKeyGenerationError)));
-      // `this` may be deleted.
     });
 
     std::move(closure).Run();
@@ -426,10 +444,10 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       base::OnceClosure closure,
       unexportable_keys::ServiceErrorOr<
           unexportable_keys::UnexportableAttestationKeyId> key_id_or_error) {
+    // Returns early on error, which runs the callback and may delete `this`.
     ASSIGN_OR_RETURN(attestation_key_id_, key_id_or_error, [this](auto) {
       RunCallback(CreateErrorRegistrationResult(
           SessionError(SessionError::kAttestationKeyGenerationError)));
-      // `this` may be deleted.
     });
 
     std::move(closure).Run();
@@ -645,13 +663,12 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   void OnProviderWellKnownRequestComplete(
       std::optional<std::string> challenge,
       std::optional<std::string> authorization) {
-    SessionError::ErrorType error =
-        OnProviderWellKnownRequestCompleteInternal();
-    if (error != SessionError::kSuccess) {
-      RunCallback(CreateErrorRegistrationResult(SessionError(error)));
-      // `this` may be deleted.
-      return;
-    }
+    // Returns early on error, which runs the callback and may delete `this`.
+    RETURN_IF_ERROR(
+        OnProviderWellKnownRequestCompleteInternal(),
+        [this](SessionError::ErrorType error) {
+          RunCallback(CreateErrorRegistrationResult(SessionError(error)));
+        });
 
     GURL well_known_url =
         CreateWellKnownUrl(url::Origin::Create(fetcher_endpoint_));
@@ -664,7 +681,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         GetWeakPtr(), std::move(challenge), std::move(authorization)));
   }
 
-  SessionError::ErrorType OnProviderWellKnownRequestCompleteInternal() {
+  SessionErrorOr<void> OnProviderWellKnownRequestCompleteInternal() {
     HttpResponseHeaders* headers = url_fetcher_->request().response_headers();
     const int response_code = headers ? headers->response_code() : 0;
     RecordHttpResponseOrErrorCode(
@@ -672,56 +689,46 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         url_fetcher_->net_error(), response_code);
 
     if (url_fetcher_->net_error() != OK) {
-      return SessionError::kSessionProviderWellKnownUnavailable;
+      return base::unexpected(
+          SessionError::kSessionProviderWellKnownUnavailable);
     }
 
     if (!headers || headers->response_code() != 200) {
-      return SessionError::kSessionProviderWellKnownUnavailable;
+      return base::unexpected(
+          SessionError::kSessionProviderWellKnownUnavailable);
     }
 
-    std::optional<WellKnownParams> maybe_params =
-        ParseWellKnownJson(url_fetcher_->data_received());
-    if (!maybe_params.has_value()) {
-      return SessionError::kSessionProviderWellKnownMalformed;
-    }
+    ASSIGN_OR_RETURN(WellKnownParams params,
+                     ParseWellKnownJson(url_fetcher_->data_received()), [] {
+                       return SessionError::kSessionProviderWellKnownMalformed;
+                     });
 
-    if (maybe_params->provider_origin.has_value()) {
-      return SessionError::kSessionProviderWellKnownHasProviderOrigin;
+    if (params.provider_origin.has_value()) {
+      return base::unexpected(
+          SessionError::kSessionProviderWellKnownHasProviderOrigin);
     }
 
     // TODO(crbug.com/511776603): Evaluate whether to use the final redirect URL
     // instead of the original URL here in a follow-up.
-    std::string target_origin =
-        url::Origin::Create(fetcher_endpoint_).Serialize();
-    if (!maybe_params->relying_origins.has_value() ||
-        !std::ranges::contains(*maybe_params->relying_origins, target_origin)) {
-      return SessionError::kFederatedNotAuthorizedByProvider;
-    }
-
-    if (!WithinOriginLabelLimit(*maybe_params->relying_origins,
-                                target_origin)) {
-      return SessionError::kTooManyRelyingOriginLabels;
-    }
-
-    return SessionError::kSuccess;
+    return CheckRelyingOrigin(params.relying_origins,
+                              url::Origin::Create(fetcher_endpoint_));
   }
 
   void OnRelyingPartyWellKnownRequestComplete(
       std::optional<std::string> challenge,
       std::optional<std::string> authorization) {
-    SessionError::ErrorType error =
-        OnRelyingPartyWellKnownRequestCompleteInternal();
-    if (error != SessionError::kSuccess) {
-      RunCallback(CreateErrorRegistrationResult(SessionError(error)));
-      // `this` may be deleted.
-      return;
-    }
+    // Returns early on error, which runs the callback and may delete `this`.
+    RETURN_IF_ERROR(
+        OnRelyingPartyWellKnownRequestCompleteInternal(),
+        [this](SessionError::ErrorType error) {
+          RunCallback(CreateErrorRegistrationResult(SessionError(error)));
+        });
 
     StartFetch(std::move(challenge), std::move(authorization));
     // `this` may be deleted.
   }
 
-  SessionError::ErrorType OnRelyingPartyWellKnownRequestCompleteInternal() {
+  SessionErrorOr<void> OnRelyingPartyWellKnownRequestCompleteInternal() {
     HttpResponseHeaders* headers = url_fetcher_->request().response_headers();
     const int response_code = headers ? headers->response_code() : 0;
     RecordHttpResponseOrErrorCode(
@@ -729,32 +736,33 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         url_fetcher_->net_error(), response_code);
 
     if (url_fetcher_->net_error() != OK) {
-      return SessionError::kRelyingPartyWellKnownUnavailable;
+      return base::unexpected(SessionError::kRelyingPartyWellKnownUnavailable);
     }
 
     if (!headers || headers->response_code() != 200) {
-      return SessionError::kRelyingPartyWellKnownUnavailable;
+      return base::unexpected(SessionError::kRelyingPartyWellKnownUnavailable);
     }
 
-    std::optional<WellKnownParams> maybe_params =
-        ParseWellKnownJson(url_fetcher_->data_received());
-    if (!maybe_params.has_value()) {
-      return SessionError::kRelyingPartyWellKnownMalformed;
-    }
+    ASSIGN_OR_RETURN(WellKnownParams params,
+                     ParseWellKnownJson(url_fetcher_->data_received()), [] {
+                       return SessionError::kRelyingPartyWellKnownMalformed;
+                     });
 
-    if (maybe_params->relying_origins.has_value()) {
-      return SessionError::kRelyingPartyWellKnownHasRelyingOrigins;
+    if (params.relying_origins.has_value()) {
+      return base::unexpected(
+          SessionError::kRelyingPartyWellKnownHasRelyingOrigins);
     }
 
     // TODO(crbug.com/511776603): Evaluate whether to use the final redirect URL
     // instead of the original URL here in a follow-up.
-    if (!maybe_params->provider_origin.has_value() ||
+    if (!params.provider_origin.has_value() ||
         url::Origin::Create(provider_url_).Serialize() !=
-            *maybe_params->provider_origin) {
-      return SessionError::kFederatedNotAuthorizedByRelyingParty;
+            *params.provider_origin) {
+      return base::unexpected(
+          SessionError::kFederatedNotAuthorizedByRelyingParty);
     }
 
-    return SessionError::kSuccess;
+    return base::ok();
   }
 
   static constexpr size_t kMaxChallenges = 5;
@@ -817,13 +825,12 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       unexportable_keys::UnexportableSigningKeyId key_id,
       SessionErrorOr<RegistrationFetcher::RegistrationToken>
           registration_token) {
-    if (!registration_token.has_value()) {
-      RunCallback(CreateErrorRegistrationResult(
-          SessionError(registration_token.error())));
-      // `this` may be deleted.
-      return;
-    }
-    last_registration_token_ = std::move(registration_token).value();
+    // Returns early on error, which runs the callback and may delete `this`.
+    ASSIGN_OR_RETURN(
+        last_registration_token_, std::move(registration_token),
+        [this](SessionError::ErrorType error) {
+          RunCallback(CreateErrorRegistrationResult(SessionError(error)));
+        });
 
     // Cache the signed refresh challenge in case the same challenge is
     // attempted next time (e.g. if refresh transiently fails).
@@ -964,28 +971,23 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     // validate the origin that actually served the response.
     GURL final_registration_url = url_fetcher_->request().url();
 
-    base::expected<SessionParams, SessionError> params_or_error =
+    // Returns early on error, which runs the callback and may delete `this`.
+    ASSIGN_OR_RETURN(
+        SessionParams params,
         ParseSessionInstructionJson(final_registration_url, session_identifier_,
-                                    url_fetcher_->data_received());
-    if (!params_or_error.has_value()) {
-      RunCallback(
-          CreateErrorRegistrationResult(std::move(params_or_error).error()));
-      // `this` may be deleted.
-      return;
-    }
+                                    url_fetcher_->data_received()),
+        [this](SessionError error) {
+          RunCallback(CreateErrorRegistrationResult(std::move(error)));
+        });
 
-    SessionParams& params = *params_or_error;
     params.key_id = CHECK_DEREF(key_id_);
     params.attestation_key_id = attestation_key_id_;
-    base::expected<std::unique_ptr<Session>, SessionError> session_or_error =
-        Session::CreateIfValid(params);
-    if (!session_or_error.has_value()) {
-      RunCallback(
-          CreateErrorRegistrationResult(std::move(session_or_error).error()));
-      // `this` may be deleted.
-      return;
-    }
-    std::unique_ptr<Session> session = std::move(*session_or_error);
+    // Returns early on error, which runs the callback and may delete `this`.
+    ASSIGN_OR_RETURN(
+        std::unique_ptr<Session> session, Session::CreateIfValid(params),
+        [this](SessionError error) {
+          RunCallback(CreateErrorRegistrationResult(std::move(error)));
+        });
 
     // Re-process challenge headers now that a session exists so that cached
     // challenges work for the registration case as well.
@@ -1074,16 +1076,16 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
           SessionError::kSubdomainRegistrationWellKnownUnavailable));
     }
 
-    std::optional<WellKnownParams> maybe_params =
-        ParseWellKnownJson(url_fetcher_->data_received());
-    if (!maybe_params.has_value()) {
-      return CreateErrorRegistrationResult(
-          SessionError(SessionError::kSubdomainRegistrationWellKnownMalformed));
-    }
+    ASSIGN_OR_RETURN(
+        WellKnownParams params,
+        ParseWellKnownJson(url_fetcher_->data_received()), [this] {
+          return CreateErrorRegistrationResult(SessionError(
+              SessionError::kSubdomainRegistrationWellKnownMalformed));
+        });
 
-    if (!maybe_params->registering_origins.has_value() ||
+    if (!params.registering_origins.has_value() ||
         !std::ranges::contains(
-            *maybe_params->registering_origins,
+            *params.registering_origins,
             url::Origin::Create(final_registration_url).Serialize())) {
       return CreateErrorRegistrationResult(
           SessionError(SessionError::kSubdomainRegistrationUnauthorized));
@@ -1153,7 +1155,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   //// This section of fields is state passed into the constructor. ////
   // Refers to the endpoint this class will use when triggering a registration
   // or refresh request.
-  GURL fetcher_endpoint_;
+  const GURL fetcher_endpoint_;
   // The origin that configured `fetcher_endpoint_`: the origin of the response
   // carrying the registration header, or the scope origin of the session being
   // refreshed.
