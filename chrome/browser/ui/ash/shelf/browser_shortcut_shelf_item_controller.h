@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ash {
 class BrowserDelegate;

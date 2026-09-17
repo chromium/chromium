@@ -84,7 +84,6 @@
 #include "services/network/socket_factory.h"
 #include "services/network/url_request_context_owner.h"
 #include "services/network/web_bundle/web_bundle_manager.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_REPORTING)

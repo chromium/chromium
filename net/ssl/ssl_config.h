@@ -19,7 +19,6 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/socket/next_proto.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace net {
 

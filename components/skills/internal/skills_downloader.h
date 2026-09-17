@@ -15,7 +15,6 @@
 #include "components/skills/public/skills_types.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace skills {
 

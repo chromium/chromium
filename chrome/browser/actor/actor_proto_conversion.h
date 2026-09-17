@@ -20,7 +20,6 @@
 #include "components/origin_gating/core/task_policy_config.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/tabs/public/tab_interface.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 // Conversion function for turning optimization_guide::proto::* types into
 // ToolRequests usable by the actor framework.

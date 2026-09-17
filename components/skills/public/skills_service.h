@@ -21,7 +21,6 @@
 #include "components/skills/proto/skill.pb.h"
 #include "components/skills/public/skills_types.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
 class DataTypeControllerDelegate;

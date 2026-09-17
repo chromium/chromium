@@ -15,7 +15,6 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/mojom/page/page.mojom-forward.h"
 
 class Profile;

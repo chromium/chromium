@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/features/actor_login.pb.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class GURL;
 

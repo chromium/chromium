@@ -10,7 +10,6 @@
 #include "base/types/expected.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
 
 class GURL;

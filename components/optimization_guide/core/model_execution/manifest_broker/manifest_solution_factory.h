@@ -28,7 +28,6 @@
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace optimization_guide {
 

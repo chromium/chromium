@@ -15,7 +15,6 @@
 #include "base/values.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/origin.h"
 
 namespace signin {

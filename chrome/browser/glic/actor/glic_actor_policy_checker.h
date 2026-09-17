@@ -19,7 +19,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
 
 class GURL;

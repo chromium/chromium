@@ -9,15 +9,16 @@
 #include <vector>
 
 #include "base/containers/map_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/uuid.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/transform.h"
-#include "base/strings/stringprintf.h"
-#include "base/uuid.h"
 
 namespace device {
 

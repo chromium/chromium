@@ -20,7 +20,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace optimization_guide {
 

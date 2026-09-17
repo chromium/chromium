@@ -20,7 +20,6 @@
 #include "device/vr/openxr/openxr_mesh_manager.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace device {
 

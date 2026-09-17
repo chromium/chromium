@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/tabs/public/tab_interface.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/models/image_model.h"
 
 namespace content {

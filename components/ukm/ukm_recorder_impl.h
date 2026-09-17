@@ -30,7 +30,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ukm_consent_state.h"
 #include "url/gurl.h"
 

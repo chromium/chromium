@@ -11,7 +11,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/display/mac/display_link_mac.h"
 #include "ui/display/mac/vsync_provider_mac.h"
 

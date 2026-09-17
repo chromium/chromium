@@ -31,7 +31,6 @@
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/mouse_cursor_monitor.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace base {
