@@ -164,7 +164,7 @@
   z-index: 0;
 }
 
-:host([disabled]:host-context([energy-effect-animation-enabled_]))
+:host-context([energy-effect-animation-enabled_]):host([disabled])
   #submitEnergy {
   opacity: 0.4;
 }
