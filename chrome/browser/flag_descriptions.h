@@ -7498,13 +7498,6 @@ inline constexpr char kBluetoothUseLLPrivacyDescription[] =
     "Enable address resolution offloading to Bluetooth Controller if "
     "supported. Modifying this flag will cause Bluetooth Controller to reset.";
 
-inline constexpr char kCampbellGlyphName[] = "Enable glyph for Campbell";
-inline constexpr char kCampbellGlyphDescription[] = "Enables a Campbell glyph.";
-
-inline constexpr char kCampbellKeyName[] = "Key to enable glyph for Campbell";
-inline constexpr char kCampbellKeyDescription[] =
-    "Secret key to enable glyph for Campbell";
-
 inline constexpr char kCaptureModeEducationName[] =
     "Enable Capture Mode Education";
 inline constexpr char kCaptureModeEducationDescription[] =

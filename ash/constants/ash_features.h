@@ -157,7 +157,6 @@ enum BorealisZinkGlDriverParam { kZinkEnableRecommended, kZinkEnableAll };
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<BorealisZinkGlDriverParam>
     kBorealisZinkGlDriverParam;
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCampbellGlyph);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCaptureModeEducation);
 enum class CaptureModeEducationParam {
   kShortcutNudge,

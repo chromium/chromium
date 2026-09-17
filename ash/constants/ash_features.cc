@@ -362,9 +362,6 @@ const base::FeatureParam<BorealisZinkGlDriverParam> kBorealisZinkGlDriverParam{
     BorealisZinkGlDriverParam::kZinkEnableRecommended,
     &borealis_zink_gl_driver_options};
 
-// Enables the feature to parameterize glyph for "Campbell" feature.
-BASE_FEATURE(kCampbellGlyph, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the nudges/tutorials that inform users of the screen capture keyboard
 // shortcut and feature tile.
 BASE_FEATURE(kCaptureModeEducation, base::FEATURE_ENABLED_BY_DEFAULT);

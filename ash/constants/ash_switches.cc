@@ -25,11 +25,6 @@ namespace {
 constexpr base::TimeDelta kAshContextualNudgesMinInterval = base::Seconds(0);
 constexpr base::TimeDelta kAshContextualNudgesMaxInterval = base::Seconds(60);
 
-// The hash value for the secret key of the campbell feature.
-constexpr char kCampbellHashKey[] =
-    "\x78\xb6\xa7\x59\x06\x11\xc7\xea\x09\x7e\x92\xe3\xe9\xff\xa6\x01\x4c"
-    "\x03\x18\x32";
-
 }  // namespace
 
 bool IsAuthSessionCryptohomeEnabled() {
@@ -204,24 +199,6 @@ bool UseFakeCrasAudioClientForDBus() {
 bool ShouldAllowDefaultShelfPinLayoutIgnoringSync() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kAllowDefaultShelfPinLayoutIgnoringSync);
-}
-
-bool IsCampbellSecretKeyMatched() {
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --campbell-key="INSERT KEY HERE"
-  //  --enable-features=CampbellGlyph:icon/<icon>
-  const std::string provided_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kCampbellKey));
-
-  const bool key_matched = (provided_key_hash == kCampbellHashKey);
-  if (!key_matched) {
-    LOG(ERROR)
-        << "Provided campbel secrey key does not match the expected one.";
-  }
-
-  return key_matched;
 }
 
 bool IsPerUserTimezoneEnabled() {

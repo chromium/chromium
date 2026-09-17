@@ -1645,22 +1645,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "campbell-glyph",
-    "owners": [
-      "tbarzic@chromium.org",
-      "chromeos-launcher@google.com"
-    ],
-    "expiry_milestone": 124
-  },
-  {
-    "name": "campbell-key",
-    "owners": [
-      "tbarzic@chromium.org",
-      "chromeos-launcher@google.com"
-    ],
-    "expiry_milestone": 124
-  },
-  {
     "name": "canvas-2d-hibernation",
     "owners": [ "lizeb@chromium.org", "clank-performance-team@google.com" ],
     "expiry_milestone": 138

@@ -294,11 +294,6 @@ inline constexpr char kBirchIsEvening[] = "birch-is-evening";
 // purposes.
 inline constexpr char kBirchIsMorning[] = "birch-is-morning";
 
-// Switch used to pass in a secret key for Campbell feature. Unless the correct
-// secret key is provided, Campbell feature will remain disabled, regardless of
-// the state of the associated feature flag.
-inline constexpr char kCampbellKey[] = "campbell-key";
-
 // If this flag is set, it indicates that this device is a "Cellular First"
 // device. Cellular First devices use cellular telephone data networks as
 // their primary means of connecting to the internet.
@@ -1306,9 +1301,6 @@ bool UseFakeCrasAudioClientForDBus();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool ShouldAllowDefaultShelfPinLayoutIgnoringSync();
-
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsCampbellSecretKeyMatched();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsScannerUpdateSecretKeyMatched();

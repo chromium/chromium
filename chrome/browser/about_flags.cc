@@ -3032,17 +3032,6 @@ const FeatureEntry::FeatureVariation
         {"threshold 0.8", kLauncherLocalImageSearchRelevance_80, nullptr},
         {"threshold 0.9", kLauncherLocalImageSearchRelevance_90, nullptr}};
 
-const FeatureEntry::FeatureParam kCampbell9dot[] = {{"icon", "9dot"}};
-const FeatureEntry::FeatureParam kCampbellHero[] = {{"icon", "hero"}};
-const FeatureEntry::FeatureParam kCampbellAction[] = {{"icon", "action"}};
-const FeatureEntry::FeatureParam kCampbellText[] = {{"icon", "text"}};
-
-const FeatureEntry::FeatureVariation kCampbellGlyphVariations[] = {
-    {"9dot", kCampbell9dot, nullptr},
-    {"hero", kCampbellHero, nullptr},
-    {"action", kCampbellAction, nullptr},
-    {"text", kCampbellText, nullptr}};
-
 const FeatureEntry::FeatureParam kCaptureModeEducationShortcutNudge[] = {
     {"CaptureModeEducationParam", "ShortcutNudge"}};
 const FeatureEntry::FeatureParam kCaptureModeEducationShortcutTutorial[] = {
@@ -5383,14 +5372,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBluetoothUseLLPrivacyName,
      flag_descriptions::kBluetoothUseLLPrivacyDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(bluez::features::kLinkLayerPrivacy)},
-    {"campbell-glyph", flag_descriptions::kCampbellGlyphName,
-     flag_descriptions::kCampbellGlyphDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kCampbellGlyph,
-                                    kCampbellGlyphVariations,
-                                    "GampbellGlyph")},
-    {"campbell-key", flag_descriptions::kCampbellKeyName,
-     flag_descriptions::kCampbellKeyDescription, kOsCrOS,
-     STRING_VALUE_TYPE(ash::switches::kCampbellKey, "")},
     {"cellular-bypass-esim-installation-connectivity-check",
      flag_descriptions::kCellularBypassESimInstallationConnectivityCheckName,
      flag_descriptions::
