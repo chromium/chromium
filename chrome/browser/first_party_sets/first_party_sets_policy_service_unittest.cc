@@ -193,10 +193,6 @@ class FirstPartySetsPolicyServiceTest
     profile_manager_.reset();
   }
 
-  void SetCacheFilter(net::FirstPartySetsCacheFilter cache_filter) {
-    first_party_sets_handler_.SetCacheFilter(std::move(cache_filter));
-  }
-
   void SetGlobalSets(net::GlobalFirstPartySets global_sets) {
     first_party_sets_handler_.SetGlobalSets(std::move(global_sets));
   }
@@ -537,22 +533,6 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
 
   otr_service->OnRelatedWebsiteSetsEnabledChanged(true);
   EXPECT_FALSE(otr_service->is_enabled());
-
-  env().RunUntilIdle();
-}
-
-TEST_F(FirstPartySetsPolicyServiceTest, NotifiesReadyWithCacheFilter) {
-  net::SchemefulSite test_primary(GURL("https://a.test"));
-  net::FirstPartySetsCacheFilter test_cache_filter({{test_primary, 1}},
-                                                   /*browser_run_id=*/1);
-  SetCacheFilter(test_cache_filter.Clone());
-  service()->InitForTesting();
-
-  net::FirstPartySetsContextConfig empty_config;
-  EXPECT_CALL(mock_delegate,
-              NotifyReady(CarryingConfigAndCacheFilter(
-                  std::ref(empty_config), std::ref(test_cache_filter))))
-      .Times(1);
 
   env().RunUntilIdle();
 }

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -23,8 +24,6 @@
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 #include "content/browser/first_party_sets/first_party_sets_overrides_policy.h"
-#include "content/browser/first_party_sets/first_party_sets_site_data_remover.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_client.h"
@@ -33,6 +32,7 @@
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/sets_mutation.h"
+#include "sql/database.h"
 
 namespace net {
 class SchemefulSite;
@@ -52,10 +52,6 @@ FirstPartySetsHandler* g_test_instance = nullptr;
 // Global FirstPartySetsHandlerImpl instance for testing. This is mainly useful
 // for tests that need to know about content-internal details.
 FirstPartySetsHandlerImpl* g_impl_test_instance = nullptr;
-
-base::TaskPriority GetTaskPriority() {
-  return base::TaskPriority::BEST_EFFORT;
-}
 
 }  // namespace
 
@@ -151,7 +147,19 @@ void FirstPartySetsHandlerImplInstance::Init(
   }
 
   initialized_ = true;
-  SetDatabase(user_data_dir);
+  if (!user_data_dir.empty()) {
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(
+            [](const base::FilePath& db_path) {
+              if (base::PathExists(db_path)) {
+                sql::Database::Delete(db_path);
+              }
+            },
+            user_data_dir.Append(kFirstPartySetsDatabase)));
+  }
 }
 
 bool FirstPartySetsHandlerImplInstance::IsEnabled() const {
@@ -171,39 +179,6 @@ void FirstPartySetsHandlerImplInstance::SetPublicFirstPartySets(
   sets_loader_->SetComponentSets(version, std::move(sets_file));
 }
 
-void FirstPartySetsHandlerImplInstance::GetPersistedSetsForTesting(
-    const std::string& browser_context_id,
-    base::OnceCallback<void(std::optional<net::GlobalFirstPartySets>)>
-        callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!browser_context_id.empty());
-  if (db_helper_.is_null()) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-  db_helper_
-      .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::
-                     GetGlobalSetsForTesting)  // IN-TEST
-      .WithArgs(browser_context_id)
-      .Then(std::move(callback));
-}
-
-void FirstPartySetsHandlerImplInstance::HasBrowserContextClearedForTesting(
-    const std::string& browser_context_id,
-    base::OnceCallback<void(std::optional<bool>)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!browser_context_id.empty());
-  if (db_helper_.is_null()) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-  db_helper_
-      .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::
-                     HasEntryInBrowserContextsClearedForTesting)  // IN-TEST
-      .WithArgs(browser_context_id)
-      .Then(std::move(callback));
-}
-
 void FirstPartySetsHandlerImplInstance::SetCompleteSets(
     net::GlobalFirstPartySets sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -212,21 +187,6 @@ void FirstPartySetsHandlerImplInstance::SetCompleteSets(
   sets_loader_.reset();
 
   InvokePendingQueries();
-}
-
-void FirstPartySetsHandlerImplInstance::SetDatabase(
-    const base::FilePath& user_data_dir) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(db_helper_.is_null());
-
-  if (user_data_dir.empty()) {
-    VLOG(1) << "Empty path. Failed initializing First-Party Sets database.";
-    return;
-  }
-  db_helper_.emplace(base::ThreadPool::CreateSequencedTaskRunner(
-                         {base::MayBlock(), GetTaskPriority(),
-                          base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-                     user_data_dir.Append(kFirstPartySetsDatabase));
 }
 
 void FirstPartySetsHandlerImplInstance::EnqueuePendingTask(
@@ -283,123 +243,18 @@ net::GlobalFirstPartySets FirstPartySetsHandlerImplInstance::GetGlobalSetsSync()
   return global_sets_->Clone();
 }
 
-void FirstPartySetsHandlerImplInstance::ClearSiteDataOnChangedSetsForContext(
-    base::RepeatingCallback<BrowserContext*()> browser_context_getter,
-    const std::string& browser_context_id,
-    base::OnceCallback<void(net::FirstPartySetsCacheFilter)> callback) {
+bool FirstPartySetsHandlerImplInstance::WhenInitComplete(
+    base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!enabled_) {
-    std::move(callback).Run(net::FirstPartySetsCacheFilter());
-    return;
-  }
-
   if (global_sets_.has_value()) {
-    ClearSiteDataOnChangedSetsForContextInternal(
-        browser_context_getter, browser_context_id, std::move(callback));
-    return;
+    return true;
   }
 
-  // base::Unretained(this) is safe because this is a static singleton.
-  EnqueuePendingTask(
-      base::BindOnce(&FirstPartySetsHandlerImplInstance::
-                         ClearSiteDataOnChangedSetsForContextInternal,
-                     base::Unretained(this), browser_context_getter,
-                     browser_context_id, std::move(callback)));
-}
-
-void FirstPartySetsHandlerImplInstance::
-    ClearSiteDataOnChangedSetsForContextInternal(
-        base::RepeatingCallback<BrowserContext*()> browser_context_getter,
-        const std::string& browser_context_id,
-        base::OnceCallback<void(net::FirstPartySetsCacheFilter)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(global_sets_.has_value());
-  CHECK(!browser_context_id.empty());
-  CHECK(enabled_);
-
-  if (db_helper_.is_null()) {
-    VLOG(1) << "Invalid First-Party Sets database. Failed to clear site data "
-               "for browser_context_id="
-            << browser_context_id;
-    std::move(callback).Run(net::FirstPartySetsCacheFilter());
-    return;
+  if (!callback.is_null()) {
+    EnqueuePendingTask(std::move(callback));
   }
 
-  // Extract the callback into a variable and pass it into DB async call args,
-  // to prevent the case that `context_config` gets used after it's moved. This
-  // is because C++ does not have a defined evaluation order for function
-  // parameters.
-  base::OnceCallback<void(
-      std::optional<std::pair<std::vector<net::SchemefulSite>,
-                              net::FirstPartySetsCacheFilter>>)>
-      on_get_sites_to_clear =
-          base::BindOnce(&FirstPartySetsHandlerImplInstance::OnGetSitesToClear,
-                         // base::Unretained(this) is safe here because this
-                         // is a static singleton.
-                         base::Unretained(this), browser_context_getter,
-                         browser_context_id, std::move(callback));
-
-  db_helper_
-      .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::
-                     UpdateAndGetSitesToClearForContext)
-      .WithArgs(browser_context_id, global_sets_->Clone())
-      .Then(std::move(on_get_sites_to_clear));
-}
-
-void FirstPartySetsHandlerImplInstance::OnGetSitesToClear(
-    base::RepeatingCallback<BrowserContext*()> browser_context_getter,
-    const std::string& browser_context_id,
-    base::OnceCallback<void(net::FirstPartySetsCacheFilter)> callback,
-    std::optional<std::pair<std::vector<net::SchemefulSite>,
-                            net::FirstPartySetsCacheFilter>> sites_to_clear)
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!sites_to_clear.has_value()) {
-    std::move(callback).Run(net::FirstPartySetsCacheFilter());
-    return;
-  }
-
-  BrowserContext* browser_context = browser_context_getter.Run();
-  if (!browser_context) {
-    DVLOG(1) << "Invalid Browser Context. Failed to clear site data for "
-                "browser_context_id="
-             << browser_context_id;
-
-    std::move(callback).Run(net::FirstPartySetsCacheFilter());
-    return;
-  }
-
-  FirstPartySetsSiteDataRemover::RemoveSiteData(
-      *browser_context->GetBrowsingDataRemover(),
-      std::move(sites_to_clear->first),
-      base::BindOnce(&FirstPartySetsHandlerImplInstance::
-                         DidClearSiteDataOnChangedSetsForContext,
-                     // base::Unretained(this) is safe here because
-                     // this is a static singleton.
-                     base::Unretained(this), browser_context_id,
-                     std::move(sites_to_clear->second), std::move(callback)));
-}
-
-void FirstPartySetsHandlerImplInstance::DidClearSiteDataOnChangedSetsForContext(
-    const std::string& browser_context_id,
-    net::FirstPartySetsCacheFilter cache_filter,
-    base::OnceCallback<void(net::FirstPartySetsCacheFilter)> callback,
-    uint64_t failed_data_types) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!db_helper_.is_null());
-
-  if (failed_data_types == 0) {
-    db_helper_
-        .AsyncCall(
-            &FirstPartySetsHandlerDatabaseHelper::UpdateClearStatusForContext)
-        .WithArgs(browser_context_id);
-  }
-
-  db_helper_.AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistSets)
-      .WithArgs(browser_context_id, global_sets_->Clone());
-  std::move(callback).Run(std::move(cache_filter));
+  return false;
 }
 
 void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadata(
@@ -432,8 +287,6 @@ void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadataInternal(
   std::move(callback).Run(
       global_sets_->ComputeMetadata(site, top_frame_site, config));
 }
-
-
 
 bool FirstPartySetsHandlerImplInstance::ForEachEffectiveSetEntry(
     const net::FirstPartySetsContextConfig& config,

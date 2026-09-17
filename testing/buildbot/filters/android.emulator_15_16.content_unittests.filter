@@ -2,8 +2,6 @@
 -AttributionOsLevelManagerAndroidTest.Register
 -AttributionOsLevelManagerAndroidTest.ClearData
 
-# crbug.com/340939237
--FirstPartySetsHandlerImplEnabledTest.ClearSiteDataOnChangedSetsForContext_PublicSetsWithDiff_Successful
 
 # crbug.com/362295873
 -FontUniqueNameLookupTest.TestMatchPostScriptNameTtc

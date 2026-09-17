@@ -4808,7 +4808,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   std::unique_ptr<BrowsingDataFilterBuilder> filter_builder(
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kDelete));
-  // RWS data clearing is site-based (see FirstPartySetsSiteDataRemover).
+  // RWS data clearing is site-based.
   filter_builder->AddOrigin(
       url::Origin::Create(net::SchemefulSite(kRequestedSubdomain).GetURL()));
 

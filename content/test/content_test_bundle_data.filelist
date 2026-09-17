@@ -8015,15 +8015,6 @@ data/find_in_page_two_frames.html
 data/find_in_pdf_page.pdf
 data/find_in_simple_page.html
 data/find_in_simple_page.html.mock-http-headers
-data/first_party_sets/v1.init_invalid_run_count.sql
-data/first_party_sets/v1.init_too_new.sql
-data/first_party_sets/v1.sql
-data/first_party_sets/v2.sql
-data/first_party_sets/v3.sql
-data/first_party_sets/v4.sql
-data/first_party_sets/v5.public_sets_orphan.sql
-data/first_party_sets/v5.public_sets_singleton.sql
-data/first_party_sets/v5.sql
 data/font/Ahem.ttf
 data/font/font_fallback.html
 data/font/gdi_test.ttf

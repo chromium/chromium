@@ -102,21 +102,13 @@ void FirstPartySetsPolicyService::Init() {
     return;
   }
 
-  // Representation of the current profile to be persisted on disk.
-  const std::string browser_context_id = profile->GetBaseName().AsUTF8Unsafe();
-
-  base::RepeatingCallback<content::BrowserContext*()> browser_context_getter =
-      base::BindRepeating(
-          [](base::WeakPtr<FirstPartySetsPolicyService> weak_ptr) {
-            return weak_ptr ? weak_ptr->browser_context() : nullptr;
-          },
-          weak_factory_.GetWeakPtr());
-
-  content::FirstPartySetsHandler::GetInstance()
-      ->ClearSiteDataOnChangedSetsForContext(
-          browser_context_getter, browser_context_id,
-          base::BindOnce(&FirstPartySetsPolicyService::OnReadyToNotifyDelegates,
-                         weak_factory_.GetWeakPtr()));
+  content::FirstPartySetsHandler* handler =
+      content::FirstPartySetsHandler::GetInstance();
+  if (handler->WhenInitComplete(base::BindOnce(
+          &FirstPartySetsPolicyService::OnReadyToNotifyDelegates,
+          weak_factory_.GetWeakPtr(), net::FirstPartySetsCacheFilter()))) {
+    OnReadyToNotifyDelegates(net::FirstPartySetsCacheFilter());
+  }
 }
 
 void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(

@@ -13,7 +13,6 @@
 #include "base/types/optional_ref.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/public/browser/first_party_sets_handler.h"
-#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 
@@ -23,8 +22,6 @@ class Version;
 }  // namespace base
 
 namespace content {
-
-class BrowserContext;
 
 // Used to create a dummy FirstPartySetsHandlerImpl implementation for testing
 // purposes. Enabled by default.
@@ -44,12 +41,7 @@ class ScopedMockFirstPartySetsHandler
   std::optional<net::FirstPartySetEntry> FindEntry(
       const net::SchemefulSite& site,
       const net::FirstPartySetsContextConfig& config) const override;
-  void ClearSiteDataOnChangedSetsForContext(
-      base::RepeatingCallback<content::BrowserContext*()>
-          browser_context_getter,
-      const std::string& browser_context_id,
-      base::OnceCallback<void(net::FirstPartySetsCacheFilter)> callback)
-      override;
+  bool WhenInitComplete(base::OnceClosure callback) override;
   void ComputeFirstPartySetMetadata(
       const net::SchemefulSite& site,
       base::optional_ref<const net::SchemefulSite> top_frame_site,
@@ -66,8 +58,6 @@ class ScopedMockFirstPartySetsHandler
 
   // Helper functions for tests to set up context.
 
-  void SetCacheFilter(net::FirstPartySetsCacheFilter cache_filter);
-
   void SetGlobalSets(net::GlobalFirstPartySets global_sets);
 
   void set_invoke_callbacks_asynchronously(bool asynchronous) {
@@ -81,8 +71,6 @@ class ScopedMockFirstPartySetsHandler
  private:
   raw_ptr<content::FirstPartySetsHandlerImpl> previous_;
   net::GlobalFirstPartySets global_sets_;
-
-  net::FirstPartySetsCacheFilter cache_filter_;
 
   // Whether the instance should make every query deadlock.
   bool should_deadlock_ = false;

@@ -1746,7 +1746,6 @@ if (!is_android) {
       "//chrome/browser/file_system_access",
       "//chrome/browser/file_system_access:browser_tests",
       "//chrome/browser/first_party_sets",
-      "//chrome/browser/first_party_sets:browser_tests",
       "//chrome/browser/first_run:browser_tests",
       "//chrome/browser/gcm",
       "//chrome/browser/geic",

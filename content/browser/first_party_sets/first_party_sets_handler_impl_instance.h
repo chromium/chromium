@@ -16,16 +16,13 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "base/threading/sequence_bound.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "content/browser/first_party_sets/first_party_sets_handler_database_helper.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 #include "content/common/content_export.h"
-#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 
@@ -36,15 +33,10 @@ class SchemefulSite;
 
 namespace content {
 
-class BrowserContext;
-
 // Class FirstPartySetsHandlerImplInstance is a singleton, it allows an embedder
 // to provide First-Party Sets inputs from custom sources, then parses/merges
-// the inputs to form the current First-Party Sets data, compares them with the
-// persisted First-Party Sets data used during the last browser session to get
-// a list of sites that changed the First-Party Set they are part of, invokes
-// the provided callback with the current First-Party Sets data, and writes
-// the current First-Party Sets data to disk.
+// the inputs to form the current First-Party Sets data, and invokes
+// the provided callback with the current First-Party Sets data.
 class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
     : public FirstPartySetsHandlerImpl {
  public:
@@ -72,11 +64,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   std::optional<net::FirstPartySetEntry> FindEntry(
       const net::SchemefulSite& site,
       const net::FirstPartySetsContextConfig& config) const override;
-  void ClearSiteDataOnChangedSetsForContext(
-      base::RepeatingCallback<BrowserContext*()> browser_context_getter,
-      const std::string& browser_context_id,
-      base::OnceCallback<void(net::FirstPartySetsCacheFilter)> callback)
-      override;
+  [[nodiscard]] bool WhenInitComplete(base::OnceClosure callback) override;
   void ComputeFirstPartySetMetadata(
       const net::SchemefulSite& site,
       base::optional_ref<const net::SchemefulSite> top_frame_site,
@@ -86,18 +74,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
       const net::FirstPartySetsContextConfig& config,
       base::FunctionRef<bool(const net::SchemefulSite&,
                              const net::FirstPartySetEntry&)> f) const override;
-  void GetPersistedSetsForTesting(
-      const std::string& browser_context_id,
-      base::OnceCallback<void(std::optional<net::GlobalFirstPartySets>)>
-          callback);
-  void HasBrowserContextClearedForTesting(
-      const std::string& browser_context_id,
-      base::OnceCallback<void(std::optional<bool>)> callback);
-
-  void SynchronouslyResetDBHelperForTesting() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    db_helper_.SynchronouslyResetForTest();  // IN-TEST
-  }
 
  private:
   friend class base::NoDestructor<FirstPartySetsHandlerImplInstance>;
@@ -107,10 +83,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
 
   // Sets the global First-Party Sets data. Must be called exactly once.
   void SetCompleteSets(net::GlobalFirstPartySets sets);
-
-  // Sets `db_helper_`, which will initialize the underlying First-Party Sets
-  // database under `user_data_dir`. Must be called exactly once.
-  void SetDatabase(const base::FilePath& user_data_dir);
 
   // Enqueues a task to be performed once initialization is complete.
   void EnqueuePendingTask(base::OnceClosure run_task);
@@ -124,13 +96,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   // Must be called after the list has been initialized.
   net::GlobalFirstPartySets GetGlobalSetsSync() const;
 
-  // Performs the actual state clearing for the given context. Must not be
-  // called until initialization is complete.
-  void ClearSiteDataOnChangedSetsForContextInternal(
-      base::RepeatingCallback<BrowserContext*()> browser_context_getter,
-      const std::string& browser_context_id,
-      base::OnceCallback<void(net::FirstPartySetsCacheFilter)> callback);
-
   // Like ComputeFirstPartySetMetadata, but passes the result into the provided
   // callback. Must not be called before `global_sets_` has been set.
   void ComputeFirstPartySetMetadataInternal(
@@ -138,23 +103,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
       base::optional_ref<const net::SchemefulSite> top_frame_site,
       const net::FirstPartySetsContextConfig& config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
-
-  void OnGetSitesToClear(
-      base::RepeatingCallback<BrowserContext*()> browser_context_getter,
-      const std::string& browser_context_id,
-      base::OnceCallback<void(net::FirstPartySetsCacheFilter)> callback,
-      std::optional<std::pair<std::vector<net::SchemefulSite>,
-                              net::FirstPartySetsCacheFilter>> sites_to_clear)
-      const;
-
-  // `failed_data_types` is a bitmask used to indicate data types from
-  // BrowsingDataRemover::DataType enum that were failed to remove. 0 indicates
-  // success.
-  void DidClearSiteDataOnChangedSetsForContext(
-      const std::string& browser_context_id,
-      net::FirstPartySetsCacheFilter cache_filter,
-      base::OnceCallback<void(net::FirstPartySetsCacheFilter)> callback,
-      uint64_t failed_data_types) const;
 
   // Whether Init has been called already or not.
   bool initialized_ = false;
@@ -187,10 +135,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   // metrics.
   std::optional<base::ElapsedTimer> first_async_task_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Access the underlying DB on a database sequence to make sure none of DB
-  // operations that support blocking are called directly on the main thread.
-  base::SequenceBound<FirstPartySetsHandlerDatabaseHelper> db_helper_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
