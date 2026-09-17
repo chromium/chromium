@@ -111,4 +111,7 @@ enum ChromeAimEntryPoint {
 
   // AIM is entered from the omnibox popup button to enter cobrowsing.
   DESKTOP_CHROME_COBROWSE_OMNIBOX_POPUP_BUTTON = 210;
+
+  // AIM is entered from the omnibox composebox search with an attached tab.
+  IOS_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH = 217;
 }
