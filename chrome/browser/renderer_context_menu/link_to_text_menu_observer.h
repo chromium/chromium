@@ -98,6 +98,9 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   // Copies given text to clipboard.
   void CopyTextToClipboard(const std::string& text);
 
+  // Returns the label for the "Copy link to text" context menu item.
+  std::u16string GetCopyLinkToTextLabel() const;
+
   // Returns |remote_|, for the frame in which the context menu was opened.
   mojo::Remote<blink::mojom::TextFragmentReceiver>& GetRemote();
 
@@ -121,6 +124,8 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
 
   // True when the context menu was opened with text selected.
   bool open_from_new_selection_ = false;
+
+  std::u16string selected_text_;
 
   std::optional<std::string> generated_link_;
 

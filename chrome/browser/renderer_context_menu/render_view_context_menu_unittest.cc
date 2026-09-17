@@ -2089,9 +2089,9 @@ TEST_F(RenderViewContextMenuPrefsTest, PrintSelectionLabel) {
   ui::MenuModel* model = model_and_index->first;
   size_t index = model_and_index->second;
 
-  // Verify that the print menu item contains the selection text.
+  // Verify that the print menu item does not contain the selection text.
   std::u16string label = model->GetLabelAt(index);
-  EXPECT_NE(label.find(u"hello world"), std::u16string::npos);
+  EXPECT_EQ(label.find(u"hello world"), std::u16string::npos);
 }
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
@@ -2123,12 +2123,12 @@ TEST_F(RenderViewContextMenuPrefsTest, CopySelectionLabel) {
   size_t index = model_and_index->second;
 
   std::u16string label = model->GetLabelAt(index);
-  // The label should contain the truncated text.
+  // The label shouldn't contain the truncated text.
   // Expected truncated text: 24 chars + ellipsis.
   std::u16string expected_selection =
       u"012345678901234567890123" + std::u16string(1, 0x2026);
 
-  EXPECT_NE(label.find(expected_selection), std::u16string::npos);
+  EXPECT_EQ(label.find(expected_selection), std::u16string::npos);
 }
 TEST_F(RenderViewContextMenuPrefsTest,
        ReadingModeSidePanelContextMenuAllowlist) {
@@ -2460,20 +2460,6 @@ class RenderViewContextMenuMenuSimplificationTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-TEST_F(RenderViewContextMenuMenuSimplificationTest, CopySelectionTruncated) {
-  content::ContextMenuParams params;
-  params.selection_text = u"Long text exceeding twenty five characters";
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  ChromeTranslateClient::CreateForWebContents(web_contents());
-  menu.Init();
-
-  size_t index =
-      menu.menu_model().GetIndexOfCommandId(IDC_CONTENT_CONTEXT_COPY).value();
-  std::u16string label = menu.menu_model().GetLabelAt(index);
-  EXPECT_EQ(label, u"&Copy \x201CLong text exceeding twen\x2026\x201D");
-}
 
 TEST_F(RenderViewContextMenuMenuSimplificationTest, PasswordFieldRestricted) {
   content::ContextMenuParams params;

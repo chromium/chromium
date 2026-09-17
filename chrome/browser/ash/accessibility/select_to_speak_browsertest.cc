@@ -888,27 +888,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
   sm_.Replay();
 }
 
-class SelectToSpeakContextMenuTest
-    : public SelectToSpeakTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  SelectToSpeakContextMenuTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          ::features::kMenuSimplification);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          ::features::kMenuSimplification);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, SelectToSpeakContextMenuTest, ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(SelectToSpeakContextMenuTest,
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
                        ReadsSelectedTextFromContextMenuClick) {
   std::string text = "This is some selected text";
   LoadURLAndSelectToSpeak(base::StringPrintf(
@@ -928,25 +908,9 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakContextMenuTest,
   generator_->PressRightButton();
   generator_->ReleaseRightButton();
 
-  // Maximum length of the elided text on the render view menu item.
-  const int max_string_length = 25;
-
-  // Wait for the Select to Speak menu item to be shown,
+  // Wait for the copy context menu item to be shown,
   // this means the menu is displayed.
-  // Truncate the selected text so that it matches what is shown on the render
-  // view menu item.
-  std::string elided_text = text;
-  if (GetParam() && elided_text.length() > max_string_length) {
-    elided_text = elided_text.substr(0, max_string_length - 1) + "\u2026";
-  }
-  std::string copy_name =
-      GetParam()
-          ? base::UTF16ToUTF8(gfx::RemoveAccelerator(
-                l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_COPY_SELECTION,
-                                           base::UTF8ToUTF16(elided_text)))) +
-                " Ctrl+C"
-          : "Copy Ctrl+C";
-  automation_test_utils_->GetNodeBoundsInRoot(copy_name, "menuItem");
+  automation_test_utils_->GetNodeBoundsInRoot("Copy Ctrl+C", "menuItem");
   ASSERT_TRUE(automation_test_utils_->NodeExistsNoWait(name, "menuItem"));
 
   // Click the Select to Speak menu item.

@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
@@ -40,6 +42,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/text_elider.h"
 
 using shared_highlighting::LinkGenerationError;
 using shared_highlighting::LinkGenerationReadyStatus;
@@ -128,9 +131,15 @@ void LinkToTextMenuObserver::InitMenu(
   // `annotation_type_.has_value()` are true. Consequently, a context menu for
   // new text selection is created.
   if (open_from_new_selection_) {
-    proxy_->AddMenuItem(
-        IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
-        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
+    selected_text_ = params.selection_text;
+    base::TrimWhitespace(selected_text_, base::TRIM_ALL, &selected_text_);
+    if (features::IsMenuSimplificationEnabled()) {
+      selected_text_ =
+          gfx::TruncateString(selected_text_, 25, gfx::CHARACTER_BREAK);
+      base::TrimWhitespace(selected_text_, base::TRIM_ALL, &selected_text_);
+    }
+    proxy_->AddMenuItem(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
+                        GetCopyLinkToTextLabel());
     RequestLinkGeneration();
   } else if (annotation_type_.has_value()) {
     switch (annotation_type_.value()) {
@@ -222,12 +231,10 @@ void LinkToTextMenuObserver::OnRequestLinkGenerationCompleted(
   }
 
   // Enable the menu option.
-
   generated_link_ =
       shared_highlighting::AppendSelectors(url_, {selector}).spec();
-  proxy_->UpdateMenuItem(
-      IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, true, false,
-      l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
+  proxy_->UpdateMenuItem(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, true, false,
+                         GetCopyLinkToTextLabel());
 
   // Useful only for testing to be notified when generation is complete.
   auto* cb = GetGenerationCompleteCallbackForTesting();
@@ -438,4 +445,12 @@ void LinkToTextMenuObserver::CopyTextToClipboard(const std::string& text) {
   CHECK(rfh);
 
   enterprise_data_protection::CopyTextToClipboard(rfh, base::UTF8ToUTF16(text));
+}
+
+std::u16string LinkToTextMenuObserver::GetCopyLinkToTextLabel() const {
+  if (features::IsMenuSimplificationEnabled() && !selected_text_.empty()) {
+    return l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT_V2,
+                                      selected_text_);
+  }
+  return l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT);
 }
