@@ -15,12 +15,12 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
-#include "components/trusted_vault/standalone_trusted_vault_storage.h"
-#include "components/trusted_vault/test/fake_file_access.h"
+#include "components/trusted_vault/test/legacy_fake_file_access.h"
 #include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
@@ -70,16 +70,16 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
     // `storage_` which is destroyed before `recovery_factor_` below.
     recovery_factor_ = nullptr;
 
-    std::unique_ptr<FakeFileAccess> file_access =
-        std::make_unique<FakeFileAccess>();
+    std::unique_ptr<LegacyFakeFileAccess> file_access =
+        std::make_unique<LegacyFakeFileAccess>();
     if (file_access_) {
       // We only want to reset the recovery factor, not the underlying storage.
       file_access->SetStoredLocalTrustedVault(
           file_access_->GetStoredLocalTrustedVault());
     }
     file_access_ = file_access.get();
-    storage_ =
-        StandaloneTrustedVaultStorage::CreateForTesting(std::move(file_access));
+    storage_ = LegacyStandaloneTrustedVaultStorage::CreateForTesting(
+        std::move(file_access));
     storage_->ReadDataFromDisk();
     storage_->MutateUserVault(account_info.gaia, [](UserVault&) {});
 
@@ -101,9 +101,9 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
     return connection_.get();
   }
 
-  StandaloneTrustedVaultStorage* storage() { return storage_.get(); }
+  LegacyStandaloneTrustedVaultStorage* storage() { return storage_.get(); }
 
-  FakeFileAccess* file_access() { return file_access_; }
+  LegacyFakeFileAccess* file_access() { return file_access_; }
 
   PhysicalDeviceRecoveryFactor* recovery_factor() {
     return recovery_factor_.get();
@@ -196,8 +196,8 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
   }
 
  private:
-  std::unique_ptr<StandaloneTrustedVaultStorage> storage_ = nullptr;
-  raw_ptr<FakeFileAccess> file_access_ = nullptr;
+  std::unique_ptr<LegacyStandaloneTrustedVaultStorage> storage_ = nullptr;
+  raw_ptr<LegacyFakeFileAccess> file_access_ = nullptr;
   std::unique_ptr<NiceMock<MockTrustedVaultThrottlingConnection>> connection_ =
       nullptr;
   std::unique_ptr<PhysicalDeviceRecoveryFactor> recovery_factor_;

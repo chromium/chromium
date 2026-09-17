@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/trusted_vault/standalone_trusted_vault_storage.h"
+#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 
 #include <cstdint>
 #include <memory>
@@ -93,15 +93,15 @@ trusted_vault_pb::LocalTrustedVault ReadLocalTrustedVaultFile(
   return data_proto;
 }
 
-class StandaloneTrustedVaultStorageTest : public testing::Test {
+class LegacyStandaloneTrustedVaultStorageTest : public testing::Test {
  public:
-  StandaloneTrustedVaultStorageTest()
+  LegacyStandaloneTrustedVaultStorageTest()
       : base_path_(CreateUniqueTempDir(&temp_dir_)),
-        storage_(std::make_unique<StandaloneTrustedVaultStorage>(
+        storage_(std::make_unique<LegacyStandaloneTrustedVaultStorage>(
             base_path(),
             security_domain_id())) {}
 
-  ~StandaloneTrustedVaultStorageTest() override = default;
+  ~LegacyStandaloneTrustedVaultStorageTest() override = default;
 
   SecurityDomainId security_domain_id() const {
     return SecurityDomainId::kChromeSync;
@@ -120,15 +120,16 @@ class StandaloneTrustedVaultStorageTest : public testing::Test {
         base::FilePath(FILE_PATH_LITERAL("trusted_vault.pb")));
   }
 
-  StandaloneTrustedVaultStorage* storage() { return storage_.get(); }
+  LegacyStandaloneTrustedVaultStorage* storage() { return storage_.get(); }
 
  private:
   base::ScopedTempDir temp_dir_;
   const base::FilePath base_path_;
-  std::unique_ptr<StandaloneTrustedVaultStorage> storage_;
+  std::unique_ptr<LegacyStandaloneTrustedVaultStorage> storage_;
 };
 
-TEST_F(StandaloneTrustedVaultStorageTest, ShouldRecordNotFoundWhenReadingFile) {
+TEST_F(LegacyStandaloneTrustedVaultStorageTest,
+       ShouldRecordNotFoundWhenReadingFile) {
   base::HistogramTester histogram_tester;
   storage()->ReadDataFromDisk();
   histogram_tester.ExpectUniqueSample(
@@ -137,7 +138,7 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldRecordNotFoundWhenReadingFile) {
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(StandaloneTrustedVaultStorageTest,
+TEST_F(LegacyStandaloneTrustedVaultStorageTest,
        ShouldRecordMD5DigestMismatchWhenReadingFile) {
   trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
   file_proto.set_md5_digest_hex_string("corrupted_md5_digest");
@@ -151,7 +152,7 @@ TEST_F(StandaloneTrustedVaultStorageTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(StandaloneTrustedVaultStorageTest,
+TEST_F(LegacyStandaloneTrustedVaultStorageTest,
        ShouldRecordFileProtoDeserializationFailedWhenReadingFile) {
   ASSERT_TRUE(base::WriteFile(file_path(), "corrupted_proto"));
 
@@ -164,7 +165,7 @@ TEST_F(StandaloneTrustedVaultStorageTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(StandaloneTrustedVaultStorageTest,
+TEST_F(LegacyStandaloneTrustedVaultStorageTest,
        ShouldRecordDataProtoDeserializationFailedWhenReadingFile) {
   const std::string kCorruptedSerializedDataProto = "corrupted_proto";
   trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
@@ -182,7 +183,7 @@ TEST_F(StandaloneTrustedVaultStorageTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(StandaloneTrustedVaultStorageTest, ShouldReadAndFindUserKeys) {
+TEST_F(LegacyStandaloneTrustedVaultStorageTest, ShouldReadAndFindUserKeys) {
   const GaiaId kGaiaId1("user1");
   const GaiaId kGaiaId2("user2");
   const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
@@ -216,7 +217,7 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldReadAndFindUserKeys) {
               ElementsAre(KeyMaterialEq(kKey3), KeyMaterialEq(kKey4)));
 }
 
-TEST_F(StandaloneTrustedVaultStorageTest, ShouldAddAndStoreUserKeys) {
+TEST_F(LegacyStandaloneTrustedVaultStorageTest, ShouldAddAndStoreUserKeys) {
   const GaiaId kGaiaId1("user1");
   const GaiaId kGaiaId2("user2");
   const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
@@ -251,7 +252,7 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldAddAndStoreUserKeys) {
   EXPECT_THAT(proto.user(1).last_vault_key_version(), Eq(9));
 }
 
-TEST_F(StandaloneTrustedVaultStorageTest, ShouldRemoveUser) {
+TEST_F(LegacyStandaloneTrustedVaultStorageTest, ShouldRemoveUser) {
   const GaiaId kGaiaId1("user1");
   const GaiaId kGaiaId2("user2");
   const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
@@ -285,7 +286,7 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldRemoveUser) {
               ElementsAre(KeyMaterialEq(kKey1), KeyMaterialEq(kKey2)));
 }
 
-TEST_F(StandaloneTrustedVaultStorageTest,
+TEST_F(LegacyStandaloneTrustedVaultStorageTest,
        ShouldUpgradeToVersion1AndFixMissingConstantKey) {
   const char gaia_id_1[] = "user1";
   const char gaia_id_2[] = "user2";
@@ -325,7 +326,7 @@ TEST_F(StandaloneTrustedVaultStorageTest,
   EXPECT_THAT(proto.data_version(), Ge(1));
 }
 
-TEST_F(StandaloneTrustedVaultStorageTest,
+TEST_F(LegacyStandaloneTrustedVaultStorageTest,
        ShouldUpgradeAllUsersDataToVersion2AndResetKeysAreStale) {
   const char gaia_id_1[] = "user1";
   const char gaia_id_2[] = "user2";
@@ -351,7 +352,7 @@ TEST_F(StandaloneTrustedVaultStorageTest,
   EXPECT_THAT(new_data.data_version(), Ge(2));
 }
 
-TEST_F(StandaloneTrustedVaultStorageTest, ShouldUpgradeToVersion3) {
+TEST_F(LegacyStandaloneTrustedVaultStorageTest, ShouldUpgradeToVersion3) {
   const char gaia_id_1[] = "user1";
   const char gaia_id_2[] = "user2";
   const auto key_pair = SecureBoxKeyPair::GenerateRandom();
@@ -398,7 +399,7 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldUpgradeToVersion3) {
   EXPECT_THAT(new_data.data_version(), Ge(3));
 }
 
-TEST_F(StandaloneTrustedVaultStorageTest, ShouldUpgradeToVersion4) {
+TEST_F(LegacyStandaloneTrustedVaultStorageTest, ShouldUpgradeToVersion4) {
   const char gaia_id_1[] = "user1";
   const char gaia_id_2[] = "user2";
   const auto key_pair = SecureBoxKeyPair::GenerateRandom();
@@ -446,14 +447,14 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldUpgradeToVersion4) {
 
 // This test ensures that migration logic in ReadDataFromDisk() doesn't create
 // new file if there wasn't any.
-TEST_F(StandaloneTrustedVaultStorageTest, ShouldNotWriteEmptyData) {
+TEST_F(LegacyStandaloneTrustedVaultStorageTest, ShouldNotWriteEmptyData) {
   storage()->ReadDataFromDisk();
   EXPECT_FALSE(base::PathExists(file_path()));
 }
 
 // This test checks that a corrupted SHA256 value is detected and returns the
 // correct error code.
-TEST_F(StandaloneTrustedVaultStorageTest,
+TEST_F(LegacyStandaloneTrustedVaultStorageTest,
        ShouldRecordSHA256DigestMismatchWhenReadingFile) {
   trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
   // Set MD5 hash as normal since it takes precedence.
@@ -470,7 +471,7 @@ TEST_F(StandaloneTrustedVaultStorageTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(StandaloneTrustedVaultStorageTest, GetUserVault) {
+TEST_F(LegacyStandaloneTrustedVaultStorageTest, GetUserVault) {
   const GaiaId kGaiaId("user1");
   storage()->MutateUserVault(kGaiaId, [](UserVault&) {});
 
@@ -478,7 +479,7 @@ TEST_F(StandaloneTrustedVaultStorageTest, GetUserVault) {
   EXPECT_EQ(user_vault.gaia_id(), kGaiaId.ToString());
 }
 
-TEST_F(StandaloneTrustedVaultStorageTest, MutateUserVault) {
+TEST_F(LegacyStandaloneTrustedVaultStorageTest, MutateUserVault) {
   const GaiaId kGaiaId("user1");
   const UserVault& mutated_vault = storage()->MutateUserVault(
       kGaiaId,
@@ -496,10 +497,10 @@ TEST_F(StandaloneTrustedVaultStorageTest, MutateUserVault) {
 
 // This test checks that the `kEnableTrustedVaultSHA256` flag disables new
 // SHA256 writes.
-class StandaloneTrustedVaultStorageDisableSHA256Test
-    : public StandaloneTrustedVaultStorageTest {
+class LegacyStandaloneTrustedVaultStorageDisableSHA256Test
+    : public LegacyStandaloneTrustedVaultStorageTest {
  public:
-  StandaloneTrustedVaultStorageDisableSHA256Test() {
+  LegacyStandaloneTrustedVaultStorageDisableSHA256Test() {
     feature_list_.InitAndDisableFeature(kEnableTrustedVaultSHA256);
   }
 
@@ -509,7 +510,7 @@ class StandaloneTrustedVaultStorageDisableSHA256Test
 
 // Test that files written with corrupted SHA256 can still be read when the
 // feature is disabled.
-TEST_F(StandaloneTrustedVaultStorageDisableSHA256Test, DisablingSHA256) {
+TEST_F(LegacyStandaloneTrustedVaultStorageDisableSHA256Test, DisablingSHA256) {
   trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
   // Set MD5 hash as normal since it takes precedence.
   file_proto.set_md5_digest_hex_string(

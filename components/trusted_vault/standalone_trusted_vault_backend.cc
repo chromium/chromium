@@ -23,6 +23,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/trusted_vault/features.h"
+#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/physical_device_recovery_factor.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
@@ -30,7 +31,6 @@
 #include "components/trusted_vault/proto_time_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
-#include "components/trusted_vault/standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
@@ -139,7 +139,7 @@ class LocalRecoveryFactorsFactoryImpl
 
   std::vector<std::unique_ptr<LocalRecoveryFactor>> CreateLocalRecoveryFactors(
       SecurityDomainId security_domain_id,
-      StandaloneTrustedVaultStorage* storage,
+      LegacyStandaloneTrustedVaultStorage* storage,
       TrustedVaultThrottlingConnection* connection,
       const CoreAccountInfo& primary_account) override {
     std::vector<std::unique_ptr<LocalRecoveryFactor>> local_recovery_factors;
@@ -215,7 +215,7 @@ StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
     const std::string& icloud_keychain_access_group_prefix,
 #endif
     SecurityDomainId security_domain_id,
-    std::unique_ptr<StandaloneTrustedVaultStorage> storage,
+    std::unique_ptr<LegacyStandaloneTrustedVaultStorage> storage,
     std::unique_ptr<Delegate> delegate,
     std::unique_ptr<TrustedVaultConnection> connection)
     : security_domain_id_(security_domain_id),
@@ -239,7 +239,7 @@ StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
 
 StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
     SecurityDomainId security_domain_id,
-    std::unique_ptr<StandaloneTrustedVaultStorage> storage,
+    std::unique_ptr<LegacyStandaloneTrustedVaultStorage> storage,
     std::unique_ptr<Delegate> delegate,
     std::unique_ptr<TrustedVaultThrottlingConnection> connection,
     std::unique_ptr<LocalRecoveryFactorsFactory> local_recovery_factors_factory)
@@ -256,7 +256,7 @@ StandaloneTrustedVaultBackend::~StandaloneTrustedVaultBackend() = default;
 scoped_refptr<StandaloneTrustedVaultBackend>
 StandaloneTrustedVaultBackend::CreateForTesting(
     SecurityDomainId security_domain_id,
-    std::unique_ptr<StandaloneTrustedVaultStorage> storage,
+    std::unique_ptr<LegacyStandaloneTrustedVaultStorage> storage,
     std::unique_ptr<StandaloneTrustedVaultBackend::Delegate> delegate,
     std::unique_ptr<TrustedVaultThrottlingConnection> connection,
     std::unique_ptr<LocalRecoveryFactorsFactory>
@@ -568,7 +568,8 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
       connection_->RegisterAuthenticationFactor(
           *primary_account_,
           GetTrustedVaultKeysWithVersions(
-              StandaloneTrustedVaultStorage::GetAllVaultKeys(per_user_vault),
+              LegacyStandaloneTrustedVaultStorage::GetAllVaultKeys(
+                  per_user_vault),
               per_user_vault.last_vault_key_version()),
           *imported_public_key,
           UnspecifiedAuthenticationFactorType(method_type_hint),
@@ -842,7 +843,7 @@ void StandaloneTrustedVaultBackend::FulfillFetchKeys(
   std::vector<std::vector<uint8_t>> vault_keys;
   if (per_user_vault) {
     vault_keys =
-        StandaloneTrustedVaultStorage::GetAllVaultKeys(*per_user_vault);
+        LegacyStandaloneTrustedVaultStorage::GetAllVaultKeys(*per_user_vault);
     std::erase_if(vault_keys, [](const std::vector<uint8_t>& key) {
       return key == GetConstantTrustedVaultKey();
     });

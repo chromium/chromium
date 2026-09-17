@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/trusted_vault/standalone_trusted_vault_storage.h"
+#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 
 #include <memory>
 
@@ -206,10 +206,11 @@ void WriteDataToDiskImpl(const trusted_vault_pb::LocalTrustedVault& data,
                             success);
 }
 
-// Default file access logic StandaloneTrustedVaultStorage.
+// Default file access logic LegacyStandaloneTrustedVaultStorage.
 // Responsible for mapping per user / per security domain storage to files,
 // and required data migrations.
-class DefaultFileAccess : public StandaloneTrustedVaultStorage::FileAccess {
+class DefaultFileAccess
+    : public LegacyStandaloneTrustedVaultStorage::FileAccess {
  public:
   DefaultFileAccess(const base::FilePath& base_dir,
                     SecurityDomainId security_domain_id)
@@ -263,49 +264,50 @@ class DefaultFileAccess : public StandaloneTrustedVaultStorage::FileAccess {
 
 }  // namespace
 
-std::unique_ptr<StandaloneTrustedVaultStorage>
-StandaloneTrustedVaultStorage::CreateForTesting(
+std::unique_ptr<LegacyStandaloneTrustedVaultStorage>
+LegacyStandaloneTrustedVaultStorage::CreateForTesting(
     std::unique_ptr<FileAccess> file_access) {
   return base::WrapUnique(
-      new StandaloneTrustedVaultStorage(std::move(file_access)));
+      new LegacyStandaloneTrustedVaultStorage(std::move(file_access)));
 }
 
-StandaloneTrustedVaultStorage::StandaloneTrustedVaultStorage(
+LegacyStandaloneTrustedVaultStorage::LegacyStandaloneTrustedVaultStorage(
     const base::FilePath& base_dir,
     SecurityDomainId security_domain_id)
     : file_access_(
           std::make_unique<DefaultFileAccess>(base_dir, security_domain_id)) {}
 
-StandaloneTrustedVaultStorage::StandaloneTrustedVaultStorage(
+LegacyStandaloneTrustedVaultStorage::LegacyStandaloneTrustedVaultStorage(
     std::unique_ptr<FileAccess> file_access)
     : file_access_(std::move(file_access)) {
   CHECK(file_access_);
 }
 
-StandaloneTrustedVaultStorage::~StandaloneTrustedVaultStorage() = default;
+LegacyStandaloneTrustedVaultStorage::~LegacyStandaloneTrustedVaultStorage() =
+    default;
 
-void StandaloneTrustedVaultStorage::ReadDataFromDisk() {
+void LegacyStandaloneTrustedVaultStorage::ReadDataFromDisk() {
   data_ = file_access_->ReadFromDisk();
 }
 
-const UserVault* StandaloneTrustedVaultStorage::AddUserVault(
+const UserVault* LegacyStandaloneTrustedVaultStorage::AddUserVault(
     const GaiaId& gaia_id) {
   return AddUserVaultImpl(gaia_id);
 }
 
-const UserVault* StandaloneTrustedVaultStorage::FindUserVault(
+const UserVault* LegacyStandaloneTrustedVaultStorage::FindUserVault(
     const GaiaId& gaia_id) const {
   return FindUserVaultImpl(gaia_id);
 }
 
-const UserVault& StandaloneTrustedVaultStorage::GetUserVault(
+const UserVault& LegacyStandaloneTrustedVaultStorage::GetUserVault(
     const GaiaId& gaia_id) const {
   const UserVault* user_vault = FindUserVault(gaia_id);
   CHECK(user_vault);
   return *user_vault;
 }
 
-const UserVault& StandaloneTrustedVaultStorage::MutateUserVault(
+const UserVault& LegacyStandaloneTrustedVaultStorage::MutateUserVault(
     const GaiaId& gaia_id,
     base::FunctionRef<void(UserVault&)> mutator) {
   UserVault* user_vault = FindUserVaultImpl(gaia_id);
@@ -317,7 +319,7 @@ const UserVault& StandaloneTrustedVaultStorage::MutateUserVault(
   return *user_vault;
 }
 
-void StandaloneTrustedVaultStorage::RemoveUserVaults(
+void LegacyStandaloneTrustedVaultStorage::RemoveUserVaults(
     base::FunctionRef<bool(const UserVault&)> predicate) {
   auto* users = data_.mutable_user();
   auto removed = std::ranges::remove_if(*users, predicate);
@@ -328,7 +330,7 @@ void StandaloneTrustedVaultStorage::RemoveUserVaults(
   file_access_->WriteToDisk(data_);
 }
 
-UserVault* StandaloneTrustedVaultStorage::AddUserVaultImpl(
+UserVault* LegacyStandaloneTrustedVaultStorage::AddUserVaultImpl(
     const GaiaId& gaia_id) {
   CHECK(FindUserVault(gaia_id) == nullptr);
 
@@ -337,7 +339,7 @@ UserVault* StandaloneTrustedVaultStorage::AddUserVaultImpl(
   return user_vault;
 }
 
-UserVault* StandaloneTrustedVaultStorage::FindUserVaultImpl(
+UserVault* LegacyStandaloneTrustedVaultStorage::FindUserVaultImpl(
     const GaiaId& gaia_id) {
   for (int i = 0; i < data_.user_size(); ++i) {
     if (GaiaId(data_.user(i).gaia_id()) == gaia_id) {
@@ -347,7 +349,7 @@ UserVault* StandaloneTrustedVaultStorage::FindUserVaultImpl(
   return nullptr;
 }
 
-const UserVault* StandaloneTrustedVaultStorage::FindUserVaultImpl(
+const UserVault* LegacyStandaloneTrustedVaultStorage::FindUserVaultImpl(
     const GaiaId& gaia_id) const {
   for (int i = 0; i < data_.user_size(); ++i) {
     if (GaiaId(data_.user(i).gaia_id()) == gaia_id) {
@@ -358,12 +360,12 @@ const UserVault* StandaloneTrustedVaultStorage::FindUserVaultImpl(
 }
 
 const LocalDeviceRegistrationInfo&
-StandaloneTrustedVaultStorage::GetLocalDeviceRegistrationInfo(
+LegacyStandaloneTrustedVaultStorage::GetLocalDeviceRegistrationInfo(
     const GaiaId& gaia_id) const {
   return GetUserVault(gaia_id).local_device_registration_info();
 }
 
-void StandaloneTrustedVaultStorage::MutateLocalDeviceRegistrationInfo(
+void LegacyStandaloneTrustedVaultStorage::MutateLocalDeviceRegistrationInfo(
     const GaiaId& gaia_id,
     base::FunctionRef<void(LocalDeviceRegistrationInfo&)> mutator) {
   MutateUserVault(gaia_id, [&](UserVault& user_vault) {
@@ -372,12 +374,12 @@ void StandaloneTrustedVaultStorage::MutateLocalDeviceRegistrationInfo(
 }
 
 const ICloudKeychainRegistrationInfo&
-StandaloneTrustedVaultStorage::GetICloudKeychainRegistrationInfo(
+LegacyStandaloneTrustedVaultStorage::GetICloudKeychainRegistrationInfo(
     const GaiaId& gaia_id) const {
   return GetUserVault(gaia_id).icloud_keychain_registration_info();
 }
 
-void StandaloneTrustedVaultStorage::MutateICloudKeychainRegistrationInfo(
+void LegacyStandaloneTrustedVaultStorage::MutateICloudKeychainRegistrationInfo(
     const GaiaId& gaia_id,
     base::FunctionRef<void(ICloudKeychainRegistrationInfo&)> mutator) {
   MutateUserVault(gaia_id, [&](UserVault& user_vault) {
@@ -385,14 +387,14 @@ void StandaloneTrustedVaultStorage::MutateICloudKeychainRegistrationInfo(
   });
 }
 
-bool StandaloneTrustedVaultStorage::
+bool LegacyStandaloneTrustedVaultStorage::
     GetLastRegistrationReturnedLocalDataObsolete(const GaiaId& gaia_id) const {
   const UserVault* user_vault = FindUserVault(gaia_id);
   return user_vault &&
          user_vault->last_registration_returned_local_data_obsolete();
 }
 
-void StandaloneTrustedVaultStorage::
+void LegacyStandaloneTrustedVaultStorage::
     SetLastRegistrationReturnedLocalDataObsolete(const GaiaId& gaia_id,
                                                  bool obsolete) {
   MutateUserVault(gaia_id, [&](UserVault& user_vault) {
@@ -400,20 +402,20 @@ void StandaloneTrustedVaultStorage::
   });
 }
 
-std::vector<std::vector<uint8_t>> StandaloneTrustedVaultStorage::GetVaultKeys(
-    const GaiaId& gaia_id) const {
+std::vector<std::vector<uint8_t>>
+LegacyStandaloneTrustedVaultStorage::GetVaultKeys(const GaiaId& gaia_id) const {
   const UserVault* user_vault = FindUserVault(gaia_id);
   return user_vault ? GetAllVaultKeys(*user_vault)
                     : std::vector<std::vector<uint8_t>>();
 }
 
-int StandaloneTrustedVaultStorage::GetLastKeyVersion(
+int LegacyStandaloneTrustedVaultStorage::GetLastKeyVersion(
     const GaiaId& gaia_id) const {
   const UserVault* user_vault = FindUserVault(gaia_id);
   return user_vault ? user_vault->last_vault_key_version() : 0;
 }
 
-void StandaloneTrustedVaultStorage::SetVaultKeys(
+void LegacyStandaloneTrustedVaultStorage::SetVaultKeys(
     const GaiaId& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {
@@ -428,13 +430,13 @@ void StandaloneTrustedVaultStorage::SetVaultKeys(
   });
 }
 
-bool StandaloneTrustedVaultStorage::GetKeysMarkedAsStaleByConsumer(
+bool LegacyStandaloneTrustedVaultStorage::GetKeysMarkedAsStaleByConsumer(
     const GaiaId& gaia_id) const {
   const UserVault* user_vault = FindUserVault(gaia_id);
   return user_vault && user_vault->keys_marked_as_stale_by_consumer();
 }
 
-void StandaloneTrustedVaultStorage::SetKeysMarkedAsStaleByConsumer(
+void LegacyStandaloneTrustedVaultStorage::SetKeysMarkedAsStaleByConsumer(
     const GaiaId& gaia_id,
     bool stale) {
   MutateUserVault(gaia_id, [&](UserVault& user_vault) {
@@ -442,14 +444,14 @@ void StandaloneTrustedVaultStorage::SetKeysMarkedAsStaleByConsumer(
   });
 }
 
-int64_t StandaloneTrustedVaultStorage::GetLastFailedRequestMillis(
+int64_t LegacyStandaloneTrustedVaultStorage::GetLastFailedRequestMillis(
     const GaiaId& gaia_id) const {
   const UserVault* user_vault = FindUserVault(gaia_id);
   return user_vault ? user_vault->last_failed_request_millis_since_unix_epoch()
                     : 0;
 }
 
-void StandaloneTrustedVaultStorage::SetLastFailedRequestMillis(
+void LegacyStandaloneTrustedVaultStorage::SetLastFailedRequestMillis(
     const GaiaId& gaia_id,
     int64_t last_failed_request_millis) {
   MutateUserVault(gaia_id, [&](UserVault& user_vault) {
@@ -458,7 +460,7 @@ void StandaloneTrustedVaultStorage::SetLastFailedRequestMillis(
   });
 }
 
-bool StandaloneTrustedVaultStorage::HasNonConstantKey(
+bool LegacyStandaloneTrustedVaultStorage::HasNonConstantKey(
     const GaiaId& gaia_id) const {
   const UserVault* user_vault = FindUserVault(gaia_id);
   if (!user_vault) {
@@ -478,7 +480,7 @@ bool StandaloneTrustedVaultStorage::HasNonConstantKey(
 
 // static
 std::vector<std::vector<uint8_t>>
-StandaloneTrustedVaultStorage::GetAllVaultKeys(
+LegacyStandaloneTrustedVaultStorage::GetAllVaultKeys(
     const UserVault& per_user_vault) {
   std::vector<std::vector<uint8_t>> vault_keys;
   for (const trusted_vault_pb::LocalTrustedVaultKey& key :

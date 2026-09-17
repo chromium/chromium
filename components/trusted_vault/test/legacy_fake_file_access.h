@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TRUSTED_VAULT_TEST_FAKE_FILE_ACCESS_H_
-#define COMPONENTS_TRUSTED_VAULT_TEST_FAKE_FILE_ACCESS_H_
+#ifndef COMPONENTS_TRUSTED_VAULT_TEST_LEGACY_FAKE_FILE_ACCESS_H_
+#define COMPONENTS_TRUSTED_VAULT_TEST_LEGACY_FAKE_FILE_ACCESS_H_
 
-#include "components/trusted_vault/standalone_trusted_vault_storage.h"
+#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 
 namespace trusted_vault {
 
-class FakeFileAccess : public StandaloneTrustedVaultStorage::FileAccess {
+class LegacyFakeFileAccess
+    : public LegacyStandaloneTrustedVaultStorage::FileAccess {
  public:
-  FakeFileAccess();
-  FakeFileAccess(const FakeFileAccess& other) = delete;
-  FakeFileAccess& operator=(const FakeFileAccess& other) = delete;
-  ~FakeFileAccess() override;
+  LegacyFakeFileAccess();
+  LegacyFakeFileAccess(const LegacyFakeFileAccess& other) = delete;
+  LegacyFakeFileAccess& operator=(const LegacyFakeFileAccess& other) = delete;
+  ~LegacyFakeFileAccess() override;
 
   trusted_vault_pb::LocalTrustedVault ReadFromDisk() override;
   void WriteToDisk(const trusted_vault_pb::LocalTrustedVault& data) override;
@@ -29,4 +30,4 @@ class FakeFileAccess : public StandaloneTrustedVaultStorage::FileAccess {
 
 }  // namespace trusted_vault
 
-#endif  // COMPONENTS_TRUSTED_VAULT_TEST_FAKE_FILE_ACCESS_H_
+#endif  // COMPONENTS_TRUSTED_VAULT_TEST_LEGACY_FAKE_FILE_ACCESS_H_

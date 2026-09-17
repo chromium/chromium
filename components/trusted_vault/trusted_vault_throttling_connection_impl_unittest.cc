@@ -8,9 +8,9 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/simple_test_clock.h"
+#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/local_recovery_factor.h"
-#include "components/trusted_vault/standalone_trusted_vault_storage.h"
-#include "components/trusted_vault/test/fake_file_access.h"
+#include "components/trusted_vault/test/legacy_fake_file_access.h"
 #include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,16 +39,16 @@ class TrustedVaultThrottlingConnectionImplTest : public testing::Test {
     delegate_ = nullptr;
     throttling_connection_ = nullptr;
 
-    std::unique_ptr<FakeFileAccess> file_access =
-        std::make_unique<FakeFileAccess>();
+    std::unique_ptr<LegacyFakeFileAccess> file_access =
+        std::make_unique<LegacyFakeFileAccess>();
     if (file_access_) {
       // Retain the stored state.
       file_access->SetStoredLocalTrustedVault(
           file_access_->GetStoredLocalTrustedVault());
     }
     file_access_ = file_access.get();
-    storage_ =
-        StandaloneTrustedVaultStorage::CreateForTesting(std::move(file_access));
+    storage_ = LegacyStandaloneTrustedVaultStorage::CreateForTesting(
+        std::move(file_access));
     storage_->ReadDataFromDisk();
     storage_->MutateUserVault(account_info().gaia, [](UserVault&) {});
 
@@ -79,10 +79,10 @@ class TrustedVaultThrottlingConnectionImplTest : public testing::Test {
 
  private:
   base::SimpleTestClock clock_;
-  std::unique_ptr<StandaloneTrustedVaultStorage> storage_;
+  std::unique_ptr<LegacyStandaloneTrustedVaultStorage> storage_;
   std::unique_ptr<TrustedVaultThrottlingConnectionImpl> throttling_connection_;
   raw_ptr<NiceMock<MockTrustedVaultThrottlingConnection>> delegate_ = nullptr;
-  raw_ptr<FakeFileAccess> file_access_ = nullptr;
+  raw_ptr<LegacyFakeFileAccess> file_access_ = nullptr;
 };
 
 TEST_F(TrustedVaultThrottlingConnectionImplTest, ShouldNotThrottleByDefault) {

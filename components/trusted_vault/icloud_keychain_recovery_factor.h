@@ -9,8 +9,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/local_recovery_factor.h"
-#include "components/trusted_vault/standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_throttling_connection.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -28,8 +28,8 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
   ICloudKeychainRecoveryFactor(
       const std::string& icloud_keychain_access_group_prefix,
       const SecurityDomainId security_domain_id,
-      ICloudKeychainStorage* storage,
-      KeyStorage* key_storage,
+      LegacyICloudKeychainStorage* storage,
+      LegacyKeyStorage* key_storage,
       TrustedVaultThrottlingConnection* connection,
       CoreAccountInfo primary_account);
   ICloudKeychainRecoveryFactor(const ICloudKeychainRecoveryFactor&) = delete;
@@ -74,8 +74,8 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
 
   const std::string icloud_keychain_access_group_;
   const SecurityDomainId security_domain_id_;
-  const raw_ptr<ICloudKeychainStorage> storage_;
-  const raw_ptr<KeyStorage> key_storage_;
+  const raw_ptr<LegacyICloudKeychainStorage> storage_;
+  const raw_ptr<LegacyKeyStorage> key_storage_;
   const raw_ptr<TrustedVaultThrottlingConnection> connection_;
   const CoreAccountInfo primary_account_;
 

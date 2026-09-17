@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TRUSTED_VAULT_STANDALONE_TRUSTED_VAULT_STORAGE_H_
-#define COMPONENTS_TRUSTED_VAULT_STANDALONE_TRUSTED_VAULT_STORAGE_H_
+#ifndef COMPONENTS_TRUSTED_VAULT_LEGACY_STANDALONE_TRUSTED_VAULT_STORAGE_H_
+#define COMPONENTS_TRUSTED_VAULT_LEGACY_STANDALONE_TRUSTED_VAULT_STORAGE_H_
 
 #include <memory>
 #include <vector>
@@ -24,9 +24,9 @@ using ICloudKeychainRegistrationInfo =
     trusted_vault_pb::ICloudKeychainRegistrationInfo;
 
 // Storage interface for PhysicalDeviceRecoveryFactor.
-class PhysicalDeviceStorage {
+class LegacyPhysicalDeviceStorage {
  public:
-  virtual ~PhysicalDeviceStorage() = default;
+  virtual ~LegacyPhysicalDeviceStorage() = default;
 
   // Finds and returns a reference to the local device registration info for
   // `gaia_id`. Triggers a CHECK failure if the vault does not exist. The
@@ -55,9 +55,9 @@ class PhysicalDeviceStorage {
 };
 
 // Storage interface for ICloudKeychainRecoveryFactor.
-class ICloudKeychainStorage {
+class LegacyICloudKeychainStorage {
  public:
-  virtual ~ICloudKeychainStorage() = default;
+  virtual ~LegacyICloudKeychainStorage() = default;
 
   // Finds and returns a reference to the iCloud Keychain registration info for
   // `gaia_id`. Triggers a CHECK failure if the vault does not exist. The
@@ -86,9 +86,9 @@ class ICloudKeychainStorage {
 };
 
 // Storage interface for vault key access and updates.
-class KeyStorage {
+class LegacyKeyStorage {
  public:
-  virtual ~KeyStorage() = default;
+  virtual ~LegacyKeyStorage() = default;
 
   // Finds and returns all vault keys for `gaia_id`. Returns an empty vector if
   // the user vault does not exist.
@@ -124,9 +124,9 @@ class KeyStorage {
 };
 
 // Storage interface for connection request throttling state.
-class ConnectionThrottlingStorage {
+class LegacyConnectionThrottlingStorage {
  public:
-  virtual ~ConnectionThrottlingStorage() = default;
+  virtual ~LegacyConnectionThrottlingStorage() = default;
 
   // Returns the time (in milliseconds since UNIX epoch) at which last failed
   // request was sent for `gaia_id`. Returns 0 if no failed requests were
@@ -142,10 +142,11 @@ class ConnectionThrottlingStorage {
 };
 
 // Storage helper for StandaloneTrustedVaultBackend handling file operations.
-class StandaloneTrustedVaultStorage : public PhysicalDeviceStorage,
-                                      public ICloudKeychainStorage,
-                                      public KeyStorage,
-                                      public ConnectionThrottlingStorage {
+class LegacyStandaloneTrustedVaultStorage
+    : public LegacyPhysicalDeviceStorage,
+      public LegacyICloudKeychainStorage,
+      public LegacyKeyStorage,
+      public LegacyConnectionThrottlingStorage {
  public:
   // Interface for actual file access. Can be swapped with a fake for tests.
   class FileAccess {
@@ -161,16 +162,16 @@ class StandaloneTrustedVaultStorage : public PhysicalDeviceStorage,
   };
 
   // Create with non-default FileAccess. Only used for testing.
-  static std::unique_ptr<StandaloneTrustedVaultStorage> CreateForTesting(
+  static std::unique_ptr<LegacyStandaloneTrustedVaultStorage> CreateForTesting(
       std::unique_ptr<FileAccess> file_access);
 
-  StandaloneTrustedVaultStorage(const base::FilePath& base_dir,
-                                SecurityDomainId security_domain_id);
-  StandaloneTrustedVaultStorage(const StandaloneTrustedVaultStorage& other) =
-      delete;
-  StandaloneTrustedVaultStorage& operator=(
-      const StandaloneTrustedVaultStorage& other) = delete;
-  ~StandaloneTrustedVaultStorage() override;
+  LegacyStandaloneTrustedVaultStorage(const base::FilePath& base_dir,
+                                      SecurityDomainId security_domain_id);
+  LegacyStandaloneTrustedVaultStorage(
+      const LegacyStandaloneTrustedVaultStorage& other) = delete;
+  LegacyStandaloneTrustedVaultStorage& operator=(
+      const LegacyStandaloneTrustedVaultStorage& other) = delete;
+  ~LegacyStandaloneTrustedVaultStorage() override;
 
   // Restores state saved in storage, should be called before using the object.
   void ReadDataFromDisk();
@@ -235,7 +236,7 @@ class StandaloneTrustedVaultStorage : public PhysicalDeviceStorage,
                                       bool stale) override;
   bool HasNonConstantKey(const GaiaId& gaia_id) const override;
 
-  // ConnectionThrottlingStorage implementation:
+  // LegacyConnectionThrottlingStorage implementation:
   int64_t GetLastFailedRequestMillis(const GaiaId& gaia_id) const override;
   void SetLastFailedRequestMillis(const GaiaId& gaia_id,
                                   int64_t last_failed_request_millis) override;
@@ -245,7 +246,7 @@ class StandaloneTrustedVaultStorage : public PhysicalDeviceStorage,
       const UserVault& per_user_vault);
 
  private:
-  explicit StandaloneTrustedVaultStorage(
+  explicit LegacyStandaloneTrustedVaultStorage(
       std::unique_ptr<FileAccess> file_access);
 
   UserVault* AddUserVaultImpl(const GaiaId& gaia_id);
@@ -258,4 +259,4 @@ class StandaloneTrustedVaultStorage : public PhysicalDeviceStorage,
 
 }  // namespace trusted_vault
 
-#endif  // COMPONENTS_TRUSTED_VAULT_STANDALONE_TRUSTED_VAULT_STORAGE_H_
+#endif  // COMPONENTS_TRUSTED_VAULT_LEGACY_STANDALONE_TRUSTED_VAULT_STORAGE_H_

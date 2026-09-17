@@ -21,9 +21,9 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/trusted_vault/command_line_switches.h"
+#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/standalone_trusted_vault_backend.h"
-#include "components/trusted_vault/standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
 #include "components/trusted_vault/trusted_vault_connection_impl.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
@@ -276,8 +276,8 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
       icloud_keychain_access_group_prefix,
 #endif
       security_domain,
-      std::make_unique<StandaloneTrustedVaultStorage>(base_dir,
-                                                      security_domain),
+      std::make_unique<LegacyStandaloneTrustedVaultStorage>(base_dir,
+                                                            security_domain),
       std::make_unique<BackendDelegate>(base::BindPostTaskToCurrentDefault(
           base::BindRepeating(&StandaloneTrustedVaultClient::
                                   NotifyRecoverabilityDegradedChanged,

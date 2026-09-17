@@ -30,6 +30,8 @@ static_library("trusted_vault") {
       "download_keys_response_handler.h",
       "frontend_trusted_vault_connection.cc",
       "frontend_trusted_vault_connection.h",
+      "legacy_standalone_trusted_vault_storage.cc",
+      "legacy_standalone_trusted_vault_storage.h",
       "physical_device_recovery_factor.cc",
       "physical_device_recovery_factor.h",
       "proto_string_bytes_conversion.cc",
@@ -49,8 +51,6 @@ static_library("trusted_vault") {
       "standalone_trusted_vault_client.h",
       "standalone_trusted_vault_server_constants.cc",
       "standalone_trusted_vault_server_constants.h",
-      "standalone_trusted_vault_storage.cc",
-      "standalone_trusted_vault_storage.h",
       "trusted_vault_access_token_fetcher.h",
       "trusted_vault_access_token_fetcher_frontend.cc",
       "trusted_vault_access_token_fetcher_frontend.h",
@@ -98,6 +98,7 @@ if (!is_android && !is_ios) {
     testonly = true
     sources = [
       "download_keys_response_handler_unittest.cc",
+      "legacy_standalone_trusted_vault_storage_unittest.cc",
       "physical_device_recovery_factor_unittest.cc",
       "proto_string_bytes_conversion_unittest.cc",
       "proto_time_conversion_unittest.cc",
@@ -107,7 +108,6 @@ if (!is_android && !is_ios) {
       "standalone_trusted_vault_backend_unittest.cc",
       "standalone_trusted_vault_client_unittest.cc",
       "standalone_trusted_vault_server_constants_unittest.cc",
-      "standalone_trusted_vault_storage_unittest.cc",
       "trusted_vault_access_token_fetcher_frontend_unittest.cc",
       "trusted_vault_connection_impl_unittest.cc",
       "trusted_vault_crypto_unittest.cc",
@@ -174,12 +174,12 @@ static_library("test_support") {
 
   if (!is_android && !is_ios) {
     sources += [
-      "test/fake_file_access.cc",
-      "test/fake_file_access.h",
       "test/fake_security_domains_server.cc",
       "test/fake_security_domains_server.h",
       "test/fake_security_domains_url_loader_factory.cc",
       "test/fake_security_domains_url_loader_factory.h",
+      "test/legacy_fake_file_access.cc",
+      "test/legacy_fake_file_access.h",
       "test/mock_trusted_vault_throttling_connection.cc",
       "test/mock_trusted_vault_throttling_connection.h",
     ]

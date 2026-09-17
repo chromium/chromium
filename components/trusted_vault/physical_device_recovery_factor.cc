@@ -47,8 +47,8 @@ TrustedVaultDownloadKeysStatusForUMA GetDownloadKeysStatusForUMAFromResponse(
 
 PhysicalDeviceRecoveryFactor::PhysicalDeviceRecoveryFactor(
     SecurityDomainId security_domain_id,
-    PhysicalDeviceStorage* storage,
-    KeyStorage* key_storage,
+    LegacyPhysicalDeviceStorage* storage,
+    LegacyKeyStorage* key_storage,
     TrustedVaultThrottlingConnection* connection,
     CoreAccountInfo primary_account)
     : security_domain_id_(security_domain_id),

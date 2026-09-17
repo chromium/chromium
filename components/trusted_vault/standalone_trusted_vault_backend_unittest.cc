@@ -25,13 +25,13 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/trusted_vault/features.h"
+#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
-#include "components/trusted_vault/standalone_trusted_vault_storage.h"
-#include "components/trusted_vault/test/fake_file_access.h"
+#include "components/trusted_vault/test/legacy_fake_file_access.h"
 #include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
@@ -113,7 +113,7 @@ class MockDelegate : public StandaloneTrustedVaultBackend::Delegate {
 
 class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
  public:
-  FakeLocalRecoveryFactor(StandaloneTrustedVaultStorage* storage,
+  FakeLocalRecoveryFactor(LegacyStandaloneTrustedVaultStorage* storage,
                           TrustedVaultThrottlingConnection* connection,
                           CoreAccountInfo account)
       : storage_(storage), connection_(connection), account_(account) {}
@@ -232,7 +232,7 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
     std::move(register_callback_).Run(status, key_version, had_local_keys);
   }
 
-  void SetStorage(StandaloneTrustedVaultStorage* storage) {
+  void SetStorage(LegacyStandaloneTrustedVaultStorage* storage) {
     storage_ = storage;
   }
 
@@ -248,7 +248,7 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
   }
 
  private:
-  raw_ptr<StandaloneTrustedVaultStorage> storage_;
+  raw_ptr<LegacyStandaloneTrustedVaultStorage> storage_;
   raw_ptr<TrustedVaultThrottlingConnection> connection_;
   const CoreAccountInfo account_;
 
@@ -309,7 +309,7 @@ class TestLocalRecoveryFactorsFactory
 
   std::vector<std::unique_ptr<LocalRecoveryFactor>> CreateLocalRecoveryFactors(
       SecurityDomainId security_domain_id,
-      StandaloneTrustedVaultStorage* storage,
+      LegacyStandaloneTrustedVaultStorage* storage,
       TrustedVaultThrottlingConnection* connection,
       const CoreAccountInfo& account) override {
     std::vector<FakeLocalRecoveryFactor*> fake_recovery_factors =
@@ -332,7 +332,7 @@ class TestLocalRecoveryFactorsFactory
   }
 
   void SetRecoveryFactors(
-      StandaloneTrustedVaultStorage* new_storage,
+      LegacyStandaloneTrustedVaultStorage* new_storage,
       TrustedVaultThrottlingConnection* new_connection,
       std::map<std::optional<GaiaId>,
                std::vector<std::unique_ptr<FakeLocalRecoveryFactor>>>&&
@@ -351,7 +351,7 @@ class TestLocalRecoveryFactorsFactory
   }
 
   std::vector<FakeLocalRecoveryFactor*> GetOrCreateRecoveryFactors(
-      StandaloneTrustedVaultStorage* storage,
+      LegacyStandaloneTrustedVaultStorage* storage,
       TrustedVaultThrottlingConnection* connection,
       const CoreAccountInfo& account) {
     if (!recovery_factors_.contains(account.gaia)) {
@@ -391,15 +391,15 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   void ResetBackend(
       std::unique_ptr<testing::NiceMock<MockTrustedVaultThrottlingConnection>>
           connection) {
-    auto file_access = std::make_unique<FakeFileAccess>();
+    auto file_access = std::make_unique<LegacyFakeFileAccess>();
     if (file_access_) {
       // We only want to reset the backend, not the underlying faked file.
       file_access->SetStoredLocalTrustedVault(
           file_access_->GetStoredLocalTrustedVault());
     }
     file_access_ = file_access.get();
-    auto storage =
-        StandaloneTrustedVaultStorage::CreateForTesting(std::move(file_access));
+    auto storage = LegacyStandaloneTrustedVaultStorage::CreateForTesting(
+        std::move(file_access));
 
     auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
 
@@ -430,9 +430,9 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     num_local_recovery_factors_ = num_local_recovery_factors;
   }
 
-  StandaloneTrustedVaultStorage* storage() { return storage_; }
+  LegacyStandaloneTrustedVaultStorage* storage() { return storage_; }
 
-  FakeFileAccess* file_access() { return file_access_; }
+  LegacyFakeFileAccess* file_access() { return file_access_; }
 
   MockTrustedVaultThrottlingConnection* connection() { return connection_; }
 
@@ -497,8 +497,8 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
  private:
   size_t num_local_recovery_factors_ = 1;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
-  raw_ptr<StandaloneTrustedVaultStorage> storage_ = nullptr;
-  raw_ptr<FakeFileAccess> file_access_ = nullptr;
+  raw_ptr<LegacyStandaloneTrustedVaultStorage> storage_ = nullptr;
+  raw_ptr<LegacyFakeFileAccess> file_access_ = nullptr;
   raw_ptr<testing::NiceMock<MockTrustedVaultThrottlingConnection>> connection_ =
       nullptr;
   raw_ptr<TestLocalRecoveryFactorsFactory> local_recovery_factors_factory_;

@@ -17,14 +17,14 @@ namespace trusted_vault {
 
 TrustedVaultThrottlingConnectionImpl::TrustedVaultThrottlingConnectionImpl(
     std::unique_ptr<TrustedVaultConnection> delegate,
-    ConnectionThrottlingStorage* storage)
+    LegacyConnectionThrottlingStorage* storage)
     : TrustedVaultThrottlingConnectionImpl(std::move(delegate),
                                            storage,
                                            base::DefaultClock::GetInstance()) {}
 
 TrustedVaultThrottlingConnectionImpl::TrustedVaultThrottlingConnectionImpl(
     std::unique_ptr<TrustedVaultConnection> delegate,
-    ConnectionThrottlingStorage* storage,
+    LegacyConnectionThrottlingStorage* storage,
     raw_ptr<base::Clock> clock)
     : delegate_(std::move(delegate)), storage_(storage), clock_(clock) {
   CHECK(delegate_);
@@ -36,7 +36,7 @@ TrustedVaultThrottlingConnectionImpl::TrustedVaultThrottlingConnectionImpl(
 std::unique_ptr<TrustedVaultThrottlingConnectionImpl>
 TrustedVaultThrottlingConnectionImpl::CreateForTesting(
     std::unique_ptr<TrustedVaultConnection> delegate,
-    ConnectionThrottlingStorage* storage,
+    LegacyConnectionThrottlingStorage* storage,
     raw_ptr<base::Clock> clock) {
   return base::WrapUnique(new TrustedVaultThrottlingConnectionImpl(
       std::move(delegate), storage, clock));

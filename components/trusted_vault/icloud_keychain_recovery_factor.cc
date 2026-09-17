@@ -48,8 +48,8 @@ std::optional<std::vector<std::vector<uint8_t>>> DecryptTrustedVaultWrappedKeys(
 ICloudKeychainRecoveryFactor::ICloudKeychainRecoveryFactor(
     const std::string& icloud_keychain_access_group_prefix,
     SecurityDomainId security_domain_id,
-    ICloudKeychainStorage* storage,
-    KeyStorage* key_storage,
+    LegacyICloudKeychainStorage* storage,
+    LegacyKeyStorage* key_storage,
     TrustedVaultThrottlingConnection* connection,
     CoreAccountInfo primary_account)
     : icloud_keychain_access_group_(
