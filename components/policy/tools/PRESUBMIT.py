@@ -6,6 +6,8 @@ import os
 import sys
 
 def _RunPythonUnitTests(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   tests = input_api.canned_checks.GetUnitTestsInDirectory(
       input_api,
       output_api,

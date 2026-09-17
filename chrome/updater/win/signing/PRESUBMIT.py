@@ -9,6 +9,8 @@ for more details about the presubmit API built into depot_tools.
 
 
 def CommonChecks(input_api, output_api):
+    if not input_api.HasAffectedFiles(extensions='.py'):
+        return []
     disabled_warnings = [
         'anomalous-backslash-in-string',
         'superfluous-parens',

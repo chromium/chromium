@@ -12,6 +12,8 @@ _OTA_DOC_LINK = 'https://g3doc.corp.google.com/googleclient/chrome/enterprise/g3
 
 
 def CheckPylint(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   disabled_warnings = [
     # TODO(crbug.com/413421824): Burn down this list over time.
     'anomalous-backslash-in-string',

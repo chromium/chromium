@@ -75,6 +75,8 @@ def _CheckNoAutofillBrowserTestsWithoutAutofillBrowserTestEnvironment(
     ] if len(warning_files) else []
 
 def _RunHistogramChecks(input_api, output_api, histogram_name):
+    if not input_api.HasAffectedFiles(path='bad_message.h'):
+        return []
     try:
         # Setup sys.path so that we can call histograms code.
         import sys

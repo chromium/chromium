@@ -39,6 +39,8 @@ def FetchLauncherFilterFileData(input_api, cwd: str) -> Dict[str, str]:
 
 
 def GetPylintConfiguration(input_api, output_api) -> List:
+    if not input_api.HasAffectedFiles(extensions='.py'):
+        return []
     disabled_warnings = [
         'C0415',  # import-outside-toplevel
     ]

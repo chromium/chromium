@@ -17,6 +17,8 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckPyLint(input_api, output_api):
+    if not input_api.HasAffectedFiles(extensions='.py'):
+        return []
     disabled_warnings = [
         # TODO(crbug.com/413421824): Burn down this list over time.
         'anomalous-backslash-in-string',

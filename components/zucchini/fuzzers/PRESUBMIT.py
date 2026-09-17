@@ -25,6 +25,9 @@ def _should_run_python_tests(input_api):
 
 
 def CheckPython(input_api, output_api):
+    if not (input_api.HasAffectedFiles(extensions='.py') or
+            input_api.HasAffectedFiles(path=sorted(_PYTHON_TEST_INPUTS))):
+        return []
     checks = []
     if _should_run_python_tests(input_api):
         checks.extend(
