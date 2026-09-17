@@ -231,6 +231,13 @@ FILES_TO_REMOVE = [
     'linux/include/private',
     'linux/python',
     'linux/xstc',
+    'codegen/genCharset.py',
+    'codegen/genEscape.py',
+    'codegen/genHtml5Ent.py',
+    'codegen/genHtml5LibTests.py',
+    'codegen/genRanges.py',
+    'codegen/genTestApi.py',
+    'codegen/genUnicode.py',
 ]
 
 
