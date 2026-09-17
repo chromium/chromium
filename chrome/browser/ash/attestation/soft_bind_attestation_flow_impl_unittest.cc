@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/account_id/account_id_literal.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/test_support.h"
 #include "net/cert/x509_certificate.h"
@@ -37,8 +38,8 @@ namespace attestation {
 
 namespace {
 
-const AccountId kTestAccountId =
-    AccountId::FromUserEmail("test_email@chromium.org");
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmail("test_email@chromium.org");
 
 }  // namespace
 

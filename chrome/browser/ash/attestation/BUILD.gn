@@ -119,10 +119,6 @@ source_set("unit_tests") {
     "tpm_challenge_key_unittest.cc",
   ]
 
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   deps = [
     ":attestation",
     ":attestation_proto",
@@ -146,6 +142,7 @@ source_set("unit_tests") {
     "//chromeos/components/kiosk:test_support",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/tpm_manager",
+    "//components/account_id:test_support",
     "//components/policy/core/common:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager",
