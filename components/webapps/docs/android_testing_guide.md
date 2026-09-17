@@ -75,14 +75,38 @@ keep this guide maintainable, tests are grouped by directory and feature area.
 ### 1. Instrumentation Tests (Java/JUnit4)
 
 These tests run on an emulator or physical device to test UI, integration, and
-lifecycle.
+lifecycle. Unlike host-side JUnit tests below, instrumentation tests cannot run
+without an active device.
+
+#### Emulator Prerequisite
+
+To start the recommended local development emulator (API 33 x64 image with 12GB
+partition storage, windowed UI, and networking enabled):
+
+```bash
+tools/android/avd/avd.py start -v \
+    --avd-config tools/android/avd/proto/android_33_google_apis_x64_local.textpb \
+    --emulator-window --no-read-only --enable-network
+```
+
+For more options and configuration details, see:
+
+- [Using an Android Emulator](/docs/android_emulator.md)
+
+- [Clank Noogler Guide: Step 5 - Start an emulator](http://go/clank-noogler/get_the_code_and_build_it.md#step-5-start-an-emulator)
+  (Google internal)
+
+- [Clank Android Emulator Tips](http://go/clank-emulator) (Google internal)
 
 - **TWA and General Webapp UI/Lifecycle**:
+
   - **Directory**:
     [`chrome/android/javatests/src/org/chromium/chrome/browser/webapps/`](../../../chrome/android/javatests/src/org/chromium/chrome/browser/webapps/)
   - **Features**: WebAPK launch/update integration, splash screens, display
     modes, display cutout, and default offline behavior.
+
 - **Trusted Web Activities (TWA) & Permission Delegation**:
+
   - **Directory**:
     [`chrome/android/javatests/src/org/chromium/chrome/browser/browserservices/`](../../../chrome/android/javatests/src/org/chromium/chrome/browser/browserservices/)
     (and subdirectories like `permissiondelegation/`)
@@ -90,29 +114,47 @@ lifecycle.
     delegation (location, notifications, contacts), and post-launch
     verification.
 
-**How to Run**: Build the test APK:
-`autoninja -C out/Default chrome_public_test_apk`
+**How to Run**: Use `tools/autotest.py` to automatically compile and execute a
+test file:
 
-Run all tests in a directory:
-`out/Default/bin/run_chrome_public_test_apk -f "org.chromium.chrome.browser.webapps.*"`
-`out/Default/bin/run_chrome_public_test_apk -f "org.chromium.chrome.browser.browserservices.*"`
+```bash
+tools/autotest.py -C out/Android chrome/android/javatests/src/org/chromium/chrome/browser/webapps/WebappActivityTest.java
+```
+
+Or build and run all tests in a directory via the test runner script:
+
+```bash
+autoninja -C out/Android chrome_public_test_apk
+out/Android/bin/run_chrome_public_test_apk -f "org.chromium.chrome.browser.webapps.*"
+out/Android/bin/run_chrome_public_test_apk -f "org.chromium.chrome.browser.browserservices.*"
+```
 
 ### 2. Host-Side JUnit Tests (Java)
 
 These unit tests run on the development host JVM and test business logic,
-storage, and utility classes without requiring a device.
+storage, and utility classes without requiring an emulator or device.
 
 - **Registration, Storage, and Lifecycle Logic**:
   - **Directories**:
     - [`chrome/android/junit/src/org/chromium/chrome/browser/webapps/`](../../../chrome/android/junit/src/org/chromium/chrome/browser/webapps/)
     - [`chrome/android/junit/src/org/chromium/chrome/browser/browserservices/`](../../../chrome/android/junit/src/org/chromium/chrome/browser/browserservices/)
       (including `permissiondelegation/` and `ui/`)
-  - **Features**: `InstalledWebappRegistrar`, `InstalledWebappDataRegister`,
-    and `WebappDataStorage`.
+  - **Features**: `InstalledWebappRegistrar`, `InstalledWebappDataRegister`, and
+    `WebappDataStorage`.
 
-**How to Run**:
-`out/Default/bin/run_chrome_junit_tests -f "org.chromium.chrome.browser.webapps.*"`
-`out/Default/bin/run_chrome_junit_tests -f "org.chromium.chrome.browser.browserservices.*"`
+**How to Run**: Use `tools/autotest.py`:
+
+```bash
+tools/autotest.py -C out/Android chrome/android/junit/src/org/chromium/chrome/browser/webapps/WebappAuthenticatorTest.java
+```
+
+Or build and run via the test runner script:
+
+```bash
+autoninja -C out/Android chrome_junit_tests
+out/Android/bin/run_chrome_junit_tests -f "org.chromium.chrome.browser.webapps.*"
+out/Android/bin/run_chrome_junit_tests -f "org.chromium.chrome.browser.browserservices.*"
+```
 
 ### 3. WebAPK Shell & Client Library Tests
 
