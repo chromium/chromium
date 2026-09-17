@@ -2412,6 +2412,64 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdFeatureOff_UMARecorded) {
       SuffixedHistogram("HeavyAds.NetworkBytesAtFrameUnload"), 0);
 }
 
+// Checks re-entrancy: replaying a stashed navigation resource can trigger the
+// heavy ad intervention, which synchronously destroys another in-flight
+// NavigationRequest in the same frame. The resulting DidFinishNavigation
+// re-enters ProcessOngoingNavigationResource for the same frame while the
+// outer call is still in progress.
+TEST_P(AdsPageLoadMetricsObserverTest,
+       HeavyAdIntervention_ReentrantNavigationFinish) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {heavy_ad_intervention::features::kHeavyAdIntervention},
+      {heavy_ad_intervention::features::kHeavyAdPrivacyMitigations});
+
+  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
+  RenderFrameHost* subframe = AppendChildFrame(main_frame);
+
+  // Start a navigation in the subframe but don't commit it yet.
+  auto nav1 = CreateNavigationSimulator(kAdUrl, subframe);
+  nav1->Start();
+  nav1->ReadyToCommit();
+
+  // Start a second navigation in the same subframe to give us an in-flight
+  // NavigationRequest that will be cancelled when the intervention triggers.
+  auto nav2 = content::NavigationSimulator::CreateRendererInitiated(
+      GURL(kAdUrl), subframe);
+  nav2->Start();
+
+  // Stash a complete primary frame resource for the subframe under `nav1` that
+  // exceeds the heavy-ad network limit. It is replayed when nav1 finishes.
+  ResourceDataUpdate(subframe, ResourceCached::kNotCached,
+                     heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1));
+
+  // The intervention triggers synchronously during nav1's commit, canceling
+  // nav2 and navigating the frame to the error page. `waiter` confirms it.
+  ErrorPageWaiter waiter(web_contents());
+  nav1->Commit();
+
+  RenderFrameHost* final_ad_frame = nav1->GetFinalRenderFrameHost();
+  waiter.WaitForError();
+
+  // The stashed resource must be processed exactly once, even though the
+  // intervention re-enters this code path for the same frame.
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram("HeavyAds.InterventionType2"), HeavyAdStatus::kNetwork,
+      1);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("HeavyAds.NetworkBytesAtFrameUnload"), 1);
+
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(final_ad_frame);
+  EXPECT_EQ(
+      rfh_tester->GetHeavyAdIssueCount(
+          content::RenderFrameHostTester::HeavyAdIssueType::kNetworkTotal),
+      1);
+  EXPECT_EQ(rfh_tester->GetHeavyAdIssueCount(
+                content::RenderFrameHostTester::HeavyAdIssueType::kAll),
+            1);
+}
+
 TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdNetworkUsage_InterventionFired) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
