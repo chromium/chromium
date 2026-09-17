@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
@@ -16,13 +15,6 @@
 #include "media/base/video_types.h"
 
 namespace media {
-
-namespace {
-
-// Kill-switch: Remove after M145 is stable.
-BASE_FEATURE(kResetDecoderForNonIDR, base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
 
 VideoToolboxH264Accelerator::VideoToolboxH264Accelerator(
     std::unique_ptr<MediaLog> media_log,
@@ -169,8 +161,7 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
     return Status::kFail;
   }
 
-  if (!pic->idr && first_decode_ &&
-      base::FeatureList::IsEnabled(kResetDecoderForNonIDR)) {
+  if (!pic->idr && first_decode_) {
     // Flag the sample if it's non-IDR and the first sample provided. This was
     // recommended by Apple to prevent corruption when seeking to SEI
     // recovery points. See https://crbug.com/451536366.
