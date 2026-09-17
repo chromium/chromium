@@ -995,18 +995,25 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
     // update.
     wcax->ResetContentChangedEventsCounter();
 
-    // When the root changes, send the new root id and a navigate signal to
-    // Java.
     if (root_changed) {
-      auto* root_manager = static_cast<BrowserAccessibilityManagerAndroid*>(
-          GetManagerForRootFrame());
-      CHECK(root_manager, base::NotFatalUntil::M159);
+      if (IsRootFrameManager()) {
+        // When the root frame's root changes, send the new root id and a
+        // navigate signal to Java.
+        auto* root = static_cast<BrowserAccessibilityAndroid*>(
+            GetBrowserAccessibilityRoot());
+        CHECK(root, base::NotFatalUntil::M159);
 
-      auto* root = static_cast<BrowserAccessibilityAndroid*>(
-          root_manager->GetBrowserAccessibilityRoot());
-      CHECK(root, base::NotFatalUntil::M159);
-
-      wcax->HandleNavigate(root->GetUniqueId());
+        wcax->HandleNavigate(root->GetUniqueId());
+      } else if (ui::BrowserAccessibility* host =
+                     GetParentNodeFromParentTreeAsBrowserAccessibility()) {
+        // When a child frame's root changes, the node hosting that frame has a
+        // different child, so it is invalidated to have its subtree refetched.
+        // The state of the root frame, including accessibility focus, is left
+        // untouched.
+        wcax->HandleContentChanged(
+            static_cast<BrowserAccessibilityAndroid*>(host)->GetUniqueId(),
+            /*set_subtree_changed=*/true);
+      }
     }
   }
 

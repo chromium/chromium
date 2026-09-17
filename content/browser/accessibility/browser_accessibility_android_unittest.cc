@@ -113,6 +113,13 @@ class MockWebContentsAccessibilityAndroid
   MOCK_METHOD(void, HandlePaneOpened, (int32_t unique_id), (override));
   MOCK_METHOD(void, HandlePaneClosed, (int32_t unique_id), (override));
 
+  MOCK_METHOD(void, HandleNavigate, (int32_t root_id), (override));
+
+  MOCK_METHOD(void,
+              HandleContentChanged,
+              (int32_t unique_id, bool set_subtree_changed),
+              (override));
+
   MOCK_METHOD(bool,
               IsNodeLikelyKnownByAndroidFrameworkForExperiment,
               (int32_t unique_id),
@@ -3134,6 +3141,116 @@ TEST_F(BrowserAccessibilityAndroidTest,
   ASSERT_EQ(5U, grid_node->PlatformChildCount());
   EXPECT_EQ(u"multiselectable, 2 of 3 selected.",
             grid_node->GetAndroidStateDescription());
+}
+
+// The navigate signal resets the accessibility focus on the Java side, so it
+// must only be sent when the root of the root frame changes, and not when the
+// root of a child frame changes (e.g. when an iframe navigates). A child frame
+// root change invalidates the node hosting that frame instead, since that node
+// now has a different child.
+TEST_F(BrowserAccessibilityAndroidTest, TestNavigateOnlySentForRootFrame) {
+  // The child frame's tree, hosted by the |iframe| node of the root frame's
+  // tree below.
+  ui::AXNodeData child_root;
+  child_root.id = 1;
+  child_root.role = ax::mojom::Role::kRootWebArea;
+
+  ui::AXTreeUpdate child_update = MakeAXTreeUpdateForTesting(child_root);
+
+  ui::AXNodeData iframe;
+  iframe.id = 2;
+  iframe.role = ax::mojom::Role::kIframe;
+  iframe.AddChildTreeId(child_update.tree_data.tree_id);
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {iframe.id};
+
+  ui::AXTreeUpdate root_update = MakeAXTreeUpdateForTesting(root, iframe);
+  child_update.tree_data.parent_tree_id = root_update.tree_data.tree_id;
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> root_manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          root_update, node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  // As in production, the child frame's delegate does not report being a root
+  // frame, so its manager reaches the WebContentsAccessibilityAndroid instance
+  // through the root frame's manager.
+  ui::TestAXPlatformTreeManagerDelegate child_frame_delegate;
+  child_frame_delegate.is_root_frame_ = false;
+  child_frame_delegate.SetWebContentsAccessibility(
+      &mock_web_contents_accessibility_android_);
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> child_manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          child_update, node_id_delegate_, &child_frame_delegate));
+
+  ASSERT_EQ(root_manager.get(), child_manager->GetManagerForRootFrame());
+  ASSERT_NE(nullptr,
+            child_manager->GetParentNodeFromParentTreeAsBrowserAccessibility());
+
+  // Ignore the signals sent while the trees were being created.
+  testing::Mock::VerifyAndClearExpectations(
+      &mock_web_contents_accessibility_android_);
+
+  auto* iframe_node = static_cast<BrowserAccessibilityAndroid*>(
+      root_manager->GetFromID(iframe.id));
+  ASSERT_NE(nullptr, iframe_node);
+
+  // A root change in the child frame's tree must not send a navigate signal,
+  // since the root frame's root is unchanged. The node hosting the child frame
+  // is invalidated instead, since it now has a different child.
+  EXPECT_CALL(mock_web_contents_accessibility_android_,
+              HandleNavigate(testing::_))
+      .Times(0);
+  EXPECT_CALL(mock_web_contents_accessibility_android_,
+              HandleContentChanged(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(mock_web_contents_accessibility_android_,
+              HandleContentChanged(
+                  static_cast<int32_t>(iframe_node->GetUniqueId()),
+                  /*set_subtree_changed=*/true))
+      .Times(testing::AtLeast(1));
+
+  ui::AXNodeData new_child_root;
+  new_child_root.id = 10;
+  new_child_root.role = ax::mojom::Role::kRootWebArea;
+
+  ui::AXTreeUpdate new_child_update;
+  new_child_update.root_id = new_child_root.id;
+  new_child_update.nodes = {new_child_root};
+  ASSERT_TRUE(child_manager->ax_tree()->Unserialize(new_child_update))
+      << child_manager->ax_tree()->error();
+
+  testing::Mock::VerifyAndClearExpectations(
+      &mock_web_contents_accessibility_android_);
+
+  // A root change in the root frame's tree sends a navigate signal with the
+  // unique id of the new root.
+  int32_t navigate_root_id = ui::kInvalidAXNodeID;
+  EXPECT_CALL(mock_web_contents_accessibility_android_,
+              HandleContentChanged(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(mock_web_contents_accessibility_android_,
+              HandleNavigate(testing::_))
+      .WillOnce(testing::SaveArg<0>(&navigate_root_id));
+
+  ui::AXNodeData new_root;
+  new_root.id = 20;
+  new_root.role = ax::mojom::Role::kRootWebArea;
+
+  ui::AXTreeUpdate new_root_update;
+  new_root_update.root_id = new_root.id;
+  new_root_update.nodes = {new_root};
+  ASSERT_TRUE(root_manager->ax_tree()->Unserialize(new_root_update))
+      << root_manager->ax_tree()->error();
+
+  auto* new_root_node = static_cast<BrowserAccessibilityAndroid*>(
+      root_manager->GetBrowserAccessibilityRoot());
+  ASSERT_NE(nullptr, new_root_node);
+  EXPECT_EQ(new_root_node->GetUniqueId(), navigate_root_id);
 }
 
 }  // namespace content

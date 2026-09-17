@@ -6596,6 +6596,46 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
+     * Test that replacing the content of a child frame does not clear accessibility focus held by a
+     * node outside of that frame. Android has no notion of child frames, so accessibility focus is
+     * tracked per WebContents, and work done for a navigation of the root frame must not be
+     * repeated for a child frame.
+     */
+    @Test
+    @SmallTest
+    public void testChildFrameContentReplacedWithAccessibilityFocusOutsideFrame() throws Throwable {
+        setupTestWithHTML(
+                """
+                <p id='p1'>Paragraph 1</p>
+                <iframe id='f1' srcdoc="<p id='p2'>Paragraph 2</p>"></iframe>
+                """);
+
+        int p1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p1");
+        int p2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+
+        // Focus a node outside of the child frame.
+        focusNode(p1Vvid);
+        Assert.assertTrue(FOCUSING_ERROR, isNodeAccessibilityFocused(p1Vvid));
+
+        // Replace the content of the child frame, and wait until its previous content is removed
+        // from the accessibility tree.
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                mActivityTestRule.getWebContents(),
+                """
+                var doc = document.getElementById('f1').contentDocument;
+                doc.open();
+                doc.write("<p id='p3'>Paragraph 3</p>");
+                doc.close();
+                """);
+        CriteriaHelper.pollUiThread(
+                () -> createAccessibilityNodeInfo(p2Vvid) == null,
+                "Child frame content was not removed from the accessibility tree");
+
+        // The focused node is outside of the child frame, so it keeps accessibility focus.
+        Assert.assertTrue(FOCUSING_ERROR, isNodeAccessibilityFocused(p1Vvid));
+    }
+
+    /**
      * Test that when content height dynamically expands via JavaScript, the updated scroll
      * dimensions cause ACTION_SCROLL_FORWARD and ACTION_SCROLL_DOWN to be added to the
      * AccessibilityNodeInfo.
