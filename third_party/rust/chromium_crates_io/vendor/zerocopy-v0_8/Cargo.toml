@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.56.0"
 name = "zerocopy"
-version = "0.8.56"
+version = "0.8.57"
 build = "build.rs"
 exclude = [".*"]
 autolib = false
@@ -95,6 +95,7 @@ path = "src/lib.rs"
 [[test]]
 name = "codegen"
 path = "tests/codegen.rs"
+test = false
 
 [[test]]
 name = "include"
@@ -103,6 +104,7 @@ path = "tests/include.rs"
 [[test]]
 name = "ui"
 path = "tests/ui.rs"
+required-features = ["derive"]
 
 [[bench]]
 name = "as_bytes_dynamic_size"
@@ -385,7 +387,7 @@ name = "zero_static_size"
 path = "benches/zero_static_size.rs"
 
 [dependencies.zerocopy-derive]
-version = "=0.8.56"
+version = "=0.8.57"
 optional = true
 
 [dev-dependencies.elain]
@@ -409,7 +411,7 @@ version = "1.0"
 version = "1.1"
 
 [dev-dependencies.zerocopy-derive]
-version = "=0.8.56"
+version = "=0.8.57"
 
 [target."cfg(any())".dependencies.zerocopy-derive]
-version = "=0.8.56"
+version = "=0.8.57"

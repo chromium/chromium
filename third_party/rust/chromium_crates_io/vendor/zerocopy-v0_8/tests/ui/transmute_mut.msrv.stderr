@@ -82,9 +82,9 @@ error[E0599]: the method `transmute_mut` exists for struct `Wrap<&mut [u8], &mut
 87  | const SRC_UNSIZED: &mut [u8; 1] = transmute_mut!(&mut [0u8][..]);
     |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ method cannot be called on `Wrap<&mut [u8], &mut [u8; 1]>` due to unsatisfied trait bounds
     |
-   ::: $WORKSPACE/src/util/macro_util.rs:694:1
+   ::: $WORKSPACE/src/util/macro_util.rs:728:1
     |
-694 | pub struct Wrap<Src, Dst>(pub Src, pub PhantomData<Dst>);
+728 | pub struct Wrap<Src, Dst>(pub Src, pub PhantomData<Dst>);
     | --------------------------------------------------------- doesn't satisfy `Wrap<&mut [u8], &mut [u8; 1]>: TransmuteMutDst`
     |
     = note: the following trait bounds were not satisfied:

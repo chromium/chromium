@@ -1471,6 +1471,19 @@ mod tests {
         // its `PanicOnDrop` temporary, which would cause a panic.
         assert_eq!(y.as_ref().map_err(|p| &p.src.0), Err::<&bool, _>(&2u8));
         mem::forget(y);
+
+        #[derive(Debug, TryFromBytes)]
+        #[repr(C, align(8))]
+        struct PaddedBool(bool);
+
+        // A failed transmutation must return every source byte, including
+        // bytes which would be padding in the destination type.
+        let src = [2u8, 1, 2, 3, 4, 5, 6, 7];
+        let x: Result<PaddedBool, _> = try_transmute!(src);
+        assert_eq!(x.unwrap_err().into_src(), src);
+
+        let x: Result<PaddedBool, _> = try_transmute!([0u8; 8]);
+        assert!(!x.unwrap().0);
     }
 
     #[test]

@@ -91,6 +91,9 @@ fn main() {
         println!(
             "cargo:rustc-check-cfg=cfg(__ZEROCOPY_INTERNAL_USE_ONLY_NIGHTLY_FEATURES_IN_TESTS)"
         );
+        println!(
+            "cargo:rustc-check-cfg=cfg(__ZEROCOPY_INTERNAL_USE_ONLY_TOOLCHAIN, values(\"msrv\", \"stable\", \"nightly\"))"
+        );
         println!("cargo:rustc-check-cfg=cfg(__ZEROCOPY_INTERNAL_USE_ONLY_DEV_MODE)");
         println!("cargo:rustc-check-cfg=cfg(coverage_nightly)");
         println!("cargo:rustc-check-cfg=cfg(zerocopy_inline_always)");

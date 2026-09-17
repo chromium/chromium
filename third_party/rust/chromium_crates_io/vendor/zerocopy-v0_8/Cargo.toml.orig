@@ -15,7 +15,7 @@
 [package]
 edition = "2021"
 name = "zerocopy"
-version = "0.8.56"
+version = "0.8.57"
 description = "Zerocopy makes zero-cost memory manipulation effortless. We write \"unsafe\" so you don't have to."
 categories = [
     "embedded",
@@ -120,13 +120,27 @@ __internal_use_only_features_that_work_on_stable = [
 ]
 
 [dependencies]
-zerocopy-derive = { version = "=0.8.56", path = "zerocopy-derive", optional = true }
+zerocopy-derive = { version = "=0.8.57", path = "zerocopy-derive", optional = true }
 
 # The "associated proc macro pattern" ensures that the versions of zerocopy and
 # zerocopy-derive remain equal, even if the 'derive' feature isn't used.
 # See: https://github.com/matklad/macro-dep-test
 [target.'cfg(any())'.dependencies]
-zerocopy-derive = { version = "=0.8.56", path = "zerocopy-derive" }
+zerocopy-derive = { version = "=0.8.57", path = "zerocopy-derive" }
+
+# The UI suite needs the `derive` feature, so let Cargo skip this integration
+# test when that feature is disabled.
+[[test]]
+name = "ui"
+path = "tests/ui.rs"
+required-features = ["derive"]
+
+# This target requires LLVM tooling and is exercised by its dedicated CI job.
+# Exclude it from Cargo's ordinary unfiltered test selection.
+[[test]]
+name = "codegen"
+path = "tests/codegen.rs"
+test = false
 
 [dev-dependencies]
 # FIXME(#381) Remove this dependency once we have our own layout gadgets.
@@ -138,4 +152,4 @@ rustversion = "1.0"
 static_assertions = "1.1"
 testutil = { path = "testutil" }
 # In tests, unlike in production, zerocopy-derive is not optional
-zerocopy-derive = { version = "=0.8.56", path = "zerocopy-derive" }
+zerocopy-derive = { version = "=0.8.57", path = "zerocopy-derive" }

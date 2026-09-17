@@ -6,6 +6,6 @@
 // by `tools/crates/run_gnrt.py vendor`. Do not edit!
 //
 // This is an empty placeholder that has replaced the
-// `zerocopy-derive-0.8.56` crate.
+// `zerocopy-derive-0.8.57` crate.
 //
 // See `//tools/crates/gnrt/removed_crate.md` to learn more.
