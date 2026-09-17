@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.signin_button;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -40,10 +41,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -54,29 +56,32 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivity;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
 /** Integration tests for {@link SigninButtonCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "This test relies on native initialization")
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({SigninFeatures.SIGNIN_LEVEL_UP_BUTTON, SigninFeatures.PROFILE_DISC_ON_ALL_PAGES})
 @DisableFeatures({
@@ -86,14 +91,17 @@ import org.chromium.ui.test.util.ViewUtils;
 })
 public class SigninButtonCoordinatorTest {
 
+    private static final FakeAccountManagerFacade sFakeAccountManagerFacade =
+            new FakeAccountManagerFacade(/* serializeToPrefs= */ false);
+
     // Mock sign-in environment needs to be destroyed after ChromeTabbedActivity in case there are
     // observers registered in the AccountManagerFacade mock.
     @Rule(order = 0)
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    public final SigninTestRule mSigninTestRule = new SigninTestRule(sFakeAccountManagerFacade);
 
     @Rule(order = 1)
-    public final FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private FakeSyncServiceImpl mFakeSyncServiceImpl;
 
@@ -103,11 +111,28 @@ public class SigninButtonCoordinatorTest {
 
     @After
     public void tearDown() {
-        if (mFakeSyncServiceImpl != null) {
-            mFakeSyncServiceImpl = null;
-            SyncServiceFactory.setInstanceForTesting(null);
+        mFakeSyncServiceImpl = null;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mActivityTestRule.getActivity() != null) {
+                        mActivityTestRule.getActivity().onTopResumedActivityChanged(true);
+                    }
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+                    prefService.clearPref(Pref.SIGNIN_ALLOWED);
+                    IncognitoTabHostUtils.closeAllIncognitoTabs();
+                    if (mActivityTestRule.getActivity() != null) {
+                        var modalDialogManager =
+                                mActivityTestRule.getActivity().getModalDialogManager();
+                        if (modalDialogManager != null) {
+                            modalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
+                        }
+                    }
+                });
+        if (mSigninTestRule.getPrimaryAccount() != null) {
+            mSigninTestRule.forceSignOut();
         }
-        setSigninAllowed(true);
+        ThreadUtils.runOnUiThreadBlocking(sFakeAccountManagerFacade::removeAllAccounts);
     }
 
     @Test
@@ -248,19 +273,18 @@ public class SigninButtonCoordinatorTest {
 
     @Test
     @MediumTest
+    @RequiresRestart("Injects mock SyncService before the Activity launches")
     // Specifies the test to run only with the GMS Core version greater than or equal to 24w15 which
     // is the min version that supports split stores UPM backend, to avoid
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testSigninButtonWithErrorBadge() {
-        // Injects the mock SyncService before the Activity launches as the toolbar instantiates
-        // SigninButtonCoordinator and binds the SyncService immediately upon creation.
-        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mFakeSyncServiceImpl = new FakeSyncServiceImpl();
                     SyncServiceFactory.setInstanceForTesting(mFakeSyncServiceImpl);
                 });
+        mActivityTestRule.recreateActivity();
         startActivityOnNtp();
 
         // Test initial state with no error.
@@ -299,18 +323,17 @@ public class SigninButtonCoordinatorTest {
 
     @Test
     @MediumTest
+    @RequiresRestart("Injects null SyncService before the Activity launches")
     // Specifies the test to run only with the GMS Core version greater than or equal to 24w15 which
     // is the min version that supports split stores UPM backend, to avoid
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testSigninButtonWithNullSyncService() {
-        // Injects the null SyncService before the Activity launches as the toolbar instantiates
-        // SigninButtonCoordinator and binds the SyncService immediately upon creation.
-        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SyncServiceFactory.setInstanceForTesting(null);
                 });
+        mActivityTestRule.recreateActivity();
         startActivityOnNtp();
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -423,6 +446,7 @@ public class SigninButtonCoordinatorTest {
                 allOf(
                         withId(R.id.account_picker_header_title),
                         withText(R.string.signin_account_picker_bottom_sheet_title)));
+        pressBack();
     }
 
     @Test
@@ -590,6 +614,11 @@ public class SigninButtonCoordinatorTest {
         ColorStateList unfocusedTint = avatarButton.getImageTintList();
         assertNotNull(unfocusedTint);
         assertNotEquals("Tint should change when window is inactive", focusedTint, unfocusedTint);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getActivity().onTopResumedActivityChanged(true);
+                });
     }
 
     @Test
@@ -612,6 +641,7 @@ public class SigninButtonCoordinatorTest {
         // Verify that the account menu popup is displayed.
         ViewUtils.waitForVisibleView(withId(R.id.account_menu_container));
         assertTrue(avatarButton.isPressed());
+        ThreadUtils.runOnUiThreadBlocking(avatarButton::dismiss);
     }
 
     @Test
