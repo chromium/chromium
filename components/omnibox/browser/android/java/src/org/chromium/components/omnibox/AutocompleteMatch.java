@@ -20,6 +20,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
+import org.chromium.components.omnibox.AutocompleteProto.AutocompleteMatchProto;
+import org.chromium.components.omnibox.AutocompleteProto.MatchClassificationProto;
 import org.chromium.components.omnibox.GroupsProto.GroupId;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
@@ -652,8 +654,8 @@ public class AutocompleteMatch {
     }
 
     /** Serialize suggestion to a protocol buffer message. */
-    public AutocompleteProto.AutocompleteMatchProto serialize() {
-        var builder = AutocompleteProto.AutocompleteMatchProto.newBuilder();
+    public AutocompleteMatchProto serialize() {
+        var builder = AutocompleteMatchProto.newBuilder();
         builder.setType(mType)
                 .setDisplayText(mDisplayText)
                 .setFillIntoEdit(mFillIntoEdit)
@@ -686,13 +688,13 @@ public class AutocompleteMatch {
         }
         for (var displayTextClassification : mDisplayTextClassifications) {
             builder.addDisplayTextClassification(
-                    AutocompleteProto.MatchClassificationProto.newBuilder()
+                    MatchClassificationProto.newBuilder()
                             .setOffset(displayTextClassification.offset)
                             .setStyle(displayTextClassification.style));
         }
         for (var descriptionClassification : mDescriptionClassifications) {
             builder.addDescriptionClassification(
-                    AutocompleteProto.MatchClassificationProto.newBuilder()
+                    MatchClassificationProto.newBuilder()
                             .setOffset(descriptionClassification.offset)
                             .setStyle(descriptionClassification.style));
         }
@@ -700,7 +702,7 @@ public class AutocompleteMatch {
     }
 
     /** Deserialize suggestion from a protocol buffer message. */
-    public static AutocompleteMatch deserialize(AutocompleteProto.AutocompleteMatchProto input) {
+    public static AutocompleteMatch deserialize(AutocompleteMatchProto input) {
         List<MatchClassification> displayTextClassifications = new ArrayList<>();
         List<MatchClassification> descriptionClassifications = new ArrayList<>();
 

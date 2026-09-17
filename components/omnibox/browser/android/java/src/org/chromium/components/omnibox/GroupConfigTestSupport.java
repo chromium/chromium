@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
+import org.chromium.components.omnibox.GroupsProto.GroupConfig.RenderType;
 import org.chromium.components.omnibox.GroupsProto.GroupSection;
 
 /**
@@ -31,14 +32,14 @@ public class GroupConfigTestSupport {
     public static GroupConfig SECTION_MOST_VISITED =
             GroupConfig.newBuilder()
                     .setSection(GroupSection.SECTION_MOBILE_MOST_VISITED)
-                    .setRenderType(GroupConfig.RenderType.HORIZONTAL)
+                    .setRenderType(RenderType.HORIZONTAL)
                     .build();
 
     /** Query Tiles group, with no header text and horizontal layout direction. */
     public static GroupConfig SECTION_QUERY_TILES =
             GroupConfig.newBuilder()
                     .setSection(GroupSection.SECTION_MOBILE_QUERY_TILES)
-                    .setRenderType(GroupConfig.RenderType.HORIZONTAL)
+                    .setRenderType(RenderType.HORIZONTAL)
                     .build();
 
     /** Suggestions with no headers, section 1. */
