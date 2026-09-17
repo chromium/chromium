@@ -6,9 +6,6 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -26,12 +23,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -39,6 +31,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
@@ -72,18 +65,6 @@ import java.util.concurrent.TimeoutException;
 @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
 @Batch(Batch.PER_CLASS)
 public class FinancialAccountsManagementFragmentTest {
-    @Rule public final AutofillTestRule rule = new AutofillTestRule();
-
-    @Rule
-    public final SettingsTestRule<FinancialAccountsManagementFragment>
-            mSettingsActivityTestRule =
-                    new SettingsTestRule<>(FinancialAccountsManagementFragment.class);
-
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
-
-    @Mock private Callback<String> mFinancialAccountManageLinkOpenerCallback;
-
     private static final GURL FINANCIAL_ACCOUNT_DISPLAY_ICON_URL = new GURL("http://example.com");
     private static final BankAccount PIX_BANK_ACCOUNT =
             new BankAccount.Builder()
@@ -115,6 +96,15 @@ public class FinancialAccountsManagementFragmentTest {
                     .setEwalletName("eWallet name")
                     .setAccountDisplayName("Ewallet account display name")
                     .build();
+
+    public final @Rule AutofillTestRule rule = new AutofillTestRule();
+
+    @Rule
+    public final SettingsTestRule<FinancialAccountsManagementFragment> mSettingsActivityTestRule =
+            new SettingsTestRule<>(FinancialAccountsManagementFragment.class);
+
+    private final PayloadCallbackHelper<String> mFinancialAccountManageLinkOpenerCallback =
+            new PayloadCallbackHelper<>();
 
     private AutofillTestHelper mAutofillTestHelper;
 
@@ -507,9 +497,13 @@ public class FinancialAccountsManagementFragmentTest {
                                 .sameAs(
                                         convertDrawableToBitmap(
                                                 ResourcesCompat.getDrawable(
-                                                        mSettingsActivityTestRule.getActivity().getResources(),
+                                                        mSettingsActivityTestRule
+                                                                .getActivity()
+                                                                .getResources(),
                                                         R.drawable.ic_account_balance,
-                                                        mSettingsActivityTestRule.getActivity().getTheme()))))
+                                                        mSettingsActivityTestRule
+                                                                .getActivity()
+                                                                .getTheme()))))
                 .isTrue();
     }
 
@@ -529,7 +523,8 @@ public class FinancialAccountsManagementFragmentTest {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putString(FinancialAccountsManagementFragment.TITLE_KEY, "Title");
 
-        SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
+        SettingsActivityInterface activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
 
         assertThat(activity.getTitle().toString()).isEqualTo("Title");
     }
@@ -538,7 +533,8 @@ public class FinancialAccountsManagementFragmentTest {
     @MediumTest
     @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testActivityTriggered_titleNotPresentInArgs_emptyTitle() {
-        SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        SettingsActivityInterface activity =
+                mSettingsActivityTestRule.startSettingsActivity(new Bundle());
 
         assertThat(activity.getTitle().toString()).isEmpty();
     }
@@ -568,9 +564,13 @@ public class FinancialAccountsManagementFragmentTest {
                                 .sameAs(
                                         convertDrawableToBitmap(
                                                 ResourcesCompat.getDrawable(
-                                                        mSettingsActivityTestRule.getActivity().getResources(),
+                                                        mSettingsActivityTestRule
+                                                                .getActivity()
+                                                                .getResources(),
                                                         R.drawable.ic_account_balance,
-                                                        mSettingsActivityTestRule.getActivity().getTheme()))))
+                                                        mSettingsActivityTestRule
+                                                                .getActivity()
+                                                                .getTheme()))))
                 .isTrue();
     }
 
@@ -580,7 +580,8 @@ public class FinancialAccountsManagementFragmentTest {
     @MediumTest
     public void testEwalletSwitchDisabled_eWalletRowItemsRemoved() throws TimeoutException {
         AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
-        SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        SettingsActivityInterface activity =
+                mSettingsActivityTestRule.startSettingsActivity(new Bundle());
         ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
         Preference eWalletPref = getEwalletPreference(activity, EWALLET_ACCOUNT);
         assertThat(eWalletPref).isNotNull();
@@ -602,7 +603,8 @@ public class FinancialAccountsManagementFragmentTest {
                 () -> {
                     getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_EWALLET, false);
                 });
-        SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        SettingsActivityInterface activity =
+                mSettingsActivityTestRule.startSettingsActivity(new Bundle());
         ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
         Preference eWalletPref = getEwalletPreference(activity, EWALLET_ACCOUNT);
         assertThat(eWalletPref).isNull();
@@ -620,7 +622,8 @@ public class FinancialAccountsManagementFragmentTest {
     @RequiresRestart("crbug.com/344671557")
     public void testPixSwitchDisabled_bankAccountPrefsRemoved() throws TimeoutException {
         AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
-        SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        SettingsActivityInterface activity =
+                mSettingsActivityTestRule.startSettingsActivity(new Bundle());
         ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
         Preference bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
         assertThat(bankAccountPref).isNotNull();
@@ -642,7 +645,8 @@ public class FinancialAccountsManagementFragmentTest {
                 () -> {
                     getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_PIX, false);
                 });
-        SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        SettingsActivityInterface activity =
+                mSettingsActivityTestRule.startSettingsActivity(new Bundle());
         ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
 
         Preference bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
@@ -682,7 +686,8 @@ public class FinancialAccountsManagementFragmentTest {
                         FinancialAccountsManagementFragment
                                 .FACILITATED_PAYMENTS_PIX_TOGGLE_UPDATED_HISTOGRAM,
                         true);
-        SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        SettingsActivityInterface activity =
+                mSettingsActivityTestRule.startSettingsActivity(new Bundle());
         ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
         assertThat(pixSwitch.isChecked()).isFalse();
 
@@ -704,7 +709,8 @@ public class FinancialAccountsManagementFragmentTest {
                         FinancialAccountsManagementFragment
                                 .FACILITATED_PAYMENTS_PIX_TOGGLE_UPDATED_HISTOGRAM,
                         false);
-        SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        SettingsActivityInterface activity =
+                mSettingsActivityTestRule.startSettingsActivity(new Bundle());
         ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
         assertThat(pixSwitch.isChecked()).isTrue();
 
@@ -728,7 +734,8 @@ public class FinancialAccountsManagementFragmentTest {
                         FinancialAccountsManagementFragment
                                 .FACILITATED_PAYMENTS_EWALLET_TOGGLE_UPDATED_HISTOGRAM,
                         true);
-        SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        SettingsActivityInterface activity =
+                mSettingsActivityTestRule.startSettingsActivity(new Bundle());
         ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
         assertThat(eWalletSwitch.isChecked()).isFalse();
 
@@ -750,7 +757,8 @@ public class FinancialAccountsManagementFragmentTest {
                         FinancialAccountsManagementFragment
                                 .FACILITATED_PAYMENTS_EWALLET_TOGGLE_UPDATED_HISTOGRAM,
                         false);
-        SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        SettingsActivityInterface activity =
+                mSettingsActivityTestRule.startSettingsActivity(new Bundle());
         ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
         assertThat(eWalletSwitch.isChecked()).isTrue();
 
@@ -770,16 +778,15 @@ public class FinancialAccountsManagementFragmentTest {
         mSettingsActivityTestRule
                 .getFragment()
                 .setFinancialAccountManageLinkOpenerCallbackForTesting(
-                        mFinancialAccountManageLinkOpenerCallback);
+                        mFinancialAccountManageLinkOpenerCallback::notifyCalled);
         Preference bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
 
         ThreadUtils.runOnUiThreadBlocking(bankAccountPref::performClick);
 
-        verify(mFinancialAccountManageLinkOpenerCallback)
-                .onResult(
-                        eq(
-                                "https://pay.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods&id="
-                                        + PIX_BANK_ACCOUNT.getInstrumentId()));
+        assertThat(mFinancialAccountManageLinkOpenerCallback.getOnlyPayloadBlocking())
+                .isEqualTo(
+                        "https://pay.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods&id="
+                                + PIX_BANK_ACCOUNT.getInstrumentId());
     }
 
     @Test
@@ -793,16 +800,15 @@ public class FinancialAccountsManagementFragmentTest {
         mSettingsActivityTestRule
                 .getFragment()
                 .setFinancialAccountManageLinkOpenerCallbackForTesting(
-                        mFinancialAccountManageLinkOpenerCallback);
+                        mFinancialAccountManageLinkOpenerCallback::notifyCalled);
         Preference bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
 
         ThreadUtils.runOnUiThreadBlocking(bankAccountPref::performClick);
 
-        verify(mFinancialAccountManageLinkOpenerCallback)
-                .onResult(
-                        eq(
-                                "https://pay.sandbox.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods&id="
-                                        + PIX_BANK_ACCOUNT.getInstrumentId()));
+        assertThat(mFinancialAccountManageLinkOpenerCallback.getOnlyPayloadBlocking())
+                .isEqualTo(
+                        "https://pay.sandbox.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods&id="
+                                + PIX_BANK_ACCOUNT.getInstrumentId());
     }
 
     private static PreferenceScreen getPreferenceScreen(SettingsActivityInterface activity) {
@@ -814,19 +820,22 @@ public class FinancialAccountsManagementFragmentTest {
         return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
     }
 
-    private static ChromeSwitchPreference getEwalletSwitchPreference(SettingsActivityInterface activity) {
+    private static ChromeSwitchPreference getEwalletSwitchPreference(
+            SettingsActivityInterface activity) {
         return (ChromeSwitchPreference)
                 getPreferenceScreen(activity)
                         .findPreference(FinancialAccountsManagementFragment.PREFERENCE_KEY_EWALLET);
     }
 
-    private static ChromeSwitchPreference getPixSwitchPreference(SettingsActivityInterface activity) {
+    private static ChromeSwitchPreference getPixSwitchPreference(
+            SettingsActivityInterface activity) {
         return (ChromeSwitchPreference)
                 getPreferenceScreen(activity)
                         .findPreference(FinancialAccountsManagementFragment.PREFERENCE_KEY_PIX);
     }
 
-    private static Preference getEwalletPreference(SettingsActivityInterface activity, Ewallet eWallet) {
+    private static Preference getEwalletPreference(
+            SettingsActivityInterface activity, Ewallet eWallet) {
         String eWalletPrefKey =
                 String.format(
                         FinancialAccountsManagementFragment.PREFERENCE_KEY_EWALLET_ACCOUNT,
