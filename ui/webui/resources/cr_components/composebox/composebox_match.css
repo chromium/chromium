@@ -87,6 +87,7 @@
 :host([suggest-style='default']) #iconContainer {
   align-items: center;
   display: flex;
+  flex-shrink: 0;
   justify-content: center;
   padding-inline-start:
       var(--cr-composebox-match-icon-container-padding-inline-start, 18px);
