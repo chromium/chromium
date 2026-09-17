@@ -54,13 +54,18 @@ void PowerMonitorDeviceSource::PlatformInit() {
       this,
       mac::ScopedIONotificationPortRef::Receiver(notification_port_).get(),
       &SystemPowerEventCallback, &notifier_);
-  DCHECK_NE(power_manager_port_, IO_OBJECT_NULL);
 
-  // Add the sleep/wake notification event source to the runloop.
-  CFRunLoopAddSource(
-      CFRunLoopGetCurrent(),
-      IONotificationPortGetRunLoopSource(notification_port_.get()),
-      kCFRunLoopCommonModes);
+  // Registration failure means PowerSuspendObserver implementations will not
+  // receive suspend/resume events. Continue with degraded functionality
+  // rather than crashing; the battery and thermal monitors do not depend on
+  // this registration.
+  if (power_manager_port_ != MACH_PORT_NULL) {
+    // Add the sleep/wake notification event source to the runloop.
+    CFRunLoopAddSource(
+        CFRunLoopGetCurrent(),
+        IONotificationPortGetRunLoopSource(notification_port_.get()),
+        kCFRunLoopCommonModes);
+  }
 
   battery_level_provider_ = BatteryLevelProvider::Create();
   // Get the initial battery power status and register for all
@@ -77,18 +82,21 @@ void PowerMonitorDeviceSource::PlatformInit() {
 }
 
 void PowerMonitorDeviceSource::PlatformDestroy() {
-  CFRunLoopRemoveSource(
-      CFRunLoopGetCurrent(),
-      IONotificationPortGetRunLoopSource(notification_port_.get()),
-      kCFRunLoopCommonModes);
+  // The notification resources are valid only if registration succeeded.
+  if (power_manager_port_ != MACH_PORT_NULL) {
+    CFRunLoopRemoveSource(
+        CFRunLoopGetCurrent(),
+        IONotificationPortGetRunLoopSource(notification_port_.get()),
+        kCFRunLoopCommonModes);
 
-  // Deregister for system power notifications.
-  IODeregisterForSystemPower(&notifier_);
+    // Deregister for system power notifications.
+    IODeregisterForSystemPower(&notifier_);
 
-  // Close the connection to the IOPMrootDomain that was opened in
-  // PlatformInit().
-  IOServiceClose(power_manager_port_);
-  power_manager_port_ = IO_OBJECT_NULL;
+    // Close the connection to the IOPMrootDomain that was opened in
+    // PlatformInit().
+    IOServiceClose(power_manager_port_);
+    power_manager_port_ = MACH_PORT_NULL;
+  }
 }
 
 PowerStateObserver::BatteryPowerStatus
