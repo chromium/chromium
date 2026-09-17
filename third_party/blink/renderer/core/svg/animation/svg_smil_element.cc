@@ -690,17 +690,14 @@ void SVGSMILElement::ParseAttribute(const AttributeModificationParams& params) {
       InstanceListChanged();
     }
   } else if (name == svg_names::kOnbeginAttr) {
-    SetAttributeEventListener(event_type_names::kBeginEvent,
-                              JSEventHandlerForContentAttribute::Create(
-                                  GetExecutionContext(), name, value));
+    SetElementAttributeEventListenerFromScriptBody(
+        event_type_names::kBeginEvent, name, value, params.reason);
   } else if (name == svg_names::kOnendAttr) {
-    SetAttributeEventListener(event_type_names::kEndEvent,
-                              JSEventHandlerForContentAttribute::Create(
-                                  GetExecutionContext(), name, value));
+    SetElementAttributeEventListenerFromScriptBody(event_type_names::kEndEvent,
+                                                   name, value, params.reason);
   } else if (name == svg_names::kOnrepeatAttr) {
-    SetAttributeEventListener(event_type_names::kRepeatEvent,
-                              JSEventHandlerForContentAttribute::Create(
-                                  GetExecutionContext(), name, value));
+    SetElementAttributeEventListenerFromScriptBody(
+        event_type_names::kRepeatEvent, name, value, params.reason);
   } else if (name == svg_names::kRestartAttr) {
     if (value == "never")
       restart_ = kRestartNever;

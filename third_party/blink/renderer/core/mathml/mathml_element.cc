@@ -137,9 +137,8 @@ void MathMLElement::ParseAttribute(const AttributeModificationParams& param) {
   const AtomicString& event_name =
       HTMLElement::EventNameForAttributeName(param.name);
   if (!event_name.IsNull()) {
-    SetAttributeEventListener(
-        event_name, JSEventHandlerForContentAttribute::Create(
-                        GetExecutionContext(), param.name, param.new_value));
+    SetElementAttributeEventListenerFromScriptBody(
+        event_name, param.name, param.new_value, param.reason);
     return;
   }
 

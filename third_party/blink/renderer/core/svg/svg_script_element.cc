@@ -44,11 +44,9 @@ SVGScriptElement::SVGScriptElement(Document& document,
 void SVGScriptElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kOnerrorAttr) {
-    SetAttributeEventListener(
-        event_type_names::kError,
-        JSEventHandlerForContentAttribute::Create(
-            GetExecutionContext(), params.name, params.new_value,
-            JSEventHandler::HandlerType::kOnErrorEventHandler));
+    SetElementAttributeEventListenerFromScriptBody(
+        event_type_names::kError, params.name, params.new_value, params.reason,
+        JSEventHandler::HandlerType::kOnErrorEventHandler);
   } else if (params.name == svg_names::kAsyncAttr &&
              RuntimeEnabledFeatures::SvgScriptElementAsyncAttributeEnabled()) {
     // https://html.spec.whatwg.org/C/#non-blocking

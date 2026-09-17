@@ -42,6 +42,7 @@
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -673,6 +674,27 @@ void InvalidateForCanvasTransformChange(LayoutObject* layout_object) {
       }
     }
   }
+}
+
+inline bool ShouldBlockInlineScriptAttributeSet(
+    ExecutionContext* context,
+    Element* target,
+    const EventListener* listener,
+    Element::AttributeModificationReason reason) {
+  if (!RuntimeEnabledFeatures::CheckCSPOnInlineScriptAttributeSetEnabled()) {
+    return false;
+  }
+
+  bool modified_by_author =
+      reason == Element::AttributeModificationReason::kDirectly ||
+      reason == Element::AttributeModificationReason::kByParser;
+  ContentSecurityPolicy* csp =
+      context ? context->GetContentSecurityPolicy() : nullptr;
+  return listener && modified_by_author && csp &&
+         !csp->AllowInline(ContentSecurityPolicy::InlineType::kScriptAttribute,
+                           target, listener->ScriptBody(), String(),
+                           context->Url().GetString(),
+                           TextPosition::BelowRangePosition());
 }
 
 }  // namespace
@@ -14184,6 +14206,48 @@ bool Element::SupportsBaseAppearance(AppearanceValue appearance_value) const {
     return SupportsBaseAppearanceInternal(*base_appearance_value);
   }
   return false;
+}
+
+void Element::SetElementAttributeEventListenerFromScriptBody(
+    const AtomicString& event_type_name,
+    const QualifiedName& attribute_name,
+    const AtomicString& script_body,
+    AttributeModificationReason reason,
+    JSEventHandler::HandlerType type) {
+  ExecutionContext* context = GetExecutionContext();
+  EventListener* listener = JSEventHandlerForContentAttribute::Create(
+      context, attribute_name, script_body, type);
+  if (!ShouldBlockInlineScriptAttributeSet(context, this, listener, reason)) {
+    SetAttributeEventListener(event_type_name, listener);
+  }
+}
+
+void Element::SetDocumentAttributeEventListenerFromScriptBody(
+    const AtomicString& event_type_name,
+    const QualifiedName& attribute_name,
+    const AtomicString& script_body,
+    AttributeModificationReason reason,
+    JSEventHandler::HandlerType type) {
+  ExecutionContext* context = GetExecutionContext();
+  EventListener* listener = JSEventHandlerForContentAttribute::Create(
+      context, attribute_name, script_body, type);
+  if (!ShouldBlockInlineScriptAttributeSet(context, this, listener, reason)) {
+    GetDocument().SetAttributeEventListener(event_type_name, listener);
+  }
+}
+
+void Element::SetWindowAttributeEventListenerFromScriptBody(
+    const AtomicString& event_type_name,
+    const QualifiedName& attribute_name,
+    const AtomicString& script_body,
+    AttributeModificationReason reason,
+    JSEventHandler::HandlerType type) {
+  ExecutionContext* context = GetExecutionContext();
+  EventListener* listener = JSEventHandlerForContentAttribute::Create(
+      context, attribute_name, script_body, type);
+  if (!ShouldBlockInlineScriptAttributeSet(context, this, listener, reason)) {
+    GetDocument().SetWindowAttributeEventListener(event_type_name, listener);
+  }
 }
 
 OverscrollAreaTracker& Element::EnsureOverscrollAreaTracker() {

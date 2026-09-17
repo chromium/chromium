@@ -34,6 +34,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_event_handler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -2330,6 +2331,27 @@ class CORE_EXPORT Element : public ContainerNode {
   virtual bool SupportsBaseAppearanceInternal(BaseAppearanceValue) const {
     return false;
   }
+
+  void SetElementAttributeEventListenerFromScriptBody(
+      const AtomicString& event_type_name,
+      const QualifiedName& attribute_name,
+      const AtomicString& script_body,
+      AttributeModificationReason,
+      JSEventHandler::HandlerType = JSEventHandler::HandlerType::kEventHandler);
+
+  void SetDocumentAttributeEventListenerFromScriptBody(
+      const AtomicString& event_type_name,
+      const QualifiedName& attribute_name,
+      const AtomicString& script_body,
+      AttributeModificationReason,
+      JSEventHandler::HandlerType = JSEventHandler::HandlerType::kEventHandler);
+
+  void SetWindowAttributeEventListenerFromScriptBody(
+      const AtomicString& event_type_name,
+      const QualifiedName& attribute_name,
+      const AtomicString& script_body,
+      AttributeModificationReason,
+      JSEventHandler::HandlerType = JSEventHandler::HandlerType::kEventHandler);
 
  private:
   friend class AXObject;

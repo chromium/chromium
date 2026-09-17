@@ -1,0 +1,290 @@
+<!doctype html>
+<meta http-equiv="Content-Security-Policy" content="script-src 'nonce-abc'; style-src 'self'">
+<script nonce="abc" src="/resources/testharness.js"></script>
+<script nonce="abc" src="/resources/testharnessreport.js"></script>
+
+<div id="parent"></div>
+<script nonce="abc">
+  promise_test(async t => {
+    document.body.setAttribute("onload", "void(0)");
+    document.body.setAttribute("onselectionchange", "void(0)");
+
+    var parent = document.getElementById("parent");
+
+    var input = document.createElement('input');
+    input.setAttribute("onsearch", "void(0)");
+    parent.appendChild(input);
+
+    var iframe_holder = document.createElement('div');
+    iframe_holder.innerHTML = `<iframe id="target_iframe" onbeforeunload="void(0)"></iframe>`;
+    var iframe = iframe_holder.firstChild;
+    parent.appendChild(iframe_holder);
+
+    var svg_ns = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(svg_ns, 'svg');
+    svg.setAttribute("onabort", "void(0)");
+    svg.setAttribute("onerror", "void(0)");
+    svg.setAttribute("onresize", "void(0)");
+    svg.setAttribute("onscroll", "void(0)");
+    svg.setAttribute("onunload", "void(0)");
+
+    var svg_rect = document.createElementNS(svg_ns, 'rect');
+    svg_rect.setAttribute("onclick", "void(0)");
+    svg.appendChild(svg_rect);
+    parent.appendChild(svg);
+
+    var svg_script = document.createElementNS(svg_ns, 'script');
+    svg_script.setAttribute("onerror", "void(0)");
+    svg.appendChild(svg_script);
+
+    var svg_animate = document.createElementNS(svg_ns, 'animate');
+    svg_animate.setAttribute("onbegin", "void(0)");
+    parent.appendChild(svg_animate);
+
+    var mathml_ns = 'http://www.w3.org/1998/Math/MathML';
+    var mathml_math = document.createElementNS(mathml_ns, 'math');
+    var mathml_mi = document.createElementNS(mathml_ns, 'mi');
+    mathml_mi.setAttribute("onclick", "void(0)");
+    mathml_math.appendChild(mathml_mi);
+    parent.appendChild(mathml_math);
+
+    var frameset = document.createElement('frameset');
+    frameset.setAttribute("onload", "void(0)");
+    parent.appendChild(frameset);
+
+    const documentEvents = new EventWatcher(t, document, ["securitypolicyviolation"]);
+    var document_event_count = 0;
+    const documentBodyEvents = new EventWatcher(t, document.body, ["securitypolicyviolation"]);
+    var document_body_event_count = 0;
+    const svgEvents = new EventWatcher(t, svg, ["securitypolicyviolation"]);
+    var svg_event_count = 0;
+
+    const timeout_promise = () => new Promise((_, reject) => t.step_timeout(
+        () => reject(new Error('Timed out waiting for securitypolicyviolation')), 1000));
+    const watcher_id = (index) => index === 0 ? `#${index}-${document_event_count}`
+                                : index === 1 ? `#${index}-${document_body_event_count}`
+                                : index === 4 ? `#${index}-${svg_event_count}`
+                                              : `#${index}`;
+    const get_failed_watchers = (results) => results.flatMap(
+        (r, i) => r.status !== "fulfilled" ? [ `${watcher_id(i)}: ${r.reason}` ] : []);
+
+    iframe.contentDocument.onsecuritypolicyviolation =
+        t.unreached_func("Should not be dispatched on the subframe document");
+
+    await Promise.allSettled([
+      Promise.race([documentEvents.wait_for("securitypolicyviolation")
+                        .then(e => {
+                          document_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 9);
+                          assert_in_array(e.columnNumber, [19, 31]);
+                          assert_equals(e.target, document.body);
+                          return documentEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          document_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 10);
+                          assert_in_array(e.columnNumber, [19, 31]);
+                          assert_equals(e.target, document.body);
+                          return documentEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          document_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 15);
+                          assert_in_array(e.columnNumber, [11, 23]);
+                          assert_equals(e.target, input);
+                          return documentEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          document_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 19);
+                          assert_in_array(e.columnNumber, [5, 29]);
+                          assert_equals(e.target, iframe);
+                          return documentEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          document_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 25);
+                          assert_in_array(e.columnNumber, [9, 21]);
+                          assert_equals(e.target, svg);
+                          return documentEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          document_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 26);
+                          assert_in_array(e.columnNumber, [9, 21]);
+                          assert_equals(e.target, svg);
+                          return documentEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          document_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 27);
+                          assert_in_array(e.columnNumber, [9, 21]);
+                          assert_equals(e.target, svg);
+                          return documentEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          document_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 28);
+                          assert_in_array(e.columnNumber, [9, 21]);
+                          assert_equals(e.target, svg);
+                          return documentEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          document_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 29);
+                          assert_in_array(e.columnNumber, [9, 21]);
+                          assert_equals(e.target, svg);
+                          return documentEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          document_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 32);
+                          assert_in_array(e.columnNumber, [14, 26]);
+                          assert_equals(e.target, svg_rect);
+                          return documentEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          document_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 37);
+                          assert_in_array(e.columnNumber, [16, 28]);
+                          assert_equals(e.target, svg_script);
+                          return documentEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          document_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 41);
+                          assert_in_array(e.columnNumber, [17, 29]);
+                          assert_equals(e.target, svg_animate);
+                          return documentEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          document_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 47);
+                          assert_in_array(e.columnNumber, [15, 27]);
+                          assert_equals(e.target, mathml_mi);
+                          return documentEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          document_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 52);
+                          assert_in_array(e.columnNumber, [14, 26]);
+                          assert_equals(e.target, frameset);
+                        }),
+                    timeout_promise()]),
+      Promise.race([documentBodyEvents.wait_for("securitypolicyviolation")
+                        .then(e => {
+                          document_body_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 9);
+                          assert_in_array(e.columnNumber, [19, 31]);
+                          assert_equals(e.target, document.body);
+                          return documentBodyEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          document_body_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 10);
+                          assert_in_array(e.columnNumber, [19, 31]);
+                          assert_equals(e.target, document.body);
+                          documentBodyEvents.stop_watching();
+                        }),
+                    timeout_promise()]),
+      Promise.race([new EventWatcher(t, input, ["securitypolicyviolation"])
+                        .wait_for("securitypolicyviolation").then(e => {
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 15);
+                          assert_in_array(e.columnNumber, [11, 23]);
+                          assert_equals(e.target, input);
+                        }),
+                    timeout_promise()]),
+      Promise.race([new EventWatcher(t, iframe, ["securitypolicyviolation"])
+                        .wait_for("securitypolicyviolation").then(e => {
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 19);
+                          assert_in_array(e.columnNumber, [5, 29]);
+                          assert_equals(e.target, iframe);
+                        }),
+                    timeout_promise()]),
+      Promise.race([svgEvents.wait_for("securitypolicyviolation")
+                        .then(e => {
+                          svg_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 25);
+                          assert_in_array(e.columnNumber, [9, 21]);
+                          assert_equals(e.target, svg);
+                          return svgEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          svg_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 26);
+                          assert_in_array(e.columnNumber, [9, 21]);
+                          assert_equals(e.target, svg);
+                          return svgEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          svg_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 27);
+                          assert_in_array(e.columnNumber, [9, 21]);
+                          assert_equals(e.target, svg);
+                          return svgEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          svg_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 28);
+                          assert_in_array(e.columnNumber, [9, 21]);
+                          assert_equals(e.target, svg);
+                          return svgEvents.wait_for("securitypolicyviolation");
+                        }).then(e => {
+                          svg_event_count++;
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 29);
+                          assert_in_array(e.columnNumber, [9, 21]);
+                          assert_equals(e.target, svg);
+                          svgEvents.stop_watching();
+                        }),
+                    timeout_promise()]),
+      Promise.race([new EventWatcher(t, svg_rect, ["securitypolicyviolation"])
+                        .wait_for("securitypolicyviolation").then(e => {
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 32);
+                          assert_in_array(e.columnNumber, [14, 26]);
+                          assert_equals(e.target, svg_rect);
+                        }),
+                    timeout_promise()]),
+      Promise.race([new EventWatcher(t, svg_script, ["securitypolicyviolation"])
+                        .wait_for("securitypolicyviolation").then(e => {
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 37);
+                          assert_in_array(e.columnNumber, [16, 28]);
+                          assert_equals(e.target, svg_script);
+                        }),
+                    timeout_promise()]),
+      Promise.race([new EventWatcher(t, svg_animate, ["securitypolicyviolation"])
+                        .wait_for("securitypolicyviolation").then(e => {
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 41);
+                          assert_in_array(e.columnNumber, [17, 29]);
+                          assert_equals(e.target, svg_animate);
+                        }),
+                    timeout_promise()]),
+      Promise.race([new EventWatcher(t, mathml_mi, ["securitypolicyviolation"])
+                        .wait_for("securitypolicyviolation").then(e => {
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 47);
+                          assert_in_array(e.columnNumber, [15, 27]);
+                          assert_equals(e.target, mathml_mi);
+                        }),
+                    timeout_promise()]),
+      Promise.race([new EventWatcher(t, frameset, ["securitypolicyviolation"])
+                        .wait_for("securitypolicyviolation").then(e => {
+                          assert_equals(e.blockedURI, "inline");
+                          assert_equals(e.lineNumber, 52);
+                          assert_in_array(e.columnNumber, [14, 26]);
+                          assert_equals(e.target, frameset);
+                        }),
+                    timeout_promise()]),
+    ]).then(t.step_func(results => {
+      assert_array_equals(get_failed_watchers(results), []);
+    }));
+  });
+</script>

@@ -509,9 +509,8 @@ void SVGElement::ParseAttribute(const AttributeModificationParams& params) {
   const AtomicString& event_name =
       HTMLElement::EventNameForAttributeName(params.name);
   if (!event_name.IsNull()) {
-    SetAttributeEventListener(
-        event_name, JSEventHandlerForContentAttribute::Create(
-                        GetExecutionContext(), params.name, params.new_value));
+    SetElementAttributeEventListenerFromScriptBody(
+        event_name, params.name, params.new_value, params.reason);
     return;
   }
 

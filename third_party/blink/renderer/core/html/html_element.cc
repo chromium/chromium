@@ -955,10 +955,8 @@ void HTMLElement::ParseAttribute(const AttributeModificationParams& params) {
   }
 
   if (triggers->event != g_null_atom) {
-    SetAttributeEventListener(
-        triggers->event,
-        JSEventHandlerForContentAttribute::Create(
-            GetExecutionContext(), params.name, params.new_value));
+    SetElementAttributeEventListenerFromScriptBody(
+        triggers->event, params.name, params.new_value, params.reason);
   }
 
   if (triggers->web_feature != kNoWebFeature) {

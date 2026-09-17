@@ -158,109 +158,78 @@ void HTMLFrameSetElement::ParseAttribute(
       }
     }
   } else if (name == html_names::kOnafterprintAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kAfterprint,
-        JSEventHandlerForContentAttribute::Create(GetExecutionContext(), name,
-                                                  value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kAfterprint,
+                                                  name, value, params.reason);
   } else if (name == html_names::kOnbeforeprintAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kBeforeprint,
-        JSEventHandlerForContentAttribute::Create(GetExecutionContext(), name,
-                                                  value));
+    SetWindowAttributeEventListenerFromScriptBody(
+        event_type_names::kBeforeprint, name, value, params.reason);
   } else if (name == html_names::kOnloadAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kLoad, JSEventHandlerForContentAttribute::Create(
-                                     GetExecutionContext(), name, value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kLoad, name,
+                                                  value, params.reason);
   } else if (name == html_names::kOnbeforeunloadAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kBeforeunload,
-        JSEventHandlerForContentAttribute::Create(
-            GetExecutionContext(), name, value,
-            JSEventHandler::HandlerType::kOnBeforeUnloadEventHandler));
+    SetWindowAttributeEventListenerFromScriptBody(
+        event_type_names::kBeforeunload, name, value, params.reason,
+        JSEventHandler::HandlerType::kOnBeforeUnloadEventHandler);
   } else if (name == html_names::kOnunloadAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kUnload, JSEventHandlerForContentAttribute::Create(
-                                       GetExecutionContext(), name, value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kUnload,
+                                                  name, value, params.reason);
   } else if (name == html_names::kOnpagehideAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kPagehide, JSEventHandlerForContentAttribute::Create(
-                                         GetExecutionContext(), name, value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kPagehide,
+                                                  name, value, params.reason);
   } else if (name == html_names::kOnpageshowAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kPageshow, JSEventHandlerForContentAttribute::Create(
-                                         GetExecutionContext(), name, value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kPageshow,
+                                                  name, value, params.reason);
   } else if (name == html_names::kOnblurAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kBlur, JSEventHandlerForContentAttribute::Create(
-                                     GetExecutionContext(), name, value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kBlur, name,
+                                                  value, params.reason);
   } else if (name == html_names::kOnerrorAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kError,
-        JSEventHandlerForContentAttribute::Create(
-            GetExecutionContext(), name, value,
-            JSEventHandler::HandlerType::kOnErrorEventHandler));
+    SetWindowAttributeEventListenerFromScriptBody(
+        event_type_names::kError, name, value, params.reason,
+        JSEventHandler::HandlerType::kOnErrorEventHandler);
   } else if (name == html_names::kOnfocusAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kFocus, JSEventHandlerForContentAttribute::Create(
-                                      GetExecutionContext(), name, value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kFocus,
+                                                  name, value, params.reason);
   } else if (name == html_names::kOnfocusinAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kFocusin, JSEventHandlerForContentAttribute::Create(
-                                        GetExecutionContext(), name, value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kFocusin,
+                                                  name, value, params.reason);
   } else if (name == html_names::kOnfocusoutAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kFocusout, JSEventHandlerForContentAttribute::Create(
-                                         GetExecutionContext(), name, value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kFocusout,
+                                                  name, value, params.reason);
   } else if (RuntimeEnabledFeatures::OrientationEventEnabled() &&
              name == html_names::kOnorientationchangeAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kOrientationchange,
-        JSEventHandlerForContentAttribute::Create(GetExecutionContext(), name,
-                                                  value));
+    SetWindowAttributeEventListenerFromScriptBody(
+        event_type_names::kOrientationchange, name, value, params.reason);
   } else if (name == html_names::kOnhashchangeAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kHashchange,
-        JSEventHandlerForContentAttribute::Create(GetExecutionContext(), name,
-                                                  value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kHashchange,
+                                                  name, value, params.reason);
   } else if (name == html_names::kOnmessageAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kMessage, JSEventHandlerForContentAttribute::Create(
-                                        GetExecutionContext(), name, value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kMessage,
+                                                  name, value, params.reason);
   } else if (name == html_names::kOnresizeAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kResize, JSEventHandlerForContentAttribute::Create(
-                                       GetExecutionContext(), name, value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kResize,
+                                                  name, value, params.reason);
   } else if (name == html_names::kOnscrollAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kScroll, JSEventHandlerForContentAttribute::Create(
-                                       GetExecutionContext(), name, value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kScroll,
+                                                  name, value, params.reason);
   } else if (name == html_names::kOnstorageAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kStorage, JSEventHandlerForContentAttribute::Create(
-                                        GetExecutionContext(), name, value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kStorage,
+                                                  name, value, params.reason);
   } else if (name == html_names::kOnonlineAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kOnline, JSEventHandlerForContentAttribute::Create(
-                                       GetExecutionContext(), name, value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kOnline,
+                                                  name, value, params.reason);
   } else if (name == html_names::kOnofflineAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kOffline, JSEventHandlerForContentAttribute::Create(
-                                        GetExecutionContext(), name, value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kOffline,
+                                                  name, value, params.reason);
   } else if (name == html_names::kOnpopstateAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kPopstate, JSEventHandlerForContentAttribute::Create(
-                                         GetExecutionContext(), name, value));
+    SetWindowAttributeEventListenerFromScriptBody(event_type_names::kPopstate,
+                                                  name, value, params.reason);
   } else if (name == html_names::kOnlanguagechangeAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kLanguagechange,
-        JSEventHandlerForContentAttribute::Create(GetExecutionContext(), name,
-                                                  value));
+    SetWindowAttributeEventListenerFromScriptBody(
+        event_type_names::kLanguagechange, name, value, params.reason);
   } else if (RuntimeEnabledFeatures::TimeZoneChangeEventEnabled() &&
              name == html_names::kOntimezonechangeAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kTimezonechange,
-        JSEventHandlerForContentAttribute::Create(GetExecutionContext(), name,
-                                                  value));
+    SetWindowAttributeEventListenerFromScriptBody(
+        event_type_names::kTimezonechange, name, value, params.reason);
   } else {
     HTMLElement::ParseAttribute(params);
   }

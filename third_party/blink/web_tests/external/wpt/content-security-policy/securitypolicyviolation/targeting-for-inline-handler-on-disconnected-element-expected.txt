@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] targeting-for-inline-handler-on-disconnected-element
-  assert_equals: expected 11 but got 12
-Harness: the test ran to completion.
-

@@ -993,9 +993,8 @@ void HTMLInputElement::ParseAttribute(
   } else if (name == html_names::kOnsearchAttr) {
     // Search field and slider attributes all just cause updateFromElement to be
     // called through style recalcing.
-    SetAttributeEventListener(event_type_names::kSearch,
-                              JSEventHandlerForContentAttribute::Create(
-                                  GetExecutionContext(), name, value));
+    SetElementAttributeEventListenerFromScriptBody(event_type_names::kSearch,
+                                                   name, value, params.reason);
   } else if (name == html_names::kIncrementalAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kIncrementalAttribute);
   } else if (name == html_names::kMinAttr) {

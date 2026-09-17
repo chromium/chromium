@@ -1190,6 +1190,15 @@
       status: "stable",
     },
     {
+      // Run the CSP "Should element's inline behavior be blocked?" check when
+      // an event handler content attribute is set to an inline script.
+      // See the specs:
+      // https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-content-attributes
+      // https://w3c.github.io/webappsec-csp/#should-block-inline
+      name: "CheckCSPOnInlineScriptAttributeSet",
+      status: "stable",
+    },
+    {
       name: "CheckVisibilityExtraProperties",
       status: "stable",
     },
