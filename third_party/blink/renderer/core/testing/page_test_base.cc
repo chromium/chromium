@@ -214,8 +214,8 @@ void PageTestBase::TearDown() {
   // `~SimpleFontData`. So we have to decouple FontFallbackList from the
   // initial style. `FontFallbackList` will be recreated by
   // `EnsureFallbackList()` if needed.
-  const_cast<ComputedStyle*>(ComputedStyle::GetInitialStyleSingleton())
-      ->GetFont()
+  const_cast<ComputedStyle&>(ComputedStyle::GetInitialStyleSingleton())
+      .GetFont()
       ->NullifyForTesting();
 }
 

@@ -2378,10 +2378,10 @@ float StyleResolver::InitialZoom() const {
   return 1;
 }
 
-const ComputedStyle* StyleResolver::CreateInitialStyle() const {
-  ComputedStyleBuilder builder(*ComputedStyle::GetInitialStyleSingleton());
+const ComputedStyle& StyleResolver::CreateInitialStyle() const {
+  ComputedStyleBuilder builder(ComputedStyle::GetInitialStyleSingleton());
   SetZoomedInitialLineWidths(InitialZoom(), builder);
-  return builder.TakeStyle();
+  return *builder.TakeStyle();
 }
 
 ComputedStyleBuilder StyleResolver::InitialStyleBuilderForElement() const {

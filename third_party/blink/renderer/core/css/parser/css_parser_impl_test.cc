@@ -1434,7 +1434,7 @@ TEST(CSSParserImplTest, AllPropertiesCanParseImportant) {
   Document* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
   const ComputedStyle& initial_style =
-      *ComputedStyle::GetInitialStyleSingleton();
+      ComputedStyle::GetInitialStyleSingleton();
 
   int broken_properties = 0;
 

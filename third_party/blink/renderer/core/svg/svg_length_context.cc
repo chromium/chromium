@@ -130,7 +130,7 @@ const ComputedStyle* SVGLengthContext::ComputedStyleForLengthResolving(
   }
   // We can end up here if trying to resolve values for elements in an
   // inactive document.
-  return ComputedStyle::GetInitialStyleSingleton();
+  return &ComputedStyle::GetInitialStyleSingleton();
 }
 
 float SVGLengthContext::GetZoom() const {

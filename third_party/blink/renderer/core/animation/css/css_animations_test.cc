@@ -3457,7 +3457,7 @@ class AnimatedSourcePropertyTest
   String Value() const {
     return ComputedStyleUtils::ComputedPropertyValue(
                CSSProperty::Get(GetParam()),
-               *ComputedStyle::GetInitialStyleSingleton())
+               ComputedStyle::GetInitialStyleSingleton())
         ->CssText();
   }
 };

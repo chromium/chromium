@@ -20,9 +20,8 @@ class StyleAnimatedSourcesTest : public PageTestBase {
 TEST_F(StyleAnimatedSourcesTest, AvoidsCopyOnWriteWhenSettingIdenticalSources) {
   SetBodyInnerHTML("<div id=a></div>");
   Element* a = GetElementById("a");
-  const ComputedStyle* initial = ComputedStyle::GetInitialStyleSingleton();
 
-  ComputedStyleBuilder builder(*initial);
+  ComputedStyleBuilder builder(ComputedStyle::GetInitialStyleSingleton());
   builder.SetAnimatedSource(CSSPropertyID::kOpacity, *a);
   const ComputedStyle* style1 = builder.TakeStyle();
 

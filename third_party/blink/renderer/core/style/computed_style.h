@@ -174,7 +174,7 @@ class TextDecoration;
 // Blink. It acts as a container where the computed value of every CSS property
 // can be retrieved after its created using a builder.
 //
-//   ComputedStyleBuilder builder(*ComputedStyle::GetInitialStyleSingleton());
+//   ComputedStyleBuilder builder(ComputedStyle::GetInitialStyleSingleton());
 //   builder.SetDisplay(EDisplay::kNone); //'display' keyword property
 //   auto style = builder.TakeStyle();
 //   style->Display();
@@ -354,7 +354,7 @@ class ComputedStyle final : public ComputedStyleBase {
   // Singletons to be used for StyleBuilder. The instances are
   // context-independent and must always be used as `const` versions to avoid
   // pollution of the style. Instances are allocated as per-thread singletons.
-  CORE_EXPORT static const ComputedStyle* GetInitialStyleSingleton();
+  CORE_EXPORT static const ComputedStyle& GetInitialStyleSingleton();
 
   static const ComputedStyle* NullifyEnsured(const ComputedStyle* style) {
     if (!style) {
@@ -971,7 +971,7 @@ class ComputedStyle final : public ComputedStyleBase {
   void SetChildHasExplicitInheritance() const {
     // Child-dependent flags are contextual, and must not mutate the shared
     // initial-style singleton.
-    DCHECK(this != GetInitialStyleSingleton());
+    DCHECK(this != &GetInitialStyleSingleton());
     ComputedStyleBase::SetChildHasExplicitInheritance();
   }
 

@@ -179,7 +179,7 @@ PseudoElementStyleCache& ComputedStyle::EnsurePseudoElementStyleCache() const {
   return *cached_data_->pseudo_element_styles_;
 }
 
-const ComputedStyle* ComputedStyle::GetInitialStyleSingleton() {
+const ComputedStyle& ComputedStyle::GetInitialStyleSingleton() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       ThreadSpecific<Persistent<const ComputedStyle>>,
       thread_specific_initial_style, ());
@@ -188,7 +188,7 @@ const ComputedStyle* ComputedStyle::GetInitialStyleSingleton() {
     persistent = MakeGarbageCollected<ComputedStyle>(PassKey());
     LEAK_SANITIZER_IGNORE_OBJECT(&persistent);
   }
-  return persistent.Get();
+  return *persistent;
 }
 
 Vector<AtomicString>* ComputedStyle::GetVariableNamesCache() const {
