@@ -341,16 +341,15 @@ Canvas2DResourceProvider::ProduceCanvasResource() {
 
   if (IsSoftware()) {
     DCHECK(GetSkSurface());
-    scoped_refptr<CanvasResource> output_resource = NewOrRecycledResource();
+    scoped_refptr<CanvasResourceSharedImage> output_resource =
+        NewOrRecycledResource();
     if (!output_resource) {
       return nullptr;
     }
 
-    // Note that the resource *must* be a CanvasResourceSharedImage as this
-    // class creates CanvasResourceSharedImage instances exclusively.
-    static_cast<CanvasResourceSharedImage*>(output_resource.get())
-        ->UploadSoftwareRenderingResults(GetSkSurface());
+    output_resource->UploadSoftwareRenderingResults(GetSkSurface());
 
+    CHECK(!output_resource->CreatesAcceleratedTransferableResources());
     return output_resource;
   }
 
@@ -362,6 +361,10 @@ Canvas2DResourceProvider::ProduceCanvasResource() {
   // backing SharedImage). Hence, we must make sure that we give up any write
   // access.
   EndWriteAccess();
+
+  if (resource_) {
+    CHECK(resource_->CreatesAcceleratedTransferableResources());
+  }
 
   return resource_;
 }
