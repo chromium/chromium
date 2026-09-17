@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SESSIONS_CORE_LIVE_TAB_H_
 #define COMPONENTS_SESSIONS_CORE_LIVE_TAB_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/serialized_user_agent_override.h"
 #include "components/sessions/core/session_id.h"
@@ -40,6 +41,9 @@ class SESSIONS_EXPORT LiveTab {
 
   // Returns the user agent override, if any.
   virtual SerializedUserAgentOverride GetUserAgentOverride() = 0;
+
+  // Returns a WeakPtr that is invalidated when the tab is destroyed.
+  virtual base::WeakPtr<LiveTab> GetWeakPtr() = 0;
 };
 
 }  // namespace sessions
