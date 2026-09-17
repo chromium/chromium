@@ -13,6 +13,7 @@ import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.view.DragEvent;
 import android.view.GestureDetector;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.view.Window;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -205,6 +207,9 @@ public class VerticalTabListCoordinator {
     private @Nullable VerticalTabListItemTouchHelperCallback mMainTouchHelperCallback;
     private @Nullable StripDragShadowView mDragShadowView;
     private @Nullable MultiThumbnailCardProvider mMultiThumbnailCardProvider;
+
+    /** Decor view the drag-end relay is installed on while a rail-initiated drag is in flight. */
+    private @Nullable View mDragEndRelayView;
 
     private boolean mIsActive;
     private boolean mIsInTransition;
@@ -967,6 +972,7 @@ public class VerticalTabListCoordinator {
         if (mBackPressManager.has(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG)) {
             mBackPressManager.removeHandler(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
         }
+        removeDragEndRelay();
         for (TabSwitcherDragHandler dragHandler : mTabSwitcherDragHandlers) {
             dragHandler.destroy();
         }
@@ -1391,6 +1397,10 @@ public class VerticalTabListCoordinator {
 
                     initDragShadowView(viewHolder.itemView.getContext());
 
+                    // Installed before the drag starts: ACTION_DRAG_STARTED is dispatched
+                    // asynchronously, but only a view that already has a listener can claim it.
+                    installDragEndRelay(dragHandler);
+
                     boolean dragStarted;
                     if (isGroupHeader) {
                         if (mDragShadowView != null) {
@@ -1418,6 +1428,7 @@ public class VerticalTabListCoordinator {
                     }
 
                     if (!dragStarted) {
+                        removeDragEndRelay();
                         if (mDragShadowView != null) {
                             mDragShadowView.clear();
                         }
@@ -1494,6 +1505,78 @@ public class VerticalTabListCoordinator {
         dragHandler.setTabModelSelector(tabModelSelector);
         mTabSwitcherDragHandlers.add(dragHandler);
         return dragHandler;
+    }
+
+    /**
+     * Installs a relay on the window's decor view that forwards {@code ACTION_DRAG_ENDED} to {@code
+     * dragHandler} when no rail view is able to receive it.
+     *
+     * <p>Every drag listener of the rail lives on a rail view: the two {@link RecyclerView}s, the
+     * rail container and the new tab button. All of them sit in the subtree that {@code
+     * SideUiCoordinatorImpl} removes from the anchor container ({@code
+     * anchorContainer.removeView(sideUiContainerView)}) when the window is resized below the width
+     * that shows vertical tabs. {@code ViewGroup#removeViewInternal()} drops the removed child from
+     * {@code mChildrenInterestedInDrag} and {@code ViewGroup#dispatchDetachedFromWindow()} clears
+     * the detached subtree's own drag bookkeeping, so from then on no rail view is sent {@code
+     * ACTION_DRAG_ENDED}: {@link TabSwitcherDragHandler} never reaches {@code finishDrag()}, the
+     * process-wide {@link DragDropGlobalState} is never released, and the tabbed activity's drag
+     * touch observer ({@code e -> DragDropGlobalState.hasValue()}) then swallows every touch in
+     * every Chrome window of the process.
+     *
+     * <p>The decor view outlives the rail, so it is used purely as a delivery point. The relay
+     * claims {@code ACTION_DRAG_STARTED}, because only views that claim it are sent {@code
+     * ACTION_DRAG_ENDED}, and forwards nothing but that end event. Forwarding the event rather than
+     * open-coding a teardown is deliberate: the handler's normal end path both releases the drag
+     * state and restores the rail through {@code handleExternalDragEnd()} - dragged item, single
+     * item min height, drag shadow, drop indicators, delegate reset - so the rail is intact when
+     * the window is widened again.
+     *
+     * <p>A view has a single {@code OnDragListener} slot. Nothing else in Chrome sets one on a
+     * decor view; do not add a second one without merging it with this.
+     *
+     * @param dragHandler The drag handler to forward {@code ACTION_DRAG_ENDED} to.
+     */
+    private void installDragEndRelay(TabSwitcherDragHandler dragHandler) {
+        removeDragEndRelay();
+
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (activity == null) return;
+        Window window = activity.getWindow();
+        if (window == null) return;
+        // peekDecorView() rather than getDecorView(), so that starting a drag never inflates one.
+        View decorView = window.peekDecorView();
+        if (decorView == null) return;
+
+        mDragEndRelayView = decorView;
+        decorView.setOnDragListener(
+                (view, dragEvent) -> {
+                    switch (dragEvent.getAction()) {
+                        case DragEvent.ACTION_DRAG_STARTED:
+                            // Claiming is what makes ACTION_DRAG_ENDED get delivered here. Never
+                            // claim a drop: the real drop targets are descendants of the decor
+                            // view and beat it in ViewGroup#findFrontmostDroppableChildAt.
+                            return true;
+                        case DragEvent.ACTION_DRAG_ENDED:
+                            removeDragEndRelay();
+                            // False once an attached rail listener has already handled this same
+                            // event: a ViewGroup runs its own drag listener after its children's,
+                            // and finishDrag() has cleared the handler's drag source by then.
+                            if (dragHandler.isDragSource()) {
+                                dragHandler.onDrag(view, dragEvent);
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                });
+    }
+
+    /** Uninstalls the drag-end relay. No-op when it is not installed. */
+    private void removeDragEndRelay() {
+        if (mDragEndRelayView == null) return;
+
+        mDragEndRelayView.setOnDragListener(null);
+        mDragEndRelayView = null;
     }
 
     private void clearDropIndicators() {

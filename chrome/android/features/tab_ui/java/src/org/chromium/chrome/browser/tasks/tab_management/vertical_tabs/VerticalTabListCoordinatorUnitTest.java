@@ -4795,4 +4795,121 @@ public class VerticalTabListCoordinatorUnitTest {
         assertEquals(expectedCap, extraLayoutSpace[0]);
         assertEquals(expectedCap, extraLayoutSpace[1]);
     }
+
+    /**
+     * Robolectric's bare Activity has no content view, so peekDecorView() would return null and the
+     * relay would never be installed. A real Chrome activity sets content during startup.
+     */
+    private View ensureDecorView() {
+        return mActivity.getWindow().getDecorView();
+    }
+
+    private static View.OnDragListener getOnDragListener(View view) {
+        Object listenerInfo = ReflectionHelpers.getField(view, "mListenerInfo");
+        if (listenerInfo == null) return null;
+        return ReflectionHelpers.getField(listenerInfo, "mOnDragListener");
+    }
+
+    private static DragEvent mockDragEvent(int action, boolean result) {
+        DragEvent dragEvent = mock(DragEvent.class);
+        when(dragEvent.getAction()).thenReturn(action);
+        when(dragEvent.getResult()).thenReturn(result);
+        return dragEvent;
+    }
+
+    /** Starts a rail drag out of the main list and returns the relay left on the decor view. */
+    private View.OnDragListener dragOutAndCaptureRelay() {
+        View decorView = ensureDecorView();
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+        model.set(TabProperties.IS_PINNED, false);
+        when(mMainTabSwitcherDragHandler.startTabDragAction(any(), any(), any(), any()))
+                .thenReturn(true);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        View.OnDragListener relay = getOnDragListener(decorView);
+        assertNotNull("A drag-end relay must be installed while a rail drag is in flight.", relay);
+        return relay;
+    }
+
+    @Test
+    public void testDragEndRelay_ClaimsDragStartedOnlyAndForwardsNothingElse() {
+        prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mMockTab1);
+        createCoordinator();
+        View decorView = ensureDecorView();
+        View.OnDragListener relay = dragOutAndCaptureRelay();
+
+        // Claiming ACTION_DRAG_STARTED is the only thing that guarantees ACTION_DRAG_ENDED.
+        assertTrue(relay.onDrag(decorView, mockDragEvent(DragEvent.ACTION_DRAG_STARTED, false)));
+        // Claiming anything else would steal events from the rail and the content below it.
+        assertFalse(relay.onDrag(decorView, mockDragEvent(DragEvent.ACTION_DROP, false)));
+        assertFalse(relay.onDrag(decorView, mockDragEvent(DragEvent.ACTION_DRAG_LOCATION, false)));
+        verify(mMainTabSwitcherDragHandler, never()).onDrag(any(), any());
+    }
+
+    @Test
+    public void testDragEndRelay_RailDetachedMidDrag_ForwardsDragEndedToHandler() {
+        prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mMockTab1);
+        createCoordinator();
+        View decorView = ensureDecorView();
+        View.OnDragListener relay = dragOutAndCaptureRelay();
+
+        // The rail subtree was removed from the anchor container, so no rail listener was able to
+        // end the drag and the handler still owns it.
+        when(mMainTabSwitcherDragHandler.isDragSource()).thenReturn(true);
+        DragEvent dragEnded = mockDragEvent(DragEvent.ACTION_DRAG_ENDED, /* result= */ false);
+
+        assertFalse(relay.onDrag(decorView, dragEnded));
+
+        verify(mMainTabSwitcherDragHandler).onDrag(decorView, dragEnded);
+        assertNull("The relay must uninstall itself with the drag.", getOnDragListener(decorView));
+    }
+
+    @Test
+    public void testDragEndRelay_RailStillAttached_DoesNotHandleTheEndTwice() {
+        prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mMockTab1);
+        createCoordinator();
+        View decorView = ensureDecorView();
+        View.OnDragListener relay = dragOutAndCaptureRelay();
+
+        // A rail listener already ran the handler's end path for this event, clearing its source.
+        when(mMainTabSwitcherDragHandler.isDragSource()).thenReturn(false);
+
+        relay.onDrag(decorView, mockDragEvent(DragEvent.ACTION_DRAG_ENDED, /* result= */ true));
+
+        verify(mMainTabSwitcherDragHandler, never()).onDrag(any(), any());
+    }
+
+    @Test
+    public void testDragOut_DragFailsToStart_RemovesRelay() {
+        prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mMockTab1);
+        createCoordinator();
+        when(mMainTabSwitcherDragHandler.startTabDragAction(any(), any(), any(), any()))
+                .thenReturn(false);
+        View decorView = ensureDecorView();
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        assertNull(getOnDragListener(decorView));
+    }
+
+    @Test
+    public void testDestroy_RemovesDragEndRelay() {
+        prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mMockTab1);
+        createCoordinator();
+        View decorView = ensureDecorView();
+        dragOutAndCaptureRelay();
+
+        mCoordinator.destroy();
+
+        assertNull(getOnDragListener(decorView));
+    }
 }
