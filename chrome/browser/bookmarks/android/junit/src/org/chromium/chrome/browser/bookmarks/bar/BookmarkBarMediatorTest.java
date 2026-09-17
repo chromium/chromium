@@ -469,6 +469,60 @@ public class BookmarkBarMediatorTest {
     }
 
     @Test
+    public void testPopupMenuItemClickListener_ShiftClick_Url() {
+        BookmarkId desktopFolderId = mBookmarkModel.getDesktopFolderId();
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        desktopFolderId, 0, "Popup Bookmark", JUnitTestGURLs.URL_1);
+
+        ModelList modelList =
+                mMediator.buildMenuModelListForFolder(mBookmarkModel, desktopFolderId);
+        ListItem listItem = modelList.get(0);
+
+        // Simulate Shift Key active in Touch events to fake state
+        MotionEvent downEvent = mock(MotionEvent.class);
+        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(downEvent.getMetaState()).thenReturn(KeyEvent.META_SHIFT_ON);
+        listItem.model
+                .get(ListMenuItemProperties.TOUCH_LISTENER)
+                .onTouch(new View(mActivity), downEvent);
+
+        View.OnClickListener listener = listItem.model.get(ListMenuItemProperties.CLICK_LISTENER);
+        listener.onClick(new View(mActivity));
+
+        verify(mBookmarkOpener).openBookmarksInNewWindow(eq(List.of(bookmarkId)), eq(false));
+        verify(mPopupCoordinator).dismiss();
+    }
+
+    @Test
+    public void testPopupMenuItemClickListener_ShiftClick_Folder() {
+        BookmarkId desktopFolderId = mBookmarkModel.getDesktopFolderId();
+        BookmarkId folderId = mBookmarkModel.addFolder(desktopFolderId, 0, "Test Folder");
+        mBookmarkModel.addBookmark(folderId, 0, "B1", JUnitTestGURLs.URL_1);
+
+        ModelList modelList =
+                mMediator.buildMenuModelListForFolder(mBookmarkModel, desktopFolderId);
+        ListItem listItem = modelList.get(0); // Should be the Test Folder
+
+        // Simulate Shift Key active
+        MotionEvent downEvent = mock(MotionEvent.class);
+        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(downEvent.getMetaState()).thenReturn(KeyEvent.META_SHIFT_ON);
+        listItem.model
+                .get(ListMenuItemProperties.TOUCH_LISTENER)
+                .onTouch(new View(mActivity), downEvent);
+
+        View.OnClickListener listener = listItem.model.get(ListMenuItemProperties.CLICK_LISTENER);
+        listener.onClick(new View(mActivity));
+
+        // For folders, Shift click should just do regular click (no new window, no new tabs, no
+        // dismiss)
+        verify(mBookmarkOpener, never()).openBookmarksInNewWindow(any(), anyBoolean());
+        verify(mBookmarkOpener, never()).openFolderBookmarksInNewTabs(any(), anyBoolean(), any());
+        verify(mPopupCoordinator, never()).dismiss();
+    }
+
+    @Test
     public void testPopupMenuItemTouchListener_PrimaryClickNotConsumed() {
         BookmarkId desktopFolderId = mBookmarkModel.getDesktopFolderId();
         mBookmarkModel.addBookmark(desktopFolderId, 0, "Popup Bookmark", JUnitTestGURLs.URL_1);

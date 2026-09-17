@@ -391,14 +391,12 @@ class BookmarkBarMediator
             return;
         }
 
-        final Profile profile = assertNonNull(mProfileSupplier.get());
         final boolean isCtrlPressed = (metaState & KeyEvent.META_CTRL_ON) != 0;
+        final boolean isShiftPressed = (metaState & KeyEvent.META_SHIFT_ON) != 0;
         final boolean isMiddleClick = (buttonState & MotionEvent.BUTTON_TERTIARY) != 0;
 
         if (item.isFolder()) {
-            if (isCtrlPressed || isMiddleClick) {
-                openBookmarkItemInNewTabs(item, profile.isOffTheRecord());
-            } else {
+            if (!openBookmarkItem(item, isCtrlPressed, isShiftPressed, isMiddleClick)) {
                 // Get the view of the folder that was clicked.
                 View anchorView = getAnchorViewForBookmark(item);
                 if (anchorView == null) return;
@@ -416,12 +414,43 @@ class BookmarkBarMediator
         }
 
         BookmarkBarUtils.recordClick(BookmarkBarClickType.BOOKMARK_BAR_URL);
-        if (isCtrlPressed || isMiddleClick) {
-            openBookmarkItemInNewTabs(item, profile.isOffTheRecord());
-            return;
+        openBookmarkItem(item, isCtrlPressed, isShiftPressed, isMiddleClick);
+    }
+
+    /**
+     * Handles opening a bookmark item (URL or folder) according to modifier keys.
+     *
+     * @return True if an open action was performed (in current tab, new tab, or new window); false
+     *     if the item is a folder and no modifier action was taken (meaning standard folder
+     *     expansion should proceed).
+     */
+    private boolean openBookmarkItem(
+            BookmarkItem item,
+            boolean isCtrlPressed,
+            boolean isShiftPressed,
+            boolean isMiddleClick) {
+        final Profile profile = assertNonNull(mProfileSupplier.get());
+        final boolean isOffTheRecord = profile.isOffTheRecord();
+
+        if (item.isFolder()) {
+            if (isCtrlPressed || isMiddleClick) {
+                openBookmarkItemInNewTabs(item, isOffTheRecord);
+                return true;
+            }
+            // For folders, Shift has no special open effect and is treated as a regular click to
+            // trigger folder expansion, maintaining parity with desktop Chrome bookmarks bar
+            // behavior.
+            return false;
         }
 
-        mBookmarkOpener.openBookmarkInCurrentTab(item.getId(), profile.isOffTheRecord());
+        if (isCtrlPressed || isMiddleClick) {
+            openBookmarkItemInNewTabs(item, isOffTheRecord);
+        } else if (isShiftPressed) {
+            mBookmarkOpener.openBookmarksInNewWindow(List.of(item.getId()), isOffTheRecord);
+        } else {
+            mBookmarkOpener.openBookmarkInCurrentTab(item.getId(), isOffTheRecord);
+        }
+        return true;
     }
 
     private void onBookmarkItemLongClick(BookmarkItem item) {
@@ -1016,31 +1045,35 @@ class BookmarkBarMediator
                         : BookmarkBarClickType.POP_UP_URL);
 
         boolean isCtrlPressed = (mLastTouchMetaState & KeyEvent.META_CTRL_ON) != 0;
-        boolean isOffTheRecord = assertNonNull(mProfileSupplier.get()).isOffTheRecord();
+        boolean isShiftPressed = (mLastTouchMetaState & KeyEvent.META_SHIFT_ON) != 0;
 
-        if (isCtrlPressed) {
-            openBookmarkItemInNewTabs(bookmarkItem, isOffTheRecord);
-            mPopupCoordinator.dismiss();
-        } else if (!bookmarkItem.isFolder()) {
-            mBookmarkOpener.openBookmarkInCurrentTab(bookmarkItem.getId(), isOffTheRecord);
+        if (openBookmarkItem(
+                bookmarkItem, isCtrlPressed, isShiftPressed, /* isMiddleClick= */ false)) {
             mPopupCoordinator.dismiss();
         }
     }
 
     /** Handles pure hardware pointer events like middle-clicks (via OnGenericMotionListener). */
     private boolean handlePopupItemGenericMotion(BookmarkItem bookmarkItem, MotionEvent event) {
-        if (event.getActionMasked() == MotionEvent.ACTION_BUTTON_RELEASE
-                && event.getActionButton() == MotionEvent.BUTTON_TERTIARY) {
-            BookmarkBarUtils.recordClick(
-                    bookmarkItem.isFolder()
-                            ? BookmarkBarClickType.POP_UP_FOLDER
-                            : BookmarkBarClickType.POP_UP_URL);
-            boolean isOffTheRecord = assertNonNull(mProfileSupplier.get()).isOffTheRecord();
-            openBookmarkItemInNewTabs(bookmarkItem, isOffTheRecord);
-            mPopupCoordinator.dismiss();
-            return true;
+        final boolean isMiddleClick =
+                event.getActionMasked() == MotionEvent.ACTION_BUTTON_RELEASE
+                        && event.getActionButton() == MotionEvent.BUTTON_TERTIARY;
+        if (!isMiddleClick) {
+            return false;
         }
-        return false;
+
+        BookmarkBarUtils.recordClick(
+                bookmarkItem.isFolder()
+                        ? BookmarkBarClickType.POP_UP_FOLDER
+                        : BookmarkBarClickType.POP_UP_URL);
+        if (openBookmarkItem(
+                bookmarkItem,
+                /* isCtrlPressed= */ false,
+                /* isShiftPressed= */ false,
+                /* isMiddleClick= */ true)) {
+            mPopupCoordinator.dismiss();
+        }
+        return true;
     }
 
     // End of popup event handlers
@@ -1135,22 +1168,15 @@ class BookmarkBarMediator
                 }
 
                 // When not a folder, this must be a URL, which will be opened in either the current
-                // tab or a new tab when Ctrl is also pressed.
+                // tab, a new window when Shift is pressed, or a new tab when Ctrl is also pressed.
                 BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_URL);
-                boolean isOffTheRecord = assertNonNull(mProfileSupplier.get()).isOffTheRecord();
-
-                if (event.isCtrlPressed()) {
-                    mBookmarkOpener.openBookmarksInNewTabs(
-                            List.of(bookmarkItem.getId()),
-                            isOffTheRecord,
-                            TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND);
-                } else {
-                    mBookmarkOpener.openBookmarkInCurrentTab(bookmarkItem.getId(), isOffTheRecord);
+                if (openBookmarkItem(
+                        bookmarkItem,
+                        event.isCtrlPressed(),
+                        event.isShiftPressed(),
+                        /* isMiddleClick= */ false)) {
+                    mPopupCoordinator.dismiss();
                 }
-
-                // Dismiss only when opening a bookmark (webpage) and not a folder, and always
-                // consume the event to prevent fallback.
-                mPopupCoordinator.dismiss();
                 return true;
             }
             return false;
