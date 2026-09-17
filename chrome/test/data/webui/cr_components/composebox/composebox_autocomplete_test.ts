@@ -11,7 +11,7 @@ import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/c
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -662,6 +662,64 @@ suite('ComposeboxAutocomplete', () => {
           'hello world 2',
           getInputValue(element.getInputElement().inputElement));
     });
+
+    test(
+        'does not fill suggestion into input on keyboard navigation for ' +
+            'image suggestions',
+        async () => {
+          element = createTestElement();
+          element.richImageSuggestionsEnabled = true;
+          const inputElem = element.getInputElement();
+          const input = inputElem.inputElement;
+          const matchesElement = element.$.matches;
+
+          element.input = 'cat';
+          element.lastQueriedInput = 'cat';
+
+          const matches = [
+            createSearchMatchForTesting({
+              fillIntoEdit: 'cat',
+              allowedToBeDefaultMatch: true,
+            }),
+            createSearchMatchForTesting({
+              fillIntoEdit: 'caterpillar',
+              suggestStyle: SuggestStyle.kDefault,
+            }),
+            createSearchMatchForTesting({
+              fillIntoEdit: 'cat image prompt',
+              suggestStyle: SuggestStyle.kRichImage,
+            }),
+          ];
+          searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                input: 'cat',
+                matches,
+                queryId: element.activeQueryId,
+              }));
+          await microtasksFinished();
+
+          // ArrowDown to text suggestion -> input fills with fillIntoEdit.
+          input.dispatchEvent(new KeyboardEvent(
+              'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
+          await microtasksFinished();
+          assertEquals(1, matchesElement.selectedMatchIndex);
+          assertEquals('caterpillar', element.input);
+
+          // ArrowDown to rich image suggestion -> input reverts to original
+          // query.
+          input.dispatchEvent(new KeyboardEvent(
+              'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
+          await microtasksFinished();
+          assertEquals(2, matchesElement.selectedMatchIndex);
+          assertEquals('cat', element.input);
+
+          // ArrowUp back to text suggestion -> input fills with fillIntoEdit.
+          input.dispatchEvent(new KeyboardEvent(
+              'keydown', {key: 'ArrowUp', bubbles: true, composed: true}));
+          await microtasksFinished();
+          assertEquals(1, matchesElement.selectedMatchIndex);
+          assertEquals('caterpillar', element.input);
+        });
 
     test(
         'arrow up/down enables submit for suggestion with no query',

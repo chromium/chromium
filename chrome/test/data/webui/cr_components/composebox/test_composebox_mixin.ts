@@ -96,6 +96,8 @@ export class TestComposeboxMixinElement extends TestElementBase {
           <cr-composebox-dropdown id="matches"
               .result="${this.result}"
               .selectedMatchIndex="${this.selectedMatchIndex}"
+              .richImageSuggestionsEnabled="${
+                  this.richImageSuggestionsEnabled}"
               @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
               @match-focusin="${this.onMatchFocusin}"
               @match-click="${this.onMatchClick}"

@@ -5,7 +5,6 @@
 import './composebox_match.js';
 
 import {assert} from '//resources/js/assert.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {RenderType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -73,9 +72,7 @@ export class ComposeboxDropdownElement extends CrLitElement {
   accessor maxSuggestions: number|null = null;
   accessor toolMode: ToolMode = ToolMode.kUnspecified;
   accessor overrideClampLineNum: number = -1;
-  accessor richImageSuggestionsEnabled: boolean =
-      loadTimeData.valueExists('composeboxRichImageSuggestionsEnabled') &&
-      loadTimeData.getBoolean('composeboxRichImageSuggestionsEnabled');
+  accessor richImageSuggestionsEnabled: boolean = false;
 
   //============================================================================
   // Public methods
