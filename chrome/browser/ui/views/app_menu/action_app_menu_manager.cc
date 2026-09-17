@@ -430,7 +430,7 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
                   recent_tabs_menu_->GetWeakPtr()));
         }
 
-        section.AddAction(kActionShowDownloads);
+        section.AddAction(kActionShowDownloadsPage);
 
         if (!profile->IsGuestSession()) {
           section.AddDynamicSubmenu(

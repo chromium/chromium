@@ -1853,10 +1853,6 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
 #if BUILDFLAG(IS_CHROMEOS)
-                // ChromeOS does not use DownloadToolbarUIController (downloads
-                // are managed via the Ash shelf/holding space), so directly
-                // open the downloads WebUI page instead of showing the toolbar
-                // bubble.
                 chrome::ShowDownloads(webui::GetBrowserForOpeningWebUi(bwi));
 #else
                 if (auto* controller = DownloadToolbarUIController::From(bwi)) {
@@ -1869,7 +1865,6 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           features::IsRoundedIconsEnabled()
               ? kDownloadIcon
               : kDownloadToolbarButtonChromeRefreshOldIcon)
-          .SetAccelerator(GetAcceleratorForCommandId(IDC_SHOW_DOWNLOADS))
           .Build());
 
   if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
@@ -4438,6 +4433,27 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                   : vector_icons::kHistoryChromeRefreshOldIcon,
               ui::kColorIcon))
           .SetAccelerator(GetAcceleratorForCommandId(IDC_SHOW_HISTORY))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ShowDownloads(webui::GetBrowserForOpeningWebUi(bwi));
+              },
+              bwi))
+          .SetActionId(kActionShowDownloadsPage)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_SHOW_DOWNLOADS)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_SHOW_DOWNLOADS)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled()
+                  ? kDownloadIcon
+                  : kDownloadToolbarButtonChromeRefreshOldIcon,
+              ui::kColorIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_SHOW_DOWNLOADS))
           .Build());
 
   root_action_item_->AddChild(

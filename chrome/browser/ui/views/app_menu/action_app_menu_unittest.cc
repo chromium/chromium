@@ -149,7 +149,7 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   ASSERT_TRUE(print_item);
 
   views::MenuItemView* downloads_item =
-      root->GetMenuItemByID(kActionShowDownloads);
+      root->GetMenuItemByID(kActionShowDownloadsPage);
   ASSERT_TRUE(downloads_item);
 
   views::MenuItemView* clear_browsing_item =
@@ -1410,7 +1410,7 @@ TEST_F(ActionAppMenuTest, HeaderAndMenuItemBorderLayout) {
   EXPECT_EQ(password_item->GetContentStart(), 20);
 
   views::MenuItemView* downloads_item =
-      root->GetMenuItemByID(kActionShowDownloads);
+      root->GetMenuItemByID(kActionShowDownloadsPage);
   ASSERT_TRUE(downloads_item);
   EXPECT_FALSE(downloads_item->GetBorder());
   EXPECT_EQ(downloads_item->GetContentStart(), 20);

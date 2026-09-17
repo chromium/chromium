@@ -155,6 +155,7 @@
     IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP) \
   E(kActionShowHistory, IDC_SHOW_HISTORY) \
   E(kActionShowBookmarkManager, IDC_SHOW_BOOKMARK_MANAGER) \
+  E(kActionShowDownloadsPage, IDC_SHOW_DOWNLOADS) \
   E(kActionImportSettings, IDC_IMPORT_SETTINGS) \
   E(kActionOptions, IDC_OPTIONS) \
   E(kActionEditSearchEngines, IDC_EDIT_SEARCH_ENGINES) \
@@ -522,7 +523,7 @@
   E(kActionShowPasswordManager, IDC_SHOW_PASSWORD_MANAGER) \
   E(kActionShowPaymentMethods, IDC_SHOW_PAYMENT_METHODS) \
   E(kActionShowAddressesBubbleOrPage) \
-  E(kActionShowDownloads, IDC_SHOW_DOWNLOADS) \
+  E(kActionShowDownloads) \
   E(kActionClearBrowsingData, IDC_CLEAR_BROWSING_DATA) \
   E(kActionPrint, IDC_PRINT) \
   E(kActionShowTranslate, IDC_SHOW_TRANSLATE) \
