@@ -48,9 +48,11 @@ GaiaRemoteConsentFlow::~GaiaRemoteConsentFlow() {
 
 void GaiaRemoteConsentFlow::Start() {
   if (!web_flow_) {
-    web_flow_ =
-        std::make_unique<WebAuthFlow>(this, profile_, resolution_data_.url,
-                                      WebAuthFlow::INTERACTIVE, user_gesture_);
+    // No initiator origin: `resolution_data_.url` is not controlled by the
+    // extension, it is obtained by Chrome from Gaia.
+    web_flow_ = std::make_unique<WebAuthFlow>(
+        this, profile_, resolution_data_.url, WebAuthFlow::INTERACTIVE,
+        user_gesture_, /*initiator_origin=*/std::nullopt);
   }
 
   if (resolution_data_.cookies.empty()) {

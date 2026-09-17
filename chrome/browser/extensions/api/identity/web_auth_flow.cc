@@ -33,6 +33,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/ui_util.h"
@@ -44,6 +45,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -73,6 +75,7 @@ WebAuthFlow::WebAuthFlow(
     const GURL& provider_url,
     Mode mode,
     bool user_gesture,
+    std::optional<url::Origin> initiator_origin,
     AbortOnLoad abort_on_load_for_non_interactive,
     std::optional<base::TimeDelta> timeout_for_non_interactive,
     std::optional<gfx::Rect> popup_bounds)
@@ -81,6 +84,7 @@ WebAuthFlow::WebAuthFlow(
       provider_url_(provider_url),
       mode_(mode),
       user_gesture_(user_gesture),
+      initiator_origin_(std::move(initiator_origin)),
       abort_on_load_for_non_interactive_(abort_on_load_for_non_interactive),
       timeout_for_non_interactive_(timeout_for_non_interactive),
       non_interactive_timeout_timer_(std::make_unique<base::OneShotTimer>()),
@@ -141,6 +145,20 @@ void WebAuthFlow::Start() {
   WebContentsObserver::Observe(web_contents_.get());
 
   content::NavigationController::LoadURLParams load_params(provider_url_);
+
+  if (initiator_origin_) {
+    // `provider_url_` was supplied by an extension, so the navigation must be
+    // attributed to it. Otherwise the network stack treats it as a trusted
+    // top-level navigation initiated by the user, see
+    // https://crbug.com/523264945.
+    load_params.is_renderer_initiated = true;
+    load_params.initiator_origin = initiator_origin_;
+    // `source_site_instance` needs to be set so that a renderer process
+    // compatible with `initiator_origin` is picked by Site Isolation.
+    load_params.source_site_instance = content::SiteInstance::CreateForURL(
+        profile_, initiator_origin_->GetURL());
+  }
+
   web_contents_->GetController().LoadURLWithParams(load_params);
 
   MaybeStartTimeout();

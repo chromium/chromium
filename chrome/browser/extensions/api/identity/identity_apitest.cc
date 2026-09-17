@@ -147,6 +147,7 @@ using ::base::BucketsAre;
 using ::extensions::ExtensionsAPIClient;
 using ::testing::_;
 using ::testing::HasSubstr;
+using ::testing::Not;
 using ::testing::Return;
 using ::testing::StartsWith;
 
@@ -3834,6 +3835,57 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, InteractionRequired) {
   histogram_tester()->ExpectUniqueSample(
       kLaunchWebAuthFlowResultHistogramName,
       IdentityLaunchWebAuthFlowFunction::Error::kInteractionRequired, 1);
+}
+
+// Navigations started by `launchWebAuthFlow` must be attributed to the
+// calling extension, so that the target site sees a cross-site request and
+// `SameSite=Strict` cookies are withheld. See https://crbug.com/523264945.
+IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
+                       NavigationIsAttributedToExtension) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(base::FilePath(
+      FILE_PATH_LITERAL("chrome/test/data/extensions/api_test/identity")));
+
+  net::test_server::HttpRequest::HeaderMap headers;
+  https_server.RegisterRequestMonitor(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request) {
+        if (request.GetURL().path() == "/interaction_required.html") {
+          headers = request.headers;
+        }
+      }));
+  ASSERT_TRUE(https_server.Start());
+
+  const GURL auth_url(https_server.GetURL("/interaction_required.html"));
+  ASSERT_TRUE(content::SetCookie(profile(), auth_url,
+                                 "strict_cookie=1; SameSite=Strict; Secure"));
+  ASSERT_TRUE(content::SetCookie(profile(), auth_url,
+                                 "lax_cookie=1; SameSite=Lax; Secure"));
+
+  scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
+      CreateLaunchWebAuthFlowFunction();
+  scoped_refptr<const Extension> extension = function->extension();
+
+  content::TestNavigationObserver nav_observer(auth_url);
+  nav_observer.StartWatchingNewWebContents();
+
+  const std::string args = base::StringPrintf(
+      R"([{"interactive": false, "url": "%s"}])", auth_url.spec().c_str());
+  ASSERT_EQ(utils::RunFunctionAndReturnError(function.get(), args, profile()),
+            errors::kInteractionRequired);
+
+  nav_observer.Wait();
+  ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(nav_observer.last_initiator_origin(), extension->origin());
+
+  // The request must not look like a trusted, user-initiated navigation.
+  ASSERT_TRUE(headers.contains("Sec-Fetch-Site"));
+  EXPECT_EQ(headers["Sec-Fetch-Site"], "cross-site");
+
+  // `SameSite=Strict` cookies must be withheld. `SameSite=Lax` cookies are
+  // still sent.
+  ASSERT_TRUE(headers.contains("Cookie"));
+  EXPECT_THAT(headers["Cookie"], Not(HasSubstr("strict_cookie=1")));
+  EXPECT_THAT(headers["Cookie"], HasSubstr("lax_cookie=1"));
 }
 
 // Checks that, by default, when a page fully loads in silent mode and doesn't

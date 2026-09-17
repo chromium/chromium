@@ -533,6 +533,14 @@ extern const base::FeatureParam<base::TimeDelta>
     kPolicyDisclaimerRegistrationRetryDelay;
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+// Controls whether the navigation performed by
+// `chrome.identity.launchWebAuthFlow` is attributed with the extesion's origin.
+// Introduced as a kill switch.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kExtensionWebAuthFlowInitiatorOrigin);
+#endif
+
 // Feature flag to fetch AccountInfo (UserInfo & Capabilities) on restart.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kFetchAccountInfoOnRestart);

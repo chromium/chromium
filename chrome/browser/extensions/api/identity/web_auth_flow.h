@@ -21,6 +21,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -102,12 +103,19 @@ class WebAuthFlow : public content::WebContentsObserver,
 
   // Creates an instance with the given parameters.
   // Caller owns `delegate`.
+  //
+  // `initiator_origin` must be the origin of the extension that supplied
+  // `provider_url`, so that the resulting navigation is attributed to it
+  // instead of being treated as a trusted, browser-initiated navigation. Pass
+  // `std::nullopt` only when `provider_url` does not originate from web or
+  // extension content.
   WebAuthFlow(
       Delegate* delegate,
       Profile* profile,
       const GURL& provider_url,
       Mode mode,
       bool user_gesture,
+      std::optional<url::Origin> initiator_origin,
       AbortOnLoad abort_on_load_for_non_interactive = AbortOnLoad::kYes,
       std::optional<base::TimeDelta> timeout_for_non_interactive = std::nullopt,
       std::optional<gfx::Rect> popup_bounds = std::nullopt);
@@ -174,6 +182,9 @@ class WebAuthFlow : public content::WebContentsObserver,
   const GURL provider_url_;
   const Mode mode_;
   const bool user_gesture_;
+  // Origin to attribute the navigation to, or `std::nullopt` for a
+  // browser-initiated navigation. See the constructor for details.
+  const std::optional<url::Origin> initiator_origin_;
 
   // WebContents used to initialize the authentication. It is not displayed
   // and not owned by browser window. This WebContents is observed by

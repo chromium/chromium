@@ -29,7 +29,8 @@ class FakeWebAuthFlow : public WebAuthFlow {
                     nullptr,
                     GURL(),
                     WebAuthFlow::INTERACTIVE,
-                    /*user_gesture=*/true) {}
+                    /*user_gesture=*/true,
+                    /*initiator_origin=*/std::nullopt) {}
 
   ~FakeWebAuthFlow() override = default;
 
