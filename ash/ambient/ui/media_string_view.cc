@@ -182,6 +182,7 @@ void MediaStringView::InitLayout() {
 
   media_text_container_ = AddChildView(std::make_unique<views::View>());
   media_text_container_->SetPaintToLayer();
+  media_text_container_->layer()->SetName("MediaStringView:TextContainer");
   media_text_container_->layer()->SetFillsBoundsOpaquely(false);
   media_text_container_->layer()->SetMasksToBounds(true);
   auto* text_layout = media_text_container_->SetLayoutManager(

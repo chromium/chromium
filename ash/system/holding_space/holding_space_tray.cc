@@ -188,6 +188,7 @@ std::unique_ptr<views::View> CreateDropTargetOverlay() {
   drop_target_overlay->SetID(kHoldingSpaceTrayDropTargetOverlayId);
   drop_target_overlay->SetLayoutManager(std::make_unique<views::FillLayout>());
   drop_target_overlay->SetPaintToLayer();
+  drop_target_overlay->layer()->SetName("HoldingSpaceTray:DropTargetOverlay");
   drop_target_overlay->layer()->SetFillsBoundsOpaquely(false);
   return drop_target_overlay;
 }

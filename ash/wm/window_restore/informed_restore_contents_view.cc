@@ -423,6 +423,8 @@ void InformedRestoreContentsView::CreateChildViews() {
                     .SetImageSize(screenshot_size))
             .Build());
 
+    icon_row_container_->layer()->SetName(
+        "InformedRestoreContentsView:IconRowContainer");
     icon_row_container_->layer()->SetFillsBoundsOpaquely(false);
     icon_row_container_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(informed_restore::kPreviewContainerRadius));

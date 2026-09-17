@@ -147,6 +147,7 @@ void ActiveSessionAuthView::AddHeaderAndCloseButton(
   header->SetLayoutManager(std::move(header_layout));
 
   header->SetPaintToLayer();
+  header->layer()->SetName("ActiveSessionAuthView:Header");
   header->layer()->SetFillsBoundsOpaquely(false);
 
   // Auth header position and add.

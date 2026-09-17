@@ -249,6 +249,8 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
 
   scrollable_container_ = AddChildView(std::make_unique<views::View>());
   scrollable_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  scrollable_container_->layer()->SetName(
+      "AppsContainerView:ScrollableContainer");
   AppListViewDelegate* view_delegate =
       contents_view_->GetAppListMainView()->view_delegate();
 

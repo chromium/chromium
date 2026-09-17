@@ -628,6 +628,7 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
 
   icon_background_ = AddChildView(std::make_unique<views::View>());
   icon_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  icon_background_->layer()->SetName("AppListItemView:IconBackground");
   icon_background_->SetBackground(
       views::CreateLayerBasedSolidBackground(GetBackgroundLayerColorId()));
   icon_background_->background()->SetInternalName(

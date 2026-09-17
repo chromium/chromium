@@ -255,6 +255,7 @@ ReturnToAppButton::ReturnToAppButton(ReturnToAppPanel* panel,
   } else {
     // Add a layer for icons container in the top row to perform animation.
     icons_container()->SetPaintToLayer();
+    icons_container()->layer()->SetName("ReturnToAppButton:IconsContainer");
     icons_container()->layer()->SetFillsBoundsOpaquely(false);
   }
 }

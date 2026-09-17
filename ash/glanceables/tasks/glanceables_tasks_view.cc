@@ -527,6 +527,8 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
   // arbitrary non empty value.
   task_list_sentinel_->SetPreferredSize(gfx::Size(1, 1));
   task_list_sentinel_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  task_list_sentinel_->layer()->SetName(
+      "GlanceablesTasksView:TaskListSentinel");
   task_list_sentinel_->layer()->SetFillsBoundsOpaquely(false);
   task_list_sentinel_->layer()->SetOpacity(0.0f);
   task_view_model_.Add(task_list_sentinel_.get(), task_view_model_.view_size());

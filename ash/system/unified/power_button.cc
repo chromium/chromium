@@ -36,6 +36,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_solid_color.h"
 #include "ui/events/event.h"
 #include "ui/gfx/font_list.h"
@@ -397,6 +398,7 @@ PowerButton::PowerButton(UnifiedSystemTrayController* tray_controller)
   // Inits the `background_view_`'s layer. This view is `SetPaintToLayer` so it
   // can be set the customized rounded corner.
   background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  background_view_->layer()->SetName("PowerButton:Background");
   auto* background_layer = background_view_->layer();
   background_layer->SetRoundedCornerRadius(kAllRoundedCorners);
   background_layer->SetIsFastRoundedCorner(true);

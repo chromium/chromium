@@ -240,6 +240,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
 
   if (chromeos::features::IsSystemBlurEnabled()) {
     background_view->SetPaintToLayer();
+    background_view->layer()->SetName("SavedDeskItemView:Background");
     background_view->layer()->SetFillsBoundsOpaquely(false);
     background_view->layer()->SetBackgroundBlur(
         StyleUtil::kBackgroundBlurSigma);
@@ -252,6 +253,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
     // Otherwise, it will be painted to its ancestors layer and
     // `background_view` will be drawn on top of it as a result.
     box_layout_view->SetPaintToLayer();
+    box_layout_view->layer()->SetName("SavedDeskItemView:BoxLayoutView");
     box_layout_view->layer()->SetFillsBoundsOpaquely(false);
   }
 
@@ -303,6 +305,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   hover_container_->SetPaintToLayer();
+  hover_container_->layer()->SetName("SavedDeskItemView:HoverContainer");
   icon_container_view_->SetPaintToLayer();
 
   hover_container_->layer()->SetFillsBoundsOpaquely(false);

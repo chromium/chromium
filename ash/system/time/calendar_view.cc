@@ -571,6 +571,7 @@ CalendarView::CalendarView(bool use_glanceables_container_style)
   calendar_sliding_surface_->SetProperty(views::kViewIgnoredByLayoutKey, true);
   // This layer is required for animations.
   calendar_sliding_surface_->SetPaintToLayer();
+  calendar_sliding_surface_->layer()->SetName("CalendarView:SlidingSurface");
   calendar_sliding_surface_->layer()->SetFillsBoundsOpaquely(false);
 
   // Override the default focus order so the calendar contents (which contains

@@ -204,6 +204,8 @@ void HoldingSpaceTrayIcon::InitLayout() {
   // As holding space items are added to the model, child layers will be added
   // to `previews_container_` view's layer to represent them.
   previews_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  previews_container_->layer()->SetName(
+      "HoldingSpaceTrayIcon:PreviewsContainer");
 }
 
 void HoldingSpaceTrayIcon::UpdateDropTargetState(bool is_drop_target,

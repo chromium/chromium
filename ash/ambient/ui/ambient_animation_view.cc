@@ -47,6 +47,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/outsets.h"
@@ -208,6 +209,8 @@ void AmbientAnimationView::Init() {
   animation_container_view->SetUseDefaultFillLayout(true);
   // Purely for performance reasons. Gains 3-4 fps.
   animation_container_view->SetPaintToLayer();
+  animation_container_view->layer()->SetName(
+      "AmbientAnimationView:AnimationContainer");
   // In portrait mode, the landscape animation file is currently being used. Its
   // width is scaled down to match the width of the portrait screen, and it's
   // center-aligned leaving empty space on the top and bottom of the screen. To

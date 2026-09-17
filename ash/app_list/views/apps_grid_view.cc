@@ -353,6 +353,7 @@ AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
 
   items_container_ = AddChildView(std::make_unique<views::View>());
   items_container_->SetPaintToLayer();
+  items_container_->layer()->SetName("AppsGridView:ItemsContainer");
   items_container_->layer()->SetFillsBoundsOpaquely(false);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);

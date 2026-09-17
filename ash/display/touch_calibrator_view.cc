@@ -590,6 +590,7 @@ void TouchCalibratorView::InitViewContents(bool is_for_touchscreen_mapping) {
                                kTapLabelWidth, kTouchPointViewHeight);
   touch_point_view_->SetVisible(false);
   touch_point_view_->SetPaintToLayer();
+  touch_point_view_->layer()->SetName("TouchCalibratorView:TouchPointView");
   touch_point_view_->layer()->SetFillsBoundsOpaquely(false);
   touch_point_view_->layer()->GetAnimator()->AddObserver(this);
   touch_point_view_->SetBackground(

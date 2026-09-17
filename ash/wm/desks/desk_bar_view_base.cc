@@ -118,6 +118,7 @@ void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
 
   auto* layer = view->layer();
   layer->SetFillsBoundsOpaquely(false);
+  layer->SetName("DeskBarViewBase:Background");
 
   if (!type_is_desk_button) {
     // Forest feature needs a transparent desks bar background. Still needs the

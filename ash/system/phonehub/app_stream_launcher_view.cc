@@ -166,6 +166,7 @@ std::unique_ptr<views::View> AppStreamLauncherView::CreateAppListView() {
   items_container_ =
       scroll_contents->AddChildView(std::make_unique<views::View>());
   items_container_->SetPaintToLayer();
+  items_container_->layer()->SetName("AppStreamLauncherView:ItemsContainer");
   items_container_->layer()->SetFillsBoundsOpaquely(false);
   scroll_view->SetContents(std::move(scroll_contents));
 

@@ -427,6 +427,7 @@ void MediaTray::ShowEmptyState() {
   empty_state_view->AddChildView(std::move(no_media_label));
 
   empty_state_view->SetPaintToLayer();
+  empty_state_view->layer()->SetName("MediaTray:EmptyStateView");
   empty_state_view->layer()->SetFillsBoundsOpaquely(false);
   empty_state_view_ =
       GetBubbleView()->AddChildView(std::move(empty_state_view));

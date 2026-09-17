@@ -85,6 +85,7 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
         views::CreatePillBackground(cros_tokens::kCrosSysSystemOnBaseOpaque));
     if (item_in_folder_icon_) {
       badge_container_->SetPaintToLayer();
+      badge_container_->layer()->SetName("TopIconAnimationView:BadgeContainer");
       badge_container_->layer()->SetFillsBoundsOpaquely(false);
     }
     auto* badge_icon_view =
