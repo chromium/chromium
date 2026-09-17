@@ -737,8 +737,7 @@ SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
 
 std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
     DbscRequest& request,
-    HttpRequestHeaders* extra_headers,
-    const FirstPartySetMetadata& first_party_set_metadata) {
+    HttpRequestHeaders* extra_headers) {
   if (request.device_bound_session_mode() ==
           net::DeviceBoundSessionMode::kDisabled ||
       request.device_bound_session_mode() ==
@@ -762,8 +761,8 @@ std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
       continue;
     }
 
-    base::TimeDelta minimum_lifetime = session->MinimumBoundCookieLifetime(
-        request, first_party_set_metadata, session_key);
+    base::TimeDelta minimum_lifetime =
+        session->MinimumBoundCookieLifetime(request, session_key);
     if (minimum_lifetime.is_zero()) {
       auto previous_deferrals_it = previous_deferrals.find(session_key);
       if (previous_deferrals_it != previous_deferrals.end() &&
@@ -800,7 +799,7 @@ void SessionServiceImpl::DeferRequestForRefresh(
   if (deferral.is_pending_initialization) {
     CHECK(pending_initialization_);
     requests_before_initialization_++;
-    // Due to the need to recompute `first_party_set_metadata`, we always
+    // Due to the need to re-evaluate session state and cookies, we always
     // restart the request after initialization completes.
     queued_operations_.push_back(base::BindOnce(
         std::move(callback), RefreshResult::kInitializedService));
@@ -1008,10 +1007,9 @@ void SessionServiceImpl::UnblockWaitingRequests(
 void SessionServiceImpl::SetChallengeForBoundSession(
     OnAccessCallback on_access_callback,
     DbscRequest& request,
-    const FirstPartySetMetadata& first_party_set_metadata,
     const SessionChallengeParam& param) {
   ChallengeResult result = SetChallengeForBoundSessionInternal(
-      std::move(on_access_callback), request, first_party_set_metadata, param);
+      std::move(on_access_callback), request, param);
   NotifyIfEventCallbackListeners([&] {
     return SessionEvent::MakeChallengeEvent(
         SchemefulSite(request.url()), param.session_id(),
@@ -1022,7 +1020,6 @@ void SessionServiceImpl::SetChallengeForBoundSession(
 ChallengeResult SessionServiceImpl::SetChallengeForBoundSessionInternal(
     OnAccessCallback on_access_callback,
     DbscRequest& request,
-    const FirstPartySetMetadata& first_party_set_metadata,
     const SessionChallengeParam& param) {
   if (!param.session_id()) {
     return ChallengeResult::kNoSessionId;
@@ -1035,7 +1032,7 @@ ChallengeResult SessionServiceImpl::SetChallengeForBoundSessionInternal(
     return ChallengeResult::kNoSessionMatch;
   }
 
-  if (!session->CanSetBoundCookie(request, first_party_set_metadata)) {
+  if (!session->CanSetBoundCookie(request)) {
     return ChallengeResult::kCantSetBoundCookie;
   }
 
@@ -1824,10 +1821,8 @@ void SessionServiceImpl::MaybeStartProactiveRefresh(
       });
 }
 
-void SessionServiceImpl::HandleResponseHeaders(
-    DbscRequest& request,
-    HttpResponseHeaders* headers,
-    const FirstPartySetMetadata& first_party_set_metadata) {
+void SessionServiceImpl::HandleResponseHeaders(DbscRequest& request,
+                                               HttpResponseHeaders* headers) {
   if (request.device_bound_session_mode() ==
       net::DeviceBoundSessionMode::kDisabled) {
     return;
@@ -1856,8 +1851,7 @@ void SessionServiceImpl::HandleResponseHeaders(
                                                                   headers);
   for (auto& param : challenge_params) {
     SetChallengeForBoundSession(request.device_bound_session_access_callback(),
-                                request, first_party_set_metadata,
-                                std::move(param));
+                                request, std::move(param));
   }
 }
 

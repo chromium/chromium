@@ -4153,11 +4153,10 @@ TEST_F(RegistrationTest, RefreshRetryTransientErrorOnSecondRoundtrip) {
       .WillRepeatedly(Return(session.get()));
 
   EXPECT_CALL(session_service(), HandleResponseHeaders)
-      .WillRepeatedly([&session](DbscRequest& request,
-                                 HttpResponseHeaders* headers,
-                                 const FirstPartySetMetadata& fp) {
-        session->set_cached_challenge("new_challenge");
-      });
+      .WillRepeatedly(
+          [&session](DbscRequest& request, HttpResponseHeaders* headers) {
+            session->set_cached_challenge("new_challenge");
+          });
 
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge)
       .WillRepeatedly(Return(nullptr));
@@ -4234,11 +4233,10 @@ TEST_F(RegistrationTest, RefreshRetryTransientErrorOnBothRoundtrips) {
       .WillRepeatedly(Return(session.get()));
 
   EXPECT_CALL(session_service(), HandleResponseHeaders)
-      .WillRepeatedly([&session](DbscRequest& request,
-                                 HttpResponseHeaders* headers,
-                                 const FirstPartySetMetadata& fp) {
-        session->set_cached_challenge("new_challenge");
-      });
+      .WillRepeatedly(
+          [&session](DbscRequest& request, HttpResponseHeaders* headers) {
+            session->set_cached_challenge("new_challenge");
+          });
 
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge)
       .WillRepeatedly(Return(nullptr));

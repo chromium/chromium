@@ -29,7 +29,6 @@
 #include "net/log/net_log_with_source.h"
 
 namespace net {
-class FirstPartySetMetadata;
 class IsolationInfo;
 class SiteForCookies;
 class URLRequestContext;
@@ -167,8 +166,7 @@ class NET_EXPORT SessionService {
   // the Secure-Session-Skipped header in `extra_headers`.
   virtual std::optional<DeferralParams> ShouldDefer(
       DbscRequest& request,
-      HttpRequestHeaders* extra_headers,
-      const FirstPartySetMetadata& first_party_set_metadata) = 0;
+      HttpRequestHeaders* extra_headers) = 0;
 
   // Defer a request and maybe refresh the corresponding session.
   // `deferral` is either the identifier of the session that is required to be
@@ -186,7 +184,6 @@ class NET_EXPORT SessionService {
   virtual void SetChallengeForBoundSession(
       OnAccessCallback on_access_callback,
       DbscRequest& request,
-      const FirstPartySetMetadata& first_party_set_metadata,
       const SessionChallengeParam& param) = 0;
 
   // Get all sessions. If sessions have not yet been loaded from disk,
@@ -284,10 +281,8 @@ class NET_EXPORT SessionService {
 
   // Helper function to handle the registration and challenge headers provided
   // in `headers` on the response to `request`.
-  virtual void HandleResponseHeaders(
-      DbscRequest& request,
-      HttpResponseHeaders* headers,
-      const FirstPartySetMetadata& first_party_set_metadata) = 0;
+  virtual void HandleResponseHeaders(DbscRequest& request,
+                                     HttpResponseHeaders* headers) = 0;
 
   virtual void SelectClientCertificate(
       const GURL& url,

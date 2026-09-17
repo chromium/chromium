@@ -999,18 +999,16 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     }
 
     // The registration endpoint is required to be same-site with the
-    // session. Therefore we don't need any FirstPartySetMetadata.  The
-    // normalization provided by `DbscRequest` isn't technically needed
-    // here. But `CanSetBoundCookie` needs that normalization for other
-    // callers and its cheap enough that it's not worth working around.
+    // session. The normalization provided by `DbscRequest` isn't technically
+    // needed here. But `CanSetBoundCookie` needs that normalization for other
+    // callers and it's cheap enough that it's not worth working around.
     bool can_set_bound_cookie;
     {
       // If we can't set a bound cookie, we destroy `this`, which leads
       // to a dangling pointer in the `DbscRequest`. Instead, destroy
       // `dbsc_request` before handling the returned boolean.
       DbscRequest dbsc_request(&url_fetcher_->request());
-      can_set_bound_cookie =
-          session->CanSetBoundCookie(dbsc_request, FirstPartySetMetadata());
+      can_set_bound_cookie = session->CanSetBoundCookie(dbsc_request);
     }
     if (!can_set_bound_cookie) {
       RunCallback(CreateErrorRegistrationResult(

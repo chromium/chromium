@@ -17,7 +17,6 @@
 
 namespace net {
 class CanonicalCookie;
-class FirstPartySetMetadata;
 }  // namespace net
 
 namespace net::device_bound_sessions {
@@ -152,14 +151,12 @@ class NET_EXPORT CookieCraving : public CookieBase {
   // arguments providing context for the access.
   bool ShouldIncludeForRequest(
       DbscRequest& request,
-      const FirstPartySetMetadata& first_party_set_metadata,
       const CookieOptions& options,
       const CookieAccessParams& params) const;
 
   // Whether the craving could be modified by `request`, with other
   // arguments providing context for the access.
   bool CanSetBoundCookie(DbscRequest& request,
-                         const FirstPartySetMetadata& first_party_set_metadata,
                          CookieOptions* options) const;
 
  private:

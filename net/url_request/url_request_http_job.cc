@@ -949,8 +949,7 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
   if (service) {
     device_bound_sessions::DbscRequest request(request_);
     std::optional<device_bound_sessions::SessionService::DeferralParams>
-        deferral = service->ShouldDefer(request, &request_info_.extra_headers,
-                                        first_party_set_metadata_);
+        deferral = service->ShouldDefer(request, &request_info_.extra_headers);
     // If the request needs to be deferred while waiting for refresh, do not
     // start the transaction at this time. This may also kick off a refresh.
     if (deferral) {
@@ -1194,8 +1193,7 @@ void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
   }
 
   device_bound_sessions::DbscRequest request(request_);
-  service->HandleResponseHeaders(request, GetResponseHeaders(),
-                                 first_party_set_metadata_);
+  service->HandleResponseHeaders(request, GetResponseHeaders());
 }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 

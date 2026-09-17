@@ -288,8 +288,7 @@ TEST_F(SessionServiceImplTest, RegisterSuccess) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
   ASSERT_TRUE(maybe_deferral);
   EXPECT_FALSE(maybe_deferral->is_pending_initialization);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
@@ -316,8 +315,7 @@ TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
   // NullFetcher, so should not be valid
   EXPECT_FALSE(maybe_deferral);
 }
@@ -346,7 +344,7 @@ TEST_F(SessionServiceImplTest, SetChallengeForBoundSession) {
   DbscRequest dbsc_request(request.get());
   for (const auto& param : params) {
     service().SetChallengeForBoundSession(base::DoNothing(), dbsc_request,
-                                          FirstPartySetMetadata(), param);
+                                          param);
   }
 
   const Session* session =
@@ -379,7 +377,7 @@ TEST_F(SessionServiceImplTest, SetChallengeForBoundSessionBlockedCookies) {
   ASSERT_EQ(params.size(), 1U);
   DbscRequest dbsc_request(request.get());
   service().SetChallengeForBoundSession(base::DoNothing(), dbsc_request,
-                                        FirstPartySetMetadata(), params[0]);
+                                        params[0]);
 
   const Session* session =
       service().GetSession({SchemefulSite(kTestUrl), Session::Id(kSessionId)});
@@ -405,7 +403,7 @@ TEST_F(SessionServiceImplTest, ExpiryExtendedOnUser) {
 
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
-  service().ShouldDefer(dbsc_request, &extra_headers, FirstPartySetMetadata());
+  service().ShouldDefer(dbsc_request, &extra_headers);
 
   EXPECT_GT(session->expiry_date(), base::Time::Now() + base::Days(399));
 }
@@ -463,7 +461,7 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnDeferral) {
       future.GetRepeatingCallback<const SessionAccess&>());
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
-  service().ShouldDefer(dbsc_request, &extra_headers, FirstPartySetMetadata());
+  service().ShouldDefer(dbsc_request, &extra_headers);
 
   SessionAccess access = future.Take();
   EXPECT_EQ(access.access_type, SessionAccess::AccessType::kUpdate);
@@ -494,7 +492,7 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnSetChallenge) {
   DbscRequest dbsc_request(request.get());
   service().SetChallengeForBoundSession(
       future.GetRepeatingCallback<const SessionAccess&>(), dbsc_request,
-      FirstPartySetMetadata(), params[0]);
+      params[0]);
 
   SessionAccess access = future.Take();
   EXPECT_EQ(access.access_type, SessionAccess::AccessType::kUpdate);
@@ -998,7 +996,7 @@ TEST_F(SessionServiceImplTest, EventObserverOnProactiveRefresh) {
   // Trigger proactive refresh.
   HttpRequestHeaders extra_headers;
   auto dbsc_request = std::make_unique<DbscRequest>(request.get());
-  service().ShouldDefer(*dbsc_request, &extra_headers, FirstPartySetMetadata());
+  service().ShouldDefer(*dbsc_request, &extra_headers);
 
   base::MockCallback<SessionService::OnEventCallback> event_callback;
   base::CallbackListSubscription subscription =
@@ -1056,7 +1054,7 @@ TEST_F(SessionServiceImplTest, EventObserverOnProactiveAndDeferredRefresh) {
   // Trigger proactive refresh.
   HttpRequestHeaders extra_headers;
   auto dbsc_request = std::make_unique<DbscRequest>(request.get());
-  service().ShouldDefer(*dbsc_request, &extra_headers, FirstPartySetMetadata());
+  service().ShouldDefer(*dbsc_request, &extra_headers);
 
   // Defer the request.
   auto deferral = SessionService::DeferralParams(Session::Id(kSessionId));
@@ -1129,7 +1127,7 @@ TEST_F(SessionServiceImplTest, EventObserverOnChallenge) {
   });
 
   service().SetChallengeForBoundSession(base::DoNothing(), dbsc_request,
-                                        FirstPartySetMetadata(), params[0]);
+                                        params[0]);
 }
 
 TEST_F(SessionServiceImplTest, EventObserverOnChallenge_NoSessionId) {
@@ -1167,7 +1165,7 @@ TEST_F(SessionServiceImplTest, EventObserverOnChallenge_NoSessionId) {
   });
 
   service().SetChallengeForBoundSession(base::DoNothing(), dbsc_request,
-                                        FirstPartySetMetadata(), params[0]);
+                                        params[0]);
 }
 
 TEST_F(SessionServiceImplTest, EventObserverOnChallenge_NoSessionMatch) {
@@ -1206,7 +1204,7 @@ TEST_F(SessionServiceImplTest, EventObserverOnChallenge_NoSessionMatch) {
   });
 
   service().SetChallengeForBoundSession(base::DoNothing(), dbsc_request,
-                                        FirstPartySetMetadata(), params[0]);
+                                        params[0]);
 }
 
 TEST_F(SessionServiceImplTest, EventObserverOnChallenge_CantSetBoundCookie) {
@@ -1245,7 +1243,7 @@ TEST_F(SessionServiceImplTest, EventObserverOnChallenge_CantSetBoundCookie) {
   });
 
   service().SetChallengeForBoundSession(base::DoNothing(), dbsc_request,
-                                        FirstPartySetMetadata(), params[0]);
+                                        params[0]);
 }
 
 TEST_F(SessionServiceImplTest, GetAllSessions) {
@@ -1550,8 +1548,7 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestRestart) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
   ASSERT_TRUE(maybe_deferral);
   EXPECT_FALSE(maybe_deferral->is_pending_initialization);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
@@ -1599,8 +1596,7 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_FatalError) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
   ASSERT_TRUE(maybe_deferral);
   EXPECT_FALSE(maybe_deferral->is_pending_initialization);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
@@ -1690,8 +1686,7 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_NonFatalError) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
   ASSERT_TRUE(maybe_deferral);
   EXPECT_FALSE(maybe_deferral->is_pending_initialization);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
@@ -1739,8 +1734,7 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
   ASSERT_TRUE(maybe_deferral);
   EXPECT_FALSE(maybe_deferral->is_pending_initialization);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
@@ -1795,8 +1789,7 @@ TEST_F(SessionServiceImplTest, RefreshWithInvalidParams) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
   ASSERT_TRUE(maybe_deferral);
   EXPECT_FALSE(maybe_deferral->is_pending_initialization);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
@@ -2067,8 +2060,7 @@ TEST_F(SessionServiceImplTest, SessionBackoff) {
 
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
-  EXPECT_TRUE(service().ShouldDefer(dbsc_request, &extra_headers,
-                                    FirstPartySetMetadata()));
+  EXPECT_TRUE(service().ShouldDefer(dbsc_request, &extra_headers));
 
   // Do four failing refreshes.
   for (size_t i = 0; i < 4; i++) {
@@ -2103,8 +2095,7 @@ TEST_F(SessionServiceImplTest, RepeatedDeferral) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
   ASSERT_TRUE(maybe_deferral);
   EXPECT_FALSE(maybe_deferral->is_pending_initialization);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
@@ -2113,8 +2104,7 @@ TEST_F(SessionServiceImplTest, RepeatedDeferral) {
       SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId)},
       RefreshResult::kRefreshed);
 
-  maybe_deferral = service().ShouldDefer(dbsc_request, &extra_headers,
-                                         FirstPartySetMetadata());
+  maybe_deferral = service().ShouldDefer(dbsc_request, &extra_headers);
   EXPECT_FALSE(maybe_deferral);
 }
 
@@ -2142,8 +2132,7 @@ TEST_F(SessionServiceImplTest, AddsDebugHeader) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
   EXPECT_FALSE(maybe_deferral);
 
   std::optional<std::string> debug_header =
@@ -2174,8 +2163,7 @@ TEST_F(SessionServiceImplTest, NoDebugHeaderOnSuccess) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
   EXPECT_FALSE(maybe_deferral);
 
   std::optional<std::string> debug_header =
@@ -2200,8 +2188,7 @@ TEST_F(SessionServiceImplTest, NoDebugHeaderOnInScopeRefreshNotYetNeeded) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
   EXPECT_FALSE(maybe_deferral);
 
   std::optional<std::string> debug_header =
@@ -2506,8 +2493,7 @@ TEST_F(SessionServiceImplTest, EmptyResponseOnRegistration) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
 
   // Registration failed, so should not be valid
   EXPECT_FALSE(maybe_deferral);
@@ -2535,8 +2521,7 @@ TEST_F(SessionServiceImplTest, EmptyResponseOnRefresh) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
   ASSERT_TRUE(maybe_deferral);
   EXPECT_FALSE(maybe_deferral->is_pending_initialization);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
@@ -2583,12 +2568,12 @@ TEST_F(SessionServiceImplTest, SessionUsage) {
 
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
-  service().ShouldDefer(dbsc_request, &extra_headers, FirstPartySetMetadata());
+  service().ShouldDefer(dbsc_request, &extra_headers);
 
   EXPECT_EQ(request->device_bound_session_usage().size(), 0);
 
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
-  service().ShouldDefer(dbsc_request, &extra_headers, FirstPartySetMetadata());
+  service().ShouldDefer(dbsc_request, &extra_headers);
 
   SessionKey session_key{SchemefulSite(kTestRefreshUrl),
                          Session::Id(kSessionId)};
@@ -2614,8 +2599,7 @@ TEST_P(SessionServiceImplRequestModeTest, ShouldDefer) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
 
   if (GetParam() == net::DeviceBoundSessionMode::kAllowed) {
     EXPECT_TRUE(deferral.has_value());
@@ -2640,8 +2624,7 @@ TEST_P(SessionServiceImplRequestModeTest, HandleRegistrationHeader) {
       kSessionId, kRefreshUrlString, kOrigin);
 
   DbscRequest dbsc_request(request.get());
-  service().HandleResponseHeaders(dbsc_request, headers.get(),
-                                  FirstPartySetMetadata());
+  service().HandleResponseHeaders(dbsc_request, headers.get());
 
   base::test::TestFuture<std::vector<SessionKey>> future;
   service().GetAllSessionsAsync(
@@ -2673,8 +2656,7 @@ TEST_P(SessionServiceImplRequestModeTest, HandleChallengeHeader) {
                      "\"challenge\";id=\"" + std::string(kSessionId) + "\"");
 
   DbscRequest dbsc_request(request.get());
-  service().HandleResponseHeaders(dbsc_request, headers.get(),
-                                  FirstPartySetMetadata());
+  service().HandleResponseHeaders(dbsc_request, headers.get());
 
   if (GetParam() == net::DeviceBoundSessionMode::kDisabled) {
     EXPECT_FALSE(session->cached_challenge().has_value());
@@ -2998,8 +2980,7 @@ TEST_F(SessionServiceImplWithStoreTest, RequestsWaitForSessionsToLoad) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
   ASSERT_TRUE(maybe_deferral);
   EXPECT_TRUE(maybe_deferral->is_pending_initialization);
 
@@ -3041,8 +3022,7 @@ TEST_F(SessionServiceImplWithStoreTest, RequestDestroyedDuringAsyncKeyRestore) {
   HttpRequestHeaders extra_headers;
   auto dbsc_request = std::make_unique<DbscRequest>(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(*dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(*dbsc_request, &extra_headers);
   ASSERT_TRUE(maybe_deferral);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
 
@@ -3094,8 +3074,7 @@ TEST_F(SessionServiceImplWithStoreTest,
   HttpRequestHeaders extra_headers1;
   auto dbsc_request1 = std::make_unique<DbscRequest>(request1.get());
   std::optional<SessionService::DeferralParams> deferral1 =
-      service().ShouldDefer(*dbsc_request1, &extra_headers1,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(*dbsc_request1, &extra_headers1);
   ASSERT_TRUE(deferral1);
   EXPECT_EQ(**deferral1->session_id, kSessionId);
 
@@ -3120,8 +3099,7 @@ TEST_F(SessionServiceImplWithStoreTest,
   HttpRequestHeaders extra_headers2;
   DbscRequest dbsc_request2(request2.get());
   std::optional<SessionService::DeferralParams> deferral2 =
-      service().ShouldDefer(dbsc_request2, &extra_headers2,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request2, &extra_headers2);
   ASSERT_TRUE(deferral2);
 
   base::test::TestFuture<RefreshResult> future2;
@@ -3170,8 +3148,7 @@ TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
   ASSERT_TRUE(maybe_deferral);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
 
@@ -3218,8 +3195,7 @@ TEST_F(SessionServiceImplWithStoreTest, RecoveryFromTransientSigningError) {
   HttpRequestHeaders extra_headers_a;
   DbscRequest dbsc_request_a(request_a.get());
   std::optional<SessionService::DeferralParams> maybe_deferral_a =
-      service().ShouldDefer(dbsc_request_a, &extra_headers_a,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request_a, &extra_headers_a);
   ASSERT_TRUE(maybe_deferral_a);
 
   // Mock transient failure for Request A
@@ -3251,8 +3227,7 @@ TEST_F(SessionServiceImplWithStoreTest, RecoveryFromTransientSigningError) {
   HttpRequestHeaders extra_headers_b;
   DbscRequest dbsc_request_b(request_b.get());
   std::optional<SessionService::DeferralParams> maybe_deferral_b =
-      service().ShouldDefer(dbsc_request_b, &extra_headers_b,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request_b, &extra_headers_b);
   ASSERT_TRUE(maybe_deferral_b);
 
   // Mock success for Request B
@@ -3445,8 +3420,7 @@ TEST_F(SessionServiceImplWithStoreTest, NoSessionUsageDuringInitialization) {
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
 
   EXPECT_EQ(request->device_bound_session_usage().size(), 0);
 }
@@ -3719,13 +3693,11 @@ TEST_F(SessionServiceImplTest, DeferredWaitersCanTriggerAnotherRefresh) {
   // (already refreshed) but true for the second one (waiter gets a second
   // chance).
   HttpRequestHeaders extra_headers1;
-  auto deferral1 = service().ShouldDefer(dbsc_request1, &extra_headers1,
-                                         FirstPartySetMetadata());
+  auto deferral1 = service().ShouldDefer(dbsc_request1, &extra_headers1);
   EXPECT_FALSE(deferral1.has_value());
 
   HttpRequestHeaders extra_headers2;
-  auto deferral2 = service().ShouldDefer(dbsc_request2, &extra_headers2,
-                                         FirstPartySetMetadata());
+  auto deferral2 = service().ShouldDefer(dbsc_request2, &extra_headers2);
   EXPECT_TRUE(deferral2.has_value());
 }
 
@@ -3766,8 +3738,7 @@ TEST_F(SessionServiceImplTest, ProactiveRefreshBlocksDeferring) {
   HttpRequestHeaders extra_headers;
   auto dbsc_request = std::make_unique<DbscRequest>(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(*dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(*dbsc_request, &extra_headers);
   ASSERT_FALSE(maybe_deferral);
   SessionKey session_key{site, Session::Id(kSessionId)};
   EXPECT_EQ(request->device_bound_session_usage().size(), 1);
@@ -3837,8 +3808,7 @@ TEST_F(SessionServiceImplTest, ProactiveRefreshBlocksProactive) {
   HttpRequestHeaders extra_headers;
   auto dbsc_request = std::make_unique<DbscRequest>(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(*dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(*dbsc_request, &extra_headers);
   ASSERT_FALSE(maybe_deferral);
 
   EXPECT_EQ(tracker.num_pending_refreshes(), 1);
@@ -3852,8 +3822,7 @@ TEST_F(SessionServiceImplTest, ProactiveRefreshBlocksProactive) {
   request->set_maybe_sent_cookies({{*cookie.get(), access_result}});
   dbsc_request = std::make_unique<DbscRequest>(request.get());
 
-  maybe_deferral = service().ShouldDefer(*dbsc_request, &extra_headers,
-                                         FirstPartySetMetadata());
+  maybe_deferral = service().ShouldDefer(*dbsc_request, &extra_headers);
   ASSERT_FALSE(maybe_deferral);
 
   EXPECT_EQ(tracker.num_pending_refreshes(), 1);
@@ -3919,8 +3888,7 @@ TEST_F(SessionServiceImplTest, DeferringRefreshBlocksProactive) {
 
   HttpRequestHeaders extra_headers;
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(*dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(*dbsc_request, &extra_headers);
   ASSERT_FALSE(maybe_deferral);
 
   EXPECT_EQ(tracker.num_pending_refreshes(), 1);
@@ -3972,8 +3940,7 @@ TEST_F(SessionServiceImplTest, FailedProactiveRefreshBlocksProactiveRefresh) {
   HttpRequestHeaders extra_headers;
   auto dbsc_request = std::make_unique<DbscRequest>(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(*dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(*dbsc_request, &extra_headers);
   ASSERT_FALSE(maybe_deferral);
 
   EXPECT_EQ(tracker.num_pending_refreshes(), 1);
@@ -3991,8 +3958,7 @@ TEST_F(SessionServiceImplTest, FailedProactiveRefreshBlocksProactiveRefresh) {
   request->set_maybe_sent_cookies({{*cookie.get(), access_result}});
   dbsc_request = std::make_unique<DbscRequest>(request.get());
 
-  maybe_deferral = service().ShouldDefer(*dbsc_request, &extra_headers,
-                                         FirstPartySetMetadata());
+  maybe_deferral = service().ShouldDefer(*dbsc_request, &extra_headers);
   ASSERT_FALSE(maybe_deferral);
 
   EXPECT_EQ(tracker.num_pending_refreshes(), 0);
@@ -4038,8 +4004,7 @@ TEST_F(SessionServiceImplTest, NoProactiveRefreshNeededYet) {
   HttpRequestHeaders extra_headers;
   auto dbsc_request = std::make_unique<DbscRequest>(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(*dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(*dbsc_request, &extra_headers);
   ASSERT_FALSE(maybe_deferral);
   SessionKey session_key{site, Session::Id(kSessionId)};
   EXPECT_EQ(request->device_bound_session_usage().size(), 1);
@@ -5437,8 +5402,7 @@ TEST_F(SessionServiceImplTest,
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
+      service().ShouldDefer(dbsc_request, &extra_headers);
   ASSERT_TRUE(maybe_deferral);
 
   base::test::TestFuture<RefreshResult> future;

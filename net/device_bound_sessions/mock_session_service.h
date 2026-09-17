@@ -37,9 +37,7 @@ class SessionServiceMock : public SessionService {
               (override));
   MOCK_METHOD(std::optional<SessionService::DeferralParams>,
               ShouldDefer,
-              (DbscRequest & request,
-               HttpRequestHeaders* extra_headers,
-               const FirstPartySetMetadata& first_party_set_metadata),
+              (DbscRequest & request, HttpRequestHeaders* extra_headers),
               (override));
   MOCK_METHOD(void,
               DeferRequestForRefresh,
@@ -51,7 +49,6 @@ class SessionServiceMock : public SessionService {
               SetChallengeForBoundSession,
               (OnAccessCallback on_access_callback,
                DbscRequest& request,
-               const FirstPartySetMetadata& first_party_set_metadata,
                const SessionChallengeParam& challenge_param),
               (override));
   MOCK_METHOD(
@@ -132,9 +129,7 @@ class SessionServiceMock : public SessionService {
               (override));
   MOCK_METHOD(void,
               HandleResponseHeaders,
-              (DbscRequest & request,
-               HttpResponseHeaders* headers,
-               const FirstPartySetMetadata& first_party_set_metadata),
+              (DbscRequest & request, HttpResponseHeaders* headers),
               (override));
   MOCK_METHOD(void,
               SelectClientCertificate,

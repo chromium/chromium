@@ -123,8 +123,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   std::optional<DeferralParams> ShouldDefer(
       DbscRequest& request,
-      HttpRequestHeaders* extra_headers,
-      const FirstPartySetMetadata& first_party_set_metadata) override;
+      HttpRequestHeaders* extra_headers) override;
 
   void DeferRequestForRefresh(DbscRequest& request,
                               DeferralParams deferral,
@@ -133,7 +132,6 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void SetChallengeForBoundSession(
       OnAccessCallback on_access_callback,
       DbscRequest& request,
-      const FirstPartySetMetadata& first_party_set_metadata,
       const SessionChallengeParam& param) override;
 
   void GetAllSessionsAsync(
@@ -172,10 +170,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       SignedRefreshChallenge signed_refresh_challenge) override;
   bool SigningQuotaExceeded(const SchemefulSite& site) override;
   void AddSigningOccurrence(const SchemefulSite& site) override;
-  void HandleResponseHeaders(
-      DbscRequest& request,
-      HttpResponseHeaders* headers,
-      const FirstPartySetMetadata& first_party_set_metadata) override;
+  void HandleResponseHeaders(DbscRequest& request,
+                             HttpResponseHeaders* headers) override;
   void SelectClientCertificate(
       const GURL& url,
       scoped_refptr<SSLCertRequestInfo> cert_info,
@@ -484,7 +480,6 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   ChallengeResult SetChallengeForBoundSessionInternal(
       OnAccessCallback on_access_callback,
       DbscRequest& request,
-      const FirstPartySetMetadata& first_party_set_metadata,
       const SessionChallengeParam& param);
 
   // Helper to notify event listeners about an event only if they exist.

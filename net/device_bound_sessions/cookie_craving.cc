@@ -21,6 +21,7 @@
 #include "net/device_bound_sessions/cookie_craving_display.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session_error.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/url_request/url_request.h"
 #include "url/url_canon.h"
 
@@ -385,7 +386,6 @@ CookieCravingDisplay CookieCraving::ToDisplay() const {
 
 bool CookieCraving::ShouldIncludeForRequest(
     DbscRequest& request,
-    const FirstPartySetMetadata& first_party_set_metadata,
     const CookieOptions& options,
     const CookieAccessParams& params) const {
   if (!IncludeForRequestURL(request.url(), options, params)
@@ -417,13 +417,12 @@ bool CookieCraving::ShouldIncludeForRequest(
   // whether to include cookies on the WebSocket handshake. That makes
   // it safe in this very limited context to expose the `URLRequest`.
   return request.network_delegate()->AnnotateAndMoveUserBlockedCookies(
-      *request.unnormalized_request(), first_party_set_metadata,
+      *request.unnormalized_request(), net::FirstPartySetMetadata(),
       included_cravings, excluded_cravings);
 }
 
 bool CookieCraving::CanSetBoundCookie(
     DbscRequest& request,
-    const FirstPartySetMetadata& first_party_set_metadata,
     CookieOptions* options) const {
   // TODO(crbug.com/438783631): Refactor this.
   // The below is all copied from
@@ -447,7 +446,7 @@ bool CookieCraving::CanSetBoundCookie(
   // it safe in this very limited context to expose the `URLRequest`.
   if (!request.network_delegate()->CanSetCookie(
           *request.unnormalized_request(), *canonical_cookie, options,
-          first_party_set_metadata, &status)) {
+          net::FirstPartySetMetadata(), &status)) {
     return false;
   }
 
