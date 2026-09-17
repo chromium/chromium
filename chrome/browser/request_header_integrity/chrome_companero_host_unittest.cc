@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/task/task_traits.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -68,5 +70,49 @@ TEST_F(ChromeCompaneroHostTest, LibraryAbsentGracefulFailure) {
   remote->GetHeaderNameAndValue(future.GetCallback());
   EXPECT_FALSE(future.Get());
 }
+
+// The param is read with GetWithoutCache() throughout these tests because
+// BASE_FEATURE_ENUM_PARAM memoises the value process-wide on first read, which
+// production wants (the host is constructed once) but which would make these
+// assertions depend on test ordering.
+TEST_F(ChromeCompaneroHostTest, TokenTaskPriorityDefaultsToUserVisible) {
+  EXPECT_EQ(base::TaskPriority::USER_VISIBLE,
+            kTokenTaskPriority.GetWithoutCache());
+}
+
+TEST_F(ChromeCompaneroHostTest, TokenTaskPriorityFallsBackOnUnknownValue) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kRequestHeaderIntegrityTokenPriority,
+      {{"TokenTaskPriority", "nonsense"}});
+  EXPECT_EQ(base::TaskPriority::USER_VISIBLE,
+            kTokenTaskPriority.GetWithoutCache());
+}
+
+class ChromeCompaneroHostTaskPriorityTest
+    : public ChromeCompaneroHostTest,
+      public testing::WithParamInterface<base::TaskPriority> {};
+
+// Every base::TaskPriority the param offers must be settable, and settable
+// under base's own spelling for it. Driving both the param value and the test
+// name off TaskPriorityToString() means the accepted values cannot drift away
+// from base without this failing, and a failure names the offending priority.
+TEST_P(ChromeCompaneroHostTaskPriorityTest, TokenTaskPriorityIsConfigurable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kRequestHeaderIntegrityTokenPriority,
+      {{"TokenTaskPriority", base::TaskPriorityToString(GetParam())}});
+  EXPECT_EQ(GetParam(), kTokenTaskPriority.GetWithoutCache());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ChromeCompaneroHostTaskPriorityTest,
+    testing::Values(base::TaskPriority::BEST_EFFORT,
+                    base::TaskPriority::USER_VISIBLE,
+                    base::TaskPriority::USER_BLOCKING),
+    [](const testing::TestParamInfo<base::TaskPriority>& info) {
+      return base::TaskPriorityToString(info.param);
+    });
 
 }  // namespace request_header_integrity

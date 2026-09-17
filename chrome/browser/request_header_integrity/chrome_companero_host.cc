@@ -4,13 +4,16 @@
 
 #include "chrome/browser/request_header_integrity/chrome_companero_host.h"
 
+#include <array>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/task/task_traits.h"
@@ -32,6 +35,33 @@
 #endif
 
 namespace request_header_integrity {
+
+BASE_FEATURE(kRequestHeaderIntegrityTokenPriority,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Association of param values to base::TaskPriority members. Only the
+// priorities that make sense for this work are offered: the token is produced
+// on a background sequence that nothing blocks on, so there is no reason to
+// expose anything finer grained.
+//
+// The strings deliberately match base::TaskPriorityToString(), so a Finch
+// config reads the same as the priority shown in traces and logs. This mirrors
+// kNoVarySearchCacheLoadTaskRunnerPriority in //net/base/features.cc, which
+// tunes a task runner priority the same way.
+constexpr auto kTokenTaskPriorityOptions =
+    std::to_array<base::FeatureParam<base::TaskPriority>::Option>({
+        {base::TaskPriority::BEST_EFFORT, "BEST_EFFORT"},
+        {base::TaskPriority::USER_VISIBLE, "USER_VISIBLE"},
+        {base::TaskPriority::USER_BLOCKING, "USER_BLOCKING"},
+    });
+
+// The param name is derived from the variable name by BASE_FEATURE_ENUM_PARAM,
+// so this is configured as "TokenTaskPriority".
+BASE_FEATURE_ENUM_PARAM(base::TaskPriority,
+                        kTokenTaskPriority,
+                        &kRequestHeaderIntegrityTokenPriority,
+                        base::TaskPriority::USER_VISIBLE,
+                        kTokenTaskPriorityOptions);
 
 namespace {
 
@@ -182,7 +212,7 @@ class ChromeCompaneroHost::Backend : public mojom::ChromeCompanero {
 ChromeCompaneroHost::ChromeCompaneroHost() {
   if (base::ThreadPoolInstance::Get()) {
     backend_.emplace(base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+        {base::MayBlock(), kTokenTaskPriority.Get()}));
   }
 }
 
