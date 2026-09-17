@@ -1885,6 +1885,10 @@ inline constexpr char kSyncWalletVehicleRegistrationsName[] =
 inline constexpr char kSyncWalletVehicleRegistrationsDescription[] =
     "Enables syncing vehicle registrations in the wallet to the server.";
 
+inline constexpr char kTTCEnabledName[] = "TTCEnabled";
+inline constexpr char kTTCEnabledDescription[] =
+    "Enables TalkToChrome prototype.";
+
 inline constexpr char kTabGroupInOverflowMenuName[] =
     "Enable the Tab Group button in the overflow menu";
 inline constexpr char kTabGroupInOverflowMenuDescription[] =

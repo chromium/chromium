@@ -1133,3 +1133,9 @@ BASE_FEATURE(kAimHistoryThreadsManagement, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAimHistoryThreadsManagementEnabled() {
   return base::FeatureList::IsEnabled(kAimHistoryThreadsManagement);
 }
+
+BASE_FEATURE(kTTCEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTTCEnabled() {
+  return base::FeatureList::IsEnabled(kTTCEnabled);
+}
