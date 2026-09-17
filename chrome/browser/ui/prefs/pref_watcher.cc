@@ -157,6 +157,8 @@ PrefWatcher::PrefWatcher(Profile* profile) : profile_(profile) {
                                      renderer_callback);
   profile_pref_change_registrar_.Add(
       universal_optout::prefs::kUniversalOptOutEnabled, renderer_callback);
+  profile_pref_change_registrar_.Add(autofill::prefs::kAutofillAtMemoryShortcut,
+                                     renderer_callback);
   profile_pref_change_registrar_.Add(
       autofill::prefs::kAutofillAtMemoryTriggerInfo, renderer_callback);
   profile_pref_change_registrar_.Add(
