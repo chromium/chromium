@@ -15,7 +15,7 @@ export function getHtml() {
 </if>
 <if expr="not _google_chrome">
   <img class="top-toolbar-logo chrome-logo-light"
-      src="chrome://resources/cr_components/searchbox/icons/chrome_product.svg"
+      src="chrome://resources/cr_components/searchbox/icons/chrome_product_cr23.svg"
       alt=""
       aria-hidden="true">
   <img class="top-toolbar-logo chrome-logo-dark"
