@@ -2620,6 +2620,33 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    public void onTopResumedActivityChanged_hubSearchRetainsObservers() {
+        var session =
+                createSession(new GURL("https://abc.xyz"), "title", PageClassification.ANDROID_HUB);
+        mMediator.beginInput(session);
+
+        clearInvocations(mAutocompleteController);
+        mMediator.onTopResumedActivityChanged(/* isTopResumedActivity= */ false);
+        verify(mAutocompleteController, never()).stop(anyInt());
+        verify(mAutocompleteController, never()).removeOnSuggestionsReceivedListener(any());
+    }
+
+    @Test
+    public void onTopResumedActivityChanged_tabSearchRetainsObservers() {
+        var session =
+                createSession(
+                        new GURL("https://abc.xyz"),
+                        "title",
+                        PageClassification.ANDROID_TAB_SEARCH_OVERLAY);
+        mMediator.beginInput(session);
+
+        clearInvocations(mAutocompleteController);
+        mMediator.onTopResumedActivityChanged(/* isTopResumedActivity= */ false);
+        verify(mAutocompleteController, never()).stop(anyInt());
+        verify(mAutocompleteController, never()).removeOnSuggestionsReceivedListener(any());
+    }
+
+    @Test
     public void isInInputSession_ignoresWindowFocus() {
         var session = createEmptySession();
         mMediator.beginInput(session);
@@ -2969,37 +2996,28 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void installAutocompleteObservers_failsWhenActivityNotFocused() {
-        // Create a new mediator with activity focus set to false.
-        doReturn(false).when(mActivity).hasWindowFocus();
-        AutocompleteMediator mediator =
-                new AutocompleteMediator(
-                        mContext,
-                        mResourceProvider,
-                        mAutocompleteDelegate,
-                        mTextStateProvider,
-                        mListModel,
-                        new Handler(),
-                        () -> mModalDialogManager,
-                        null,
-                        null,
-                        mLocationBarDataProvider,
-                        tabGroupId -> {},
-                        url -> false,
-                        mOmniboxActionDelegate,
-                        mActivityLifecycleDispatcher,
-                        mEmbedder,
-                        mWindowAndroid,
-                        mDeferredImeCallback,
-                        mFuseboxCoordinator,
-                        mUiOverrides);
-        mediator.getDropdownItemViewInfoListBuilderForTest()
-                .registerSuggestionProcessor(mMockProcessor);
+        mMediator.onTopResumedActivityChanged(/* isTopResumedActivity= */ false);
 
         var session = createEmptySession();
-        mediator.beginInput(session);
+        mMediator.beginInput(session);
 
         // Verify that observers are NOT installed because activity is not focused.
         verify(mAutocompleteController, never()).addOnSuggestionsReceivedListener(any());
+    }
+
+    @Test
+    public void installAutocompleteObservers_tabSearchInstallsWhenActivityNotFocused() {
+        mMediator.onTopResumedActivityChanged(/* isTopResumedActivity= */ false);
+
+        var session =
+                createSession(
+                        new GURL("https://abc.xyz"),
+                        "title",
+                        PageClassification.ANDROID_TAB_SEARCH_OVERLAY);
+        mMediator.beginInput(session);
+
+        // Verify that observers ARE installed for Tab Search even though activity is not focused.
+        verify(mAutocompleteController).addOnSuggestionsReceivedListener(mMediator);
     }
 
     @Test
