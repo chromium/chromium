@@ -41,6 +41,7 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -215,7 +216,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       const WebMediaPlayerSource&,
       WebMediaPlayerClient*) override;
   RemotePlaybackClient* CreateRemotePlaybackClient(HTMLMediaElement&) override;
-  void DidChangeScrollOffset() override;
+  void DidChangeScrollOffset(mojom::blink::ScrollType) override;
   void NotifyCurrentHistoryItemChanged() override;
   void DidUpdateCurrentHistoryItem() override;
 

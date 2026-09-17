@@ -49,6 +49,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom-blink.h"
+#include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_client.h"
@@ -309,9 +310,10 @@ void LocalFrameClientImpl::WillReleaseScriptContext(
   }
 }
 
-void LocalFrameClientImpl::DidChangeScrollOffset() {
+void LocalFrameClientImpl::DidChangeScrollOffset(
+    mojom::blink::ScrollType scroll_type) {
   if (web_frame_->Client()) {
-    web_frame_->Client()->DidChangeScrollOffset();
+    web_frame_->Client()->DidChangeScrollOffset(scroll_type);
   }
 }
 

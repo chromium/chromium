@@ -57,6 +57,7 @@
 #include "cc/input/snap_selection_strategy.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -521,7 +522,7 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   // when navigating back.
   if (is_root_layer) {
     frame_view->GetFrame().Loader().SaveScrollState();
-    frame_view->DidChangeScrollOffset();
+    frame_view->DidChangeScrollOffset(scroll_type);
     if (scroll_type == mojom::blink::ScrollType::kCompositor ||
         scroll_type == mojom::blink::ScrollType::kUser) {
       if (DocumentLoader* document_loader = frame->Loader().GetDocumentLoader())

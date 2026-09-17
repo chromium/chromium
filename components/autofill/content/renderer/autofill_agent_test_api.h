@@ -10,6 +10,7 @@
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/javascript_autofill_tracker.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
+#include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-shared.h"
 
 namespace autofill {
 
@@ -55,7 +56,10 @@ class AutofillAgentTestApi {
     agent_->SelectFieldOptionsChanged(element);
   }
 
-  void DidChangeScrollOffset() { agent_->DidChangeScrollOffset(); }
+  void DidChangeScrollOffset(blink::mojom::ScrollType scroll_type =
+                                 blink::mojom::ScrollType::kProgrammatic) {
+    agent_->DidChangeScrollOffset(scroll_type);
+  }
 
   bool ShouldThrottleAskForValuesToFill(
       FieldRendererId field,

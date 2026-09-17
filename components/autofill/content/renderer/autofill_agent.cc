@@ -71,6 +71,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-shared.h"
 #include "third_party/blink/public/platform/web_runtime_features_base.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
@@ -591,7 +592,7 @@ void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
   }
 }
 
-void AutofillAgent::DidChangeScrollOffset() {
+void AutofillAgent::DidChangeScrollOffset(blink::mojom::ScrollType) {
   if (config_.focus_requires_scroll) {
     HidePopup();
     return;

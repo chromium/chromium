@@ -28,6 +28,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-shared.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
@@ -140,7 +141,7 @@ class CONTENT_EXPORT RenderFrameObserver {
   virtual void WillReleaseScriptContext(v8::Local<v8::Context> context,
                                         int32_t world_id) {}
   virtual void DidClearWindowObject() {}
-  virtual void DidChangeScrollOffset() {}
+  virtual void DidChangeScrollOffset(blink::mojom::ScrollType) {}
   virtual void WillSubmitForm(const blink::WebFormElement& form) {}
   virtual void DidMatchCSS(
       const std::vector<blink::WebString>& newly_matching_selectors,

@@ -13,7 +13,8 @@ include_rules = [
   "+third_party/blink/public/common",
   "+third_party/blink/public/platform",
   "+third_party/blink/public/web",
-  "+third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
+  "+third_party/blink/public/mojom/devtools/inspector_issue.mojom.h",
+  "+third_party/blink/public/mojom/scroll",
 ]
 
 specific_include_rules = {

@@ -41,7 +41,7 @@ void FacilitatedPaymentsAgent::DidMeaningfulLayout(
   OnTriggeredRescan();
 }
 
-void FacilitatedPaymentsAgent::DidChangeScrollOffset() {
+void FacilitatedPaymentsAgent::DidChangeScrollOffset(blink::mojom::ScrollType) {
   OnTriggeredRescan();
 }
 

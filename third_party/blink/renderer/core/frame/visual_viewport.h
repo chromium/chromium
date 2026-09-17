@@ -35,6 +35,7 @@
 
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -115,8 +116,11 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   void InitializeScrollbars();
 
   // Sets the location of the visual viewport relative to the outer viewport.
-  // The coordinates are in partial CSS pixels.
-  void SetLocation(const gfx::PointF&);
+  // The coordinates are in partial CSS pixels. Defaults to a programmatic
+  // scroll.
+  void SetLocation(
+      const gfx::PointF&,
+      mojom::blink::ScrollType = mojom::blink::ScrollType::kProgrammatic);
   // FIXME: This should be called moveBy
   void Move(const ScrollOffset&);
 
@@ -139,9 +143,12 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   void MainFrameDidChangeSize();
 
   // Sets scale and location in one operation, preventing intermediate clamping.
-  void SetScaleAndLocation(float scale,
-                           bool is_pinch_gesture_active,
-                           const gfx::PointF& location);
+  // Defaults to a programmatic scroll.
+  void SetScaleAndLocation(
+      float scale,
+      bool is_pinch_gesture_active,
+      const gfx::PointF& location,
+      mojom::blink::ScrollType = mojom::blink::ScrollType::kProgrammatic);
 
   void SetScale(float);
   float Scale() const { return scale_; }
@@ -320,7 +327,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
  private:
   bool DidSetScaleOrLocation(float scale,
                              bool is_pinch_gesture_active,
-                             const gfx::PointF& location);
+                             const gfx::PointF& location,
+                             mojom::blink::ScrollType);
 
   void CreateLayers();
 

@@ -52,6 +52,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
@@ -4246,8 +4247,9 @@ void LocalFrameView::SetLayoutSizeInternal(const gfx::Size& size,
   document->LayoutViewportWasResized(options);
 }
 
-void LocalFrameView::DidChangeScrollOffset() {
-  GetFrame().Client()->DidChangeScrollOffset();
+void LocalFrameView::DidChangeScrollOffset(
+    mojom::blink::ScrollType scroll_type) {
+  GetFrame().Client()->DidChangeScrollOffset(scroll_type);
   if (GetFrame().IsOutermostMainFrame()) {
     GetFrame()
         .GetPage()

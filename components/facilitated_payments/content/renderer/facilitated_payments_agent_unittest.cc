@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-shared.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 
 namespace payments::facilitated {
@@ -117,7 +118,7 @@ TEST_F(FacilitatedPaymentsAgentTest,
 
   // Scroll just before the timer would fire, which should reset it.
   task_environment_.FastForwardBy(kDebounceDelay - kEpsilon);
-  agent_->DidChangeScrollOffset();
+  agent_->DidChangeScrollOffset(blink::mojom::ScrollType::kUser);
 
   // Advance to just before the debounce delay since the scroll event. No score
   // should be reported even though more than one delay has elapsed in total.
@@ -163,7 +164,7 @@ TEST_F(FacilitatedPaymentsAgentTest,
   EXPECT_FALSE(agent_->GetTimerForTesting().IsRunning());
 
   // Further lifecycle events should be ignored while disabled.
-  agent_->DidChangeScrollOffset();
+  agent_->DidChangeScrollOffset(blink::mojom::ScrollType::kUser);
   EXPECT_FALSE(agent_->GetTimerForTesting().IsRunning());
 
   task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);

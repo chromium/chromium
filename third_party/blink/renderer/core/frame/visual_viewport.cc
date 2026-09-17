@@ -37,6 +37,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/solid_color_scrollbar_layer.h"
+#include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -467,8 +468,10 @@ gfx::PointF VisualViewport::ViewportCSSPixelsToRootFrame(
   return point_in_root_frame;
 }
 
-void VisualViewport::SetLocation(const gfx::PointF& new_location) {
-  SetScaleAndLocation(scale_, is_pinch_gesture_active_, new_location);
+void VisualViewport::SetLocation(const gfx::PointF& new_location,
+                                 mojom::blink::ScrollType scroll_type) {
+  SetScaleAndLocation(scale_, is_pinch_gesture_active_, new_location,
+                      scroll_type);
 }
 
 void VisualViewport::Move(const ScrollOffset& delta) {
@@ -518,8 +521,10 @@ double VisualViewport::ScaleForVisualViewport() const {
 
 void VisualViewport::SetScaleAndLocation(float scale,
                                          bool is_pinch_gesture_active,
-                                         const gfx::PointF& location) {
-  if (DidSetScaleOrLocation(scale, is_pinch_gesture_active, location)) {
+                                         const gfx::PointF& location,
+                                         mojom::blink::ScrollType scroll_type) {
+  if (DidSetScaleOrLocation(scale, is_pinch_gesture_active, location,
+                            scroll_type)) {
     // In remote or nested main frame cases, the visual viewport is inert so it
     // cannot be moved or scaled. This is enforced by setting page scale
     // constraints.
@@ -546,9 +551,11 @@ double VisualViewport::VisibleHeightCSSPx() const {
   return height_css_px;
 }
 
-bool VisualViewport::DidSetScaleOrLocation(float scale,
-                                           bool is_pinch_gesture_active,
-                                           const gfx::PointF& location) {
+bool VisualViewport::DidSetScaleOrLocation(
+    float scale,
+    bool is_pinch_gesture_active,
+    const gfx::PointF& location,
+    mojom::blink::ScrollType scroll_type) {
   if (!IsActiveViewport()) {
     is_pinch_gesture_active_ = is_pinch_gesture_active;
     // The VisualViewport in an embedded widget must always be 1.0 or else
@@ -605,7 +612,7 @@ bool VisualViewport::DidSetScaleOrLocation(float scale,
 
     EnqueueScrollEvent();
 
-    LocalMainFrame().View()->DidChangeScrollOffset();
+    LocalMainFrame().View()->DidChangeScrollOffset(scroll_type);
     values_changed = true;
   }
 
@@ -988,7 +995,8 @@ void VisualViewport::UpdateScrollOffset(const ScrollOffset& position,
                                         mojom::blink::ScrollType scroll_type,
                                         cc::ScrollSourceType source_type) {
   if (!DidSetScaleOrLocation(scale_, is_pinch_gesture_active_,
-                             gfx::PointAtOffsetFromOrigin(position))) {
+                             gfx::PointAtOffsetFromOrigin(position),
+                             scroll_type)) {
     return;
   }
   if (IsExplicitScrollType(scroll_type))
@@ -1062,7 +1070,8 @@ bool VisualViewport::ScheduleAnimation() {
 }
 
 void VisualViewport::ClampToBoundaries() {
-  SetLocation(gfx::PointAtOffsetFromOrigin(offset_));
+  SetLocation(gfx::PointAtOffsetFromOrigin(offset_),
+              mojom::blink::ScrollType::kClamping);
 }
 
 gfx::RectF VisualViewport::ViewportToRootFrame(

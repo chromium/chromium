@@ -47,7 +47,7 @@ class FacilitatedPaymentsAgent : public content::RenderFrameObserver,
 
   // content::RenderFrameObserver:
   void DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type) override;
-  void DidChangeScrollOffset() override;
+  void DidChangeScrollOffset(blink::mojom::ScrollType) override;
   void DidFinishLoad() override;
   void DidFinishSameDocumentNavigation() override;
   void DidObserveSoftNavigation(

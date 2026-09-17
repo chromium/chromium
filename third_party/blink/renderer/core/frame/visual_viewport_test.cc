@@ -19,6 +19,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-shared.h"
 #include "third_party/blink/public/web/web_ax_context.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -1038,7 +1039,7 @@ class VisualViewportMockWebFrameClient
  public:
   MOCK_METHOD2(UpdateContextMenuDataForTesting,
                void(const ContextMenuData&, const std::optional<gfx::Point>&));
-  MOCK_METHOD0(DidChangeScrollOffset, void());
+  MOCK_METHOD1(DidChangeScrollOffset, void(blink::mojom::ScrollType));
 };
 
 MATCHER_P2(ContextMenuAtLocation,
@@ -1095,7 +1096,8 @@ TEST_P(VisualViewportTest, TestContextMenuShownInCorrectLocation) {
   // should still appear at the location of the event, relative to the WebView.
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
   WebView()->SetPageScaleFactor(2);
-  EXPECT_CALL(mock_web_frame_client, DidChangeScrollOffset());
+  EXPECT_CALL(mock_web_frame_client,
+              DidChangeScrollOffset(blink::mojom::ScrollType::kProgrammatic));
   visual_viewport.SetLocation(gfx::PointF(60, 80));
   EXPECT_CALL(
       mock_web_frame_client,
@@ -1129,18 +1131,29 @@ TEST_P(VisualViewportTest, TestClientNotifiedOfScrollEvents) {
   WebView()->SetPageScaleFactor(2);
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
 
-  EXPECT_CALL(mock_web_frame_client, DidChangeScrollOffset());
+  EXPECT_CALL(mock_web_frame_client,
+              DidChangeScrollOffset(blink::mojom::ScrollType::kProgrammatic));
   visual_viewport.SetLocation(gfx::PointF(60, 80));
   Mock::VerifyAndClearExpectations(&mock_web_frame_client);
 
   // Scroll vertically.
-  EXPECT_CALL(mock_web_frame_client, DidChangeScrollOffset());
+  EXPECT_CALL(mock_web_frame_client,
+              DidChangeScrollOffset(blink::mojom::ScrollType::kProgrammatic));
   visual_viewport.SetLocation(gfx::PointF(60, 90));
   Mock::VerifyAndClearExpectations(&mock_web_frame_client);
 
   // Scroll horizontally.
-  EXPECT_CALL(mock_web_frame_client, DidChangeScrollOffset());
+  EXPECT_CALL(mock_web_frame_client,
+              DidChangeScrollOffset(blink::mojom::ScrollType::kProgrammatic));
   visual_viewport.SetLocation(gfx::PointF(70, 90));
+  Mock::VerifyAndClearExpectations(&mock_web_frame_client);
+
+  // Clamping scroll when visual viewport size increases, shrinking scroll
+  // bounds.
+  EXPECT_CALL(mock_web_frame_client,
+              DidChangeScrollOffset(blink::mojom::ScrollType::kClamping));
+  visual_viewport.SetSize(gfx::Size(300, 500));
+  visual_viewport.ClampToBoundaries();
 
   // Reset the old client so destruction can occur naturally.
   WebView()->MainFrameImpl()->SetClient(old_client);
