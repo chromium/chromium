@@ -226,6 +226,7 @@ void FileSystemAccessObserverObservation::OnChanges(
 
   FileSystemAccessManagerImpl* manager = handle_base.manager();
   const storage::FileSystemURL& handle_url = handle_base.url();
+  const auto handle_type = std::visit(GetHandleTypeVisitor(), handle_);
   std::vector<blink::mojom::FileSystemAccessChangePtr> mojo_changes;
   bool observation_root_disappeared = false;
   for (const auto& change : changes_or_error.value()) {
@@ -236,7 +237,6 @@ void FileSystemAccessObserverObservation::OnChanges(
     // It is illegal to receive a change outside of the observed scope.
     CHECK(observation_->scope().Contains(change.url));
 
-    const auto handle_type = std::visit(GetHandleTypeVisitor(), handle_);
     blink::mojom::FileSystemAccessEntryPtr root_entry = CreateEntryForUrl(
         *manager, binding_context, handle_state, handle_url, handle_type);
     const auto& change_info = change.change_info;
