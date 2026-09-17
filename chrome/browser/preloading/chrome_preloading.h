@@ -107,6 +107,16 @@ inline constexpr content::PreloadingPredictor kMouseHoverOnNewTabPage(
 
 // When the preloading URL is predicted from the default search suggest due to
 // the user touching down on a Omnibox Search suggestion.
+//
+// This is currently used for both TouchDown and EnterKey.
+//
+// TODO(crbug.com/532219992): Add an ADR documenting:
+//
+// - The rationale and ongoing discussion for sharing this predictor between
+//   TouchDown and EnterKey instead of adding separate predictors.
+// - The effects on existing UMA/UKM metrics.
+// - How `PreloadingPredictor` granularity and ideal metrics aggregation should
+//   be designed in the future.
 inline constexpr content::PreloadingPredictor kOmniboxTouchDownPredictor(
     111,
     "OmniboxTouchDownPredirector");
