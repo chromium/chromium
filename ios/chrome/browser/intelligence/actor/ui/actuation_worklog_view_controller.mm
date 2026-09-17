@@ -4,14 +4,25 @@
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_header_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_compact_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_mutator.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+// Point size for the header close button symbol.
+constexpr CGFloat kCloseButtonPointSize = 14.0;
+
+}  // namespace
 
 using intelligence::actor::kSpacingLarge;
 
@@ -22,6 +33,8 @@ using intelligence::actor::kSpacingLarge;
 @implementation ActuationWorklogViewController {
   // Header view that sits right above the worklog.
   ActuationHeaderView* _headerView;
+  // Primary accessory close button displayed in `_headerView`.
+  UIButton* _closeButton;
   // Current step layout. Visible when `_compact` is true.
   ActuationWorklogCompactView* _compactView;
   // Timeline view embedded inside a scrollview to support vertical growth as
@@ -94,6 +107,7 @@ using intelligence::actor::kSpacingLarge;
 
 - (void)reset {
   [_headerView reset];
+  _headerView.primaryAccessoryButton = _closeButton;
   [_compactView reset];
   [_fullView reset];
   [_scrollView setContentOffset:CGPointZero animated:NO];
@@ -117,11 +131,34 @@ using intelligence::actor::kSpacingLarge;
 
 #pragma mark - Private
 
+// Handles close button tap to request stopping the active actuation task.
+- (void)stopActuationButtonTapped {
+  [self.mutator stopActuation];
+}
+
+// Creates the close button accessory for `_headerView`.
+- (UIButton*)createCloseButton {
+  __weak __typeof(self) weakSelf = self;
+  UIAction* closeAction = [UIAction actionWithHandler:^(UIAction*) {
+    [weakSelf stopActuationButtonTapped];
+  }];
+  UIButton* button = [ActuationHeaderView
+      createCircularIconButtonWithIcon:SymbolWithPointSize(
+                                           SymbolXMark, kCloseButtonPointSize)
+                                action:closeAction];
+  button.accessibilityIdentifier =
+      kActuationHeaderCloseButtonAccessibilityIdentifier;
+  button.accessibilityLabel = l10n_util::GetNSString(IDS_CLOSE);
+  return button;
+}
+
 // Creates the view hierarchy.
 - (void)setupSubviews {
   _headerView = [[ActuationHeaderView alloc] initWithFrame:CGRectZero];
   _headerView.accessibilityIdentifier = kActuationHeaderAccessibilityIdentifier;
   _headerView.actuating = _actuationActive;
+  _closeButton = [self createCloseButton];
+  _headerView.primaryAccessoryButton = _closeButton;
   _headerView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_headerView];
 

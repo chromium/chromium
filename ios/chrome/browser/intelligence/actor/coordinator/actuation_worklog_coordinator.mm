@@ -31,12 +31,14 @@
   _mediator =
       [[ActuationWorklogMediator alloc] initWithActorService:actorService];
   _mediator.consumer = _viewController;
+  _viewController.mutator = _mediator;
   [_mediator connect];
 }
 
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
+  _viewController.mutator = nil;
   _viewController = nil;
 }
 

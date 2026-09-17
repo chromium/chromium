@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_mutator.h"
 
 namespace actor {
 class ActorService;
@@ -17,7 +18,8 @@ class ActorService;
 
 // Translates `ActorTask` execution updates into displayable timeline items and
 // action chips for an `ActuationWorklogConsumer`.
-@interface ActuationWorklogMediator : NSObject <ActorTaskUpdatesObserver>
+@interface ActuationWorklogMediator
+    : NSObject <ActorTaskUpdatesObserver, ActuationWorklogMutator>
 
 // The consumer that receives formatted worklog updates.
 @property(nonatomic, weak) id<ActuationWorklogConsumer> consumer;

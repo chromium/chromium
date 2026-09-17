@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 
 @class ActuationWorklogViewController;
+@protocol ActuationWorklogMutator;
 
 // Delegate protocol for ActuationWorklogViewController events.
 @protocol ActuationWorklogViewControllerDelegate <NSObject>
@@ -26,6 +27,9 @@
 
 // The delegate for this view controller.
 @property(nonatomic, weak) id<ActuationWorklogViewControllerDelegate> delegate;
+
+// The mutator for delegating user actions.
+@property(nonatomic, weak) id<ActuationWorklogMutator> mutator;
 
 // Whether the worklog is presented in compact mode or full timeline mode.
 @property(nonatomic, assign, getter=isCompact) BOOL compact;
