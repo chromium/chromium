@@ -368,4 +368,21 @@ TEST_F(X11WindowOzoneTest, StartupIdPropertyFromInitProperties) {
   EXPECT_EQ(value, kStartupId);
 }
 
+TEST_F(X11WindowOzoneTest, NotifyStartupCompletePreservesGeometryCache) {
+  testing::NiceMock<MockPlatformWindowDelegate> delegate;
+  gfx::AcceleratedWidget widget;
+  constexpr gfx::Rect kInitialBounds(10, 20, 300, 400);
+  auto window =
+      CreatePlatformWindow(&delegate, kInitialBounds, &widget, nullptr);
+
+  window->NotifyStartupComplete("test-startup-id");
+
+  constexpr gfx::Rect kNewBounds(50, 60, 500, 600);
+  EXPECT_CALL(delegate, OnBoundsChanged(_)).Times(testing::AtLeast(1));
+  window->SetBoundsInPixels(kNewBounds);
+  x11::Connection::Get()->Sync();
+  x11::Connection::Get()->DispatchAll();
+  EXPECT_EQ(window->GetBoundsInPixels(), kNewBounds);
+}
+
 }  // namespace ui

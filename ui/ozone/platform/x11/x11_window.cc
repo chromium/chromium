@@ -1231,7 +1231,6 @@ void X11Window::NotifyStartupComplete(const std::string& startup_id) {
     event.type = net_startup_info;
   }
 
-  geometry_cache_.reset();
   connection_->DestroyWindow(window);
   connection_->Flush();
 }
