@@ -8,6 +8,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -178,11 +179,58 @@ TEST_F(EntityTableTest, DeleteEntityInstancesByRecordType) {
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(local_vr));
   ASSERT_THAT(table().GetEntityInstances(),
               UnorderedElementsAre(pp, dl, wallet_vr, local_vr));
+
+  auto count_in_table = [&](const char* table_name,
+                            const EntityInstance::EntityId& guid) {
+    sql::Statement s;
+    std::string query = base::StrCat(
+        {"SELECT count(*) FROM ", table_name, " WHERE entity_guid = ?"});
+    s.Assign(test_api(table()).db()->GetUniqueStatement(query));
+    s.BindString(0, *guid);
+    EXPECT_TRUE(s.Step());
+    return s.ColumnInt(0);
+  };
+
+  // Verify that child table entries exist before deletion.
+  EXPECT_GT(count_in_table("autofill_ai_attributes", wallet_vr.guid()), 0);
+  EXPECT_GT(count_in_table("autofill_ai_entities_metadata", wallet_vr.guid()),
+            0);
+  EXPECT_GT(count_in_table("autofill_ai_attributes", local_vr.guid()), 0);
+  EXPECT_GT(count_in_table("autofill_ai_entities_metadata", local_vr.guid()),
+            0);
+
   // Delete Wallet entity instances.
   EXPECT_TRUE(
       table().DeleteEntityInstances(EntityInstance::RecordType::kServerWallet));
   EXPECT_THAT(table().GetEntityInstances(),
               UnorderedElementsAre(pp, dl, local_vr));
+
+  // Verify that Wallet child table entries were removed.
+  EXPECT_EQ(count_in_table("autofill_ai_attributes", wallet_vr.guid()), 0);
+  EXPECT_EQ(count_in_table("autofill_ai_entities_metadata", wallet_vr.guid()),
+            0);
+
+  // Verify that Local child table entries remain intact.
+  EXPECT_GT(count_in_table("autofill_ai_attributes", local_vr.guid()), 0);
+  EXPECT_GT(count_in_table("autofill_ai_entities_metadata", local_vr.guid()),
+            0);
+}
+
+// Tests deleting a record type when an entity has no child table entries.
+TEST_F(EntityTableTest, DeleteEntityInstances_NoChildEntries) {
+  // Insert an entity row directly without corresponding attributes or metadata.
+  ASSERT_TRUE(test_api(table()).db()->Execute(
+      "INSERT INTO autofill_ai_entities (guid, entity_type, nickname, "
+      "record_type) VALUES ('bare-guid', 'vehicle', 'Car', 1)"));
+
+  EXPECT_TRUE(
+      table().EntityInstanceExists(EntityInstance::EntityId("bare-guid")));
+
+  EXPECT_TRUE(
+      table().DeleteEntityInstances(EntityInstance::RecordType::kServerWallet));
+
+  EXPECT_FALSE(
+      table().EntityInstanceExists(EntityInstance::EntityId("bare-guid")));
 }
 
 // Tests removing individual entity instances.

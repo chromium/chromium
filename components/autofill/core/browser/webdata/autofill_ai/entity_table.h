@@ -163,6 +163,11 @@ class EntityTable : public WebDatabaseTable {
   // moved from `autofill_ai_entities` to `autofill_ai_entities_metadata`.
   bool MigrateToVersion147AddEntitiesMetadataTable();
 
+  // In this version, orphaned entries in child tables
+  // (`autofill_ai_attributes` and `autofill_ai_entities_metadata`)
+  // left behind by previous non-cascading deletions are cleaned up.
+  bool MigrateToVersion157CleanupOrphanedEntityChildData();
+
   // Returns true if adding the entity succeeded.
   // It does not validate the entity itself, but it does check that no such
   // entity with the same GUID exists.

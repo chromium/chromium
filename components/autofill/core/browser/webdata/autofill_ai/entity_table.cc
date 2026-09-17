@@ -217,6 +217,14 @@ bool EntityTable::MigrateToVersion(int version,
       *update_compatible_version = true;
       return true;
     }
+    case 157: {
+      // In this version, orphaned entries in child tables
+      // (`autofill_ai_attributes` and `autofill_ai_entities_metadata`)
+      // left behind by previous non-cascading deletions are cleaned up.
+      // `*update_compatible_version` is not set because this data cleanup
+      // does not introduce any backwards-incompatible schema changes.
+      return MigrateToVersion157CleanupOrphanedEntityChildData();
+    }
   }
   return true;
 }
@@ -243,6 +251,22 @@ bool EntityTable::MigrateToVersion147AddEntitiesMetadataTable() {
                          entities_metadata::kUseDate) &&
          sql::DropColumn(*db(), entities::kTableName,
                          entities_metadata::kDateModified) &&
+         transaction.Commit();
+}
+
+bool EntityTable::MigrateToVersion157CleanupOrphanedEntityChildData() {
+  sql::Transaction transaction(db());
+  return transaction.Begin() &&
+         sql::DeleteFromTable(
+             *db(), attributes::kTableName,
+             base::StrCat({attributes::kEntityGuid, " NOT IN (SELECT ",
+                           entities::kGuid, " FROM ", entities::kTableName,
+                           ")"})) &&
+         sql::DeleteFromTable(
+             *db(), entities_metadata::kTableName,
+             base::StrCat({entities_metadata::kEntityGuid, " NOT IN (SELECT ",
+                           entities::kGuid, " FROM ", entities::kTableName,
+                           ")"})) &&
          transaction.Commit();
 }
 
@@ -351,11 +375,24 @@ bool EntityTable::AddOrUpdateEntityInstance(const EntityInstance& entity) {
 
 bool EntityTable::DeleteEntityInstances(
     EntityInstance::RecordType record_type) {
+  sql::Statement s;
+  sql::SelectBuilder(*db(), s, entities::kTableName, {entities::kGuid},
+                     /*modifiers=*/"WHERE record_type = ?");
+  s.BindInt(0, std::to_underlying(record_type));
+  std::vector<EntityInstance::EntityId> guids;
+  while (s.Step()) {
+    guids.emplace_back(s.ColumnString(0));
+  }
+  if (!s.Succeeded()) {
+    return false;
+  }
+
   sql::Transaction transaction(db());
   return transaction.Begin() &&
-         sql::DeleteWhereColumnEq(*db(), entities::kTableName,
-                                  entities::kRecordType,
-                                  static_cast<int>(record_type)) &&
+         std::ranges::all_of(guids,
+                             [this](const EntityInstance::EntityId& guid) {
+                               return RemoveEntityInstance(guid);
+                             }) &&
          transaction.Commit();
 }
 

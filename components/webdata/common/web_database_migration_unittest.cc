@@ -2200,4 +2200,76 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion155ToCurrent) {
   }
 }
 
+// Version 157 cleans up orphaned entries in child tables
+// (autofill_ai_attributes and autofill_ai_entities_metadata).
+TEST_F(WebDatabaseMigrationTest, MigrateVersion156ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_156.sql")));
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(156, VersionFromConnection(&connection));
+
+    // Insert a valid entity, its attribute, and its metadata.
+    ASSERT_TRUE(connection.Execute(
+        "INSERT INTO autofill_ai_entities (guid, entity_type, nickname, "
+        "record_type) VALUES ('guid-1', 'TestEntity', 'Nick', 1);"));
+    ASSERT_TRUE(connection.Execute(
+        "INSERT INTO autofill_ai_attributes (entity_guid, attribute_type, "
+        "field_type, value_encrypted, verification_status) VALUES ('guid-1', "
+        "'attr', 1, X'00', 0);"));
+    ASSERT_TRUE(connection.Execute(
+        "INSERT INTO autofill_ai_entities_metadata (entity_guid, use_count, "
+        "use_date, date_modified) VALUES ('guid-1', 1, 100, 200);"));
+
+    // Insert orphaned attribute and metadata (entity_guid 'orphan-guid' does
+    // not exist in autofill_ai_entities).
+    ASSERT_TRUE(connection.Execute(
+        "INSERT INTO autofill_ai_attributes (entity_guid, attribute_type, "
+        "field_type, value_encrypted, verification_status) VALUES "
+        "('orphan-guid', 'attr', 1, X'00', 0);"));
+    ASSERT_TRUE(connection.Execute(
+        "INSERT INTO autofill_ai_entities_metadata (entity_guid, use_count, "
+        "use_date, date_modified) VALUES ('orphan-guid', 5, 300, 400);"));
+  }
+
+  DoMigration();
+
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+
+    // Valid entity and its child rows should still exist.
+    sql::Statement s_entity(connection.GetUniqueStatement(
+        "SELECT count(*) FROM autofill_ai_entities WHERE guid = 'guid-1'"));
+    ASSERT_TRUE(s_entity.Step());
+    EXPECT_EQ(1, s_entity.ColumnInt(0));
+
+    sql::Statement s_attr(connection.GetUniqueStatement(
+        "SELECT count(*) FROM autofill_ai_attributes WHERE entity_guid = "
+        "'guid-1'"));
+    ASSERT_TRUE(s_attr.Step());
+    EXPECT_EQ(1, s_attr.ColumnInt(0));
+
+    sql::Statement s_meta(connection.GetUniqueStatement(
+        "SELECT count(*) FROM autofill_ai_entities_metadata WHERE "
+        "entity_guid = 'guid-1'"));
+    ASSERT_TRUE(s_meta.Step());
+    EXPECT_EQ(1, s_meta.ColumnInt(0));
+
+    // Orphaned attribute and metadata should be deleted.
+    sql::Statement s_orphan_attr(connection.GetUniqueStatement(
+        "SELECT count(*) FROM autofill_ai_attributes WHERE entity_guid = "
+        "'orphan-guid'"));
+    ASSERT_TRUE(s_orphan_attr.Step());
+    EXPECT_EQ(0, s_orphan_attr.ColumnInt(0));
+
+    sql::Statement s_orphan_meta(connection.GetUniqueStatement(
+        "SELECT count(*) FROM autofill_ai_entities_metadata WHERE "
+        "entity_guid = 'orphan-guid'"));
+    ASSERT_TRUE(s_orphan_meta.Step());
+    EXPECT_EQ(0, s_orphan_meta.ColumnInt(0));
+  }
+}
 }  // anonymous namespace
