@@ -12,13 +12,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.base.test.util.Criteria.checkThat;
 
@@ -43,17 +39,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.KeyUtils;
+import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.search.SearchBoxProperties;
@@ -63,6 +57,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+
+import java.util.concurrent.TimeoutException;
 
 /** Non-render tests for {@link BookmarkSearchBoxRow}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -85,15 +81,16 @@ public class BookmarkSearchBoxRowTest {
     }
 
     @Rule
-    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private Callback<String> mSearchTextChangeCallback;
-    @Mock private Runnable mClearSearchTextRunnable;
-    @Mock private Callback<Boolean> mFocusChangeCallback;
-    @Mock private Callback<Boolean> mToggleCallback;
+    private final PayloadCallbackHelper<String> mSearchTextChangeCallbackHelper =
+            new PayloadCallbackHelper<>();
+    private final CallbackHelper mClearSearchTextCallbackHelper = new CallbackHelper();
+    private final PayloadCallbackHelper<Boolean> mFocusChangeCallbackHelper =
+            new PayloadCallbackHelper<>();
+    private final PayloadCallbackHelper<Boolean> mToggleCallbackHelper =
+            new PayloadCallbackHelper<>();
 
     private BookmarkSearchBoxRow mBookmarkSearchBoxRow;
     private EditText mEditText;
@@ -140,17 +137,17 @@ public class BookmarkSearchBoxRowTest {
                                             true)
                                     .with(
                                             SearchBoxProperties.TEXT_CHANGED_CALLBACK,
-                                            mSearchTextChangeCallback)
+                                            mSearchTextChangeCallbackHelper::notifyCalled)
                                     .with(
                                             SearchBoxProperties.CLEAR_SEARCH_TEXT_RUNNABLE,
-                                            mClearSearchTextRunnable)
+                                            mClearSearchTextCallbackHelper::notifyCalled)
                                     .with(
                                             SearchBoxProperties.FOCUS_CHANGED_CALLBACK,
-                                            mFocusChangeCallback)
+                                            mFocusChangeCallbackHelper::notifyCalled)
                                     .with(
                                             BookmarkSearchBoxRowProperties
                                                     .SHOPPING_CHIP_TOGGLE_CALLBACK,
-                                            mToggleCallback)
+                                            mToggleCallbackHelper::notifyCalled)
                                     .build();
                     PropertyModelChangeProcessor.create(
                             mPropertyModel,
@@ -189,11 +186,11 @@ public class BookmarkSearchBoxRowTest {
         String barText = "bar";
         setProperty(SearchBoxProperties.SEARCH_TEXT, barText);
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.getText(), withText(barText)));
-        verifyNoInteractions(mSearchTextChangeCallback);
+        assertEquals(0, mSearchTextChangeCallbackHelper.getCallCount());
 
         String fooText = "foo";
         ThreadUtils.runOnUiThreadBlocking(() -> mEditText.setText(fooText));
-        verify(mSearchTextChangeCallback).onResult(eq(fooText));
+        assertEquals(fooText, mSearchTextChangeCallbackHelper.getOnlyPayloadBlocking());
     }
 
     @Test
@@ -201,17 +198,19 @@ public class BookmarkSearchBoxRowTest {
     public void testFocusChangeCallback() {
         setProperty(SearchBoxProperties.HAS_FOCUS, true);
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(true)));
-        verifyNoInteractions(mFocusChangeCallback);
+        assertEquals(0, mFocusChangeCallbackHelper.getCallCount());
 
         setProperty(SearchBoxProperties.HAS_FOCUS, false);
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(false)));
-        verifyNoInteractions(mFocusChangeCallback);
+        assertEquals(0, mFocusChangeCallbackHelper.getCallCount());
 
         ThreadUtils.runOnUiThreadBlocking(() -> mEditText.performClick());
-        verify(mFocusChangeCallback).onResult(true);
+        assertTrue(mFocusChangeCallbackHelper.getPayloadByIndexBlocking(0));
+        assertEquals(1, mFocusChangeCallbackHelper.getCallCount());
 
         ThreadUtils.runOnUiThreadBlocking(() -> mEditText.clearFocus());
-        verify(mFocusChangeCallback).onResult(false);
+        assertFalse(mFocusChangeCallbackHelper.getPayloadByIndexBlocking(1));
+        assertEquals(2, mFocusChangeCallbackHelper.getCallCount());
     }
 
     @Test
@@ -229,36 +228,38 @@ public class BookmarkSearchBoxRowTest {
     public void testShoppingChipToggleCallback() {
         setProperty(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED, false);
         onView(withId(R.id.shopping_filter_chip)).perform(click());
-        verify(mToggleCallback).onResult(true);
+        assertTrue(mToggleCallbackHelper.getPayloadByIndexBlocking(0));
+        assertEquals(1, mToggleCallbackHelper.getCallCount());
 
         setProperty(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED, true);
         onView(withId(R.id.shopping_filter_chip)).perform(click());
-        verify(mToggleCallback).onResult(false);
+        assertFalse(mToggleCallbackHelper.getPayloadByIndexBlocking(1));
+        assertEquals(2, mToggleCallbackHelper.getCallCount());
     }
 
     @Test
     @MediumTest
     public void testTogglingChipDoesNotClearSearchFocus() {
         ThreadUtils.runOnUiThreadBlocking(() -> mEditText.performClick());
-        verify(mFocusChangeCallback).onResult(true);
+        assertTrue(mFocusChangeCallbackHelper.getOnlyPayloadBlocking());
 
         onView(withId(R.id.shopping_filter_chip)).perform(click());
-        verify(mFocusChangeCallback, never()).onResult(false);
+        assertEquals(1, mFocusChangeCallbackHelper.getCallCount());
 
         onView(withId(R.id.shopping_filter_chip)).perform(click());
-        verify(mFocusChangeCallback, never()).onResult(false);
+        assertEquals(1, mFocusChangeCallbackHelper.getCallCount());
     }
 
     @Test
     @MediumTest
-    public void testClearSearchTextButtonAndRunnable() {
+    public void testClearSearchTextButtonAndRunnable() throws TimeoutException {
         onView(withId(R.id.clear_text_button)).check(matches(not(isDisplayed())));
 
         setProperty(SearchBoxProperties.CLEAR_BUTTON_VISIBILITY, true);
         onView(withId(R.id.clear_text_button)).check(matches(isDisplayed()));
 
         onView(withId(R.id.clear_text_button)).perform(click());
-        verify(mClearSearchTextRunnable).run();
+        mClearSearchTextCallbackHelper.waitForOnly();
     }
 
     @Test
@@ -278,6 +279,6 @@ public class BookmarkSearchBoxRowTest {
 
         String searchText = "foo";
         ThreadUtils.runOnUiThreadBlocking(() -> mEditText.setText(searchText));
-        verify(mSearchTextChangeCallback, times(1)).onResult(eq(searchText));
+        assertEquals(searchText, mSearchTextChangeCallbackHelper.getOnlyPayloadBlocking());
     }
 }
