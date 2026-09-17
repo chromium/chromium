@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_media_toolbar_button.h"
 
 #include "base/test/run_until.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
@@ -27,9 +28,8 @@ class WebUIMediaToolbarButtonInteractiveTest
             {}) {}
 };
 
-// TODO(crbug.com/561995604): Re-enable this test once the flakiness is fixed.
 IN_PROC_BROWSER_TEST_F(WebUIMediaToolbarButtonInteractiveTest,
-                       DISABLED_MediaButtonClickedAndRightClicked) {
+                       MediaButtonClickedAndRightClicked) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   ASSERT_TRUE(webui_toolbar_view);
 
@@ -43,7 +43,8 @@ IN_PROC_BROWSER_TEST_F(WebUIMediaToolbarButtonInteractiveTest,
       webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
   ASSERT_TRUE(web_contents);
 
-  // 1. Verify media button is visible and not highlighted.
+  // 1. Verify media button is visible, tracked, and not highlighted.
+  ASSERT_TRUE(WaitForTrackedElementVisible(kToolbarMediaButtonElementId));
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return content::EvalJs(
                web_contents,
