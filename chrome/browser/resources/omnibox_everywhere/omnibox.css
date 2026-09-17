@@ -136,20 +136,13 @@
 
 cr-searchbox-input::part(searchbox-input) {
   align-self: center;
+  padding-inline-end: 64px;
   padding-inline-start: 7px;
   padding-top: 2px;
 }
 
 :host([compose-button-enabled]) cr-searchbox-input::part(searchbox-input) {
-  padding-inline-end: 16px;
-}
-
-:host([is-fusebox-enabled]) cr-searchbox-input::part(searchbox-input) {
-  padding-inline-end: 64px;
-}
-
-:host cr-searchbox-input::part(searchbox-input) {
-  padding-inline-end: 110px;
+  padding-inline-end: 8px;
 }
 
 :host([multi-line-enabled][is-fusebox-enabled])
