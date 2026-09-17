@@ -8,7 +8,7 @@
 
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_impl.h"
 #include "base/functional/callback.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace ash {
@@ -16,11 +16,12 @@ namespace quick_pair {
 
 // static
 FastPairHandshakeLookupImpl* FastPairHandshakeLookupImpl::GetImplInstance() {
-  return base::Singleton<FastPairHandshakeLookupImpl>::get();
+  static base::NoDestructor<FastPairHandshakeLookupImpl> instance;
+  return instance.get();
 }
 
-FastPairHandshakeLookupImpl::FastPairHandshakeLookupImpl() {}
-FastPairHandshakeLookupImpl::~FastPairHandshakeLookupImpl() {}
+FastPairHandshakeLookupImpl::FastPairHandshakeLookupImpl() = default;
+FastPairHandshakeLookupImpl::~FastPairHandshakeLookupImpl() = default;
 
 FastPairHandshake* FastPairHandshakeLookupImpl::Get(
     scoped_refptr<Device> device) {

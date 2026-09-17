@@ -120,8 +120,8 @@ const char kHandshakeFailureReason[] =
 namespace ash {
 namespace quick_pair {
 
-const std::string kMetadataId = "test_id";
-const std::string kAddress = "test_address";
+constexpr char kMetadataId[] = "test_id";
+constexpr char kAddress[] = "test_address";
 
 class FastPairHandshakeImplTest : public testing::Test {
  public:

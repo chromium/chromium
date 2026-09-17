@@ -6,6 +6,7 @@
 #define ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_GATT_SERVICE_CLIENT_LOOKUP_IMPL_H_
 
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_lookup.h"
+#include "base/no_destructor.h"
 
 namespace ash {
 namespace quick_pair {
@@ -37,8 +38,7 @@ class FastPairGattServiceClientLookupImpl
   virtual ~FastPairGattServiceClientLookupImpl();
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      FastPairGattServiceClientLookupImpl>;
+  friend class base::NoDestructor<FastPairGattServiceClientLookupImpl>;
 
   base::flat_map<device::BluetoothDevice*,
                  std::unique_ptr<FastPairGattServiceClient>>

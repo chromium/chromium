@@ -6,6 +6,7 @@
 #define ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_HANDSHAKE_LOOKUP_IMPL_H_
 
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
+#include "base/no_destructor.h"
 
 namespace ash {
 namespace quick_pair {
@@ -36,7 +37,7 @@ class FastPairHandshakeLookupImpl : public FastPairHandshakeLookup {
   virtual ~FastPairHandshakeLookupImpl();
 
  private:
-  friend struct base::DefaultSingletonTraits<FastPairHandshakeLookupImpl>;
+  friend class base::NoDestructor<FastPairHandshakeLookupImpl>;
 
   base::flat_map<scoped_refptr<Device>, std::unique_ptr<FastPairHandshake>>
       fast_pair_handshakes_;

@@ -13,6 +13,7 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -37,9 +38,9 @@ const std::array<uint8_t, kBlockSizeBytes> kPasskeyBytes = {
     0x02, 0x5E, 0x3F, 0x45, 0x61, 0xC3, 0x32, 0x1D,
     0xA0, 0xBA, 0xF0, 0xBB, 0x95, 0x1F, 0xF7, 0xB6};
 
-const std::vector<uint8_t> kAccountKey = {0xA0, 0xBA, 0xF0, 0xBB, 0x95, 0x1F,
-                                          0xF7, 0xB6, 0xCF, 0x5E, 0x3F, 0x45,
-                                          0x61, 0xC3, 0x32, 0x1D};
+constexpr std::array<uint8_t, 16> kAccountKey = {
+    0xA0, 0xBA, 0xF0, 0xBB, 0x95, 0x1F, 0xF7, 0xB6,
+    0xCF, 0x5E, 0x3F, 0x45, 0x61, 0xC3, 0x32, 0x1D};
 
 const char kPublicAntiSpoof[] =
     "Wuyr48lD3txnUhGiMF1IfzlTwRxxe+wMB1HLzP+"
@@ -84,7 +85,7 @@ class FastPairDataEncryptorImplTest : public testing::TestWithParam<TestParam> {
                      weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void SuccessfulSetUp(const std::vector<uint8_t>& account_key) {
+  void SuccessfulSetUp(base::span<const uint8_t> account_key) {
     repository_ = std::make_unique<FakeFastPairRepository>();
     nearby::fastpair::Device metadata;
 
@@ -101,7 +102,8 @@ class FastPairDataEncryptorImplTest : public testing::TestWithParam<TestParam> {
       device_ = base::MakeRefCounted<Device>(kValidModelId, kTestAddress,
                                              Protocol::kFastPairSubsequent);
     }
-    device_->set_account_key(account_key);
+    device_->set_account_key(
+        std::vector<uint8_t>(account_key.begin(), account_key.end()));
 
     FastPairDataEncryptorImpl::Factory::CreateAsync(
         device_, base::BindOnce(
