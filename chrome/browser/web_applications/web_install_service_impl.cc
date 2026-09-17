@@ -59,6 +59,10 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -88,6 +92,7 @@ constexpr char kInstallElementTypeUma[] =
 // Rate limiting defaults for cross-origin IsInstalled queries.
 size_t g_max_cross_origin_queries = 100;
 base::TimeDelta g_min_cross_origin_query_interval = base::Seconds(1);
+network::SharedURLLoaderFactory* g_test_factory = nullptr;
 
 bool IsUrlAllowedForWebInstall(const GURL& url) {
   return url.SchemeIs(url::kHttpsScheme) ||
@@ -241,6 +246,11 @@ void WebInstallServiceImpl::CreateIfAllowed(
     return;
   }
 
+  if (!network::IsUrlPotentiallyTrustworthy(
+          render_frame_host->GetLastCommittedURL())) {
+    return;
+  }
+
   // TODO(crbug.com/493534965): Evaluate sandbox restrictions. In the meantime,
   // Web Install API is not available in any sandboxed contexts, including
   // sandboxed top-level documents, as well as frames with sandbox flags
@@ -267,6 +277,26 @@ WebInstallServiceImpl::SetMinCrossOriginQueryIntervalForTesting(  // IN-TEST
     base::TimeDelta interval) {
   return base::AutoReset<base::TimeDelta>(&g_min_cross_origin_query_interval,
                                           interval);
+}
+
+// static
+base::AutoReset<network::SharedURLLoaderFactory*>
+WebInstallServiceImpl::SetURLLoaderFactoryForTesting(  // IN-TEST
+    network::SharedURLLoaderFactory* factory) {
+  return base::AutoReset<network::SharedURLLoaderFactory*>(&g_test_factory,
+                                                           factory);
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+WebInstallServiceImpl::GetURLLoaderFactory() {
+  if (g_test_factory) {
+    return base::WrapRefCounted(g_test_factory);
+  }
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
+  render_frame_host().CreateNetworkServiceDefaultFactory(
+      factory_remote.InitWithNewPipeAndPassReceiver());
+  return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
+      std::move(factory_remote));
 }
 
 void WebInstallServiceImpl::IsInstalled(
@@ -542,7 +572,8 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
   // DataErrors (invalid JSON, missing id) are returned accurately. This
   // prevents sites from using error differences to detect Incognito mode.
   manifest_fetcher_ = std::make_unique<WebInstallManifestFetcher>(
-      install_target, initiating_profile->GetURLLoaderFactory());
+      install_target, render_frame_host().GetLastCommittedOrigin(),
+      GetURLLoaderFactory());
 
   manifest_fetcher_->Fetch(base::BindOnce(
       &WebInstallServiceImpl::OnManifestFetched, weak_ptr_factory_.GetWeakPtr(),

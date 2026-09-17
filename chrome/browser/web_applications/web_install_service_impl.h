@@ -30,6 +30,10 @@ class Page;
 class WebContents;
 }  // namespace content
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace webapps {
 enum class InstallResultCode;
 enum class InstallableStatusCode;
@@ -100,6 +104,8 @@ class WebInstallServiceImpl
       size_t max_queries);
   static base::AutoReset<base::TimeDelta>
   SetMinCrossOriginQueryIntervalForTesting(base::TimeDelta interval);
+  static base::AutoReset<network::SharedURLLoaderFactory*>
+  SetURLLoaderFactoryForTesting(network::SharedURLLoaderFactory* factory);
 
   // blink::mojom::WebInstallService:
   // TODO(crbug.com/485281836): Only explicit manifest IDs are supported for
@@ -115,6 +121,8 @@ class WebInstallServiceImpl
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
+
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
  private:
   // Internal entry point for the manifest URL install flow. Acquires the

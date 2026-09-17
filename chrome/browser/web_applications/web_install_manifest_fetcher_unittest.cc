@@ -79,6 +79,7 @@ TEST_F(WebInstallManifestFetcherTest, FetchesManifestSuccessfully) {
   AddResponse(kManifestUrl, kValidManifestJson);
 
   WebInstallManifestFetcher fetcher(GURL(kManifestUrl),
+                                    url::Origin::Create(GURL(kManifestUrl)),
                                     shared_url_loader_factory_);
   base::test::TestFuture<
       base::expected<std::string, WebInstallManifestFetchError>>
@@ -99,6 +100,7 @@ TEST_F(WebInstallManifestFetcherTest, FailsOnNetworkError) {
       network::URLLoaderCompletionStatus(net::ERR_CONNECTION_REFUSED));
 
   WebInstallManifestFetcher fetcher(GURL(kManifestUrl),
+                                    url::Origin::Create(GURL(kManifestUrl)),
                                     shared_url_loader_factory_);
   base::test::TestFuture<
       base::expected<std::string, WebInstallManifestFetchError>>
@@ -114,6 +116,7 @@ TEST_F(WebInstallManifestFetcherTest, FailsOnRedirect) {
   AddRedirect(kRedirectUrl, kRedirectTargetUrl);
 
   WebInstallManifestFetcher fetcher(GURL(kRedirectUrl),
+                                    url::Origin::Create(GURL(kRedirectUrl)),
                                     shared_url_loader_factory_);
   base::test::TestFuture<
       base::expected<std::string, WebInstallManifestFetchError>>
@@ -129,6 +132,7 @@ TEST_F(WebInstallManifestFetcherTest, FailsOn404) {
   test_factory_.AddResponse(std::string(kManifestUrl), "", net::HTTP_NOT_FOUND);
 
   WebInstallManifestFetcher fetcher(GURL(kManifestUrl),
+                                    url::Origin::Create(GURL(kManifestUrl)),
                                     shared_url_loader_factory_);
   base::test::TestFuture<
       base::expected<std::string, WebInstallManifestFetchError>>
@@ -144,6 +148,7 @@ TEST_F(WebInstallManifestFetcherTest, FetchesEmptyManifest) {
   AddResponse(kManifestUrl, "");
 
   WebInstallManifestFetcher fetcher(GURL(kManifestUrl),
+                                    url::Origin::Create(GURL(kManifestUrl)),
                                     shared_url_loader_factory_);
   base::test::TestFuture<
       base::expected<std::string, WebInstallManifestFetchError>>
@@ -165,6 +170,7 @@ TEST_F(WebInstallManifestFetcherTest, FailsWhenResponseExceedsMaxLength) {
   AddResponse(kManifestUrl, std::string(100, 'x'));
 
   WebInstallManifestFetcher fetcher(GURL(kManifestUrl),
+                                    url::Origin::Create(GURL(kManifestUrl)),
                                     shared_url_loader_factory_);
   base::test::TestFuture<
       base::expected<std::string, WebInstallManifestFetchError>>
@@ -184,7 +190,8 @@ TEST_F(WebInstallManifestFetcherTest, DestroyedMidFlightDoesNotCrash) {
       }));
 
   auto fetcher = std::make_unique<WebInstallManifestFetcher>(
-      GURL(kManifestUrl), shared_url_loader_factory_);
+      GURL(kManifestUrl), url::Origin::Create(GURL(kManifestUrl)),
+      shared_url_loader_factory_);
 
   bool callback_called = false;
   fetcher->Fetch(base::BindLambdaForTesting(

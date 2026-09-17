@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -22,6 +23,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -74,6 +76,8 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "skia/ext/image_operations.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -403,6 +407,73 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
       static_cast<int>(WebInstallServiceResult::kSuccess));
   EXPECT_EQ(ukm::GetSourceIdType(entries[1]->source_id),
             ukm::SourceIdType::APP_ID);
+}
+
+// Fixture with a dedicated manifest server placed in the local network
+// address space, while the page servers stay in the public address space (as
+// the test harness configures by default).
+class WebInstallFromManifestLocalNetworkBrowserTest
+    : public WebInstallFromManifestBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebInstallFromManifestBrowserTest::SetUpCommandLine(command_line);
+    manifest_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    manifest_server_.RegisterRequestHandler(base::BindRepeating(
+        &WebInstallFromManifestLocalNetworkBrowserTest::RecordManifestRequest,
+        base::Unretained(this)));
+    ASSERT_TRUE(manifest_server_.InitializeAndListen());
+    // Keep every other test server endpoint in the public address space, as
+    // the test harness does by default, while placing the manifest server on
+    // the local network.
+    network::AddIpAddressSpaceOverridesToCommandLine(
+        {network::GenerateIpAddressSpaceOverride(
+             manifest_server_, network::mojom::IPAddressSpace::kLocal),
+         "127.0.0.1:0=public", "[::1]:0=public"},
+        *command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    WebInstallFromManifestBrowserTest::SetUpOnMainThread();
+    manifest_server_.StartAcceptingConnections();
+  }
+
+  // Returns whether the manifest server received any request.
+  bool ManifestServerSawRequest() {
+    base::AutoLock lock(manifest_request_count_lock_);
+    return manifest_request_count_ > 0;
+  }
+
+ protected:
+  net::EmbeddedTestServer manifest_server_;
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> RecordManifestRequest(
+      const net::test_server::HttpRequest& request) {
+    base::AutoLock lock(manifest_request_count_lock_);
+    manifest_request_count_++;
+    // Fall through to the default handlers.
+    return nullptr;
+  }
+
+  base::Lock manifest_request_count_lock_;
+  int manifest_request_count_ GUARDED_BY(manifest_request_count_lock_) = 0;
+};
+
+// The manifest is fetched in the browser process on behalf of the initiating
+// document. A document in the public address space must not retrieve a
+// manifest from a host on the local network: the fetch is denied before any
+// request reaches the manifest host, and the install reports a DataError.
+IN_PROC_BROWSER_TEST_F(WebInstallFromManifestLocalNetworkBrowserTest,
+                       ManifestOnLocalNetworkRejected) {
+  NavigateToValidUrl();
+  SetPermissionResponse(/*permission_granted=*/false);
+
+  ASSERT_TRUE(
+      TryInstallFromManifest(manifest_server_.GetURL(kValidManifestWithId)));
+
+  EXPECT_FALSE(ManifestServerSawRequest());
+  ASSERT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kDataError);
 }
 
 // Valid manifest with custom id, matching id option.
