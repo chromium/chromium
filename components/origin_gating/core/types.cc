@@ -43,8 +43,10 @@ std::string DecisionSourceToString(DecisionSource source) {
       return "RequireHttpsOrLocalhost";
     case DecisionSource::kRequireHttpsOrHttp:
       return "RequireHttpsOrHttp";
-    case DecisionSource::kTaskPolicyConfig:
-      return "TaskPolicyConfig";
+    case DecisionSource::kBlockByTaskPolicyConfig:
+      return "BlockByTaskPolicyConfig";
+    case DecisionSource::kAllowByTaskPolicyConfig:
+      return "AllowByTaskPolicyConfig";
     case DecisionSource::kNoVerdict:
       return "NoVerdict";
   }

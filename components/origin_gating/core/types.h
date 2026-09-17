@@ -78,8 +78,11 @@ enum class DecisionSource {
   // http.
   kRequireHttpsOrHttp,
   // Predicate that evaluates the destination against the task policy
-  // configuration.
-  kTaskPolicyConfig,
+  // configuration and blocks if blocked, otherwise returns kNoDecision.
+  kBlockByTaskPolicyConfig,
+  // Predicate that evaluates the destination against the task policy
+  // configuration and allows if allowed, otherwise returns kNoDecision.
+  kAllowByTaskPolicyConfig,
   // No decision was reached before the OriginGating framework ran out of
   // predicates to run.
   kNoVerdict,

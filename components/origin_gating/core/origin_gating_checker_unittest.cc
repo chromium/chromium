@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
@@ -44,6 +45,14 @@ enum class OtherTestCustomPredicate {
   kOtherCustom1,
   kOtherCustom2,
 };
+
+TaskPolicyConfig::Rule AllowlistedRule() {
+  return TaskPolicyConfig::Rule(
+      /*navigation_sources=*/{},
+      /*resources=*/{TaskPolicyConfig::Rule::Resource::kSession},
+      /*capabilities=*/
+      {TaskPolicyConfig::Rule::Capability::kAll});
+}
 
 }  // namespace
 
@@ -705,7 +714,7 @@ TEST_F(OriginGatingCheckerTest,
   OriginGatingChecker checker(
       delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
-          {{DecisionSource::kTaskPolicyConfig, GateableEventSet::All()}},
+          {{DecisionSource::kBlockByTaskPolicyConfig, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
@@ -728,7 +737,7 @@ TEST_F(OriginGatingCheckerTest,
   OriginGatingChecker checker(
       delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
-          {{DecisionSource::kTaskPolicyConfig, GateableEventSet::All()}},
+          {{DecisionSource::kAllowByTaskPolicyConfig, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
 
   // Configure the slot on the checker.
@@ -753,7 +762,7 @@ TEST_F(OriginGatingCheckerTest,
       checker, nullptr, source, destination);
 
   EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kTaskPolicyConfig);
+  EXPECT_EQ(decision.attribution, DecisionSource::kAllowByTaskPolicyConfig);
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -761,7 +770,7 @@ TEST_F(OriginGatingCheckerTest,
   OriginGatingChecker checker(
       delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
-          {{DecisionSource::kTaskPolicyConfig, GateableEventSet::All()}},
+          {{DecisionSource::kBlockByTaskPolicyConfig, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
 
   // Set an empty config which blocks all navigations.
@@ -778,7 +787,7 @@ TEST_F(OriginGatingCheckerTest,
       checker, nullptr, source, destination);
 
   EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kTaskPolicyConfig);
+  EXPECT_EQ(decision.attribution, DecisionSource::kBlockByTaskPolicyConfig);
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -786,7 +795,7 @@ TEST_F(OriginGatingCheckerTest,
   OriginGatingChecker checker(
       delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
-          {{DecisionSource::kTaskPolicyConfig, GateableEventSet::All()}},
+          {{DecisionSource::kAllowByTaskPolicyConfig, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
 
   // Configure the slot to allow actuation.
@@ -813,7 +822,7 @@ TEST_F(OriginGatingCheckerTest,
 
   GatingDecision decision = future.Get<1>();
   EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kTaskPolicyConfig);
+  EXPECT_EQ(decision.attribution, DecisionSource::kAllowByTaskPolicyConfig);
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -821,7 +830,7 @@ TEST_F(OriginGatingCheckerTest,
   OriginGatingChecker checker(
       delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
-          {{DecisionSource::kTaskPolicyConfig, GateableEventSet::All()}},
+          {{DecisionSource::kBlockByTaskPolicyConfig, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
 
   // Set an empty config which blocks all actuations.
@@ -841,7 +850,98 @@ TEST_F(OriginGatingCheckerTest,
 
   GatingDecision decision = future.Get<1>();
   EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kTaskPolicyConfig);
+  EXPECT_EQ(decision.attribution, DecisionSource::kBlockByTaskPolicyConfig);
+}
+
+// ActorContainerConfig usage doesn't necessarily preclude blockage by other
+// predicates, even if the actor container config predicate is listed first in
+// the predicate order.
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_ActorContainerConfig_InterleavedPredicates) {
+  const GURL kAllowedByConfigAndListSite("https://allowedbyboth.com");
+  const GURL kBlockedByConfigAndListSite("https://blockedbyboth.com");
+  const GURL kAllowedByConfigIgnoredByListSite("https://allowedbyconfig.com");
+  const GURL kBlockedByConfigSite("https://blockedbyconfig.com");
+  const GURL kBlockedByListSite("https://blockedbylist.com");
+
+  CustomPredicate custom(
+      base::BindLambdaForTesting([&](GatingDecisionContext*, const GURL& source,
+                                     const GURL& destination) -> Decision {
+        if (destination == kAllowedByConfigAndListSite) {
+          return Decision::kAllowed;
+        }
+        if (destination == kBlockedByConfigSite ||
+            destination == kAllowedByConfigIgnoredByListSite) {
+          return Decision::kNoDecision;
+        }
+        if (destination == kBlockedByConfigAndListSite ||
+            destination == kBlockedByListSite) {
+          return Decision::kBlocked;
+        }
+        NOTREACHED();
+      }),
+      TestCustomPredicate::kCustom1);
+
+  OriginGatingChecker checker(delegate_.GetWeakPtr(),
+                              OriginGatingConfiguration(
+                                  {
+                                      {DecisionSource::kBlockByTaskPolicyConfig,
+                                       GateableEventSet::All()},
+                                      {custom, GateableEventSet::All()},
+                                      {DecisionSource::kAllowByTaskPolicyConfig,
+                                       GateableEventSet::All()},
+                                  },
+                                  /*use_site_keyed_cache=*/false));
+
+  checker.task_policy_config_slot().Assign(TaskPolicyConfig(/*location_rules=*/{
+      // Allowed on the below sites, blocked elsewhere.
+      {TaskPolicyConfig::Location(
+           net::SchemefulSite(kAllowedByConfigAndListSite)),
+       AllowlistedRule()},
+      {TaskPolicyConfig::Location(
+           net::SchemefulSite(kAllowedByConfigIgnoredByListSite)),
+       AllowlistedRule()},
+      {TaskPolicyConfig::Location(net::SchemefulSite(kBlockedByListSite)),
+       AllowlistedRule()},
+  }));
+
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _, _, _))
+      .Times(0);
+  EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _, _, _)).Times(0);
+
+  {
+    GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+        checker, nullptr, kBlockedByListSite, kBlockedByListSite);
+    EXPECT_FALSE(decision.is_allowed);
+    EXPECT_EQ(decision.attribution, TestCustomPredicate::kCustom1);
+  }
+  {
+    GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+        checker, nullptr, kBlockedByConfigSite, kBlockedByConfigSite);
+    EXPECT_FALSE(decision.is_allowed);
+    EXPECT_EQ(decision.attribution, DecisionSource::kBlockByTaskPolicyConfig);
+  }
+  {
+    GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+        checker, nullptr, kAllowedByConfigIgnoredByListSite,
+        kAllowedByConfigIgnoredByListSite);
+    EXPECT_TRUE(decision.is_allowed);
+    EXPECT_EQ(decision.attribution, DecisionSource::kAllowByTaskPolicyConfig);
+  }
+  {
+    GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+        checker, nullptr, kAllowedByConfigAndListSite,
+        kAllowedByConfigAndListSite);
+    EXPECT_TRUE(decision.is_allowed);
+    EXPECT_EQ(decision.attribution, TestCustomPredicate::kCustom1);
+  }
+  {
+    GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+        checker, nullptr, kBlockedByConfigAndListSite,
+        kBlockedByConfigAndListSite);
+    EXPECT_FALSE(decision.is_allowed);
+    EXPECT_EQ(decision.attribution, DecisionSource::kBlockByTaskPolicyConfig);
+  }
 }
 
 TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Allowed) {

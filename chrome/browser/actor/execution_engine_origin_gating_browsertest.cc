@@ -33,6 +33,7 @@
 #include "components/optimization_guide/core/filters/hints_component_util.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -141,6 +142,23 @@ constexpr std::string_view kSameOriginInitiatorHistogram =
     "Actor.NavigationGating.SameOriginInitiator";
 constexpr std::string_view kSameSiteInitiatorHistogram =
     "Actor.NavigationGating.SameSiteInitiator";
+
+optimization_guide::proto::LocationRule* AddAllowlistedSiteToActorConfig(
+    std::string_view domain,
+    optimization_guide::proto::AgentContainerConfig& config_proto) {
+  optimization_guide::proto::LocationRule* rule =
+      config_proto.add_location_rules();
+  optimization_guide::proto::Site* site =
+      rule->mutable_location()->mutable_site();
+  site->set_protocol(optimization_guide::proto::Protocol::PROTOCOL_HTTPS);
+  site->set_domain(domain);
+  optimization_guide::proto::RuleMetadata* metadata = rule->mutable_metadata();
+  metadata->add_capabilities(
+      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
+  metadata->add_accessible_resources(
+      optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
+  return rule;
+}
 
 }  // namespace
 
@@ -1743,17 +1761,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        TaskPolicyConfig_Navigation) {
   optimization_guide::proto::AgentContainerConfig config_proto;
-  optimization_guide::proto::LocationRule* rule =
-      config_proto.add_location_rules();
-  optimization_guide::proto::Site* site =
-      rule->mutable_location()->mutable_site();
-  site->set_protocol(optimization_guide::proto::Protocol::PROTOCOL_HTTPS);
-  site->set_domain("example.com");
-  optimization_guide::proto::RuleMetadata* metadata = rule->mutable_metadata();
-  metadata->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  metadata->add_accessible_resources(
-      optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
+  AddAllowlistedSiteToActorConfig("example.com", config_proto);
 
   const GURL allowed_url = embedded_https_test_server().GetURL(
       "foo.example.com", "/actor/blank.html");
@@ -1796,20 +1804,12 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        TaskPolicyConfig_TaskStart) {
   optimization_guide::proto::AgentContainerConfig config_proto;
   optimization_guide::proto::LocationRule* rule =
-      config_proto.add_location_rules();
-  optimization_guide::proto::Site* site =
-      rule->mutable_location()->mutable_site();
-  site->set_protocol(optimization_guide::proto::Protocol::PROTOCOL_HTTPS);
-  site->set_domain("example.com");
-  optimization_guide::proto::RuleMetadata* metadata = rule->mutable_metadata();
-  metadata->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  metadata->add_accessible_resources(
-      optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
+      AddAllowlistedSiteToActorConfig("example.com", config_proto);
   // Add a NavigationSource that should be ignored.
   optimization_guide::proto::NavigationSource* nav_source =
       rule->add_navigation_sources();
-  site = nav_source->mutable_source()->mutable_site();
+  optimization_guide::proto::Site* site =
+      nav_source->mutable_source()->mutable_site();
   site->set_protocol(optimization_guide::proto::Protocol::PROTOCOL_HTTPS);
   site->set_domain("foo.com");
 
@@ -1829,6 +1829,157 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
       ActorTaskMetadata::WithAgentContainerConfigForTesting(config_proto),
       result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kUrlBlocked);
+}
+
+// If the actor container config would allow a navigation but some other
+// predicate would disallow it, it should be disallowed.
+IN_PROC_BROWSER_TEST_F(
+    ExecutionEngineOriginGatingBrowserTest,
+    ActorContainerConfig_SafetyListBlockOverridesContainerAllow_Navigation) {
+  base::HistogramTester histogram_tester;
+  const GURL destination_url =
+      embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
+  const GURL start_page_url = embedded_https_test_server().GetURL(
+      "foo.com",
+      base::StrCat({"/actor/link_full_page.html?href=",
+                    url::EncodeUriComponent(destination_url.spec())}));
+
+  // Block the destination URL in SafetyListManager.
+  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+    {
+      "navigation_blocked": [
+        { "from": "*", "to": "bar.com" }
+      ]
+    }
+  )json");
+
+  // AgentContainerConfig allows both foo.com (to actuate the link) and
+  // bar.com (the navigation destination).
+  optimization_guide::proto::AgentContainerConfig config_proto;
+  AddAllowlistedSiteToActorConfig("foo.com", config_proto);
+  AddAllowlistedSiteToActorConfig("bar.com", config_proto);
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_page_url));
+  OpenGlicAndCreateTask();
+
+  std::unique_ptr<ToolRequest> click_link =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+
+  PerformActionsFuture result;
+  actor_keyed_service().PerformActions(
+      actor_task().id(), ToRequestList(click_link),
+      ActorTaskMetadata::WithAgentContainerConfigForTesting(config_proto),
+      result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kActionsBlockedForSiteRisk);
+
+  histogram_tester.ExpectUniqueSample(
+      "Actor.NavigationGating.GatingDecision2",
+      ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
+}
+
+// If the actor container config would allow an action on the page but some
+// other predicate would disallow it, it should be disallowed.
+IN_PROC_BROWSER_TEST_F(
+    ExecutionEngineOriginGatingBrowserTest,
+    ActorContainerConfig_SafetyListBlockOverridesContainerAllow_PageAction) {
+  const GURL page_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+
+  // Block the page URL in SafetyListManager.
+  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+    {
+      "navigation_blocked": [
+        { "from": "*", "to": "example.com" }
+      ]
+    }
+  )json");
+
+  // AgentContainerConfig allows example.com.
+  optimization_guide::proto::AgentContainerConfig config_proto;
+  AddAllowlistedSiteToActorConfig("example.com", config_proto);
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), page_url));
+  OpenGlicAndCreateTask();
+
+  std::unique_ptr<ToolRequest> click =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+
+  // Should not be able to actuate the blocked page even though
+  // AgentContainerConfig allows it.
+  PerformActionsFuture result;
+  actor_keyed_service().PerformActions(
+      actor_task().id(), ToRequestList(click),
+      ActorTaskMetadata::WithAgentContainerConfigForTesting(config_proto),
+      result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kActionsBlockedForSiteRisk);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
+                       ActorContainerConfig_NavigationAllowed) {
+  base::HistogramTester histogram_tester;
+  const GURL destination_url =
+      embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
+  const GURL start_page_url = embedded_https_test_server().GetURL(
+      "foo.com",
+      base::StrCat({"/actor/link_full_page.html?href=",
+                    url::EncodeUriComponent(destination_url.spec())}));
+
+  // AgentContainerConfig allows both foo.com (to actuate the link) and
+  // bar.com (the navigation destination).
+  optimization_guide::proto::AgentContainerConfig config_proto;
+  AddAllowlistedSiteToActorConfig("foo.com", config_proto);
+  AddAllowlistedSiteToActorConfig("bar.com", config_proto);
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_page_url));
+  OpenGlicAndCreateTask();
+
+  PerformActionsFuture result;
+  actor_keyed_service().PerformActions(
+      actor_task().id(),
+      ToRequestList(MakeClickRequest(*active_tab(), gfx::Point(1, 1))),
+      ActorTaskMetadata::WithAgentContainerConfigForTesting(config_proto),
+      result.GetCallback());
+  ExpectOkResult(result);
+
+  histogram_tester.ExpectUniqueSample(
+      "Actor.NavigationGating.GatingDecision2",
+      ExecutionEngine::GatingDecision::kAllowByContainerConfig, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
+                       ActorContainerConfig_NavigationAllowed_SensitiveSite) {
+  base::HistogramTester histogram_tester;
+  const GURL destination_url = embedded_https_test_server().GetURL(
+      "sensitive.example.com", "/actor/blank.html");
+  const GURL start_page_url = embedded_https_test_server().GetURL(
+      "foo.com",
+      base::StrCat({"/actor/link_full_page.html?href=",
+                    url::EncodeUriComponent(destination_url.spec())}));
+
+  // AgentContainerConfig allows both foo.com (to actuate the link) and
+  // example.com (the navigation destination).
+  optimization_guide::proto::AgentContainerConfig config_proto;
+  AddAllowlistedSiteToActorConfig("foo.com", config_proto);
+  AddAllowlistedSiteToActorConfig("example.com", config_proto);
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_page_url));
+  OpenGlicAndCreateTask();
+
+  PerformActionsFuture result;
+  actor_keyed_service().PerformActions(
+      actor_task().id(),
+      ToRequestList(MakeClickRequest(*active_tab(), gfx::Point(1, 1))),
+      ActorTaskMetadata::WithAgentContainerConfigForTesting(config_proto),
+      result.GetCallback());
+  // Note that the navigation succeeds, even though we did not set up a
+  // confirmation handler.
+  ExpectOkResult(result);
+
+  histogram_tester.ExpectUniqueSample(
+      "Actor.NavigationGating.GatingDecision2",
+      ExecutionEngine::GatingDecision::kAllowByContainerConfig, 1);
 }
 
 class ExecutionEngineOriginGatingParamBrowserTest

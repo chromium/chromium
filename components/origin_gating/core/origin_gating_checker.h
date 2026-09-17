@@ -129,6 +129,10 @@ class OriginGatingChecker {
     GURL destination;
     url::Origin destination_origin;
     std::optional<bool> requires_user_confirmation;
+    // The decision from the ActorContainerConfig, or `kNoDecision` if there is
+    // no config. This is `std::nullopt` until a predicate that involves the
+    // ActorContainerConfig is consulted.
+    std::optional<Decision> actor_container_decision;
   };
 
   void EvaluatePredicates(
@@ -201,9 +205,7 @@ class OriginGatingChecker {
   Decision IsCachedWithUserConfirmation(const url::Origin& origin) const
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  Decision EvaluateTaskPolicyConfig(GateableEvent event,
-                                    const url::Origin& source,
-                                    const url::Origin& destination) const
+  Decision EvaluateTaskPolicyConfigWithCache(DelegateInputs& input) const
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

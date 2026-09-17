@@ -515,10 +515,10 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
       switch (decision.attribution.Source()) {
         case DecisionSource::kAllowSameOrigin:
           return ExecutionEngine::GatingDecision::kAllowSameOrigin;
-        case DecisionSource::kTaskPolicyConfig:
-          return decision.is_allowed
-                     ? ExecutionEngine::GatingDecision::kAllowByContainerConfig
-                     : ExecutionEngine::GatingDecision::kBlockByContainerConfig;
+        case DecisionSource::kBlockByTaskPolicyConfig:
+          return ExecutionEngine::GatingDecision::kBlockByContainerConfig;
+        case DecisionSource::kAllowByTaskPolicyConfig:
+          return ExecutionEngine::GatingDecision::kAllowByContainerConfig;
         case DecisionSource::kEnterprisePolicy:
           return decision.is_allowed
                      ? ExecutionEngine::GatingDecision::kAllowByStaticList
@@ -578,7 +578,7 @@ MayActOnUrlBlockReason MapGatingDecisionToBlockReason(
           return ProfileIOData::IsHandledURL(url)
                      ? MayActOnUrlBlockReason::kWrongScheme
                      : MayActOnUrlBlockReason::kExternalProtocol;
-        case DecisionSource::kTaskPolicyConfig:
+        case DecisionSource::kBlockByTaskPolicyConfig:
           return MayActOnUrlBlockReason::kBlockedByContainerConfig;
         case DecisionSource::kNoVerdict:
           // `OnNoVerdict` allows navigation requests to proceed, and only
@@ -590,6 +590,7 @@ MayActOnUrlBlockReason MapGatingDecisionToBlockReason(
         case origin_gating::DecisionSource::kAllowAboutBlank:
         case origin_gating::DecisionSource::kCacheWithUserConfirmation:
         case origin_gating::DecisionSource::kCacheWithoutUserConfirmation:
+        case origin_gating::DecisionSource::kAllowByTaskPolicyConfig:
           // Unreachable since these predicates allow the event, but
           // `decision.is_allowed` is false.
           NOTREACHED();
@@ -760,7 +761,7 @@ ExecutionEngine::ExecutionEngine(base::PassKey<ExecutionEngine>,
                                                        task_->GetProfile()),
                                    ActorCustomPredicate::kLookalikeUrl),
                    kRequestsAndPageActions},
-                  {DecisionSource::kTaskPolicyConfig,
+                  {DecisionSource::kBlockByTaskPolicyConfig,
                    {GateableEvent::kNavigationResponse,
                     GateableEvent::kPageAction}},
                   {CreateSafetyListPredicate(),
@@ -776,6 +777,9 @@ ExecutionEngine::ExecutionEngine(base::PassKey<ExecutionEngine>,
                            task_->GetProfile()),
                        ActorCustomPredicate::kSensitiveUrl),
                    {GateableEvent::kNavigationRequest}},
+                  {DecisionSource::kAllowByTaskPolicyConfig,
+                   {GateableEvent::kNavigationResponse,
+                    GateableEvent::kPageAction}},
                   {DecisionSource::kCacheWithoutUserConfirmation,
                    {GateableEvent::kNavigationResponse}},
               },
