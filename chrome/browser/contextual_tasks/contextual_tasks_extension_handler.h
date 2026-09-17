@@ -85,6 +85,16 @@ class ContextualTasksExtensionHandler
   void SetTaskId(const base::Uuid& uuid) override;
   void OnWebviewMessage(const std::vector<uint8_t>& message) override;
   void GetHandshakeMessage(GetHandshakeMessageCallback callback) override;
+  void GetLensCropPreview(const std::string& data_id,
+                          GetLensCropPreviewCallback callback) override;
+
+  base::WeakPtr<contextual_search::InputStateModel>
+  GetOrCreateInputStateModelForTesting() {
+    return GetOrCreateInputStateModel();
+  }
+  void OnLensThumbnailCreatedForTesting(const std::string& thumbnail_uri) {
+    OnLensThumbnailCreated(thumbnail_uri);
+  }
 
   void BindComposeboxFactory(
       mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver);
@@ -245,6 +255,7 @@ class ContextualTasksExtensionHandler
   void OnInputStateChanged(const omnibox::InputState& state);
   base::WeakPtr<contextual_search::InputStateModel>
   GetOrCreateInputStateModel();
+  void OnLensThumbnailCreated(const std::string& thumbnail_uri);
 
   base::WeakPtr<contextual_search::InputStateModel> input_state_model_;
   base::CallbackListSubscription input_state_subscription_;
@@ -259,6 +270,8 @@ class ContextualTasksExtensionHandler
   std::optional<base::Uuid> task_id_;
   omnibox::ToolMode active_tool_ = omnibox::TOOL_MODE_UNSPECIFIED;
   omnibox::ModelMode active_model_ = omnibox::MODEL_MODE_UNSPECIFIED;
+
+  base::WeakPtrFactory<ContextualTasksExtensionHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_EXTENSION_HANDLER_H_

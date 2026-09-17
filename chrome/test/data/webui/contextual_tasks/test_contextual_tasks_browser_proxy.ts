@@ -528,10 +528,16 @@ export class TestExtensionPageHandler extends TestBrowserProxy implements
   constructor() {
     super([
       'getHandshakeMessage',
+      'getLensCropPreview',
       'onWebviewMessage',
       'setTaskId',
       'updateComposeboxHeight',
     ]);
+  }
+
+  getLensCropPreview(dataId: string) {
+    this.methodCalled('getLensCropPreview', dataId);
+    return Promise.resolve({dataUri: null});
   }
 
   getHandshakeMessage() {

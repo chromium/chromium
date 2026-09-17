@@ -6,6 +6,7 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -152,6 +153,27 @@ void ContextualTasksExtensionHandler::GetHandshakeMessage(
   std::move(callback).Run(
       mojo_base::ProtoWrapper(contextual_tasks::GetHandshakeMessageProto()));
 }
+
+void ContextualTasksExtensionHandler::GetLensCropPreview(
+    const std::string& data_id,
+    GetLensCropPreviewCallback callback) {
+  auto model = GetOrCreateInputStateModel();
+  if (!model) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  std::move(callback).Run(model->GetLensCrop(data_id));
+}
+
+void ContextualTasksExtensionHandler::OnLensThumbnailCreated(
+    const std::string& thumbnail_uri) {
+  std::string data_id = base::UnguessableToken::Create().ToString();
+  auto model = GetOrCreateInputStateModel();
+  if (model) {
+    model->SetLensCrop(data_id, thumbnail_uri);
+  }
+}
+
 // composebox::mojom::PageHandler stubs:
 void ContextualTasksExtensionHandler::FocusChanged(bool focused) {}
 void ContextualTasksExtensionHandler::StartPlatformVoiceRecognition() {}
@@ -161,6 +183,9 @@ void ContextualTasksExtensionHandler::HandleLensButtonClick() {
       "ContextualTasks.Composebox.UserAction.LensButtonClicked"));
 
   if (auto* controller = GetLensSearchController()) {
+    controller->SetThumbnailCreatedCallback(base::BindRepeating(
+        &ContextualTasksExtensionHandler::OnLensThumbnailCreated,
+        weak_ptr_factory_.GetWeakPtr()));
     if (controller->IsShowingUI()) {
       if (controller->invocation_source() ==
           lens::LensOverlayInvocationSource::kContextualTasksComposebox) {
