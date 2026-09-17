@@ -71,7 +71,7 @@
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_MAC)
-constexpr int kTabStripRegionInternalPaddingMac = 12;
+inline constexpr int kTabStripRegionInternalPaddingMac = 12;
 #endif
 
 namespace {
@@ -784,10 +784,6 @@ HorizontalTabStripRegionViewNew::HorizontalTabStripRegionViewNew(
         browser, TabStripComboButton::Context::kHorizontalTabStrip));
     combo_button_->SetProperty(views::kCrossAxisAlignmentKey,
                                views::LayoutAlignment::kCenter);
-    combo_button_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(
-            0, GetLayoutConstant(LayoutConstant::kTabStripPadding), 0, 0));
 
     if (glic::GlicEnabling::IsProfileEligible(browser_view->GetProfile())) {
       tab_strip_action_container =
@@ -880,8 +876,29 @@ views::View::Views HorizontalTabStripRegionViewNew::GetChildrenInZOrder() {
   return children;
 }
 
+void HorizontalTabStripRegionViewNew::ChildPreferredSizeChanged(
+    views::View* child) {
+  PreferredSizeChanged();
+}
+
+bool HorizontalTabStripRegionViewNew::HasLeadingButtons() const {
+  if (combo_button_ && combo_button_->GetVisible() &&
+      ((combo_button_->start_button() &&
+        combo_button_->start_button()->GetVisible()) ||
+       (combo_button_->end_button() &&
+        combo_button_->end_button()->GetVisible()))) {
+    return true;
+  }
+  return false;
+}
+
 void HorizontalTabStripRegionViewNew::Layout(PassKey) {
+  UpdateTabStripMargin();
   LayoutSuperclass<BaseTabStripRegionView>(this);
+
+  if (combo_button_) {
+    AdjustViewBoundsRect(combo_button_, 0);
+  }
 }
 
 gfx::Size HorizontalTabStripRegionViewNew::GetMinimumSize() const {
@@ -1032,12 +1049,10 @@ void HorizontalTabStripRegionViewNew::AddTabStripView(
                                views::MaximumFlexSizeRule::kPreferred));
   const size_t index = combo_button_ ? 1 : 0;
   AddChildViewAt(std::move(view), index);
+  UpdateTabStripMargin();
 }
 
 void HorizontalTabStripRegionViewNew::UpdateButtonBorders() {
-  if (!tab_strip_action_container_) {
-    return;
-  }
   const int extra_vertical_space =
       GetLayoutConstant(LayoutConstant::kTabStripHeight) -
       GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap) -
@@ -1048,7 +1063,92 @@ void HorizontalTabStripRegionViewNew::UpdateButtonBorders() {
       GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
 
   const auto border_insets = gfx::Insets::TLBR(top_inset, 0, bottom_inset, 0);
-  tab_strip_action_container_->UpdateButtonBorders(border_insets);
+  if (tab_strip_action_container_) {
+    tab_strip_action_container_->UpdateButtonBorders(border_insets);
+  }
+  if (combo_button_) {
+    UpdateBorderInsetsIfNeeded(combo_button_, border_insets);
+  }
+}
+
+void HorizontalTabStripRegionViewNew::UpdateTabStripMargin() {
+#if BUILDFLAG(IS_MAC)
+  if (HasLeadingButtons()) {
+    // When leading buttons are present, maintain a consistent 12px gap from
+    // the caption buttons on Mac.
+    SetProperty(views::kInternalPaddingKey,
+                gfx::Insets::TLBR(0, kTabStripRegionInternalPaddingMac, 0, 0));
+  } else {
+    ClearProperty(views::kInternalPaddingKey);
+  }
+#endif
+
+  std::optional<int> tab_strip_left_margin;
+  int current_leading_width = 0;
+
+  if (combo_button_ && ((combo_button_->start_button() &&
+                         combo_button_->start_button()->GetVisible()) ||
+                        (combo_button_->end_button() &&
+                         combo_button_->end_button()->GetVisible()))) {
+    combo_button_->SetPaintToLayer();
+    combo_button_->layer()->SetFillsBoundsOpaquely(false);
+    combo_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
+    current_leading_width +=
+        combo_button_->GetPreferredSize().width() +
+        GetLayoutConstant(LayoutConstant::kTabStripPadding);
+  } else if (combo_button_) {
+    combo_button_->ClearProperty(views::kViewIgnoredByLayoutKey);
+  }
+
+  if (current_leading_width > 0) {
+    tab_strip_left_margin = current_leading_width +
+                            GetLayoutConstant(LayoutConstant::kTabStripPadding);
+  }
+
+  bool subtract_radius = current_leading_width > 0;
+#if BUILDFLAG(IS_MAC)
+  const bool is_immersive_mode_enabled =
+      SafeInvoke(browser_view()->browser())
+          .Then(
+              Overload<BrowserWindowInterface*>(&ImmersiveModeController::From))
+          .Then(&ImmersiveModeController::IsEnabled)
+          .value_or(false);
+  if (is_immersive_mode_enabled) {
+    subtract_radius = false;
+  }
+#endif
+
+  if (subtract_radius) {
+    tab_strip_left_margin.value() -= TabStyle::Get()->GetBottomCornerRadius();
+  }
+
+  UpdateButtonBorders();
+
+  if (tab_strip_view()) {
+    if (tab_strip_left_margin.has_value()) {
+      tab_strip_view()->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::TLBR(0, tab_strip_left_margin.value_or(0), 0, 0));
+    } else {
+      tab_strip_view()->ClearProperty(views::kMarginsKey);
+    }
+  }
+}
+
+void HorizontalTabStripRegionViewNew::AdjustViewBoundsRect(View* view,
+                                                           int offset) {
+  if (!tab_strip_view()) {
+    return;
+  }
+
+  const gfx::Size view_size = view->GetPreferredSize();
+  const int x = tab_strip_view()->x() +
+                TabStyle::Get()->GetBottomCornerRadius() -
+                GetLayoutConstant(LayoutConstant::kTabStripPadding) -
+                view_size.width() - offset;
+  const gfx::Rect new_bounds =
+      gfx::Rect(gfx::Point(x, GetInsets().top()), view_size);
+  view->SetBoundsRect(new_bounds);
 }
 
 BEGIN_METADATA(HorizontalTabStripRegionViewNew)
