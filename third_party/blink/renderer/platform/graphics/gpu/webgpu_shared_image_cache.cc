@@ -177,24 +177,12 @@ std::optional<gpu::SyncToken> WebGpuSharedImageLease::CopyToBackingSharedImage(
   gfx::Rect copy_rect(src_x, src_y, resource_.shared_image_->size().width(),
                       resource_.shared_image_->size().height());
 
-  auto dst_access = resource_.shared_image_->BeginRasterAccess(
-      raster, resource_.sync_token_, /*readonly=*/false);
-
-  std::unique_ptr<gpu::RasterScopedAccess> src_access =
-      shared_image->BeginRasterAccess(raster, ready_sync_token,
-                                      /*readonly=*/true);
-  raster->CopySharedImage(shared_image->mailbox(),
-                          resource_.shared_image_->mailbox(),
-                          /*xoffset=*/0, /*yoffset=*/0, copy_rect.x(),
-                          copy_rect.y(), copy_rect.width(), copy_rect.height());
-  gpu::SyncToken completion_sync_token =
-      gpu::RasterScopedAccess::EndAccess(std::move(src_access));
-  shared_image->UpdateDestructionSyncToken(completion_sync_token);
-  auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(dst_access));
-  resource_.sync_token_ = sync_token;
-  resource_.shared_image_->UpdateDestructionSyncToken(sync_token);
+  auto result = raster->CopySharedImage(
+      shared_image, ready_sync_token, resource_.shared_image_,
+      resource_.sync_token_, copy_rect, gfx::Point());
+  resource_.sync_token_ = result.dest_sync_token;
   resource_.is_cleared_ = true;
-  return completion_sync_token;
+  return result.source_sync_token;
 }
 
 void WebGpuSharedImageLease::OnMemoryDump(

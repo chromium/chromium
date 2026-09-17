@@ -57,6 +57,22 @@ class RasterInterface : public InterfaceBase {
   RasterInterface() {}
   virtual ~RasterInterface() {}
 
+  struct CopySharedImageResult {
+    SyncToken source_sync_token;
+    SyncToken dest_sync_token;
+  };
+
+  // This function will not perform any color conversion during the copy.
+  // `source_rect` specifies the subregion of `source` to copy from, and
+  // `dest_offset` specifies the offset within `dest` to copy to.
+  virtual CopySharedImageResult CopySharedImage(
+      const scoped_refptr<ClientSharedImage>& source,
+      const SyncToken& source_sync_token,
+      const scoped_refptr<ClientSharedImage>& dest,
+      const SyncToken& dest_sync_token,
+      const gfx::Rect& source_rect,
+      const gfx::Point& dest_offset);
+
   // This function will not perform any color conversion during the copy.
   // The same width/height is assumed for the destination.
   virtual void CopySharedImage(const gpu::Mailbox& source_mailbox,
