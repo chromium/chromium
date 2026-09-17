@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/floating_sso/cookie_sync_test_util.h"
 
-#include <array>
 #include <string>
 
 #include "base/check.h"
@@ -14,19 +13,6 @@
 #include "components/sync/protocol/entity_data.h"
 
 namespace ash::floating_sso {
-
-const std::array<std::string, 4> kUniqueKeysForTests{
-    "https://toplevelsite.comtrueFirstNamewww.example.com/baz219",
-    "https://toplevelsite.comtrueSecondNamewww.example.com/baz219",
-    "https://toplevelsite.comtrueThirdNamewww.example.com/baz219",
-    "https://toplevelsite.comtrueFourthNamewww.example.com/baz219"};
-
-const std::array<std::string, 4> kNamesForTests{"FirstName", "SecondName",
-                                                "ThirdName", "FourthName"};
-
-// Assert that we have the same number of names and keys.
-static_assert(std::tuple_size_v<decltype(kUniqueKeysForTests)> ==
-              std::tuple_size_v<decltype(kNamesForTests)>);
 
 sync_pb::CookieSpecifics CreatePredefinedCookieSpecificsForTest(
     size_t i,

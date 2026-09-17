@@ -23,8 +23,22 @@ struct EntityData;
 
 namespace ash::floating_sso {
 
-extern const std::array<std::string, 4> kUniqueKeysForTests;
-extern const std::array<std::string, 4> kNamesForTests;
+// Elements are `const char*` rather than `std::string_view` so that they can
+// be used directly as keys of `std::map<std::string, ...>`, whose comparator
+// is not transparent.
+inline constexpr std::array<const char*, 4> kUniqueKeysForTests = {
+    "https://toplevelsite.comtrueFirstNamewww.example.com/baz219",
+    "https://toplevelsite.comtrueSecondNamewww.example.com/baz219",
+    "https://toplevelsite.comtrueThirdNamewww.example.com/baz219",
+    "https://toplevelsite.comtrueFourthNamewww.example.com/baz219"};
+
+inline constexpr std::array<const char*, 4> kNamesForTests = {
+    "FirstName", "SecondName", "ThirdName", "FourthName"};
+
+// Assert that we have the same number of names and keys.
+static_assert(std::tuple_size_v<decltype(kUniqueKeysForTests)> ==
+              std::tuple_size_v<decltype(kNamesForTests)>);
+
 inline constexpr char kValueForTests[] = "TestValue";
 inline constexpr char kDomainForTests[] = "www.example.com";
 inline constexpr char kPathForTests[] = "/baz";
