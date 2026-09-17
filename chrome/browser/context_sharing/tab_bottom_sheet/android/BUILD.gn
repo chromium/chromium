@@ -37,9 +37,13 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/tab_bottom_sheet_skeleton_box.xml",
+    "java/res/drawable/tab_bottom_sheet_skeleton_line.xml",
     "java/res/layout/tab_bottom_sheet.xml",
     "java/res/layout/tab_bottom_sheet_peek_layout.xml",
     "java/res/layout/tab_bottom_sheet_resizing_view.xml",
+    "java/res/layout/tab_bottom_sheet_skeleton_view.xml",
+    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [

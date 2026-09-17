@@ -4,7 +4,8 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources">
     <!-- Tab Bottom Sheet -->
     <dimen name="tab_bottom_sheet_resizing_view_icon_size">32dp</dimen>
     <dimen name="tab_bottom_sheet_resizing_view_text_margin_top">20dp</dimen>
@@ -36,4 +37,12 @@ found in the LICENSE file.
     <dimen name="tab_bottom_sheet_peek_description_margin_top">-2dp</dimen>
     <dimen name="tab_bottom_sheet_peek_close_button_size">40dp</dimen>
     <dimen name="tab_bottom_sheet_peek_close_button_margin_end">6dp</dimen>
+    <dimen name="tab_bottom_sheet_skeleton_padding_horiz" tools:ignore="UnusedResources">24dp</dimen>
+    <dimen name="tab_bottom_sheet_skeleton_padding_bottom" tools:ignore="UnusedResources">32dp</dimen>
+    <dimen name="tab_bottom_sheet_skeleton_bar_height" tools:ignore="UnusedResources">12dp</dimen>
+    <dimen name="tab_bottom_sheet_skeleton_bar_radius" tools:ignore="UnusedResources">6dp</dimen>
+    <dimen name="tab_bottom_sheet_skeleton_pill_height" tools:ignore="UnusedResources">48dp</dimen>
+    <dimen name="tab_bottom_sheet_skeleton_pill_radius" tools:ignore="UnusedResources">24dp</dimen>
+    <dimen name="tab_bottom_sheet_skeleton_spacing" tools:ignore="UnusedResources">16dp</dimen>
+    <dimen name="tab_bottom_sheet_skeleton_buffer" tools:ignore="UnusedResources">24dp</dimen>
 </resources>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetSkeletonView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="top"
+    tools:ignore="UselessParent,UnusedResources">
+
+    <!-- Bottom Skeleton Container -->
+    <LinearLayout
+        android:id="@+id/skeleton_bottom_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/tab_bottom_sheet_skeleton_padding_horiz"
+        android:paddingEnd="@dimen/tab_bottom_sheet_skeleton_padding_horiz"
+        android:paddingBottom="@dimen/tab_bottom_sheet_skeleton_padding_bottom"
+        tools:ignore="UselessParent">
+
+        <!-- Bar 1: 100% width -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/tab_bottom_sheet_skeleton_bar_height"
+            android:background="@drawable/tab_bottom_sheet_skeleton_line" />
+
+        <!-- Bar 2: 100% width -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/tab_bottom_sheet_skeleton_bar_height"
+            android:layout_marginTop="@dimen/tab_bottom_sheet_skeleton_spacing"
+            android:background="@drawable/tab_bottom_sheet_skeleton_line" />
+
+        <!-- Bar 3: 60% width -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/tab_bottom_sheet_skeleton_spacing"
+            android:baselineAligned="false"
+            android:weightSum="1.0">
+            <View
+            android:layout_width="0dp"
+            android:layout_height="@dimen/tab_bottom_sheet_skeleton_bar_height"
+            android:layout_weight="0.6"
+            android:background="@drawable/tab_bottom_sheet_skeleton_line" />
+        </LinearLayout>
+
+        <!-- Pill Box -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/tab_bottom_sheet_skeleton_pill_height"
+            android:layout_marginTop="@dimen/tab_bottom_sheet_skeleton_spacing"
+            android:background="@drawable/tab_bottom_sheet_skeleton_box" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/skeleton_header_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top">
+        <include layout="@layout/tab_bottom_sheet_peek_layout" />
+    </FrameLayout>
+
+</org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetSkeletonView>
