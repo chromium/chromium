@@ -100,6 +100,11 @@ dependencies {
     supportsAndroidCompileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:+'
     supportsAndroidCompileLatest 'org.reactivestreams:reactive-streams:+'
     compileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-android:+'
+
+    // Needed by androidx and by doubledown targets. Pinned; version must
+    // match the resolveVersion overrides in ChromiumDepGraph.groovy.
+    compileLatest 'org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.7.3'
+    compileLatest 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3'
 }
 
 task setUpRepository(type: BuildConfigGenerator) {

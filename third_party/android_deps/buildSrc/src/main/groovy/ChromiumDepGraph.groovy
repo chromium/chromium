@@ -273,9 +273,9 @@ class ChromiumDepGraph {
             org_jetbrains_kotlinx_kotlinx_coroutines_guava: new PropertyOverride(
                     resolveVersion: '1.8.1'),
             org_jetbrains_kotlinx_kotlinx_serialization_core_jvm: new PropertyOverride(
-                    resolveVersion: '1.7.2'),
+                    resolveVersion: '1.7.3'),
             org_jetbrains_kotlinx_kotlinx_serialization_json: new PropertyOverride(
-                    resolveVersion: '1.7.2', overrideLatest: true),
+                    resolveVersion: '1.7.3', overrideLatest: true),
             org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm: new PropertyOverride(
                     resolveVersion: '1.7.3'),
             io_reactivex_rxjava3_rxjava: new PropertyOverride(

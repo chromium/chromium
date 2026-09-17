@@ -13,9 +13,6 @@ dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
     // Needed by androidx and by doubledown targets.
-    // Note: These have version overrides set in ChromiumDepGraph.groovy.
-    compile "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.7.2"
-    compile "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.2"
     compile "org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22"
 
     // Used by ModuleInterfaceProcessor.java
