@@ -5687,10 +5687,17 @@ NavigationControllerImpl::GetNavigationApiHistoryEntryVectors(
                                        .initiator_frame_tree_node_id();
     if (initiator_id) {
       auto* initiator_node = FrameTreeNode::GloballyFindByID(initiator_id);
-      previous_entry = initiator_node->frame_tree()
-                           .controller()
-                           .GetLastCommittedEntry()
-                           ->GetFrameEntry(initiator_node);
+      // The initiator frame may have been destroyed if the initiator tab was
+      // closed while a new-tab prerender is still committing its initial
+      // navigation. The prerender WebContents destruction is deferred via
+      // DeleteSoon, creating a window where the initiator's FrameTreeNode is
+      // gone but the prerender is still alive.
+      if (initiator_node) {
+        previous_entry = initiator_node->frame_tree()
+                             .controller()
+                             .GetLastCommittedEntry()
+                             ->GetFrameEntry(initiator_node);
+      }
     }
   } else if (GetLastCommittedEntryIndex() != -1 &&
              GetLastCommittedEntryIndex() >= backmost_index &&

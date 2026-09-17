@@ -930,9 +930,17 @@ PrerenderHostId PrerenderHostRegistry::StartPrerendering(
       }
       PrerenderHost* prerender_host = found->second.get();
 
-      // The initiator WebContents should be alive as it cancels all the
-      // prerendering requests during destruction.
-      CHECK(prerender_host->initiator_web_contents());
+      // For new-tab prerenders, the initiator_web_contents may be null if the
+      // initiator tab was closed while activation was deferred. This can happen
+      // because window.open detaches the prerender from the initiator's
+      // PrerenderHostRegistry, preventing tab close from cancelling the host.
+      if (!prerender_host->initiator_web_contents()) {
+        pending_prerenders_.pop_front();
+        CancelHostInternal(prerender_host->prerender_host_id(),
+                           PrerenderCancellationReason(
+                               PrerenderFinalStatus::kTriggerDestroyed));
+        continue;
+      }
 
       WebContentsImpl* initiator_web_contents = static_cast<WebContentsImpl*>(
           prerender_host->initiator_web_contents().get());
@@ -1777,9 +1785,16 @@ bool PrerenderHostRegistry::CanNavigationActivateHost(
   //   `host.initiator_web_contents()` is visible at this point. Thus,
   //   activation is allowed when either of them is visible.
   //
-  // TODO(crbug.com/40249964): Remove the restriction after further
-  // investigation and discussion.
-  CHECK(host.initiator_web_contents());
+  // For new-tab prerenders, the initiator_web_contents may be null if the
+  // initiator tab was closed while activation was deferred. This can happen
+  // because window.open detaches the prerender from the initiator's
+  // PrerenderHostRegistry, preventing tab close from cancelling the host.
+  if (!host.initiator_web_contents()) {
+    CancelHost(host.prerender_host_id(),
+               PrerenderFinalStatus::kTriggerDestroyed);
+    return false;
+  }
+
   if (web_contents()->GetVisibility() == Visibility::HIDDEN &&
       host.initiator_web_contents()->GetVisibility() == Visibility::HIDDEN) {
     CancelHost(host.prerender_host_id(),

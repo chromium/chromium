@@ -4470,6 +4470,88 @@ IN_PROC_BROWSER_TEST_F(PrerenderTargetHintBrowserTest,
       PrerenderFinalStatus::kTabClosedWithoutUserGesture);
 }
 
+// Test fixture with a ControllableHttpResponse for slow prerender URLs.
+class PrerenderTargetHintSlowResponseBrowserTest
+    : public PrerenderTargetHintBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    // Register controllable responses before the server starts.
+    prerender_response_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            &ssl_server(), "/title2.html");
+    PrerenderTargetHintBrowserTest::SetUpOnMainThread();
+  }
+
+ protected:
+  net::test_server::ControllableHttpResponse& prerender_response() {
+    return *prerender_response_;
+  }
+
+ private:
+  std::unique_ptr<net::test_server::ControllableHttpResponse>
+      prerender_response_;
+};
+
+// Regression test: closing the initiator shell while a new-tab prerender
+// activation is deferred (prerender still loading) must not CHECK-crash in
+// CanNavigationActivateHost when host.initiator_web_contents() is null.
+// When activation is triggered via a target=_blank link click,
+// TakePreCreatedWebContentsForNewTabIfExists detaches the prerender
+// from the initiator's PrerenderHostRegistry. Closing the initiator tab
+// can then no longer cancel the PrerenderHost, leaving it with a null
+// initiator_web_contents WeakPtr.
+IN_PROC_BROWSER_TEST_F(PrerenderTargetHintSlowResponseBrowserTest,
+                       NewTabPrerenderNoCrashOnActivationAfterInitiatorClosed) {
+  const GURL initial_url = GetUrl("/simple_links.html");
+  const GURL prerendering_url = GetUrl("/title2.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  Shell* initiator_shell = shell();
+
+  // Start prerendering title2.html with _blank target hint. The response is
+  // held by ControllableHttpResponse so the prerender stays loading.
+  prerender_helper()->AddPrerendersAsync({prerendering_url},
+                                         /*eagerness=*/std::nullopt, "_blank");
+
+  prerender_response().WaitForRequest();
+
+  // Click the noopener "target=_blank" link to trigger activation.
+  // TakePreCreatedWebContentsForNewTabIfExists detaches the prerender from
+  // the initiator's registry (noopener is required for opener_suppressed).
+  // The activation defers via PrerenderCommitDeferringCondition because the
+  // prerender is still loading.
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(
+      ExecJs(web_contents(), "clickSameSiteNewWindowWithNoopenerLink();"));
+  Shell* new_shell = new_shell_observer.GetShell();
+  ASSERT_TRUE(new_shell);
+  WebContents* new_wc = new_shell->web_contents();
+
+  // Close only the initiator shell, keeping the new tab's shell alive. The
+  // PrerenderNewTabHandle was already detached, so CancelHost cannot find the
+  // host. The PrerenderHost survives with a null initiator_web_contents
+  // WeakPtr. Wait for full destruction to ensure the WeakPtr is invalidated
+  // before the activation resumes.
+  WebContents* initiator_wc = initiator_shell->web_contents();
+  WebContentsDestroyedWatcher initiator_destroyed_watcher(initiator_wc);
+  initiator_shell->Close();
+  initiator_destroyed_watcher.Wait();
+
+  // Send the prerender response. The deferred activation resumes and calls
+  // CanNavigationActivateHost. Without the fix,
+  // CHECK(host.initiator_web_contents()) crashes. With the fix, the prerender
+  // is cancelled gracefully.
+  TestNavigationObserver activation_observer(new_wc);
+  prerender_response().Send(net::HTTP_OK, "text/html",
+                            "<html><head><title>Title 2</title></head></html>");
+  prerender_response().Done();
+  activation_observer.Wait();
+
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kTriggerDestroyed);
+  EXPECT_EQ(new_wc->GetLastCommittedURL(), prerendering_url);
+  EXPECT_TRUE(activation_observer.last_navigation_succeeded());
+}
+
 // Tests that trigger cancellation via BrowsingDataRemover (e.g.,
 // Clear-Site-Data) is handled safely without causing Use-After-Free due to
 // synchronous destruction of the WebContentsImpl during iteration.
