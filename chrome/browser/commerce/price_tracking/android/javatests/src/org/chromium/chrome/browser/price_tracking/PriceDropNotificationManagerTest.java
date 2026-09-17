@@ -50,6 +50,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -341,6 +342,7 @@ public class PriceDropNotificationManagerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/562732344")
     public void testHasReachedMaxAllowedNotificationNumber() {
         int mockType = SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED;
         assertEquals(
