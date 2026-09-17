@@ -18023,7 +18023,6 @@
                         "unlimited_shows": "false"
                     },
                     "enable_features": [
-                        "HappinessTrackingSurveysForDesktopSEHijacking",
                         "SearchEngineExplicitChoiceDialog",
                         "SearchEngineUnconditionalDialog"
                     ]
