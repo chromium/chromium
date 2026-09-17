@@ -28,3 +28,4 @@ export {StackedFaviconsElement} from './stacked_favicons.js';
 export {Color} from './tab_group_types.mojom-webui.js';
 export type {PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TokenRange} from './tab_search.mojom-webui.js';
 export {browserProxyFactory, PageHandlerRemote, SplitTabLayout} from './tab_search.mojom-webui.js';
+export {TabAlertState} from './tabs.mojom-webui.js';

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxyFactory, isSplitTab, OpenTabsDelegate, OpenTabsItemType, PageHandlerRemote, SplitTabLayout} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {browserProxyFactory, isSplitTab, OpenTabsDelegate, OpenTabsItemType, PageHandlerRemote, SplitTabLayout, TabAlertState} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionClient, OrganizerListSectionItem, PageRemote, ProfileData, Tab} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -32,6 +32,22 @@ function createTab(overrides: Partial<Tab>): Tab {
       overrides);
 }
 
+function createProfileData(tabs: Tab[]): ProfileData {
+  return {
+    windows: [{
+      active: true,
+      isHostWindow: true,
+      height: WINDOW_HEIGHT,
+      tabs,
+    }],
+    recentlyClosedTabs: [],
+    recentlyClosedTabGroups: [],
+    recentlyClosedSplitViews: [],
+    recentlyClosedSectionExpanded: false,
+    tabGroups: [],
+  };
+}
+
 class TestClient implements OrganizerListSectionClient {
   items: Array<OrganizerListSectionItem<unknown>> = [];
 
@@ -50,6 +66,8 @@ const SPLIT_TAB_1_URL = 'https://docs.google.com';
 const SPLIT_TAB_2_ID = 11;
 const SPLIT_TAB_2_TITLE = 'Sheets';
 const SPLIT_TAB_2_URL = 'https://sheets.google.com';
+const WINDOW_HEIGHT = 600;
+const AUDIO_ICON = 'organizer-panel:volume-up';
 
 suite('OpenTabsDelegateTest', () => {
   let mockPageHandler: PageHandlerRemote&TestMock<PageHandlerRemote>;
@@ -88,18 +106,34 @@ suite('OpenTabsDelegateTest', () => {
     lastActiveElapsedText: 'just now',
   });
 
+  const musicTab: Tab = createTab({
+    tabId: 5,
+    title: 'Music',
+    url: 'https://music.youtube.com',
+    lastActiveTimeTicks: {internalValue: 50n},
+    alertStates: [TabAlertState.kAudioPlaying],
+  });
+
+  const mutedTab: Tab = createTab({
+    tabId: 6,
+    title: 'Muted video',
+    url: 'https://www.netflix.com',
+    lastActiveTimeTicks: {internalValue: 75n},
+    alertStates: [TabAlertState.kAudioMuting],
+  });
+
   const mockProfileData: ProfileData = {
     windows: [
       {
         active: true,
         isHostWindow: true,
-        height: 600,
+        height: WINDOW_HEIGHT,
         tabs: [googleTab, youtubeTab],
       },
       {
         active: false,
         isHostWindow: false,
-        height: 600,
+        height: WINDOW_HEIGHT,
         tabs: [chromiumTab],
       },
     ],
@@ -172,6 +206,60 @@ suite('OpenTabsDelegateTest', () => {
     assertEquals(googleTab.url, items[2]!.prefixIcon?.url);
     assertDeepEquals(
         {type: OpenTabsItemType.TAB, tab: googleTab}, items[2]!.data);
+  });
+
+  test('sorts tabs with audio alerts first with an audio icon', async () => {
+    mockPageHandler.setResultFor('getProfileData', Promise.resolve({
+      profileData:
+          createProfileData([googleTab, musicTab, youtubeTab, mutedTab]),
+    }));
+
+    const items = await delegate.getItems();
+    assertEquals(4, items.length);
+
+    // Audio tabs come first, ordered by MRU within the audio group.
+    assertDeepEquals([mutedTab.title], items[0]!.title);
+    assertEquals(AUDIO_ICON, items[0]!.trailingIcon);
+    assertDeepEquals([musicTab.title], items[1]!.title);
+    assertEquals(AUDIO_ICON, items[1]!.trailingIcon);
+
+    // Remaining tabs keep their MRU order and have no trailing icon.
+    assertDeepEquals([youtubeTab.title], items[2]!.title);
+    assertEquals(undefined, items[2]!.trailingIcon);
+    assertDeepEquals([googleTab.title], items[3]!.title);
+    assertEquals(undefined, items[3]!.trailingIcon);
+  });
+
+  test('shows the audio icon when one split view tab plays audio', async () => {
+    const splitTab1 = createTab({
+      tabId: SPLIT_TAB_1_ID,
+      title: SPLIT_TAB_1_TITLE,
+      url: SPLIT_TAB_1_URL,
+      split: true,
+      splitId: SPLIT_TOKEN,
+      lastActiveTimeTicks: {internalValue: 10n},
+    });
+    const splitTab2 = createTab({
+      tabId: SPLIT_TAB_2_ID,
+      title: SPLIT_TAB_2_TITLE,
+      url: SPLIT_TAB_2_URL,
+      split: true,
+      splitId: SPLIT_TOKEN,
+      lastActiveTimeTicks: {internalValue: 20n},
+      alertStates: [TabAlertState.kAudioPlaying],
+    });
+
+    mockPageHandler.setResultFor('getProfileData', Promise.resolve({
+      profileData: createProfileData([googleTab, splitTab1, splitTab2]),
+    }));
+
+    const items = await delegate.getItems();
+    assertEquals(2, items.length);
+
+    assertTrue(isSplitTab(items[0]!.data!));
+    assertEquals(AUDIO_ICON, items[0]!.trailingIcon);
+    assertDeepEquals([googleTab.title], items[1]!.title);
+    assertEquals(undefined, items[1]!.trailingIcon);
   });
 
   test('notifies client when tabs are changed', async () => {
@@ -307,21 +395,8 @@ suite('OpenTabsDelegateTest', () => {
           lastActiveElapsedText: splitTab2ElapsedText,
         });
 
-        const splitProfileData: ProfileData = {
-          windows: [
-            {
-              active: true,
-              isHostWindow: true,
-              height: 600,
-              tabs: [splitTab1, splitTab2],
-            },
-          ],
-          recentlyClosedTabs: [],
-          recentlyClosedTabGroups: [],
-          recentlyClosedSplitViews: [],
-          recentlyClosedSectionExpanded: false,
-          tabGroups: [],
-        };
+        const splitProfileData: ProfileData =
+            createProfileData([splitTab1, splitTab2]);
 
         mockPageHandler.setResultFor(
             'getProfileData', Promise.resolve({profileData: splitProfileData}));
@@ -375,21 +450,8 @@ suite('OpenTabsDelegateTest', () => {
           splitLayout: SplitTabLayout.kStacked,
         });
 
-        const splitProfileData: ProfileData = {
-          windows: [
-            {
-              active: true,
-              isHostWindow: true,
-              height: 600,
-              tabs: [splitTab1, splitTab2],
-            },
-          ],
-          recentlyClosedTabs: [],
-          recentlyClosedTabGroups: [],
-          recentlyClosedSplitViews: [],
-          recentlyClosedSectionExpanded: false,
-          tabGroups: [],
-        };
+        const splitProfileData: ProfileData =
+            createProfileData([splitTab1, splitTab2]);
 
         mockPageHandler.setResultFor(
             'getProfileData', Promise.resolve({profileData: splitProfileData}));
@@ -416,21 +478,8 @@ suite('OpenTabsDelegateTest', () => {
       splitId: SPLIT_TOKEN,
     });
 
-    const splitProfileData: ProfileData = {
-      windows: [
-        {
-          active: true,
-          isHostWindow: true,
-          height: 600,
-          tabs: [splitTab1, splitTab2],
-        },
-      ],
-      recentlyClosedTabs: [],
-      recentlyClosedTabGroups: [],
-      recentlyClosedSplitViews: [],
-      recentlyClosedSectionExpanded: false,
-      tabGroups: [],
-    };
+    const splitProfileData: ProfileData =
+        createProfileData([splitTab1, splitTab2]);
 
     mockPageHandler.setResultFor(
         'getProfileData', Promise.resolve({profileData: splitProfileData}));
@@ -462,21 +511,8 @@ suite('OpenTabsDelegateTest', () => {
           splitId: SPLIT_TOKEN,
         });
 
-        const splitProfileData: ProfileData = {
-          windows: [
-            {
-              active: true,
-              isHostWindow: true,
-              height: 600,
-              tabs: [splitTab1, splitTab2],
-            },
-          ],
-          recentlyClosedTabs: [],
-          recentlyClosedTabGroups: [],
-          recentlyClosedSplitViews: [],
-          recentlyClosedSectionExpanded: false,
-          tabGroups: [],
-        };
+        const splitProfileData: ProfileData =
+            createProfileData([splitTab1, splitTab2]);
 
         mockPageHandler.setResultFor(
             'getProfileData', Promise.resolve({profileData: splitProfileData}));

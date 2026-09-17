@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../icons.html.js';
+
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Token} from '//resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
@@ -10,6 +12,10 @@ import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../
 import type {OrganizerListSectionItem, OrganizerListSectionItemDescriptionPart, OrganizerListSectionItemIcon} from '../organizer_list_section_item.js';
 import type {BrowserProxy, ProfileData, Tab, TabsRemovedInfo, TabUpdateInfo} from '../tab_search.mojom-webui.js';
 import {browserProxyFactory, SplitTabLayout} from '../tab_search.mojom-webui.js';
+import {TabAlertState} from '../tabs.mojom-webui.js';
+
+// Trailing icon shown for tabs that are playing or muting audio.
+const AUDIO_ICON = 'organizer-panel:volume-up';
 
 export enum OpenTabsItemType {
   TAB = 'tab',
@@ -56,6 +62,17 @@ function getMostRecentTab(item: OpenTabsItem): Tab {
           getLastActiveTimeTicks(item.tabs[0]) ?
       item.tabs[1] :
       item.tabs[0];
+}
+
+function tabHasAudioAlert(tab: Tab): boolean {
+  return tab.alertStates.some(
+      alertState => alertState === TabAlertState.kAudioPlaying ||
+          alertState === TabAlertState.kAudioMuting);
+}
+
+function hasAudioAlert(item: OpenTabsItem): boolean {
+  return isSplitTab(item) ? item.tabs.some(tabHasAudioAlert) :
+                            tabHasAudioAlert(item.tab);
 }
 
 export class OpenTabsDelegate implements
@@ -194,7 +211,14 @@ export class OpenTabsDelegate implements
       });
     }
 
+    // Tabs playing or muting audio are surfaced first, each group ordered by
+    // most recently used.
     items.sort((a, b) => {
+      const audioA = hasAudioAlert(a);
+      const audioB = hasAudioAlert(b);
+      if (audioA !== audioB) {
+        return audioA ? -1 : 1;
+      }
       const timeA = getLastActiveTimeTicks(getMostRecentTab(a));
       const timeB = getLastActiveTimeTicks(getMostRecentTab(b));
       return timeB > timeA ? 1 : (timeB < timeA ? -1 : 0);
@@ -237,6 +261,7 @@ export class OpenTabsDelegate implements
       title,
       description,
       prefixIcon,
+      trailingIcon: hasAudioAlert(item) ? AUDIO_ICON : undefined,
       hoveredActionButton: {
         icon: 'cr:close',
         ariaLabel: loadTimeData.getString('closeTab'),
