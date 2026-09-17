@@ -15,6 +15,7 @@ import android.graphics.drawable.RippleDrawable;
 import android.util.TypedValue;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,6 +46,10 @@ public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
         return R.drawable.list_item_background_middle;
     }
 
+    protected @ColorInt int getBackgroundTintColor() {
+        return SemanticColorUtils.getColorSurfaceContainerLow(mContext);
+    }
+
     private void loadBackgroundDrawable(@Nullable View view, @DrawableRes int backgroundId) {
         if (view == null) {
             // RecyclerView might return a {@code null} view if it's not displayed to the user.
@@ -57,8 +62,7 @@ public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
         RippleDrawable rippleDrawable =
                 new RippleDrawable(ColorStateList.valueOf(themeRes.data), background, null);
         view.setBackground(rippleDrawable);
-        view.setBackgroundTintList(
-                ColorStateList.valueOf(SemanticColorUtils.getColorSurfaceContainerLow(mContext)));
+        view.setBackgroundTintList(ColorStateList.valueOf(getBackgroundTintColor()));
     }
 
     /**

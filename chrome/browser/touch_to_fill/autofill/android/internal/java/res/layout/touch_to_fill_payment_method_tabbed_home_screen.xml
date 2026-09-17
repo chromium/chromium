@@ -30,8 +30,10 @@ found in the LICENSE file.
             <ImageView
                 android:id="@+id/branding_icon"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/ttf_header_product_icon_height"
+                android:layout_height="@dimen/ttf_tab_header_product_icon_height"
                 android:layout_marginVertical="@dimen/ttf_header_product_icon_margin_vertical"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
                 android:importantForAccessibility="no"
                 android:layout_gravity="center_horizontal"/>
 

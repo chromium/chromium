@@ -19,6 +19,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.RelativeLayout;
 import android.widget.ViewFlipper;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
@@ -37,6 +38,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.browser_ui.bottomsheet.ItemDividerBase;
 import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.Set;
 
@@ -74,6 +76,11 @@ class TouchToFillPaymentMethodView extends BottomSheetListViewBase {
     private static class HorizontalDividerItemDecoration extends ItemDividerBase {
         HorizontalDividerItemDecoration(Context context) {
             super(context);
+        }
+
+        @Override
+        protected @ColorInt int getBackgroundTintColor() {
+            return SemanticColorUtils.getColorSurfaceContainer(mContext);
         }
 
         @Override

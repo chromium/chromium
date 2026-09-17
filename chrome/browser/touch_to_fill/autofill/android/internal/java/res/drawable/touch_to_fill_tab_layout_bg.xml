@@ -6,6 +6,6 @@ found in the LICENSE file.
 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="?attr/colorSurfaceContainerLow" />
+    <solid android:color="?attr/colorSurfaceContainer" />
     <corners android:radius="@dimen/ttf_tab_layout_corner_radius" />
 </shape>
