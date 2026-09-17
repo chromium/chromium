@@ -357,7 +357,8 @@ void TabDialogManager::ShowDialog(views::Widget* widget,
   // Only show as active if the primary window widget (usually the browser
   // window) is painted as active. This prevents a background browser window
   // from becoming foreground on showing the dialog.
-  if (GetHostWidget()->ShouldPaintAsActive()) {
+  if (GetHostWidget()->ShouldPaintAsActive() &&
+      !params_->should_show_inactive) {
     widget_->Show();
   } else {
     widget->ShowInactive();

@@ -5,6 +5,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
 #include "base/test/run_until.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/dictation/dictation_interactive_browser_test_base.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
@@ -16,13 +17,16 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/dictation/dictation_bubble_ui.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/interaction/widget_focus_observer.h"
 #include "url/gurl.h"
 
 namespace dictation {
@@ -163,6 +167,74 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
       EXPECT_EQ(service->session_controller()->attached_stream_provider(),
                 nullptr);
     })
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
+                       FocusUiByCyclingPaneFocus) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+
+  ui::Accelerator next_pane;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_FOCUS_NEXT_PANE, &next_pane));
+  views::Widget* bubble_widget = nullptr;
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    ObserveState(views::test::kCurrentWidgetFocus),
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+    WithView(
+        DictationBubbleUi::kViewElementIdForTesting,
+        [&](views::View* view) { bubble_widget = view->GetWidget(); }),
+    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
+                      &views::View::HasFocus, false),
+    SendAccelerator(kBrowserViewElementId, next_pane),
+    WaitForState(views::test::kCurrentWidgetFocus, std::ref(bubble_widget)),
+    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
+                      &views::View::HasFocus, true),
+    SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB),
+    CheckViewProperty(DictationBubbleUi::kCloseButtonElementIdForTesting,
+                      &views::View::HasFocus, true)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
+                       FocusUiByInactivePopupAccelerator) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+
+  ui::Accelerator focus_inactive_popup;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY, &focus_inactive_popup));
+  views::Widget* bubble_widget = nullptr;
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    ObserveState(views::test::kCurrentWidgetFocus),
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+    WithView(
+        DictationBubbleUi::kViewElementIdForTesting,
+        [&](views::View* view) { bubble_widget = view->GetWidget(); }),
+    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
+                      &views::View::HasFocus, false),
+    SendAccelerator(kBrowserViewElementId, focus_inactive_popup),
+    WaitForState(views::test::kCurrentWidgetFocus, std::ref(bubble_widget)),
+    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
+                      &views::View::HasFocus, true),
+    SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB),
+    CheckViewProperty(DictationBubbleUi::kCloseButtonElementIdForTesting,
+                      &views::View::HasFocus, true)
   );
   // clang-format on
 }

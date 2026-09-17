@@ -92,6 +92,7 @@ void SessionUiImpl::CreateBubbleUi() {
   auto params = std::make_unique<tabs::TabDialogManager::Params>();
   params->disable_input = false;
   params->block_new_modal = false;
+  params->should_show_inactive = true;
   params->get_dialog_bounds = base::BindRepeating(
       &DictationBubbleUi::GetBubbleBounds, base::Unretained(bubble_ui_.get()));
 
