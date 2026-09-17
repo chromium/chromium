@@ -144,6 +144,8 @@ if (enterprise_cloud_content_analysis || is_android) {
       "cloud_content_scanning/files_request_handler_base.h",
       "cloud_content_scanning/multipart_uploader.cc",
       "cloud_content_scanning/multipart_uploader.h",
+      "cloud_content_scanning/network_request_analysis_request.cc",
+      "cloud_content_scanning/network_request_analysis_request.h",
       "cloud_content_scanning/request_handler_base.cc",
       "cloud_content_scanning/request_handler_base.h",
       "cloud_content_scanning/resumable_uploader.cc",
@@ -345,6 +347,7 @@ if (enterprise_cloud_content_analysis || is_android) {
       "cloud_content_scanning/file_opening_job_unittest.cc",
       "cloud_content_scanning/files_request_handler_base_unittest.cc",
       "cloud_content_scanning/multipart_uploader_unittest.cc",
+      "cloud_content_scanning/network_request_analysis_request_unittest.cc",
       "cloud_content_scanning/resumable_uploader_unittest.cc",
     ]
 

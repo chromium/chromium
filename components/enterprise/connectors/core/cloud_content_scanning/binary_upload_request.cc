@@ -16,6 +16,7 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/resource_request_body.h"
 
 namespace enterprise_connectors {
 
@@ -35,6 +36,7 @@ BinaryUploadRequest::Data& BinaryUploadRequest::Data::operator=(
   size = other.size;
   mime_type = other.mime_type;
   page = other.page.Duplicate();
+  request_body = other.request_body;
   is_obfuscated = other.is_obfuscated;
   return *this;
 }
