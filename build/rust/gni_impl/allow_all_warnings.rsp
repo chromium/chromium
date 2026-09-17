@@ -19,6 +19,7 @@
 -Aexplicit_builtin_cfgs_in_flags
 -Aexplicit_outlives_requirements
 -Affi_unwind_calls
+-Afunction_casts_as_integer
 -Afuzzy_provenance_casts
 -Aif_let_rescope
 -Aill_formed_attribute_input
