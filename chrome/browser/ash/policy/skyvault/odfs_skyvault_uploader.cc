@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
@@ -28,9 +29,9 @@ namespace ash::cloud_upload {
 
 namespace {
 
-// A factory that can be injected in tests.
-static OdfsMigrationUploader::FactoryCallback g_testing_factory_ =
-    OdfsMigrationUploader::FactoryCallback();
+// A factory that can be injected in tests. Heap-allocated and intentionally
+// never destroyed so that no exit-time destructor is registered.
+OdfsMigrationUploader::FactoryCallback* g_testing_factory = nullptr;
 
 // Runs the upload callback provided to `OdfsSkyvaultUploader::Upload`.
 void OnUploadDone(
@@ -384,9 +385,9 @@ scoped_refptr<OdfsMigrationUploader> OdfsMigrationUploader::Create(
     const storage::FileSystemURL& file_system_url,
     const base::FilePath& relative_source_path,
     const std::string& upload_root) {
-  if (g_testing_factory_) {
+  if (g_testing_factory) {
     CHECK_IS_TEST();
-    return g_testing_factory_.Run(profile, id, file_system_url,
+    return g_testing_factory->Run(profile, id, file_system_url,
                                   relative_source_path);
   }
   return new OdfsMigrationUploader(profile, id, file_system_url,
@@ -396,7 +397,9 @@ scoped_refptr<OdfsMigrationUploader> OdfsMigrationUploader::Create(
 // static
 void OdfsMigrationUploader::SetFactoryForTesting(FactoryCallback factory) {
   CHECK_IS_TEST();
-  g_testing_factory_ = factory;
+  delete g_testing_factory;
+  g_testing_factory =
+      factory ? new FactoryCallback(std::move(factory)) : nullptr;
 }
 
 OdfsMigrationUploader::OdfsMigrationUploader(
