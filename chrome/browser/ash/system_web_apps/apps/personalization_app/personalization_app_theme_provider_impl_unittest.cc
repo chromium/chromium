@@ -22,6 +22,7 @@
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -37,8 +38,8 @@ namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
 constexpr GaiaId::Literal kTestGaiaId("1234567890");
-AccountId kAccountId =
-    AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
+constexpr AccountId::Literal kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
 
 class TestThemeObserver
     : public ash::personalization_app::mojom::ThemeObserver {

@@ -39,6 +39,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -65,8 +66,9 @@ using ::testing::IsTrue;
 using ::testing::Pointee;
 
 constexpr char kFakeTestEmail[] = "fakeemail@example.com";
-const AccountId kFakeTestAccountId =
-    AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId("1111"));
+constexpr AccountId::Literal kFakeTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kFakeTestEmail,
+                                            GaiaId::Literal("1111"));
 
 class TestAmbientObserver
     : public ash::personalization_app::mojom::AmbientObserver {

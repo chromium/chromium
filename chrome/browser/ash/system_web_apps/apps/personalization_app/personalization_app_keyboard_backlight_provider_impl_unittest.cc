@@ -21,6 +21,7 @@
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
@@ -33,8 +34,9 @@ namespace ash::personalization_app {
 namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
-const AccountId account_id =
-    AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId("1111"));
+constexpr AccountId::Literal account_id =
+    AccountId::Literal::FromUserEmailGaiaId(kFakeTestEmail,
+                                            GaiaId::Literal("1111"));
 
 class TestKeyboardBacklightObserver
     : public ash::personalization_app::mojom::KeyboardBacklightObserver {

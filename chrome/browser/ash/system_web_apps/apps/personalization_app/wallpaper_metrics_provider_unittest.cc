@@ -22,6 +22,7 @@
 #include "base/test/test_future.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -33,8 +34,8 @@
 namespace {
 
 constexpr char kUser[] = "user1@test.com";
-const AccountId kAccountId =
-    AccountId::FromUserEmailGaiaId(kUser, GaiaId("1111"));
+constexpr AccountId::Literal kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kUser, GaiaId::Literal("1111"));
 
 ash::personalization_app::mojom::SeaPenQueryPtr MakeTemplateQuery() {
   return ash::personalization_app::mojom::SeaPenQuery::NewTemplateQuery(
