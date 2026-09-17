@@ -11,7 +11,9 @@
 #include <bit>
 #include <memory>
 #include <type_traits>
+#include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
@@ -25,6 +27,7 @@
 namespace gpu {
 
 class CommandBufferHelper;
+class ScopedDedicatedChunk;
 
 // Manages a shared memory segment.
 class GPU_COMMAND_BUFFER_CLIENT_EXPORT MemoryChunk {
@@ -153,6 +156,12 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappedMemoryManager {
     max_allocated_bytes_ = max_allocated_bytes;
   }
 
+  // Caps the total size of dedicated chunks. AllocDedicatedChunk() fails once
+  // the cap is reached so callers can fall back to pooled chunks.
+  void set_max_dedicated_bytes_for_testing(size_t max_dedicated_bytes) {
+    max_dedicated_bytes_ = max_dedicated_bytes;
+  }
+
   // Allocates a block of memory
   // Parameters:
   //   size: size of memory to allocate.
@@ -205,11 +214,30 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappedMemoryManager {
     return base::subtle::reinterpret_span<T>(buffer);
   }
 
+  // Allocates a whole new chunk dedicated to a single allocation, guaranteeing
+  // that the shared memory offset is always 0.
+  //
+  // Parameters:
+  //   size: size of memory to allocate.
+  // Returns:
+  //   an RAII handle to the allocated chunk that releases it (and destroys
+  //   its transfer buffer) on destruction. Invalid handle on OOM; callers
+  //   should be careful to check error conditions.
+  ScopedDedicatedChunk AllocDedicatedChunk(uint32_t size);
+
   // Frees a block of memory.
   //
   // Parameters:
   //   pointer: the pointer to the memory block to free.
   void Free(void* pointer);
+
+  // Removes a dedicated chunk and destroys its transfer buffer. The caller
+  // must have already written all commands referencing `shm_id` into the
+  // command buffer.
+  //
+  // Normally called internally by ScopedDedicatedChunk's destructor; exposed
+  // for callers that need to release a chunk early.
+  void RemoveDedicatedChunk(int32_t shm_id);
 
   // Frees a block of memory, pending the passage of a token. That memory won't
   // be re-allocated until the token has passed through the command stream.
@@ -228,7 +256,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappedMemoryManager {
 
   // Used for testing
   size_t num_chunks() const {
-    return chunks_.size();
+    return chunks_.size() + dedicated_chunks_.size();
   }
 
   size_t bytes_in_use() const {
@@ -236,12 +264,19 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappedMemoryManager {
     for (size_t ii = 0; ii < chunks_.size(); ++ii) {
       bytes_in_use += chunks_[ii]->bytes_in_use();
     }
+    for (const auto& entry : dedicated_chunks_) {
+      bytes_in_use += entry.second->size();
+    }
     return bytes_in_use;
   }
 
   // Used for testing
   size_t allocated_memory() const {
     return allocated_memory_;
+  }
+
+  size_t dedicated_memory_for_testing() const {
+    return dedicated_memory_for_testing_;
   }
 
   // Gets the status of a previous allocation, as well as the corresponding
@@ -255,13 +290,55 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappedMemoryManager {
   // size a chunk is rounded up to.
   uint32_t chunk_size_multiple_;
   raw_ptr<CommandBufferHelper> helper_;
+  // Chunks that can be sub-allocated from and reused; never dedicated.
   MemoryChunkVector chunks_;
+  // Chunks allocated via AllocDedicatedChunk(), keyed by shm_id.
+  base::flat_map<int32_t, scoped_refptr<gpu::Buffer>> dedicated_chunks_;
   size_t allocated_memory_;
   size_t max_free_bytes_;
   size_t max_allocated_bytes_;
+  size_t dedicated_memory_for_testing_;
+  size_t max_dedicated_bytes_;
   // A process-unique ID used for disambiguating memory dumps from different
   // mapped memory manager.
   int tracing_id_;
+};
+
+// RAII handle for a chunk allocated via
+// MappedMemoryManager::AllocDedicatedChunk(). Releases the chunk (and
+// destroys its transfer buffer) when destroyed, moved-from, or Reset().
+//
+// Must not outlive the MappedMemoryManager it was allocated from: it holds a
+// non-owning pointer back to the manager and calls RemoveDedicatedChunk() on
+// it, so destroying the manager first would leave that pointer dangling.
+// (MappedMemoryManager's destructor DCHECKs that no dedicated chunk is still
+// outstanding.)
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT ScopedDedicatedChunk {
+ public:
+  ScopedDedicatedChunk();
+  ScopedDedicatedChunk(base::span<uint8_t> span,
+                       int32_t shm_id,
+                       MappedMemoryManager* manager);
+
+  ScopedDedicatedChunk(const ScopedDedicatedChunk&) = delete;
+  ScopedDedicatedChunk& operator=(const ScopedDedicatedChunk&) = delete;
+
+  ScopedDedicatedChunk(ScopedDedicatedChunk&& other);
+  ScopedDedicatedChunk& operator=(ScopedDedicatedChunk&& other);
+
+  ~ScopedDedicatedChunk();
+
+  bool valid() const { return manager_ != nullptr; }
+  int32_t shm_id() const { return shm_id_; }
+  base::span<uint8_t> span() const { return span_; }
+
+  // Releases the chunk early. Safe to call on an already-empty instance.
+  void Reset();
+
+ private:
+  base::raw_span<uint8_t> span_;
+  int32_t shm_id_ = -1;
+  raw_ptr<MappedMemoryManager> manager_ = nullptr;
 };
 
 // A class that will manage the lifetime of a mapped memory allocation

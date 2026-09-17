@@ -7,15 +7,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <functional>
+#include <utility>
 
 #include "base/atomic_sequence_num.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -48,10 +47,14 @@ MappedMemoryManager::MappedMemoryManager(CommandBufferHelper* helper,
       allocated_memory_(0),
       max_free_bytes_(unused_memory_reclaim_limit),
       max_allocated_bytes_(SharedMemoryLimits::kNoLimit),
-      tracing_id_(g_next_mapped_memory_manager_tracing_id.GetNext()) {
-}
+      dedicated_memory_for_testing_(0),
+      max_dedicated_bytes_(SharedMemoryLimits::kNoLimit),
+      tracing_id_(g_next_mapped_memory_manager_tracing_id.GetNext()) {}
 
 MappedMemoryManager::~MappedMemoryManager() {
+  // Outstanding ScopedDedicatedChunk instances hold a raw pointer back to
+  // this manager; destroying it first would leave them dangling.
+  DCHECK(dedicated_chunks_.empty());
   helper_->OrderingBarrier();
   CommandBuffer* cmd_buf = helper_->command_buffer();
   for (auto& chunk : chunks_) {
@@ -130,6 +133,34 @@ base::span<uint8_t> MappedMemoryManager::Alloc(
   return span;
 }
 
+ScopedDedicatedChunk MappedMemoryManager::AllocDedicatedChunk(uint32_t size) {
+  if (max_allocated_bytes_ != SharedMemoryLimits::kNoLimit &&
+      (size > max_allocated_bytes_ - allocated_memory_)) {
+    return {};
+  }
+
+  if (max_dedicated_bytes_ != SharedMemoryLimits::kNoLimit &&
+      (size > max_dedicated_bytes_ - dedicated_memory_for_testing_)) {
+    return {};
+  }
+
+  // Make a new chunk to guarantee offset 0.
+  CommandBuffer* cmd_buf = helper_->command_buffer();
+  int32_t id = -1;
+  scoped_refptr<gpu::Buffer> shm = cmd_buf->CreateTransferBuffer(
+      size, &id, /* alignment */ 0,
+      TransferBufferAllocationOption::kReturnNullOnOOM);
+  if (id < 0) {
+    return {};
+  }
+  DCHECK(shm.get());
+  base::span<uint8_t> span = shm->as_byte_span();
+  allocated_memory_ += shm->size();
+  dedicated_memory_for_testing_ += shm->size();
+  dedicated_chunks_.emplace(id, std::move(shm));
+  return ScopedDedicatedChunk(span.first(size), id, this);
+}
+
 void MappedMemoryManager::Free(void* pointer) {
   for (auto& chunk : chunks_) {
     if (chunk->IsInChunk(pointer)) {
@@ -138,6 +169,19 @@ void MappedMemoryManager::Free(void* pointer) {
     }
   }
   NOTREACHED();
+}
+
+void MappedMemoryManager::RemoveDedicatedChunk(int32_t shm_id) {
+  auto iter = dedicated_chunks_.find(shm_id);
+  CHECK(iter != dedicated_chunks_.end());
+  // DestroyTransferBuffer is sent out-of-band, so it would otherwise reach the
+  // service before the commands referencing `shm_id` that are still sitting in
+  // the command buffer.
+  helper_->OrderingBarrier();
+  helper_->command_buffer()->DestroyTransferBuffer(shm_id);
+  allocated_memory_ -= iter->second->size();
+  dedicated_memory_for_testing_ -= iter->second->size();
+  dedicated_chunks_.erase(iter);
 }
 
 void MappedMemoryManager::FreePendingToken(void* pointer, int32_t token) {
@@ -188,27 +232,34 @@ bool MappedMemoryManager::OnMemoryDump(
   const uint64_t tracing_process_id =
       base::trace_event::MemoryDumpManager::GetInstance()
           ->GetTracingProcessId();
-  for (const auto& chunk : chunks_) {
-    std::string dump_name =
-        base::StringPrintf("gpu/mapped_memory/manager_0x%x/chunk_0x%x",
-                           tracing_id_, chunk->shm_id());
+  auto dump_chunk = [&](int32_t shm_id, uint32_t size, uint32_t free_size,
+                        gpu::Buffer* shared_memory) {
+    std::string dump_name = base::StringPrintf(
+        "gpu/mapped_memory/manager_0x%x/chunk_0x%x", tracing_id_, shm_id);
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
 
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                    MemoryAllocatorDump::kUnitsBytes, chunk->GetSize());
-    dump->AddScalar("free_size", MemoryAllocatorDump::kUnitsBytes,
-                    chunk->GetFreeSize());
+                    MemoryAllocatorDump::kUnitsBytes, size);
+    dump->AddScalar("free_size", MemoryAllocatorDump::kUnitsBytes, free_size);
 
-    auto shared_memory_guid = chunk->shared_memory()->backing()->GetGUID();
+    auto shared_memory_guid = shared_memory->backing()->GetGUID();
     const int kImportance = 2;
     if (!shared_memory_guid.is_empty()) {
       pmd->CreateSharedMemoryOwnershipEdge(dump->guid(), shared_memory_guid,
                                            kImportance);
     } else {
-      auto guid = GetBufferGUIDForTracing(tracing_process_id, chunk->shm_id());
+      auto guid = GetBufferGUIDForTracing(tracing_process_id, shm_id);
       pmd->CreateSharedGlobalAllocatorDump(guid);
       pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
     }
+  };
+  for (const auto& chunk : chunks_) {
+    dump_chunk(chunk->shm_id(), chunk->GetSize(), chunk->GetFreeSize(),
+               chunk->shared_memory());
+  }
+  for (const auto& entry : dedicated_chunks_) {
+    dump_chunk(entry.first, entry.second->size(), /*free_size=*/0u,
+               entry.second.get());
   }
 
   return true;
@@ -223,6 +274,42 @@ FencedAllocator::State MappedMemoryManager::GetPointerStatusForTest(
     }
   }
   return FencedAllocator::FREE;
+}
+
+ScopedDedicatedChunk::ScopedDedicatedChunk() = default;
+
+ScopedDedicatedChunk::ScopedDedicatedChunk(base::span<uint8_t> span,
+                                           int32_t shm_id,
+                                           MappedMemoryManager* manager)
+    : span_(span), shm_id_(shm_id), manager_(manager) {}
+
+ScopedDedicatedChunk::ScopedDedicatedChunk(ScopedDedicatedChunk&& other)
+    : span_(std::exchange(other.span_, base::raw_span<uint8_t>())),
+      shm_id_(std::exchange(other.shm_id_, -1)),
+      manager_(std::exchange(other.manager_, nullptr)) {}
+
+ScopedDedicatedChunk& ScopedDedicatedChunk::operator=(
+    ScopedDedicatedChunk&& other) {
+  if (this != &other) {
+    Reset();
+    std::swap(span_, other.span_);
+    std::swap(shm_id_, other.shm_id_);
+    std::swap(manager_, other.manager_);
+  }
+  return *this;
+}
+
+ScopedDedicatedChunk::~ScopedDedicatedChunk() {
+  Reset();
+}
+
+void ScopedDedicatedChunk::Reset() {
+  if (manager_) {
+    span_ = {};
+    manager_->RemoveDedicatedChunk(shm_id_);
+    shm_id_ = -1;
+    manager_ = nullptr;
+  }
 }
 
 void ScopedMappedMemoryPtr::Release() {

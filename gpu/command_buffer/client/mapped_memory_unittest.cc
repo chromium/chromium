@@ -11,10 +11,12 @@
 #include <list>
 #include <memory>
 
+#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/system/sys_info.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
 #include "gpu/command_buffer/client/command_buffer_direct_locked.h"
@@ -451,6 +453,119 @@ TEST_F(MappedMemoryManagerTest, MaxAllocationTest) {
 
   manager_->Free(span1.data());
   manager_->Free(span4.data());
+}
+
+TEST_F(MappedMemoryManagerTest, AllocDedicatedChunkBasic) {
+  const uint32_t kSize = 16;
+  ScopedDedicatedChunk chunk1 = manager_->AllocDedicatedChunk(kSize);
+  ASSERT_TRUE(chunk1.valid());
+  EXPECT_EQ(kSize, chunk1.span().size());
+  EXPECT_EQ(1u, manager_->num_chunks());
+  EXPECT_GT(manager_->allocated_memory(), 0u);
+  EXPECT_EQ(manager_->allocated_memory(),
+            manager_->dedicated_memory_for_testing());
+
+  // A regular Alloc() must not sub-allocate into the dedicated chunk.
+  int32_t id2 = -1;
+  unsigned int offset2 = 0xFFFFFFFFU;
+  base::span<uint8_t> span2 = manager_->Alloc(kSize, &id2, &offset2);
+  ASSERT_FALSE(span2.empty());
+  EXPECT_NE(chunk1.shm_id(), id2);
+  EXPECT_EQ(2u, manager_->num_chunks());
+
+  manager_->Free(span2.data());
+}
+
+TEST_F(MappedMemoryManagerTest, AllocDedicatedChunkMultiple) {
+  const uint32_t kSize = 16;
+  ScopedDedicatedChunk chunk1 = manager_->AllocDedicatedChunk(kSize);
+  ScopedDedicatedChunk chunk2 = manager_->AllocDedicatedChunk(kSize);
+  ASSERT_TRUE(chunk1.valid());
+  ASSERT_TRUE(chunk2.valid());
+  EXPECT_NE(chunk1.shm_id(), chunk2.shm_id());
+  EXPECT_NE(chunk1.span().data(), chunk2.span().data());
+  EXPECT_EQ(2u, manager_->num_chunks());
+
+  chunk1.Reset();
+  EXPECT_EQ(1u, manager_->num_chunks());
+  chunk2.Reset();
+  EXPECT_EQ(0u, manager_->num_chunks());
+}
+
+TEST_F(MappedMemoryManagerTest, AllocDedicatedChunkRespectsMaxAllocatedBytes) {
+  const uint32_t kSize = 1024;
+  manager_->set_max_allocated_bytes(kSize / 2);
+  ScopedDedicatedChunk chunk = manager_->AllocDedicatedChunk(kSize);
+  EXPECT_FALSE(chunk.valid());
+  EXPECT_EQ(0u, manager_->num_chunks());
+}
+
+TEST_F(MappedMemoryManagerTest, AllocDedicatedChunkRespectsMaxDedicatedBytes) {
+  const uint32_t kSize = 1024;
+  manager_->set_max_dedicated_bytes_for_testing(kSize / 2);
+  ScopedDedicatedChunk chunk = manager_->AllocDedicatedChunk(kSize);
+  EXPECT_FALSE(chunk.valid());
+  EXPECT_EQ(0u, manager_->num_chunks());
+  EXPECT_EQ(0u, manager_->dedicated_memory_for_testing());
+
+  // Regular Alloc() is unaffected by the dedicated-only limit.
+  int32_t pooled_id = -1;
+  unsigned int pooled_offset = 0xFFFFFFFFU;
+  base::span<uint8_t> pooled_span =
+      manager_->Alloc(kSize, &pooled_id, &pooled_offset);
+  EXPECT_FALSE(pooled_span.empty());
+  manager_->Free(pooled_span.data());
+}
+
+TEST_F(MappedMemoryManagerTest, RemoveDedicatedChunk) {
+  const uint32_t kSize = 16;
+  ScopedDedicatedChunk chunk = manager_->AllocDedicatedChunk(kSize);
+  ASSERT_TRUE(chunk.valid());
+  EXPECT_EQ(1u, manager_->num_chunks());
+  EXPECT_GT(manager_->allocated_memory(), 0u);
+  EXPECT_EQ(manager_->allocated_memory(),
+            manager_->dedicated_memory_for_testing());
+
+  chunk.Reset();
+  EXPECT_EQ(0u, manager_->num_chunks());
+  EXPECT_EQ(0u, manager_->allocated_memory());
+  EXPECT_EQ(0u, manager_->dedicated_memory_for_testing());
+}
+
+TEST_F(MappedMemoryManagerTest, RemoveDedicatedChunkDoesNotAffectOtherChunks) {
+  const uint32_t kSize = 16;
+  ScopedDedicatedChunk dedicated_chunk = manager_->AllocDedicatedChunk(kSize);
+  ASSERT_TRUE(dedicated_chunk.valid());
+
+  int32_t pooled_id = -1;
+  unsigned int pooled_offset = 0xFFFFFFFFU;
+  base::span<uint8_t> pooled_span =
+      manager_->Alloc(kSize, &pooled_id, &pooled_offset);
+  ASSERT_FALSE(pooled_span.empty());
+  EXPECT_EQ(2u, manager_->num_chunks());
+
+  dedicated_chunk.Reset();
+  EXPECT_EQ(1u, manager_->num_chunks());
+  EXPECT_EQ(0u, manager_->dedicated_memory_for_testing());
+
+  // The pooled chunk and its allocation are still usable.
+  EXPECT_EQ(FencedAllocator::IN_USE,
+            manager_->GetPointerStatusForTest(pooled_span.data(), nullptr));
+  manager_->Free(pooled_span.data());
+}
+
+TEST_F(MappedMemoryManagerTest, RemoveDedicatedChunkChecksIsDedicated) {
+  const uint32_t kSize = 16;
+  int32_t id = -1;
+  unsigned int offset = 0xFFFFFFFFU;
+  base::span<uint8_t> span = manager_->Alloc(kSize, &id, &offset);
+  ASSERT_FALSE(span.empty());
+  EXPECT_DEATH_IF_SUPPORTED(manager_->RemoveDedicatedChunk(id), "");
+  manager_->Free(span.data());
+}
+
+TEST_F(MappedMemoryManagerTest, RemoveDedicatedChunkChecksShmIdExists) {
+  EXPECT_DEATH_IF_SUPPORTED(manager_->RemoveDedicatedChunk(12345), "");
 }
 
 }  // namespace gpu
