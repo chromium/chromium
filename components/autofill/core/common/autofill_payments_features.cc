@@ -260,13 +260,6 @@ BASE_FEATURE(kAutofillEnableSeparatePixPreferenceItem,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-// When enabled, the Touch To Fill bottom sheet on Android can be reshown after
-// a BNPL flow is dismissed by a user.
-BASE_FEATURE(kAutofillEnableTouchToFillReshowForBnpl,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // When enabled, travel category and merchant benefits sourced from Curinos will
 // be shown in Autofill.
 BASE_FEATURE(kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinos,

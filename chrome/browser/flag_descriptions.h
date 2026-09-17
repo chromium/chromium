@@ -1177,12 +1177,6 @@ inline constexpr char kAutofillEnableSeparatePixPreferenceItemDescription[] =
     "menu "
     "item.";
 
-inline constexpr char kAutofillEnableTouchToFillReshowForBnplName[] =
-    "Enable the Touch To Fill bottom sheet to be reshown on Android for BNPL.";
-inline constexpr char kAutofillEnableTouchToFillReshowForBnplDescription[] =
-    "When enabled, the Touch To Fill bottom sheet on Android can be reshown "
-    "after a BNPL flow is dismissed by a user.";
-
 inline constexpr char
     kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinosName[] =
         "Enable travel category and merchant benefits from Curinos";

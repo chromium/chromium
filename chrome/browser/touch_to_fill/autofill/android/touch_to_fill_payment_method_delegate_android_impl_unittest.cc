@@ -608,7 +608,7 @@ TEST_P(TouchToFillPaymentMethodDelegateAndroidImplPaymentMethodUnitTest,
 }
 
 TEST_P(TouchToFillPaymentMethodDelegateAndroidImplPaymentMethodUnitTest,
-       TryToShowTouchToFillFailsIfShownBeforeAndShouldNotReshow_FlagOff) {
+       TryToShowTouchToFillFailsIfShownBeforeAndShouldNotReshow) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
   ASSERT_TRUE(touch_to_fill_delegate_->IsShowingTouchToFill());
@@ -627,28 +627,7 @@ TEST_P(TouchToFillPaymentMethodDelegateAndroidImplPaymentMethodUnitTest,
 }
 
 TEST_P(TouchToFillPaymentMethodDelegateAndroidImplPaymentMethodUnitTest,
-       TryToShowTouchToFillFailsIfShownBeforeAndShouldReshow_FlagOff) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(
-      features::kAutofillEnableTouchToFillReshowForBnpl);
-  TryToShowTouchToFill(/*expected_success=*/true);
-
-  ASSERT_TRUE(touch_to_fill_delegate_->IsShowingTouchToFill());
-
-  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/true,
-                                       /*should_reshow=*/true);
-
-  TryToShowTouchToFill(/*expected_success=*/false);
-
-  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-}
-
-TEST_P(TouchToFillPaymentMethodDelegateAndroidImplPaymentMethodUnitTest,
-       TryToShowTouchToFillShownIfShownBeforeAndShouldReshow_FlagOn) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(
-      features::kAutofillEnableTouchToFillReshowForBnpl);
-
+       TryToShowTouchToFillShownIfShownBeforeAndShouldReshow) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
   ASSERT_TRUE(touch_to_fill_delegate_->IsShowingTouchToFill());
@@ -659,24 +638,6 @@ TEST_P(TouchToFillPaymentMethodDelegateAndroidImplPaymentMethodUnitTest,
   TryToShowTouchToFill(/*expected_success=*/true);
 
   ASSERT_TRUE(touch_to_fill_delegate_->IsShowingTouchToFill());
-}
-
-TEST_P(TouchToFillPaymentMethodDelegateAndroidImplPaymentMethodUnitTest,
-       TryToShowTouchToFillFailsIfShownBeforeAndShouldNotReshow_FlagOn) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(
-      features::kAutofillEnableTouchToFillReshowForBnpl);
-
-  TryToShowTouchToFill(/*expected_success=*/true);
-
-  ASSERT_TRUE(touch_to_fill_delegate_->IsShowingTouchToFill());
-
-  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/true,
-                                       /*should_reshow=*/false);
-
-  TryToShowTouchToFill(/*expected_success=*/false);
-
-  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 }
 
 TEST_P(TouchToFillPaymentMethodDelegateAndroidImplPaymentMethodUnitTest,

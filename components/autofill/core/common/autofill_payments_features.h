@@ -100,10 +100,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableScanCardOptionWhenNoCardsSaved);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSeparatePixPreferenceItem);
 #endif
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableTouchToFillReshowForBnpl);
-#endif
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(
     kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinos);

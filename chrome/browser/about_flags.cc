@@ -12679,15 +12679,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsAndroid | kOsWin,
      FEATURE_VALUE_TYPE(features::kOverscrollEffectOnNonRootScrollers)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-touch-to-fill-reshow-for-bnpl",
-     flag_descriptions::kAutofillEnableTouchToFillReshowForBnplName,
-     flag_descriptions::kAutofillEnableTouchToFillReshowForBnplDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableTouchToFillReshowForBnpl)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_MAC)
     {"enable-accessibility-text-operation",
      flag_descriptions::kMacAccessibilityTextOperationName,
