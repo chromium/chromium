@@ -10,7 +10,8 @@
   },
   "permissions": [
     "contextualTasksPrivate",
-    "metricsPrivate"
+    "metricsPrivate",
+    "favicon"
   ],
   "host_permissions": [
     "chrome://resources/*"
@@ -34,7 +35,8 @@
       "resources": [
         "chip.html",
         "favicons.html",
-        "lens_button.html"
+        "lens_button.html",
+        "tab_picker.html"
       ],
       // LINT.IfChange(WebAccessibleMatches)
       "matches": [

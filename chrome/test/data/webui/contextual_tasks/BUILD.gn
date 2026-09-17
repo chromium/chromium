@@ -46,6 +46,7 @@ build_webui_tests("build") {
       "extension_post_message_handler_test.ts",
       "info_tooltip_test.ts",
       "lens_button_test.ts",
+      "tab_picker_test.ts",
       "unbounded_menu_test.ts",
     ]
   }
