@@ -19,6 +19,7 @@ readonly APP_DIR="@APP_DIR@"
 readonly APP_PRODUCT="@APP_PRODUCT@"
 readonly BRAND_CODE="@BRAND_CODE@"
 readonly FRAMEWORK_DIR="@FRAMEWORK_DIR@"
+readonly UPDATER_REQUIREMENT="@UPDATER_REQUIREMENT@"
 
 # Uses "defaults read" to obtain the value of a key in a property list.
 #
@@ -31,8 +32,33 @@ infoplist_read() {
 
 echo "Installing GoogleUpdater."
 
-"${INSTALLATION_PATH}/${FRAMEWORK_DIR}/Helpers/GoogleUpdater.app/Contents/MacOS/GoogleUpdater" "--install" "--system"
+# SECURITY: This script runs as root, but "${INSTALLATION_PATH}" (/Applications)
+# is writable by group "admin" on default macOS, so anything under it can be
+# swapped out from under this script between payload extraction and script
+# execution (TOCTOU); https://crbug.com/520429499.
+#
+# To address this, copy the updater bundle into a root-owned temporary directory
+# first, verify its code signature, and only then execute the verified copy.
+# See something similar done in InstallUpdater() and VerifyUpdaterSignature() in
+# //chrome/updater/mac/privileged_helper/service.mm.
 
+readonly UPDATER_APP_NAME="GoogleUpdater.app"
+readonly UPDATER_APP_SRC="${INSTALLATION_PATH}/${FRAMEWORK_DIR}/Helpers/${UPDATER_APP_NAME}"
+
+updater_scratch_dir="$(mktemp -d -t GoogleUpdaterInstall.$$)"
+trap 'rm -rf "${updater_scratch_dir}"' EXIT
+
+cp -c -R "${UPDATER_APP_SRC}" "${updater_scratch_dir}/"
+
+if ! codesign --verify --deep --strict=symlinks \
+    --test-requirement "=${UPDATER_REQUIREMENT}" \
+    "${updater_scratch_dir}/${UPDATER_APP_NAME}"; then
+  echo "${UPDATER_APP_NAME} failed code signature verification." >&2
+  exit 1
+fi
+
+"${updater_scratch_dir}/${UPDATER_APP_NAME}/Contents/MacOS/GoogleUpdater" \
+    "--install" "--system"
 
 # 2. If specified, create the brand file if it does not yet exist.
 

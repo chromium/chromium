@@ -192,6 +192,14 @@ def _create_pkgbuild_scripts(paths, dist_config):
             '@BRAND_CODE@': dist_config.distribution.branding_code or '',
             '@BUNDLE_ID@': dist_config.base_bundle_id,
             '@FRAMEWORK_DIR@': dist_config.framework_dir,
+            # The value of `dist_config.codesign_requirements_basic` is used by
+            # appending it to an existing requirements value, so it must have a
+            # structure that allows it to be used in such a way (i.e. being an
+            # empty string in the default case, or starting with 'and anchor
+            # ...' for internal configs). Prepending a 'true' allows for its
+            # usage here.
+            '@UPDATER_REQUIREMENT@': 'true '
+            + dist_config.codesign_requirements_basic,
         }
         for key, value in substitutions.items():
             script = script.replace(key, value)
