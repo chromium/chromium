@@ -117,6 +117,7 @@
 #include "media/audio/audio_io.h"
 #include "media/audio/system_glitch_reporter.h"
 #include "media/audio/win/audio_manager_win.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
 
@@ -160,6 +161,63 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
   static AUDCLNT_SHAREMODE GetShareMode();
 
   bool started() const { return render_thread_.get() != NULL; }
+
+  // Handles glitch detection, buffer underrun checks, recovery grouping,
+  // and reporting glitch metrics to UMA and text logs.
+  // Public for unit testing.
+  class MEDIA_EXPORT GlitchDetector {
+   public:
+    explicit GlitchDetector(base::TimeDelta buffer_duration);
+    ~GlitchDetector();
+
+    // Resets state between playout streams or test cases.
+    void Reset();
+
+    // Evaluates the render callback state (audio clock position, QPC time, and
+    // buffer padding) to detect glitches and accumulate lost duration across
+    // buffer recovery windows.
+    // Note: `device_position` has undefined units and is meaningful only in
+    // relation to `device_frequency` from IAudioClock::GetFrequency().
+    void ProcessRenderCallback(UINT64 device_position,
+                               UINT64 qpc_position,
+                               UINT64 device_frequency,
+                               UINT32 current_padding_frames,
+                               size_t packet_size_frames,
+                               bool is_shared_mode);
+
+    // Extracts accumulated glitch info to hand to OnMoreData().
+    AudioGlitchInfo GetGlitchInfoAndReset();
+
+    // Returns long-term glitch stats for stream end logging and UMA reporting.
+    SystemGlitchReporter::Stats GetLongTermStatsAndReset();
+
+   private:
+    // Maximum number of consecutive callbacks (~100ms for 10ms packets) to
+    // keep the recovery window active while the client refills the endpoint
+    // buffer and the hardware playout clock resynchronizes to real time.
+    // If playout has not caught up after this limit, the recovery window
+    // times out and commits the accumulated lost duration.
+    static constexpr int kRecoveryWindowCallbacks = 10;
+
+    // Number of callbacks that a recent empty buffer remains valid for.
+    // When buffer padding drops below one packet on callback N, the hardware
+    // playout clock position gap often registers on callback N+1 after the
+    // client writes a refill packet. Keeping this at 2 callbacks bridges this
+    // 1-callback offset across the refill boundary.
+    static constexpr int kRecentEmptyBufferCallbacks = 2;
+
+    const base::TimeDelta glitch_threshold_;
+
+    UINT64 last_device_position_ = 0;
+    UINT64 last_qpc_position_ = 0;
+
+    int recovery_window_countdown_ = 0;
+    int recent_empty_buffer_countdown_ = 0;
+    base::TimeDelta accumulated_glitch_duration_;
+
+    SystemGlitchReporter glitch_reporter_;
+    AudioGlitchInfo::Accumulator glitch_info_accumulator_;
+  };
 
  private:
   void SendLogMessage(std::string message);
@@ -210,9 +268,9 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
   // Our creator, the audio manager needs to be notified when we close.
   const raw_ptr<AudioManagerWin> manager_;
 
-  // Used to aggregate and report glitch metrics to UMA (periodically) and to
-  // text logs (when a stream ends).
-  SystemGlitchReporter glitch_reporter_;
+  // Handles glitch detection, buffer underrun checks, recovery grouping,
+  // and reporting glitch metrics to UMA and text logs.
+  std::unique_ptr<GlitchDetector> glitch_detector_;
 
   std::unique_ptr<AmplitudePeakDetector> peak_detector_;
 
@@ -262,12 +320,6 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
 
   // Counts the number of audio frames written to the endpoint buffer.
   UINT64 num_written_frames_;
-
-  // The position read during the last call to RenderAudioFromSource.
-  UINT64 last_position_ = 0;
-
-  // The performance counter read during the last call to RenderAudioFromSource.
-  UINT64 last_qpc_position_ = 0;
 
   // Pointer to the client that will deliver audio samples to be played out.
   raw_ptr<AudioSourceCallback> source_;

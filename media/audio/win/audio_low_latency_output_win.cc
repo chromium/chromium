@@ -86,6 +86,200 @@ WASAPIAudioOutputStream::GetShareMode() {
   return AUDCLNT_SHAREMODE_SHARED;
 }
 
+// Encapsulates glitch detection, buffer underrun checks, recovery window
+// tracking, and metric reporting for WASAPIAudioOutputStream.
+//
+// Playout Glitch Detection Architecture:
+// 1. Dual Condition Verification:
+//    In shared mode, a glitch is reported only when:
+//    a) The render callback was delayed (hardware clock fell behind real time
+//       by more than half a buffer duration, e.g. > 5ms for 10ms packets), AND
+//    b) The hardware endpoint buffer ran dry (queued padding dropped below
+//       one packet). This avoids false alarms during harmless OS scheduler
+//       jitter (e.g. common Bluetooth 15-7-8ms cadences) when the buffer still
+//       has audio playing.
+//    In exclusive mode, there is no intermediate OS audio engine buffer, so
+//    any timing gap (a) directly triggers a glitch without checking padding.
+// 2. Measuring Full Glitch Duration During Refill (Recovery Window):
+//    Why it is needed:
+//    When a physical stall occurs, the audio buffer empties. Once rendering
+//    resumes, the client refills the buffer across several callbacks while the
+//    hardware playout position catches up. Checking "buffer empty" on each
+//    callback alone cuts off measurement too early: writing just one refill
+//    packet raises padding above zero immediately, which would cause subsequent
+//    refill delays to be ignored and under-report the true lost audio.
+//
+//    Start condition:
+//    Opened when playout falls behind (gap > threshold) accompanied or
+//    immediately preceded by an empty buffer (padding < 1 packet).
+//
+//    Stop condition:
+//    Closed when the playout clock catches back up to real time (gap <= 0),
+//    or when the countdown expires (kRecoveryWindowCallbacks). When closed,
+//    the full cumulative lost duration is reported as a single glitch.
+WASAPIAudioOutputStream::GlitchDetector::GlitchDetector(
+    base::TimeDelta buffer_duration)
+    : glitch_threshold_(buffer_duration / 2),
+      glitch_reporter_(SystemGlitchReporter::StreamType::kRender) {}
+
+WASAPIAudioOutputStream::GlitchDetector::~GlitchDetector() = default;
+
+void WASAPIAudioOutputStream::GlitchDetector::Reset() {
+  last_device_position_ = 0;
+  last_qpc_position_ = 0;
+  recovery_window_countdown_ = 0;
+  recent_empty_buffer_countdown_ = 0;
+  accumulated_glitch_duration_ = base::TimeDelta();
+  glitch_info_accumulator_.GetAndReset();
+}
+
+void WASAPIAudioOutputStream::GlitchDetector::ProcessRenderCallback(
+    UINT64 device_position,
+    UINT64 qpc_position,
+    UINT64 device_frequency,
+    UINT32 current_padding_frames,
+    size_t packet_size_frames,
+    bool is_shared_mode) {
+  if (last_device_position_ == 0) {
+    // First callback: seed baseline positions without checking for glitches.
+    last_device_position_ = device_position;
+    last_qpc_position_ = qpc_position;
+    return;
+  }
+
+  if (device_position < last_device_position_) {
+    // Audio clock position should be monotonic, but buggy drivers can jump
+    // back.
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("audio"),
+                        "position decrease");
+  }
+
+  // Measure how much audio the hardware played out since the last callback.
+  // Guard against position underflow if a driver clock jumped backward.
+  base::TimeDelta position_time_increase =
+      device_position < last_device_position_
+          ? base::TimeDelta()
+          : media::AudioTimestampHelper::FramesToTime(
+                device_position - last_device_position_, device_frequency);
+
+  // Measure how much real wall-clock time passed (QPC in 100ns units).
+  base::TimeDelta qpc_position_time_increase =
+      qpc_position < last_qpc_position_
+          ? base::TimeDelta()
+          : base::Microseconds((qpc_position - last_qpc_position_) / 10);
+
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("audio"), "gap estimation",
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                auto* data = event->set_win_render_audio_from_source();
+                data->set_iaudioclock_stream_position_increase_ms(
+                    position_time_increase.InMilliseconds());
+                data->set_iaudioclock_qpc_position_increase_ms(
+                    qpc_position_time_increase.InMilliseconds());
+              });
+
+  // Timing gap: positive if real time advanced faster than audio played.
+  base::TimeDelta gap_duration =
+      qpc_position_time_increase - position_time_increase;
+
+  const bool playout_fell_behind = gap_duration > glitch_threshold_;
+  base::TimeDelta glitch_duration_to_report;
+
+  if (base::FeatureList::IsEnabled(media::kWasapiImproveGlitchDetection)) {
+    // Heuristic 1 (Empty buffer check):
+    // Each render callback is scheduled one packet duration (e.g. 10ms) apart.
+    // In shared mode, if the unread audio remaining in the endpoint buffer
+    // (`current_padding_frames`) is less than one packet
+    // (`packet_size_frames`), the hardware will exhaust all buffered audio
+    // before the next callback arrives. In exclusive mode, there is no
+    // intermediate OS buffer padding, so any timing gap is treated as a
+    // potential underrun.
+    const bool buffer_is_empty =
+        !is_shared_mode || (current_padding_frames < packet_size_frames);
+
+    if (buffer_is_empty) {
+      // Heuristic 2 (Recent empty buffer carryover):
+      // When the buffer runs empty on callback N, `IAudioClock::GetPosition()`
+      // may not reflect the stall immediately on callback N. Because the client
+      // writes a refill packet during callback N, `current_padding_frames` will
+      // no longer be zero on callback N+1 when the resulting playout position
+      // gap actually registers. Setting a 2-callback countdown ensures that an
+      // empty buffer on callback N is remembered on callback N+1.
+      recent_empty_buffer_countdown_ = kRecentEmptyBufferCallbacks;
+    }
+
+    const bool has_recent_empty_buffer = recent_empty_buffer_countdown_ > 0;
+    const bool in_recovery_window = recovery_window_countdown_ > 0;
+
+    if (!in_recovery_window) {
+      if (playout_fell_behind && has_recent_empty_buffer) {
+        // Delayed callback accompanied or immediately preceded by an empty
+        // buffer: an underrun has occurred.
+        // Open recovery window to track the buffer refill phase and
+        // accumulate any additional lost audio until playout resynchronizes.
+        recovery_window_countdown_ = kRecoveryWindowCallbacks;
+        recent_empty_buffer_countdown_ = 0;
+        accumulated_glitch_duration_ = gap_duration;
+        TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("audio"), "glitch");
+      } else if (recent_empty_buffer_countdown_ > 0) {
+        recent_empty_buffer_countdown_--;
+      }
+    } else {
+      // Recovery phase: the client is refilling the buffer, but the hardware
+      // playout clock may still be lagging behind real time.
+      recovery_window_countdown_--;
+
+      if (gap_duration > base::TimeDelta()) {
+        accumulated_glitch_duration_ += gap_duration;
+      }
+
+      if (recovery_window_countdown_ <= 0 ||
+          gap_duration <= base::TimeDelta()) {
+        // Playout has recovered (or the recovery window timed out).
+        // Commit the single unified glitch with the full accumulated lost
+        // duration.
+        recovery_window_countdown_ = 0;
+        glitch_duration_to_report = accumulated_glitch_duration_;
+        accumulated_glitch_duration_ = base::TimeDelta();
+      }
+    }
+  } else if (playout_fell_behind) {
+    // Legacy behavior: trigger on timing gap alone regardless of buffer state.
+    glitch_duration_to_report = gap_duration;
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("audio"), "glitch");
+  }
+
+  glitch_reporter_.UpdateStats(glitch_duration_to_report);
+  if (glitch_duration_to_report.is_positive()) {
+    glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedSystemGlitch(
+        glitch_duration_to_report, AudioGlitchInfo::Direction::kRender));
+  }
+
+  last_device_position_ = device_position;
+  last_qpc_position_ = qpc_position;
+}
+
+AudioGlitchInfo
+WASAPIAudioOutputStream::GlitchDetector::GetGlitchInfoAndReset() {
+  return glitch_info_accumulator_.GetAndReset();
+}
+
+SystemGlitchReporter::Stats
+WASAPIAudioOutputStream::GlitchDetector::GetLongTermStatsAndReset() {
+  // If a stream ends while still in a recovery window, flush whatever was
+  // accumulated to UMA before returning stats:
+  if (recovery_window_countdown_ > 0 &&
+      accumulated_glitch_duration_ > base::TimeDelta()) {
+    recovery_window_countdown_ = 0;
+    glitch_reporter_.UpdateStats(accumulated_glitch_duration_);
+    glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedSystemGlitch(
+        accumulated_glitch_duration_, AudioGlitchInfo::Direction::kRender));
+    accumulated_glitch_duration_ = base::TimeDelta();
+  }
+  return glitch_reporter_.GetLongTermStatsAndReset();
+}
+
 WASAPIAudioOutputStream::WASAPIAudioOutputStream(
     AudioManagerWin* manager,
     const std::string& device_id,
@@ -95,7 +289,8 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
     : id_(base::UnguessableToken::Create()),
       creating_thread_id_(base::PlatformThread::CurrentId()),
       manager_(manager),
-      glitch_reporter_(SystemGlitchReporter::StreamType::kRender),
+      glitch_detector_(
+          std::make_unique<GlitchDetector>(params.GetBufferDuration())),
       format_(),
       params_(params),
       opened_(false),
@@ -442,8 +637,7 @@ void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
 
   source_ = callback;
   num_written_frames_ = endpoint_buffer_size_frames_;
-  last_position_ = 0;
-  last_qpc_position_ = 0;
+  glitch_detector_->Reset();
 
   // Recreate `peak_detector_` every time we create a new `render_thread_`, to
   // avoid ThreadChecker DCHECKs.
@@ -604,7 +798,12 @@ void WASAPIAudioOutputStream::Run() {
   UINT64 device_frequency = 0;
 
   // The device frequency is the frequency generated by the hardware clock in
-  // the audio device. The GetFrequency() method reports a constant frequency.
+  // the audio device. Per Microsoft documentation for
+  // IAudioClock::GetFrequency: "The GetFrequency method ignores such variations
+  // [drift/jitter relative to QPC] and simply reports a constant frequency.
+  // However, the position reported by the IAudioClock::GetPosition method takes
+  // all such variations into account". Hence, querying this once prior to the
+  // render loop is both sufficient and correct.
   hr = audio_clock_->GetFrequency(&device_frequency);
   error = FAILED(hr);
   if (error) {
@@ -670,9 +869,6 @@ HRESULT WASAPIAudioOutputStream::RenderAudioFromSource(
         data->set_iaudioclient_buffer_size_frames(endpoint_buffer_size_frames_);
       });
 
-  const base::TimeDelta buffer_duration =
-      media::AudioTimestampHelper::FramesToTime(packet_size_frames_,
-                                                format_.Format.nSamplesPerSec);
   UINT32 num_queued_frames = 0;
   uint8_t* audio_data = nullptr;
 
@@ -761,8 +957,6 @@ HRESULT WASAPIAudioOutputStream::RenderAudioFromSource(
       return hr;
     }
 
-    // Stores glitch info to be passed on to OnMoreData().
-    AudioGlitchInfo::Accumulator glitch_info_accumulator;
     base::TimeDelta delay;
     base::TimeTicks delay_timestamp;
     UINT64 position = 0;
@@ -781,90 +975,14 @@ HRESULT WASAPIAudioOutputStream::RenderAudioFromSource(
             data->set_iaudioclock_qpc_position(qpc_position);
             data->set_num_written_frames(num_written_frames_);
           });
-      // Check for glitches. Records a glitch whenever the stream's position has
-      // moved forward significantly less than the performance counter has. The
-      // threshold is set to half the buffer size, to limit false positives.
-      // When a stream begins running, its device position might remain 0
-      // until the audio data has propagated from the endpoint buffer to the
-      // rendering device. The device position changes to a nonzero value when
-      // the data begins playing through the device.
-      if (last_position_ != 0) {
-        CHECK(last_qpc_position_);
 
-        // The device position is the offset from the start of the stream to the
-        // current position in the stream. The units in which this offset is
-        // expressed are undefined, the value has meaning only in relation to
-        // the frequency reported by the IAudioClock::GetFrequency() method,
-        // passed  as |device_frequency| here. It's expected to monotonically
-        // non-decrease. It won't advance if we make the render client starve by
-        // not providing frames to render. Note: WASAPIAudioOutputStream::Run()
-        // assumes that the frequency is constant throughout the stream
-        // lifetime. CoreAudio documentation is not exactly clear on that: it
-        // only says that the device frequency reported by successive calls to
-        // GetFrequency never changes during the lifetime of a stream "in
-        // Windows Vista".
-        if (position < last_position_) {
-          // http://crbug.com/1473580: according to MS documentation |position|
-          // is monotonic, but in practice it's not always so.
-          TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("audio"),
-                              "position decrease");
-        }
-        // If |position_time_increase| is negative, it means we are likely to
-        // have a larger |gap_duration| and to register a glitch. In reality,
-        // it's unclear if there's a glitch in such "it should never happen"
-        // case or not.
-        base::TimeDelta position_time_increase =
-            media::AudioTimestampHelper::FramesToTime(position - last_position_,
-                                                      device_frequency);
-
-        // The QPC values are in 100 ns units, according to
-        // IAudioClock::GetPosition() documentation. Presumably monotonically
-        // increasing, but there are known cases when it can jump backward due
-        // to driver bugs, etc.
-        base::TimeDelta qpc_position_time_increase =
-            qpc_position < last_qpc_position_
-                ? base::TimeDelta()
-                : base::Microseconds((qpc_position - last_qpc_position_) / 10);
-
-        TRACE_EVENT(
-            TRACE_DISABLED_BY_DEFAULT("audio"), "gap estimation",
-            [&](perfetto::EventContext ctx) {
-              auto* event =
-                  ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-              auto* data = event->set_win_render_audio_from_source();
-              data->set_iaudioclock_stream_position_increase_ms(
-                  position_time_increase.InMilliseconds());
-              data->set_iaudioclock_qpc_position_increase_ms(
-                  qpc_position_time_increase.InMilliseconds());
-            });
-        // We probably should not trust qpc_position being reported in 100 ns
-        // intervals in some cases, in a remote desktop situation, for example.
-        // Let's see how qpc-based time compares to base::TimeTicks. Even if we
-        // are using a low resolution timers (~15 ms precision), the difference
-        // between the two should be well under 40 ms. But let's be
-        // concervative.
-        // |gap_duration| can be positive or negative. Negative means a bigger
-        // chunk of the buffer was consumed. Too big (how big?) positive means
-        // no audio was played for a while, which potentially resulted in a
-        // glitch.
-        base::TimeDelta gap_duration =
-            qpc_position_time_increase - position_time_increase;
-
-        // TODO(crbug.com/40257462): Investigate precisely what gap duration
-        // should be counted as a glitch.
-        bool is_glitch = gap_duration > buffer_duration / 2;
-        glitch_reporter_.UpdateStats(is_glitch ? gap_duration
-                                               : base::TimeDelta());
-        if (is_glitch) {
-          TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("audio"), "glitch");
-          glitch_info_accumulator.Add(
-              AudioGlitchInfo::SingleBoundedSystemGlitch(
-                  gap_duration, AudioGlitchInfo::Direction::kRender));
-        }
-      }
-
-      last_position_ = position;
-      last_qpc_position_ = qpc_position;
+      // Delegate glitch detection, buffer underrun checks, and recovery
+      // event grouping to GlitchDetector. Note that `num_queued_frames` is
+      // always 0 in exclusive mode (`share_mode_ != AUDCLNT_SHAREMODE_SHARED`),
+      // where buffer padding is not used.
+      glitch_detector_->ProcessRenderCallback(
+          position, qpc_position, device_frequency, num_queued_frames,
+          packet_size_frames_, share_mode_ == AUDCLNT_SHAREMODE_SHARED);
 
       // Number of frames already played out through the speaker (estimation).
       const uint64_t played_out_frames =
@@ -924,7 +1042,7 @@ HRESULT WASAPIAudioOutputStream::RenderAudioFromSource(
       audio_bus_->set_is_bitstream_format(true);
       int frames_filled = source_->OnMoreData(
           BoundedDelay(delay), delay_timestamp,
-          glitch_info_accumulator.GetAndReset(), audio_bus.get());
+          glitch_detector_->GetGlitchInfoAndReset(), audio_bus.get());
 
       // During pause/seek, keep the pipeline filled with zero'ed frames.
       if (!frames_filled) {
@@ -947,7 +1065,7 @@ HRESULT WASAPIAudioOutputStream::RenderAudioFromSource(
         // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     int frames_filled = source_->OnMoreData(
         BoundedDelay(delay), delay_timestamp,
-        glitch_info_accumulator.GetAndReset(), audio_bus_.get());
+        glitch_detector_->GetGlitchInfoAndReset(), audio_bus_.get());
     uint32_t num_filled_bytes = frames_filled * format_.Format.nBlockAlign;
     CHECK_LE(num_filled_bytes, packet_size_bytes_);
     audio_bus_->Scale(volume_);
@@ -1081,7 +1199,7 @@ void WASAPIAudioOutputStream::StopThread() {
 
 void WASAPIAudioOutputStream::ReportAndResetStats() {
   SystemGlitchReporter::Stats stats =
-      glitch_reporter_.GetLongTermStatsAndReset();
+      glitch_detector_->GetLongTermStatsAndReset();
   SendLogMessage(base::StringPrintf(
       "%s => (num_glitches_detected=[%d], cumulative_audio_lost=[%llu ms], "
       "largest_glitch=[%llu ms])",
