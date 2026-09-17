@@ -229,9 +229,10 @@ PersonalCollaborationDataSyncBridge::GetDataForCommit(
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& storage_key : storage_keys) {
-    if (specifics_.contains(storage_key)) {
-      batch->Put(storage_key, CreateEntityDataFromSpecifics(
-                                  storage_key, specifics_[storage_key]));
+    auto it = specifics_.find(storage_key);
+    if (it != specifics_.end()) {
+      batch->Put(storage_key,
+                 CreateEntityDataFromSpecifics(storage_key, it->second));
     }
   }
   return batch;
@@ -325,13 +326,14 @@ syncer::ConflictResolution PersonalCollaborationDataSyncBridge::ResolveConflict(
     const syncer::EntityData& remote_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto it = specifics_.find(storage_key);
   // If we are not tracking this storage_key, accept the remote change.
-  if (!specifics_.contains(storage_key)) {
+  if (it == specifics_.end()) {
     return syncer::ConflictResolution::kUseRemote;
   }
 
   const sync_pb::SharedTabGroupAccountDataSpecifics local_specifics =
-      specifics_.at(storage_key);
+      it->second;
   const sync_pb::SharedTabGroupAccountDataSpecifics remote_specifics =
       remote_data.specifics.shared_tab_group_account_data();
 
@@ -370,9 +372,9 @@ bool PersonalCollaborationDataSyncBridge::IsInitialized() const {
 std::optional<sync_pb::SharedTabGroupAccountDataSpecifics>
 PersonalCollaborationDataSyncBridge::GetSpecificsForStorageKey(
     const std::string& storage_key) const {
-  return specifics_.contains(storage_key)
-             ? std::make_optional<>(specifics_.at(storage_key))
-             : std::nullopt;
+  auto it = specifics_.find(storage_key);
+  return it != specifics_.end() ? std::make_optional<>(it->second)
+                                : std::nullopt;
 }
 
 std::optional<sync_pb::SharedTabGroupAccountDataSpecifics>
