@@ -311,8 +311,7 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
   bool allowed = IsMatchTypeAllowed(match_type);
   LOG_OTT(one_time_token_service_->log_sink())
       << "GmailOtpRetriever cached token match checked: allowed=" << allowed
-      << ", match_type=" << static_cast<int>(match_type)
-      << ", is_login_flow=" << is_login_flow_;
+      << ", match_type=" << match_type << ", is_login_flow=" << is_login_flow_;
   if (allowed) {
     RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/true);
     const OneTimeToken& matched_token = cached_tokens.at(index);
@@ -390,8 +389,7 @@ void GmailOtpRetriever::OnReceivedTokenMatchChecked(
   bool allowed = IsMatchTypeAllowed(match_type);
   LOG_OTT(one_time_token_service_->log_sink())
       << "GmailOtpRetriever received token match checked: allowed=" << allowed
-      << ", match_type=" << static_cast<int>(match_type)
-      << ", is_login_flow=" << is_login_flow_;
+      << ", match_type=" << match_type << ", is_login_flow=" << is_login_flow_;
   if (allowed) {
     RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/false);
     if (!best_candidate_.has_value() ||
@@ -464,6 +462,29 @@ void GmailOtpRetriever::OnOpaqueOriginDetected() {
       << "GmailOtpRetriever failed: Opaque frame origin.";
   std::move(retrieve_otp_callback_)
       .Run(base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown));
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         GmailOtpSenderDomainMatchType match_type) {
+  switch (match_type) {
+    case GmailOtpSenderDomainMatchType::kUnknown:
+      return os << "kUnknown";
+    case GmailOtpSenderDomainMatchType::kNoMatch:
+      return os << "kNoMatch";
+    case GmailOtpSenderDomainMatchType::kGrouped:
+      return os << "kGrouped";
+    case GmailOtpSenderDomainMatchType::kPsl:
+      return os << "kPsl";
+    case GmailOtpSenderDomainMatchType::kGroupedAndPsl:
+      return os << "kGroupedAndPsl";
+    case GmailOtpSenderDomainMatchType::kExact:
+      return os << "kExact";
+    case GmailOtpSenderDomainMatchType::kAffiliated:
+      return os << "kAffiliated";
+    case GmailOtpSenderDomainMatchType::kFrameIsWwwPsl:
+      return os << "kFrameIsWwwPsl";
+  }
+  return os << static_cast<int>(match_type);
 }
 
 std::ostream& operator<<(std::ostream& os, GmailOtpRetriever::Source source) {

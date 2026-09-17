@@ -46,6 +46,9 @@ enum class GmailOtpSenderDomainMatchType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:GmailOtpSenderDomainMatchType)
 
+std::ostream& operator<<(std::ostream& os,
+                         GmailOtpSenderDomainMatchType match_type);
+
 class OneTimeTokenService;
 enum class OneTimeTokenSource;
 
