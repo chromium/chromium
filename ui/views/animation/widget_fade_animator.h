@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -153,6 +154,8 @@ class VIEWS_EXPORT WidgetFadeAnimator : public AnimationDelegateViews,
 
   base::RepeatingCallbackList<FadeCompleteCallbackSignature>
       fade_complete_callbacks_;
+
+  base::WeakPtrFactory<WidgetFadeAnimator> weak_factory_{this};
 };
 
 }  // namespace views
