@@ -1057,11 +1057,12 @@ const FeatureEntry::FeatureParam kOmniboxDynamicAimSubmitRhsHint[] = {
 const FeatureEntry::FeatureVariation kOmniboxDynamicSubmitVariations[] = {
     {"- \"Input has hint", kOmniboxDynamicAimSubmitRhsHint, nullptr}};
 
-
 const FeatureEntry::Choice kOmniboxLoomChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
      "OmniboxEverywhere,IPH_OmniboxEverywhereLensPromo"},
+    {"Enabled without Multiline", switches::kEnableFeatures,
+     "OmniboxEverywhere:Multiline/false,IPH_OmniboxEverywhereLensPromo"},
     {"Enabled with Profile Picker", switches::kEnableFeatures,
      "OmniboxEverywhere:ProfilePicker/true,IPH_OmniboxEverywhereLensPromo"},
     {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,

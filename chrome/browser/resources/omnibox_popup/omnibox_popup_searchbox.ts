@@ -430,11 +430,6 @@ export class OmniboxPopupSearchboxElement extends
         null;
   }
 
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    this.initialInputScrollHeight = this.$.input.inputElement.scrollHeight;
-  }
-
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
@@ -544,21 +539,6 @@ export class OmniboxPopupSearchboxElement extends
   revert() {
     this.clearAutocompleteMatches();
     this.popupPageHandler_.revert(this.currentSequenceNum_);
-  }
-
-  // TODO(crbug.com/528331161): Unify this with the NTP searchbox logic and move
-  // it to SearchboxMixin.
-  override updateDropdownVisibility() {
-    super.updateDropdownVisibility();
-
-    if (this.multiLineEnabled && this.dropdownIsVisible) {
-      const shouldSuppressDropdown = this.initialInputScrollHeight > 0 &&
-          this.$.input.inputElement.scrollHeight >
-              this.initialInputScrollHeight;
-      if (shouldSuppressDropdown) {
-        this.dropdownIsVisible = false;
-      }
-    }
   }
 
   /**

@@ -386,6 +386,13 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
     updateDropdownVisibility(): void {
       this.dropdownIsVisible = this.hasMatches();
+
+      if (this.multiLineEnabled && this.dropdownIsVisible) {
+        const isUserTyping = (this.result?.input.length ?? 0) > 0;
+        if (isUserTyping && this.getInputElement()?.isMultiline()) {
+          this.dropdownIsVisible = false;
+        }
+      }
     }
 
     async onAutocompleteResultChanged(result: AutocompleteResult) {
@@ -771,6 +778,9 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       // visible.
       if (!this.dropdownIsVisible) {
         if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+          if (this.multiLineEnabled && this.getInputElement()?.isMultiline()) {
+            return;
+          }
           const inputValue = this.getInputElement().inputElement.value;
           if (inputValue.trim() || !inputValue) {
             this.queryAutocomplete(

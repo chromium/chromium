@@ -49,6 +49,7 @@ class TestSearchboxMixinElement extends TestElementBase {
           @keydown="${this.onInputWrapperKeydown}">
         <cr-searchbox-input id="input"
             searchbox-icon="search.svg"
+            ?multi-line-enabled="${this.multiLineEnabled}"
             .result="${this.result}"
             .selectedMatch="${this.selectedMatch}"
             .inputKeywordModel="${this.inputKeywordModel}"
@@ -2960,6 +2961,80 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         await microtasksFinished();
 
         assertFalse(shiftEnterEvent.defaultPrevented);
+      });
+
+  test(
+      'updateDropdownVisibility suppresses dropdown when multiLineEnabled ' +
+          'and input is multiline',
+      async () => {
+        element.multiLineEnabled = true;
+        const inputElement = element.getInputElement();
+        inputElement.multiLineEnabled = true;
+        await microtasksFinished();
+
+        element.result = createAutocompleteResultForTesting({
+          input: 'hello world',
+          matches: [createSearchMatchForTesting()],
+        });
+        element.dropdownIsVisible = true;
+
+        Object.defineProperty(inputElement.$.input, 'scrollHeight', {
+          value: 64,
+          configurable: true,
+        });
+
+        element.updateDropdownVisibility();
+        assertFalse(element.dropdownIsVisible);
+      });
+
+  test(
+      'updateDropdownVisibility suppresses dropdown when multiline input ' +
+          'contains only newlines or whitespace',
+      async () => {
+        element.multiLineEnabled = true;
+        const inputElement = element.getInputElement();
+        inputElement.multiLineEnabled = true;
+        await microtasksFinished();
+
+        element.result = createAutocompleteResultForTesting({
+          input: '\n\n',
+          matches: [createSearchMatchForTesting()],
+        });
+        element.dropdownIsVisible = true;
+
+        Object.defineProperty(inputElement.$.input, 'scrollHeight', {
+          value: 64,
+          configurable: true,
+        });
+
+        element.updateDropdownVisibility();
+        assertFalse(element.dropdownIsVisible);
+      });
+
+  test(
+      'ArrowUp and ArrowDown do not prevent default when multiLineEnabled ' +
+          'and isMultiline',
+      async () => {
+        element.multiLineEnabled = true;
+        const inputElement = element.getInputElement();
+        inputElement.multiLineEnabled = true;
+        await microtasksFinished();
+        element.dropdownIsVisible = false;
+
+        Object.defineProperty(inputElement.$.input, 'scrollHeight', {
+          value: 64,
+          configurable: true,
+        });
+
+        const upEvent = createKeyboardEvent('ArrowUp');
+        inputElement.inputElement.dispatchEvent(upEvent);
+        await microtasksFinished();
+        assertFalse(upEvent.defaultPrevented);
+
+        const downEvent = createKeyboardEvent('ArrowDown');
+        inputElement.inputElement.dispatchEvent(downEvent);
+        await microtasksFinished();
+        assertFalse(downEvent.defaultPrevented);
       });
 
   test(

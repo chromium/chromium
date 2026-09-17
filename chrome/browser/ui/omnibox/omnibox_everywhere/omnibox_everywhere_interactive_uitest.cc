@@ -633,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereEphemeralBrowserTest,
       "omnibox-everywhere-app",
       "omnibox-everywhere-omnibox",
       "cr-searchbox-input",
-      "input",
+      "#input",
   };
 
   RunTestSequence(

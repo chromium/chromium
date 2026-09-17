@@ -97,6 +97,9 @@ BASE_FEATURE(kWebUIOmniboxFullPopup, DISABLED);
 BASE_FEATURE(kWebUIOmniboxFullPopupDoubleClick, ENABLED);
 // If enabled, enables OmniboxEverywhere popup triggered by shortcut.
 BASE_FEATURE(kOmniboxEverywhere, DISABLED);
+// Controls multiline searchbox support in OmniboxEverywhere.
+const base::FeatureParam<bool> kOmniboxEverywhereMultilineParam{
+    &kOmniboxEverywhere, "Multiline", true};
 // Controls showing the profile picker menu on profile avatar click in
 // OmniboxEverywhere.
 const base::FeatureParam<bool> kOmniboxEverywhereProfilePickerParam{

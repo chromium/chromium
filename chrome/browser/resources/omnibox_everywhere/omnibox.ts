@@ -82,6 +82,10 @@ export class OmniboxEverywhereOmniboxElement extends
 
   static override get properties() {
     return {
+      multiLineEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
       virtualFocusEnabled: {
         type: Boolean,
       },
@@ -148,6 +152,8 @@ export class OmniboxEverywhereOmniboxElement extends
   }
 
   accessor isActive: boolean = true;
+  override accessor multiLineEnabled: boolean =
+      loadTimeData.getBoolean('searchboxMultiline');
   override accessor virtualFocusEnabled: boolean =
       loadTimeData.valueExists('omniboxEverywhereVirtualFocusNavigation') &&
       loadTimeData.getBoolean('omniboxEverywhereVirtualFocusNavigation');
@@ -252,7 +258,6 @@ export class OmniboxEverywhereOmniboxElement extends
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
-    this.initialInputScrollHeight = this.$.input.scrollHeight;
     const lensButton =
         this.shadowRoot?.querySelector<HTMLElement>('#lensSearchButton');
     if (lensButton) {
