@@ -662,6 +662,8 @@ void NativeWidgetMacNSWindowHost::CreateCompositor(
 
   // Create the layer.
   SetLayer(ui::Layer::Create(params.layer_type));
+  layer()->SetName(params.name.empty() ? "NativeWidgetMacNSWindowHost"
+                                       : params.name);
   layer()->set_delegate(this);
   layer()->SetFillsBoundsOpaquely(!translucent);
 

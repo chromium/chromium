@@ -225,6 +225,7 @@ class PaintedLayer : public ui::LayerOwner, public ui::LayerDelegate {
 PaintedLayer::PaintedLayer(std::unique_ptr<Painter> painter)
     : painter_(std::move(painter)) {
   SetLayer(std::make_unique<ui::LayerTextured>());
+  layer()->SetName("PaintedLayer");
   layer()->set_delegate(this);
 }
 
