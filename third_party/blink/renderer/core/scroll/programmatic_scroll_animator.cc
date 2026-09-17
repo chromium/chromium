@@ -22,17 +22,26 @@ ProgrammaticScrollAnimator::ProgrammaticScrollAnimator(
 ProgrammaticScrollAnimator::~ProgrammaticScrollAnimator() = default;
 
 void ProgrammaticScrollAnimator::Dispose() {
-  if (on_finish_) {
-    std::move(on_finish_).Run(ScrollableArea::ScrollCompletionMode::kFinished);
-  }
+  // Drop the callback without running it; running it here in a pre-finalizer
+  // would be invalid because its completion handling attempts to allocate and
+  // enqueue a `scrollend` event during garbage collection. Resetting the
+  // callback releases any bound `ScrollPromiseResolver::ActiveScrollTracker`,
+  // which schedules the promise resolution from a posted task instead of from
+  // within garbage collection.
+  //
+  // TODO(crbug.com/562898435): Because we drop the on finish callback here, we
+  // don't dispatch scrollend. Follow up on fixing this the right way.
+  on_finish_.Reset();
 }
 
 void ProgrammaticScrollAnimator::ResetAnimationState() {
   ScrollAnimatorCompositorCoordinator::ResetAnimationState();
   animation_curve_.reset();
   start_time_ = base::TimeTicks();
-  if (on_finish_)
-    std::move(on_finish_).Run(ScrollableArea::ScrollCompletionMode::kFinished);
+  if (on_finish_) {
+    std::move(on_finish_)
+        .Run(ScrollableArea::ScrollCompletionMode::kInterruptedByScroll);
+  }
 }
 
 mojom::blink::ScrollType ProgrammaticScrollAnimator::GetScrollType() const {
@@ -92,11 +101,11 @@ void ProgrammaticScrollAnimator::AnimateToOffset(
 
 void ProgrammaticScrollAnimator::CancelAnimation() {
   DCHECK_NE(run_state_, RunState::kRunningOnCompositorButNeedsUpdate);
-  ScrollAnimatorCompositorCoordinator::CancelAnimation();
   if (on_finish_) {
     std::move(on_finish_)
         .Run(ScrollableArea::ScrollCompletionMode::kInterruptedByScroll);
   }
+  ScrollAnimatorCompositorCoordinator::CancelAnimation();
 }
 
 void ProgrammaticScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {

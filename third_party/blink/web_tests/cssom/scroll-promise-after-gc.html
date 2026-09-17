@@ -17,6 +17,9 @@
 <div id="scroller">
   <div class="filler"></div>
 </div>
+<div id="overflow_scroller" style="overflow:scroll;height:100px">
+  <div class="filler"></div>
+</div>
 <iframe id = "iframe1" srcdoc='
   <!DOCTYPE html>
   <style>
@@ -47,13 +50,13 @@
 
   const scroller = document.getElementById("scroller");
 
-  async function confirmPromiseSettles(scroll_promise) {
-    async function waitForFrames(num) {
-      while (num--) {
-        await new Promise(requestAnimationFrame);
-      }
+  async function waitForFrames(num) {
+    while (num--) {
+      await new Promise(requestAnimationFrame);
     }
+  }
 
+  async function confirmPromiseSettles(scroll_promise) {
     // The worst case wait time below is added only to avoid test harness
     // timeout error which would make it hard to spot the failure point.
     let val = await Promise.race([scroll_promise, waitForFrames(10)]);
@@ -61,6 +64,7 @@
     if (val === undefined) {
       assert_unreached("unresolved scroll_promise");
     }
+    return val;
   }
 
   promise_test(async () => {
@@ -75,30 +79,75 @@
     assert_true(scroller.scrollTop < offset,
           "Smooth scroll continues after gc");
 
-    await promise;
+    let result = await promise;
     assert_equals(scroller.scrollTop, offset,
           "Smooth scroll ends through await");
+    assert_false(result.interrupted, "Smooth scroll should not be interrupted");
   }, "Scroll promise handling after garbage collection");
 
   promise_test(async () => {
     scroller.scrollTop = 0;
+    await waitForFrames(2);
+
+    let scrollend_fired = false;
+    scroller.addEventListener("scrollend", () => {
+      scrollend_fired = true;
+    }, { once: true });
 
     let scroll_promise = scroller.scrollBy({ top: 1000, behavior: "smooth" });
     scroller.remove();
     window.gc();
 
-    await confirmPromiseSettles(scroll_promise);
+    let result = await confirmPromiseSettles(scroll_promise);
+    assert_true(result.interrupted, "Scroll should be interrupted");
+    await waitForFrames(2);
+    assert_false(
+        scrollend_fired,
+        "scrollend should not be fired because the event target node was no " +
+            "longer attached");
   }, "Scroll promise handling after scroller removal and garbage collection");
+
+  promise_test(async () => {
+    const overflow_scroller = document.getElementById("overflow_scroller");
+    overflow_scroller.scrollTop = 0;
+
+    let scrollend_fired = false;
+    overflow_scroller.addEventListener("scrollend", () => {
+      scrollend_fired = true;
+    }, { once: true });
+
+    let scroll_promise =
+          overflow_scroller.scrollBy({ top: 1000, behavior: "smooth" });
+    overflow_scroller.style.overflow = "visible";
+    overflow_scroller.offsetHeight;
+    window.gc();
+
+    let result = await confirmPromiseSettles(scroll_promise);
+    assert_true(result.interrupted, "Scroll should be interrupted");
+    await waitForFrames(2);
+    assert_true(scrollend_fired, "scrollend should be fired");
+  }, "Scroll promise handling after overflow change and garbage collection");
 
   promise_test(async () => {
     const iframe = document.getElementById("iframe1");
     const scroller1 = iframe.contentDocument.getElementById("scroller");
 
+    let scrollend_fired = false;
+    scroller1.addEventListener("scrollend", () => {
+      scrollend_fired = true;
+    }, { once: true });
+
     let scroll_promise = scroller1.scrollBy({ top: 1000, behavior: "smooth" });
     iframe.remove();
     window.gc();
 
-    await confirmPromiseSettles(scroll_promise);
+    let result = await confirmPromiseSettles(scroll_promise);
+    assert_true(result.interrupted, "Scroll should be interrupted");
+    await waitForFrames(2);
+    assert_false(
+        scrollend_fired,
+        "scrollend should not be fired because the event target node was no " +
+            "longer attached");
   }, "Scroll promise handling after iframe removed and garbage collected");
 
   // The following test is similar to the above except that the scroller is
@@ -109,11 +158,22 @@
     const iframe = document.getElementById("iframe2");
     iframe.contentDocument.body.appendChild(scroller);
 
+    let scrollend_fired = false;
+    scroller.addEventListener("scrollend", () => {
+      scrollend_fired = true;
+    }, { once: true });
+
     let scroll_promise = scroller.scrollBy({ top: 1000, behavior: "smooth" });
     iframe.remove();
     window.gc();
 
-    await confirmPromiseSettles(scroll_promise);
+    let result = await confirmPromiseSettles(scroll_promise);
+    assert_true(result.interrupted, "Scroll should be interrupted");
+    await waitForFrames(2);
+    assert_false(
+        scrollend_fired,
+        "scrollend should not be fired because the event target node was no " +
+            "longer attached");
   }, "Scroll promise handling after iframe with appended child removed and " +
         "garbage collected");
 </script>

@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] Scroll promise handling after overflow change and garbage collection
+  assert_true: scrollend should be fired expected true got false
 [FAIL] Scroll promise handling after iframe removed and garbage collected
   assert_unreached: unresolved scroll_promise Reached unreachable code
 Harness: the test ran to completion.

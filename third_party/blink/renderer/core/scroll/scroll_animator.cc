@@ -59,11 +59,7 @@ ScrollAnimator::ScrollAnimator(ScrollableArea* scrollable_area,
       tick_clock_(tick_clock),
       last_granularity_(ui::ScrollGranularity::kScrollByPixel) {}
 
-ScrollAnimator::~ScrollAnimator() {
-  if (on_finish_) {
-    std::move(on_finish_).Run(ScrollableArea::ScrollCompletionMode::kFinished);
-  }
-}
+ScrollAnimator::~ScrollAnimator() = default;
 
 ScrollOffset ScrollAnimator::DesiredTargetOffset() const {
   if (run_state_ == RunState::kWaitingToCancelOnCompositor)
