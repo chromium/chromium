@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/model_execution/test/substitution_builder.h"
+#include "components/optimization_guide/core/model_execution/configs/substitution_builder.h"
 
 #include "components/optimization_guide/proto/substitution.pb.h"
 

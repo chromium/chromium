@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("configs") {
+  sources = [
+    "manifest_builder.cc",
+    "manifest_builder.h",
+    "substitution_builder.cc",
+    "substitution_builder.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/optimization_guide/core:manifest_broker",
+    "//components/optimization_guide/core:model_execution",
+    "//components/optimization_guide/core:ondevice",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/optimization_guide/public/mojom",
+  ]
+}

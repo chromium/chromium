@@ -4,7 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/example_manifest.h"
 
-#include "components/optimization_guide/core/model_execution/manifest_broker/test/manifest_builder.h"
+#include "components/optimization_guide/core/model_execution/configs/manifest_builder.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 
 namespace optimization_guide {

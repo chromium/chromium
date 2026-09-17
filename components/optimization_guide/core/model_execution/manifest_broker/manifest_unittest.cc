@@ -4,7 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 
-#include "components/optimization_guide/core/model_execution/manifest_broker/test/manifest_builder.h"
+#include "components/optimization_guide/core/model_execution/configs/manifest_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

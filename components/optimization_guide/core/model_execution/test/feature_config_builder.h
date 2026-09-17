@@ -8,8 +8,9 @@
 #include <initializer_list>
 #include <optional>
 #include <string>
+#include <vector>
 
-#include "components/optimization_guide/core/model_execution/test/substitution_builder.h"
+#include "components/optimization_guide/core/model_execution/configs/substitution_builder.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/example_for_testing.pb.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
@@ -20,7 +21,7 @@
 
 namespace optimization_guide {
 
-// Sets a threshold that will reject text containing "unsafe"  when used with
+// Sets a threshold that will reject text containing "unsafe" when used with
 // FakeOnDeviceModel::ClassifyTextSafety.
 proto::SafetyCategoryThreshold ForbidUnsafe();
 

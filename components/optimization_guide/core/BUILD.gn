@@ -437,34 +437,24 @@ if (build_with_model_execution) {
     ]
   }
 
-  static_library("manifest_broker_dev_support") {
-    sources = [
-      "model_execution/manifest_broker/test/example_manifest.cc",
-      "model_execution/manifest_broker/test/example_manifest.h",
-      "model_execution/manifest_broker/test/manifest_builder.cc",
-      "model_execution/manifest_broker/test/manifest_builder.h",
-    ]
-    deps = [
-      ":manifest_broker",
-      "//base",
-      "//components/optimization_guide/proto:optimization_guide_proto",
-      "//components/optimization_guide/public/mojom",
-    ]
-  }
-
   static_library("manifest_broker_test_support") {
     testonly = true
     sources = [
+      "model_execution/manifest_broker/test/example_manifest.cc",
+      "model_execution/manifest_broker/test/example_manifest.h",
       "model_execution/manifest_broker/test/fake_manifest_broker.cc",
       "model_execution/manifest_broker/test/fake_manifest_broker.h",
+      "model_execution/manifest_broker/test/manifest_component_directory.cc",
+      "model_execution/manifest_broker/test/manifest_component_directory.h",
       "model_execution/manifest_broker/test/scenario_builder.cc",
       "model_execution/manifest_broker/test/scenario_builder.h",
       "model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.cc",
       "model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h",
     ]
+    public_deps =
+        [ "//components/optimization_guide/core/model_execution/configs" ]
     deps = [
       ":manifest_broker",
-      ":manifest_broker_dev_support",
       ":model_execution_test_support",
       ":ondevice",
       "//base",
@@ -671,9 +661,9 @@ static_library("model_execution_test_support") {
       "model_execution/test/request_builder.h",
       "model_execution/test/response_holder.cc",
       "model_execution/test/response_holder.h",
-      "model_execution/test/substitution_builder.cc",
-      "model_execution/test/substitution_builder.h",
     ]
+    public_deps =
+        [ "//components/optimization_guide/core/model_execution/configs" ]
     deps += [
       "//components/component_updater:test_support",
       "//components/optimization_guide/public/mojom",
@@ -708,8 +698,8 @@ group("test_support") {
   ]
   if (build_with_model_execution) {
     public_deps += [
-      ":manifest_broker_dev_support",
       ":manifest_broker_test_support",
+      "//components/optimization_guide/core/model_execution/configs",
     ]
   }
 }
@@ -895,11 +885,11 @@ source_set("model_execution_unit_tests") {
     ]
     deps += [
       ":manifest_broker",
-      ":manifest_broker_dev_support",
       ":manifest_broker_test_support",
       ":prediction",
       "//components/component_updater",
       "//components/crx_file",
+      "//components/optimization_guide/core/model_execution/configs",
       "//components/optimization_guide/public/mojom",
       "//components/signin/public/identity_manager:test_support",
       "//components/sync_preferences:test_support",
