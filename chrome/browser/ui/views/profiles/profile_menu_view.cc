@@ -803,7 +803,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
             preferred_account.has_value() &&
             preferred_account->gaia_id == account_info_for_promos.GetGaiaId()) {
           if (std::optional<std::string> custom_subtitle =
-                  signin::GetAccountPreviewPromoSubtitle(*preferred_account);
+                  signin::GetAccountPreviewProfileMenuSubtitle(
+                      account_info_for_promos.GetEmail(), *preferred_account);
               custom_subtitle.has_value() && !custom_subtitle->empty()) {
             params.subtitle = base::UTF8ToUTF16(*custom_subtitle);
           }

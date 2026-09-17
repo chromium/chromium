@@ -19,6 +19,13 @@ namespace signin {
 std::optional<std::string> GetAccountPreviewPromoSubtitle(
     const AccountPreviewDataService::AccountPreviewPreference& preference);
 
+// Returns a formatted subtitle string for the profile menu signin promo based
+// on the account preview preference and user email, or std::nullopt if
+// preference contains no preferred data types.
+std::optional<std::string> GetAccountPreviewProfileMenuSubtitle(
+    std::string_view email,
+    const AccountPreviewDataService::AccountPreviewPreference& preference);
+
 // Returns a formatted subtitle string for the profile separation (multi-user)
 // intercept bubble with account preview, or std::nullopt if preference contains
 // no preferred data types.

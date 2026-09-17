@@ -47,6 +47,31 @@ int GetExpectedPromoMessageId(syncer::DataType data_type, bool with_device) {
   }
 }
 
+int GetExpectedProfileMenuMessageId(syncer::DataType data_type,
+                                    bool with_device) {
+  switch (data_type) {
+    case syncer::PASSWORDS:
+      return with_device
+                 ? IDS_ACCOUNT_PREVIEW_PROFILE_MENU_SUBTITLE_PASSWORDS_WITH_DEVICE
+                 : IDS_ACCOUNT_PREVIEW_PROFILE_MENU_SUBTITLE_PASSWORDS;
+    case syncer::BOOKMARKS:
+      return with_device
+                 ? IDS_ACCOUNT_PREVIEW_PROFILE_MENU_SUBTITLE_BOOKMARKS_WITH_DEVICE
+                 : IDS_ACCOUNT_PREVIEW_PROFILE_MENU_SUBTITLE_BOOKMARKS;
+    case syncer::AUTOFILL:
+    case syncer::AUTOFILL_WALLET_METADATA:
+      return with_device
+                 ? IDS_ACCOUNT_PREVIEW_PROFILE_MENU_SUBTITLE_SAVED_INFO_WITH_DEVICE
+                 : IDS_ACCOUNT_PREVIEW_PROFILE_MENU_SUBTITLE_SAVED_INFO;
+    case syncer::READING_LIST:
+      return with_device
+                 ? IDS_ACCOUNT_PREVIEW_PROFILE_MENU_SUBTITLE_READING_LIST_WITH_DEVICE
+                 : IDS_ACCOUNT_PREVIEW_PROFILE_MENU_SUBTITLE_READING_LIST;
+    default:
+      NOTREACHED();
+  }
+}
+
 int GetExpectedProfileSeparationMessageId(syncer::DataType data_type,
                                           bool with_device) {
   switch (data_type) {
@@ -236,6 +261,98 @@ TEST(AccountPreviewUtilsTest,
       l10n_util::GetStringUTF8(IDS_ACCOUNT_PREVIEW_PROMO_SUBTITLE_PASSWORDS);
 
   EXPECT_EQ(GetAccountPreviewPromoSubtitle(pref), expected);
+}
+
+TEST(AccountPreviewUtilsTest, ProfileMenuEmptyPreferenceReturnsNullopt) {
+  AccountPreviewDataService::AccountPreviewPreference pref;
+  EXPECT_EQ(GetAccountPreviewProfileMenuSubtitle("elisa.g.beckett@gmail.com",
+                                                 pref),
+            std::nullopt);
+}
+
+class AccountPreviewUtilsProfileMenuParamTest
+    : public testing::TestWithParam<
+          std::tuple<syncer::DataType /*data_type*/, bool /*with_device*/>> {};
+
+TEST_P(AccountPreviewUtilsProfileMenuParamTest, Subtitle) {
+  const auto& [data_type, with_device] = GetParam();
+  AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.preferred_data_types.push_back({data_type, SyncDataQuartile::kAboveQ3});
+  if (with_device) {
+    pref.other_device_form_factor =
+        sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+    std::u16string device_str =
+        l10n_util::GetStringUTF16(IDS_ACCOUNT_PREVIEW_DEVICE_PHONE);
+    EXPECT_EQ(GetAccountPreviewProfileMenuSubtitle("elisa.g.beckett@gmail.com",
+                                                   pref),
+              l10n_util::GetStringFUTF8(
+                  GetExpectedProfileMenuMessageId(data_type,
+                                                  /*with_device=*/true),
+                  device_str, u"elisa.g.beckett@gmail.com"));
+  } else {
+    EXPECT_EQ(GetAccountPreviewProfileMenuSubtitle("elisa.g.beckett@gmail.com",
+                                                   pref),
+              l10n_util::GetStringFUTF8(
+                  GetExpectedProfileMenuMessageId(data_type,
+                                                  /*with_device=*/false),
+                  u"elisa.g.beckett@gmail.com"));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AccountPreviewUtilsProfileMenuParamTest,
+    testing::Combine(testing::Values(syncer::PASSWORDS,
+                                     syncer::BOOKMARKS,
+                                     syncer::AUTOFILL,
+                                     syncer::AUTOFILL_WALLET_METADATA,
+                                     syncer::READING_LIST),
+                     /*with_device=*/testing::Bool()),
+    ParamToTestName);
+
+TEST(AccountPreviewUtilsTest,
+     ProfileMenuPreferenceWithExtensionsAndDesktopDevice) {
+  AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.preferred_data_types.push_back(
+      {syncer::EXTENSIONS, SyncDataQuartile::kAboveQ3});
+  pref.other_device_form_factor =
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  std::u16string device_str =
+      l10n_util::GetStringUTF16(IDS_ACCOUNT_PREVIEW_DEVICE_COMPUTER);
+  std::string expected = l10n_util::GetStringFUTF8(
+      IDS_ACCOUNT_PREVIEW_PROFILE_MENU_SUBTITLE_EXTENSIONS_WITH_DEVICE,
+      device_str, u"elisa.g.beckett@gmail.com");
+
+  EXPECT_EQ(GetAccountPreviewProfileMenuSubtitle("elisa.g.beckett@gmail.com",
+                                                 pref),
+            expected);
+#else
+  EXPECT_EQ(GetAccountPreviewProfileMenuSubtitle("elisa.g.beckett@gmail.com",
+                                                 pref),
+            std::nullopt);
+#endif
+}
+
+TEST(AccountPreviewUtilsTest,
+     ProfileMenuPreferenceWithExtensionsWithoutDevice) {
+  AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.preferred_data_types.push_back(
+      {syncer::EXTENSIONS, SyncDataQuartile::kAboveQ3});
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  std::string expected = l10n_util::GetStringFUTF8(
+      IDS_ACCOUNT_PREVIEW_PROFILE_MENU_SUBTITLE_EXTENSIONS,
+      u"elisa.g.beckett@gmail.com");
+  EXPECT_EQ(GetAccountPreviewProfileMenuSubtitle("elisa.g.beckett@gmail.com",
+                                                 pref),
+            expected);
+#else
+  EXPECT_EQ(GetAccountPreviewProfileMenuSubtitle("elisa.g.beckett@gmail.com",
+                                                 pref),
+            std::nullopt);
+#endif
 }
 
 TEST(AccountPreviewUtilsTest, ProfileSeparationEmptyPreferenceReturnsNullopt) {
