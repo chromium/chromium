@@ -34,11 +34,15 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/metrics/entropy_state.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/variations/client_filterable_state.h"
+#include "components/variations/pref_names.h"
 #include "components/variations/processed_study.h"
 #include "components/variations/proto/study.pb.h"
+#include "components/variations/sticky_activation_manager.h"
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_layers.h"
@@ -2241,6 +2245,121 @@ TYPED_TEST(VariationsSeedProcessorTest,
                                  simulated_group_name),
             EMPTY_ID);
   EXPECT_EQ(base::GetFieldTrialParamValue(kStudyName, "x"), "");
+}
+
+// Regression test: Simulating a study with STICKY_AFTER_QUERY activation after
+// startup (i.e. after StickyActivationManager::StartMonitoring() has been
+// called) must not crash, and must not mutate sticky activation state.
+TYPED_TEST(VariationsSeedProcessorTest,
+           SimulateCreateTrialFromStudy_StickyAfterQuery) {
+  base::test::TaskEnvironment task_environment;
+  TestingPrefServiceSimple local_state;
+  StickyActivationManager::RegisterPrefs(*local_state.registry());
+
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  const char kStudyName[] = "StickySimulationStudy";
+  study->set_name(kStudyName);
+  // Sticky studies must have PERMANENT consistency and no experiment IDs.
+  study->set_consistency(Study_Consistency_PERMANENT);
+  study->set_default_experiment_name("Default");
+  study->set_activation_type(Study::STICKY_AFTER_QUERY);
+  AddExperiment("Default", 0, study);
+  AddExperiment("Enabled", 100, study);
+
+  std::unique_ptr<base::FeatureList> feature_list =
+      std::make_unique<base::FeatureList>();
+  EntropyProviders entropy_providers(
+      /*high_entropy_source=*/"client_id",
+      /*low_entropy_source=*/{123, metrics::EntropyState::kMaxLowEntropySize},
+      /*limited_entropy_source=*/"limited");
+  VariationsLayers layers(seed, entropy_providers);
+  ProcessedStudy processed_study;
+  ASSERT_TRUE(processed_study.Init(study));
+
+  StickyActivationManager sticky_activation_manager(&local_state);
+  VariationsSeedProcessor seed_processor(sticky_activation_manager);
+
+  // Mimic what happens at startup once all studies have been processed. From
+  // this point on, StickyActivationManager::ShouldActivate() may not be called.
+  sticky_activation_manager.StartMonitoring();
+  ASSERT_EQ(local_state.GetString(prefs::kVariationsStickyStudies), "");
+
+  // Run the simulation. This mimics what happens when a new seed is fetched at
+  // runtime, e.g. for runtime mutable studies.
+  scoped_refptr<base::FieldTrial> simulated_trial =
+      this->CreateTrialFromStudy(seed_processor, processed_study,
+                                 entropy_providers, layers, feature_list.get(),
+                                 /*simulated=*/true);
+  ASSERT_TRUE(simulated_trial);
+  EXPECT_EQ(simulated_trial->trial_name(), kStudyName);
+  EXPECT_EQ(simulated_trial->GetGroupNameWithoutActivation(), "Enabled");
+
+  // Verify NO side effects: the trial is neither registered nor activated, and
+  // the sticky activation state was not modified.
+  EXPECT_EQ(base::FieldTrialList::Find(kStudyName), nullptr);
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kStudyName));
+  EXPECT_EQ(local_state.GetString(prefs::kVariationsStickyStudies), "");
+
+  // The simulation should also not have registered the study as a sticky trial
+  // with the manager. Verify this by activating a real trial with the same name
+  // and checking that it does not get persisted as a sticky trial.
+  base::FieldTrialList::CreateFieldTrial(kStudyName, "Enabled")->Activate();
+  EXPECT_EQ(local_state.GetString(prefs::kVariationsStickyStudies), "");
+}
+
+// Same as above, but for a study whose group is forced via a command line flag,
+// which goes through a different activation code path.
+TYPED_TEST(VariationsSeedProcessorTest,
+           SimulateCreateTrialFromStudy_StickyAfterQueryWithForcingFlag) {
+  base::test::TaskEnvironment task_environment;
+  TestingPrefServiceSimple local_state;
+  StickyActivationManager::RegisterPrefs(*local_state.registry());
+
+  const char kForcingSwitch[] = "sticky-simulation-forcing-flag";
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingSwitch);
+
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  const char kStudyName[] = "StickySimulationStudyWithForcingFlag";
+  study->set_name(kStudyName);
+  study->set_consistency(Study_Consistency_PERMANENT);
+  study->set_default_experiment_name("Default");
+  study->set_activation_type(Study::STICKY_AFTER_QUERY);
+  AddExperiment("Default", 100, study);
+  AddExperiment("ForcedGroup", 0, study)->set_forcing_flag(kForcingSwitch);
+
+  std::unique_ptr<base::FeatureList> feature_list =
+      std::make_unique<base::FeatureList>();
+  EntropyProviders entropy_providers(
+      /*high_entropy_source=*/"client_id",
+      /*low_entropy_source=*/{123, metrics::EntropyState::kMaxLowEntropySize},
+      /*limited_entropy_source=*/"limited");
+  VariationsLayers layers(seed, entropy_providers);
+  ProcessedStudy processed_study;
+  ASSERT_TRUE(processed_study.Init(study));
+
+  StickyActivationManager sticky_activation_manager(&local_state);
+  VariationsSeedProcessor seed_processor(sticky_activation_manager);
+  sticky_activation_manager.StartMonitoring();
+  ASSERT_EQ(local_state.GetString(prefs::kVariationsStickyStudies), "");
+
+  // Run the simulation. This must not crash.
+  scoped_refptr<base::FieldTrial> simulated_trial =
+      this->CreateTrialFromStudy(seed_processor, processed_study,
+                                 entropy_providers, layers, feature_list.get(),
+                                 /*simulated=*/true);
+  ASSERT_TRUE(simulated_trial);
+  EXPECT_EQ(simulated_trial->trial_name(), kStudyName);
+  EXPECT_EQ(simulated_trial->GetGroupNameWithoutActivation(), "ForcedGroup");
+
+  // Verify NO side effects.
+  EXPECT_EQ(base::FieldTrialList::Find(kStudyName), nullptr);
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kStudyName));
+  EXPECT_EQ(local_state.GetString(prefs::kVariationsStickyStudies), "");
+
+  base::FieldTrialList::CreateFieldTrial(kStudyName, "ForcedGroup")->Activate();
+  EXPECT_EQ(local_state.GetString(prefs::kVariationsStickyStudies), "");
 }
 
 TYPED_TEST(VariationsSeedProcessorTest,

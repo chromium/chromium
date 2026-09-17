@@ -495,8 +495,14 @@ VariationsSeedProcessor::CreateTrialFromStudyImpl(
             /*entropy_value=*/0);
       }
 
-      if (ShouldActivate(study, experiment.name(),
-                         *sticky_activation_manager_)) {
+      // Note: Do not activate simulated trials. Activation is a no-op for them
+      // (they are not registered and their group choice is already finalized),
+      // but ShouldActivate() has side effects for STICKY_AFTER_QUERY studies:
+      // it mutates StickyActivationManager's state and CHECK-fails once
+      // monitoring has started (i.e. after startup). A simulation must not
+      // affect the real activation state.
+      if (!simulated && ShouldActivate(study, experiment.name(),
+                                       *sticky_activation_manager_)) {
         // This call must happen after all params have been registered for the
         // trial. Otherwise, since we look up params by trial and group name,
         // the params won't be registered under the correct key.
@@ -582,7 +588,9 @@ VariationsSeedProcessor::CreateTrialFromStudyImpl(
     }
   }
 
-  if (ShouldActivate(study, group_name, *sticky_activation_manager_)) {
+  // Note: Do not activate simulated trials. See the note above.
+  if (!simulated &&
+      ShouldActivate(study, group_name, *sticky_activation_manager_)) {
     // This call must happen after all params have been registered for the
     // trial. Otherwise, since we look up params by trial and group name, the
     // params won't be registered under the correct key.
