@@ -3430,6 +3430,18 @@ chromium-metrics-reviews@google.com.
   <token key="MessageIdentifier" variants="MessageIdentifiers"/>
 </histogram>
 
+<histogram name="Android.MinidumpUploader.MinidumpLossReason"
+    enum="AndroidMinidumpLossReason" expires_after="2027-04-01">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <owner>src/components/minidump_uploader/OWNERS</owner>
+  <summary>
+    Records the reason why a crash report minidump was discarded or lost
+    unrecoverably during the persistence, transmission, storage checking, or
+    startup cleanup phases.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiInstance.MaxActiveInstanceCount"
     units="instances" expires_after="2027-02-14">
   <owner>rathomas@google.com</owner>

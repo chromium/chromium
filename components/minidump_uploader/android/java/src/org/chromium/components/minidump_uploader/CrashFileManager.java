@@ -4,9 +4,11 @@
 
 package org.chromium.components.minidump_uploader;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.crash.anr.AnrCollector;
@@ -20,6 +22,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -60,6 +64,36 @@ import java.util.regex.Pattern;
  */
 @NullMarked
 public class CrashFileManager {
+    @IntDef({
+        MinidumpLossReason.TRANSMISSION_FAILURE,
+        MinidumpLossReason.FILE_SIZE_LIMIT_EXCEEDED,
+        MinidumpLossReason.UID_LIMIT_EXCEEDED,
+        MinidumpLossReason.GLOBAL_LIMIT_EXCEEDED,
+        MinidumpLossReason.AGE_LIMIT_EXCEEDED,
+        MinidumpLossReason.SAVED_LIMIT_EXCEEDED,
+        MinidumpLossReason.COPY_FAILED,
+        MinidumpLossReason.LOG_FILE_WRITE_FAILED,
+        MinidumpLossReason.LEFTOVER_TEMP_FILES,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MinidumpLossReason {
+        int TRANSMISSION_FAILURE = 0;
+        int FILE_SIZE_LIMIT_EXCEEDED = 1;
+        int UID_LIMIT_EXCEEDED = 2;
+        int GLOBAL_LIMIT_EXCEEDED = 3;
+        int AGE_LIMIT_EXCEEDED = 4;
+        int SAVED_LIMIT_EXCEEDED = 5;
+        int COPY_FAILED = 6;
+        int LOG_FILE_WRITE_FAILED = 7;
+        int LEFTOVER_TEMP_FILES = 8;
+        int COUNT = 9;
+    }
+
+    public static void recordMinidumpLoss(@MinidumpLossReason int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.MinidumpUploader.MinidumpLossReason", reason, MinidumpLossReason.COUNT);
+    }
+
     private static final String TAG = "CrashFileManager";
 
     /** The name of the crash directory. */
@@ -521,7 +555,9 @@ public class CrashFileManager {
             long ageInMillis = new Date().getTime() - f.lastModified();
             long ageInDays = TimeUnit.DAYS.convert(ageInMillis, TimeUnit.MILLISECONDS);
             if (ageInDays > MAX_CRASH_REPORT_AGE_IN_DAYS) {
-                deleteFile(f);
+                if (deleteFile(f)) {
+                    recordMinidumpLoss(MinidumpLossReason.AGE_LIMIT_EXCEEDED);
+                }
                 continue;
             }
 
@@ -531,7 +567,9 @@ public class CrashFileManager {
                 // that one more file has been kept.
                 ++numSavedCrashes;
             } else {
-                deleteFile(f);
+                if (deleteFile(f)) {
+                    recordMinidumpLoss(MinidumpLossReason.SAVED_LIMIT_EXCEEDED);
+                }
             }
         }
     }
@@ -735,6 +773,7 @@ public class CrashFileManager {
                 // Note that we will still try to copy the new file if this deletion fails.
                 Log.w(TAG, "Couldn't delete old minidump " + oldestFile.getAbsolutePath());
             }
+            recordMinidumpLoss(MinidumpLossReason.UID_LIMIT_EXCEEDED);
             return;
         }
 
@@ -746,6 +785,7 @@ public class CrashFileManager {
                 // Note that we will still try to copy the new file if this deletion fails.
                 Log.w(TAG, "Couldn't delete old minidump " + oldestFile.getAbsolutePath());
             }
+            recordMinidumpLoss(MinidumpLossReason.GLOBAL_LIMIT_EXCEEDED);
         }
     }
 
@@ -761,6 +801,7 @@ public class CrashFileManager {
         File crashDirectory = getCrashDirectory();
         if (!ensureCrashDirExists()) {
             Log.e(TAG, "Crash directory doesn't exist");
+            recordMinidumpLoss(MinidumpLossReason.COPY_FAILED);
             return null;
         }
         // Only threads copying minidumps will be touching this tmp-directory. Since these threads
@@ -768,6 +809,7 @@ public class CrashFileManager {
         // synchronization explicitly for creating this tmp-directory.
         if (!tmpDir.isDirectory() && !tmpDir.mkdir()) {
             Log.e(TAG, "Couldn't create " + tmpDir.getAbsolutePath());
+            recordMinidumpLoss(MinidumpLossReason.COPY_FAILED);
             return null;
         }
         if (tmpDir.getCanonicalPath().equals(crashDirectory.getCanonicalPath())) {
@@ -801,6 +843,7 @@ public class CrashFileManager {
                 if (!tmpFile.delete()) {
                     Log.w(TAG, "Couldn't delete file " + tmpFile.getAbsolutePath());
                 }
+                recordMinidumpLoss(MinidumpLossReason.FILE_SIZE_LIMIT_EXCEEDED);
                 return null;
             }
         } finally {
@@ -819,6 +862,7 @@ public class CrashFileManager {
         if (tmpFile.renameTo(minidumpFile)) {
             return minidumpFile;
         }
+        recordMinidumpLoss(MinidumpLossReason.COPY_FAILED);
         return null;
     }
 

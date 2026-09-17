@@ -125,12 +125,13 @@ public final class AwMinidumpUploader {
         List<Map<String, String>> crashInfos = new ArrayList<>(fileCount);
         for (int i = 0; i < fileCount; ++i) {
             File file = minidumpFiles[i];
-            ParcelFileDescriptor p = null;
             try {
-                p = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+                minidumpFds[i] =
+                        ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
             } catch (IOException e) {
+                CrashFileManager.recordMinidumpLoss(
+                        CrashFileManager.MinidumpLossReason.TRANSMISSION_FAILURE);
             }
-            minidumpFds[i] = p;
             crashInfos.add(crashesInfoMap.get(getCrashUuid(file)));
         }
 
@@ -138,10 +139,12 @@ public final class AwMinidumpUploader {
             // AIDL does not support arrays of objects, so use a List here.
             service.transmitCrashes(minidumpFds, crashInfos);
         } catch (Exception e) {
-            // Exception can be RemoteException, or "RuntimeException: Too many open files".
-            // https://crbug.com/1399777
-            // TODO(gsennton): add a UMA metric here to ensure we aren't losing
-            // too many minidumps because of this.
+            for (int i = 0; i < fileCount; ++i) {
+                if (minidumpFds[i] != null) {
+                    CrashFileManager.recordMinidumpLoss(
+                            CrashFileManager.MinidumpLossReason.TRANSMISSION_FAILURE);
+                }
+            }
         }
         deleteMinidumps(minidumpFiles);
         for (ParcelFileDescriptor fd : minidumpFds) {

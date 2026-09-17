@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.services;
 
+import static org.chromium.components.minidump_uploader.CrashFileManager.recordMinidumpLoss;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -102,7 +104,7 @@ public class CrashReceiverService extends Service {
 
     /**
      * Copy minidumps from the {@code fileDescriptors} to the directory where WebView stores its
-     * minidump files. Also writes a new log file for each mindump, the log file contains a JSON
+     * minidump files. Also writes a new log file for each minidump, the log file contains a JSON
      * object with info from {@code crashesInfo}. The log file name is: <copied-file-name> + {@code
      * "_log.json"} suffix.
      *
@@ -127,17 +129,22 @@ public class CrashReceiverService extends Service {
                                 SystemWideCrashDirectories.getWebViewTmpCrashDir(),
                                 uid);
                 if (copiedFile == null) {
+                    // We also log a UMA metric within the method to signal that the minidump copy
+                    // failed.
                     Log.w(TAG, "failed to copy minidump from " + fd);
-                    // TODO(gsennton): add UMA metric to ensure we aren't losing too many
-                    // minidumps here.
                 } else {
                     copiedAnything = true;
                     File logFile =
                             SystemWideCrashDirectories.createCrashJsonLogFile(copiedFile.getName());
-                    CrashLoggingUtils.writeCrashInfoToLogFile(logFile, copiedFile, crashInfo);
+                    if (!CrashLoggingUtils.writeCrashInfoToLogFile(
+                            logFile, copiedFile, crashInfo)) {
+                        recordMinidumpLoss(
+                                CrashFileManager.MinidumpLossReason.LOG_FILE_WRITE_FAILED);
+                    }
                 }
             } catch (IOException e) {
                 Log.w(TAG, "failed to copy minidump from " + fd, e);
+                recordMinidumpLoss(CrashFileManager.MinidumpLossReason.COPY_FAILED);
             } finally {
                 deleteFilesInWebViewTmpDirIfExists();
             }
@@ -152,14 +159,19 @@ public class CrashReceiverService extends Service {
     }
 
     private static void deleteFilesInDirIfExists(File directory) {
-        if (directory.isDirectory()) {
-            File[] files = directory.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (!file.delete()) {
-                        Log.w(TAG, "Couldn't delete file " + file.getAbsolutePath());
-                    }
-                }
+        if (!directory.isDirectory()) {
+            return;
+        }
+        File[] files = directory.listFiles();
+        if (files == null) {
+            return;
+        }
+        if (files.length > 1) {
+            recordMinidumpLoss(CrashFileManager.MinidumpLossReason.LEFTOVER_TEMP_FILES);
+        }
+        for (File file : files) {
+            if (!file.delete()) {
+                Log.w(TAG, "Couldn't delete file " + file.getAbsolutePath());
             }
         }
     }

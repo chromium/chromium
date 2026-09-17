@@ -324,6 +324,46 @@ chromium-metrics-reviews@google.com.
   <int value="393228" label="6.12"/>
 </enum>
 
+<enum name="AndroidMinidumpLossReason">
+  <int value="0" label="Transmission Failure (Binder IPC failed)">
+    Logged when transmitting minidumps from the client app to the WebView
+    Receiver Service fails because of a Binder exception (e.g. service death,
+    transaction too large, or too many open files).
+  </int>
+  <int value="1" label="File Size Limit Exceeded (&gt;1MB)">
+    Logged if the file descriptor copies more than 1MB of data (the size limit
+    for a minidump in WebView).
+  </int>
+  <int value="2" label="UID Limit Exceeded (per-app cap)">
+    Logged if a package's User ID exceeds the maximum allowed files per app (10
+    files) and the oldest one is deleted.
+  </int>
+  <int value="3" label="Global Limit Exceeded (total cap)">
+    Logged if the global WebView crash directory exceeds the maximum allowed
+    files overall (20 files) and the oldest one is deleted.
+  </int>
+  <int value="4" label="Age Limit Exceeded (deleted &gt;30 days old)">
+    Logged if an un-uploaded minidump is deleted during a startup/periodical
+    cleanup because it is older than 30 days.
+  </int>
+  <int value="5" label="Saved Limit Exceeded (deleted overall kept cap)">
+    Logged if an un-uploaded minidump is deleted during a startup/periodical
+    cleanup to enforce the overall keep limit (10 files).
+  </int>
+  <int value="6" label="Copy Failed (directories, rename, or IOException)">
+    Logged if copying the file descriptor fails due to directory missing errors,
+    rename failure, or any IOException during stream reading.
+  </int>
+  <int value="7" label="Log File Write Failed">
+    Logged if we were unable to write the minidump to the log file, possibly
+    because it was missing or there were other filesystem issues.
+  </int>
+  <int value="8" label="Left Over Temp Files">
+    Logged if, after copying the minidumps to WebView's own directory, there are
+    more than 1 temporary files left in the temp directory.
+  </int>
+</enum>
+
 <!-- LINT.IfChange(AndroidPdfHyperlinkClickResult) -->
 
 <enum name="AndroidPdfHyperlinkClickResult">
