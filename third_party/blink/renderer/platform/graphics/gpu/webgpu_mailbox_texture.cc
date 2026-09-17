@@ -92,8 +92,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
       if (auto shared_image = image->GetSharedImage();
           shared_image && dest_shared_image) {
         gfx::Rect copy_rect(image_sub_rect.x(), image_sub_rect.y(),
-                            dest_shared_image->size().width(),
-                            dest_shared_image->size().height());
+                            mailbox_texture_width, mailbox_texture_height);
         auto result = context_provider_wrapper->ContextProvider()
                           .RasterInterface()
                           ->CopySharedImage(
