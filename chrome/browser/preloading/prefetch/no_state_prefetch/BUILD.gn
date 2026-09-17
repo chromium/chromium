@@ -47,6 +47,7 @@ source_set("impl") {
     "//chrome/browser/sync:factories",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:tab_helpers",
     "//chrome/common",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/no_state_prefetch/browser",

@@ -306,6 +306,7 @@ if (!is_android) {
       "//chrome/browser/commerce",
       "//chrome/browser/feedback",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:tab_helpers",
       "//chrome/browser/ui:tab_ui_helper",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",

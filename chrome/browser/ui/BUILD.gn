@@ -16,6 +16,7 @@ import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/lens/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//content/browser/devtools/features.gni")
+import("//content/public/common/features.gni")
 import("//crypto/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -897,6 +898,254 @@ source_set("download_close_type") {
   public = [ "download_close_type.h" ]
 }
 
+source_set("tab_helpers") {
+  public = [ "tab_helpers.h" ]
+}
+
+source_set("tab_helpers_impl") {
+  sources = [ "tab_helpers.cc" ]
+
+  public_deps = [ ":tab_helpers" ]
+
+  deps = [
+    ":recently_audible_helper",
+    ":tab_dialogs",
+    ":ui_features",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:buildflags",
+    "//chrome/browser:chained_back_navigation_tracker",
+    "//chrome/browser:chrome_content_browser_client",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/breadcrumbs",
+    "//chrome/browser/commerce",
+    "//chrome/browser/complex_tasks",
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/external_protocol",
+    "//chrome/browser/favicon",
+    "//chrome/browser/file_system_access",
+    "//chrome/browser/glic:impl",
+    "//chrome/browser/glic/public:features",
+    "//chrome/browser/history",
+    "//chrome/browser/history_clusters",
+    "//chrome/browser/history_embeddings",
+    "//chrome/browser/image_fetcher",
+    "//chrome/browser/loader",
+    "//chrome/browser/login_detection",
+    "//chrome/browser/lookalikes",
+    "//chrome/browser/media",
+    "//chrome/browser/navigation_predictor",
+    "//chrome/browser/net",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/page_content_annotations",
+    "//chrome/browser/page_content_annotations:extraction_service",
+    "//chrome/browser/page_content_annotations:fetcher",
+    "//chrome/browser/page_info",
+    "//chrome/browser/page_load_metrics",
+    "//chrome/browser/password_manager",
+    "//chrome/browser/permissions",
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/predictors",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resource_coordinator",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/sessions",
+    "//chrome/browser/site_protection",
+    "//chrome/browser/ssl",
+    "//chrome/browser/storage_access_api",
+    "//chrome/browser/subresource_filter",
+    "//chrome/browser/supervised_user",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync_tab_context",
+    "//chrome/browser/tab_contents",
+    "//chrome/browser/task_manager",
+    "//chrome/browser/translate",
+    "//chrome/browser/trusted_vault",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/find_bar",
+    "//chrome/browser/ui/javascript_dialogs",
+    "//chrome/browser/ui/prefs",
+    "//chrome/browser/ui/safety_hub",
+    "//chrome/browser/ui/search_engines",
+    "//chrome/browser/ui/tab_contents",
+    "//chrome/browser/v8_compile_hints",
+    "//chrome/browser/vr",
+    "//chrome/common",
+    "//chrome/common:buildflags",
+    "//chrome/common:chrome_features",
+    "//chrome/common:non_code_constants",
+    "//components/blocked_content",
+    "//components/breadcrumbs/core:status",
+    "//components/captive_portal/core:buildflags",
+    "//components/client_hints/browser",
+    "//components/commerce/content/browser",
+    "//components/commerce/core:feature_list",
+    "//components/compose:buildflags",
+    "//components/content_capture/common",
+    "//components/content_settings/browser",
+    "//components/contextual_tasks/public:feature_list",
+    "//components/dom_distiller/core:dom_distiller_features",
+    "//components/download/content/factory",
+    "//components/download/content/public",
+    "//components/enterprise/buildflags",
+    "//components/facilitated_payments/core/features",
+    "//components/history/content/browser",
+    "//components/history/core/browser",
+    "//components/infobars/content",
+    "//components/javascript_dialogs",
+    "//components/metrics:content",
+    "//components/metrics_services_manager",
+    "//components/offline_pages/buildflags",
+    "//components/omnibox/common",
+    "//components/optimization_guide/core:features",
+    "//components/page_content_annotations/content",
+    "//components/page_content_annotations/core",
+    "//components/page_info/core",
+    "//components/password_manager/core/browser",
+    "//components/performance_manager",
+    "//components/permissions",
+    "//components/permissions:permissions_common",
+    "//components/safe_browsing/content/browser",
+    "//components/safe_browsing/core/common:features",
+    "//components/search",
+    "//components/sessions",
+    "//components/sessions:session_id",
+    "//components/signin/public/base:signin_buildflags",
+    "//components/site_engagement/content",
+    "//components/tabs:public",
+    "//components/tracing:tracing_config",
+    "//components/ukm/content",
+    "//components/webapps/browser",
+    "//components/zoom",
+    "//content/public/browser",
+    "//content/public/common:buildflags",
+    "//extensions/buildflags",
+    "//media",
+    "//pdf:buildflags",
+    "//printing/buildflags",
+    "//rlz/buildflags",
+    "//ui/accessibility:ax_base",
+  ]
+
+  if (is_android) {
+    deps += [
+      "//chrome/browser/android",
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/banners",
+      "//chrome/browser/facilitated_payments",
+      "//chrome/browser/finds",
+      "//chrome/browser/finds/core",
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/plugins",
+      "//chrome/browser/ui/android:context_menu_helper",
+      "//components/page_load_metrics/browser",
+      "//components/sensitive_content",
+      "//components/sensitive_content:features",
+      "//content/public/common",
+    ]
+  } else {
+    deps += [
+      ":uma_browsing_activity_observer",
+      "//chrome/browser/metrics",
+      "//chrome/browser/ui/bookmarks",
+      "//chrome/browser/ui/passwords",
+      "//chrome/browser/ui/read_anything",
+      "//chrome/browser/ui/search",
+      "//chrome/browser/ui/views/tab_sharing",
+      "//components/image_fetcher/core",
+      "//components/omnibox/browser",
+      "//components/web_modal",
+    ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/boot_times_recorder",
+      "//chrome/browser/ash/child_accounts/time_limits",
+      "//chrome/browser/ash/growth",
+      "//chrome/browser/ash/mahi/web_contents",
+      "//chrome/browser/chromeos/gemini_app",
+      "//chrome/browser/chromeos/policy/dlp",
+      "//chrome/browser/ui/ash/google_one",
+      "//chromeos/ash/experiences/isolated_web_app",
+    ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    deps += [
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/performance_controls",
+      "//chrome/browser/ui/shared_highlighting",
+    ]
+  }
+
+  if (is_win) {
+    deps += [ "//chrome/browser:font_prewarmer_tab_helper" ]
+  }
+
+  if (enable_captive_portal_detection) {
+    deps += [
+      "//chrome/browser/captive_portal",
+      "//components/captive_portal/content",
+    ]
+  }
+
+  if (enable_extensions_core) {
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions/api/web_navigation",
+      "//chrome/browser/ui/extensions",
+      "//extensions/browser",
+      "//extensions/common:extension_features",
+      "//extensions/common:mojom",
+    ]
+    if (!is_android) {
+      deps += [
+        "//chrome/browser/web_applications",
+        "//chrome/browser/web_applications/isolated_web_apps:isolated_web_apps_no_pwa_core_deps",
+      ]
+    }
+  }
+
+  if (enable_offline_pages) {
+    deps += [ "//chrome/browser/offline_pages" ]
+  }
+
+  if (enable_plugins) {
+    deps += [ "//chrome/browser/plugins" ]
+  }
+
+  if (enable_printing) {
+    deps += [ "//chrome/browser/printing" ]
+  }
+
+  if (enable_compose) {
+    deps += [ "//chrome/browser/compose" ]
+  }
+
+  if (enable_rlz) {
+    deps += [ "//chrome/browser/rlz" ]
+  }
+
+  if (safe_browsing_mode > 0) {
+    deps += [
+      "//components/safe_browsing/content/browser:client_side_detection",
+      "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
+    ]
+  }
+
+  if (enable_dice_support) {
+    deps += [
+      "//chrome/browser/contextual_tasks:ui",
+      "//components/signin/public/base:signin_switches",
+    ]
+  }
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 # TODO(https://crbug.com/353332589): Once //chrome/browser is properly
@@ -904,11 +1153,6 @@ source_set("download_close_type") {
 # The two are already semantically a part of the same target as they allow
 # circular includes from each other.
 static_library("ui") {
-  sources = [
-    "tab_helpers.cc",
-    "tab_helpers.h",
-  ]
-
   defines = []
   libs = []
 
@@ -1643,7 +1887,7 @@ static_library("ui") {
     ]
   } else {
     # !is_android
-    sources += [
+    sources = [
       # This file physically lives in //chrome/browser but is compiled here so
       # that //chrome/browser:browser has no remaining sources. It registers
       # WebUI interface binders for desktop, which need this target's headers.
@@ -1691,6 +1935,8 @@ static_library("ui") {
       ":focus_tab_after_navigation_helper",
       ":intent_picker_tab_helper",
       ":layout_constants",
+      ":tab_helpers",
+      ":tab_helpers_impl",
       ":tab_ui_helper",
       ":uma_browsing_activity_observer",
       "//base",

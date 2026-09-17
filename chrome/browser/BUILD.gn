@@ -2528,6 +2528,7 @@ source_set("browser") {
       "//chrome/browser/partnerbookmarks:android_impl",
       "//chrome/browser/privacy:secure_dns_bridge",
       "//chrome/browser/translate/android:android_impl",
+      "//chrome/browser/ui:tab_helpers_impl",
       "//chrome/browser/ui/android:context_menu_helper",
       "//chrome/browser/ui/android/tab_model:impl",
       "//chrome/browser/ui/webui/notifications_internals:impl",

@@ -89,6 +89,7 @@ source_set("impl") {
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:singleton_tabs",
       "//chrome/browser/ui:status_bubble",
+      "//chrome/browser/ui:tab_helpers",
       "//chrome/browser/ui/browser_ui_controller",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/location_bar",
