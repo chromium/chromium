@@ -1263,6 +1263,55 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, AdvancedProtectionStatusChange) {
   EXPECT_EQ(service->GetCurrentSetting(), HttpsFirstModeSetting::kDisabled);
 }
 
+// Checks that enabling Advanced Protection clears the HTTP allowlist, just as a
+// UI pref change would. A user going from HTTPS-Upgrades to HTTPS-First Mode
+// shouldn't inherit the set of allowlisted sites. Disabling Advanced Protection
+// should not clear the allowlist.
+TEST_F(HttpsFirstModeSettingsTrackerTest,
+       AdvancedProtectionStatusChange_ShouldClearAllowlist) {
+  feature_list()->InitAndEnableFeature(
+      features::kHttpsFirstModeForAdvancedProtectionUsers);
+
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  safe_browsing::AdvancedProtectionStatusManager* aps_manager =
+      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+          profile());
+  ASSERT_TRUE(aps_manager);
+
+  StatefulSSLHostStateDelegate* state =
+      StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
+  ASSERT_TRUE(state);
+  content::StoragePartition* storage_partition =
+      profile()->GetDefaultStoragePartition();
+
+  ASSERT_EQ(service->GetCurrentSetting(), HttpsFirstModeSetting::kDisabled);
+
+  // Allowlist a host for http while HTTPS-First Mode is disabled.
+  state->AllowHttpForHost("http-allowed.com", storage_partition);
+  EXPECT_TRUE(
+      state->IsHttpAllowedForHost("http-allowed.com", storage_partition));
+
+  // Enable Advanced Protection. The effective setting becomes kEnabledFull and
+  // the allowlist should be cleared.
+  aps_manager->SetAdvancedProtectionStatusForTesting(true);
+  EXPECT_EQ(service->GetCurrentSetting(), HttpsFirstModeSetting::kEnabledFull);
+  EXPECT_FALSE(
+      state->IsHttpAllowedForHost("http-allowed.com", storage_partition));
+
+  // Allowlist again while under Advanced Protection (e.g. via a click-through),
+  // then disable Advanced Protection. The allowlist should not be cleared.
+  state->AllowHttpForHost("http-allowed.com", storage_partition);
+  EXPECT_TRUE(
+      state->IsHttpAllowedForHost("http-allowed.com", storage_partition));
+  aps_manager->SetAdvancedProtectionStatusForTesting(false);
+  EXPECT_EQ(service->GetCurrentSetting(), HttpsFirstModeSetting::kDisabled);
+  EXPECT_TRUE(
+      state->IsHttpAllowedForHost("http-allowed.com", storage_partition));
+}
+
 TEST_F(HttpsFirstModeSettingsTrackerTest, BalancedModeEnabledForEsbUsers) {
   HttpsFirstModeService* service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());

@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/task_traits.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/ssl/daily_navigation_counter.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -80,7 +81,10 @@ enum class HttpsFirstModeImplicitStateChange {
 //   prefs, and Advanced Protection status).
 // - Checking the Site Engagement scores of a site and enable/disable HFM based
 //   on that.
-class HttpsFirstModeService : public KeyedService {
+class HttpsFirstModeService
+    : public KeyedService,
+      public safe_browsing::AdvancedProtectionStatusManager::
+          StatusChangedObserver {
  public:
   explicit HttpsFirstModeService(Profile* profile, base::Clock* clock);
   ~HttpsFirstModeService() override;
@@ -138,6 +142,8 @@ class HttpsFirstModeService : public KeyedService {
   // Triggered when the Security Settings Bundle pref changes during the
   // session.
   void OnSecuritySettingsBundleChanged();
+  // safe_browsing::AdvancedProtectionStatusManager::StatusChangedObserver:
+  void OnAdvancedProtectionStatusChanged(bool enabled) override;
   // HTTPS-Upgrade fallback events are stored in a pref. This method extracts
   // the fallback events, deletes old events, adds a new event if
   // `add_new_entry` is true. Returns true if the heuristic indicates that
@@ -168,6 +174,11 @@ class HttpsFirstModeService : public KeyedService {
 
   base::DictValue navigation_counts_dict_;
   std::unique_ptr<DailyNavigationCounter> navigation_counter_;
+
+  base::ScopedObservation<
+      safe_browsing::AdvancedProtectionStatusManager,
+      safe_browsing::AdvancedProtectionStatusManager::StatusChangedObserver>
+      obs_{this};
 
   base::WeakPtrFactory<HttpsFirstModeService> weak_factory_{this};
 };

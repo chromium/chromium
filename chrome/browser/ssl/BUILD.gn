@@ -36,6 +36,7 @@ source_set("ssl") {
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing:advanced_protection",
     "//components/captive_portal/core:buildflags",
     "//components/infobars/core",
     "//components/keyed_service/core",
@@ -78,10 +79,7 @@ source_set("ssl") {
       "generated_https_first_mode_pref.h",
       "ssl_client_auth_observer.h",
     ]
-    public_deps += [
-      "//chrome/browser/safe_browsing:advanced_protection",
-      "//ui/views",
-    ]
+    public_deps += [ "//ui/views" ]
   }
 
   if (is_chromeos) {

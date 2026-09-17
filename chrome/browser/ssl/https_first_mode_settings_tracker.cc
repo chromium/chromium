@@ -277,6 +277,15 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
           &HttpsFirstModeService::OnSecuritySettingsBundleChanged,
           base::Unretained(this)));
 
+  // Track Advanced Protection status, which also affects the effective setting.
+  if (base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeForAdvancedProtectionUsers)) {
+    if (auto* aps_manager = safe_browsing::
+            AdvancedProtectionStatusManagerFactory::GetForProfile(profile_)) {
+      obs_.Observe(aps_manager);
+    }
+  }
+
   // Make sure the pref state is logged and the synthetic field trial state is
   // created at startup (as the pref may never change over the session).
   HttpsFirstModeSetting setting = GetCurrentSetting();
@@ -468,6 +477,27 @@ void HttpsFirstModeService::OnSecuritySettingsBundleChanged() {
   // Trigger bundle migration dynamically if the bundle transitioned
   // into Enhanced during the session (e.g., via sync).
   MigrateEnhancedBundleUsersAndMaybeShowToast();
+}
+
+void HttpsFirstModeService::OnAdvancedProtectionStatusChanged(bool enabled) {
+  HttpsFirstModeSetting setting = GetCurrentSetting();
+  // Update synthetic field trial group registration.
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      kHttpsFirstModeSyntheticFieldTrialName,
+      GetSyntheticFieldTrialGroupName(setting));
+
+  // Reset the HTTP allowlist and HTTPS enforcelist when Advanced Protection is
+  // enabled. A user going from HTTPS-Upgrades to HTTPS-First Mode shouldn't
+  // inherit the set of allowlisted sites.
+  if (enabled) {
+    StatefulSSLHostStateDelegate* state =
+        static_cast<StatefulSSLHostStateDelegate*>(
+            profile_->GetSSLHostStateDelegate());
+    if (state) {
+      state->ClearHttpsOnlyModeAllowlist();
+      state->ClearHttpsEnforcelist();
+    }
+  }
 }
 
 bool HttpsFirstModeService::
