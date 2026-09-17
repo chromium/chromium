@@ -98,7 +98,8 @@ class SharedImageInterfaceProxy {
                          std::unique_ptr<gfx::GpuFence> acquire_fence,
                          const Mailbox& mailbox);
 
-  void DestroySharedImage(const SyncToken& sync_token, const Mailbox& mailbox);
+  void DestroySharedImage(std::vector<SyncToken> sync_tokens,
+                          const Mailbox& mailbox);
   void AddReferenceToSharedImage(const SyncToken& sync_token,
                                  const Mailbox& mailbox);
 

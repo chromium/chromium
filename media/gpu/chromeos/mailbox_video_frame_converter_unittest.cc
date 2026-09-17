@@ -147,7 +147,7 @@ class MockSharedImageInterface : public gpu::SharedImageInterface {
                     std::unique_ptr<gfx::GpuFence> acquire_fence,
                     const gpu::Mailbox& mailbox));
   MOCK_METHOD2(DestroySharedImage,
-               void(const gpu::SyncToken& sync_token,
+               void(std::vector<gpu::SyncToken> sync_tokens,
                     const gpu::Mailbox& mailbox));
   MOCK_METHOD2(DestroySharedImage,
                void(const gpu::SyncToken& sync_token,

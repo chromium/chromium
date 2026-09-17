@@ -189,8 +189,9 @@ void ArcSharedImageInterface::UpdateSharedImage(
     const Mailbox& mailbox) {
   NOTREACHED();
 }
-void ArcSharedImageInterface::DestroySharedImage(const SyncToken& sync_token,
-                                                 const Mailbox& mailbox) {
+void ArcSharedImageInterface::DestroySharedImage(
+    std::vector<SyncToken> sync_tokens,
+    const Mailbox& mailbox) {
   gpu_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ArcSharedImageInterface::DestroySharedImageOnGpuThread,

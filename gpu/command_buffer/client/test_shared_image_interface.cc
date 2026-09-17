@@ -328,7 +328,7 @@ scoped_refptr<ClientSharedImage> TestSharedImageInterface::ImportSharedImage(
 }
 
 void TestSharedImageInterface::DestroySharedImage(
-    const SyncToken& sync_token,
+    std::vector<SyncToken> sync_tokens,
     const Mailbox& mailbox) {
   base::AutoLock locked(lock_);
   if (most_recent_mappable_shared_image_ &&
@@ -337,7 +337,7 @@ void TestSharedImageInterface::DestroySharedImage(
   }
 
   shared_images_.erase(mailbox);
-  most_recent_destroy_token_ = sync_token;
+  most_recent_destroy_tokens_ = std::move(sync_tokens);
 
   if (test_client_) {
     test_client_->DidDestroySharedImage();

@@ -219,11 +219,11 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
       base::UnsafeSharedMemoryRegion memory_region,
       base::OnceCallback<void(bool)> callback);
 
-  // Destroys the shared image, unregistering its mailbox, after |sync_token|
-  // has been released. After this call, the mailbox can't be used to reference
-  // the image any more, however if the image was imported into other APIs,
-  // those may keep a reference to the underlying data.
-  virtual void DestroySharedImage(const SyncToken& sync_token,
+  // Destroys the shared image, unregistering its mailbox, after all
+  // |sync_tokens| have been released. After this call, the mailbox can't be
+  // used to reference the image any more, however if the image was imported
+  // into other APIs, those may keep a reference to the underlying data.
+  virtual void DestroySharedImage(std::vector<SyncToken> sync_tokens,
                                   const Mailbox& mailbox) = 0;
 
   // Same behavior as the above, except that this version takes

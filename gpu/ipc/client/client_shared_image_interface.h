@@ -98,7 +98,7 @@ class GPU_IPC_CLIENT_EXPORT ClientSharedImageInterface
       base::OnceCallback<void(bool)> callback) override;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
-  void DestroySharedImage(const SyncToken& sync_token,
+  void DestroySharedImage(std::vector<SyncToken> sync_tokens,
                           const Mailbox& mailbox) override;
   void DestroySharedImage(
       const SyncToken& sync_token,

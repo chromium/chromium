@@ -501,7 +501,19 @@ ClientSharedImage::~ClientSharedImage() {
 
   auto sii = GetSharedImageInterface();
   if (sii) {
-    sii->DestroySharedImage(destruction_sync_token_, mailbox_);
+    std::vector<SyncToken> sync_tokens;
+    if (base::FeatureList::IsEnabled(
+            features::kUseAutomaticSyncTokenManagement)) {
+      base::AutoLock auto_lock(lock_);
+      for (const auto& [_, sync_token] : sync_token_map_) {
+        if (sync_token.HasData()) {
+          sync_tokens.push_back(sync_token);
+        }
+      }
+    } else if (destruction_sync_token_.HasData()) {
+      sync_tokens.push_back(destruction_sync_token_);
+    }
+    sii->DestroySharedImage(std::move(sync_tokens), mailbox_);
   }
 }
 

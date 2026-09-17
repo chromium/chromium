@@ -402,7 +402,8 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyInsertAndWaitSyncTokenCorrectly) {
   // Release the unused swap buffers held by the provider.
   provider_ = nullptr;
 
-  EXPECT_EQ(sii_->MostRecentDestroyToken(), release_token);
+  EXPECT_THAT(sii_->MostRecentDestroyTokens(),
+              testing::Contains(release_token));
 }
 
 // Ensures swap buffers will be recycled.

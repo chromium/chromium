@@ -660,4 +660,30 @@ TEST(ClientSharedImageTest,
   EXPECT_TRUE(callback_called);
 }
 
+TEST(ClientSharedImageTest, DestroySharedImage_AutomaticSyncTokenManagement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUseAutomaticSyncTokenManagement);
+
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto client_si =
+      sii->CreateSharedImage(CreateSharedImageInfo(), kNullSurfaceHandle);
+  SyncToken creation_token = client_si->creation_sync_token();
+
+  CommandBufferNamespace ns = CommandBufferNamespace::GPU_IO;
+  CommandBufferId cmd_id1 = CommandBufferId::FromUnsafeValue(10);
+  CommandBufferId cmd_id2 = CommandBufferId::FromUnsafeValue(20);
+  SyncToken token1(ns, cmd_id1, /*release_count=*/100);
+  SyncToken token2(ns, cmd_id2, /*release_count=*/200);
+
+  client_si->EndExport(SharedImageExportResult::CreateForTesting(token1));
+  client_si->UpdateDestructionSyncToken(token2);
+  // Passing an empty SyncToken should not clear previously tracked SyncTokens.
+  client_si->UpdateDestructionSyncToken(SyncToken());
+
+  client_si.reset();
+
+  EXPECT_THAT(sii->MostRecentDestroyTokens(),
+              testing::UnorderedElementsAre(creation_token, token1, token2));
+}
+
 }  // namespace gpu

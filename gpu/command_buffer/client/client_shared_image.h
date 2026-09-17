@@ -324,7 +324,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   void EndDisplayCompositorAccess(const SyncToken& sync_token);
 
   void UpdateDestructionSyncToken(const gpu::SyncToken& sync_token) {
-    destruction_sync_token_ = sync_token;
+    destruction_sync_token_ = StoreSyncTokenInternal(sync_token);
   }
 
   // Signals the service-side that the backing of this SharedImage was modified

@@ -94,7 +94,7 @@ class TestSharedImageInterface : public SharedImageInterface {
   scoped_refptr<ClientSharedImage> ImportSharedImage(
       ExportedSharedImage exported_shared_image) override;
 
-  void DestroySharedImage(const SyncToken& sync_token,
+  void DestroySharedImage(std::vector<SyncToken> sync_tokens,
                           const Mailbox& mailbox) override;
   void DestroySharedImage(
       const SyncToken& sync_token,
@@ -179,8 +179,8 @@ class TestSharedImageInterface : public SharedImageInterface {
   const SyncToken& MostRecentGeneratedToken() const {
     return most_recent_generated_token_;
   }
-  const SyncToken& MostRecentDestroyToken() const {
-    return most_recent_destroy_token_;
+  const std::vector<SyncToken>& MostRecentDestroyTokens() const {
+    return most_recent_destroy_tokens_;
   }
   ClientSharedImage* MostRecentMappableSharedImage() const {
     return most_recent_mappable_shared_image_;
@@ -211,7 +211,7 @@ class TestSharedImageInterface : public SharedImageInterface {
   size_t num_update_shared_image_no_fence_calls_ = 0;
   gfx::Size most_recent_size_;
   SyncToken most_recent_generated_token_;
-  SyncToken most_recent_destroy_token_;
+  std::vector<SyncToken> most_recent_destroy_tokens_;
   raw_ptr<ClientSharedImage> most_recent_mappable_shared_image_;
   absl::flat_hash_set<Mailbox> shared_images_;
   bool emulate_client_provided_native_buffer_ = false;
