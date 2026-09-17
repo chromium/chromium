@@ -1858,6 +1858,8 @@ static_library("ui") {
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/android/tab_model:impl",
       "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/side_panel/internal/android",
+      "//chrome/browser/ui/side_panel/internal/android:dev",
       "//chrome/browser/ui/webui/notifications_internals",
       "//chrome/browser/ui/webui/notifications_internals:impl",
       "//components/android_autofill/browser:android",

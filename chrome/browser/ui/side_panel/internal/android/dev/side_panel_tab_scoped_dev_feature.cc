@@ -15,11 +15,10 @@
 #include "chrome/browser/ui/side_panel/side_panel_native_view.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/web_contents.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after headers that provide symbols used by @JniType.
-#include "chrome/browser/ui/side_panel/internal/android/jni_headers/SidePanelTabScopedDevFeatureImpl_jni.h"
+#include "chrome/browser/ui/side_panel/internal/android/dev_jni_headers/SidePanelTabScopedDevFeatureImpl_jni.h"
 
 namespace {
 SidePanelNativeView CreateSidePanelDevView(tabs::TabInterface* tab,

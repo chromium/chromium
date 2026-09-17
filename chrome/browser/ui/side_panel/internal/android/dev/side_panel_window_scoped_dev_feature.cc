@@ -18,7 +18,7 @@
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after headers that provide symbols used by @JniType.
-#include "chrome/browser/ui/side_panel/internal/android/jni_headers/SidePanelWindowScopedDevFeatureImpl_jni.h"
+#include "chrome/browser/ui/side_panel/internal/android/dev_jni_headers/SidePanelWindowScopedDevFeatureImpl_jni.h"
 
 namespace {
 using jni_zero::AttachCurrentThread;
