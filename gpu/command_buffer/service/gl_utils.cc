@@ -167,6 +167,9 @@ void PopulateGLCapabilities(GLCapabilities* caps,
                 &caps->max_fragment_uniform_vectors);
   glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &caps->max_renderbuffer_size);
   glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &caps->max_texture_image_units);
+  if (feature_info->workarounds().max_texture_image_units_13) {
+    caps->max_texture_image_units = std::min(caps->max_texture_image_units, 13);
+  }
   glGetIntegerv(GL_MAX_VARYING_VECTORS, &caps->max_varying_vectors);
   glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &caps->max_vertex_attribs);
   glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS,
