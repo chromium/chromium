@@ -961,9 +961,12 @@ BASE_FEATURE(kIPHiOSAIHubNewBadge,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIPHiOSGeminiLiveNewBadgeFeature,
+             "IPH_iOSGeminiLiveNewBadgeFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIPHiOSGeminiLiveIPHFeature, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSGeminiLiveIPHFeature,
+             "IPH_iOSGeminiLiveIPHFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIPHiOSGeminiFullscreenPromoFeature,
              "IPH_iOSGeminiFullscreenPromoFeature",
