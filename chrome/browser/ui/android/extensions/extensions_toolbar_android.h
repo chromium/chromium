@@ -95,7 +95,7 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
                          const ToolbarActionsModel::ActionId& action_id);
   void ExecuteUserAction(const ToolbarActionsModel::ActionId& action_id,
                          ToolbarActionViewModel::InvocationSource source);
-  void OnRequestAccessButtonClicked(JNIEnv* env,
+  bool OnRequestAccessButtonClicked(JNIEnv* env,
                                     content::WebContents* web_contents);
   void MovePinnedAction(const ToolbarActionsModel::ActionId& action_id,
                         int target_index);
@@ -111,6 +111,10 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
 
   // The view model for this container.
   std::unique_ptr<ExtensionsToolbarViewModel> toolbar_view_model_;
+
+  // Holds the current parameters for the request access button.
+  ExtensionsToolbarViewModel::RequestAccessButtonParams
+      request_access_button_params_;
 
   // Registers ExtensionsToolbarViewModel as the ExtensionsContainer for the
   // browser window.

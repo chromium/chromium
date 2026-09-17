@@ -253,6 +253,11 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
     }
 
     private void handleAccessGranted(WebContents webContents) {
+        if (!mExtensionsToolbarBridge.onRequestAccessButtonClicked(webContents)) {
+            refreshRequestAccessButton();
+            return;
+        }
+
         mIsShowingAllowedText = true;
         mWebContentsShowingAllowedText = webContents;
         mModel.set(
@@ -264,8 +269,6 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
         mModel.set(
                 ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_CLICK_LISTENER,
                 null); // Disable further clicks
-
-        mExtensionsToolbarBridge.onRequestAccessButtonClicked(webContents);
 
         // We post a delayed task to re-evaluate the button state so it naturally disappears
         // after the user has a moment to see the "Allowed" text.

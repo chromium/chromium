@@ -122,9 +122,9 @@ public class ExtensionsToolbarBridge implements Destroyable {
                 .movePinnedAction(mNativeExtensionsToolbarAndroid, actionId, targetIndex);
     }
 
-    public void onRequestAccessButtonClicked(WebContents webContents) {
+    public boolean onRequestAccessButtonClicked(WebContents webContents) {
         assert mNativeExtensionsToolbarAndroid != 0;
-        ExtensionsToolbarBridgeJni.get()
+        return ExtensionsToolbarBridgeJni.get()
                 .onRequestAccessButtonClicked(mNativeExtensionsToolbarAndroid, webContents);
     }
 
@@ -382,7 +382,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
                 @JniType("std::string") String actionId,
                 int targetIndex);
 
-        void onRequestAccessButtonClicked(
+        boolean onRequestAccessButtonClicked(
                 long nativeExtensionsToolbarAndroid,
                 @JniType("content::WebContents*") WebContents webContents);
 

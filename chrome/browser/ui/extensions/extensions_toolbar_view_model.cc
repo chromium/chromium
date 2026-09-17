@@ -282,8 +282,9 @@ void ExtensionsToolbarViewModel::ExecuteUserAction(
 
 void ExtensionsToolbarViewModel::GrantSiteAccess(
     content::WebContents* web_contents,
-    const std::vector<extensions::ExtensionId>& extension_ids) {
-  if (!actions_model_) {
+    const std::vector<extensions::ExtensionId>& extension_ids,
+    const url::Origin& expected_origin) {
+  if (!actions_model_ || !web_contents) {
     return;
   }
 
@@ -300,8 +301,7 @@ void ExtensionsToolbarViewModel::GrantSiteAccess(
 
   extensions::SitePermissionsHelper(profile).UpdateSiteAccess(
       extensions_to_run, web_contents,
-      extensions::PermissionsManager::UserSiteAccess::kOnSite,
-      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+      extensions::PermissionsManager::UserSiteAccess::kOnSite, expected_origin);
 }
 
 // Extensions are included in the request access button only when:
@@ -351,6 +351,8 @@ ExtensionsToolbarViewModel::GetRequestAccessButtonParams(
   if (params.extension_ids.empty()) {
     return params;
   }
+
+  params.origin = origin;
 
   std::vector<std::u16string> tooltip_parts;
   tooltip_parts.push_back(l10n_util::GetStringFUTF16(

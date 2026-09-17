@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/android/extensions/extensions_toolbar_android.h"
 
 #include <cstdint>
+#include <utility>
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -111,16 +112,21 @@ base::android::ScopedJavaLocalRef<jobject>
 ExtensionsToolbarAndroid::GetRequestAccessButtonParams(
     JNIEnv* env,
     content::WebContents* web_contents) {
-  ExtensionsToolbarViewModel::RequestAccessButtonParams params;
   if (ToolbarActionsModel::CanShowActionsInToolbar(*browser_)) {
-    params = toolbar_view_model_->GetRequestAccessButtonParams(web_contents);
+    request_access_button_params_ =
+        toolbar_view_model_->GetRequestAccessButtonParams(web_contents);
+  } else {
+    request_access_button_params_ =
+        ExtensionsToolbarViewModel::RequestAccessButtonParams();
   }
-  return Java_RequestAccessButtonParams_Constructor(env, params.extension_ids,
-                                                    params.tooltip_text);
+  return Java_RequestAccessButtonParams_Constructor(
+      env, request_access_button_params_.extension_ids,
+      request_access_button_params_.tooltip_text);
 }
 
 void ExtensionsToolbarAndroid::OnRequestAccessButtonParamsChanged(
     content::WebContents* web_contents) {
+  request_access_button_params_ = {};
   Java_ExtensionsToolbarBridge_onRequestAccessButtonParamsChanged(
       AttachCurrentThread(), java_object_);
 }
@@ -197,6 +203,8 @@ void ExtensionsToolbarAndroid::OnPinnedActionsChanged() {
 void ExtensionsToolbarAndroid::OnActiveWebContentsChanged(
     bool /*is_same_document*/,
     content::WebContents* web_contents) {
+  request_access_button_params_ =
+      ExtensionsToolbarViewModel::RequestAccessButtonParams();
   Java_ExtensionsToolbarBridge_onActiveWebContentsChanged(
       AttachCurrentThread(), java_object_,
       web_contents ? web_contents->GetJavaWebContents() : nullptr);
@@ -376,13 +384,31 @@ bool ExtensionsToolbarAndroid::IsActionDraggable(
   return toolbar_view_model_->IsActionDraggable(action_id);
 }
 
-void ExtensionsToolbarAndroid::OnRequestAccessButtonClicked(
+bool ExtensionsToolbarAndroid::OnRequestAccessButtonClicked(
     JNIEnv* env,
     content::WebContents* web_contents) {
-  ExtensionsToolbarViewModel::RequestAccessButtonParams params =
-      toolbar_view_model_->GetRequestAccessButtonParams(web_contents);
+  if (!web_contents) {
+    return false;
+  }
 
-  toolbar_view_model_->GrantSiteAccess(web_contents, params.extension_ids);
+  ExtensionsToolbarViewModel::RequestAccessButtonParams params =
+      std::exchange(request_access_button_params_, {});
+
+  // Verify that the origin displayed when the action was initiated matches the
+  // current origin of the WebContents.
+  if (params.origin.opaque() ||
+      !params.origin.IsSameOriginWith(
+          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
+    return false;
+  }
+
+  if (params.extension_ids.empty()) {
+    return false;
+  }
+
+  toolbar_view_model_->GrantSiteAccess(web_contents, params.extension_ids,
+                                       params.origin);
+  return true;
 }
 
 void ExtensionsToolbarAndroid::ExecuteUserAction(

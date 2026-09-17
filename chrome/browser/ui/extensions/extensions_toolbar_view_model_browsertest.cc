@@ -349,6 +349,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
       toolbar_model()->GetRequestAccessButtonParams(GetActiveWebContents());
   EXPECT_TRUE(params.extension_ids.empty());
   EXPECT_TRUE(params.tooltip_text.empty());
+  EXPECT_TRUE(params.origin.opaque());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
@@ -370,6 +371,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
   EXPECT_THAT(params.extension_ids, testing::ElementsAre(extension_a->id()));
   EXPECT_NE(params.tooltip_text.find(u"Extension A"), std::u16string::npos);
   EXPECT_NE(params.tooltip_text.find(u"example.com"), std::u16string::npos);
+  EXPECT_EQ(params.origin,
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Add a second request
   const std::string extension_b_id =
@@ -383,6 +386,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
                                         extension_a->id(), extension_b->id()));
   EXPECT_NE(params.tooltip_text.find(u"Extension A"), std::u16string::npos);
   EXPECT_NE(params.tooltip_text.find(u"Extension B"), std::u16string::npos);
+  EXPECT_EQ(params.origin,
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Remove the request for extension A
   permissions_manager->RemoveHostAccessRequest(tab_id, extension_a->id());
@@ -390,12 +395,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
   EXPECT_THAT(params.extension_ids, testing::ElementsAre(extension_b->id()));
   EXPECT_EQ(params.tooltip_text.find(u"Extension A"), std::u16string::npos);
   EXPECT_NE(params.tooltip_text.find(u"Extension B"), std::u16string::npos);
+  EXPECT_EQ(params.origin,
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Remove the second request to return to the initial state
   permissions_manager->RemoveHostAccessRequest(tab_id, extension_b->id());
   params = toolbar_model()->GetRequestAccessButtonParams(web_contents);
   EXPECT_TRUE(params.extension_ids.empty());
   EXPECT_TRUE(params.tooltip_text.empty());
+  EXPECT_TRUE(params.origin.opaque());
 }
 
 // Tests that GetRequestAccessButtonParams returns empty when an extension has
@@ -410,6 +418,62 @@ IN_PROC_BROWSER_TEST_F(
       toolbar_model()->GetRequestAccessButtonParams(GetActiveWebContents());
   EXPECT_TRUE(params.extension_ids.empty());
   EXPECT_TRUE(params.tooltip_text.empty());
+  EXPECT_TRUE(params.origin.opaque());
+}
+
+// Tests that GrantSiteAccess succeeds when the expected origin matches the
+// current web contents origin.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
+                       GrantSiteAccess_SucceedsIfOriginMatches) {
+  auto extension = AddExtension("Test Extension", {}, {"*://example.com/*"},
+                                /*withhold_permissions=*/true);
+
+  NavigateTo("example.com");
+  auto* web_contents = GetActiveWebContents();
+  auto origin = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+
+  auto* permissions_manager = extensions::PermissionsManager::Get(profile());
+  EXPECT_EQ(permissions_manager->GetUserSiteAccess(
+                *extension, web_contents->GetLastCommittedURL()),
+            extensions::PermissionsManager::UserSiteAccess::kOnClick);
+
+  toolbar_model()->GrantSiteAccess(web_contents, {extension->id()}, origin);
+
+  EXPECT_EQ(permissions_manager->GetUserSiteAccess(
+                *extension, web_contents->GetLastCommittedURL()),
+            extensions::PermissionsManager::UserSiteAccess::kOnSite);
+}
+
+// Tests that GrantSiteAccess fails to grant site access if the expected origin
+// does not match the current web contents origin.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
+                       GrantSiteAccess_FailsIfOriginChanges) {
+  auto extension = AddExtension("Test Extension", {}, {"*://example.com/*"},
+                                /*withhold_permissions=*/true);
+
+  NavigateTo("example.com");
+  auto* web_contents = GetActiveWebContents();
+  auto origin_a = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+
+  auto* permissions_manager = extensions::PermissionsManager::Get(profile());
+  EXPECT_EQ(permissions_manager->GetUserSiteAccess(
+                *extension, web_contents->GetLastCommittedURL()),
+            extensions::PermissionsManager::UserSiteAccess::kOnClick);
+
+  // Navigate to a different site before the action is executed.
+  NavigateTo("other.com");
+
+  // Attempt to grant site access using the origin of the previous site.
+  toolbar_model()->GrantSiteAccess(web_contents, {extension->id()}, origin_a);
+
+  // Site access should NOT be granted for either the previous site or the new
+  // site.
+  EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension,
+                                                   GURL("http://example.com/")),
+            extensions::PermissionsManager::UserSiteAccess::kOnClick);
+  EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension,
+                                                   GURL("http://other.com/")),
+            extensions::PermissionsManager::UserSiteAccess::kOnClick);
 }
 
 // Tests that a pinned action is draggable.

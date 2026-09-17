@@ -111,6 +111,7 @@ public class ExtensionAccessControlButtonMediatorTest {
 
         when(mExtensionsToolbarBridge.getRequestAccessButtonParams(any()))
                 .thenReturn(new RequestAccessButtonParams(new String[0], ""));
+        when(mExtensionsToolbarBridge.onRequestAccessButtonClicked(any())).thenReturn(true);
 
         mModel =
                 new PropertyModel.Builder(
@@ -235,6 +236,32 @@ public class ExtensionAccessControlButtonMediatorTest {
         // State should be immediately cleared and the button should evaluate state for the new tab
         // (no requests)
         assertFalse(mModel.get(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE));
+    }
+
+    @Test
+    public void testRequestAccessButton_NativeCallFailsDoesNotShowAllowed() {
+        ExtensionsToolbarBridge.Observer observer = mToolbarObserverCaptor.getValue();
+
+        RequestAccessButtonParams paramsWithRequests =
+                new RequestAccessButtonParams(new String[] {"a"}, "Tooltip");
+        when(mExtensionsToolbarBridge.getRequestAccessButtonParams(mWebContents))
+                .thenReturn(paramsWithRequests);
+        when(mExtensionsToolbarBridge.onRequestAccessButtonClicked(mWebContents)).thenReturn(false);
+
+        observer.onActiveWebContentsChanged(mWebContents);
+        assertTrue(mModel.get(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE));
+        assertEquals(
+                1, mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_EXTENSION_COUNT));
+
+        // User clicks the button, but native call returns false (e.g. origin mismatch).
+        OnClickListener listener =
+                mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_CLICK_LISTENER);
+        listener.onClick(null);
+
+        // Button should not enter the "Allowed" state (-1).
+        assertEquals(
+                1, mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_EXTENSION_COUNT));
+        verify(mExtensionsToolbarBridge).onRequestAccessButtonClicked(mWebContents);
     }
 
     @Test

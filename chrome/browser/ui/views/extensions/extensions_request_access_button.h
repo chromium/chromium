@@ -104,6 +104,9 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton {
   // Extensions included in the request access button.
   std::vector<extensions::ExtensionId> extension_ids_;
 
+  // The origin for which the button is displaying access requests.
+  url::Origin origin_;
+
   // The origin for which the button is displaying a confirmation message, if
   // any.
   std::optional<url::Origin> confirmation_origin_;

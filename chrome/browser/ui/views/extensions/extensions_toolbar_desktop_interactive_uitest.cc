@@ -1255,6 +1255,81 @@ IN_PROC_BROWSER_TEST_F(
             UserSiteAccess::kOnAllSites);
 }
 
+// Tests that the request access button does not grant site access if the
+// button's expected origin does not match the tab's current committed origin.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopFeatureUITest,
+                       RequestAccessButton_DoesNotGrantIfOriginChanges) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Test Extension", "<all_urls>");
+  extensions::ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  auto* permissions_manager = extensions::PermissionsManager::Get(profile());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  const GURL site_a_url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+  NavigateToUrl(site_a_url);
+  AddHostAccessRequest(*extension, web_contents);
+  WaitForAnimation();
+
+  EXPECT_TRUE(request_access_button()->GetVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension->id()));
+  const auto site_a_params = GetExtensionsToolbarDesktop()
+                                 ->GetToolbarViewModel()
+                                 ->GetRequestAccessButtonParams(web_contents);
+  EXPECT_EQ(site_a_params.origin, url::Origin::Create(site_a_url));
+
+  const GURL site_b_url =
+      embedded_test_server()->GetURL("other.com", "/title1.html");
+  NavigateToUrl(site_b_url);
+  WaitForAnimation();
+
+  // Navigation to site B reset the request access button. Manually update the
+  // button with site A's info to simulate the race condition where the button
+  // was displaying requests for site A when the click action was dispatched.
+  request_access_button()->Update(site_a_params);
+
+  EXPECT_TRUE(request_access_button()->GetVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension->id()));
+
+  // Don't show the timed confirmation overlay.
+  request_access_button()->remove_confirmation_for_testing(true);
+
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, site_a_url));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, site_b_url));
+
+  // User action is processed when the button has site A details, but the tab
+  // has already navigated to site B.
+  ClickButton(request_access_button());
+  WaitForAnimation();
+
+  // Verify site access was not granted to either site and no confirmation was
+  // shown.
+  EXPECT_FALSE(request_access_button()->IsShowingConfirmation());
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, site_b_url));
+  EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension, site_b_url),
+            UserSiteAccess::kOnClick);
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, site_a_url));
+  EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension, site_a_url),
+            UserSiteAccess::kOnClick);
+
+  // Also verify that direct view model calls with a mismatched expected origin
+  // do not grant access.
+  GetExtensionsToolbarDesktop()->GetToolbarViewModel()->GrantSiteAccess(
+      web_contents, {extension->id()}, url::Origin::Create(site_a_url));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, site_b_url));
+  EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension, site_b_url),
+            UserSiteAccess::kOnClick);
+}
+
 // Tests that when the user clicks on the request access button and immediately
 // navigates to a different site, the confirmation text is collapsed and the
 // button displays the extensions requesting access to the new site (if any).
