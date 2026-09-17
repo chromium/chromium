@@ -9,6 +9,7 @@
 #include "base/test/test_future.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_context_menu_invocation_helper.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/glic_invoke_handler.h"
+#include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -1476,6 +1478,57 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithFloatingTarget) {
   EXPECT_TRUE(success_future.Wait());
   EXPECT_TRUE(instance->IsDetached());
 }
+
+// An instance can be bound to several tabs at once, but only one of its side
+// panels is active at a time. An invocation that targets a specific tab must
+// show on that tab, rather than following the instance to wherever it happens
+// to be active. The two tabs live in separate windows so that both remain
+// activated (an invocation on a non-activated tab would only create an
+// inactive side panel). Desktop only: Android has a single active embedder and
+// peeks the background window's tab instead of activating it.
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeTargetsRequestedTabWhenActiveInAnotherTab) {
+  // Keep the instance from binding to newly created tabs on its own, so that
+  // the bindings under test are only the ones this test sets up.
+  GetProfile()->GetPrefs()->SetBoolean(
+      glic::prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, false);
+
+  tabs::TabInterface* tab_a = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForActiveEmbedderToMatchTab(instance, tab_a));
+
+  // Bind the instance to tab B, in a second window, and leave it active there.
+  // This goes through Show() rather than Invoke() so that the setup does not
+  // depend on the invocation routing that this test is exercising.
+  BrowserWindowInterface* browser_b = CreateAdditionalBrowserWindow();
+  tabs::TabInterface* tab_b =
+      CreateAndActivateTab(browser_b, GURL("about:blank"));
+  ASSERT_TRUE(tab_b);
+  instance->Show(ShowOptions::ForSidePanel(*tab_b));
+  ASSERT_OK(WaitForGlicInstanceBoundToTab(tab_b));
+  ASSERT_OK(WaitForActiveEmbedderToMatchTab(instance, tab_b));
+
+  // The instance is now bound to both tabs, and active on tab B.
+  ASSERT_EQ(GetInstanceForTab(tab_a), instance);
+  ASSERT_EQ(GetInstanceForTab(tab_b), instance);
+  ASSERT_TRUE(tab_a->IsActivated());
+
+  // Invoke against tab A while the instance is still active on tab B.
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(glic::Target(*tab_a),
+                            mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+  coordinator().Invoke(std::move(options));
+  ASSERT_TRUE(success_future.Wait());
+
+  // The invocation must move to the targeted tab, not stay on tab B.
+  ASSERT_OK(WaitForActiveEmbedderToMatchTab(instance, tab_a));
+
+  // The invocation should have reused the existing instance.
+  EXPECT_EQ(GetInstanceForTab(tab_a), instance);
+  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/504753617): Re-enable the test.
