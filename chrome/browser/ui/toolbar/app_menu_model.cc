@@ -257,20 +257,6 @@ const gfx::VectorIcon& GetSendTabToSelfIcon() {
                                            : kDevicesChromeRefreshOldIcon;
 }
 
-// Conditionally return the update app menu item title based on upgrade detector
-// state.
-std::u16string GetUpgradeDialogTitleText() {
-  if (UpgradeDetector::GetInstance()->is_outdated_install() ||
-      UpgradeDetector::GetInstance()->is_outdated_install_no_au()) {
-    return l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_MENU_ITEM);
-  }
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
-    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
-  return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE_ALT);
-#else
-  return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE);
-#endif
-}
 
 #if !BUILDFLAG(IS_CHROMEOS)
 std::u16string GetSyncSectionTitle(Profile* profile,
@@ -1204,6 +1190,20 @@ AlertMenuItem AppMenuModel::GetAlertItemForRunningTutorial(
                      kPasswordManagerTutorialId)
              ? AlertMenuItem::kPasswordManager
              : AlertMenuItem::kNone;
+}
+
+// static
+std::u16string AppMenuModel::GetUpgradeDialogTitleText() {
+  if (UpgradeDetector::GetInstance()->is_outdated_install() ||
+      UpgradeDetector::GetInstance()->is_outdated_install_no_au()) {
+    return l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_MENU_ITEM);
+  }
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+  return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE_ALT);
+#else
+  return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE);
+#endif
 }
 
 AppMenuModel::AppMenuModel(ui::AcceleratorProvider* provider,

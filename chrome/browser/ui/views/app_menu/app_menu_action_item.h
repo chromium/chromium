@@ -28,6 +28,7 @@ class AppMenuActionItem {
     kSection,
     kHeader,
     kSearch,
+    kNotification,
     kCustom,
   };
 

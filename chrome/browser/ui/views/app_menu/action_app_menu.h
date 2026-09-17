@@ -110,6 +110,8 @@ class ActionAppMenu : public views::MenuDelegate {
   // The search bar view in the menu, if kChroMenuSearch is enabled.
   raw_ptr<AppMenuSearchBarView> search_bar_ = nullptr;
 
+  bool has_notification_header_ = false;
+
   size_t header_count_ = 0;
 
   // The action to execute when the menu is closed.

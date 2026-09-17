@@ -43,6 +43,7 @@ class ActionAppMenuManager {
   actions::ActionItem* GetAppMenuRoot() const;
 
  private:
+  void AddNotificationActions(actions::ActionItem* root);
   void AddSearchBarAction(actions::ActionItem* root);
   void AddBlockHeaderActions(actions::ActionItem* root);
   void AddYourChromeActions(actions::ActionItem* root);

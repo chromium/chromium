@@ -30,6 +30,7 @@
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/menu_button_controller.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_separator.h"
@@ -165,6 +166,7 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
   }
 
   search_bar_ = nullptr;
+  has_notification_header_ = false;
   action_to_execute_on_close_.reset();
   command_to_action_map_.clear();
   header_count_ = 0;
@@ -235,6 +237,10 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
     actions::BaseAction* const child_base = children_action_items[i].get();
     actions::ActionItem* const child_ptr = child_base->GetActionItem();
 
+    if (!child_ptr->GetVisible()) {
+      continue;
+    }
+
     const auto display_type =
         child_ptr->GetProperty(AppMenuActionItem::kDisplayTypeKey);
 
@@ -299,6 +305,10 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
   views::MenuItemView::Type menu_item_type =
       is_checkable ? views::MenuItemView::Type::kCheckbox
                    : views::MenuItemView::Type::kNormal;
+
+  if (display_type == AppMenuActionItem::DisplayType::kNotification) {
+    has_notification_header_ = true;
+  }
 
   views::MenuItemView* menu_item =
       has_submenu ? parent_menu_item->AppendSubMenu(
@@ -404,9 +414,12 @@ void ActionAppMenu::PopulateSearchBar(views::MenuItemView* view_parent,
   search_item->set_vertical_margin(0);
 
   auto search_bar = std::make_unique<AppMenuSearchBarView>();
-  search_bar->SetProperty(views::kMarginsKey,
-                          ChromeLayoutProvider::Get()->GetInsetsMetric(
-                              INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN));
+  search_bar->SetProperty(
+      views::kMarginsKey,
+      ChromeLayoutProvider::Get()->GetInsetsMetric(
+          has_notification_header_
+              ? INSETS_ACTION_APP_MENU_SEARCH_BAR_WITH_NOTIFICATION_MARGIN
+              : INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN));
   search_bar_ = search_bar.get();
   search_item->AddChildView(std::move(search_bar));
 }
@@ -454,9 +467,12 @@ void ActionAppMenu::PopulateBlockSection(
       block_action_item, &action_view_controller_, &command_to_action_map_,
       base::BindRepeating(&ActionAppMenu::CancelAndEvaluate,
                           base::Unretained(this)));
-  block_view->SetProperty(views::kMarginsKey,
-                          ChromeLayoutProvider::Get()->GetInsetsMetric(
-                              INSETS_ACTION_APP_MENU_BLOCK_MARGIN));
+  block_view->SetProperty(
+      views::kMarginsKey,
+      ChromeLayoutProvider::Get()->GetInsetsMetric(
+          has_notification_header_ && !search_bar_
+              ? INSETS_ACTION_APP_MENU_BLOCK_WITH_NOTIFICATION_MARGIN
+              : INSETS_ACTION_APP_MENU_BLOCK_MARGIN));
   block_item->AddChildView(std::move(block_view));
 }
 

@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/time/default_clock.h"
+#include "base/time/default_tick_clock.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -71,7 +73,7 @@ void ActionAppMenuTestBase::SetUp() {
                        .SetActionId(action_id)
                        .SetText(text)
                        .SetEnabled(true)
-                       .SetVisible(true)
+                       .SetVisible(action_id != kActionUpgradeDialog)
                        .Build());
   };
 

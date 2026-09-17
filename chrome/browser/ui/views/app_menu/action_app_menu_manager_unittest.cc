@@ -7,6 +7,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/defaults.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -45,7 +46,7 @@ TEST_F(ActionAppMenuManagerTest, ProxySyncsWithDelegateAndInvokes) {
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
   ASSERT_NE(root, nullptr);
   actions::ActionItem* your_chrome_section =
-      root->GetChildren().children()[1]->GetActionItem();
+      root->GetChildren().children()[2]->GetActionItem();
   ASSERT_NE(your_chrome_section, nullptr);
   actions::BaseAction* passwords_submenu = nullptr;
   for (const auto& child : your_chrome_section->GetChildren().children()) {
@@ -88,9 +89,9 @@ TEST_F(ActionAppMenuManagerTest, BlockActionsGuestSessionExcludesIncognito) {
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
   ASSERT_NE(root, nullptr);
 
-  // The block section is at index 0.
+  // The block section is at index 1.
   actions::ActionItem* block_section =
-      root->GetChildren().children()[0]->GetActionItem();
+      root->GetChildren().children()[1]->GetActionItem();
   ASSERT_NE(block_section, nullptr);
 
   // Only New Tab and New Window should be present for a guest session.
@@ -134,7 +135,7 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenu) {
   ASSERT_NE(root, nullptr);
 
   actions::ActionItem* your_chrome_section =
-      root->GetChildren().children()[1]->GetActionItem();
+      root->GetChildren().children()[2]->GetActionItem();
   ASSERT_NE(your_chrome_section, nullptr);
 
   actions::BaseAction* profile_submenu = nullptr;
@@ -236,7 +237,7 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenuSingleProfile) {
   ASSERT_NE(root, nullptr);
 
   actions::ActionItem* your_chrome_section =
-      root->GetChildren().children()[1]->GetActionItem();
+      root->GetChildren().children()[2]->GetActionItem();
   ASSERT_NE(your_chrome_section, nullptr);
 
   actions::BaseAction* profile_submenu = nullptr;
@@ -296,7 +297,7 @@ TEST_F(ActionAppMenuManagerTest,
   ASSERT_NE(root, nullptr);
 
   actions::ActionItem* block_section =
-      root->GetChildren().children()[0]->GetActionItem();
+      root->GetChildren().children()[1]->GetActionItem();
   ASSERT_NE(block_section, nullptr);
 
   // When isolated mode replaces incognito, it should replace the New Incognito
@@ -335,7 +336,7 @@ TEST_F(ActionAppMenuManagerTest, BookmarkBarSubmenuCheckItems) {
   ASSERT_NE(root, nullptr);
 
   actions::ActionItem* your_chrome_section =
-      root->GetChildren().children()[1]->GetActionItem();
+      root->GetChildren().children()[2]->GetActionItem();
   ASSERT_NE(your_chrome_section, nullptr);
 
   actions::BaseAction* bookmarks_submenu = nullptr;
@@ -375,5 +376,74 @@ TEST_F(ActionAppMenuManagerTest, BookmarkBarSubmenuCheckItems) {
   EXPECT_TRUE(bookmark_bar_children[2]->GetActionItem()->GetProperty(
       AppMenuActionItem::kIsCheckableKey));
 }
+
+TEST_F(ActionAppMenuManagerTest, NotificationHeaderNoNotification) {
+  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  // The notification section is present in the action tree. The upgrade dialog
+  // action within it is not visible.
+  ASSERT_FALSE(root->GetChildren().children().empty());
+  actions::ActionItem* notification_section =
+      root->GetChildren().children()[0]->GetActionItem();
+  ASSERT_NE(notification_section, nullptr);
+  ASSERT_FALSE(notification_section->GetChildren().children().empty());
+  EXPECT_EQ(notification_section->GetChildren()
+                .children()[0]
+                ->GetActionItem()
+                ->GetActionId(),
+            kActionUpgradeDialog);
+  EXPECT_FALSE(notification_section->GetChildren()
+                   .children()[0]
+                   ->GetActionItem()
+                   ->GetVisible());
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ActionAppMenuManagerTest, NotificationHeaderUpgradeNotification) {
+  if (!browser_defaults::kShowUpgradeMenuItem) {
+    GTEST_SKIP() << "Upgrade menu item is not supported on this platform.";
+  }
+
+  actions::ActionItem* upgrade_action =
+      actions::ActionManager::Get().FindAction(kActionUpgradeDialog);
+  ASSERT_NE(upgrade_action, nullptr);
+  upgrade_action->SetVisible(true);
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  const auto& children = root->GetChildren().children();
+  ASSERT_GE(children.size(), 2u);
+
+  // The first item should be the notification section.
+  actions::ActionItem* notification_section = children[0]->GetActionItem();
+  ASSERT_NE(notification_section, nullptr);
+  EXPECT_EQ(
+      notification_section->GetProperty(AppMenuActionItem::kDisplayTypeKey),
+      AppMenuActionItem::DisplayType::kSection);
+  EXPECT_EQ(
+      notification_section->GetProperty(AppMenuActionItem::kContainerColorKey),
+      ui::kColorAppMenuUpgradeRowBackground);
+
+  const auto& section_children = notification_section->GetChildren().children();
+  ASSERT_EQ(section_children.size(), 1u);
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetActionId(),
+            kActionUpgradeDialog);
+  EXPECT_TRUE(section_children[0]->GetActionItem()->GetVisible());
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kNotification);
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
+                AppMenuActionItem::kContainerColorKey),
+            ui::kColorAppMenuUpgradeRowBackground);
+}
+#endif
 
 }  // namespace

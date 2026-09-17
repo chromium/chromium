@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -306,11 +307,22 @@ void ActionAppMenuManager::CreateMenuHierarchy() {
     return;
   }
 
+  AddNotificationActions(root);
   AddSearchBarAction(root);
   AddBlockHeaderActions(root);
   AddYourChromeActions(root);
   AddToolsAndActionsActions(root);
   AddFooterActions(root);
+}
+
+void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
+  AppMenuBuilder(
+      root, BrowserActions::From(browser_window_interface_)->root_action_item(),
+      ui::kColorAppMenuUpgradeRowBackground)
+      .AddSection(DisplayType::kSection, [](AppMenuBuilder& section) {
+        section.AddAction(kActionUpgradeDialog,
+                          {.display_type = DisplayType::kNotification});
+      });
 }
 
 void ActionAppMenuManager::AddSearchBarAction(actions::ActionItem* root) {

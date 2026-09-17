@@ -259,6 +259,10 @@ class AppMenuModel : public ui::SimpleMenuModel,
   static AlertMenuItem GetAlertItemForRunningTutorial(
       BrowserWindowInterface* browser);
 
+  // Conditionally return the update app menu item title based on upgrade
+  // detector state.
+  static std::u16string GetUpgradeDialogTitleText();
+
   // Creates an app menu model for the given browser. Init() must be called
   // before passing this to an AppMenu. |app_menu_icon_controller|, if provided,
   // is used to decide whether or not to include an item for opening the upgrade

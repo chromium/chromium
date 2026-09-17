@@ -1530,4 +1530,94 @@ TEST_F(ActionAppMenuTest, BlockSectionAndMenuHostWidth) {
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ActionAppMenuTest, UpgradeNotificationRowStyling) {
+  if (!browser_defaults::kShowUpgradeMenuItem) {
+    GTEST_SKIP() << "Upgrade menu item is not supported on this platform.";
+  }
+
+  actions::ActionItem* upgrade_action =
+      actions::ActionManager::Get().FindAction(
+          kActionUpgradeDialog, browser_actions_->root_action_item());
+  ASSERT_NE(upgrade_action, nullptr);
+  upgrade_action->SetVisible(true);
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* upgrade_item =
+      root->GetMenuItemByID(kActionUpgradeDialog);
+  ASSERT_TRUE(upgrade_item);
+  EXPECT_TRUE(upgrade_item->GetVisible());
+  EXPECT_EQ(upgrade_item->title(), u"Update Chrome");
+
+  // Upgrade row should have container background with rounded top and bottom
+  // corners.
+  ASSERT_TRUE(upgrade_item->GetMenuItemBackground().has_value());
+  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->background_color_id,
+            ui::kColorAppMenuUpgradeRowBackground);
+  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->top_radius, 8);
+  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->bottom_radius, 8);
+
+  // Verify the following block section item has
+  // INSETS_ACTION_APP_MENU_BLOCK_WITH_NOTIFICATION_MARGIN, creating 12px of
+  // whitespace below the notification banner (matching the 12px container inset
+  // above).
+  views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(1);
+  ASSERT_NE(block_item, nullptr);
+  ASSERT_EQ(block_item->children().size(), 1u);
+  auto* block_view =
+      views::AsViewClass<AppMenuBlockView>(block_item->children()[0]);
+  ASSERT_TRUE(block_view);
+  const gfx::Insets* block_margins =
+      block_view->GetProperty(views::kMarginsKey);
+  ASSERT_TRUE(block_margins);
+  EXPECT_EQ(*block_margins,
+            ChromeLayoutProvider::Get()->GetInsetsMetric(
+                INSETS_ACTION_APP_MENU_BLOCK_WITH_NOTIFICATION_MARGIN));
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, UpgradeNotificationHiddenWhenInvisible) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* upgrade_item =
+      root->GetMenuItemByID(kActionUpgradeDialog);
+  EXPECT_FALSE(upgrade_item);
+
+  // Block section should be at index 0 and use standard block margins when the
+  // notification is hidden.
+  views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(0);
+  ASSERT_NE(block_item, nullptr);
+  ASSERT_EQ(block_item->children().size(), 1u);
+  auto* block_view =
+      views::AsViewClass<AppMenuBlockView>(block_item->children()[0]);
+  ASSERT_TRUE(block_view);
+  const gfx::Insets* block_margins =
+      block_view->GetProperty(views::kMarginsKey);
+  ASSERT_TRUE(block_margins);
+  EXPECT_EQ(*block_margins, ChromeLayoutProvider::Get()->GetInsetsMetric(
+                                INSETS_ACTION_APP_MENU_BLOCK_MARGIN));
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+#endif
+
 }  // namespace
