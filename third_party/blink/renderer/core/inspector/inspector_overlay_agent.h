@@ -193,6 +193,8 @@ class CORE_EXPORT InspectorOverlayAgent final
   static std::unique_ptr<InspectorContainerQueryContainerHighlightConfig>
   ToContainerQueryContainerHighlightConfig(
       protocol::Overlay::ContainerQueryContainerHighlightConfig*);
+  static std::unique_ptr<InspectorImcbHighlightConfig> ToImcbHighlightConfig(
+      protocol::Overlay::ImcbHighlightConfig*);
   static std::unique_ptr<InspectorFlexItemHighlightConfig>
   ToFlexItemHighlightConfig(protocol::Overlay::FlexItemHighlightConfig*);
   static std::unique_ptr<InspectorIsolationModeHighlightConfig>

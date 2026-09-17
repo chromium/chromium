@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/static_position.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_containing_block_utils.h"
 #include "third_party/blink/renderer/core/layout/non_overflowing_scroll_range.h"
@@ -227,6 +228,9 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     BoxStrut insets_for_get_computed_style;
     // Offset to container's border box.
     LogicalOffset offset;
+    // Inset-modified containing block relative to containing block's border
+    // box.
+    PhysicalRect imcb_rect;
     // Holds the initial layout result if we needed to know the size in order
     // to calculate the offset. If an initial result is set, it will either be
     // re-used or replaced in the final layout pass.

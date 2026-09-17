@@ -1011,4 +1011,284 @@ TEST_F(InspectorHighlightTest, CanvasInlineChildHighlight) {
           "\"path\":[\"M\",125,0,\"L\",150,0,\"L\",150,25,\"L\",125,25,\"Z\""));
 }
 
+TEST_F(InspectorHighlightTest, ImcbInfoStandardAbspos) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      body { margin: 0; padding: 0; }
+      #container {
+        position: relative;
+        width: 300px;
+        height: 300px;
+      }
+      #target {
+        position: absolute;
+        top: 20px;
+        left: 30px;
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div id="container">
+      <div id="target"></div>
+    </div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  EXPECT_TRUE(target);
+
+  InspectorHighlightConfig config = InspectorHighlight::DefaultConfig();
+  config.imcb_highlight_config =
+      std::make_unique<InspectorImcbHighlightConfig>();
+  LineStyle line_style;
+  line_style.color = Color(127, 32, 210);
+  line_style.pattern = "dashed";
+  config.imcb_highlight_config->imcb_border = line_style;
+
+  InspectorHighlightContrastInfo contrast_info;
+  InspectorHighlight highlight(target, config, contrast_info,
+                               /*append_element_info=*/false,
+                               /*append_distance_info=*/false,
+                               NodeContentVisibilityState::kNone);
+  std::unique_ptr<protocol::DictionaryValue> protocol_value =
+      highlight.AsProtocolValue();
+  ASSERT_TRUE(protocol_value->get("imcbInfo"));
+  protocol::ListValue* imcb_info_list = protocol_value->getArray("imcbInfo");
+  ASSERT_EQ(imcb_info_list->size(), 1u);
+  protocol::DictionaryValue* imcb_obj =
+      protocol::DictionaryValue::cast(imcb_info_list->at(0));
+  ASSERT_TRUE(imcb_obj);
+  EXPECT_TRUE(imcb_obj->get("imcbBorder"));
+  EXPECT_TRUE(imcb_obj->get("containingBlockBorder"));
+  // Standard abspos has no anchor targets and no grid.
+  EXPECT_EQ(imcb_obj->get("anchorTargets"), nullptr);
+  EXPECT_EQ(imcb_obj->get("positionAreaGrid"), nullptr);
+  EXPECT_TRUE(imcb_obj->get("imcbHighlightConfig"));
+}
+
+TEST_F(InspectorHighlightTest, ImcbInfoAnchorPositionArea) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      body { margin: 0; padding: 0; }
+      #container {
+        position: relative;
+        width: 400px;
+        height: 400px;
+      }
+      #anchor {
+        anchor-name: --test-anchor;
+        position: absolute;
+        left: 50px;
+        top: 50px;
+        width: 100px;
+        height: 80px;
+      }
+      #anchored {
+        position: absolute;
+        position-anchor: --test-anchor;
+        position-area: bottom right;
+        width: 120px;
+        height: 60px;
+      }
+    </style>
+    <div id="container">
+      <div id="anchor"></div>
+      <div id="anchored"></div>
+    </div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  Element* anchored = GetDocument().getElementById(AtomicString("anchored"));
+  EXPECT_TRUE(anchored);
+
+  InspectorHighlightConfig config = InspectorHighlight::DefaultConfig();
+  config.imcb_highlight_config =
+      std::make_unique<InspectorImcbHighlightConfig>();
+  LineStyle imcb_line_style;
+  imcb_line_style.color = Color(127, 32, 210);
+  imcb_line_style.pattern = "dashed";
+  config.imcb_highlight_config->imcb_border = imcb_line_style;
+
+  LineStyle anchor_line_style;
+  anchor_line_style.color = Color(26, 115, 232);
+  anchor_line_style.pattern = "solid";
+  config.imcb_highlight_config->anchor_border = anchor_line_style;
+  config.imcb_highlight_config->show_position_area_grid = true;
+
+  InspectorHighlightContrastInfo contrast_info;
+  InspectorHighlight highlight(anchored, config, contrast_info,
+                               /*append_element_info=*/false,
+                               /*append_distance_info=*/false,
+                               NodeContentVisibilityState::kNone);
+  std::unique_ptr<protocol::DictionaryValue> protocol_value =
+      highlight.AsProtocolValue();
+  ASSERT_TRUE(protocol_value->get("imcbInfo"));
+  protocol::ListValue* imcb_info_list = protocol_value->getArray("imcbInfo");
+  ASSERT_EQ(imcb_info_list->size(), 1u);
+  protocol::DictionaryValue* imcb_obj =
+      protocol::DictionaryValue::cast(imcb_info_list->at(0));
+  ASSERT_TRUE(imcb_obj);
+  EXPECT_TRUE(imcb_obj->get("imcbBorder"));
+  EXPECT_TRUE(imcb_obj->get("containingBlockBorder"));
+  EXPECT_TRUE(imcb_obj->get("anchorTargets"));
+  EXPECT_TRUE(imcb_obj->get("positionAreaGrid"));
+
+  protocol::ListValue* targets = imcb_obj->getArray("anchorTargets");
+  ASSERT_EQ(targets->size(), 1u);
+  protocol::DictionaryValue* target_obj =
+      protocol::DictionaryValue::cast(targets->at(0));
+  ASSERT_TRUE(target_obj);
+  String anchor_name;
+  EXPECT_TRUE(target_obj->getString("name", &anchor_name));
+  EXPECT_EQ(anchor_name, "--test-anchor");
+  EXPECT_TRUE(target_obj->get("anchorBorder"));
+
+  protocol::DictionaryValue* grid_obj = imcb_obj->getObject("positionAreaGrid");
+  ASSERT_TRUE(grid_obj);
+  EXPECT_TRUE(grid_obj->get("gridBorder"));
+  protocol::ListValue* lines = grid_obj->getArray("gridLines");
+  ASSERT_TRUE(lines);
+  EXPECT_EQ(lines->size(), 4u);
+  EXPECT_TRUE(grid_obj->get("activeRegion"));
+}
+
+TEST_F(InspectorHighlightTest, ImcbInfoAnchorFunctions) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      body { margin: 0; padding: 0; }
+      #container {
+        position: relative;
+        width: 400px;
+        height: 400px;
+      }
+      #anchor {
+        anchor-name: --test-anchor;
+        position: absolute;
+        left: 50px;
+        top: 50px;
+        width: 100px;
+        height: 80px;
+      }
+      #anchored {
+        position: absolute;
+        top: anchor(--test-anchor bottom);
+        left: anchor(--test-anchor right);
+        width: 120px;
+        height: 60px;
+      }
+    </style>
+    <div id="container">
+      <div id="anchor"></div>
+      <div id="anchored"></div>
+    </div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  Element* anchored = GetDocument().getElementById(AtomicString("anchored"));
+  EXPECT_TRUE(anchored);
+
+  InspectorHighlightConfig config = InspectorHighlight::DefaultConfig();
+  config.imcb_highlight_config =
+      std::make_unique<InspectorImcbHighlightConfig>();
+  LineStyle imcb_line_style;
+  imcb_line_style.color = Color(127, 32, 210);
+  imcb_line_style.pattern = "dashed";
+  config.imcb_highlight_config->imcb_border = imcb_line_style;
+
+  LineStyle anchor_line_style;
+  anchor_line_style.color = Color(26, 115, 232);
+  anchor_line_style.pattern = "solid";
+  config.imcb_highlight_config->anchor_border = anchor_line_style;
+  config.imcb_highlight_config->show_position_area_grid = true;
+
+  InspectorHighlightContrastInfo contrast_info;
+  InspectorHighlight highlight(anchored, config, contrast_info,
+                               /*append_element_info=*/false,
+                               /*append_distance_info=*/false,
+                               NodeContentVisibilityState::kNone);
+  std::unique_ptr<protocol::DictionaryValue> protocol_value =
+      highlight.AsProtocolValue();
+  ASSERT_TRUE(protocol_value->get("imcbInfo"));
+  protocol::ListValue* imcb_info_list = protocol_value->getArray("imcbInfo");
+  ASSERT_EQ(imcb_info_list->size(), 1u);
+  protocol::DictionaryValue* imcb_obj =
+      protocol::DictionaryValue::cast(imcb_info_list->at(0));
+  ASSERT_TRUE(imcb_obj);
+  EXPECT_TRUE(imcb_obj->get("imcbBorder"));
+  EXPECT_TRUE(imcb_obj->get("containingBlockBorder"));
+  // Ad-hoc anchor functions without position-anchor have no default or implicit
+  // anchor.
+  EXPECT_EQ(imcb_obj->get("anchorTargets"), nullptr);
+  EXPECT_EQ(imcb_obj->get("positionAreaGrid"), nullptr);
+}
+
+TEST_F(InspectorHighlightTest, ImcbInfoImplicitAnchor) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      body { margin: 0; padding: 0; }
+      #button {
+        position: absolute;
+        left: 50px;
+        top: 50px;
+        width: 100px;
+        height: 80px;
+      }
+      #popover {
+        position: absolute;
+        position-area: bottom right;
+        width: 120px;
+        height: 60px;
+      }
+    </style>
+    <button id="button" popovertarget="popover">Button</button>
+    <div id="popover" popover>Popover</div>
+  )HTML");
+  Element* button = GetDocument().getElementById(AtomicString("button"));
+  ASSERT_TRUE(button);
+  button->DispatchSimulatedClick(nullptr);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  Element* popover = GetDocument().getElementById(AtomicString("popover"));
+  ASSERT_TRUE(popover);
+
+  InspectorHighlightConfig config = InspectorHighlight::DefaultConfig();
+  config.imcb_highlight_config =
+      std::make_unique<InspectorImcbHighlightConfig>();
+  LineStyle imcb_line_style;
+  imcb_line_style.color = Color(127, 32, 210);
+  imcb_line_style.pattern = "dashed";
+  config.imcb_highlight_config->imcb_border = imcb_line_style;
+
+  LineStyle anchor_line_style;
+  anchor_line_style.color = Color(26, 115, 232);
+  anchor_line_style.pattern = "solid";
+  config.imcb_highlight_config->anchor_border = anchor_line_style;
+  config.imcb_highlight_config->show_position_area_grid = true;
+
+  InspectorHighlightContrastInfo contrast_info;
+  InspectorHighlight highlight(popover, config, contrast_info,
+                               /*append_element_info=*/false,
+                               /*append_distance_info=*/false,
+                               NodeContentVisibilityState::kNone);
+  std::unique_ptr<protocol::DictionaryValue> protocol_value =
+      highlight.AsProtocolValue();
+  ASSERT_TRUE(protocol_value->get("imcbInfo"));
+  protocol::ListValue* imcb_info_list = protocol_value->getArray("imcbInfo");
+  ASSERT_EQ(imcb_info_list->size(), 1u);
+  protocol::DictionaryValue* imcb_obj =
+      protocol::DictionaryValue::cast(imcb_info_list->at(0));
+  ASSERT_TRUE(imcb_obj);
+  EXPECT_TRUE(imcb_obj->get("imcbBorder"));
+  EXPECT_TRUE(imcb_obj->get("containingBlockBorder"));
+  EXPECT_TRUE(imcb_obj->get("anchorTargets"));
+  EXPECT_TRUE(imcb_obj->get("positionAreaGrid"));
+
+  protocol::ListValue* targets = imcb_obj->getArray("anchorTargets");
+  ASSERT_EQ(targets->size(), 1u);
+  protocol::DictionaryValue* target_obj =
+      protocol::DictionaryValue::cast(targets->at(0));
+  ASSERT_TRUE(target_obj);
+  String anchor_name;
+  EXPECT_TRUE(target_obj->getString("name", &anchor_name));
+  EXPECT_EQ(anchor_name, "#button");
+  EXPECT_TRUE(target_obj->get("anchorBorder"));
+}
+
 }  // namespace blink

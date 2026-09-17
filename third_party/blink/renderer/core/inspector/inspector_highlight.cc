@@ -40,6 +40,10 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/default_anchor_data.h"
+#include "third_party/blink/renderer/core/style/position_area.h"
+#include "third_party/blink/renderer/core/style/scoped_css_name.h"
+#include "third_party/blink/renderer/core/style/style_position_anchor.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
@@ -596,6 +600,46 @@ BuildIsolationModeHighlightConfigInfo(
   config_info->setString("resizerHandleColor",
                          config.resizer_handle_color.SerializeAsCSSColor());
   config_info->setString("maskColor", config.mask_color.SerializeAsCSSColor());
+
+  return config_info;
+}
+
+std::unique_ptr<protocol::DictionaryValue> BuildImcbHighlightConfigInfo(
+    const InspectorImcbHighlightConfig& config) {
+  std::unique_ptr<protocol::DictionaryValue> config_info =
+      protocol::DictionaryValue::create();
+
+  AppendLineStyleConfig(config.imcb_border, config_info, "imcbBorder");
+  if (!config.imcb_background_color.IsFullyTransparent()) {
+    config_info->setString("imcbFillColor",
+                           config.imcb_background_color.SerializeAsCSSColor());
+  }
+  if (!config.insets_background_color.IsFullyTransparent()) {
+    config_info->setString(
+        "insetsFillColor",
+        config.insets_background_color.SerializeAsCSSColor());
+  }
+  if (!config.insets_hatch_color.IsFullyTransparent()) {
+    config_info->setString("insetsHatchColor",
+                           config.insets_hatch_color.SerializeAsCSSColor());
+  }
+
+  AppendLineStyleConfig(config.anchor_border, config_info, "anchorBorder");
+  if (!config.anchor_background_color.IsFullyTransparent()) {
+    config_info->setString(
+        "anchorFillColor",
+        config.anchor_background_color.SerializeAsCSSColor());
+  }
+  if (config.show_position_area_grid) {
+    config_info->setBoolean("showPositionAreaGrid", true);
+  }
+  AppendLineStyleConfig(config.position_area_grid_line_color, config_info,
+                        "positionAreaGridLineColor");
+  if (!config.position_area_active_region_color.IsFullyTransparent()) {
+    config_info->setString(
+        "positionAreaActiveRegionColor",
+        config.position_area_active_region_color.SerializeAsCSSColor());
+  }
 
   return config_info;
 }
@@ -2415,6 +2459,16 @@ void InspectorHighlight::AppendNodeHighlight(
         node, *(highlight_config.container_query_container_highlight_config),
         scale_));
   }
+
+  if (highlight_config.imcb_highlight_config &&
+      layout_object->IsOutOfFlowPositioned() && IsA<Element>(node)) {
+    imcb_info_ = protocol::ListValue::create();
+    if (auto info =
+            BuildImcbInfo(To<Element>(node),
+                          *highlight_config.imcb_highlight_config, scale_)) {
+      imcb_info_->pushValue(std::move(info));
+    }
+  }
 }
 
 std::unique_ptr<protocol::DictionaryValue> InspectorHighlight::AsProtocolValue()
@@ -2471,6 +2525,9 @@ std::unique_ptr<protocol::DictionaryValue> InspectorHighlight::AsProtocolValue()
       container_query_container_info_->size() > 0) {
     object->setValue("containerQueryInfo",
                      container_query_container_info_->clone());
+  }
+  if (imcb_info_ && imcb_info_->size() > 0) {
+    object->setValue("imcbInfo", imcb_info_->clone());
   }
   return object;
 }
@@ -2914,6 +2971,201 @@ std::unique_ptr<protocol::DictionaryValue> InspectorIsolatedElementHighlight(
 
   isolated_element_info->setInteger("highlightIndex", config.highlight_index);
   return isolated_element_info;
+}
+
+std::unique_ptr<protocol::DictionaryValue> BuildImcbInfo(
+    Element* element,
+    const InspectorImcbHighlightConfig& config,
+    float scale) {
+  if (!element) {
+    return nullptr;
+  }
+  LayoutBox* box = element->GetLayoutBox();
+  if (!box || !box->IsOutOfFlowPositioned()) {
+    return nullptr;
+  }
+
+  LocalFrameView* containing_view = element->GetDocument().View();
+  if (!containing_view) {
+    return nullptr;
+  }
+
+  LayoutBox* container = box->ContainingBlock();
+  if (!container) {
+    return nullptr;
+  }
+
+  const std::optional<PhysicalRect> imcb_rect =
+      box->InsetModifiedContainingBlockRect();
+  if (!imcb_rect) {
+    return nullptr;
+  }
+
+  std::unique_ptr<protocol::DictionaryValue> imcb_info =
+      protocol::DictionaryValue::create();
+
+  // 1. Inset-Modified Containing Block (IMCB) border.
+  gfx::QuadF imcb_quad = container->LocalRectToAbsoluteQuad(*imcb_rect);
+  FrameQuadToViewport(containing_view, imcb_quad);
+  HighlightPathBuilder imcb_builder;
+  imcb_builder.AppendPath(QuadToPath(imcb_quad), scale);
+  imcb_info->setValue("imcbBorder", imcb_builder.Release());
+
+  // 2. Containing Block border.
+  PhysicalRect cb_rect = container->PhysicalPaddingBoxRect();
+  gfx::QuadF cb_quad = container->LocalRectToAbsoluteQuad(cb_rect);
+  FrameQuadToViewport(containing_view, cb_quad);
+  HighlightPathBuilder cb_builder;
+  cb_builder.AppendPath(QuadToPath(cb_quad), scale);
+  imcb_info->setValue("containingBlockBorder", cb_builder.Release());
+
+  // 3. Referenced target anchor element(s) and 4. Position-area grid
+  // (only when element is anchor positioned).
+  bool is_anchor_positioned =
+      box->StyleRef().GetDefaultAnchorData().GetType() !=
+          StylePositionAnchor::Type::kNone ||
+      !box->StyleRef().GetPositionArea().IsNone() ||
+      box->StyleRef().HasAnchorFunctions() || box->AcceptableImplicitAnchor();
+
+  gfx::QuadF target_quad;
+  gfx::QuadF target_abs_quad;
+  bool has_target_quad = false;
+  if (is_anchor_positioned) {
+    const LayoutObject* target = box->FindDefaultAnchor();
+    String anchor_name;
+    if (target) {
+      const DefaultAnchorData default_anchor =
+          box->StyleRef().GetDefaultAnchorData();
+      if (default_anchor.GetType() == StylePositionAnchor::Type::kName) {
+        anchor_name = default_anchor.GetName().GetName().GetString();
+      }
+      if (anchor_name.empty()) {
+        if (target->StyleRef().AnchorName() &&
+            !target->StyleRef().AnchorName()->GetNames().empty()) {
+          anchor_name = target->StyleRef()
+                            .AnchorName()
+                            ->GetNames()
+                            .front()
+                            ->GetName()
+                            .GetString();
+        } else if (const auto* target_elem =
+                       DynamicTo<Element>(target->GetNode())) {
+          if (target_elem->HasID()) {
+            anchor_name = "#" + target_elem->GetIdAttribute();
+          } else {
+            anchor_name = target_elem->nodeName().DeprecatedLower();
+          }
+        }
+      }
+
+      if (const auto* target_box = DynamicTo<LayoutBox>(target)) {
+        target_quad = target_box->LocalRectToAbsoluteQuad(
+            target_box->PhysicalBorderBoxRect());
+        has_target_quad = true;
+      } else {
+        Vector<gfx::QuadF> quads;
+        target->AbsoluteQuads(quads);
+        if (!quads.empty()) {
+          target_quad = quads[0];
+          has_target_quad = true;
+        }
+      }
+
+      if (has_target_quad) {
+        target_abs_quad = target_quad;
+        FrameQuadToViewport(containing_view, target_quad);
+        HighlightPathBuilder target_builder;
+        target_builder.AppendPath(QuadToPath(target_quad), scale);
+
+        auto target_info = protocol::DictionaryValue::create();
+        target_info->setValue("anchorBorder", target_builder.Release());
+        if (!anchor_name.empty()) {
+          target_info->setString("name", anchor_name);
+        }
+
+        auto anchor_targets = protocol::ListValue::create();
+        anchor_targets->pushValue(std::move(target_info));
+        imcb_info->setArray("anchorTargets", std::move(anchor_targets));
+      }
+    }
+
+    // 4. 9-Cell position-area grid.
+    if (config.show_position_area_grid &&
+        !box->StyleRef().GetPositionArea().IsNone() && has_target_quad) {
+      auto position_area_grid = protocol::DictionaryValue::create();
+
+      // Grid border is the containing block bounds.
+      HighlightPathBuilder grid_border_builder;
+      grid_border_builder.AppendPath(QuadToPath(cb_quad), scale);
+      position_area_grid->setValue("gridBorder", grid_border_builder.Release());
+
+      // Project the anchor element's bounds into the containing block's local
+      // coordinate space so the grid lines align with the container even under
+      // CSS transforms.
+      gfx::QuadF target_local_quad =
+          container->AbsoluteToLocalQuad(target_abs_quad);
+      gfx::RectF target_local_box = target_local_quad.BoundingBox();
+
+      auto grid_lines = protocol::ListValue::create();
+      auto build_line = [&](gfx::PointF p1_local, gfx::PointF p2_local) {
+        gfx::PointF p1_viewport = FramePointToViewport(
+            containing_view, container->LocalToAbsolutePoint(p1_local));
+        gfx::PointF p2_viewport = FramePointToViewport(
+            containing_view, container->LocalToAbsolutePoint(p2_local));
+        PathBuilder line_builder;
+        line_builder.MoveTo(p1_viewport);
+        line_builder.LineTo(p2_viewport);
+        HighlightPathBuilder builder;
+        builder.AppendPath(line_builder.Finalize(), scale);
+        return builder.Release();
+      };
+
+      float cb_left = cb_rect.X().ToFloat();
+      float cb_right = cb_rect.Right().ToFloat();
+      float cb_top = cb_rect.Y().ToFloat();
+      float cb_bottom = cb_rect.Bottom().ToFloat();
+
+      // 2 vertical lines extending anchor's left and right physical edges
+      // across CB in container coordinates.
+      grid_lines->pushValue(
+          build_line(gfx::PointF(target_local_box.x(), cb_top),
+                     gfx::PointF(target_local_box.x(), cb_bottom)));
+      grid_lines->pushValue(
+          build_line(gfx::PointF(target_local_box.right(), cb_top),
+                     gfx::PointF(target_local_box.right(), cb_bottom)));
+
+      // 2 horizontal lines extending anchor's top and bottom physical edges
+      // across CB in container coordinates.
+      grid_lines->pushValue(
+          build_line(gfx::PointF(cb_left, target_local_box.y()),
+                     gfx::PointF(cb_right, target_local_box.y())));
+      grid_lines->pushValue(
+          build_line(gfx::PointF(cb_left, target_local_box.bottom()),
+                     gfx::PointF(cb_right, target_local_box.bottom())));
+
+      position_area_grid->setArray("gridLines", std::move(grid_lines));
+
+      // Active region calculation.
+      if (const auto& offsets = box->StyleRef().PositionAreaOffsets()) {
+        PhysicalRect active_rect = cb_rect;
+        active_rect.Contract(offsets->insets);
+        gfx::QuadF active_quad =
+            container->LocalRectToAbsoluteQuad(active_rect);
+        FrameQuadToViewport(containing_view, active_quad);
+        HighlightPathBuilder active_builder;
+        active_builder.AppendPath(QuadToPath(active_quad), scale);
+        position_area_grid->setValue("activeRegion", active_builder.Release());
+      }
+
+      imcb_info->setValue("positionAreaGrid", std::move(position_area_grid));
+    }
+  }
+
+  // 5. Config info.
+  imcb_info->setValue("imcbHighlightConfig",
+                      BuildImcbHighlightConfigInfo(config));
+
+  return imcb_info;
 }
 
 // static

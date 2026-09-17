@@ -2091,28 +2091,13 @@ protocol::Response InspectorDOMAgent::getAnchorElement(
         "The box or the container of the box does not exist");
   }
 
-  const LayoutObject* target_object;
+  const LayoutObject* target_object = nullptr;
   if (anchor_specifier.has_value()) {
     target_object = box->FindTargetAnchor(*MakeGarbageCollected<ScopedCSSName>(
         AtomicString(anchor_specifier.value()),
         &querying_object->GetDocument()));
-  } else {
-    const DefaultAnchorData default_anchor_data =
-        box->StyleRef().GetDefaultAnchorData();
-    using Type = StylePositionAnchor::Type;
-    switch (default_anchor_data.GetType()) {
-      case Type::kNone:
-        target_object = nullptr;
-        break;
-      case Type::kAuto:
-        target_object = box->AcceptableImplicitAnchor();
-        break;
-      case Type::kName:
-        target_object = box->FindTargetAnchor(default_anchor_data.GetName());
-        break;
-      case Type::kNormal:
-        NOTREACHED();
-    }
+  } else if (box->IsOutOfFlowPositioned()) {
+    target_object = box->FindDefaultAnchor();
   }
 
   if (target_object) {

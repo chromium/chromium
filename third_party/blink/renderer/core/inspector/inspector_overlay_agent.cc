@@ -2096,6 +2096,52 @@ InspectorOverlayAgent::ToContainerQueryContainerHighlightConfig(
 }
 
 // static
+std::unique_ptr<InspectorImcbHighlightConfig>
+InspectorOverlayAgent::ToImcbHighlightConfig(
+    protocol::Overlay::ImcbHighlightConfig* config) {
+  if (!config) {
+    return nullptr;
+  }
+  std::unique_ptr<InspectorImcbHighlightConfig> highlight_config =
+      std::make_unique<InspectorImcbHighlightConfig>();
+
+  if (config->hasImcbBorderColor()) {
+    LineStyle line_style;
+    line_style.color = ParseColor(config->getImcbBorderColor(nullptr));
+    line_style.pattern = "dashed";
+    highlight_config->imcb_border = line_style;
+  }
+  highlight_config->imcb_background_color =
+      ParseColor(config->getImcbBackgroundColor(nullptr));
+  highlight_config->insets_background_color =
+      ParseColor(config->getInsetsBackgroundColor(nullptr));
+  highlight_config->insets_hatch_color =
+      ParseColor(config->getInsetsHatchColor(nullptr));
+
+  if (config->hasAnchorBorderColor()) {
+    LineStyle line_style;
+    line_style.color = ParseColor(config->getAnchorBorderColor(nullptr));
+    line_style.pattern = "solid";
+    highlight_config->anchor_border = line_style;
+  }
+  highlight_config->anchor_background_color =
+      ParseColor(config->getAnchorBackgroundColor(nullptr));
+  highlight_config->show_position_area_grid =
+      config->getShowPositionAreaGrid(false);
+  if (config->hasPositionAreaGridLineColor()) {
+    LineStyle line_style;
+    line_style.color =
+        ParseColor(config->getPositionAreaGridLineColor(nullptr));
+    line_style.pattern = "dashed";
+    highlight_config->position_area_grid_line_color = line_style;
+  }
+  highlight_config->position_area_active_region_color =
+      ParseColor(config->getPositionAreaActiveRegionColor(nullptr));
+
+  return highlight_config;
+}
+
+// static
 std::unique_ptr<InspectorFlexItemHighlightConfig>
 InspectorOverlayAgent::ToFlexItemHighlightConfig(
     protocol::Overlay::FlexItemHighlightConfig* config) {
@@ -2228,6 +2274,10 @@ InspectorOverlayAgent::ToHighlightConfig(
   highlight_config->container_query_container_highlight_config =
       InspectorOverlayAgent::ToContainerQueryContainerHighlightConfig(
           config->getContainerQueryContainerHighlightConfig(nullptr));
+
+  highlight_config->imcb_highlight_config =
+      InspectorOverlayAgent::ToImcbHighlightConfig(
+          config->getImcbHighlightConfig(nullptr));
 
   return highlight_config;
 }

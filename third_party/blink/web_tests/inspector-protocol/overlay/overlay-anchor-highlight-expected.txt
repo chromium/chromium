@@ -1,0 +1,179 @@
+Verifies that Overlay.highlightNode works with imcbHighlightConfig.
+Anchor highlight rendered:
+[
+  {
+    "imcbBorder": [
+      "M",
+      158,
+      138,
+      "L",
+      408,
+      138,
+      "L",
+      408,
+      408,
+      "L",
+      158,
+      408,
+      "Z"
+    ],
+    "containingBlockBorder": [
+      "M",
+      8,
+      8,
+      "L",
+      408,
+      8,
+      "L",
+      408,
+      408,
+      "L",
+      8,
+      408,
+      "Z"
+    ],
+    "anchorTargets": [
+      {
+        "anchorBorder": [
+          "M",
+          58,
+          58,
+          "L",
+          158,
+          58,
+          "L",
+          158,
+          138,
+          "L",
+          58,
+          138,
+          "Z"
+        ],
+        "name": "--test-anchor"
+      }
+    ],
+    "positionAreaGrid": {
+      "gridBorder": [
+        "M",
+        8,
+        8,
+        "L",
+        408,
+        8,
+        "L",
+        408,
+        408,
+        "L",
+        8,
+        408,
+        "Z"
+      ],
+      "gridLines": [
+        [
+          "M",
+          58,
+          8,
+          "L",
+          58,
+          408
+        ],
+        [
+          "M",
+          158,
+          8,
+          "L",
+          158,
+          408
+        ],
+        [
+          "M",
+          8,
+          58,
+          "L",
+          408,
+          58
+        ],
+        [
+          "M",
+          8,
+          138,
+          "L",
+          408,
+          138
+        ]
+      ],
+      "activeRegion": [
+        "M",
+        158,
+        138,
+        "L",
+        408,
+        138,
+        "L",
+        408,
+        408,
+        "L",
+        158,
+        408,
+        "Z"
+      ]
+    },
+    "imcbHighlightConfig": {
+      "imcbBorder": {
+        "color": "rgb(127, 32, 210)",
+        "pattern": "dashed"
+      },
+      "anchorBorder": {
+        "color": "rgb(26, 115, 232)",
+        "pattern": "solid"
+      },
+      "showPositionAreaGrid": true,
+      "positionAreaGridLineColor": {
+        "color": "rgb(26, 115, 232)",
+        "pattern": "dashed"
+      }
+    }
+  }
+]
+Abspos IMCB highlight rendered:
+[
+  {
+    "imcbBorder": [
+      "M",
+      38,
+      28,
+      "L",
+      368,
+      28,
+      "L",
+      368,
+      358,
+      "L",
+      38,
+      358,
+      "Z"
+    ],
+    "containingBlockBorder": [
+      "M",
+      8,
+      8,
+      "L",
+      408,
+      8,
+      "L",
+      408,
+      408,
+      "L",
+      8,
+      408,
+      "Z"
+    ],
+    "imcbHighlightConfig": {
+      "imcbBorder": {
+        "color": "rgb(127, 32, 210)",
+        "pattern": "dashed"
+      }
+    }
+  }
+]
+

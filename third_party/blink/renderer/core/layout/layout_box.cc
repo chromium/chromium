@@ -115,6 +115,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
+#include "third_party/blink/renderer/core/style/style_position_anchor.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
@@ -4375,6 +4376,24 @@ const LayoutObject* LayoutBox::AcceptableImplicitAnchor() const {
   return is_acceptable_anchor ? anchor_layout_object : nullptr;
 }
 
+const LayoutObject* LayoutBox::FindDefaultAnchor() const {
+  NOT_DESTROYED();
+  DCHECK(IsOutOfFlowPositioned());
+  const DefaultAnchorData default_anchor_data =
+      StyleRef().GetDefaultAnchorData();
+  using Type = StylePositionAnchor::Type;
+  switch (default_anchor_data.GetType()) {
+    case Type::kNone:
+      return nullptr;
+    case Type::kAuto:
+      return AcceptableImplicitAnchor();
+    case Type::kName:
+      return FindTargetAnchor(default_anchor_data.GetName());
+    case Type::kNormal:
+      NOTREACHED();
+  }
+}
+
 const GCedHeapVector<NonOverflowingScrollRange>*
 LayoutBox::NonOverflowingScrollRanges() const {
   NOT_DESTROYED();
@@ -4479,6 +4498,20 @@ bool LayoutBox::NeedsAnchorPositionScrollAdjustmentInY() const {
   });
 #endif
   return layout_results.front()->NeedsAnchorPositionScrollAdjustmentInY();
+}
+
+std::optional<PhysicalRect> LayoutBox::InsetModifiedContainingBlockRect()
+    const {
+  NOT_DESTROYED();
+  if (!IsOutOfFlowPositioned()) {
+    return std::nullopt;
+  }
+  const auto& layout_results = GetLayoutResults();
+  if (layout_results.empty()) {
+    return std::nullopt;
+  }
+  // TODO(layout-dev): Devtools support when there are multiple fragments.
+  return layout_results.front()->InsetModifiedContainingBlock();
 }
 
 WritingModeConverter LayoutBox::CreateWritingModeConverter() const {

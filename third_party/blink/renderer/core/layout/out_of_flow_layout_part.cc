@@ -2561,6 +2561,17 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     // Make it relative to the current containing block fragment.
     offset_info.offset.block_offset -= previously_consumed_block_size;
 
+    // Convert the IMCB to physical coordinates relative to the default
+    // container's border-box.
+    const WritingModeConverter converter(
+        node_info.default_writing_direction,
+        container_builder_.SizeForAnchorQueries());
+    offset_info.imcb_rect = converter.ToPhysical(container_rect);
+    offset_info.imcb_rect.Contract(
+        BoxStrut(imcb.inline_start, imcb.inline_end, imcb.block_start,
+                 imcb.block_end)
+            .ConvertToPhysical(candidate_writing_direction));
+
     // Calculate the absolutized insets to be stored on |LayoutResult|.
     // |node_dimensions.inset| doesn't include margins, but |insets| do. We add
     // margins into |used_insets| for the calculation, and then remove them at
@@ -2639,6 +2650,9 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
 
   layout_result->GetMutableForOutOfFlow().SetDisplayLocksAffectedByAnchors(
       offset_info.display_locks_affected_by_anchors);
+
+  layout_result->GetMutableForOutOfFlow().SetInsetModifiedContainingBlock(
+      offset_info.imcb_rect);
 
   const auto& fragment =
       To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());

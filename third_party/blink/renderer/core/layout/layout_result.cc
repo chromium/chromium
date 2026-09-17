@@ -319,6 +319,8 @@ void LayoutResult::CopyMutableOutOfFlowData(const LayoutResult& other) const {
       other.OutOfFlowInsetsForGetComputedStyle());
   GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
       other.OutOfFlowPositionedOffset());
+  GetMutableForOutOfFlow().SetInsetModifiedContainingBlock(
+      other.InsetModifiedContainingBlock());
 }
 
 void LayoutResult::MutableForOutOfFlow::SetAccessibilityAnchor(
