@@ -32,6 +32,7 @@ import android.text.format.DateUtils;
 import android.util.Pair;
 import android.util.Size;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.Display.Mode;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -279,6 +280,7 @@ import org.chromium.ui.base.ApplicationViewportInsetTracker;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.KeyboardShortcutsDelegate;
 import org.chromium.ui.display.DisplayAndroid;
@@ -439,6 +441,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     /** The current configuration, used to for diffing when the configuration is changed. */
     private Configuration mConfig;
 
+    /** The last known display ID, used to detect display changes during configuration updates. */
+    private int mLastDisplayId = Display.INVALID_DISPLAY;
+
     /** Track whether {@link #mTabReparentingController} has prepared tab reparenting. */
     private boolean mIsTabReparentingPrepared;
 
@@ -573,6 +578,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         // Ensure that mConfig is initialized before tablet mode changes.
         mConfig = getResources().getConfiguration();
+        mLastDisplayId = getCurrentDisplayId();
 
         // WindowAndroid is created in #onCreateInternal, happened before
         // performPreInflationStartup.
@@ -2732,6 +2738,28 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     @Override
     public void performOnConfigurationChanged(Configuration newConfig) {
         super.performOnConfigurationChanged(newConfig);
+        int displayId = getCurrentDisplayId();
+        boolean displayChanged =
+                displayId != Display.INVALID_DISPLAY
+                        && mLastDisplayId != Display.INVALID_DISPLAY
+                        && displayId != mLastDisplayId;
+        if (mConfig != null
+                && UiAndroidFeatureList.sConnectedDisplayDensityDebugLogs.isEnabled()
+                && (displayChanged
+                        || newConfig.densityDpi != mConfig.densityDpi
+                        || getTabletMode().changed)) {
+            Log.i(
+                    TAG,
+                    "performOnConfigurationChanged: displayId=%d->%d, densityDpi=%d->%d,"
+                            + " swDp=%d->%d",
+                    mLastDisplayId,
+                    displayId,
+                    mConfig.densityDpi,
+                    newConfig.densityDpi,
+                    mConfig.smallestScreenWidthDp,
+                    newConfig.smallestScreenWidthDp);
+        }
+        mLastDisplayId = displayId;
         if (mConfig != null) {
             if (mTabReparentingControllerSupplier.get() != null && maybeOnTabletModeChange()) {
                 return;
@@ -2774,6 +2802,20 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             }
         }
         mConfig = newConfig;
+    }
+
+    private int getCurrentDisplayId() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            try {
+                Display display = getDisplay();
+                if (display != null) {
+                    return display.getDisplayId();
+                }
+            } catch (UnsupportedOperationException e) {
+                // Ignore if Activity is not associated with a display or in early lifecycle state.
+            }
+        }
+        return Display.INVALID_DISPLAY;
     }
 
     // Triggers runnable that makes content visible.
@@ -3534,6 +3576,20 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
      */
     private boolean doRecreateActivity() {
         TabletMode tabletMode = getTabletMode();
+        if (UiAndroidFeatureList.sConnectedDisplayDensityDebugLogs.isEnabled()) {
+            Log.i(
+                    TAG,
+                    "doRecreateActivity: isFinishing=%b, state=%d, hasReparentingController=%b,"
+                            + " tabReparentingPrepared=%b, tabletModeChanged=%b, configDensity=%d,"
+                            + " resDensity=%d",
+                    isFinishing(),
+                    ApplicationStatus.getStateForActivity(this),
+                    mTabReparentingControllerSupplier.get() != null,
+                    mIsTabReparentingPrepared,
+                    tabletMode.changed,
+                    mConfig != null ? mConfig.densityDpi : -1,
+                    getResources().getConfiguration().densityDpi);
+        }
         if (mTabReparentingControllerSupplier.get() != null && !mIsTabReparentingPrepared) {
             mTabReparentingControllerSupplier.get().prepareTabsForReparenting();
             mIsTabReparentingPrepared = true;

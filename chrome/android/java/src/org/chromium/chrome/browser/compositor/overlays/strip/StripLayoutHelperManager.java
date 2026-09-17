@@ -30,6 +30,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -118,6 +119,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
@@ -171,6 +173,8 @@ public class StripLayoutHelperManager
             this.createdIncognitoTabOnStartup = createdIncognitoTabOnStartup;
         }
     }
+
+    private static final String TAG = "StripLayoutManager";
 
     private static final FloatProperty<StripLayoutHelperManager> SCRIM_OPACITY =
             new FloatProperty<>("scrimOpacity") {
@@ -531,6 +535,13 @@ public class StripLayoutHelperManager
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mDensity = res.getDisplayMetrics().density;
         mTabStripTreeProvider = new TabStripSceneLayer(mDensity);
+        if (UiAndroidFeatureList.sConnectedDisplayDensityDebugLogs.isEnabled()) {
+            Log.i(
+                    TAG,
+                    "init: stripDensity=%.2f, windowDipScale=%.2f",
+                    mDensity,
+                    windowAndroid.getDisplay().getDipScale());
+        }
         mTabStripEventHandler = new TabStripEventHandler();
         mTabSwitcherLayoutObserver = new TabSwitcherLayoutObserver();
         mLifecycleDispatcher = lifecycleDispatcher;
@@ -872,6 +883,19 @@ public class StripLayoutHelperManager
 
     @Override
     public void onResumeWithNative() {
+        if (UiAndroidFeatureList.sConnectedDisplayDensityDebugLogs.isEnabled()) {
+            float currentResDensity = mContext.getResources().getDisplayMetrics().density;
+            float windowDipScale = mWindowAndroid.getDisplay().getDipScale();
+            if (mDensity != currentResDensity || mDensity != windowDipScale) {
+                Log.i(
+                        TAG,
+                        "onResumeWithNative density mismatch: stripDensity=%.2f, resDensity=%.2f,"
+                                + " windowDipScale=%.2f",
+                        mDensity,
+                        currentResDensity,
+                        windowDipScale);
+            }
+        }
         if (mTabModelSelector == null) return;
         Tab currentTab = mTabModelSelector.getCurrentTab();
         if (currentTab == null) return;

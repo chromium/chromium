@@ -1492,6 +1492,15 @@ public class WindowAndroid
         if (context == null) return;
         DisplayAndroid newDisplay = DisplayAndroid.getNonMultiDisplay(context);
         if (newDisplay != mDisplayAndroid) {
+            if (UiAndroidFeatureList.sConnectedDisplayDensityDebugLogs.isEnabled()) {
+                Log.i(
+                        TAG,
+                        "updateDisplayForContext: displayId=%d->%d, dipScale=%.2f->%.2f",
+                        mDisplayAndroid.getDisplayId(),
+                        newDisplay.getDisplayId(),
+                        mDisplayAndroid.getDipScale(),
+                        newDisplay.getDipScale());
+            }
             mDisplayAndroid.removeObserver(this);
             mDisplayAndroid = newDisplay;
             mDisplayAndroid.addObserver(this);

@@ -30,6 +30,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kClipboardConfusedDeputyDefenseImages,
     &ui::kClipboardConfusedDeputyDefenseFiles,
     &ui::kClipboardOversizedPayloadProvider,
+    &ui::kConnectedDisplayDensityDebugLogs,
     &ui::kDeprecatedExternalPickerFunction,
     &ui::kDisablePhotoPickerForVideoCapture,
     &ui::kHasContentUri,

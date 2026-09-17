@@ -60,6 +60,9 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kClipboardConfusedDeputyDefenseFiles);
 // across processes via ClipboardTextDataProvider on Android.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kClipboardOversizedPayloadProvider);
 
+// Enables debug logging for connected display and density changes.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kConnectedDisplayDensityDebugLogs);
+
 // Use the old-style opening of an External Picker when uploading files.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDeprecatedExternalPickerFunction);
 

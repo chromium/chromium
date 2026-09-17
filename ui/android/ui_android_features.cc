@@ -38,6 +38,9 @@ BASE_FEATURE(kClipboardConfusedDeputyDefenseFiles,
 BASE_FEATURE(kClipboardOversizedPayloadProvider,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kConnectedDisplayDensityDebugLogs,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDeprecatedExternalPickerFunction,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
