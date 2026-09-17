@@ -130,7 +130,7 @@ HWND CaptionButton::Create(HWND parent, const RECT& bounds, int control_id) {
       reinterpret_cast<HMENU>(static_cast<INT_PTR>(control_id)),
       CURRENT_MODULE(), nullptr);
   CHECK(control_hwnd && ::IsWindow(control_hwnd));
-  CHECK(SubclassWindow(control_hwnd));
+  CHECK((SubclassWindow)(control_hwnd));
 
   // The `BUTTON`'s `WM_CREATE` has already fired by the time the subclass is
   // installed, so set the tool tip up here rather than from a `WM_CREATE`
@@ -171,44 +171,76 @@ LRESULT CaptionButton::OnMouseMessage(UINT msg, WPARAM wparam, LPARAM lparam) {
   return 1;
 }
 
-LRESULT CaptionButton::OnMouseMove(UINT, WPARAM, LPARAM) {
-  if (!is_tracking_mouse_events_) {
-    TRACKMOUSEEVENT tme = {};
-    tme.cbSize = sizeof(TRACKMOUSEEVENT);
-    tme.dwFlags = TME_HOVER | TME_LEAVE;
-    tme.hwndTrack = hwnd();
-    tme.dwHoverTime = 1;
-    is_tracking_mouse_events_ = _TrackMouseEvent(&tme);
+LRESULT CaptionButton::OnMouseMove(UINT, WPARAM, LPARAM lparam) {
+  // `BUTTON` captures the mouse on WM_LBUTTONDOWN, so moves outside the client
+  // rect keep arriving here.
+  RECT client_rect = {};
+  ::GetClientRect(hwnd(), &client_rect);
+  const POINTS points = MAKEPOINTS(lparam);
+  const POINT point = {points.x, points.y};
+  const bool can_hover = ::PtInRect(&client_rect, point) && IsEnabled();
+
+  // Arm before setting the flag: WM_MOUSELEAVE is the only thing that clears
+  // the highlight, so hovering with no outstanding registration would stick.
+  if (can_hover && !is_tracking_mouse_events_) {
+    TRACKMOUSEEVENT tme = {
+        .cbSize = sizeof(TRACKMOUSEEVENT),
+        .dwFlags = TME_LEAVE,
+        .hwndTrack = hwnd(),
+    };
+    is_tracking_mouse_events_ = ::TrackMouseEvent(&tme) != FALSE;
   }
 
-  // Let `BUTTON`'s default procedure see the move so it can update pressed
-  // state and capture state correctly when the user drags out of the button.
+  const bool should_hover = can_hover && is_tracking_mouse_events_;
+  if (is_mouse_hovering_ != should_hover) {
+    is_mouse_hovering_ = should_hover;
+    ::InvalidateRect(hwnd(), nullptr, FALSE);
+  }
+
   SetMsgHandled(FALSE);
   return 0;
 }
 
-LRESULT CaptionButton::OnMouseHover(UINT, WPARAM, LPARAM) {
-  if (!is_mouse_hovering_) {
-    is_mouse_hovering_ = true;
-    ::InvalidateRect(hwnd(), nullptr, FALSE);
-    ::UpdateWindow(hwnd());
+void CaptionButton::CancelMouseTracking() {
+  if (!is_tracking_mouse_events_) {
+    return;
   }
-  SetMsgHandled(FALSE);
-  return 0;
+  TRACKMOUSEEVENT tme = {
+      .cbSize = sizeof(TRACKMOUSEEVENT),
+      .dwFlags = TME_CANCEL | TME_LEAVE,
+      .hwndTrack = hwnd(),
+  };
+  ::TrackMouseEvent(&tme);
+  is_tracking_mouse_events_ = false;
 }
 
 LRESULT CaptionButton::OnMouseLeave(UINT, WPARAM, LPARAM) {
-  TRACKMOUSEEVENT tme = {};
-  tme.cbSize = sizeof(TRACKMOUSEEVENT);
-  tme.dwFlags = TME_CANCEL | TME_HOVER | TME_LEAVE;
-  tme.hwndTrack = hwnd();
-  _TrackMouseEvent(&tme);
-
   is_tracking_mouse_events_ = false;
-  is_mouse_hovering_ = false;
+  if (is_mouse_hovering_) {
+    is_mouse_hovering_ = false;
+    ::InvalidateRect(hwnd(), nullptr, FALSE);
+  }
+
+  SetMsgHandled(FALSE);
+  return 0;
+}
+
+LRESULT CaptionButton::OnEnable(UINT, WPARAM wparam, LPARAM) {
+  if (!wparam) {
+    is_mouse_hovering_ = false;
+    CancelMouseTracking();
+  }
 
   ::InvalidateRect(hwnd(), nullptr, FALSE);
-  ::UpdateWindow(hwnd());
+  SetMsgHandled(FALSE);
+  return 0;
+}
+
+LRESULT CaptionButton::OnShowWindow(UINT, WPARAM wparam, LPARAM) {
+  if (!wparam) {
+    is_mouse_hovering_ = false;
+    CancelMouseTracking();
+  }
 
   SetMsgHandled(FALSE);
   return 0;
@@ -277,6 +309,10 @@ void CaptionButton::DrawItem(LPDRAWITEMSTRUCT draw_item_struct) {
 
   ::SelectObject(dc, old_brush);
   ::SelectObject(dc, old_pen);
+}
+
+bool CaptionButton::IsEnabled() const {
+  return IsWindow() && ::IsWindowEnabled(hwnd());
 }
 
 COLORREF CaptionButton::bk_color() const {
@@ -376,22 +412,6 @@ HRGN MinimizeButton::GetButtonRgn(int rgn_width, int rgn_height) {
   ::OffsetRect(&minimize_button_rect, 0, y_offset);
 
   return ::CreateRectRgnIndirect(&minimize_button_rect);
-}
-
-MaximizeButton::MaximizeButton() {
-  // Maximize button is not used.
-  set_tool_tip_text(L"");
-}
-
-HRGN MaximizeButton::GetButtonRgn(int rgn_width, int rgn_height) {
-  const RECT maximize_button_rects[] = {{0, 0, rgn_width, rgn_height},
-                                        {1, 2, rgn_width - 1, rgn_height - 1}};
-
-  HRGN rgn = ::CreateRectRgnIndirect(&maximize_button_rects[0]);
-  base::win::ScopedGDIObject<HRGN> rgn_temp(
-      ::CreateRectRgnIndirect(&maximize_button_rects[1]));
-  ::CombineRgn(rgn, rgn, rgn_temp.get(), RGN_DIFF);
-  return rgn;
 }
 
 OwnerDrawTitleBarWindow::OwnerDrawTitleBarWindow() {
@@ -513,10 +533,6 @@ LRESULT OwnerDrawTitleBarWindow::OnSetCursor(UINT,
 }
 
 void OwnerDrawTitleBarWindow::OnClose(UINT, int, HWND) {
-  ::PostMessage(::GetParent(hwnd()), WM_SYSCOMMAND, MAKEWPARAM(SC_CLOSE, 0), 0);
-}
-
-void OwnerDrawTitleBarWindow::OnMaximize(UINT, int, HWND) {
   ::PostMessage(::GetParent(hwnd()), WM_SYSCOMMAND, MAKEWPARAM(SC_CLOSE, 0), 0);
 }
 

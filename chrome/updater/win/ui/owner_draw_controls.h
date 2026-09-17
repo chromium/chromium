@@ -17,6 +17,11 @@
 #include "ui/gfx/win/msg_util.h"
 #include "ui/gfx/win/window_impl.h"
 
+namespace updater::test {
+class CaptionButtonTestApi;
+class OwnerDrawTitleBarTestApi;
+}  // namespace updater::test
+
 namespace updater::ui {
 
 // Owner-drawn caption button used by the custom title bar. The control is a
@@ -48,20 +53,32 @@ class CaptionButton : public SubclassedWindow {
   CR_BEGIN_MSG_MAP_EX(CaptionButton)
     CR_MESSAGE_RANGE_HANDLER_EX(WM_MOUSEFIRST, WM_MOUSELAST, OnMouseMessage)
     CR_MESSAGE_HANDLER_EX(WM_MOUSEMOVE, OnMouseMove)
-    CR_MESSAGE_HANDLER_EX(WM_MOUSEHOVER, OnMouseHover)
     CR_MESSAGE_HANDLER_EX(WM_MOUSELEAVE, OnMouseLeave)
+    CR_MESSAGE_HANDLER_EX(WM_ENABLE, OnEnable)
+    CR_MESSAGE_HANDLER_EX(WM_SHOWWINDOW, OnShowWindow)
     CR_MESSAGE_HANDLER_EX(WM_THEMECHANGED, OnThemeChanged)
     CR_MESSAGE_HANDLER_EX(WM_SYSCOLORCHANGE, OnThemeChanged)
     CR_MESSAGE_HANDLER_EX(WM_SETTINGCHANGE, OnThemeChanged)
   CR_END_MSG_MAP()
 
  private:
+  friend class updater::test::CaptionButtonTestApi;
+
   virtual HRGN GetButtonRgn(int rgn_width, int rgn_height) = 0;
+
+  // Cancels any outstanding TME_LEAVE registration so that the next cursor
+  // entry re-arms it.
+  void CancelMouseTracking();
+
+  // Reports the control's own WS_DISABLED bit. Hover gating needs the enabled
+  // bit outside a draw cycle.
+  bool IsEnabled() const;
 
   LRESULT OnMouseMessage(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnMouseMove(UINT msg, WPARAM wparam, LPARAM lparam);
-  LRESULT OnMouseHover(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnMouseLeave(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnEnable(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnShowWindow(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnThemeChanged(UINT msg, WPARAM wparam, LPARAM lparam);
 
   COLORREF bk_color_ = RGB(0, 0, 0);
@@ -96,23 +113,12 @@ class MinimizeButton : public CaptionButton {
   HRGN GetButtonRgn(int rgn_width, int rgn_height) override;
 };
 
-class MaximizeButton : public CaptionButton {
- public:
-  MaximizeButton();
-  MaximizeButton(const MaximizeButton&) = delete;
-  MaximizeButton& operator=(const MaximizeButton&) = delete;
-
- private:
-  HRGN GetButtonRgn(int rgn_width, int rgn_height) override;
-};
-
 // Owner-drawn custom title bar. A child of the host dialog; positions and
 // paints its caption buttons.
 class OwnerDrawTitleBarWindow : public gfx::WindowImpl {
  public:
   enum ButtonIds {
     kButtonClose = 1,
-    kButtonMaximize,
     kButtonMinimize,
   };
 
@@ -140,12 +146,13 @@ class OwnerDrawTitleBarWindow : public gfx::WindowImpl {
     CR_MESSAGE_HANDLER_EX(WM_SIZE, OnSize)
     CR_MESSAGE_HANDLER_EX(WM_DRAWITEM, OnDrawItem)
     CR_COMMAND_ID_HANDLER_EX(kButtonClose, OnClose)
-    CR_COMMAND_ID_HANDLER_EX(kButtonMaximize, OnMaximize)
     CR_COMMAND_ID_HANDLER_EX(kButtonMinimize, OnMinimize)
     CR_MESSAGE_HANDLER_EX(WM_SETCURSOR, OnSetCursor)
   CR_END_MSG_MAP()
 
  private:
+  friend class updater::test::OwnerDrawTitleBarTestApi;
+
   void CreateCaptionButtons();
   void UpdateButtonState(HMENU menu,
                          UINT button_sc_id,
@@ -164,7 +171,6 @@ class OwnerDrawTitleBarWindow : public gfx::WindowImpl {
   LRESULT OnDrawItem(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnSetCursor(UINT msg, WPARAM wparam, LPARAM lparam);
   void OnClose(UINT notify_code, int id, HWND ctl);
-  void OnMaximize(UINT notify_code, int id, HWND ctl);
   void OnMinimize(UINT notify_code, int id, HWND ctl);
 
   POINT current_drag_position_ = {-1, -1};
@@ -198,6 +204,8 @@ class OwnerDrawTitleBar {
   }
 
  private:
+  friend class updater::test::OwnerDrawTitleBarTestApi;
+
   RECT ComputeTitleBarClientRect(HWND parent_hwnd, HWND title_bar_spacer_hwnd);
 
   OwnerDrawTitleBarWindow title_bar_window_;
