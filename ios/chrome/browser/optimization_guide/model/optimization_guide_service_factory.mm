@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
+#import "base/memory/weak_ptr.h"
 #import "base/path_service.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/optimization_guide/core/delivery/prediction_manager.h"
@@ -53,8 +55,8 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
   if (!profile->IsOffTheRecord()) {
     private_ai::PrivateAiService* private_ai_service =
         PrivateAiServiceFactory::GetForProfile(profile);
-    delegate = std::make_unique<IOSModelExecutionManagerDelegate>(
-        profile, private_ai_service);
+    delegate =
+        std::make_unique<IOSModelExecutionManagerDelegate>(private_ai_service);
   }
 #endif
 
@@ -63,7 +65,9 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
       GetApplicationContext()->GetApplicationLocaleStorage()->Get(), hint_store,
       profile->GetPrefs(), BrowserListFactory::GetForProfile(profile),
       GetApplicationContext()->GetSharedURLLoaderFactory(),
-      IdentityManagerFactory::GetForProfile(profile), std::move(delegate));
+      IdentityManagerFactory::GetForProfile(profile), std::move(delegate),
+      base::BindRepeating(&ProfileIOS::GetNetworkContext,
+                          base::Unretained(profile)));
 
   service->DoFinalInit(
       BackgroundDownloadServiceFactory::GetForProfile(profile));

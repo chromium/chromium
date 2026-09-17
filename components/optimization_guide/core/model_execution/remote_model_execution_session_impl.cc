@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -22,6 +23,7 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/remote_model_execution_common.h"
+#include "components/optimization_guide/core/optimization_guide_common.mojom-shared.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -55,6 +57,33 @@ GURL GetModelExecutionServiceStreamURL(ModelBasedCapabilityKey feature) {
 }
 
 }  // namespace
+
+// static
+std::unique_ptr<RemoteModelExecutionSession>
+RemoteModelExecutionSession::Create(
+    ModelBasedCapabilityKey feature,
+    const StreamingModelExecutionOptions& options,
+    OptimizationGuideModelExecutionStreamingCallback callback,
+    network::mojom::NetworkContext* network_context,
+    signin::IdentityManager* identity_manager,
+    OptimizationGuideLogger* logger) {
+  if (!base::FeatureList::IsEnabled(
+          features::kOptimizationGuideModelExecution)) {
+    return nullptr;
+  }
+  CHECK(network_context);
+  if (logger && logger->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger)
+        << "StartStreamingSession: "
+        << proto::ModelExecutionFeature_Name(
+               ToModelExecutionFeatureProto(feature));
+  }
+
+  return std::make_unique<RemoteModelExecutionSessionImpl>(
+      feature, options, std::move(callback), network_context, identity_manager,
+      logger);
+}
 
 RemoteModelExecutionSessionImpl::RemoteModelExecutionSessionImpl(
     ModelBasedCapabilityKey feature,

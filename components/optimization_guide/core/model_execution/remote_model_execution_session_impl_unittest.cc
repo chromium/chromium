@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "base/test/test_future.h"
@@ -23,6 +24,7 @@
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/remote_model_execution_common.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -33,6 +35,7 @@
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/websocket.mojom.h"
+#include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -737,6 +740,34 @@ TEST_F(RemoteModelExecutionSessionImplTest,
   fake_client_->SimulateConnected();
 
   EXPECT_EQ(session_, nullptr);
+}
+
+TEST_F(RemoteModelExecutionSessionImplTest,
+       CreateWithFeatureDisabledReturnsNull) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kOptimizationGuideModelExecution);
+  network::TestNetworkContext test_network_context;
+  base::test::TestFuture<OptimizationGuideModelStreamingResult>
+      streaming_future;
+  auto session = RemoteModelExecutionSession::Create(
+      ModelBasedCapabilityKey::kScamDetection, {},
+      streaming_future.GetRepeatingCallback(), &test_network_context,
+      identity_test_env_.identity_manager());
+  EXPECT_EQ(session, nullptr);
+}
+
+TEST_F(RemoteModelExecutionSessionImplTest, CreateSuccess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kOptimizationGuideModelExecution);
+  network::TestNetworkContext test_network_context;
+  base::test::TestFuture<OptimizationGuideModelStreamingResult>
+      streaming_future;
+  auto session = RemoteModelExecutionSession::Create(
+      ModelBasedCapabilityKey::kScamDetection, {},
+      streaming_future.GetRepeatingCallback(), &test_network_context,
+      identity_test_env_.identity_manager());
+  EXPECT_NE(session, nullptr);
 }
 
 }  // namespace optimization_guide

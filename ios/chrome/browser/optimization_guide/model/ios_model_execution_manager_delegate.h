@@ -10,12 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 
-class ProfileIOS;
-
-namespace network::mojom {
-class NetworkContext;
-}  // namespace network::mojom
-
 namespace private_ai {
 class PrivateAiService;
 }  // namespace private_ai
@@ -25,18 +19,15 @@ class PrivateAiService;
 class IOSModelExecutionManagerDelegate
     : public optimization_guide::ModelExecutionManager::Delegate {
  public:
-  IOSModelExecutionManagerDelegate(
-      ProfileIOS* profile,
+  explicit IOSModelExecutionManagerDelegate(
       private_ai::PrivateAiService* private_ai_service);
   ~IOSModelExecutionManagerDelegate() override;
 
   // optimization_guide::ModelExecutionManager::Delegate:
   std::unique_ptr<optimization_guide::ModelExecutionFetcher>
   CreatePrivateAiFetcher() override;
-  network::mojom::NetworkContext* GetNetworkContext() override;
 
  private:
-  raw_ptr<ProfileIOS> profile_;
   raw_ptr<private_ai::PrivateAiService> private_ai_service_;
 };
 

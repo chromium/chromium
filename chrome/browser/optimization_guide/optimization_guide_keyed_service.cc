@@ -167,12 +167,6 @@ class ModelExecutionDelegate : public ModelExecutionManager::Delegate {
         client);
   }
 
-  network::mojom::NetworkContext* GetNetworkContext() override {
-    return Profile::FromBrowserContext(browser_context_)
-        ->GetDefaultStoragePartition()
-        ->GetNetworkContext();
-  }
-
  private:
   raw_ptr<content::BrowserContext> browser_context_;
 };
@@ -551,11 +545,12 @@ OptimizationGuideKeyedService::StartStreamingSession(
     optimization_guide::OptimizationGuideModelExecutionStreamingCallback
         callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!model_execution_manager_) {
-    return nullptr;
-  }
-  return model_execution_manager_->StartStreamingSession(feature, options,
-                                                         std::move(callback));
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  return optimization_guide::RemoteModelExecutionSession::Create(
+      feature, options, std::move(callback),
+      profile->GetDefaultStoragePartition()->GetNetworkContext(),
+      IdentityManagerFactory::GetForProfile(profile),
+      optimization_guide_logger_.get());
 }
 
 void OptimizationGuideKeyedService::AddOnDeviceModelAvailabilityChangeObserver(

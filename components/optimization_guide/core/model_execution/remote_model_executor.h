@@ -21,6 +21,16 @@
 #include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
+class OptimizationGuideLogger;
+
+namespace network::mojom {
+class NetworkContext;
+}  // namespace network::mojom
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace optimization_guide {
 
 // The model execution service.
@@ -114,6 +124,14 @@ class RemoteModelExecutionSession {
     // Called when the connection state changes.
     virtual void OnConnectionStateChanged(ConnectionState state) = 0;
   };
+
+  static std::unique_ptr<RemoteModelExecutionSession> Create(
+      ModelBasedCapabilityKey feature,
+      const StreamingModelExecutionOptions& options,
+      OptimizationGuideModelExecutionStreamingCallback callback,
+      network::mojom::NetworkContext* network_context,
+      signin::IdentityManager* identity_manager,
+      OptimizationGuideLogger* logger = nullptr);
 
   virtual ~RemoteModelExecutionSession() = default;
 
