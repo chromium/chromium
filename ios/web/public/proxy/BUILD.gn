@@ -11,5 +11,6 @@ source_set("proxy") {
     "proxy_config.cc",
     "proxy_config.h",
     "proxy_configuration_provider.h",
+    "pvd_route_translator.h",
   ]
 }

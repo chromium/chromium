@@ -260,4 +260,35 @@ TEST_F(ProxyConfigurationProviderTest, HttpsProxyConfigurationSupported) {
   }
 }
 
+// Tests that Apple's native `Network.framework` proxy configuration APIs
+// correctly accept and retain wildcards (e.g., `*.apple.com`), domain
+// suffixes (e.g., `apple.com`), IPv4 literals, and IPv6 literals without
+// crash or string corruption.
+//
+// Undocumented Apple behavior rationale:
+// Apple's `Network.framework` API (`nw_proxy_config_add_match_domain`) does
+// not explicitly document wildcard prefix or IP literal support, but the
+// underlying WebKit proxy subsystem relies on this behavior to steer traffic
+// to HTTP CONNECT proxies.
+//
+// Meaning of test failure:
+// If this test fails in a future iOS release, Apple has changed the native
+// parsing or acceptance of wildcard/IP matchers in `nw_proxy_config_t`. This
+// will break traffic steering for Enterprise Secure Gateway, causing
+// corporate requests to bypass the gateway or fail to connect.
+TEST_F(ProxyConfigurationProviderTest, UndocumentedNativeMatcherBehaviors) {
+  ProxyConfigurationProvider& provider =
+      ProxyConfigurationProvider::FromBrowserState(&browser_state_);
+
+  provider.UpdateProxyConfiguration({
+      ProxyRuleFor("secure-proxy.corp.com", 443,
+                   {"*.apple.com", "apple.com", "192.168.1.1", "[2001:db8::1]"},
+                   net::ProxyServer::SCHEME_HTTPS),
+  });
+
+  VerifyNativeProxyConfigurations(
+      &browser_state_, {{.match_domains = {"*.apple.com", "apple.com",
+                                           "192.168.1.1", "[2001:db8::1]"}}});
+}
+
 }  // namespace web

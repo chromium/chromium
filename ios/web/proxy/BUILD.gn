@@ -8,9 +8,13 @@ source_set("proxy") {
     "//ios/web/public",
     "//ios/web/public/proxy",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
+    "//net",
   ]
 
-  sources = [ "proxy_configuration_provider.mm" ]
+  sources = [
+    "proxy_configuration_provider.mm",
+    "pvd_route_translator.cc",
+  ]
 }
 
 source_set("unittests") {
@@ -22,8 +26,12 @@ source_set("unittests") {
     "//ios/web/public/proxy",
     "//ios/web/public/test",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
+    "//net",
     "//testing/gtest",
   ]
 
-  sources = [ "proxy_configuration_provider_unittest.mm" ]
+  sources = [
+    "proxy_configuration_provider_unittest.mm",
+    "pvd_route_translator_unittest.mm",
+  ]
 }
