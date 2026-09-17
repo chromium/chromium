@@ -139,6 +139,8 @@ Signer::Signer(SignatureKind kind, crypto::keypair::PrivateKey key)
       EVP_DigestSignInit(sign_context_.get(), &pkctx, md, nullptr, key.key()));
   ConfigurePkeyCtx(pkctx, kind);
 }
+Signer::Signer(Signer&&) = default;
+Signer& Signer::operator=(Signer&&) = default;
 Signer::~Signer() = default;
 
 void Signer::Update(base::span<const uint8_t> data) {
@@ -173,6 +175,8 @@ Verifier::Verifier(SignatureKind kind,
                              key.key()));
   ConfigurePkeyCtx(pkctx, kind);
 }
+Verifier::Verifier(Verifier&&) = default;
+Verifier& Verifier::operator=(Verifier&&) = default;
 Verifier::~Verifier() = default;
 
 void Verifier::Update(base::span<const uint8_t> data) {

@@ -60,6 +60,8 @@ CRYPTO_EXPORT std::vector<uint8_t> Sign(SignatureKind kind,
 class CRYPTO_EXPORT Signer {
  public:
   Signer(SignatureKind kind, crypto::keypair::PrivateKey key);
+  Signer(Signer&&);
+  Signer& operator=(Signer&&);
   ~Signer();
 
   // Put more data into the signing function.
@@ -80,6 +82,8 @@ class CRYPTO_EXPORT Verifier {
   Verifier(SignatureKind kind,
            crypto::keypair::PublicKey key,
            base::span<const uint8_t> signature);
+  Verifier(Verifier&&);
+  Verifier& operator=(Verifier&&);
   ~Verifier();
 
   // Put more data into the verification function.

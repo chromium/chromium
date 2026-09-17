@@ -29,7 +29,6 @@
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "crypto/tpm_parser.h"
 #include "crypto/unexportable_key_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -224,10 +223,10 @@ TEST_P(UnexportableKeyTest, RoundTrip) {
   LOG(INFO) << "Signing took " << (base::TimeTicks::Now() - sign_start);
   ASSERT_TRUE(sig);
 
-  crypto::SignatureVerifier verifier;
-  ASSERT_TRUE(verifier.VerifyInit(algorithm(), *sig, spki));
-  verifier.VerifyUpdate(msg);
-  ASSERT_TRUE(verifier.VerifyFinal());
+  std::optional<crypto::keypair::PublicKey> pub_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(spki);
+  ASSERT_TRUE(pub_key);
+  EXPECT_TRUE(crypto::sign::Verify(algorithm(), *pub_key, msg, *sig));
 
   const base::TimeTicks import2_start = base::TimeTicks::Now();
   std::unique_ptr<crypto::UnexportableSigningKey> key2 =
@@ -243,10 +242,7 @@ TEST_P(UnexportableKeyTest, RoundTrip) {
   LOG(INFO) << "Signing took " << (base::TimeTicks::Now() - sign2_start);
   ASSERT_TRUE(sig2);
 
-  crypto::SignatureVerifier verifier2;
-  ASSERT_TRUE(verifier2.VerifyInit(algorithm(), *sig2, spki));
-  verifier2.VerifyUpdate(msg);
-  ASSERT_TRUE(verifier2.VerifyFinal());
+  EXPECT_TRUE(crypto::sign::Verify(algorithm(), *pub_key, msg, *sig2));
 
   crypto::StatefulUnexportableKeyProvider* stateful_provider =
       provider->AsStatefulUnexportableKeyProvider();

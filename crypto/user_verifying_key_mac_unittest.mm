@@ -17,8 +17,8 @@
 #include "crypto/apple/fake_keychain_v2.h"
 #include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "crypto/apple/scoped_lacontext.h"
+#include "crypto/keypair.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace crypto {
@@ -129,10 +129,11 @@ TEST_F(UserVerifyingKeyMacTest, RoundTrip) {
     std::optional<std::vector<uint8_t>> signature = Sign(key.get(), message);
     ASSERT_TRUE(signature);
 
-    crypto::SignatureVerifier verifier;
-    ASSERT_TRUE(verifier.VerifyInit(kAcceptableAlgos[0], *signature, spki));
-    verifier.VerifyUpdate(message);
-    ASSERT_TRUE(verifier.VerifyFinal());
+    std::optional<keypair::PublicKey> pub_key =
+        keypair::PublicKey::FromSubjectPublicKeyInfo(spki);
+    ASSERT_TRUE(pub_key);
+    EXPECT_TRUE(
+        sign::Verify(kAcceptableAlgos[0], *pub_key, message, *signature));
 
     std::unique_ptr<UserVerifyingSigningKey> key2 =
         GetUserVerifyingSigningKey(key->GetKeyLabel());
@@ -141,10 +142,8 @@ TEST_F(UserVerifyingKeyMacTest, RoundTrip) {
     std::optional<std::vector<uint8_t>> signature2 = Sign(key.get(), message);
     ASSERT_TRUE(signature2);
 
-    crypto::SignatureVerifier verifier2;
-    ASSERT_TRUE(verifier2.VerifyInit(kAcceptableAlgos[0], *signature2, spki));
-    verifier2.VerifyUpdate(message);
-    ASSERT_TRUE(verifier2.VerifyFinal());
+    EXPECT_TRUE(
+        sign::Verify(kAcceptableAlgos[0], *pub_key, message, *signature2));
   }
 }
 
