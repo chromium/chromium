@@ -7,9 +7,8 @@ include_rules = [
   "+components/signin/public/android/jni_headers/SigninDeepLinkPayload_jni.h",
   #TODO(b/309104936): Remove this unwanted include rule.
   "+components/signin/public/identity_manager/primary_account_change_event.h",
+  "+components/unexportable_keys",
   # TODO(crbug.com/478783796): Remove once kWalletApiPrivatePassesEnabled launches.
   "+components/wallet/core/common/wallet_features.h",
-  "+components/unexportable_keys",
   "+extensions/buildflags",
-  "+third_party/boringssl/src/include",
 ]

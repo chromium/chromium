@@ -19,7 +19,6 @@ include_rules = [
   "+ash/public/cpp/network_config_service.h",
   "+ash/resources/vector_icons/vector_icons.h",
   "+ash/webui/eche_app_ui/eche_connection_status_handler.h",
-  "+ash/webui/eche_app_ui/eche_connection_status_handler.h",
   "+ash/webui/eche_app_ui/mojom",
   "+ash/webui/eche_app_ui/pref_names.h",
   "+ash/webui/eche_app_ui/system_info_provider.h",

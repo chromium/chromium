@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/webui/ash/settings/os_settings_features_util.h",
   "+chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h",
-  "+chrome/browser/ui/webui/ash/settings/pages/reset",
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/browser/ui/webui/settings",
   "+chrome/grit",

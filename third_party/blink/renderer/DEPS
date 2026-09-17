@@ -1,7 +1,6 @@
 include_rules = [
     "+base/auto_reset.h",
     "+base/bit_cast.h",
-    "+base/bit_cast.h",
     "+base/bits.h",
     "+base/check.h",
     "+base/check_deref.h",
