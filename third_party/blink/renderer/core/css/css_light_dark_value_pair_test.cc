@@ -58,6 +58,17 @@ TEST(CSSLightDarkValuePairTest, BackgroundImageEquals) {
   EXPECT_FALSE(*value3 == *value4);
 }
 
+TEST(CSSLightDarkValuePairTest, IsValuePair) {
+  const auto* value =
+      ParseUAPropertyValue(CSSPropertyID::kColor, "light-dark(red, green)");
+  ASSERT_TRUE(value);
+  EXPECT_TRUE(value->IsLightDarkValuePair());
+  EXPECT_TRUE(value->IsValuePair());
+  EXPECT_FALSE(value->IsBaseValuePair());
+  EXPECT_TRUE(IsA<CSSValuePair>(*value));
+  EXPECT_FALSE(value->HasRandomFunctions());
+}
+
 }  // namespace
 
 }  // namespace blink
