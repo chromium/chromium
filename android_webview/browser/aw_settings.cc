@@ -594,10 +594,14 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   if (base::FeatureList::IsEnabled(
           android_webview::features::
               kWebViewGateTextSizeAdjustOnTextAutosizing)) {
+    // For years, the CSS property text-size-adjust was only honored in pages in
+    // Webview when the Android App had chosen the TEXT_AUTOSIZING layout mode.
+    // kWebViewGateTextSizeAdjustOnTextAutosizing indicates that the user wants
+    // to maintain this old behavior.
     web_prefs->text_size_adjust_enabled =
         Java_AwSettings_getTextAutosizingEnabledLocked(env, obj);
   } else {
-    // Keep the regressed behavior (always enabled) if flag is disabled.
+    // The modern approach is for CSS to always honor text-size-adjust.
     web_prefs->text_size_adjust_enabled = true;
   }
 

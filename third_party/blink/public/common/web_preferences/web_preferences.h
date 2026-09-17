@@ -250,6 +250,9 @@ struct BLINK_COMMON_EXPORT WebPreferences {
 
   bool fullscreen_supported = true;
 
+  // NOTE: When modifying behavior related to this flag, please e-mail
+  // webview-font-settings@google.com as an FYI. Googlers, more info is
+  // available at go/webview-font-settings.
   bool text_size_adjust_enabled = BUILDFLAG(IS_ANDROID);
 
   // Representation of the Web App Manifest scope if any.
@@ -304,6 +307,9 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // Long press on links selects text instead of triggering context menu.
   bool long_press_link_select_text = false;
   // Support WebView font scaling behavior that differs from Chrome.
+  // NOTE: When modifying behavior related to this flag, please e-mail
+  // webview-font-settings@google.com as an FYI. Googlers, more info is
+  // available at go/webview-font-settings.
   bool scale_all_fonts_if_no_meta_text_scale_tag = false;
 #endif  // BUILDFLAG(IS_ANDROID)
 

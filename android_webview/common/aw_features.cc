@@ -163,6 +163,9 @@ BASE_FEATURE(kWebViewForceWebAuthn, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Gate text-size-adjust on whether the app called
 // setLayoutAlgorithm(TEXT_AUTOSIZING).
+// NOTE: When modifying behavior related to this flag, please e-mail
+// webview-font-settings@google.com as an FYI. Googlers, more info is
+// available at go/webview-font-settings.
 BASE_FEATURE(kWebViewGateTextSizeAdjustOnTextAutosizing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

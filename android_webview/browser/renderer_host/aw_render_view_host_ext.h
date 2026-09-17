@@ -61,8 +61,10 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
   // the corresponding public WebView API is as well.
   mojom::HitTestDataPtr TakeLastHitTestData();
 
-  // Sets the zoom factor for text only. Used in layout modes other than
-  // Text Autosizing.
+  // Sets the zoom factor for text only.
+  // NOTE: When modifying behavior related to setTextZoom, please e-mail
+  // webview-font-settings@google.com as an FYI. Googlers, more info is
+  // available at go/webview-font-settings.
   void SetTextZoomFactor(float factor);
 
   void ResetScrollAndScaleState();
