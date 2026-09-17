@@ -4,8 +4,21 @@
 
 import {enumFromClient} from '../../enum_conversions.js';
 import {ExperimentalTriggeringClientReceiver, SubscriberObservationType as SubscriberObservationTypeMojo} from '../../glic.mojom-webui.js';
-import type {ExperimentalTriggeringClientInterface, ExperimentalTriggeringUpdatesHandlerRemote, Screenshot as ScreenshotMojo, WebClientHandlerRemote} from '../../glic.mojom-webui.js';
-import type {ExperimentalTriggeringUpdate, ExperimentalTriggeringUploadScreenshotRequest, GlicExperimentalTriggeringBrowserHost, GlicWebClient as WebClient, Observable, Screenshot, Subscriber} from '../../glic_api/glic_api.js';
+import type {                                            //
+             ExperimentalTriggeringClientInterface,      //
+             ExperimentalTriggeringUpdatesHandlerRemote, //
+             Screenshot as ScreenshotMojo,               //
+             WebClientHandlerRemote,                     //
+} from '../../glic.mojom-webui.js';
+import type {                                               //
+             ExperimentalTriggeringUpdate,                  //
+             ExperimentalTriggeringUploadScreenshotRequest, //
+             GlicExperimentalTriggeringBrowserHost,         //
+             GlicWebClient as WebClient,                    //
+             Observable,                                    //
+             Screenshot,                                    //
+             Subscriber,                                    //
+} from '../../glic_api/glic_api.js';
 import {Subject} from '../../observable.js';
 import {getGuestLoadTimeData} from '../guest_load_time_data.js';
 import {optionalFromClient, screenshotToClient} from '../host/conversions.js';

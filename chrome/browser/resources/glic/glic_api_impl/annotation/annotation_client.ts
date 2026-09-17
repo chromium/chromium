@@ -6,7 +6,11 @@ import {assert} from '//resources/js/assert.js';
 
 import {enumToClient} from '../../enum_conversions.js';
 import {AnnotationHandlerRemote} from '../../glic.mojom-webui.js';
-import type {ScrollToSelector as ScrollToSelectorMojo, WebClientHandlerRemote, WebClientInitialState} from '../../glic.mojom-webui.js';
+import type {                                          //
+             ScrollToSelector as ScrollToSelectorMojo, //
+             WebClientHandlerRemote,                   //
+             WebClientInitialState,                    //
+} from '../../glic.mojom-webui.js';
 import type {GlicBrowserHost, ScrollToParams} from '../../glic_api/glic_api.js';
 import {ScrollToErrorReason} from '../../glic_api/glic_api.js';
 import {urlFromClient} from '../host/conversions.js';

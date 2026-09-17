@@ -8,17 +8,64 @@
 import {assertNotReached} from '//resources/js/assert.js';
 
 import {enumFromClient} from '../../enum_conversions.js';
-import {PromptType as PromptTypeMojo, ResponseStopCause as ResponseStopCauseMojo, TabDataHandlerReceiver} from '../../glic.mojom-webui.js';
+import {                                       //
+  PromptType as PromptTypeMojo,                //
+  ResponseStopCause as ResponseStopCauseMojo,  //
+  TabDataHandlerReceiver,                      //
+} from '../../glic.mojom-webui.js';
 import type {TabDataHandlerInterface, TabDataMojoType, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
 import {ResponseStopCause} from '../../glic_api/glic_api.js';
-import type {ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PinTabsOptions, PromptType, TabContextOptions, UnpinTabsOptions, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
+import type {                            //
+             ClientErrorDialogType,      //
+             ConversationInfo,           //
+             CounterAbuseVerdict,        //
+             MicrophoneStatus,           //
+             OnResponseStoppedDetails,   //
+             OpenPinnedTabPickerOptions, //
+             PinTabsOptions,             //
+             PromptType,                 //
+             TabContextOptions,          //
+             UnpinTabsOptions,           //
+             WebClientMode,              //
+             ZeroStateSuggestions,       //
+} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
-import type {GlicException, ImageBytesResultPrivate, RgbaImage, TabContextResultPrivate, WebClientHost, WebClientTabDataObserver} from '../request_types.js';
+import type {                          //
+             GlicException,            //
+             ImageBytesResultPrivate,  //
+             RgbaImage,                //
+             TabContextResultPrivate,  //
+             WebClientHost,            //
+             WebClientTabDataObserver, //
+} from '../request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable} from '../request_types.js';
 import {ResponseExtras} from '../transport/messaging.js';
-import type {PendingRemote, PostMessageHandler, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
+import type {                    //
+             PendingRemote,      //
+             PostMessageHandler, //
+             PostMessageRemote,  //
+             PostMessageRouter,  //
+} from '../transport/post_message_transport.js';
 
-import {bitmapN32ToRGBAImage, conversationInfoFromClient, counterAbuseVerdictFromClient, idFromClient, idToClient, imageBytesResultToClient, microphoneStatusToMojo, openPinnedTabPickerOptionsToMojo, optionalFromClient, pinTabsOptionsToMojo, tabContextOptionsFromClient, tabContextToClient, tabDataToPrivate, timeDeltaFromClient, unpinTabsOptionsToMojo, urlToClient, webClientModeToMojo} from './conversions.js';
+import {                             //
+  bitmapN32ToRGBAImage,              //
+  conversationInfoFromClient,        //
+  counterAbuseVerdictFromClient,     //
+  idFromClient,                      //
+  idToClient,                        //
+  imageBytesResultToClient,          //
+  microphoneStatusToMojo,            //
+  openPinnedTabPickerOptionsToMojo,  //
+  optionalFromClient,                //
+  pinTabsOptionsToMojo,              //
+  tabContextOptionsFromClient,       //
+  tabContextToClient,                //
+  tabDataToPrivate,                  //
+  timeDeltaFromClient,               //
+  unpinTabsOptionsToMojo,            //
+  urlToClient,                       //
+  webClientModeToMojo,               //
+} from './conversions.js';
 import type {GlicApiHost} from './glic_api_host.js';
 import {linkPipeClosure} from './host_utils.js';
 

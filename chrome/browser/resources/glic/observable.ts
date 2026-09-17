@@ -108,7 +108,7 @@ class ObservableBase<T> {
       }
     });
     this.subscribers.clear();
-    if (hadSubscribers){
+    if (hadSubscribers) {
       this.activeSubscriptionChanged(false);
     }
   }
@@ -136,7 +136,7 @@ class ObservableBase<T> {
       }
     });
     this.subscribers.clear();
-    if (hadSubscribers){
+    if (hadSubscribers) {
       this.activeSubscriptionChanged(false);
     }
   }

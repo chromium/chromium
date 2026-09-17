@@ -6,7 +6,12 @@ import {assert} from '//resources/js/assert.js';
 
 import {kBuiltInToolDefinitions} from '../../generated_tool_definitions.js';
 import type {WebClientHandlerRemote, WebClientInitialState} from '../../glic.mojom-webui.js';
-import {ChromeToolBlockingBehavior, ChromeToolResponseScheduling, ExecuteToolErrorReason, HostCapability} from '../../glic_api/glic_api.js';
+import {                         //
+  ChromeToolBlockingBehavior,    //
+  ChromeToolResponseScheduling,  //
+  ExecuteToolErrorReason,        //
+  HostCapability,                //
+} from '../../glic_api/glic_api.js';
 import type {ChromeTool, ChromeToolExecutionResult, GlicBrowserHost, GlicToolsHost} from '../../glic_api/glic_api.js';
 import {AiOverlayToolsRemote, ScrollGranularity} from '../../tools.mojom-webui.js';
 import {hostCapabilitiesToClient} from '../host/conversions.js';

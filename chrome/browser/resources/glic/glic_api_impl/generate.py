@@ -88,6 +88,7 @@ def Main():
         node_cmd = [sys.executable, node_py, gen_sources_js] + sys.argv[1:]
         env = os.environ.copy()
         env['GENERATE_IMPL_DIR'] = os.path.join(this_dir, 'generate_impl')
+        env['PYTHON_EXECUTABLE'] = sys.executable
         result = subprocess.run(node_cmd, env=env)
         sys.exit(result.returncode)
 

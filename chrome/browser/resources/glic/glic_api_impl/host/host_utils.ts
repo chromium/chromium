@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {InterfaceDef, PendingRemote, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
+import type {                   //
+             InterfaceDef,      //
+             PendingRemote,     //
+             PostMessageRemote, //
+             PostMessageRouter, //
+} from '../transport/post_message_transport.js';
 
 export interface HasMojoConnection {
   onConnectionError: {addListener: (l: Function) => number};

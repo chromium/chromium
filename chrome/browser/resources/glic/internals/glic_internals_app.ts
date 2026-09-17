@@ -9,9 +9,25 @@ import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ActuationTarget, FeatureMode, FormFactor, FreOverride, InvocationSource, Platform} from '../glic_enums.mojom-webui.js';
-import {ActuationEligibility, browserProxyFactory, FreCompletionWaitMode, GlicExperimentalTriggeringState} from '../glic_internals.mojom-webui.js';
-import type {BrowserProxy, InternalsDataPayload, TriggerInvokeFromInternalsOptions} from '../glic_internals.mojom-webui.js';
+import {             //
+  ActuationTarget,   //
+  FeatureMode,       //
+  FormFactor,        //
+  FreOverride,       //
+  InvocationSource,  //
+  Platform,          //
+} from '../glic_enums.mojom-webui.js';
+import {                            //
+  ActuationEligibility,             //
+  browserProxyFactory,              //
+  FreCompletionWaitMode,            //
+  GlicExperimentalTriggeringState,  //
+} from '../glic_internals.mojom-webui.js';
+import type {                                   //
+             BrowserProxy,                      //
+             InternalsDataPayload,              //
+             TriggerInvokeFromInternalsOptions, //
+} from '../glic_internals.mojom-webui.js';
 
 import {getCss} from './glic_internals_app.css.js';
 import {getHtml} from './glic_internals_app.html.js';

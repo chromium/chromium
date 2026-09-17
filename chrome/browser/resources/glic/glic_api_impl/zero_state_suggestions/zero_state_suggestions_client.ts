@@ -3,8 +3,19 @@
 // found in the LICENSE file.
 
 import {ZeroStateSuggestionsClientReceiver, ZeroStateSuggestionsHandlerRemote} from '../../glic.mojom-webui.js';
-import type {WebClientHandlerRemote, WebClientInitialState, ZeroStateSuggestionsClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
-import type {GlicBrowserHost, ObservableValue, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {                                                                //
+             WebClientHandlerRemote,                                         //
+             WebClientInitialState,                                          //
+             ZeroStateSuggestionsClientInterface,                            //
+             ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, //
+             ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo,           //
+} from '../../glic.mojom-webui.js';
+import type {                             //
+             GlicBrowserHost,             //
+             ObservableValue,             //
+             ZeroStateSuggestionsOptions, //
+             ZeroStateSuggestionsV2,      //
+} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl} from '../../observable.js';
 import {zeroStateSuggestionsToClient} from '../host/conversions.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';

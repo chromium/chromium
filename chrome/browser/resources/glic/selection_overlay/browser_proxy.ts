@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SelectionOverlayPageCallbackRouter, SelectionOverlayPageHandlerFactory, SelectionOverlayPageHandlerRemote} from './selection_overlay.mojom-webui.js';
+import {                               //
+  SelectionOverlayPageCallbackRouter,  //
+  SelectionOverlayPageHandlerFactory,  //
+  SelectionOverlayPageHandlerRemote,   //
+} from './selection_overlay.mojom-webui.js';
 
 let instance: BrowserProxy|null = null;
 

@@ -18,7 +18,14 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {OverlayState} from './glic_overlay.mojom-webui.js';
-import {ErrorPanelType, GlicOverlayPageCallbackRouter, GlicOverlayPageHandlerFactory, GlicOverlayPageHandlerRemote, GlicOverlayPageRemote, LoadingStyle} from './glic_overlay.mojom-webui.js';
+import {                          //
+  ErrorPanelType,                 //
+  GlicOverlayPageCallbackRouter,  //
+  GlicOverlayPageHandlerFactory,  //
+  GlicOverlayPageHandlerRemote,   //
+  GlicOverlayPageRemote,          //
+  LoadingStyle,                   //
+} from './glic_overlay.mojom-webui.js';
 
 export type {OverlayState};
 export {

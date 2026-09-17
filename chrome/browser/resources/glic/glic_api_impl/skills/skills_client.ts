@@ -6,8 +6,23 @@ import {assert} from '//resources/js/assert.js';
 
 import {enumFromClient, enumToClient} from '../../enum_conversions.js';
 import {SkillsClientReceiver, SkillsHandlerRemote, SkillSource as SkillSourceMojo} from '../../glic.mojom-webui.js';
-import type {Skill as SkillMojo, SkillPreview as SkillPreviewMojo, SkillsClientInterface, WebClientHandlerRemote, WebClientInitialState} from '../../glic.mojom-webui.js';
-import type {CreateSkillRequest, GlicBrowserHost, GlicBrowserSkills, ObservableValue, Skill, SkillPreview, SkillsWebClientEvent, UpdateSkillRequest} from '../../glic_api/glic_api.js';
+import type {                                  //
+             Skill as SkillMojo,               //
+             SkillPreview as SkillPreviewMojo, //
+             SkillsClientInterface,            //
+             WebClientHandlerRemote,           //
+             WebClientInitialState,            //
+} from '../../glic.mojom-webui.js';
+import type {                      //
+             CreateSkillRequest,   //
+             GlicBrowserHost,      //
+             GlicBrowserSkills,    //
+             ObservableValue,      //
+             Skill,                //
+             SkillPreview,         //
+             SkillsWebClientEvent, //
+             UpdateSkillRequest,   //
+} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl} from '../../observable.js';
 import {optionalToClient, timeToClient, urlToClient} from '../host/conversions.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';

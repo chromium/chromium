@@ -2,7 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PageMetadata, PdfDocumentData, PinTabsOptions, PromptType, ResumeActorTaskResult, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../glic_api/glic_api.js';
+import type {                             //
+             AdditionalContext,           //
+             AdditionalContextPart,       //
+             AnnotatedPageData,           //
+             ClientErrorDialogType,       //
+             ConversationInfo,            //
+             CounterAbuseVerdict,         //
+             ErrorReasonTypes,            //
+             ErrorWithReason,             //
+             FocusedTabDataHasFocus,      //
+             FocusedTabDataHasNoFocus,    //
+             InvokeOptions,               //
+             MetricUserInputReactionType, //
+             MicrophoneStatus,            //
+             OnResponseStoppedDetails,    //
+             OpenPinnedTabPickerOptions,  //
+             PageMetadata,                //
+             PdfDocumentData,             //
+             PinTabsOptions,              //
+             PromptType,                  //
+             ResumeActorTaskResult,       //
+             TabContextOptions,           //
+             TabContextResult,            //
+             TabData,                     //
+             UnpinTabsOptions,            //
+             UserProfileInfo,             //
+             WebClientMode,               //
+             ZeroStateSuggestions,        //
+} from '../glic_api/glic_api.js';
 
 import type {InterfaceDef, InterfaceDefMethods} from './transport/messaging.js';
 import {defInterface, defMessage} from './transport/messaging.js';

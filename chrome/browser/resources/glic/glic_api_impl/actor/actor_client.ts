@@ -7,19 +7,85 @@
 import {assert} from '//resources/js/assert.js';
 
 import type * as actorWebUiMojom from '../../actor_webui.mojom-webui.js';
-import {GmailOtpErrorReason as GmailOtpErrorReasonMojo, SelectAutofillSuggestionsDialogErrorReason as SelectAutofillSuggestionsDialogErrorReasonMojo, SelectCredentialDialogErrorReason as SelectCredentialDialogErrorReasonMojo} from '../../actor_webui.mojom-webui.js';
-import type {GmailOtpConfirmationRequest as GmailOtpConfirmationRequestMojo, GmailOtpConfirmationResult as GmailOtpConfirmationResultMojo, GmailOtpOptInRequest as GmailOtpOptInRequestMojo, GmailOtpOptInResult as GmailOtpOptInResultMojo, NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, TaskOptions as TaskOptionsMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo, UserGrantedPermissionDuration as UserGrantedPermissionDurationMojo} from '../../actor_webui.mojom-webui.js';
+import {                                           //
+  GmailOtpErrorReason as GmailOtpErrorReasonMojo,  //
+  SelectAutofillSuggestionsDialogErrorReason as SelectAutofillSuggestionsDialogErrorReasonMojo,  //
+  SelectCredentialDialogErrorReason as SelectCredentialDialogErrorReasonMojo,  //
+} from '../../actor_webui.mojom-webui.js';
+import type {                                                                //
+             GmailOtpConfirmationRequest as GmailOtpConfirmationRequestMojo, //
+             GmailOtpConfirmationResult as GmailOtpConfirmationResultMojo,   //
+             GmailOtpOptInRequest as GmailOtpOptInRequestMojo,               //
+             GmailOtpOptInResult as GmailOtpOptInResultMojo,                 //
+             NavigationConfirmationRequest as NavigationConfirmationRequestMojo, //
+             NavigationConfirmationResponse as NavigationConfirmationResponseMojo, //
+             SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, //
+             SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, //
+             SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, //
+             SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, //
+             TaskOptions as TaskOptionsMojo, //
+             UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, //
+             UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo, //
+             UserGrantedPermissionDuration as UserGrantedPermissionDurationMojo, //
+} from '../../actor_webui.mojom-webui.js';
 import {enumFromClient, enumToClient} from '../../enum_conversions.js';
 import {ActorClientReceiver, ActorHandlerRemote} from '../../glic.mojom-webui.js';
-import type {ActorClientInterface, ActorTaskState as ActorTaskStateMojo, TabContextResult as TabContextMojo, WebClientHandlerRemote, WebClientInitialState} from '../../glic.mojom-webui.js';
+import type {                                      //
+             ActorClientInterface,                 //
+             ActorTaskState as ActorTaskStateMojo, //
+             TabContextResult as TabContextMojo,   //
+             WebClientHandlerRemote,               //
+             WebClientInitialState,                //
+} from '../../glic.mojom-webui.js';
 import type * as glicApi from '../../glic_api/glic_api.js';
-import type {ActorTaskInterruptReason, CancelActionsResult, CreateActorTabOptions, Credential, FormFillingResponse, GlicBrowserHost, GlicBrowserHostJournal, GmailOtpConfirmationRequest, GmailOtpOptInRequest, Journal, NavigationConfirmationRequest, Observable, ObservableValue, ResumeActorTaskResult, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest} from '../../glic_api/glic_api.js';
-import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, CreateTaskErrorReason, FeatureMode, PerformActionsErrorReason} from '../../glic_api/glic_api.js';
+import type {                                        //
+             ActorTaskInterruptReason,               //
+             CancelActionsResult,                    //
+             CreateActorTabOptions,                  //
+             Credential,                             //
+             FormFillingResponse,                    //
+             GlicBrowserHost,                        //
+             GlicBrowserHostJournal,                 //
+             GmailOtpConfirmationRequest,            //
+             GmailOtpOptInRequest,                   //
+             Journal,                                //
+             NavigationConfirmationRequest,          //
+             Observable,                             //
+             ObservableValue,                        //
+             ResumeActorTaskResult,                  //
+             SelectAutofillSuggestionsDialogRequest, //
+             SelectCredentialDialogRequest,          //
+             TabContextOptions,                      //
+             TabContextResult,                       //
+             TabData,                                //
+             TaskOptions,                            //
+             UserConfirmationDialogRequest,          //
+} from '../../glic_api/glic_api.js';
+import {                      //
+  ActorTaskPauseReason,       //
+  ActorTaskState,             //
+  ActorTaskStopReason,        //
+  CreateTaskErrorReason,      //
+  FeatureMode,                //
+  PerformActionsErrorReason,  //
+} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {convertTabContextResultFromPrivate, convertTabDataFromPrivate} from '../client/glic_api_client.js';
 import {rgbaImageToBlob} from '../client/image_utils.js';
 import type {CheckEnumCompatibility} from '../conversions.js';
-import {bitmapN32ToRGBAImage, byteArrayFromClient, getArrayBufferFromBigBuffer, idFromClient, idToClient, optionalFromClient, optionalToClient, originToClient, tabContextOptionsFromClient, tabContextToClient, urlToClient} from '../host/conversions.js';
+import {                        //
+  bitmapN32ToRGBAImage,         //
+  byteArrayFromClient,          //
+  getArrayBufferFromBigBuffer,  //
+  idFromClient,                 //
+  idToClient,                   //
+  optionalFromClient,           //
+  optionalToClient,             //
+  originToClient,               //
+  tabContextOptionsFromClient,  //
+  tabContextToClient,           //
+  urlToClient,                  //
+} from '../host/conversions.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';
 import type {ResumeActorTaskResultPrivate} from '../request_types.js';
 import {ErrorWithReasonImpl} from '../request_types.js';

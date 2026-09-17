@@ -5,6 +5,7 @@
 import type * as mojom from '../glic.mojom-webui.js';
 import type * as api from '../glic_api/glic_api.js';
 import type * as mojomEnums from '../glic_enums.mojom-webui.js';
+
 import {assertNever} from './transport/messaging.js';
 
 // Helper function to shallow-copy an object and replace some properties.

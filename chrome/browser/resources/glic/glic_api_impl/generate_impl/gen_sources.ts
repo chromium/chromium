@@ -54,8 +54,18 @@ function generateTs(c: MojomModel): string {
   }
 
   if (unresolvedTypes.size > 0) {
-    const importsList = Array.from(unresolvedTypes).sort().join(', ');
-    writer.writeLine(`import type {${importsList}} from './glic_api.js';`);
+    const sorted = Array.from(unresolvedTypes).sort();
+    const singleLine =
+        `import type {${sorted.join(', ')}} from './glic_api.js';`;
+    if (singleLine.length > 120 && sorted.length > 2) {
+      writer.writeLine('import type {//');
+      for (const t of sorted) {
+        writer.writeLine(`${t},//`);
+      }
+      writer.writeLine('} from \'./glic_api.js\';');
+    } else {
+      writer.writeLine(singleLine);
+    }
     writer.writeLine();
   }
 
@@ -64,7 +74,27 @@ function generateTs(c: MojomModel): string {
   return writer.toString();
 }
 
+function formatWithClangFormat(text: string, filePath: string): string {
+  let scriptDir = path.dirname(fileURLToPath(import.meta.url));
+  if (!fs.existsSync(path.join(scriptDir, 'parse.py')) &&
+      process.env['GENERATE_IMPL_DIR']) {
+    scriptDir = process.env['GENERATE_IMPL_DIR'];
+  }
+  const pythonExe = process.env['PYTHON_EXECUTABLE'] ||
+      (process.platform === 'win32' ? 'python' : 'python3');
+  const clangFormatPy = path.resolve(
+      scriptDir, '../../../../../../third_party/depot_tools/clang_format.py');
+  try {
+    return execFileSync(
+        pythonExe, [clangFormatPy, `--assume-filename=${filePath}`],
+        {input: text, encoding: 'utf-8'});
+  } catch (e) {
+    return text;
+  }
+}
+
 function writeFile(targetPath: string, text: string, checkOnly: boolean) {
+  text = formatWithClangFormat(text, targetPath);
   if (fs.existsSync(targetPath)) {
     const originalText = fs.readFileSync(targetPath, 'utf-8');
     if (originalText === text) {

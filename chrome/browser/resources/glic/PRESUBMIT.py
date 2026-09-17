@@ -120,6 +120,75 @@ def CheckApiChangesIfModified(input_api, output_api, on_upload):
     return results
 
 
+def _CheckTypeScriptImports(input_api, output_api):
+    def file_filter(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file,
+            files_to_check=[r'^chrome/browser/resources/glic/.*\.ts$'],
+            files_to_skip=[r'.*\.d\.ts$'],
+        )
+
+    affected_files = list(
+        input_api.AffectedFiles(include_deletes=False, file_filter=file_filter)
+    )
+    file_paths = [f.UnixLocalPath() for f in affected_files]
+    if not file_paths:
+        return []
+
+    format_ts_imports_script = input_api.os_path.join(
+        input_api.change.RepositoryRoot(),
+        'chrome',
+        'browser',
+        'glic',
+        'tools',
+        'format_ts_imports.py',
+    )
+
+    cmd = [
+        input_api.python3_executable,
+        format_ts_imports_script,
+        '--check-only',
+    ] + file_paths
+
+    proc = input_api.subprocess.Popen(
+        cmd,
+        cwd=input_api.change.RepositoryRoot(),
+        stdout=input_api.subprocess.PIPE,
+        stderr=input_api.subprocess.PIPE,
+        text=True,
+    )
+    _, stderr = proc.communicate()
+
+    if proc.returncode != 0:
+        unformatted_files = []
+        for line in stderr.splitlines():
+            line = line.strip()
+            if not line or line.startswith('The following files') or line.startswith('Warning:'):
+                continue
+            norm_line = input_api.os_path.normpath(line)
+            for f in file_paths:
+                f_norm = input_api.os_path.normpath(f)
+                if f_norm == norm_line or norm_line.endswith(f_norm):
+                    unformatted_files.append(f)
+                    break
+        target_files = unformatted_files or file_paths
+        cmd_str = (
+            'vpython3 chrome/browser/glic/tools/format_ts_imports.py -i '
+            + ' '.join(target_files)
+        )
+        message = (
+            'TypeScript imports in the following file(s) are not properly '
+            'formatted. Please run:\n  ' + cmd_str
+        )
+        return [
+            output_api.PresubmitError(
+                message,
+                items=target_files,
+            )
+        ]
+    return []
+
+
 def _CommonChecks(input_api, output_api, on_upload):
     old_path = input_api.sys.path[:]
     try:
@@ -130,6 +199,7 @@ def _CommonChecks(input_api, output_api, on_upload):
             [
                 CheckApiChangesIfModified(input_api, output_api, on_upload),
                 GlicCommonChecks(input_api, output_api),
+                _CheckTypeScriptImports(input_api, output_api),
             ],
             [],
         )

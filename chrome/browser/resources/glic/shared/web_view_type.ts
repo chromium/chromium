@@ -7,6 +7,7 @@
 
 // <if expr="not enable_extensions_core">
 import '/shared/guest_view/slim_webview.js';
+
 import type {SlimWebviewElement} from '/shared/guest_view/slim_webview.js';
 // </if>
 

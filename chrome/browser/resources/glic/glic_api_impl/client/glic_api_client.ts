@@ -7,28 +7,142 @@ import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-we
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
 import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
 import {enumFromClient, enumToClient} from '../../enum_conversions.js';
-import {CaptureRegionObserverReceiver, PinCandidatesObserverReceiver, SettingsPageField as SettingsPageFieldMojo, TabFaviconHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
-import type {AdditionalContext as AdditionalContextMojo, CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverInterface, CaptureRegionResult as CaptureRegionResultMojo, FileUploadPolicyState as FileUploadPolicyStateMojo, FocusedTabData as FocusedTabDataMojo, GeminiEnterpriseSettings as GeminiEnterpriseSettingsMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserverInterface, TabData as TabDataMojo, TabFaviconHandlerInterface, WebClientHandlerRemote, WebClientInterface} from '../../glic.mojom-webui.js';
+import {                                       //
+  CaptureRegionObserverReceiver,               //
+  PinCandidatesObserverReceiver,               //
+  SettingsPageField as SettingsPageFieldMojo,  //
+  TabFaviconHandlerReceiver,                   //
+  WebClientReceiver,                           //
+} from '../../glic.mojom-webui.js';
+import type {                                                          //
+             AdditionalContext as AdditionalContextMojo,               //
+             CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, //
+             CaptureRegionObserverInterface,                           //
+             CaptureRegionResult as CaptureRegionResultMojo,           //
+             FileUploadPolicyState as FileUploadPolicyStateMojo,       //
+             FocusedTabData as FocusedTabDataMojo,                     //
+             GeminiEnterpriseSettings as GeminiEnterpriseSettingsMojo, //
+             InvokeOptions as InvokeOptionsMojo,                       //
+             OpenPanelInfo as OpenPanelInfoMojo,                       //
+             PanelOpeningData as PanelOpeningDataMojo,                 //
+             PanelState as PanelStateMojo,                             //
+             PinCandidate as PinCandidateMojo,                         //
+             PinCandidatesObserverInterface,                           //
+             TabData as TabDataMojo,                                   //
+             TabFaviconHandlerInterface,                               //
+             WebClientHandlerRemote,                                   //
+             WebClientInterface,                                       //
+} from '../../glic.mojom-webui.js';
 import {CaptureRegionErrorReason, ClientCapabilities, HostCapability} from '../../glic_api/glic_api.js';
-import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, FileUploadPolicyState, FocusedTabData, FormFactor, GeicBrowserHost, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenPinnedTabPickerOptions, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, PromptType, ResizeWindowOptions, ResumeActorTaskResult, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
+import type {                            //
+             ActivateTabOptions,         //
+             AdditionalContext,          //
+             AnnotatedPageData,          //
+             CaptureRegionParams,        //
+             CaptureRegionResult,        //
+             ChromeVersion,              //
+             ClientErrorDialogType,      //
+             ConversationInfo,           //
+             CounterAbuseVerdict,        //
+             CreateTabOptions,           //
+             FileUploadPolicyState,      //
+             FocusedTabData,             //
+             FormFactor,                 //
+             GeicBrowserHost,            //
+             GeminiEnterpriseSettings,   //
+             GetPinCandidatesOptions,    //
+             GlicBrowserHost,            //
+             GlicBrowserHostMetrics,     //
+             GlicHostRegistry,           //
+             GlicWebClient,              //
+             ImageBytesResult,           //
+             ImageInfo,                  //
+             InvokeOptions,              //
+             MicrophoneStatus,           //
+             Observable,                 //
+             ObservableValue,            //
+             OnResponseStoppedDetails,   //
+             OpenPanelInfo,              //
+             OpenPinnedTabPickerOptions, //
+             OpenSettingsOptions,        //
+             PageMetadata,               //
+             PanelOpeningData,           //
+             PanelState,                 //
+             PdfDocumentData,            //
+             PinCandidate,               //
+             PinTabsOptions,             //
+             Platform,                   //
+             PromptType,                 //
+             ResizeWindowOptions,        //
+             ResumeActorTaskResult,      //
+             TabContextOptions,          //
+             TabContextResult,           //
+             TabData,                    //
+             UnpinTabsOptions,           //
+             UserProfileInfo,            //
+             WebClientMode,              //
+             ZeroStateSuggestions,       //
+} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {OneShotTimer} from '../../timer.js';
 import {GlicBrowserHostActor} from '../actor/actor_client.js';
 import {GlicBrowserHostAnnotation} from '../annotation/annotation_client.js';
 import {GlicBrowserHostExperimentalTriggering} from '../experimental_triggering/experimental_triggering_client.js';
 import {GlicBrowserHostGeic} from '../geic/geic_client.js';
-import {additionalContextToClient, bitmapN32ToRGBAImage, captureRegionResultToClient, conversionSettings, createTabOptionsFromClient, fileUploadPolicyStateToClient, focusedTabDataToClient, getPinCandidatesOptionsFromClient, idFromClient, idToClient, invokeOptionsToClient, pageMetadataToClient, panelOpeningDataToClient, panelStateToClient, pinCandidateToClient, tabContextOptionsFromClient, tabDataToClient, timeDeltaFromClient, urlFromClient, webClientModeToMojo} from '../host/conversions.js';
+import {                              //
+  additionalContextToClient,          //
+  bitmapN32ToRGBAImage,               //
+  captureRegionResultToClient,        //
+  conversionSettings,                 //
+  createTabOptionsFromClient,         //
+  fileUploadPolicyStateToClient,      //
+  focusedTabDataToClient,             //
+  getPinCandidatesOptionsFromClient,  //
+  idFromClient,                       //
+  idToClient,                         //
+  invokeOptionsToClient,              //
+  pageMetadataToClient,               //
+  panelOpeningDataToClient,           //
+  panelStateToClient,                 //
+  pinCandidateToClient,               //
+  tabContextOptionsFromClient,        //
+  tabDataToClient,                    //
+  timeDeltaFromClient,                //
+  urlFromClient,                      //
+  webClientModeToMojo,                //
+} from '../host/conversions.js';
 import type {GlicApiHost} from '../host/glic_api_host.js';
 import {PanelOpenState} from '../host/types.js';
 import {GlicBrowserHostSkills} from '../skills/skills_client.js';
 import {GlicBrowserHostTools} from '../tools/tools_client.js';
 import {assertNever, ResponseExtras} from '../transport/messaging.js';
-import type {createDirectMessagingPair, PendingRemote, PostMessageHandler, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
+import type {                           //
+             createDirectMessagingPair, //
+             PendingRemote,             //
+             PostMessageHandler,        //
+             PostMessageRemote,         //
+             PostMessageRouter,         //
+} from '../transport/post_message_transport.js';
 import {GlicBrowserHostZeroStateSuggestions} from '../zero_state_suggestions/zero_state_suggestions_client.js';
 
 import {replaceProperties} from './../conversions.js';
 import {ErrorWithReasonImpl, newTransferableException, WebClientTabDataObserverDef} from './../request_types.js';
-import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, GlicException, ImageBytesResultPrivate, ImageInfoPrivate, InvokeOptionsPrivate, PdfDocumentDataPrivate, ResumeActorTaskResultPrivate, TabContextResultPrivate, TabDataPrivate, WebClient, WebClientHost, WebClientTabDataObserver} from './../request_types.js';
+import type {                              //
+             AdditionalContextPrivate,     //
+             AnnotatedPageDataPrivate,     //
+             FocusedTabDataPrivate,        //
+             GlicException,                //
+             ImageBytesResultPrivate,      //
+             ImageInfoPrivate,             //
+             InvokeOptionsPrivate,         //
+             PdfDocumentDataPrivate,       //
+             ResumeActorTaskResultPrivate, //
+             TabContextResultPrivate,      //
+             TabDataPrivate,               //
+             WebClient,                    //
+             WebClientHost,                //
+             WebClientTabDataObserver,     //
+} from './../request_types.js';
 import type {GlicBrowserHostBaseContext} from './glic_client_common.js';
 import {createDelegationProxy} from './glic_client_common.js';
 import {rgbaImageToBlob} from './image_utils.js';

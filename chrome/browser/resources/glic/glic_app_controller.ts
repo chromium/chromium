@@ -8,7 +8,14 @@ import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
 import {PanelStateKind} from './glic_enums.mojom-webui.js';
-import {GuestPageType, HelpCenterTopic, PrepareForClientResult, ProfileReadyState, WebClientState, WebUiState} from './glic_webui.mojom-webui.js';
+import {                   //
+  GuestPageType,           //
+  HelpCenterTopic,         //
+  PrepareForClientResult,  //
+  ProfileReadyState,       //
+  WebClientState,          //
+  WebUiState,              //
+} from './glic_webui.mojom-webui.js';
 import type {ZoomAction} from './glic_webui.mojom-webui.js';
 import type {WebviewDelegate} from './webview.js';
 import {WebviewController, WebviewPersistentState} from './webview.js';

@@ -231,25 +231,25 @@ export class ExperimentalOptInApp {
     });
 
     this.webview_.addEventListener(
-        'loadcommit', ((e: Event) => {
-                        const loadCommitEvent =
-                            e as unknown as chrome.webviewTag.LoadCommitEvent;
-                        if (!loadCommitEvent.isTopLevel) {
-                          return;
-                        }
-                        const urlObj = new URL(loadCommitEvent.url);
-                        const urlHash = urlObj.hash;
+        'loadcommit',
+        ((e: Event) => {
+          const loadCommitEvent =
+              e as unknown as chrome.webviewTag.LoadCommitEvent;
+          if (!loadCommitEvent.isTopLevel) {
+            return;
+          }
+          const urlObj = new URL(loadCommitEvent.url);
+          const urlHash = urlObj.hash;
 
-                        if (urlHash === '#continue') {
-                          if (loadTimeData.getBoolean(
-                                  'glicOptInDialogA11yFixEnabled')) {
-                            this.focusGuestHeading_();
-                          }
-                          handler.accept();
-                        } else if (urlHash.startsWith('#noThanks')) {
-                          handler.reject();
-                        }
-                      }) as EventListener);
+          if (urlHash === '#continue') {
+            if (loadTimeData.getBoolean('glicOptInDialogA11yFixEnabled')) {
+              this.focusGuestHeading_();
+            }
+            handler.accept();
+          } else if (urlHash.startsWith('#noThanks')) {
+            handler.reject();
+          }
+        }) as EventListener);
 
     this.webview_.addEventListener(
         'pointerdown', () => this.scheduleInstantHeadingChecks_());
@@ -478,7 +478,7 @@ export class ExperimentalOptInApp {
     }
 
     // Wait for cookie sync to complete before setting src
-    const { success } = await handler.syncCookies();
+    const {success} = await handler.syncCookies();
     if (!success) {
       console.error('Failed to sync cookies for glic webview');
       // If sync fails, check if it's because the user went offline during the
@@ -492,7 +492,8 @@ export class ExperimentalOptInApp {
     }
 
     if (this.webview_.getAttribute('src') === this.optInUrl_) {
-      // If the URL is already set, setting it again does nothing. Force a reload.
+      // If the URL is already set, setting it again does nothing. Force a
+      // reload.
       if (isFullWebView(this.webview_)) {
         this.webview_.reload();
       } else {

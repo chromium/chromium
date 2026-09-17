@@ -262,7 +262,7 @@ export declare interface GlicWebClient {
    * `panelOpeningData` in these cases.
    */
   notifyPanelWillOpen?
-    (panelOpeningData: PanelOpeningData & PanelState): Promise<OpenPanelInfo>;
+      (panelOpeningData: PanelOpeningData&PanelState): Promise<OpenPanelInfo>;
 
   /**
    * Called right after the panel was hidden away and is not visible to
@@ -313,7 +313,7 @@ export declare interface GlicWebClient {
    * take place.
    */
   getExperimentalTriggeringUpdates?
-    (): Observable2<ExperimentalTriggeringUpdate>;
+      (): Observable2<ExperimentalTriggeringUpdate>;
 
   // !!! ATTENTION !!!
   // Avoid adding new methods to this interface! Instead, to push information to
@@ -391,7 +391,7 @@ export declare interface GlicBrowserHost {
    * expect that the provided values may not be applied verbatim.
    */
   resizeWindow(width: number, height: number, options?: ResizeWindowOptions):
-    Promise<void>;
+      Promise<void>;
 
   /**
    * Set the state of the panel's user drag-to-resize capability, or if the
@@ -443,7 +443,7 @@ export declare interface GlicBrowserHost {
    * @throws {Error} on failure.
    */
   getContextFromFocusedTab?
-    (options: TabContextOptions): Promise<TabContextResult>;
+      (options: TabContextOptions): Promise<TabContextResult>;
 
   /**
    * Similar to `getContextFromFocusedTab`, but returns context from the tab
@@ -452,7 +452,7 @@ export declare interface GlicBrowserHost {
    * @throws {Error} on failure.
    */
   getContextFromTab?
-    (tabId: string, options: TabContextOptions): Promise<TabContextResult>;
+      (tabId: string, options: TabContextOptions): Promise<TabContextResult>;
 
   /**
    * Similar to `getContextFromTab`, but for actors. Skips the focus check.
@@ -460,7 +460,7 @@ export declare interface GlicBrowserHost {
    * @throws {Error} on failure.
    */
   getContextForActorFromTab?
-    (tabId: string, options: TabContextOptions): Promise<TabContextResult>;
+      (tabId: string, options: TabContextOptions): Promise<TabContextResult>;
 
   /**
    * Retrieves raw image bytes, MIME type, and metadata for an image node from
@@ -491,7 +491,7 @@ export declare interface GlicBrowserHost {
    * @throws {ActInFocusedTabError} on failure.
    */
   actInFocusedTab?
-    (params: ActInFocusedTabParams): Promise<ActInFocusedTabResult>;
+      (params: ActInFocusedTabParams): Promise<ActInFocusedTabResult>;
 
   /**
    * Creates a task and returns its ID. The optional @param taskOptions
@@ -552,8 +552,8 @@ export declare interface GlicBrowserHost {
    *
    */
   pauseActorTask?
-    (taskId: number, pauseReason?: ActorTaskPauseReason, tabId?: string):
-    void;
+      (taskId: number, pauseReason?: ActorTaskPauseReason, tabId?: string):
+          void;
 
   /**
    * Resumes a previously paused actor task with the given ID.
@@ -565,7 +565,7 @@ export declare interface GlicBrowserHost {
    *
    */
   resumeActorTask?(taskId: number, tabContextOptions: TabContextOptions):
-    Promise<ResumeActorTaskResult>;
+      Promise<ResumeActorTaskResult>;
 
   /**
    * Interrupts the actor task with the given ID in the browser if it exists.
@@ -578,7 +578,7 @@ export declare interface GlicBrowserHost {
    * @param interruptReason The reason for why the interrupt was initiated.
    */
   interruptActorTask?
-    (taskId: number, interruptReason?: ActorTaskInterruptReason): void;
+      (taskId: number, interruptReason?: ActorTaskInterruptReason): void;
 
   /**
    * Indicates a task is no longer interrupted with the given ID in the browser
@@ -610,7 +610,7 @@ export declare interface GlicBrowserHost {
    * isn't associated with the task until an action is performed on the tab.
    */
   createActorTab?(taskId: number, createActorTabOptions: CreateActorTabOptions):
-    Promise<TabData>;
+      Promise<TabData>;
 
   /**
    * Returns the observable state of TabData for the given tab.
@@ -630,7 +630,7 @@ export declare interface GlicBrowserHost {
    * not found with the given ID. If the tab has no favicon, the observable
    * will emit undefined.
    */
-  getTabFaviconById?(tabId: string): ObservableValue<Blob | undefined>;
+  getTabFaviconById?(tabId: string): ObservableValue<Blob|undefined>;
 
   /**
    * Makes the given tab the active tab in its window and activates its window.
@@ -662,7 +662,7 @@ export declare interface GlicBrowserHost {
    * be terminated and a new one will begin.
    */
   captureRegion?
-    (params?: CaptureRegionParams): ObservableValue<CaptureRegionResult>;
+      (params?: CaptureRegionParams): ObservableValue<CaptureRegionResult>;
 
   /**
    * Deletes a captured region.
@@ -823,7 +823,7 @@ export declare interface GlicBrowserHost {
   getOsLocationPermissionState?(): ObservableValue<boolean>;
 
   /** Returns the state of the OS hotkey. */
-  getOsHotkeyState?(): ObservableValue<{ hotkey: string }>;
+  getOsHotkeyState?(): ObservableValue<{hotkey: string}>;
 
   /** Returns the state of the glic closed captioning setting. */
   getClosedCaptioningSetting?(): ObservableValue<boolean>;
@@ -974,7 +974,7 @@ export declare interface GlicBrowserHost {
    * ZeroStateSuggestions tabId and url before using it.
    */
   getZeroStateSuggestionsForFocusedTab?
-    (is_first_run?: boolean): Promise<ZeroStateSuggestions>;
+      (is_first_run?: boolean): Promise<ZeroStateSuggestions>;
 
   /**
    * Called when the client believes that the user's status may have changed.
@@ -1056,7 +1056,7 @@ export declare interface GlicBrowserHost {
    * subscribed only while it is required.
    */
   getPinCandidates?
-    (options: GetPinCandidatesOptions): ObservableValue<PinCandidate[]>;
+      (options: GetPinCandidatesOptions): ObservableValue<PinCandidate[]>;
 
   /**
    * Returns an observable unique to the supplied options that emits zero state
@@ -1067,7 +1067,7 @@ export declare interface GlicBrowserHost {
    * observer to stop emitting.
    */
   getZeroStateSuggestions?(options?: ZeroStateSuggestionsOptions):
-    ObservableValue<ZeroStateSuggestionsV2>;
+      ObservableValue<ZeroStateSuggestionsV2>;
 
   /**
    * Returns an observable of the skills functionality. Emits an instance of
@@ -1161,7 +1161,7 @@ export declare interface GlicBrowserHost {
    * When the tab is destroyed, the observable will complete.
    */
   getPageMetadata?
-    (tabId: string, names: string[]): ObservableValue<PageMetadata>;
+      (tabId: string, names: string[]): ObservableValue<PageMetadata>;
 
   /**
    * Returns an observable that emits when the browser wants the web client to
@@ -1177,7 +1177,7 @@ export declare interface GlicBrowserHost {
    * up the UI elements when the task is no longer active.
    */
   selectCredentialDialogRequestHandler?
-    (): Observable<SelectCredentialDialogRequest>;
+      (): Observable<SelectCredentialDialogRequest>;
 
   /**
    * Returns an observable that emits when the browser wants the web client to
@@ -1193,7 +1193,7 @@ export declare interface GlicBrowserHost {
    * up the UI elements when the task is no longer active.
    */
   selectUserConfirmationDialogRequestHandler?
-    (): Observable<UserConfirmationDialogRequest>;
+      (): Observable<UserConfirmationDialogRequest>;
 
   /**
    * Returns an observable that emits when the browser wants the web client to
@@ -1209,7 +1209,7 @@ export declare interface GlicBrowserHost {
    * up the UI elements when the task is no longer active.
    */
   selectNavigationConfirmationRequestHandler?
-    (): Observable<NavigationConfirmationRequest>;
+      (): Observable<NavigationConfirmationRequest>;
 
   /**
    * Returns an observable that emits when the browser wants the web client to
@@ -1226,7 +1226,7 @@ export declare interface GlicBrowserHost {
    * up the UI elements when the task is no longer active.
    */
   selectAutofillSuggestionsDialogRequestHandler?
-    (): Observable<SelectAutofillSuggestionsDialogRequest>;
+      (): Observable<SelectAutofillSuggestionsDialogRequest>;
 
   /**
    * Returns an observable that emits when the browser wants the web client to
@@ -1340,13 +1340,14 @@ export declare interface GlicBrowserHost {
   /**
    * Notifies the host of a counter-abuse verdict received from the server.
    */
-  processCounterAbuseVerdict?(tabId: string, verdict: CounterAbuseVerdict): void;
+  processCounterAbuseVerdict?
+      (tabId: string, verdict: CounterAbuseVerdict): void;
 }
 
 /** Information about a conversation. */
 
 /** Fields of interest from the system settings page. */
-export type OsPermissionType = 'media' | 'geolocation';
+export type OsPermissionType = 'media'|'geolocation';
 
 /** Holds optional parameters for `GlicBrowserHost#resizeWindow`. */
 export declare interface ResizeWindowOptions {
@@ -1642,8 +1643,8 @@ export declare interface GlicBrowserHostJournal {
    * endAsyncEvent must be called to terminate this event.
    */
   beginAsyncEvent(
-    asynEventId: number, taskId: number, event: string,
-    details: string): void;
+      asynEventId: number, taskId: number, event: string,
+      details: string): void;
 
   /**
    * Clears the contents of a started journal. No-op if a journal was not
@@ -1698,7 +1699,7 @@ export declare interface OpenPanelInfo {
    * open event. See documentation on `resizeWindow` for how the provided
    * arguments will be used.
    */
-  resizeParams?: { width: number, height: number, options?: ResizeWindowOptions };
+  resizeParams?: {width: number, height: number, options?: ResizeWindowOptions};
 
   /**
    * Whether the panel should start out resizable by the user. The panel is
@@ -1763,7 +1764,7 @@ export declare interface FocusedTabDataHasNoFocus {
  * Note: This will be updated in the future when we have a solution worked out
  * for annotating the captured screenshots.
  */
-export declare interface ImageOriginAnnotations { }
+export declare interface ImageOriginAnnotations {}
 
 /** Maps the ErrorWithReason.reasonType to the type of reason. */
 export declare interface ErrorReasonTypes {
@@ -1791,7 +1792,7 @@ export type WebClientInitializeError = ErrorWithReason<'webClientInitialize'>;
 
 /** Error implementation with a typed generic reason attached. */
 export declare interface ErrorWithReason<
-  T extends keyof ErrorReasonTypes> extends Error {
+    T extends keyof ErrorReasonTypes> extends Error {
   /** A tag that identifies the reason type. */
   reasonType: T;
   /** The reason for the error. */
@@ -1900,7 +1901,7 @@ export declare interface ObservableValue<T> extends Observable<T> {
    * Provides synchronous access to the current value. Returns undefined if the
    * initial value has not yet been populated.
    */
-  getCurrentValue(): T | undefined;
+  getCurrentValue(): T|undefined;
 }
 
 /** Allows control of a subscription to an Observable. */
@@ -1959,7 +1960,7 @@ export declare interface UserConfirmationDialogRequest {
 
   // The WebClient must call this function to respond back to the browser when
   // the dialog is closed.
-  onDialogClosed(result: { response: UserConfirmationDialogResponse }): void;
+  onDialogClosed(result: {response: UserConfirmationDialogResponse}): void;
 }
 
 export declare interface UserConfirmationDialogResponse {
@@ -1975,8 +1976,8 @@ export declare interface NavigationConfirmationRequest {
 
   // The WebClient must call this function to respond back to the browser when
   // the confirmation request has a decision.
-  onConfirmationDecision(result: { response: NavigationConfirmationResponse }):
-    void;
+  onConfirmationDecision(result: {response: NavigationConfirmationResponse}):
+      void;
 }
 
 export declare interface NavigationConfirmationResponse {

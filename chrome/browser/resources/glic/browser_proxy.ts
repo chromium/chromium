@@ -6,7 +6,14 @@ import '/strings.m.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import {GlicPreloadHandlerFactory, GlicPreloadHandlerRemote, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, PreloadPageCallbackRouter} from './glic_webui.mojom-webui.js';
+import {                      //
+  GlicPreloadHandlerFactory,  //
+  GlicPreloadHandlerRemote,   //
+  PageCallbackRouter,         //
+  PageHandlerFactory,         //
+  PageHandlerRemote,          //
+  PreloadPageCallbackRouter,  //
+} from './glic_webui.mojom-webui.js';
 import type {GlicPreloadHandlerInterface, PageHandlerInterface} from './glic_webui.mojom-webui.js';
 import {ObservableValue} from './observable.js';
 export interface BrowserProxy {

@@ -7,7 +7,13 @@ import {assert} from '//resources/js/assert.js';
 import {enumToClient} from '../../enum_conversions.js';
 import {GeminiEnterpriseHandlerRemote} from '../../gemini_enterprise.mojom-webui.js';
 import type {WebClientHandlerRemote, WebClientInitialState} from '../../glic.mojom-webui.js';
-import type {CloseSignInTabOptions, CloseSignInTabResult, GeicBrowserHost, OpenSignInTabOptions, OpenSignInTabResult} from '../../glic_api/glic_api.js';
+import type {                       //
+             CloseSignInTabOptions, //
+             CloseSignInTabResult,  //
+             GeicBrowserHost,       //
+             OpenSignInTabOptions,  //
+             OpenSignInTabResult,   //
+} from '../../glic_api/glic_api.js';
 
 export class GlicBrowserHostGeic implements GeicBrowserHost {
   private handler?: WebClientHandlerRemote;

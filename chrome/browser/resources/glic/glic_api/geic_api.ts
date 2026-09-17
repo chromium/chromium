@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CloseSignInTabOptions, CloseSignInTabResult, OpenSignInTabOptions, OpenSignInTabResult} from './glic_api_generated.js';
+import type {                       //
+             CloseSignInTabOptions, //
+             CloseSignInTabResult,  //
+             OpenSignInTabOptions,  //
+             OpenSignInTabResult,   //
+} from './glic_api_generated.js';
 
 /**
  * Provides Gemini Enterprise in Chrome functionality to the web client.
@@ -15,8 +20,7 @@ export interface GeicBrowserHost {
    * @param options Optional parameters for opening the sign-in tab.
    * @returns The result of attempting to open the sign-in tab.
    */
-  openSignInTab(options?: OpenSignInTabOptions):
-      Promise<OpenSignInTabResult>;
+  openSignInTab(options?: OpenSignInTabOptions): Promise<OpenSignInTabResult>;
 
   /**
    * Closes the active sign-in tab (if open) and restores focus to the

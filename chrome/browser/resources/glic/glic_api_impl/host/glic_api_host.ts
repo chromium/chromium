@@ -16,7 +16,12 @@ import {maybeWrapWithLogging} from '../mojo_logging.js';
 import {getHostRequestHistogramInfo} from '../request_types.js';
 import type {WebClient} from '../request_types.js';
 import type {ResponseExtras} from '../transport/messaging.js';
-import type {InterfaceDef, PostMessageLifecycleObserver, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
+import type {                              //
+             InterfaceDef,                 //
+             PostMessageLifecycleObserver, //
+             PostMessageRemote,            //
+             PostMessageRouter,            //
+} from '../transport/post_message_transport.js';
 
 import {conversionSettings, urlFromClient} from './conversions.js';
 import {HostMessageHandler} from './host_from_client.js';

@@ -5,7 +5,14 @@
 import {ObservableValue as ObservableValueImpl} from '../../observable.js';
 import {OneShotTimer} from '../../timer.js';
 import type {WebClientHost} from '../request_types.js';
-import type {InterfaceDef, PendingRemote, PostMessageHandler, PostMessageReceiver, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
+import type {                     //
+             InterfaceDef,        //
+             PendingRemote,       //
+             PostMessageHandler,  //
+             PostMessageReceiver, //
+             PostMessageRemote,   //
+             PostMessageRouter,   //
+} from '../transport/post_message_transport.js';
 
 export interface ObservableSetByTabIdDelegate<
     ObservedType, ObserverInterface extends InterfaceDef = InterfaceDef> {
