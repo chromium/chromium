@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.side_ui;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -1290,5 +1291,54 @@ public class SideUiCoordinatorImplTest {
         assertEquals(
                 HeightType.NOT_APPLICABLE,
                 specsForTabWithoutSideUi.getHeightType(AnchorSide.RIGHT));
+    }
+
+    @Test
+    public void testResizeHandle_FollowsContainerLifecycle() {
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        sideUiContainer.mSupportsManualResize = true;
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        // The handle is only created once there is a resizable container showing.
+        assertNull(mCoordinator.getResizeHandleViewForTesting(AnchorSide.RIGHT));
+
+        UiUpdateRequest uiUpdateRequest =
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true);
+        mCoordinator.updateUi(uiUpdateRequest);
+
+        View resizeHandleView = mCoordinator.getResizeHandleViewForTesting(AnchorSide.RIGHT);
+        assertNotNull(resizeHandleView);
+        assertEquals(View.VISIBLE, resizeHandleView.getVisibility());
+        assertEquals(mRightAnchorContainer, resizeHandleView.getParent());
+        // The handle must be on top of the container's View to receive touch events.
+        assertEquals(
+                resizeHandleView,
+                mRightAnchorContainer.getChildAt(mRightAnchorContainer.getChildCount() - 1));
+
+        // A container that stops being resizable hides the handle.
+        sideUiContainer.mSupportsManualResize = false;
+        mCoordinator.updateUi(uiUpdateRequest);
+        assertEquals(View.GONE, resizeHandleView.getVisibility());
+
+        // Closing the container removes the handle along with the container's View.
+        sideUiContainer.mHasContentForTabMap.put(mTab, false);
+        mCoordinator.updateUi(uiUpdateRequest);
+        assertNull(mCoordinator.getResizeHandleViewForTesting(AnchorSide.RIGHT));
+        assertNull(resizeHandleView.getParent());
+    }
+
+    @Test
+    public void testResizeHandle_NotCreatedForNonResizableContainer() {
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        mCoordinator.updateUi(
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
+
+        assertNull(mCoordinator.getResizeHandleViewForTesting(AnchorSide.RIGHT));
     }
 }

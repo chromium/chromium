@@ -5969,6 +5969,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.SideUi.ResizeHandle.TouchState"
+    enum="AndroidSideUiResizeHandleTouchState" expires_after="2026-12-16">
+  <owner>spdonghao@google.com</owner>
+  <owner>linyuh@google.com</owner>
+  <summary>
+    Records each gesture transition of the Side UI resize handle. The expected
+    transitions are a drag starting on ACTION_DOWN, and a drag being committed
+    on ACTION_UP or ACTION_CANCEL. The unexpected ones are an ACTION_MOVE,
+    ACTION_UP or ACTION_CANCEL arriving with no drag in progress, and an
+    ACTION_DOWN arriving while a previous drag is still in progress because that
+    drag never received its ACTION_UP or ACTION_CANCEL.
+
+    Recorded once per touch event on the handle, except for an ACTION_MOVE
+    during a drag.
+  </summary>
+</histogram>
+
 <histogram name="Android.SpareTab.FinalStatus" enum="SpareTabFinalStatus"
     expires_after="2026-01-18">
   <owner>sreejakshetty@chromium.org</owner>
