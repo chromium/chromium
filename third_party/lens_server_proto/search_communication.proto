@@ -1,0 +1,58 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2024";
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// Top-level envelope for messages from Extension Iframes to Search Web.
+message ClientToSearchMessage {
+  // Handshake ping sent by an extension frame to initiate communication.
+  message HandshakePing {}
+
+  // Instructs Search Web to mount or unmount a Chrome input into the searchbox.
+  message InjectChromeInput {
+    // Ephemeral random client ID for indexing and keeping data in sync between
+    // Chrome and Search.
+    string data_id = 1;
+
+    enum InputType {
+      INPUT_TYPE_UNSPECIFIED = 0;
+      // Lens chip / visual search preview.
+      LENS_CHIP = 1;
+      // Context library / added tabs container.
+      CONTEXT_LIBRARY = 2;
+    }
+    InputType input_type = 2;
+
+    // Whether the injected input should be mounted/visible.
+    bool is_visible = 3;
+  }
+
+  oneof event_message {
+    // Initial handshake ping sent by an extension iframe upon mounting.
+    HandshakePing handshake_ping = 1;
+
+    // Instructs Search Web to mount or unmount an input iframe (e.g. Lens chip,
+    // tab chip).
+    InjectChromeInput inject_chrome_input = 2;
+  }
+}
+
+// Top-level envelope for messages from Search Web to Extension Iframes.
+message SearchToClientMessage {
+  // Handshake response returned by Search Web. Guarantees Search Web is ready
+  // for messages from Chrome and vice versa.
+  message HandshakeResponse {
+    // The active multi-login account index on the Search page.
+    int32 auth_user_index = 1;
+  }
+
+  oneof event_message {
+    // Handshake response sent by Search Web acknowledging readiness.
+    HandshakeResponse handshake_response = 1;
+  }
+}
