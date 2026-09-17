@@ -7,11 +7,11 @@
 #include <tuple>
 
 #include "base/notreached.h"
-#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -87,28 +87,13 @@ class TestSendTabToSelfModelObserver : public SendTabToSelfModelObserver {
   ~TestSendTabToSelfModelObserver() override = default;
 
   void OnEntryAddedLocally(const SendTabToSelfEntry* entry) override {
-    last_added_entry_ = std::make_unique<SendTabToSelfEntry>(*entry);
-    if (entry_added_callback_) {
-      std::move(entry_added_callback_).Run();
-    }
+    future_.SetValue(*entry);
   }
 
-  const SendTabToSelfEntry* last_added_entry() const {
-    return last_added_entry_.get();
-  }
-
-  void WaitForEntryAdded() {
-    if (last_added_entry_) {
-      return;
-    }
-    base::RunLoop run_loop;
-    entry_added_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
+  SendTabToSelfEntry WaitForNextEntry() { return future_.Take(); }
 
  private:
-  std::unique_ptr<SendTabToSelfEntry> last_added_entry_;
-  base::OnceClosure entry_added_callback_;
+  base::test::TestFuture<SendTabToSelfEntry> future_;
   base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>
       observation_{this};
 };
@@ -217,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                         OsType::kLinux, base::Time::Now())});
 
   controller->OnDeviceSelected("device_1", "device_name_1");
-  observer.WaitForEntryAdded();
+  observer.WaitForNextEntry();
 
   const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
                                              ? kComputerCustomIcon
@@ -249,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                         OsType::kAndroid, base::Time::Now())});
 
   controller->OnDeviceSelected("device_1", "device_name_1");
-  observer.WaitForEntryAdded();
+  observer.WaitForNextEntry();
 
   const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
                                              ? kMobileIcon
@@ -281,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                         OsType::kAndroid, base::Time::Now())});
 
   controller->OnDeviceSelected("device_1", "device_name_1");
-  observer.WaitForEntryAdded();
+  observer.WaitForNextEntry();
 
   const gfx::VectorIcon& expected_icon =
       features::IsRoundedIconsEnabled() ? kTabletFilledIcon : kTabletOldIcon;
@@ -317,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
       SendTabToSelfResult::kSuccessThrottled);
 
   controller->OnDeviceSelected("device_1", "device_name_1");
-  observer.WaitForEntryAdded();
+  observer.WaitForNextEntry();
 
   const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
                                              ? kComputerCustomIcon
@@ -349,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                                             ShareEntryPoint::kContentMenu);
   delegate.ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
 
-  observer.WaitForEntryAdded();
+  observer.WaitForNextEntry();
 
   const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
                                              ? kComputerCustomIcon
@@ -466,11 +451,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
 
   base::HistogramTester histogram_tester;
   controller->OnDeviceSelected("device_1", "device_name_1");
-  observer.WaitForEntryAdded();
+  SendTabToSelfEntry entry = observer.WaitForNextEntry();
 
   // Test that the entry was added with the correct URL.
-  EXPECT_EQ(web_contents->GetLastCommittedURL(),
-            observer.last_added_entry()->GetURL());
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), entry.GetURL());
 
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome",
@@ -481,8 +465,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
       "Sharing.SendTabToSelf.ScrollPosition.SelectorLength", 1);
 
   // The scroll position should be populated from the successful extraction.
-  EXPECT_FALSE(
-      observer.last_added_entry()->GetPageContext().scroll_position.IsEmpty());
+  EXPECT_FALSE(entry.GetPageContext().scroll_position.IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
@@ -506,11 +489,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
 
   base::HistogramTester histogram_tester;
   controller->OnDeviceSelected("device_1", "device_name_1");
-  observer.WaitForEntryAdded();
+  SendTabToSelfEntry entry = observer.WaitForNextEntry();
 
   // Test that the entry was added with the correct URL.
-  EXPECT_EQ(web_contents->GetLastCommittedURL(),
-            observer.last_added_entry()->GetURL());
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), entry.GetURL());
 
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome",
@@ -519,8 +501,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
       "Sharing.SendTabToSelf.ScrollPosition.GenerationTime", 1);
 
   // The scroll position should be empty because the page has no content.
-  EXPECT_TRUE(
-      observer.last_added_entry()->GetPageContext().scroll_position.IsEmpty());
+  EXPECT_TRUE(entry.GetPageContext().scroll_position.IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
@@ -558,11 +539,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
 
   base::HistogramTester histogram_tester;
   controller->OnDeviceSelected("device_1", "device_name_1");
-  observer.WaitForEntryAdded();
+  SendTabToSelfEntry entry = observer.WaitForNextEntry();
 
   // Test that the entry was added with the correct URL.
-  EXPECT_EQ(web_contents->GetLastCommittedURL(),
-            observer.last_added_entry()->GetURL());
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), entry.GetURL());
 
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome",
@@ -574,13 +554,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
 
   // The scroll position should be populated since the text is now in the
   // viewport.
-  EXPECT_FALSE(
-      observer.last_added_entry()->GetPageContext().scroll_position.IsEmpty());
+  EXPECT_FALSE(entry.GetPageContext().scroll_position.IsEmpty());
   // Verify that the generated selector matches the middle words from the
   // target paragraph.
-  EXPECT_THAT(observer.last_added_entry()
-                  ->GetPageContext()
-                  .scroll_position.text_fragment.text_start,
+  EXPECT_THAT(entry.GetPageContext().scroll_position.text_fragment.text_start,
               AnyOf(HasSubstr("fox"), HasSubstr("jumps"), HasSubstr("dog")));
 }
 
