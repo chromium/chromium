@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -36,13 +35,11 @@ class CORE_EXPORT Profiler final : public EventTarget {
            ScriptState* script_state,
            const String& profiler_id,
            int target_sample_rate,
-           scoped_refptr<const SecurityOrigin> source_origin,
            base::TimeTicks time_origin)
       : profiler_group_(profiler_group),
         script_state_(script_state),
         profiler_id_(profiler_id),
         target_sample_rate_(target_sample_rate),
-        source_origin_(source_origin),
         time_origin_(time_origin) {}
 
   ~Profiler() override = default;
@@ -57,7 +54,6 @@ class CORE_EXPORT Profiler final : public EventTarget {
 
   String ProfilerId() const { return profiler_id_; }
   int TargetSampleRate() const { return target_sample_rate_; }
-  const SecurityOrigin* SourceOrigin() const { return source_origin_.get(); }
   base::TimeTicks TimeOrigin() const { return time_origin_; }
 
   // Overrides from extending EventTarget
@@ -75,7 +71,6 @@ class CORE_EXPORT Profiler final : public EventTarget {
   Member<ScriptState> script_state_;
   const String profiler_id_;
   const int target_sample_rate_;
-  const scoped_refptr<const SecurityOrigin> source_origin_;
   const base::TimeTicks time_origin_;
 };
 

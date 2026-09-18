@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -241,12 +240,6 @@ Profiler* ProfilerGroup::CreateProfiler(ScriptState* script_state,
       return nullptr;
     }
     case v8::CpuProfilingStatus::kStarted: {
-      // Limit non-crossorigin script frames to the origin that started the
-      // profiler.
-      auto* execution_context = ExecutionContext::From(script_state);
-      scoped_refptr<const SecurityOrigin> source_origin(
-          execution_context->GetSecurityOrigin());
-
       // The V8 CPU profiler ticks in multiples of the base sampling interval.
       // This effectively means that we gather samples at the multiple of the
       // base sampling interval that's greater than or equal to the requested
@@ -262,7 +255,7 @@ Profiler* ProfilerGroup::CreateProfiler(ScriptState* script_state,
 
       auto* profiler = MakeGarbageCollected<Profiler>(
           this, script_state, profiler_id, effective_sample_interval_ms,
-          source_origin, time_origin);
+          time_origin);
       profilers_.insert(profiler);
       num_active_profilers_++;
       return profiler;
@@ -338,8 +331,8 @@ void ProfilerGroup::StopProfiler(
   v8::Local<v8::String> profiler_id =
       V8String(isolate_, profiler->ProfilerId());
   auto* profile = cpu_profiler_->StopProfiling(profiler_id);
-  auto* trace = ProfilerTraceBuilder::FromProfile(
-      script_state, profile, profiler->SourceOrigin(), profiler->TimeOrigin());
+  auto* trace = ProfilerTraceBuilder::FromProfile(script_state, profile,
+                                                  profiler->TimeOrigin());
   resolver->Resolve(trace);
 
   if (profile)

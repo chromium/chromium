@@ -37,7 +37,7 @@ TEST_F(ProfilerTraceBuilderTest, AddVMStateMarkerCrossOriginIsolated) {
   ScopedExperimentalJSProfilerMarkersForTest enable_markers(true);
 
   ProfilerTraceBuilder* builder = MakeGarbageCollected<ProfilerTraceBuilder>(
-      script_state, nullptr, base::TimeTicks::Now());
+      script_state, base::TimeTicks::Now());
   builder->is_cross_origin_isolated_ = true;
 
   base::TimeTicks sample_ticks = base::TimeTicks::Now();
@@ -58,7 +58,7 @@ TEST_F(ProfilerTraceBuilderTest, AddEmbedderStateMarkerCrossOriginIsolated) {
   ScopedExperimentalJSProfilerMarkersForTest enable_markers(true);
 
   ProfilerTraceBuilder* builder = MakeGarbageCollected<ProfilerTraceBuilder>(
-      script_state, nullptr, base::TimeTicks::Now());
+      script_state, base::TimeTicks::Now());
   builder->is_cross_origin_isolated_ = true;
 
   base::TimeTicks sample_ticks = base::TimeTicks::Now();
@@ -83,7 +83,7 @@ TEST_F(ProfilerTraceBuilderTest, AddVMStateMarker) {
   ScopedExperimentalJSProfilerMarkersForTest enable_markers(true);
 
   ProfilerTraceBuilder* builder = MakeGarbageCollected<ProfilerTraceBuilder>(
-      script_state, nullptr, base::TimeTicks::Now());
+      script_state, base::TimeTicks::Now());
 
   base::TimeTicks sample_ticks = base::TimeTicks::Now();
   builder->AddSample(nullptr, sample_ticks, v8::StateTag::GC,
@@ -103,7 +103,7 @@ TEST_F(ProfilerTraceBuilderTest, AddEmbedderStateMarker) {
   ScopedExperimentalJSProfilerMarkersForTest enable_markers(true);
 
   ProfilerTraceBuilder* builder = MakeGarbageCollected<ProfilerTraceBuilder>(
-      script_state, nullptr, base::TimeTicks::Now());
+      script_state, base::TimeTicks::Now());
 
   base::TimeTicks sample_ticks = base::TimeTicks::Now();
   builder->AddSample(nullptr, sample_ticks, v8::StateTag::IDLE,
@@ -127,7 +127,7 @@ TEST_F(ProfilerTraceBuilderTest, AddEmbedderStateMarkerFeatureDisabled) {
   ScopedExperimentalJSProfilerMarkersForTest disable_markers(false);
 
   ProfilerTraceBuilder* builder = MakeGarbageCollected<ProfilerTraceBuilder>(
-      script_state, nullptr, base::TimeTicks::Now());
+      script_state, base::TimeTicks::Now());
 
   base::TimeTicks sample_ticks = base::TimeTicks::Now();
   builder->AddSample(nullptr, sample_ticks, v8::StateTag::IDLE,
@@ -150,8 +150,8 @@ TEST_F(ProfilerTraceBuilderTest,
   auto* script_state = scope.GetScriptState();
 
   base::TimeTicks time_origin = base::TimeTicks::Now();
-  ProfilerTraceBuilder* builder = MakeGarbageCollected<ProfilerTraceBuilder>(
-      script_state, nullptr, time_origin);
+  ProfilerTraceBuilder* builder =
+      MakeGarbageCollected<ProfilerTraceBuilder>(script_state, time_origin);
 
   // In non-cross-origin-isolated contexts, timestamps should be coarsened
   // to kCoarseResolutionMicroseconds (100us).
@@ -184,8 +184,8 @@ TEST_F(ProfilerTraceBuilderTest, SampleTimestampClampingCrossOriginIsolated) {
   auto* script_state = scope.GetScriptState();
 
   base::TimeTicks time_origin = base::TimeTicks::Now();
-  ProfilerTraceBuilder* builder = MakeGarbageCollected<ProfilerTraceBuilder>(
-      script_state, nullptr, time_origin);
+  ProfilerTraceBuilder* builder =
+      MakeGarbageCollected<ProfilerTraceBuilder>(script_state, time_origin);
   builder->is_cross_origin_isolated_ = true;
 
   // In cross-origin-isolated contexts, timestamps should be coarsened

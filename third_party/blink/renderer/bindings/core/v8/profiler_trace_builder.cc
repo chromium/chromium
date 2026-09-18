@@ -25,11 +25,10 @@ namespace blink {
 ProfilerTrace* ProfilerTraceBuilder::FromProfile(
     ScriptState* script_state,
     const v8::CpuProfile* profile,
-    const SecurityOrigin* allowed_origin,
     base::TimeTicks time_origin) {
   TRACE_EVENT0("blink", "ProfilerTraceBuilder::FromProfile");
-  ProfilerTraceBuilder* builder = MakeGarbageCollected<ProfilerTraceBuilder>(
-      script_state, allowed_origin, time_origin);
+  ProfilerTraceBuilder* builder =
+      MakeGarbageCollected<ProfilerTraceBuilder>(script_state, time_origin);
   if (profile) {
     for (int i = 0; i < profile->GetSamplesCount(); i++) {
       const auto* node = profile->GetSample(i);
@@ -44,11 +43,8 @@ ProfilerTrace* ProfilerTraceBuilder::FromProfile(
 }
 
 ProfilerTraceBuilder::ProfilerTraceBuilder(ScriptState* script_state,
-                                           const SecurityOrigin* allowed_origin,
                                            base::TimeTicks time_origin)
-    : script_state_(script_state),
-      allowed_origin_(allowed_origin),
-      time_origin_(time_origin) {
+    : script_state_(script_state), time_origin_(time_origin) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state_);
   if (execution_context) {
     is_cross_origin_isolated_ =
@@ -217,23 +213,25 @@ bool ProfilerTraceBuilder::ShouldIncludeStackFrame(
 
   int script_id = resource_node->GetScriptId();
 
-  // If we already tested whether or not this script was cross-origin, return
-  // the cached results.
-  auto it = script_same_origin_cache_.find(script_id);
-  if (it != script_same_origin_cache_.end())
+  // If we already tested whether or not this script's frames may be included,
+  // return the cached result.
+  auto it = script_inclusion_cache_.find(script_id);
+  if (it != script_inclusion_cache_.end()) {
     return it->value;
+  }
 
-  KURL resource_url(resource_node->GetScriptResourceNameStr());
-  if (!resource_url.IsValid())
-    return false;
-
-  auto origin = SecurityOrigin::Create(resource_url);
-  // Omit frames that don't pass a cross-origin check.
+  // Omit frames whose script's response was not CORS-same-origin with the
+  // profiling context. This mirrors the muted-errors check used for
+  // window.onerror, and accounts for redirects in the script's request chain.
+  //
+  // Also omit frames whose script has no parseable resource name, such as
+  // eval() and new Function().
+  //
   // Do this at the stack level (rather than the frame level) to avoid
   // including skeleton frames without data.
-  bool allowed = resource_node->IsScriptSharedCrossOrigin() ||
-                 origin->IsSameOriginWith(allowed_origin_);
-  script_same_origin_cache_.Set(script_id, allowed);
+  bool allowed = resource_node->IsScriptSharedCrossOrigin() &&
+                 KURL(resource_node->GetScriptResourceNameStr()).IsValid();
+  script_inclusion_cache_.Set(script_id, allowed);
   return allowed;
 }
 
