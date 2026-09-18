@@ -147,7 +147,8 @@ void SkiaOutputDeviceOffscreen::EnsureBackbuffer() {
     skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
         context_state_->gr_context_type(),
         SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type_),
-        /*plane_index=*/0, /*mipmapped=*/false,
+        /*plane_index=*/0,
+        /*is_yuv_plane=*/false, /*mipmapped=*/false,
         /*scanout_dcomp_surface=*/false);
     graphite_texture_ =
         context_state_->gpu_main_graphite_recorder()->createBackendTexture(

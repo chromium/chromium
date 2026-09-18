@@ -188,6 +188,7 @@ GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphiteBackendTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
     int plane_index,
+    bool is_yuv_plane,
     bool mipmapped,
     bool scanout_dcomp_surface);
 
