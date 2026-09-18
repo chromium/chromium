@@ -6,7 +6,6 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
-#include "base/i18n/rtl.h"
 #include "base/path_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -14,12 +13,10 @@
 
 namespace {
 
-// Initializes the i18n stack and loads the necessary strings. Uses a specific
-// locale, so that the tests can compare against golden strings without
-// depending on the environment.
+// Initializes the i18n stack and loads the necessary strings. The locale is
+// already pinned to en-US by base::TestSuite, so that the tests can compare
+// against golden strings without depending on the environment.
 void InitI18n() {
-  base::i18n::SetICUDefaultLocale("en_US");
-
   ui::RegisterPathProvider();
 
   base::FilePath ui_test_pak_path;
