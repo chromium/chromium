@@ -5,6 +5,7 @@
 #include "ash/webui/os_feedback_ui/backend/feedback_service_provider.h"
 
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/os_feedback_ui/backend/histogram_util.h"
@@ -34,7 +35,7 @@ constexpr char kFeedbackAppPostSubmitAction[] =
 bool kUseInternalUserEmail = false;
 constexpr bool kIsInternalEmail = true;
 constexpr int kPerformanceTraceId = 1;
-const std::vector<uint8_t> kFakePngData = {42, 22, 26, 13, 7, 16, 8, 2};
+constexpr uint8_t kFakePngData[] = {42, 22, 26, 13, 7, 16, 8, 2};
 
 using FeedbackAppPostSubmitAction =
     ash::os_feedback_ui::mojom::FeedbackAppPostSubmitAction;
@@ -66,7 +67,8 @@ class TestOsFeedbackDelegate : public OsFeedbackDelegate {
   int GetPerformanceTraceId() override { return kPerformanceTraceId; }
 
   void GetScreenshotPng(GetScreenshotPngCallback callback) override {
-    std::move(callback).Run(kFakePngData);
+    std::move(callback).Run(
+        std::vector<uint8_t>(std::begin(kFakePngData), std::end(kFakePngData)));
   }
 
   void SendReport(os_feedback_ui::mojom::ReportPtr report,
@@ -152,7 +154,9 @@ TEST_F(FeedbackServiceProviderTest, GetFeedbackContext) {
 // Test that GetScreenshotPng returns a response with correct status.
 TEST_F(FeedbackServiceProviderTest, GetScreenshotPng) {
   auto png_data = GetScreenshotPngAndWait();
-  EXPECT_EQ(kFakePngData, png_data);
+  EXPECT_EQ(
+      std::vector<uint8_t>(std::begin(kFakePngData), std::end(kFakePngData)),
+      png_data);
 }
 
 // Test that SendReport returns a response with correct status.
