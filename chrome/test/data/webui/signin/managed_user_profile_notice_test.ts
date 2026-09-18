@@ -44,10 +44,6 @@ suite('ManagedUserProfileNoticeTest', function() {
     return browserProxy.whenCalled('initialized');
   });
 
-  teardown(function() {
-    loadTimeData.overrideValues({'showLinkDataCheckbox': false});
-  });
-
   /**
    * Checks that the expected image url is displayed.
    */

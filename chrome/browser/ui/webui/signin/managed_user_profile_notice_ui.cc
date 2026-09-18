@@ -168,7 +168,6 @@ void AddStrings(content::WebUIDataSource* source) {
       {"confirmLabel", IDS_CONFIRM},
       {"closeLabel", IDS_CLOSE},
       {"retryLabel", IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_RETRY_LABEL},
-      {"linkDataText", IDS_ENTERPRISE_PROFILE_WELCOME_LINK_DATA_CHECKBOX},
 
       {"profileDisclosureTitle",
        IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_WORK_TITLE},
@@ -234,7 +233,6 @@ void AddFlags(content::WebUIDataSource* source, Profile* profile) {
   source->AddInteger("screenType",
                      static_cast<int>(ScreenType::kProfilePicker));
 
-  source->AddBoolean("showLinkDataCheckbox", false);
   source->AddBoolean("isModalDialog", false);
   source->AddBoolean("enforcedByPolicy", false);
 
@@ -414,8 +412,6 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
     source->AddString("enterpriseProfileWelcomeTitle",
                       l10n_util::GetStringUTF16(title_id));
 
-    source->AddBoolean("showLinkDataCheckbox",
-                       create_param->show_link_data_option);
     // If the user is already signed in and is trying to turn sync on, we can
     // skip the value proposition screen since they are already signed in.
     if (create_param->user_already_signed_in) {
@@ -439,8 +435,6 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
         "profileDisclosureTitle",
         l10n_util::GetStringUTF16(
             IDS_ENTERPRISE_WELCOME_PROFILE_OIDC_DISCLOSURE_TITLE));
-
-    source->AddBoolean("showLinkDataCheckbox", false);
   } else if (type == ScreenType::kFirstRun) {
     const std::string_view given_name =
         account_info.GetGivenName().value_or(account_info.GetEmail());

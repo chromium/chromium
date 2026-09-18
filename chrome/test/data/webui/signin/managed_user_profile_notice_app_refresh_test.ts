@@ -39,7 +39,6 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
     browserProxy = new TestManagedUserProfileNoticeBrowserProxy(
         testManagedUserProfileInfo);
     ManagedUserProfileNoticeBrowserProxyImpl.setInstance(browserProxy);
-    loadTimeData.overrideValues({'showLinkDataCheckbox': false});
     await createManagedUserProfileNoticeApp();
     return microtasksFinished();
   });
