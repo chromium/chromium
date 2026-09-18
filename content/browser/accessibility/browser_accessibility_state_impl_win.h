@@ -23,7 +23,9 @@ CONTENT_EXPORT void RecordUiaClientProcessHistogramsForModeChange(
     ui::AXMode new_mode,
     std::vector<std::string> process_names);
 
-// Returns true if the specified JAWS version (from `fsdomsrv.dll`'s product
+CONTENT_EXPORT bool IsJawsHookModule(std::string_view module_name);
+
+// Returns true if the specified JAWS version (from `jhook.dll`'s product
 // version, e.g. 2026.2606.132) still relies on the synthetic tab selection
 // event that Chromium fires on window activation to restore per-tab settings.
 // Newer versions of JAWS detect tab changes on their own. See

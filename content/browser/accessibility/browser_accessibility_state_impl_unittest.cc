@@ -326,6 +326,22 @@ TEST(BrowserAccessibilityStateImplWinTest, RecordsDisconnectHistogram) {
 }
 
 TEST(BrowserAccessibilityStateImplWinTest,
+     DetectsJawsHookModuleCaseInsensitively) {
+  EXPECT_TRUE(internal::IsJawsHookModule("jhook.dll"));
+  EXPECT_TRUE(internal::IsJawsHookModule("JHOOK.DLL"));
+  EXPECT_TRUE(internal::IsJawsHookModule("JHook.dll"));
+}
+
+TEST(BrowserAccessibilityStateImplWinTest, RejectsNonJawsHookModules) {
+  EXPECT_FALSE(internal::IsJawsHookModule("fsdomsrv.dll"));
+  EXPECT_FALSE(internal::IsJawsHookModule("AccEventCache.dll"));
+  EXPECT_FALSE(internal::IsJawsHookModule("nvdahelperremote.dll"));
+  EXPECT_FALSE(internal::IsJawsHookModule(""));
+  EXPECT_FALSE(internal::IsJawsHookModule("jhook.dll.bak"));
+  EXPECT_FALSE(internal::IsJawsHookModule("notjhook.dll"));
+}
+
+TEST(BrowserAccessibilityStateImplWinTest,
      JawsVersionNeedsTabSelectionEventForOlderVersions) {
   // Versions older than 2026.2606.132 still rely on the synthetic event.
   EXPECT_TRUE(internal::DoesJawsVersionNeedTabSelectionEvent(2022, 0, 0));

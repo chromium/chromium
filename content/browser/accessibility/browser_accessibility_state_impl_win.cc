@@ -155,6 +155,12 @@ void RecordUiaClientProcessHistogramsForModeChange(
   }
 }
 
+bool IsJawsHookModule(std::string_view module_name) {
+  // fsdomsrv.dll is only injected in response to other events, so use the
+  // JAWS hook DLL to detect JAWS independently of those events.
+  return base::EqualsCaseInsensitiveASCII(module_name, "jhook.dll");
+}
+
 bool DoesJawsVersionNeedTabSelectionEvent(uint16_t major,
                                           uint16_t minor,
                                           uint16_t build) {
@@ -390,7 +396,7 @@ std::vector<AssistiveTechInfo> DiscoverAssistiveTech() {
     }
 
     std::string module_name(base::FilePath(filename).BaseName().AsUTF8Unsafe());
-    if (base::EqualsCaseInsensitiveASCII(module_name, "fsdomsrv.dll")) {
+    if (internal::IsJawsHookModule(module_name)) {
       discovered_ats.push_back(
           {AccessibilityTarget::kJaws, GetModuleVersion(filename)});
     }
