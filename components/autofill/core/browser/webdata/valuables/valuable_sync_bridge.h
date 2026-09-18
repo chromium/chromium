@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -36,6 +37,7 @@
 namespace autofill {
 
 class AutofillWebDataService;
+class PaymentsAutofillTable;
 
 class ValuableSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
                            public base::SupportsUserData::Data,
@@ -115,6 +117,10 @@ class ValuableSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   ValuableDatabaseOperationResult SetEntities(
       std::vector<EntityInstance> entities);
 
+  // Sets `wallet_direct_offers` in the database.
+  ValuableDatabaseOperationResult SetWalletDirectOffers(
+      std::vector<AutofillOfferData> wallet_direct_offers);
+
   // Sets the Wallet data from `entity_data` to this client and records metrics
   // about added/deleted data. Returns a ModelError if any errors occured.
   std::optional<syncer::ModelError> SetSyncData(
@@ -128,6 +134,10 @@ class ValuableSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
 
   // Returns the `EntityTable` associated with the `web_data_backend_`.
   EntityTable* GetEntityTable();
+
+  // Returns the `PaymentsAutofillTable` associated with the
+  // `web_data_backend_`.
+  PaymentsAutofillTable* GetPaymentsAutofillTable();
 
   AutofillSyncMetadataTable* GetSyncMetadataStore();
 

@@ -419,6 +419,19 @@ TEST_F(PaymentsDataManagerTest,
   EXPECT_TRUE(future.Wait());
 }
 
+// Verifies that a `syncer::AUTOFILL_VALUABLE` change triggers a `Refresh()`,
+// which reloads the offers written by the `ValuableSyncBridge`.
+TEST_F(PaymentsDataManagerTest, OnAutofillChangedBySync_AutofillValuable) {
+  ASSERT_TRUE(payments_data_manager().GetAutofillOffers().empty());
+  GetServerDataTable()->SetAutofillOffers(
+      {test::GetPromoCodeOfferData(GURL("https://www.example.com"))});
+
+  payments_data_manager().OnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE);
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_EQ(payments_data_manager().GetAutofillOffers().size(), 1u);
+}
+
 // Test that a local IBAN is removed from suggestions when it has a matching
 // prefix and suffix (either equal or starting with) and the same length as a
 // server IBAN.

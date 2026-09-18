@@ -89,12 +89,12 @@ bool AutofillOfferData::operator==(
 
 int AutofillOfferData::Compare(
     const AutofillOfferData& other_offer_data) const {
-  int comparison = offer_id_ - other_offer_data.offer_id_;
-  if (comparison != 0) {
-    return comparison;
+  // Note that the difference of two int64 ids does not fit into an int.
+  if (offer_id_ != other_offer_data.offer_id_) {
+    return offer_id_ < other_offer_data.offer_id_ ? -1 : 1;
   }
 
-  comparison =
+  int comparison =
       offer_reward_amount_.compare(other_offer_data.offer_reward_amount_);
   if (comparison != 0) {
     return comparison;

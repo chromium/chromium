@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -1056,6 +1057,13 @@ template bool AreAnyItemsDifferent<>(const std::vector<CreditCardBenefit>&,
 
 template bool AreAnyItemsDifferent<>(const std::vector<std::string>&,
                                      const std::vector<std::string>&);
+
+// TODO(crbug.com/546252995): `LoyaltyCard` is not a payments type and is
+// instead used by `ValuableSyncBridge`. Move `AreAnyItemsDifferent()` to a
+// shared header under `components/autofill/core/browser/webdata/` to be
+// available for all sync bridges.
+template bool AreAnyItemsDifferent<>(const std::vector<LoyaltyCard>&,
+                                     const std::vector<LoyaltyCard>&);
 
 bool AreAnyItemsDifferent(
     const std::vector<sync_pb::PaymentInstrument>& old_instruments,

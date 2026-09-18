@@ -313,7 +313,8 @@ void PaymentsDataManager::Shutdown() {
 }
 
 void PaymentsDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
-  if (data_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
+  if (data_type == syncer::AUTOFILL_VALUABLE ||
+      data_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
       data_type == syncer::AUTOFILL_WALLET_DATA ||
       data_type == syncer::AUTOFILL_WALLET_METADATA ||
       data_type == syncer::AUTOFILL_WALLET_USAGE) {
