@@ -1605,8 +1605,8 @@ CrasAudioHandler::AbstractAudioSurvey(
         survey->set_type(SurveyType::kGeneral);
       } else if (it.second == CrasAudioHandler::kSurveyNameBluetooth) {
         survey->set_type(SurveyType::kBluetooth);
-      } else if (it.second == CrasAudioHandler::kSurveyNameOutputProc) {
-        survey->set_type(SurveyType::kOutputProc);
+      } else {
+        return nullptr;
       }
     } else {
       survey->AddData(it.first, it.second);
@@ -1618,6 +1618,9 @@ CrasAudioHandler::AbstractAudioSurvey(
 void CrasAudioHandler::SurveyTriggered(
     const base::flat_map<std::string, std::string>& survey_specific_data) {
   auto survey = CrasAudioHandler::AbstractAudioSurvey(survey_specific_data);
+  if (!survey) {
+    return;
+  }
 
   for (auto& observer : observers_) {
     observer.OnSurveyTriggered(*survey);

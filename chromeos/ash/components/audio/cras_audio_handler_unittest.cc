@@ -5235,22 +5235,18 @@ TEST_P(CrasAudioHandlerTest, AudioSelectionExceptionRule2Input) {
       /*expected_count=*/1);
 }
 
-TEST_P(CrasAudioHandlerTest, AudioSurveyOutputProc) {
+TEST_P(CrasAudioHandlerTest, AudioSurveyUnknown) {
   AudioNodeList audio_nodes = GenerateAudioNodeList(
       {kInternalSpeaker, kHeadphone, kInternalMic, kUSBMic1});
   base::flat_map<std::string, std::string> survey_specific_data = {
-      {CrasAudioHandler::kSurveyNameKey,
-       CrasAudioHandler::kSurveyNameOutputProc}};
+      {CrasAudioHandler::kSurveyNameKey, "UNKNOWN"}};
 
   SetUpCrasAudioHandler(audio_nodes);
 
-  // Simulate an audio survey gets triggered.
+  // Simulate an unknown audio survey gets triggered.
   fake_cras_audio_client()->NotifySurveyTriggered(survey_specific_data);
 
-  EXPECT_EQ(test_observer_->survey_triggerd_count(), 1);
-  EXPECT_EQ(test_observer_->survey_triggerd_recv().type(),
-            CrasAudioHandler::SurveyType::kOutputProc);
-  EXPECT_EQ(test_observer_->survey_triggerd_recv().data().size(), 0u);
+  EXPECT_EQ(test_observer_->survey_triggerd_count(), 0);
 }
 
 // Tests that two internal input devices don't set alternative_device to be
