@@ -10,16 +10,17 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
+#include "services/device/generic_sensor/platform_sensor_reader_win_base.h"
 
 namespace device {
 
-class PlatformSensorReaderWinBase;
-
 // Implementation of PlatformSensorProvider for Windows platform.
 // PlatformSensorProviderWin is responsible for following tasks:
-// - Starts sensor thread and stops it when there are no active sensors.
-// - Initialises ISensorManager and creates sensor reader on sensor thread.
+// - Owns the COM STA task runner that all ISensorManager and ISensor access
+//   happens on, and keeps ISensorManager confined to it via ComStaHelper.
+// - Creates sensor readers on that COM STA task runner.
 // - Constructs PlatformSensorWin on IPC thread and returns it to requester.
 class PlatformSensorProviderWin final : public PlatformSensorProvider {
  public:
@@ -34,7 +35,9 @@ class PlatformSensorProviderWin final : public PlatformSensorProvider {
   base::WeakPtr<PlatformSensorProvider> AsWeakPtr() override;
 
   // Overrides ISensorManager COM interface provided by the system, used
-  // only for testing purposes.
+  // only for testing purposes. The override is applied asynchronously on
+  // |com_sta_task_runner_|, but it is ordered ahead of any subsequent
+  // CreateSensorReader() call on that same sequence.
   void SetSensorManagerForTesting(
       Microsoft::WRL::ComPtr<ISensorManager> sensor_manager);
 
@@ -46,18 +49,14 @@ class PlatformSensorProviderWin final : public PlatformSensorProvider {
                             CreateSensorCallback callback) override;
 
  private:
-  void InitSensorManager();
-  void OnInitSensorManager(mojom::SensorType type,
-                           CreateSensorCallback callback);
-  std::unique_ptr<PlatformSensorReaderWinBase> CreateSensorReader(
-      mojom::SensorType type);
-  void SensorReaderCreated(
-      mojom::SensorType type,
-      CreateSensorCallback callback,
-      std::unique_ptr<PlatformSensorReaderWinBase> sensor_reader);
+  class ComStaHelper;
 
-  scoped_refptr<base::SingleThreadTaskRunner> com_sta_task_runner_;
-  Microsoft::WRL::ComPtr<ISensorManager> sensor_manager_;
+  void SensorReaderCreated(mojom::SensorType type,
+                           CreateSensorCallback callback,
+                           ScopedPlatformSensorReaderWinBase sensor_reader);
+
+  const scoped_refptr<base::SingleThreadTaskRunner> com_sta_task_runner_;
+  base::SequenceBound<ComStaHelper> com_sta_helper_;
   base::WeakPtrFactory<PlatformSensorProviderWin> weak_factory_{this};
 };
 

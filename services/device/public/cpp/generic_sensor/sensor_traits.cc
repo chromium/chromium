@@ -4,6 +4,8 @@
 
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 
+#include <cmath>
+
 namespace device {
 
 using mojom::SensorType;
@@ -67,6 +69,11 @@ double GetSensorDefaultFrequency(mojom::SensorType type) {
           SensorType::RELATIVE_ORIENTATION_QUATERNION>::kDefaultFrequency;
     // No default so the compiler will warn us if a new type is added.
   }
+}
+
+bool IsValidSensorFrequency(double frequency) {
+  // Rejects NaN, +/-inf, zero and negative frequencies.
+  return std::isfinite(frequency) && frequency > 0;
 }
 
 }  // namespace device

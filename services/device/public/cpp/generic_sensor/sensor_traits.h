@@ -32,6 +32,12 @@ double GetSensorMaxAllowedFrequency(mojom::SensorType type);
 
 double GetSensorDefaultFrequency(mojom::SensorType type);
 
+// Returns whether |frequency| is usable as a sensor frequency, i.e. whether it
+// is finite and strictly positive. Platform code derives reporting intervals
+// from frequencies (e.g. 1/frequency), which is undefined behavior for
+// non-finite or zero values, so it validates them before use.
+bool IsValidSensorFrequency(double frequency);
+
 }  // namespace device
 
 #endif  // SERVICES_DEVICE_PUBLIC_CPP_GENERIC_SENSOR_SENSOR_TRAITS_H_

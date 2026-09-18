@@ -82,7 +82,7 @@ void PlatformSensorProviderWinrt::CreateSensorInternal(
 void PlatformSensorProviderWinrt::SensorReaderCreated(
     mojom::SensorType type,
     CreateSensorCallback callback,
-    std::unique_ptr<PlatformSensorReaderWinBase> sensor_reader) {
+    ScopedPlatformSensorReaderWinBase sensor_reader) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!sensor_reader) {
     // Fallback options for sensors that can be implemented using sensor
@@ -105,14 +105,16 @@ void PlatformSensorProviderWinrt::SensorReaderCreated(
   scoped_refptr<PlatformSensor> sensor =
       base::MakeRefCounted<PlatformSensorWin>(
           type, GetSensorReadingSharedBufferForType(type), AsWeakPtr(),
-          com_sta_task_runner_, std::move(sensor_reader));
+          std::move(sensor_reader));
   std::move(callback).Run(std::move(sensor));
 }
 
-std::unique_ptr<PlatformSensorReaderWinBase>
+ScopedPlatformSensorReaderWinBase
 PlatformSensorProviderWinrt::CreateSensorReader(mojom::SensorType type) {
   DCHECK(com_sta_task_runner_->RunsTasksInCurrentSequence());
-  return sensor_reader_factory_->CreateSensorReader(type);
+  return ScopedPlatformSensorReaderWinBase(
+      sensor_reader_factory_->CreateSensorReader(type).release(),
+      base::OnTaskRunnerDeleter(com_sta_task_runner_));
 }
 
 }  // namespace device

@@ -8,10 +8,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
+#include "services/device/generic_sensor/platform_sensor_reader_win_base.h"
 
 namespace device {
-
-class PlatformSensorReaderWinBase;
 
 // Helper class used to instantiate new PlatformSensorReaderWinBase instances.
 class SensorReaderFactory {
@@ -43,13 +42,14 @@ class PlatformSensorProviderWinrt final : public PlatformSensorProvider {
                             CreateSensorCallback callback) override;
 
  private:
-  std::unique_ptr<PlatformSensorReaderWinBase> CreateSensorReader(
-      mojom::SensorType type);
+  // Wraps the factory-created reader in a pointer whose deleter posts back to
+  // |com_sta_task_runner_|, so the reader's COM objects are always released in
+  // the STA, including when the reply below never runs.
+  ScopedPlatformSensorReaderWinBase CreateSensorReader(mojom::SensorType type);
 
-  void SensorReaderCreated(
-      mojom::SensorType type,
-      CreateSensorCallback callback,
-      std::unique_ptr<PlatformSensorReaderWinBase> sensor_reader);
+  void SensorReaderCreated(mojom::SensorType type,
+                           CreateSensorCallback callback,
+                           ScopedPlatformSensorReaderWinBase sensor_reader);
 
   // The Windows.Devices.Sensors WinRT API supports both STA and MTA
   // threads. STA was chosen as PlatformSensorWin can only handle STA.

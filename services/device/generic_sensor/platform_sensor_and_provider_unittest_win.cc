@@ -6,14 +6,23 @@
 #include <sensors.h>
 #include <wrl/implements.h>
 
+#include <limits>
+#include <vector>
+
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/win/propvarutil.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_propvariant.h"
@@ -199,7 +208,19 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
 
     // Overrides default ISensorManager with mocked interface.
     provider_ = std::make_unique<PlatformSensorProviderWin>();
+    com_sta_task_runner_ = provider_->GetComStaTaskRunnerForTesting();
     provider_->SetSensorManagerForTesting(std::move(manager));
+  }
+
+  void TearDown() override {
+    provider_.reset();
+    // Follow the teardown chain across sequences: finish any in-flight reader
+    // creation on the COM STA, run the replies that drop those readers, then
+    // let the readers' deleters run on the COM STA. Only then are the mock COM
+    // objects they hold references to safe to verify.
+    FlushComStaTaskRunner();
+    FlushMainSequence();
+    FlushComStaTaskRunner();
   }
 
  protected:
@@ -229,13 +250,37 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
                       const PlatformSensorConfiguration& config) {
     run_loop_ = std::make_unique<base::RunLoop>();
     bool ret = sensor->StartListening(client, config);
-    if (ret)
+    if (ret) {
       run_loop_->Run();
+    }
     run_loop_ = nullptr;
     return ret;
   }
 
   void QuitInnerLoop() { run_loop_->Quit(); }
+
+  // Runs |task| on the COM STA task runner and waits for it to complete.
+  void RunOnComStaTaskRunner(base::OnceClosure task) {
+    base::test::TestFuture<void> future;
+    com_sta_task_runner_->PostTaskAndReply(FROM_HERE, std::move(task),
+                                           future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
+
+  // Waits until everything already queued on the COM STA task runner has run.
+  void FlushComStaTaskRunner() { RunOnComStaTaskRunner(base::DoNothing()); }
+
+  // Waits until everything already queued on the main sequence has run. The
+  // quit closure is posted behind the pending tasks, so FIFO ordering makes
+  // this deterministic without resorting to RunUntilIdle(). Tasks that those
+  // tasks post in turn are not waited for; the callers below pair this with
+  // FlushComStaTaskRunner() to follow the work across sequences explicitly.
+  void FlushMainSequence() {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
   void SetUnsupportedSensor(REFSENSOR_TYPE_ID sensor) {
     EXPECT_CALL(*(sensor_manager_.Get()), GetSensorsByType(sensor, _))
@@ -280,6 +325,7 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
     // data change events.
     ON_CALL(*(sensor_.Get()), SetEventSink(NotNull()))
         .WillByDefault([this](ISensorEvents* events) {
+          EXPECT_TRUE(com_sta_task_runner_->RunsTasksInCurrentSequence());
           events->AddRef();
           sensor_events_.Attach(events);
           if (this->run_loop_) {
@@ -295,6 +341,7 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
     // longer interested in sensor events and ISensorEvents can be released.
     ON_CALL(*(sensor_.Get()), SetEventSink(IsNull()))
         .WillByDefault([this](ISensorEvents* events) {
+          EXPECT_TRUE(com_sta_task_runner_->RunsTasksInCurrentSequence());
           sensor_events_.Reset();
           if (this->run_loop_) {
             task_environment_.GetMainThreadTaskRunner()->PostTask(
@@ -321,18 +368,24 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
         });
   }
 
+  // The event generators below run on the COM STA task runner because that is
+  // where COM delivers ISensorEvents callbacks for an apartment-threaded
+  // ISensor: the apartment that called SetEventSink() receives them.
+
   // Generates OnLeave event, e.g. when sensor is disconnected.
   void GenerateLeaveEvent() {
     if (!sensor_events_)
       return;
-    sensor_events_->OnLeave(SENSOR_ID());
+    RunOnComStaTaskRunner(base::BindLambdaForTesting(
+        [&]() { sensor_events_->OnLeave(SENSOR_ID()); }));
   }
 
   // Generates OnStateChangedLeave event.
   void GenerateStateChangeEvent(SensorState state) {
     if (!sensor_events_)
       return;
-    sensor_events_->OnStateChanged(sensor_.Get(), state);
+    RunOnComStaTaskRunner(base::BindLambdaForTesting(
+        [&]() { sensor_events_->OnStateChanged(sensor_.Get(), state); }));
   }
 
   struct PropertyKeyCompare {
@@ -373,11 +426,14 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
               return S_OK;
             }));
 
-    sensor_events_->OnDataUpdated(sensor_.Get(), data_report.Get());
+    RunOnComStaTaskRunner(base::BindLambdaForTesting([&]() {
+      sensor_events_->OnDataUpdated(sensor_.Get(), data_report.Get());
+    }));
   }
 
   base::win::ScopedCOMInitializer com_initializer_;
   base::test::TaskEnvironment task_environment_;
+  scoped_refptr<base::SingleThreadTaskRunner> com_sta_task_runner_;
   Microsoft::WRL::ComPtr<MockISensorManager> sensor_manager_;
   Microsoft::WRL::ComPtr<MockISensorCollection> sensor_collection_;
   Microsoft::WRL::ComPtr<MockISensor> sensor_;
@@ -449,7 +505,8 @@ TEST_F(PlatformSensorAndProviderTestWin, SensorStarted) {
   EXPECT_CALL(*(sensor_.Get()), SetEventSink(IsNull())).Times(1);
   EXPECT_CALL(*(sensor_.Get()), SetProperties(NotNull(), _))
       .WillRepeatedly(
-          [](IPortableDeviceValues* props, IPortableDeviceValues** result) {
+          [this](IPortableDeviceValues* props, IPortableDeviceValues** result) {
+            EXPECT_TRUE(com_sta_task_runner_->RunsTasksInCurrentSequence());
             ULONG value = 0;
             HRESULT hr = props->GetUnsignedIntegerValue(
                 SENSOR_PROPERTY_CURRENT_REPORT_INTERVAL, &value);
@@ -787,6 +844,266 @@ TEST_F(PlatformSensorAndProviderTestWin,
   auto quaternion_sensor =
       CreateSensor(SensorType::ABSOLUTE_ORIENTATION_QUATERNION);
   EXPECT_FALSE(quaternion_sensor);
+}
+
+// Tests that rapid start and stop operations are serialized on the COM STA
+// task runner, i.e. that the event sink is alternately set and cleared.
+TEST_F(PlatformSensorAndProviderTestWin, RapidStartAndStop) {
+  constexpr int kIterations = 50;
+
+  SetSupportedReportingFrequency(10);
+  SetSupportedSensor(SENSOR_TYPE_AMBIENT_LIGHT);
+
+  // Written on the COM STA sequence; read after flushing it below. true means
+  // the sink was set, false that it was cleared.
+  std::vector<bool> sink_transitions;
+  EXPECT_CALL(*(sensor_.Get()), SetEventSink(NotNull()))
+      .Times(kIterations)
+      .WillRepeatedly([&](ISensorEvents* events) {
+        EXPECT_TRUE(com_sta_task_runner_->RunsTasksInCurrentSequence());
+        sink_transitions.push_back(true);
+        events->AddRef();
+        sensor_events_.Attach(events);
+        return S_OK;
+      });
+  EXPECT_CALL(*(sensor_.Get()), SetEventSink(IsNull()))
+      .Times(kIterations)
+      .WillRepeatedly([&](ISensorEvents*) {
+        EXPECT_TRUE(com_sta_task_runner_->RunsTasksInCurrentSequence());
+        sink_transitions.push_back(false);
+        sensor_events_.Reset();
+        return S_OK;
+      });
+
+  auto sensor = CreateSensor(SensorType::AMBIENT_LIGHT);
+  ASSERT_TRUE(sensor);
+
+  auto client = std::make_unique<NiceMock<MockPlatformSensorClient>>(sensor);
+  PlatformSensorConfiguration configuration(10);
+
+  for (int i = 0; i < kIterations; ++i) {
+    EXPECT_TRUE(sensor->StartListening(client.get(), configuration));
+    EXPECT_TRUE(sensor->StopListening(client.get(), configuration));
+  }
+  FlushComStaTaskRunner();
+
+  ASSERT_EQ(sink_transitions.size(), size_t{2 * kIterations});
+  for (size_t i = 0; i < sink_transitions.size(); ++i) {
+    EXPECT_EQ(sink_transitions[i], i % 2 == 0) << "transition " << i;
+  }
+}
+
+// Tests that configurations with invalid frequencies (non-finite, <= 0, or
+// > max) are rejected.
+TEST_F(PlatformSensorAndProviderTestWin, StartWithInvalidFrequency) {
+  SetSupportedReportingFrequency(10);
+  SetSupportedSensor(SENSOR_TYPE_AMBIENT_LIGHT);
+
+  auto sensor = CreateSensor(SensorType::AMBIENT_LIGHT);
+  ASSERT_TRUE(sensor);
+
+  auto client = std::make_unique<NiceMock<MockPlatformSensorClient>>(sensor);
+
+  for (double frequency : {0.0, -1.0, std::numeric_limits<double>::quiet_NaN(),
+                           std::numeric_limits<double>::infinity()}) {
+    SCOPED_TRACE(frequency);
+    // Note: an invalid frequency can only be constructed through the setter,
+    // and only because PlatformSensorConfiguration::set_frequency() DCHECKs the
+    // previous value rather than its argument. If that DCHECK is ever fixed,
+    // this loop needs another way to build an invalid configuration.
+    PlatformSensorConfiguration invalid_frequency;
+    invalid_frequency.set_frequency(frequency);
+    EXPECT_FALSE(sensor->StartListening(client.get(), invalid_frequency));
+  }
+
+  PlatformSensorConfiguration excessive_frequency(20);
+  EXPECT_FALSE(sensor->StartListening(client.get(), excessive_frequency));
+}
+
+// Tests that when setting reporting properties fails on the COM thread,
+// the sensor reports an error gracefully to the client.
+TEST_F(PlatformSensorAndProviderTestWin, SensorStartFailsOnComError) {
+  SetSupportedReportingFrequency(10);
+  SetSupportedSensor(SENSOR_TYPE_AMBIENT_LIGHT);
+
+  EXPECT_CALL(*(sensor_.Get()), SetProperties(NotNull(), _))
+      .WillOnce([this](IPortableDeviceValues*, IPortableDeviceValues**) {
+        EXPECT_TRUE(com_sta_task_runner_->RunsTasksInCurrentSequence());
+        return E_FAIL;
+      });
+
+  auto sensor = CreateSensor(SensorType::AMBIENT_LIGHT);
+  ASSERT_TRUE(sensor);
+
+  auto client = std::make_unique<NiceMock<MockPlatformSensorClient>>(sensor);
+  PlatformSensorConfiguration configuration(10);
+
+  base::test::TestFuture<void> error_future;
+  EXPECT_CALL(*client, OnSensorError())
+      .WillOnce(base::test::InvokeFuture(error_future));
+
+  EXPECT_TRUE(sensor->StartListening(client.get(), configuration));
+  EXPECT_TRUE(error_future.Wait());
+}
+
+// Tests that when setting the event sink fails on the COM thread,
+// the sensor reports an error gracefully to the client.
+TEST_F(PlatformSensorAndProviderTestWin, SensorStartFailsOnSetEventSinkError) {
+  SetSupportedReportingFrequency(10);
+  SetSupportedSensor(SENSOR_TYPE_AMBIENT_LIGHT);
+
+  EXPECT_CALL(*(sensor_.Get()), SetProperties(NotNull(), _))
+      .WillOnce([this](IPortableDeviceValues*, IPortableDeviceValues**) {
+        EXPECT_TRUE(com_sta_task_runner_->RunsTasksInCurrentSequence());
+        return S_OK;
+      });
+  EXPECT_CALL(*(sensor_.Get()), SetEventSink(NotNull()))
+      .WillOnce([this](ISensorEvents*) {
+        EXPECT_TRUE(com_sta_task_runner_->RunsTasksInCurrentSequence());
+        return E_FAIL;
+      });
+
+  auto sensor = CreateSensor(SensorType::AMBIENT_LIGHT);
+  ASSERT_TRUE(sensor);
+
+  auto client = std::make_unique<NiceMock<MockPlatformSensorClient>>(sensor);
+  PlatformSensorConfiguration configuration(10);
+
+  base::test::TestFuture<void> error_future;
+  EXPECT_CALL(*client, OnSensorError())
+      .WillOnce(base::test::InvokeFuture(error_future));
+
+  EXPECT_TRUE(sensor->StartListening(client.get(), configuration));
+  EXPECT_TRUE(error_future.Wait());
+}
+
+// Tests that an asynchronous start failure is dropped when the client has
+// already stopped listening. PlatformSensor::NotifySensorError() disables the
+// sensor for every client, so a superseded start must not report one.
+TEST_F(PlatformSensorAndProviderTestWin, SupersededStartFailureIsNotReported) {
+  SetSupportedReportingFrequency(10);
+  SetSupportedSensor(SENSOR_TYPE_AMBIENT_LIGHT);
+
+  EXPECT_CALL(*(sensor_.Get()), SetProperties(NotNull(), _))
+      .WillOnce(testing::Return(E_FAIL));
+
+  auto sensor = CreateSensor(SensorType::AMBIENT_LIGHT);
+  ASSERT_TRUE(sensor);
+
+  auto client = std::make_unique<NiceMock<MockPlatformSensorClient>>(sensor);
+  PlatformSensorConfiguration configuration(10);
+  EXPECT_CALL(*client, OnSensorError()).Times(0);
+
+  // Hold the COM STA runner so that the start and the stop below are both
+  // requested before the start is processed.
+  base::WaitableEvent resume;
+  com_sta_task_runner_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&resume]() {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+        resume.Wait();
+      }));
+
+  EXPECT_TRUE(sensor->StartListening(client.get(), configuration));
+  EXPECT_TRUE(sensor->StopListening(client.get(), configuration));
+  resume.Signal();
+
+  // A reported error would travel from the COM STA to the main sequence, so
+  // drain both before letting the Times(0) expectation above be verified.
+  FlushComStaTaskRunner();
+  FlushMainSequence();
+}
+
+// Tests that multiple configurations can be added and removed safely.
+TEST_F(PlatformSensorAndProviderTestWin, MultipleConfigurations) {
+  SetSupportedReportingFrequency(20);
+  SetSupportedSensor(SENSOR_TYPE_AMBIENT_LIGHT);
+
+  auto sensor = CreateSensor(SensorType::AMBIENT_LIGHT);
+  ASSERT_TRUE(sensor);
+
+  auto client1 = std::make_unique<NiceMock<MockPlatformSensorClient>>(sensor);
+  auto client2 = std::make_unique<NiceMock<MockPlatformSensorClient>>(sensor);
+  PlatformSensorConfiguration config1(5);
+  PlatformSensorConfiguration config2(10);
+
+  EXPECT_TRUE(StartListening(sensor, client1.get(), config1));
+  EXPECT_TRUE(sensor->StartListening(client2.get(), config2));
+
+  EXPECT_TRUE(sensor->StopListening(client1.get(), config1));
+  EXPECT_TRUE(sensor->StopListening(client2.get(), config2));
+
+  FlushComStaTaskRunner();
+}
+
+// Tests that active sensor resources are properly cleaned up when the
+// sensor object is released while still listening.
+TEST_F(PlatformSensorAndProviderTestWin, SensorCleanedUpOnDestruction) {
+  SetSupportedReportingFrequency(10);
+  SetSupportedSensor(SENSOR_TYPE_AMBIENT_LIGHT);
+
+  EXPECT_CALL(*(sensor_.Get()), SetEventSink(NotNull())).Times(1);
+  EXPECT_CALL(*(sensor_.Get()), SetEventSink(IsNull())).Times(1);
+
+  auto sensor = CreateSensor(SensorType::AMBIENT_LIGHT);
+  ASSERT_TRUE(sensor);
+
+  auto client = std::make_unique<NiceMock<MockPlatformSensorClient>>(sensor);
+  PlatformSensorConfiguration configuration(10);
+  EXPECT_TRUE(StartListening(sensor, client.get(), configuration));
+  EXPECT_TRUE(sensor_events_);
+
+  // Store a local reference before reset so we can test the detached listener.
+  Microsoft::WRL::ComPtr<ISensorEvents> detached_events = sensor_events_;
+  EXPECT_TRUE(detached_events);
+
+  // Release the client and sensor reference while active.
+  client.reset();
+  sensor.reset();
+
+  FlushComStaTaskRunner();
+  EXPECT_FALSE(sensor_events_);
+
+  // Verify that events COM may still deliver to a detached listener neither
+  // crash nor dereference the destroyed reader.
+  RunOnComStaTaskRunner(base::BindLambdaForTesting([&]() {
+    EXPECT_EQ(S_OK, detached_events->OnLeave(SENSOR_ID()));
+    EXPECT_EQ(S_OK, detached_events->OnStateChanged(
+                        sensor_.Get(), SensorState::SENSOR_STATE_READY));
+  }));
+}
+
+// Tests that PlatformSensorProviderWin properly cleans up COM references
+// on destruction.
+TEST_F(PlatformSensorAndProviderTestWin, ProviderCleanedUpOnDestruction) {
+  SetSupportedSensor(SENSOR_TYPE_AMBIENT_LIGHT);
+  auto sensor = CreateSensor(SensorType::AMBIENT_LIGHT);
+  EXPECT_TRUE(sensor);
+
+  provider_.reset();
+  FlushComStaTaskRunner();
+}
+
+// Tests that a reader whose creation completes while the provider is being
+// destroyed is still released on the COM STA sequence. The provider's reply is
+// dropped in that case, taking the only owning pointer to the reader with it.
+TEST_F(PlatformSensorAndProviderTestWin, ProviderDestroyedWhileCreatingReader) {
+  SetSupportedSensor(SENSOR_TYPE_AMBIENT_LIGHT);
+
+  base::test::TestFuture<scoped_refptr<PlatformSensor>> sensor_future;
+  provider_->CreateSensor(SensorType::AMBIENT_LIGHT,
+                          sensor_future.GetCallback());
+
+  // Destroy the provider before its reply can run on this sequence. Pending
+  // requests are answered with nullptr.
+  provider_.reset();
+  EXPECT_FALSE(sensor_future.Get());
+
+  // Let the creation finish, drop the reply (and with it the reader), and let
+  // the reader's deleter run. ~PlatformSensorReaderWin32() DCHECKs that it runs
+  // on the COM STA sequence.
+  FlushComStaTaskRunner();
+  FlushMainSequence();
+  FlushComStaTaskRunner();
 }
 
 }  // namespace device
