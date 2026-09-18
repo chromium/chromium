@@ -203,6 +203,8 @@ enum class TabGridTransitionType {
 
 // Prepares items for the Browser to Tab Grid transition.
 - (void)prepareBrowserToTabGridTransition {
+  [_params->browser_layout_view_controller.view endEditing:YES];
+
   // Take the toolbar snapshots before adding the `_browserLayoutViewController`
   // to the hierarchy (since taking the snapshots forces a screen update). This
   // fixes some transition issues.
