@@ -460,9 +460,9 @@ CreateVulkanYcbcrConversionInfo(
             ? VK_SAMPLER_YCBCR_RANGE_ITU_FULL
             : VK_SAMPLER_YCBCR_RANGE_ITU_NARROW;
 
-    valid_ycbcr_info.emplace(
-        format, 0, ycbcr_model, ycbcr_range, VK_CHROMA_LOCATION_COSITED_EVEN,
-        VK_CHROMA_LOCATION_COSITED_EVEN, /*format_features=*/0);
+    valid_ycbcr_info.emplace(format, 0, ycbcr_model, ycbcr_range,
+                             VK_CHROMA_LOCATION_COSITED_EVEN,
+                             VK_CHROMA_LOCATION_COSITED_EVEN, 0);
   }
 
   VkFormat vk_format = static_cast<VkFormat>(valid_ycbcr_info->image_format);
