@@ -335,6 +335,21 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
 
     // For subresource loads we attempt to resolve the FrameData immediately.
     frame_data = ExtensionApiFrameIdMap::Get()->GetFrameData(parent_routing_id);
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+  } else if (content::RenderProcessHost* process =
+                 content::RenderProcessHost::FromID(global_id.child_id)) {
+    // For requests without a frame routing ID (such as service worker or shared
+    // worker requests), check if the process is dedicated to guests.
+    // Note: We deliberately do not populate `web_view_instance_id`,
+    // `web_view_rules_registry_id`, or `web_view_embedder_process_id` here.
+    // Workers are partition-scoped and may be shared across multiple webview or
+    // guest frames, so they are not tied to a single webview instance. Flagging
+    // `is_web_view = true` is sufficient to prevent these requests from leaking
+    // to unrelated extension webRequest or declarativeNetRequest listeners.
+    // This means these requests won't be interceptable by events on the webview
+    // itself, either, but this matches the behavior that has existed for ~ever.
+    is_web_view = process->IsForGuestsOnly();
+#endif
   }
 }
 
