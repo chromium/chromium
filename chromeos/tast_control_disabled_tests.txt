@@ -93,10 +93,6 @@ tast.bruschetta.CopyPaste.wayland_to_x11@betty
 tast.bruschetta.Toolkit.qt5_x11@betty
 tast.bruschetta.Toolkit.qt6_wayland@betty
 tast.bruschetta.Toolkit.qt6_x11@betty
-tast.crostini.CommandCd.baguette_stable@betty
-tast.crostini.RestartIcon.baguette_stable@betty
-tast.crostini.ShareDownloads.baguette_stable@betty
-tast.crostini.ShareFolders.baguette_stable@betty
 
 # https://crbug.com/432304431
 tast.featured.FieldTrialEarlyBoot.active_trial
