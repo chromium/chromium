@@ -465,6 +465,15 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
   widget_delegate_->SetContentsView(std::move(web_view));
 
   widget_->Init(std::move(params));
+
+  if (!is_ephemeral) {
+    // Views unconditionally strips WS_MINIMIZEBOX during Init() for frameless
+    // widgets (remove_standard_frame), ignoring CanMinimize(). Setting the
+    // constraint now that the Widget exists re-applies it via
+    // SizeConstraintsChanged(), so the shell offers taskbar minimization.
+    CHECK(!widget_delegate_->CanMinimize());
+    widget_delegate_->SetCanMinimize(true);
+  }
 #if BUILDFLAG(IS_MAC)
   widget_->SetActivationIndependence(is_ephemeral);
   widget_->SetCanAppearInExistingFullscreenSpaces(true);
@@ -500,6 +509,9 @@ void OmniboxEverywhereUIManager::ActivateAndFocus() {
   }
 
   is_demoted_ = false;
+  if (widget_->IsMinimized()) {
+    widget_->Restore();
+  }
 #if BUILDFLAG(IS_MAC)
   widget_->MoveToActiveFullscreenSpace();
 #endif
@@ -525,7 +537,7 @@ void OmniboxEverywhereUIManager::OnEphemeralModelPrefChanged() {
   if (!widget_) {
     return;
   }
-  bool was_visible = IsVisible();
+  bool was_visible = IsVisible() || widget_->IsMinimized();
   Profile* profile = profile_;
   CleanUpWidget();
   if (was_visible) {
@@ -535,7 +547,9 @@ void OmniboxEverywhereUIManager::OnEphemeralModelPrefChanged() {
 }
 
 void OmniboxEverywhereUIManager::OnMostVisitedPrefChanged() {
-  if (!widget_ || IsVisible()) {
+  // Don't tear down the widget if it is visible on screen or minimized on the
+  // taskbar.
+  if (!widget_ || IsVisible() || widget_->IsMinimized()) {
     return;
   }
   // Clean up the widget when the pref changes so there is not flicker when the
@@ -582,16 +596,10 @@ void OmniboxEverywhereUIManager::Close() {
 }
 
 void OmniboxEverywhereUIManager::Demote() {
-  last_shown_time_.reset();
-  deactivation_task_.Cancel();
-  hotkey_dropdown_deactivation_task_.Cancel();
+  CancelTransientUiState();
   if (!widget_ || !widget_->IsVisible() || is_demoted_ ||
       HasOpenModalDialog()) {
     return;
-  }
-  if (is_context_menu_open_ && context_menu_runner_) {
-    context_menu_runner_->Cancel();
-    is_context_menu_open_ = false;
   }
   is_demoted_ = true;
   widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
@@ -672,6 +680,16 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
   ReleaseKeepAlives();
 }
 
+void OmniboxEverywhereUIManager::CancelTransientUiState() {
+  last_shown_time_.reset();
+  deactivation_task_.Cancel();
+  hotkey_dropdown_deactivation_task_.Cancel();
+  if (is_context_menu_open_ && context_menu_runner_) {
+    context_menu_runner_->Cancel();
+    is_context_menu_open_ = false;
+  }
+}
+
 void OmniboxEverywhereUIManager::Shutdown() {
   deactivation_task_.Cancel();
   hotkey_dropdown_deactivation_task_.Cancel();
@@ -684,11 +702,12 @@ void OmniboxEverywhereUIManager::Shutdown() {
 }
 
 bool OmniboxEverywhereUIManager::IsVisible() const {
-  return widget_ && widget_->IsVisible();
+  return widget_ && widget_->IsVisible() && !widget_->IsMinimized();
 }
 
 bool OmniboxEverywhereUIManager::IsActive() const {
-  return widget_ && widget_->IsActive() && !is_demoted_;
+  return widget_ && widget_->IsActive() && !widget_->IsMinimized() &&
+         !is_demoted_;
 }
 
 bool OmniboxEverywhereUIManager::HasOpenModalDialog() const {
@@ -709,6 +728,9 @@ void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
     deactivation_task_.Cancel();
     hotkey_dropdown_deactivation_task_.Cancel();
     is_demoted_ = false;
+    if (!HasOpenModalDialog() && !is_context_menu_open_ && web_contents()) {
+      web_contents()->Focus();
+    }
     return;
   }
   if (!HasOpenModalDialog() && !is_context_menu_open_) {
@@ -721,6 +743,21 @@ void OmniboxEverywhereUIManager::OnWidgetVisibilityOnScreenChanged(
     bool visible) {
   if (!visible && !HasOpenModalDialog() && !is_context_menu_open_ &&
       prefs::IsEphemeralModelEnabled()) {
+    Close();
+  }
+}
+
+void OmniboxEverywhereUIManager::OnWidgetShowStateChanged(
+    views::Widget* widget) {
+  if (is_closing_ || !widget_ || widget != widget_.get()) {
+    return;
+  }
+  if (!widget_->IsMinimized()) {
+    is_demoted_ = false;
+    return;
+  }
+  CancelTransientUiState();
+  if (prefs::IsEphemeralModelEnabled() && !HasOpenModalDialog()) {
     Close();
   }
 }

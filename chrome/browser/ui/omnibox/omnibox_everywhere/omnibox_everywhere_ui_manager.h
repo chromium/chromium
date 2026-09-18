@@ -111,14 +111,15 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   // shutdown.
   void Shutdown();
 
-  // Returns true if the widget is visible.
+  // Returns true if the widget is visible and not minimized.
   bool IsVisible() const;
 
   // Returns true if the widget is active/focused.
   bool IsActive() const;
 
-  // Returns true if a file chooser, drive picker, or screenshare picker modal
-  // dialog is open.
+  // Returns true if any modal dialog or modal overlay owned by the launcher is
+  // open (e.g. file chooser, drive picker, permission prompt, screenshare
+  // picker/disclosure, region select overlay, or hotkey dropdown).
   bool HasOpenModalDialog() const;
 
   // Returns true while a screenshot capture flow owns the screen: the native
@@ -132,6 +133,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetVisibilityOnScreenChanged(views::Widget* widget,
                                          bool visible) override;
+  void OnWidgetShowStateChanged(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetUserDragStarted(views::Widget* widget) override;
   void OnWidgetUserDragEnded(views::Widget* widget) override;
@@ -297,6 +299,10 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void AppendSettingsContextMenu();
 
   void CleanUpWidget();
+
+  // Cancels transient UI state (pending dismissal tasks, activation grace
+  // period timestamp, and any open context menu).
+  void CancelTransientUiState();
   void OnWidgetClosed(views::Widget::ClosedReason reason);
   void OnContextMenuClosed();
   void HandleWidgetDeactivated();
