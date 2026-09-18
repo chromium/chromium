@@ -32,3 +32,28 @@ source_set("public") {
     "//third_party/protobuf:protobuf_lite",
   ]
 }
+
+# Kept separate from ":public" so that consumers of the transport interfaces do
+# not pick up a dependency on the wire proto unless they actually translate
+# between PayloadType and the wire enum.
+source_set("payload_type_mapping") {
+  sources = [ "payload_type_mapping.h" ]
+
+  public_deps = [
+    ":public",
+    "//base",
+    "//components/sharing_message/proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "payload_type_mapping_unittest.cc" ]
+
+  deps = [
+    ":payload_type_mapping",
+    "//components/sharing_message/proto",
+    "//testing/gtest",
+  ]
+}
