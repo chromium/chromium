@@ -648,7 +648,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         if (shouldShowSnackbar(profile, settingsToApply, nonNtp)) {
             SyncedSetupSettings currentSettings = getCurrentSettings(profile);
             showOfferUndoSnackbarAfterDialogs(profile, currentSettings, settingsToApply, nonNtp);
-            applySettings(profile, settingsToApply);
+            applySettings(profile, settingsToApply, nonNtp);
         } else {
             markCrossDeviceSettingImportComplete(
                     nonNtp, CrossDeviceSettingImportOutcome.NO_SETTINGS_TO_IMPORT);
@@ -961,14 +961,19 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      *
      * @param profile The {@link Profile}.
      * @param settingsToApply The settings to apply.
+     * @param nonNtp Whether only settings that affect non-NTP pages should be applied.
      */
-    private void applySettings(Profile profile, SyncedSetupSettings settingsToApply) {
+    private void applySettings(
+            Profile profile, SyncedSetupSettings settingsToApply, boolean nonNtp) {
         Log.i(
                 TAG,
-                "applySettings: prefs=%s, theme=%s",
+                "applySettings: prefs=%s, theme=%s, nonNtp=%s",
                 settingsToApply.getPrefs().keySet(),
-                settingsToApply.getTheme());
-        applyUserPrefSettings(profile, settingsToApply.getPrefs());
+                settingsToApply.getTheme(),
+                nonNtp);
+        if (!nonNtp) {
+            applyUserPrefSettings(profile, settingsToApply.getPrefs());
+        }
         applyLocalStateSettings(settingsToApply.getPrefs());
         if (settingsToApply.getTheme() != null) {
             applyThemeSettings(settingsToApply.getTheme());

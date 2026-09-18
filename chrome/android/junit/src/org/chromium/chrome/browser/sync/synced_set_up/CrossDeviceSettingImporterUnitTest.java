@@ -399,6 +399,7 @@ public class CrossDeviceSettingImporterUnitTest {
     public void testAskToApplySettingImportIfNeeded_NonNtp_differs() {
         Map<String, Object> preferencesToApply = new HashMap<>();
         preferencesToApply.put(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
+        preferencesToApply.put(Pref.MAGIC_STACK_HOME_MODULE_ENABLED, false);
         when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
 
         when(mCrossDevicePrefTracker.getServiceStatus())
