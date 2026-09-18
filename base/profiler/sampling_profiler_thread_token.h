@@ -15,6 +15,10 @@
 #include <pthread.h>
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <stdint.h>
+#elif BUILDFLAG(IS_WIN)
+#include <stdint.h>
+
+#include "base/win/scoped_handle.h"
 #endif
 
 namespace base {
@@ -36,6 +40,9 @@ struct BASE_EXPORT SamplingProfilerThreadToken {
   // current thread. We must grab it during
   // GetSamplingProfilerCurrentThreadToken() and not try to get it later.
   std::optional<uintptr_t> stack_base_address;
+#elif BUILDFLAG(IS_WIN)
+  win::ScopedHandle thread_handle;
+  uintptr_t stack_base_address;
 #endif
 };
 

@@ -5,13 +5,10 @@
 #include "base/profiler/suspendable_thread_delegate_win.h"
 
 #include <windows.h>
-#include <winternl.h>
 
 #include <vector>
 
 #include "base/check.h"
-#include "base/debug/alias.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/profiler/native_unwinder_win.h"
 #include "build/build_config.h"
 
@@ -25,80 +22,6 @@
 namespace base {
 
 namespace {
-
-// The thread environment block internal type.
-struct TEB {
-  NT_TIB Tib;
-  // Rest of struct is ignored.
-};
-
-win::ScopedHandle GetCurrentThreadHandle() {
-  HANDLE thread;
-  CHECK(::DuplicateHandle(::GetCurrentProcess(), ::GetCurrentThread(),
-                          ::GetCurrentProcess(), &thread, 0, FALSE,
-                          DUPLICATE_SAME_ACCESS));
-  return win::ScopedHandle(thread);
-}
-
-win::ScopedHandle GetThreadHandle(PlatformThreadId thread_id) {
-  // TODO(crbug.com/40620762): Move this logic to
-  // GetSamplingProfilerCurrentThreadToken() and pass the handle in
-  // SamplingProfilerThreadToken.
-  if (thread_id.raw() == ::GetCurrentThreadId()) {
-    return GetCurrentThreadHandle();
-  }
-
-  // TODO(http://crbug.com/947459): Remove the test_handle* CHECKs once we
-  // understand which flag is triggering the failure.
-  DWORD flags = 0;
-  base::debug::Alias(&flags);
-
-  flags |= THREAD_GET_CONTEXT;
-  win::ScopedHandle test_handle1(::OpenThread(flags, FALSE, thread_id.raw()));
-  CHECK(test_handle1.is_valid());
-
-  flags |= THREAD_QUERY_INFORMATION;
-  win::ScopedHandle test_handle2(::OpenThread(flags, FALSE, thread_id.raw()));
-  CHECK(test_handle2.is_valid());
-
-  flags |= THREAD_SUSPEND_RESUME;
-  win::ScopedHandle handle(::OpenThread(flags, FALSE, thread_id.raw()));
-  CHECK(handle.is_valid());
-  return handle;
-}
-
-// Returns the thread environment block pointer for |thread_handle|.
-const TEB* GetThreadEnvironmentBlock(PlatformThreadId thread_id,
-                                     HANDLE thread_handle) {
-  // TODO(crbug.com/40620762): Move this logic to
-  // GetSamplingProfilerCurrentThreadToken() and pass the TEB* in
-  // SamplingProfilerThreadToken.
-  if (thread_id.raw() == ::GetCurrentThreadId()) {
-    return reinterpret_cast<TEB*>(NtCurrentTeb());
-  }
-
-  // Define types not in winternl.h needed to invoke NtQueryInformationThread().
-  constexpr auto ThreadBasicInformation = static_cast<THREADINFOCLASS>(0);
-  struct THREAD_BASIC_INFORMATION {
-    NTSTATUS ExitStatus;
-    // RAW_PTR_EXCLUSION: Filled in by the OS so cannot use raw_ptr<>.
-    RAW_PTR_EXCLUSION TEB* Teb;
-    CLIENT_ID ClientId;
-    KAFFINITY AffinityMask;
-    LONG Priority;
-    LONG BasePriority;
-  };
-
-  THREAD_BASIC_INFORMATION basic_info = {0};
-  NTSTATUS status = ::NtQueryInformationThread(
-      thread_handle, ThreadBasicInformation, &basic_info,
-      sizeof(THREAD_BASIC_INFORMATION), nullptr);
-  if (status != 0) {
-    return nullptr;
-  }
-
-  return basic_info.Teb;
-}
 
 // Tests whether |stack_pointer| points to a location in the guard page. NO HEAP
 // ALLOCATIONS.
@@ -191,10 +114,11 @@ bool SuspendableThreadDelegateWin::ScopedSuspendThread::WasSuccessful() const {
 SuspendableThreadDelegateWin::SuspendableThreadDelegateWin(
     SamplingProfilerThreadToken thread_token)
     : thread_id_(thread_token.id),
-      thread_handle_(GetThreadHandle(thread_token.id)),
-      thread_stack_base_address_(reinterpret_cast<uintptr_t>(
-          GetThreadEnvironmentBlock(thread_token.id, thread_handle_.get())
-              ->Tib.StackBase)) {}
+      thread_handle_(std::move(thread_token.thread_handle)),
+      thread_stack_base_address_(thread_token.stack_base_address) {
+  CHECK(thread_handle_.is_valid());
+  CHECK(thread_stack_base_address_);
+}
 
 SuspendableThreadDelegateWin::~SuspendableThreadDelegateWin() = default;
 
