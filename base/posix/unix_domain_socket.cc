@@ -23,7 +23,6 @@
 
 namespace base {
 
-const size_t UnixDomainSocket::kMaxFileDescriptors = 16;
 
 bool CreateSocketPair(ScopedFD* one, ScopedFD* two) {
   int raw_socks[2];

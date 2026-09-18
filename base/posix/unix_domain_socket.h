@@ -29,7 +29,7 @@ bool BASE_EXPORT CreateSocketPair(ScopedFD* one, ScopedFD* two);
 class BASE_EXPORT UnixDomainSocket {
  public:
   // Maximum number of file descriptors that can be read by RecvMsg().
-  static const size_t kMaxFileDescriptors;
+  static constexpr size_t kMaxFileDescriptors = 16;
 
   // Use to enable receiving process IDs in RecvMsgWithPid.  Should be called on
   // the receiving socket (i.e., the socket passed to RecvMsgWithPid). Returns
