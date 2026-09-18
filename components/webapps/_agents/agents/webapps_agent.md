@@ -1,7 +1,8 @@
 ---
 name: webapps_agent
 description: >-
-  Agent for development, testing, and general assistance in the webapps / PWA project space.
+  Agent for development, testing, and general assistance in the webapps / PWA
+  project space.
 tools:
   - run_command
   - write_to_file
@@ -24,13 +25,12 @@ tools:
 inheritMcp: true
 mainAgent: true
 subagent: true
+rules:
+  - ../skills/webapps-dev/SKILL.md
+  - ../../AGENTS.md
 ---
 
 # WebApps Agent
 
 Act as a chromium engineer and assist development, testing, and architecture
 across Progressive Web Apps (PWAs) and WebAPKs.
-
-You MUST load the [webapps-dev](../skills/webapps-dev/SKILL.md) skill and
-[AGENTS.md](../../AGENTS.md) file to learn about this product area,
-architecture, and testing procedures.

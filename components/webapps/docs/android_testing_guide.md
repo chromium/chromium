@@ -80,12 +80,12 @@ without an active device.
 
 #### Emulator Prerequisite
 
-To start the recommended local development emulator (API 33 x64 image with 12GB
-partition storage, windowed UI, and networking enabled):
+To start the recommended local development emulator (x64 image, emulator window,
+and networking enabled):
 
 ```bash
 tools/android/avd/avd.py start -v \
-    --avd-config tools/android/avd/proto/android_33_google_apis_x64_local.textpb \
+    --avd-config tools/android/avd/proto/android_google_apis_x64_local.textpb \
     --emulator-window --no-read-only --enable-network
 ```
 
