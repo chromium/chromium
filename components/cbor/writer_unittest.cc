@@ -395,6 +395,48 @@ TEST(CBORWriterTest, TestWriteNoneFails) {
   EXPECT_FALSE(Writer::Write(Value(std::move(map))).has_value());
 }
 
+TEST(CBORWriterTest, TestWriteInvalidUtf8) {
+  Writer::Config config;
+  config.allow_invalid_utf8_for_testing = true;
+
+  Value invalid_str = Value::InvalidUTF8StringValueForTesting("\xff\xfe");
+  auto cbor = Writer::Write(invalid_str, config);
+  ASSERT_TRUE(cbor.has_value());
+  EXPECT_THAT(cbor.value(),
+              testing::ElementsAreArray(std::string_view("\x62\xff\xfe")));
+
+  // Verify canonical sorting of INVALID_UTF8 map keys relative to integer and
+  // valid UTF-8 string keys.
+  Value::MapValue map;
+  map[Value("\xc3\xa9")] = Value(6);
+  map[Value::InvalidUTF8StringValueForTesting("\x80\x80")] = Value(5);
+  map[Value("bb")] = Value(4);
+  map[Value::InvalidUTF8StringValueForTesting("\xff")] =
+      Value::InvalidUTF8StringValueForTesting("\xfe");
+  map[Value("a")] = Value(2);
+  map[Value(1)] = Value("int_key");
+  auto map_cbor = Writer::Write(Value(map), config);
+  ASSERT_TRUE(map_cbor.has_value());
+  static const uint8_t kExpectedMapCbor[] = {
+      0xa6,                                       // map of 6 pairs
+      0x01,                                       // key 1: unsigned int 1
+      0x67, 'i',  'n',  't', '_', 'k', 'e', 'y',  // val 1: "int_key"
+      0x61, 'a',                                  // key 2: "a" (len 1, 0x61)
+      0x02,                                       // val 2: 2
+      0x61, 0xff,                                 // key 3: "\xff" (len 1, 0xff)
+      0x61, 0xfe,                                 // val 3: "\xfe"
+      0x62, 'b',  'b',                            // key 4: "bb" (len 2, 0x62)
+      0x04,                                       // val 4: 4
+      0x62, 0x80, 0x80,                           // key 5: "\x80\x80" (len 2)
+      0x05,                                       // val 5: 5
+      0x62, 0xc3, 0xa9,                           // key 6: "\xc3\xa9" (len 2)
+      0x06,                                       // val 6: 6
+  };
+  EXPECT_THAT(
+      map_cbor.value(),
+      testing::ElementsAreArray(kExpectedMapCbor, std::size(kExpectedMapCbor)));
+}
+
 // For major type 0, 2, 3, empty CBOR array, and empty CBOR map, the nesting
 // depth is expected to be 0 since the CBOR decoder does not need to parse
 // any nested CBOR value elements.

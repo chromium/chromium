@@ -366,4 +366,29 @@ TEST(CBORValuesTest, SelfSwap) {
   EXPECT_EQ(test.GetInteger(), 1u);
 }
 
+TEST(CBORValuesTest, MapKeyOrderingWithInvalidUtf8) {
+  Value::MapValue map;
+  map[Value("\xc3\xa9")] = Value(7);
+  map[Value::InvalidUTF8StringValueForTesting("\x80\x80")] = Value(6);
+  map[Value("bb")] = Value(5);
+  map[Value::InvalidUTF8StringValueForTesting("\xff")] = Value(4);
+  map[Value("a")] = Value(3);
+  map[Value(base::as_byte_span(std::string_view("\xff\xff")))] = Value(2);
+  map[Value(1)] = Value(1);
+
+  std::vector<int64_t> values_in_order;
+  for (const auto& [k, v] : map) {
+    values_in_order.push_back(v.GetInteger());
+  }
+  // Expected order:
+  // 1. Unsigned int 1 (major type 0) -> value 1
+  // 2. Byte string "\xff\xff" (major type 2) -> value 2
+  // 3. String "a" (major type 3, len 1, byte 0x61) -> value 3
+  // 4. Invalid UTF-8 "\xff" (major type 3, len 1, byte 0xff) -> value 4
+  // 5. String "bb" (major type 3, len 2, 0x62 0x62) -> value 5
+  // 6. Invalid UTF-8 "\x80\x80" (major type 3, len 2, 0x80 0x80) -> value 6
+  // 7. String "\xc3\xa9" ("é", major type 3, len 2, 0xc3 0xa9) -> value 7
+  EXPECT_EQ(values_in_order, (std::vector<int64_t>{1, 2, 3, 4, 5, 6, 7}));
+}
+
 }  // namespace cbor
