@@ -669,29 +669,28 @@ skgpu::graphite::TextureInfo GraphiteBackendTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
     int plane_index,
-    bool is_yuv_plane,
     bool mipmapped,
     bool scanout_dcomp_surface) {
 #if BUILDFLAG(SKIA_USE_DAWN)
-  CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
-  return skgpu::graphite::TextureInfos::MakeDawn(DawnBackendTextureInfo(
-      format, /*readonly=*/false, is_yuv_plane, plane_index,
-      /*array_slice=*/0, mipmapped, scanout_dcomp_surface,
-      /*supports_multiplanar_rendering=*/false,
-      /*support_multiplanar_copy=*/false));
-#else
-  NOTREACHED();
+  if (gr_context_type == GrContextType::kGraphiteDawn) {
+    return skgpu::graphite::TextureInfos::MakeDawn(DawnBackendTextureInfo(
+        format, /*readonly=*/false, /*is_yuv_plane=*/false, plane_index,
+        /*array_slice=*/0, mipmapped, scanout_dcomp_surface,
+        /*supports_multiplanar_rendering=*/false,
+        /*support_multiplanar_copy=*/false));
+  }
 #endif
+  NOTREACHED();
 }
 
-skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
-    GrContextType gr_context_type,
+namespace {
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+skgpu::graphite::DawnTextureInfo GraphiteDawnPromiseTextureInfo(
     viz::SharedImageFormat format,
     std::optional<VulkanYCbCrInfo> ycbcr_info,
     int plane_index,
     bool mipmapped) {
-#if BUILDFLAG(SKIA_USE_DAWN)
-  CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
   skgpu::graphite::DawnTextureInfo dawn_texture_info;
   dawn_texture_info.fSampleCount = skgpu::graphite::SampleCount::k1;
 
@@ -702,7 +701,7 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
     wgpu::TextureFormat wgpu_view_format =
         gpu::ToDawnTextureViewFormat(format, plane_index);
     if (wgpu_view_format == wgpu::TextureFormat::Undefined) {
-      return skgpu::graphite::TextureInfos::MakeDawn(dawn_texture_info);
+      return dawn_texture_info;
     }
     // For multiplanar shared image, we don't know the real texture format until
     // the promise image is fulfilled, so set the fFormat to Undefined for now.
@@ -727,10 +726,26 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
         ToDawnYCbCrVkDescriptor(ycbcr_info.value());
   }
 #endif
-  return skgpu::graphite::TextureInfos::MakeDawn(dawn_texture_info);
-#else
-  NOTREACHED();
+  return dawn_texture_info;
+}
 #endif
+
+}  // namespace
+
+skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
+    GrContextType gr_context_type,
+    viz::SharedImageFormat format,
+    std::optional<VulkanYCbCrInfo> ycbcr_info,
+    int plane_index,
+    bool mipmapped) {
+#if BUILDFLAG(SKIA_USE_DAWN)
+  if (gr_context_type == GrContextType::kGraphiteDawn) {
+    return skgpu::graphite::TextureInfos::MakeDawn(
+        GraphiteDawnPromiseTextureInfo(format, ycbcr_info, plane_index,
+                                       mipmapped));
+  }
+#endif
+  NOTREACHED();
 }
 
 #if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(SKIA_USE_DAWN)

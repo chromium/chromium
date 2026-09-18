@@ -527,7 +527,6 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
     // won't have or support those usages.
     skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
         gr_context_type_, format_, /*plane_index=*/0,
-        /*is_yuv_plane=*/false,
         /*mipmapped=*/false, /*scanout_dcomp_surface=*/false);
     CHECK(texture_info.isValid());
     current_paint_.emplace(graphite_recorder_, image_info, texture_info,
@@ -821,8 +820,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
         static_cast<SkAlphaType>(alpha_type), color_space.ToSkColorSpace());
     skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
         gr_context_type_, format, /*plane_index=*/0,
-        /*is_yuv_plane=*/false, mipmap == skgpu::Mipmapped::kYes,
-        scanout_dcomp_surface);
+        mipmap == skgpu::Mipmapped::kYes, scanout_dcomp_surface);
     if (!texture_info.isValid()) {
       DLOG(ERROR) << "BeginPaintRenderPass: invalid Graphite TextureInfo";
       return nullptr;
