@@ -2,3 +2,4 @@ set noparent
 rbpotter@chromium.org
 thestig@chromium.org
 
+per-file *_android*=file://printing/android/OWNERS
