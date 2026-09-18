@@ -277,10 +277,15 @@ class ChannelFuchsia : public Channel,
     base::CurrentThread::Get()->RemoveDestructionObserver(this);
 
     read_watch_.reset();
-    if (leak_handle_) {
-      std::ignore = handle_.release();
+    {
+      base::AutoLock lock(write_lock_);
+      reject_writes_ = true;
+      if (leak_handle_) {
+        std::ignore = handle_.release();
+      } else {
+        handle_.reset();
+      }
     }
-    handle_.reset();
 
     // May destroy the |this| if it was the last reference.
     self_ = nullptr;
