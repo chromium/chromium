@@ -33,15 +33,20 @@ message AtMemoryQueryResponse {
   // Classification status of the user's query.
   enum QueryClassification {
     QUERY_CLASSIFICATION_UNSPECIFIED = 0;
+
     // Valid, supported factual lookup.
     QUERY_CLASSIFICATION_AT_MEMORY = 1;
+
     // Query is not supported by AtMemory
     QUERY_CLASSIFICATION_UNSUPPORTED = 2;
+
     // Blocked by safety filters (CSAM, adult)
     QUERY_CLASSIFICATION_SENSITIVE = 3;
+
     // Blocked by recitation check
     QUERY_CLASSIFICATION_RECITATION = 4;
   }
+
   QueryClassification query_classification = 1;
 
   // Instructions returned to fetch local data.
@@ -62,19 +67,23 @@ message AutofillFetchSpecification {
     enum StringFilterMode {
       // The client decides on which mode to use.
       STRING_FILTER_MODE_UNSPECIFIED = 0;
+
       // The filter value is a substring of the attribute value (modulo case,
       // diacritics, whitespace - see `autofill::NormalizeForComparison` in
       // Chromium code).
       STRING_FILTER_MODE_SUBSTRING = 1;
+
       // The filter value must match the attribute value exactly (modulo case,
       // diacritics, whitespace - see `autofill::NormalizeForComparison` in
       // Chromium code).
       STRING_FILTER_MODE_EXACT = 2;
+
       // The filter value must be a fuzzy match of the attribute value (modulo
       // case, diacritics, whitespace - see `autofill::NormalizeForComparison`
       // in Chromium code).
       STRING_FILTER_MODE_FUZZY = 3;
     }
+
     StringFilterMode mode = 2;
   }
 
@@ -85,12 +94,14 @@ message AutofillFetchSpecification {
       FILTER_OPERATOR_UNSPECIFIED = 0;
       FILTER_OPERATOR_EQUAL = 1;
       FILTER_OPERATOR_NOT_EQUAL = 2;
+
       // Applied only to typed values with numerical/temporal representation.
       FILTER_OPERATOR_LESS_THAN = 3;
       FILTER_OPERATOR_LESS_THAN_OR_EQUAL = 4;
       FILTER_OPERATOR_GREATER_THAN = 5;
       FILTER_OPERATOR_GREATER_THAN_OR_EQUAL = 6;
     }
+
     FilterOperator filter_operator = 2;
   }
 
@@ -188,10 +199,12 @@ message Attribute {
   oneof key {
     // This key should match Autofill data type, eg. FLIGHT_NUMBER.
     MemoryDataType schemaful_key = 2;
+
     // This should be the free-form localized type labels, such as "Health
     // insurance number".
     string schemaless_key = 3;
   }
+
   // The value to fill or display (e.g. "CX123" or "42").
   // `value` should always be set. If `typed_value` is set, `value` should be a
   // readable string representation of `typed_value` (e.g., a formatted date

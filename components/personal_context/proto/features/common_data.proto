@@ -136,12 +136,18 @@ message GmailReference {
 
   // Subject of the email message.
   string subject = 2;
+
+  // Timestamp of the email message.
+  DateTime timestamp = 3;
 }
 
 // Represents a reference to a Photos item.
 message PhotosReference {
   // The deeplink URL of the photo, album or video in Photos.
   string photos_url = 1;
+
+  // Timestamp of the photo, album or video in Photos.
+  DateTime timestamp = 2;
 }
 
 // Represents a reference to a Drive file.

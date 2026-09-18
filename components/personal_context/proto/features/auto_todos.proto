@@ -44,6 +44,7 @@ message AutoTodoItem {
     STATUS_COMPLETED = 2;
     STATUS_DISMISSED = 3;
   }
+
   // The status of the Todo.
   Status status = 6;
 
