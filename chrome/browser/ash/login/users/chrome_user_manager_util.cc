@@ -30,7 +30,7 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
 
   const base::Value* allowlist = nullptr;
   decoded_policies.GetValue(kAccountsPrefUsers, &allowlist);
-  DCHECK(allowlist);
+  CHECK(allowlist, base::NotFatalUntil::M160);
 
   bool allow_family_link = false;
   decoded_policies.GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,

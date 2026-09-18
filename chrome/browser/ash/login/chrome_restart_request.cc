@@ -89,7 +89,7 @@ void DeriveCommandLine(const GURL& start_url,
                        const base::CommandLine& base_command_line,
                        const base::DictValue& new_switches,
                        base::CommandLine* command_line) {
-  DCHECK_NE(&base_command_line, command_line);
+  CHECK_NE(&base_command_line, command_line, base::NotFatalUntil::M160);
 
   static const char* const kForwardSwitches[] = {
       sandbox::policy::switches::kDisableGpuSandbox,
@@ -340,7 +340,7 @@ void ChromeRestartRequest::Start() {
 }
 
 void ChromeRestartRequest::RestartJob() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   VLOG(1) << "ChromeRestartRequest::RestartJob";
 
   // The session manager requires a RestartJob caller to open a socket pair and
@@ -402,7 +402,7 @@ void GetOffTheRecordCommandLine(const GURL& start_url,
 
 void RestartChrome(const base::CommandLine& command_line,
                    RestartChromeReason reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   BootTimesRecorder::Get()->set_restart_requested();
 
   static bool restart_requested = false;

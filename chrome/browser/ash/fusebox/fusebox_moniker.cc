@@ -67,7 +67,7 @@ MonikerMap::~MonikerMap() = default;
 
 Moniker MonikerMap::CreateMoniker(const storage::FileSystemURL& target,
                                   bool read_only) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   Moniker moniker = base::Token::CreateRandom();
   map_.insert({moniker, std::make_pair(target, read_only)});
@@ -75,7 +75,7 @@ Moniker MonikerMap::CreateMoniker(const storage::FileSystemURL& target,
 }
 
 void MonikerMap::DestroyMoniker(const Moniker& moniker) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto iter = map_.find(moniker);
   if (iter != map_.end()) {
@@ -85,7 +85,7 @@ void MonikerMap::DestroyMoniker(const Moniker& moniker) {
 
 MonikerMap::FSURLAndReadOnlyState MonikerMap::Resolve(
     const Moniker& moniker) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto iter = map_.find(moniker);
   if (iter != map_.end()) {

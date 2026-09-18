@@ -161,7 +161,7 @@ FullRestoreService::FullRestoreService(Profile* profile)
   full_restore_save_handler->InsertIgnoreApplicationId(ash::kOsFeedbackAppId);
 
   PrefService* prefs = profile_->GetPrefs();
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M160);
 
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
@@ -246,7 +246,7 @@ void FullRestoreService::Init(bool& show_notification) {
   }
 
   PrefService* prefs = profile_->GetPrefs();
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M160);
 
   // Determine whether we should show the update string. Crash takes priority
   // over update but we do the computations to store the pref for the next
@@ -395,8 +395,8 @@ void FullRestoreService::Shutdown() {
 
 bool FullRestoreService::CanBeInited() const {
   auto* user_manager = user_manager::UserManager::Get();
-  DCHECK(user_manager);
-  DCHECK(user_manager->GetActiveUser());
+  CHECK(user_manager, base::NotFatalUntil::M160);
+  CHECK(user_manager->GetActiveUser(), base::NotFatalUntil::M160);
 
   // For non-primary user, wait for `OnTransitionedToNewActiveUser`.
   auto* user = ProfileHelper::Get()->GetUserByProfile(profile_);
@@ -411,7 +411,7 @@ bool FullRestoreService::CanBeInited() const {
   // restart process. For the restart process, `kLoginUser` should be in the
   // command line.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  DCHECK(command_line);
+  CHECK(command_line, base::NotFatalUntil::M160);
   if (command_line->HasSwitch(switches::kLoginManager) ||
       !command_line->HasSwitch(switches::kLoginUser)) {
     return true;
@@ -560,7 +560,8 @@ void FullRestoreService::MaybeShowRestoreDialog(
 }
 
 void FullRestoreService::OnPreferenceChanged(const std::string& pref_name) {
-  DCHECK_EQ(pref_name, prefs::kRestoreAppsAndPagesPrefName);
+  CHECK_EQ(pref_name, prefs::kRestoreAppsAndPagesPrefName,
+           base::NotFatalUntil::M160);
 
   RestoreOption restore_option = static_cast<RestoreOption>(
       profile_->GetPrefs()->GetInteger(prefs::kRestoreAppsAndPagesPrefName));

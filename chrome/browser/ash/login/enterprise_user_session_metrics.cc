@@ -40,7 +40,8 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 void StoreSessionLength(PrefService& local_state,
                         user_manager::UserType session_type,
                         const base::TimeDelta& session_length) {
-  DCHECK(ash::InstallAttributes::Get()->IsEnterpriseManaged());
+  CHECK(ash::InstallAttributes::Get()->IsEnterpriseManaged(),
+        base::NotFatalUntil::M160);
 
   if (session_type != user_manager::UserType::kRegular &&
       session_type != user_manager::UserType::kPublicAccount) {
@@ -56,7 +57,8 @@ void StoreSessionLength(PrefService& local_state,
 }
 
 void RecordStoredSessionLength(PrefService& local_state) {
-  DCHECK(ash::InstallAttributes::Get()->IsEnterpriseManaged());
+  CHECK(ash::InstallAttributes::Get()->IsEnterpriseManaged(),
+        base::NotFatalUntil::M160);
 
   if (!local_state.HasPrefPath(ash::prefs::kLastSessionType) ||
       !local_state.HasPrefPath(ash::prefs::kLastSessionLength)) {

@@ -16,8 +16,8 @@ namespace ash::full_restore {
 
 FullRestoreDataHandler::FullRestoreDataHandler(Profile* profile)
     : profile_(profile) {
-  DCHECK(
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
+  CHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_),
+        base::NotFatalUntil::M160);
   app_registry_cache_observer_.Observe(
       &apps::AppServiceProxyFactory::GetForProfile(profile_)
            ->AppRegistryCache());

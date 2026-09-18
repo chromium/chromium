@@ -29,11 +29,11 @@ void SecurityTokenPinDialogHostLoginImpl::ShowSecurityTokenPinDialog(
     const std::optional<AccountId>& authenticating_user_account_id,
     SecurityTokenPinEnteredCallback pin_entered_callback,
     SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback) {
-  DCHECK(!enable_user_input || attempts_left);
-  DCHECK_GE(attempts_left, -1);
+  CHECK(!enable_user_input || attempts_left, base::NotFatalUntil::M160);
+  CHECK_GE(attempts_left, -1, base::NotFatalUntil::M160);
   // There must be either no active PIN request, or the active request for which
   // the PIN has already been entered.
-  DCHECK(!pin_entered_callback_);
+  CHECK(!pin_entered_callback_, base::NotFatalUntil::M160);
 
   Reset();
 
@@ -64,7 +64,7 @@ void SecurityTokenPinDialogHostLoginImpl::ShowSecurityTokenPinDialog(
 }
 
 void SecurityTokenPinDialogHostLoginImpl::CloseSecurityTokenPinDialog() {
-  DCHECK(is_request_running());
+  CHECK(is_request_running(), base::NotFatalUntil::M160);
 
   Reset();
   LoginScreen::Get()->ClearSecurityTokenPinRequest();
@@ -72,14 +72,14 @@ void SecurityTokenPinDialogHostLoginImpl::CloseSecurityTokenPinDialog() {
 
 void SecurityTokenPinDialogHostLoginImpl::OnUserInputReceived(
     const std::string& user_input) {
-  DCHECK(is_request_running());
-  DCHECK(!user_input.empty());
+  CHECK(is_request_running(), base::NotFatalUntil::M160);
+  CHECK(!user_input.empty(), base::NotFatalUntil::M160);
 
   std::move(pin_entered_callback_).Run(user_input);
 }
 
 void SecurityTokenPinDialogHostLoginImpl::OnClosedByUser() {
-  DCHECK(is_request_running());
+  CHECK(is_request_running(), base::NotFatalUntil::M160);
 
   auto closed_callback = std::move(pin_dialog_closed_callback_);
   Reset();

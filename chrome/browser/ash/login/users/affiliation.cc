@@ -23,7 +23,7 @@ std::string GetDeviceDMTokenIfAffiliated(
     const std::vector<std::string>& user_affiliation_ids) {
   const policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  DCHECK(connector);
+  CHECK(connector, base::NotFatalUntil::M160);
   const bool is_affiliated = policy::IsUserAffiliated(
       base::flat_set<std::string>(user_affiliation_ids.begin(),
                                   user_affiliation_ids.end()),

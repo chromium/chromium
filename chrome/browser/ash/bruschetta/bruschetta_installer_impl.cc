@@ -679,7 +679,7 @@ void BruschettaInstallerImpl::HandleVmInstallSucceeded() {
                                    true);
 
   auto* client = ash::ConciergeClient::Get();
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M160);
   vm_tools::concierge::StopVmRequest request;
   request.set_name(vm_name_);
   request.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
@@ -736,12 +736,12 @@ void BruschettaInstallerImpl::Error(BruschettaInstallResult error) {
 void BruschettaInstallerImpl::AddObserver(Observer* observer) {
   // We only support a single observer for now, since we'll only ever have one
   // (the UI calling us).
-  DCHECK(observer_ == nullptr);
+  CHECK(observer_ == nullptr, base::NotFatalUntil::M160);
   observer_ = observer;
 }
 
 void BruschettaInstallerImpl::RemoveObserver(Observer* observer) {
-  DCHECK(observer_ == observer);
+  CHECK(observer_ == observer, base::NotFatalUntil::M160);
   observer_ = nullptr;
 }
 

@@ -74,8 +74,9 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
   // unnecessary. Here set it as display size to ensure the content render is
   // correct.
   if (local_bounds.IsEmpty()) {
-    DCHECK(chromeos::IsMaximizedOrFullscreenWindowStateType(window_state) ||
-           chromeos::IsMinimizedWindowStateType(window_state));
+    CHECK(chromeos::IsMaximizedOrFullscreenWindowStateType(window_state) ||
+              chromeos::IsMinimizedWindowStateType(window_state),
+          base::NotFatalUntil::M160);
     display::Display disp;
     display::Screen::Get()->GetDisplayWithDisplayId(display_id_value, &disp);
     local_bounds = disp.work_area();
@@ -231,7 +232,7 @@ void ArcGhostWindowShellSurface::SetShellAppId(
 
 void ArcGhostWindowShellSurface::SetWindowType(
     arc::GhostWindowType window_type) {
-  DCHECK(view_observer_);
+  CHECK(view_observer_, base::NotFatalUntil::M160);
   view_observer_->SetGhostWindowViewType(window_type);
 }
 

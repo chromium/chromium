@@ -83,14 +83,14 @@ class SSLPrivateKeyBridge : public network::mojom::SSLPrivateKey {
 BruschettaNetworkContext::BruschettaNetworkContext(Profile* profile,
                                                    PrefService& local_state)
     : profile_(profile), proxy_config_monitor_(&local_state) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 BruschettaNetworkContext::~BruschettaNetworkContext() = default;
 
 network::mojom::URLLoaderFactory*
 BruschettaNetworkContext::GetURLLoaderFactory() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!url_loader_factory_ || !url_loader_factory_.is_connected()) {
     EnsureNetworkContextExists();

@@ -23,7 +23,7 @@ bool HasSessionStartupPref(PrefService* prefs) {
 }
 
 void SetDefaultRestorePrefIfNecessary(PrefService* prefs) {
-  DCHECK(!HasRestorePref(prefs));
+  CHECK(!HasRestorePref(prefs), base::NotFatalUntil::M160);
 
   if (!HasSessionStartupPref(prefs)) {
     prefs->SetInteger(prefs::kRestoreAppsAndPagesPrefName,

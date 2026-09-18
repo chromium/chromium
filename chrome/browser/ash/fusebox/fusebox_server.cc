@@ -246,7 +246,7 @@ void RunCreateAndThenStatCallback(
     base::OnceClosure on_failure,
     base::File::Error error_code,
     const base::File::Info& info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
@@ -271,7 +271,7 @@ void RunCreateCallback(
     uint64_t fuse_handle,
     base::OnceClosure on_failure,
     base::File::Error error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
@@ -306,7 +306,7 @@ void RunMkDirAndThenStatCallback(
     bool read_only,
     base::File::Error error_code,
     const base::File::Info& info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
@@ -327,7 +327,7 @@ void RunMkDirCallback(
     storage::FileSystemURL fs_url,
     bool read_only,
     base::File::Error error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
@@ -359,7 +359,7 @@ void RunRenameCallbackPosixErrorCode(
     Server::RenameCallback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
     int posix_error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (posix_error_code) {
     RenameResponseProto response_proto;
@@ -384,7 +384,7 @@ void RunRmDirCallback(
     Server::RmDirCallback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
     base::File::Error error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
@@ -404,7 +404,7 @@ void RunTruncateAndThenStatCallback(
     bool read_only,
     base::File::Error error_code,
     const base::File::Info& info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
@@ -425,7 +425,7 @@ void RunTruncateCallback(
     storage::FileSystemURL fs_url,
     bool read_only,
     base::File::Error error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
@@ -457,7 +457,7 @@ void RunUnlinkCallback(
     Server::UnlinkCallback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
     base::File::Error error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
@@ -477,7 +477,7 @@ void RunStat2Callback(
     bool read_only,
     base::File::Error error_code,
     const base::File::Info& info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
@@ -502,7 +502,7 @@ std::string SubdirForTempDir(base::ScopedTempDir& scoped_temp_dir) {
 
 void EmptyTruncateWorkaroundCallback2(Server::TruncateCallback callback,
                                       base::File::Error error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   TruncateResponseProto response_proto;
   if (error_code != base::File::Error::FILE_OK) {
@@ -527,7 +527,7 @@ void EmptyTruncateWorkaroundCallback1(
     const storage::FileSystemURL fs_url,
     Server::TruncateCallback callback,
     base::File::Error error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (error_code != base::File::Error::FILE_OK) {
     EmptyTruncateWorkaroundCallback2(std::move(callback), error_code);
@@ -542,7 +542,7 @@ void DoEmptyTruncateWorkaround(
     scoped_refptr<storage::FileSystemContext> fs_context,
     const storage::FileSystemURL fs_url,
     Server::TruncateCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -558,7 +558,7 @@ void CrossFileSystemRenameCallback3(
     scoped_refptr<storage::FileSystemContext> fs_context,
     base::OnceCallback<void(int posix_error_code)> callback,
     base::File::Error error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   std::move(callback).Run(FileErrorToErrno(error_code));
 }
@@ -569,7 +569,7 @@ void CrossFileSystemRenameCallback2(
     const storage::FileSystemURL src_fs_url,
     base::OnceCallback<void(int posix_error_code)> callback,
     base::File::Error error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (error_code != base::File::FILE_OK) {
     std::move(callback).Run(FileErrorToErrno(error_code));
@@ -587,7 +587,7 @@ void CrossFileSystemRenameCallback1(
     const storage::FileSystemURL dst_fs_url,
     base::OnceCallback<void(int posix_error_code)> callback,
     base::expected<base::ScopedFD, int> result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!result.has_value()) {
     std::move(callback).Run(result.error());
@@ -614,7 +614,7 @@ void DoCrossFileSystemRename(
     const storage::FileSystemURL src_fs_url,
     const storage::FileSystemURL dst_fs_url,
     base::OnceCallback<void(int posix_error_code)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   base::ScopedFD temp_file(open(profile_path.c_str(),
                                 O_CLOEXEC | O_EXCL | O_TMPFILE | O_RDWR, 0600));
@@ -749,7 +749,7 @@ bool Server::ReadDir2MapEntry::Reply(uint64_t cookie,
 
 // static
 Server* Server::GetInstance() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   return g_server_instance;
 }
@@ -764,26 +764,26 @@ uint32_t Server::MakeModeBits(bool is_directory, bool read_only) {
 }
 
 Server::Server(Delegate* delegate) : delegate_(delegate) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!g_server_instance);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!g_server_instance, base::NotFatalUntil::M160);
   g_server_instance = this;
 }
 
 Server::~Server() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(g_server_instance);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(g_server_instance, base::NotFatalUntil::M160);
   g_server_instance = nullptr;
 }
 
 fusebox::Moniker Server::CreateMoniker(const storage::FileSystemURL& target,
                                        bool read_only) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   return moniker_map_.CreateMoniker(target, read_only);
 }
 
 void Server::DestroyMoniker(fusebox::Moniker moniker) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   moniker_map_.DestroyMoniker(moniker);
 }
@@ -791,7 +791,7 @@ void Server::DestroyMoniker(fusebox::Moniker moniker) {
 void Server::RegisterFSURLPrefix(const std::string& subdir,
                                  const std::string& fs_url_prefix,
                                  bool read_only) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (subdir.find('/') != std::string::npos) {
     LOG(ERROR) << "Invalid subdir: " << subdir;
@@ -806,7 +806,7 @@ void Server::RegisterFSURLPrefix(const std::string& subdir,
 }
 
 void Server::UnregisterFSURLPrefix(const std::string& subdir) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto iter = prefix_map_.find(subdir);
   if (iter != prefix_map_.end()) {
@@ -832,7 +832,7 @@ void Server::OverrideFuseBoxMediaPathForTesting(std::string_view path) {
 
 storage::FileSystemURL Server::ResolveFilename(Profile* profile,
                                                std::string_view filename) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   const std::string prefix = GetFuseBoxMediaSlashPath();
   if (!base::StartsWith(filename, prefix)) {
@@ -849,7 +849,7 @@ storage::FileSystemURL Server::ResolveFilename(Profile* profile,
 
 base::FilePath Server::InverseResolveFSURL(
     const storage::FileSystemURL& fs_url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   std::string fs_url_as_string = fs_url.ToGURL().spec();
 
   // Find the longest registered (in the "called Server::RegisterFSURLPrefix"
@@ -896,7 +896,7 @@ void Server::GetDebugJSONForKey(
 
 void Server::Close2(const Close2RequestProto& request_proto,
                     Close2Callback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   uint64_t fuse_handle =
       request_proto.has_fuse_handle() ? request_proto.fuse_handle() : 0;
@@ -933,7 +933,7 @@ void Server::Close2(const Close2RequestProto& request_proto,
 
 void Server::Create(const CreateRequestProto& request_proto,
                     CreateCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   std::string fs_url_as_string = request_proto.has_file_system_url()
                                      ? request_proto.file_system_url()
@@ -995,7 +995,7 @@ void Server::Create(const CreateRequestProto& request_proto,
 
 void Server::Flush(const FlushRequestProto& request_proto,
                    FlushCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   uint64_t fuse_handle =
       request_proto.has_fuse_handle() ? request_proto.fuse_handle() : 0;
@@ -1024,7 +1024,7 @@ void Server::Flush(const FlushRequestProto& request_proto,
 
 void Server::MkDir(const MkDirRequestProto& request_proto,
                    MkDirCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   std::string fs_url_as_string = request_proto.has_file_system_url()
                                      ? request_proto.file_system_url()
@@ -1061,7 +1061,7 @@ void Server::MkDir(const MkDirRequestProto& request_proto,
 
 void Server::Open2(const Open2RequestProto& request_proto,
                    Open2Callback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   std::string fs_url_as_string = request_proto.has_file_system_url()
                                      ? request_proto.file_system_url()
@@ -1099,7 +1099,7 @@ void Server::Open2(const Open2RequestProto& request_proto,
 
 void Server::Read2(const Read2RequestProto& request_proto,
                    Read2Callback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   uint64_t fuse_handle =
       request_proto.has_fuse_handle() ? request_proto.fuse_handle() : 0;
@@ -1141,7 +1141,7 @@ void Server::Read2(const Read2RequestProto& request_proto,
 
 void Server::ReadDir2(const ReadDir2RequestProto& request_proto,
                       ReadDir2Callback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   std::string fs_url_as_string = request_proto.has_file_system_url()
                                      ? request_proto.file_system_url()
@@ -1200,7 +1200,7 @@ void Server::ReadDir2(const ReadDir2RequestProto& request_proto,
 
 void Server::Rename(const RenameRequestProto& request_proto,
                     RenameCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   std::string src_fs_url_as_string = request_proto.has_src_file_system_url()
                                          ? request_proto.src_file_system_url()
@@ -1301,7 +1301,7 @@ void Server::Rename(const RenameRequestProto& request_proto,
 
 void Server::RmDir(const RmDirRequestProto& request_proto,
                    RmDirCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   std::string fs_url_as_string = request_proto.has_file_system_url()
                                      ? request_proto.file_system_url()
@@ -1335,7 +1335,7 @@ void Server::RmDir(const RmDirRequestProto& request_proto,
 
 void Server::Stat2(const Stat2RequestProto& request_proto,
                    Stat2Callback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   std::string fs_url_as_string = request_proto.has_file_system_url()
                                      ? request_proto.file_system_url()
@@ -1376,7 +1376,7 @@ void Server::Stat2(const Stat2RequestProto& request_proto,
 
 void Server::Truncate(const TruncateRequestProto& request_proto,
                       TruncateCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   std::string fs_url_as_string = request_proto.has_file_system_url()
                                      ? request_proto.file_system_url()
@@ -1417,7 +1417,7 @@ void Server::Truncate(const TruncateRequestProto& request_proto,
 
 void Server::Unlink(const UnlinkRequestProto& request_proto,
                     UnlinkCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   std::string fs_url_as_string = request_proto.has_file_system_url()
                                      ? request_proto.file_system_url()
@@ -1450,7 +1450,7 @@ void Server::Unlink(const UnlinkRequestProto& request_proto,
 
 void Server::Write2(const Write2RequestProto& request_proto,
                     Write2Callback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   uint64_t fuse_handle =
       request_proto.has_fuse_handle() ? request_proto.fuse_handle() : 0;
@@ -1485,7 +1485,7 @@ void Server::Write2(const Write2RequestProto& request_proto,
 
 void Server::ListStorages(const ListStoragesRequestProto& request,
                           ListStoragesCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   ListStoragesResponseProto response;
   response.add_storages(kMonikerSubdir);
@@ -1496,7 +1496,7 @@ void Server::ListStorages(const ListStoragesRequestProto& request,
 }
 
 void Server::MakeTempDir(MakeTempDirCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   constexpr auto make_temp_dir_on_worker_thread =
       [](base::WeakPtr<Server> weak_ptr_server, MakeTempDirCallback callback) {
@@ -1518,7 +1518,7 @@ void Server::MakeTempDir(MakeTempDirCallback callback) {
 void Server::ReplyToMakeTempDir(base::ScopedTempDir scoped_temp_dir,
                                 bool create_succeeded,
                                 MakeTempDirCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!create_succeeded) {
     std::move(callback).Run("CreateUniqueTempDir failed", "", "");
@@ -1563,7 +1563,7 @@ void Server::ReplyToMakeTempDir(base::ScopedTempDir scoped_temp_dir,
 }
 
 void Server::RemoveTempDir(const std::string& fusebox_file_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto iter = temp_subdir_map_.find(fusebox_file_path);
   if (iter == temp_subdir_map_.end()) {
@@ -1589,7 +1589,7 @@ void Server::RemoveTempDir(const std::string& fusebox_file_path) {
 void Server::OnFlush(uint64_t fuse_handle,
                      FlushCallback callback,
                      const FlushResponseProto& response_proto) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto iter = fuse_file_map_.find(fuse_handle);
   if (iter == fuse_file_map_.end()) {
@@ -1615,7 +1615,7 @@ void Server::OnFlush(uint64_t fuse_handle,
 void Server::OnRead2(uint64_t fuse_handle,
                      Read2Callback callback,
                      const Read2ResponseProto& response_proto) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto iter = fuse_file_map_.find(fuse_handle);
   if (iter == fuse_file_map_.end()) {
@@ -1645,7 +1645,7 @@ void Server::OnReadDirectory(
     base::File::Error error_code,
     storage::AsyncFileUtil::EntryList entry_list,
     bool has_more) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto iter = read_dir_2_map_.find(cookie);
   if (iter == read_dir_2_map_.end()) {
@@ -1673,7 +1673,7 @@ void Server::OnReadDirectory(
 void Server::OnWrite2(uint64_t fuse_handle,
                       Write2Callback callback,
                       const Write2ResponseProto& response_proto) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto iter = fuse_file_map_.find(fuse_handle);
   if (iter == fuse_file_map_.end()) {
@@ -1697,19 +1697,19 @@ void Server::OnWrite2(uint64_t fuse_handle,
 }
 
 void Server::EraseFuseFileMapEntry(uint64_t fuse_handle) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   fuse_file_map_.erase(fuse_handle);
 }
 
 uint64_t Server::InsertFuseFileMapEntry(FuseFileMapEntry&& entry) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   static uint64_t next_fuse_handle = 0;
   uint64_t fuse_handle = ++next_fuse_handle;
   // As the fusebox.proto comment says, "The high bit (also known as the 1<<63
   // bit) is also always zero for valid values".
-  DCHECK((fuse_handle >> 63) == 0);
+  CHECK((fuse_handle >> 63) == 0, base::NotFatalUntil::M160);
 
   fuse_file_map_.insert({fuse_handle, std::move(entry)});
   return fuse_handle;

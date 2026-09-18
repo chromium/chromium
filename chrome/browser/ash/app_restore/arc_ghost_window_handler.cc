@@ -59,7 +59,7 @@ void ArcGhostWindowHandler::WindowSessionResolver::PopulateProperties(
 }
 
 ArcGhostWindowHandler::ArcGhostWindowHandler() {
-  DCHECK_EQ(nullptr, g_instance);
+  CHECK_EQ(nullptr, g_instance, base::NotFatalUntil::M160);
   exo::WMHelper::GetInstance()->RegisterAppPropertyResolver(
       std::make_unique<WindowSessionResolver>());
   auto* lifetime_manager = exo::WMHelper::GetInstance()->GetLifetimeManager();
@@ -69,7 +69,7 @@ ArcGhostWindowHandler::ArcGhostWindowHandler() {
 }
 
 ArcGhostWindowHandler::~ArcGhostWindowHandler() {
-  DCHECK_EQ(this, g_instance);
+  CHECK_EQ(this, g_instance, base::NotFatalUntil::M160);
   if (exo::WMHelper::HasInstance()) {
     auto* lifetime_manager = exo::WMHelper::GetInstance()->GetLifetimeManager();
     if (lifetime_manager)
@@ -105,8 +105,8 @@ bool ArcGhostWindowHandler::LaunchArcGhostWindow(
     const std::string& app_id,
     int32_t session_id,
     app_restore::AppRestoreData* restore_data) {
-  DCHECK(restore_data);
-  DCHECK(restore_data->display_id.has_value());
+  CHECK(restore_data, base::NotFatalUntil::M160);
+  CHECK(restore_data->display_id.has_value(), base::NotFatalUntil::M160);
 
   const app_restore::WindowInfo& window_info = restore_data->window_info;
   CHECK(window_info.current_bounds.has_value());

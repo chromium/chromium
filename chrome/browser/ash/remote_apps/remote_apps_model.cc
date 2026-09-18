@@ -44,7 +44,8 @@ RemoteAppsModel::AppInfo& RemoteAppsModel::AddApp(const std::string& name,
   app_map_.insert({id, AppInfo(id, name, icon_url, folder_id, add_to_front)});
 
   if (!folder_id.empty()) {
-    DCHECK(folder_map_.find(folder_id) != folder_map_.end());
+    CHECK(folder_map_.find(folder_id) != folder_map_.end(),
+          base::NotFatalUntil::M160);
     FolderInfo& folder_info = folder_map_.at(folder_id);
     folder_info.items.insert(id);
   }
@@ -57,7 +58,7 @@ bool RemoteAppsModel::HasApp(const std::string& id) const {
 }
 
 RemoteAppsModel::AppInfo& RemoteAppsModel::GetAppInfo(const std::string& id) {
-  DCHECK(app_map_.find(id) != app_map_.end());
+  CHECK(app_map_.find(id) != app_map_.end(), base::NotFatalUntil::M160);
   return app_map_.at(id);
 }
 
@@ -82,12 +83,13 @@ bool RemoteAppsModel::HasFolder(const std::string& folder_id) const {
 
 RemoteAppsModel::FolderInfo& RemoteAppsModel::GetFolderInfo(
     const std::string& folder_id) {
-  DCHECK(folder_map_.find(folder_id) != folder_map_.end());
+  CHECK(folder_map_.find(folder_id) != folder_map_.end(),
+        base::NotFatalUntil::M160);
   return folder_map_.at(folder_id);
 }
 
 void RemoteAppsModel::DeleteApp(const std::string& id) {
-  DCHECK(HasApp(id));
+  CHECK(HasApp(id), base::NotFatalUntil::M160);
   auto it = app_map_.find(id);
   const std::string& folder_id = it->second.folder_id;
 
@@ -100,12 +102,12 @@ void RemoteAppsModel::DeleteApp(const std::string& id) {
 }
 
 void RemoteAppsModel::DeleteFolder(const std::string& folder_id) {
-  DCHECK(HasFolder(folder_id));
+  CHECK(HasFolder(folder_id), base::NotFatalUntil::M160);
   auto it = folder_map_.find(folder_id);
   const std::set<std::string>& app_set = it->second.items;
 
   for (const auto& id : app_set) {
-    DCHECK(app_map_.find(id) != app_map_.end());
+    CHECK(app_map_.find(id) != app_map_.end(), base::NotFatalUntil::M160);
     AppInfo& info = app_map_.at(id);
     info.folder_id.clear();
   }

@@ -49,13 +49,13 @@ bool RemoteAppsImpl::IsMojoPrivateApiAllowed(
   const extensions::Feature* feature =
       extensions::FeatureProvider::GetBehaviorFeature(
           extensions::behavior_feature::kImprivataInSessionExtension);
-  DCHECK(feature);
+  CHECK(feature, base::NotFatalUntil::M160);
   if (!feature->IsAvailableToExtension(extension).is_available())
     return false;
 
   Profile* profile =
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   // RemoteApps are available for managed guest sessions and regular user
   // sessions.
   if (!RemoteAppsManagerFactory::GetForProfile(profile))
@@ -70,7 +70,7 @@ void RemoteAppsImpl::SetBypassChecksForTesting(bool bypass_checks_for_testing) {
 }
 
 RemoteAppsImpl::RemoteAppsImpl(RemoteAppsManager* manager) : manager_(manager) {
-  DCHECK(manager);
+  CHECK(manager, base::NotFatalUntil::M160);
   app_launch_observers_with_source_id_.set_disconnect_handler(
       base::BindRepeating(&RemoteAppsImpl::DisconnectHandler,
                           base::Unretained(this)));

@@ -83,7 +83,7 @@ void FDCopier::CallRead() {
 }
 
 void FDCopier::OnRead(int result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (result == 0) {
     Finish(std::move(scoped_fd_));
@@ -104,7 +104,7 @@ void FDCopier::OnRead(int result) {
 }
 
 void FDCopier::OnWrite(Expected result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!result.has_value()) {
     Finish(std::move(result));
@@ -115,7 +115,7 @@ void FDCopier::OnWrite(Expected result) {
 }
 
 void FDCopier::Finish(Expected result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   std::move(callback_).Run(std::move(result));
   delete this;
@@ -127,7 +127,7 @@ void CopyToFileDescriptor(scoped_refptr<storage::FileSystemContext> fs_context,
                           const storage::FileSystemURL& src_fs_url,
                           base::ScopedFD dst_scoped_fd,
                           base::OnceCallback<void(Expected)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   // This new-ly created object is deleted in FDCopier::Finish.
   FDCopier* copier =

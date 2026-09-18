@@ -33,7 +33,7 @@ bool IsArcGhostWindowEnabled() {
 
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(
       user_manager->GetPrimaryUser()->GetAccountId());
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   return profile->GetPrefs()->GetBoolean(kGhostWindowEnabled);
 }
 

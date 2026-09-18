@@ -35,7 +35,7 @@ ArcGhostWindowDelegate::ArcGhostWindowDelegate(
       pending_close_(false),
       window_state_(window_state),
       shell_surface_(shell_surface) {
-  DCHECK(shell_surface);
+  CHECK(shell_surface, base::NotFatalUntil::M160);
 
   observation_.Observe(ArcGhostWindowHandler::Get());
   SetDisplayId(display_id);
@@ -59,7 +59,7 @@ void ArcGhostWindowDelegate::OnStateChanged(
   display::Display display;
   const display::Screen* screen = display::Screen::Get();
   auto display_existed = screen->GetDisplayWithDisplayId(display_id_, &display);
-  DCHECK(display_existed);
+  CHECK(display_existed, base::NotFatalUntil::M160);
 
   switch (new_state) {
     case chromeos::WindowStateType::kNormal:

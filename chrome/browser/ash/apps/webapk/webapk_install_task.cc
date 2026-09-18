@@ -127,7 +127,7 @@ bool DoesShareTargetDiffer(webapk::WebAppManifest manifest,
 
   // There is only one share target added.
   auto share_target = manifest.share_targets(0);
-  DCHECK_EQ(manifest.share_targets_size(), 1);
+  CHECK_EQ(manifest.share_targets_size(), 1, base::NotFatalUntil::M160);
 
   if (share_target.action() != share_info->action.value_or("") ||
       share_target.method() != share_info->method.value_or("") ||
@@ -188,13 +188,13 @@ void AddUpdateParams(webapk::WebApk* webapk,
   }
 
   // There is only one scope added to the scopes list.
-  DCHECK_EQ(manifest.scopes_size(), 1);
+  CHECK_EQ(manifest.scopes_size(), 1, base::NotFatalUntil::M160);
   if (manifest.scopes(0) != web_apk_info->scope) {
     webapk->add_update_reasons(webapk::WebApk::SCOPE_DIFFERS);
   }
 
   // There is only one icon added to the icon list.
-  DCHECK_EQ(manifest.icons_size(), 1);
+  CHECK_EQ(manifest.icons_size(), 1, base::NotFatalUntil::M160);
   if (manifest.icons(0).hash() != web_apk_info->icon_hash) {
     webapk->add_update_reasons(webapk::WebApk::PRIMARY_ICON_HASH_DIFFERS);
   }
@@ -212,7 +212,7 @@ std::optional<std::string> AddIconDataAndSerializeProto(
     std::vector<uint8_t> icon_data,
     arc::mojom::WebApkInfoPtr web_apk_info) {
   base::AssertLongCPUWorkAllowed();
-  DCHECK_EQ(webapk->manifest().icons_size(), 1);
+  CHECK_EQ(webapk->manifest().icons_size(), 1, base::NotFatalUntil::M160);
 
   webapk::Image* icon = webapk->mutable_manifest()->mutable_icons(0);
   if (!icon->has_image_data()) {
@@ -258,7 +258,7 @@ WebApkInstallTask::WebApkInstallTask(Profile* profile,
       package_name_to_update_(
           webapk_prefs::GetWebApkPackageName(profile_, app_id_)),
       minter_timeout_(kMinterResponseTimeout) {
-  DCHECK(web_app_provider_);
+  CHECK(web_app_provider_, base::NotFatalUntil::M160);
 }
 
 WebApkInstallTask::~WebApkInstallTask() = default;
@@ -308,7 +308,7 @@ void WebApkInstallTask::LoadWebApkInfo(std::unique_ptr<webapk::WebApk> webapk) {
 
   // Fetch details of the existing WebAPK from ARC++.
   auto* arc_service_manager = arc::ArcServiceManager::Get();
-  DCHECK(arc_service_manager);
+  CHECK(arc_service_manager, base::NotFatalUntil::M160);
   auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_service_manager->arc_bridge_service()->webapk(), GetWebApkInfo);
 
@@ -471,7 +471,7 @@ void WebApkInstallTask::OnUrlLoaderComplete(
   VLOG(1) << "Installing WebAPK: " << response->package_name();
 
   auto* arc_service_manager = arc::ArcServiceManager::Get();
-  DCHECK(arc_service_manager);
+  CHECK(arc_service_manager, base::NotFatalUntil::M160);
   auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_service_manager->arc_bridge_service()->webapk(), InstallWebApk);
 

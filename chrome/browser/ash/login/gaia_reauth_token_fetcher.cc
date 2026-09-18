@@ -49,13 +49,13 @@ GaiaReauthTokenFetcher::GaiaReauthTokenFetcher(
     : shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       callback_(std::move(callback)) {
   CHECK(shared_url_loader_factory_);
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
 }
 
 GaiaReauthTokenFetcher::~GaiaReauthTokenFetcher() = default;
 
 void GaiaReauthTokenFetcher::Fetch() {
-  DCHECK(!simple_url_loader_);
+  CHECK(!simple_url_loader_, base::NotFatalUntil::M160);
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GetFetchReauthTokenUrl();
   resource_request->load_flags =

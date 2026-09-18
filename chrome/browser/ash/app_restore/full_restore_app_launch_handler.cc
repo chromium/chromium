@@ -369,7 +369,7 @@ void FullRestoreAppLaunchHandler::LaunchBrowserForFirstRunFullRestore() {
   UserSessionManager::GetInstance()->LaunchBrowser(profile());
 
   PrefService* prefs = profile()->GetPrefs();
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M160);
   SessionStartupPref session_startup_pref =
       SessionStartupPref::GetStartupPref(prefs);
 

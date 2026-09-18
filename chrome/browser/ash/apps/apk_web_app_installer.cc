@@ -41,8 +41,8 @@ void ApkWebAppInstaller::Install(Profile* profile,
                                  arc::mojom::RawIconPngDataPtr icon,
                                  InstallFinishCallback callback,
                                  base::WeakPtr<Owner> weak_owner) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(weak_owner.get());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(weak_owner.get(), base::NotFatalUntil::M160);
 
   // If |weak_owner| is invalidated, installation will be stopped.
   // ApkWebAppInstaller owns itself and deletes itself when finished in
@@ -66,7 +66,7 @@ ApkWebAppInstaller::~ApkWebAppInstaller() = default;
 void ApkWebAppInstaller::Start(const std::string& package_name,
                                arc::mojom::WebAppInfoPtr arc_web_app_info,
                                arc::mojom::RawIconPngDataPtr icon) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (!weak_owner_.get()) {
     CompleteInstallation(webapps::AppId(),
                          webapps::InstallResultCode::kApkWebAppInstallFailed);
@@ -92,7 +92,7 @@ void ApkWebAppInstaller::Start(const std::string& package_name,
     return;
   }
 
-  DCHECK(!web_app_install_info_);
+  CHECK(!web_app_install_info_, base::NotFatalUntil::M160);
   // TODO(b:340994232): ARC-installed web apps should pass through a manifest ID
   // and use it here instead of assuming it is not set and generating it from
   // the start URL.
@@ -160,7 +160,7 @@ void ApkWebAppInstaller::OnWebAppCreated(const GURL& start_url,
 }
 
 void ApkWebAppInstaller::OnImageDecoded(const SkBitmap& decoded_image) {
-  DCHECK(web_app_install_info_);
+  CHECK(web_app_install_info_, base::NotFatalUntil::M160);
 
   if (decoded_image.width() == decoded_image.height())
     web_app_install_info_->icon_bitmaps.any[decoded_image.width()] =
@@ -179,7 +179,7 @@ void ApkWebAppInstaller::OnImageDecoded(const SkBitmap& decoded_image) {
 
 void ApkWebAppInstaller::DoInstall() {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M160);
   // Doesn't overwrite already existing web app with manifest fields from the
   // apk.
   GURL start_url = web_app_install_info_->start_url();

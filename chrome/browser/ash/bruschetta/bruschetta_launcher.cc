@@ -62,7 +62,7 @@ BruschettaLauncher::~BruschettaLauncher() = default;
 
 void BruschettaLauncher::EnsureRunning(
     base::OnceCallback<void(BruschettaResult)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   bool launch_in_progress = false;
   if (!callbacks_.empty()) {
     launch_in_progress = true;

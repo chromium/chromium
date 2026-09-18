@@ -207,10 +207,10 @@ void ArcGhostWindowView::OnThemeChanged() {
 void ArcGhostWindowView::LoadIcon(const std::string& app_id) {
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
 
-  DCHECK(
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+  CHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile),
+        base::NotFatalUntil::M160);
 
   apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
       app_id, apps::IconType::kStandard,

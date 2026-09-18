@@ -421,9 +421,10 @@ bool FakeChromeUserManager::IsUserNonCryptohomeDataEphemeral(
 
 bool FakeChromeUserManager::IsUserAllowed(
     const user_manager::User& user) const {
-  DCHECK(user.GetType() == user_manager::UserType::kRegular ||
-         user.GetType() == user_manager::UserType::kGuest ||
-         user.GetType() == user_manager::UserType::kChild);
+  CHECK(user.GetType() == user_manager::UserType::kRegular ||
+            user.GetType() == user_manager::UserType::kGuest ||
+            user.GetType() == user_manager::UserType::kChild,
+        base::NotFatalUntil::M160);
 
   if (user.GetType() == user_manager::UserType::kGuest &&
       !IsGuestSessionAllowed()) {

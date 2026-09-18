@@ -202,7 +202,7 @@ void BruschettaService::StopRunningVms() {
 
 void BruschettaService::StopVm(std::string vm_name) {
   auto* client = ash::ConciergeClient::Get();
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M160);
 
   vm_tools::concierge::StopVmRequest request;
   request.set_name(vm_name);
@@ -243,7 +243,8 @@ void BruschettaService::RegisterInPrefs(const guest_os::GuestId& guest_id,
 
 void BruschettaService::RegisterWithTerminal(
     const guest_os::GuestId& guest_id) {
-  DCHECK(!terminal_providers_.contains(guest_id.vm_name));
+  CHECK(!terminal_providers_.contains(guest_id.vm_name),
+        base::NotFatalUntil::M160);
   terminal_providers_[guest_id.vm_name] =
       guest_os::GuestOsServiceFactory::GetForProfile(profile_)
           ->TerminalProviderRegistry()

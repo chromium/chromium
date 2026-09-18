@@ -362,7 +362,7 @@ ui::ResourceScaleFactor GetAdjustedScaleFactorForDefaultImage(
 GURL GetDefaultImageUrl(
     int index,
     ui::ResourceScaleFactor scale_factor /*= ui::k200Percent*/) {
-  DCHECK(index >= 0 && index < kDefaultImagesCount);
+  CHECK(index >= 0 && index < kDefaultImagesCount, base::NotFatalUntil::M160);
 
   ui::ResourceScaleFactor adjusted_scale_factor =
       GetAdjustedScaleFactorForDefaultImage(index, scale_factor);
@@ -398,7 +398,7 @@ bool IsInCurrentImageSet(int index) {
 DefaultUserImage GetDefaultUserImage(
     int index,
     ui::ResourceScaleFactor scale_factor /*= ui::k200Percent*/) {
-  DCHECK(IsValidIndex(index));
+  CHECK(IsValidIndex(index), base::NotFatalUntil::M160);
   int description_message_id = kDefaultImageInfo[index].description_message_id;
   std::u16string title = description_message_id
                              ? l10n_util::GetStringUTF16(description_message_id)

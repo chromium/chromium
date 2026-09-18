@@ -306,7 +306,7 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
     // asynchronously. PNG_CODEC can be used here because LoadImage() is
     // called only for users whose user image has previously been set by one of
     // the Set*() methods, which transcode to JPEG or PNG format.
-    DCHECK(!image_path_.empty());
+    CHECK(!image_path_.empty(), base::NotFatalUntil::M160);
     user_image_loader::StartWithFilePath(
         parent_->background_task_runner_, image_path_,
         ChooseFormatFromPath(image_path_),
@@ -319,10 +319,11 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
 }
 
 void UserImageManagerImpl::Job::SetToDefaultImage(int default_image_index) {
-  DCHECK(!run_);
+  CHECK(!run_, base::NotFatalUntil::M160);
   run_ = true;
 
-  DCHECK(default_user_image::IsValidIndex(default_image_index));
+  CHECK(default_user_image::IsValidIndex(default_image_index),
+        base::NotFatalUntil::M160);
 
   image_index_ = default_image_index;
 
@@ -350,11 +351,12 @@ void UserImageManagerImpl::Job::SetToDefaultImage(int default_image_index) {
 void UserImageManagerImpl::Job::SetToImage(
     int image_index,
     std::unique_ptr<user_manager::UserImage> user_image) {
-  DCHECK(!run_);
+  CHECK(!run_, base::NotFatalUntil::M160);
   run_ = true;
 
-  DCHECK(image_index == user_manager::UserImage::Type::kExternal ||
-         image_index == user_manager::UserImage::Type::kProfile);
+  CHECK(image_index == user_manager::UserImage::Type::kExternal ||
+            image_index == user_manager::UserImage::Type::kProfile,
+        base::NotFatalUntil::M160);
 
   image_index_ = image_index;
 
@@ -363,7 +365,7 @@ void UserImageManagerImpl::Job::SetToImage(
 
 void UserImageManagerImpl::Job::SetToImageData(
     std::unique_ptr<std::string> data) {
-  DCHECK(!run_);
+  CHECK(!run_, base::NotFatalUntil::M160);
   run_ = true;
 
   image_index_ = user_manager::UserImage::Type::kExternal;
@@ -379,13 +381,13 @@ void UserImageManagerImpl::Job::SetToPath(const base::FilePath& path,
                                           int image_index,
                                           const GURL& image_url,
                                           bool resize) {
-  DCHECK(!run_);
+  CHECK(!run_, base::NotFatalUntil::M160);
   run_ = true;
 
   image_index_ = image_index;
   image_url_ = image_url;
 
-  DCHECK(!path.empty());
+  CHECK(!path.empty(), base::NotFatalUntil::M160);
   user_image_loader::StartWithFilePath(
       parent_->background_task_runner_, path,
       user_manager::UserImage::ImageFormat::FORMAT_UNKNOWN,
@@ -411,8 +413,9 @@ void UserImageManagerImpl::Job::UpdateUser(
     return;
   }
   if (!user_image->image().isNull()) {
-    DCHECK(default_user_image::IsValidIndex(image_index_) ||
-           user_image->has_image_bytes());
+    CHECK(default_user_image::IsValidIndex(image_index_) ||
+              user_image->has_image_bytes(),
+          base::NotFatalUntil::M160);
     user->SetImage(std::move(user_image), image_index_);
   } else {
     user->SetStubImage(
@@ -596,9 +599,10 @@ void UserImageManagerImpl::LoadUserImage() {
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LOGIN_DEFAULT_USER)),
       image_index, true);
-  DCHECK((image_path && !image_path->empty()) ||
-         image_index == user_manager::UserImage::Type::kProfile ||
-         default_user_image::IsValidIndex(image_index));
+  CHECK((image_path && !image_path->empty()) ||
+            image_index == user_manager::UserImage::Type::kProfile ||
+            default_user_image::IsValidIndex(image_index),
+        base::NotFatalUntil::M160);
   if (!default_user_image::IsValidIndex(image_index) &&
       (!image_path || image_path->empty())) {
     // Return if the profile image is to be used but has not been downloaded
@@ -748,7 +752,7 @@ bool UserImageManagerImpl::IsUserImageManaged() const {
 }
 
 void UserImageManagerImpl::OnExternalDataSet(const std::string& policy) {
-  DCHECK_EQ(policy::key::kUserAvatarImage, policy);
+  CHECK_EQ(policy::key::kUserAvatarImage, policy, base::NotFatalUntil::M160);
   if (IsUserImageManaged()) {
     return;
   }
@@ -771,7 +775,7 @@ void UserImageManagerImpl::OnExternalDataSet(const std::string& policy) {
 }
 
 void UserImageManagerImpl::OnExternalDataCleared(const std::string& policy) {
-  DCHECK_EQ(policy::key::kUserAvatarImage, policy);
+  CHECK_EQ(policy::key::kUserAvatarImage, policy, base::NotFatalUntil::M160);
   if (!IsUserImageManaged()) {
     return;
   }
@@ -790,8 +794,8 @@ void UserImageManagerImpl::OnExternalDataCleared(const std::string& policy) {
 void UserImageManagerImpl::OnExternalDataFetched(
     const std::string& policy,
     std::unique_ptr<std::string> data) {
-  DCHECK_EQ(policy::key::kUserAvatarImage, policy);
-  DCHECK(IsUserImageManaged());
+  CHECK_EQ(policy::key::kUserAvatarImage, policy, base::NotFatalUntil::M160);
+  CHECK(IsUserImageManaged(), base::NotFatalUntil::M160);
   if (data) {
     job_ = std::make_unique<Job>(&local_state_.get(), this);
     job_->SetToImageData(std::move(data));
@@ -828,13 +832,13 @@ int UserImageManagerImpl::GetDesiredImageSideLength() const {
 
 signin::IdentityManager* UserImageManagerImpl::GetIdentityManager() {
   const user_manager::User* user = GetUser();
-  DCHECK(user && user->is_profile_created());
+  CHECK(user && user->is_profile_created(), base::NotFatalUntil::M160);
   return ash::IdentityManagerProvider::Get().Find(user->GetAccountId());
 }
 
 network::mojom::URLLoaderFactory* UserImageManagerImpl::GetURLLoaderFactory() {
   const user_manager::User* user = GetUser();
-  DCHECK(user && user->is_profile_created());
+  CHECK(user && user->is_profile_created(), base::NotFatalUntil::M160);
   return ProfileHelper::Get()
       ->GetProfileByUser(user)
       ->GetDefaultStoragePartition()
@@ -851,7 +855,7 @@ void UserImageManagerImpl::OnProfileDownloadSuccess(
   // Ensure that the `profile_downloader_` is deleted when this method returns.
   std::unique_ptr<ProfileDownloader> profile_downloader(
       profile_downloader_.release());
-  DCHECK_EQ(downloader, profile_downloader.get());
+  CHECK_EQ(downloader, profile_downloader.get(), base::NotFatalUntil::M160);
 
   user_manager_->UpdateUserAccountData(
       account_id_,
@@ -901,7 +905,7 @@ void UserImageManagerImpl::OnProfileDownloadSuccess(
 void UserImageManagerImpl::OnProfileDownloadFailure(
     ProfileDownloader* downloader,
     ProfileDownloaderDelegate::FailureReason reason) {
-  DCHECK_EQ(downloader, profile_downloader_.get());
+  CHECK_EQ(downloader, profile_downloader_.get(), base::NotFatalUntil::M160);
   profile_downloader_.reset();
 
   if (reason == ProfileDownloaderDelegate::NETWORK_ERROR) {

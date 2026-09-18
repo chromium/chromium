@@ -25,7 +25,7 @@ namespace {
 
 void RunFlushCallback(ReadWriter::FlushCallback callback,
                       int posix_error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   FlushResponseProto response_proto;
   if (posix_error_code) {
@@ -36,7 +36,7 @@ void RunFlushCallback(ReadWriter::FlushCallback callback,
 
 void RunRead2CallbackFailure(ReadWriter::Read2Callback callback,
                              base::File::Error error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   Read2ResponseProto response_proto;
   response_proto.set_posix_error_code(FileErrorToErrno(error_code));
@@ -46,7 +46,7 @@ void RunRead2CallbackFailure(ReadWriter::Read2Callback callback,
 void RunRead2CallbackTypical(ReadWriter::Read2Callback callback,
                              scoped_refptr<net::IOBuffer> buffer,
                              int length) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   Read2ResponseProto response_proto;
   if (length < 0) {
@@ -61,7 +61,7 @@ void RunRead2CallbackTypical(ReadWriter::Read2Callback callback,
 
 void RunWrite2CallbackFailure(ReadWriter::Write2Callback callback,
                               int posix_error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   Write2ResponseProto response_proto;
   response_proto.set_posix_error_code(posix_error_code);
@@ -69,7 +69,7 @@ void RunWrite2CallbackFailure(ReadWriter::Write2Callback callback,
 }
 
 void RunWrite2CallbackTypical(ReadWriter::Write2Callback callback, int length) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   Write2ResponseProto response_proto;
   if (length < 0) {
@@ -135,7 +135,7 @@ void EOFFlushFsWriterIfNecessary(
     int64_t write_offset,
     bool needs_eof_flushing,
     EOFFlushFsWriterCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!fs_writer || !needs_eof_flushing) {
     std::move(callback).Run(std::move(fs_writer), 0);
@@ -173,11 +173,11 @@ ReadWriter::ReadWriter(const storage::FileSystemURL& fs_url,
       profile_path_(profile_path),
       use_temp_file_(use_temp_file),
       temp_file_starts_with_copy_(temp_file_starts_with_copy) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 }
 
 ReadWriter::~ReadWriter() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 }
 
 // Some functions (marked with a §) below, take an fs_context argument that
@@ -186,7 +186,7 @@ ReadWriter::~ReadWriter() {
 
 void ReadWriter::Close(scoped_refptr<storage::FileSystemContext> fs_context,
                        Close2Callback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (closed_) {
     Close2ResponseProto response_proto;
@@ -211,7 +211,7 @@ void ReadWriter::OnEOFFlushBeforeActualClose(
     scoped_refptr<storage::FileSystemContext> fs_context,
     std::unique_ptr<storage::FileStreamWriter> fs_writer,
     int flush_posix_error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   ReadWriter* self = weak_ptr.get();
   if (!self) {
@@ -240,11 +240,11 @@ void ReadWriter::OnEOFFlushBeforeActualClose(
 }
 
 void ReadWriter::Save() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(close2_fs_context_);
-  DCHECK(close2_callback_);
-  DCHECK(!is_loaning_temp_file_scoped_fd_);
-  DCHECK(use_temp_file_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(close2_fs_context_, base::NotFatalUntil::M160);
+  CHECK(close2_callback_, base::NotFatalUntil::M160);
+  CHECK(!is_loaning_temp_file_scoped_fd_, base::NotFatalUntil::M160);
+  CHECK(use_temp_file_, base::NotFatalUntil::M160);
 
   if (write_posix_error_code_ != 0) {
     Close2ResponseProto response_proto;
@@ -270,8 +270,8 @@ void ReadWriter::Save() {
 
 void ReadWriter::Flush(scoped_refptr<storage::FileSystemContext> fs_context,
                        FlushCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(!is_in_flight_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(!is_in_flight_, base::NotFatalUntil::M160);
   is_in_flight_ = true;
 
   if (closed_) {
@@ -304,8 +304,8 @@ void ReadWriter::Read(scoped_refptr<storage::FileSystemContext> fs_context,
                       int64_t offset,
                       int64_t length,
                       Read2Callback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(!is_in_flight_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(!is_in_flight_, base::NotFatalUntil::M160);
   is_in_flight_ = true;
 
   if ((offset < 0) || (length < 0) || (offset > (INT64_MAX - length))) {
@@ -373,7 +373,7 @@ void ReadWriter::OnRead(
     scoped_refptr<net::IOBuffer> buffer,
     int64_t offset,
     int length) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   ReadWriter* self = weak_ptr.get();
   if (!self) {
@@ -384,7 +384,7 @@ void ReadWriter::OnRead(
     return;
   }
 
-  DCHECK(self->is_in_flight_);
+  CHECK(self->is_in_flight_, base::NotFatalUntil::M160);
   self->is_in_flight_ = false;
 
   if (length >= 0) {
@@ -405,8 +405,8 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
                        int64_t offset,
                        int length,
                        Write2Callback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(!is_in_flight_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(!is_in_flight_, base::NotFatalUntil::M160);
   is_in_flight_ = true;
 
   if ((offset < 0) || (length < 0) ||
@@ -500,7 +500,7 @@ void ReadWriter::OnTempFileInitialized(
     int length,
     Write2Callback callback,
     base::expected<base::ScopedFD, int> result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   ReadWriter* self = weak_ptr.get();
   if (!result.has_value() || !self) {
@@ -526,7 +526,7 @@ void ReadWriter::CallWriteTempFile(base::WeakPtr<ReadWriter> weak_ptr,
                                    int64_t offset,
                                    int length,
                                    Write2Callback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   ReadWriter* self = weak_ptr.get();
   if (!self) {
@@ -550,7 +550,7 @@ void ReadWriter::CallWriteTempFile(base::WeakPtr<ReadWriter> weak_ptr,
 void ReadWriter::OnWriteTempFile(base::WeakPtr<ReadWriter> weak_ptr,
                                  Write2Callback callback,
                                  WriteTempFileResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   ReadWriter* self = weak_ptr.get();
   if (!self) {
@@ -561,7 +561,7 @@ void ReadWriter::OnWriteTempFile(base::WeakPtr<ReadWriter> weak_ptr,
     return;
   }
 
-  DCHECK(self->is_in_flight_);
+  CHECK(self->is_in_flight_, base::NotFatalUntil::M160);
   self->is_in_flight_ = false;
   self->is_loaning_temp_file_scoped_fd_ = false;
 
@@ -586,7 +586,7 @@ void ReadWriter::OnDefaultFlush(
     FlushCallback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
     int flush_posix_error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   ReadWriter* self = weak_ptr.get();
   if (!self) {
@@ -609,7 +609,7 @@ void ReadWriter::OnEOFFlushBeforeCallWriteDirect(
     int length,
     std::unique_ptr<storage::FileStreamWriter> fs_writer,
     int flush_posix_error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   ReadWriter* self = weak_ptr.get();
   if (!self) {
@@ -646,7 +646,7 @@ void ReadWriter::CallWriteDirect(
     scoped_refptr<net::IOBuffer> buffer,
     int64_t offset,
     int length) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   // Save the pointer before we std::move fs_writer into a base::OnceCallback.
   // The std::move keeps the underlying storage::FileStreamWriter alive while
@@ -674,7 +674,7 @@ void ReadWriter::OnWriteDirect(
     scoped_refptr<net::IOBuffer> buffer,
     int64_t offset,
     int length) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   ReadWriter* self = weak_ptr.get();
   if (!self) {
@@ -685,7 +685,7 @@ void ReadWriter::OnWriteDirect(
     return;
   }
 
-  DCHECK(self->is_in_flight_);
+  CHECK(self->is_in_flight_, base::NotFatalUntil::M160);
   self->is_in_flight_ = false;
 
   if (length >= 0) {
