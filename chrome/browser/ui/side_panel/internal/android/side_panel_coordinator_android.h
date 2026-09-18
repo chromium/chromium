@@ -106,12 +106,15 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   //            Start of functions for testing                   //
   /////////////////////////////////////////////////////////////////
 
-  // Enables/Disables deferred View replacement for testing.
-  //
   // See the Java
-  // `SidePanelContainerCoordinator#configDeferredViewReplacementForTesting`
-  // for detailed documentation.
-  void ConfigDeferredViewReplacementForTesting(bool enable);
+  // `SidePanelContainerCoordinatorImpl#pauseContentReplacementForTesting`
+  // for documentation.
+  void PauseContentReplacementForTesting();
+
+  // See the Java
+  // `SidePanelContainerCoordinatorImpl#resumeContentReplacementForTesting`
+  // for documentation.
+  void ResumeContentReplacementForTesting();
 
   // See the Java
   // `SidePanelContainerCoordinator#simulateAutoCloseConditionForTesting`

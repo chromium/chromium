@@ -549,11 +549,15 @@ int SidePanelCoordinatorAndroid::GetContainerWidthForTesting() {  // IN-TEST
 }
 
 void SidePanelCoordinatorAndroid::
-    ConfigDeferredViewReplacementForTesting(  // IN-TEST
-        bool enable) {
-  Java_SidePanelCoordinatorAndroidBridge_configDeferredViewReplacementForTesting(  // IN-TEST
-      AttachCurrentThread(), java_coordinator(), browser()->GetProfile(),
-      enable);
+    PauseContentReplacementForTesting() {  // IN-TEST
+  Java_SidePanelCoordinatorAndroidBridge_pauseContentReplacementForTesting(  // IN-TEST
+      AttachCurrentThread(), java_coordinator(), browser()->GetProfile());
+}
+
+void SidePanelCoordinatorAndroid::
+    ResumeContentReplacementForTesting() {  // IN-TEST
+  Java_SidePanelCoordinatorAndroidBridge_resumeContentReplacementForTesting(  // IN-TEST
+      AttachCurrentThread(), java_coordinator(), browser()->GetProfile());
 }
 
 void SidePanelCoordinatorAndroid::

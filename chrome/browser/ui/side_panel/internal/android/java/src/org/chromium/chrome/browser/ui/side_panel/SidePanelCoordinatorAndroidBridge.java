@@ -224,10 +224,15 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
     }
 
     @CalledByNativeForTesting
-    private void configDeferredViewReplacementForTesting(
-            @JniType("Profile*") Profile profile, boolean enable) {
-        log(TAG, "configDeferredViewReplacementForTesting", profile, enable);
-        mNativeBridgeSelector.configDeferredViewReplacementForTesting(profile, enable); // IN-TEST
+    private void pauseContentReplacementForTesting(@JniType("Profile*") Profile profile) {
+        log(TAG, "pauseContentReplacementForTesting", profile);
+        mNativeBridgeSelector.pauseContentReplacementForTesting(profile); // IN-TEST
+    }
+
+    @CalledByNativeForTesting
+    private void resumeContentReplacementForTesting(@JniType("Profile*") Profile profile) {
+        log(TAG, "resumeContentReplacementForTesting", profile);
+        mNativeBridgeSelector.resumeContentReplacementForTesting(profile); // IN-TEST
     }
 
     @CalledByNativeForTesting

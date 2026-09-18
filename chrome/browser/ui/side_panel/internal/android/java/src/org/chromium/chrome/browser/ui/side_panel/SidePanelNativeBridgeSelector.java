@@ -289,13 +289,23 @@ final class SidePanelNativeBridgeSelector {
     }
 
     /**
-     * See {@link SidePanelContainerCoordinatorImpl#configDeferredViewReplacementForTesting}.
+     * See {@link SidePanelContainerCoordinatorImpl#pauseContentReplacementForTesting}.
      *
      * <p>The given {@link Profile} must be the current {@link Profile}.
      */
-    void configDeferredViewReplacementForTesting(Profile profile, boolean enable) {
+    void pauseContentReplacementForTesting(Profile profile) {
         assertCurrentProfile(profile);
-        mSidePanelContainerCoordinator.configDeferredViewReplacementForTesting(enable); // IN-TEST
+        mSidePanelContainerCoordinator.pauseContentReplacementForTesting(); // IN-TEST
+    }
+
+    /**
+     * See {@link SidePanelContainerCoordinatorImpl#resumeContentReplacementForTesting}.
+     *
+     * <p>The given {@link Profile} must be the current {@link Profile}.
+     */
+    void resumeContentReplacementForTesting(Profile profile) {
+        assertCurrentProfile(profile);
+        mSidePanelContainerCoordinator.resumeContentReplacementForTesting(); // IN-TEST
     }
 
     /**

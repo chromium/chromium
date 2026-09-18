@@ -87,7 +87,7 @@ final class SidePanelContainerCoordinatorImpl
      */
     private boolean mIsPreparingForAutoRestore;
 
-    private boolean mEnableDeferredViewReplacementForTesting;
+    private boolean mIsContentReplacementPausedForTesting;
     private boolean mSimulateAutoCloseConditionForTesting;
 
     SidePanelContainerCoordinatorImpl(
@@ -248,20 +248,19 @@ final class SidePanelContainerCoordinatorImpl
                         }
                     }
                 };
-
         mPendingReplaceRunnable = removeOldViewRunnable;
-        ThinWebView thinWebView = findThinWebView(newContent.mView);
 
-        // If there is no ThinWebView, immediately complete the content View replacement since this
-        // won't cause UI flickers.
-        if (thinWebView == null) {
-            completePendingContentReplacementInternal();
+        if (mIsContentReplacementPausedForTesting) {
             return;
         }
 
-        // If there is a ThinWebView, but we are in a test that doesn't explicitly enable the
-        // deferred View removal, also complete the View replacement immediately.
-        if (BuildConfig.IS_FOR_TEST && !mEnableDeferredViewReplacementForTesting) {
+        // If there is no ThinWebView, immediately complete the content View replacement since this
+        // won't cause UI flickers.
+        //
+        // If we are in a test, do the same since cross-platform tests using the cross-platform C++
+        // side panel APIs can't wait for ThinWebView to render its first frame.
+        ThinWebView thinWebView = findThinWebView(newContent.mView);
+        if (thinWebView == null || BuildConfig.IS_FOR_TEST) {
             completePendingContentReplacementInternal();
             return;
         }
@@ -312,23 +311,34 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     /**
-     * Enables or disables deferred content View replacement for testing.
+     * Pauses content replacement in {@link #startReplacingPanelContent}, for testing.
      *
-     * <p>When (1) this is enabled and (2) the new active tab during a tab switch requires replacing
-     * the side panel content View with a {@code ThinWebView}, the old content View won't be removed
-     * until the {@code ThinWebView} has rendered the first frame.
+     * <p>Tests should use this method to simulate the deferred content replacement for {@link
+     * ThinWebView} in {@link #startReplacingPanelContent}, instead of setting up a {@link
+     * ThinWebView}. This is because this method and {@link #resumeContentReplacementForTesting} can
+     * give tests precise timing control so that we can verify intermediate states.
      *
-     * <p>(2) is <i>always</i> enabled in production to prevent UI flickers during tab switches.
-     *
-     * <p>In tests, (2) needs to be explicitly enabled since tests covering the deferred content
-     * View replacement need to wait for the replacement to complete. Not all tests have the "wait"
-     * logic, and it's hard to add it since there are many existing cross-platform side panel
-     * browser tests that assume synchronous replacement.
-     *
-     * @param enable Whether deferred View replacement is enabled.
+     * @see #startReplacingPanelContent
+     * @see #resumeContentReplacementForTesting
      */
-    void configDeferredViewReplacementForTesting(boolean enable) {
-        mEnableDeferredViewReplacementForTesting = enable;
+    void pauseContentReplacementForTesting() {
+        mIsContentReplacementPausedForTesting = true;
+    }
+
+    /**
+     * Resumes content replacement that's paused in {@link #startReplacingPanelContent}, for
+     * testing.
+     *
+     * <p>This immediately completes the pending content replacement, if it exists.
+     *
+     * @see #startReplacingPanelContent
+     * @see #pauseContentReplacementForTesting
+     */
+    void resumeContentReplacementForTesting() {
+        assert mIsContentReplacementPausedForTesting
+                : "pauseContentReplacementForTesting() hasn't been called.";
+        mIsContentReplacementPausedForTesting = false;
+        completePendingContentReplacementInternal();
     }
 
     /**
