@@ -120,7 +120,7 @@ while (( "$#" )) ; do
   echo -n "${1} " >> "@OUTFILE@"
   shift
 done
-echo "\n" >> "@OUTFILE@"
+echo >> "@OUTFILE@"
 exit 0
 )",
         {{"@DEST@", app_install_dir_.AsUTF8Unsafe()},
@@ -277,13 +277,6 @@ exit 0
     return ReadPlistItem(GetBrandFilePath(), "KSBrandID");
   }
 
-  std::string GetLastKSAdminArgs() {
-    std::string args;
-    EXPECT_TRUE(base::ReadFileToString(
-        temp_.GetPath().AppendUTF8("ksadmin_out"), &args));
-    return args;
-  }
-
   void SetEnrolled(bool enroll) {
     const base::FilePath enrollment = temp_.GetPath().AppendUTF8("Enrollment");
     if (enroll) {
@@ -388,7 +381,7 @@ std::string MakeInterceptorScript(std::string_view pre_tool_hook) {
   return base::StrCat({R"-(#!/bin/bash
 set -e
 # Remove the interceptor from PATH by removing the first entry.
-PATH="$(sed -e 's/^[^:]*://' <<< "${PATH}")"
+PATH="${PATH#*:}"
 )-",
                        pre_tool_hook, "\n",
                        R"-(exec "$(basename "$0")" "$@")-"});
