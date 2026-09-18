@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/editing/finder/find_results.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 
 namespace blink {
@@ -833,6 +834,45 @@ TEST_P(FindBufferParamTest, DoNotSearchInSuggestedValues) {
 
     // This time, there should be a match.
     EXPECT_EQ(1U, results.CountForTesting());
+  }
+}
+
+TEST_P(FindBufferParamTest, DoNotSearchInSelectSuggestedOption) {
+  SetBodyContent(R"HTML(
+    <style>
+      #s option { visibility: hidden; }
+    </style>
+    <select id="s" size="2">
+      <option value="val1">secret</option>
+      <option value="val2">other</option>
+    </select>
+  )HTML");
+
+  auto* select = To<HTMLSelectElement>(GetElementById("s"));
+  select->SetSuggestedValue("val1");
+  ASSERT_TRUE(select->IsPreviewed());
+  ASSERT_TRUE(select->GetAutofillPreviewElement());
+  ASSERT_TRUE(select->GetAutofillPreviewElement()->popoverOpen());
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  {
+    FindBuffer buffer(WholeDocumentRange(), GetParam());
+    const auto results = buffer.FindMatches("secret", FindOptions());
+    EXPECT_EQ(0U, results.CountForTesting());
+  }
+
+  // Self-assigning selectedIndex resets autofill state potentially without
+  // hiding the preview popover. Make sure that this does not affect
+  // findability.
+  select->setSelectedIndex(select->selectedIndex());
+  ASSERT_FALSE(select->IsPreviewed());
+  ASSERT_TRUE(select->GetAutofillPreviewElement()->popoverOpen());
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  {
+    FindBuffer buffer(WholeDocumentRange(), GetParam());
+    const auto results = buffer.FindMatches("secret", FindOptions());
+    EXPECT_EQ(0U, results.CountForTesting());
   }
 }
 

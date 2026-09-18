@@ -124,6 +124,20 @@ if (!window.internals) {
     assert_false(lookup('view'));
   }, 'crbug.com/556224075: Test that suggested values with an empty value in a listbox select are not found by search');
 
+  test(() => {
+    listbox.innerHTML = '<option value="value">option-text</option><option>preview</option>';
+    internals.setSuggestedValue(listbox, 'preview');
+    assert_false(lookup('preview'));
+    assert_false(lookup('view'));
+
+    // Self-assigning selectedIndex resets autofill state potentially without
+    // hiding the preview popover. Make sure that this does not affect
+    // findability.
+    listbox.selectedIndex = listbox.selectedIndex;
+    assert_false(lookup('preview'));
+    assert_false(lookup('view'));
+  }, 'crbug.com/562224383: Test that suggested values in a listbox select are not found by search after selectedIndex self-assignment');
+
 }
 
 </script>
