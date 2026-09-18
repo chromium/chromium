@@ -44,6 +44,7 @@
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
@@ -319,6 +320,11 @@ void WebuiOmniboxHandler::AddTabContext(
   auto context = searchbox_context_data->TakePendingContext();
   if (!context) {
     context = std::make_unique<SearchboxContextData::Context>();
+  }
+
+  if (source == searchbox::mojom::TabAttachmentSource::kCurrentTabChip) {
+    context->invocation_source =
+        lens::LensOverlayInvocationSource::kOmniboxPageAction;
   }
 
   auto tab_attachment = searchbox::mojom::TabAttachment::New();

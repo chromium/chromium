@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -2438,6 +2440,43 @@ TEST_F(WebuiOmniboxHandlerTabScopingTest,
   EXPECT_TRUE(omnibox_controller_->edit_model()->has_focus());
 }
 
+TEST_F(WebuiOmniboxHandlerTabScopingTest,
+       AddTabContext_CurrentTabChipSetsInvocationSource) {
+  SearchboxContextData searchbox_context_data(unowned_user_data_host_);
+  TabUIHelper tab_ui_helper(mock_active_tab_);
+
+  base::MockCallback<WebuiOmniboxHandler::AddTabContextCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_));
+
+  const int tab_id = mock_active_tab_.GetHandle().raw_value();
+  handler_->AddTabContext(
+      tab_id, /*delay_upload=*/false,
+      searchbox::mojom::TabAttachmentSource::kCurrentTabChip, callback.Get());
+
+  auto context = searchbox_context_data.TakePendingContext();
+  ASSERT_TRUE(context);
+  EXPECT_EQ(context->invocation_source,
+            lens::LensOverlayInvocationSource::kOmniboxPageAction);
+}
+
+TEST_F(WebuiOmniboxHandlerTabScopingTest,
+       AddTabContext_ContextMenuDoesNotSetInvocationSource) {
+  SearchboxContextData searchbox_context_data(unowned_user_data_host_);
+  TabUIHelper tab_ui_helper(mock_active_tab_);
+
+  base::MockCallback<WebuiOmniboxHandler::AddTabContextCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_));
+
+  const int tab_id = mock_active_tab_.GetHandle().raw_value();
+  handler_->AddTabContext(tab_id, /*delay_upload=*/false,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          callback.Get());
+
+  auto context = searchbox_context_data.TakePendingContext();
+  ASSERT_TRUE(context);
+  EXPECT_FALSE(context->invocation_source.has_value());
+}
+
 #endif
 
 namespace {
@@ -2840,11 +2879,76 @@ TEST_F(OmniboxComposeboxHandlerTest,
 }
 
 TEST_F(OmniboxComposeboxHandlerTest,
+       ProcessContextAndOpenUrl_OmniboxPageActionSetsEntryPoint206) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {omnibox::kContextManagementInComposebox,
+       contextual_tasks::kContextualTasksSidePanel,
+       contextual_tasks::kContextualTasksForceEntryPointEligibility},
+      /*disabled_features=*/{contextual_tasks::kContextualTasks});
+
+  auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
+      contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
+          ->SetTestingFactoryAndUse(
+              profile(),
+              base::BindLambdaForTesting([&](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+                return std::make_unique<
+                    testing::NiceMock<MockContextualTasksUiService>>(
+                    Profile::FromBrowserContext(context));
+              })));
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents_.get(), base::BindRepeating([](content::WebContents*) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(web_contents_.get());
+
+  base::UnguessableToken active_tab_token = base::UnguessableToken::Create();
+  contextual_search::FileInfo file_info;
+  file_info.file_token = active_tab_token;
+  file_info.tab_session_id = active_tab_id;
+
+  auto* mock_controller =
+      static_cast<contextual_search::MockContextualSearchContextController*>(
+          session_handle_->GetController());
+  EXPECT_CALL(*mock_controller, GetFileInfo(active_tab_token))
+      .WillRepeatedly(testing::Return(&file_info));
+
+  session_handle_->set_submitted_context_tokens({active_tab_token});
+  session_handle_->set_invocation_source(
+      lens::LensOverlayInvocationSource::kOmniboxPageAction);
+
+  omnibox::ChromeAimEntryPoint passed_entry_point =
+      omnibox::UNKNOWN_AIM_ENTRY_POINT;
+  EXPECT_CALL(*mock_ui_service,
+              StartTaskUiInSidePanelImpl(&browser_window_interface_, &mock_tab_,
+                                         testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](BrowserWindowInterface*, tabs::TabInterface*, const GURL&,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>,
+              contextual_tasks::StartTaskUiOptions options) {
+            passed_entry_point = options.entry_point;
+          });
+
+  OpenUrl(GURL("https://www.google.com/search?q=test"),
+          WindowOpenDisposition::CURRENT_TAB);
+
+  EXPECT_EQ(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH,
+      passed_entry_point);
+}
+
+TEST_F(OmniboxComposeboxHandlerTest,
        ProcessContextAndOpenUrl_MultiTabDoesNotBypassToSidePanelDirectly) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kContextManagementInComposebox,
-                            contextual_tasks::kContextualTasksSidePanel},
+      /*enabled_features=*/
+      {omnibox::kContextManagementInComposebox,
+       contextual_tasks::kContextualTasksSidePanel,
+       contextual_tasks::kContextualTasksForceEntryPointEligibility},
       /*disabled_features=*/{contextual_tasks::kContextualTasks});
 
   auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(

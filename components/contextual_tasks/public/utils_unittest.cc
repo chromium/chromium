@@ -25,14 +25,17 @@ TEST(ContextualTasksUtilsTest, GetLensInvocationSourceForAimZeroState) {
                 omnibox::ChromeAimEntryPoint::
                     DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON),
             lens::LensOverlayInvocationSource::kCobrowsePinnedToolbarButton);
-  EXPECT_EQ(GetLensInvocationSourceForAimZeroState(
-                omnibox::ChromeAimEntryPoint::
-                    DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION),
-            lens::LensOverlayInvocationSource::kOmniboxPageAction);
   EXPECT_EQ(
       GetLensInvocationSourceForAimZeroState(
-          omnibox::ChromeAimEntryPoint::IOS_CHROME_APP_BAR_ENTRY_POINT),
-      lens::LensOverlayInvocationSource::kAppBarAimButton);
+          omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION),
+      lens::LensOverlayInvocationSource::kOmniboxPageAction);
+  EXPECT_EQ(GetLensInvocationSourceForAimZeroState(
+                omnibox::ChromeAimEntryPoint::
+                    DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH),
+            lens::LensOverlayInvocationSource::kOmniboxPageAction);
+  EXPECT_EQ(GetLensInvocationSourceForAimZeroState(
+                omnibox::ChromeAimEntryPoint::IOS_CHROME_APP_BAR_ENTRY_POINT),
+            lens::LensOverlayInvocationSource::kAppBarAimButton);
   EXPECT_EQ(GetLensInvocationSourceForAimZeroState(
                 omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT),
             std::nullopt);
@@ -48,6 +51,22 @@ TEST(ContextualTasksUtilsTest,
   std::string aep;
   EXPECT_TRUE(net::GetValueForKeyInQuery(result_url, "aep", &aep));
   EXPECT_EQ(aep, "205");
+
+  std::string source;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(result_url, "source", &source));
+  EXPECT_EQ(source, "chrome.crn.obpa");
+}
+
+TEST(ContextualTasksUtilsTest,
+     AppendAimEntryPointParams_CobrowseOmniboxTabSearch) {
+  GURL base_url("https://www.google.com");
+  GURL result_url = AppendAimEntryPointParams(
+      base_url,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH);
+
+  std::string aep;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(result_url, "aep", &aep));
+  EXPECT_EQ(aep, "206");
 
   std::string source;
   EXPECT_TRUE(net::GetValueForKeyInQuery(result_url, "source", &source));

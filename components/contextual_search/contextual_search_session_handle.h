@@ -120,6 +120,11 @@ class ContextualSearchSessionHandle {
     return invocation_source_;
   }
 
+  void set_invocation_source(
+      std::optional<lens::LensOverlayInvocationSource> invocation_source) {
+    invocation_source_ = invocation_source;
+  }
+
   bool is_contextual_lens_session() const {
     return is_contextual_lens_session_;
   }
@@ -401,7 +406,7 @@ class ContextualSearchSessionHandle {
   const base::UnguessableToken session_id_;
 
   // The invocation source to send with generated search URLs or query payloads.
-  const std::optional<lens::LensOverlayInvocationSource> invocation_source_;
+  std::optional<lens::LensOverlayInvocationSource> invocation_source_;
 
   // Whether this session was initiated by a contextual Lens query. This could
   // apply to entrypoints like contextual suggestions in the Omnibox or the

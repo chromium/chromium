@@ -73,8 +73,8 @@ class OmniboxPopupComposeboxClient : public ContextualOmniboxClient {
     net::GetValueForKeyInQuery(destination_url, "q", &query_text);
     composebox_handler_->SubmitQuery(
         query_text, disposition,
-        PageClassificationToAimEntryPoint(
-            GetPageClassification(/*is_prefetch=*/false)),
+        GetAimEntryPoint(GetPageClassification(/*is_prefetch=*/false),
+                         composebox_handler_->GetContextualSessionHandle()),
         additional_params, /*is_voice_search=*/false);
   }
 
