@@ -140,3 +140,19 @@ if (enable_me2me_host && target_cpu == "x64") {
   group("remoting_me2me_host_archive") {
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "setup_session_environment_unittest.cc" ]
+
+  data = [
+    "setup-session-environment",
+    "setup_session_environment_unittest.py",
+  ]
+
+  deps = [
+    "//base",
+    "//testing/gtest",
+  ]
+}
