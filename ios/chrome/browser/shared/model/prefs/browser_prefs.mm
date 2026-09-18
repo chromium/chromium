@@ -24,7 +24,7 @@
 #import "components/dom_distiller/core/distilled_page_prefs.h"
 #import "components/enterprise/browser/groups/groups_prefs.h"
 #import "components/enterprise/browser/identifiers/identifiers_prefs.h"
-#import "components/enterprise/browser/reporting/common_pref_names.h"
+#import "components/enterprise/browser/reporting/prefs.h"
 #import "components/enterprise/client_certificates/core/prefs.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/data_controls/core/browser/prefs.h"
@@ -258,6 +258,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   chrome_urls::RegisterPrefs(registry);
   client_certificates::RegisterLocalStatePrefs(registry);
   enterprise_groups::RegisterLocalStatePrefs(registry);
+  enterprise_reporting::RegisterLocalStatePrefs(registry);
   flags_ui::PrefServiceFlagsStorage::RegisterPrefs(registry);
   signin::IdentityManager::RegisterLocalStatePrefs(registry);
   IOSChromeMetricsServiceClient::RegisterPrefs(registry);
@@ -311,17 +312,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
                                 false);
   registry->RegisterTimePref(prefs::kAgeMismatchSignoutTimestamp, base::Time());
-
-  registry->RegisterBooleanPref(enterprise_reporting::kCloudReportingEnabled,
-                                false);
-  registry->RegisterTimePref(enterprise_reporting::kLastUploadTimestamp,
-                             base::Time());
-  registry->RegisterTimePref(
-      enterprise_reporting::kLastUploadSucceededTimestamp, base::Time());
-  registry->RegisterTimeDeltaPref(
-      enterprise_reporting::kCloudReportingUploadFrequency, base::Hours(24));
-  registry->RegisterListPref(
-      enterprise_reporting::kSaasUsageDomainUrlsForBrowser);
 
   registry->RegisterDictionaryPref(prefs::kOverflowMenuDestinationUsageHistory,
                                    PrefRegistry::LOSSY_PREF);
@@ -509,6 +499,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   enterprise_connectors::RegisterProfilePrefs(registry);
   enterprise_data_protection::RegisterProfilePrefs(registry);
   enterprise_net::RegisterProfilePrefs(registry);
+  enterprise_reporting::RegisterProfilePrefs(registry);
   ios_feed::RegisterProfilePrefs(registry);
   FirstRun::RegisterProfilePrefs(registry);
   FontSizeTabHelper::RegisterProfilePrefs(registry);
@@ -703,32 +694,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Preferences related to ntp customization enterprise policy.
   registry->RegisterBooleanPref(prefs::kNTPCustomBackgroundEnabledByPolicy,
                                 true);
-
-  // Preferences related to enterprise cloud profile reporting.
-  registry->RegisterBooleanPref(
-      enterprise_reporting::kCloudProfileReportingEnabled, false);
-  registry->RegisterTimePref(enterprise_reporting::kLastUploadTimestamp,
-                             base::Time());
-  registry->RegisterTimePref(
-      enterprise_reporting::kLastUploadSucceededTimestamp, base::Time());
-  registry->RegisterTimeDeltaPref(
-      enterprise_reporting::kCloudReportingUploadFrequency, base::Hours(24));
-  registry->RegisterBooleanPref(
-      enterprise_reporting::kPoliciesEverFetchedWithProfileId, false);
-  registry->RegisterBooleanPref(
-      enterprise_reporting::kUserSecurityAuthenticatedReporting, false);
-  registry->RegisterBooleanPref(
-      enterprise_reporting::kUserSecuritySignalsReporting, false);
-  registry->RegisterTimePref(
-      enterprise_reporting::kLastSignalsUploadAttemptTimestamp, base::Time());
-  registry->RegisterTimePref(
-      enterprise_reporting::kLastSignalsUploadSucceededTimestamp, base::Time());
-  registry->RegisterStringPref(
-      enterprise_reporting::kLastSignalsUploadSucceededConfig, std::string());
-  registry->RegisterListPref(
-      enterprise_reporting::kSecuritySignalsClientCertificatesSelectors);
-  registry->RegisterListPref(
-      enterprise_reporting::kSaasUsageDomainUrlsForProfile);
 
   // Register prefs related to Enterprise Isolated Mode.
   enterprise_isolated_mode::RegisterProfilePrefs(registry);
