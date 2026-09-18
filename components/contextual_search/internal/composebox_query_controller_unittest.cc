@@ -4757,6 +4757,28 @@ TEST_F(ComposeboxQueryControllerTest, SuggestInputsForOnlyAttachment) {
   }
 }
 
+TEST_F(ComposeboxQueryControllerTest, SuggestInputsForRawFile) {
+  StartSession();
+
+  const base::UnguessableToken pdf_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kPdf;
+  input_data->mime_type_string = "application/pdf";
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kPdf));
+
+  controller().StartFileUploadFlow(pdf_token, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+  WaitForFileUpload(pdf_token, lens::MimeType::kPdf);
+
+  auto inputs = controller().CreateSuggestInputs({pdf_token});
+  EXPECT_EQ(inputs->encoded_request_id(),
+            GetEncodedRequestInfoForToken(pdf_token));
+  EXPECT_EQ(inputs->contextual_visual_input_type(), "pdf");
+}
+
 TEST_F(ComposeboxQueryControllerTest, DeleteFile_Failed) {
   identity_test_env()->MakePrimaryAccountAvailable(
       kTestUser, signin::ConsentLevel::kSignin);
