@@ -693,7 +693,8 @@ void OmniboxEditModel::StartAutocomplete(bool prevent_inline_autocomplete) {
   const std::u16string input_text = MaybePrependKeyword(user_text_);
 
   size_t cursor_position =
-      view_ ? view_->GetSelectionBounds().end() : user_text_.length();
+      view_ ? std::min(view_->GetSelectionBounds().end(), user_text_.length())
+            : user_text_.length();
 
   // For keyword searches, the text that AutocompleteInput expects is
   // of the form "<keyword> <query>", where our query is |user_text_|.
