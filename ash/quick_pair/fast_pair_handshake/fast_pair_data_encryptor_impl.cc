@@ -14,6 +14,7 @@
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process.h"
@@ -99,11 +100,16 @@ void FastPairDataEncryptorImpl::Factory::CreateAsyncWithAccountKey(
   CD_LOG(INFO, Feature::FP) << __func__;
 
   std::optional<std::vector<uint8_t>> account_key = device->account_key();
-  DCHECK(account_key);
-  DCHECK_EQ(account_key->size(), static_cast<size_t>(kPrivateKeyByteSize));
+  if (!account_key ||
+      account_key->size() != static_cast<size_t>(kPrivateKeyByteSize)) {
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Account key is missing or has invalid size.";
+    std::move(on_get_instance_callback).Run(nullptr);
+    return;
+  }
 
   std::array<uint8_t, kPrivateKeyByteSize> private_key;
-  std::copy_n(account_key->begin(), kPrivateKeyByteSize, private_key.begin());
+  base::span(private_key).copy_from(*account_key);
 
   std::unique_ptr<FastPairDataEncryptorImpl> data_encryptor =
       base::WrapUnique(new FastPairDataEncryptorImpl(std::move(private_key)));

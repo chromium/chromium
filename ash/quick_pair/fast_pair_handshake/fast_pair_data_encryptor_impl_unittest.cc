@@ -82,7 +82,7 @@ class FastPairDataEncryptorImplTest : public testing::TestWithParam<TestParam> {
     FastPairDataEncryptorImpl::Factory::CreateAsync(
         device_, base::BindOnce(
                      &FastPairDataEncryptorImplTest::OnDataEncryptorCreateAsync,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::NullCallback()));
   }
 
   void SuccessfulSetUp(base::span<const uint8_t> account_key) {
@@ -108,7 +108,7 @@ class FastPairDataEncryptorImplTest : public testing::TestWithParam<TestParam> {
     FastPairDataEncryptorImpl::Factory::CreateAsync(
         device_, base::BindOnce(
                      &FastPairDataEncryptorImplTest::OnDataEncryptorCreateAsync,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::NullCallback()));
   }
 
   void SuccessfulSetUpToTestPublicKey() {
@@ -128,7 +128,7 @@ class FastPairDataEncryptorImplTest : public testing::TestWithParam<TestParam> {
     FastPairDataEncryptorImpl::Factory::CreateAsync(
         device_, base::BindOnce(
                      &FastPairDataEncryptorImplTest::OnDataEncryptorCreateAsync,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::NullCallback()));
   }
 
   void FailedSetUpNoKeyPair() {
@@ -147,12 +147,33 @@ class FastPairDataEncryptorImplTest : public testing::TestWithParam<TestParam> {
     FastPairDataEncryptorImpl::Factory::CreateAsync(
         device_, base::BindOnce(
                      &FastPairDataEncryptorImplTest::OnDataEncryptorCreateAsync,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::NullCallback()));
+  }
+
+  void FailedSetUpWithAccountKey(
+      std::optional<std::vector<uint8_t>> account_key,
+      base::OnceClosure quit_closure) {
+    repository_ = std::make_unique<FakeFastPairRepository>();
+    // Not using the param here to control the type of device because only
+    // the kFastPairSubsequent protocol uses account key.
+    device_ = base::MakeRefCounted<Device>(kValidModelId, kTestAddress,
+                                           Protocol::kFastPairSubsequent);
+    if (account_key) {
+      device_->set_account_key(*account_key);
+    }
+    FastPairDataEncryptorImpl::Factory::CreateAsync(
+        device_, base::BindOnce(
+                     &FastPairDataEncryptorImplTest::OnDataEncryptorCreateAsync,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(quit_closure)));
   }
 
   void OnDataEncryptorCreateAsync(
+      base::OnceClosure quit_closure,
       std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor) {
     data_encryptor_ = std::move(fast_pair_data_encryptor);
+    if (quit_closure) {
+      std::move(quit_closure).Run();
+    }
   }
 
   const std::array<uint8_t, kBlockSizeBytes> EncryptBytes() {
@@ -291,6 +312,39 @@ TEST_P(FastPairDataEncryptorImplTest, ParseDecryptedResponse_InvalidInputSize) {
 TEST_P(FastPairDataEncryptorImplTest, NoKeyPair) {
   FailedSetUpNoKeyPair();
   base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(data_encryptor_);
+}
+
+TEST_P(FastPairDataEncryptorImplTest, NoAccountKey) {
+  EXPECT_FALSE(data_encryptor_);
+  base::RunLoop run_loop;
+  FailedSetUpWithAccountKey(std::nullopt, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_FALSE(data_encryptor_);
+}
+
+TEST_P(FastPairDataEncryptorImplTest, EmptyAccountKey) {
+  EXPECT_FALSE(data_encryptor_);
+  base::RunLoop run_loop;
+  FailedSetUpWithAccountKey(std::vector<uint8_t>{}, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_FALSE(data_encryptor_);
+}
+
+TEST_P(FastPairDataEncryptorImplTest, UndersizedAccountKey) {
+  EXPECT_FALSE(data_encryptor_);
+  base::RunLoop run_loop;
+  FailedSetUpWithAccountKey(std::vector<uint8_t>{0x04}, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_FALSE(data_encryptor_);
+}
+
+TEST_P(FastPairDataEncryptorImplTest, OversizedAccountKey) {
+  EXPECT_FALSE(data_encryptor_);
+  base::RunLoop run_loop;
+  FailedSetUpWithAccountKey(std::vector<uint8_t>(20, 0x01),
+                            run_loop.QuitClosure());
+  run_loop.Run();
   EXPECT_FALSE(data_encryptor_);
 }
 
