@@ -5,6 +5,7 @@ tasak@google.com
 nuskos@chromium.org
 mikt@google.com
 bikineev@chromium.org
+arthursonzogni@chromium.org
 
 per-file pointers/raw_ptr*=file://base/memory/MIRACLE_PTR_OWNERS
 per-file pointers/raw_ref*=file://base/memory/MIRACLE_PTR_OWNERS
