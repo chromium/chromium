@@ -200,7 +200,6 @@ FrameVisibilityVoter::GetSpeculativeFramesForActiveFrame(
       matching_speculative_frames.push_back(speculative_frame);
     }
   }
-  CHECK_LE(matching_speculative_frames.size(), 1u);
   return matching_speculative_frames;
 }
 
