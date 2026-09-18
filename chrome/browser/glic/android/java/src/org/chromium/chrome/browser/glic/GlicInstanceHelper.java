@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.glic;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
@@ -37,7 +38,10 @@ public class GlicInstanceHelper {
     private GlicInstanceHelper() {}
 
     @CalledByNative
-    private void onInstanceChanged(String conversationId, String conversationTitle, int taskId) {
+    private void onInstanceChanged(
+            @JniType("std::string") String conversationId,
+            @JniType("std::string") String conversationTitle,
+            int taskId) {
         mConversationId = conversationId;
         mConversationTitle = conversationTitle;
         mTaskId = taskId;

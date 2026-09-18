@@ -5,6 +5,7 @@
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 
 #include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -19,7 +20,7 @@
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/facilitated_payments/ui/android/internal/jni/FacilitatedPaymentsPaymentMethodsControllerBridge_jni.h"
 
 FacilitatedPaymentsController::FacilitatedPaymentsController(
@@ -126,14 +127,12 @@ void FacilitatedPaymentsController::OnEwalletSelected(JNIEnv* env,
 }
 
 void FacilitatedPaymentsController::OnPaymentAppSelected(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& j_package_name,
-    const base::android::JavaRef<jstring>& j_activity_name) {
+    const std::string& package_name,
+    const std::string& activity_name) {
   if (on_fop_selected_) {
     std::move(on_fop_selected_)
-        .Run(payments::facilitated::SelectedFopData(
-            base::android::ConvertJavaStringToUTF8(env, j_package_name),
-            base::android::ConvertJavaStringToUTF8(env, j_activity_name)));
+        .Run(payments::facilitated::SelectedFopData(package_name,
+                                                    activity_name));
   }
 }
 

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.glic;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
@@ -23,7 +24,11 @@ public class ActorLoginPermission {
     @CalledByNative
     @VisibleForTesting
     ActorLoginPermission(
-            String siteOrAppName, GURL url, String signonRealm, String username, GURL faviconUrl) {
+            @JniType("std::string") String siteOrAppName,
+            @JniType("GURL") GURL url,
+            @JniType("std::string") String signonRealm,
+            @JniType("std::u16string") String username,
+            @JniType("GURL") GURL faviconUrl) {
         mSiteOrAppName = siteOrAppName;
         mUrl = url;
         mSignonRealm = signonRealm;

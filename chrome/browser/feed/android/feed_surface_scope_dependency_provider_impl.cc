@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <vector>
+
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
@@ -13,9 +16,10 @@
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/variations/variations_ids_provider.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/feed/android/jni_headers/FeedSurfaceScopeDependencyProviderImpl_jni.h"
 
 namespace feed::android {
@@ -51,24 +55,19 @@ void OnFetchResourceFinished(JNIEnv* env,
 
 static void JNI_FeedSurfaceScopeDependencyProviderImpl_FetchResource(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_url,
-    const base::android::JavaRef<jstring>& j_method,
-    const base::android::JavaRef<jobjectArray>& j_header_name_and_values,
+    const GURL& url,
+    const std::string& method,
+    const std::vector<std::string>& header_name_and_values,
     const base::android::JavaRef<jbyteArray>& j_post_data,
     const base::android::JavaRef<jobject>& callback_obj) {
   FeedApi* feed_stream_api = GetFeedApi();
   if (!feed_stream_api) {
     return;
   }
-  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  std::vector<std::string> header_name_and_values;
-  base::android::AppendJavaStringArrayToStringVector(
-      env, j_header_name_and_values, &header_name_and_values);
   std::string post_data;
   base::android::JavaByteArrayToString(env, j_post_data, &post_data);
   feed_stream_api->FetchResource(
-      url, base::android::ConvertJavaStringToUTF8(env, j_method),
-      header_name_and_values, post_data,
+      url, method, header_name_and_values, post_data,
       base::BindOnce(
           &OnFetchResourceFinished, env,
           base::android::ScopedJavaGlobalRef<jobject>(callback_obj)));

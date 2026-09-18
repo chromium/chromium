@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.glic;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -63,8 +64,8 @@ public class GlicActorLoginBridge {
 
         void revokePermission(
                 long nativeGlicActorLoginBridge,
-                String signonRealm,
-                String username,
+                @JniType("std::string") String signonRealm,
+                @JniType("std::string") String username,
                 Callback<Boolean> callback);
     }
 }

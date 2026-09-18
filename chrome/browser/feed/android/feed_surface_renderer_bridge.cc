@@ -23,9 +23,10 @@
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/variations/variations_ids_provider.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/feed/android/jni_headers/FeedSurfaceRendererBridge_jni.h"
 
 using base::android::JavaRef;
@@ -209,17 +210,15 @@ void FeedSurfaceRendererBridge::SurfaceClosed(JNIEnv* env) {
 }
 
 static void JNI_FeedSurfaceRendererBridge_ReportOpenAction(
-    JNIEnv* env,
     Profile* profile,
     int32_t surface_id,
-    const JavaRef<jobject>& j_url,
+    const GURL& url,
     const std::string& slice_id,
     int action_type) {
   FeedApi* feed_api = GetFeedApi(profile);
   if (!feed_api) {
     return;
   }
-  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   feed_api->ReportOpenAction(url, FromJavaSurfaceId(surface_id), slice_id,
                              static_cast<OpenActionType>(action_type));
 }
@@ -238,19 +237,14 @@ static void JNI_FeedSurfaceRendererBridge_ReportOpenVisitComplete(
 }
 
 static void JNI_FeedSurfaceRendererBridge_UpdateUserProfileOnLinkClick(
-    JNIEnv* env,
     Profile* profile,
-    const base::android::JavaRef<jobject>& j_url,
-    const base::android::JavaRef<jlongArray>& entity_mids) {
+    const GURL& url,
+    const std::vector<int64_t>& entity_mids) {
   FeedApi* feed_api = GetFeedApi(profile);
   if (!feed_api) {
     return;
   }
-  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  std::vector<int64_t> entities_mids_vector;
-  base::android::JavaLongArrayToInt64Vector(env, entity_mids,
-                                            &entities_mids_vector);
-  feed_api->UpdateUserProfileOnLinkClick(url, entities_mids_vector);
+  feed_api->UpdateUserProfileOnLinkClick(url, entity_mids);
 }
 
 static void JNI_FeedSurfaceRendererBridge_ReportSliceViewed(

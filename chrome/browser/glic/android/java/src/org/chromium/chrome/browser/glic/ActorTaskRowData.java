@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.glic;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
@@ -27,8 +28,8 @@ public class ActorTaskRowData {
     @CalledByNative
     public ActorTaskRowData(
             int taskId,
-            String title,
-            String subtitle,
+            @JniType("std::string") String title,
+            @JniType("std::string") String subtitle,
             boolean isEnabled,
             boolean needsReview,
             int tabId) {

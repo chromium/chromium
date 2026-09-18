@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/android/glic_navigation_utils_android.h"
 
+#include <string>
 #include <string_view>
 
 #include "base/android/jni_android.h"
@@ -11,22 +12,21 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/glic/android/jni_headers/GlicNavigationUtils_jni.h"
 
 namespace glic {
 
 void ShowGlicSettings(GlicSettingsPage settings_page,
                       std::string_view highlight_field) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_GlicNavigationUtils_showGlicSettings(
-      env, static_cast<int>(settings_page),
-      base::android::ConvertUTF8ToJavaString(env, highlight_field));
+  Java_GlicNavigationUtils_showGlicSettings(jni_zero::AttachCurrentThread(),
+                                            static_cast<int>(settings_page),
+                                            std::string(highlight_field));
 }
 
 void ShowSignIn(Profile* profile, content::WebContents* web_contents) {
   Java_GlicNavigationUtils_showSignIn(
-      base::android::AttachCurrentThread(), profile->GetJavaObject(),
+      jni_zero::AttachCurrentThread(), profile->GetJavaObject(),
       web_contents ? web_contents->GetJavaWebContents() : nullptr);
 }
 

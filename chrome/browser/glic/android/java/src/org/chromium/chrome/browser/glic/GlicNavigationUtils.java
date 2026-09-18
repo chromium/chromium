@@ -12,6 +12,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
@@ -59,7 +60,8 @@ public class GlicNavigationUtils {
 
     /** Opens the GLIC settings page. */
     @CalledByNative
-    static void showGlicSettings(@GlicSettingsPage int settingsPage, String highlightField) {
+    static void showGlicSettings(
+            @GlicSettingsPage int settingsPage, @JniType("std::string") String highlightField) {
         Context context = ContextUtils.getApplicationContext();
 
         SettingsNavigation settingsNavigation =

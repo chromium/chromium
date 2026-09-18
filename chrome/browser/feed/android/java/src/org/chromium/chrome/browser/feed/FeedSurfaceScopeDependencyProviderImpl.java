@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -135,9 +136,9 @@ public class FeedSurfaceScopeDependencyProviderImpl
     @NativeMethods
     public interface Natives {
         void fetchResource(
-                GURL url,
-                String method,
-                String[] headerNameAndValues,
+                @JniType("GURL") GURL url,
+                @JniType("std::string") String method,
+                @JniType("std::vector<std::string>") String[] headerNameAndValues,
                 byte @Nullable [] postData,
                 Callback<NetworkResponse> callback);
     }

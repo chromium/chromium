@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_ANDROID_GLIC_ACTOR_LOGIN_BRIDGE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_set.h"
@@ -31,14 +32,12 @@ class GlicActorLoginBridge {
   GlicActorLoginBridge(const GlicActorLoginBridge&) = delete;
   GlicActorLoginBridge& operator=(const GlicActorLoginBridge&) = delete;
 
-  void Destroy(JNIEnv* env);
+  void Destroy();
 
-  void GetAllPermissions(JNIEnv* env,
-                         const base::android::JavaRef<jobject>& jcallback);
+  void GetAllPermissions(const base::android::JavaRef<jobject>& jcallback);
 
-  void RevokePermission(JNIEnv* env,
-                        const base::android::JavaRef<jstring>& j_signon_realm,
-                        const base::android::JavaRef<jstring>& j_username,
+  void RevokePermission(const std::string& signon_realm,
+                        const std::string& username,
                         const base::android::JavaRef<jobject>& jcallback);
 
  private:

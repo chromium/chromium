@@ -12,6 +12,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -25,7 +26,8 @@ public class GlicTestEnvironmentAndroid {
     }
 
     @CalledByNative
-    public static void setActivityOrientation(WebContents webContents, int orientation) {
+    public static void setActivityOrientation(
+            @JniType("content::WebContents*") @Nullable WebContents webContents, int orientation) {
         if (webContents == null) return;
         WindowAndroid window = webContents.getTopLevelNativeWindow();
         if (window == null) return;
@@ -63,7 +65,8 @@ public class GlicTestEnvironmentAndroid {
 
         void destroy(long nativeGlicTestEnvironmentAndroid);
 
-        String getURL(long nativeGlicTestEnvironmentAndroid, String path);
+        @JniType("std::string")
+        String getURL(long nativeGlicTestEnvironmentAndroid, @JniType("std::string") String path);
 
         boolean isWebClientConnected(long nativeGlicTestEnvironmentAndroid);
 

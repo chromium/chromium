@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FACILITATED_PAYMENTS_UI_ANDROID_FACILITATED_PAYMENTS_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 #include <string_view>
 
 #include "base/android/scoped_java_ref.h"
@@ -79,10 +80,8 @@ class FacilitatedPaymentsController {
 
   void OnEwalletSelected(JNIEnv* env, int64_t instrument_id);
 
-  void OnPaymentAppSelected(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& package_name,
-      const base::android::JavaRef<jstring>& activity_name);
+  void OnPaymentAppSelected(const std::string& package_name,
+                            const std::string& activity_name);
 
   // Asks the `view_` to show the PIX account linking prompt. Virtual for
   // overriding in tests.

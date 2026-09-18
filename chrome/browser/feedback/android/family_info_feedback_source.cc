@@ -4,6 +4,8 @@
 
 #include "chrome/browser/feedback/android/family_info_feedback_source.h"
 
+#include <string>
+
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
@@ -20,19 +22,16 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/feedback/android/jni_headers/FamilyInfoFeedbackSource_jni.h"
 
-using base::android::AttachCurrentThread;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
+using jni_zero::AttachCurrentThread;
+using jni_zero::JavaRef;
 
 namespace chrome::android {
 
 static void JNI_FamilyInfoFeedbackSource_Start(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
+    JavaRef<jobject>& obj,
     Profile* profile) {
   FamilyInfoFeedbackSource* feedback_source =
       new FamilyInfoFeedbackSource(obj, profile);
@@ -40,7 +39,7 @@ static void JNI_FamilyInfoFeedbackSource_Start(
 }
 
 FamilyInfoFeedbackSource::FamilyInfoFeedbackSource(
-    const base::android::JavaRef<jobject>& obj,
+    const JavaRef<jobject>& obj,
     Profile* profile)
     : supervised_user_service_(
           supervised_user::SupervisedUserServiceFactory::GetForProfile(profile)),
@@ -84,11 +83,10 @@ void FamilyInfoFeedbackSource::OnSuccess(
     // Store the family member role for the primary account of the profile.
     if (primary_account_gaia == member.user_id()) {
       // If a child is signed-in, report the parental control web filter.
-      ScopedJavaLocalRef<jstring> child_web_filter_type = nullptr;
+      std::string child_web_filter_type;
       if (member.role() == kidsmanagement::CHILD) {
-        child_web_filter_type = ConvertUTF8ToJavaString(
-            env, supervised_user::WebFilterTypeToDisplayString(
-                     url_filtering_service_->GetWebFilterType()));
+        child_web_filter_type = supervised_user::WebFilterTypeToDisplayString(
+            url_filtering_service_->GetWebFilterType());
       }
       Java_FamilyInfoFeedbackSource_processPrimaryAccountFamilyInfo(
           env, java_ref_, supervised_user::FamilyRoleToString(member.role()),

@@ -285,7 +285,7 @@ public class FeedSurfaceRendererBridge {
         void reportOpenAction(
                 @JniType("Profile*") Profile profile,
                 int surfaceId,
-                GURL url,
+                @JniType("GURL") GURL url,
                 @JniType("std::string") @Nullable String sliceId,
                 @OpenActionType int openActionType);
 
@@ -303,7 +303,9 @@ public class FeedSurfaceRendererBridge {
         void reportStreamScrollStart(@JniType("Profile*") Profile profile, int surfaceId);
 
         void updateUserProfileOnLinkClick(
-                @JniType("Profile*") Profile profile, GURL url, long[] mids);
+                @JniType("Profile*") Profile profile,
+                @JniType("GURL") GURL url,
+                @JniType("std::vector<int64_t>") long[] mids);
 
         void processThereAndBackAgain(
                 @JniType("Profile*") Profile profile, byte[] data, byte[] loggingParameters);

@@ -57,10 +57,11 @@ public class FamilyInfoFeedbackSource implements AsyncFeedbackSource {
 
     @CalledByNative
     private void processPrimaryAccountFamilyInfo(
-            @JniType("std::string") String familyRole, @Nullable String webFilterType) {
+            @JniType("std::string") String familyRole,
+            @JniType("std::string") String webFilterType) {
         processFamilyMemberRole(familyRole);
 
-        if (webFilterType != null) {
+        if (!webFilterType.isEmpty()) {
             processParentalControlSitesChild(webFilterType);
         }
 

@@ -32,11 +32,8 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/test/test_support_jni_headers/FamilyInfoFeedbackSourceTestBridge_jni.h"
-
-using base::android::ConvertUTF8ToJavaString;
-using base::android::ScopedJavaLocalRef;
 
 namespace chrome::android {
 namespace {
@@ -88,12 +85,9 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
   Profile* profile() const { return profile_.get(); }
 
   // Methods to access Java counterpart FamilyInfoFeedbackSource.
-  std::string GetFeedbackValue(std::string feedback_tag) {
-    const base::android::JavaRef<jstring>& j_value =
-        Java_FamilyInfoFeedbackSourceTestBridge_getValue(
-            env_, j_feedback_source_,
-            base::android::ConvertUTF8ToJavaString(env_, feedback_tag));
-    return base::android::ConvertJavaStringToUTF8(env_, j_value);
+  std::string GetFeedbackValue(const std::string& feedback_tag) {
+    return Java_FamilyInfoFeedbackSourceTestBridge_getValue(
+        env_, j_feedback_source_, feedback_tag);
   }
 
   void OnListFamilyMembersSuccess(
@@ -127,7 +121,7 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
   // Creates a Java instance of FamilyInfoFeedbackSource.
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObjectForTesting() {
     return Java_FamilyInfoFeedbackSourceTestBridge_createFamilyInfoFeedbackSource(
-        env_, profile_.get()->GetJavaObject());
+        env_, profile_.get());
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -223,12 +217,9 @@ class FamilyInfoFeedbackSourceTest
 
   // Methods to access Java counterpart FamilyInfoFeedbackSource.
   std::string GetFeedbackValue() {
-    const base::android::JavaRef<jstring>& j_value =
-        Java_FamilyInfoFeedbackSourceTestBridge_getValue(
-            env_, j_feedback_source_,
-            base::android::ConvertUTF8ToJavaString(
-                env_, supervised_user::kFamilyMemberRoleFeedbackTag));
-    return base::android::ConvertJavaStringToUTF8(env_, j_value);
+    return Java_FamilyInfoFeedbackSourceTestBridge_getValue(
+        env_, j_feedback_source_,
+        supervised_user::kFamilyMemberRoleFeedbackTag);
   }
 
   void OnListFamilyMembersSuccess(
@@ -262,7 +253,7 @@ class FamilyInfoFeedbackSourceTest
   // Creates a Java instance of FamilyInfoFeedbackSource.
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObjectForTesting() {
     return Java_FamilyInfoFeedbackSourceTestBridge_createFamilyInfoFeedbackSource(
-        env_, profile_.get()->GetJavaObject());
+        env_, profile_.get());
   }
 
   content::BrowserTaskEnvironment task_environment_;

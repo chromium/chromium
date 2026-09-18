@@ -4,6 +4,9 @@
 
 #include "chrome/browser/glic/android/glic_actor_login_bridge.h"
 
+#include <memory>
+#include <string>
+
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -18,12 +21,10 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_permissions_manager_impl.h"
 #include "url/android/gurl_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/glic/android/jni_headers/ActorLoginPermission_jni.h"
 #include "chrome/browser/glic/android/jni_headers/GlicActorLoginBridge_jni.h"
 
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -47,12 +48,11 @@ GlicActorLoginBridge::GlicActorLoginBridge(JNIEnv* env,
 
 GlicActorLoginBridge::~GlicActorLoginBridge() = default;
 
-void GlicActorLoginBridge::Destroy(JNIEnv* env) {
+void GlicActorLoginBridge::Destroy() {
   delete this;
 }
 
 void GlicActorLoginBridge::GetAllPermissions(
-    JNIEnv* env,
     const JavaRef<jobject>& jcallback) {
   manager_->GetAllPermissions(
       SyncServiceFactory::GetForProfile(profile_),
@@ -64,7 +64,7 @@ void GlicActorLoginBridge::GetAllPermissions(
 void GlicActorLoginBridge::OnGetAllPermissionsComplete(
     ScopedJavaGlobalRef<jobject> jcallback,
     base::flat_set<password_manager::ActorLoginPermission> permissions) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
 
   ScopedJavaLocalRef<jobject> j_list =
       Java_GlicActorLoginBridge_createPermissionList(env);
@@ -72,11 +72,9 @@ void GlicActorLoginBridge::OnGetAllPermissionsComplete(
   for (const auto& permission : permissions) {
     ScopedJavaLocalRef<jobject> j_permission =
         Java_ActorLoginPermission_Constructor(
-            env, ConvertUTF8ToJavaString(env, permission.domain_info.name),
-            url::GURLAndroid::FromNativeGURL(env, permission.domain_info.url),
-            ConvertUTF8ToJavaString(env, permission.domain_info.signon_realm),
-            ConvertUTF16ToJavaString(env, permission.username),
-            url::GURLAndroid::FromNativeGURL(env, permission.favicon_url));
+            env, permission.domain_info.name, permission.domain_info.url,
+            permission.domain_info.signon_realm, permission.username,
+            permission.favicon_url);
 
     Java_GlicActorLoginBridge_addPermissionToList(env, j_list, j_permission);
   }
@@ -84,16 +82,9 @@ void GlicActorLoginBridge::OnGetAllPermissionsComplete(
   base::android::RunObjectCallbackAndroid(jcallback, j_list);
 }
 
-void GlicActorLoginBridge::RevokePermission(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_signon_realm,
-    const JavaRef<jstring>& j_username,
-    const JavaRef<jobject>& jcallback) {
-  std::string signon_realm =
-      base::android::ConvertJavaStringToUTF8(env, j_signon_realm);
-  std::string username =
-      base::android::ConvertJavaStringToUTF8(env, j_username);
-
+void GlicActorLoginBridge::RevokePermission(const std::string& signon_realm,
+                                            const std::string& username,
+                                            const JavaRef<jobject>& jcallback) {
   manager_->RevokePermission(
       signon_realm, username,
       base::BindOnce(&GlicActorLoginBridge::OnRevokePermissionComplete,

@@ -13,7 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 
-import java.util.Arrays;
+import java.util.List;
 
 /** JNI Bridge to dispatch native C++ GlicSplitButtonDelegate requests and UI events. */
 @JNINamespace("glic")
@@ -47,7 +47,9 @@ public class GlicSplitButtonDelegateBridge implements ChromeAndroidTaskFeature {
 
     @CalledByNative
     public void onTriggerGlicNudgeUi(
-            String label, String anchoredMessageText, String promptSuggestion) {
+            @JniType("std::string") String label,
+            @JniType("std::string") String anchoredMessageText,
+            @JniType("std::string") String promptSuggestion) {
         mDelegate.onTriggerGlicNudgeUi(label, anchoredMessageText, promptSuggestion);
     }
 
@@ -87,12 +89,12 @@ public class GlicSplitButtonDelegateBridge implements ChromeAndroidTaskFeature {
     }
 
     @CalledByNative
-    public void setGlicActorNudgeLabel(String nudgeLabel) {
+    public void setGlicActorNudgeLabel(@JniType("std::u16string") String nudgeLabel) {
         mDelegate.setGlicActorNudgeLabel(nudgeLabel);
     }
 
     @CalledByNative
-    public void triggerGlicActorNudge(String nudgeLabel) {
+    public void triggerGlicActorNudge(@JniType("std::u16string") String nudgeLabel) {
         mDelegate.triggerGlicActorNudge(nudgeLabel);
     }
 
@@ -102,8 +104,8 @@ public class GlicSplitButtonDelegateBridge implements ChromeAndroidTaskFeature {
     }
 
     @CalledByNative
-    public void showActorTaskListBubble(ActorTaskRowData[] rows) {
-        mDelegate.showActorTaskListBubble(Arrays.asList(rows));
+    public void showActorTaskListBubble(@JniType("std::vector") List<ActorTaskRowData> rows) {
+        mDelegate.showActorTaskListBubble(rows);
     }
 
     @CalledByNative

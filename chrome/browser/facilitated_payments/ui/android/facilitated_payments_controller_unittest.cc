@@ -5,10 +5,10 @@
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 
 #include <memory>
+#include <string>
 #include <tuple>
 #include <vector>
 
-#include "base/android/jni_string.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -519,10 +519,7 @@ TEST_F(FacilitatedPaymentsControllerTest, OnPaymentAppSelected) {
           testing::Field(&payments::facilitated::SelectedFopData::activity_name,
                          activity_name))));
 
-  JNIEnv* env = base::android::AttachCurrentThread();
-  controller_->OnPaymentAppSelected(
-      env, base::android::ConvertUTF8ToJavaString(env, package_name),
-      base::android::ConvertUTF8ToJavaString(env, activity_name));
+  controller_->OnPaymentAppSelected(package_name, activity_name);
 }
 
 class FacilitatedPaymentsControllerTestForAccountLinkingType

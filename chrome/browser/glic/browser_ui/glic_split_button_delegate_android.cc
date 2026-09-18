@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
-#include "chrome/browser/glic/android/jni_headers/ActorTaskRowData_jni.h"
-#include "chrome/browser/glic/android/jni_headers/GlicSplitButtonDelegateBridge_jni.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
@@ -19,8 +17,15 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/actor/core/task_id.h"
+#include "third_party/jni_zero/default_conversions.h"
+
+// Must come after headers that provide symbols used by @JniType.
+#include "chrome/browser/glic/android/jni_headers/ActorTaskRowData_jni.h"
+#include "chrome/browser/glic/android/jni_headers/GlicSplitButtonDelegateBridge_jni.h"
 
 namespace glic {
+
+using jni_zero::AttachCurrentThread;
 
 // C++ implementation of GlicSplitButtonViewDelegate for Android.
 // Acts as JNI bridge to forward C++ split button requests to Java's
@@ -50,58 +55,49 @@ class GlicSplitButtonDelegateAndroid : public GlicSplitButtonViewDelegate {
 
   // GlicSplitButtonViewDelegate:
   void OnTriggerGlicNudgeUI(NudgeParams params) override {
-    JNIEnv* env = base::android::AttachCurrentThread();
     Java_GlicSplitButtonDelegateBridge_onTriggerGlicNudgeUi(
-        env, j_delegate_,
-        base::android::ConvertUTF8ToJavaString(env, params.label),
-        base::android::ConvertUTF8ToJavaString(env,
-                                               params.anchored_message_text),
-        base::android::ConvertUTF8ToJavaString(
-            env, params.prompt_suggestion.value_or("")));
+        AttachCurrentThread(), j_delegate_, params.label,
+        params.anchored_message_text, params.prompt_suggestion.value_or(""));
   }
 
   void OnHideGlicNudgeUI() override {
-    Java_GlicSplitButtonDelegateBridge_onHideGlicNudgeUi(
-        base::android::AttachCurrentThread(), j_delegate_);
+    Java_GlicSplitButtonDelegateBridge_onHideGlicNudgeUi(AttachCurrentThread(),
+                                                         j_delegate_);
   }
 
   bool GetIsShowingGlicNudge() override {
     return Java_GlicSplitButtonDelegateBridge_getIsShowingGlicNudge(
-        base::android::AttachCurrentThread(), j_delegate_);
+        AttachCurrentThread(), j_delegate_);
   }
 
   void ShowGlicActorTaskIcon() override {
     Java_GlicSplitButtonDelegateBridge_showGlicActorTaskIcon(
-        base::android::AttachCurrentThread(), j_delegate_);
+        AttachCurrentThread(), j_delegate_);
   }
 
   void HideGlicActorTaskIcon() override {
     Java_GlicSplitButtonDelegateBridge_hideGlicActorTaskIcon(
-        base::android::AttachCurrentThread(), j_delegate_);
+        AttachCurrentThread(), j_delegate_);
   }
 
   bool GetIsShowingGlicActorTaskIconNudge() override {
     return Java_GlicSplitButtonDelegateBridge_getIsShowingGlicActorTaskIconNudge(
-        base::android::AttachCurrentThread(), j_delegate_);
+        AttachCurrentThread(), j_delegate_);
   }
 
   void SetGlicActorNudgeLabel(const std::u16string& nudge_label) override {
-    JNIEnv* env = base::android::AttachCurrentThread();
     Java_GlicSplitButtonDelegateBridge_setGlicActorNudgeLabel(
-        env, j_delegate_,
-        base::android::ConvertUTF16ToJavaString(env, nudge_label));
+        AttachCurrentThread(), j_delegate_, nudge_label);
   }
 
   void TriggerGlicActorNudge(const std::u16string& nudge_label) override {
-    JNIEnv* env = base::android::AttachCurrentThread();
     Java_GlicSplitButtonDelegateBridge_triggerGlicActorNudge(
-        env, j_delegate_,
-        base::android::ConvertUTF16ToJavaString(env, nudge_label));
+        AttachCurrentThread(), j_delegate_, nudge_label);
   }
 
   void SetGlicActorNudgePressedState(bool pressed) override {
     Java_GlicSplitButtonDelegateBridge_setGlicActorNudgePressedState(
-        base::android::AttachCurrentThread(), j_delegate_, pressed);
+        AttachCurrentThread(), j_delegate_, pressed);
   }
 
   void ShowActorTaskListBubble() override {
@@ -115,41 +111,36 @@ class GlicSplitButtonDelegateAndroid : public GlicSplitButtonViewDelegate {
         ActorTaskListBubbleController::GetActorTaskRowsForBubble(
             profile, manager->actor_task_list_bubble_rows());
 
-    JNIEnv* env = base::android::AttachCurrentThread();
-    std::vector<base::android::ScopedJavaLocalRef<jobject>> j_rows;
+    JNIEnv* env = AttachCurrentThread();
+    std::vector<jni_zero::ScopedJavaLocalRef<jobject>> j_rows;
     j_rows.reserve(rows.size());
     for (const auto& row : rows) {
       j_rows.push_back(Java_ActorTaskRowData_Constructor(
-          env, row.task_id.value(),
-          base::android::ConvertUTF8ToJavaString(env, row.title),
-          base::android::ConvertUTF8ToJavaString(env, row.subtitle),
-          row.is_enabled, row.needs_review, row.tab_id));
+          env, row.task_id.value(), row.title, row.subtitle, row.is_enabled,
+          row.needs_review, row.tab_id));
     }
-    Java_GlicSplitButtonDelegateBridge_showActorTaskListBubble(
-        env, j_delegate_,
-        base::android::ToTypedJavaArrayOfObjects(
-            env, j_rows,
-            org_chromium_chrome_browser_glic_ActorTaskRowData_clazz(env)));
+    Java_GlicSplitButtonDelegateBridge_showActorTaskListBubble(env, j_delegate_,
+                                                               j_rows);
   }
 
   void CloseActorTaskListBubble() override {
     Java_GlicSplitButtonDelegateBridge_closeActorTaskListBubble(
-        base::android::AttachCurrentThread(), j_delegate_);
+        AttachCurrentThread(), j_delegate_);
   }
 
   bool IsActorTaskListBubbleShowing() override {
     return Java_GlicSplitButtonDelegateBridge_isActorTaskListBubbleShowing(
-        base::android::AttachCurrentThread(), j_delegate_);
+        AttachCurrentThread(), j_delegate_);
   }
 
   void SetGlicShowState(bool show) override {
-    Java_GlicSplitButtonDelegateBridge_setGlicShowState(
-        base::android::AttachCurrentThread(), j_delegate_, show);
+    Java_GlicSplitButtonDelegateBridge_setGlicShowState(AttachCurrentThread(),
+                                                        j_delegate_, show);
   }
 
   void SetGlicPanelIsOpen(bool open) override {
-    Java_GlicSplitButtonDelegateBridge_setGlicPanelIsOpen(
-        base::android::AttachCurrentThread(), j_delegate_, open);
+    Java_GlicSplitButtonDelegateBridge_setGlicPanelIsOpen(AttachCurrentThread(),
+                                                          j_delegate_, open);
   }
 
   // Methods invoked from Java GlicSplitButtonDelegateBridge via JNI:

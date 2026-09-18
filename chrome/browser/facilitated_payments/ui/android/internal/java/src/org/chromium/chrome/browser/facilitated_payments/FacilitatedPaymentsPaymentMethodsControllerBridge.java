@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -106,6 +107,8 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
                 @AccountLinkingPromptUserAction int action);
 
         void onPaymentAppSelected(
-                long nativeFacilitatedPaymentsController, String packageName, String activityName);
+                long nativeFacilitatedPaymentsController,
+                @JniType("std::string") String packageName,
+                @JniType("std::string") String activityName);
     }
 }
