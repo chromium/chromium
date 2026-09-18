@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/net/network_diagnostics/network_diagnostics.h"
+
 #include <memory>
+#include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/values.h"
-#include "chrome/browser/ash/net/network_diagnostics/network_diagnostics.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_test_helper.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
@@ -28,7 +31,7 @@ namespace mojom = ::chromeos::network_diagnostics::mojom;
 // is based on the IP v4 config path used to set up IP v4 configs in
 // FakeShillManagerClient::SetupDefaultEnvironment().
 const char kIPv4ConfigPath[] = "ipconfig_v4_path";
-const std::vector<std::string> kWellFormedDnsServers = {
+constexpr std::string_view kWellFormedDnsServers[] = {
     "192.168.1.100", "192.168.1.101", "192.168.1.102"};
 
 // This fakes a DebugDaemonClient by serving fake ICMP results when the
@@ -94,11 +97,11 @@ class NetworkDiagnosticsTest : public NetworkDiagnosticsTestHelper {
   // service by overwriting the initial IPConfigs that are set up in
   // FakeShillManagerClient::SetupDefaultEnvironment(). Attach name
   // servers to the IP config.
-  void SetUpNameServers(const std::vector<std::string>& name_servers) {
+  void SetUpNameServers(base::span<const std::string_view> name_servers) {
     DCHECK(!wifi_path().empty());
     // Set up the name servers
     base::ListValue dns_servers;
-    for (const std::string& name_server : name_servers) {
+    for (std::string_view name_server : name_servers) {
       dns_servers.Append(name_server);
     }
 
