@@ -32,8 +32,14 @@ class ApplicationLocaleStorage {
   const std::string& Get(
       LocaleFormat format = LocaleFormat::kChromeNormalized) const;
 
+  // Returns current locale language tag.
+  const base::i18n::LanguageTag& GetTag() const;
+
   // Changes the locale string.
   void Set(std::string new_locale);
+
+  // Changes the locale language tag.
+  void SetTag(base::i18n::LanguageTag new_locale);
 
   // Registers a callback which is triggered when the locale stored in this
   // class is changed.

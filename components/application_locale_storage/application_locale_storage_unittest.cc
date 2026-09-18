@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,6 +17,14 @@ TEST(ApplicationLocaleStorageTest, GetShouldReturnPreviousSet) {
   ApplicationLocaleStorage locale_storage;
   locale_storage.Set("en-US");
   EXPECT_EQ(locale_storage.Get(), "en-US");
+  EXPECT_EQ(locale_storage.GetTag(), base::i18n::GetKnownLanguageTag("en-US"));
+}
+
+TEST(ApplicationLocaleStorageTest, GetTagShouldReturnPreviousSetTag) {
+  ApplicationLocaleStorage locale_storage;
+  locale_storage.SetTag(base::i18n::GetKnownLanguageTag("pt-BR"));
+  EXPECT_EQ(locale_storage.GetTag(), base::i18n::GetKnownLanguageTag("pt-BR"));
+  EXPECT_EQ(locale_storage.Get(), "pt-BR");
 }
 
 TEST(ApplicationLocaleStorageTest, GetBCP47Format) {
@@ -38,8 +47,10 @@ TEST(ApplicationLocaleStorageTest, SetShouldTriggerCallback) {
     auto subscription =
         locale_storage.RegisterOnLocaleChangedCallback(std::move(callback));
     locale_storage.Set("ja");
+    locale_storage.SetTag(base::i18n::GetKnownLanguageTag("fr"));
   }
 
-  ASSERT_EQ(history.size(), static_cast<size_t>(1u));
+  ASSERT_EQ(history.size(), static_cast<size_t>(2u));
   EXPECT_EQ(history[0], "ja");
+  EXPECT_EQ(history[1], "fr");
 }

@@ -8,11 +8,10 @@
 #include <utility>
 
 #include "base/callback_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_util.h"
 
 ApplicationLocaleStorage::ApplicationLocaleStorage()
     : locale_(base::i18n::GetKnownLanguageTag("und")) {}
@@ -24,6 +23,11 @@ const std::string& ApplicationLocaleStorage::Get(LocaleFormat) const {
   return tag_string_;
 }
 
+const base::i18n::LanguageTag& ApplicationLocaleStorage::GetTag() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return locale_;
+}
+
 void ApplicationLocaleStorage::Set(std::string new_locale) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<base::i18n::LanguageTag> new_locale_tag =
@@ -33,10 +37,14 @@ void ApplicationLocaleStorage::Set(std::string new_locale) {
                << new_locale;
     return;
   }
-  locale_ = *new_locale_tag;
+  SetTag(std::move(*new_locale_tag));
+}
+
+void ApplicationLocaleStorage::SetTag(base::i18n::LanguageTag new_locale) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  locale_ = std::move(new_locale);
   tag_string_ = std::string(locale_.tag_string());
-  on_locale_changed_callback_list_.Notify(
-      std::string(new_locale_tag->tag_string()));
+  on_locale_changed_callback_list_.Notify(tag_string_);
 }
 
 base::CallbackListSubscription
