@@ -282,7 +282,7 @@ TEST_F(AtMemorySuggestionControllerTest, DelegateRouting) {
           testing::Field(
               &AutofillSuggestionDelegate::SuggestionMetadata::multi_index,
               std::vector<size_t>{0})));
-  controller->OnSuggestionSelected(0);
+  controller->OnSuggestionAccepted(0);
 
   // OnChildSuggestionsShown routes to OnSuggestionsShown with parent metadata.
   EXPECT_CALL(mock_delegate,

@@ -55,7 +55,7 @@ public class AtMemoryBottomSheetCoordinator {
 
         void requestExpandSheet(boolean expandInFullHeight);
 
-        void onSuggestionClicked(int position);
+        void onSuggestionAccepted(int position);
 
         void onSuggestionDismissed(int position);
 

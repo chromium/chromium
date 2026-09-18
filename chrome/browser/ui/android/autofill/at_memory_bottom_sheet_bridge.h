@@ -51,7 +51,7 @@ class AtMemoryBottomSheetBridge {
   void OnDismissed(JNIEnv* env);
   void OnQuerySubmitted(JNIEnv* env, const std::u16string& query);
   void OnQueryTextChanged(JNIEnv* env, const std::u16string& query);
-  void OnSuggestionSelected(JNIEnv* env, int position);
+  void OnSuggestionAccepted(JNIEnv* env, int position);
   void OnSuggestionDismissed(JNIEnv* env, int position);
   void OnChildSuggestionsShown(JNIEnv* env, int parent_position);
   void OnChildSuggestionSelected(JNIEnv* env,

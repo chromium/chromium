@@ -81,7 +81,7 @@ class AtMemorySuggestionController : public AutofillSuggestionController {
   virtual void OnDismissed();
   void OnQuerySubmitted(const std::u16string& query);
   void OnQueryTextChanged(const std::u16string& query);
-  void OnSuggestionSelected(int position);
+  void OnSuggestionAccepted(int position);
   void OnSuggestionDismissed(int position);
   void OnChildSuggestionsShown(int parent_position);
   void OnChildSuggestionSelected(int parent_position, int child_position);

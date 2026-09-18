@@ -220,7 +220,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
                 mContext, AutofillOptionsReferrer.PERSONAL_CONTEXT_ATMEMORY_NOTICE);
     }
 
-    private void onSuggestionClicked(AutofillSuggestion suggestion, int position) {
+    private void onSuggestionAccepted(AutofillSuggestion suggestion, int position) {
         if (!suggestion.isAcceptable()) {
             return;
         }
@@ -233,7 +233,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
             }
             return;
         }
-        mDelegate.onSuggestionClicked(position);
+        mDelegate.onSuggestionAccepted(position);
     }
 
     private void onFlyoutClicked(AutofillSuggestion suggestion, int position) {
@@ -345,7 +345,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
                 .with(SuggestionItemProperties.IS_LOADING, suggestion.isLoading())
                 .with(
                         SuggestionItemProperties.ON_SUGGESTION_CLICKED,
-                        () -> onSuggestionClicked(suggestion, position))
+                        () -> onSuggestionAccepted(suggestion, position))
                 .with(
                         SuggestionItemProperties.ON_FLYOUT_CLICKED,
                         () -> onFlyoutClicked(suggestion, position))

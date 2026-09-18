@@ -157,9 +157,9 @@ void AtMemoryBottomSheetBridge::OnSuggestionDismissed(JNIEnv* env,
   controller_->OnSuggestionDismissed(position);
 }
 
-void AtMemoryBottomSheetBridge::OnSuggestionSelected(JNIEnv* env,
+void AtMemoryBottomSheetBridge::OnSuggestionAccepted(JNIEnv* env,
                                                      int position) {
-  controller_->OnSuggestionSelected(position);
+  controller_->OnSuggestionAccepted(position);
 }
 
 void AtMemoryBottomSheetBridge::OnChildSuggestionsShown(JNIEnv* env,

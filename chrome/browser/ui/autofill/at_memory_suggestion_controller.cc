@@ -239,7 +239,7 @@ void AtMemorySuggestionController::OnQueryTextChanged(
   }
 }
 
-void AtMemorySuggestionController::OnSuggestionSelected(int position) {
+void AtMemorySuggestionController::OnSuggestionAccepted(int position) {
   AcceptSuggestion(position, AutofillMetrics::SuggestionAcceptedMethod::kTap);
 }
 

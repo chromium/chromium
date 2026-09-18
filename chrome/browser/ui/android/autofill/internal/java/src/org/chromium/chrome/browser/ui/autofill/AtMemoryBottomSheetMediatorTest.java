@@ -110,7 +110,7 @@ public class AtMemoryBottomSheetMediatorTest {
     }
 
     @Test
-    public void testOnSuggestionClicked() {
+    public void testOnSuggestionAccepted() {
         List<AutofillSuggestion> suggestions =
                 List.of(
                         new AutofillSuggestion.Builder()
@@ -136,7 +136,7 @@ public class AtMemoryBottomSheetMediatorTest {
         PropertyModel itemModel1 = mModelList.get(0).model;
         itemModel1.get(ON_SUGGESTION_CLICKED).run();
 
-        verify(mDelegate).onSuggestionClicked(/* position= */ 0);
+        verify(mDelegate).onSuggestionAccepted(/* position= */ 0);
     }
 
     @Test
@@ -147,7 +147,7 @@ public class AtMemoryBottomSheetMediatorTest {
     }
 
     @Test
-    public void testOnSuggestionClicked_unacceptable() {
+    public void testOnSuggestionAccepted_unacceptable() {
         List<AutofillSuggestion> suggestions =
                 List.of(
                         new AutofillSuggestion.Builder()
@@ -163,7 +163,7 @@ public class AtMemoryBottomSheetMediatorTest {
         PropertyModel itemModel1 = mModelList.get(0).model;
         itemModel1.get(ON_SUGGESTION_CLICKED).run();
 
-        verify(mDelegate, never()).onSuggestionClicked(/* position= */ 0);
+        verify(mDelegate, never()).onSuggestionAccepted(/* position= */ 0);
     }
 
     @Test
