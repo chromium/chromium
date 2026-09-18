@@ -1,8 +1,13 @@
 caption: Enable AutoFill for credit cards
+deprecated: true
 desc: |-
+  This policy is deprecated in M156, please use <ph name="AUTOFILL_SETTINGS_POLICY_NAME">AutofillSettings</ph> instead.
+
+  To persist the current behavior of disabling <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME">AutofillCreditCardEnabled</ph>, configure <ph name="AUTOFILL_SETTINGS_POLICY_NAME">AutofillSettings</ph> with "url_pattern" set to "*" and "blocked_types" set to ["payments"].
+
   Setting the policy to True or leaving it unset means users can control autofill suggestions for credit cards in the UI.
 
-        Setting the policy to False means autofill never suggests or fills credit card information, nor will it save additional credit card information that users might submit while browsing the web.
+  Setting the policy to False means autofill never suggests or fills credit card information, nor will it save additional credit card information that users might submit while browsing the web.
 default: true
 example_value: false
 features:

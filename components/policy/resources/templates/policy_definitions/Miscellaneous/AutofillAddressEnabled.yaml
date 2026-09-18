@@ -1,8 +1,13 @@
 caption: Enable AutoFill for addresses
+deprecated: true
 desc: |-
+  This policy is deprecated in M156, please use <ph name="AUTOFILL_SETTINGS_POLICY_NAME">AutofillSettings</ph> instead.
+
+  To persist the current behavior of disabling <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME">AutofillAddressEnabled</ph>, configure <ph name="AUTOFILL_SETTINGS_POLICY_NAME">AutofillSettings</ph> with "url_pattern" set to "*" and "blocked_types" set to ["contact_info", "identity_docs", "travel"].
+
   Setting the policy to True or leaving it unset gives users control of Autofill for addresses in the UI.
 
-        Setting the policy to False means Autofill never suggests or fills address information, nor does it save additional address information that users submit while browsing the web.
+  Setting the policy to False means Autofill never suggests or fills address information, nor does it save additional address information that users submit while browsing the web.
 default: true
 example_value: false
 features:
