@@ -27,11 +27,21 @@ public class ToolModeUtils {
     }
 
     /**
+     * Returns whether the given tool mode is any sort of image generation tool. Note that
+     * TOOL_MODE_IMAGE_GEN_SELFIE is deliberately excluded, matching getRequestTypeForToolMode,
+     * which does not map it to IMAGE_GENERATION either.
+     */
+    public static boolean isImageGenTool(@ToolModeProtoIntDef.ToolMode int toolMode) {
+        return toolMode == ToolMode.TOOL_MODE_IMAGE_GEN_VALUE
+                || toolMode == ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE;
+    }
+
+    /**
      * @param requestType The current request type.
      * @param hasAttachments If there are any attachments.
      * @return The ToolMode for the given request type and attachment state.
      */
-    public static /* ToolMode */ int getToolModeForRequestType(
+    public static @ToolModeProtoIntDef.ToolMode int getToolModeForRequestType(
             @AutocompleteRequestType int requestType, boolean hasAttachments) {
         return switch (requestType) {
             case AutocompleteRequestType.IMAGE_GENERATION ->
