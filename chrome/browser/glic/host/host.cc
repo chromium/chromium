@@ -596,6 +596,10 @@ void Host::WebUiStateChanged(GlicPageHandler* page_handler,
   observers_.Notify(&Observer::WebUiStateChanged, primary_webui_state_);
 }
 
+void Host::ClientLoadErrorOccurred(ClientLoadErrorReason reason) {
+  observers_.Notify(&Observer::ClientLoadErrorOccurred, reason);
+}
+
 void Host::NotifyInstanceActivationChanged(bool is_active) {
   if (auto* client = GetPrimaryWebClient()) {
     client->NotifyInstanceActivationChanged(is_active);

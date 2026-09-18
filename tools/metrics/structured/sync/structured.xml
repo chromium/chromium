@@ -3167,14 +3167,15 @@
     </metric>
     <metric name="IsSignedIn" type="int">
       <summary>
-        Whether the user is signed in or not.
-        Deprecated in favor of the Tags bitmask metric
+        Whether the user is signed in or not. Deprecated in favor of the
+        Tags bitmask metric
       </summary>
     </metric>
     <metric name="Tags" type="int">
       <summary>
-        Various tags associated with the session, e.g. whether the user is signed in or not,
-        if certain enterprise policies are enabled, etc. Stored as a bitmask.
+        Various tags associated with the session, e.g. whether the user is signed in
+        or not, if certain enterprise policies are enabled, etc. Stored as a
+        bitmask.
       </summary>
     </metric>
   </event>
@@ -3702,9 +3703,9 @@
   <scope>device</scope>
   <key-rotation>90</key-rotation>
   <summary>
-    Metrics for tracking Gemini in Chrome (Glic) events, including invocations, features, and UI states.
+    Metrics for tracking Gemini in Chrome (Glic) events, including invocations,
+    features, and UI states.
   </summary>
-
   <enum name="GlicCuiOutcome">
     <variant value="0">SUCCESS</variant>
     <variant value="1">UNKNOWN_CANCEL</variant>
@@ -3713,6 +3714,21 @@
     <variant value="4">FAILED_LATENCY</variant>
   </enum>
 
+  <enum name="GlicClientLoadErrorReason">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">UNAVAILABLE</variant>
+    <variant value="2">INELIGIBLE_ACCOUNT</variant>
+    <variant value="3">LOCATION_MISMATCH</variant>
+    <variant value="4">DISABLED_BY_ADMIN</variant>
+    <variant value="5">OFFLINE</variant>
+    <variant value="6">SIGN_IN</variant>
+    <variant value="7">COOKIE_SYNC_FAILED</variant>
+    <variant value="8">GUEST_LOAD_FAILED</variant>
+    <variant value="9">GUEST_PROCESS_GONE</variant>
+    <variant value="10">CLIENT_ERROR</variant>
+    <variant value="11">CLIENT_LOAD_TIMEOUT</variant>
+    <variant value="12">WARMED_TIMEOUT</variant>
+  </enum>
   <event name="InvokeStarted">
     <summary>
       Recorded when a Glic invocation is initiated.
@@ -3750,7 +3766,8 @@
     </metric>
     <metric name="Outcome" type="GlicCuiOutcome">
       <summary>
-        The high level outcome of the invocation natively mapped from GlicCuiOutcome.
+        The high level outcome of the invocation natively mapped from
+        GlicCuiOutcome.
       </summary>
     </metric>
     <metric name="InvokeError" type="int">
@@ -3805,6 +3822,45 @@
     <metric name="DurationTimeDelta" type="int">
       <summary>
         The duration in milliseconds that this specific task took to complete.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="ClientLoadError">
+    <summary>
+      Recorded when the Glic client fails to load and a failure surface is shown
+      to the user in place of the client. Recorded in the browser process, which
+      is the source of truth in both the webview and no-webview architectures.
+      Reason describes the cause of the failure rather than which panel was
+      displayed, which lets several distinct causes that currently share a single
+      error panel be told apart. Failures reached while the panel is closed, for
+      example during warming, are only recorded if they survive the retry
+      performed when the panel is next opened, so this counts errors the user
+      actually saw rather than every internal failure.
+    </summary>
+    <metric name="InvocationId" type="int">
+      <summary>
+        The identifier of the invocation that was in flight when the failure
+        happened, joining this event to InvokeStarted and InvokeTerminated. Absent
+        if the failure happened outside an invocation, for example while the panel
+        was already open or during background warming.
+      </summary>
+    </metric>
+    <metric name="Reason" type="GlicClientLoadErrorReason">
+      <summary>
+        Why the client failed to become usable. Mirrors the
+        glic::ClientLoadErrorReason enum in //chrome/browser/glic/glic_enums.h,
+        which is translated into this enum by an exhaustive switch in
+        glic_instance_metrics.cc, so a variant cannot be renamed or removed here
+        without breaking the build.
+      </summary>
+    </metric>
+    <metric name="ElapsedMs" type="int">
+      <summary>
+        Milliseconds between the invocation starting and the failure being reported,
+        which distinguishes failures that happen immediately, such as an eligibility
+        check, from ones that happen after a long wait, such as a load timeout.
+        Absent when InvocationId is absent.
       </summary>
     </metric>
   </event>

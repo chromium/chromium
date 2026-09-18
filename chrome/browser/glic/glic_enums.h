@@ -113,6 +113,78 @@ enum class EmbedderType {
   kMaxValue = kTab,
 };
 
+// Why the Glic client failed to load, i.e. failed to become usable. Scoped to
+// failures that prevent the client from reaching a usable state; errors raised
+// by a client that is already running are a separate concept.
+//
+// This describes the *cause* of a failure, not the panel that was shown. The
+// same causes exist whether the client is hosted in a <webview> by
+// chrome://glic or rendered directly by the GlicNoWebview overlay, so the
+// browser can be the single source of truth for recording them in both worlds.
+// The host page reports its cause over mojo as mojom::ClientLoadErrorReason
+// and GlicPageHandler translates it into this enum; the overlay reports this
+// enum directly. A cause with no webview analogue therefore needs no mojom
+// change.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ClientLoadErrorReason)
+enum class ClientLoadErrorReason {
+  // The cause could not be determined.
+  kUnknown = 0,
+
+  // Eligibility gates. The client was never loaded because the profile is not
+  // permitted to use Glic.
+
+  // Glic is not available for this profile.
+  kUnavailable = 1,
+
+  // The signed-in account lacks the required capabilities.
+  kIneligibleAccount = 2,
+
+  // Glic is not available in the user's country.
+  kLocationMismatch = 3,
+
+  // Enterprise policy disables Glic. Covers both the plain and
+  // learn-more-link variants of the panel, which differ only in presentation.
+  kDisabledByAdmin = 4,
+
+  // The browser has no network connection.
+  kOffline = 5,
+
+  // The user needs to sign in. Covers both the pre-load auth check and the
+  // guest navigating to a login page.
+  kSignIn = 6,
+
+  // Resyncing cookies into the guest partition failed, so the client could not
+  // be authenticated.
+  kCookieSyncFailed = 7,
+
+  // Guest failures. The guest contents itself did not come up.
+
+  // The guest navigation committed an error page.
+  kGuestLoadFailed = 8,
+
+  // The guest renderer process crashed or was killed.
+  kGuestProcessGone = 9,
+
+  // The web client loaded but reported a fatal error.
+  kClientError = 10,
+
+  // Timeouts owned by the chrome://glic host page. These have no counterpart
+  // in the no-webview world, where the browser's own invocation watchdog
+  // (WaitForClientConnectedTask) owns the deadline instead.
+
+  // The host page gave up waiting for the web client to connect.
+  kClientLoadTimeout = 11,
+
+  // A warmed client never became ready after the panel was shown.
+  kWarmedTimeout = 12,
+
+  kMaxValue = kWarmedTimeout,
+};
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_ENUMS_H_

@@ -169,6 +169,37 @@ enum WebUiState {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebUiState)
 
+// Why the Glic client failed to load, as reported by the host page through
+// NotifyClientLoadError(). Where WebUiState says which panel is on screen,
+// this says what went wrong; several causes below share a single panel.
+//
+// This is a wire format only. GlicPageHandler translates it into
+// glic::ClientLoadErrorReason, which is the browser-side vocabulary and the
+// enum that is actually recorded; see
+// //chrome/browser/glic/glic_enums.h:ClientLoadErrorReason for what the values
+// mean. Causes that exist only in the GlicNoWebview world do not belong here,
+// because the overlay reports to the browser in-process and needs no wire
+// type.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+[Stable, Extensible]
+enum ClientLoadErrorReason {
+  [Default] kUnknown = 0,
+  kUnavailable = 1,
+  kIneligibleAccount = 2,
+  kLocationMismatch = 3,
+  kDisabledByAdmin = 4,
+  kOffline = 5,
+  kSignIn = 6,
+  kCookieSyncFailed = 7,
+  kGuestLoadFailed = 8,
+  kGuestProcessGone = 9,
+  kClientError = 10,
+  kClientLoadTimeout = 11,
+  kWarmedTimeout = 12,
+};
+
 // The result of `PrepareForClient()`.
 enum PrepareForClientResult {
   // Ready to load the web client.
@@ -230,4 +261,14 @@ interface PageHandler {
 
   // Notifies the PageHandler that the state of the WebUI has changed.
   OnWebUiStateChanged(WebUiState new_state);
+
+  // Notifies the PageHandler that the client failed to become usable, and why.
+  //
+  // This is reported separately from `OnWebUiStateChanged()` on purpose. The
+  // WebUI state describes which panel is on screen; `reason` describes what
+  // actually went wrong, which several distinct causes currently collapse
+  // into a single kError state. Keeping it separate also means the browser
+  // has one handler for client errors that works unchanged in the
+  // GlicNoWebview world, where this page does not exist.
+  NotifyClientLoadError(ClientLoadErrorReason reason);
 };

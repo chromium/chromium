@@ -93,6 +93,9 @@ class GlicPageHandler : public glic::mojom::PageHandler,
 
   void OnWebUiStateChanged(glic::mojom::WebUiState new_state) override;
 
+  void NotifyClientLoadError(
+      glic::mojom::ClientLoadErrorReason reason) override;
+
   // Host::Observer implementation.
   void ClientReadyToShow(const mojom::OpenPanelInfo& open_info) override;
 

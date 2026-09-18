@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/context/glic_delegating_sharing_manager.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_pinned_tab_manager.h"
@@ -310,6 +311,7 @@ class GlicInstanceImpl : public GlicInstance,
   // Host::Observer
   void ClientReadyToShow(const mojom::OpenPanelInfo& open_info) override;
   void WebUiStateChanged(mojom::WebUiState state) override;
+  void ClientLoadErrorOccurred(ClientLoadErrorReason reason) override;
   void ContextAccessIndicatorChanged(bool enabled) override;
 
   // Test support.

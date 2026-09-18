@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
@@ -160,6 +161,11 @@ class Host : public GlicSharingManagerProvider {
     // If the glic WebUI is destroyed, the webUI state is returned to
     // kUninitialized.
     virtual void WebUiStateChanged(mojom::WebUiState state) {}
+
+    // Called when the client failed to become usable. Unlike
+    // WebUiStateChanged() this describes the cause rather than the panel, and
+    // it is reported in both the webview and no-webview worlds.
+    virtual void ClientLoadErrorOccurred(ClientLoadErrorReason reason) {}
     virtual void ContextAccessIndicatorChanged(bool enabled) {}
   };
 
@@ -353,6 +359,11 @@ class Host : public GlicSharingManagerProvider {
   // Informs the host that the WebUi state has changed.
   void WebUiStateChanged(GlicPageHandler* page_handler,
                          mojom::WebUiState new_state);
+
+  // Informs the host that the client failed to become usable, and why.
+  // Repeated errors are not deduplicated; an error after a reload is a
+  // genuinely new event.
+  void ClientLoadErrorOccurred(ClientLoadErrorReason reason);
 
   // Called when the web client changes its mode.
   void OnInteractionModeChange(mojom::WebClientMode new_mode);

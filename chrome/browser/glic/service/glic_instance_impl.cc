@@ -1616,6 +1616,12 @@ void GlicInstanceImpl::WebUiStateChanged(mojom::WebUiState state) {
   instance_metrics_.OnWebUiStateChanged(state);
 }
 
+void GlicInstanceImpl::ClientLoadErrorOccurred(ClientLoadErrorReason reason) {
+  TRACE_EVENT_INSTANT("glic", "GlicInstanceImpl::ClientLoadErrorOccurred",
+                      perfetto::Flow::FromPointer(this), "reason", reason);
+  instance_metrics_.OnClientLoadError(reason);
+}
+
 void GlicInstanceImpl::ContextAccessIndicatorChanged(bool enabled) {
   if (coordinator_delegate_) {
     coordinator_delegate_->ContextAccessIndicatorChanged(*this, enabled);
