@@ -545,7 +545,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      *     found).
      */
     Rect getTabThumbnailRect(int tabId) {
-        int index = getIndexForTabIdWithRelatedTabs(tabId);
+        int index = getIndexFromTabId(tabId);
         if (index == TabModel.INVALID_TAB_INDEX) return new Rect();
 
         return mRecyclerView.getRectOfTabThumbnail(
@@ -568,7 +568,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             mAwaitingLayoutRunnable = null;
             mAwaitingModel = null;
         }
-        int index = getIndexForTabIdWithRelatedTabs(tabId);
+        int index = getIndexFromTabId(tabId);
         if (index == TabModel.INVALID_TAB_INDEX) {
             r.run();
             return;
@@ -965,13 +965,6 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         }
     }
 
-    /** Returns the index for the tab with related tabs. */
-    // TODO(crbug.com/517544602): Migrate to a token based lookup. Scanning related tab IDs can miss
-    // a group card once cards are keyed by token and its TAB_ID goes stale.
-    int getIndexForTabIdWithRelatedTabs(int tabId) {
-        return mMediator.getIndexForTabIdWithRelatedTabs(tabId);
-    }
-
     void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
         assert mMode == TabListMode.GRID : "Can only run animation in GRID mode.";
         mMediator.showQuickDeleteAnimation(onAnimationEnd, tabs, mRecyclerView);
@@ -1072,11 +1065,13 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                 mRecyclerView, cardIndex, () -> mRecyclerView.setSmoothScrolling(false));
     }
 
-    /**
-     * Maps a tab ID to an index. For use with {@link #addSpecialListItem(int, int, PropertyModel)}.
-     */
+    /** Maps a tab ID to an index in the model list. */
+    // TODO(crbug.com/517544602): Clean up the legacy fallback when removing the feature flag.
     int getIndexFromTabId(@TabId int tabId) {
-        return mMediator.getIndexFromTabId(tabId);
+        if (TabUiFeatureUtilities.isAndroidTabUiRefactorEnabled()) {
+            return mMediator.getIndexFromTabId(tabId);
+        }
+        return mMediator.getIndexForTabIdWithRelatedTabs(tabId);
     }
 
     /**

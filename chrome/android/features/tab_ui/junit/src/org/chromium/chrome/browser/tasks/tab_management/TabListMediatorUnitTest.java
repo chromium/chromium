@@ -5441,6 +5441,47 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
+    public void testUnsetShrinkCloseAnimation_DidClose_Tab1Closed_RefactorEnabled() {
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = List.of(mTab1, newTab);
+        createTabGroup(tabs, TAB_GROUP_ID);
+
+        mMediator.resetWithListOfTabs(tabs, null, false);
+
+        PropertyModel model = mModelList.get(0).model;
+        model.set(CARD_TYPE, TAB_GROUP);
+        model.set(TabProperties.TAB_GROUP_HEADER_ID, TAB_GROUP_ID);
+        model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
+
+        var callback = mMediator.getOnMaybeTabClosedCallback(TAB1_ID);
+
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab1);
+
+        callback.onResult(true);
+        assertFalse(mModelList.get(0).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
+    }
+
+    @Test
+    public void testUnsetShrinkCloseAnimation_DidClose_FlatLayout_NoOp() {
+        setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = List.of(mTab1, newTab);
+        createTabGroup(tabs, TAB_GROUP_ID);
+
+        mMediator.resetWithListOfTabs(tabs, null, false);
+
+        mModelList.get(1).model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
+        var callback = mMediator.getOnMaybeTabClosedCallback(TAB1_ID);
+
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab1);
+
+        callback.onResult(true);
+        // Sibling tab in FLAT layout should not be affected by group card defense.
+        assertTrue(mModelList.get(0).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
+    }
+
+    @Test
     public void testUnsetShrinkCloseAnimation_DidClose_TabsClosed() {
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> tabs = List.of(mTab1, newTab);

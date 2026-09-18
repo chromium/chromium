@@ -3088,9 +3088,14 @@ public class TabListMediator implements TabListNotificationHandler {
                             + TabUiMetricsHelper.getComponentNameForMetrics(mComponentId));
 
             // Special case in defense of a group not being completely closed. We need to find the
-            // group by the tab's old root ID.
-            // TODO(crbug.com/517544602): Migrate to a token based lookup.
-            int index = getIndexForTabIdWithRelatedTabs(tab.getId());
+            // group by the tab's old root ID or group token.
+            if (!mTabListLayoutDelegate.supportsTabGroups()) return;
+
+            int index =
+                    TabUiFeatureUtilities.isAndroidTabUiRefactorEnabled()
+                                    && tab.getTabGroupId() != null
+                            ? mModelList.indexFromTabGroupId(tab.getTabGroupId())
+                            : getIndexForTabIdWithRelatedTabs(tab.getId());
             if (mModelList.isValidIndex(index)) {
                 if (mTabListConfig.supportsShrinkCloseAnimation) {
                     mModelList
