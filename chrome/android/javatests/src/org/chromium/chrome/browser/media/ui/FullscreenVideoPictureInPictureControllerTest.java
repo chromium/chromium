@@ -58,8 +58,10 @@ import org.chromium.ui.test.util.DeviceRestriction;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY
 })
-@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // PiP not supported on AAOS.
-@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481444525
+@Restriction({
+    DeviceRestriction.RESTRICTION_TYPE_NON_AUTO, // PiP not supported on AAOS.
+    DeviceFormFactor.PHONE_OR_TABLET // Fullscreen PiP deprecated on Desktop (crbug.com/521413134).
+})
 @EnableFeatures(ChromeFeatureList.FULLSCREEN_VIDEO_PICTURE_IN_PICTURE)
 public class FullscreenVideoPictureInPictureControllerTest {
     // TODO(peconn): Add a test for exit on Tab Reparenting.
