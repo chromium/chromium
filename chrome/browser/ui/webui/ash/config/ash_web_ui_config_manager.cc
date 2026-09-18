@@ -82,7 +82,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/terminal_ui.h"
 #include "chrome/browser/ash/system_web_apps/apps/vc_background_ui/vc_background_ui_utils.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
@@ -137,6 +136,7 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/consent_auditor/consent_auditor_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_ui.h"
@@ -280,7 +280,7 @@ std::unique_ptr<content::WebUIConfig> MakeRecorderAppUIConfig() {
         signin::IdentityManager* identity_manager =
             IdentityManagerProvider::Get().Find(account_id);
         consent_auditor::ConsentAuditor* consent_auditor =
-            ConsentAuditorFactory::GetForProfile(profile);
+            ConsentAuditorProvider::Get().Find(account_id);
 
         auto delegate = std::make_unique<ChromeRecorderAppUIDelegate>(
             g_browser_process->local_state(),

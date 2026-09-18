@@ -6,6 +6,7 @@ assert(is_chromeos)
 
 group("keyed_service_provider") {
   public_deps = [
+    ":consent_auditor_provider_impl",
     ":desk_sync_service_provider_impl",
     ":favicon_service_provider_impl",
     ":feature_engagement_tracker_provider_impl",
@@ -15,6 +16,25 @@ group("keyed_service_provider") {
     ":template_url_service_provider_impl",
     ":wifi_configuration_sync_service_provider_impl",
   ]
+}
+
+source_set("consent_auditor_provider_impl") {
+  sources = [
+    "consent_auditor_provider_impl.cc",
+    "consent_auditor_provider_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/consent_auditor",
+    "//chrome/browser/profiles",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/consent_auditor:consent_auditor_provider",
+    "//components/account_id",
+    "//content/public/browser",
+  ]
+
+  visibility = [ ":keyed_service_provider" ]
 }
 
 source_set("desk_sync_service_provider_impl") {
