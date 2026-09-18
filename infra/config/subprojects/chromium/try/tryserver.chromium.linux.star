@@ -887,6 +887,7 @@ try_.builder(
     contact_team_email = "chrome-linux-engprod@google.com",
     cq_settings = try_.cq_settings(
         on_default_cq = True,
+        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         # crbug/940930
