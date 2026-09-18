@@ -317,7 +317,7 @@ id<GREYMatcher> DownloadButton() {
 // Tests the chrome://policy page when there are policies set.
 - (void)testPoliciesShowOnPage {
   // Set policies
-  policy_test_utils::MergePolicy(false, "AutofillCreditCardEnabled");
+  policy_test_utils::MergePolicy(false, "DefaultSearchProviderEnabled");
   policy_test_utils::MergePolicy(1, "IncognitoModeAvailability");
 
   // Navigate to chrome://policy.
@@ -326,7 +326,7 @@ id<GREYMatcher> DownloadButton() {
   // Verify that the policy set is shown on the page.
   std::vector<std::vector<std::string>> expected_policies;
   expected_policies.push_back(
-      PopulateExpectedPolicy("AutofillCreditCardEnabled", "false"));
+      PopulateExpectedPolicy("DefaultSearchProviderEnabled", "false"));
   expected_policies.push_back(
       PopulateExpectedRestartPolicy("IncognitoModeAvailability", "1"));
   VerifyPolicies(expected_policies);
@@ -413,7 +413,7 @@ id<GREYMatcher> DownloadButton() {
                  @"Status update received prematurely.");
 
   // Update a policy to trigger OnPolicyUpdated and SendStatus.
-  policy_test_utils::SetPolicy(false, "AutofillCreditCardEnabled");
+  policy_test_utils::SetPolicy(false, "DefaultSearchProviderEnabled");
 
   bool statusUpdated = base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForPageLoadTimeout, ^{
