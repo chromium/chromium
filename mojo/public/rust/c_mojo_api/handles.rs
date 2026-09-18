@@ -39,15 +39,18 @@ chromium::import! {
 
 use crate::result::*;
 
+pub type RawMojoHandle = raw_ffi::MojoHandle;
+pub type RawMojoMessageHandle = raw_ffi::MojoMessageHandle;
+
 // It's unlikely, but if the underlying type for these handles ever changes
 // we'll need to change our representation to match.
-static_assertions::assert_type_eq_all!(raw_ffi::MojoHandle, usize);
-static_assertions::assert_type_eq_all!(raw_ffi::MojoMessageHandle, usize);
+static_assertions::assert_type_eq_all!(RawMojoHandle, usize);
+static_assertions::assert_type_eq_all!(RawMojoMessageHandle, usize);
 
 // TODO(crbug.com/498966599): Expose and use base::win::IsPseudoHandle
 // instead of reimplementing it here. See the documentation for that
 // function for more information.
-fn is_pseudohandle(raw_value: raw_ffi::MojoHandle) -> bool {
+fn is_pseudohandle(raw_value: RawMojoHandle) -> bool {
     // Truncate to 32 bits, and treat as signed
     let val = raw_value as i32;
     return (-12..0).contains(&val);
@@ -71,7 +74,7 @@ impl UntypedHandle {
     /// # Safety
     /// The value must represent a live, unowned handle.
     /// Passing a value of 0 will panic, but will not cause undefined behavior.
-    pub unsafe fn wrap_raw_value(raw_value: raw_ffi::MojoHandle) -> Self {
+    pub unsafe fn wrap_raw_value(raw_value: RawMojoHandle) -> Self {
         if is_pseudohandle(raw_value) {
             panic!("Cannot wrap a pseudohandle (value between 0 and -12)!")
         }
@@ -83,7 +86,7 @@ impl UntypedHandle {
     // own top level thing, e.g. slice_as_cxx_ptr and whatnot.
     /// Convert a slice of UntypedHandles into a pointer to their underlying
     /// handle values.
-    pub fn slice_as_ptr(handles: &[Self]) -> *const raw_ffi::MojoHandle {
+    pub fn slice_as_ptr(handles: &[Self]) -> *const RawMojoHandle {
         // Passing nothing must be done explicitly:
         // https://davidben.net/2024/01/15/empty-slices.html
         if handles.is_empty() {
@@ -96,7 +99,7 @@ impl UntypedHandle {
 
     /// Convert a mutable slice of UntypedHandles into a pointer to their
     /// underlying handle values.
-    pub fn slice_as_mut_ptr(handles: &mut [Self]) -> *mut raw_ffi::MojoHandle {
+    pub fn slice_as_mut_ptr(handles: &mut [Self]) -> *mut RawMojoHandle {
         // Passing nothing must be done explicitly:
         // https://davidben.net/2024/01/15/empty-slices.html
         if handles.is_empty() {
@@ -112,7 +115,7 @@ impl UntypedHandle {
     /// This function gives up ownership of the underlying handle, so the
     /// caller is responsible for ensuring it does not get copied, and gets
     /// properly closed.
-    pub fn into_raw_value(self) -> raw_ffi::MojoHandle {
+    pub fn into_raw_value(self) -> RawMojoHandle {
         let val = self.handle_value.into();
         std::mem::forget(self);
         val
@@ -148,7 +151,7 @@ impl MessageHandle {
     /// # Safety
     /// The value must represent a live, unowned handle.
     /// Passing a value of 0 will panic, but will not cause undefined behavior.
-    pub unsafe fn wrap_raw_value(raw_value: raw_ffi::MojoMessageHandle) -> Self {
+    pub unsafe fn wrap_raw_value(raw_value: RawMojoMessageHandle) -> Self {
         if is_pseudohandle(raw_value) {
             panic!("Cannot wrap a handle value between 0 and -12!")
         }
@@ -161,7 +164,7 @@ impl MessageHandle {
     /// This function gives up ownership of the underlying handle, so the
     /// caller is responsible for ensuring it does not get copied, and gets
     /// properly closed.
-    pub fn into_raw_value(self) -> raw_ffi::MojoMessageHandle {
+    pub fn into_raw_value(self) -> RawMojoMessageHandle {
         let val = self.handle_value.into();
         std::mem::forget(self);
         val

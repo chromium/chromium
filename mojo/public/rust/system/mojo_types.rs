@@ -9,7 +9,9 @@ chromium::import! {
   "//mojo/public/rust/c_mojo_api" as mojo_ffi;
 }
 
-pub use mojo_ffi::{MessageHandle, MojoError, MojoResult, UntypedHandle};
+pub use mojo_ffi::{
+    MessageHandle, MojoError, MojoResult, RawMojoHandle, RawMojoMessageHandle, UntypedHandle,
+};
 
 /// Helper macro to declare strongly-typed wrappers around an UntypedHandle
 /// which are inter-convertible with it.
