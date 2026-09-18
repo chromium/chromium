@@ -71,6 +71,9 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
       BrowserProxyImpl.getInstance()
           .toolbarUIHandler.setAvatarButtonIphPromoShowing(this.hasHelpBubble);
     }
+    if (changedProperties.has('state')) {
+      this.toggleAttribute('has-label', !!this.state.text);
+    }
   }
 
   override accessor state: AvatarControlState = {

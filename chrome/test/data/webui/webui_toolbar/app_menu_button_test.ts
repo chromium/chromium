@@ -51,9 +51,25 @@ suite('AppMenuButtonTest', function() {
     browserProxy = new MockBrowserProxy(toolbarUiHandler);
     BrowserProxyImpl.setInstance(browserProxy as unknown as BrowserProxy);
 
+    document.documentElement.style.setProperty(
+        '--toolbar-interior-margin-end', '6px');
+    document.documentElement.style.setProperty(
+        '--toolbar-button-refresh-expanded-margin', '5px');
+    document.documentElement.style.setProperty(
+        '--toolbar-icon-default-margin', '2px');
+
     appMenuButton = document.createElement('app-menu-button');
     document.body.appendChild(appMenuButton);
     await microtasksFinished();
+  });
+
+  teardown(function() {
+    document.documentElement.style.removeProperty(
+        '--toolbar-interior-margin-end');
+    document.documentElement.style.removeProperty(
+        '--toolbar-button-refresh-expanded-margin');
+    document.documentElement.style.removeProperty(
+        '--toolbar-icon-default-margin');
   });
 
   test('Mouse Down Triggers Menu', function() {
@@ -156,6 +172,7 @@ suite('AppMenuButtonTest', function() {
     assertEquals('false', innerButton.getAttribute('aria-expanded'));
     assertFalse(button.hasAttribute('is-menu-open'));
     assertFalse(button.hasAttribute('has-label'));
+    assertFalse(appMenuButton.hasAttribute('has-label'));
     assertFalse(!!button.querySelector('span'));
 
     // 2. Set Non-Default State 1
@@ -176,6 +193,7 @@ suite('AppMenuButtonTest', function() {
     assertEquals('true', innerButton.getAttribute('aria-expanded'));
     assertTrue(button.hasAttribute('is-menu-open'));
     assertTrue(button.hasAttribute('has-label'));
+    assertTrue(appMenuButton.hasAttribute('has-label'));
 
     let labelSpan = button.querySelector('span');
     assertTrue(!!labelSpan);
@@ -197,6 +215,7 @@ suite('AppMenuButtonTest', function() {
     assertEquals('false', innerButton.getAttribute('aria-expanded'));
     assertFalse(button.hasAttribute('is-menu-open'));
     assertTrue(button.hasAttribute('has-label'));
+    assertTrue(appMenuButton.hasAttribute('has-label'));
 
     labelSpan = button.querySelector('span');
     assertTrue(!!labelSpan);
@@ -209,6 +228,7 @@ suite('AppMenuButtonTest', function() {
     };
     await microtasksFinished();
     assertFalse(button.hasAttribute('has-label'));
+    assertFalse(appMenuButton.hasAttribute('has-label'));
     assertFalse(!!button.querySelector('span'));
   });
 
@@ -324,5 +344,40 @@ suite('AppMenuButtonTest', function() {
 
     assertFalse(
         appMenuButton.$.button.classList.contains('help-anchor-highlight'));
+  });
+
+  test('Expanded Trailing Margin', async function() {
+    // Collapsed: default 6px margin and 0px leading margin
+    assertFalse(appMenuButton.hasAttribute('has-label'));
+    assertFalse(appMenuButton.$.button.hasAttribute('has-label'));
+    assertEquals('6px', window.getComputedStyle(appMenuButton).marginInlineEnd);
+    assertEquals(
+        '0px', window.getComputedStyle(appMenuButton).marginInlineStart);
+
+    // Expanded with label: 7px trailing margin (6px + 1px) and 3px leading margin
+    appMenuButton.state = {
+      ...appMenuButton.state,
+      labelText: 'Update',
+    };
+    await microtasksFinished();
+
+    assertTrue(appMenuButton.hasAttribute('has-label'));
+    assertTrue(appMenuButton.$.button.hasAttribute('has-label'));
+    assertEquals('7px', window.getComputedStyle(appMenuButton).marginInlineEnd);
+    assertEquals(
+        '3px', window.getComputedStyle(appMenuButton).marginInlineStart);
+
+    // Maximized/fullscreen mode: margin-inline-end is 0 and trailing margin
+    // variable is 7px
+    appMenuButton.state = {
+      ...appMenuButton.state,
+      windowIsMaximizedOrFullscreen: true,
+    };
+    await microtasksFinished();
+
+    assertEquals('0px', window.getComputedStyle(appMenuButton).marginInlineEnd);
+    assertEquals(
+        '7px',
+        window.getComputedStyle(appMenuButton.$.button).paddingInlineEnd);
   });
 });

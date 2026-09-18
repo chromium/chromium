@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {AvatarToolbarButtonState, BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE, resetInitialStateForTesting, SearchboxBrowserProxy, SecurityChipRole, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE, resetInitialStateForTesting, SearchboxBrowserProxy, SecurityChipRole, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {BrowserProxy, FocusRequestListener, LhsChipIdentifier, NavigationControlsStateListener, ToolbarAppElement} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {TestToolbarUiHandler} from './test_toolbar_browser_proxy.js';
@@ -179,6 +179,15 @@ function createMockNavigationState() {
       accessibilityDescription: '',
       enabled: true,
       hasLinearGradientRing: false,
+    },
+    appMenuControlState: {
+      iconType: AppMenuIconType.kNone,
+      severity: AppMenuSeverity.kNone,
+      labelText: null as string | null,
+      accessibilityText: '',
+      tooltip: '',
+      isContextMenuVisible: false,
+      windowIsMaximizedOrFullscreen: false,
     },
     layoutConstantsVersion: 0,
     pinnedToolbarActionsState: [],
@@ -893,5 +902,68 @@ suite('ToolbarAppTest', () => {
             window.getComputedStyle(textSpan).maxWidth.includes('calc-size'),
         'Avatar button text should animate on subsequent state changes');
     assertFalse(avatarButton.classList.contains('initial-load'));
+  });
+
+  test('AppMenuAndAvatarSpacing', async () => {
+    loadTimeData.overrideValues({
+      enableAvatarButton: true,
+      enableAppMenuButton: true,
+    });
+
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+
+    const avatarButton = app.shadowRoot.querySelector('avatar-button')!;
+    const appMenuButton = app.shadowRoot.querySelector('app-menu-button')!;
+    assertTrue(!!avatarButton, 'avatar-button should be present');
+    assertTrue(!!appMenuButton, 'app-menu-button should be present');
+
+    // 1. Both collapsed (no text on avatar, no labelText on app menu).
+    const navState = createMockNavigationState();
+    navState.avatarControlState.text = '';
+    navState.appMenuControlState.labelText = null;
+    browserProxy.fireNavigationStateListener([], navState);
+    await microtasksFinished();
+
+    assertFalse(avatarButton.hasAttribute('has-label'));
+    assertFalse(appMenuButton.hasAttribute('has-label'));
+    assertEquals(
+        '0px', window.getComputedStyle(appMenuButton).marginInlineStart);
+
+    // 2. App menu expanded with label, avatar collapsed without text.
+    // Leading margin on appMenuButton should be calc(5px - 2px) = 3px.
+    const appMenuExpandedState = createMockNavigationState();
+    appMenuExpandedState.avatarControlState.text = '';
+    appMenuExpandedState.appMenuControlState.labelText = 'Update';
+    browserProxy.fireNavigationStateListener([], appMenuExpandedState);
+    await microtasksFinished();
+
+    assertFalse(avatarButton.hasAttribute('has-label'));
+    assertTrue(appMenuButton.hasAttribute('has-label'));
+    assertEquals(
+        '3px', window.getComputedStyle(appMenuButton).marginInlineStart);
+
+    // 3. Both avatar and app menu expanded with labels.
+    // Avatar has trailing margin 3px, so appMenuButton's leading margin
+    // collapses to 0px to preserve 5px inter-button spacing with the 2px
+    // flexbox gap.
+    const bothExpandedState = createMockNavigationState();
+    bothExpandedState.avatarControlState.text = 'Paused';
+    bothExpandedState.appMenuControlState.labelText = 'Update';
+    browserProxy.fireNavigationStateListener([], bothExpandedState);
+    await microtasksFinished();
+
+    assertTrue(avatarButton.hasAttribute('has-label'));
+    assertTrue(appMenuButton.hasAttribute('has-label'));
+    assertEquals(
+        '0px', window.getComputedStyle(appMenuButton).marginInlineStart);
+
+    // 4. If avatar button is overflowed/hidden, appMenuButton's leading margin
+    // uncollapses to 3px.
+    avatarButton.classList.add('overflow-display-none');
+    await microtasksFinished();
+    assertEquals(
+        '3px', window.getComputedStyle(appMenuButton).marginInlineStart);
   });
 });

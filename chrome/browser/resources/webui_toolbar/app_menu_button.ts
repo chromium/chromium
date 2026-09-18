@@ -88,6 +88,7 @@ export class AppMenuButtonElement extends AppMenuButtonElementBase {
       this.toggleAttribute(
           'window-is-maximized-or-fullscreen',
           this.state.windowIsMaximizedOrFullscreen);
+      this.toggleAttribute('has-label', !!this.state.labelText);
     }
   }
 

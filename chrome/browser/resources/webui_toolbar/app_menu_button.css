@@ -26,6 +26,21 @@
   --toolbar-chip-trailing-margin: var(--toolbar-interior-margin-end, 6px);
 }
 
+/* In native Views, ToolbarView::UpdateRefreshMarginsWithContextualTasks increases
+ * the margins when the app menu button is expanded with a label.
+ * The leading margin expands the inter-button gap from 2px to 5px.
+ * The trailing interior margin increases by +1px (from 6px to 7px). */
+:host([has-label]) {
+  margin-inline-start: calc(var(--toolbar-button-refresh-expanded-margin) -
+                            var(--toolbar-icon-default-margin));
+  margin-inline-end: calc(var(--toolbar-interior-margin-end) + 1px);
+}
+
+:host([window-is-maximized-or-fullscreen][has-label]) {
+  margin-inline-end: 0;
+  --toolbar-chip-trailing-margin: calc(var(--toolbar-interior-margin-end) + 1px);
+}
+
 toolbar-chip-button {
   --toolbar-chip-icon-size: var(--toolbar-button-icon-size);
   --toolbar-chip-icon-label-gap: var(--app-menu-button-image-label-padding);
