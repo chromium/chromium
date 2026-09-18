@@ -1518,6 +1518,8 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
     // derivation shall have the same values for all coded slice segment
     // NAL units of a codec picture.
     EQ_OR_RETURN(shdr, prior_shdr, st_ref_pic_set);
+    EQ_OR_RETURN(shdr, prior_shdr, st_rps_bits);
+    EQ_OR_RETURN(shdr, prior_shdr, lt_rps_bits);
 
     // All the other fields we need to compare are contiguous, so compare them
     // as one memory range.
