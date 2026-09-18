@@ -5,16 +5,15 @@
 #ifndef UI_VIEWS_LAYOUT_FLEX_LAYOUT_H_
 #define UI_VIEWS_LAYOUT_FLEX_LAYOUT_H_
 
-#include <functional>
+#include <list>
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -179,16 +178,12 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
     const raw_ptr<FlexLayout> layout_;
   };
 
-  using ChildIndices = absl::InlinedVector<size_t, 8>;
+  using ChildIndices = std::list<size_t>;
 
   // Maps a flex order (lower = allocated first, and therefore higher priority)
   // to the indices of child views within that order that can flex.
   // See FlexSpecification::order().
-  using FlexOrderToViewIndexMap =
-      base::flat_map<int,
-                     ChildIndices,
-                     std::less<>,
-                     absl::InlinedVector<std::pair<int, ChildIndices>, 2>>;
+  using FlexOrderToViewIndexMap = std::map<int, ChildIndices>;
 
   // Alignment used when the main-axis alignment is not specified.
   static constexpr LayoutAlignment kDefaultMainAxisAlignment =
