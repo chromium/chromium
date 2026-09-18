@@ -128,17 +128,20 @@ void ChromeContentClient::AddPlugins(
   static constexpr char16_t kPDFPluginName[] = u"Chromium PDF Plugin";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   static constexpr char16_t kPDFPluginDescription[] = u"Built-in PDF viewer";
-  static constexpr char kPDFPluginExtension[] = "pdf";
-  static constexpr char kPDFPluginExtensionDescription[] =
-      "Portable Document Format";
+  static constexpr char16_t kPDFPluginExtensionDescription[] =
+      u"Portable Document Format";
 
   content::WebPluginInfo pdf_info;
   pdf_info.name = kPDFPluginName;
   pdf_info.path = base::FilePath(ChromeContentClient::kPDFInternalPluginPath);
   pdf_info.desc = kPDFPluginDescription;
-  content::WebPluginMimeType pdf_mime_type(pdf::kInternalPluginMimeType,
-                                           kPDFPluginExtension,
-                                           kPDFPluginExtensionDescription);
+  // Deliberately registers no file extensions: only the PDF viewer and Print
+  // Preview may create the internal PDF plugin, and they request it by MIME
+  // type. Formerly registering "pdf" here let web content select it via URL
+  // file-extension sniffing.
+  content::WebPluginMimeType pdf_mime_type;
+  pdf_mime_type.mime_type = pdf::kInternalPluginMimeType;
+  pdf_mime_type.description = kPDFPluginExtensionDescription;
   pdf_info.mime_types.push_back(pdf_mime_type);
   pdf_info.type = content::WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN;
   plugins->push_back(pdf_info);

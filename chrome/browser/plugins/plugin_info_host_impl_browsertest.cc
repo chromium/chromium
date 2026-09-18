@@ -271,7 +271,9 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
 
   WebPluginMimeType mime_type = plugin_info->plugin.mime_types[0];
   EXPECT_EQ(pdf::kInternalPluginMimeType, mime_type.mime_type);
-  EXPECT_THAT(mime_type.file_extensions, ElementsAre("pdf"));
+  // No file extensions: the internal PDF plugin must not be reachable via URL
+  // file-extension sniffing.
+  EXPECT_THAT(mime_type.file_extensions, IsEmpty());
   EXPECT_EQ(u"Portable Document Format", mime_type.description);
   EXPECT_THAT(mime_type.additional_params, IsEmpty());
 }
@@ -287,6 +289,28 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
   // Internal PDF plugin is not affected by PDF content setting.
   EXPECT_EQ(PluginStatus::kAllowed, plugin_info->status);
   EXPECT_EQ(pdf::kInternalPluginMimeType, plugin_info->actual_mime_type);
+}
+
+// An <embed> or <object> with no "type" attribute passes an empty MIME type,
+// so plugin lookup fell back to URL file-extension matching. The internal PDF
+// plugin used to register the "pdf" extension, and it was exempt from the
+// "always open PDFs externally" preference, so it was selected in the lookup.
+// Lookup then reported kAllowed for a plugin the renderer cannot create
+// in web content.
+IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
+                       GetPluginInfoForPdfByFileExtensionWhenDisabled) {
+  SetAlwaysOpenPdfExternally();
+
+  // Note: the URL must be valid and have a path, or PluginList bails out
+  // before it reaches file-extension matching.
+  PluginInfoPtr plugin_info =
+      GetPluginInfo(GURL("https://example.com/fake.pdf"), std::string());
+  ASSERT_TRUE(plugin_info);
+
+  // Only the PDF viewer extension should match, and the preference disables
+  // it.
+  EXPECT_EQ(PluginStatus::kDisabled, plugin_info->status);
+  EXPECT_EQ(pdf::kPDFMimeType, plugin_info->actual_mime_type);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PluginInfoHostImplBidiTest, testing::Bool());
