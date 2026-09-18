@@ -4,6 +4,9 @@
 
 source_set("model") {
   sources = [
+    "ttc_audio_engine.h",
+    "ttc_audio_engine.mm",
+    "ttc_audio_engine_delegate.h",
     "ttc_audio_metrics.h",
     "ttc_audio_metrics.mm",
     "ttc_audio_recorder.h",
@@ -24,6 +27,7 @@ source_set("model") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "ttc_audio_engine_unittest.mm",
     "ttc_audio_metrics_unittest.mm",
     "ttc_audio_recorder_unittest.mm",
   ]
