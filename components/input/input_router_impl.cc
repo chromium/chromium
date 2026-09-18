@@ -553,7 +553,11 @@ void InputRouterImpl::OnGestureEventAck(
     const GestureEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   touch_event_queue_.OnGestureEventAck(event, ack_result);
+  if (!weak_this) {
+    return;
+  }
   disposition_handler_->OnGestureEventAck(event, ack_source, ack_result);
 }
 
@@ -588,7 +592,11 @@ void InputRouterImpl::OnMouseWheelEventAck(
     const MouseWheelEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   disposition_handler_->OnWheelEventAck(event, ack_source, ack_result);
+  if (!weak_this) {
+    return;
+  }
   gesture_event_queue_.OnWheelEventAck(event, ack_source, ack_result);
 }
 

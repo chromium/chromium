@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/logging.h"
+#include "base/memory/weak_auto_reset.h"
 #include "base/trace_event/trace_event.h"
 #include "components/input/touchpad_tap_suppression_controller.h"
 #include "components/input/touchscreen_tap_suppression_controller.h"
@@ -223,7 +224,10 @@ void GestureEventQueue::AckCompletedEvents() {
   if (processing_acks_) {
     return;
   }
-  base::AutoReset<bool> process_acks(&processing_acks_, true);
+  base::WeakAutoReset reset_processing_acks(
+      weak_ptr_factory_.GetWeakPtr(), &GestureEventQueue::processing_acks_,
+      true);
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   while (!sent_events_awaiting_ack_.empty()) {
     auto iter = sent_events_awaiting_ack_.begin();
     if (iter->ack_state() == blink::mojom::InputEventResultState::kUnknown) {
@@ -233,6 +237,9 @@ void GestureEventQueue::AckCompletedEvents() {
     sent_events_awaiting_ack_.erase(iter);
 
     AckGestureEventToClient(event, event.ack_source(), event.ack_state());
+    if (!weak_this) {
+      return;
+    }
   }
 }
 

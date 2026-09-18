@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/input/dispatch_to_renderer_callback.h"
@@ -246,6 +247,8 @@ class COMPONENT_EXPORT(INPUT) GestureEventQueue {
   // True when the last GSE event is either in the debouncing_deferral_queue_ or
   // pushed to the queue and dropped from it later on.
   bool scroll_end_filtered_by_deboucing_deferral_queue_ = false;
+
+  base::WeakPtrFactory<GestureEventQueue> weak_ptr_factory_{this};
 };
 
 }  // namespace input

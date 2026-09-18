@@ -88,6 +88,10 @@ class GestureEventQueueTest : public testing::Test,
       blink::mojom::InputEventResultState ack_result) override {
     ++acked_gesture_event_count_;
     last_acked_event_ = event.event;
+    if (destroy_queue_on_ack_) {
+      queue_.reset();
+      return;
+    }
     if (sync_followup_event_) {
       auto sync_followup_event = std::move(sync_followup_event_);
       SimulateGestureEvent(*sync_followup_event);
@@ -242,6 +246,10 @@ class GestureEventQueueTest : public testing::Test,
 
   GestureEventQueue* queue() const { return queue_.get(); }
 
+  void set_destroy_queue_on_ack(bool destroy) {
+    destroy_queue_on_ack_ = destroy;
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<GestureEventQueue> queue_;
@@ -250,6 +258,7 @@ class GestureEventQueueTest : public testing::Test,
   WebGestureEvent last_acked_event_;
   std::unique_ptr<blink::mojom::InputEventResultState> sync_ack_result_;
   std::unique_ptr<WebGestureEvent> sync_followup_event_;
+  bool destroy_queue_on_ack_ = false;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -642,6 +651,18 @@ TEST_F(GestureEventQueueWithCompositorEventQueueTest,
             last_acked_event().GetType());
   EXPECT_EQ(0U, GestureEventQueueSize());
   EXPECT_EQ(0U, GetAndResetSentGestureEventCount());
+}
+
+TEST_F(GestureEventQueueTest, SynchronousDestructionDuringAck) {
+  SimulateGestureEvent(WebInputEvent::Type::kGestureTapDown,
+                       blink::WebGestureDevice::kTouchscreen);
+  EXPECT_EQ(1U, GestureEventQueueSize());
+
+  set_destroy_queue_on_ack(true);
+  SendInputEventACK(WebInputEvent::Type::kGestureTapDown,
+                    blink::mojom::InputEventResultState::kConsumed);
+
+  EXPECT_EQ(nullptr, queue());
 }
 
 }  // namespace input

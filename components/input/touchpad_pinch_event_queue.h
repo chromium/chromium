@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/input/dispatch_to_renderer_callback.h"
 #include "components/input/event_with_latency_info.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -80,6 +81,8 @@ class COMPONENT_EXPORT(INPUT) TouchpadPinchEventQueue {
   base::circular_deque<std::unique_ptr<QueuedTouchpadPinchEvent>> pinch_queue_;
   std::unique_ptr<QueuedTouchpadPinchEvent> pinch_event_awaiting_ack_;
   std::optional<bool> first_event_prevented_;
+
+  base::WeakPtrFactory<TouchpadPinchEventQueue> weak_ptr_factory_{this};
 };
 
 }  // namespace input
