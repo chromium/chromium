@@ -34,6 +34,7 @@ source_set("impl") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/engagement",
     "//chrome/browser/ui:storage_pressure_bubble",
+    "//chrome/common:chrome_features",
     "//chrome/common:non_code_constants",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",

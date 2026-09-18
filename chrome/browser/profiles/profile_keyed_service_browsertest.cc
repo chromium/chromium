@@ -648,6 +648,10 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     guest_otr_active_services.erase("SharesheetService");
   }
 #endif
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationStorageNotification.Get()) {
+    guest_otr_active_services.erase("StorageNotificationService");
+  }
   TestKeyedProfileServicesActives(guest_otr_profile, guest_otr_active_services);
 }
 

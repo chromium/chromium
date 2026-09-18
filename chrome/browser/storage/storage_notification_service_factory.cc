@@ -4,6 +4,8 @@
 
 #include "chrome/browser/storage/storage_notification_service_factory.h"
 
+#include "chrome/common/chrome_features.h"
+
 StorageNotificationServiceFactory::StorageNotificationServiceFactory()
     : ProfileKeyedServiceFactory(
           "StorageNotificationService",
@@ -49,5 +51,7 @@ StorageNotificationServiceFactory::BuildInstanceFor(
 
 bool StorageNotificationServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  return true;
+  return !base::FeatureList::IsEnabled(
+             features::kLazyKeyedServiceInstantiation) ||
+         !features::kLazyKeyedServiceInstantiationStorageNotification.Get();
 }
