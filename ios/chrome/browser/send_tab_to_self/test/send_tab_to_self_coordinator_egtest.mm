@@ -14,10 +14,8 @@
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
-#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -36,6 +34,15 @@ namespace {
 NSString* const kTargetDeviceName = @"My other device";
 NSString* const kRemoteDeviceName = @"remote_device";
 NSString* const kExampleURL = @"https://www.example.com/";
+
+NSString* const kInvokedEntryPointHistogram =
+    @"Sharing.SendTabToSelf.InvokedEntryPoint";
+NSString* const kSentEntryPointHistogram =
+    @"Sharing.SendTabToSelf.SentEntryPoint";
+NSString* const kActivatedEntryPointHistogram =
+    @"Sharing.SendTabToSelf.ActivatedEntryPoint";
+NSString* const kTimeOpenedToActivatedHistogram =
+    @"Sharing.SendTabToSelf.TimeOpenedToActivated";
 
 constexpr std::string_view kActivePagePath =
     "/send_tab_to_self/send_tab_to_self_active_page.html";
@@ -461,17 +468,16 @@ void DismissSendTabToSelfModal() {
                             forBucket:
                                 8  // ShareEntryPoint::kShareSheetDirectShare
                                    // is 8
-                         forHistogram:
-                             @"Sharing.SendTabToSelf.InvokedEntryPoint"],
-      @"Sharing.SendTabToSelf.InvokedEntryPoint histogram not logged.");
+                         forHistogram:kInvokedEntryPointHistogram],
+      @"%@ histogram not logged.", kInvokedEntryPointHistogram);
   GREYAssertNil(
       [MetricsAppInterface
           expectUniqueSampleWithCount:1
                             forBucket:
                                 8  // ShareEntryPoint::kShareSheetDirectShare
                                    // is 8
-                         forHistogram:@"Sharing.SendTabToSelf.SentEntryPoint"],
-      @"Sharing.SendTabToSelf.SentEntryPoint histogram not logged.");
+                         forHistogram:kSentEntryPointHistogram],
+      @"%@ histogram not logged.", kSentEntryPointHistogram);
 }
 
 // Tests that when network connectivity is lost, attempting to share a tab via a
@@ -1057,10 +1063,9 @@ void DismissSendTabToSelfModal() {
 
   // Verify that the activation metric has NOT been logged yet.
   GREYAssertNil(
-      [MetricsAppInterface
-          expectTotalCount:0
-              forHistogram:@"Sharing.SendTabToSelf.ActivatedEntryPoint"],
-      @"Sharing.SendTabToSelf.ActivatedEntryPoint logged prematurely.");
+      [MetricsAppInterface expectTotalCount:0
+                               forHistogram:kActivatedEntryPointHistogram],
+      @"%@ logged prematurely.", kActivatedEntryPointHistogram);
 
   // Tap "Open" on the banner and verify that the received tab is opened
   // directly in the foreground.
@@ -1082,9 +1087,8 @@ void DismissSendTabToSelfModal() {
                             forBucket:
                                 8  // ShareActivatedEntryPoint::kMobileMessageBanner
                                    // is 8
-                         forHistogram:
-                             @"Sharing.SendTabToSelf.ActivatedEntryPoint"],
-      @"Sharing.SendTabToSelf.ActivatedEntryPoint histogram not logged.");
+                         forHistogram:kActivatedEntryPointHistogram],
+      @"%@ histogram not logged.", kActivatedEntryPointHistogram);
 }
 
 // Tests that when kSendTabToSelfAutoOpen is enabled and a shared tab is
@@ -1289,15 +1293,13 @@ void DismissSendTabToSelfModal() {
 
   // Verify that the activation metrics histograms have NOT been logged yet.
   GREYAssertNil(
-      [MetricsAppInterface
-          expectTotalCount:0
-              forHistogram:@"Sharing.SendTabToSelf.ActivatedEntryPoint"],
-      @"Sharing.SendTabToSelf.ActivatedEntryPoint logged prematurely.");
+      [MetricsAppInterface expectTotalCount:0
+                               forHistogram:kActivatedEntryPointHistogram],
+      @"%@ logged prematurely.", kActivatedEntryPointHistogram);
   GREYAssertNil(
-      [MetricsAppInterface
-          expectTotalCount:0
-              forHistogram:@"Sharing.SendTabToSelf.TimeOpenedToActivated"],
-      @"Sharing.SendTabToSelf.TimeOpenedToActivated logged prematurely.");
+      [MetricsAppInterface expectTotalCount:0
+                               forHistogram:kTimeOpenedToActivatedHistogram],
+      @"%@ logged prematurely.", kTimeOpenedToActivatedHistogram);
 
   // Tap the restored background tab (index 1) to view/activate it.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(1)]
@@ -1313,17 +1315,15 @@ void DismissSendTabToSelfModal() {
           expectUniqueSampleWithCount:1
                             forBucket:4  // ShareActivatedEntryPoint::kTabStrip
                                          // is 4
-                         forHistogram:
-                             @"Sharing.SendTabToSelf.ActivatedEntryPoint"],
-      @"Sharing.SendTabToSelf.ActivatedEntryPoint histogram not logged.");
+                         forHistogram:kActivatedEntryPointHistogram],
+      @"%@ histogram not logged.", kActivatedEntryPointHistogram);
 
   // 2. Sharing.SendTabToSelf.TimeOpenedToActivated should have exactly 1
   // sample.
   GREYAssertNil(
-      [MetricsAppInterface
-          expectTotalCount:1
-              forHistogram:@"Sharing.SendTabToSelf.TimeOpenedToActivated"],
-      @"Sharing.SendTabToSelf.TimeOpenedToActivated histogram not logged.");
+      [MetricsAppInterface expectTotalCount:1
+                               forHistogram:kTimeOpenedToActivatedHistogram],
+      @"%@ histogram not logged.", kTimeOpenedToActivatedHistogram);
 }
 
 // Tests that when both kSendTabToSelfAutoOpen and
