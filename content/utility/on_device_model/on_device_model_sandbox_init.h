@@ -13,24 +13,10 @@
 
 namespace on_device_model {
 
-// This file and the corresponding .cc file require a review from Linux sandbox
-// owners.
-
-// Must be called in the service's process before the sandbox policy is engaged.
-//
-// On non-Linux platforms, this is called from UtilityMain() prior to sandbox
-// initialization.
-// On Linux/ChromeOS, this is called from PreSandboxHook() after starting the
-// syscall broker process while the process is still single-threaded, avoiding
-// fork() in a multi-threaded process.
+// Must be called in the service's process before sandbox initialization.
+// These are defined separately in pre_sandbox_init.cc for explicit security
+// review coverage.
 [[nodiscard]] bool PreSandboxInit();
-
-// Returns true if PreSandboxInit() has been called. Since PreSandboxInit() is
-// called in different locations depending on the platform (e.g. from
-// UtilityMain() on non-Linux platforms, and from PreSandboxHook() on
-// Linux/ChromeOS), this is used to confirm that it has been called, no matter
-// the platform, when entering the service's main function.
-bool WasPreSandboxInitCalled();
 
 // Must be called in the service's process after the run loop finished.
 [[nodiscard]] bool Shutdown();

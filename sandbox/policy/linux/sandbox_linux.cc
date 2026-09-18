@@ -86,6 +86,22 @@ bool IsRunningTSAN() {
 #endif
 }
 
+// In processes which must bring up GPU drivers before sandbox initialization,
+// we can't ensure that other threads won't be running already.
+bool ShouldAllowThreadsDuringSandboxInit(const std::string& process_type,
+                                         sandbox::mojom::Sandbox sandbox_type) {
+  if (process_type == switches::kGpuProcess) {
+    return true;
+  }
+
+  if (process_type == switches::kUtilityProcess &&
+      sandbox_type == sandbox::mojom::Sandbox::kOnDeviceModelExecution) {
+    return true;
+  }
+
+  return false;
+}
+
 // Get a file descriptor to /proc. Either duplicate |proc_fd| or try to open
 // it by using the filesystem directly.
 // TODO(jln): get rid of this ugly interface.
@@ -346,9 +362,9 @@ bool SandboxLinux::InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
 
   const bool has_threads = !IsSingleThreaded();
 
-  // The `options.allow_threads_during_sandbox_init` option is only used for
-  // the on-device model execution process.
-  DCHECK(sandbox_type == sandbox::mojom::Sandbox::kOnDeviceModelExecution ||
+  // For now, restrict the |options.allow_threads_during_sandbox_init| option to
+  // the GPU process
+  DCHECK(process_type == switches::kGpuProcess ||
          !options.allow_threads_during_sandbox_init);
   if (has_threads && !options.allow_threads_during_sandbox_init) {
     std::string error_message =
@@ -359,35 +375,18 @@ bool SandboxLinux::InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
     if (IsRunningTSAN())
       return false;
 
-    bool sandbox_failure_fatal = true;
-    if (process_type == switches::kGpuProcess) {
-      // In the GPU process, bringing up GPU drivers before sandbox
-      // initialization may leave background worker threads running. By default,
-      // this causes InitializeSandbox() to fail non-fatally and skip
-      // seccomp-BPF.
-      //
-      // However, failures can be made fatal using
-      // '--gpu-sandbox-failures-fatal'. Passing the switch without a value (or
-      // with any value other than 'no') makes failures fatal. Passing
-      // '--gpu-sandbox-failures-fatal=no' keeps them non-fatal.
-      const bool switch_is_set_and_not_no =
-          command_line->HasSwitch(switches::kGpuSandboxFailuresFatal) &&
-          command_line->GetSwitchValueASCII(
-              switches::kGpuSandboxFailuresFatal) != "no";
-      if (switch_is_set_and_not_no) {
-        sandbox_failure_fatal = true;
-      } else {
-        sandbox_failure_fatal = false;
-      }
-    } else if (process_type == switches::kUtilityProcess &&
-               sandbox_type ==
-                   sandbox::mojom::Sandbox::kOnDeviceModelExecution) {
-      // When multithreaded sandbox initialization is disabled for on-device
-      // model execution, multiple threads cause sandbox initialization to fail
-      // non-fatally and skip seccomp-BPF.
-      CHECK(!base::FeatureList::IsEnabled(
-          features::kOnDeviceModelExecutionMultiThreadedSandbox));
-      sandbox_failure_fatal = false;
+    // Only a few specific processes are allowed to call InitializeSandbox()
+    // with multiple threads running.
+    bool sandbox_failure_fatal =
+        !ShouldAllowThreadsDuringSandboxInit(process_type, sandbox_type);
+    // This can be disabled with the '--gpu-sandbox-failures-fatal' flag.
+    // Setting the flag with no value or any value different than 'yes' or 'no'
+    // is equal to setting '--gpu-sandbox-failures-fatal=yes'.
+    if (process_type == switches::kGpuProcess &&
+        command_line->HasSwitch(switches::kGpuSandboxFailuresFatal)) {
+      const std::string switch_value =
+          command_line->GetSwitchValueASCII(switches::kGpuSandboxFailuresFatal);
+      sandbox_failure_fatal = switch_value != "no";
     }
 
     if (sandbox_failure_fatal && !IsUnsandboxedSandboxType(sandbox_type)) {

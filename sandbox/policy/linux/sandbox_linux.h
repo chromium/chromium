@@ -183,10 +183,6 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // of threads cannot be determined.
   bool IsSingleThreaded() const;
 
-  // We must have been pre-initialized before using these.
-  bool seccomp_bpf_supported() const;
-  bool seccomp_bpf_with_tsync_supported() const;
-
   // Returns true if we started Seccomp BPF.
   bool seccomp_bpf_started() const;
 
@@ -251,6 +247,10 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
 
   SandboxLinux();
   ~SandboxLinux();
+
+  // We must have been pre_initialized_ before using these.
+  bool seccomp_bpf_supported() const;
+  bool seccomp_bpf_with_tsync_supported() const;
 
   // Returns true if it can be determined that the current process has open
   // directories that are not managed by the SandboxLinux class. This would

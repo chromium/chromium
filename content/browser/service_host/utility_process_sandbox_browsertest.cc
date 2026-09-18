@@ -103,7 +103,14 @@ class UtilityProcessSandboxBrowserTest
   void OnGotSandboxStatus(int32_t sandbox_status, bool seccomp_bpf_started) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-    if (GetParam() != Sandbox::kNoSandbox) {
+    // Aside from kNoSandbox, every utility process launched explicitly with a
+    // sandbox type should always end up with a sandbox.
+    //
+    // Note: Sandbox::kOnDeviceModelExecution is currently skipped because
+    // background driver threads created during PreSandboxInit() prevent
+    // Seccomp-BPF from starting (crbug.com/499278708).
+    if (GetParam() != Sandbox::kNoSandbox &&
+        GetParam() != Sandbox::kOnDeviceModelExecution) {
       EXPECT_TRUE(seccomp_bpf_started);
     }
 

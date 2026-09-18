@@ -32,8 +32,6 @@ BASE_FEATURE(kNetworkServiceSyscallFilter, base::FEATURE_ENABLED_BY_DEFAULT);
 // is disabled, a file path allowlist will still be applied, but the policy will
 // allow everything.
 BASE_FEATURE(kNetworkServiceFileAllowlist, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kOnDeviceModelExecutionMultiThreadedSandbox,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 

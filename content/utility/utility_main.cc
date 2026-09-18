@@ -292,15 +292,9 @@ int UtilityMain(MainFunctionParams parameters) {
     }
   }
 
-  // On Linux and ChromeOS, `PreSandboxInit()` is deferred to `PreSandboxHook()`
-  // so the broker process can be safely forked before driver warming spawns
-  // threads. Any threads spawned by `PreSandboxInit()` are then covered by
-  // Seccomp-BPF via TSYNC.
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
   if (utility_sub_type == on_device_model::mojom::OnDeviceModelService::Name_) {
     CHECK(on_device_model::PreSandboxInit());
   }
-#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
