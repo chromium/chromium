@@ -867,7 +867,7 @@ inline LayoutStateScenePassKey PassKey() {
     case TabGridOpeningMode::kDefault:
       break;
   }
-
+  [self hideAssistant];
   [self showTabSwitcherAtPage:page];
 }
 
