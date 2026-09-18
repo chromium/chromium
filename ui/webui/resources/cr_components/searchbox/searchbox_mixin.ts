@@ -351,6 +351,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           inline: '',
           moveCursorToEnd: true,
         });
+        this.keywordModeManager_.exit();
         this.clearAutocompleteMatches();
       }
       e.preventDefault();
@@ -372,6 +373,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         inline: '',
         moveCursorToEnd: true,
       });
+      this.keywordModeManager_.exit();
       this.clearAutocompleteMatches();
     }
 
@@ -975,6 +977,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     }
 
     onMatchClick() {
+      this.keywordModeManager_.exit();
       this.clearAutocompleteMatches();
     }
 
