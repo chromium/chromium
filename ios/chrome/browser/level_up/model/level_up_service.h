@@ -45,9 +45,10 @@ class LevelUpService : public KeyedService {
   // Returns the current level of the user.
   int GetCurrentLevel() const;
 
-  // Returns the number of tasks remaining to reach the next level, or 0 if
-  // the max level is reached.
-  int GetTasksRemainingForNextLevel() const;
+  // Returns a pair of (the number of tasks remaining to reach the next level,
+  // total number of tasks required for the next level), or (0,0) if the max
+  // level is reached.
+  std::pair<int, int> GetTasksRemainingForNextLevel() const;
 
   // Marks a task as completed.
   void MarkTaskCompleted(TaskType task_type);

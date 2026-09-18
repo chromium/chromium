@@ -114,18 +114,12 @@ const CGFloat kCompletionRowSpacing = 16.0;
 
 #pragma mark - LevelUpConsumer
 
-- (void)setLevel:(NSInteger)level tasksForLevel:(NSArray<LevelUpTask*>*)tasks {
+- (void)setLevel:(NSInteger)level
+    remainingTasksForNextLevel:(NSInteger)tasksRemaining
+        totalTasksForNextLevel:(NSInteger)totalTasks {
   _levelLabel.text = l10n_util::GetNSStringF(IDS_IOS_LEVEL_UP_LEVEL_TITLE,
                                              base::NumberToString16(level));
 
-  NSInteger completedTasksForLevel = 0;
-  for (LevelUpTask* task in tasks) {
-    if (task.completed) {
-      completedTasksForLevel++;
-    }
-  }
-  NSInteger totalTasksForLevel = tasks.count;
-  NSInteger tasksRemaining = totalTasksForLevel - completedTasksForLevel;
   NSString* progressMessage = nil;
   if (tasksRemaining > 0) {
     _completionBadgeContainer.hidden = YES;
@@ -143,7 +137,8 @@ const CGFloat kCompletionRowSpacing = 16.0;
   }
   _subtitleLabel.text = progressMessage;
 
-  [_progressBar setCompleted:completedTasksForLevel total:totalTasksForLevel];
+  int completed = totalTasks - tasksRemaining;
+  [_progressBar setCompleted:completed total:totalTasks];
 }
 
 - (void)setNewTasksNotificationEnabled:(BOOL)enabled {

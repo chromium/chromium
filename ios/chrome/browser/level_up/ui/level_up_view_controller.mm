@@ -60,6 +60,11 @@ const CGFloat kTasksCellHeight = 350.0;
   NSArray<LevelUpTask*>* _tasks;
   // The active level.
   NSInteger _level;
+  // How many tasks the user must complete to get to the next level.
+  NSInteger _remainingTasksForNextLevel;
+  // How many tasks the user has already completed on their path to the next
+  // level.
+  NSInteger _totalTasksForNextLevel;
   // User's full name.
   NSString* _userFullName;
   // User's avatar image.
@@ -87,8 +92,15 @@ const CGFloat kTasksCellHeight = 350.0;
 
 #pragma mark - LevelUpConsumer
 
-- (void)setLevel:(NSInteger)level tasksForLevel:(NSArray<LevelUpTask*>*)tasks {
+- (void)setLevel:(NSInteger)level
+    remainingTasksForNextLevel:(NSInteger)remainingTasksForNextLevel
+        totalTasksForNextLevel:(NSInteger)totalTasksForNextLevel {
   _level = level;
+  _remainingTasksForNextLevel = remainingTasksForNextLevel;
+  _totalTasksForNextLevel = totalTasksForNextLevel;
+}
+
+- (void)setRecommendedTasks:(NSArray<LevelUpTask*>*)tasks {
   _tasks = [tasks copy];
 }
 
@@ -140,7 +152,9 @@ const CGFloat kTasksCellHeight = 350.0;
 // Configures the progress cell.
 - (void)configureProgressCell:(LevelUpProgressView*)cell {
   cell.delegate = self.delegate;
-  [cell setLevel:_level tasksForLevel:_tasks];
+  [cell setLevel:_level
+      remainingTasksForNextLevel:_remainingTasksForNextLevel
+          totalTasksForNextLevel:_totalTasksForNextLevel];
   [cell setNewTasksNotificationEnabled:_newTasksNotificationEnabled];
 }
 

@@ -285,14 +285,24 @@ int LevelUpService::GetCurrentLevel() const {
   return current_level_;
 }
 
-int LevelUpService::GetTasksRemainingForNextLevel() const {
+std::pair<int, int> LevelUpService::GetTasksRemainingForNextLevel() const {
   if (current_level_ >= kMaxLevel) {
-    return 0;
+    return {0, 0};
   }
   int next_level = current_level_ + 1;
-  int required = GetTotalTasksRequiredForLevel(next_level);
+  int total_required = GetTotalTasksRequiredForLevel(next_level);
   int completed = completed_tasks_.size();
-  return std::max(0, required - completed);
+  int required = std::max(0, total_required - completed);
+
+  int base_amount_for_next_level = GetTasksIncrementForLevel(next_level);
+  // If the user's level is incorrect due to changing requirements or tasks, the
+  // required amount can exceed the base amount for next level. In that case,
+  // raise amount for next level. For example, if the level requirements are
+  // currently 1 -> 2: 3 and 2 -> 3: 4, and the user is at level 2 with only 1
+  // task remaining, they need 6 tasks to reach 3, even though 2 -> 3 is only 4.
+  int amount_for_next_level =
+      required == 0 ? 0 : std::max(base_amount_for_next_level, required);
+  return {required, amount_for_next_level};
 }
 
 void LevelUpService::MarkTaskCompleted(TaskType task_type) {

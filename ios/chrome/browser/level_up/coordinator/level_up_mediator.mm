@@ -115,6 +115,16 @@
 
   int level = _levelUpService->GetCurrentLevel();
 
+  auto [remainingTasksForNextLevel, totalTasksForNextLevel] =
+      _levelUpService->GetTasksRemainingForNextLevel();
+  if ([self.consumer
+          respondsToSelector:@selector(setLevel:remainingTasksForNextLevel:
+                                       totalTasksForNextLevel:)]) {
+    [self.consumer setLevel:level
+        remainingTasksForNextLevel:remainingTasksForNextLevel
+            totalTasksForNextLevel:totalTasksForNextLevel];
+  }
+
   NSMutableArray<LevelUpTask*>* productivityTasks =
       [[NSMutableArray alloc] init];
   NSMutableArray<LevelUpTask*>* safetyTasks = [[NSMutableArray alloc] init];
@@ -151,8 +161,8 @@
                                               completed:completed]];
   }
 
-  if ([self.consumer respondsToSelector:@selector(setLevel:tasksForLevel:)]) {
-    [self.consumer setLevel:level tasksForLevel:recommendedTasks];
+  if ([self.consumer respondsToSelector:@selector(setRecommendedTasks:)]) {
+    [self.consumer setRecommendedTasks:recommendedTasks];
   }
 
   _categories = @[

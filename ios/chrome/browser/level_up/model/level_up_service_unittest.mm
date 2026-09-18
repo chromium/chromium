@@ -50,7 +50,7 @@ class LevelUpServiceTest : public PlatformTest {
 TEST_F(LevelUpServiceTest, TestDefaultState) {
   EXPECT_FALSE(service_->IsUIEnabled());
   EXPECT_EQ(service_->GetCurrentLevel(), 1);
-  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), 3);
+  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(3, 3));
 
   // Verify all tasks are initially uncompleted.
   const auto& tasks = service_->GetTasks();
@@ -65,18 +65,18 @@ TEST_F(LevelUpServiceTest, TestMilestoneProgression) {
   service_->MarkTaskCompleted(TaskType::kTabGroups);
   EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kTabGroups));
   EXPECT_EQ(service_->GetCurrentLevel(), 1);
-  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), 2);
+  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(2, 3));
 
   // Complete 2nd task.
   service_->MarkTaskCompleted(TaskType::kAutofill);
   EXPECT_EQ(service_->GetCurrentLevel(), 1);
-  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), 1);
+  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(1, 3));
 
   // Complete 3rd task -> Should reach Level 2!
   service_->MarkTaskCompleted(TaskType::kPinTabs);
   EXPECT_EQ(service_->GetCurrentLevel(), 2);
   // Reaching Level 3 requires 8 total tasks. 8 - 3 = 5 remaining.
-  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), 5);
+  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(5, 5));
 
   // Complete 4 more tasks (total 7).
   service_->MarkTaskCompleted(TaskType::kGemini);
@@ -84,13 +84,13 @@ TEST_F(LevelUpServiceTest, TestMilestoneProgression) {
   service_->MarkTaskCompleted(TaskType::kClearBrowsingData);
   service_->MarkTaskCompleted(TaskType::kSafeBrowsing);
   EXPECT_EQ(service_->GetCurrentLevel(), 2);
-  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), 1);
+  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(1, 5));
 
   // Complete 8th task -> Should reach Level 3!
   service_->MarkTaskCompleted(TaskType::kIncognito);
   EXPECT_EQ(service_->GetCurrentLevel(), 3);
   // Reaching Level 4 requires all 12 tasks. 12 - 8 = 4 remaining.
-  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), 4);
+  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(4, 4));
 
   // Complete remaining 4 tasks (total 12).
   service_->MarkTaskCompleted(TaskType::kPasswordCheckup);
@@ -98,7 +98,7 @@ TEST_F(LevelUpServiceTest, TestMilestoneProgression) {
   service_->MarkTaskCompleted(TaskType::kAISearch);
   service_->MarkTaskCompleted(TaskType::kLensCameraSearch);
   EXPECT_EQ(service_->GetCurrentLevel(), 4);
-  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), 0);
+  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(0, 0));
 }
 
 // Tests that the level is monotonic and never decreases.
@@ -273,7 +273,7 @@ TEST_F(LevelUpServiceTest, TestOptedOutDoesNotTrack) {
   service_->MarkTaskCompleted(TaskType::kTabGroups);
   EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kTabGroups));
   EXPECT_EQ(service_->GetCurrentLevel(), 1);
-  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), 3);
+  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(3, 3));
 
   // Attempt to increment a stat.
   service_->IncrementStatValue(LevelUpTaskStatType::kTabsDecluttered, 5);
