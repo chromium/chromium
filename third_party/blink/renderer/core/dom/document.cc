@@ -6155,9 +6155,7 @@ void Document::SendFocusNotification(Element* new_focused_element,
   }
 
   auto dom_node_id = mojom::blink::DOMNodeId::New(kInvalidDOMNodeId);
-  if (base::FeatureList::IsEnabled(
-          features::kPopulateDOMNodeIdInFocusedNodeDetails) &&
-      new_focused_element && (is_editable || is_richly_editable)) {
+  if (new_focused_element && (is_editable || is_richly_editable)) {
     dom_node_id->value = new_focused_element->GetDomNodeId();
   }
 

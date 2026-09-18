@@ -2426,12 +2426,6 @@ inline constexpr char kPopularSitesRefreshUsChoiceArm1[] = "Arm 1";
 inline constexpr char kPopularSitesRefreshUsChoiceArm2[] = "Arm 2";
 inline constexpr char kPopularSitesRefreshUsChoiceArm3[] = "Arm 3";
 
-inline constexpr char kPopulateDOMNodeIdInFocusedNodeDetailsName[] =
-    "Dictation focus supporting code";
-inline constexpr char kPopulateDOMNodeIdInFocusedNodeDetailsDescription[] =
-    "Enables additional focus change handling code needed for the dictation "
-    "feature.";
-
 inline constexpr char kEnableLensStandaloneName[] =
     "Enable Lens features in Chrome.";
 inline constexpr char kEnableLensStandaloneDescription[] =

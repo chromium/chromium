@@ -40,7 +40,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/ui_base_switches.h"
 
@@ -884,17 +883,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   EXPECT_EQ(blink::mojom::FocusType::kMouse, observer.last_focus_type());
 }
 
-class WebContentsObserverBrowserTestNodeIdEnabled
-    : public WebContentsObserverBrowserTest {
- public:
-  WebContentsObserverBrowserTestNodeIdEnabled() = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kPopulateDOMNodeIdInFocusedNodeDetails};
-};
-
-IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTestNodeIdEnabled,
+IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                        OnFocusChangedInPageNodeId) {
   FocusedNodeObserver observer(web_contents());
   GURL url(embedded_test_server()->GetURL("/form_that_posts_cross_site.html"));
