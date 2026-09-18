@@ -231,10 +231,10 @@ class VirtualCardUsageData;
 // -----------------------------------------------------------------------------
 // offer_eligible_instrument
 //                      Contains the mapping of credit cards and card linked
-//                      offers.
-//                      TODO(crbug.com/546252995): Remove this table once
-//                      `OfferType` is deprecated, since it will not be used
-//                      for direct offers.
+//                      offers. Neither written nor read anymore, since
+//                      card-linked offers are no longer synced.
+//                      TODO(crbug.com/546252995): Drop this table once
+//                      `OfferType` is deprecated.
 //
 //   offer_id           Int 64 to identify the relevant offer. Matches the
 //                      `offer_id` in the `offer_data` table.
@@ -517,6 +517,13 @@ class PaymentsAutofillTable : public WebDatabaseTable {
       const std::vector<AutofillOfferData>& autofill_offer_data);
   bool GetAutofillOffers(
       std::vector<std::unique_ptr<AutofillOfferData>>* autofill_offer_data);
+
+  // Inserts `autofill_offer_data`, replacing any offer with the same offer id.
+  bool AddOrUpdateAutofillOffer(const AutofillOfferData& autofill_offer_data);
+  // Removes the offer with `offer_id`. Succeeds if no such offer exists.
+  bool RemoveAutofillOffer(int64_t offer_id);
+  // Returns whether an offer with `offer_id` is stored.
+  bool AutofillOfferExists(int64_t offer_id);
 
   // CRUD operations for VirtualCardUsageData in the virtual_card_usage_data
   // table

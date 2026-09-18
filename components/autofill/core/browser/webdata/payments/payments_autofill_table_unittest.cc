@@ -1449,6 +1449,59 @@ TEST_F(PaymentsAutofillTableTest, SetAndGetOfferData) {
   }
 }
 
+TEST_F(PaymentsAutofillTableTest, AddOrUpdateAutofillOffer) {
+  const AutofillOfferData offer1 = test::GetPromoCodeOfferData(
+      GURL("http://www.merchant_1.com/"), /*is_expired=*/false, /*offer_id=*/1);
+  const AutofillOfferData offer2 = test::GetPromoCodeOfferData(
+      GURL("http://www.merchant_2.com/"), /*is_expired=*/false, /*offer_id=*/2);
+  ASSERT_TRUE(table_->AddOrUpdateAutofillOffer(offer1));
+  ASSERT_TRUE(table_->AddOrUpdateAutofillOffer(offer2));
+
+  std::vector<std::unique_ptr<AutofillOfferData>> offers;
+  ASSERT_TRUE(table_->GetAutofillOffers(&offers));
+  EXPECT_THAT(offers, testing::UnorderedElementsAre(testing::Pointee(offer1),
+                                                    testing::Pointee(offer2)));
+
+  // Updating an offer replaces it in place, without affecting other offers.
+  // Since `offer_id` is not a primary key, this also verifies that the rows of
+  // the previous version are removed from the child tables rather than
+  // accumulating. The updated offer deliberately has a different merchant
+  // origin, which is stored in a separate table.
+  const AutofillOfferData updated_offer1 = test::GetPromoCodeOfferData(
+      GURL("http://www.merchant_3.com/"), /*is_expired=*/true, /*offer_id=*/1);
+  ASSERT_TRUE(table_->AddOrUpdateAutofillOffer(updated_offer1));
+
+  ASSERT_TRUE(table_->GetAutofillOffers(&offers));
+  EXPECT_THAT(offers,
+              testing::UnorderedElementsAre(testing::Pointee(updated_offer1),
+                                            testing::Pointee(offer2)));
+}
+
+TEST_F(PaymentsAutofillTableTest, RemoveAutofillOffer) {
+  const AutofillOfferData offer1 = test::GetPromoCodeOfferData(
+      GURL("http://www.merchant_1.com/"), /*is_expired=*/false, /*offer_id=*/1);
+  const AutofillOfferData offer2 = test::GetPromoCodeOfferData(
+      GURL("http://www.merchant_2.com/"), /*is_expired=*/false, /*offer_id=*/2);
+
+  ASSERT_TRUE(table_->AddOrUpdateAutofillOffer(offer1));
+  ASSERT_TRUE(table_->AddOrUpdateAutofillOffer(offer2));
+  ASSERT_TRUE(table_->AutofillOfferExists(1));
+  ASSERT_TRUE(table_->AutofillOfferExists(2));
+
+  EXPECT_TRUE(table_->RemoveAutofillOffer(1));
+  EXPECT_FALSE(table_->AutofillOfferExists(1));
+  EXPECT_TRUE(table_->AutofillOfferExists(2));
+
+  std::vector<std::unique_ptr<AutofillOfferData>> offers;
+  ASSERT_TRUE(table_->GetAutofillOffers(&offers));
+  EXPECT_THAT(offers, testing::ElementsAre(testing::Pointee(offer2)));
+
+  // Removing an offer that doesn't exist succeeds and is a no-op.
+  EXPECT_TRUE(table_->RemoveAutofillOffer(1));
+  ASSERT_TRUE(table_->GetAutofillOffers(&offers));
+  EXPECT_THAT(offers, testing::ElementsAre(testing::Pointee(offer2)));
+}
+
 TEST_F(PaymentsAutofillTableTest, SetAndGetVirtualCardUsageData) {
   // Create test data.
   VirtualCardUsageData virtual_card_usage_data_1 =

@@ -350,37 +350,45 @@ ValuableDatabaseOperationResult ValuableSyncBridge::HandleDeleteRequest(
     return ValuableDatabaseOperationResult::kDataChanged;
   }
 
-  if (!IsSyncWalletFlightReservationsEnabled() &&
-      !IsSyncWalletVehicleRegistrationsEnabled() &&
-      !IsSyncWalletPrivatePassesEnabled() && !IsSyncWalletShoppingEnabled()) {
-    return ValuableDatabaseOperationResult::kNoChange;
-  }
-  EntityInstance::EntityId entity_id(storage_key);
-  if (GetEntityTable()->EntityInstanceExists(entity_id)) {
-    // Requesting the associated metadata before the entity removed.
-    std::optional<EntityInstance::EntityMetadata> metadata =
-        GetEntityTable()->GetEntityMetadata(entity_id);
-    if (!GetEntityTable()->RemoveEntityInstance(entity_id)) {
-      return ValuableDatabaseOperationResult::kDatabaseError;
-    }
+  if (IsSyncWalletFlightReservationsEnabled() ||
+      IsSyncWalletVehicleRegistrationsEnabled() ||
+      IsSyncWalletPrivatePassesEnabled() || IsSyncWalletShoppingEnabled()) {
+    EntityInstance::EntityId entity_id(storage_key);
+    if (GetEntityTable()->EntityInstanceExists(entity_id)) {
+      // Requesting the associated metadata before the entity removed.
+      std::optional<EntityInstance::EntityMetadata> metadata =
+          GetEntityTable()->GetEntityMetadata(entity_id);
+      if (!GetEntityTable()->RemoveEntityInstance(entity_id)) {
+        return ValuableDatabaseOperationResult::kDatabaseError;
+      }
 
-    // Server entities can not be removed directly by the user in the client.
-    // They are only removed via a ACTION_DELETE directive received through the
-    // valuables bridge. When the bridge removes an entity instance and its
-    // associated metadata directly from the local table, server metadata
-    // observers (e.g. ValuableMetadataSyncBridge) must be manually notified of
-    // the deletion so it can be committed to the server.
-    if (IsSyncAutofillValuableMetadataEnabled() && metadata) {
-      web_data_backend_->NotifyOnServerEntityMetadataChanged(
-          EntityInstanceMetadataChange(EntityInstanceMetadataChange::REMOVE,
-                                       entity_id, std::move(*metadata)));
+      // Server entities can not be removed directly by the user in the client.
+      // They are only removed via a ACTION_DELETE directive received through
+      // the valuables bridge. When the bridge removes an entity instance and
+      // its associated metadata directly from the local table, server metadata
+      // observers (e.g. ValuableMetadataSyncBridge) must be manually notified
+      // of the deletion so it can be committed to the server.
+      if (IsSyncAutofillValuableMetadataEnabled() && metadata) {
+        web_data_backend_->NotifyOnServerEntityMetadataChanged(
+            EntityInstanceMetadataChange(EntityInstanceMetadataChange::REMOVE,
+                                         entity_id, std::move(*metadata)));
+      }
+      return ValuableDatabaseOperationResult::kDataChanged;
     }
-    return ValuableDatabaseOperationResult::kDataChanged;
   }
 
-  // TODO(crbug.com/546252995): `storage_key` may belong to an offer. Offers
-  // are persisted but deletions aren't handled yet; remove the offer with this
-  // id from `PaymentsAutofillTable`.
+  if (IsSyncWalletDirectOffersEnabled(app_locale_)) {
+    int64_t offer_id = 0;
+    PaymentsAutofillTable* payments_table = GetPaymentsAutofillTable();
+    if (base::StringToInt64(storage_key, &offer_id) &&
+        payments_table->AutofillOfferExists(offer_id)) {
+      if (!payments_table->RemoveAutofillOffer(offer_id)) {
+        return ValuableDatabaseOperationResult::kDatabaseError;
+      }
+      return ValuableDatabaseOperationResult::kDataChanged;
+    }
+  }
+
   return ValuableDatabaseOperationResult::kNoChange;
 }
 
@@ -448,12 +456,14 @@ ValuableSyncBridge::ApplyIncrementalSyncChanges(
               }
             }
             break;
-          // Offers pass `IsEntityDataValid()` but are dropped here, so nothing
-          // is written to disk yet.
-          // TODO(crbug.com/546252995): Convert the specifics with
-          // `CreateOfferDataFromValuableSpecifics()` and add or update the
-          // resulting `AutofillOfferData` in `PaymentsAutofillTable`.
-          case sync_pb::AutofillValuableSpecifics::kOffer:
+          case sync_pb::AutofillValuableSpecifics::kOffer: {
+            if (!GetPaymentsAutofillTable()->AddOrUpdateAutofillOffer(
+                    CreateOfferDataFromValuableSpecifics(specifics))) {
+              db_operation_result =
+                  ValuableDatabaseOperationResult::kDatabaseError;
+            }
+            break;
+          }
           // Event ticket and transit pass are not supported by Chrome.
           case sync_pb::AutofillValuableSpecifics::kEventTicket:
           case sync_pb::AutofillValuableSpecifics::kTransitPass:
@@ -468,7 +478,6 @@ ValuableSyncBridge::ApplyIncrementalSyncChanges(
             ValuableDatabaseOperationResult::kDatabaseError) {
           db_operation_result = ValuableDatabaseOperationResult::kDatabaseError;
         }
-
         break;
     }
   }

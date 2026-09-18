@@ -459,6 +459,48 @@ T CheckedToEnum(std::underlying_type_t<T> raw_int) {
   return IsKnownEnumValue(e) ? e : T::kMinValue;
 }
 
+bool RemoveAutofillOfferRows(sql::Database& db, int64_t offer_id) {
+  return sql::DeleteWhereColumnEq(db, kOfferDataTable, kOfferId, offer_id) &&
+         sql::DeleteWhereColumnEq(db, kOfferEligibleInstrumentTable, kOfferId,
+                                  offer_id) &&
+         sql::DeleteWhereColumnEq(db, kOfferMerchantDomainTable, kOfferId,
+                                  offer_id);
+}
+
+bool InsertOffer(sql::Database& db, const AutofillOfferData& offer) {
+  sql::Statement insert_offer;
+  sql::CachedInsertBuilder(
+      SQL_FROM_HERE, db, insert_offer, kOfferDataTable,
+      {kOfferId, kOfferRewardAmount, kExpiry, kOfferDetailsUrl, kPromoCode,
+       kValuePropText, kSeeDetailsText, kUsageInstructionsText});
+  insert_offer.BindInt64(0, offer.GetOfferId());
+  insert_offer.BindString(1, offer.GetOfferRewardAmount());
+  insert_offer.BindInt64(
+      2, offer.GetExpiry().ToDeltaSinceWindowsEpoch().InMilliseconds());
+  insert_offer.BindString(3, offer.GetOfferDetailsUrl().spec());
+  insert_offer.BindString(4, offer.GetPromoCode());
+  insert_offer.BindString(5, offer.GetDisplayStrings().value_prop_text);
+  insert_offer.BindString(6, offer.GetDisplayStrings().see_details_text);
+  insert_offer.BindString(7, offer.GetDisplayStrings().usage_instructions_text);
+  if (!insert_offer.Run()) {
+    return false;
+  }
+
+  sql::Statement insert_merchant_domain;
+  sql::CachedInsertBuilder(SQL_FROM_HERE, db, insert_merchant_domain,
+                           kOfferMerchantDomainTable,
+                           {kOfferId, kMerchantDomain});
+  for (const GURL& merchant_origin : offer.GetMerchantOrigins()) {
+    insert_merchant_domain.BindInt64(0, offer.GetOfferId());
+    insert_merchant_domain.BindString(1, merchant_origin.spec());
+    if (!insert_merchant_domain.Run()) {
+      return false;
+    }
+    insert_merchant_domain.Reset(/*clear_bound_vars=*/true);
+  }
+  return true;
+}
+
 }  // namespace
 
 PaymentsAutofillTable::PaymentsAutofillTable() = default;
@@ -1382,53 +1424,38 @@ void PaymentsAutofillTable::SetAutofillOffers(
   sql::DeleteAllRows(*db(), kOfferMerchantDomainTable);
 
   // Insert new values.
-  sql::Statement insert_offers;
-  sql::CachedInsertBuilder(
-      SQL_FROM_HERE, *db(), insert_offers, kOfferDataTable,
-      {kOfferId, kOfferRewardAmount, kExpiry, kOfferDetailsUrl, kPromoCode,
-       kValuePropText, kSeeDetailsText, kUsageInstructionsText});
-
-  sql::Statement insert_offer_eligible_instruments;
-  sql::CachedInsertBuilder(
-      SQL_FROM_HERE, *db(), insert_offer_eligible_instruments,
-      kOfferEligibleInstrumentTable, {kOfferId, kInstrumentId});
-
-  sql::Statement insert_offer_merchant_domains;
-  sql::CachedInsertBuilder(SQL_FROM_HERE, *db(), insert_offer_merchant_domains,
-                           kOfferMerchantDomainTable,
-                           {kOfferId, kMerchantDomain});
-
   for (const AutofillOfferData& data : autofill_offer_data) {
-    insert_offers.BindInt64(0, data.GetOfferId());
-    insert_offers.BindString(1, data.GetOfferRewardAmount());
-    insert_offers.BindInt64(
-        2, data.GetExpiry().ToDeltaSinceWindowsEpoch().InMilliseconds());
-    insert_offers.BindString(3, data.GetOfferDetailsUrl().spec());
-    insert_offers.BindString(4, data.GetPromoCode());
-    insert_offers.BindString(5, data.GetDisplayStrings().value_prop_text);
-    insert_offers.BindString(6, data.GetDisplayStrings().see_details_text);
-    insert_offers.BindString(7,
-                             data.GetDisplayStrings().usage_instructions_text);
-    insert_offers.Run();
-    insert_offers.Reset(/*clear_bound_vars=*/true);
-
-    for (const int64_t instrument_id : data.GetEligibleInstrumentIds()) {
-      // Insert new offer_eligible_instrument values.
-      insert_offer_eligible_instruments.BindInt64(0, data.GetOfferId());
-      insert_offer_eligible_instruments.BindInt64(1, instrument_id);
-      insert_offer_eligible_instruments.Run();
-      insert_offer_eligible_instruments.Reset(/*clear_bound_vars=*/true);
-    }
-
-    for (const GURL& merchant_origin : data.GetMerchantOrigins()) {
-      // Insert new offer_merchant_domain values.
-      insert_offer_merchant_domains.BindInt64(0, data.GetOfferId());
-      insert_offer_merchant_domains.BindString(1, merchant_origin.spec());
-      insert_offer_merchant_domains.Run();
-      insert_offer_merchant_domains.Reset(/*clear_bound_vars=*/true);
+    if (!InsertOffer(*db(), data)) {
+      return;
     }
   }
   transaction.Commit();
+}
+
+bool PaymentsAutofillTable::AddOrUpdateAutofillOffer(
+    const AutofillOfferData& autofill_offer_data) {
+  sql::Transaction transaction(db());
+  // An offer already stored under the same id is removed before the new one is
+  // inserted.
+  return transaction.Begin() &&
+         RemoveAutofillOfferRows(*db(), autofill_offer_data.GetOfferId()) &&
+         InsertOffer(*db(), autofill_offer_data) && transaction.Commit();
+}
+
+bool PaymentsAutofillTable::RemoveAutofillOffer(int64_t offer_id) {
+  sql::Transaction transaction(db());
+  return transaction.Begin() && RemoveAutofillOfferRows(*db(), offer_id) &&
+         transaction.Commit();
+}
+
+bool PaymentsAutofillTable::AutofillOfferExists(int64_t offer_id) {
+  sql::Statement s;
+  sql::CachedSelectBuilder(
+      SQL_FROM_HERE, *db(), s, kOfferDataTable, {kOfferId},
+      /*modifiers=*/
+      base::StrCat({"WHERE ", kOfferId, " = ", sql::kPlaceholder}));
+  s.BindInt64(0, offer_id);
+  return s.Step();
 }
 
 bool PaymentsAutofillTable::GetAutofillOffers(

@@ -44,6 +44,7 @@ using syncer::test::AddUnknownFieldToProto;
 using syncer::test::HasUnknownField;
 using testing::_;
 using testing::ElementsAre;
+using testing::Property;
 using testing::Return;
 using testing::ReturnRef;
 using testing::UnorderedElementsAre;
@@ -1221,6 +1222,100 @@ TEST_F(
 
   EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
       bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+}
+
+// Tests that an offer added through `ApplyIncrementalSyncChanges()` is written
+// to `PaymentsAutofillTable` without dropping the offers already stored there.
+TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
+       ApplyIncrementalSyncChanges_AddsOffer) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
+
+  ASSERT_TRUE(SyncOffers({TestOfferSpecifics(kId1)}));
+  ASSERT_EQ(GetAllOffersFromTable().size(), 1u);
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      kId2,
+      std::move(*CreateEntityDataFromSpecifics(TestOfferSpecifics(kId2)))));
+
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+
+  EXPECT_THAT(
+      GetAllOffersFromTable(),
+      UnorderedElementsAre(Property(&AutofillOfferData::GetOfferId, 1),
+                           Property(&AutofillOfferData::GetOfferId, 2)));
+}
+
+// Tests that an updated offer replaces the stored offer with the same id
+// instead of being added a second time.
+TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
+       ApplyIncrementalSyncChanges_UpdatesOffer) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
+
+  ASSERT_TRUE(SyncOffers({TestOfferSpecifics(kId1)}));
+  ASSERT_EQ(GetAllOffersFromTable().size(), 1u);
+  ASSERT_EQ(GetAllOffersFromTable()[0].GetPromoCode(), "SAFEWAY50");
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateUpdate(
+      kId1, std::move(*CreateEntityDataFromSpecifics(TestOfferSpecifics(
+                kId1, /*offer_code=*/"SAFEWAY75",
+                /*description=*/"75% off your next purchase",
+                /*pass_view_url=*/"https://safeway.com/offer-details")))));
+
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+
+  const std::vector<AutofillOfferData> offers = GetAllOffersFromTable();
+  ASSERT_EQ(offers.size(), 1u);
+  EXPECT_EQ(offers[0].GetOfferId(), 1);
+  EXPECT_EQ(offers[0].GetPromoCode(), "SAFEWAY75");
+}
+
+// Tests that a deletion removes only the offer with the matching id.
+TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
+       ApplyIncrementalSyncChanges_DeletesOffer) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
+
+  ASSERT_TRUE(SyncOffers({TestOfferSpecifics(kId1), TestOfferSpecifics(kId2)}));
+  ASSERT_EQ(GetAllOffersFromTable().size(), 2u);
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(
+      syncer::EntityChange::CreateDelete(kId1, syncer::EntityData()));
+
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+
+  const std::vector<AutofillOfferData> offers = GetAllOffersFromTable();
+  ASSERT_EQ(offers.size(), 1u);
+  EXPECT_EQ(offers[0].GetOfferId(), 2);
+}
+
+// Tests that a deletion whose storage key doesn't belong to any offer leaves
+// the stored offers untouched.
+TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
+       ApplyIncrementalSyncChanges_UnrelatedDeleteKeepsOffers) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
+
+  ASSERT_TRUE(SyncOffers({TestOfferSpecifics(kId1)}));
+  ASSERT_EQ(GetAllOffersFromTable().size(), 1u);
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateDelete(
+      "00000000-0000-0000-0000-000000000009", syncer::EntityData()));
+
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+
+  const std::vector<AutofillOfferData> offers = GetAllOffersFromTable();
+  ASSERT_EQ(offers.size(), 1u);
+  EXPECT_EQ(offers[0].GetOfferId(), 1);
 }
 #endif  // !BUILDFLAG(IS_IOS)
 

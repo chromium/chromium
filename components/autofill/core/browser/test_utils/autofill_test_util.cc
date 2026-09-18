@@ -668,6 +668,12 @@ AutofillOfferData GetPromoCodeOfferData(GURL origin,
   // Sets the expiry to be later if not expired, or earlier if expired.
   base::Time expiry = is_expired ? AutofillClock::Now() - base::Days(1)
                                  : AutofillClock::Now() + base::Days(35);
+  // `PaymentsAutofillTable` stores the expiry with millisecond precision, while
+  // `AutofillClock::Now()` has microsecond precision, so truncate it to
+  // millisecond precision to match real data.
+  expiry = base::Time::FromMillisecondsSinceUnixEpoch(
+      expiry.InMillisecondsSinceUnixEpoch());
+
   std::vector<GURL> merchant_origins{origin};
   DisplayStrings display_strings;
   display_strings.value_prop_text = "5% off on shoes. Up to $50.";
