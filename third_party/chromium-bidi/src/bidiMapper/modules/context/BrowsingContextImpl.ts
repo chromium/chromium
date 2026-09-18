@@ -1197,6 +1197,7 @@ export class BrowsingContextImpl {
       screenOrientation,
       config.screenArea ?? null,
       config.scrollbarType ?? null,
+      config.viewportMeta ?? null,
     );
   }
 
@@ -2070,6 +2071,22 @@ export class BrowsingContextImpl {
       config.screenOrientation ?? null,
       config.screenArea ?? null,
       scrollbarType,
+      config.viewportMeta ?? null,
+    );
+  }
+
+  async setViewportMetaOverride(viewportMeta: true | null): Promise<void> {
+    const config = this.#configStorage.getActiveConfig(
+      this.id,
+      this.userContext,
+    );
+    await this.cdpTarget.setDeviceMetricsOverride(
+      config.viewport ?? null,
+      config.devicePixelRatio ?? null,
+      config.screenOrientation ?? null,
+      config.screenArea ?? null,
+      config.scrollbarType ?? null,
+      viewportMeta,
     );
   }
 }

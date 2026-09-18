@@ -406,9 +406,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSetUserAgentOverrideParams(command.params),
         );
       case 'emulation.setViewportMetaOverride':
-        this.#parser.parseSetViewportMetaOverrideParams(command.params);
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#emulationProcessor.setViewportMetaOverride(
+          this.#parser.parseSetViewportMetaOverrideParams(command.params),
         );
       case 'userAgentClientHints.setClientHintsOverride':
         return await this.#emulationProcessor.setClientHintsOverride(

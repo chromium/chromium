@@ -128,6 +128,35 @@ describe('ContextConfigStorage', () => {
         expected: {viewport: {width: 3, height: 3}},
         name: 'should override null with value from browsing context config',
       },
+      // ViewportMeta overrides across contexts.
+      {
+        global: {viewportMeta: true as const},
+        expected: {viewportMeta: true as const},
+        name: 'should return global viewportMeta config',
+      },
+      {
+        global: [{viewportMeta: true as const}, {viewportMeta: null}],
+        expected: {},
+        name: 'null should remove previously set global viewportMeta value',
+      },
+      {
+        global: {viewportMeta: true as const},
+        user: {viewportMeta: null},
+        expected: {viewportMeta: true as const},
+        name: 'null in user context should fall back to global viewportMeta value',
+      },
+      {
+        user: {viewportMeta: true as const},
+        browsing: {viewportMeta: null},
+        expected: {viewportMeta: true as const},
+        name: 'null in browsing context should fall back to user context viewportMeta value',
+      },
+      {
+        user: {viewportMeta: null},
+        browsing: {viewportMeta: true as const},
+        expected: {viewportMeta: true as const},
+        name: 'viewportMeta true in browsing context should override null in user context',
+      },
     ].forEach(({name, global, user, browsing, expected}) => {
       it(name, () => {
         if (global) {

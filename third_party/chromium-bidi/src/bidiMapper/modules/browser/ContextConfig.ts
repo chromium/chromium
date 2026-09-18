@@ -64,6 +64,7 @@ export class ContextConfig {
   userAgent?: string | null;
   userPromptHandler?: Session.UserPromptHandler;
   viewport?: BrowsingContext.Viewport | null;
+  viewportMeta?: true | null;
   // keep-sorted end
 
   /**
