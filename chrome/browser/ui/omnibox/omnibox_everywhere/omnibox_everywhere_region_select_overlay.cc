@@ -385,7 +385,7 @@ class TeardropCursorChipView : public views::View {
     canvas->DrawPath(teardrop_path, border_flags_);
 
     // Magnifying glass icon.
-    constexpr int kIconSize = 16;
+    constexpr int kIconSize = 20;
     const int icon_x = kPadding + (kChipSize - kIconSize) / 2;
     const int icon_y = kPadding + (kChipSize - kIconSize) / 2;
     canvas->Save();
@@ -685,22 +685,10 @@ class RegionSelectOverlayView : public views::View {
       return;
     }
 
-    constexpr int kOffset = 8;
-    int chip_x = pos.x() + kOffset;
-    int chip_y = pos.y() + kOffset;
-
-    if (chip_x + TeardropCursorChipView::kTotalSize > width()) {
-      chip_x = pos.x() - TeardropCursorChipView::kTotalSize - kOffset;
-    }
-    if (chip_y + TeardropCursorChipView::kTotalSize > height()) {
-      chip_y = pos.y() - TeardropCursorChipView::kTotalSize - kOffset;
-    }
-    chip_x = std::clamp(
-        chip_x, 0, std::max(0, width() - TeardropCursorChipView::kTotalSize));
-    chip_y = std::clamp(
-        chip_y, 0, std::max(0, height() - TeardropCursorChipView::kTotalSize));
-
-    cursor_chip_->SetBounds(chip_x, chip_y, TeardropCursorChipView::kTotalSize,
+    constexpr int kVisualOffset = 10;
+    constexpr int kOffset = kVisualOffset - TeardropCursorChipView::kPadding;
+    cursor_chip_->SetBounds(pos.x() + kOffset, pos.y() + kOffset,
+                            TeardropCursorChipView::kTotalSize,
                             TeardropCursorChipView::kTotalSize);
     cursor_chip_->SetVisible(true);
   }
