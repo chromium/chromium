@@ -61,7 +61,8 @@ DemoComponents::DemoComponents(
       component_manager_ash_(std::move(component_manager_ash)),
       config_(config) {
   CHECK(component_manager_ash_);
-  DCHECK_NE(config_, DemoSession::DemoModeConfig::kNone);
+  CHECK_NE(config_, DemoSession::DemoModeConfig::kNone,
+           base::NotFatalUntil::M160);
 }
 
 DemoComponents::~DemoComponents() = default;

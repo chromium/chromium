@@ -129,25 +129,25 @@ PasswordSyncTokenFetcher::PasswordSyncTokenFetcher(
       identity_manager_(identity_manager),
       consumer_(consumer),
       request_type_(RequestType::kNone) {
-  DCHECK(consumer_);
+  CHECK(consumer_, base::NotFatalUntil::M160);
 }
 
 PasswordSyncTokenFetcher::~PasswordSyncTokenFetcher() = default;
 
 void PasswordSyncTokenFetcher::StartTokenCreate() {
-  DCHECK_EQ(request_type_, RequestType::kNone);
+  CHECK_EQ(request_type_, RequestType::kNone, base::NotFatalUntil::M160);
   request_type_ = RequestType::kCreateToken;
   StartAccessTokenFetch();
 }
 
 void PasswordSyncTokenFetcher::StartTokenGet() {
-  DCHECK_EQ(request_type_, RequestType::kNone);
+  CHECK_EQ(request_type_, RequestType::kNone, base::NotFatalUntil::M160);
   request_type_ = RequestType::kGetToken;
   StartAccessTokenFetch();
 }
 
 void PasswordSyncTokenFetcher::StartTokenVerify(const std::string& sync_token) {
-  DCHECK_EQ(request_type_, RequestType::kNone);
+  CHECK_EQ(request_type_, RequestType::kNone, base::NotFatalUntil::M160);
   request_type_ = RequestType::kVerifyToken;
   sync_token_ = sync_token;
   FetchSyncToken(/*access_token=*/std::string());
@@ -247,7 +247,7 @@ void PasswordSyncTokenFetcher::FetchSyncToken(const std::string& access_token) {
                                       kContentTypeJSON);
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kAcceptValue);
-  DCHECK(!simple_url_loader_);
+  CHECK(!simple_url_loader_, base::NotFatalUntil::M160);
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);

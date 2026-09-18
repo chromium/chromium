@@ -62,7 +62,7 @@ SecurityTokenSessionControllerFactory::BuildServiceInstanceForBrowserContext(
   if (!profile)
     return nullptr;
   auto* const user_manager = user_manager::UserManager::Get();
-  DCHECK(user_manager);
+  CHECK(user_manager, base::NotFatalUntil::M160);
   const bool is_primary_profile = user_manager->IsPrimaryUser(
       BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
   const bool is_signin_profile = IsSigninBrowserContext(profile);
@@ -77,7 +77,7 @@ SecurityTokenSessionControllerFactory::BuildServiceInstanceForBrowserContext(
   }
 
   const user_manager::User* primary_user = user_manager->GetPrimaryUser();
-  DCHECK(primary_user);
+  CHECK(primary_user, base::NotFatalUntil::M160);
 
   chromeos::CertificateProviderService* certificate_provider_service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(

@@ -206,7 +206,7 @@ InSessionPasswordChangeManager::InSessionPasswordChangeManager(
       primary_profile_(primary_profile),
       primary_user_(ProfileHelper::Get()->GetUserByProfile(primary_profile)),
       urgent_warning_days_(kUrgentWarningDays) {
-  DCHECK(primary_user_);
+  CHECK(primary_user_, base::NotFatalUntil::M160);
 
   // Add `this` as a SessionActivationObserver to see when the screen is locked.
   auto* session_controller = SessionController::Get();
@@ -426,7 +426,7 @@ void InSessionPasswordChangeManager::OnPasswordUpdateFailure(
 
 void InSessionPasswordChangeManager::OnPasswordUpdateSuccess(
     std::unique_ptr<UserContext> user_context) {
-  DCHECK(user_context);
+  CHECK(user_context, base::NotFatalUntil::M160);
   VLOG(3) << "Cryptohome password is changed.";
   RecordCryptohomePasswordChangeSuccess(password_source_);
   NotifyObservers(Event::CRYPTOHOME_PASSWORD_CHANGED);

@@ -97,7 +97,7 @@ void PopulateCpuInfo(SystemLogsResponse& psd, const TelemetryInfoPtr& info) {
   }
   std::vector<healthd::PhysicalCpuInfoPtr>& physical_cpus =
       info->cpu_result->get_cpu_info()->physical_cpus;
-  DCHECK_GE(physical_cpus.size(), 1u);
+  CHECK_GE(physical_cpus.size(), 1u, base::NotFatalUntil::M160);
 
   std::string cpu_names;
   for (const auto& cpu : physical_cpus) {

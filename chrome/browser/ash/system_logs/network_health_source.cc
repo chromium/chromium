@@ -215,8 +215,8 @@ NetworkHealthSource::NetworkHealthSource(bool scrub,
 NetworkHealthSource::~NetworkHealthSource() = default;
 
 void NetworkHealthSource::Fetch(SysLogsSourceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!callback.is_null());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M160);
   callback_ = std::move(callback);
   network_health_service_->GetHealthSnapshot(
       base::BindOnce(&NetworkHealthSource::OnNetworkHealthReceived,

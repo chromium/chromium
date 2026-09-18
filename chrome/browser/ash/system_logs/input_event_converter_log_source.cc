@@ -16,7 +16,7 @@ namespace {
 
 void SaveDescription(SysLogsSourceCallback callback,
                      const std::string& description) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto response = std::make_unique<SystemLogsResponse>();
 
@@ -33,8 +33,8 @@ InputEventConverterLogSource::InputEventConverterLogSource()
 InputEventConverterLogSource::~InputEventConverterLogSource() = default;
 
 void InputEventConverterLogSource::Fetch(SysLogsSourceCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!callback.is_null());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M160);
 
   ui::InputController* input_controller =
       ui::OzonePlatform::GetInstance()->GetInputController();

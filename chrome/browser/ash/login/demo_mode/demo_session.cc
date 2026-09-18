@@ -250,7 +250,7 @@ std::vector<CountryCodeAndFullNamePair> GetSortedCountryCodeAndNamePairList(
   UErrorCode error_code = U_ZERO_ERROR;
   std::unique_ptr<icu::Collator> collator(
       icu::Collator::createInstance(error_code));
-  DCHECK(U_SUCCESS(error_code));
+  CHECK(U_SUCCESS(error_code), base::NotFatalUntil::M160);
 
   std::sort(result.begin(), result.end(),
             [&collator](const CountryCodeAndFullNamePair& pair1,
@@ -282,7 +282,7 @@ std::string DemoSession::DemoConfigToString(
 // static
 DemoSession::DemoModeConfig DemoSession::GetDemoConfig(
     const PrefService& local_state) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (g_force_demo_config.has_value())
     return *g_force_demo_config;
@@ -542,10 +542,10 @@ DemoSession::~DemoSession() {
 // static
 
 void DemoSession::InstallDemoResources() {
-  DCHECK(components_->resources_component_loaded());
+  CHECK(components_->resources_component_loaded(), base::NotFatalUntil::M160);
 
   Profile* const profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   const base::FilePath downloads =
       file_manager::util::GetDownloadsFolderForProfile(profile);
   auto install_media = base::BindOnce(
@@ -660,8 +660,9 @@ void DemoSession::OnSessionStateChanged() {
 }
 
 base::FilePath DemoSession::GetDemoAppComponentPath() {
-  DCHECK(components_);
-  DCHECK(!components_->default_app_component_path().empty());
+  CHECK(components_, base::NotFatalUntil::M160);
+  CHECK(!components_->default_app_component_path().empty(),
+        base::NotFatalUntil::M160);
   return base::FilePath(
       GetSwitchOrDefault(switches::kDemoModeSwaContentDirectory,
                          components_->default_app_component_path().value()));
@@ -773,7 +774,7 @@ void DemoSession::RestoreDefaultLocaleForNextSession() {
     return;
   }
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   const std::string current_locale =
       profile->GetPrefs()->GetString(language::prefs::kApplicationLocale);
   if (current_locale.empty()) {

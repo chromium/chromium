@@ -21,7 +21,7 @@ using AuthMethod = LoginAuthRecorder::AuthMethod;
 using AuthMethodSwitchType = LoginAuthRecorder::AuthMethodSwitchType;
 
 std::optional<AuthMethodSwitchType> SwitchFromPasswordTo(AuthMethod current) {
-  DCHECK_NE(AuthMethod::kPassword, current);
+  CHECK_NE(AuthMethod::kPassword, current, base::NotFatalUntil::M160);
   switch (current) {
     case AuthMethod::kPin:
       return AuthMethodSwitchType::kPasswordToPin;
@@ -38,7 +38,7 @@ std::optional<AuthMethodSwitchType> SwitchFromPasswordTo(AuthMethod current) {
 }
 
 std::optional<AuthMethodSwitchType> SwitchFromPinTo(AuthMethod current) {
-  DCHECK_NE(AuthMethod::kPin, current);
+  CHECK_NE(AuthMethod::kPin, current, base::NotFatalUntil::M160);
   switch (current) {
     case AuthMethod::kPassword:
       return AuthMethodSwitchType::kPinToPassword;
@@ -54,7 +54,7 @@ std::optional<AuthMethodSwitchType> SwitchFromPinTo(AuthMethod current) {
 }
 
 std::optional<AuthMethodSwitchType> SwitchFromSmartlockTo(AuthMethod current) {
-  DCHECK_NE(AuthMethod::kSmartlock, current);
+  CHECK_NE(AuthMethod::kSmartlock, current, base::NotFatalUntil::M160);
   switch (current) {
     case AuthMethod::kPassword:
       return AuthMethodSwitchType::kSmartlockToPassword;
@@ -71,7 +71,7 @@ std::optional<AuthMethodSwitchType> SwitchFromSmartlockTo(AuthMethod current) {
 
 std::optional<AuthMethodSwitchType> SwitchFromFingerprintTo(
     AuthMethod current) {
-  DCHECK_NE(AuthMethod::kFingerprint, current);
+  CHECK_NE(AuthMethod::kFingerprint, current, base::NotFatalUntil::M160);
   switch (current) {
     case AuthMethod::kPassword:
       return AuthMethodSwitchType::kFingerprintToPassword;
@@ -87,7 +87,7 @@ std::optional<AuthMethodSwitchType> SwitchFromFingerprintTo(
 }
 
 std::optional<AuthMethodSwitchType> SwitchFromNothingTo(AuthMethod current) {
-  DCHECK_NE(AuthMethod::kNothing, current);
+  CHECK_NE(AuthMethod::kNothing, current, base::NotFatalUntil::M160);
   switch (current) {
     case AuthMethod::kPassword:
       return AuthMethodSwitchType::kNothingToPassword;
@@ -106,7 +106,7 @@ std::optional<AuthMethodSwitchType> SwitchFromNothingTo(AuthMethod current) {
 
 std::optional<AuthMethodSwitchType> FindSwitchType(AuthMethod previous,
                                                    AuthMethod current) {
-  DCHECK_NE(previous, current);
+  CHECK_NE(previous, current, base::NotFatalUntil::M160);
   switch (previous) {
     case AuthMethod::kPassword:
       return SwitchFromPasswordTo(current);
@@ -134,7 +134,7 @@ LoginAuthRecorder::~LoginAuthRecorder() {
 }
 
 void LoginAuthRecorder::RecordAuthMethod(AuthMethod method) {
-  DCHECK_NE(method, AuthMethod::kNothing);
+  CHECK_NE(method, AuthMethod::kNothing, base::NotFatalUntil::M160);
 
   bool is_locked;
   switch (session_manager::SessionManager::Get()->session_state()) {

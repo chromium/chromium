@@ -94,8 +94,9 @@ void EnableAdbSideloadingScreen::OnQueryAdbSideload(
   local_state_->CommitPendingWrite();
 
   if (enabled) {
-    DCHECK_EQ(response_code,
-              SessionManagerClient::AdbSideloadResponseCode::SUCCESS);
+    CHECK_EQ(response_code,
+             SessionManagerClient::AdbSideloadResponseCode::SUCCESS,
+             base::NotFatalUntil::M160);
     LogEvent(AdbSideloadingPromptEvent::kSkipped);
     exit_callback_.Run();
     return;

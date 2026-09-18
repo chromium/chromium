@@ -21,7 +21,7 @@ FileManagerCopyOrMoveHookFileCheckDelegate::
     : CopyOrMoveHookDelegate(),
       file_system_context_(file_system_context),
       file_check_callback_(file_check_callback) {
-  DCHECK(!file_check_callback.is_null());
+  CHECK(!file_check_callback.is_null(), base::NotFatalUntil::M160);
 }
 
 FileManagerCopyOrMoveHookFileCheckDelegate::

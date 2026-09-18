@@ -41,20 +41,20 @@ LoginScreenExtensionsLifetimeManager::LoginScreenExtensionsLifetimeManager(
       extensions_process_manager_(
           extensions::ProcessManager::Get(signin_original_profile_)),
       session_manager_(session_manager::SessionManager::Get()) {
-  DCHECK(signin_original_profile_);
-  DCHECK(extension_system_);
-  DCHECK(extensions_process_manager_);
-  DCHECK(session_manager_);
+  CHECK(signin_original_profile_, base::NotFatalUntil::M160);
+  CHECK(extension_system_, base::NotFatalUntil::M160);
+  CHECK(extensions_process_manager_, base::NotFatalUntil::M160);
+  CHECK(session_manager_, base::NotFatalUntil::M160);
 
   auto* const extension_registry =
       extensions::ExtensionRegistry::Get(signin_original_profile_);
-  DCHECK(extension_registry);
+  CHECK(extension_registry, base::NotFatalUntil::M160);
   extension_registry_observation_.Observe(extension_registry);
 
   session_manager_observation_.Observe(session_manager_);
 
   ProfileManager* const profile_manager = g_browser_process->profile_manager();
-  DCHECK(profile_manager);
+  CHECK(profile_manager, base::NotFatalUntil::M160);
   profile_manager_observation_.Observe(profile_manager);
 
   UpdateStateIfProfileReady();
@@ -63,7 +63,7 @@ LoginScreenExtensionsLifetimeManager::LoginScreenExtensionsLifetimeManager(
 LoginScreenExtensionsLifetimeManager::~LoginScreenExtensionsLifetimeManager() {
   // `ShutDown()` and, optionally, `OnProfileManagerDestroying()` must have
   // already been called until this point.
-  DCHECK(!profile_manager_observation_.IsObserving());
+  CHECK(!profile_manager_observation_.IsObserving(), base::NotFatalUntil::M160);
 }
 
 void LoginScreenExtensionsLifetimeManager::Shutdown() {
@@ -84,7 +84,7 @@ void LoginScreenExtensionsLifetimeManager::OnProfileAdded(Profile* profile) {
 }
 
 void LoginScreenExtensionsLifetimeManager::OnProfileManagerDestroying() {
-  DCHECK(profile_manager_observation_.IsObserving());
+  CHECK(profile_manager_observation_.IsObserving(), base::NotFatalUntil::M160);
   // We need to do this here in addition to `Shutdown()`, because the profile
   // manager destruction can start before the profile's one.
   profile_manager_observation_.Reset();
@@ -142,7 +142,7 @@ LoginScreenExtensionsLifetimeManager::GetExtensionService() {
 
 void LoginScreenExtensionsLifetimeManager::UpdateStateIfProfileReady() {
   ProfileManager* const profile_manager = g_browser_process->profile_manager();
-  DCHECK(profile_manager);
+  CHECK(profile_manager, base::NotFatalUntil::M160);
   if (!profile_manager->IsValidProfile(signin_original_profile_)) {
     // Wait until the profile is initialized - see `OnProfileAdded()`.
     return;
@@ -160,8 +160,9 @@ void LoginScreenExtensionsLifetimeManager::UpdateState() {
 extensions::ExtensionIdList
 LoginScreenExtensionsLifetimeManager::GetPolicyExtensionIds() const {
   const PrefService* const prefs = signin_original_profile_->GetPrefs();
-  DCHECK_NE(prefs->GetAllPrefStoresInitializationStatus(),
-            PrefService::INITIALIZATION_STATUS_WAITING);
+  CHECK_NE(prefs->GetAllPrefStoresInitializationStatus(),
+           PrefService::INITIALIZATION_STATUS_WAITING,
+           base::NotFatalUntil::M160);
 
   const PrefService::Preference* const pref =
       prefs->FindPreference(extensions::pref_names::kInstallForceList);

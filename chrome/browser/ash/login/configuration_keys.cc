@@ -180,8 +180,9 @@ bool ValidateConfiguration(const base::DictValue& configuration) {
 
 base::DictValue FilterConfiguration(const base::DictValue& configuration,
                                     ConfigurationHandlerSide side) {
-  DCHECK(side == ConfigurationHandlerSide::HANDLER_CPP ||
-         side == ConfigurationHandlerSide::HANDLER_JS);
+  CHECK(side == ConfigurationHandlerSide::HANDLER_CPP ||
+            side == ConfigurationHandlerSide::HANDLER_JS,
+        base::NotFatalUntil::M160);
   base::DictValue filtered_result;
   for (const auto& key : kAllConfigurationKeys) {
     if (key.side == side ||

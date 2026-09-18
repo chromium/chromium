@@ -34,7 +34,7 @@ PasswordSyncTokenLoginChecker::PasswordSyncTokenLoginChecker(
       sync_token_(sync_token),
       retry_backoff_(retry_backoff) {
   CHECK(shared_url_loader_factory_);
-  DCHECK(!sync_token_.empty());
+  CHECK(!sync_token_.empty(), base::NotFatalUntil::M160);
 }
 
 PasswordSyncTokenLoginChecker::~PasswordSyncTokenLoginChecker() = default;
@@ -48,7 +48,7 @@ void PasswordSyncTokenLoginChecker::RecheckAfter(base::TimeDelta delay) {
 }
 
 void PasswordSyncTokenLoginChecker::CheckForPasswordNotInSync() {
-  DCHECK(!password_sync_token_fetcher_);
+  CHECK(!password_sync_token_fetcher_, base::NotFatalUntil::M160);
   // Passing nullptr to the PasswordSyncTokenFetcher here is fine,
   // because it is used only for verification.
   // TODO: consider to remove the explicit nullptr passing by splitting
@@ -62,7 +62,7 @@ void PasswordSyncTokenLoginChecker::CancelPendingChecks() {
   // We should not have any active request at this point. DCHECK makes sure it
   // is really the case for the dev build. In a release build InvalidateWeakPtrs
   // helps to recover by cancelling potential existing requests.
-  DCHECK(!IsCheckPending());
+  CHECK(!IsCheckPending(), base::NotFatalUntil::M160);
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 

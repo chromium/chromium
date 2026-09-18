@@ -81,7 +81,7 @@ void MatchVirtualTasks(Profile* profile,
                        const std::vector<GURL>& file_urls,
                        const std::vector<std::string>& dlp_source_urls,
                        std::vector<FullTaskDescriptor>* result_list) {
-  DCHECK_EQ(entries.size(), file_urls.size());
+  CHECK_EQ(entries.size(), file_urls.size(), base::NotFatalUntil::M160);
   if (entries.empty()) {
     return;
   }

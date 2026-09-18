@@ -52,8 +52,8 @@ PasswordSyncTokenVerifier::PasswordSyncTokenVerifier(PrefService* local_state,
       primary_profile_(primary_profile),
       primary_user_(ProfileHelper::Get()->GetUserByProfile(primary_profile)),
       retry_backoff_(&kFetchTokenRetryBackoffPolicy) {
-  DCHECK(primary_profile_);
-  DCHECK(primary_user_);
+  CHECK(primary_profile_, base::NotFatalUntil::M160);
+  CHECK(primary_user_, base::NotFatalUntil::M160);
 }
 
 PasswordSyncTokenVerifier::~PasswordSyncTokenVerifier() = default;
@@ -68,7 +68,7 @@ void PasswordSyncTokenVerifier::RecheckAfter(base::TimeDelta delay) {
 }
 
 void PasswordSyncTokenVerifier::CreateTokenAsync() {
-  DCHECK(!password_sync_token_fetcher_);
+  CHECK(!password_sync_token_fetcher_, base::NotFatalUntil::M160);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       primary_profile_->GetURLLoaderFactory();
   if (!url_loader_factory.get()) {
@@ -103,7 +103,7 @@ void PasswordSyncTokenVerifier::CheckForPasswordNotInSync() {
 }
 
 void PasswordSyncTokenVerifier::PerformTokenCheck() {
-  DCHECK(!password_sync_token_fetcher_);
+  CHECK(!password_sync_token_fetcher_, base::NotFatalUntil::M160);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       primary_profile_->GetURLLoaderFactory();
   // url_loader_factory is nullptr in unit tests so constructing
@@ -150,7 +150,7 @@ void PasswordSyncTokenVerifier::FetchSyncTokenOnReauth() {
 }
 
 void PasswordSyncTokenVerifier::PerformFetchToken() {
-  DCHECK(!password_sync_token_fetcher_);
+  CHECK(!password_sync_token_fetcher_, base::NotFatalUntil::M160);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       primary_profile_->GetURLLoaderFactory();
   // No url_loader_factory in unit tests.
@@ -168,7 +168,7 @@ void PasswordSyncTokenVerifier::CancelPendingChecks() {
   // We should not have any active request at this point. DCHECK makes sure it
   // is really the case for the dev build. In a release build InvalidateWeakPtrs
   // helps to recover by cancelling potential existing requests.
-  DCHECK(!weak_ptr_factory_.HasWeakPtrs());
+  CHECK(!weak_ptr_factory_.HasWeakPtrs(), base::NotFatalUntil::M160);
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -177,7 +177,7 @@ void PasswordSyncTokenVerifier::RecordTokenPollingStart() {
 }
 
 void PasswordSyncTokenVerifier::OnTokenCreated(const std::string& sync_token) {
-  DCHECK(!sync_token.empty());
+  CHECK(!sync_token.empty(), base::NotFatalUntil::M160);
 
   // Set token value in local state.
   user_manager::KnownUser known_user(&local_state_.get());

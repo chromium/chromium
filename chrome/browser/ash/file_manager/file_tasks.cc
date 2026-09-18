@@ -128,7 +128,7 @@ constexpr char kPdfMimeType[] = "application/pdf";
 constexpr char kPdfFileExtension[] = ".pdf";
 
 base::DictValue& GetDebugBaseValueDictForExecuteFileTask() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   static base::NoDestructor<base::DictValue> instance;
   return *instance;
 }
@@ -225,7 +225,7 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
   // The logic in ChooseAndSetDefaultTask() also requires the following to hold.
   // This should only fail if the media app is configured for "*".
   // "image/*" does not count as "generic".
-  DCHECK(!media_app_task->is_generic_file_handler);
+  CHECK(!media_app_task->is_generic_file_handler, base::NotFatalUntil::M160);
 
   // Otherwise, build a new list with Media App at the front.
   if (media_app_task == tasks->begin()) {
@@ -274,7 +274,7 @@ Profile* GetProfileForExtensionTask(Profile* profile,
                                     const extensions::Extension& extension) {
   // In guest profile, all available task handlers are in OTR profile.
   if (profile->IsGuestSession()) {
-    DCHECK(profile->IsOffTheRecord());
+    CHECK(profile->IsOffTheRecord(), base::NotFatalUntil::M160);
     return profile;
   }
 
@@ -617,8 +617,9 @@ void UpdateDefaultTask(Profile* profile,
     // (which use app id: "<app service id>", action id: "<activity>"), we
     // generate Task IDs in the legacy format.
     std::string package;
-    DCHECK(
-        apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+    CHECK(
+        apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile),
+        base::NotFatalUntil::M160);
     apps::AppServiceProxy* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile);
     if (proxy) {
@@ -952,7 +953,7 @@ void FindAllTypesOfTasks(Profile* profile,
                          const std::vector<GURL>& file_urls,
                          const std::vector<std::string>& dlp_source_urls,
                          FindTasksCallback callback) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   auto resulting_tasks = std::make_unique<ResultingTasks>();
   bool has_encrypted_item = std::ranges::any_of(entries, &IsEncryptedEntry);
   bool all_encrypted_items = std::ranges::all_of(entries, &IsEncryptedEntry);
@@ -981,12 +982,14 @@ void ChooseAndSetDefaultTask(Profile* profile,
                                              resulting_tasks)) {
     // If the function returns true, then the default selection has been
     // affected by policy. Check that |policy_default_handler_status| is set.
-    DCHECK(resulting_tasks->policy_default_handler_status);
+    CHECK(resulting_tasks->policy_default_handler_status,
+          base::NotFatalUntil::M160);
     return;
   }
 
   // Otherwise check that |policy_default_handler_status| is not set.
-  DCHECK(!resulting_tasks->policy_default_handler_status);
+  CHECK(!resulting_tasks->policy_default_handler_status,
+        base::NotFatalUntil::M160);
 
   // Collect the default tasks from the preferences into a set.
   base::flat_set<TaskDescriptor> default_tasks;
@@ -1036,7 +1039,7 @@ void ChooseAndSetDefaultTask(Profile* profile,
   // Go through all the tasks from the beginning and see if there is any
   // default task. If found, pick and set it as default and return.
   for (FullTaskDescriptor& task : tasks) {
-    DCHECK(!task.is_default);
+    CHECK(!task.is_default, base::NotFatalUntil::M160);
     if (default_tasks.contains(task.task_descriptor)) {
       task.is_default = true;
       return;
@@ -1094,7 +1097,7 @@ void ChooseAndSetDefaultTask(Profile* profile,
   // No default tasks found. If there is any fallback file browser handler,
   // make it as default task, so it's selected by default.
   for (FullTaskDescriptor& task : tasks) {
-    DCHECK(!task.is_default);
+    CHECK(!task.is_default, base::NotFatalUntil::M160);
     if (IsFallbackFileHandler(task)) {
       task.is_default = true;
       return;

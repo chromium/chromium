@@ -72,7 +72,7 @@ GuestTosScreen::GuestTosScreen(
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M160);
 }
 
 GuestTosScreen::~GuestTosScreen() = default;

@@ -97,7 +97,7 @@ const base::TickClock* g_tick_clock_for_testing_ = nullptr;
 chromeos::CertificateProviderService* GetLoginScreenCertProviderService() {
   auto* browser_context =
       BrowserContextHelper::Get()->GetSigninBrowserContext();
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M160);
   return chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
       browser_context);
 }
@@ -322,7 +322,7 @@ void ScreenLocker::Authenticate(std::unique_ptr<UserContext> user_context,
     return;
   }
 
-  DCHECK(!pending_auth_state_);
+  CHECK(!pending_auth_state_, base::NotFatalUntil::M160);
   pending_auth_state_ = std::make_unique<AuthState>(
       user_context->GetAccountId(), std::move(callback));
   unlock_attempt_type_ = AUTH_PASSWORD;
@@ -378,7 +378,7 @@ void ScreenLocker::AuthenticateWithChallengeResponse(
     return;
   }
 
-  DCHECK(!pending_auth_state_);
+  CHECK(!pending_auth_state_, base::NotFatalUntil::M160);
   pending_auth_state_ =
       std::make_unique<AuthState>(account_id, std::move(callback));
 
@@ -403,7 +403,7 @@ void ScreenLocker::OnChallengeResponseKeysPrepared(
 
   const user_manager::User* const user =
       user_manager::UserManager::Get()->FindUser(account_id);
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M160);
   auto user_context = std::make_unique<UserContext>(*user);
   *user_context->GetMutableChallengeResponseKeys() =
       std::move(challenge_response_keys);
@@ -427,7 +427,7 @@ void ScreenLocker::OnPinAttemptDone(std::unique_ptr<UserContext> user_context,
 
 void ScreenLocker::ContinueAuthenticate(
     std::unique_ptr<UserContext> user_context) {
-  DCHECK(!user_context->IsUsingPin());
+  CHECK(!user_context->IsUsingPin(), base::NotFatalUntil::M160);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&ScreenLocker::AttemptUnlock, weak_factory_.GetWeakPtr(),
@@ -435,7 +435,7 @@ void ScreenLocker::ContinueAuthenticate(
 }
 
 void ScreenLocker::AttemptUnlock(std::unique_ptr<UserContext> user_context) {
-  DCHECK(user_context);
+  CHECK(user_context, base::NotFatalUntil::M160);
   // Retrieve accountId before std::move(user_context).
   const AccountId accountId = user_context->GetAccountId();
 

@@ -83,7 +83,7 @@ base::RepeatingCallback<void(std::string)>*
 void MarketingBackendConnector::UpdateEmailPreferences(
     Profile* profile,
     const std::string& country_code) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   VLOG(1) << "Subscribing the user to all chromebook email campaigns.";
 
   // Early exit for testing

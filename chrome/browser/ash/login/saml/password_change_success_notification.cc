@@ -54,7 +54,7 @@ constexpr SystemNotificationWarningLevel kWarningLevel =
 
 // static
 void PasswordChangeSuccessNotification::Show(const user_manager::User& user) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // NotifierId for histogram reporting.
   NotifierId notifier_id(NotifierType::SYSTEM_COMPONENT, kNotificationId,

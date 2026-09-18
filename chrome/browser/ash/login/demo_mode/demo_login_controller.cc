@@ -423,7 +423,8 @@ DemoLoginController::DemoLoginController(
 DemoLoginController::~DemoLoginController() = default;
 
 void DemoLoginController::TriggerDemoAccountLoginFlow() {
-  DCHECK_EQ(State::kReadyForLoginWithDemoAccount, state_);
+  CHECK_EQ(State::kReadyForLoginWithDemoAccount, state_,
+           base::NotFatalUntil::M160);
   // Try demo account login first by disable auto-login to managed guest
   // session.
   state_ = State::kSetupDemoAccountInProgress;
@@ -549,7 +550,8 @@ void DemoLoginController::HandleSetupDemoAcountResponse(
 
   UserLoginPermissionTracker::Get()->SetDemoUser(
       gaia::CanonicalizeEmail(*email));
-  DCHECK_EQ(State::kSetupDemoAccountInProgress, state_);
+  CHECK_EQ(State::kSetupDemoAccountInProgress, state_,
+           base::NotFatalUntil::M160);
   state_ = State::kLoginDemoAccount;
 
   // Enable 24 hour session by overriding power policy.
@@ -574,7 +576,8 @@ void DemoLoginController::OnSetupDemoAccountError(
   LOG(ERROR) << "Failed to set up demo account. Result code: "
              << static_cast<int>(result_code);
 
-  DCHECK_EQ(State::kSetupDemoAccountInProgress, state_);
+  CHECK_EQ(State::kSetupDemoAccountInProgress, state_,
+           base::NotFatalUntil::M160);
 
   // Report error to the metrics.
   DemoSessionMetricsRecorder::ReportDemoAccountSetupResult(result_code);

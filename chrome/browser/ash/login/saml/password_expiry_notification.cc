@@ -110,7 +110,7 @@ void PasswordExpiryNotificationDelegate::Click(
 // static
 void PasswordExpiryNotification::Show(const user_manager::User& user,
                                       base::TimeDelta time_until_expiry) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // NotifierId for histogram reporting.
   NotifierId notifier_id(NotifierType::SYSTEM_COMPONENT, kNotificationId,
@@ -156,7 +156,7 @@ std::u16string PasswordExpiryNotification::GetTitleText(
 
 // static
 void PasswordExpiryNotification::Dismiss(const user_manager::User& user) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   message_center::MessageCenter::Get()->RemoveNotification(
       CreateUserScopedNotificationId(kNotificationId, user.username_hash()),
       /*by_user=*/false);

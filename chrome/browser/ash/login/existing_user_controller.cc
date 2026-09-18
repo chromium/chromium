@@ -234,10 +234,10 @@ void SetLoginExtensionApiCanLockManagedGuestSessionPref(
     bool can_lock_managed_guest_session) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M160);
   Profile* profile = Profile::FromBrowserContext(
       BrowserContextHelper::Get()->GetBrowserContextByUser(user));
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   PrefService* prefs = profile->GetPrefs();
   prefs->SetBoolean(ash::prefs::kLoginExtensionApiCanLockManagedGuestSession,
                     can_lock_managed_guest_session);
@@ -941,7 +941,7 @@ void ExistingUserController::FinalizeAuthAndStartSession(
     user_manager::User* user =
         user_manager::UserManager::Get()->FindUserAndModify(
             user_context.GetAccountId());
-    DCHECK(user);
+    CHECK(user, base::NotFatalUntil::M160);
     user->AddProfileCreatedObserver(
         base::BindOnce(&SetLoginExtensionApiCanLockManagedGuestSessionPref,
                        user_context.GetAccountId(), true));
@@ -986,7 +986,8 @@ void ExistingUserController::FinalizeAuthAndStartSession(
 }
 
 void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
-  DCHECK(ash::InstallAttributes::Get()->IsEnterpriseManaged());
+  CHECK(ash::InstallAttributes::Get()->IsEnterpriseManaged(),
+        base::NotFatalUntil::M160);
   message_center::RichNotificationData data;
   data.buttons.emplace_back(
       l10n_util::GetStringUTF16(IDS_AUTO_LAUNCH_NOTIFICATION_BUTTON));
@@ -999,7 +1000,7 @@ void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
   auto delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating([](std::optional<int> button_index) {
-            DCHECK(button_index);
+            CHECK(button_index, base::NotFatalUntil::M160);
             SystemTrayClientImpl::Get()->ShowEnterpriseInfo();
           }));
   auto notification = CreateSystemNotificationPtr(
@@ -1126,7 +1127,7 @@ void ExistingUserController::OnOnlinePasswordUnusable(
 void ExistingUserController::OnOnlinePasswordUnusableImpl(
     std::unique_ptr<UserContext> user_context,
     bool online_password_mismatch) {
-  DCHECK(user_context);
+  CHECK(user_context, base::NotFatalUntil::M160);
   is_login_in_progress_ = false;
 
   if (online_password_mismatch) {
@@ -1309,7 +1310,7 @@ void ExistingUserController::LoginAsPublicSession(
   policy::DeviceLocalAccountPolicyService* policy_service =
       browser_policy_connector_ash_->GetDeviceLocalAccountPolicyService();
   const auto& user_id = user_context.GetAccountId().GetUserEmail();
-  DCHECK(policy_service);
+  CHECK(policy_service, base::NotFatalUntil::M160);
   if (!policy_service->IsPolicyAvailableForUser(user_id)) {
     SYSLOG(INFO) << "MGS: Policies are not available yet, will wait";
     policy_waiter_ = std::make_unique<DeviceLocalAccountPolicyWaiter>(
@@ -1539,7 +1540,8 @@ void ExistingUserController::ShowError(SigninError error,
   VLOG(1) << details;
   auto* signin_ui = GetLoginDisplayHost()->GetSigninUI();
   if (!signin_ui) {
-    DCHECK(session_manager::SessionManager::Get()->IsInSecondaryLoginScreen());
+    CHECK(session_manager::SessionManager::Get()->IsInSecondaryLoginScreen(),
+          base::NotFatalUntil::M160);
     // Silently ignore the error on the secondary login screen. The screen is
     // being deprecated anyway.
     return;
@@ -1553,7 +1555,8 @@ void ExistingUserController::ShowOobeNotCompletedError() {
          "called when OobeAutoEnrollmentCheckForced is enabled";
   auto* signin_ui = GetLoginDisplayHost()->GetSigninUI();
   if (!signin_ui) {
-    DCHECK(session_manager::SessionManager::Get()->IsInSecondaryLoginScreen());
+    CHECK(session_manager::SessionManager::Get()->IsInSecondaryLoginScreen(),
+          base::NotFatalUntil::M160);
     // Silently ignore the error on the secondary login screen. The screen is
     // being deprecated anyway.
     return;
@@ -1585,7 +1588,7 @@ void ExistingUserController::SetPublicSessionKeyboardLayoutAndLogin(
       break;
     }
   }
-  DCHECK(!keyboard_layout.empty());
+  CHECK(!keyboard_layout.empty(), base::NotFatalUntil::M160);
   SYSLOG(INFO) << "MGS: Setting keyboard layout '" << keyboard_layout << "'";
   new_user_context.SetPublicSessionInputMethod(keyboard_layout);
 

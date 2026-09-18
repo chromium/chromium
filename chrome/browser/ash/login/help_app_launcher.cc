@@ -42,7 +42,7 @@ void HelpAppLauncher::ShowHelpTopic(HelpTopic help_topic_id) {
       BrowserContextHelper::Get()->GetSigninBrowserContext());
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
 
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M160);
   if (!registry)
     return;
 
@@ -67,7 +67,7 @@ HelpAppLauncher::~HelpAppLauncher() = default;
 
 void HelpAppLauncher::ShowHelpTopicDialog(Profile* profile,
                                           const GURL& topic_url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   LoginWebDialog* dialog = new LoginWebDialog(
       profile, parent_window_,
       l10n_util::GetStringUTF16(IDS_LOGIN_OOBE_HELP_DIALOG_TITLE), topic_url);

@@ -42,8 +42,8 @@ SingleDebugDaemonLogSource::SingleDebugDaemonLogSource(
 SingleDebugDaemonLogSource::~SingleDebugDaemonLogSource() = default;
 
 void SingleDebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!callback.is_null());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M160);
 
   ash::DebugDaemonClient::Get()->GetLog(
       source_name(),

@@ -33,7 +33,7 @@ SmartLockAuthAttempt::~SmartLockAuthAttempt() {
 }
 
 bool SmartLockAuthAttempt::Start() {
-  DCHECK_EQ(STATE_IDLE, state_);
+  CHECK_EQ(STATE_IDLE, state_, base::NotFatalUntil::M160);
 
   if (!proximity_auth::ScreenlockBridge::Get()->IsLocked()) {
     return false;

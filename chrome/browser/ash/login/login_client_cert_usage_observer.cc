@@ -81,7 +81,7 @@ bool LoginClientCertUsageObserver::GetOnlyUsedClientCert(
            "authentication, since more than one client certificate was used";
     return false;
   }
-  DCHECK(used_cert_);
+  CHECK(used_cert_, base::NotFatalUntil::M160);
   if (!ObtainSignatureAlgorithms(*used_cert_, signature_algorithms))
     return false;
   *cert = used_cert_;

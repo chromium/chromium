@@ -20,7 +20,7 @@ void RecordSmartLockSigninDuration(const base::TimeDelta& duration) {
 }
 
 void RecordSmartLockSigninEvent(SmartLockAuthEvent event) {
-  DCHECK_LT(event, SMART_LOCK_AUTH_EVENT_COUNT);
+  CHECK_LT(event, SMART_LOCK_AUTH_EVENT_COUNT, base::NotFatalUntil::M160);
   UMA_HISTOGRAM_ENUMERATION("EasyUnlock.AuthEvent.SignIn", event,
                             SMART_LOCK_AUTH_EVENT_COUNT);
 }
@@ -31,7 +31,7 @@ void RecordSmartLockScreenUnlockDuration(const base::TimeDelta& duration) {
 }
 
 void RecordSmartLockScreenUnlockEvent(SmartLockAuthEvent event) {
-  DCHECK_LT(event, SMART_LOCK_AUTH_EVENT_COUNT);
+  CHECK_LT(event, SMART_LOCK_AUTH_EVENT_COUNT, base::NotFatalUntil::M160);
   UMA_HISTOGRAM_ENUMERATION("EasyUnlock.AuthEvent.Unlock", event,
                             SMART_LOCK_AUTH_EVENT_COUNT);
 }

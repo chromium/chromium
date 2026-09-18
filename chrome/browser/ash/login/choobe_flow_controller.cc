@@ -158,7 +158,7 @@ void ChoobeFlowController::OnScreensSelected(PrefService& prefs,
   selected_screens_ids_.clear();
   for (const auto& screen_id : screens_ids) {
     const auto id = OobeScreenId(screen_id.GetString());
-    DCHECK(IsOptionalScreen(id));
+    CHECK(IsOptionalScreen(id), base::NotFatalUntil::M160);
     selected_screens_ids_.insert(id);
   }
 
@@ -217,7 +217,7 @@ void ChoobeFlowController::OnChoobeFlowExit() {
 }
 
 bool ChoobeFlowController::ShouldShowReturnButton(OobeScreenId screen_id) {
-  DCHECK(!selected_screens_ids_.empty());
+  CHECK(!selected_screens_ids_.empty(), base::NotFatalUntil::M160);
 
   // The return button should only be shown in the last selected screen.
   OobeScreenId last_selected_screen =
@@ -233,7 +233,8 @@ bool ChoobeFlowController::ShouldShowReturnButton(OobeScreenId screen_id) {
     return false;
   }
 
-  DCHECK(eligible_screens_ids_.find(screen_id) != eligible_screens_ids_.end());
+  CHECK(eligible_screens_ids_.find(screen_id) != eligible_screens_ids_.end(),
+        base::NotFatalUntil::M160);
 
   return true;
 }

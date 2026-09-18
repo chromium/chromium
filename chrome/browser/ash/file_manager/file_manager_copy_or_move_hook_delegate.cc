@@ -17,7 +17,7 @@ namespace file_manager {
 FileManagerCopyOrMoveHookDelegate::FileManagerCopyOrMoveHookDelegate(
     ProgressCallback progress_callback)
     : progress_callback_(std::move(progress_callback)) {
-  DCHECK(!progress_callback_.is_null());
+  CHECK(!progress_callback_.is_null(), base::NotFatalUntil::M160);
 }
 
 FileManagerCopyOrMoveHookDelegate::~FileManagerCopyOrMoveHookDelegate() =

@@ -92,8 +92,8 @@ SingleLogFileLogSource::SingleLogFileLogSource(SupportedSource source_type)
 SingleLogFileLogSource::~SingleLogFileLogSource() = default;
 
 void SingleLogFileLogSource::Fetch(SysLogsSourceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!callback.is_null());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M160);
 
   auto response = std::make_unique<SystemLogsResponse>();
   auto* response_ptr = response.get();

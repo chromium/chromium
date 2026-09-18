@@ -12,7 +12,7 @@
 namespace system_logs {
 
 void UiHierarchyLogSource::Fetch(SysLogsSourceCallback callback) {
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M160);
 
   auto response = std::make_unique<SystemLogsResponse>();
 

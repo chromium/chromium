@@ -63,8 +63,8 @@ ShillLogSource::ShillLogSource(bool scrub)
 ShillLogSource::~ShillLogSource() = default;
 
 void ShillLogSource::Fetch(SysLogsSourceCallback callback) {
-  DCHECK(!callback.is_null());
-  DCHECK(callback_.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M160);
+  CHECK(callback_.is_null(), base::NotFatalUntil::M160);
   callback_ = std::move(callback);
 
   ash::ShillManagerClient::Get()->GetProperties(base::BindOnce(
@@ -168,9 +168,9 @@ void ShillLogSource::AddIPConfig(const std::string& device_path,
                                  const std::string& ip_config_path,
                                  const base::DictValue& properties) {
   base::DictValue* device = devices_.FindDict(device_path);
-  DCHECK(device);
+  CHECK(device, base::NotFatalUntil::M160);
   base::DictValue* ip_configs = device->FindDict(shill::kIPConfigsProperty);
-  DCHECK(ip_configs);
+  CHECK(ip_configs, base::NotFatalUntil::M160);
   ip_configs->Set(ip_config_path,
                   ScrubAndExpandProperties(ip_config_path, properties));
 }

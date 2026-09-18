@@ -75,7 +75,7 @@ SigninPartitionManager::~SigninPartitionManager() = default;
 void SigninPartitionManager::StartSigninSession(
     content::WebContents* embedder_web_contents,
     StartSigninSessionDoneCallback signin_session_started) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   // If we already were in a sign-in session, close it first.
   // This clears stale data from the last-used StoragePartition.
   CloseCurrentSigninSession(base::DoNothing());
@@ -134,13 +134,13 @@ void SigninPartitionManager::SetOnCreateNewStoragePartitionForTesting(
 
 const std::string& SigninPartitionManager::GetCurrentStoragePartitionName()
     const {
-  DCHECK(IsInSigninSession());
+  CHECK(IsInSigninSession(), base::NotFatalUntil::M160);
   return current_storage_partition_name_;
 }
 
 content::StoragePartition*
 SigninPartitionManager::GetCurrentStoragePartition() {
-  DCHECK(IsInSigninSession());
+  CHECK(IsInSigninSession(), base::NotFatalUntil::M160);
   return current_storage_partition_;
 }
 

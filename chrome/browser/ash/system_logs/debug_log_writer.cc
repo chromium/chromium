@@ -51,7 +51,7 @@ base::LazyThreadPoolSequencedTaskRunner g_sequenced_task_runner =
 void WriteDebugLogToFileCompleted(const base::FilePath& file_path,
                                   StoreLogsCallback callback,
                                   bool succeeded) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (!succeeded) {
     bool posted = g_sequenced_task_runner.Get()->PostTask(
         FROM_HERE,
@@ -59,7 +59,7 @@ void WriteDebugLogToFileCompleted(const base::FilePath& file_path,
             file_path,
             base::OnceCallback<void(bool)>(base::DoNothing())
                 .Then(base::BindOnce(std::move(callback), std::nullopt))));
-    DCHECK(posted);
+    CHECK(posted, base::NotFatalUntil::M160);
     return;
   }
   if (!callback.is_null())
@@ -72,7 +72,7 @@ void WriteDebugLogToFile(std::unique_ptr<base::File> file,
                          const base::FilePath& file_path,
                          bool should_compress,
                          StoreLogsCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (!file->IsValid()) {
     LOG(ERROR) << "Can't create debug log file: " << file_path.AsUTF8Unsafe()
                << ", error: " << file->error_details();
@@ -228,8 +228,8 @@ void StoreLogs(const base::FilePath& out_dir,
                bool include_chrome_logs,
                base::OnceCallback<void(std::optional<base::FilePath> logs_path)>
                    callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!callback.is_null());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M160);
 
   if (include_chrome_logs) {
     base::FilePath file_path =

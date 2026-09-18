@@ -27,7 +27,7 @@ bool AreDemoDimensionsAccessible() {
 }
 
 std::string Country(PrefService& local_state) {
-  DCHECK(AreDemoDimensionsAccessible());
+  CHECK(AreDemoDimensionsAccessible(), base::NotFatalUntil::M160);
   // TODO(b/328305607): Remove this conversion part once all
   // prefs::kDemoModeCountry are converted.
   const std::string country = local_state.GetString(prefs::kDemoModeCountry);
@@ -40,37 +40,37 @@ std::string Country(PrefService& local_state) {
 }
 
 std::string RetailerName(const PrefService& local_state) {
-  DCHECK(AreDemoDimensionsAccessible());
+  CHECK(AreDemoDimensionsAccessible(), base::NotFatalUntil::M160);
   return local_state.GetString(prefs::kDemoModeRetailerId);
 }
 
 std::string StoreNumber(const PrefService& local_state) {
-  DCHECK(AreDemoDimensionsAccessible());
+  CHECK(AreDemoDimensionsAccessible(), base::NotFatalUntil::M160);
   return local_state.GetString(prefs::kDemoModeStoreId);
 }
 
 bool IsCloudGamingDevice() {
-  DCHECK(AreDemoDimensionsAccessible());
+  CHECK(AreDemoDimensionsAccessible(), base::NotFatalUntil::M160);
   return chromeos::features::IsCloudGamingDeviceEnabled();
 }
 
 bool IsFeatureAwareDevice() {
-  DCHECK(AreDemoDimensionsAccessible());
+  CHECK(AreDemoDimensionsAccessible(), base::NotFatalUntil::M160);
   return ash::features::IsFeatureAwareDeviceDemoModeEnabled();
 }
 
 base::Version AppVersion(const PrefService& local_state) {
-  DCHECK(AreDemoDimensionsAccessible());
+  CHECK(AreDemoDimensionsAccessible(), base::NotFatalUntil::M160);
   return base::Version(local_state.GetString(prefs::kDemoModeAppVersion));
 }
 
 base::Version ResourcesVersion(const PrefService& local_state) {
-  DCHECK(AreDemoDimensionsAccessible());
+  CHECK(AreDemoDimensionsAccessible(), base::NotFatalUntil::M160);
   return base::Version(local_state.GetString(prefs::kDemoModeResourcesVersion));
 }
 
 std::string GetChromeOSVersionString() {
-  DCHECK(AreDemoDimensionsAccessible());
+  CHECK(AreDemoDimensionsAccessible(), base::NotFatalUntil::M160);
   // 1. Get Chrome Browser Milestone from version_info. We use the version from
   // the browser since some dev devices may have a locally built Chromium
   // deployed.
@@ -99,12 +99,12 @@ std::string GetChromeOSVersionString() {
 }
 
 std::string Board() {
-  DCHECK(AreDemoDimensionsAccessible());
+  CHECK(AreDemoDimensionsAccessible(), base::NotFatalUntil::M160);
   return base::SysInfo::GetLsbReleaseBoard();
 }
 
 std::string_view Model() {
-  DCHECK(AreDemoDimensionsAccessible());
+  CHECK(AreDemoDimensionsAccessible(), base::NotFatalUntil::M160);
   // kCustomizationIdKey stores the model name of the device.
   const std::optional<std::string_view> model =
       system::StatisticsProvider::GetInstance()->GetMachineStatistic(
@@ -114,7 +114,7 @@ std::string_view Model() {
 }
 
 std::string Locale(const PrefService& local_state) {
-  DCHECK(AreDemoDimensionsAccessible());
+  CHECK(AreDemoDimensionsAccessible(), base::NotFatalUntil::M160);
   return local_state.GetString(language::prefs::kApplicationLocale);
 }
 

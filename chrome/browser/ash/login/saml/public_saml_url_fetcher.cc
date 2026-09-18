@@ -66,7 +66,7 @@ bool PublicSamlUrlFetcher::FetchSucceeded() {
 }
 
 void PublicSamlUrlFetcher::Fetch(base::OnceClosure callback) {
-  DCHECK(!callback_);
+  CHECK(!callback_, base::NotFatalUntil::M160);
   callback_ = std::move(callback);
   policy::DeviceManagementService* service =
       browser_policy_connector_ash_->device_management_service();

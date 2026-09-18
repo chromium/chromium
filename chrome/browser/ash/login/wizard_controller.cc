@@ -526,7 +526,7 @@ WizardController::~WizardController() {
 }
 
 void WizardController::Init(OobeScreenId first_screen) {
-  DCHECK(!is_initialized());
+  CHECK(!is_initialized(), base::NotFatalUntil::M160);
   is_initialized_ = true;
 
   prescribed_enrollment_config_ =
@@ -1459,7 +1459,7 @@ void WizardController::ShowConsolidatedConsentScreen() {
 }
 
 void WizardController::ShowChoobeScreen() {
-  DCHECK(features::IsOobeChoobeEnabled());
+  CHECK(features::IsOobeChoobeEnabled(), base::NotFatalUntil::M160);
   SetCurrentScreen(GetScreen(ChoobeScreenView::kScreenId));
 }
 
@@ -1850,11 +1850,11 @@ void WizardController::OnConsolidatedConsentScreenExit(
       ShowSyncConsentScreen();
       break;
     case ConsolidatedConsentScreen::Result::ACCEPTED_DEMO_ONLINE:
-      DCHECK(demo_setup_controller_);
+      CHECK(demo_setup_controller_, base::NotFatalUntil::M160);
       ShowAutoEnrollmentCheckScreen();
       break;
     case ConsolidatedConsentScreen::Result::BACK_DEMO:
-      DCHECK(demo_setup_controller_);
+      CHECK(demo_setup_controller_, base::NotFatalUntil::M160);
       ShowDemoModePreferencesScreen();
       break;
   }
@@ -1887,7 +1887,7 @@ void WizardController::OnOsInstallScreenExit() {
     return;
   }
   const bool did_advance = MaybeSetToPreviousScreen();
-  DCHECK(did_advance);
+  CHECK(did_advance, base::NotFatalUntil::M160);
 }
 
 void WizardController::OnOsTrialScreenExit(OsTrialScreen::Result result) {
@@ -2232,7 +2232,7 @@ void WizardController::OnScreenExit(OobeScreenId screen,
   if (exit_reason == BaseScreen::kNotApplicable) {
     return;
   }
-  DCHECK(current_screen_->screen_id() == screen);
+  CHECK(current_screen_->screen_id() == screen, base::NotFatalUntil::M160);
 
   GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordScreenExit(screen,
                                                                   exit_reason);
@@ -2453,19 +2453,20 @@ void WizardController::OnEnrollmentScreenExit(EnrollmentScreen::Result result) {
       // OOBECompletedActions are only performed in the first call.
       PerformOOBECompletedActions(
           OobeMetricsHelper::CompletedPreLoginOobeFlowType::kAutoEnrollment);
-      DCHECK(!prescribed_enrollment_config_.is_forced());
+      CHECK(!prescribed_enrollment_config_.is_forced(),
+            base::NotFatalUntil::M160);
       // set  the userCreationScreen with the default step creation and
       // pre-select 'For personal use'.
       GetScreen<UserCreationScreen>()->SetDefaultStep();
       ShowLoginScreen();
       break;
     case EnrollmentScreen::Result::TPM_ERROR:
-      DCHECK(switches::IsTpmDynamic());
+      CHECK(switches::IsTpmDynamic(), base::NotFatalUntil::M160);
       wizard_context_->tpm_owned_error = true;
       AdvanceToScreen(TpmErrorView::kScreenId);
       break;
     case EnrollmentScreen::Result::TPM_DBUS_ERROR:
-      DCHECK(switches::IsTpmDynamic());
+      CHECK(switches::IsTpmDynamic(), base::NotFatalUntil::M160);
       wizard_context_->tpm_dbus_error = true;
       AdvanceToScreen(TpmErrorView::kScreenId);
       break;
@@ -2506,8 +2507,8 @@ void WizardController::OnEnrollmentDone() {
     AutoLaunchKioskApp(app.value());
   } else if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     // Could be not managed in tests.
-    DCHECK_EQ(LoginDisplayHost::default_host()->GetOobeUI()->display_type(),
-              OobeUI::kOobeDisplay);
+    CHECK_EQ(LoginDisplayHost::default_host()->GetOobeUI()->display_type(),
+             OobeUI::kOobeDisplay, base::NotFatalUntil::M160);
     SwitchWebUItoMojo();
   } else {
     ShowLoginScreen();
@@ -2531,7 +2532,7 @@ void WizardController::OnDemoPreferencesScreenExit(
   OnScreenExit(DemoPreferencesScreenView::kScreenId,
                DemoPreferencesScreen::GetResultString(result));
 
-  DCHECK(demo_setup_controller_);
+  CHECK(demo_setup_controller_, base::NotFatalUntil::M160);
 
   switch (result) {
     case DemoPreferencesScreen::Result::COMPLETED:
@@ -2551,7 +2552,7 @@ void WizardController::OnDemoSetupScreenExit(DemoSetupScreen::Result result) {
   OnScreenExit(DemoSetupScreenView::kScreenId,
                DemoSetupScreen::GetResultString(result));
 
-  DCHECK(demo_setup_controller_);
+  CHECK(demo_setup_controller_, base::NotFatalUntil::M160);
   demo_setup_controller_.reset();
 
   switch (result) {
@@ -3919,8 +3920,8 @@ PrefService* WizardController::GetLocalState() {
 void WizardController::OnTimezoneResolved(
     std::unique_ptr<TimeZoneResponseData> timezone,
     bool server_error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(timezone);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(timezone, base::NotFatalUntil::M160);
 
   timezone_resolved_ = true;
   base::ScopedClosureRunner inform_test(
@@ -3964,7 +3965,7 @@ TimeZoneProvider* WizardController::GetTimezoneProvider() {
 void WizardController::OnLocationResolved(const Geoposition& position,
                                           bool server_error,
                                           const base::TimeDelta elapsed) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   const base::TimeDelta timeout = base::Seconds(kResolveTimeZoneTimeoutSeconds);
   // Ignore invalid position.
@@ -4029,7 +4030,7 @@ void WizardController::ShowEnrollmentScreenIfEligible() {
 }
 
 bool WizardController::MaybeSetToPreviousScreen() {
-  DCHECK(current_screen_);
+  CHECK(current_screen_, base::NotFatalUntil::M160);
   if (!previous_screens_.contains(current_screen_)) {
     return false;
   }

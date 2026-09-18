@@ -44,7 +44,7 @@ EnableDebuggingScreen::EnableDebuggingScreen(
       local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M160);
 }
 
 EnableDebuggingScreen::~EnableDebuggingScreen() = default;

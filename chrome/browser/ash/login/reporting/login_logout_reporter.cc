@@ -211,7 +211,7 @@ void LoginLogoutReporter::OnLoginFailure(const AuthFailure& error) {
 }
 
 void LoginLogoutReporter::OnKioskLoginFailure() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!reporter_helper_->ReportingEnabled(kReportDeviceLoginLogout)) {
     return;
@@ -224,7 +224,7 @@ void LoginLogoutReporter::OnKioskLoginFailure() {
 }
 
 void LoginLogoutReporter::MaybeReportKioskLoginFailure() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   const auto* pref =
       local_state_->FindPreference(kLoginLogoutReporterDictionary);

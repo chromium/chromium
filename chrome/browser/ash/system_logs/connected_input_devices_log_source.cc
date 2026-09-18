@@ -61,7 +61,7 @@ void ConnectedInputDevicesLogSource::ProcessDeviceFillResponse(
     SystemLogsResponse* response,
     const std::string& vendor_key,
     const std::string& pid_key) {
-  DCHECK(response);
+  CHECK(response, base::NotFatalUntil::M160);
   if (dev.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL)
     return;
   auto it = vendor_map.find(dev.vendor_id);
@@ -75,7 +75,7 @@ void ConnectedInputDevicesLogSource::ProcessDeviceFillResponse(
 }
 
 void ConnectedInputDevicesLogSource::Fetch(SysLogsSourceCallback callback) {
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M160);
 
   auto response = std::make_unique<SystemLogsResponse>();
 
@@ -99,7 +99,7 @@ void ConnectedInputDevicesLogSource::Fetch(SysLogsSourceCallback callback) {
                  std::unique_ptr<SystemLogsResponse> response,
                  const std::string& driver_names,
                  const std::string& touchpad_library_name) {
-                DCHECK(response);
+                CHECK(response, base::NotFatalUntil::M160);
                 if (!driver_names.empty()) {
                   response->emplace("TOUCHPAD_DRIVERS", driver_names);
                 }

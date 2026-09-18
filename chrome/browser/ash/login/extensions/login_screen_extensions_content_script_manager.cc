@@ -35,12 +35,12 @@ LoginScreenExtensionsContentScriptManager::
     : signin_original_profile_(signin_original_profile),
       extension_system_(
           extensions::ExtensionSystem::Get(signin_original_profile_)) {
-  DCHECK(signin_original_profile_);
-  DCHECK(extension_system_);
+  CHECK(signin_original_profile_, base::NotFatalUntil::M160);
+  CHECK(extension_system_, base::NotFatalUntil::M160);
 
   auto* const extension_registry =
       extensions::ExtensionRegistry::Get(signin_original_profile_);
-  DCHECK(extension_registry);
+  CHECK(extension_registry, base::NotFatalUntil::M160);
   extension_registry_observation_.Observe(extension_registry);
 }
 

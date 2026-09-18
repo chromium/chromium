@@ -71,7 +71,7 @@ bool IsViewableInBrowser(const base::FilePath& file_path) {
 }
 
 bool OpenNewTab(const GURL& url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!ash::NewWindowDelegate::GetInstance()) {
     return false;
@@ -174,7 +174,7 @@ bool OpenHostedFileInNewTabOrApp(Profile* profile,
                                  const base::FilePath& file_path,
                                  LaunchAppCallback callback,
                                  const GURL& hosted_url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!hosted_url.SchemeIsHTTPOrHTTPS() && !hosted_url.SchemeIsFile()) {
     LOG(WARNING) << "Rejecting URI with scheme: " << hosted_url.scheme();
@@ -190,7 +190,7 @@ bool OpenHostedFileInNewTabOrApp(Profile* profile,
   }
   apps::AppServiceProxy* app_service =
       apps::AppServiceProxyFactory::GetForProfile(profile);
-  DCHECK(app_service);
+  CHECK(app_service, base::NotFatalUntil::M160);
   const apps::AppRegistryCache& cache = app_service->AppRegistryCache();
   bool is_app_available = false;
   cache.ForOneApp(
@@ -221,8 +221,8 @@ bool OpenFileWithAppOrBrowser(Profile* profile,
                               const storage::FileSystemURL& file_system_url,
                               const std::string& action_id,
                               LaunchAppCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(profile);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   const base::FilePath file_path = file_system_url.path();
 
@@ -251,7 +251,7 @@ bool OpenFileWithAppOrBrowser(Profile* profile,
       // drive's web interface. Otherwise (e.g. MTP, FSP), the file is just
       // downloaded in a browser tab.
       const GURL url = ash::FileSystemURLToExternalFileURL(file_system_url);
-      DCHECK(!url.is_empty());
+      CHECK(!url.is_empty(), base::NotFatalUntil::M160);
       OpenNewTab(url);
     } else {
       drive::DriveIntegrationService* integration_service =

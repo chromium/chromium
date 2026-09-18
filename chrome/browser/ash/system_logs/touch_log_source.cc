@@ -135,7 +135,7 @@ void OnEventLogCollected(
     std::unique_ptr<system_logs::SystemLogsResponse> response,
     system_logs::SysLogsSourceCallback callback,
     const std::vector<base::FilePath>& log_paths) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   system_logs::SystemLogsResponse* response_ptr = response.get();
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -151,7 +151,7 @@ void OnStatusLogCollected(
     std::unique_ptr<system_logs::SystemLogsResponse> response,
     system_logs::SysLogsSourceCallback callback,
     const std::string& log) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   (*response)[kDeviceStatusLogDataKey] = log;
 
   // Collect touch event logs.
@@ -172,8 +172,8 @@ void OnStatusLogCollected(
 namespace system_logs {
 
 void TouchLogSource::Fetch(SysLogsSourceCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!callback.is_null());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M160);
 
   // Collect touch device status logs.
   auto response = std::make_unique<SystemLogsResponse>();

@@ -198,7 +198,7 @@ void SmartLockNotificationController::NotificationDelegate::Click(
       return;
     }
 
-    DCHECK_EQ(1, *button_index);
+    CHECK_EQ(1, *button_index, base::NotFatalUntil::M160);
   }
 
   notification_controller_->LaunchMultiDeviceSettings();
