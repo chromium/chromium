@@ -946,7 +946,7 @@ BASE_FEATURE(kUseNSURLDataForGURLConversion, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_APPLE)
 
 BASE_FEATURE(kDrainSpdySessionSynchronouslyOnRemoteEndpointDisconnect,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLogicalClearHttpCache, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kLogicalClearHttpCacheUserVisiblePriority{
