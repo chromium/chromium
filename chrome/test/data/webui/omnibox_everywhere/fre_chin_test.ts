@@ -38,6 +38,7 @@ suite('FreChinTest', () => {
     const dropdownTrigger = freChin.shadowRoot.querySelector<HTMLButtonElement>(
         '.dropdown-trigger');
     assertTrue(!!dropdownTrigger);
+    assertEquals('183px', window.getComputedStyle(dropdownTrigger).width);
     assertEquals(
         'Select keyboard shortcut: Cmd Shift Space',
         dropdownTrigger.getAttribute('aria-label'));
@@ -75,6 +76,7 @@ suite('FreChinTest', () => {
             freChin.shadowRoot.querySelector<HTMLButtonElement>(
                 '.dropdown-trigger');
         assertTrue(!!dropdownTrigger);
+        assertEquals('183px', window.getComputedStyle(dropdownTrigger).width);
         assertEquals(
             'Select keyboard shortcut',
             dropdownTrigger.getAttribute('aria-label'));
