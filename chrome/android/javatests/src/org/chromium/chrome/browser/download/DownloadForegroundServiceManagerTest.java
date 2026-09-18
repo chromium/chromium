@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.download;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.notifications.NotificationConstants.DEFAULT_NOTIFICATION_ID;
@@ -123,7 +124,9 @@ public final class DownloadForegroundServiceManagerTest {
                 Notification newNotification,
                 int oldNotificationId,
                 Notification oldNotification,
-                boolean killOldNotification) {}
+                boolean killOldNotification) {
+            assertNotNull(newNotification.getSmallIcon());
+        }
     }
 
     @Before

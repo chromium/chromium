@@ -78,6 +78,15 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         MockListenerServiceImpl impl = service.getImpl();
         doReturn(false).when(impl).processIntent(any(Intent.class));
         mMockContext.startService(new Intent());
+        org.mockito.ArgumentCaptor<Notification> notificationCaptor =
+                org.mockito.ArgumentCaptor.forClass(Notification.class);
+        verify(mMockForegroundServiceUtils)
+                .startForeground(
+                        eq(service),
+                        anyInt(),
+                        notificationCaptor.capture(),
+                        eq(ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK));
+        assertNotNull(notificationCaptor.getValue().getSmallIcon());
         verify(service.getImpl()).stopListenerService();
         // In multiple-notification mode, service lifetime is decoupled from individual
         // notifications; destroying the service notifies controllers via onServiceDestroyed()

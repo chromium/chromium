@@ -238,6 +238,7 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
                                 NotificationUmaTracker.SystemNotificationType.DOWNLOAD_FILES,
                                 null,
                                 notificationId));
+        builder.setSmallIcon(android.R.drawable.stat_sys_download);
         return builder.build();
     }
 

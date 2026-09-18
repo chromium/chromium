@@ -253,7 +253,8 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
                         /* notificationTag= */ null,
                         notificationId);
         return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK, metadata);
+                        ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK, metadata)
+                .setSmallIcon(R.drawable.ic_chrome);
     }
 
     private static Context getContext() {
