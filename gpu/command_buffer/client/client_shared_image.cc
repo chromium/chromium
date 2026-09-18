@@ -504,12 +504,7 @@ ClientSharedImage::~ClientSharedImage() {
     std::vector<SyncToken> sync_tokens;
     if (base::FeatureList::IsEnabled(
             features::kUseAutomaticSyncTokenManagement)) {
-      base::AutoLock auto_lock(lock_);
-      for (const auto& [_, sync_token] : sync_token_map_) {
-        if (sync_token.HasData()) {
-          sync_tokens.push_back(sync_token);
-        }
-      }
+      sync_tokens = CollectSyncTokens();
     } else if (destruction_sync_token_.HasData()) {
       sync_tokens.push_back(destruction_sync_token_);
     }
@@ -605,20 +600,9 @@ void ClientSharedImage::SignalLatestSyncToken(
       if (!shared_image) {
         continue;
       }
-      base::AutoLock auto_lock(shared_image->lock_);
-      unsigned int effective_sync_token_count = 0;
-      for (const auto& [_, sync_token] : shared_image->sync_token_map_) {
-        if (sync_token.GetClientId() ==
-            shared_image->creation_sync_token().GetClientId()) {
-          continue;
-        }
-
-        if (sync_token.HasData()) {
-          sync_tokens.push_back(sync_token);
-          effective_sync_token_count++;
-        }
-      }
-      CHECK_LE(effective_sync_token_count, 1u);
+      std::vector<SyncToken> image_tokens = shared_image->CollectSyncTokens();
+      sync_tokens.insert(sync_tokens.end(), image_tokens.begin(),
+                         image_tokens.end());
     }
     has_valid_token = !sync_tokens.empty();
   } else {
@@ -646,7 +630,7 @@ bool ClientSharedImage::IsSyncTokenSignaled(
     base::AutoLock auto_lock(lock_);
     SyncPointClientId client_id = context_support->GetSyncPointClientId();
     auto it = sync_token_map_.find(client_id);
-    if (it != sync_token_map_.end() && it->second.HasData()) {
+    if (it != sync_token_map_.end()) {
       return context_support->IsSyncTokenSignaled(it->second);
     }
     return true;
@@ -664,13 +648,7 @@ std::vector<SyncToken> ClientSharedImage::GetSyncTokensForDisplayCompositor(
     const SyncToken& sync_token) {
   if (base::FeatureList::IsEnabled(
           features::kUseAutomaticSyncTokenManagement)) {
-    std::vector<SyncToken> sync_tokens;
-    sync_tokens.reserve(sync_token_map_.size());
-    base::AutoLock auto_lock(lock_);
-    for (const auto& [_, token] : sync_token_map_) {
-      sync_tokens.push_back(token);
-    }
-    return sync_tokens;
+    return CollectSyncTokens();
   } else {
     return {sync_token};
   }
@@ -1089,9 +1067,7 @@ void ClientSharedImage::WaitSyncTokenInternal(InterfaceBase* ib,
     // upon is already inside this ClientSharedImage instance.
     base::AutoLock auto_lock(lock_);
     for (const auto& [_, token] : sync_token_map_) {
-      if (token.HasData()) {
-        ib->WaitSyncTokenCHROMIUM(token.GetConstData());
-      }
+      ib->WaitSyncTokenCHROMIUM(token.GetConstData());
     }
   } else {
     ib->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
@@ -1172,6 +1148,20 @@ ClientSharedImage::BeginWebGPUTextureAccess(
       webgpu, this, sync_token, device, desc, usage, mailbox_flags));
 }
 
+std::vector<SyncToken> ClientSharedImage::CollectSyncTokensLocked() {
+  std::vector<SyncToken> sync_tokens;
+  sync_tokens.reserve(sync_token_map_.size());
+  for (const auto& [_, sync_token] : sync_token_map_) {
+    sync_tokens.push_back(sync_token);
+  }
+  return sync_tokens;
+}
+
+std::vector<SyncToken> ClientSharedImage::CollectSyncTokens() {
+  base::AutoLock auto_lock(lock_);
+  return CollectSyncTokensLocked();
+}
+
 std::vector<SyncToken> ClientSharedImage::VerifyAndCollectSyncTokens() {
   base::AutoLock auto_lock(lock_);
 
@@ -1182,12 +1172,7 @@ std::vector<SyncToken> ClientSharedImage::VerifyAndCollectSyncTokens() {
     });
   }
 
-  std::vector<SyncToken> sync_tokens;
-  sync_tokens.reserve(sync_token_map_.size());
-  for (const auto& [_, sync_token] : sync_token_map_) {
-    sync_tokens.push_back(sync_token);
-  }
-  return sync_tokens;
+  return CollectSyncTokensLocked();
 }
 
 SharedImageExportResult ClientSharedImage::EndImport(

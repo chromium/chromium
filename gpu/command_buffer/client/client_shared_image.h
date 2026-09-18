@@ -324,7 +324,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   void EndDisplayCompositorAccess(const SyncToken& sync_token);
 
   void UpdateDestructionSyncToken(const gpu::SyncToken& sync_token) {
-    destruction_sync_token_ = StoreSyncTokenInternal(sync_token);
+    destruction_sync_token_ = sync_token;
   }
 
   // Signals the service-side that the backing of this SharedImage was modified
@@ -500,6 +500,8 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       base::OnceCallback<void(bool)> callback);
 
   // Collect all SyncTokens stored in the internal map.
+  std::vector<SyncToken> CollectSyncTokensLocked()
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
   std::vector<SyncToken> CollectSyncTokens();
 
   void WaitSyncTokenInternal(InterfaceBase* ib, const SyncToken& sync_token);
@@ -538,6 +540,8 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   SyncToken creation_sync_token_;
   SyncToken destruction_sync_token_;
 
+  // Every SyncToken stored in this map is guaranteed to be non-empty, as
+  // enforced by StoreSyncTokenLocked().
   base::flat_map<SyncPointClientId, SyncToken> sync_token_map_;
 
   std::unique_ptr<MappableBuffer> mappable_buffer_;

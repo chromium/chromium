@@ -676,14 +676,15 @@ TEST(ClientSharedImageTest, DestroySharedImage_AutomaticSyncTokenManagement) {
   SyncToken token2(ns, cmd_id2, /*release_count=*/200);
 
   client_si->EndExport(SharedImageExportResult::CreateForTesting(token1));
+  // In automatic mode, UpdateDestructionSyncToken is effectively a no-op and
+  // any SyncToken passed into it should be ignored.
   client_si->UpdateDestructionSyncToken(token2);
-  // Passing an empty SyncToken should not clear previously tracked SyncTokens.
   client_si->UpdateDestructionSyncToken(SyncToken());
 
   client_si.reset();
 
   EXPECT_THAT(sii->MostRecentDestroyTokens(),
-              testing::UnorderedElementsAre(creation_token, token1, token2));
+              testing::UnorderedElementsAre(creation_token, token1));
 }
 
 }  // namespace gpu
