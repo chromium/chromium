@@ -1589,7 +1589,9 @@ void StoragePartitionImpl::Initialize(
                             .Append(relative_partition_path_)
                             .AppendASCII("Code Cache");
     }
-    CHECK_GE(settings.size_in_bytes(), 0, base::NotFatalUntil::M159);
+    // TODO(crbug.com/562462615): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_GE(settings.size_in_bytes(), 0);
     GetGeneratedCodeCacheContext()->Initialize(code_cache_path,
                                                settings.size_in_bytes());
   }
