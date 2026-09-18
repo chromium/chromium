@@ -218,23 +218,24 @@ class TokenPreloadScanner::StartTagScanner {
         use_data_src_attr_match_for_image_ = false;
         break;
     }
-    // SVG <image> and <script> load via href/xlink:href, not src. Handle
-    // <image> like <img>, with the attribute mapping done in
-    // ProcessSVGHrefAttribute(). In MathML, script is an unknown element
-    // and loads nothing.
-    if (foreign_content == TokenPreloadScanner::ForeignContentType::kSvg) {
-      if (Match(tag_impl_, html_names::kImageTag)) {
-        is_svg_image_ = true;
-        tag_impl_ = html_names::kImgTag.LocalName().Impl();
-      } else if (Match(tag_impl_, html_names::kScriptTag)) {
+    // SVG <image> loads via href/xlink:href, not src. Handle it like <img>,
+    // with the attribute mapping done in ProcessSVGHrefAttribute().
+    if (foreign_content == TokenPreloadScanner::ForeignContentType::kSvg &&
+        Match(tag_impl_, html_names::kImageTag)) {
+      is_svg_image_ = true;
+      tag_impl_ = html_names::kImgTag.LocalName().Impl();
+    }
+    if (RuntimeEnabledFeatures::PreloadScannerImprovementsEnabled()) {
+      // SVG <script> also loads via href/xlink:href. In MathML, script is an
+      // unknown element and loads nothing.
+      if (foreign_content == TokenPreloadScanner::ForeignContentType::kSvg &&
+          Match(tag_impl_, html_names::kScriptTag)) {
         is_svg_script_ = true;
+      } else if (foreign_content ==
+                     TokenPreloadScanner::ForeignContentType::kMath &&
+                 Match(tag_impl_, html_names::kScriptTag)) {
+        tag_impl_ = nullptr;
       }
-    } else if (RuntimeEnabledFeatures::
-                   PreloadScannerSkipMathMLScriptEnabled() &&
-               foreign_content ==
-                   TokenPreloadScanner::ForeignContentType::kMath &&
-               Match(tag_impl_, html_names::kScriptTag)) {
-      tag_impl_ = nullptr;
     }
     if (Match(tag_impl_, html_names::kImgTag) ||
         Match(tag_impl_, html_names::kSourceTag) ||
@@ -1108,7 +1109,7 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
       if (template_count_) {
         return;
       }
-      if (RuntimeEnabledFeatures::PreloadScannerSkipMathMLScriptEnabled() &&
+      if (RuntimeEnabledFeatures::PreloadScannerImprovementsEnabled() &&
           !foreign_content_stack_.empty() &&
           HTMLTreeBuilder::IsForeignContentBreakoutStartTag(
               LookupHtmlTag(token.GetName()), token)) {

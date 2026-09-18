@@ -668,6 +668,26 @@ TEST_F(HTMLPreloadScannerTest, testMathScript) {
   }
 }
 
+TEST_F(HTMLPreloadScannerTest, testPreloadScannerImprovementsDisabled) {
+  ScopedPreloadScannerImprovementsForTest scoped_feature(false);
+  PreloadScannerTestCase test_cases[] = {
+      {"http://example.test", "<image src='bla.gif'>", "bla.gif",
+       "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test", "<svg><image href='bla.gif'></image></svg>",
+       "bla.gif", "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test", "<svg></svg><image src='bla.gif'>", "bla.gif",
+       "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test", "<svg><script src='bla.js'></script></svg>",
+       "bla.js", "http://example.test/", ResourceType::kScript, 0},
+      {"http://example.test", "<math><script src='bla.js'></script></math>",
+       "bla.js", "http://example.test/", ResourceType::kScript, 0},
+  };
+
+  for (const auto& test_case : test_cases) {
+    Test(test_case);
+  }
+}
+
 TEST_F(HTMLPreloadScannerTest, testImagesWithViewport) {
   PreloadScannerTestCase test_cases[] = {
       {"http://example.test",

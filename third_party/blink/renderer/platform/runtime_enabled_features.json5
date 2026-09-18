@@ -4880,9 +4880,10 @@
       status: "stable",
     },
     {
-      // Kill switch for skipping MathML <script src> and simulating the HTML
-      // breakout tags in the HTML preload scanner. https://crbug.com/40728681
-      name: "PreloadScannerSkipMathMLScript",
+      // Kill switch for spec-compliant handling of HTML <image> and SVG/MathML
+      // foreign content in the HTML preload scanner. Ships in M155 and can be
+      // removed in M158. https://crbug.com/40728681
+      name: "PreloadScannerImprovements",
       status: "stable",
     },
     {
