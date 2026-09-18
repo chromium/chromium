@@ -37,8 +37,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
-import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.printing.TabPrinter;
@@ -525,13 +523,6 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                             mBottomSheetControllerSupplier.get(),
                             new BookmarkManagerOpenerImpl(),
                             PriceDropNotificationManagerFactory.create(mTab.getProfile()));
-
-                    // Add to offline pages.
-                    assumeNonNull(RequestCoordinatorBridge.getForProfile(profile))
-                            .savePageLater(
-                                    url.getSpec(),
-                                    OfflinePageBridge.BOOKMARK_NAMESPACE,
-                                    /* userRequested= */ true);
                 });
     }
 

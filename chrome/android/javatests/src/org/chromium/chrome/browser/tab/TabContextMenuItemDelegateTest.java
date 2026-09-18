@@ -44,6 +44,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
@@ -52,6 +53,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -237,6 +240,41 @@ public class TabContextMenuItemDelegateTest {
         } finally {
             Intents.release();
         }
+    }
+
+    @Test
+    @SmallTest
+    public void testOnReadLater_AddsToReadingList() {
+        createContextMenuForCurrentTab();
+        GURL testUrl = new GURL("https://example.com/sample_article");
+        String testTitle = "Sample Article";
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContextMenuDelegate.onReadLater(testUrl, testTitle);
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+                    BookmarkModel bookmarkModel =
+                            BookmarkModel.getForProfile(
+                                    cta.getActivityTab().getProfile().getOriginalProfile());
+                    if (!bookmarkModel.isBookmarkModelLoaded()) {
+                        return false;
+                    }
+                    BookmarkId readingListFolder = bookmarkModel.getDefaultReadingListFolder();
+                    if (readingListFolder == null) {
+                        return false;
+                    }
+                    for (BookmarkId id : bookmarkModel.getChildIds(readingListFolder)) {
+                        BookmarkItem item = bookmarkModel.getBookmarkById(id);
+                        if (item != null && item.getUrl().equals(testUrl)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
     }
 
     private void createContextMenuForCurrentTab() {

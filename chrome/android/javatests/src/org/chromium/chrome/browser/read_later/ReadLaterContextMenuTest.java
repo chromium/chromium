@@ -14,9 +14,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +29,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,6 +39,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -46,16 +47,20 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridgeJni;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
+import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
@@ -105,6 +110,32 @@ public class ReadLaterContextMenuTest {
         RequestCoordinatorBridgeJni.setInstanceForTesting(mRequestCoordinatorBridgeJniMock);
     }
 
+    @After
+    public void tearDown() {
+        // This class is batched and only the Activity is recreated between tests, so the reading
+        // list would otherwise leak from one test into the next. That would let
+        // waitForReadingListEntry() succeed on a stale entry before the tap under test had done
+        // anything, silently disarming the assertions that follow it.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BookmarkModel model =
+                            BookmarkModel.getForProfile(ProfileManager.getLastUsedRegularProfile());
+                    if (model.isBookmarkModelLoaded()) {
+                        model.removeAllUserBookmarks();
+                    }
+                });
+        // Wait for the removal to land so the next test starts from a known-empty reading list.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    BookmarkModel model =
+                            BookmarkModel.getForProfile(ProfileManager.getLastUsedRegularProfile());
+                    if (!model.isBookmarkModelLoaded()) return true;
+                    BookmarkId readingListFolder = model.getDefaultReadingListFolder();
+                    return readingListFolder == null
+                            || model.getChildIds(readingListFolder).isEmpty();
+                });
+    }
+
     @Test
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
@@ -135,7 +166,7 @@ public class ReadLaterContextMenuTest {
     @Test
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
-    public void testContextMenuAddToOfflinePage() throws Throwable {
+    public void testContextMenuAddToReadingList() throws Throwable {
         String url = mTestServer.getURL(CONTEXT_MENU_TEST_URL);
         mActivityTestRule.loadUrlInNewTab(url);
         ChromeActivity activity = mActivityTestRule.getActivity();
@@ -147,8 +178,52 @@ public class ReadLaterContextMenuTest {
                 CONTEXT_MENU_LINK_DOM_ID,
                 R.id.contextmenu_read_later);
         String linkUrl = mTestServer.getURL(CONTEXT_MENU_LINK_URL);
-        verify(mRequestCoordinatorBridgeJniMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
-                .savePageLater(any(), any(), eq(linkUrl), any(), any(), any(), anyBoolean());
+        waitForReadingListEntry(tab, linkUrl);
+        verify(mRequestCoordinatorBridgeJniMock, never())
+                .savePageLater(any(), any(), any(), any(), any(), any(), anyBoolean());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.PHONE})
+    public void testContextMenuAddToReadingList_Incognito() throws Throwable {
+        String url = mTestServer.getURL(CONTEXT_MENU_TEST_URL);
+        mActivityTestRule.loadUrlInNewTab(url, /* incognito= */ true);
+        ChromeActivity activity = mActivityTestRule.getActivity();
+        Tab tab = mActivityTestRule.getActivityTab();
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                activity,
+                tab,
+                CONTEXT_MENU_LINK_DOM_ID,
+                R.id.contextmenu_read_later);
+        String linkUrl = mTestServer.getURL(CONTEXT_MENU_LINK_URL);
+        waitForReadingListEntry(tab, linkUrl);
+        verify(mRequestCoordinatorBridgeJniMock, never())
+                .savePageLater(any(), any(), any(), any(), any(), any(), anyBoolean());
+    }
+
+    /**
+     * Waits until {@code url} shows up in the reading list. Waiting for this before asserting that
+     * no offline save happened is what keeps that assertion meaningful: it proves onReadLater
+     * actually ran, rather than the menu tap having silently done nothing.
+     */
+    private void waitForReadingListEntry(Tab tab, String url) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    BookmarkModel model =
+                            BookmarkModel.getForProfile(tab.getProfile().getOriginalProfile());
+                    if (!model.isBookmarkModelLoaded()) return false;
+                    BookmarkId readingListFolder = model.getDefaultReadingListFolder();
+                    if (readingListFolder == null) return false;
+                    for (BookmarkId childId : model.getChildIds(readingListFolder)) {
+                        BookmarkItem item = model.getBookmarkById(childId);
+                        if (item != null && item.getUrl().getSpec().equals(url)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
     }
 
     private ViewInteraction waitForHelpBubble(Matcher<View> matcher) {
