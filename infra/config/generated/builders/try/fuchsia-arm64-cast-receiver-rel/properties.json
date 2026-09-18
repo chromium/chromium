@@ -46,6 +46,10 @@
       "targets_spec_directory": "infra/config/generated/builders/try/fuchsia-arm64-cast-receiver-rel/targets"
     }
   },
+  "$build/flakiness": {
+    "check_for_flakiness": true,
+    "check_for_flakiness_with_resultdb": true
+  },
   "$build/siso": {
     "configs": [
       "builder",
@@ -68,5 +72,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.fuchsia",
+  "cq": "path-based",
   "recipe": "chromium_trybot"
 }

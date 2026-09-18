@@ -56,16 +56,15 @@ try_.builder(
         ],
     ),
     contact_team_email = "chrome-fuchsia-engprod@google.com",
-    # TODO(crbug.com/549757519): Restore to the CQ when test pool is recovered.
-    # cq_settings = try_.cq_settings(
-    #     location_filters = [
-    #         # This is the only bot that builds //chromecast code for Fuchsia on
-    #         # ARM64, so trigger it when changes are made.
-    #         "chromecast/.+",
-    #         # Always trigger this builder when drilling the fuchsia-sdk.
-    #         "build/fuchsia/sdk_override.txt",
-    #     ],
-    # ),
+    cq_settings = try_.cq_settings(
+        location_filters = [
+            # This is the only bot that builds //chromecast code for Fuchsia on
+            # ARM64, so trigger it when changes are made.
+            "chromecast/.+",
+            # Always trigger this builder when drilling the fuchsia-sdk.
+            "build/fuchsia/sdk_override.txt",
+        ],
+    ),
     execution_timeout = 6 * time.hour,
     experiments = {
         "luci.buildbucket.run_in_turboci": 100,
