@@ -339,6 +339,7 @@ fixed_impl!(F4Dot12, 16, 12, i16);
 fixed_impl!(F6Dot10, 16, 10, i16);
 fixed_impl!(Fixed, 32, 16, i32);
 fixed_impl!(F26Dot6, 32, 6, i32);
+fixed_impl!(F48Dot16, 64, 16, i64);
 
 fixed_mul_div_assign!(Fixed);
 fixed_mul_div_assign!(F26Dot6);
@@ -346,6 +347,7 @@ fixed_mul_div_assign!(F26Dot6);
 float_conv!(F2Dot14, to_f32, from_f32, f32);
 float_conv!(F4Dot12, to_f32, from_f32, f32);
 float_conv!(F6Dot10, to_f32, from_f32, f32);
+float_conv!(F48Dot16, to_f64, from_f64, f64);
 float_conv!(F2Dot14, to_f64, from_f64, f64, no_fmt);
 float_conv!(F4Dot12, to_f64, from_f64, f64, no_fmt);
 float_conv!(F6Dot10, to_f64, from_f64, f64, no_fmt);
@@ -398,6 +400,39 @@ impl Fixed {
         const SCALE_FACTOR: f32 = 1.0 / 65536.0;
         self.0 as f32 * SCALE_FACTOR
     }
+
+    /// Converts a 16.16 to a 48.16 fixed point value.
+    ///
+    /// This conversion is exact.
+    #[inline(always)]
+    pub const fn to_f48dot16(self) -> F48Dot16 {
+        F48Dot16(self.0 as i64)
+    }
+
+    /// Applies an item variation delta, returning the varied value as a
+    /// single precision floating point number.
+    ///
+    /// A delta for a 16.16 valued target is a raw integer count of the
+    /// target's own quantum, so the accumulated 48.16 delta is scaled by
+    /// 1/65536 on application. The result is intentionally not rounded
+    /// back to 16.16.
+    #[inline(always)]
+    pub fn apply_delta(self, delta: F48Dot16) -> f32 {
+        self.to_f32() + (delta.to_f64() / 65536.0) as f32
+    }
+
+    /// Multiplies by a 32 bit integer, producing the product as a 48.16
+    /// fixed point value.
+    ///
+    /// This is the shape of variation delta accumulation: a raw integer
+    /// delta scaled by a 16.16 scalar. The arithmetic wraps rather than
+    /// panicking, following this module's style -- though the widened
+    /// product of two 32 bit values is at most 2^62 and cannot actually
+    /// wrap.
+    #[inline(always)]
+    pub const fn mul_i32(self, value: i32) -> F48Dot16 {
+        F48Dot16((self.0 as i64).wrapping_mul(value as i64))
+    }
 }
 
 impl From<i32> for Fixed {
@@ -431,7 +466,68 @@ impl F26Dot6 {
     }
 }
 
+impl F48Dot16 {
+    /// Creates a 48.16 fixed point value from a 64 bit integer.
+    #[inline(always)]
+    pub const fn from_i64(i: i64) -> Self {
+        Self(i << 16)
+    }
+
+    /// Creates a 48.16 fixed point value from a 32 bit integer.
+    #[inline(always)]
+    pub const fn from_i32(i: i32) -> Self {
+        Self((i as i64) << 16)
+    }
+
+    /// Converts a 48.16 fixed point value to a 64 bit integer, rounding off
+    /// the fractional bits.
+    #[inline(always)]
+    pub const fn to_i64(self) -> i64 {
+        self.0.wrapping_add(0x8000) >> 16
+    }
+
+    /// Converts a 48.16 fixed point value to a 32 bit integer, rounding off
+    /// the fractional bits.
+    ///
+    /// This truncates the integral bits if the value is too large to fit.
+    #[inline(always)]
+    pub const fn to_i32(self) -> i32 {
+        self.to_i64() as i32
+    }
+
+    /// Converts a 48.16 fixed point value to a single precision floating
+    /// point value.
+    ///
+    /// This operation is lossy.
+    #[inline(always)]
+    pub const fn to_f32(self) -> f32 {
+        const SCALE_FACTOR: f64 = 1.0 / 65536.0;
+        (self.0 as f64 * SCALE_FACTOR) as f32
+    }
+
+    /// Converts a 48.16 to a 16.16 fixed point value.
+    ///
+    /// The fractional bits carry over exactly; this truncates the integral
+    /// bits if the value is too large to fit.
+    #[inline(always)]
+    pub const fn to_fixed(self) -> Fixed {
+        Fixed(self.0 as i32)
+    }
+}
+
 impl F2Dot14 {
+    /// Applies an item variation delta, returning the varied value as a
+    /// single precision floating point number.
+    ///
+    /// A delta for a 2.14 valued target is a raw integer count of the
+    /// target's own quantum, so the accumulated 48.16 delta is scaled by
+    /// one quarter of one percent -- 1/16384 -- on application. The result
+    /// is intentionally not rounded back to 2.14.
+    #[inline(always)]
+    pub fn apply_delta(self, delta: F48Dot16) -> f32 {
+        self.to_f32() + (delta.to_f64() / 16384.0) as f32
+    }
+
     /// Converts a 2.14 to 16.16 fixed point value.
     #[inline(always)]
     pub const fn to_fixed(self) -> Fixed {
@@ -591,6 +687,128 @@ mod tests {
         // Just don't panic with overflow; we use wrapping arithmetic to
         // match FT.
         assert_eq!(-Fixed(i32::MIN), Fixed(i32::MIN));
+    }
+
+    #[test]
+    fn f48dot16_floats() {
+        assert_eq!(F48Dot16(0x0001_0000), F48Dot16::from_f64(1.0));
+        assert_eq!(F48Dot16(0x0000_0000), F48Dot16::from_f64(0.0));
+        assert_eq!(F48Dot16(0x0001_8000), F48Dot16::from_f64(1.5));
+        assert_eq!(F48Dot16(-0x0001_8000), F48Dot16::from_f64(-1.5));
+        assert_eq!(F48Dot16(0x0000_0001), F48Dot16::EPSILON);
+        // Values far outside the 16.16 range are representable.
+        assert_eq!(
+            F48Dot16((1i64 << 40) * 65536),
+            F48Dot16::from_f64((1u64 << 40) as f64)
+        );
+        assert_eq!(
+            F48Dot16::from_f64(1099511627776.5).to_f64(),
+            1099511627776.5
+        );
+    }
+
+    #[test]
+    fn f48dot16_round() {
+        assert_eq!(F48Dot16(0x0001_7FFF).round(), F48Dot16(0x0001_0000));
+        assert_eq!(F48Dot16(0x0001_8000).round(), F48Dot16(0x0002_0000));
+        assert_eq!(F48Dot16::from_f64(-1.5).round(), F48Dot16::from_f64(-1.0));
+    }
+
+    #[test]
+    fn f48dot16_to_int() {
+        assert_eq!(F48Dot16::from_f64(1.0).to_i64(), 1);
+        assert_eq!(F48Dot16::from_f64(1.5).to_i64(), 2);
+        assert_eq!(F48Dot16::from_f64(-1.5).to_i64(), -1);
+        assert_eq!(F48Dot16::from_f64(1099511627776.25).to_i64(), 1099511627776);
+    }
+
+    #[test]
+    fn f48dot16_from_int() {
+        assert_eq!(F48Dot16::from_i64(1000).to_bits(), 1000 << 16);
+        assert_eq!(F48Dot16::from_i64(1 << 40).to_bits(), 1 << 56);
+    }
+
+    /// Widening from 16.16 is exact over the whole range, and narrowing
+    /// returns exactly when the value fits.
+    #[test]
+    fn f48dot16_fixed_conversions() {
+        for bits in [0, 1, -1, 0x1234_5678, i32::MAX, i32::MIN] {
+            let fixed = Fixed(bits);
+            let wide = fixed.to_f48dot16();
+            assert_eq!(wide.to_bits(), bits as i64);
+            assert_eq!(wide.to_fixed(), fixed);
+        }
+        // Out of range narrows truncate, wrapping like the sibling
+        // conversions rather than saturating.
+        assert_eq!(F48Dot16(i32::MAX as i64 + 1).to_fixed(), Fixed(i32::MIN));
+        assert_eq!(F48Dot16(i32::MIN as i64 - 1).to_fixed(), Fixed(i32::MAX));
+    }
+
+    #[test]
+    fn f48dot16_mul_i32() {
+        assert_eq!(Fixed::from_f64(0.5).mul_i32(3), F48Dot16::from_f64(1.5));
+        assert_eq!(Fixed::ONE.mul_i32(-7), F48Dot16::from_i64(-7));
+        assert_eq!(Fixed::ZERO.mul_i32(i32::MAX), F48Dot16::ZERO);
+        // The extreme product fits without overflow: |i32::MIN| * |i32::MIN|
+        // is 2^62, inside i64.
+        assert_eq!(Fixed(i32::MIN).mul_i32(i32::MIN), F48Dot16(1i64 << 62));
+    }
+
+    /// The variation delta shape: raw deltas scaled and summed exactly,
+    /// then rounded once at the end.
+    #[test]
+    fn f48dot16_delta_accumulation() {
+        let deltas = [100i32, -250, 37];
+        let scalars = [
+            Fixed::from_f64(1.0),
+            Fixed::from_f64(0.5),
+            Fixed::from_f64(0.25),
+        ];
+        let mut accum = F48Dot16::ZERO;
+        for (delta, scalar) in deltas.iter().zip(&scalars) {
+            accum += scalar.mul_i32(*delta);
+        }
+        // 100 - 125 + 9.25 = -15.75, which rounds to the nearest integer.
+        assert_eq!(accum, F48Dot16::from_f64(-15.75));
+        assert_eq!(accum.to_i64(), -16);
+        assert_eq!(accum.round(), F48Dot16::from_f64(-16.0));
+    }
+
+    /// The delta application methods must agree exactly with the former
+    /// `FloatItemDeltaTarget` impls in read-fonts that they replaced, which
+    /// computed base + raw * (1 / quantum) through an f64 raw count.
+    #[test]
+    fn f48dot16_apply_delta() {
+        let raws = [0i64, 1, -1, 100, -32768, 65536, 1 << 40, -(1 << 40)];
+        for raw_bits in raws {
+            let delta = F48Dot16(raw_bits);
+            let raw = delta.to_f64();
+            // Fixed targets scale by 1/65536.
+            let base = Fixed::from_f64(1.5);
+            assert_eq!(
+                base.apply_delta(delta),
+                base.to_f32() + (raw * (1.0 / 65536.0)) as f32
+            );
+            // 2.14 targets scale by 1/16384.
+            let base = F2Dot14::from_f32(0.25);
+            assert_eq!(
+                base.apply_delta(delta),
+                base.to_f32() + (raw * (1.0 / 16384.0)) as f32
+            );
+        }
+        // Spot values: one quantum of delta moves a target by one quantum.
+        assert_eq!(
+            Fixed::ZERO.apply_delta(F48Dot16::from_i64(1)),
+            1.0 / 65536.0
+        );
+        assert_eq!(
+            F2Dot14::from_f32(0.0).apply_delta(F48Dot16::from_i64(1)),
+            1.0 / 16384.0
+        );
+        assert_eq!(
+            F2Dot14::from_f32(0.5).apply_delta(F48Dot16::from_f64(-0.5)),
+            0.5 - 0.5 / 16384.0
+        );
     }
 
     #[test]

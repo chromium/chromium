@@ -34,7 +34,7 @@ mod version;
 mod serde_test;
 
 pub use bbox::BoundingBox;
-pub use fixed::{F26Dot6, F2Dot14, F4Dot12, F6Dot10, Fixed};
+pub use fixed::{F26Dot6, F2Dot14, F48Dot16, F4Dot12, F6Dot10, Fixed};
 pub use fword::{FWord, UfWord};
 pub use glyph_id::{GlyphId, GlyphId16, GlyphId24, TryFromGlyphIdError};
 pub use int24::Int24;
