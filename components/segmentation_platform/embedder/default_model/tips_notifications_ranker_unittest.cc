@@ -137,7 +137,8 @@ TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForEssentials) {
 TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForNewFeatures) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kAndroidTipsNotifications, {{"new_features", "true"}});
+      features::kAndroidTipsNotifications,
+      {{"essential", "false"}, {"new_features", "true"}});
 
   ExpectInitAndFetchModel();
   ASSERT_TRUE(fetched_metadata_);

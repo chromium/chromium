@@ -185,7 +185,7 @@ constexpr base::FeatureParam<int> kMaxDefaultBrowserMagicStackIosImpressions{
     "max_default_browser_magic_stack_ios_impressions",
     /*default_value=*/6};
 
-BASE_FEATURE(kAndroidTipsNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidTipsNotifications, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<bool> kTrustAndSafety{&kAndroidTipsNotifications,
                                                    "trust_and_safety",
@@ -193,7 +193,7 @@ constexpr base::FeatureParam<bool> kTrustAndSafety{&kAndroidTipsNotifications,
 
 constexpr base::FeatureParam<bool> kEssential{&kAndroidTipsNotifications,
                                               "essential",
-                                              /*default_value=*/false};
+                                              /*default_value=*/true};
 
 constexpr base::FeatureParam<bool> kNewFeatures{&kAndroidTipsNotifications,
                                                 "new_features",
