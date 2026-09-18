@@ -92,11 +92,23 @@ void WebGpuSharedImageLease::DrawToBackingSharedImage(
   draw_callback(*recorder.beginRecording());
   if (cc::PaintRecord last_recording = recorder.finishRecordingAsPicture();
       last_recording.has_draw_ops()) {
-    auto access = resource_.shared_image_->BeginRasterAccess(
-        RasterInterface(), resource_.sync_token_, /*readonly=*/false);
-
     const bool needs_clear = !resource_.is_cleared_;
     resource_.is_cleared_ = true;
+
+    auto& context_provider =
+        resource_.context_provider_wrapper_->ContextProvider();
+    CanvasImageProvider image_provider(
+        context_provider.ImageDecodeCache(kN32_SkColorType),
+        resource_.shared_image_->format() == viz::SinglePlaneFormat::kRGBA_F16
+            ? context_provider.ImageDecodeCache(kRGBA_F16_SkColorType)
+            : nullptr,
+        resource_.shared_image_->color_space(),
+        resource_.shared_image_->format(),
+        cc::PlaybackImageProvider::RasterMode::kGpu,
+        resource_.context_provider_wrapper_);
+
+    auto access = resource_.shared_image_->BeginRasterAccess(
+        RasterInterface(), resource_.sync_token_, /*readonly=*/false);
 
     gpu::raster::RasterInterface* ri = RasterInterface();
     SkColor4f background_color =
@@ -131,18 +143,6 @@ void WebGpuSharedImageLease::DrawToBackingSharedImage(
                             resource_.shared_image_->color_space(),
                             /*hdr_headroom=*/0.f,
                             resource_.shared_image_->mailbox().name);
-
-    auto& context_provider =
-        resource_.context_provider_wrapper_->ContextProvider();
-    CanvasImageProvider image_provider(
-        context_provider.ImageDecodeCache(kN32_SkColorType),
-        resource_.shared_image_->format() == viz::SinglePlaneFormat::kRGBA_F16
-            ? context_provider.ImageDecodeCache(kRGBA_F16_SkColorType)
-            : nullptr,
-        resource_.shared_image_->color_space(),
-        resource_.shared_image_->format(),
-        cc::PlaybackImageProvider::RasterMode::kGpu,
-        resource_.context_provider_wrapper_);
 
     ri->RasterCHROMIUM(
         list.get(), &image_provider, size, full_raster_rect, playback_rect,
