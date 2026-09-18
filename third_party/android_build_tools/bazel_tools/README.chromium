@@ -1,0 +1,31 @@
+Name: Bazel Tools (singlejar, ijar and zipper)
+Short Name: bazel_tools
+Version: 7.4.1
+Update Mechanism: Manual
+License: Apache-2.0
+License File: LICENSE
+Security Critical: No
+Shipped: no
+URL: https://github.com/bazelbuild/bazel/tree/7.4.1/src/tools/singlejar,
+     https://github.com/bazelbuild/bazel/tree/7.4.1/third_party/ijar
+
+Description:
+Native command-line tools built from the Bazel source tree:
+* singlejar: combines multiple .jar files into a single .jar.
+  https://github.com/bazelbuild/bazel/tree/7.4.1/src/tools/singlejar
+* ijar: creates an interface .jar containing only the ABI (method and field
+  signatures) of the classes in an input .jar, which allows compile steps to
+  avoid being re-run when only method bodies change.
+  https://github.com/bazelbuild/bazel/tree/7.4.1/third_party/ijar
+* zipper: a minimal zip archiver/extractor. Entries are stored uncompressed
+  unless the "C" flag is passed, and every entry is given a fixed timestamp
+  (2010-01-01), so archives are reproducible. Inputs can be remapped within
+  the archive via "zip_path=file".
+  https://github.com/bazelbuild/bazel/blob/7.4.1/third_party/ijar/zip_main.cc
+
+These are built by the 3pp recipe in 3pp/ and uploaded to CIPD as
+chromium/third_party/android_build_tools/bazel_tools/${platform}, with one
+package per platform (linux-amd64 and mac-arm64).
+
+Local Modifications:
+None
