@@ -469,6 +469,32 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals('', input.value);
   });
 
+  test('MousedownTriggersZeroSuggest', async () => {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      sequenceNumber: 2,
+      text: 'https://example.com',
+      fullUrl: 'https://example.com',
+      permanentDisplayText: 'example.com',
+      isFocused: true,
+    }));
+    await microtasksFinished();
+    testProxy.handler.reset();
+
+    const input = searchbox.$.input.inputElement;
+    input.dispatchEvent(new MouseEvent('mousedown', {
+      button: 0,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    const args = testProxy.handler.getArgs('queryAutocomplete')[0];
+    assertEquals('https://example.com', args[2]);
+    assertTrue(args[6]);  // isOnFocus
+  });
+
   test('ClearsInputTextAndNotifiesHandler', async () => {
     callbackRouter.setInputState(createDefaultOmniboxInputState({
       sequenceNumber: 5,

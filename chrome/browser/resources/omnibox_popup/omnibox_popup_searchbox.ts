@@ -675,16 +675,21 @@ export class OmniboxPopupSearchboxElement extends
     this.showFullUrlOnDeselect_();
     // If nothing is selected, a mouse click should select all the text
     // if the input is not already focused. (i.e. focusing on omnibox).
+    const input = this.getInputElement().inputElement;
     if (!this.dropdownIsVisible &&
         this.shadowRoot?.activeElement !== this.$.input) {
       // Only handle left (0) and middle (1) mouse button clicks.
       if (e.button === 0 || e.button === 1) {
-        const input = this.getInputElement().inputElement;
         if (input.selectionStart === input.selectionEnd) {
           this.selectAllOnMouseRelease_ = true;
           input.select();
         }
       }
+    }
+    if (e.button === 0 && e.composedPath().includes(input)) {
+      this.onInputFocusChanged(new CustomEvent('input-focus-changed', {
+        detail: {value: input.value, isOnFocus: !input.value},
+      }));
     }
   }
 
