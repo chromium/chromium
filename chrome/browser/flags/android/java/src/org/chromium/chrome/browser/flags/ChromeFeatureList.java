@@ -1883,6 +1883,8 @@ public abstract class ChromeFeatureList {
     public static final String
             ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER_JUMP_TO_COMPLETION_WITH_FADE =
                     "jump_to_completion_with_fade";
+    public static final String ANDROID_DEVICE_SIGNALS_DISCLAIMER_CLEAR_CONSENT =
+            "clear_device_signals_permission_on_startup";
     public static final String ANDROID_THEME_MODULE_FORCE_DEPENDENCIES =
             "force_theme_module_dependencies";
     public static final String ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT = "force_light_theme";
@@ -1899,6 +1901,9 @@ public abstract class ChromeFeatureList {
      */
     static final Map<String, Map<String, String>> sParamsDefaultValues =
             Map.ofEntries(
+                    Map.entry(
+                            ANDROID_DEVICE_SIGNALS_DISCLAIMER,
+                            Map.of(ANDROID_DEVICE_SIGNALS_DISCLAIMER_CLEAR_CONSENT, "false")),
                     Map.entry(
                             ANDROID_THEME_MODULE,
                             Map.of(ANDROID_THEME_MODULE_FORCE_DEPENDENCIES, "false")),
@@ -1918,6 +1923,11 @@ public abstract class ChromeFeatureList {
             !BuildConfig.IS_FOR_TEST
                     ? null
                     : Map.ofEntries(
+                            Map.entry(
+                                    ANDROID_DEVICE_SIGNALS_DISCLAIMER,
+                                    Map.of(
+                                            ANDROID_DEVICE_SIGNALS_DISCLAIMER_CLEAR_CONSENT,
+                                            "false")),
                             Map.entry(
                                     ANDROID_THEME_MODULE,
                                     Map.of(ANDROID_THEME_MODULE_FORCE_DEPENDENCIES, "false")),
