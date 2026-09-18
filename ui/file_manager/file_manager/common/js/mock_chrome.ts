@@ -213,10 +213,10 @@ export class MockMetrics {
     if (args.length > 0) {
       let metricName = args[0];
       // Ignore the first position because it's the metric name.
-      let metricArgs = args.slice(1);
-      // Some APIs uses `metricName` instead of first argument.
+      const metricArgs = args.slice(1);
+      // For APIs like recordValue that take a descriptor object as the first
+      // argument, extract the string metric name.
       if (metricName.metricName) {
-        metricArgs = [metricName, ...metricArgs];
         metricName = metricName.metricName;
       }
       this.metricCalls[metricName] = this.metricCalls[metricName] || [];
@@ -242,11 +242,8 @@ export class MockMetrics {
   recordValue(...args: any[]) {
     this.call('recordValue', args);
   }
-  recordInterval(...args: any[]) {
-    this.call('recordInterval', args);
-  }
-  recordEnum(...args: any[]) {
-    this.call('recordEnum', args);
+  recordEnumerationValue(...args: any[]) {
+    this.call('recordEnumerationValue', args);
   }
 
   // To make MockMetrics compatible with chrome.metricsPrivate.
@@ -283,10 +280,6 @@ export class MockMetrics {
     throw new Error('not implemented');
   }
   recordSparseValue(_metricName: string, _value: number): void {
-    throw new Error('not implemented');
-  }
-  recordEnumerationValue(
-      _metricName: string, _value: number, _enumSize: number): void {
     throw new Error('not implemented');
   }
 }

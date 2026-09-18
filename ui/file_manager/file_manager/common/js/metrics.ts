@@ -83,26 +83,6 @@ export function recordUserAction(name: string) {
 }
 
 /**
- * Records an elapsed time of no more than 10 seconds.
- * @param value Numeric value to be recorded in units that match the histogram
- *    definition (in histograms.xml).
- */
-export function recordValue(
-    name: string, type: chrome.metricsPrivate.MetricTypeType, min: number,
-    max: number, buckets: number, value: number) {
-  callAPI('recordValue', [
-    {
-      'metricName': convertName(name),
-      'type': type,
-      'min': min,
-      'max': max,
-      'buckets': buckets,
-    },
-    value,
-  ]);
-}
-
-/**
  * Complete the time interval recording.
  *
  * Should be preceded by a call to startInterval with the same name.
@@ -162,22 +142,12 @@ export function recordEnum(
   let index = validValues.indexOf(value);
   const boundaryValue = validValues.length;
 
-  // Collect invalid values in the overflow bucket at the end.
-  if (index < 0 || index >= boundaryValue) {
-    index = boundaryValue - 1;
+  // Collect invalid values in the overflow bucket at the end. Valid 0-based
+  // indices are [0, boundaryValue - 1], so boundaryValue is the one-past-the-end
+  // overflow bucket.
+  if (index === -1) {
+    index = boundaryValue;
   }
 
-  // Setting min to 1 looks strange but this is exactly the recommended way
-  // of using histograms for enum-like types. Bucket #0 works as a regular
-  // bucket AND the underflow bucket.
-  // (Source: UMA_HISTOGRAM_ENUMERATION definition in
-  // base/metrics/histogram.h)
-  const metricDescr = {
-    'metricName': convertName(name),
-    'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
-    'min': 1,
-    'max': boundaryValue - 1,
-    'buckets': boundaryValue,
-  };
-  callAPI('recordValue', [metricDescr, index]);
+  callAPI('recordEnumerationValue', [convertName(name), index, boundaryValue]);
 }

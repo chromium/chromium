@@ -287,8 +287,8 @@ export async function testToggleHoldingSpaceCommand() {
     // Verify metrics recorded.
     const calls = mockMetrics.metricCalls['FileBrowser.MenuItemSelected'] || [];
     assertTrue(calls.length > 0);
-    // The index is 2nd position argument, we're only checking the first call.
-    const metricIndex = calls[0][1];
+    // The index is 1st position argument, we're only checking the first call.
+    const metricIndex = calls[0][0];
     assertEquals(
         getMetricName(metricIndex),
         testCase.expect.isAdd ? 'pin-to-holding-space' :

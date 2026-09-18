@@ -6,7 +6,6 @@
  * @fileoverview Utility methods for the holding space feature.
  */
 
-import {recordValue} from '../../common/js/metrics.js';
 import {storage} from '../../common/js/storage.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 
@@ -89,13 +88,16 @@ export async function maybeStoreTimeOfFirstPin() {
   // respectively.
   const oneSecondInMillis = 1000;
   const oneDayInMillis = 24 * 60 * 60 * 1000;
-  recordValue(
-      /*name=*/ 'HoldingSpace.TimeFromFirstWelcomeBannerShowToFirstPin',
-      chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
-      /*min=*/ oneSecondInMillis,
-      /*max=*/ oneDayInMillis,
-      /*buckets=*/ 50,
-      /*value=*/ timeFromFirstWelcomeBannerShowToFirstPin);
+  chrome.metricsPrivate.recordValue(
+      {
+        metricName:
+            'FileBrowser.HoldingSpace.TimeFromFirstWelcomeBannerShowToFirstPin',
+        type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
+        min: oneSecondInMillis,
+        max: oneDayInMillis,
+        buckets: 50,
+      },
+      timeFromFirstWelcomeBannerShowToFirstPin);
 }
 
 /**
