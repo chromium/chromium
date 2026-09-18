@@ -28,6 +28,7 @@ import android.graphics.Color;
 import android.net.Uri;
 
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
@@ -259,8 +260,9 @@ public class CustomTabActivityEphemeralTest {
         // allowed in OTR profiles. (crbug.com/40706528)
         Intent intent = createEphemeralCustomTabIntent();
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        final var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
-        final var token = sessionHolder.getSessionAsCustomTab();
+        final var sessionHolder =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        final var token = sessionHolder.getToken();
         Assert.assertTrue(connection.newSession(token));
         // Passes the launch intent to the connection.
         setCanUseHiddenTabForSession(sessionHolder, true);

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.browserservices;
 import android.content.Intent;
 
 import androidx.browser.customtabs.CustomTabsService;
+import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.test.core.app.ApplicationProvider;
 
@@ -82,9 +83,9 @@ public class TrustedWebActivityTestUtil {
 
     /** Creates a Custom Tabs Session from the Intent, specifying the |packageName|. */
     public static void createSession(Intent intent, String packageName) throws TimeoutException {
-        var token = SessionHolder.getSessionHolderFromIntent(intent);
+        var token = SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        connection.newSession(token.getSessionAsCustomTab());
+        connection.newSession(token.getToken());
         connection.overridePackageNameForSessionForTesting(token, packageName);
     }
 

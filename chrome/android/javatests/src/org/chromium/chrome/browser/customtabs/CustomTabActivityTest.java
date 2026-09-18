@@ -358,9 +358,9 @@ public class CustomTabActivityTest {
         headers.putString("redirect-url", "https://www.google.com");
         intent.putExtra(Browser.EXTRA_HEADERS, headers);
 
-        var token = SessionHolder.getSessionHolderFromIntent(intent);
+        var token = SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token.getSessionAsCustomTab());
+        connection.newSession(token.getToken());
         connection.overridePackageNameForSessionForTesting(token, "app1");
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -919,8 +919,8 @@ public class CustomTabActivityTest {
         intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, network);
 
         // We need a session to make it valid.
-        var token = SessionHolder.getSessionHolderFromIntent(intent);
-        realConnection.newSession(token.getSessionAsCustomTab());
+        var token = SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        realConnection.newSession(token.getToken());
 
         // Launch. It should attempt to load mTestPage but fail due to invalid network.
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -1158,9 +1158,9 @@ public class CustomTabActivityTest {
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage2);
         String referrer = "https://example.com";
         intent.putExtra(Intent.EXTRA_REFERRER_NAME, referrer);
-        var token = SessionHolder.getSessionHolderFromIntent(intent);
+        var token = SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token.getSessionAsCustomTab());
+        connection.newSession(token.getToken());
         connection.overridePackageNameForSessionForTesting(token, "app1");
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -1230,11 +1230,11 @@ public class CustomTabActivityTest {
         Intent intent =
                 createIntentWithCallback(
                         tabShownSemaphore, navigationStartSemaphore, navigationFinishedSemaphore);
-        final var token = SessionHolder.getSessionHolderFromIntent(intent);
-        Assert.assertTrue(connection.newSession(token.getSessionAsCustomTab()));
+        final var token =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        Assert.assertTrue(connection.newSession(token.getToken()));
         Assert.assertTrue(
-                connection.mayLaunchUrl(
-                        token.getSessionAsCustomTab(), Uri.parse(mTestPage), null, null));
+                connection.mayLaunchUrl(token.getToken(), Uri.parse(mTestPage), null, null));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         Assert.assertTrue(
@@ -1339,15 +1339,15 @@ public class CustomTabActivityTest {
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
         intent.putExtra(
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
-        final var token = SessionHolder.getSessionHolderFromIntent(intent);
-        Assert.assertTrue(connection.newSession(token.getSessionAsCustomTab()));
+        final var token =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        Assert.assertTrue(connection.newSession(token.getToken()));
         connection.mClientManager.setHideDomainForSession(token, true);
 
         if (useHiddenTab) {
             setCanUseHiddenTabForSession(token, true);
             Assert.assertTrue(
-                    connection.mayLaunchUrl(
-                            token.getSessionAsCustomTab(), Uri.parse(url), null, null));
+                    connection.mayLaunchUrl(token.getToken(), Uri.parse(url), null, null));
             CustomTabsTestUtils.ensureCompletedSpeculationForUrl(url);
         }
 
@@ -1387,13 +1387,13 @@ public class CustomTabActivityTest {
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
-        final var token = SessionHolder.getSessionHolderFromIntent(intent);
-        Assert.assertTrue(connection.newSession(token.getSessionAsCustomTab()));
+        final var token =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        Assert.assertTrue(connection.newSession(token.getToken()));
         // Forcing no hidden tab implies falling back to simply creating a spare WebContents.
         setCanUseHiddenTabForSession(token, false);
         Assert.assertTrue(
-                connection.mayLaunchUrl(
-                        token.getSessionAsCustomTab(), Uri.parse(mTestPage), null, null));
+                connection.mayLaunchUrl(token.getToken(), Uri.parse(mTestPage), null, null));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
@@ -1455,8 +1455,9 @@ public class CustomTabActivityTest {
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
-        final var token = SessionHolder.getSessionHolderFromIntent(intent);
-        Assert.assertTrue(connection.newSession(token.getSessionAsCustomTab()));
+        final var token =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        Assert.assertTrue(connection.newSession(token.getToken()));
         mCustomTabActivityTestRule.launchActivity(intent);
 
         helper.waitForNext();
@@ -1661,12 +1662,13 @@ public class CustomTabActivityTest {
 
         final Context context = ApplicationProvider.getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
-        final var token = SessionHolder.getSessionHolderFromIntent(intent);
+        final var token =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
 
         // warmup(), create session, allow parallel requests, allow origin.
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         final Origin origin = Origin.create(requestUri);
-        Assert.assertTrue(connection.newSession(token.getSessionAsCustomTab()));
+        Assert.assertTrue(connection.newSession(token.getToken()));
         connection.mClientManager.setAllowParallelRequestForSession(token, true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1710,13 +1712,13 @@ public class CustomTabActivityTest {
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         Intent intent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, urlWithFragment);
-        final var token = SessionHolder.getSessionHolderFromIntent(intent);
-        connection.newSession(token.getSessionAsCustomTab());
+        final var token =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        connection.newSession(token.getToken());
         connection.setIgnoreUrlFragmentsForSession(token, ignoreFragments);
         setCanUseHiddenTabForSession(token, true);
         Assert.assertTrue(
-                connection.mayLaunchUrl(
-                        token.getSessionAsCustomTab(), Uri.parse(initialUrl), null, null));
+                connection.mayLaunchUrl(token.getToken(), Uri.parse(initialUrl), null, null));
 
         if (wait) {
             CustomTabsTestUtils.ensureCompletedSpeculationForUrl(initialUrl);
@@ -2055,8 +2057,8 @@ public class CustomTabActivityTest {
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
         if (useHiddenTab) {
             CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-            var token = SessionHolder.getSessionHolderFromIntent(intent);
-            connection.newSession(token.getSessionAsCustomTab());
+            var token = SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+            connection.newSession(token.getToken());
             setCanUseHiddenTabForSession(token, true);
             Bundle extras = null;
             if (speculationReferrer != null) {
@@ -2064,8 +2066,7 @@ public class CustomTabActivityTest {
                 extras.putParcelable(Intent.EXTRA_REFERRER, Uri.parse(speculationReferrer));
             }
             Assert.assertTrue(
-                    connection.mayLaunchUrl(
-                            token.getSessionAsCustomTab(), Uri.parse(url), extras, null));
+                    connection.mayLaunchUrl(token.getToken(), Uri.parse(url), extras, null));
             CustomTabsTestUtils.ensureCompletedSpeculationForUrl(url);
         }
 
@@ -2181,9 +2182,9 @@ public class CustomTabActivityTest {
         intent.setData(Uri.parse(mTestPage));
         int[] ids = {101};
         intent.putExtra(CustomTabIntentDataProvider.EXPERIMENT_IDS, ids);
-        var token = SessionHolder.getSessionHolderFromIntent(intent);
+        var token = SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token.getSessionAsCustomTab());
+        connection.newSession(token.getToken());
         connection.overridePackageNameForSessionForTesting(
                 token, "com.google.android.googlequicksearchbox");
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -2212,9 +2213,9 @@ public class CustomTabActivityTest {
                         .session;
         Intent intent = new CustomTabsIntent.Builder(session).build().intent;
         intent.setData(Uri.parse(mTestPage));
-        var token = SessionHolder.getSessionHolderFromIntent(intent);
+        var token = SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token.getSessionAsCustomTab());
+        connection.newSession(token.getToken());
         connection.overridePackageNameForSessionForTesting(
                 token, "com.google.android.googlequicksearchbox");
         Bundle extrasBundle = new Bundle();
@@ -2222,10 +2223,7 @@ public class CustomTabActivityTest {
         extrasBundle.putIntArray(CustomTabIntentDataProvider.EXPERIMENT_IDS, ids);
         Assert.assertTrue(
                 connection.mayLaunchUrl(
-                        token.getSessionAsCustomTab(),
-                        Uri.parse("https://www.google.com"),
-                        extrasBundle,
-                        null));
+                        token.getToken(), Uri.parse("https://www.google.com"), extrasBundle, null));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertTrue(CustomTabsTestUtils.hasVariationId(101));
@@ -2262,11 +2260,10 @@ public class CustomTabActivityTest {
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
-        var token = SessionHolder.getSessionHolderFromIntent(intent);
-        connection.newSession(token.getSessionAsCustomTab());
+        var token = SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        connection.newSession(token.getToken());
         setCanUseHiddenTabForSession(token, true);
-        Assert.assertTrue(
-                connection.mayLaunchUrl(token.getSessionAsCustomTab(), Uri.parse(url), null, null));
+        Assert.assertTrue(connection.mayLaunchUrl(token.getToken(), Uri.parse(url), null, null));
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
@@ -2313,9 +2310,9 @@ public class CustomTabActivityTest {
             message = "crbug.com/428281172")
     public void testLaunchPartialCustomTabActivity_BottomSheet() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
-        var token = SessionHolder.getSessionHolderFromIntent(intent);
+        var token = SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token.getSessionAsCustomTab());
+        connection.newSession(token.getToken());
         connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
         intent.putExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -2374,9 +2371,9 @@ public class CustomTabActivityTest {
     @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void testLaunchPartialCustomTabActivity_SideSheet() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
-        var token = SessionHolder.getSessionHolderFromIntent(intent);
+        var token = SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token.getSessionAsCustomTab());
+        connection.newSession(token.getToken());
         connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
         intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, 100);
         intent.putExtra(EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 300);
@@ -2436,9 +2433,9 @@ public class CustomTabActivityTest {
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287346
     public void testLaunchPartialCustomTabActivity_Transition() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
-        var token = SessionHolder.getSessionHolderFromIntent(intent);
+        var token = SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token.getSessionAsCustomTab());
+        connection.newSession(token.getToken());
         connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
         intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, 600);
         intent.putExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 300);
@@ -2479,9 +2476,9 @@ public class CustomTabActivityTest {
     @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
     public void testLaunchPartialCustomTabActivity_FullSize() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
-        var token = SessionHolder.getSessionHolderFromIntent(intent);
+        var token = SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token.getSessionAsCustomTab());
+        connection.newSession(token.getToken());
         connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
         intent.putExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 300);
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
@@ -2565,14 +2562,13 @@ public class CustomTabActivityTest {
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
-        var token = SessionHolder.getSessionHolderFromIntent(intent);
-        connection.newSession(token.getSessionAsCustomTab());
+        var token = SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        connection.newSession(token.getToken());
 
         if (prefetch) {
             setCanUseHiddenTabForSession(token, true);
             Assert.assertTrue(
-                    connection.mayLaunchUrl(
-                            token.getSessionAsCustomTab(), Uri.parse(url), null, null));
+                    connection.mayLaunchUrl(token.getToken(), Uri.parse(url), null, null));
             CriteriaHelper.pollUiThread(
                     () -> {
                         Criteria.checkThat(
@@ -2626,13 +2622,12 @@ public class CustomTabActivityTest {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, navigationUrl);
-        var token = SessionHolder.getSessionHolderFromIntent(intent);
-        connection.newSession(token.getSessionAsCustomTab());
+        var token = SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        connection.newSession(token.getToken());
         setCanUseHiddenTabForSession(token, true);
 
         Assert.assertTrue(
-                connection.mayLaunchUrl(
-                        token.getSessionAsCustomTab(), Uri.parse(speculationUrl), null, null));
+                connection.mayLaunchUrl(token.getToken(), Uri.parse(speculationUrl), null, null));
         CustomTabsTestUtils.ensureCompletedSpeculationForUrl(speculationUrl);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
@@ -2794,8 +2789,10 @@ public class CustomTabActivityTest {
 
     private SessionHolder warmUpAndLaunchUrlWithSession(Intent intentWithSession) throws Exception {
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        var token = SessionHolder.getSessionHolderFromIntent(intentWithSession);
-        connection.newSession(token.getSessionAsCustomTab());
+        var token =
+                SessionHolder.of(
+                        CustomTabsSessionToken.getSessionTokenFromIntent(intentWithSession));
+        connection.newSession(token.getToken());
         intentWithSession.setData(Uri.parse(mTestPage));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intentWithSession);
         return token;

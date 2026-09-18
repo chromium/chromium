@@ -841,7 +841,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver =
                 new RealtimeEngagementSignalObserver(
                         env.tabObserverRegistrar,
-                        env.session.getSessionAsCustomTab(),
+                        env.session.getToken(),
                         mEngagementSignalsCallback,
                         /* hadScrollDown= */ false);
         env.tabProvider.setInitialTab(initialTab, TabCreationMode.DEFAULT);
@@ -1070,7 +1070,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver =
                 new RealtimeEngagementSignalObserver(
                         env.tabObserverRegistrar,
-                        env.session.getSessionAsCustomTab(),
+                        env.session.getToken(),
                         mEngagementSignalsCallback,
                         hadScrollDown);
         verify(env.tabObserverRegistrar).registerActivityTabObserver(mEngagementSignalObserver);

@@ -18,8 +18,8 @@ import org.chromium.build.annotations.Nullable;
  * Holds either a {@link CustomTabsSessionToken} or an {@link AuthTabSessionToken}.
  *
  * <p>The hierarchy is sealed, so a session is always exactly one of {@link CustomTab} or {@link
- * AuthTab}. Prefer switching over the two cases, which the compiler checks for exhaustiveness, over
- * the {@code getSessionAs*()} accessors:
+ * AuthTab}. To reach the underlying token, use a {@code switch} with a case for each: the compiler
+ * rejects the switch if either case is missing.
  *
  * <pre>{@code
  * var callback = switch (sessionHolder) {
@@ -58,32 +58,22 @@ public sealed interface SessionHolder permits SessionHolder.CustomTab, SessionHo
     /** Whether the session has an id. */
     boolean hasId();
 
-    /** Returns whether the session is a {@link CustomTabsSessionToken}. */
+    /**
+     * Returns whether the session is a {@link CustomTabsSessionToken}. Prefer {@code instanceof
+     * SessionHolder.CustomTab customTab} when the token itself is needed, since the pattern binds
+     * it without a cast.
+     */
     default boolean isCustomTab() {
         return this instanceof CustomTab;
     }
 
-    /** Returns whether the session is an {@link AuthTabSessionToken}. */
+    /**
+     * Returns whether the session is an {@link AuthTabSessionToken}. Prefer {@code instanceof
+     * SessionHolder.AuthTab authTab} when the token itself is needed, since the pattern binds it
+     * without a cast.
+     */
     default boolean isAuthTab() {
         return this instanceof AuthTab;
-    }
-
-    /**
-     * Returns the session as a {@link CustomTabsSessionToken}, throwing {@link ClassCastException}
-     * if this is not a {@link CustomTab}.
-     */
-    // TODO(crbug.com/562120570): Migrate callers to switch over the sealed hierarchy and remove.
-    default CustomTabsSessionToken getSessionAsCustomTab() {
-        return ((CustomTab) this).getToken();
-    }
-
-    /**
-     * Returns the session as an {@link AuthTabSessionToken}, throwing {@link ClassCastException} if
-     * this is not an {@link AuthTab}.
-     */
-    // TODO(crbug.com/562120570): Migrate callers to switch over the sealed hierarchy and remove.
-    default AuthTabSessionToken getSessionAsAuthTab() {
-        return ((AuthTab) this).getToken();
     }
 
     /** Holds the session of a Custom Tab. */

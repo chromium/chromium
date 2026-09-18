@@ -31,6 +31,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.core.widget.ImageViewCompat;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -459,9 +460,10 @@ public class TrustedCdnPublisherUrlTest {
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(targetContext, testUrl);
         intent.putExtra(
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
-        var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
+        var sessionHolder =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        connection.newSession(sessionHolder.getSessionAsCustomTab());
+        connection.newSession(sessionHolder.getToken());
         connection.overridePackageNameForSessionForTesting(sessionHolder, clientPackage);
         connection.setTrustedPublisherUrlPackageForTest("com.example.test");
 

@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.provider.Browser;
 
 import androidx.browser.customtabs.CustomTabsService;
+import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -178,9 +179,10 @@ public class IntentHandlerNativeTest {
         headers.putString("redirect-url", "https://www.google.com");
         headersIntent.putExtra(Browser.EXTRA_HEADERS, headers);
 
-        var sessionHolder = SessionHolder.getSessionHolderFromIntent(headersIntent);
+        var sessionHolder =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(headersIntent));
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(sessionHolder.getSessionAsCustomTab());
+        connection.newSession(sessionHolder.getToken());
         connection.overridePackageNameForSessionForTesting(sessionHolder, "app1");
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -211,9 +213,10 @@ public class IntentHandlerNativeTest {
         headers.putString("redirect-url", "https://www.google.com");
         headersIntent.putExtra(Browser.EXTRA_HEADERS, headers);
 
-        var sessionHolder = SessionHolder.getSessionHolderFromIntent(headersIntent);
+        var sessionHolder =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(headersIntent));
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(sessionHolder.getSessionAsCustomTab());
+        connection.newSession(sessionHolder.getToken());
         connection.overridePackageNameForSessionForTesting(sessionHolder, "app1");
         ThreadUtils.runOnUiThreadBlocking(
                 () ->

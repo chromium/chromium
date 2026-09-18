@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
@@ -104,9 +105,9 @@ public class PartialCustomTabActivityRenderTest {
                                         mNightModeEnabled
                                                 ? COLOR_SCHEME_DARK
                                                 : COLOR_SCHEME_LIGHT));
-        var token = SessionHolder.getSessionHolderFromIntent(intent);
+        var token = SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token.getSessionAsCustomTab());
+        connection.newSession(token.getToken());
         connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
         intent.putExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 800);
         return intent;

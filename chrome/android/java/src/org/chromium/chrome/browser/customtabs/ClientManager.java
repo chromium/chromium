@@ -388,16 +388,18 @@ class ClientManager {
                         && serviceConnection != null
                         && engagementSignalsHandler != null);
 
-        BrowserCallbackWrapper callbackWrapper;
-        if (session.isAuthTab()) {
-            var callback = session.getSessionAsAuthTab().getCallback();
-            if (callback == null) return false;
-            callbackWrapper = new BrowserCallbackWrapper(callback);
-        } else {
-            var callback = session.getSessionAsCustomTab().getCallback();
-            if (callback == null) return false;
-            callbackWrapper = new BrowserCallbackWrapper(callback);
-        }
+        @Nullable BrowserCallbackWrapper callbackWrapper =
+                switch (session) {
+                    case SessionHolder.AuthTab authTab -> {
+                        var callback = authTab.getToken().getCallback();
+                        yield callback == null ? null : new BrowserCallbackWrapper(callback);
+                    }
+                    case SessionHolder.CustomTab customTab -> {
+                        var callback = customTab.getToken().getCallback();
+                        yield callback == null ? null : new BrowserCallbackWrapper(callback);
+                    }
+                };
+        if (callbackWrapper == null) return false;
 
         if (mSessionParams.containsKey(session)) {
             SessionParams params = mSessionParams.get(session);

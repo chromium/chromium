@@ -35,6 +35,7 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
@@ -1797,13 +1798,13 @@ public class UrlOverridingTest {
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         Context context = ContextUtils.getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
-        final var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
-        Assert.assertTrue(connection.newSession(sessionHolder.getSessionAsCustomTab()));
+        final var sessionHolder =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        Assert.assertTrue(connection.newSession(sessionHolder.getToken()));
 
         connection.setCanUseHiddenTabForSession(sessionHolder, true);
         Assert.assertTrue(
-                connection.mayLaunchUrl(
-                        sessionHolder.getSessionAsCustomTab(), Uri.parse(url), null, null));
+                connection.mayLaunchUrl(sessionHolder.getToken(), Uri.parse(url), null, null));
         CustomTabsTestUtils.ensureCompletedSpeculationForUrl(url);
 
         // Can't wait for Activity startup as we close so fast the polling is flaky.
@@ -1824,8 +1825,9 @@ public class UrlOverridingTest {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
 
-        final var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
-        Assert.assertTrue(connection.newSession(sessionHolder.getSessionAsCustomTab()));
+        final var sessionHolder =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        Assert.assertTrue(connection.newSession(sessionHolder.getToken()));
 
         AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
         // Can't wait for Activity startup as we close so fast the polling is flaky.
@@ -1847,8 +1849,9 @@ public class UrlOverridingTest {
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         Context context = ContextUtils.getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
-        final var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
-        Assert.assertTrue(connection.newSession(sessionHolder.getSessionAsCustomTab()));
+        final var sessionHolder =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        Assert.assertTrue(connection.newSession(sessionHolder.getToken()));
         connection.overridePackageNameForSessionForTesting(sessionHolder, TRUSTED_CCT_PACKAGE);
 
         mCustomTabActivityRule.startCustomTabActivityWithIntent(intent);

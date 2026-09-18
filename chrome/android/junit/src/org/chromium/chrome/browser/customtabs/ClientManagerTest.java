@@ -63,7 +63,7 @@ public class ClientManagerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private ClientManager mClientManager;
-    private final SessionHolder mSession =
+    private final SessionHolder.CustomTab mSession =
             SessionHolder.of(CustomTabsSessionToken.createMockSessionTokenForTesting());
     private final int mUid = Process.myUid();
     private final int mPid = Process.myPid();
@@ -118,10 +118,9 @@ public class ClientManagerTest {
         ChromeOriginVerifier.clearCachedVerificationsForTesting();
         UmaRecorderHolder.resetForTesting();
 
-        mPostMessageServiceConnection =
-                new PostMessageServiceConnection(mSession.getSessionAsCustomTab()) {};
+        mPostMessageServiceConnection = new PostMessageServiceConnection(mSession.getToken()) {};
         mPostMessageHandler = new PostMessageHandler(mPostMessageServiceConnection);
-        mEngagementSignalsHandler = new EngagementSignalsHandler(mSession.getSessionAsCustomTab());
+        mEngagementSignalsHandler = new EngagementSignalsHandler(mSession.getToken());
     }
 
     @Test
@@ -307,7 +306,7 @@ public class ClientManagerTest {
         // TODO(peconn): Get rid of this anonymous class once PostMessageServiceConnection is made
         // non-abstract. Same with the other occurrences below.
         PostMessageServiceConnection serviceConnection =
-                new PostMessageServiceConnection(mSession.getSessionAsCustomTab()) {};
+                new PostMessageServiceConnection(mSession.getToken()) {};
         Assert.assertTrue(
                 cm.newSession(
                         mSession,
@@ -348,7 +347,7 @@ public class ClientManagerTest {
     public void testPostMessageOriginDifferentRelations() {
         final ClientManager cm = mClientManager;
         PostMessageServiceConnection serviceConnection =
-                new PostMessageServiceConnection(mSession.getSessionAsCustomTab()) {};
+                new PostMessageServiceConnection(mSession.getToken()) {};
         Assert.assertTrue(
                 cm.newSession(
                         mSession,
@@ -494,7 +493,7 @@ public class ClientManagerTest {
         final ClientManager cm = mClientManager;
 
         PostMessageServiceConnection serviceConnection =
-                new PostMessageServiceConnection(mSession.getSessionAsCustomTab()) {};
+                new PostMessageServiceConnection(mSession.getToken()) {};
         Assert.assertTrue(
                 cm.newSession(
                         mSession,

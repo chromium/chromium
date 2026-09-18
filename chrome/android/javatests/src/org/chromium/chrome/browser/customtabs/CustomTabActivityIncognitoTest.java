@@ -36,6 +36,7 @@ import android.widget.RemoteViews;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
@@ -467,15 +468,13 @@ public class CustomTabActivityIncognitoTest {
         // allowed in incognito. (crbug.com/40706528)
         Intent intent = createTestCustomTabIntent();
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        final var token = SessionHolder.getSessionHolderFromIntent(intent);
+        final var token =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
         // Passes the launch intent to the connection.
         mCustomTabActivityTestRule.buildSessionWithHiddenTab(token);
         Assert.assertFalse(
                 connection.mayLaunchUrl(
-                        token.getSessionAsCustomTab(),
-                        Uri.parse(mTestPage),
-                        intent.getExtras(),
-                        null));
+                        token.getToken(), Uri.parse(mTestPage), intent.getExtras(), null));
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
@@ -498,12 +497,12 @@ public class CustomTabActivityIncognitoTest {
         // allowed in incognito. (crbug.com/40174356)
         Intent intent = createTestCustomTabIntent();
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        final var token = SessionHolder.getSessionHolderFromIntent(intent);
+        final var token =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
         // Passes null intent here to mimic not having incognito extra in intent at the connection.
         mCustomTabActivityTestRule.buildSessionWithHiddenTab(token);
         Assert.assertTrue(
-                connection.mayLaunchUrl(
-                        token.getSessionAsCustomTab(), Uri.parse(mTestPage), null, null));
+                connection.mayLaunchUrl(token.getToken(), Uri.parse(mTestPage), null, null));
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
@@ -517,7 +516,7 @@ public class CustomTabActivityIncognitoTest {
                 connection.getSpeculationParamsForTesting().hiddenTab.tab, mTestPage);
         mCustomTabActivityTestRule.setCustomSessionInitiatedForIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        connection.cleanUpSession(token.getSessionAsCustomTab());
+        connection.cleanUpSession(token.getToken());
     }
 
     /** Regression test for crbug.com/40839771. */

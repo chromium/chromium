@@ -400,8 +400,8 @@ public class CustomTabsConnection {
         PostMessageServiceConnection serviceConnection = null;
         PostMessageHandler postMessageHandler = null;
         EngagementSignalsHandler engagementSignalsHandler = null;
-        if (session.isCustomTab()) {
-            var customTabSession = session.getSessionAsCustomTab();
+        if (session instanceof SessionHolder.CustomTab customTab) {
+            var customTabSession = customTab.getToken();
             // TODO(peconn): Make this not an anonymous class once PostMessageServiceConnection is
             // made
             // non-abstract in AndroidX.

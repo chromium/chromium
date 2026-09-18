@@ -450,19 +450,16 @@ public class CustomTabsConnectionTest {
         Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup());
         Intent intent2 =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPageUrl);
-        var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent2);
+        var sessionHolder =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent2));
         Assert.assertTrue(
-                "Failed newSession()",
-                mCustomTabsConnection.newSession(sessionHolder.getSessionAsCustomTab()));
+                "Failed newSession()", mCustomTabsConnection.newSession(sessionHolder.getToken()));
         mCustomTabsConnection.setCanUseHiddenTabForSession(sessionHolder, true);
 
         Assert.assertTrue(
                 "Failed first mayLaunchUrl()",
                 mCustomTabsConnection.mayLaunchUrl(
-                        sessionHolder.getSessionAsCustomTab(),
-                        Uri.parse(mTestPageUrl),
-                        null,
-                        null));
+                        sessionHolder.getToken(), Uri.parse(mTestPageUrl), null, null));
 
         CriteriaHelper.pollUiThread(
                 () ->
@@ -496,10 +493,7 @@ public class CustomTabsConnectionTest {
         Assert.assertTrue(
                 "Failed second mayLaunchUrl()",
                 mCustomTabsConnection.mayLaunchUrl(
-                        sessionHolder.getSessionAsCustomTab(),
-                        Uri.parse(mTestPageUrl),
-                        null,
-                        null));
+                        sessionHolder.getToken(), Uri.parse(mTestPageUrl), null, null));
 
         CriteriaHelper.pollUiThread(
                 () ->

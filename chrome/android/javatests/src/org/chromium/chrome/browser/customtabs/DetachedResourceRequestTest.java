@@ -641,8 +641,9 @@ public class DetachedResourceRequestTest {
         intent.putExtra(CustomTabsConnection.PARALLEL_REQUEST_URL_KEY, url);
         intent.putExtra(CustomTabsConnection.PARALLEL_REQUEST_REFERRER_KEY, ORIGIN);
 
-        var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
-        Assert.assertTrue(mConnection.newSession(sessionHolder.getSessionAsCustomTab()));
+        var sessionHolder =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        Assert.assertTrue(mConnection.newSession(sessionHolder.getToken()));
         mConnection.mClientManager.setAllowParallelRequestForSession(sessionHolder, true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -772,8 +773,9 @@ public class DetachedResourceRequestTest {
     private SessionHolder prepareSession(Uri origin, CustomTabsCallback callback) throws Exception {
         CustomTabsSession session = CustomTabsTestUtils.bindWithCallback(callback).session;
         Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
-        Assert.assertTrue(mConnection.newSession(sessionHolder.getSessionAsCustomTab()));
+        var sessionHolder =
+                SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        Assert.assertTrue(mConnection.newSession(sessionHolder.getToken()));
         mConnection.mClientManager.setAllowParallelRequestForSession(sessionHolder, true);
         mConnection.mClientManager.setAllowResourcePrefetchForSession(sessionHolder, true);
         ThreadUtils.runOnUiThreadBlocking(
