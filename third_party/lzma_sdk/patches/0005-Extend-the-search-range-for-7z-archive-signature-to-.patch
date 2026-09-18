@@ -1,4 +1,4 @@
-From fd8346b8856317ee310edba9548c31eb9c2cb80b Mon Sep 17 00:00:00 2001
+From a35b25d245fc0db0c52b6057ce3f02b48a64f5c4 Mon Sep 17 00:00:00 2001
 From: Greg Thompson <grt@chromium.org>
 Date: Wed, 13 May 2026 14:19:04 +0200
 Subject: [PATCH 5/6] Extend the search range for 7z archive signature to
@@ -9,7 +9,7 @@ Subject: [PATCH 5/6] Extend the search range for 7z archive signature to
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/third_party/lzma_sdk/src/C/Util/SfxSetup/SfxSetup.c b/third_party/lzma_sdk/src/C/Util/SfxSetup/SfxSetup.c
-index 344aa735ea018..4ae429845bb8a 100644
+index 9b5c1f9117668..c52e838f7f546 100644
 --- a/third_party/lzma_sdk/src/C/Util/SfxSetup/SfxSetup.c
 +++ b/third_party/lzma_sdk/src/C/Util/SfxSetup/SfxSetup.c
 @@ -11,6 +11,10 @@
@@ -33,5 +33,5 @@ index 344aa735ea018..4ae429845bb8a 100644
  static BoolInt FindSignature(CSzFile *stream, UInt64 *resPos)
  {
 -- 
-2.55.0.1082.g2b9226bbc0-goog
+2.54.0.563.g4f69b47b94-goog
 

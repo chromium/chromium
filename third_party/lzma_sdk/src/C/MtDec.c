@@ -1,5 +1,5 @@
 /* MtDec.c -- Multi-thread Decoder
-: Igor Pavlov : Public domain */
+2024-02-20 : Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -22,7 +22,7 @@
 #define PRF(x)
 #endif
 
-#define PRF_STR_INT(s, d) PRF(printf("\n" s " %d\n", (unsigned)d);)
+#define PRF_STR_INT(s, d) PRF(printf("\n" s " %d\n", (unsigned)d))
 
 void MtProgress_Init(CMtProgress *p, ICompressProgressPtr progress)
 {

@@ -1,4 +1,4 @@
-From 36e620cabc2479857d810b4a7832dd97a2316dd1 Mon Sep 17 00:00:00 2001
+From 5f9da78043867561259e529c6757d426232450b0 Mon Sep 17 00:00:00 2001
 From: Greg Thompson <grt@chromium.org>
 Date: Wed, 13 May 2026 14:18:23 +0200
 Subject: [PATCH 3/6] Add the ability to suppress CRC hardware acceleration for
@@ -51,5 +51,5 @@ index 3e6d408b9287f..36d915390609b 100644
  /* Call CrcGenerateTable one time before other CRC functions */
  void Z7_FASTCALL CrcGenerateTable(void);
 -- 
-2.55.0.1082.g2b9226bbc0-goog
+2.54.0.563.g4f69b47b94-goog
 

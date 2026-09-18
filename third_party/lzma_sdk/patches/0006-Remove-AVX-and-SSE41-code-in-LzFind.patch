@@ -1,4 +1,4 @@
-From 0e1acc2158adf9cfdbbb8918b7cb187af8f519a5 Mon Sep 17 00:00:00 2001
+From 9e505a36e7769daeda1ca6287d457b67778b9a40 Mon Sep 17 00:00:00 2001
 From: Greg Thompson <grt@chromium.org>
 Date: Wed, 13 May 2026 14:19:22 +0200
 Subject: [PATCH 6/6] Remove AVX and SSE41 code in LzFind
@@ -30,5 +30,5 @@ index 330bc17293153..728c7afae6a0f 100644
  #ifdef USE_LZFIND_SATUR_SUB_128
  
 -- 
-2.55.0.1082.g2b9226bbc0-goog
+2.54.0.563.g4f69b47b94-goog
 

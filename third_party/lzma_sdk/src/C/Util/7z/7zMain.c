@@ -960,14 +960,9 @@ int Z7_CDECL main(int numargs, char *args[])
         if (listCommand == 0 && isDir && !fullPaths)
           continue;
         len = SzArEx_GetFileNameUtf16(&db, i, NULL);
+        // len = SzArEx_GetFullNameLen(&db, i);
 
-        if (len > (1u << 20))
-        {
-          res = SZ_ERROR_UNSUPPORTED;
-          break;
-        }
-
-        if (len > tempSize || !temp)
+        if (len > tempSize)
         {
           SzFree(NULL, temp);
           tempSize = len;
