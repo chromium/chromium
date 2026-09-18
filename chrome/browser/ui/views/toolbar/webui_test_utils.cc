@@ -196,8 +196,11 @@ void SetUpWebUI(const ui::ElementIdentifier& element_id,
 }
 
 WebUIToolbarWebView* GetWebUIToolbarWebView(BrowserWindowInterface* browser) {
-  return BrowserView::GetBrowserViewForBrowser(browser)
-      ->toolbar_button_provider()
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view || !browser_view->toolbar_button_provider()) {
+    return nullptr;
+  }
+  return browser_view->toolbar_button_provider()
       ->GetWebUIToolbarViewForTesting();
 }
 
@@ -433,7 +436,8 @@ AvatarToolbarButtonTestAccessor::GetButton() {
   if (!interface) {
     return static_cast<AvatarToolbarButton*>(nullptr);
   }
-  if (features::IsWebUIAvatarButtonEnabled()) {
+  if (features::IsWebUIAvatarButtonEnabled() &&
+      GetWebUIToolbarWebView(browser_)) {
     return static_cast<WebUIAvatarToolbarButton*>(interface);
   }
   return static_cast<AvatarToolbarButton*>(interface);
@@ -575,10 +579,10 @@ views::Widget* AvatarToolbarButtonTestAccessor::GetWidget() {
                           return button ? button->GetWidget() : nullptr;
                         },
                         [this](WebUIAvatarToolbarButton* button) {
-                          return BrowserView::GetBrowserViewForBrowser(browser_)
-                              ->toolbar_button_provider()
-                              ->GetWebUIToolbarViewForTesting()
-                              ->GetWidget();
+                          auto* const browser_view =
+                              BrowserView::GetBrowserViewForBrowser(browser_);
+                          return browser_view ? browser_view->GetWidget()
+                                              : nullptr;
                         },
                     },
                     GetButton());

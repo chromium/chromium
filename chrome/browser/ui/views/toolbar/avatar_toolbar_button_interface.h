@@ -49,7 +49,7 @@ class AvatarToolbarButtonInterface {
   virtual views::DialogDelegate* GetDialogDelegate() = 0;
 
   // Returns the anchor to use for avatar button bubbles.
-  views::BubbleAnchor GetBubbleAnchor(BrowserWindowInterface& browser);
+  static views::BubbleAnchor GetBubbleAnchor(BrowserWindowInterface& browser);
 
   virtual void ButtonPressed(bool is_source_accelerator) = 0;
 

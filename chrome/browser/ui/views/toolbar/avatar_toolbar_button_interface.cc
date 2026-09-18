@@ -27,6 +27,7 @@ bool AvatarToolbarButtonInterface::CanShowForProfile(Profile* profile) {
 #endif
 }
 
+// static
 views::BubbleAnchor AvatarToolbarButtonInterface::GetBubbleAnchor(
     BrowserWindowInterface& browser) {
   return views::BubbleAnchor(BrowserElements::From(&browser)->GetElement(

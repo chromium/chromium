@@ -911,6 +911,7 @@ class DiceWebSigninInterceptionBubbleWithParamBrowserTest
 
 IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubbleWithParamBrowserTest,
                        AvatarEffectWithInterceptType) {
+  AvatarToolbarButtonTestAccessor(browser()).WaitForAvatarButton();
   AvatarToolbarButtonInterface* avatar_button = GetAvatarButton();
   ASSERT_FALSE(avatar_button->HasExplicitButtonState());
   ASSERT_TRUE(AvatarToolbarButtonTestAccessor(browser()).GetText().empty());
@@ -933,8 +934,8 @@ IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubbleWithParamBrowserTest,
   bubble->SetHeightAndShowWidget(/*height=*/500);
 
   EXPECT_TRUE(avatar_button->HasExplicitButtonState());
-  EXPECT_EQ(AvatarToolbarButtonTestAccessor(browser()).GetText(),
-            expected_avatar_text());
+  EXPECT_TRUE(AvatarToolbarButtonTestAccessor(browser()).WaitForText(
+      expected_avatar_text()));
 
   views::Widget* widget = bubble->GetWidget();
 
@@ -947,7 +948,7 @@ IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubbleWithParamBrowserTest,
   closing_observer.Wait();
 
   EXPECT_FALSE(avatar_button->HasExplicitButtonState());
-  EXPECT_TRUE(AvatarToolbarButtonTestAccessor(browser()).GetText().empty());
+  EXPECT_TRUE(AvatarToolbarButtonTestAccessor(browser()).WaitForText(u""));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

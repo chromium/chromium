@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -29,6 +30,7 @@ class IncognitoClearBrowsingDataDialogTest : public InProcessBrowserTest {
     if (!incognito_browser_) {
       incognito_browser_ = CreateIncognitoBrowser(GetProfile());
     }
+    AvatarToolbarButtonTestAccessor(incognito_browser_).WaitForAvatarButton();
 
     auto* coordinator = GetCoordinator();
     BrowserView* browser_view =
