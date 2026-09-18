@@ -2,19 +2,29 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# The headers in public are the only ones that should be accessible from
+# core. This is enforced via DEPS.
+source_set("public") {
+  public = [
+    "public/conversation.h",
+    "public/make_conversation.h",
+    "public/tool_types.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//url",
+  ]
+}
+
 source_set("app") {
   public = [
     "audio_controller.h",
     "ttc_backend.h",
     "ttc_mes_client.h",
-
-    # The headers in public/ are the only ones that should be accessible from
-    # core/, this is enforced via DEPS.
-    "public/conversation.h",
-    "public/make_conversation.h",
-    "public/tool_definition.h",
   ]
   public_deps = [
+    ":public",
     "//base",
     "//chrome/browser/optimization_guide",
     "//components/optimization_guide/core",
@@ -32,13 +42,14 @@ source_set("impl") {
     "conversation_impl.cc",
     "conversation_impl.h",
     "make_conversation.cc",
-    "tool_definition.cc",
+    "tool_types.cc",
     "ttc_mes_client.cc",
   ]
   deps = [
     ":app",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ttc/core",
     "//content/public/browser",
     "//services/audio/public/cpp",
   ]
@@ -54,6 +65,7 @@ source_set("unit_tests") {
     ":app",
     ":impl",
     "//base/test:test_support",
+    "//chrome/browser/ttc/core",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//media",

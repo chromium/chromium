@@ -66,7 +66,8 @@ class TtcKeyedService : public KeyedService {
 
   // Creates the Conversation for a session. Never returns null.
   std::unique_ptr<Conversation> MakeConversation(
-      base::PassKey<SessionControllerImpl>);
+      base::PassKey<SessionControllerImpl>,
+      SessionController& session_controller);
 
   SessionController* session_controller() { return session_controller_.get(); }
 

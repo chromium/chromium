@@ -7,14 +7,14 @@
 
 #include <memory>
 
-class Profile;
-
 namespace ttc {
 
 class Conversation;
+class SessionController;
 
 // Creates the concrete ConversationImpl object for use from outside of app/.
-std::unique_ptr<Conversation> MakeConversationImpl(Profile* profile);
+std::unique_ptr<Conversation> MakeConversationImpl(
+    SessionController& session_controller);
 
 }  // namespace ttc
 

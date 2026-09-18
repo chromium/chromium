@@ -7,17 +7,17 @@
 
 #include <memory>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/types/expected.h"
+#include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/ttc/app/public/tool_types.h"
 
 class Profile;
-class BrowserWindowInterface;
 
 namespace ttc {
 
@@ -26,19 +26,19 @@ class ToolController {
   explicit ToolController(Profile* profile);
   ~ToolController();
 
-  using OpenUrlResult = base::expected<std::monostate, std::string>;
-  using OpenUrlCallback = base::OnceCallback<void(OpenUrlResult)>;
-  void OpenUrl(BrowserWindowInterface* browser,
-               const std::string& url_string,
-               bool new_tab,
-               OpenUrlCallback callback);
+  void ProcessToolCall(const ToolRequest& tool_request,
+                       ToolResponseCallback callback);
 
  private:
   void EnsureTaskCreated(actor::ActorKeyedService* actor_service);
+
+#if !BUILDFLAG(IS_ANDROID)
+  void OpenUrl(const base::DictValue& arguments, ToolResponseCallback callback);
   void OnNavigateActionsFinished(
-      OpenUrlCallback callback,
+      ToolResponseCallback callback,
       std::vector<actor::ActionResultWithLatencyInfo> results,
       actor::TabObservationStrategy strategy);
+#endif
 
   raw_ptr<Profile> profile_;
   actor::TaskId task_id_;

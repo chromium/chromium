@@ -8,8 +8,9 @@
 
 namespace ttc {
 
-std::unique_ptr<Conversation> MakeConversationImpl(Profile* profile) {
-  return std::make_unique<ConversationImpl>(profile);
+std::unique_ptr<Conversation> MakeConversationImpl(
+    SessionController& session_controller) {
+  return std::make_unique<ConversationImpl>(session_controller);
 }
 
 }  // namespace ttc

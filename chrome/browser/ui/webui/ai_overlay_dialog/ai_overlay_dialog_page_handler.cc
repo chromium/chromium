@@ -609,9 +609,10 @@ void AiOverlayDialogPageHandler::OnGenerationStateChanged(bool started,
 }
 
 void AiOverlayDialogPageHandler::OnToolCall(
-    const std::string& name,
-    base::DictValue arguments,
-    TtcMesClient::Observer::ToolResponseCallback response_callback) {
+    const ToolRequest& tool_request,
+    ToolResponseCallback response_callback) {
+  const std::string& name = tool_request.name;
+  const base::DictValue& arguments = tool_request.arguments;
   VLOG(1) << "AiOverlayDialogPageHandler executing tool: name=" << name
           << ", args=" << arguments;
 
@@ -627,21 +628,20 @@ void AiOverlayDialogPageHandler::OnToolCall(
     std::move(response_callback).Run(std::move(dict));
   };
 
-  auto make_status_cb =
-      [](TtcMesClient::Observer::ToolResponseCallback callback) {
-        return base::BindOnce(
-            [](TtcMesClient::Observer::ToolResponseCallback cb,
-               base::expected<std::monostate, std::string> result) {
-              base::DictValue dict;
-              if (result.has_value()) {
-                dict.Set("status", "ok");
-              } else {
-                dict.Set("error", result.error());
-              }
-              std::move(cb).Run(std::move(dict));
-            },
-            std::move(callback));
-      };
+  auto make_status_cb = [](ToolResponseCallback callback) {
+    return base::BindOnce(
+        [](ToolResponseCallback cb,
+           base::expected<std::monostate, std::string> result) {
+          base::DictValue dict;
+          if (result.has_value()) {
+            dict.Set("status", "ok");
+          } else {
+            dict.Set("error", result.error());
+          }
+          std::move(cb).Run(std::move(dict));
+        },
+        std::move(callback));
+  };
 
   std::optional<int> dom_id;
   if (auto id = arguments.FindInt("dom_node_id")) {
@@ -752,7 +752,7 @@ void AiOverlayDialogPageHandler::OnToolCall(
     tools->SwitchTab(
         *query,
         base::BindOnce(
-            [](TtcMesClient::Observer::ToolResponseCallback cb,
+            [](ToolResponseCallback cb,
                base::expected<ai_overlay_dialog::mojom::SwitchTabResultPtr,
                               std::string> result) {
               base::DictValue dict;
@@ -860,7 +860,7 @@ void AiOverlayDialogPageHandler::OnToolCall(
     }
     tools->OpenPage(*query,
                     base::BindOnce(
-                        [](TtcMesClient::Observer::ToolResponseCallback cb,
+                        [](ToolResponseCallback cb,
                            base::expected<std::string, std::string> result) {
                           base::DictValue dict;
                           if (result.has_value()) {
@@ -929,7 +929,7 @@ void AiOverlayDialogPageHandler::OnToolCall(
     }
     tools->OpenGeminiPanel(
         *prompt, base::BindOnce(
-                     [](TtcMesClient::Observer::ToolResponseCallback cb,
+                     [](ToolResponseCallback cb,
                         base::expected<std::string, std::string> result) {
                        base::DictValue dict;
                        if (result.has_value()) {

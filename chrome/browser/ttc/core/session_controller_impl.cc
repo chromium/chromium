@@ -47,9 +47,13 @@ std::unique_ptr<SessionView> MakeSessionView(
 
 SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
     : service_(service),
-      conversation_(
-          service.MakeConversation(base::PassKey<SessionControllerImpl>())),
-      session_view_(MakeSessionView(*this)) {
+      session_view_(MakeSessionView(*this)),
+      tool_controller_(service.profile()) {
+  // Created here rather than in the initializer list because MakeConversation()
+  // calls back into GetProfile() on this object.
+  conversation_ =
+      service.MakeConversation(base::PassKey<SessionControllerImpl>(), *this);
+
   if (content::WebContents* contents = GetObservedWebContents()) {
     // TODO(b/555800359): Reset page_context_monitor_ on active tab changes.
     page_context_monitor_ = std::make_unique<TtcPageContextMonitor>(
@@ -60,6 +64,27 @@ SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
 }
 
 SessionControllerImpl::~SessionControllerImpl() = default;
+
+void SessionControllerImpl::GetPageContext(FetchCompleteCallback callback) {
+  if (!page_context_monitor_) {
+    std::move(callback).Run(base::unexpected(
+        page_content_annotations::FetchPageContextError::kWebContentsWentAway));
+    return;
+  }
+
+  page_context_monitor_->StartNewFetch(std::move(callback));
+}
+
+Profile* SessionControllerImpl::GetProfile() {
+  return service_->profile();
+}
+
+void SessionControllerImpl::ProcessToolCall(
+    const ToolRequest& tool_request,
+    ToolResponseCallback tool_response_callback) {
+  tool_controller_.ProcessToolCall(tool_request,
+                                   std::move(tool_response_callback));
+}
 
 BrowserWindowInterface* SessionControllerImpl::GetBrowserWindowInterface() {
 #if BUILDFLAG(IS_ANDROID)
@@ -94,16 +119,6 @@ content::WebContents* SessionControllerImpl::GetObservedWebContents() {
       window ? window->GetActiveTabInterface() : nullptr;
   return active_tab ? active_tab->GetContents() : nullptr;
 #endif
-}
-
-void SessionControllerImpl::GetPageContext(FetchCompleteCallback callback) {
-  if (!page_context_monitor_) {
-    std::move(callback).Run(base::unexpected(
-        page_content_annotations::FetchPageContextError::kWebContentsWentAway));
-    return;
-  }
-
-  page_context_monitor_->StartNewFetch(std::move(callback));
 }
 
 void SessionControllerImpl::OnPageContextChanged() {

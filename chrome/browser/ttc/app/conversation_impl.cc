@@ -12,19 +12,24 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/audio_controller.h"
 #include "chrome/browser/ttc/app/ttc_mes_client.h"
+#include "chrome/browser/ttc/core/session_controller.h"
 
 namespace ttc {
 
-ConversationImpl::ConversationImpl(Profile* profile)
-    : backend_(std::make_unique<TtcMesClient>(profile, this)),
+ConversationImpl::ConversationImpl(SessionController& session_controller)
+    : backend_(std::make_unique<TtcMesClient>(session_controller.GetProfile(),
+                                              this)),
       audio_controller_(std::make_unique<AudioController>(
-          AudioController::GetDefaultAudioStreamFactoryBinder())) {}
+          AudioController::GetDefaultAudioStreamFactoryBinder())),
+      session_controller_(session_controller) {}
 
 ConversationImpl::ConversationImpl(
     std::unique_ptr<TtcBackend> backend,
-    std::unique_ptr<AudioController> audio_controller)
+    std::unique_ptr<AudioController> audio_controller,
+    SessionController& session_controller)
     : backend_(std::move(backend)),
-      audio_controller_(std::move(audio_controller)) {
+      audio_controller_(std::move(audio_controller)),
+      session_controller_(session_controller) {
   if (backend_) {
     backend_->set_observer(this);
   }
@@ -179,13 +184,10 @@ void ConversationImpl::OnGenerationStateChanged(bool started,
   }
 }
 
-void ConversationImpl::OnToolCall(const std::string& name,
-                                  base::DictValue arguments,
+void ConversationImpl::OnToolCall(const ToolRequest& tool_request,
                                   ToolResponseCallback response_callback) {
-  if (!observers_.empty()) {
-    observers_.begin()->OnToolCall(name, std::move(arguments),
-                                   std::move(response_callback));
-  }
+  session_controller_->ProcessToolCall(tool_request,
+                                       std::move(response_callback));
 }
 
 }  // namespace ttc

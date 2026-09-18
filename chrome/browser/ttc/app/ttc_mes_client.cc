@@ -198,40 +198,41 @@ void TtcMesClient::HandleToolCall(
   if (!observer_) {
     return;
   }
-  base::DictValue args;
+  ToolRequest tool_request;
+  tool_request.name = tool_call.name();
   if (!tool_call.arguments_json().empty()) {
     std::optional<base::DictValue> args_dict = base::JSONReader::ReadDict(
         tool_call.arguments_json(), base::JSON_PARSE_RFC);
     if (!args_dict) {
       LOG(ERROR) << "Failed to parse tool call arguments as JSON: "
                  << tool_call.arguments_json();
-      base::DictValue error_result;
-      error_result.Set("error", "Invalid JSON provided for tool arguments");
+      ToolResponse error_response;
+      error_response.Set("error", "Invalid JSON provided for tool arguments");
       OnToolExecutionComplete(tool_call.call_id(), tool_call.name(),
-                              std::move(error_result));
+                              std::move(error_response));
       return;
     }
-    args = std::move(*args_dict);
+    tool_request.arguments = std::move(*args_dict);
   }
 
   auto callback = base::BindOnce(&TtcMesClient::OnToolExecutionComplete,
                                  weak_factory_.GetWeakPtr(),
                                  tool_call.call_id(), tool_call.name());
-  observer_->OnToolCall(tool_call.name(), std::move(args), std::move(callback));
+  observer_->OnToolCall(std::move(tool_request), std::move(callback));
 }
 
 void TtcMesClient::OnToolExecutionComplete(const std::string& call_id,
                                            const std::string& tool_name,
-                                           base::DictValue result) {
+                                           ToolResponse response) {
   optimization_guide::proto::TtcClientFrame frame;
   frame.set_client_timestamp_ms(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
-  auto* response = frame.mutable_tool_response();
-  response->set_call_id(call_id);
-  response->set_name(tool_name);
-  std::optional<std::string> json = base::WriteJson(result);
+  auto* tool_response = frame.mutable_tool_response();
+  tool_response->set_call_id(call_id);
+  tool_response->set_name(tool_name);
+  std::optional<std::string> json = base::WriteJson(response);
   CHECK(json);
-  response->set_response_json(std::move(*json));
+  tool_response->set_response_json(std::move(*json));
   SendFrame(frame);
 }
 

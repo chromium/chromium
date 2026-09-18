@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_APP_PUBLIC_TOOL_DEFINITION_H_
-#define CHROME_BROWSER_TTC_APP_PUBLIC_TOOL_DEFINITION_H_
+#ifndef CHROME_BROWSER_TTC_APP_PUBLIC_TOOL_TYPES_H_
+#define CHROME_BROWSER_TTC_APP_PUBLIC_TOOL_TYPES_H_
 
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/values.h"
 
 namespace ttc {
@@ -48,6 +49,17 @@ struct ToolDefinition {
   Verbalization verbalization = Verbalization::kStandard;
 };
 
+// Parameters for a tool call.
+struct ToolRequest {
+  std::string name;
+  base::DictValue arguments;
+};
+
+// The result of executing a tool.
+using ToolResponse = base::DictValue;
+
+using ToolResponseCallback = base::OnceCallback<void(ToolResponse)>;
+
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_APP_PUBLIC_TOOL_DEFINITION_H_
+#endif  // CHROME_BROWSER_TTC_APP_PUBLIC_TOOL_TYPES_H_

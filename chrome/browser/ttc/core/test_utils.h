@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "chrome/browser/ttc/app/public/conversation.h"
-#include "chrome/browser/ttc/app/public/tool_definition.h"
+#include "chrome/browser/ttc/app/public/tool_types.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"

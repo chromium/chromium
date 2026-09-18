@@ -76,10 +76,8 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
   void OnGenerationStateChanged(bool started,
                                 bool completed,
                                 bool interrupted) override;
-  void OnToolCall(
-      const std::string& name,
-      base::DictValue arguments,
-      TtcMesClient::Observer::ToolResponseCallback response_callback) override;
+  void OnToolCall(const ToolRequest& tool_request,
+                  ToolResponseCallback response_callback) override;
 
   void DidChangePage(const GURL& url,
                      const std::optional<std::u16string>& title,

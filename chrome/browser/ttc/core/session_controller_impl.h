@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_view_delegate.h"
+#include "chrome/browser/ttc/core/tool_controller.h"
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
 
 namespace content {
@@ -33,6 +34,9 @@ class SessionControllerImpl : public SessionController,
 
   // SessionController implementation:
   void GetPageContext(FetchCompleteCallback callback) override;
+  Profile* GetProfile() override;
+  void ProcessToolCall(const ToolRequest& tool_request,
+                       ToolResponseCallback tool_response_callback) override;
 
   // SessionViewDelegate implementation:
   BrowserWindowInterface* GetBrowserWindowInterface() override;
@@ -60,6 +64,7 @@ class SessionControllerImpl : public SessionController,
   std::unique_ptr<SessionView> session_view_;
 
   std::unique_ptr<TtcPageContextMonitor> page_context_monitor_;
+  ToolController tool_controller_;
 };
 
 }  // namespace ttc

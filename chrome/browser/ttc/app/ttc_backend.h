@@ -10,9 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
-#include "base/values.h"
-#include "chrome/browser/ttc/app/public/tool_definition.h"
+#include "chrome/browser/ttc/app/public/tool_types.h"
 #include "url/gurl.h"
 
 namespace optimization_guide::proto {
@@ -37,10 +35,7 @@ class TtcBackend {
     virtual void OnGenerationStateChanged(bool started,
                                           bool completed,
                                           bool interrupted) = 0;
-    using ToolResponseCallback =
-        base::OnceCallback<void(base::DictValue response)>;
-    virtual void OnToolCall(const std::string& name,
-                            base::DictValue arguments,
+    virtual void OnToolCall(const ToolRequest& tool_request,
                             ToolResponseCallback response_callback) {}
   };
 

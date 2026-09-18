@@ -13,13 +13,12 @@
 
 #include "base/callback_list.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ttc/app/audio_controller.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/app/ttc_backend.h"
 #include "url/gurl.h"
-
-class Profile;
 
 namespace media {
 class AudioParameters;
@@ -31,6 +30,8 @@ class AnnotatedPageContent;
 
 namespace ttc {
 
+class SessionController;
+
 // Downsamples 48kHz 16-bit mono PCM to 16kHz using a 3:1 moving average filter.
 std::vector<uint8_t> Downsample48kHzTo16kHz(base::span<const uint8_t> pcm_data);
 
@@ -39,9 +40,10 @@ std::vector<uint8_t> Downsample48kHzTo16kHz(base::span<const uint8_t> pcm_data);
 // speech capture, audio playback, interruptions, transcripts, and tools.
 class ConversationImpl : public Conversation, public TtcBackend::Observer {
  public:
-  explicit ConversationImpl(Profile* profile);
+  explicit ConversationImpl(SessionController& session_controller);
   ConversationImpl(std::unique_ptr<TtcBackend> backend,
-                   std::unique_ptr<AudioController> audio_controller);
+                   std::unique_ptr<AudioController> audio_controller,
+                   SessionController& session_controller);
   ~ConversationImpl() override;
 
   ConversationImpl(const ConversationImpl&) = delete;
@@ -72,8 +74,7 @@ class ConversationImpl : public Conversation, public TtcBackend::Observer {
   void OnGenerationStateChanged(bool started,
                                 bool completed,
                                 bool interrupted) override;
-  void OnToolCall(const std::string& name,
-                  base::DictValue arguments,
+  void OnToolCall(const ToolRequest& tool_request,
                   ToolResponseCallback response_callback) override;
 
   AudioController* audio_controller() { return audio_controller_.get(); }
@@ -86,6 +87,9 @@ class ConversationImpl : public Conversation, public TtcBackend::Observer {
 
   std::unique_ptr<TtcBackend> backend_;
   std::unique_ptr<AudioController> audio_controller_;
+
+  // Safe because the SessionController owns this object.
+  const raw_ref<SessionController> session_controller_;
 
   base::CallbackListSubscription audio_capture_subscription_;
   base::CallbackListSubscription playback_completion_subscription_;

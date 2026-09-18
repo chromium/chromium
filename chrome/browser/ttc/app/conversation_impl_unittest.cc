@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ttc/app/audio_controller.h"
 #include "chrome/browser/ttc/app/ttc_backend.h"
+#include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/base/audio_bus.h"
@@ -81,12 +82,29 @@ class MockConversationObserver : public Conversation::Observer {
               OnGenerationStateChanged,
               (bool started, bool completed, bool interrupted),
               (override));
-  MOCK_METHOD(void,
-              OnToolCall,
-              (const std::string& name,
-               base::DictValue arguments,
-               Conversation::Observer::ToolResponseCallback response_callback),
-              (override));
+};
+
+class FakeSessionController : public SessionController {
+ public:
+  explicit FakeSessionController(Profile* profile) : profile_(profile) {}
+  ~FakeSessionController() override = default;
+
+  void GetPageContext(FetchCompleteCallback callback) override {}
+  Profile* GetProfile() override { return profile_; }
+  void ProcessToolCall(const ToolRequest& tool_request,
+                       ToolResponseCallback tool_response) override {
+    last_request_.name = tool_request.name;
+    last_request_.arguments = tool_request.arguments.Clone();
+    ToolResponse response;
+    response.Set("status", "ok");
+    std::move(tool_response).Run(std::move(response));
+  }
+
+  const ToolRequest& last_request() const { return last_request_; }
+
+ private:
+  raw_ptr<Profile> profile_;
+  ToolRequest last_request_;
 };
 
 }  // namespace
@@ -99,10 +117,11 @@ class ConversationImplTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+  FakeSessionController session_controller_{&profile_};
 };
 
 TEST_F(ConversationImplTest, DefaultConstructorInitializesComponents) {
-  ConversationImpl conversation(&profile_);
+  ConversationImpl conversation(session_controller_);
   EXPECT_FALSE(conversation.is_connected());
   EXPECT_NE(conversation.audio_controller(), nullptr);
   EXPECT_NE(conversation.backend(), nullptr);
@@ -114,7 +133,8 @@ TEST_F(ConversationImplTest, AudioOutputPlaysToAudioController) {
   auto mock_backend = std::make_unique<MockTtcBackend>();
 
   ConversationImpl conversation(std::move(mock_backend),
-                                std::move(audio_controller));
+                                std::move(audio_controller),
+                                session_controller_);
 
   std::vector<uint8_t> audio_data(3200, 0x15);
   EXPECT_FALSE(audio_controller_ptr->is_playing());
@@ -135,7 +155,8 @@ TEST_F(ConversationImplTest, InterruptionClearsAudioQueue) {
   auto mock_backend = std::make_unique<MockTtcBackend>();
 
   ConversationImpl conversation(std::move(mock_backend),
-                                std::move(audio_controller));
+                                std::move(audio_controller),
+                                session_controller_);
 
   std::vector<uint8_t> audio_data(3200, 0x25);
   conversation.OnAudioOutput(audio_data, /*sequence_number=*/2);
@@ -147,12 +168,13 @@ TEST_F(ConversationImplTest, InterruptionClearsAudioQueue) {
   EXPECT_FALSE(audio_controller_ptr->is_playing());
 }
 
-TEST_F(ConversationImplTest, ObserverReceivesTranscriptionsAndTools) {
+TEST_F(ConversationImplTest, ObserverReceivesTranscriptionsAndState) {
   auto audio_controller = std::make_unique<AudioController>();
   auto mock_backend = std::make_unique<MockTtcBackend>();
 
   ConversationImpl conversation(std::move(mock_backend),
-                                std::move(audio_controller));
+                                std::move(audio_controller),
+                                session_controller_);
 
   MockConversationObserver observer;
   conversation.AddObserver(&observer);
@@ -160,28 +182,42 @@ TEST_F(ConversationImplTest, ObserverReceivesTranscriptionsAndTools) {
   EXPECT_CALL(observer, OnTranscriptions("hello", "world")).Times(1);
   conversation.OnTranscriptions("hello", "world");
 
-  bool tool_called = false;
-  EXPECT_CALL(observer,
-              OnToolCall(testing::Eq("navigate"), testing::_, testing::_))
-      .WillOnce([&](const std::string& name, base::DictValue args,
-                    Conversation::Observer::ToolResponseCallback cb) {
-        tool_called = true;
-        EXPECT_EQ(name, "navigate");
-        const std::string* url = args.FindString("url");
-        ASSERT_TRUE(url);
-        EXPECT_EQ(*url, "abc");
-        std::move(cb).Run(base::DictValue());
-      });
-  base::DictValue args;
-  args.Set("url", "abc");
-  conversation.OnToolCall("navigate", std::move(args), base::DoNothing());
-  EXPECT_TRUE(tool_called);
-
   EXPECT_CALL(observer, OnConversationStateChanged(true, "sess_123", ""))
       .Times(1);
   conversation.OnStreamingStateChanged(true, "sess_123", "");
 
   conversation.RemoveObserver(&observer);
+}
+
+TEST_F(ConversationImplTest, ToolCallForwardedToSessionController) {
+  auto audio_controller = std::make_unique<AudioController>();
+  auto mock_backend = std::make_unique<MockTtcBackend>();
+
+  ConversationImpl conversation(std::move(mock_backend),
+                                std::move(audio_controller),
+                                session_controller_);
+
+  ToolRequest tool_request;
+  tool_request.name = "navigate";
+  tool_request.arguments.Set("url", "abc");
+
+  ToolResponse response;
+  conversation.OnToolCall(std::move(tool_request),
+                          base::BindLambdaForTesting([&](ToolResponse result) {
+                            response = std::move(result);
+                          }));
+
+  // The request should have reached the SessionController (unchanged).
+  EXPECT_EQ(session_controller_.last_request().name, "navigate");
+  const std::string* url =
+      session_controller_.last_request().arguments.FindString("url");
+  ASSERT_TRUE(url);
+  EXPECT_EQ(*url, "abc");
+
+  // The response should be routed back from the SessionController.
+  const std::string* status = response.FindString("status");
+  ASSERT_TRUE(status);
+  EXPECT_EQ(*status, "ok");
 }
 
 TEST_F(ConversationImplTest, Downsample48kHzTo16kHz) {
@@ -233,7 +269,8 @@ TEST_F(ConversationImplTest, StartAndStopWiring) {
   MockTtcBackend* backend_ptr = mock_backend.get();
 
   ConversationImpl conversation(std::move(mock_backend),
-                                std::move(audio_controller));
+                                std::move(audio_controller),
+                                session_controller_);
 
   EXPECT_CALL(*backend_ptr, Connect()).Times(1);
   conversation.Start();
@@ -251,7 +288,8 @@ TEST_F(ConversationImplTest, CapturedAudioRouting16kHzPassthrough) {
   MockTtcBackend* backend_ptr = mock_backend.get();
 
   ConversationImpl conversation(std::move(mock_backend),
-                                std::move(audio_controller));
+                                std::move(audio_controller),
+                                session_controller_);
   conversation.Start();
 
   // Use values that have exact representations in float:
@@ -291,7 +329,8 @@ TEST_F(ConversationImplTest, CapturedAudioRouting48kHzDownsampling) {
   MockTtcBackend* backend_ptr = mock_backend.get();
 
   ConversationImpl conversation(std::move(mock_backend),
-                                std::move(audio_controller));
+                                std::move(audio_controller),
+                                session_controller_);
   conversation.Start();
 
   // 6 samples with exact float representations
@@ -331,7 +370,8 @@ TEST_F(ConversationImplTest, OnPlaybackCompletedReportsStatus) {
   MockTtcBackend* backend_ptr = mock_backend.get();
 
   ConversationImpl conversation(std::move(mock_backend),
-                                std::move(audio_controller));
+                                std::move(audio_controller),
+                                session_controller_);
   conversation.Start();
 
   base::RunLoop run_loop;
@@ -353,7 +393,8 @@ TEST_F(ConversationImplTest, SendTextInputForwardsToBackend) {
   auto mock_backend = std::make_unique<MockTtcBackend>();
   MockTtcBackend* backend_ptr = mock_backend.get();
 
-  ConversationImpl conversation(std::move(mock_backend), nullptr);
+  ConversationImpl conversation(std::move(mock_backend), nullptr,
+                                session_controller_);
   EXPECT_CALL(*backend_ptr, SendTextInput("hello world")).Times(1);
   conversation.SendTextInput("hello world");
 }
@@ -362,7 +403,8 @@ TEST_F(ConversationImplTest, SendToolSetUpdateForwardsToBackend) {
   auto mock_backend = std::make_unique<MockTtcBackend>();
   MockTtcBackend* backend_ptr = mock_backend.get();
 
-  ConversationImpl conversation(std::move(mock_backend), nullptr);
+  ConversationImpl conversation(std::move(mock_backend), nullptr,
+                                session_controller_);
   std::vector<ToolDefinition> tools;
   ToolDefinition tool;
   tool.name = "test_tool";

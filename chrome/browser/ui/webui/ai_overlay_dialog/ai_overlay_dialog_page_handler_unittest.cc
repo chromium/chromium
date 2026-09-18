@@ -285,12 +285,13 @@ TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_HandlesToolCall) {
   handler_remote().FlushForTesting();
 
   // Test remember_this tool call
-  base::DictValue remember_args;
-  remember_args.Set("key", "test_key");
-  remember_args.Set("value", "test_val");
-  base::DictValue remember_response;
-  handler()->OnToolCall("remember_this", std::move(remember_args),
-                        base::BindLambdaForTesting([&](base::DictValue resp) {
+  ToolRequest remember_request;
+  remember_request.name = "remember_this";
+  remember_request.arguments.Set("key", "test_key");
+  remember_request.arguments.Set("value", "test_val");
+  ToolResponse remember_response;
+  handler()->OnToolCall(remember_request,
+                        base::BindLambdaForTesting([&](ToolResponse resp) {
                           remember_response = std::move(resp);
                         }));
   const std::string* remember_status = remember_response.FindString("status");
@@ -300,11 +301,12 @@ TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_HandlesToolCall) {
   EXPECT_EQ(controller()->GetRememberedNotes(), expected_notes);
 
   // Test forget_this tool call
-  base::DictValue forget_args;
-  forget_args.Set("key", "test_key");
-  base::DictValue forget_response;
-  handler()->OnToolCall("forget_this", std::move(forget_args),
-                        base::BindLambdaForTesting([&](base::DictValue resp) {
+  ToolRequest forget_request;
+  forget_request.name = "forget_this";
+  forget_request.arguments.Set("key", "test_key");
+  ToolResponse forget_response;
+  handler()->OnToolCall(forget_request,
+                        base::BindLambdaForTesting([&](ToolResponse resp) {
                           forget_response = std::move(resp);
                         }));
   const std::string* forget_status = forget_response.FindString("status");
@@ -313,9 +315,11 @@ TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_HandlesToolCall) {
   EXPECT_TRUE(controller()->GetRememberedNotes().empty());
 
   // Test close_voice_interface tool call
-  base::DictValue close_response;
-  handler()->OnToolCall("close_voice_interface", base::DictValue(),
-                        base::BindLambdaForTesting([&](base::DictValue resp) {
+  ToolRequest close_request;
+  close_request.name = "close_voice_interface";
+  ToolResponse close_response;
+  handler()->OnToolCall(close_request,
+                        base::BindLambdaForTesting([&](ToolResponse resp) {
                           close_response = std::move(resp);
                         }));
   const std::string* close_status = close_response.FindString("status");

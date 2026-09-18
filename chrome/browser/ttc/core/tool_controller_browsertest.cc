@@ -7,9 +7,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ttc/app/public/tool_types.h"
+#include "chrome/browser/ttc/core/session_controller.h"
+#include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,14 +23,14 @@ namespace ttc {
 
 namespace {
 
-using OpenUrlResult = base::expected<std::monostate, std::string>;
-
-class ToolControllerBrowserTest : public InProcessBrowserTest {
+class ToolControllerBrowserTest : public TtcCoreBrowserTestBase {
  public:
   ToolControllerBrowserTest() = default;
+  ~ToolControllerBrowserTest() override = default;
 
+  // TtcCoreBrowserTestBase:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    TtcCoreBrowserTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
@@ -33,26 +38,48 @@ class ToolControllerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenUrlCurrentTab) {
   // Verify ActorKeyedService is available.
-  auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
+  auto* actor_service = actor::ActorKeyedService::Get(profile());
   ASSERT_TRUE(actor_service);
 
-  // TODO(b/544821996): Switch to using a real E2E setup (when ready), instead
-  // of directly instantiating ToolController here.
-  ToolController controller(browser()->GetProfile());
-  base::test::TestFuture<OpenUrlResult> future;
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
 
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
-  controller.OpenUrl(browser(), url.spec(), /*new_tab=*/false,
-                     future.GetCallback());
+  ToolRequest tool_request;
+  tool_request.name = "open_url";
+  tool_request.arguments.Set("url", url.spec());
+  tool_request.arguments.Set("new_tab", false);
 
-  auto result = future.Get();
-  EXPECT_TRUE(result.has_value())
-      << (result.has_value() ? "" : "OpenUrl failed: " + result.error());
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(web_contents->GetLastCommittedURL(), url);
+  ToolResponse response = future.Take();
+  EXPECT_TRUE(response.empty());
+
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+
+  ToolRequest tool_request;
+  tool_request.name = "unsupported_tool";
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  const std::string* error = response.FindString("error");
+  ASSERT_TRUE(error);
+  EXPECT_EQ(*error, "Unsupported tool");
 }
 
 }  // namespace

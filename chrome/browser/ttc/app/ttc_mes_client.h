@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/ttc/app/public/tool_definition.h"
+#include "chrome/browser/ttc/app/public/tool_types.h"
 #include "chrome/browser/ttc/app/ttc_backend.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/features/ttc.pb.h"
@@ -70,7 +70,7 @@ class TtcMesClient
   void HandleToolCall(const optimization_guide::proto::ToolCall& tool_call);
   void OnToolExecutionComplete(const std::string& call_id,
                                const std::string& tool_name,
-                               base::DictValue result);
+                               ToolResponse response);
   void SendFrame(const optimization_guide::proto::TtcClientFrame& frame);
 
   raw_ptr<Profile> profile_;

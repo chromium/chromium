@@ -33,6 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/tool_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -151,8 +152,22 @@ void AiOverlayTools::OpenUrl(const std::string& url_string,
                              OpenUrlCallback callback) {
   RecordToolCallInvoked("OpenUrl");
   if (tool_controller_) {
-    tool_controller_->OpenUrl(browser_, url_string, new_tab,
-                              std::move(callback));
+    ToolRequest request;
+    request.name = "open_url";
+    request.arguments.Set("url", url_string);
+    request.arguments.Set("new_tab", new_tab);
+    tool_controller_->ProcessToolCall(
+        std::move(request),
+        base::BindOnce(
+            [](OpenUrlCallback callback, ToolResponse response) {
+              const std::string* error = response.FindString("error");
+              if (error) {
+                std::move(callback).Run(base::unexpected(*error));
+              } else {
+                std::move(callback).Run(std::monostate());
+              }
+            },
+            std::move(callback)));
     return;
   }
 

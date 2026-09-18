@@ -11,8 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/values.h"
-#include "chrome/browser/ttc/app/public/tool_definition.h"
+#include "chrome/browser/ttc/app/public/tool_types.h"
 #include "url/gurl.h"
 
 namespace optimization_guide::proto {
@@ -37,11 +36,6 @@ class Conversation {
     virtual void OnGenerationStateChanged(bool started,
                                           bool completed,
                                           bool interrupted) {}
-    using ToolResponseCallback =
-        base::OnceCallback<void(base::DictValue response)>;
-    virtual void OnToolCall(const std::string& name,
-                            base::DictValue arguments,
-                            ToolResponseCallback response_callback) {}
   };
 
   virtual ~Conversation() = default;
