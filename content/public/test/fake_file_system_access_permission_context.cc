@@ -20,7 +20,7 @@ FakeFileSystemAccessPermissionContext::GetReadPermissionGrant(
     const url::Origin& origin,
     const PathInfo& path_info,
     HandleType handle_type,
-    UserAction user_action) {
+    AccessTrigger access_trigger) {
   return base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
       FileSystemAccessPermissionGrant::PermissionStatus::GRANTED, path_info);
 }
@@ -30,7 +30,7 @@ FakeFileSystemAccessPermissionContext::GetWritePermissionGrant(
     const url::Origin& origin,
     const PathInfo& path_info,
     HandleType handle_type,
-    UserAction user_action) {
+    AccessTrigger access_trigger) {
   return base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
       FileSystemAccessPermissionGrant::PermissionStatus::GRANTED, path_info);
 }
@@ -39,7 +39,7 @@ void FakeFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
     const url::Origin& origin,
     const PathInfo& path_info,
     HandleType handle_type,
-    UserAction user_action,
+    AccessTrigger access_trigger,
     GlobalRenderFrameHostId frame_id,
     base::OnceCallback<void(SensitiveEntryResult)> callback) {
   std::move(callback).Run(SensitiveEntryResult::kAllowed);

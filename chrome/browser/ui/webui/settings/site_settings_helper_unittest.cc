@@ -1388,11 +1388,11 @@ TEST_F(PersistentPermissionsSiteSettingsHelperTest,
   auto file_write_grant = context->GetWritePermissionGrant(
       kTestOrigin, content::PathInfo(kTestPath),
       ChromeFileSystemAccessPermissionContext::HandleType::kFile,
-      ChromeFileSystemAccessPermissionContext::UserAction::kSave);
+      ChromeFileSystemAccessPermissionContext::AccessTrigger::kSave);
   auto file_read_grant = context->GetWritePermissionGrant(
       kTestOrigin, content::PathInfo(kTestPath2),
       ChromeFileSystemAccessPermissionContext::HandleType::kFile,
-      ChromeFileSystemAccessPermissionContext::UserAction::kSave);
+      ChromeFileSystemAccessPermissionContext::AccessTrigger::kSave);
 
   auto populated_grants =
       context->ConvertObjectsToGrants(context->GetGrantedObjects(kTestOrigin));

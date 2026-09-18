@@ -283,17 +283,17 @@ class ChromeFileSystemAccessPermissionContext
   GetReadPermissionGrant(const url::Origin& origin,
                          const content::PathInfo& path_info,
                          HandleType handle_type,
-                         UserAction user_action) override;
+                         AccessTrigger access_trigger) override;
   scoped_refptr<content::FileSystemAccessPermissionGrant>
   GetWritePermissionGrant(const url::Origin& origin,
                           const content::PathInfo& path_info,
                           HandleType handle_type,
-                          UserAction user_action) override;
+                          AccessTrigger access_trigger) override;
   void ConfirmSensitiveEntryAccess(
       const url::Origin& origin,
       const content::PathInfo& path_info,
       HandleType handle_type,
-      UserAction user_action,
+      AccessTrigger access_trigger,
       content::GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(SensitiveEntryResult)> callback) override;
   void PerformAfterWriteChecks(
@@ -505,7 +505,7 @@ class ChromeFileSystemAccessPermissionContext
   void CheckShouldBlockAccessToPathAndReply(
       base::FilePath path,
       HandleType handle_type,
-      UserAction user_action,
+      AccessTrigger access_trigger,
       std::vector<BlockPathRule> extra_rules,
       base::OnceCallback<void(bool)> callback,
       BlockPathRules block_path_rules);
@@ -515,13 +515,13 @@ class ChromeFileSystemAccessPermissionContext
   // whether the path is on the blocklist.
   void CheckPathAgainstBlocklist(const content::PathInfo& path_info,
                                  HandleType handle_type,
-                                 UserAction user_action,
+                                 AccessTrigger access_trigger,
                                  base::OnceCallback<void(bool)> callback);
   void DidCheckPathAgainstBlocklist(
       const url::Origin& origin,
       const content::PathInfo& path_info,
       HandleType handle_type,
-      UserAction user_action,
+      AccessTrigger access_trigger,
       content::GlobalRenderFrameHostId frame_id,
       const base::TimeTicks start_time,
       base::OnceCallback<void(SensitiveEntryResult)> callback,
@@ -568,7 +568,7 @@ class ChromeFileSystemAccessPermissionContext
       const url::Origin& origin,
       const base::FilePath& file_path,
       HandleType handle_type,
-      UserAction user_action,
+      AccessTrigger access_trigger,
       GrantType grant_type);
 
   // Builds a list of `FileRequestData` from persisted grants, which is used

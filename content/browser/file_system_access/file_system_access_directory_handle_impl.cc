@@ -53,7 +53,7 @@ namespace content {
 using HandleType = FileSystemAccessPermissionContext::HandleType;
 using SensitiveEntryResult =
     FileSystemAccessPermissionContext::SensitiveEntryResult;
-using UserAction = FileSystemAccessPermissionContext::UserAction;
+using AccessTrigger = FileSystemAccessPermissionContext::AccessTrigger;
 
 struct FileSystemAccessDirectoryHandleImpl::
     FileSystemAccessDirectoryEntriesListenerHolder
@@ -220,9 +220,13 @@ void FileSystemAccessDirectoryHandleImpl::GetFileResolved(
             ? PathType::kLocal
             : PathType::kExternal,
         child_url.path(), basename};
+    // TODO(crbug.com/545006893): Update to pass
+    // AccessTrigger::kProgrammaticWrite when `create` is true. This CL is a
+    // pure refactoring so we avoid making behavioral changes here; this will
+    // be addressed in a follow-up CL.
     manager()->permission_context()->ConfirmSensitiveEntryAccess(
         context().storage_key.origin(), path_info, HandleType::kFile,
-        UserAction::kNone, context().frame_id,
+        AccessTrigger::kProgrammaticRead, context().frame_id,
         base::BindOnce(&FileSystemAccessDirectoryHandleImpl::DoGetFile,
                        weak_factory_.GetWeakPtr(), basename, create, child_url,
                        std::move(callback)));
@@ -838,7 +842,8 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
                   ? PathType::kLocal
                   : PathType::kExternal,
               child_url.path(), basename),
-          HandleType::kFile, UserAction::kNone, context().frame_id,
+          HandleType::kFile, AccessTrigger::kProgrammaticRead,
+          context().frame_id,
           base::BindOnce(&FileSystemAccessDirectoryHandleImpl::
                              DidVerifySensitiveAccessForFileEntry,
                          weak_factory_.GetWeakPtr(), entry.name,

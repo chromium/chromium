@@ -1648,7 +1648,8 @@ class FileSystemAccessHandleGetRenamePermissionTest
                     kTestStorageKey.origin(),
                     testing::Field(&content::PathInfo::path, dest_url.path()),
                     HandleType::kFile,
-                    FileSystemAccessPermissionContext::UserAction::kNone))
+                    FileSystemAccessPermissionContext::AccessTrigger::
+                        kProgrammaticRead))
         .WillOnce(testing::Return(target_write_grant));
 
     if (parent_status.has_value()) {
@@ -1656,13 +1657,14 @@ class FileSystemAccessHandleGetRenamePermissionTest
           testing::NiceMock<MockFileSystemAccessPermissionGrant>>();
       ON_CALL(*parent_write_grant, GetStatus())
           .WillByDefault(testing::Return(*parent_status));
-      EXPECT_CALL(permission_context_,
-                  GetWritePermissionGrant(
-                      kTestStorageKey.origin(),
-                      testing::Field(&content::PathInfo::path,
-                                     dest_url.path().DirName()),
-                      HandleType::kDirectory,
-                      FileSystemAccessPermissionContext::UserAction::kNone))
+      EXPECT_CALL(
+          permission_context_,
+          GetWritePermissionGrant(kTestStorageKey.origin(),
+                                  testing::Field(&content::PathInfo::path,
+                                                 dest_url.path().DirName()),
+                                  HandleType::kDirectory,
+                                  FileSystemAccessPermissionContext::
+                                      AccessTrigger::kProgrammaticRead))
           .WillOnce(testing::Return(parent_write_grant));
     } else {
       EXPECT_CALL(permission_context_,

@@ -26,7 +26,7 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
     : public base::RefCountedThreadSafe<FileSystemAccessEntryFactory,
                                         BrowserThread::DeleteOnUIThread> {
  public:
-  using UserAction = FileSystemAccessPermissionContext::UserAction;
+  using AccessTrigger = FileSystemAccessPermissionContext::AccessTrigger;
 
   // Context from which a created handle is going to be used. This is used for
   // security and permission checks. Pass in the URL most relevant as the url
@@ -67,14 +67,14 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
   virtual blink::mojom::FileSystemAccessEntryPtr CreateFileEntryFromPath(
       const BindingContext& binding_context,
       const content::PathInfo& path_info,
-      UserAction user_action) = 0;
+      AccessTrigger access_trigger) = 0;
 
   // Creates a new FileSystemAccessEntryPtr from the path to a directory.
   // Assumes the passed in path is valid and represents a directory.
   virtual blink::mojom::FileSystemAccessEntryPtr CreateDirectoryEntryFromPath(
       const BindingContext& binding_context,
       const content::PathInfo& path_info,
-      UserAction user_action) = 0;
+      AccessTrigger access_trigger) = 0;
 
   // Resolve a FileSystemAccessTransferToken to its FileSystemURL. Invokes the
   // callback with a std::nullopt if the token isn't valid or can't be found

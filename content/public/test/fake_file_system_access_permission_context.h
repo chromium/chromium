@@ -29,19 +29,19 @@ class FakeFileSystemAccessPermissionContext
       const url::Origin& origin,
       const PathInfo& path_info,
       HandleType handle_type,
-      UserAction user_action) override;
+      AccessTrigger access_trigger) override;
 
   scoped_refptr<FileSystemAccessPermissionGrant> GetWritePermissionGrant(
       const url::Origin& origin,
       const PathInfo& path_info,
       HandleType handle_type,
-      UserAction user_action) override;
+      AccessTrigger access_trigger) override;
 
   void ConfirmSensitiveEntryAccess(
       const url::Origin& origin,
       const PathInfo& path_info,
       HandleType handle_type,
-      UserAction user_action,
+      AccessTrigger access_trigger,
       GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(SensitiveEntryResult)> callback) override;
 

@@ -340,7 +340,11 @@ FileSystemAccessHandleBase::GetRenamePermission(
           context().storage_key,
           // TODO(crbug.com/40198034): Support directory moves.
           FileSystemAccessPermissionContext::HandleType::kFile,
-          FileSystemAccessPermissionContext::UserAction::kNone);
+          // TODO(crbug.com/545006893): Rename queries write_grant and should
+          // use AccessTrigger::kProgrammaticWrite rather than
+          // kProgrammaticRead. This CL is a pure refactoring so we avoid making
+          // behavioral changes here; this will be addressed in a follow-up CL.
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead);
 
   if (destination_shared_handle_state.write_grant->GetStatus() ==
       PermissionStatus::GRANTED) {
@@ -388,7 +392,13 @@ FileSystemAccessHandleBase::GetRenamePermission(
                 destination_url.path().DirName()),
             context().storage_key,
             FileSystemAccessPermissionContext::HandleType::kDirectory,
-            FileSystemAccessPermissionContext::UserAction::kNone);
+            // TODO(crbug.com/545006893): Rename queries write_grant and should
+            // use AccessTrigger::kProgrammaticWrite rather than
+            // kProgrammaticRead. This CL is a pure refactoring so we avoid
+            // making behavioral changes here; this will be addressed in a
+            // follow-up CL.
+            FileSystemAccessPermissionContext::AccessTrigger::
+                kProgrammaticRead);
 
     if (parent_shared_handle_state.write_grant->GetStatus() ==
         PermissionStatus::GRANTED) {
@@ -606,8 +616,13 @@ void FileSystemAccessHandleBase::DidTakeMoveLocks(
         context().storage_key.origin(), path_info,
         // TODO(crbug.com/40198034): Update once moving directory is supported.
         FileSystemAccessPermissionContext::HandleType::kFile,
-        // This must be kSave as the move operation will save the file.
-        FileSystemAccessPermissionContext::UserAction::kSave,
+        // TODO(crbug.com/545006893): Move currently passes kSave because the
+        // move operation will save the file, but it can spawn unexpected
+        // interactive UI dialogs when blocked. Revisit transitioning this to a
+        // programmatic write trigger or suppressing dialogs for programmatic
+        // moves. This CL is a pure refactoring so we avoid making behavioral
+        // changes here.
+        FileSystemAccessPermissionContext::AccessTrigger::kSave,
         context().frame_id,
         base::BindOnce(
             &FileSystemAccessHandleBase::DidVerifySensitiveEntryAccessForMove,

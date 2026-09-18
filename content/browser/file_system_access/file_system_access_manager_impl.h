@@ -169,11 +169,11 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   blink::mojom::FileSystemAccessEntryPtr CreateFileEntryFromPath(
       const BindingContext& binding_context,
       const PathInfo& path_info,
-      UserAction user_action) override;
+      AccessTrigger access_trigger) override;
   blink::mojom::FileSystemAccessEntryPtr CreateDirectoryEntryFromPath(
       const BindingContext& binding_context,
       const PathInfo& path_info,
-      UserAction user_action) override;
+      AccessTrigger access_trigger) override;
   void ResolveTransferToken(
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
           transfer_token,
@@ -400,7 +400,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       const PathInfo& path_info,
       const blink::StorageKey& storage_key,
       FileSystemAccessPermissionContext::HandleType handle_type,
-      FileSystemAccessPermissionContext::UserAction user_action);
+      FileSystemAccessPermissionContext::AccessTrigger access_trigger);
   // Same as above, but for paths in a sandboxed file system.
   SharedHandleState GetSharedHandleStateForSandboxedPath();
 

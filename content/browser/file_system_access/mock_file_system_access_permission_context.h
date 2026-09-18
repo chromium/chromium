@@ -25,7 +25,7 @@ class MockFileSystemAccessPermissionContext
               (const url::Origin& origin,
                const PathInfo& path_info,
                HandleType handle_type,
-               FileSystemAccessPermissionContext::UserAction user_action),
+               FileSystemAccessPermissionContext::AccessTrigger access_trigger),
               (override));
 
   MOCK_METHOD(scoped_refptr<FileSystemAccessPermissionGrant>,
@@ -33,14 +33,14 @@ class MockFileSystemAccessPermissionContext
               (const url::Origin& origin,
                const PathInfo& path_info,
                HandleType handle_type,
-               FileSystemAccessPermissionContext::UserAction user_action),
+               FileSystemAccessPermissionContext::AccessTrigger access_trigger),
               (override));
 
   void ConfirmSensitiveEntryAccess(
       const url::Origin& origin,
       const PathInfo& path_info,
       HandleType handle_type,
-      UserAction user_action,
+      AccessTrigger access_trigger,
       GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(SensitiveEntryResult)> callback) override;
   MOCK_METHOD(void,
@@ -48,7 +48,7 @@ class MockFileSystemAccessPermissionContext
               (const url::Origin& origin,
                const PathInfo& path_info,
                HandleType handle_type,
-               UserAction user_action,
+               AccessTrigger access_trigger,
                GlobalRenderFrameHostId frame_id,
                base::OnceCallback<void(SensitiveEntryResult)>& callback));
 

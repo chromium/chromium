@@ -103,7 +103,7 @@ AwFileSystemAccessPermissionContext::GetReadPermissionGrant(
     const url::Origin& origin,
     const content::PathInfo& path_info,
     HandleType handle_type,
-    UserAction user_action) {
+    AccessTrigger access_trigger) {
   return base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
       content::FileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
       path_info);
@@ -114,7 +114,7 @@ AwFileSystemAccessPermissionContext::GetWritePermissionGrant(
     const url::Origin& origin,
     const content::PathInfo& path_info,
     HandleType handle_type,
-    UserAction user_action) {
+    AccessTrigger access_trigger) {
   return base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
       content::FileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
       path_info);
@@ -124,7 +124,7 @@ void AwFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
     const url::Origin& origin,
     const content::PathInfo& path_info,
     HandleType handle_type,
-    UserAction user_action,
+    AccessTrigger access_trigger,
     content::GlobalRenderFrameHostId frame_id,
     base::OnceCallback<void(SensitiveEntryResult)> callback) {
   CheckPathAgainstBlocklist(

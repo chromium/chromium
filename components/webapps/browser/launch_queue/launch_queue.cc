@@ -52,16 +52,21 @@ class EntriesBuilder {
     entries_.reserve(expected_number_of_entries);
   }
 
-  void AddFileEntry(const content::PathInfo& path_info,
-                    content::FileSystemAccessEntryFactory::UserAction action) {
+  void AddFileEntry(
+      const content::PathInfo& path_info,
+      content::FileSystemAccessEntryFactory::AccessTrigger trigger) {
     entries_.push_back(
-        entry_factory_->CreateFileEntryFromPath(context_, path_info, action));
+        entry_factory_->CreateFileEntryFromPath(context_, path_info, trigger));
   }
 
   void AddDirectoryEntry(const content::PathInfo& path_info) {
+    // TODO(crbug.com/545006893): Directory launch entries currently use kOpen.
+    // Investigate whether write triggers or checks are needed when write
+    // permission may be requested. This CL is a pure refactoring so we avoid
+    // making behavioral changes here.
     entries_.push_back(entry_factory_->CreateDirectoryEntryFromPath(
         context_, path_info,
-        content::FileSystemAccessEntryFactory::UserAction::kOpen));
+        content::FileSystemAccessEntryFactory::AccessTrigger::kOpen));
   }
 
   std::vector<blink::mojom::FileSystemAccessEntryPtr> Build() {
@@ -135,11 +140,12 @@ void LaunchQueue::SendLaunchParams(LaunchParams launch_params,
     CHECK_EQ(launch_params.paths().size(), launch_params.can_write().size());
     for (size_t i = 0; i < launch_params.paths().size(); ++i) {
       bool can_write = launch_params.can_write()[i];
-      content::FileSystemAccessEntryFactory::UserAction action =
-          can_write ? content::FileSystemAccessEntryFactory::UserAction::kSave
-                    : content::FileSystemAccessEntryFactory::UserAction::kOpen;
+      content::FileSystemAccessEntryFactory::AccessTrigger trigger =
+          can_write
+              ? content::FileSystemAccessEntryFactory::AccessTrigger::kSave
+              : content::FileSystemAccessEntryFactory::AccessTrigger::kOpen;
       entries_builder.AddFileEntry(
-          delegate_->GetPathInfo(launch_params.paths()[i]), action);
+          delegate_->GetPathInfo(launch_params.paths()[i]), trigger);
     }
 
     files = entries_builder.Build();

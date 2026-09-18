@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               ConfirmSensitiveEntryAccess_(
                   origin, test_file_info,
                   FileSystemAccessPermissionContext::HandleType::kFile,
-                  FileSystemAccessPermissionContext::UserAction::kSave,
+                  FileSystemAccessPermissionContext::AccessTrigger::kSave,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
 
@@ -657,13 +657,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               GetReadPermissionGrant(
                   origin, test_file_info,
                   FileSystemAccessPermissionContext::HandleType::kFile,
-                  FileSystemAccessPermissionContext::UserAction::kSave))
+                  FileSystemAccessPermissionContext::AccessTrigger::kSave))
       .WillOnce(testing::Return(read_grant));
   EXPECT_CALL(permission_context,
               GetWritePermissionGrant(
                   origin, test_file_info,
                   FileSystemAccessPermissionContext::HandleType::kFile,
-                  FileSystemAccessPermissionContext::UserAction::kSave))
+                  FileSystemAccessPermissionContext::AccessTrigger::kSave))
       .WillOnce(testing::Return(write_grant));
 
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
@@ -891,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
               ConfirmSensitiveEntryAccess_(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
 
@@ -899,13 +899,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
               GetReadPermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(read_grant));
   EXPECT_CALL(permission_context,
               GetWritePermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
@@ -987,7 +987,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               ConfirmSensitiveEntryAccess_(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
 
@@ -995,13 +995,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               GetReadPermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(read_grant));
   EXPECT_CALL(permission_context,
               GetWritePermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
@@ -1090,7 +1090,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               ConfirmSensitiveEntryAccess_(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
 
@@ -1098,13 +1098,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               GetReadPermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(read_grant));
   EXPECT_CALL(permission_context,
               GetWritePermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
@@ -1199,7 +1199,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               ConfirmSensitiveEntryAccess_(
                   origin, PathInfo(test_file),
                   FileSystemAccessPermissionContext::HandleType::kFile,
-                  FileSystemAccessPermissionContext::UserAction::kSave,
+                  FileSystemAccessPermissionContext::AccessTrigger::kSave,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveEntryResult::kAbort));
 
@@ -1273,7 +1273,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               ConfirmSensitiveEntryAccess_(
                   origin, PathInfo(test_file),
                   FileSystemAccessPermissionContext::HandleType::kFile,
-                  FileSystemAccessPermissionContext::UserAction::kSave,
+                  FileSystemAccessPermissionContext::AccessTrigger::kSave,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveEntryResult::kAbort));
 
@@ -1395,7 +1395,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               ConfirmSensitiveEntryAccess_(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
 
@@ -1403,13 +1403,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               GetReadPermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(read_grant));
   EXPECT_CALL(permission_context,
               GetWritePermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
@@ -1504,7 +1504,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               ConfirmSensitiveEntryAccess_(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
 
@@ -1512,13 +1512,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               GetReadPermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(read_grant));
   EXPECT_CALL(permission_context,
               GetWritePermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
@@ -1607,7 +1607,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               ConfirmSensitiveEntryAccess_(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
 
@@ -1615,13 +1615,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               GetReadPermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(read_grant));
   EXPECT_CALL(permission_context,
               GetWritePermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
@@ -1719,7 +1719,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               ConfirmSensitiveEntryAccess_(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
 
@@ -1727,13 +1727,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               GetReadPermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(read_grant));
   EXPECT_CALL(permission_context,
               GetWritePermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
@@ -1824,7 +1824,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               ConfirmSensitiveEntryAccess_(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
 
@@ -1836,13 +1836,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               GetReadPermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(read_grant));
   EXPECT_CALL(permission_context,
               GetWritePermissionGrant(
                   origin, test_dir_info,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))

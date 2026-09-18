@@ -1226,13 +1226,15 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
                 GetReadPermissionGrant(
                     origin, content::PathInfo(target),
                     FileSystemAccessPermissionContext::HandleType::kFile,
-                    FileSystemAccessPermissionContext::UserAction::kNone))
+                    FileSystemAccessPermissionContext::AccessTrigger::
+                        kProgrammaticRead))
         .WillOnce(testing::Return(target_grant));
     EXPECT_CALL(permission_context_,
                 GetWritePermissionGrant(
                     origin, content::PathInfo(target),
                     FileSystemAccessPermissionContext::HandleType::kFile,
-                    FileSystemAccessPermissionContext::UserAction::kNone))
+                    FileSystemAccessPermissionContext::AccessTrigger::
+                        kProgrammaticRead))
         .WillOnce(testing::Return(target_grant));
 
     const bool target_write_granted =
@@ -1244,13 +1246,15 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
                   GetReadPermissionGrant(
                       origin, content::PathInfo(parent_path),
                       FileSystemAccessPermissionContext::HandleType::kDirectory,
-                      FileSystemAccessPermissionContext::UserAction::kNone))
+                      FileSystemAccessPermissionContext::AccessTrigger::
+                          kProgrammaticRead))
           .WillOnce(testing::Return(parent_grant));
       EXPECT_CALL(permission_context_,
                   GetWritePermissionGrant(
                       origin, content::PathInfo(parent_path),
                       FileSystemAccessPermissionContext::HandleType::kDirectory,
-                      FileSystemAccessPermissionContext::UserAction::kNone))
+                      FileSystemAccessPermissionContext::AccessTrigger::
+                          kProgrammaticRead))
           .WillOnce(testing::Return(parent_grant));
     }
   }
@@ -1287,7 +1291,7 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
           ConfirmSensitiveEntryAccess_(
               origin, content::PathInfo(target),
               FileSystemAccessPermissionContext::HandleType::kFile,
-              FileSystemAccessPermissionContext::UserAction::kSave,
+              FileSystemAccessPermissionContext::AccessTrigger::kSave,
               web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
           .WillOnce(base::test::RunOnceCallback<5>(
               FileSystemAccessPermissionContext::SensitiveEntryResult::
@@ -1298,7 +1302,7 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
           ConfirmSensitiveEntryAccess_(
               origin, content::PathInfo(target),
               FileSystemAccessPermissionContext::HandleType::kFile,
-              FileSystemAccessPermissionContext::UserAction::kSave,
+              FileSystemAccessPermissionContext::AccessTrigger::kSave,
               web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
           .WillOnce(
               base::test::RunOnceCallback<5>(*expected_sensitive_entry_result));
@@ -1399,7 +1403,7 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
         ConfirmSensitiveEntryAccess_(
             origin, content::PathInfo(target),
             FileSystemAccessPermissionContext::HandleType::kFile,
-            FileSystemAccessPermissionContext::UserAction::kSave,
+            FileSystemAccessPermissionContext::AccessTrigger::kSave,
             web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
         .WillOnce(base::test::RunOnceCallback<5>(
             FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
@@ -1463,7 +1467,7 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
           ConfirmSensitiveEntryAccess_(
               origin, content::PathInfo(target),
               FileSystemAccessPermissionContext::HandleType::kFile,
-              FileSystemAccessPermissionContext::UserAction::kSave,
+              FileSystemAccessPermissionContext::AccessTrigger::kSave,
               web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
           .WillOnce(
               base::test::RunOnceCallback<5>(*expected_sensitive_entry_result));
@@ -2148,32 +2152,36 @@ TEST_F(FileSystemAccessFileHandleImplRenameOnlyInHomedirTest,
   // Mock the target file permission check. Returning `ask_grant_` (which is not
   // granted) ensures the logic falls back to checking the parent directory
   // permissions.
-  EXPECT_CALL(permission_context_,
-              GetReadPermissionGrant(
-                  origin, content::PathInfo(target),
-                  FileSystemAccessPermissionContext::HandleType::kFile,
-                  FileSystemAccessPermissionContext::UserAction::kNone))
+  EXPECT_CALL(
+      permission_context_,
+      GetReadPermissionGrant(
+          origin, content::PathInfo(target),
+          FileSystemAccessPermissionContext::HandleType::kFile,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead))
       .WillOnce(testing::Return(ask_grant_));
-  EXPECT_CALL(permission_context_,
-              GetWritePermissionGrant(
-                  origin, content::PathInfo(target),
-                  FileSystemAccessPermissionContext::HandleType::kFile,
-                  FileSystemAccessPermissionContext::UserAction::kNone))
+  EXPECT_CALL(
+      permission_context_,
+      GetWritePermissionGrant(
+          origin, content::PathInfo(target),
+          FileSystemAccessPermissionContext::HandleType::kFile,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead))
       .WillOnce(testing::Return(ask_grant_));
 
   // Since target is in homedir, parent directory grants should be checked.
   auto parent_path = target.DirName();
-  EXPECT_CALL(permission_context_,
-              GetReadPermissionGrant(
-                  origin, content::PathInfo(parent_path),
-                  FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kNone))
+  EXPECT_CALL(
+      permission_context_,
+      GetReadPermissionGrant(
+          origin, content::PathInfo(parent_path),
+          FileSystemAccessPermissionContext::HandleType::kDirectory,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead))
       .WillOnce(testing::Return(allow_grant_));
-  EXPECT_CALL(permission_context_,
-              GetWritePermissionGrant(
-                  origin, content::PathInfo(parent_path),
-                  FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kNone))
+  EXPECT_CALL(
+      permission_context_,
+      GetWritePermissionGrant(
+          origin, content::PathInfo(parent_path),
+          FileSystemAccessPermissionContext::HandleType::kDirectory,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead))
       .WillOnce(testing::Return(deny_grant_));  // Denied parent write.
   // Rename should fail because parent write is denied.
   base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
@@ -2212,24 +2220,26 @@ TEST_F(FileSystemAccessFileHandleImplRenameOnlyInHomedirTest,
       .WillOnce(testing::Return(false));
   // Since target is outside homedir, it should fallback to checking target file
   // grants (legacy behavior).
-  EXPECT_CALL(permission_context_,
-              GetReadPermissionGrant(
-                  origin, content::PathInfo(target),
-                  FileSystemAccessPermissionContext::HandleType::kFile,
-                  FileSystemAccessPermissionContext::UserAction::kNone))
+  EXPECT_CALL(
+      permission_context_,
+      GetReadPermissionGrant(
+          origin, content::PathInfo(target),
+          FileSystemAccessPermissionContext::HandleType::kFile,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead))
       .WillOnce(testing::Return(allow_grant_));
-  EXPECT_CALL(permission_context_,
-              GetWritePermissionGrant(
-                  origin, content::PathInfo(target),
-                  FileSystemAccessPermissionContext::HandleType::kFile,
-                  FileSystemAccessPermissionContext::UserAction::kNone))
+  EXPECT_CALL(
+      permission_context_,
+      GetWritePermissionGrant(
+          origin, content::PathInfo(target),
+          FileSystemAccessPermissionContext::HandleType::kFile,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead))
       .WillOnce(testing::Return(allow_grant_));
   EXPECT_CALL(
       permission_context_,
       ConfirmSensitiveEntryAccess_(
           origin, content::PathInfo(target),
           FileSystemAccessPermissionContext::HandleType::kFile,
-          FileSystemAccessPermissionContext::UserAction::kSave,
+          FileSystemAccessPermissionContext::AccessTrigger::kSave,
           web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
       .WillOnce(base::test::RunOnceCallback<5>(
           FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));

@@ -16,7 +16,7 @@
 namespace android_webview {
 
 using HandleType = AwFileSystemAccessPermissionContext::HandleType;
-using UserAction = AwFileSystemAccessPermissionContext::UserAction;
+using AccessTrigger = AwFileSystemAccessPermissionContext::AccessTrigger;
 
 class AwFileSystemAccessPermissionContextTest : public testing::Test {
  public:
@@ -29,7 +29,7 @@ class AwFileSystemAccessPermissionContextTest : public testing::Test {
         future;
     permission_context_.ConfirmSensitiveEntryAccess(
         kTestOrigin, content::PathInfo(path), HandleType::kFile,
-        UserAction::kOpen, content::GlobalRenderFrameHostId(),
+        AccessTrigger::kOpen, content::GlobalRenderFrameHostId(),
         future.GetCallback());
     auto result = future.Get();
     return result ==

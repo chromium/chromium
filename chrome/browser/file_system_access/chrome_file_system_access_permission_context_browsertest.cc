@@ -55,7 +55,7 @@ void GrantParentDirectoryAccess(
   auto parent_grant = permission_context->GetWritePermissionGrant(
       origin, content::PathInfo(parent_dir),
       ChromeFileSystemAccessPermissionContext::HandleType::kDirectory,
-      ChromeFileSystemAccessPermissionContext::UserAction::kOpen);
+      ChromeFileSystemAccessPermissionContext::AccessTrigger::kOpen);
   base::test::TestFuture<
       content::FileSystemAccessPermissionGrant::PermissionRequestOutcome>
       parent_grant_future;
@@ -112,7 +112,7 @@ class TestFileSystemAccessPermissionContext
       const url::Origin& origin,
       const content::PathInfo& path_info,
       HandleType handle_type,
-      UserAction user_action,
+      AccessTrigger access_trigger,
       content::GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(SensitiveEntryResult)> callback) override {
     confirm_sensitive_entry_access_ = true;
@@ -121,7 +121,7 @@ class TestFileSystemAccessPermissionContext
       return;
     }
     ChromeFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
-        origin, path_info, handle_type, user_action, frame_id,
+        origin, path_info, handle_type, access_trigger, frame_id,
         std::move(callback));
   }
 
@@ -217,12 +217,14 @@ class ChromeFileSystemAccessPermissionContextBrowserTestBase
     // Checks permissions.
     auto read_grant = permission_context()->GetReadPermissionGrant(
         origin, content::PathInfo(path), handle_type,
-        ChromeFileSystemAccessPermissionContext::UserAction::kNone);
+        ChromeFileSystemAccessPermissionContext::AccessTrigger::
+            kProgrammaticRead);
     EXPECT_EQ(read_grant->GetStatus(), expected_read_status);
 
     auto write_grant = permission_context()->GetWritePermissionGrant(
         origin, content::PathInfo(path), handle_type,
-        ChromeFileSystemAccessPermissionContext::UserAction::kNone);
+        ChromeFileSystemAccessPermissionContext::AccessTrigger::
+            kProgrammaticRead);
     EXPECT_EQ(write_grant->GetStatus(), expected_write_status);
 
     // Checks extended permissions.
@@ -713,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(
   auto grant = permission_context()->GetWritePermissionGrant(
       GetOrigin(), content::PathInfo(test_dir),
       ChromeFileSystemAccessPermissionContext::HandleType::kDirectory,
-      ChromeFileSystemAccessPermissionContext::UserAction::kOpen);
+      ChromeFileSystemAccessPermissionContext::AccessTrigger::kOpen);
   base::test::TestFuture<
       content::FileSystemAccessPermissionGrant::PermissionRequestOutcome>
       future;
@@ -1566,7 +1568,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChromeAppTest,
   auto grant = permission_context.GetReadPermissionGrant(
       kTestOrigin, kTestPathInfo,
       ChromeFileSystemAccessPermissionContext::HandleType::kFile,
-      ChromeFileSystemAccessPermissionContext::UserAction::kOpen);
+      ChromeFileSystemAccessPermissionContext::AccessTrigger::kOpen);
   EXPECT_EQ(grant->GetStatus(), content::PermissionStatus::GRANTED);
 
   // Dormant grants exist after tabs are backgrounded for the amount of time

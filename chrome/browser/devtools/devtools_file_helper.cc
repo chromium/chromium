@@ -301,10 +301,15 @@ void DevToolsFileHelper::ConnectAutomaticFileSystem(
       FileSystemAccessPermissionContextFactory::GetForProfile(profile_);
   if (permission_context) {
     content::PathInfo path_info(path);
+    // TODO(crbug.com/545006893): DevTools automatic file systems can write to
+    // disk, but currently use AccessTrigger::kProgrammaticRead. Investigate
+    // updating this to a write trigger. This CL is a pure refactoring so we
+    // avoid making behavioral changes here.
     permission_context->ConfirmSensitiveEntryAccess(
         url::Origin(), path_info,
         content::FileSystemAccessPermissionContext::HandleType::kDirectory,
-        content::FileSystemAccessPermissionContext::UserAction::kNone,
+        content::FileSystemAccessPermissionContext::AccessTrigger::
+            kProgrammaticRead,
         content::GlobalRenderFrameHostId(),
         base::BindOnce(
             &DevToolsFileHelper::CheckBlocklistAndConnectAutomaticFileSystem,

@@ -101,11 +101,24 @@ inline std::ostream& operator<<(std::ostream& os, const PathInfo& path_info) {
 // All these methods must always be called on the UI thread.
 class FileSystemAccessPermissionContext {
  public:
-  // The type of action a user took that resulted in needing a permission grant
-  // for a particular path. This is used to signal to the permission context if
-  // the path was the result of a "save" operation, which an implementation can
-  // use to automatically grant write access to the path.
-  enum class UserAction {
+  // The context that resulted in needing a permission grant or sensitive entry
+  // access check for a particular path.
+  //
+  // This will be used to
+  // - Determine initial permission grant states (e.g. granting access
+  //   automatically for explicit user actions such as open/save pickers or
+  //   drag-and-drop, versus requiring prompts for restored handles).
+  // - Apply the appropriate sensitive entry blocklist (e.g. read vs write)
+  //   rules.
+  // - Determine whether interactive confirmation dialogs may be displayed, or
+  //   if blocked operations should abort programmatically.
+  //
+  // TODO(crbug.com/545006893): as a result of patching new use cases,
+  // `AccessTrigger` currently bundles various concerns together. We should
+  // consider refactoring this to decouple sensitive entry checks into an
+  // explicit check mode and prompt policy, leaving this enum simpler and only
+  // used for initial permission grant resolution.
+  enum class AccessTrigger {
     // The path for which a permission grant is requested was the result of a
     // "open" dialog. As such, only read access to files should be automatically
     // granted, but read access to directories as well as write access to files
@@ -123,10 +136,16 @@ class FileSystemAccessPermissionContext {
     // drag&drop operation. Read access should start out granted, but write
     // access will require a prompt.
     kDragAndDrop,
-    // The path for which a permission grant is requested was not the result of
-    // a user action. This is used for checking additional blocklist check of
-    // a path when obtaining a handle, therefore no prompt needs to be shown.
-    kNone,
+    // The path for which a permission grant or access check is requested was
+    // not the result of an explicit user action (e.g. obtaining child handles
+    // or programmatic read access). No prompt needs to be shown.
+    kProgrammaticRead,
+    // The path for which a permission grant or access check is requested was
+    // not the result of an explicit user action, but is for a write operation
+    // (e.g. creating a child file/directory or creating a file writer).
+    // Write-blocklisted paths should be blocked, and no prompt needs to be
+    // shown.
+    kProgrammaticWrite,
   };
 
   // This enum helps distinguish between file or directory File System Access
@@ -141,7 +160,7 @@ class FileSystemAccessPermissionContext {
       const url::Origin& origin,
       const PathInfo& path_info,
       HandleType handle_type,
-      UserAction user_action) = 0;
+      AccessTrigger access_trigger) = 0;
 
   // Returns the permission grant to use for a particular path. This could be a
   // grant that applies to more than just the path passed in, for example if a
@@ -152,7 +171,7 @@ class FileSystemAccessPermissionContext {
   GetWritePermissionGrant(const url::Origin& origin,
                           const PathInfo& path_info,
                           HandleType handle_type,
-                          UserAction user_action) = 0;
+                          AccessTrigger access_trigger) = 0;
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -172,7 +191,7 @@ class FileSystemAccessPermissionContext {
       const url::Origin& origin,
       const PathInfo& path_info,
       HandleType handle_type,
-      UserAction user_action,
+      AccessTrigger access_trigger,
       GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(SensitiveEntryResult)> callback) = 0;
 

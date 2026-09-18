@@ -110,7 +110,7 @@ class TestFileSystemAccessPermissionContext
       const url::Origin& origin,
       const content::PathInfo& path_info,
       HandleType handle_type,
-      UserAction user_action,
+      AccessTrigger access_trigger,
       content::GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(SensitiveEntryResult)> callback) override {
     std::move(callback).Run(ChromeFileSystemAccessPermissionContext::
@@ -121,24 +121,24 @@ class TestFileSystemAccessPermissionContext
   GetReadPermissionGrant(const url::Origin& origin,
                          const content::PathInfo& path_info,
                          HandleType handle_type,
-                         UserAction user_action) override {
+                         AccessTrigger access_trigger) override {
     if (read_grant_) {
       return read_grant_;
     }
     return ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
-        origin, path_info, handle_type, user_action);
+        origin, path_info, handle_type, access_trigger);
   }
 
   scoped_refptr<content::FileSystemAccessPermissionGrant>
   GetWritePermissionGrant(const url::Origin& origin,
                           const content::PathInfo& path_info,
                           HandleType handle_type,
-                          UserAction user_action) override {
+                          AccessTrigger access_trigger) override {
     if (write_grant_) {
       return write_grant_;
     }
     return ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
-        origin, path_info, handle_type, user_action);
+        origin, path_info, handle_type, access_trigger);
   }
 
   scoped_refptr<content::FileSystemAccessPermissionGrant> read_grant_;

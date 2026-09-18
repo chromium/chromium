@@ -15,10 +15,10 @@ void MockFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
     const url::Origin& origin,
     const PathInfo& path_info,
     HandleType handle_type,
-    UserAction user_action,
+    AccessTrigger access_trigger,
     GlobalRenderFrameHostId frame_id,
     base::OnceCallback<void(SensitiveEntryResult)> callback) {
-  ConfirmSensitiveEntryAccess_(origin, path_info, handle_type, user_action,
+  ConfirmSensitiveEntryAccess_(origin, path_info, handle_type, access_trigger,
                                frame_id, callback);
 }
 

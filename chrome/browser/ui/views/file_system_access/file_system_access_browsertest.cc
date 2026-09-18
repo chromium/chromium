@@ -943,7 +943,7 @@ IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
   auto grant = permission_context->GetWritePermissionGrant(
       kTestOrigin, content::PathInfo(test_file),
       content::FileSystemAccessPermissionContext::HandleType::kFile,
-      content::FileSystemAccessPermissionContext::UserAction::kSave);
+      content::FileSystemAccessPermissionContext::AccessTrigger::kSave);
 
   EXPECT_TRUE(permission_context->HasExtendedPermissionForTesting(
       kTestOrigin, content::PathInfo(test_file),
@@ -1121,7 +1121,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheFileSystemAccessBrowserTest,
   auto grant = permission_context->GetWritePermissionGrant(
       url::Origin::Create(initial_url), content::PathInfo(test_file),
       content::FileSystemAccessPermissionContext::HandleType::kFile,
-      content::FileSystemAccessPermissionContext::UserAction::kOpen);
+      content::FileSystemAccessPermissionContext::AccessTrigger::kOpen);
 
   std::optional<
       content::FileSystemAccessPermissionGrant::PermissionRequestOutcome>
@@ -1200,7 +1200,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderFileSystemAccessBrowserTest,
   auto grant = permission_context->GetWritePermissionGrant(
       url::Origin::Create(initial_url), content::PathInfo(test_file),
       content::FileSystemAccessPermissionContext::HandleType::kFile,
-      content::FileSystemAccessPermissionContext::UserAction::kOpen);
+      content::FileSystemAccessPermissionContext::AccessTrigger::kOpen);
 
   std::optional<
       content::FileSystemAccessPermissionGrant::PermissionRequestOutcome>
@@ -1317,7 +1317,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameFileSystemAccessBrowserTest,
   auto grant = permission_context->GetWritePermissionGrant(
       url::Origin::Create(fenced_frame_url), content::PathInfo(test_file),
       content::FileSystemAccessPermissionContext::HandleType::kFile,
-      content::FileSystemAccessPermissionContext::UserAction::kOpen);
+      content::FileSystemAccessPermissionContext::AccessTrigger::kOpen);
 
   base::test::TestFuture<
       content::FileSystemAccessPermissionGrant::PermissionRequestOutcome>
