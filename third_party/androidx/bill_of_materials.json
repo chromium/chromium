@@ -1515,11 +1515,6 @@
         "version": "1.2.1"
     },
     {
-        "name": "checker-compat-qual",
-        "group": "org.checkerframework",
-        "version": "2.5.5"
-    },
-    {
         "name": "checker-qual",
         "group": "org.checkerframework",
         "version": "3.43.0"
