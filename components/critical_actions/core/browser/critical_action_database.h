@@ -127,12 +127,16 @@ class CriticalActionDatabase {
   // version 2 (normalized 3-table schema).
   bool MigrateFromV1ToV2();
 
+  // Migrates schema from version 2 to version 3 (drops `url` column and index).
+  bool MigrateFromV2ToV3();
+
   // SQLite error callback.
   void DatabaseErrorCallback(int extended_error, sql::Statement* statement);
 
   const base::FilePath db_path_;
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
   sql::MetaTable meta_table_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool needs_vacuum_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

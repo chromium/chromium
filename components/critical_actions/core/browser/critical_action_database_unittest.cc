@@ -403,15 +403,119 @@ TEST_F(CriticalActionDatabaseTest, MigrationV1ToV2) {
     EXPECT_EQ(act_3->conversation_id, "conv_2");
     EXPECT_EQ(act_3->action_type, ActionType::kSettingChange);
 
-    // Verify database version was updated to 2.
+    // Verify database version was updated to 3.
     sql::MetaTable meta;
-    ASSERT_TRUE(meta.Init(&database.GetDBForTesting(), 2, 1));
-    EXPECT_EQ(meta.GetVersionNumber(), 2);
+    ASSERT_TRUE(meta.Init(&database.GetDBForTesting(), 3, 3));
+    EXPECT_EQ(meta.GetVersionNumber(), 3);
+    EXPECT_EQ(meta.GetCompatibleVersionNumber(), 3);
+    EXPECT_FALSE(database.GetDBForTesting().DoesColumnExist(
+        "CriticalActionEntries", "url"));
+    EXPECT_FALSE(database.GetDBForTesting().DoesIndexExist("idx_entries_url"));
 
     // Verify GetCriticalActions retrieves all migrated records.
     EXPECT_EQ(database.GetCriticalActions({}).size(), 3u);
 
     database.Close();
+  }
+}
+
+TEST_F(CriticalActionDatabaseTest, MigrationV2ToV3) {
+  base::HistogramTester histograms;
+  {
+    sql::Database raw_db(sql::Database::Tag("CriticalActions"));
+    ASSERT_TRUE(raw_db.Open(db_path_));
+    sql::MetaTable meta;
+    ASSERT_TRUE(meta.Init(&raw_db, /*version=*/2, /*compatible_version=*/1));
+    // Frozen V2 schema snapshot -- do NOT call InitSchema(), it is V3 now.
+    ASSERT_TRUE(raw_db.Execute("CREATE TABLE CriticalActionEntries ("
+                               "  critical_action_id TEXT PRIMARY KEY NOT NULL,"
+                               "  timestamp INTEGER NOT NULL,"
+                               "  actor_task_id TEXT,"
+                               "  action_type INTEGER NOT NULL,"
+                               "  url TEXT,"
+                               "  metadata TEXT)"));
+    ASSERT_TRUE(raw_db.Execute("CREATE INDEX idx_entries_url ON "
+                               "CriticalActionEntries(url)"));
+    ASSERT_TRUE(raw_db.Execute("CREATE TABLE CriticalActionVisits ("
+                               "  critical_action_id TEXT PRIMARY KEY NOT NULL,"
+                               "  visit_id INTEGER NOT NULL)"));
+    ASSERT_TRUE(raw_db.Execute("CREATE TABLE CriticalActionConversations ("
+                               "  critical_action_id TEXT PRIMARY KEY NOT NULL,"
+                               "  conversation_id TEXT NOT NULL)"));
+
+    ASSERT_TRUE(raw_db.Execute(
+        "INSERT INTO CriticalActionEntries VALUES ("
+        "  'act_1', 1000000, 'task_1', 1, 'https://test.com', 'meta1')"));
+    ASSERT_TRUE(raw_db.Execute(
+        "INSERT INTO CriticalActionEntries VALUES ("
+        "  'act_2', 2000000, 'task_2', 2, 'https://test.org', 'meta2')"));
+    ASSERT_TRUE(raw_db.Execute(
+        "INSERT INTO CriticalActionEntries VALUES ("
+        "  'act_3', 3000000, 'task_3', 3, 'https://test.io', 'meta3')"));
+    ASSERT_TRUE(raw_db.Execute(
+        "INSERT INTO CriticalActionVisits VALUES ('act_1', 42)"));
+    ASSERT_TRUE(raw_db.Execute(
+        "INSERT INTO CriticalActionVisits VALUES ('act_2', 43)"));
+    ASSERT_TRUE(raw_db.Execute(
+        "INSERT INTO CriticalActionVisits VALUES ('act_3', 44)"));
+    raw_db.Close();
+  }
+
+  CriticalActionDatabase database(db_path_);
+  ASSERT_TRUE(database.Init());
+  auto& db = database.GetDBForTesting();
+
+  EXPECT_FALSE(db.DoesColumnExist("CriticalActionEntries", "url"));
+  EXPECT_FALSE(db.DoesIndexExist("idx_entries_url"));
+
+  // Non-url data survived, field by field (this is also the ordinal guard).
+  auto act_1 = database.GetCriticalAction("act_1");
+  ASSERT_TRUE(act_1.has_value());
+  EXPECT_EQ(act_1->visit_id, 42);
+  EXPECT_EQ(act_1->actor_task_id, "task_1");
+  EXPECT_EQ(act_1->metadata, "meta1");
+  EXPECT_EQ(database.GetCriticalActions({}).size(), 3u);
+
+  sql::MetaTable meta;
+  ASSERT_TRUE(meta.Init(&db, 3, 3));
+  EXPECT_EQ(meta.GetVersionNumber(), 3);
+  EXPECT_EQ(meta.GetCompatibleVersionNumber(), 3);
+
+  // The one-shot VACUUM ran, succeeded, and left no free pages behind.
+  histograms.ExpectUniqueSample(
+      "CriticalActions.Database.MigrationVacuumResult", true, 1);
+  sql::Statement s(db.GetReadonlyStatement("PRAGMA freelist_count"));
+  ASSERT_TRUE(s.Step());
+  EXPECT_EQ(0, s.ColumnInt(0));
+}
+
+TEST_F(CriticalActionDatabaseTest, FreshDatabaseDoesNotVacuum) {
+  base::HistogramTester histograms;
+  {
+    CriticalActionDatabase database(db_path_);
+    ASSERT_TRUE(database.Init());
+    histograms.ExpectTotalCount(
+        "CriticalActions.Database.MigrationVacuumResult", 0);
+  }
+  {
+    CriticalActionDatabase database(db_path_);
+    ASSERT_TRUE(database.Init());
+    histograms.ExpectTotalCount(
+        "CriticalActions.Database.MigrationVacuumResult", 0);
+  }
+}
+
+TEST_F(CriticalActionDatabaseTest, SchemaHasNoUrlColumn) {
+  CriticalActionDatabase database(db_path_);
+  ASSERT_TRUE(database.Init());
+  auto& db = database.GetDBForTesting();
+  EXPECT_FALSE(db.DoesColumnExist("CriticalActionEntries", "url"));
+  EXPECT_FALSE(db.DoesIndexExist("idx_entries_url"));
+  static constexpr base::cstring_view kExpectedColumns[] = {
+      "critical_action_id", "timestamp", "actor_task_id", "action_type",
+      "metadata"};
+  for (base::cstring_view column : kExpectedColumns) {
+    EXPECT_TRUE(db.DoesColumnExist("CriticalActionEntries", column)) << column;
   }
 }
 
