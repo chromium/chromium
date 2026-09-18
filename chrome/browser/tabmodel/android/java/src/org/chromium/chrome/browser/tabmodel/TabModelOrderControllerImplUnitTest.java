@@ -379,34 +379,4 @@ public class TabModelOrderControllerImplUnitTest {
         assertTrue(TabModelOrderControllerImpl.sameModelType(mOtherModel, incognitoTab));
         assertFalse(TabModelOrderControllerImpl.sameModelType(mOtherModel, regularTab));
     }
-
-    @Test
-    public void testMightBeAdjacent() {
-        assertTrue(TabModelOrderControllerImpl.mightBeAdjacent(TabLaunchType.FROM_LINK));
-        assertTrue(
-                TabModelOrderControllerImpl.mightBeAdjacent(
-                        TabLaunchType.FROM_LONGPRESS_FOREGROUND));
-        assertTrue(
-                TabModelOrderControllerImpl.mightBeAdjacent(
-                        TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP));
-        assertTrue(
-                TabModelOrderControllerImpl.mightBeAdjacent(
-                        TabLaunchType.FROM_LONGPRESS_BACKGROUND));
-        assertTrue(
-                TabModelOrderControllerImpl.mightBeAdjacent(
-                        TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP));
-        assertTrue(
-                TabModelOrderControllerImpl.mightBeAdjacent(
-                        TabLaunchType.FROM_LONGPRESS_INCOGNITO));
-        assertTrue(
-                TabModelOrderControllerImpl.mightBeAdjacent(
-                        TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND));
-        assertTrue(
-                TabModelOrderControllerImpl.mightBeAdjacent(
-                        TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND));
-
-        assertFalse(TabModelOrderControllerImpl.mightBeAdjacent(TabLaunchType.FROM_RESTORE));
-        assertFalse(TabModelOrderControllerImpl.mightBeAdjacent(TabLaunchType.FROM_CHROME_UI));
-        assertFalse(TabModelOrderControllerImpl.mightBeAdjacent(TabLaunchType.FROM_STARTUP));
-    }
 }

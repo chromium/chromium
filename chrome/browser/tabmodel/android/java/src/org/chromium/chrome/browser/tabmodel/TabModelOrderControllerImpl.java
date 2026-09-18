@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.tab.TabAttributeKeys;
 import org.chromium.chrome.browser.tab.TabAttributes;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabLaunchTypeUtils;
 
 /**
  * Implementation of the TabModelOrderController based off of tab_strip_model_order_controller.cc
@@ -60,7 +61,7 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
             return TabList.INVALID_TAB_INDEX;
         }
 
-        if (mightBeAdjacent(type)) {
+        if (TabLaunchTypeUtils.shouldOpenAdjacent(type)) {
             position = determineInsertionIndexIfMaybeAdjacent(type, newTab);
         }
 
@@ -162,18 +163,6 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
         }
     }
 
-    /** Determine if a launch type requires calculation to determine the position of the new tab. */
-    static boolean mightBeAdjacent(@TabLaunchType int type) {
-        return type == TabLaunchType.FROM_LINK
-                || type == TabLaunchType.FROM_LONGPRESS_FOREGROUND
-                || type == TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP
-                || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND
-                || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                || type == TabLaunchType.FROM_LONGPRESS_INCOGNITO
-                || type == TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND
-                || type == TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND;
-    }
-
     @Override
     public boolean willOpenInForeground(@TabLaunchType int type, boolean isNewTabIncognitoBranded) {
         return willOpenInForeground(
@@ -187,20 +176,10 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
             boolean isNewTabIncognitoBranded,
             boolean isCurrentModelIncognitoBranded) {
         // Restore is handling the active index by itself.
-        if (type == TabLaunchType.FROM_RESTORE
-                || type == TabLaunchType.FROM_BROWSER_ACTIONS
-                || type == TabLaunchType.FROM_RESTORE_TABS_UI) {
+        if (TabLaunchTypeUtils.isRestoreLaunch(type)) {
             return false;
         }
-        return (type != TabLaunchType.FROM_LONGPRESS_BACKGROUND
-                        && type != TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                        && type != TabLaunchType.FROM_RECENT_TABS
-                        && type != TabLaunchType.FROM_SYNC_BACKGROUND
-                        && type != TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP
-                        && type != TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND
-                        && type != TabLaunchType.FROM_REPARENTING_BACKGROUND
-                        && type != TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND
-                        && type != TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND)
+        return !TabLaunchTypeUtils.isBackgroundLaunch(type)
                 || isCurrentModelIncognitoBranded != isNewTabIncognitoBranded;
     }
 
