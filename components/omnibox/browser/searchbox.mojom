@@ -44,6 +44,7 @@ struct InputKeywordModel {
   string keyword;
   string display_text;
   string icon_path;
+  string placeholder;
 };
 
 struct MatchKeywordModel {

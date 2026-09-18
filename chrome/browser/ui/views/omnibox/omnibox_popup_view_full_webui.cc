@@ -46,6 +46,7 @@ namespace {
 searchbox::mojom::InputKeywordModelPtr CreateInputKeywordModel(
     KeywordState keyword_state,
     const std::u16string& keyword,
+    const std::u16string& placeholder,
     const TemplateURLService* turl_service) {
   if (keyword_state == KeywordState::kNone) {
     CHECK(keyword.empty());
@@ -60,6 +61,7 @@ searchbox::mojom::InputKeywordModelPtr CreateInputKeywordModel(
   const auto names =
       SelectedKeywordView::GetKeywordLabelNames(keyword, turl_service);
   keyword_model->display_text = base::UTF16ToUTF8(names.full_name);
+  keyword_model->placeholder = base::UTF16ToUTF8(placeholder);
   return keyword_model;
 }
 
@@ -164,6 +166,7 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI(bool query_zps) {
     searchbox::mojom::InputKeywordModelPtr keyword_model =
         CreateInputKeywordModel(
             edit_model->keyword_state(), edit_model->keyword(),
+            edit_model->keyword_placeholder(),
             controller()->client()->GetTemplateURLService());
     // TODO(crbug.com/497883783): Consider adding a dedicated
     // `SetSelectionRange` IPC method so that when only the selection
@@ -380,6 +383,7 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
     if (state) {
       keyword_model = CreateInputKeywordModel(
           state->model_state.keyword_state, state->model_state.keyword,
+          state->model_state.keyword_placeholder,
           controller()->client()->GetTemplateURLService());
     }
     const bool is_tab_switch =

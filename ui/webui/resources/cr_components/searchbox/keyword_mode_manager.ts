@@ -94,8 +94,8 @@ export class KeywordModeManager {
    * method.
    */
   enter(
-      keyword: string, displayText: string,
-      entryMethod: KeywordModeEntryMethod): void {
+      keyword: string, displayText: string, entryMethod: KeywordModeEntryMethod,
+      placeholder: string = ''): void {
     // TODO(crbug.com/546826241): To fully support keyword mode entryMethod
     // state needs to be saved/restored across tabs.
     this.entryMethod_ = entryMethod;
@@ -106,6 +106,7 @@ export class KeywordModeManager {
       iconPath:
           this.availableKeywordModels_.get(keyword.toLowerCase())?.iconPath ||
           '',
+      placeholder: placeholder,
     };
   }
 
@@ -157,7 +158,7 @@ export class KeywordModeManager {
     assert(match.keywordModel);
     this.enter(
         match.keywordModel.keyword, match.keywordModel.chipHint,
-        KeywordModeEntryMethod.CLICK);
+        KeywordModeEntryMethod.CLICK, match.keywordModel.placeholder);
     this.delegate_.onKeywordEntered();
   }
 
@@ -177,7 +178,7 @@ export class KeywordModeManager {
     }
     this.enter(
         match.keywordModel.keyword, match.keywordModel.chipHint,
-        KeywordModeEntryMethod.TAB);
+        KeywordModeEntryMethod.TAB, match.keywordModel.placeholder);
     this.delegate_.onKeywordEntered();
     return true;
   }
@@ -253,8 +254,10 @@ export class KeywordModeManager {
 
     const keyword = model.keyword;
     const displayText = model.displayText || keyword;
+    const placeholder = model.placeholder || '';
 
-    this.enter(keyword, displayText, KeywordModeEntryMethod.SPACE_AT_END);
+    this.enter(
+        keyword, displayText, KeywordModeEntryMethod.SPACE_AT_END, placeholder);
     return true;
   }
 
@@ -319,8 +322,11 @@ export class KeywordModeManager {
 
     const keyword = model.keyword;
     const displayText = model.displayText || keyword;
+    const placeholder = model.placeholder || '';
 
-    this.enter(keyword, displayText, KeywordModeEntryMethod.SPACE_IN_MIDDLE);
+    this.enter(
+        keyword, displayText, KeywordModeEntryMethod.SPACE_IN_MIDDLE,
+        placeholder);
     return true;
   }
 
@@ -405,7 +411,8 @@ export class KeywordModeManager {
               selectedMatch.keywordModel.keyword.toLowerCase()) {
         this.enter(
             selectedMatch.keywordModel.keyword,
-            selectedMatch.keywordModel.chipHint, KeywordModeEntryMethod.TAB);
+            selectedMatch.keywordModel.chipHint, KeywordModeEntryMethod.TAB,
+            selectedMatch.keywordModel.placeholder);
       }
       return;
     }
@@ -427,6 +434,7 @@ export class KeywordModeManager {
                     .get(selectedMatch.keywordModel.keyword.toLowerCase())
                     ?.iconPath ||
           '',
+      placeholder: selectedMatch.keywordModel.placeholder,
     };
   }
 }

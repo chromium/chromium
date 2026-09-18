@@ -1434,9 +1434,7 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, SearchAtKeyword) {
       // Omnibox text should should become empty, and a keyword chip
       // should show up.
       WaitTillOmniboxViewText(""), WaitTillSearchKeywordText("Search Tabs"),
-      // No placeholder in full yet, see http://crbug.com/534854816
-      WaitTillOmniboxViewPlaceholder(
-          mode() != Mode::kFull ? u"Enter a word or two" : u""),
+      WaitTillOmniboxViewPlaceholder(u"Enter a word or two"),
       InAnyContext(SendKeyPress(InputWebContents(), ui::VKEY_S)),
       WaitTillOmniboxViewText("s"), WaitTillSearchKeywordText("Search Tabs"),
       InAnyContext(SendKeyPress(InputWebContents(), ui::VKEY_BACK)),

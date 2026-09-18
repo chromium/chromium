@@ -281,6 +281,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
   void SetAutocompleteControllerForTesting(
       std::unique_ptr<AutocompleteController> controller);
+  void SendAvailableKeywordModels();
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
@@ -320,7 +321,6 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   base::WeakPtrFactory<SearchboxHandler> weak_ptr_factory_{this};
 
   TemplateURLService* GetTemplateURLService() const;
-  void SendAvailableKeywordModels();
   void OnKeywordSpaceTriggeringPrefChanged();
 
   void OpenMatch(OmniboxPopupSelection selection,

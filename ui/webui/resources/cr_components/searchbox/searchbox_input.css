@@ -83,6 +83,10 @@ input::-webkit-search-cancel-button {
   visibility: hidden;
 }
 
+:host([in-keyword-mode]) :is(input, textarea):focus::placeholder {
+  visibility: visible;
+}
+
 cr-searchbox-icon {
   height: 100%;
   padding-inline-end: var(--cr-searchbox-icon-right-position, 4px);

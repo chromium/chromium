@@ -1336,8 +1336,6 @@ void AutocompleteMatch::GetKeywordUiState(
     KeywordState* keyword_state,
     std::u16string* keyword_out,
     std::u16string* keyword_placeholder_out) const {
-  *keyword_placeholder_out = GetKeywordPlaceholder(
-      GetTemplateURL(template_url_service), is_history_embeddings_enabled);
   if (associated_keyword.empty()) {
     keyword_out->assign(
         IsExplicitlyInvokedKeyword(template_url_service) ? keyword : u"");
@@ -1347,6 +1345,12 @@ void AutocompleteMatch::GetKeywordUiState(
     keyword_out->assign(associated_keyword);
     *keyword_state = KeywordState::kHint;
   }
+  const TemplateURL* turl =
+      keyword_out->empty()
+          ? nullptr
+          : GetTemplateURLWithKeyword(template_url_service, *keyword_out, "");
+  *keyword_placeholder_out =
+      GetKeywordPlaceholder(turl, is_history_embeddings_enabled);
 }
 
 bool AutocompleteMatch::IsExplicitlyInvokedKeyword(

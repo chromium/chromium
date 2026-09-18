@@ -1271,6 +1271,9 @@ void SearchboxHandler::SendAvailableKeywordModels() {
         &keyword_icon != &vector_icons::kSearchChromeRefreshOldIcon) {
       keyword_model->icon_path = AutocompleteIconToResourceName(keyword_icon);
     }
+    keyword_model->placeholder =
+        base::UTF16ToUTF8(AutocompleteMatch::GetKeywordPlaceholder(
+            turl, client() && client()->IsHistoryEmbeddingsEnabled()));
     models.push_back(std::move(keyword_model));
   }
 
@@ -1387,7 +1390,8 @@ void SearchboxHandler::QueryAutocomplete(
     if (is_keyword_selected && template_url) {
       edit_model()->SetKeywordInfo(
           KeywordState::kKeyword, template_url->keyword(),
-          /*keyword_placeholder=*/u"",
+          AutocompleteMatch::GetKeywordPlaceholder(
+              template_url, client() && client()->IsHistoryEmbeddingsEnabled()),
           keyword == "?" ? metrics::OmniboxEventProto::QUESTION_MARK
                          : metrics::OmniboxEventProto::SPACE_AT_END);
     } else {
