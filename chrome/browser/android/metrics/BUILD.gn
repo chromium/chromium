@@ -16,10 +16,7 @@ if (is_android) {
 
   android_library("java") {
     srcjar_deps = [ ":jni_headers" ]
-    sources = [
-      "java/src/org/chromium/chrome/browser/metrics/MainIntentBehaviorMetrics.java",
-      "java/src/org/chromium/chrome/browser/metrics/PackageMetrics.java",
-    ]
+    sources = [ "java/src/org/chromium/chrome/browser/metrics/MainIntentBehaviorMetrics.java" ]
     sources += _jni_sources
 
     deps = [
@@ -30,7 +27,6 @@ if (is_android) {
       "//chrome/browser/preferences:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/ui/android/default_browser_promo:java",
-      "//components/browser_ui/util/android:java",
       "//components/ukm/android:java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",

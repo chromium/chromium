@@ -4988,36 +4988,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.PackageStats.CacheSize" units="MB"
-    expires_after="2024-05-05">
-  <owner>nyquist@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Records the size of the user's cache at startup on Android O and above.
-  </summary>
-</histogram>
-
-<histogram name="Android.PackageStats.CodeSize" units="MB"
-    expires_after="2024-05-05">
-  <owner>nyquist@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    At startup, records the space on disk taken by Chrome application including
-    APK resources, compiled libraries, and extracted native code. Only recorded
-    for Android O and above.
-  </summary>
-</histogram>
-
-<histogram name="Android.PackageStats.DataSize" units="MB"
-    expires_after="2024-05-05">
-  <owner>nyquist@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Records the size of the user's data directory at startup on Android O and
-    above. Does not include cache size.
-  </summary>
-</histogram>
-
 <histogram name="Android.PageContentProtoViewStructureBuilder.Result"
     enum="BooleanSuccess" expires_after="2026-07-26">
   <owner>salg@google.com</owner>
