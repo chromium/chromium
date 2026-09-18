@@ -39,7 +39,7 @@ import org.chromium.url.GURL;
 public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider {
     private final Intent mIntent;
     private final @Nullable String mClientPackageName;
-    private final @Nullable SessionHolder<AuthTabSessionToken> mSession;
+    private final SessionHolder.@Nullable AuthTab mSession;
     private final ColorProvider mColorProvider;
     private final Drawable mCloseButtonIcon;
     private final @Nullable String mRedirectScheme;
@@ -65,7 +65,7 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
         assert intent != null;
         mIntent = intent;
         AuthTabSessionToken token = AuthTabSessionToken.createSessionTokenFromIntent(intent);
-        mSession = token != null ? new SessionHolder<>(token) : null;
+        mSession = token != null ? SessionHolder.of(token) : null;
         mClientPackageName =
                 IntentUtils.safeGetStringExtra(
                         intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
@@ -112,7 +112,7 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
     }
 
     @Override
-    public @Nullable SessionHolder<AuthTabSessionToken> getSession() {
+    public SessionHolder.@Nullable AuthTab getSession() {
         return mSession;
     }
 

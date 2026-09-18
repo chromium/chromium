@@ -76,7 +76,7 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
                     : getCallingPackage();
         }
 
-        SessionHolder<?> session = SessionHolder.getSessionHolderFromIntent(getIntent());
+        SessionHolder session = SessionHolder.getSessionHolderFromIntent(getIntent());
         if (session == null) {
             return null;
         }

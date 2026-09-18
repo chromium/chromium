@@ -60,7 +60,7 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
             return new CustomTabHeightStrategy();
         }
 
-        SessionHolder<?> session = intentData.getSession();
+        SessionHolder session = intentData.getSession();
         OnResizedCallback resizeCallback =
                 (height, width) ->
                         CustomTabsConnection.getInstance().onResized(session, height, width);

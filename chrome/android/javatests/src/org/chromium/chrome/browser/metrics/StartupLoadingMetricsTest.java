@@ -533,7 +533,7 @@ public class StartupLoadingMetricsTest {
         CustomTabsConnection connection = CustomTabsTestUtils.setUpConnection();
         mConnectionToCleanup = connection;
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
-        var sessionHolder = new SessionHolder<>(token);
+        var sessionHolder = SessionHolder.of(token);
         connection.newSession(token);
         connection.setCanUseHiddenTabForSession(sessionHolder, false);
         Intent intent =

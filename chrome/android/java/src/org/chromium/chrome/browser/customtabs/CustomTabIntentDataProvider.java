@@ -341,7 +341,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     private final Intent mIntent;
-    private final @Nullable SessionHolder<CustomTabsSessionToken> mSession;
+    private final SessionHolder.@Nullable CustomTab mSession;
     private final boolean mIsTrustedIntent;
     private final @Nullable Intent mKeepAliveServiceIntent;
     private final @Nullable Bundle mAnimationBundle;
@@ -419,14 +419,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      * @param session The connected session for the custom tabs activity, or null.
      * @return True if the intent or session are trusted.
      */
-    public static boolean isTrustedCustomTab(Intent intent, @Nullable SessionHolder<?> session) {
+    public static boolean isTrustedCustomTab(Intent intent, @Nullable SessionHolder session) {
         if (IntentHandler.wasIntentSenderChrome(intent)) return true;
         String packageName = getClientPackageNameFromSessionOrCallingActivity(intent, session);
         return CustomTabsConnection.getInstance().isFirstParty(packageName);
     }
 
     static @Nullable String getClientPackageNameFromSessionOrCallingActivity(
-            Intent intent, @Nullable SessionHolder<?> session) {
+            Intent intent, @Nullable SessionHolder session) {
         String packageNameFromSession =
                 CustomTabsConnection.getInstance().getClientPackageNameForSession(session);
         if (!TextUtils.isEmpty(packageNameFromSession)) return packageNameFromSession;
@@ -440,7 +440,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     public static void configureIntentForResizableCustomTab(Context context, Intent intent) {
-        SessionHolder<?> session = SessionHolder.getSessionHolderFromIntent(intent);
+        SessionHolder session = SessionHolder.getSessionHolderFromIntent(intent);
         boolean isTrustedCustomTab = isTrustedCustomTab(intent, session);
         String packageName = getClientPackageNameFromSessionOrCallingActivity(intent, session);
         @Px
@@ -585,7 +585,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         mIntent = intent;
 
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        mSession = token != null ? new SessionHolder<>(token) : null;
+        mSession = token != null ? SessionHolder.of(token) : null;
         mIsTrustedIntent = isTrustedCustomTab(intent, mSession);
 
         mAnimationBundle =
@@ -1383,7 +1383,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    public @Nullable SessionHolder<CustomTabsSessionToken> getSession() {
+    public SessionHolder.@Nullable CustomTab getSession() {
         return mSession;
     }
 

@@ -204,7 +204,7 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return The session specified in the intent, or null.
      */
-    public @Nullable SessionHolder<?> getSession() {
+    public @Nullable SessionHolder getSession() {
         return null;
     }
 

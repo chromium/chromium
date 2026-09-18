@@ -101,7 +101,9 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public CustomTabsTabModelOrchestrator tabModelOrchestrator;
     @Mock public CustomTabObserver customTabObserver;
     @Mock public ActivityLifecycleDispatcher lifecycleDispatcher;
-    @Mock public SessionHolder<CustomTabsSessionToken> session;
+    public final SessionHolder.CustomTab session =
+            SessionHolder.of(CustomTabsSessionToken.createMockSessionTokenForTesting());
+
     @Mock public TabModelSelectorImpl tabModelSelector;
     @Mock public TabModel tabModel;
     @Mock public ReparentingTask reparentingTask;

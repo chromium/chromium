@@ -77,7 +77,7 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
         String packageName = tab == null ? null : TabAssociatedApp.getAppId(tab);
         if (packageName == null) return; // No associated package
 
-        SessionHolder<?> session = mIntentDataProvider.getSession();
+        SessionHolder session = mIntentDataProvider.getSession();
         boolean isConnected =
                 packageName.equals(
                         CustomTabsConnection.getInstance().getClientPackageNameForSession(session));

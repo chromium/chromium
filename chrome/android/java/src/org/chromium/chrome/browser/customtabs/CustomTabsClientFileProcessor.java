@@ -43,7 +43,7 @@ public class CustomTabsClientFileProcessor {
      */
     @WorkerThread
     public boolean processFile(
-            SessionHolder<?> session, Uri uri, int purpose, @Nullable Bundle extras) {
+            SessionHolder session, Uri uri, int purpose, @Nullable Bundle extras) {
         if (uri == null) {
             Log.w(TAG, "Received a null uri");
             return false;
@@ -56,7 +56,7 @@ public class CustomTabsClientFileProcessor {
         return false;
     }
 
-    private boolean receiveTwaSplashImage(SessionHolder<?> sessionToken, Uri uri) {
+    private boolean receiveTwaSplashImage(SessionHolder sessionToken, Uri uri) {
         Bitmap bitmap =
                 FileUtils.queryBitmapFromContentProvider(ContextUtils.getApplicationContext(), uri);
         if (bitmap == null) return false;
@@ -67,7 +67,7 @@ public class CustomTabsClientFileProcessor {
     }
 
     /** Cleans up files associated with the session that has been disconnected. */
-    public void onSessionDisconnected(SessionHolder<?> session) {
+    public void onSessionDisconnected(SessionHolder session) {
         if (mTwaSplashImageHolderCreated && session.isCustomTab()) {
             // If the image still hasn't been claimed, delete it.
             SplashImageHolder.getInstance().takeImage(session);

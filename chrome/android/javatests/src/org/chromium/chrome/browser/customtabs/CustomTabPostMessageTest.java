@@ -118,8 +118,7 @@ public class CustomTabPostMessageTest {
         ChromeTabUtils.waitForTitle(currentTab, newTitle);
     }
 
-    private void setCanUseHiddenTabForSession(
-            SessionHolder<?> sessionHolder, boolean useHiddenTab) {
+    private void setCanUseHiddenTabForSession(SessionHolder sessionHolder, boolean useHiddenTab) {
         CustomTabsConnection.getInstance()
                 .setCanUseHiddenTabForSession(sessionHolder, useHiddenTab);
     }

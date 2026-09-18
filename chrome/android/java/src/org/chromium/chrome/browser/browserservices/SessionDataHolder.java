@@ -31,7 +31,7 @@ public class SessionDataHolder {
 
     private @Nullable SessionHandler mActiveSessionHandler;
 
-    private @Nullable Callback<SessionHolder<?>> mSessionDisconnectCallback;
+    private @Nullable Callback<SessionHolder> mSessionDisconnectCallback;
 
     private static SessionDataHolder sInstance = new SessionDataHolder();
 
@@ -50,13 +50,13 @@ public class SessionDataHolder {
 
     /** Data associated with a {@link SessionHandler} necessary to pass new intents to it. */
     private static class SessionData {
-        public final SessionHolder<?> session;
+        public final SessionHolder session;
 
         // Session handlers can reside in Activities of different types, so we need to store the
         // Activity class to be able to route new intents into it.
         public final Class<? extends Activity> activityClass;
 
-        private SessionData(SessionHolder<?> session, Class<? extends Activity> activityClass) {
+        private SessionData(SessionHolder session, Class<? extends Activity> activityClass) {
             this.session = session;
             this.activityClass = activityClass;
         }
@@ -68,7 +68,7 @@ public class SessionDataHolder {
      * @param sessionHandler {@link SessionHandler} to set.
      */
     public void setActiveHandler(SessionHandler sessionHandler) {
-        SessionHolder<?> session = sessionHandler.getSession();
+        SessionHolder session = sessionHandler.getSession();
         if (session == null) return;
 
         mActiveSessionHandler = sessionHandler;
@@ -121,16 +121,16 @@ public class SessionDataHolder {
     }
 
     /** Returns whether the given session is the currently active session. */
-    public boolean isActiveSession(@Nullable SessionHolder<?> session) {
+    public boolean isActiveSession(@Nullable SessionHolder session) {
         return getActiveHandler(session) != null;
     }
 
     /**
      * Returns the active session handler if it is associated with given session, null otherwise.
      */
-    public @Nullable SessionHandler getActiveHandler(@Nullable SessionHolder<?> session) {
+    public @Nullable SessionHandler getActiveHandler(@Nullable SessionHolder session) {
         if (mActiveSessionHandler == null) return null;
-        SessionHolder<?> activeSession = mActiveSessionHandler.getSession();
+        SessionHolder activeSession = mActiveSessionHandler.getSession();
         if (activeSession == null || !activeSession.equals(session)) return null;
         return mActiveSessionHandler;
     }
@@ -155,7 +155,7 @@ public class SessionDataHolder {
      * @return Whether the given referrer is a valid first party url to the client that launched the
      *     activity.
      */
-    public boolean canActiveHandlerUseReferrer(@Nullable SessionHolder<?> session, Uri referrer) {
+    public boolean canActiveHandlerUseReferrer(@Nullable SessionHolder session, Uri referrer) {
         SessionHandler handler = getActiveHandler(session);
         return handler != null && handler.canUseReferrer(referrer);
     }

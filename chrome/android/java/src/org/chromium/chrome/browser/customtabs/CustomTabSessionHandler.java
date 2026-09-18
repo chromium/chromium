@@ -91,7 +91,7 @@ public class CustomTabSessionHandler
     }
 
     @Override
-    public @Nullable SessionHolder<?> getSession() {
+    public @Nullable SessionHolder getSession() {
         return mIntentDataProvider.getSession();
     }
 
@@ -167,7 +167,7 @@ public class CustomTabSessionHandler
 
     @Override
     public boolean canUseReferrer(Uri referrer) {
-        SessionHolder<?> session = mIntentDataProvider.getSession();
+        SessionHolder session = mIntentDataProvider.getSession();
         String packageName =
                 CustomTabsConnection.getInstance().getClientPackageNameForSession(session);
         if (TextUtils.isEmpty(packageName)) return false;

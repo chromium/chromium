@@ -19,11 +19,11 @@ import org.chromium.content_public.browser.WebContents;
  */
 @NullMarked
 public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
-    private final SessionHolder<?> mSession;
+    private final SessionHolder mSession;
     private final Tab mTab;
     private @Nullable Long mNavigationId;
 
-    public PageLoadMetricsObserver(SessionHolder<?> session, Tab tab) {
+    public PageLoadMetricsObserver(SessionHolder session, Tab tab) {
         mSession = session;
         mTab = tab;
     }

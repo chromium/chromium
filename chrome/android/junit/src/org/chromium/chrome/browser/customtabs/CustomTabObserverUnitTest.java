@@ -14,6 +14,8 @@ import static org.mockito.Mockito.when;
 
 import android.content.Intent;
 
+import androidx.browser.customtabs.CustomTabsSessionToken;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,7 +55,9 @@ public class CustomTabObserverUnitTest {
     @Mock private WebContents mWebContents;
     @Mock private RenderWidgetHostView mRenderWidgetHostView;
     @Mock private CustomTabsConnection mCustomTabsConnection;
-    @Mock private SessionHolder<?> mSession;
+
+    private final SessionHolder mSession =
+            SessionHolder.of(CustomTabsSessionToken.createMockSessionTokenForTesting());
 
     private CustomTabObserver mObserver;
 

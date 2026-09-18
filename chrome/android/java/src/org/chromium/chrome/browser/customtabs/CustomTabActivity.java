@@ -86,7 +86,7 @@ import org.chromium.ui.util.ColorUtils;
 /** The activity for custom tabs. It will be launched on top of a client's task. */
 public class CustomTabActivity extends BaseCustomTabActivity {
     private static final String TAG = "CustomTab";
-    private SessionHolder<?> mSession;
+    private SessionHolder mSession;
 
     private final CustomTabsConnection mConnection = CustomTabsConnection.getInstance();
     private int mNumOmniboxNavigationEventsPerSession;
@@ -250,7 +250,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     @Override
     public void finishNativeInitialization() {
-        mConnection.showSignInToastIfNecessary(mSession, getIntent(), getProfileProviderSupplier());
+        mConnection.showSignInToastIfNecessary(getIntent(), getProfileProviderSupplier());
 
         new CustomTabTrustedCdnPublisherUrlVisibility(
                 getWindowAndroid(),

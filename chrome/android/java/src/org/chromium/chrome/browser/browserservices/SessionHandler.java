@@ -26,7 +26,7 @@ public interface SessionHandler {
     /**
      * @return The session this {@link SessionHandler} is associated with.
      */
-    @Nullable SessionHolder<?> getSession();
+    @Nullable SessionHolder getSession();
 
     /**
      * Finds the action button with the given id, and updates it with the new content.

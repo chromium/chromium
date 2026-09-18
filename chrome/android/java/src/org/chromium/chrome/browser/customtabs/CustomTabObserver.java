@@ -54,7 +54,7 @@ import java.util.List;
 @NullMarked
 public class CustomTabObserver implements TabObserver {
     private final @Nullable CustomTabsConnection mCustomTabsConnection;
-    private final @Nullable SessionHolder<?> mSession;
+    private final @Nullable SessionHolder mSession;
 
     private final NavigationInfoCaptureTrigger mNavigationInfoCaptureTrigger =
             new NavigationInfoCaptureTrigger(this::captureNavigationInfo);
@@ -163,7 +163,7 @@ public class CustomTabObserver implements TabObserver {
         }
     }
 
-    public CustomTabObserver(boolean openedByChrome, @Nullable SessionHolder<?> token) {
+    public CustomTabObserver(boolean openedByChrome, @Nullable SessionHolder token) {
         mCustomTabsConnection = openedByChrome ? null : CustomTabsConnection.getInstance();
         mSession = token;
         if (mCustomTabsConnection != null

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import androidx.browser.customtabs.CustomTabsCallback;
+import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,7 +34,9 @@ import org.chromium.net.NetError;
 public class CustomTabNavigationEventObserverUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private CustomTabsConnection mConnection;
-    @Mock private SessionHolder<?> mSessionHolder;
+
+    private final SessionHolder mSessionHolder =
+            SessionHolder.of(CustomTabsSessionToken.createMockSessionTokenForTesting());
 
     @Before
     public void setup() {

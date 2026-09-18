@@ -98,7 +98,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     private final TabModelInitializer mTabModelInitializer;
     private final CipherFactory mCipherFactory;
 
-    @Nullable private final SessionHolder<?> mSession;
+    @Nullable private final SessionHolder mSession;
     private final Intent mIntent;
     @Nullable private final CustomTabResumeManager mResumeManager;
     @MonotonicNonNull private CookiesFetcher mCookiesFetcher;
@@ -408,7 +408,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             BrowserServicesIntentDataProvider intentDataProvider) {
         String url = intentDataProvider.getUrlToLoad();
         assumeNonNull(url);
-        SessionHolder<?> token = intentDataProvider.getSession();
+        SessionHolder token = intentDataProvider.getSession();
         HiddenTab hiddenTab =
                 CustomTabsConnection.getInstance().takeHiddenTab(token, url, intentDataProvider);
         if (hiddenTab == null) return null;
@@ -593,7 +593,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             CustomTabObserver customTabObserver,
             CustomTabNavigationEventObserver customTabNavigationEventObserver,
             Tab tab,
-            @Nullable SessionHolder<?> token) {
+            @Nullable SessionHolder token) {
         registrar.registerTabObserver(customTabObserver);
         registrar.registerTabObserver(customTabNavigationEventObserver);
         if (token != null) {

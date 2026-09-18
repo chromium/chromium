@@ -95,7 +95,7 @@ public class CustomTabIntentHandler {
         if (maybeRelaunchForCctResumption(intentDataProvider)) {
             return false;
         }
-        SessionHolder<?> session = intentDataProvider.getSession();
+        SessionHolder session = intentDataProvider.getSession();
         WebappExtras webappExtras = intentDataProvider.getWebappExtras();
         if (webappExtras != null) {
             // Don't navigate if the purpose of the intent was to bring the webapp to the

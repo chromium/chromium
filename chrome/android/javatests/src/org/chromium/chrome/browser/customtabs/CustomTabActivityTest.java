@@ -446,7 +446,7 @@ public class CustomTabActivityTest {
         return bitmap;
     }
 
-    private void setCanUseHiddenTabForSession(SessionHolder<?> token, boolean useHiddenTab) {
+    private void setCanUseHiddenTabForSession(SessionHolder token, boolean useHiddenTab) {
         CustomTabsConnection.getInstance().setCanUseHiddenTabForSession(token, useHiddenTab);
     }
 
@@ -1765,7 +1765,7 @@ public class CustomTabActivityTest {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
-        var sessionHolder = new SessionHolder<>(token);
+        var sessionHolder = SessionHolder.of(token);
         connection.newSession(token);
         setCanUseHiddenTabForSession(sessionHolder, true);
         Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(mTestPage), null, null));
@@ -1786,7 +1786,7 @@ public class CustomTabActivityTest {
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.createMockSessionTokenForTesting();
-        var sessionHolder = new SessionHolder<>(token);
+        var sessionHolder = SessionHolder.of(token);
         connection.newSession(token);
         setCanUseHiddenTabForSession(sessionHolder, true);
         connection.warmup();
@@ -1810,7 +1810,7 @@ public class CustomTabActivityTest {
     public void testHiddenTabInvalidUrl() throws Exception {
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
-        var sessionHolder = new SessionHolder<>(token);
+        var sessionHolder = SessionHolder.of(token);
         connection.newSession(token);
         setCanUseHiddenTabForSession(sessionHolder, true);
         Assert.assertFalse(
@@ -1864,7 +1864,7 @@ public class CustomTabActivityTest {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
-        var sessionHolder = new SessionHolder<>(token);
+        var sessionHolder = SessionHolder.of(token);
         connection.newSession(token);
         setCanUseHiddenTabForSession(sessionHolder, true);
         Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(mTestPage), null, null));
@@ -2255,7 +2255,7 @@ public class CustomTabActivityTest {
                 new CustomTabsConnection() {
                     @Override
                     public void setClientDataHeaderForNewTab(
-                            SessionHolder<?> session, WebContents webContents) {
+                            SessionHolder session, WebContents webContents) {
                         setClientDataHeader(webContents, expectedHeader);
                     }
                 });
@@ -2649,7 +2649,7 @@ public class CustomTabActivityTest {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         CustomTabsConnection connection = CustomTabsTestUtils.setUpConnection();
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
-        var sessionHolder = new SessionHolder<>(token);
+        var sessionHolder = SessionHolder.of(token);
         connection.newSession(token);
         Bundle extras = null;
         setCanUseHiddenTabForSession(sessionHolder, useHiddenTab);
@@ -2792,8 +2792,7 @@ public class CustomTabActivityTest {
         }
     }
 
-    private SessionHolder<?> warmUpAndLaunchUrlWithSession(Intent intentWithSession)
-            throws Exception {
+    private SessionHolder warmUpAndLaunchUrlWithSession(Intent intentWithSession) throws Exception {
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         var token = SessionHolder.getSessionHolderFromIntent(intentWithSession);
         connection.newSession(token.getSessionAsCustomTab());
@@ -2802,7 +2801,7 @@ public class CustomTabActivityTest {
         return token;
     }
 
-    private SessionHolder<?> warmUpAndLaunchUrlWithSession() throws Exception {
+    private SessionHolder warmUpAndLaunchUrlWithSession() throws Exception {
         return warmUpAndLaunchUrlWithSession(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         ApplicationProvider.getApplicationContext(), mTestPage));

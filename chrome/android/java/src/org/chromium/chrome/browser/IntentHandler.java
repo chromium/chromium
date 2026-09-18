@@ -687,7 +687,7 @@ public class IntentHandler {
      */
     private static @Nullable String getReferrerUrl(Intent intent) {
         Uri referrerExtra = getReferrer(intent);
-        SessionHolder<?> session = SessionHolder.getSessionHolderFromIntent(intent);
+        SessionHolder session = SessionHolder.getSessionHolderFromIntent(intent);
         if (referrerExtra == null && session != null) {
             Referrer referrer =
                     CustomTabsConnection.getInstance().getDefaultReferrerForSession(session);

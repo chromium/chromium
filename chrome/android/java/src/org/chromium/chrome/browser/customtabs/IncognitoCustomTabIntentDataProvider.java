@@ -55,7 +55,7 @@ import java.util.List;
 @NullMarked
 public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentDataProvider {
     private final Intent mIntent;
-    private final @Nullable SessionHolder<CustomTabsSessionToken> mSession;
+    private final SessionHolder.@Nullable CustomTab mSession;
     private final boolean mIsTrustedIntent;
     private final @Nullable Bundle mAnimationBundle;
     private final ColorProvider mColorProvider;
@@ -78,7 +78,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         mIntent = intent;
         mUrlToLoad = IntentHandler.getUrlFromIntent(intent);
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        mSession = token != null ? new SessionHolder<>(token) : null;
+        mSession = token != null ? SessionHolder.of(token) : null;
         mSendersPackageName = getClientPackageNameFromSessionOrCallingActivity(intent, mSession);
         mIsTrustedIntent = isTrustedCustomTab(intent, mSession);
         assert isOffTheRecord();
@@ -227,7 +227,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     }
 
     @Override
-    public @Nullable SessionHolder<?> getSession() {
+    public @Nullable SessionHolder getSession() {
         return mSession;
     }
 

@@ -63,8 +63,8 @@ public class ClientManagerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private ClientManager mClientManager;
-    private final SessionHolder<?> mSession =
-            new SessionHolder<>(CustomTabsSessionToken.createMockSessionTokenForTesting());
+    private final SessionHolder mSession =
+            SessionHolder.of(CustomTabsSessionToken.createMockSessionTokenForTesting());
     private final int mUid = Process.myUid();
     private final int mPid = Process.myPid();
 
@@ -213,8 +213,8 @@ public class ClientManagerTest {
         Assert.assertEquals(
                 ClientManager.CalledWarmup.SESSION_WARMUP, mClientManager.getWarmupState(mSession));
 
-        SessionHolder<?> sessionHolder =
-                new SessionHolder<>(CustomTabsSessionToken.createMockSessionTokenForTesting());
+        SessionHolder sessionHolder =
+                SessionHolder.of(CustomTabsSessionToken.createMockSessionTokenForTesting());
         mClientManager.newSession(
                 sessionHolder,
                 mUid,

@@ -145,7 +145,7 @@ public class CustomTabActivityEphemeralTest {
                 });
     }
 
-    private void setCanUseHiddenTabForSession(SessionHolder<?> token, boolean useHiddenTab) {
+    private void setCanUseHiddenTabForSession(SessionHolder token, boolean useHiddenTab) {
         // Save the connection. In case the hidden tab is not consumed by the test, ensure that it
         // is properly cleaned up after the test.
         CustomTabsConnection.getInstance().mClientManager.setHideDomainForSession(token, true);

@@ -23,7 +23,7 @@ import java.util.Map;
  */
 @NullMarked
 public class SplashImageHolder {
-    private final Map<SessionHolder<?>, Bitmap> mBitmaps =
+    private final Map<SessionHolder, Bitmap> mBitmaps =
             Collections.synchronizedMap(new ArrayMap<>());
 
     private static @Nullable SplashImageHolder sInstance;
@@ -39,12 +39,12 @@ public class SplashImageHolder {
      * Puts the bitmap into cache. It is expected to be retrieved shortly thereafter using {@link
      * #takeImage}.
      */
-    public void putImage(SessionHolder<?> token, Bitmap bitmap) {
+    public void putImage(SessionHolder token, Bitmap bitmap) {
         mBitmaps.put(token, bitmap);
     }
 
     /** Takes the bitmap out of the cache. */
-    public @Nullable Bitmap takeImage(@Nullable SessionHolder<?> token) {
+    public @Nullable Bitmap takeImage(@Nullable SessionHolder token) {
         return mBitmaps.remove(token);
     }
 }

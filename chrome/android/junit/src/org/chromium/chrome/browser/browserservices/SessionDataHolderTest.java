@@ -43,8 +43,8 @@ public class SessionDataHolderTest {
 
     private Intent mIntent1;
     private Intent mIntent2;
-    private SessionHolder<?> mSession1;
-    private SessionHolder<?> mSession2;
+    private SessionHolder mSession1;
+    private SessionHolder mSession2;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock CustomTabsConnection mConnection;
@@ -52,7 +52,7 @@ public class SessionDataHolderTest {
     @Mock SessionHandler mHandler2;
     @Mock Activity mActivityInTask1;
     @Mock Activity mActivityInTask2;
-    @Captor ArgumentCaptor<Callback<SessionHolder<?>>> mDisconnectCallbackCaptor;
+    @Captor ArgumentCaptor<Callback<SessionHolder>> mDisconnectCallbackCaptor;
 
     @Before
     public void setUp() {
@@ -180,8 +180,8 @@ public class SessionDataHolderTest {
         assertNull(activity);
     }
 
-    private void disconnect(SessionHolder<?> session) {
-        Callback<SessionHolder<?>> callback = mDisconnectCallbackCaptor.getValue();
+    private void disconnect(SessionHolder session) {
+        Callback<SessionHolder> callback = mDisconnectCallbackCaptor.getValue();
         if (callback != null) {
             callback.onResult(session);
         }

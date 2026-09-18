@@ -102,7 +102,7 @@ public class CustomTabsConnectionUnitTest {
     @Mock private Tab mTab;
 
     private CustomTabsConnection mConnection;
-    private SessionHolder<?> mSessionHolder;
+    private SessionHolder mSessionHolder;
     private CustomTabsSessionToken mSession;
     private PostMessageServiceConnection mPostMessageServiceConnection;
     private PostMessageHandler mPostMessageHandler;
@@ -112,7 +112,7 @@ public class CustomTabsConnectionUnitTest {
         CustomTabsConnection.setInstanceForTesting(null);
         mConnection = CustomTabsConnection.getInstance();
         mSession = spy(CustomTabsSessionToken.createMockSessionTokenForTesting());
-        mSessionHolder = new SessionHolder<>(mSession);
+        mSessionHolder = SessionHolder.of(mSession);
         when(mSession.getCallback()).thenReturn(mCallback);
         doReturn(mSessionHolder).when(mSessionHandler).getSession();
         SessionDataHolder.getInstance().setActiveHandler(mSessionHandler);
@@ -409,7 +409,7 @@ public class CustomTabsConnectionUnitTest {
     // TODO(https://crrev.com/c/4118209) Add more tests for Feature enabling/disabling.
 
     private BaseCustomTabActivity createMockCustomTabActivity(
-            boolean hasTargetNetwork, SessionHolder<?> session, boolean finishing) {
+            boolean hasTargetNetwork, SessionHolder session, boolean finishing) {
         BaseCustomTabActivity activity = mock(BaseCustomTabActivity.class);
         BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
         when(activity.getIntentDataProvider()).thenReturn(provider);
@@ -449,8 +449,8 @@ public class CustomTabsConnectionUnitTest {
 
     @Test
     public void testCleanUpSession_differentSession_doesNotFinish() {
-        SessionHolder<?> otherSession =
-                new SessionHolder<>(CustomTabsSessionToken.createMockSessionTokenForTesting());
+        SessionHolder otherSession =
+                SessionHolder.of(CustomTabsSessionToken.createMockSessionTokenForTesting());
         BaseCustomTabActivity activity =
                 createMockCustomTabActivity(
                         /* hasTargetNetwork= */ true, otherSession, /* finishing= */ false);
