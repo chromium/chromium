@@ -115,7 +115,6 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/menus/simple_menu_model.h"
-#include "ui/message_center/test/message_center_waiter.h"
 #include "ui/wm/core/window_util.h"
 #include "url/gurl.h"
 
