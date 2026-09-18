@@ -12,10 +12,15 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/webui/ash/system_web_dialog",
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+}
