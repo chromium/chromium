@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/child_process_id_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/script_injection_tracker.h"
@@ -231,6 +232,21 @@ void URLLoaderFactoryManager::OverrideURLLoaderFactoryParams(
     // called and the time
     // ContentBrowserClient::OverrideURLLoaderFactoryParams is called.
     return;
+  }
+
+  // A sandboxed frame (or page) derived from an extension may be hosted in a
+  // separate, unprivileged renderer process under kIsolateSandboxedIframes.
+  // Only grant extension privileges if the recipient process is actually a
+  // privileged extension process.
+  if (origin.opaque() && !is_for_isolated_world) {
+    ProcessMap* process_map = ProcessMap::Get(browser_context);
+    if (!process_map || factory_params->process_id.is_browser() ||
+        !process_map->IsPrivilegedExtensionProcess(
+            *extension,
+            content::ToChildProcessId(
+                factory_params->process_id.renderer_process_id()))) {
+      return;
+    }
   }
 
   // Identify and set |factory_params| that need to be overridden.

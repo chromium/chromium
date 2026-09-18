@@ -47,7 +47,9 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id_util.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -3108,6 +3110,75 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // 6b. Verify that ORB blocked the last response.
   VerifyFetchWasBlockedByOrb(other_url);
+}
+
+// Tests that process-isolated sandboxed frames do not receive extension factory
+// privileges (defense-in-depth against a compromised renderer).
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
+                       FromProcessIsolatedSandboxedPage_FactoryParams) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Sandboxed Page Factory Params Test",
+           "version": "1.0",
+           "manifest_version": 3,
+           "sandbox": {
+             "pages": [ "sandboxed.html" ]
+           }
+         })";
+  dir_.WriteManifest(kManifest);
+  dir_.WriteFile(FILE_PATH_LITERAL("sandboxed.html"), "<html>Sandboxed</html>");
+  dir_.WriteFile(FILE_PATH_LITERAL("page.html"),
+                 "<html><iframe src=\"sandboxed.html\"></iframe></html>");
+  const Extension* extension = LoadExtension(dir_.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(NavigateToURL(active_web_contents(),
+                            extension->GetResourceURL("page.html")));
+  content::RenderFrameHost* main_frame =
+      active_web_contents()->GetPrimaryMainFrame();
+  content::RenderFrameHost* sandboxed_frame =
+      content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(sandboxed_frame);
+
+  // Test factory parameters for the main extension frame.
+  network::mojom::URLLoaderFactoryParamsPtr main_frame_params =
+      network::mojom::URLLoaderFactoryParams::New();
+  main_frame_params->process_id =
+      content::ToOriginatingProcessId(main_frame->GetProcess()->GetID());
+  main_frame_params->is_trusted = false;
+  main_frame_params->unsafe_non_webby_initiator = false;
+
+  extensions::URLLoaderFactoryManager::OverrideURLLoaderFactoryParams(
+      active_web_contents()->GetBrowserContext(),
+      main_frame->GetLastCommittedOrigin(),
+      /*is_for_isolated_world=*/false,
+      /*is_for_service_worker=*/false, main_frame_params.get());
+
+  EXPECT_TRUE(main_frame_params->unsafe_non_webby_initiator);
+
+  // Test factory parameters for the manifest-sandboxed subframe.
+  network::mojom::URLLoaderFactoryParamsPtr sandboxed_params =
+      network::mojom::URLLoaderFactoryParams::New();
+  sandboxed_params->process_id =
+      content::ToOriginatingProcessId(sandboxed_frame->GetProcess()->GetID());
+  sandboxed_params->is_trusted = false;
+  sandboxed_params->unsafe_non_webby_initiator = false;
+
+  extensions::URLLoaderFactoryManager::OverrideURLLoaderFactoryParams(
+      active_web_contents()->GetBrowserContext(),
+      sandboxed_frame->GetLastCommittedOrigin(),
+      /*is_for_isolated_world=*/false,
+      /*is_for_service_worker=*/false, sandboxed_params.get());
+
+  // Under Site Isolation, verify the frame lacks extension factory privileges.
+  // Without isolation, the frame shares the process and inherits privileges.
+  if (content::SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
+    EXPECT_NE(main_frame->GetProcess(), sandboxed_frame->GetProcess());
+    EXPECT_FALSE(sandboxed_params->unsafe_non_webby_initiator);
+  } else {
+    EXPECT_EQ(main_frame->GetProcess(), sandboxed_frame->GetProcess());
+    EXPECT_TRUE(sandboxed_params->unsafe_non_webby_initiator);
+  }
 }
 
 }  // namespace extensions
