@@ -6,7 +6,7 @@
 
 import glob
 import os
-import shutil
+import pathlib
 import subprocess
 import sys
 import time
@@ -88,26 +88,28 @@ def main():
     yesno = sys.stdin.readline().strip()
     if yesno not in ['N', 'n']:
         return 1
+    chromium_src_dir = pathlib.Path(__file__).resolve().parents[2]
+    tools_resources_dir = pathlib.Path(path_to_wpt_tools_dir, "wpt",
+                                       "resources")
+    tests_resources_dir = pathlib.Path(chromium_src_dir, "third_party", "blink",
+                                       "web_tests", "external", "wpt",
+                                       "resources")
+    dst_dir = pathlib.Path(chromium_src_dir, "third_party", "blink",
+                           "web_tests", "resources")
+    file_contents = {}
+    for src in [
+            tools_resources_dir / "testdriver.js",
+            tools_resources_dir / "testdriver-actions.js",
+            tests_resources_dir / "testharness.js",
+            tests_resources_dir / "check-layout-th.js",
+    ]:
+        file_contents[src.name] = src.read_bytes()
+
     javascript_branch = "%s-%d" % (current_branch, int(time.time()))
     print("Roll wpt javascript on branch: %s" % javascript_branch)
     subprocess.check_call(['git', 'new-branch', javascript_branch])
-    files_to_roll = ["testharness.js", "testdriver.js", "testdriver-actions.js", "check-layout-th.js"]
-    chromium_src_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
-    source_dir = os.path.join(chromium_src_dir,
-                              "third_party",
-                              "blink",
-                              "web_tests",
-                              "external",
-                              "wpt",
-                              "resources")
-    dst_dir = os.path.join(chromium_src_dir,
-                           "third_party",
-                           "blink",
-                           "web_tests",
-                           "resources")
-    for f in files_to_roll:
-        shutil.copy(os.path.join(source_dir, f),
-                    os.path.join(dst_dir, f))
+    for f, content in file_contents.items():
+        (dst_dir / f).write_bytes(content)
 
     change_files = subprocess.check_output(['git',
                                             'diff',
@@ -118,8 +120,8 @@ def main():
     if change_files == '':
         print("No javascript changes to roll!")
     else:
-        for f in files_to_roll:
-            subprocess.check_call(['git', 'add', os.path.join(dst_dir, f)])
+        for f in file_contents:
+            subprocess.check_call(['git', 'add', str(dst_dir / f)])
         message = ("Roll wpt javascript\n\nThis rolls wpt javascript to latest commit at\n"
                    "%s.\n" % upstream_url)
         subprocess.check_call(['git', 'commit', '-m', message])
