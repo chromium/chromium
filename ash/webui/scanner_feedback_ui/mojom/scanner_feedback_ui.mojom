@@ -9,7 +9,7 @@ import "url/mojom/url.mojom";
 // Encompasses all fixed additional information to attach to a given feedback
 // report. Will be displayed to the user in the feedback form.
 struct FeedbackInfo {
-  // A human-readible string showing the details of the action performed.
+  // A human-readable string showing the details of the action performed.
   // Will realistically be <50kB.
   // The contents are derived from a Google-owned server response.
   string action_details;
