@@ -395,22 +395,20 @@ public class TabRemoverImpl implements TabRemover {
                     };
         }
 
-        // These calls should be kept up-to-date with any params in TabClosureParams.
+        TabClosureParams.Builder builder =
+                isAllTabs
+                        ? params.toPartialClosureBuilder(tabsToClose)
+                        : params.toBuilder(tabsToClose);
+
         if (params.tabCloseType == TabCloseType.SINGLE) {
-            assert tabsToClose.size() == 1;
-            return TabClosureParams.closeTab(tabsToClose.get(0))
-                    .recommendedNextTab(params.recommendedNextTab)
-                    .uponExit(params.uponExit && !createdPlaceholders)
-                    .allowUndo(params.allowUndo && !preventUndo)
-                    .tabClosingSource(params.tabClosingSource)
-                    .withUndoRunnable(undoRunnable)
-                    .build();
+            // Placeholder tabs left in the model mean the closure no longer exits the app. SINGLE
+            // is the only close type that needs that correction applied here. MULTIPLE cannot
+            // carry uponExit at all, and an ALL closure only reaches this line when placeholders
+            // were created, by which point toPartialClosureBuilder has narrowed it to MULTIPLE and
+            // dropped uponExit -- the same answer this expression would have produced.
+            builder.uponExit(params.uponExit && !createdPlaceholders);
         }
-        return TabClosureParams.closeTabs(tabsToClose)
-                .allowUndo(params.allowUndo && !preventUndo)
-                .hideTabGroups(params.hideTabGroups)
-                .saveToTabRestoreService(params.saveToTabRestoreService)
-                .tabClosingSource(params.tabClosingSource)
+        return builder.allowUndo(params.allowUndo && !preventUndo)
                 .withUndoRunnable(undoRunnable)
                 .build();
     }

@@ -221,6 +221,136 @@ public class TabClosureParamsUnitTest {
     }
 
     @Test
+    public void testToBuilder_CloseTab_CarriesOverEveryField() {
+        TabClosureParams params =
+                TabClosureParams.closeTab(mTab1)
+                        .recommendedNextTab(mTab2)
+                        .uponExit(true)
+                        .allowUndo(false)
+                        .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                        .withUndoRunnable(mUndoRunnable)
+                        .build();
+
+        assertEquals("Copy should equal the original", params, params.toBuilder().build());
+    }
+
+    @Test
+    public void testToBuilder_CloseTabs_CarriesOverEveryField() {
+        TabClosureParams params =
+                TabClosureParams.closeTabs(List.of(mTab1, mTab2))
+                        .allowUndo(false)
+                        .hideTabGroups(true)
+                        .saveToTabRestoreService(false)
+                        .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                        .withUndoRunnable(mUndoRunnable)
+                        .build();
+
+        assertEquals("Copy should equal the original", params, params.toBuilder().build());
+    }
+
+    @Test
+    public void testToBuilder_CloseAllTabs_CarriesOverEveryField() {
+        TabClosureParams params =
+                TabClosureParams.closeAllTabs()
+                        .uponExit(true)
+                        .allowUndo(false)
+                        .hideTabGroups(true)
+                        .saveToTabRestoreService(false)
+                        .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                        .withUndoRunnable(mUndoRunnable)
+                        .build();
+
+        assertEquals("Copy should equal the original", params, params.toBuilder().build());
+    }
+
+    @Test
+    public void testToBuilder_PreservesIsTabGroup() {
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        TabClosureParams params =
+                TabClosureParams.forCloseTabGroup(mTabModel, TAB_GROUP_ID).build();
+
+        TabClosureParams copy = params.toBuilder().build();
+
+        assertTrue("Copy should still be a tab group closure", copy.isTabGroup);
+        assertEquals("Copy should equal the original", params, copy);
+    }
+
+    @Test
+    public void testToBuilder_ReplacesTabs() {
+        TabClosureParams params =
+                TabClosureParams.closeTabs(List.of(mTab1, mTab2)).hideTabGroups(true).build();
+
+        TabClosureParams copy = params.toBuilder(List.of(mTab1)).build();
+
+        assertEquals("Tabs should be replaced", List.of(mTab1), copy.tabs);
+        assertTrue("Every other field should carry over", copy.hideTabGroups);
+    }
+
+    @Test
+    public void testToBuilder_UnsupportedReplacements() {
+        TabClosureParams allTabsParams = TabClosureParams.closeAllTabs().build();
+        TabClosureParams singleTabParams = TabClosureParams.closeTab(mTab1).build();
+        TabClosureParams multipleTabsParams =
+                TabClosureParams.closeTabs(List.of(mTab1, mTab2)).build();
+        List<Tab> oneTab = List.of(mTab1);
+        List<Tab> twoTabs = List.of(mTab1, mTab2);
+        List<Tab> noTabs = List.of();
+
+        assertThrows(AssertionError.class, () -> allTabsParams.toBuilder(oneTab));
+        assertThrows(AssertionError.class, () -> singleTabParams.toBuilder(twoTabs));
+        assertThrows(AssertionError.class, () -> multipleTabsParams.toBuilder(noTabs));
+    }
+
+    @Test
+    public void testToPartialClosureBuilder_CarriesOverSupportedFields() {
+        TabClosureParams params =
+                TabClosureParams.closeAllTabs()
+                        .uponExit(true)
+                        .allowUndo(false)
+                        .hideTabGroups(true)
+                        .saveToTabRestoreService(false)
+                        .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                        .withUndoRunnable(mUndoRunnable)
+                        .build();
+
+        TabClosureParams partialParams = params.toPartialClosureBuilder(List.of(mTab1)).build();
+
+        assertEquals(
+                "Should be TabCloseType.MULTIPLE",
+                TabCloseType.MULTIPLE,
+                partialParams.tabCloseType);
+        assertFalse("Should no longer be all tabs", partialParams.isAllTabs);
+        assertEquals("Tabs should be the surviving tabs", List.of(mTab1), partialParams.tabs);
+        assertFalse("Should not allow undo", partialParams.allowUndo);
+        assertTrue("Should hide tab groups", partialParams.hideTabGroups);
+        assertFalse("Should not save to tab restore service", partialParams.saveToTabRestoreService);
+        assertEquals(
+                "Tab closing source should carry over",
+                TabClosingSource.TABLET_TAB_STRIP,
+                partialParams.tabClosingSource);
+        assertEquals("Undo runnable should carry over", mUndoRunnable, partialParams.undoRunnable);
+        assertFalse(
+                "uponExit is unsupported by a multi-tab closure and must be dropped",
+                partialParams.uponExit);
+    }
+
+    @Test
+    public void testToPartialClosureBuilder_RequiresAllTabsClosure() {
+        TabClosureParams params = TabClosureParams.closeTabs(List.of(mTab1, mTab2)).build();
+        List<Tab> oneTab = List.of(mTab1);
+
+        assertThrows(AssertionError.class, () -> params.toPartialClosureBuilder(oneTab));
+    }
+
+    @Test
+    public void testToPartialClosureBuilder_RequiresSurvivingTabs() {
+        TabClosureParams params = TabClosureParams.closeAllTabs().build();
+        List<Tab> noTabs = List.of();
+
+        assertThrows(AssertionError.class, () -> params.toPartialClosureBuilder(noTabs));
+    }
+
+    @Test
     public void testTabClosureParams_Equality() {
         TabClosureParams tab1Params = TabClosureParams.closeTab(mTab1).build();
         TabClosureParams tab1ParamsDuplicate = TabClosureParams.closeTab(mTab1).build();
