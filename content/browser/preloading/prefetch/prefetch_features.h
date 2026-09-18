@@ -91,6 +91,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchMultipleActiveSetSizeLimitForBase);
 CONTENT_EXPORT extern const base::FeatureParam<size_t>
     kPrefetchMultipleActiveSetSizeLimitForBaseValue;
 
+// When enabled, calculates active set size limit for burst per
+// `PrefetchSchedulerPriority`.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchSchedulerBurstLimitPerPriority);
+
 // Controls the limit for Eager prefetches.
 CONTENT_EXPORT
 BASE_DECLARE_FEATURE(kPrefetchEagerLimit);

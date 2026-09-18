@@ -85,6 +85,9 @@ const base::FeatureParam<size_t>
         "prefetch_multiple_active_set_size_limit_for_base_value", 3};
 #endif
 
+BASE_FEATURE(kPrefetchSchedulerBurstLimitPerPriority,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPrefetchEagerLimit, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<size_t> kMaxNumberOfEagerPrefetchesPerPage{
     &kPrefetchEagerLimit, "max_number_of_eager_prefetches_per_page", 2};

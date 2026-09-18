@@ -8055,6 +8055,183 @@ TEST_P(PrefetchServiceTest,
             PrefetchContainer::LoadState::kEligible);
 }
 
+// Tests bursting behavior with `kPrefetchSchedulerBurstLimitPerPriority`.
+//
+// Scenario:
+//
+// - `kPrefetchSchedulerBurstLimitPerPriority` is enabled.
+// - `kPrerender2FallbackPrefetchSpecRules` is enabled with `kBurst` policy
+//   (limit is base + 1 = 2).
+// - `kWebViewPrefetchHighestPrefetchPriority` is enabled with burst limit 4.
+// - `kPrefetchMultipleActiveSetSizeLimitForBase` is disabled (base limit is 1).
+// - Interleaved prefetches are triggered in order:
+//   `webview_1` -> `prerender_1` -> `webview_2` -> `prerender_2` ->
+//   `webview_3` -> `prerender_3` -> `webview_4`.
+// - Initial saturation:
+//   - `webview_1` starts (active: 1).
+//   - `prerender_1` starts (active: 2).
+//   - `webview_2` starts (active: 3).
+//   - `prerender_2` stays eligible because prerender burst limit (2) is
+//     exceeded.
+//   - `webview_3` starts (active: 4) because webview burst limit (4) allows it,
+//     bypassing queued higher-priority `prerender_2`.
+//   - `prerender_3` stays eligible because prerender burst limit is exceeded.
+//   - `webview_4` stays eligible because webview burst limit (4) is reached.
+// - Drain phase:
+//   - Reset `handle_w1` (active: 4 -> 3). `webview_4` starts because webview
+//     burst limit is 4 (active: 3 -> 4), bypassing `prerender_2`/`prerender_3`
+//     whose limit (2) is still exceeded.
+//   - Reset `handle_w2` and `handle_w3` (active: 4 -> 2). `prerender_2` and
+//     `prerender_3` remain eligible because active set size is still >= 2.
+//   - Reset `handle_w4` (active: 2 -> 1). Prerender limit (2) is no longer
+//     exceeded; higher-priority `prerender_2` starts (active: 1 -> 2).
+//   - Reset `handle_p1` (active: 2 -> 1). `prerender_3` starts (active: 1 ->
+//   2).
+TEST_P(PrefetchServiceTest,
+       PrefetchScheduler_BurstLimitPerPriority_MixedBurst) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {
+          {features::kPrefetchSchedulerBurstLimitPerPriority, {}},
+          {features::kPrerender2FallbackPrefetchSpecRules,
+           {{"kPrerender2FallbackPrefetchSchedulerPolicy", "Burst"}}},
+          {features::kWebViewPrefetchHighestPrefetchPriority,
+           {{"WebViewPrefetchHighestPrefetchPriorityBurstLimit", "4"}}},
+      },
+      {features::kPrefetchMultipleActiveSetSizeLimitForBase,
+       features::kPrefetchSchedulerTesting});
+
+  NavigateAndCommit(GURL("https://example.com"));
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  prefetch_service()
+      .GetPrefetchSchedulerForTesting()
+      .SetCalculatePriorityForTesting(
+          base::BindRepeating([](const PrefetchContainer& prefetch_container) {
+            const std::string& spec =
+                prefetch_container.GetURL().possibly_invalid_spec();
+            if (spec.find("prerender") != std::string::npos) {
+              return PrefetchSchedulerPriority::kBurstAheadOfPrerender;
+            }
+
+            if (spec.find("webview") != std::string::npos) {
+              return PrefetchSchedulerPriority::kBurstForPrefetchPriority;
+            }
+
+            return PrefetchSchedulerPriority::kBase;
+          }));
+
+  const auto url_prerender_1 = GURL("https://example.com/prerender_1");
+  const auto url_prerender_2 = GURL("https://example.com/prerender_2");
+  const auto url_prerender_3 = GURL("https://example.com/prerender_3");
+  const auto url_webview_1 = GURL("https://example.com/webview_1");
+  const auto url_webview_2 = GURL("https://example.com/webview_2");
+  const auto url_webview_3 = GURL("https://example.com/webview_3");
+  const auto url_webview_4 = GURL("https://example.com/webview_4");
+
+  auto handle_w1 =
+      MakePrefetchFromBrowserContext(url_webview_1, std::nullopt, {}, nullptr);
+  auto handle_p1 = MakePrefetchFromBrowserContext(url_prerender_1, std::nullopt,
+                                                  {}, nullptr);
+  auto handle_w2 =
+      MakePrefetchFromBrowserContext(url_webview_2, std::nullopt, {}, nullptr);
+  auto handle_p2 = MakePrefetchFromBrowserContext(url_prerender_2, std::nullopt,
+                                                  {}, nullptr);
+  auto handle_w3 =
+      MakePrefetchFromBrowserContext(url_webview_3, std::nullopt, {}, nullptr);
+  auto handle_p3 = MakePrefetchFromBrowserContext(url_prerender_3, std::nullopt,
+                                                  {}, nullptr);
+  auto handle_w4 =
+      MakePrefetchFromBrowserContext(url_webview_4, std::nullopt, {}, nullptr);
+  task_environment()->RunUntilIdle();
+
+  base::WeakPtr<PrefetchContainer> pc_p1, pc_p2, pc_p3, pc_w1, pc_w2, pc_w3,
+      pc_w4;
+  std::tie(std::ignore, pc_p1) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_prerender_1))[0];
+  std::tie(std::ignore, pc_p2) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_prerender_2))[0];
+  std::tie(std::ignore, pc_p3) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_prerender_3))[0];
+  std::tie(std::ignore, pc_w1) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_webview_1))[0];
+  std::tie(std::ignore, pc_w2) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_webview_2))[0];
+  std::tie(std::ignore, pc_w3) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_webview_3))[0];
+  std::tie(std::ignore, pc_w4) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_webview_4))[0];
+
+  ASSERT_TRUE(pc_p1);
+  ASSERT_TRUE(pc_p2);
+  ASSERT_TRUE(pc_p3);
+  ASSERT_TRUE(pc_w1);
+  ASSERT_TRUE(pc_w2);
+  ASSERT_TRUE(pc_w3);
+  ASSERT_TRUE(pc_w4);
+
+  // Prerender burst limit is 2. `pc_p1` started (active set size was 1 -> 2),
+  // but `pc_p2` and `pc_p3` remained eligible because active set size was >= 2.
+  ASSERT_EQ(pc_p1->GetLoadState(), PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(pc_p2->GetLoadState(), PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(pc_p3->GetLoadState(), PrefetchContainer::LoadState::kEligible);
+
+  // WebView burst limit is 4. `pc_w1`, `pc_w2`, and `pc_w3` started (active
+  // set size reached 4). `pc_w4` remained eligible as limit 4 was reached.
+  ASSERT_EQ(pc_w1->GetLoadState(), PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(pc_w2->GetLoadState(), PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(pc_w3->GetLoadState(), PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(pc_w4->GetLoadState(), PrefetchContainer::LoadState::kEligible);
+
+  // 1. Reset `handle_w1`. Active set drops from 4 -> 3. `pc_w4` (WebView limit
+  // 4) should start (3 < 4), bypassing `pc_p2`/`pc_p3` whose limit (2) is still
+  // exceeded (3 >= 2). Active set returns to 4.
+  handle_w1.reset();
+  EXPECT_FALSE(pc_w1);
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(pc_p2->GetLoadState(), PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(pc_p3->GetLoadState(), PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(pc_w4->GetLoadState(), PrefetchContainer::LoadState::kStarted);
+
+  // 2. Reset `handle_w2` and `handle_w3`. Active set drops from 4 -> 2.
+  // `pc_p2` and `pc_p3` remain eligible because active set size is still >= 2.
+  handle_w2.reset();
+  EXPECT_FALSE(pc_w2);
+  handle_w3.reset();
+  EXPECT_FALSE(pc_w3);
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(pc_p2->GetLoadState(), PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(pc_p3->GetLoadState(), PrefetchContainer::LoadState::kEligible);
+
+  // 3. Reset `handle_w4`. Active set drops from 2 -> 1 (`pc_p1`).
+  // Prerender limit (2) is no longer exceeded; higher-priority `pc_p2` starts.
+  handle_w4.reset();
+  EXPECT_FALSE(pc_w4);
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(pc_p2->GetLoadState(), PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(pc_p3->GetLoadState(), PrefetchContainer::LoadState::kEligible);
+
+  // 4. Reset `handle_p1`. Active set drops from 2 -> 1 (`pc_p2`).
+  // `pc_p3` now starts.
+  handle_p1.reset();
+  EXPECT_FALSE(pc_p1);
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(pc_p2->GetLoadState(), PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(pc_p3->GetLoadState(), PrefetchContainer::LoadState::kStarted);
+}
+
 TEST_P(PrefetchServiceTest,
        UMA_Prefetch_PrefetchContainer_AddedTo_Embedder_Success) {
   NavigateAndCommit(GURL("https://example.com"));

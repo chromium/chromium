@@ -210,6 +210,10 @@ class CONTENT_EXPORT PrefetchScheduler {
       const PrefetchContainer& prefetch_container);
 
   void ProgressAsync();
+  // TODO(crbug.com/558142263): Remove once
+  // `kPrefetchSchedulerBurstLimitPerPriority` is launched.
+  void ProgressInternalLegacy();
+  void ProgressInternalWithBurstLimitPerPriority();
   void ProgressOne(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Safety: This class is owned by `PrefetchService` and has the same lifetime.
