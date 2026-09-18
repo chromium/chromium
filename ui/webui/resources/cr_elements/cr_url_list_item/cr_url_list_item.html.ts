@@ -21,7 +21,7 @@ export function getHtml(this: CrUrlListItemElement) {
 
 <div id="item">
   <slot name="prefix"></slot>
-  <div id="iconContainer">
+  <div id="iconContainer" part="iconContainer">
     <slot id="customIcon" name="customIcon">
       <div class="favicon" ?hidden="${!this.shouldShowFavicon_()}"
           .style="background-image: ${this.getFavicon_()};">
