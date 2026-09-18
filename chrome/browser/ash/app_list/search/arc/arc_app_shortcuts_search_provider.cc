@@ -39,7 +39,7 @@ ash::AppListSearchResultType ArcAppShortcutsSearchProvider::ResultType() const {
 }
 
 void ArcAppShortcutsSearchProvider::Start(const std::u16string& query) {
-  DCHECK(!query.empty());
+  CHECK(!query.empty(), base::NotFatalUntil::M160);
 
   arc::mojom::AppInstance* app_instance =
       arc::ArcServiceManager::Get()
@@ -71,7 +71,7 @@ void ArcAppShortcutsSearchProvider::StopQuery() {
 void ArcAppShortcutsSearchProvider::OnGetAppShortcutGlobalQueryItems(
     std::vector<arc::mojom::AppShortcutItemPtr> shortcut_items) {
   const ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
-  DCHECK(arc_prefs);
+  CHECK(arc_prefs, base::NotFatalUntil::M160);
 
   TokenizedString tokenized_query(last_query_, TokenizedString::Mode::kWords);
 

@@ -84,7 +84,7 @@ ArcPlayStoreSearchProvider::ArcPlayStoreSearchProvider(
       max_results_(max_results),
       profile_(profile),
       list_controller_(list_controller) {
-  DCHECK_EQ(kHistogramBuckets, max_results + 1);
+  CHECK_EQ(kHistogramBuckets, max_results + 1, base::NotFatalUntil::M160);
 }
 
 ArcPlayStoreSearchProvider::~ArcPlayStoreSearchProvider() = default;
@@ -103,7 +103,7 @@ void ArcPlayStoreSearchProvider::Start(const std::u16string& query) {
                 GetRecentAndSuggestedAppsFromPlayStore)
           : nullptr;
 
-  DCHECK(!query.empty());
+  CHECK(!query.empty(), base::NotFatalUntil::M160);
   if (app_instance == nullptr)
     return;
 
@@ -125,10 +125,10 @@ void ArcPlayStoreSearchProvider::OnResults(
     arc::ArcPlayStoreSearchRequestState state,
     std::vector<arc::mojom::AppDiscoveryResultPtr> results) {
   if (state != arc::ArcPlayStoreSearchRequestState::SUCCESS) {
-    DCHECK(
-        state ==
-            arc::ArcPlayStoreSearchRequestState::PHONESKY_RESULT_INVALID_DATA ||
-        results.empty());
+    CHECK(state == arc::ArcPlayStoreSearchRequestState::
+                       PHONESKY_RESULT_INVALID_DATA ||
+              results.empty(),
+          base::NotFatalUntil::M160);
     UMA_HISTOGRAM_ENUMERATION(kAppListPlayStoreQueryStateHistogram, state,
                               arc::ArcPlayStoreSearchRequestState::STATE_COUNT);
 

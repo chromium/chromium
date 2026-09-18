@@ -103,7 +103,7 @@ double CalculateTitleRelevance(const TokenizedString& tokenized_query,
 std::vector<std::pair<const apps::Result*, double>> SearchGames(
     const std::u16string& query,
     const GameProvider::GameIndex* index) {
-  DCHECK(index);
+  CHECK(index, base::NotFatalUntil::M160);
 
   TokenizedString tokenized_query(GetStrippedText(query),
                                   TokenizedString::Mode::kWords);
@@ -127,7 +127,7 @@ GameProvider::GameProvider(Profile* profile,
       list_controller_(list_controller),
       app_discovery_service_(
           apps::AppDiscoveryServiceFactory::GetForProfile(profile)) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // This call will fail if the app discovery service has not finished
@@ -135,7 +135,7 @@ GameProvider::GameProvider(Profile* profile,
   // subscription.
   UpdateIndex();
 
-  DCHECK(app_discovery_service_);
+  CHECK(app_discovery_service_, base::NotFatalUntil::M160);
   // It's safe to use an unretained pointer here due to the nature of
   // CallbackListSubscription.
   subscription_ = app_discovery_service_->RegisterForAppUpdates(

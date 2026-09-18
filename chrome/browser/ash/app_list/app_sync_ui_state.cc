@@ -51,7 +51,7 @@ AppSyncUIState::AppSyncUIState(Profile* profile,
 
 AppSyncUIState::~AppSyncUIState() {
   // StopObserving() must have been called before (from Shutdown()).
-  DCHECK(!sync_service_);
+  CHECK(!sync_service_, base::NotFatalUntil::M160);
 }
 
 void AppSyncUIState::AddObserver(AppSyncUIStateObserver* observer) {
@@ -67,9 +67,9 @@ void AppSyncUIState::Shutdown() {
 }
 
 void AppSyncUIState::StartObserving() {
-  DCHECK(ShouldObserveAppSyncForProfile(profile_));
-  DCHECK(sync_service_);
-  DCHECK(!extension_registry_);
+  CHECK(ShouldObserveAppSyncForProfile(profile_), base::NotFatalUntil::M160);
+  CHECK(sync_service_, base::NotFatalUntil::M160);
+  CHECK(!extension_registry_, base::NotFatalUntil::M160);
 
   extension_registry_ = extensions::ExtensionRegistry::Get(profile_);
   extension_registry_->AddObserver(this);
@@ -144,7 +144,7 @@ void AppSyncUIState::OnMaxSyncingTimer() {
 }
 
 void AppSyncUIState::OnStateChanged(syncer::SyncService* sync) {
-  DCHECK(sync_service_);
+  CHECK(sync_service_, base::NotFatalUntil::M160);
   CheckAppSync();
 }
 

@@ -60,7 +60,7 @@ void SortItems(std::vector<SyncItemWrapper<std::u16string>>* items,
 template <>
 void SortItems(std::vector<SyncItemWrapper<ash::IconColor>>* items,
                ash::AppListSortOrder order) {
-  DCHECK(IsIncreasingOrder(order));
+  CHECK(IsIncreasingOrder(order), base::NotFatalUntil::M160);
   IconColorWrapperComparator comparator;
   std::sort(items->begin(), items->end(), comparator);
 }
@@ -68,7 +68,7 @@ void SortItems(std::vector<SyncItemWrapper<ash::IconColor>>* items,
 template <>
 void SortItems(std::vector<SyncItemWrapper<EphemeralAwareName>>* items,
                ash::AppListSortOrder order) {
-  DCHECK(IsIncreasingOrder(order));
+  CHECK(IsIncreasingOrder(order), base::NotFatalUntil::M160);
   UErrorCode error = U_ZERO_ERROR;
   std::unique_ptr<icu::Collator> collator(icu::Collator::createInstance(error));
   if (U_FAILURE(error))
@@ -85,7 +85,7 @@ template <typename T>
 std::vector<int> SortAndGetLis(
     ash::AppListSortOrder order,
     std::vector<reorder::SyncItemWrapper<T>>* wrappers) {
-  DCHECK(!wrappers->empty());
+  CHECK(!wrappers->empty(), base::NotFatalUntil::M160);
   SortItems(wrappers, order);
 
   // The remaining code is needed to find the longest increasing subsequence
@@ -181,7 +181,7 @@ void GenerateReorderParamsWithLis(
     const std::vector<reorder::SyncItemWrapper<T>>& wrappers,
     const std::vector<int>& lis,
     std::vector<reorder::ReorderParam>* reorder_params) {
-  DCHECK(!wrappers.empty());
+  CHECK(!wrappers.empty(), base::NotFatalUntil::M160);
 
   // Handle the edge case that `lis` is empty, which means that all existing
   // ordinals are invalid and should be updated.
@@ -214,7 +214,7 @@ void GenerateReorderParamsWithLis(
       // The case that `lis` is empty has been handled before the loop.
       // Therefore if `index_of_lis_front_element` has reached the end, the
       // loop iterates at least once.
-      DCHECK_GT(index_of_item_to_update, 0);
+      CHECK_GT(index_of_item_to_update, 0, base::NotFatalUntil::M160);
 
       // Use a bigger ordinal to ensure the increasing order.
       syncer::StringOrdinal new_ordinal = prev_ordinal->CreateAfter();
@@ -251,7 +251,7 @@ void GenerateReorderParamsWithLis(
         reversely_generated_ordinals.pop();
       }
 
-      DCHECK(reversely_generated_ordinals.empty());
+      CHECK(reversely_generated_ordinals.empty(), base::NotFatalUntil::M160);
       index_of_item_to_update = lis_front;
       continue;
     }
@@ -289,7 +289,7 @@ void CalculateEntropyAndGetSortedSubsequence(
     std::vector<reorder::SyncItemWrapper<T>>* items,
     float* entropy,
     std::vector<reorder::SyncItemWrapper<T>>* sorted_subsequence) {
-  DCHECK(!items->empty());
+  CHECK(!items->empty(), base::NotFatalUntil::M160);
 
   std::vector<int> lis = SortAndGetLis(order, items);
   const int total_item_count = items->size();
@@ -298,7 +298,7 @@ void CalculateEntropyAndGetSortedSubsequence(
   if (!sorted_subsequence)
     return;
 
-  DCHECK(sorted_subsequence->empty());
+  CHECK(sorted_subsequence->empty(), base::NotFatalUntil::M160);
   for (const int& index : lis)
     sorted_subsequence->push_back(items->at(index));
 }
@@ -318,10 +318,10 @@ void CalculateNeighbors(const T& item_wrapper,
                         Compare compare,
                         syncer::StringOrdinal* prev,
                         syncer::StringOrdinal* next) {
-  DCHECK(prev && !prev->IsValid());
-  DCHECK(next && !next->IsValid());
+  CHECK(prev && !prev->IsValid(), base::NotFatalUntil::M160);
+  CHECK(next && !next->IsValid(), base::NotFatalUntil::M160);
 
-  DCHECK(!sorted_subsequence.empty());
+  CHECK(!sorted_subsequence.empty(), base::NotFatalUntil::M160);
 
   // Find the item that should be placed right after the new item when the new
   // item is added.
@@ -361,8 +361,8 @@ void AdjustNeighborsInGlobalScope(const T& new_item,
   // different sync devices may have different sets of apps. This method checks
   // the existing sync items whose positions are between `prev` and `next` so as
   // to get the correct position in global scope.
-  DCHECK(prev);
-  DCHECK(next);
+  CHECK(prev, base::NotFatalUntil::M160);
+  CHECK(next, base::NotFatalUntil::M160);
 
   for (const auto& item : global_items) {
     const syncer::StringOrdinal& position = item.item_ordinal;
@@ -485,7 +485,7 @@ bool CalculatePositionForSyncItemWrapper(
 std::vector<reorder::ReorderParam> GenerateReorderParamsForSyncItems(
     ash::AppListSortOrder order,
     const AppListSyncableService::SyncItemMap& sync_item_map) {
-  DCHECK_GT(sync_item_map.size(), 1u);
+  CHECK_GT(sync_item_map.size(), 1u, base::NotFatalUntil::M160);
   switch (order) {
     case ash::AppListSortOrder::kNameAlphabetical:
     case ash::AppListSortOrder::kNameReverseAlphabetical: {
@@ -512,7 +512,7 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForSyncItems(
 std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
     ash::AppListSortOrder order,
     const std::vector<const ChromeAppListItem*>& app_list_items) {
-  DCHECK_GT(app_list_items.size(), 1u);
+  CHECK_GT(app_list_items.size(), 1u, base::NotFatalUntil::M160);
   switch (order) {
     case ash::AppListSortOrder::kNameAlphabetical:
     case ash::AppListSortOrder::kNameReverseAlphabetical: {
@@ -547,7 +547,7 @@ bool CalculateItemPositionInOrder(
   switch (order) {
     case ash::AppListSortOrder::kCustom:
       // Insert `item` at the front when the sort order is kCustom.
-      DCHECK(global_items);
+      CHECK(global_items, base::NotFatalUntil::M160);
       *target_position = CalculateFrontPosition(*global_items);
       return true;
     case ash::AppListSortOrder::kNameAlphabetical:

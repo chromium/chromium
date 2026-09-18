@@ -81,7 +81,7 @@ std::vector<double> MrfuCategoryRanker::GetCategoryRanks(
     const auto it = scores_map.find(category.category);
     scores.push_back(it != scores_map.end() ? it->second : 0.0);
   }
-  DCHECK_EQ(scores.size(), categories.size());
+  CHECK_EQ(scores.size(), categories.size(), base::NotFatalUntil::M160);
   return scores;
 }
 
@@ -89,7 +89,7 @@ void MrfuCategoryRanker::UpdateCategoryRanks(const ResultsMap& results,
                                              CategoriesList& categories,
                                              ProviderType provider) {
   const auto& scores = GetCategoryRanks(results, categories, provider);
-  DCHECK_EQ(scores.size(), categories.size());
+  CHECK_EQ(scores.size(), categories.size(), base::NotFatalUntil::M160);
   if (scores.size() != categories.size())
     return;
   for (size_t i = 0; i < categories.size(); ++i)

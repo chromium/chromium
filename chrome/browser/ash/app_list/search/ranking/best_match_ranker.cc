@@ -110,7 +110,7 @@ void BestMatchRanker::UpdateResultRanks(ResultsMap& results,
   // Insert into |best_matches_| any new results from this provider that meet
   // the best match threshold.
   const auto it = results.find(provider);
-  DCHECK(it != results.end());
+  CHECK(it != results.end(), base::NotFatalUntil::M160);
 
   auto seen_ids = base::MakeFlatSet<std::string>(
       best_matches_, /*comp=*/{},

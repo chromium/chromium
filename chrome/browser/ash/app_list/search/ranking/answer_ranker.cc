@@ -105,7 +105,7 @@ void AnswerRanker::UpdateResultRanks(ResultsMap& results,
   }
 
   const auto it = results.find(provider);
-  DCHECK(it != results.end());
+  CHECK(it != results.end(), base::NotFatalUntil::M160);
   auto& new_results = it->second;
 
   // Keep track of Omnibox candidates. Any candidates that are not selected

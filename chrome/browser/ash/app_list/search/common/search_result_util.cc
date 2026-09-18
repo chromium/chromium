@@ -44,7 +44,7 @@ std::u16string StringFromTextVector(
     const std::vector<ash::SearchResultTextItem>& text_vector) {
   std::vector<std::u16string> result;
   for (const auto& text_item : text_vector) {
-    DCHECK_EQ(text_item.GetType(), TextType::kString);
+    CHECK_EQ(text_item.GetType(), TextType::kString, base::NotFatalUntil::M160);
     result.push_back(text_item.GetText());
   }
   return base::StrCat(result);

@@ -16,7 +16,7 @@ ContinueRanker::~ContinueRanker() = default;
 void ContinueRanker::UpdateResultRanks(ResultsMap& results,
                                        ProviderType provider) {
   const auto it = results.find(provider);
-  DCHECK(it != results.end());
+  CHECK(it != results.end(), base::NotFatalUntil::M160);
 
   // Note: Always rank desks admin templates higher than any other type of
   // providers in the continue section view. Always rank zero-state Drive files

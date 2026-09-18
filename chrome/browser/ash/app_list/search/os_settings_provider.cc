@@ -387,7 +387,8 @@ void OsSettingsProvider::OnSearchReturned(
     const std::u16string& query,
     const base::TimeTicks& start_time,
     std::vector<SettingsResultPtr> sorted_results) {
-  DCHECK_LE(sorted_results.size(), kNumRequestedResults);
+  CHECK_LE(sorted_results.size(), kNumRequestedResults,
+           base::NotFatalUntil::M160);
 
   SearchProvider::Results search_results;
 

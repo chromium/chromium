@@ -61,15 +61,15 @@ SqlDatabase::SqlDatabase(
       db_(histogram_tag),
       current_version_number_(current_version_number) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  DCHECK_GT(current_version_number_, 1);
-  DCHECK(!path_to_db_.empty());
+  CHECK_GT(current_version_number_, 1, base::NotFatalUntil::M160);
+  CHECK(!path_to_db_.empty(), base::NotFatalUntil::M160);
 }
 
 SqlDatabase::~SqlDatabase() = default;
 
 bool SqlDatabase::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!db_.is_open());
+  CHECK(!db_.is_open(), base::NotFatalUntil::M160);
 
   const base::FilePath dir = path_to_db_.DirName();
   if (!base::PathExists(dir) && !base::CreateDirectory(dir)) {
@@ -106,7 +106,7 @@ bool SqlDatabase::Initialize() {
 
   if (meta_table_.GetVersionNumber() == kUninitializedDbVersionNumber) {
     const int new_version_number = create_table_schema_.Run(this);
-    DCHECK_GT(new_version_number, 1);
+    CHECK_GT(new_version_number, 1, base::NotFatalUntil::M160);
 
     // Sets the version number when db is initialized.
     if (!meta_table_.SetVersionNumber(new_version_number) ||
@@ -186,7 +186,7 @@ std::unique_ptr<sql::Statement> SqlDatabase::GetStatementForQuery(
   }
 
   DVLOG(1) << "Making statement for query: " << query;
-  DCHECK(db_.IsSQLValid(query));
+  CHECK(db_.IsSQLValid(query), base::NotFatalUntil::M160);
   return std::make_unique<sql::Statement>(
       db_.GetCachedStatement(sql_from_here, query));
 }

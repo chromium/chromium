@@ -44,7 +44,7 @@ SocsCookieFetcher::SocsCookieFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Consumer* consumer)
     : consumer_(consumer), url_loader_factory_(std::move(url_loader_factory)) {
-  DCHECK(consumer_);
+  CHECK(consumer_, base::NotFatalUntil::M160);
 }
 
 SocsCookieFetcher::~SocsCookieFetcher() = default;
@@ -101,7 +101,7 @@ void SocsCookieFetcher::StartFetching() {
                                       kContentTypeJSON);
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kAcceptValue);
-  DCHECK(!simple_url_loader_);
+  CHECK(!simple_url_loader_, base::NotFatalUntil::M160);
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);

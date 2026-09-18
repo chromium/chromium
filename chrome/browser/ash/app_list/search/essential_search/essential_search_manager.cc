@@ -50,7 +50,7 @@ const net::BackoffEntry::Policy
 EssentialSearchManager::EssentialSearchManager(Profile* primary_profile)
     : primary_profile_(primary_profile),
       retry_backoff_(&kFetchSocsCookieRetryBackoffPolicy) {
-  DCHECK(primary_profile_);
+  CHECK(primary_profile_, base::NotFatalUntil::M160);
   auto* session_controller = ash::SessionController::Get();
   if (!session_controller) {
     CHECK_IS_TEST();

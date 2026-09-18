@@ -54,7 +54,7 @@ void ScoreNormalizingRanker::UpdateResultRanks(ResultsMap& results,
   }
 
   auto it = results.find(provider);
-  DCHECK(it != results.end());
+  CHECK(it != results.end(), base::NotFatalUntil::M160);
 
   // Skip normalization for continue section files - results from one provider
   // are always preferred over the other, so keeping existing scoring within

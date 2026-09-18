@@ -27,8 +27,8 @@ RemovedResultsRanker::RemovedResultsRanker(Profile* profile)
     : profile_(profile),
       proto_(GetFileSuggestKeyedService()->GetProto(
           base::PassKey<RemovedResultsRanker>())) {
-  DCHECK(profile_);
-  DCHECK(proto_);
+  CHECK(profile_, base::NotFatalUntil::M160);
+  CHECK(proto_, base::NotFatalUntil::M160);
 
   on_init_subscription_ = proto_->RegisterOnInit(
       base::BindOnce(&RemovedResultsRanker::OnRemovedResultsProtoInit,
@@ -40,7 +40,7 @@ RemovedResultsRanker::~RemovedResultsRanker() = default;
 void RemovedResultsRanker::UpdateResultRanks(ResultsMap& results,
                                              ProviderType provider) {
   const auto it = results.find(provider);
-  DCHECK(it != results.end());
+  CHECK(it != results.end(), base::NotFatalUntil::M160);
 
   // If `proto_` is not initialized, filter all results except for recent apps.
   // Otherwise, filter any results whose IDs have been recorded as for removal.

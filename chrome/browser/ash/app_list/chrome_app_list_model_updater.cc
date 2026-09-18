@@ -86,31 +86,32 @@ class ChromeAppListModelUpdater::TemporarySortManager {
   const syncer::StringOrdinal& GetPermanentPositionForId(
       const std::string& id) const {
     auto iter = permanent_position_storage_.find(id);
-    DCHECK(iter != permanent_position_storage_.cend());
+    CHECK(iter != permanent_position_storage_.cend(),
+          base::NotFatalUntil::M160);
     return iter->second;
   }
 
   void AddPermanentPosition(const std::string& id,
                             const syncer::StringOrdinal& position) {
-    DCHECK(!HasId(id));
+    CHECK(!HasId(id), base::NotFatalUntil::M160);
     permanent_position_storage_.emplace(id, position);
   }
 
   void SetPermanentPosition(const std::string& id,
                             const syncer::StringOrdinal& position) {
     auto iter = permanent_position_storage_.find(id);
-    DCHECK(iter != permanent_position_storage_.end());
+    CHECK(iter != permanent_position_storage_.end(), base::NotFatalUntil::M160);
     iter->second = position;
   }
 
   void DeletePermanentPosition(const std::string& id) {
     auto iter = permanent_position_storage_.find(id);
-    DCHECK(iter != permanent_position_storage_.end());
+    CHECK(iter != permanent_position_storage_.end(), base::NotFatalUntil::M160);
     permanent_position_storage_.erase(iter);
   }
 
   void Deactivate() {
-    DCHECK(is_active_);
+    CHECK(is_active_, base::NotFatalUntil::M160);
     is_active_ = false;
   }
 
@@ -152,7 +153,7 @@ ChromeAppListModelUpdater::ChromeAppListModelUpdater(
       sync_model_sanitizer_(sync_model_sanitizer),
       item_manager_(std::make_unique<ChromeAppListItemManager>()),
       model_(this) {
-  DCHECK(order_delegate_);
+  CHECK(order_delegate_, base::NotFatalUntil::M160);
   model_.AddObserver(this);
 }
 
@@ -196,12 +197,12 @@ void ChromeAppListModelUpdater::AddAppItemToFolder(
     const std::string& folder_id,
     bool add_from_local) {
   TRACE_EVENT0("ui", "ChromeAppListModelUpdater::AddAppItemToFolder");
-  DCHECK(!app_item->is_folder());
+  CHECK(!app_item->is_folder(), base::NotFatalUntil::M160);
 
   if (is_under_temporary_sort()) {
     // Store `app_item`'s position before calculating a new position under the
     // temporary sorting order.
-    DCHECK(temporary_sort_manager_->is_active());
+    CHECK(temporary_sort_manager_->is_active(), base::NotFatalUntil::M160);
     temporary_sort_manager_->AddPermanentPosition(app_item->id(),
                                                   app_item->position());
 
@@ -214,15 +215,16 @@ void ChromeAppListModelUpdater::AddAppItemToFolder(
 
     // When the app list is under temporary sorting, local items should be
     // ordered. Therefore `is_successful` should be true.
-    DCHECK(is_successful);
+    CHECK(is_successful, base::NotFatalUntil::M160);
 
     if (!is_successful) {
-      DCHECK(!position_under_temporary_order.IsValid());
+      CHECK(!position_under_temporary_order.IsValid(),
+            base::NotFatalUntil::M160);
       position_under_temporary_order =
           order_delegate_->CalculateGlobalFrontPosition();
     }
 
-    DCHECK(position_under_temporary_order.IsValid());
+    CHECK(position_under_temporary_order.IsValid(), base::NotFatalUntil::M160);
     app_item->SetChromePosition(position_under_temporary_order);
   }
 
@@ -383,7 +385,7 @@ void ChromeAppListModelUpdater::ActivateChromeItem(const std::string& id,
   ChromeAppListItem* item = FindItem(id);
   if (!item)
     return;
-  DCHECK(!item->is_folder());
+  CHECK(!item->is_folder(), base::NotFatalUntil::M160);
   item->PerformActivate(event_flags);
 }
 
@@ -518,7 +520,7 @@ void ChromeAppListModelUpdater::SetItemPosition(
   ash::AppListItem* item = model_.FindItem(id);
   if (!item)
     return;
-  DCHECK(new_position.IsValid());
+  CHECK(new_position.IsValid(), base::NotFatalUntil::M160);
   std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
   data->position = new_position;
   model_.SetItemMetadata(id, std::move(data));
@@ -606,8 +608,8 @@ std::vector<ChromeAppListItem*> ChromeAppListModelUpdater::GetTopLevelItems()
 ChromeAppListItem* ChromeAppListModelUpdater::ItemAtForTest(size_t index) {
   const std::map<std::string, std::unique_ptr<ChromeAppListItem>>& items =
       item_manager_->items();
-  DCHECK_LT(index, items.size());
-  DCHECK_LE(0u, index);
+  CHECK_LT(index, items.size(), base::NotFatalUntil::M160);
+  CHECK_LE(0u, index, base::NotFatalUntil::M160);
   auto it = items.cbegin();
   for (size_t i = 0; i < index; ++i)
     ++it;
@@ -772,7 +774,7 @@ void ChromeAppListModelUpdater::OnAppListItemAdded(ash::AppListItem* item) {
     // Otherwise, we detect an item is created in Ash which is not added into
     // our Chrome list yet. This only happens when a folder is created or when a
     // page break is added.
-    DCHECK(item->is_folder());
+    CHECK(item->is_folder(), base::NotFatalUntil::M160);
     std::unique_ptr<ChromeAppListItem> new_item =
         std::make_unique<ChromeAppListItem>(profile_, item->id(), this);
     new_item->SetMetadata(item->CloneMetadata());
@@ -811,7 +813,8 @@ void ChromeAppListModelUpdater::OnAppListItemWillBeDeleted(
     ash::AppListItem* item) {
   TRACE_EVENT0("ui", "ChromeAppListModelUpdater::OnAppListItemWillBeDeleted");
   if (is_under_temporary_sort()) {
-    DCHECK(temporary_sort_manager_->HasId(item->id()));
+    CHECK(temporary_sort_manager_->HasId(item->id()),
+          base::NotFatalUntil::M160);
     temporary_sort_manager_->DeletePermanentPosition(item->id());
   }
 
@@ -833,7 +836,7 @@ void ChromeAppListModelUpdater::RequestMoveItemToFolder(
     std::string id,
     const std::string& folder_id) {
   TRACE_EVENT0("ui", "ChromeAppListModelUpdater::RequestMoveItemToFolder");
-  DCHECK(!folder_id.empty());
+  CHECK(!folder_id.empty(), base::NotFatalUntil::M160);
 
   ash::AppListItem* item = model_.FindItem(id);
   if (item) {
@@ -851,7 +854,7 @@ void ChromeAppListModelUpdater::RequestMoveItemToFolder(
 
     // Verify that when the app list is under sorting, `old_position` should be
     // valid. But the case that `old_position` is invalid is handled for safety.
-    DCHECK(!is_sorted || old_position.IsValid());
+    CHECK(!is_sorted || old_position.IsValid(), base::NotFatalUntil::M160);
 
     if (is_sorted && old_position.IsValid()) {
       // When items are sorted, item positions are set so all items in the model
@@ -895,7 +898,7 @@ void ChromeAppListModelUpdater::RequestMoveItemToRoot(
   if (!item)
     return;
 
-  DCHECK(!item->folder_id().empty());
+  CHECK(!item->folder_id().empty(), base::NotFatalUntil::M160);
 
   std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
   data->folder_id = "";
@@ -923,7 +926,7 @@ void ChromeAppListModelUpdater::RequestAppListSort(
     return;
 
   if (is_under_temporary_sort()) {
-    DCHECK(temporary_sort_manager_->is_active());
+    CHECK(temporary_sort_manager_->is_active(), base::NotFatalUntil::M160);
 
     // Sorting can be triggered when app list is under temporary sort.
     if (temporary_sort_manager_->temporary_order() == order) {
@@ -979,7 +982,7 @@ void ChromeAppListModelUpdater::RequestPositionUpdate(
     std::string id,
     const syncer::StringOrdinal& new_position,
     ash::RequestPositionUpdateReason reason) {
-  DCHECK(FindItem(id));
+  CHECK(FindItem(id), base::NotFatalUntil::M160);
   SetItemPosition(id, new_position);
 
   // Commit positions and clear the sort order if a local item is moved.
@@ -1014,13 +1017,13 @@ std::string ChromeAppListModelUpdater::RequestFolderCreation(
   has_requested_move_item_position_ = true;
 
   ash::AppListItem* target_item = model_.FindItem(merge_target_id);
-  DCHECK(target_item);
-  DCHECK(!target_item->is_folder());
-  DCHECK_EQ("", target_item->folder_id());
+  CHECK(target_item, base::NotFatalUntil::M160);
+  CHECK(!target_item->is_folder(), base::NotFatalUntil::M160);
+  CHECK_EQ("", target_item->folder_id(), base::NotFatalUntil::M160);
 
   ash::AppListItem* item_to_merge = model_.FindItem(item_to_merge_id);
-  DCHECK(item_to_merge);
-  DCHECK(!item_to_merge->is_folder());
+  CHECK(item_to_merge, base::NotFatalUntil::M160);
+  CHECK(!item_to_merge->is_folder(), base::NotFatalUntil::M160);
 
   const ash::AppListSortOrder current_sort_order =
       order_delegate_->GetPermanentSortingOrder();
@@ -1124,7 +1127,7 @@ void ChromeAppListModelUpdater::OnAppListHidden() {
   if (!is_under_temporary_sort())
     return;
 
-  DCHECK(temporary_sort_manager_->is_active());
+  CHECK(temporary_sort_manager_->is_active(), base::NotFatalUntil::M160);
 
   // Commit the temporary sort order if app list gets hidden.
   EndTemporarySortAndTakeAction(EndAction::kCommit);

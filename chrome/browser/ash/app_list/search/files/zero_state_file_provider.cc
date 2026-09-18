@@ -60,7 +60,7 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
               profile)),
       downloads_path_(
           file_manager::util::GetDownloadsFolderForProfile(profile)) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
   file_suggest_service_observation_.Observe(file_suggest_service_);
 }
 
@@ -103,7 +103,7 @@ void ZeroStateFileProvider::SetSearchResults(
   for (size_t i = 0; i < std::min(results.size(), kMaxLocalFiles); ++i) {
     const auto& filepath = results[i].file_path;
     if (!IsScreenshot(filepath, downloads_path_)) {
-      DCHECK(results[i].score.has_value());
+      CHECK(results[i].score.has_value(), base::NotFatalUntil::M160);
 
       const double score = *results[i].score;
       auto result = std::make_unique<FileResult>(

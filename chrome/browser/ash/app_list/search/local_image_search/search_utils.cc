@@ -40,7 +40,7 @@ std::vector<FileSearchResult> FindIntersection(
 }
 
 bool IsStopWord(const std::string& word) {
-  DCHECK(!base::IsAsciiUpper(word[0]));
+  CHECK(!base::IsAsciiUpper(word[0]), base::NotFatalUntil::M160);
   static constexpr auto kEnglishStopwords =
       base::MakeFixedFlatSet<std::string_view>(base::sorted_unique,
                                                {

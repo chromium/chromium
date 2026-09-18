@@ -66,8 +66,8 @@ DriveSearchProvider::DriveSearchProvider(Profile* profile,
       profile_(profile),
       drive_service_(
           drive::DriveIntegrationServiceFactory::GetForProfile(profile)) {
-  DCHECK(profile_);
-  DCHECK(drive_service_);
+  CHECK(profile_, base::NotFatalUntil::M160);
+  CHECK(drive_service_, base::NotFatalUntil::M160);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -162,14 +162,14 @@ void DriveSearchProvider::OnSearchDriveByFileName(
   for (const auto& item : *items) {
     // Strip leading separators so that the path can be reparented.
     const auto& path = item->path;
-    DCHECK(!path.value().empty());
+    CHECK(!path.value().empty(), base::NotFatalUntil::M160);
     const base::FilePath relative_path =
         !path.value().empty() && base::FilePath::IsSeparator(path.value()[0])
             ? base::FilePath(path.value().substr(1))
             : path;
 
     // Reparent the file path into the user's DriveFS mount.
-    DCHECK(!relative_path.IsAbsolute());
+    CHECK(!relative_path.IsAbsolute(), base::NotFatalUntil::M160);
     base::FilePath reparented_path = mount_path.Append(relative_path.value());
 
     std::optional<base::Time> last_accessed;

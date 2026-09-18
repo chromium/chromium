@@ -43,7 +43,7 @@ LocalImageSearchService::LocalImageSearchService(const PrefService& local_state,
               /*use_file_watchers=*/true,
               search_features::IsLauncherImageSearchOcrEnabled(),
               search_features::IsLauncherImageSearchIcaEnabled())) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   annotation_storage_.AsyncCall(&app_list::AnnotationStorage::Initialize);
 }
 

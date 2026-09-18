@@ -35,13 +35,13 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(Profile* profile)
           ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
               profile)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
 
   // `FileSuggestKeyedServiceFactory` ensures to build the keyed
   // service when the app list syncable service is built. Meanwhile,
   // `ZeroStateDriveProvider` is built only when the app list syncable service
   // exists. Therefore, `file_suggest_service_` should always be true.
-  DCHECK(file_suggest_service_);
+  CHECK(file_suggest_service_, base::NotFatalUntil::M160);
 
   file_suggest_service_observation_.Observe(file_suggest_service_);
 }

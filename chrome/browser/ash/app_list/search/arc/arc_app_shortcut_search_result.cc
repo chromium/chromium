@@ -88,7 +88,7 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
 
   const int icon_dimension =
       ash::SharedAppListConfig::instance().search_tile_icon_dimension();
-  DCHECK(data_->icon);
+  CHECK(data_->icon, base::NotFatalUntil::M160);
   apps::ArcRawIconPngDataToImageSkia(
       std::move(data_->icon), icon_dimension,
       base::BindOnce(&ArcAppShortcutSearchResult::OnIconDecoded,
@@ -122,13 +122,13 @@ std::string ArcAppShortcutSearchResult::GetAppId() const {
   if (!data_->package_name)
     return std::string();
   const ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
-  DCHECK(arc_prefs);
+  CHECK(arc_prefs, base::NotFatalUntil::M160);
   return arc_prefs->GetAppIdByPackageName(data_->package_name.value());
 }
 
 std::u16string ArcAppShortcutSearchResult::ComputeAccessibleName() const {
   const ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
-  DCHECK(arc_prefs);
+  CHECK(arc_prefs, base::NotFatalUntil::M160);
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
       arc_prefs->GetApp(GetAppId());
   if (!app_info.get())

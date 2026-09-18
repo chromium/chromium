@@ -48,7 +48,8 @@ std::unique_ptr<KeyedService>
 AppSyncUIStateFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
-  DCHECK(AppSyncUIState::ShouldObserveAppSyncForProfile(profile));
+  CHECK(AppSyncUIState::ShouldObserveAppSyncForProfile(profile),
+        base::NotFatalUntil::M160);
   return std::make_unique<AppSyncUIState>(
       profile, SyncServiceFactory::GetForProfile(profile));
 }

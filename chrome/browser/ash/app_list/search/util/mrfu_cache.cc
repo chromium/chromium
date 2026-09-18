@@ -107,7 +107,7 @@ void MrfuCache::Use(const std::string& item) {
     score = &it->second;
   } else {
     auto ret = items->insert({item, Score()});
-    DCHECK(ret.second);
+    CHECK(ret.second, base::NotFatalUntil::M160);
     score = &ret.first->second;
   }
 
@@ -179,7 +179,7 @@ void MrfuCache::Delete(const std::string& item) {
 }
 
 void MrfuCache::ResetWithItems(const Items& items) {
-  DCHECK(proto_.initialized());
+  CHECK(proto_.initialized(), base::NotFatalUntil::M160);
   proto_->Clear();
 
   proto_->set_update_count(0);

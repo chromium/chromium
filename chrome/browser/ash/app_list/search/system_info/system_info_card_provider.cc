@@ -82,7 +82,7 @@ SystemInfoCardProvider::SystemInfoCardProvider(Profile* profile)
       crostini_size_calculator_(profile),
       profile_(profile),
       keywords_(launcher_search::GetSystemInfoKeywordVector()) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
   ash::cros_healthd::ServiceConnection::GetInstance()->BindProbeService(
       probe_service_.BindNewPipeAndPassReceiver());
   probe_service_.set_disconnect_handler(
@@ -223,7 +223,7 @@ void SystemInfoCardProvider::OnMemoryUsageUpdated(bool create_result,
     // The bar chart will turn red if there is less than 10% of memory free.
     answer_card_info.SetUpperLimitForBarChart(90);
     SearchProvider::Results new_results;
-    DCHECK(memory_timer_);
+    CHECK(memory_timer_, base::NotFatalUntil::M160);
     new_results.emplace_back(std::make_unique<MemoryAnswerResult>(
         profile_, last_query_, /*url_path=*/std::string(), diagnostics_icon_,
         relevance_,
@@ -315,7 +315,7 @@ void SystemInfoCardProvider::OnCpuUsageUpdated(bool create_result,
     AnswerCardInfo answer_card_info(
         ash::SystemInfoAnswerCardDisplayType::kTextCard);
     SearchProvider::Results new_results;
-    DCHECK(cpu_usage_timer_);
+    CHECK(cpu_usage_timer_, base::NotFatalUntil::M160);
     new_results.emplace_back(std::make_unique<CpuAnswerResult>(
         profile_, last_query_, /*url_path=*/std::string(), diagnostics_icon_,
         relevance_, title, description, accessibility_label_details,

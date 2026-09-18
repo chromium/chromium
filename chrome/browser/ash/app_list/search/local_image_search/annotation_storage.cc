@@ -368,7 +368,7 @@ std::vector<base::FilePath> AnnotationStorage::SearchByDirectory(
 std::vector<ImageInfo> AnnotationStorage::FindImagePath(
     const base::FilePath& image_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!image_path.empty());
+  CHECK(!image_path.empty(), base::NotFatalUntil::M160);
   DVLOG(1) << "FindImagePath " << image_path;
 
   static constexpr char kQuery[] =

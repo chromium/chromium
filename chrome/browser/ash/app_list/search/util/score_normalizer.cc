@@ -28,7 +28,7 @@ constexpr double kDefaultScore = 0.5;
 
 // Return the index of the bin in |bins| that contains |score|.
 size_t BinIndexFor(const Bins& bins, double score) {
-  DCHECK(bins[0].lower_divider() == -INFINITY);
+  CHECK(bins[0].lower_divider() == -INFINITY, base::NotFatalUntil::M160);
   for (int i = 0; i < bins.size(); ++i) {
     if (bins.at(i).lower_divider() > score) {
       return i - 1;
@@ -41,7 +41,7 @@ size_t BinIndexFor(const Bins& bins, double score) {
 // probabilities, and so an input of 0.0 is special-cased consistent with a
 // zero-probability's contribution to entropy.
 inline double xlogx(double x) {
-  DCHECK(0.0 <= x && x <= 1.0);
+  CHECK(0.0 <= x && x <= 1.0, base::NotFatalUntil::M160);
   return x == 0.0 ? 0 : x * log(x);
 }
 
@@ -224,7 +224,7 @@ void ScoreNormalizer::Update(const std::string& name, double score) {
     bins[split_index].set_count(split_l_count);
   } else {
     // The merge and split are non-intersecting.
-    DCHECK(merge_index < split_index - 1);
+    CHECK(merge_index < split_index - 1, base::NotFatalUntil::M160);
 
     // Merge merge-right into merge-left, leaving merge-right removable.
     bins[merge_index].set_count(merge_l_count + merge_r_count);
@@ -248,7 +248,7 @@ void ScoreNormalizer::Update(const std::string& name, double score) {
 }
 
 void ScoreNormalizer::OnProtoInit() {
-  DCHECK(proto_.initialized());
+  CHECK(proto_.initialized(), base::NotFatalUntil::M160);
 
   if ((proto_->has_model_version() &&
        proto_->model_version() != kModelVersion) ||

@@ -54,7 +54,7 @@ bool BurnInController::UpdateResults(ResultsMap& results,
 
   // Record-keeping for the burn-in iteration number of individual results.
   const auto it = results.find(result_type);
-  DCHECK(it != results.end());
+  CHECK(it != results.end(), base::NotFatalUntil::M160);
 
   for (const auto& result : it->second) {
     const std::string result_id = result->id();

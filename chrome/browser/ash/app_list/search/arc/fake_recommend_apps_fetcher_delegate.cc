@@ -41,7 +41,7 @@ void FakeRecommendAppsFetcherDelegate::OnLoadSuccess(
 }
 
 void FakeRecommendAppsFetcherDelegate::SetResult(Result result) {
-  DCHECK_EQ(Result::UNKNOWN, result_);
+  CHECK_EQ(Result::UNKNOWN, result_, base::NotFatalUntil::M160);
   result_ = result;
   if (result_callback_)
     std::move(result_callback_).Run();

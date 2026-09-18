@@ -37,7 +37,7 @@ DesksAdminTemplateResult::DesksAdminTemplateResult(
     : profile_(profile),
       list_controller_(list_controller),
       template_uuid_(template_uuid) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
   set_id(kAdminTemplateResultPrefix + template_uuid.AsLowercaseString());
   SetCategory(Category::kUnknown);
   SetTitle(title);
@@ -61,7 +61,7 @@ DesksAdminTemplateProvider::DesksAdminTemplateProvider(
     : SearchProvider(SearchCategory::kDesksAdmin),
       profile_(profile),
       list_controller_(list_controller) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
 }
 
 DesksAdminTemplateProvider::~DesksAdminTemplateProvider() = default;

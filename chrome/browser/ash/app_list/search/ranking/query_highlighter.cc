@@ -88,7 +88,7 @@ void QueryHighlighter::Start(const std::u16string& query,
 void QueryHighlighter::UpdateResultRanks(ResultsMap& results,
                                          ProviderType provider) {
   const auto it = results.find(provider);
-  DCHECK(it != results.end());
+  CHECK(it != results.end(), base::NotFatalUntil::M160);
 
   for (const auto& result : it->second) {
     TextVector title_vector = result->title_text_vector();

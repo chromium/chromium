@@ -96,7 +96,7 @@ std::vector<SearchCategory> SearchEngine::GetAllSearchCategories() const {
 size_t SearchEngine::ReplaceProvidersForResultTypeForTest(
     ash::AppListSearchResultType result_type,
     std::unique_ptr<SearchProvider> new_provider) {
-  DCHECK_EQ(result_type, new_provider->ResultType());
+  CHECK_EQ(result_type, new_provider->ResultType(), base::NotFatalUntil::M160);
 
   size_t removed_providers = 0;
   for (auto& [category, providers] : providers_) {
@@ -108,7 +108,7 @@ size_t SearchEngine::ReplaceProvidersForResultTypeForTest(
   if (!removed_providers) {
     return 0u;
   }
-  DCHECK_EQ(1u, removed_providers);
+  CHECK_EQ(1u, removed_providers, base::NotFatalUntil::M160);
 
   AddProvider(std::move(new_provider));
   return removed_providers;

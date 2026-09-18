@@ -50,7 +50,8 @@ void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {
   bool show = ShouldShowInLauncher(update);
   if (item) {
     if (show) {
-      DCHECK_EQ(item->GetItemType(), AppServiceAppItem::kItemType);
+      CHECK_EQ(item->GetItemType(), AppServiceAppItem::kItemType,
+               base::NotFatalUntil::M160);
       static_cast<AppServiceAppItem*>(item)->OnAppUpdate(update);
 
       // TODO(crbug.com/40569217): drop the check for kChromeApp or kWeb, and

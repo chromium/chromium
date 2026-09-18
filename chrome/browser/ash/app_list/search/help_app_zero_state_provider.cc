@@ -45,7 +45,7 @@ HelpAppZeroStateResult::HelpAppZeroStateResult(Profile* profile,
                                                const std::u16string& details,
                                                const gfx::ImageSkia& icon)
     : profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
   set_id(id);
   SetCategory(Category::kHelp);
   SetTitle(title);
@@ -88,7 +88,7 @@ HelpAppZeroStateProvider::HelpAppZeroStateProvider(
     Profile* profile,
     ash::AppListNotifier* notifier)
     : SearchProvider(SearchCategory::kHelp), profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
 
   app_registry_cache_observer_.Observe(
       &apps::AppServiceProxyFactory::GetForProfile(profile)

@@ -69,19 +69,19 @@ void ChromeAppListItemManager::UpdateChromeItem(
 
   // Remove `item` from the sorted children list then add it back to ensure that
   // `item` is placed in the sorted list correctly after position update.
-  DCHECK(old_position.IsValid());
+  CHECK(old_position.IsValid(), base::NotFatalUntil::M160);
   RemoveChildFromFolderItemMapping(item, new_folder);
   AddChildItemToFolderItemMapping(item, new_folder);
 }
 
 void ChromeAppListItemManager::RemoveChromeItem(const std::string& id) {
   auto* item = FindItem(id);
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M160);
 
   if (item->is_folder()) {
     auto iter = folder_item_mappings_.find(id);
     if (iter != folder_item_mappings_.end()) {
-      DCHECK(iter->second.empty());
+      CHECK(iter->second.empty(), base::NotFatalUntil::M160);
       folder_item_mappings_.erase(iter);
     }
   } else if (!item->folder_id().empty()) {
@@ -151,7 +151,7 @@ ChromeAppListItem* ChromeAppListItemManager::FindLastChildInFolder(
 void ChromeAppListItemManager::AddChildItemToFolderItemMapping(
     ChromeAppListItem* child_item,
     const std::string& dst_folder) {
-  DCHECK(!dst_folder.empty());
+  CHECK(!dst_folder.empty(), base::NotFatalUntil::M160);
 
   // Find the target folder's children.
   auto iter = folder_item_mappings_.find(dst_folder);
@@ -170,7 +170,7 @@ void ChromeAppListItemManager::AddChildItemToFolderItemMapping(
 void ChromeAppListItemManager::RemoveChildFromFolderItemMapping(
     ChromeAppListItem* child_item,
     const std::string& src_folder) {
-  DCHECK(!src_folder.empty());
+  CHECK(!src_folder.empty(), base::NotFatalUntil::M160);
 
   // Find the source folder's children.
   auto folder_item_mappings_iter = folder_item_mappings_.find(src_folder);
@@ -213,7 +213,7 @@ size_t ChromeAppListItemManager::GetItemSortOrderIndex(
   const syncer::StringOrdinal& position = child_item->position();
   const std::string& id = child_item->id();
 
-  DCHECK(position.IsValid());
+  CHECK(position.IsValid(), base::NotFatalUntil::M160);
   for (size_t index = 0; index < sorted_children.size(); ++index) {
     if (position.LessThan(sorted_children[index]->position()) ||
         (position.Equals(sorted_children[index]->position()) &&

@@ -44,8 +44,9 @@ bool MenuItemHasLauncherContext(const extensions::MenuItem* item) {
 }
 
 apps::WindowMode ConvertUseLaunchTypeCommandToWindowMode(int command_id) {
-  DCHECK(command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
-         command_id < ash::USE_LAUNCH_TYPE_COMMAND_END);
+  CHECK(command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
+            command_id < ash::USE_LAUNCH_TYPE_COMMAND_END,
+        base::NotFatalUntil::M160);
   switch (command_id) {
     case ash::USE_LAUNCH_TYPE_REGULAR:
       return apps::WindowMode::kBrowser;
@@ -77,8 +78,8 @@ void ShowOptionsPage(AppListControllerDelegate* controller,
                      Profile* profile,
                      const std::string& app_id,
                      bool post_task) {
-  DCHECK(controller);
-  DCHECK(profile);
+  CHECK(controller, base::NotFatalUntil::M160);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   if (post_task) {
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -93,7 +94,7 @@ void ShowOptionsPage(AppListControllerDelegate* controller,
 void ExecuteLaunchCommand(app_list::AppContextMenuDelegate* delegate,
                           int event_flags,
                           bool post_task) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M160);
   if (post_task) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(ExecuteLaunchCommand, delegate, event_flags,
@@ -429,11 +430,12 @@ void AppServiceContextMenu::SetLaunchType(int command_id) {
 }
 
 void AppServiceContextMenu::ExecutePublisherContextMenuCommand(int command_id) {
-  DCHECK(command_id >= ash::LAUNCH_APP_SHORTCUT_FIRST &&
-         command_id <= ash::LAUNCH_APP_SHORTCUT_LAST);
+  CHECK(command_id >= ash::LAUNCH_APP_SHORTCUT_FIRST &&
+            command_id <= ash::LAUNCH_APP_SHORTCUT_LAST,
+        base::NotFatalUntil::M160);
   const size_t index = command_id - ash::LAUNCH_APP_SHORTCUT_FIRST;
-  DCHECK(app_shortcut_items_);
-  DCHECK_LT(index, app_shortcut_items_->size());
+  CHECK(app_shortcut_items_, base::NotFatalUntil::M160);
+  CHECK_LT(index, app_shortcut_items_->size(), base::NotFatalUntil::M160);
 
   proxy_->ExecuteContextMenuCommand(app_id(), command_id,
                                     app_shortcut_items_->at(index).shortcut_id,

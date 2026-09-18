@@ -68,7 +68,7 @@ HelpAppResult::HelpAppResult(
     : profile_(profile),
       url_path_(result->url_path_with_parameters),
       help_app_content_id_(result->id) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
   set_id(ash::kChromeUIHelpAppURL + url_path_);
   set_relevance(relevance);
   SetTitle(result->title);
@@ -209,7 +209,8 @@ void HelpAppProvider::OnSearchReturned(
     const std::u16string& query,
     const base::TimeTicks& start_time,
     std::vector<ash::help_app::mojom::SearchResultPtr> sorted_results) {
-  DCHECK_LE(sorted_results.size(), kNumRequestedResults);
+  CHECK_LE(sorted_results.size(), kNumRequestedResults,
+           base::NotFatalUntil::M160);
 
   SearchProvider::Results search_results;
   for (const auto& result : sorted_results) {

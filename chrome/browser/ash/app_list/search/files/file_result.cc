@@ -95,7 +95,7 @@ base::File::Info GetFileInfo(base::FilePath file_path) {
 void LogRelevance(ChromeSearchResult::ResultType result_type,
                   const double relevance) {
   // Relevance scores are between 0 and 1, so we scale to 0 to 100 for logging.
-  DCHECK((relevance >= 0) && (relevance <= 1));
+  CHECK((relevance >= 0) && (relevance <= 1), base::NotFatalUntil::M160);
   const int scaled_relevance = floor(100 * relevance);
   switch (result_type) {
     case FileResult::ResultType::kFileSearch:
@@ -139,7 +139,7 @@ FileResult::FileResult(const std::string& id,
       type_(type),
       profile_(profile),
       thumbnail_loader_(thumbnail_loader) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   set_id(id);
   SetCategory(Category::kFiles);
   SetDisplayType(display_type);
@@ -263,7 +263,7 @@ double FileResult::CalculateRelevance(
   const double penalty =
       kMaxPenalty +
       (1.0 - kMaxPenalty) * std::exp(-kPenaltyCoeff * time_delta * time_delta);
-  DCHECK(penalty > 0.0 && penalty <= 1.0);
+  CHECK(penalty > 0.0 && penalty <= 1.0, base::NotFatalUntil::M160);
   return relevance * penalty;
 }
 

@@ -106,10 +106,10 @@ AppServiceAppItem::AppServiceAppItem(
 
     // Crostini and Bruschetta apps start in their respective folders.
     if (app_type_ == apps::AppType::kCrostini) {
-      DCHECK(folder_id().empty());
+      CHECK(folder_id().empty(), base::NotFatalUntil::M160);
       SetChromeFolderId(ash::kCrostiniFolderId);
     } else if (app_type_ == apps::AppType::kBruschetta) {
-      DCHECK(folder_id().empty());
+      CHECK(folder_id().empty(), base::NotFatalUntil::M160);
       SetChromeFolderId(ash::kBruschettaFolderId);
     }
   }

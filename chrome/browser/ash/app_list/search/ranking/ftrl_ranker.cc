@@ -37,7 +37,7 @@ void FtrlRanker::Train(const LaunchData& launch) {
 
 void FtrlRanker::UpdateResultRanks(ResultsMap& results, ProviderType provider) {
   const auto it = results.find(provider);
-  DCHECK(it != results.end());
+  CHECK(it != results.end(), base::NotFatalUntil::M160);
   const auto& new_results = it->second;
 
   // Create a vector of result ids.
@@ -53,7 +53,7 @@ void FtrlRanker::UpdateResultRanks(ResultsMap& results, ProviderType provider) {
   // Get the final scores from the FTRL optimizer set them on the results.
   std::vector<double> result_scores =
       ftrl_->Score(std::move(ids), std::move(expert_scores));
-  DCHECK_EQ(new_results.size(), result_scores.size());
+  CHECK_EQ(new_results.size(), result_scores.size(), base::NotFatalUntil::M160);
   for (size_t i = 0; i < new_results.size(); ++i)
     new_results[i]->scoring().set_ftrl_result_score(result_scores[i]);
 }

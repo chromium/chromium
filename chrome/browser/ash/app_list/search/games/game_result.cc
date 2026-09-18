@@ -78,12 +78,12 @@ GameResult::GameResult(Profile* profile,
     : profile_(profile),
       list_controller_(list_controller),
       dimension_(kAppIconDimension) {
-  DCHECK(profile);
-  DCHECK(list_controller);
-  DCHECK(app_discovery_service);
+  CHECK(profile, base::NotFatalUntil::M160);
+  CHECK(list_controller, base::NotFatalUntil::M160);
+  CHECK(app_discovery_service, base::NotFatalUntil::M160);
   // GameResult requires that apps::Result has GameExtras populated.
-  DCHECK(game.GetSourceExtras());
-  DCHECK(game.GetSourceExtras()->AsGameExtras());
+  CHECK(game.GetSourceExtras(), base::NotFatalUntil::M160);
+  CHECK(game.GetSourceExtras()->AsGameExtras(), base::NotFatalUntil::M160);
 
   const auto* extras = game.GetSourceExtras()->AsGameExtras();
   launch_url_ = extras->GetDeeplinkUrl();

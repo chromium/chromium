@@ -147,7 +147,8 @@ AppListControllerDelegate* ChromeAppListItem::GetController() {
 
 void ChromeAppListItem::InitFromSync(
     const app_list::AppListSyncableService::SyncItem* sync_item) {
-  DCHECK(sync_item && sync_item->item_ordinal.IsValid());
+  CHECK(sync_item && sync_item->item_ordinal.IsValid(),
+        base::NotFatalUntil::M160);
   // An existing synced position exists, use that.
   SetPosition(sync_item->item_ordinal);
   // Only set the name from the sync item if it is empty.

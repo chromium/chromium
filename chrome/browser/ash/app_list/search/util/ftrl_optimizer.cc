@@ -37,10 +37,10 @@ void Normalize(google::protobuf::RepeatedField<double>& values) {
 
 FtrlOptimizer::FtrlOptimizer(FtrlOptimizer::Proto proto, const Params& params)
     : params_(params), proto_(std::move(proto)) {
-  DCHECK_GT(params.alpha, 0.0);
-  DCHECK_GE(params.gamma, 0.0);
-  DCHECK_LE(params.gamma, 1.0);
-  DCHECK_GT(params.num_experts, 0u);
+  CHECK_GT(params.alpha, 0.0, base::NotFatalUntil::M160);
+  CHECK_GE(params.gamma, 0.0, base::NotFatalUntil::M160);
+  CHECK_LE(params.gamma, 1.0, base::NotFatalUntil::M160);
+  CHECK_GT(params.num_experts, 0u, base::NotFatalUntil::M160);
 
   // `proto_` is a class member so it is safe to call `RegisterOnInitUnsafe()`.
   proto_.RegisterOnInitUnsafe(
@@ -66,9 +66,10 @@ std::vector<double> FtrlOptimizer::Score(
     return result;
 
   const auto& weights = proto_->weights();
-  DCHECK_EQ(expert_scores.size(), num_experts);
-  DCHECK_GE(weights.size(), 0);
-  DCHECK_EQ(static_cast<size_t>(weights.size()), num_experts);
+  CHECK_EQ(expert_scores.size(), num_experts, base::NotFatalUntil::M160);
+  CHECK_GE(weights.size(), 0, base::NotFatalUntil::M160);
+  CHECK_EQ(static_cast<size_t>(weights.size()), num_experts,
+           base::NotFatalUntil::M160);
   for (size_t i = 0; i < num_items; ++i) {
     last_expert_scores_[items[i]] = {};
 
@@ -100,7 +101,8 @@ void FtrlOptimizer::Train(const std::string& item) {
 
   // Re-normalize the weights.
   Normalize(weights);
-  DCHECK_LE(std::abs(Total(proto_->weights()) - 1.0), 1.0e-5);
+  CHECK_LE(std::abs(Total(proto_->weights()) - 1.0), 1.0e-5,
+           base::NotFatalUntil::M160);
 
   proto_.StartWrite();
 }
@@ -109,14 +111,15 @@ double FtrlOptimizer::Loss(size_t expert, const std::string& item) {
   size_t num_experts = params_.num_experts;
   size_t num_items = last_expert_scores_.size();
 
-  DCHECK_GT(num_items, 0u);
-  DCHECK_LT(expert, num_experts);
+  CHECK_GT(num_items, 0u, base::NotFatalUntil::M160);
+  CHECK_LT(expert, num_experts, base::NotFatalUntil::M160);
 
   // Find the score of the launched item.
   double score = {0.0};
 
   if (last_expert_scores_.find(item) != last_expert_scores_.end()) {
-    DCHECK_EQ(last_expert_scores_[item].size(), num_experts);
+    CHECK_EQ(last_expert_scores_[item].size(), num_experts,
+             base::NotFatalUntil::M160);
     score = last_expert_scores_[item][expert];
   }
 
@@ -131,7 +134,7 @@ double FtrlOptimizer::Loss(size_t expert, const std::string& item) {
 
   // The loss is linear in the |rank|. A loss of 1.0 means |item| wasn't
   // included at all.
-  DCHECK(!last_expert_scores_.empty());
+  CHECK(!last_expert_scores_.empty(), base::NotFatalUntil::M160);
   return static_cast<double>(rank) / last_expert_scores_.size();
 }
 
@@ -144,7 +147,8 @@ void FtrlOptimizer::OnProtoInit() {
     for (size_t i = 0; i < params_.num_experts; ++i)
       proto_->add_weights(1.0 / params_.num_experts);
   }
-  DCHECK_LE(std::abs(Total(proto_->weights()) - 1.0), 1.0e-5);
+  CHECK_LE(std::abs(Total(proto_->weights()) - 1.0), 1.0e-5,
+           base::NotFatalUntil::M160);
 }
 
 }  // namespace app_list

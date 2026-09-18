@@ -122,7 +122,7 @@ void SearchController::AddProvider(std::unique_ptr<SearchProvider> provider) {
 }
 
 void SearchController::StartSearch(const std::u16string& query) {
-  DCHECK(!query.empty());
+  CHECK(!query.empty(), base::NotFatalUntil::M160);
 
   burn_in_controller_->Start();
 
@@ -334,7 +334,7 @@ void SearchController::SetZeroStateResults(ResultType result_type) {
 }
 
 void SearchController::Rank(ProviderType provider_type) {
-  DCHECK(ranker_manager_);
+  CHECK(ranker_manager_, base::NotFatalUntil::M160);
   if (results_.empty()) {
     // Happens if the burn-in period has elapsed without any results having been
     // received from providers. Return early.
