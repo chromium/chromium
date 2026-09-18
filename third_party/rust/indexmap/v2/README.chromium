@@ -1,7 +1,7 @@
 Name: indexmap
 URL: https://crates.io/crates/indexmap
-Version: 2.14.1
-Revision: fdf7e1738b3b53869bdc15d666f9b81961041825
+Version: 2.14.2
+Revision: 41a870887c4c77adf665886e63df08f406bfe37a
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/indexmap-v2/LICENSE-APACHE

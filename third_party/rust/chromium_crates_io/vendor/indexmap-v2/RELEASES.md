@@ -1,5 +1,12 @@
 # Releases
 
+## 2.14.2 (2026-09-04)
+
+- Fix item hygiene in map and set macros. Previously, an internal `const CAP`
+  could shadow the same name in the caller's namespace.
+- Allow `const` initialization of empty `indexmap_with_default!` and
+  `indexset_with_default!`. The hasher may also be omitted if it's inferrable.
+
 ## 2.14.1 (2026-08-28)
 
 - Simplify comparisons where `Equivalent` isn't needed (`Q = K`).
