@@ -92,7 +92,7 @@ export class LogManager {
     realmStorage: RealmStorage,
     eventManager: EventManager,
     logger?: LoggerFn,
-  ) {
+  ): LogManager {
     const logManager = new LogManager(
       cdpTarget,
       realmStorage,

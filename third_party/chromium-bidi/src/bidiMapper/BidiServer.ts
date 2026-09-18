@@ -282,7 +282,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     this.#messageQueue.add(messageEntry, event);
   }
 
-  close() {
+  close(): void {
     this.#transport.close();
   }
 

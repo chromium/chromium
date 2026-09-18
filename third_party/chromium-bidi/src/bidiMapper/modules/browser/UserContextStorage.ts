@@ -45,7 +45,9 @@ export class UserContextStorage {
     ];
   }
 
-  async verifyUserContextIdList(userContextIds: Browser.UserContext[]) {
+  async verifyUserContextIdList(
+    userContextIds: Browser.UserContext[],
+  ): Promise<Set<Browser.UserContext>> {
     const foundContexts = new Set<Browser.UserContext>();
     if (!userContextIds.length) {
       return foundContexts;

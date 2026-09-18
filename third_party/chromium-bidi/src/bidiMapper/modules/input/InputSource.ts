@@ -25,11 +25,11 @@ export const enum SourceType {
 }
 
 export class NoneSource {
-  type = SourceType.None as const;
+  type: SourceType.None = SourceType.None;
 }
 export class KeySource {
-  type = SourceType.Key as const;
-  pressed = new Set<string>();
+  type: SourceType.Key = SourceType.Key;
+  pressed: Set<string> = new Set<string>();
 
   // This is a bitfield that matches the modifiers parameter of
   // https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-dispatchKeyEvent
@@ -86,7 +86,7 @@ export class ClickContext {
     this.#time = time;
   }
 
-  compare(context: ClickContext) {
+  compare(context: ClickContext): boolean {
     return (
       // The click needs to be within a certain amount of ms.
       context.#time - this.#time > ClickContext.#DOUBLE_CLICK_TIME_MS ||
@@ -98,10 +98,10 @@ export class ClickContext {
 }
 
 export class PointerSource {
-  type = SourceType.Pointer as const;
+  type: SourceType.Pointer = SourceType.Pointer;
   subtype: Input.PointerType;
   pointerId: number;
-  pressed = new Set<number>();
+  pressed: Set<number> = new Set<number>();
   x = 0;
   y = 0;
   radiusX?: number;
@@ -146,7 +146,7 @@ export class PointerSource {
 
   #clickContexts = new Map<number, ClickContext>();
 
-  setClickCount(button: number, context: ClickContext) {
+  setClickCount(button: number, context: ClickContext): number {
     let storedContext = this.#clickContexts.get(button);
     if (!storedContext || storedContext.compare(context)) {
       storedContext = context;
@@ -156,7 +156,7 @@ export class PointerSource {
     return storedContext.count;
   }
 
-  getClickCount(button: number) {
+  getClickCount(button: number): number {
     return this.#clickContexts.get(button)?.count ?? 0;
   }
 
@@ -172,7 +172,7 @@ export class PointerSource {
 }
 
 export class WheelSource {
-  type = SourceType.Wheel as const;
+  type: SourceType.Wheel = SourceType.Wheel;
 }
 
 export type InputSource = NoneSource | KeySource | PointerSource | WheelSource;

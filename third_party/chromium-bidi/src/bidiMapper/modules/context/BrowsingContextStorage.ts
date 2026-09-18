@@ -56,17 +56,17 @@ export class BrowsingContextStorage {
   }
 
   /** Deletes the context with the given ID. */
-  deleteContextById(id: BrowsingContext.BrowsingContext) {
+  deleteContextById(id: BrowsingContext.BrowsingContext): void {
     this.#contexts.delete(id);
   }
 
   /** Deletes the given context. */
-  deleteContext(context: BrowsingContextImpl) {
+  deleteContext(context: BrowsingContextImpl): void {
     this.#contexts.delete(context.id);
   }
 
   /** Tracks the given context. */
-  addContext(context: BrowsingContextImpl) {
+  addContext(context: BrowsingContextImpl): void {
     this.#contexts.set(context.id, context);
     this.#eventEmitter.emit(BrowsingContextStorageEvents.Added, {
       browsingContext: context,
@@ -144,7 +144,7 @@ export class BrowsingContextStorage {
 
   verifyTopLevelContextsList(
     contexts: BrowsingContext.BrowsingContext[] | undefined,
-  ) {
+  ): Set<BrowsingContextImpl> {
     const foundContexts = new Set<BrowsingContextImpl>();
     if (!contexts) {
       return foundContexts;
@@ -163,7 +163,7 @@ export class BrowsingContextStorage {
     return foundContexts;
   }
 
-  verifyContextsList(contexts: BrowsingContext.BrowsingContext[]) {
+  verifyContextsList(contexts: BrowsingContext.BrowsingContext[]): void {
     if (!contexts.length) {
       return;
     }

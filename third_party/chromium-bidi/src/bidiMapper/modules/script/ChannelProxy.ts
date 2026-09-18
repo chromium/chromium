@@ -55,7 +55,10 @@ export class ChannelProxy {
   }
 
   /** Gets a ChannelProxy from window and returns its handle. */
-  async startListenerFromWindow(realm: Realm, eventManager: EventManager) {
+  async startListenerFromWindow(
+    realm: Realm,
+    eventManager: EventManager,
+  ): Promise<void> {
     try {
       const channelHandle = await this.#getHandleFromWindow(realm);
       void this.#startListener(realm, channelHandle, eventManager);

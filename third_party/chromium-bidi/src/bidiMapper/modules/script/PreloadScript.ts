@@ -118,7 +118,7 @@ export class PreloadScript {
   async initInTargets(
     cdpTargets: Iterable<CdpTarget>,
     runImmediately: boolean,
-  ) {
+  ): Promise<void> {
     await Promise.all(
       Array.from(cdpTargets).map((cdpTarget) =>
         this.initInTarget(cdpTarget, runImmediately),
@@ -130,7 +130,10 @@ export class PreloadScript {
    * Adds the script to the given CDP target by calling the
    * `Page.addScriptToEvaluateOnNewDocument` command.
    */
-  async initInTarget(cdpTarget: CdpTarget, runImmediately: boolean) {
+  async initInTarget(
+    cdpTarget: CdpTarget,
+    runImmediately: boolean,
+  ): Promise<void> {
     const addCdpPreloadScriptResult = await cdpTarget.cdpClient.sendCommand(
       'Page.addScriptToEvaluateOnNewDocument',
       {
@@ -150,7 +153,7 @@ export class PreloadScript {
   /**
    * Removes this script from all CDP targets.
    */
-  async remove() {
+  async remove(): Promise<void> {
     await Promise.all([
       this.#cdpPreloadScripts.map(async (cdpPreloadScript) => {
         const cdpTarget = cdpPreloadScript.target;
@@ -166,7 +169,7 @@ export class PreloadScript {
   }
 
   /** Removes the provided cdp target from the list of cdp preload scripts. */
-  dispose(cdpTargetId: Protocol.Target.TargetID) {
+  dispose(cdpTargetId: Protocol.Target.TargetID): void {
     this.#cdpPreloadScripts = this.#cdpPreloadScripts.filter(
       (cdpPreloadScript) => cdpPreloadScript.target?.id !== cdpTargetId,
     );

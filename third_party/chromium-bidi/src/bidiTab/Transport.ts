@@ -27,9 +27,11 @@ import type {Transport} from '../utils/transport.js';
 import {log} from './mapperTabPage.js';
 
 export class WindowBidiTransport implements BidiTransport {
-  static readonly LOGGER_PREFIX_RECV = `${LogType.bidi}:RECV ◂` as const;
-  static readonly LOGGER_PREFIX_SEND = `${LogType.bidi}:SEND ▸` as const;
-  static readonly LOGGER_PREFIX_WARN = LogType.debugWarn;
+  static readonly LOGGER_PREFIX_RECV: `${LogType.bidi}:RECV ◂` =
+    `${LogType.bidi}:RECV ◂` as const;
+  static readonly LOGGER_PREFIX_SEND: `${LogType.bidi}:SEND ▸` =
+    `${LogType.bidi}:SEND ▸` as const;
+  static readonly LOGGER_PREFIX_WARN: LogType.debugWarn = LogType.debugWarn;
 
   #onMessage: ((message: ChromiumBidi.Command) => void) | null = null;
 
@@ -47,17 +49,17 @@ export class WindowBidiTransport implements BidiTransport {
     };
   }
 
-  setOnMessage(onMessage: Parameters<BidiTransport['setOnMessage']>[0]) {
+  setOnMessage(onMessage: Parameters<BidiTransport['setOnMessage']>[0]): void {
     this.#onMessage = onMessage;
   }
 
-  sendMessage(message: ChromiumBidi.Message) {
+  sendMessage(message: ChromiumBidi.Message): void {
     log(WindowBidiTransport.LOGGER_PREFIX_SEND)?.(message);
     const json = JSON.stringify(message);
     window.sendBidiResponse(json);
   }
 
-  close() {
+  close(): void {
     this.#onMessage = null;
     window.onBidiMessage = null;
   }
@@ -187,15 +189,15 @@ export class WindowCdpTransport implements Transport {
     };
   }
 
-  setOnMessage(onMessage: Parameters<Transport['setOnMessage']>[0]) {
+  setOnMessage(onMessage: Parameters<Transport['setOnMessage']>[0]): void {
     this.#onMessage = onMessage;
   }
 
-  sendMessage(message: string) {
+  sendMessage(message: string): void {
     this.#cdpSend(message);
   }
 
-  close() {
+  close(): void {
     this.#onMessage = null;
     window.cdp.onmessage = null;
   }

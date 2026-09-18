@@ -83,7 +83,7 @@ async function getElementCenter(
 }
 
 export class ActionDispatcher {
-  static isMacOS = async (context: BrowsingContextImpl) => {
+  static isMacOS = async (context: BrowsingContextImpl): Promise<boolean> => {
     const hiddenSandboxRealm = await context.getOrCreateHiddenSandbox();
     const result = await hiddenSandboxRealm.callFunction(IS_MAC_DECL, false);
     assert(result.type !== 'exception');
@@ -120,7 +120,7 @@ export class ActionDispatcher {
 
   async dispatchActions(
     optionsByTick: readonly (readonly Readonly<ActionOption>[])[],
-  ) {
+  ): Promise<void> {
     await this.#inputState.queue.run(async () => {
       for (const options of optionsByTick) {
         await this.dispatchTickActions(options);

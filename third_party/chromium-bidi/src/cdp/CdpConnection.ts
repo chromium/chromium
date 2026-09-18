@@ -42,8 +42,10 @@ export interface CdpConnection {
  * CDP session.
  */
 export class MapperCdpConnection implements CdpConnection {
-  static readonly LOGGER_PREFIX_RECV = `${LogType.cdp}:RECV ◂` as const;
-  static readonly LOGGER_PREFIX_SEND = `${LogType.cdp}:SEND ▸` as const;
+  static readonly LOGGER_PREFIX_RECV: `${LogType.cdp}:RECV ◂` =
+    `${LogType.cdp}:RECV ◂` as const;
+  static readonly LOGGER_PREFIX_SEND: `${LogType.cdp}:SEND ▸` =
+    `${LogType.cdp}:SEND ▸` as const;
 
   readonly #mainBrowserCdpClient: MapperCdpClient;
   readonly #transport: Transport;
@@ -68,7 +70,7 @@ export class MapperCdpConnection implements CdpConnection {
   }
 
   /** Closes the connection to the browser. */
-  close() {
+  close(): void {
     this.#transport.close();
     for (const [, {reject, error}] of this.#commandCallbacks) {
       reject(error);

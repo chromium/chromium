@@ -30,7 +30,7 @@ import {urlMatchesAboutBlank} from '../../../utils/urlHelpers.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {EventManager} from '../session/EventManager.js';
 
-export const enum NavigationEventName {
+export enum NavigationEventName {
   FragmentNavigated = ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
   NavigationAborted = ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
   NavigationFailed = ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
@@ -48,7 +48,7 @@ export class NavigationResult {
 }
 
 export class NavigationState {
-  readonly navigationId = uuidv4();
+  readonly navigationId: string = uuidv4();
   readonly #browsingContextId: string;
   readonly #userContext: Browser.UserContext;
 
@@ -58,7 +58,7 @@ export class NavigationState {
   loaderId?: string;
   #isInitial: boolean;
   #eventManager: EventManager;
-  committed = new Deferred<void>();
+  committed: Deferred<void> = new Deferred<void>();
   isFragmentNavigation?: boolean;
 
   get finished(): Promise<NavigationResult> {
@@ -89,7 +89,7 @@ export class NavigationState {
     };
   }
 
-  start() {
+  start(): void {
     if (
       // Initial navigation should not be reported.
       !this.#isInitial &&
@@ -112,7 +112,7 @@ export class NavigationState {
     this.#started = true;
   }
 
-  #finish(navigationResult: NavigationResult) {
+  #finish(navigationResult: NavigationResult): void {
     this.#started = true;
 
     if (
@@ -132,7 +132,7 @@ export class NavigationState {
     this.#finished.resolve(navigationResult);
   }
 
-  frameNavigated() {
+  frameNavigated(): void {
     this.committed.resolve();
     if (!this.#isInitial) {
       this.#eventManager.registerEvent(
@@ -146,16 +146,16 @@ export class NavigationState {
     }
   }
 
-  fragmentNavigated() {
+  fragmentNavigated(): void {
     this.committed.resolve();
     this.#finish(new NavigationResult(NavigationEventName.FragmentNavigated));
   }
 
-  load() {
+  load(): void {
     this.#finish(new NavigationResult(NavigationEventName.Load));
   }
 
-  fail(message: string) {
+  fail(message: string): void {
     this.#finish(
       new NavigationResult(
         this.committed.isFinished
@@ -217,7 +217,7 @@ export class NavigationTracker {
    * Returns current started ongoing navigation. It can be either a started pending
    * navigation, or one is already navigated.
    */
-  get currentNavigationId() {
+  get currentNavigationId(): string {
     if (this.#pendingNavigation?.isFragmentNavigation === false) {
       // Use pending navigation if it is started and it is not a fragment navigation.
       return this.#pendingNavigation.navigationId;
@@ -272,7 +272,7 @@ export class NavigationTracker {
     return navigation;
   }
 
-  dispose() {
+  dispose(): void {
     this.#pendingNavigation?.fail('navigation canceled by context disposal');
     this.#lastCommittedNavigation.fail(
       'navigation canceled by context disposal',
@@ -280,7 +280,7 @@ export class NavigationTracker {
   }
 
   // Update the current url.
-  onTargetInfoChanged(url: string) {
+  onTargetInfoChanged(url: string): void {
     this.#logger?.(LogType.debug)?.(`onTargetInfoChanged ${url}`);
     this.#lastCommittedNavigation.url = url;
   }
@@ -308,7 +308,7 @@ export class NavigationTracker {
   /**
    * @param {string} unreachableUrl indicated the navigation is actually failed.
    */
-  frameNavigated(url: string, loaderId: string, unreachableUrl?: string) {
+  frameNavigated(url: string, loaderId: string, unreachableUrl?: string): void {
     this.#logger?.(LogType.debug)?.(`frameNavigated ${url}`);
 
     if (unreachableUrl !== undefined) {
@@ -348,7 +348,7 @@ export class NavigationTracker {
   navigatedWithinDocument(
     url: string,
     navigationType: Protocol.Page.NavigatedWithinDocumentEvent['navigationType'],
-  ) {
+  ): void {
     this.#logger?.(LogType.debug)?.(
       `navigatedWithinDocument ${url}, ${navigationType}`,
     );
@@ -387,7 +387,7 @@ export class NavigationTracker {
    * TODO: navigation should be complete when it became the current one on
    * `Page.frameNavigated` or on navigating command finished with a new loader Id.
    */
-  loadPageEvent(loaderId: string) {
+  loadPageEvent(loaderId: string): void {
     this.#logger?.(LogType.debug)?.('loadPageEvent');
     // Even if it was an initial navigation, it is finished.
     this.#isInitialNavigation = false;
@@ -398,7 +398,7 @@ export class NavigationTracker {
   /**
    * Fail navigation due to navigation command failed.
    */
-  failNavigation(navigation: NavigationState, errorText: string) {
+  failNavigation(navigation: NavigationState, errorText: string): void {
     this.#logger?.(LogType.debug)?.('failCommandNavigation');
     navigation.fail(errorText);
   }
@@ -407,7 +407,10 @@ export class NavigationTracker {
    * Updates the navigation's `loaderId` and sets it as current one, if it is a
    * cross-document navigation.
    */
-  navigationCommandFinished(navigation: NavigationState, loaderId?: string) {
+  navigationCommandFinished(
+    navigation: NavigationState,
+    loaderId?: string,
+  ): void {
     this.#logger?.(LogType.debug)?.(
       `finishCommandNavigation ${navigation.navigationId}, ${loaderId}`,
     );
@@ -424,7 +427,7 @@ export class NavigationTracker {
     url: string,
     loaderId: string,
     navigationType: string,
-  ) {
+  ): void {
     this.#logger?.(LogType.debug)?.(
       `frameStartedNavigating ${url}, ${loaderId}`,
     );
@@ -475,7 +478,7 @@ export class NavigationTracker {
    * If there is a navigation with the loaderId equals to the network request id, it means
    * that the navigation failed.
    */
-  networkLoadingFailed(loaderId: string, errorText: string) {
+  networkLoadingFailed(loaderId: string, errorText: string): void {
     this.#loaderIdToNavigationsMap.get(loaderId)?.fail(errorText);
   }
 }

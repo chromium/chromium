@@ -40,7 +40,7 @@ export class ContextConfigStorage {
    * Updates the global configuration. Properties with `undefined` values in the
    * provided `config` are ignored.
    */
-  updateGlobalConfig(config: ContextConfig) {
+  updateGlobalConfig(config: ContextConfig): void {
     this.#global = ContextConfig.merge(this.#global, config);
   }
 
@@ -51,7 +51,7 @@ export class ContextConfigStorage {
   updateBrowsingContextConfig(
     browsingContextId: string,
     config: ContextConfig,
-  ) {
+  ): void {
     this.#browsingContextConfigs.set(
       browsingContextId,
       ContextConfig.merge(
@@ -65,7 +65,7 @@ export class ContextConfigStorage {
    * Updates the configuration for a specific user context. Properties with
    * `undefined` values in the provided `config` are ignored.
    */
-  updateUserContextConfig(userContext: string, config: ContextConfig) {
+  updateUserContextConfig(userContext: string, config: ContextConfig): void {
     this.#userContextConfigs.set(
       userContext,
       ContextConfig.merge(this.#userContextConfigs.get(userContext), config),
@@ -106,7 +106,7 @@ export class ContextConfigStorage {
   getActiveConfig(
     topLevelBrowsingContextId: string | undefined,
     userContext: string,
-  ) {
+  ): ContextConfig {
     let result = ContextConfig.merge(
       this.#global,
       this.#userContextConfigs.get(userContext),

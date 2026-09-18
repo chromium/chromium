@@ -34,7 +34,7 @@ export class Buffer<T> {
     return this.#entries;
   }
 
-  add(value: T) {
+  add(value: T): void {
     this.#entries.push(value);
     while (this.#entries.length > this.#capacity) {
       const item = this.#entries.shift();

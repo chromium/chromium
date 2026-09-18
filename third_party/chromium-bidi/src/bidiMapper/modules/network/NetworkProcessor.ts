@@ -270,7 +270,7 @@ export class NetworkProcessor {
   /**
    * Validate https://fetch.spec.whatwg.org/#header-value
    */
-  static validateHeaders(headers: Network.Header[]) {
+  static validateHeaders(headers: Network.Header[]): void {
     for (const header of headers) {
       let headerValue: string;
       if (header.value.type === 'string') {
@@ -291,7 +291,7 @@ export class NetworkProcessor {
     }
   }
 
-  static isMethodValid(method: string) {
+  static isMethodValid(method: string): boolean {
     // https://httpwg.org/specs/rfc9110.html#method.overview
     return /^[!#$%&'*+\-.^_`|~a-zA-Z\d]+$/.test(method);
   }
@@ -300,7 +300,7 @@ export class NetworkProcessor {
    * Attempts to parse the given url.
    * Throws an InvalidArgumentException if the url is invalid.
    */
-  static parseUrlString(url: string) {
+  static parseUrlString(url: string): URL {
     try {
       return new URL(url);
     } catch (error) {
@@ -476,7 +476,7 @@ export class NetworkProcessor {
     });
   }
 
-  static wrapInterceptionError(error: any) {
+  static wrapInterceptionError(error: any): any {
     // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/fetch_handler.cc;l=169
     if (
       error?.message.includes('Invalid header') ||

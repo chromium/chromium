@@ -85,7 +85,7 @@ export class MockCdpNetworkEvents {
     };
   }
 
-  requestWillBeSent() {
+  requestWillBeSent(): void {
     this.cdpClient.emit('Network.requestWillBeSent', {
       requestId: this.requestId,
       loaderId: this.loaderId,
@@ -116,7 +116,7 @@ export class MockCdpNetworkEvents {
     });
   }
 
-  requestWillBeSentRedirect() {
+  requestWillBeSentRedirect(): void {
     this.cdpClient.emit('Network.requestWillBeSent', {
       requestId: this.requestId,
       loaderId: this.loaderId,
@@ -193,7 +193,7 @@ export class MockCdpNetworkEvents {
     });
   }
 
-  requestWillBeSentExtraInfo() {
+  requestWillBeSentExtraInfo(): void {
     this.cdpClient.emit('Network.requestWillBeSentExtraInfo', {
       requestId: this.requestId,
       associatedCookies: [],
@@ -223,13 +223,13 @@ export class MockCdpNetworkEvents {
     });
   }
 
-  requestServedFromCache() {
+  requestServedFromCache(): void {
     this.cdpClient.emit('Network.requestServedFromCache', {
       requestId: this.requestId,
     });
   }
 
-  responseReceivedExtraInfo() {
+  responseReceivedExtraInfo(): void {
     this.cdpClient.emit('Network.responseReceivedExtraInfo', {
       requestId: this.requestId,
       blockedCookies: [],
@@ -248,7 +248,7 @@ export class MockCdpNetworkEvents {
     });
   }
 
-  responseReceivedExtraInfoRedirect() {
+  responseReceivedExtraInfoRedirect(): void {
     this.cdpClient.emit('Network.responseReceivedExtraInfo', {
       requestId: this.requestId,
       blockedCookies: [],
@@ -271,7 +271,7 @@ export class MockCdpNetworkEvents {
     });
   }
 
-  responseReceived(hasExtraInfo = false) {
+  responseReceived(hasExtraInfo = false): void {
     this.cdpClient.emit('Network.responseReceived', {
       requestId: this.requestId,
       loaderId: this.loaderId,
@@ -330,7 +330,7 @@ export class MockCdpNetworkEvents {
     });
   }
 
-  requestPaused() {
+  requestPaused(): void {
     this.cdpClient.emit('Fetch.requestPaused', {
       requestId: this.fetchId,
       request: {
@@ -355,7 +355,7 @@ export class MockCdpNetworkEvents {
     });
   }
 
-  responsePaused() {
+  responsePaused(): void {
     this.cdpClient.emit('Fetch.requestPaused', {
       requestId: this.fetchId,
       request: {
@@ -376,7 +376,7 @@ export class MockCdpNetworkEvents {
     });
   }
 
-  authRequired() {
+  authRequired(): void {
     this.cdpClient.emit('Fetch.authRequired', {
       requestId: this.fetchId,
       request: {
@@ -406,7 +406,7 @@ export class MockCdpNetworkEvents {
     });
   }
 
-  loadingFailed() {
+  loadingFailed(): void {
     this.cdpClient.emit('Network.loadingFailed', {
       requestId: this.requestId,
       timestamp: 279179.745291,
@@ -416,7 +416,7 @@ export class MockCdpNetworkEvents {
     });
   }
 
-  loadingFinished() {
+  loadingFinished(): void {
     this.cdpClient.emit('Network.loadingFinished', {
       requestId: this.requestId,
       timestamp: 279179.745291,
@@ -424,7 +424,10 @@ export class MockCdpNetworkEvents {
     });
   }
 
-  setJsonEvent(json: string | Record<string, unknown>, _normalize = false) {
+  setJsonEvent(
+    json: string | Record<string, unknown>,
+    _normalize = false,
+  ): void {
     const event = json instanceof Object ? json : JSON.parse(json);
 
     const replaceKeys = [
@@ -472,7 +475,7 @@ export class MockCdpClient extends EventEmitter<CdpEvents> {
     this.#logger = logger;
   }
 
-  sendCommand(...args: any[]) {
+  sendCommand(...args: any[]): Promise<unknown> {
     this.#logger(...args);
 
     return new Promise((resolve) => {
@@ -480,7 +483,7 @@ export class MockCdpClient extends EventEmitter<CdpEvents> {
     });
   }
 
-  isCloseError(error: unknown) {
+  isCloseError(error: unknown): boolean {
     return error instanceof CloseError;
   }
 }
@@ -494,16 +497,16 @@ export class MockCdpTarget {
     this.cdpClient = new MockCdpClient(logger) as CdpClient;
   }
 
-  enableFetchIfNeeded() {
+  enableFetchIfNeeded(): Promise<void> {
     this.#logger('Fetch.enabled called');
     return Promise.resolve();
   }
 
-  get topLevelId() {
+  get topLevelId(): string {
     return MockCdpNetworkEvents.defaultFrameId;
   }
 
-  isSubscribedTo() {
+  isSubscribedTo(): boolean {
     return true;
   }
 }

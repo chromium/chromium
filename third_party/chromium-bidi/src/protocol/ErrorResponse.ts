@@ -134,7 +134,10 @@ export class UnknownCommandException extends Exception {
 }
 
 export class UnknownErrorException extends Exception {
-  constructor(message: string, stacktrace = new Error().stack) {
+  constructor(
+    message: string,
+    stacktrace: string | undefined = new Error().stack,
+  ) {
     super(ErrorCode.UnknownError, message, stacktrace);
   }
 }

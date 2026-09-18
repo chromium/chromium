@@ -106,7 +106,9 @@ export namespace Network {
       WebDriverBidi.Network.AddInterceptParametersSchema,
     ) as Protocol.Network.AddInterceptParameters;
   }
-  export function parseContinueRequestParameters(params: unknown) {
+  export function parseContinueRequestParameters(
+    params: unknown,
+  ): Protocol.Network.ContinueRequestParameters {
     return parseObject(
       params,
       WebDriverBidi.Network.ContinueRequestParametersSchema,
@@ -119,7 +121,9 @@ export namespace Network {
       WebDriverBidi.Network.ContinueResponseParametersSchema,
     ) as Protocol.Network.ContinueResponseParameters;
   }
-  export function parseContinueWithAuthParameters(params: unknown) {
+  export function parseContinueWithAuthParameters(
+    params: unknown,
+  ): Protocol.Network.ContinueWithAuthParameters {
     return parseObject(
       params,
       WebDriverBidi.Network.ContinueWithAuthParametersSchema,
@@ -131,7 +135,9 @@ export namespace Network {
       WebDriverBidi.Network.DisownDataParametersSchema,
     ) as Protocol.Network.DisownDataParameters;
   }
-  export function parseFailRequestParameters(params: unknown) {
+  export function parseFailRequestParameters(
+    params: unknown,
+  ): Protocol.Network.FailRequestParameters {
     return parseObject(
       params,
       WebDriverBidi.Network.FailRequestParametersSchema,
@@ -158,7 +164,9 @@ export namespace Network {
       WebDriverBidi.Network.RemoveDataCollectorParametersSchema,
     ) as Protocol.Network.RemoveDataCollectorParameters;
   }
-  export function parseRemoveInterceptParameters(params: unknown) {
+  export function parseRemoveInterceptParameters(
+    params: unknown,
+  ): Protocol.Network.RemoveInterceptParameters {
     return parseObject(
       params,
       WebDriverBidi.Network.RemoveInterceptParametersSchema,
@@ -211,7 +219,9 @@ export namespace Script {
   ): Protocol.Script.GetRealmsParameters {
     return parseObject(params, WebDriverBidi.Script.GetRealmsParametersSchema);
   }
-  export function parseRemovePreloadScriptParams(params: unknown) {
+  export function parseRemovePreloadScriptParams(
+    params: unknown,
+  ): Protocol.Script.RemovePreloadScriptParameters {
     return parseObject(
       params,
       WebDriverBidi.Script.RemovePreloadScriptParametersSchema,
@@ -224,7 +234,9 @@ export namespace Script {
 export namespace BrowsingContext {
   // keep-sorted start block=yes
 
-  export function parseActivateParams(params: unknown) {
+  export function parseActivateParams(
+    params: unknown,
+  ): Protocol.BrowsingContext.ActivateParameters {
     return parseObject(
       params,
       WebDriverBidi.BrowsingContext.ActivateParametersSchema,
@@ -567,12 +579,18 @@ export namespace Cdp {
   export function parseGetSessionRequest(
     params: unknown,
   ): Protocol.Cdp.GetSessionParameters {
-    return parseObject(params, GetSessionRequestSchema);
+    return parseObject(
+      params,
+      GetSessionRequestSchema,
+    ) as Protocol.Cdp.GetSessionParameters;
   }
   export function parseResolveRealmRequest(
     params: unknown,
   ): Protocol.Cdp.ResolveRealmParameters {
-    return parseObject(params, ResolveRealmRequestSchema);
+    return parseObject(
+      params,
+      ResolveRealmRequestSchema,
+    ) as Protocol.Cdp.ResolveRealmParameters;
   }
   export function parseSendCommandRequest(
     params: unknown,

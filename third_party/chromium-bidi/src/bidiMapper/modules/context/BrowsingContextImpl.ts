@@ -58,7 +58,8 @@ import {
 } from './NavigationTracker.js';
 
 export class BrowsingContextImpl {
-  static readonly LOGGER_PREFIX = `${LogType.debug}:browsingContext` as const;
+  static readonly LOGGER_PREFIX: `${LogType.debug}:browsingContext` =
+    `${LogType.debug}:browsingContext` as const;
 
   /** Direct children browsing contexts. */
   readonly #children = new Set<BrowsingContext.BrowsingContext>();
@@ -211,7 +212,7 @@ export class BrowsingContextImpl {
     return this.#navigationTracker.currentNavigationId;
   }
 
-  dispose(emitContextDestroyed: boolean) {
+  dispose(emitContextDestroyed: boolean): void {
     this.#navigationTracker.dispose();
 
     // Reject any pending callers awaiting the default realm when the context
@@ -317,7 +318,7 @@ export class BrowsingContextImpl {
     return topContext;
   }
 
-  addChild(childId: BrowsingContext.BrowsingContext) {
+  addChild(childId: BrowsingContext.BrowsingContext): void {
     this.#children.add(childId);
   }
 
@@ -329,7 +330,7 @@ export class BrowsingContextImpl {
     return this.#cdpTarget;
   }
 
-  updateCdpTarget(cdpTarget: CdpTarget) {
+  updateCdpTarget(cdpTarget: CdpTarget): void {
     this.#cdpTarget = cdpTarget;
     if (this.#defaultRealmDeferred.isFinished) {
       this.#defaultRealmDeferred = new Deferred<Realm>();
@@ -341,7 +342,7 @@ export class BrowsingContextImpl {
     return this.#navigationTracker.url;
   }
 
-  async lifecycleLoaded() {
+  async lifecycleLoaded(): Promise<void> {
     await this.#lifecycle.load;
   }
 
@@ -429,7 +430,7 @@ export class BrowsingContextImpl {
     };
   }
 
-  onTargetInfoChanged(params: Protocol.Target.TargetInfoChangedEvent) {
+  onTargetInfoChanged(params: Protocol.Target.TargetInfoChangedEvent): void {
     this.#navigationTracker.onTargetInfoChanged(params.targetInfo.url);
   }
 
@@ -1185,7 +1186,7 @@ export class BrowsingContextImpl {
     viewport: BrowsingContext.Viewport | null,
     devicePixelRatio: number | null,
     screenOrientation: Emulation.ScreenOrientation | null,
-  ) {
+  ): Promise<void> {
     // Set the target's viewport.
     const config = this.#configStorage.getActiveConfig(
       this.id,
@@ -1991,7 +1992,7 @@ export class BrowsingContextImpl {
     );
   }
 
-  async setScriptingEnabled(scriptingEnabled: false | null) {
+  async setScriptingEnabled(scriptingEnabled: false | null): Promise<void> {
     await Promise.all(
       this.#getAllRelatedCdpTargets().map(
         async (cdpTarget) =>
@@ -2005,7 +2006,7 @@ export class BrowsingContextImpl {
     acceptLanguage: string | null | undefined,
     clientHints:
       UAClientHints.UserAgentClientHints.ClientHintsMetadata | null | undefined,
-  ) {
+  ): Promise<void> {
     await Promise.all(
       this.#getAllRelatedCdpTargets().map(
         async (cdpTarget) =>
@@ -2020,7 +2021,7 @@ export class BrowsingContextImpl {
 
   async setEmulatedNetworkConditions(
     networkConditions: Emulation.NetworkConditions | null,
-  ) {
+  ): Promise<void> {
     await Promise.all(
       this.#getAllRelatedCdpTargets().map(
         async (cdpTarget) =>
@@ -2029,7 +2030,7 @@ export class BrowsingContextImpl {
     );
   }
 
-  async setTouchOverride(maxTouchPoints: number | null) {
+  async setTouchOverride(maxTouchPoints: number | null): Promise<void> {
     await Promise.allSettled(
       this.#getAllRelatedCdpTargets().map(
         async (cdpTarget) => await cdpTarget.setTouchOverride(maxTouchPoints),
@@ -2091,7 +2092,7 @@ export class BrowsingContextImpl {
   }
 }
 
-export function serializeOrigin(origin: string) {
+export function serializeOrigin(origin: string): string {
   // https://html.spec.whatwg.org/multipage/origin.html#ascii-serialisation-of-an-origin
   if (['://', ''].includes(origin)) {
     origin = 'null';

@@ -160,7 +160,7 @@ export type SpeculationEvent =
 export type Event =
   WebDriverBidi.Event | Cdp.Event | BluetoothEvent | SpeculationEvent;
 
-export const EVENT_NAMES = new Set([
+export const EVENT_NAMES: Set<string> = new Set([
   // keep-sorted start
   ...Object.values(BiDiModule),
   ...Object.values(Bluetooth.EventNames),

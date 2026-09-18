@@ -57,12 +57,12 @@ export class PreloadScriptStorage {
     });
   }
 
-  add(preloadScript: PreloadScript) {
+  add(preloadScript: PreloadScript): void {
     this.#scripts.add(preloadScript);
   }
 
   /** Deletes all BiDi preload script entries that match the given filter. */
-  remove(id: string) {
+  remove(id: string): void {
     const script = [...this.#scripts].find((script) => script.id === id);
     if (script === undefined) {
       throw new NoSuchScriptException(`No preload script with id '${id}'`);
@@ -79,7 +79,7 @@ export class PreloadScriptStorage {
     return script;
   }
 
-  onCdpTargetCreated(targetId: string, userContext: Browser.UserContext) {
+  onCdpTargetCreated(targetId: string, userContext: Browser.UserContext): void {
     const scriptInUserContext = [...this.#scripts].filter((script) => {
       // Global scripts
       if (!script.userContexts && !script.contexts) {

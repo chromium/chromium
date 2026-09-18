@@ -115,7 +115,7 @@ export class WindowRealm extends Realm {
   override serializeForBiDi(
     deepSerializedValue: Protocol.Runtime.DeepSerializedValue,
     internalIdMap: Map<number, string>,
-  ) {
+  ): Script.RemoteValue {
     const bidiValue = deepSerializedValue.value;
     if (deepSerializedValue.type === 'node' && bidiValue !== undefined) {
       if (Object.hasOwn(bidiValue, 'backendNodeId')) {

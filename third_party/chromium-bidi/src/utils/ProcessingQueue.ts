@@ -19,7 +19,8 @@ import {LogType, type LoggerFn} from './log.js';
 import type {Result} from './result.js';
 
 export class ProcessingQueue<T> {
-  static readonly LOGGER_PREFIX = `${LogType.debug}:queue` as const;
+  static readonly LOGGER_PREFIX: `${LogType.debug}:queue` =
+    `${LogType.debug}:queue` as const;
 
   readonly #logger?: LoggerFn;
   readonly #processor: (arg: T) => Promise<void>;
@@ -33,7 +34,7 @@ export class ProcessingQueue<T> {
     this.#logger = logger;
   }
 
-  add(entry: Promise<Result<T>>, name: string) {
+  add(entry: Promise<Result<T>>, name: string): void {
     this.#queue.push([entry, name]);
     // No need in waiting. Just initialize processor if needed.
     void this.#processIfNeeded();

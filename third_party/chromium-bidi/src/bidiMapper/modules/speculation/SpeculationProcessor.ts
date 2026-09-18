@@ -30,7 +30,7 @@ export class SpeculationProcessor {
     this.#logger = logger;
   }
 
-  onCdpTargetCreated(cdpTarget: CdpTarget) {
+  onCdpTargetCreated(cdpTarget: CdpTarget): void {
     cdpTarget.cdpClient.on('Preload.prefetchStatusUpdated', (event) => {
       let prefetchStatus: Speculation.PreloadingStatus;
       switch (event.status) {

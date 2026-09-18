@@ -48,13 +48,15 @@ export class RealmStorage {
   /** Map from realm ID to Realm. */
   readonly #realmMap = new Map<Script.Realm, Realm>();
   /** List of the internal sandboxed realms which should not be reported to the user. */
-  readonly hiddenSandboxes = new Set<string | undefined>();
+  readonly hiddenSandboxes: Set<string | undefined> = new Set<
+    string | undefined
+  >();
 
-  get knownHandlesToRealmMap() {
+  get knownHandlesToRealmMap(): Map<Script.Handle, Script.Realm> {
     return this.#knownHandlesToRealmMap;
   }
 
-  addRealm(realm: Realm) {
+  addRealm(realm: Realm): void {
     this.#realmMap.set(realm.realmId, realm);
   }
 
@@ -125,7 +127,7 @@ export class RealmStorage {
   }
 
   /** Deletes all realms that match the given filter. */
-  deleteRealms(filter: RealmFilter) {
+  deleteRealms(filter: RealmFilter): void {
     this.findRealms(filter).map((realm) => {
       realm.dispose();
       this.#realmMap.delete(realm.realmId);

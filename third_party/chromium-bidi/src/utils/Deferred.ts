@@ -58,7 +58,7 @@ export class Deferred<T> implements Promise<T> {
     return this.#promise.catch(onRejected);
   }
 
-  resolve(value: T) {
+  resolve(value: T): void {
     this.#result = value;
     if (!this.#isFinished) {
       this.#isFinished = true;
@@ -66,7 +66,7 @@ export class Deferred<T> implements Promise<T> {
     }
   }
 
-  reject(reason: Error) {
+  reject(reason: Error): void {
     if (!this.#isFinished) {
       this.#isFinished = true;
       this.#reject(reason);

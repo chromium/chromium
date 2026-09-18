@@ -164,7 +164,7 @@ export function networkHeaderFromCookieHeaders(
 /** Converts from Bidi auth action to CDP auth challenge response. */
 export function cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(
   action: 'default' | 'cancel' | 'provideCredentials',
-) {
+): 'Default' | 'CancelAuth' | 'ProvideCredentials' {
   switch (action) {
     case 'default':
       return 'Default';

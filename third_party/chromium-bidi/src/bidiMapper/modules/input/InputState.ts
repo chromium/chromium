@@ -119,7 +119,7 @@ export class InputState {
     return state;
   }
 
-  get queue() {
+  get queue(): Mutex {
     return this.#mutex;
   }
 }

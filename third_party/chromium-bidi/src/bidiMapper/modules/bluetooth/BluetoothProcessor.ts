@@ -466,7 +466,7 @@ export class BluetoothProcessor {
     }
   }
 
-  onCdpTargetCreated(cdpTarget: CdpTarget) {
+  onCdpTargetCreated(cdpTarget: CdpTarget): void {
     cdpTarget.cdpClient.on('DeviceAccess.deviceRequestPrompted', (event) => {
       this.#eventManager.registerEvent(
         {

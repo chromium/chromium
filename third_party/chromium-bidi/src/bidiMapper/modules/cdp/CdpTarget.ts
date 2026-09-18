@@ -315,7 +315,7 @@ export class CdpTarget {
     );
   }
 
-  async toggleFetchIfNeeded() {
+  async toggleFetchIfNeeded(): Promise<void> {
     const stages = this.#networkStorage.getInterceptionStages(this.topLevelId);
 
     if (
@@ -387,7 +387,7 @@ export class CdpTarget {
     }
   }
 
-  async toggleSetCacheDisabled(disable?: boolean) {
+  async toggleSetCacheDisabled(disable?: boolean): Promise<void> {
     const defaultCacheDisabled =
       this.#networkStorage.defaultCacheBehavior === 'bypass';
     const cacheDisabled = disable ?? defaultCacheDisabled;
@@ -533,7 +533,7 @@ export class CdpTarget {
     }
   }
 
-  async toggleNetwork() {
+  async toggleNetwork(): Promise<void> {
     // TODO: respect the data collectors once CDP Network domain is enabled on-demand:
     // const networkEnable = this.#networkStorage.getCollectorsForBrowsingContext(this.topLevelId).length > 0;
 
@@ -596,7 +596,7 @@ export class CdpTarget {
     screenArea: Emulation.ScreenArea | null,
     scrollbarType: 'classic' | 'overlay' | null = null,
     viewportMeta: true | null = null,
-  ) {
+  ): Promise<void> {
     if (
       viewport === null &&
       devicePixelRatio === null &&
@@ -747,7 +747,7 @@ export class CdpTarget {
     await Promise.all(promises);
   }
 
-  get topLevelId() {
+  get topLevelId(): string {
     return (
       this.#browsingContextStorage.findTopLevelContextId(this.id) ?? this.id
     );

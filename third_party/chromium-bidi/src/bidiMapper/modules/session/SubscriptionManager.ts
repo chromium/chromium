@@ -32,7 +32,7 @@ import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js'
  * Example:
  *   cartesian([1, 2], ['a', 'b']); => [[1, 'a'], [1, 'b'], [2, 'a'], [2, 'b']]
  */
-export function cartesianProduct(...a: any[][]) {
+export function cartesianProduct(...a: any[][]): unknown[] {
   return a.reduce((a: unknown[], b: unknown[]) =>
     a.flatMap((d) => b.map((e) => [d, e].flat())),
   );
@@ -244,7 +244,7 @@ export class SubscriptionManager {
   unsubscribe(
     inputEventNames: ChromiumBidi.EventNames[],
     googChannel: GoogChannel,
-  ) {
+  ): void {
     const eventNames = new Set(unrollEvents(inputEventNames));
 
     const newSubscriptions: Subscription[] = [];
@@ -296,7 +296,7 @@ export class SubscriptionManager {
   /**
    * Unsubscribes by subscriptionId.
    */
-  unsubscribeById(subscriptionIds: string[]) {
+  unsubscribeById(subscriptionIds: string[]): void {
     const subscriptionIdsSet = new Set(subscriptionIds);
     const unknownIds = difference(
       subscriptionIdsSet,

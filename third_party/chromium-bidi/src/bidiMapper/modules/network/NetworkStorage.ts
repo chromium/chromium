@@ -116,7 +116,7 @@ export class NetworkStorage {
     return request;
   }
 
-  onCdpTargetCreated(cdpTarget: CdpTarget) {
+  onCdpTargetCreated(cdpTarget: CdpTarget): void {
     const cdpClient = cdpTarget.cdpClient;
 
     // TODO: Wrap into object
@@ -351,7 +351,7 @@ export class NetworkStorage {
     };
   }
 
-  collectIfNeeded(request: NetworkRequest, dataType: Network.DataType) {
+  collectIfNeeded(request: NetworkRequest, dataType: Network.DataType): void {
     this.#collectorsStorage.collectIfNeeded(
       request,
       dataType,
@@ -360,7 +360,11 @@ export class NetworkStorage {
     );
   }
 
-  getInterceptionStages(browsingContextId: BrowsingContext.BrowsingContext) {
+  getInterceptionStages(browsingContextId: BrowsingContext.BrowsingContext): {
+    request: boolean;
+    response: boolean;
+    auth: boolean;
+  } {
     const stages = {
       request: false,
       response: false,
@@ -422,7 +426,7 @@ export class NetworkStorage {
     return intercepts;
   }
 
-  disposeRequestMap(sessionId: string) {
+  disposeRequestMap(sessionId: string): void {
     for (const request of this.#requests.values()) {
       if (request.cdpClient.sessionId === sessionId) {
         this.#requests.delete(request.id);
@@ -448,7 +452,7 @@ export class NetworkStorage {
    * Removes the given intercept from the intercept map.
    * Throws NoSuchInterceptException if the intercept does not exist.
    */
-  removeIntercept(intercept: Network.Intercept) {
+  removeIntercept(intercept: Network.Intercept): void {
     if (!this.#intercepts.has(intercept)) {
       throw new NoSuchInterceptException(
         `Intercept '${intercept}' does not exist.`,
@@ -481,14 +485,14 @@ export class NetworkStorage {
     return;
   }
 
-  addRequest(request: NetworkRequest) {
+  addRequest(request: NetworkRequest): void {
     this.#requests.set(request.id, request);
   }
 
   /**
    * Disposes the given request, if no collectors targeting it are left.
    */
-  disposeRequest(id: Network.Request) {
+  disposeRequest(id: Network.Request): void {
     if (this.#collectorsStorage.isCollected(id)) {
       // Keep request, as it's data can be accessed later.
       this.#requests.get(id)?.disposeData();
@@ -516,7 +520,7 @@ export class NetworkStorage {
     this.#defaultCacheBehavior = behavior;
   }
 
-  get defaultCacheBehavior() {
+  get defaultCacheBehavior(): Network.SetCacheBehaviorParameters['cacheBehavior'] {
     return this.#defaultCacheBehavior;
   }
 
@@ -524,14 +528,14 @@ export class NetworkStorage {
     return this.#collectorsStorage.addDataCollector(params);
   }
 
-  removeDataCollector(params: Network.RemoveDataCollectorParameters) {
+  removeDataCollector(params: Network.RemoveDataCollectorParameters): void {
     const releasedRequests = this.#collectorsStorage.removeDataCollector(
       params.collector,
     );
     releasedRequests.map((request) => this.disposeRequest(request));
   }
 
-  disownData(params: Network.DisownDataParameters) {
+  disownData(params: Network.DisownDataParameters): void {
     if (
       !this.#collectorsStorage.isCollected(
         params.request,

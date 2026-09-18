@@ -249,7 +249,7 @@ export abstract class Realm {
     }
   }
 
-  protected initialize() {
+  protected initialize(): void {
     if (!this.isHidden()) {
       // Report only not-hidden realms.
       this.#registerEvent({
@@ -705,7 +705,7 @@ export abstract class Realm {
     }
   }
 
-  async disown(handle: Script.Handle) {
+  async disown(handle: Script.Handle): Promise<void> {
     // Disowning an object from different realm does nothing.
     if (this.realmStorage.knownHandlesToRealmMap.get(handle) !== this.realmId) {
       return;
