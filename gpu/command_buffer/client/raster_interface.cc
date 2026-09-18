@@ -7,9 +7,14 @@
 #include <utility>
 
 #include "base/check.h"
+#include "cc/paint/display_item_list.h"
+#include "cc/paint/paint_op.h"
+#include "cc/paint/paint_record.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/capabilities.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace gpu::raster {
 
@@ -51,6 +56,55 @@ SyncToken RasterInterface::WritePixels(
   auto new_token = RasterScopedAccess::EndAccess(std::move(access));
   dest->UpdateDestructionSyncToken(new_token);
   return new_token;
+}
+
+SyncToken RasterInterface::RasterSharedImage(
+    const scoped_refptr<ClientSharedImage>& dest,
+    const SyncToken& sync_token,
+    cc::PaintRecord record,
+    cc::ImageProvider* image_provider,
+    bool needs_clear,
+    base::RepeatingCallback<void(SkCanvas*, uint32_t)> custom_callback) {
+  CHECK(dest);
+  auto access = dest->BeginRasterAccess(this, sync_token, /*readonly=*/false);
+
+  SkColor4f background_color = dest->alpha_type() == kOpaque_SkAlphaType
+                                   ? SkColors::kBlack
+                                   : SkColors::kTransparent;
+
+  auto list = base::MakeRefCounted<cc::DisplayItemList>();
+  list->StartPaint();
+  list->push<cc::DrawRecordOp>(std::move(record));
+  list->EndPaintOfUnpaired(gfx::Rect(dest->size()));
+  list->Finalize();
+
+  gfx::Size size = dest->size();
+  size_t max_op_size_hint = kDefaultMaxOpSizeHint;
+  gfx::Rect full_raster_rect(dest->size());
+  gfx::Rect playback_rect(dest->size());
+  gfx::Vector2dF post_translate(0.f, 0.f);
+  gfx::Vector2dF post_scale(1.f, 1.f);
+
+  const bool can_use_lcd_text = dest->alpha_type() == kOpaque_SkAlphaType;
+  const auto& caps = GetCapabilities();
+  bool use_msaa = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
+  BeginRasterCHROMIUM(
+      background_color, needs_clear,
+      /*msaa_sample_count=*/use_msaa ? 1 : 0,
+      use_msaa ? MsaaMode::kDMSAA : MsaaMode::kNoMSAA, can_use_lcd_text,
+      /*visible=*/true, dest->color_space(),
+      /*hdr_headroom=*/0.f, dest->mailbox().name);
+
+  RasterCHROMIUM(list.get(), image_provider, size, full_raster_rect,
+                 playback_rect, post_translate, post_scale,
+                 /*requires_clear=*/false,
+                 /*raster_inducing_scroll_offsets=*/nullptr, &max_op_size_hint,
+                 std::move(custom_callback));
+
+  EndRasterCHROMIUM();
+  auto completion_sync_token = RasterScopedAccess::EndAccess(std::move(access));
+  dest->UpdateDestructionSyncToken(completion_sync_token);
+  return completion_sync_token;
 }
 
 }  // namespace gpu::raster

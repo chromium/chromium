@@ -58,6 +58,7 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   }
 
   // gpu::raster::RasterInterface implementation.
+  const gpu::Capabilities& GetCapabilities() const override;
   void Finish() override;
   void Flush() override;
   void OrderingBarrierCHROMIUM() override {}

@@ -209,11 +209,13 @@ source_set("raster_interface") {
     ":client",
     ":interface_base",
     "//base",
+    "//cc/paint",
     "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:raster",
     "//skia",
     "//ui/gfx:buffer_types",
+    "//ui/gfx/geometry",
   ]
 }
 

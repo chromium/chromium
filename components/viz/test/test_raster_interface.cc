@@ -30,6 +30,10 @@ void TestRasterInterface::set_test_support(TestContextSupport* test_support) {
   }
 }
 
+const gpu::Capabilities& TestRasterInterface::GetCapabilities() const {
+  return caps_;
+}
+
 void TestRasterInterface::Finish() {
   if (test_support_)
     test_support_->CallAllSyncPointCallbacks();

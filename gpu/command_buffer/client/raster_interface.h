@@ -27,6 +27,7 @@ class SkCanvas;
 namespace cc {
 class DisplayItemList;
 class ImageProvider;
+class PaintRecord;
 struct ElementId;
 }  // namespace cc
 
@@ -45,6 +46,7 @@ extern "C" typedef const struct _GLcolorSpace* GLcolorSpace;
 
 namespace gpu {
 
+struct Capabilities;
 class ClientSharedImage;
 struct Mailbox;
 
@@ -56,6 +58,8 @@ class RasterInterface : public InterfaceBase {
  public:
   RasterInterface() {}
   virtual ~RasterInterface() {}
+
+  virtual const Capabilities& GetCapabilities() const = 0;
 
   struct CopySharedImageResult {
     SyncToken source_sync_token;
@@ -118,6 +122,14 @@ class RasterInterface : public InterfaceBase {
                               const SkYUVAPixmaps& src_yuv_pixmap) = 0;
 
   // OOP-Raster
+
+  SyncToken RasterSharedImage(
+      const scoped_refptr<ClientSharedImage>& dest,
+      const SyncToken& sync_token,
+      cc::PaintRecord record,
+      cc::ImageProvider* image_provider,
+      bool needs_clear,
+      base::RepeatingCallback<void(SkCanvas*, uint32_t)> custom_callback = {});
 
   // msaa_sample_count has no effect unless msaa_mode is set to kMSAA
   virtual void BeginRasterCHROMIUM(SkColor4f sk_color_4f,

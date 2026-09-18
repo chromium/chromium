@@ -107,53 +107,9 @@ void WebGpuSharedImageLease::DrawToBackingSharedImage(
         cc::PlaybackImageProvider::RasterMode::kGpu,
         resource_.context_provider_wrapper_);
 
-    auto access = resource_.shared_image_->BeginRasterAccess(
-        RasterInterface(), resource_.sync_token_, /*readonly=*/false);
-
-    gpu::raster::RasterInterface* ri = RasterInterface();
-    SkColor4f background_color =
-        resource_.shared_image_->alpha_type() == kOpaque_SkAlphaType
-            ? SkColors::kBlack
-            : SkColors::kTransparent;
-
-    auto list = base::MakeRefCounted<cc::DisplayItemList>();
-    list->StartPaint();
-    list->push<cc::DrawRecordOp>(std::move(last_recording));
-    list->EndPaintOfUnpaired(gfx::Rect(resource_.shared_image_->size()));
-    list->Finalize();
-
-    gfx::Size size = resource_.shared_image_->size();
-    size_t max_op_size_hint =
-        gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
-    gfx::Rect full_raster_rect(resource_.shared_image_->size());
-    gfx::Rect playback_rect(resource_.shared_image_->size());
-    gfx::Vector2dF post_translate(0.f, 0.f);
-    gfx::Vector2dF post_scale(1.f, 1.f);
-
-    const bool can_use_lcd_text =
-        resource_.shared_image_->alpha_type() == kOpaque_SkAlphaType;
-    const auto& caps = resource_.context_provider_wrapper_->ContextProvider()
-                           .GetCapabilities();
-    bool use_msaa = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
-    ri->BeginRasterCHROMIUM(background_color, needs_clear,
-                            /*msaa_sample_count=*/use_msaa ? 1 : 0,
-                            use_msaa ? gpu::raster::MsaaMode::kDMSAA
-                                     : gpu::raster::MsaaMode::kNoMSAA,
-                            can_use_lcd_text, /*visible=*/true,
-                            resource_.shared_image_->color_space(),
-                            /*hdr_headroom=*/0.f,
-                            resource_.shared_image_->mailbox().name);
-
-    ri->RasterCHROMIUM(
-        list.get(), &image_provider, size, full_raster_rect, playback_rect,
-        post_translate, post_scale, /*requires_clear=*/false,
-        /*raster_inducing_scroll_offsets=*/nullptr, &max_op_size_hint,
-        base::RepeatingCallback<void(SkCanvas*, uint32_t)>());
-
-    ri->EndRasterCHROMIUM();
-    auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-    resource_.sync_token_ = sync_token;
-    resource_.shared_image_->UpdateDestructionSyncToken(sync_token);
+    resource_.sync_token_ = RasterInterface()->RasterSharedImage(
+        resource_.shared_image_, resource_.sync_token_,
+        std::move(last_recording), &image_provider, needs_clear);
 
     image_provider.ReleaseLockedImages();
     image_provider.UnbindTextureBackedImages();

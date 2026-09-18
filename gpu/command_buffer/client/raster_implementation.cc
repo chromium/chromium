@@ -1142,6 +1142,10 @@ void RasterImplementation::UnmapRasterCHROMIUM(uint32_t raster_written_size,
 // instead of having to edit some template or the code generator.
 #include "gpu/command_buffer/client/raster_implementation_impl_autogen.h"
 
+const Capabilities& RasterImplementation::GetCapabilities() const {
+  return capabilities();
+}
+
 void RasterImplementation::CopySharedImage(const gpu::Mailbox& source_mailbox,
                                            const gpu::Mailbox& dest_mailbox,
                                            GLint xoffset,
