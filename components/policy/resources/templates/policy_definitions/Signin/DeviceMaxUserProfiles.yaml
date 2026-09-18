@@ -1,0 +1,22 @@
+caption: Maximum number of user profiles stored on the device
+desc: |-
+  Controls the maximum number of user profiles retained on the device.
+
+  When this policy is set to a positive integer <ph name="MAX_USERS">N</ph>, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> will keep at most <ph name="MAX_USERS">N</ph> regular user profiles on the device. When a new user logs in and the limit is exceeded, the least recently used user profile(s) (excluding the currently active user) will be automatically deleted along with their local storage to keep free disk space available.
+
+  If this policy is not set or set to 0, there is no limit to the number of user profiles that can be added to the device. To keep no user profiles on the device at all, use the <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME">DeviceEphemeralUsersEnabled</ph> policy instead.
+default: 0
+device_only: true
+example_value: 5
+features:
+  dynamic_refresh: true
+owners:
+- file://components/policy/OWNERS
+- fahadmansoor@google.com
+schema:
+  type: integer
+  minimum: 0
+supported_on:
+- chrome_os:156-
+tags: []
+type: int

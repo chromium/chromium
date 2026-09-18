@@ -2545,6 +2545,7 @@ chromium-metrics-reviews@google.com.
   <int value="1484" label="BackgroundTabFreezingEnabled"/>
   <int value="1485" label="ShowInputOptionsInShelfEnabled"/>
   <int value="1486" label="AdminInstalledChromeAppsForceAllowed"/>
+  <int value="1487" label="DeviceMaxUserProfiles"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

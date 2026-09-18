@@ -1485,6 +1485,7 @@ policies:
   1484: BackgroundTabFreezingEnabled
   1485: ShowInputOptionsInShelfEnabled
   1486: AdminInstalledChromeAppsForceAllowed
+  1487: DeviceMaxUserProfiles
 
 atomic_groups:
   1: Homepage
