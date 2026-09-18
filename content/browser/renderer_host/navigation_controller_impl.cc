@@ -4784,7 +4784,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*lcpp_hint=*/nullptr, blink::CreateDefaultRendererContentSettings(),
           /*visited_link_salt=*/std::nullopt,
           /*local_surface_id=*/std::nullopt,
-          /*initial_permission_statuses=*/std::nullopt,
+          node->current_frame_host()->GetCachedPermissionStatuses(),
           /*should_skip_screentshot=*/false,
           /*force_new_document_sequence_number=*/false,
           /*navigation_metrics_token=*/base::UnguessableToken::Create(),
@@ -4982,6 +4982,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
           frame_tree_node->AncestorOrSelfHasCSPEE(),
           soft_navigation_heuristics_task_id);
   commit_params->post_content_type = post_content_type;
+  commit_params->initial_permission_statuses =
+      frame_tree_node->current_frame_host()->GetCachedPermissionStatuses();
 
   if (common_params->url.IsAboutSrcdoc()) {
     // TODO(wjmaclean): initialize this in NavigationRequest's constructor
