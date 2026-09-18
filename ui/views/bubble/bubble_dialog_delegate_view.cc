@@ -695,6 +695,7 @@ void BubbleDialogDelegate::OnBubbleWidgetClosing() {
 }
 
 void BubbleDialogDelegate::OnAnchorWidgetDestroying() {
+  anchor_tracked_element_ = nullptr;
   SetAnchorView(nullptr);
 }
 
@@ -830,7 +831,7 @@ gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
   if (anchor_view) {
     anchor_rect_ = anchor_view->GetAnchorBoundsInScreen();
   } else if (anchor_tracked_element_) {
-    anchor_rect_ = anchor_tracked_element_->GetScreenBounds();
+    anchor_rect_ = anchor_tracked_element_.get()->GetScreenBounds();
   } else {
     return anchor_rect_.value_or(gfx::Rect());
   }
@@ -1115,6 +1116,9 @@ void BubbleDialogDelegate::SetAnchorWidget(views::Widget* anchor_widget) {
 }
 
 void BubbleDialogDelegate::SetAnchorView(View* anchor_view) {
+  if (anchor_view) {
+    anchor_tracked_element_ = nullptr;
+  }
   if (anchor_view && anchor_view->GetWidget()) {
     anchor_widget_observer_ =
         std::make_unique<AnchorWidgetObserver>(this, anchor_view->GetWidget());
@@ -1196,7 +1200,7 @@ BubbleAnchor BubbleDialogDelegate::GetAnchor() const {
     return BubbleAnchor(GetAnchorView());
   }
   if (anchor_tracked_element_) {
-    return BubbleAnchor(anchor_tracked_element_);
+    return BubbleAnchor(anchor_tracked_element_.get());
   }
   return BubbleAnchor();
 }

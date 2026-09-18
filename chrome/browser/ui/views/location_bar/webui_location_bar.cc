@@ -816,7 +816,9 @@ void WebUILocationBar::ShowPageInfoBubble() {
   }
 
   ui::TrackedElement* anchor_element =
-      BrowserElements::From(browser_)->GetElement(kLocationIconElementId);
+      !ShouldChipOverrideLocationIcon()
+          ? BrowserElements::From(browser_)->GetElement(kLocationIconElementId)
+          : nullptr;
   if (!anchor_element) {
     anchor_element = GetAnchorOrNull();
   }
@@ -839,7 +841,9 @@ void WebUILocationBar::ShowPageInfoBubble() {
           .Build();
   views::BubbleDialogDelegateView* const bubble =
       PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
-  bubble->SetHighlightedElement(kLocationIconElementId);
+  if (!ShouldChipOverrideLocationIcon()) {
+    bubble->SetHighlightedElement(kLocationIconElementId);
+  }
   bubble->GetWidget()->Show();
   page_info_reopen_suppressor_.Observe(bubble->GetWidget());
   UpdateLhsChipsState();

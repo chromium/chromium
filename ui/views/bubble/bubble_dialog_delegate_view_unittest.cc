@@ -1296,6 +1296,60 @@ TEST_F(BubbleDialogDelegateViewTest, TrackedElementAnchorUpdates) {
   EXPECT_EQ(updated_screen_bounds, bubble_delegate->GetAnchorRect());
 }
 
+// Tests that when a bubble is anchored to a non-Views TrackedElement (e.g. a
+// WebUI element) that is subsequently hidden and destroyed while the bubble is
+// still open, BubbleDialogDelegate safely drops its reference without dangling
+// pointers or UAFs, and GetAnchorRect() falls back to the last known anchor
+// bounds.
+TEST_F(BubbleDialogDelegateViewTest,
+       NonViewsTrackedElementAnchorDestroyedWhileOpen) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
+
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  anchor_widget->Show();
+  const ui::ElementContext kTestElementContext =
+      ElementTrackerViews::GetContextForWidget(anchor_widget.get());
+
+  const gfx::Rect initial_bounds(100, 150, 50, 60);
+  auto tracked_element = std::make_unique<ui::test::TestElement>(
+      kTestElementId, kTestElementContext);
+  tracked_element->SetScreenBounds(initial_bounds);
+  tracked_element->SetNativeView(anchor_widget->GetNativeView());
+  tracked_element->Show();
+
+  TestBubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(
+          views::BubbleAnchor(tracked_element.get()));
+  bubble_delegate->set_close_on_deactivate(false);
+  Widget* bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+  bubble_widget->Show();
+
+  EXPECT_EQ(tracked_element.get(), bubble_delegate->GetAnchor().GetIfElement());
+  EXPECT_EQ(initial_bounds, bubble_delegate->GetAnchorRect());
+
+  // Update the non-Views tracked element bounds and verify GetAnchorRect()
+  // updates.
+  const gfx::Rect updated_bounds(200, 250, 70, 80);
+  tracked_element->SetScreenBounds(updated_bounds);
+  EXPECT_EQ(updated_bounds, bubble_delegate->GetAnchorRect());
+
+  // Hide and destroy the TrackedElement while the bubble remains open.
+  tracked_element->Hide();
+  tracked_element.reset();
+
+  // The anchor should now be null (SafeElementReference automatically cleared),
+  // and GetAnchorRect() should safely return the cached screen bounds.
+  EXPECT_TRUE(bubble_delegate->GetAnchor().IsNull());
+  EXPECT_EQ(updated_bounds, bubble_delegate->GetAnchorRect());
+
+  // Resizing and closing the bubble should not crash or trigger dangling
+  // pointer checks.
+  bubble_delegate->SizeToContents();
+  bubble_widget->CloseNow();
+}
+
 // Anchoring Tests -------------------------------------------------------------
 
 class AnchorTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
