@@ -1009,7 +1009,11 @@ void HTMLSelectElement::OptionRemoved(HTMLOptionElement& option,
   if (last_on_change_option_ == &option)
     last_on_change_option_.Clear();
   select_type_->OptionRemoved(option);
-  if (suggested_option_ == &option)
+  // The autofill preview should be closed/ended and we should stop matching
+  // :autofill when any option is removed because only doing so when a specific
+  // option is removed could reveal to the page which option is being suggested
+  // to the user.
+  if (suggested_option_)
     SetSuggestedOption(nullptr);
   if (option.Selected())
     SetAutofillState(WebAutofillState::kNotFilled);

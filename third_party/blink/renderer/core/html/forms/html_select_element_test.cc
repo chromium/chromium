@@ -252,6 +252,36 @@ TEST_F(HTMLSelectElementTest,
   EXPECT_EQ(initial_client_width, select->clientWidth());
 }
 
+TEST_F(HTMLSelectElementTest,
+       OptionRemovalClearsSuggestedOptionUnconditionally) {
+  SetHtmlInnerHTML(R"HTML(
+    <!DOCTYPE HTML>
+    <select id='sel' size='4'>
+      <option id='o0' value='v0'>o0</option>
+      <option id='o1' value='v1'>o1</option>
+      <option id='o2' value='v2'>o2</option>
+    </select>
+  )HTML");
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* select = To<HTMLSelectElement>(GetElementById("sel"));
+  auto* opt0 = To<HTMLOptionElement>(GetElementById("o0"));
+
+  select->SetSuggestedValue("v2");
+  ASSERT_TRUE(select->IsPreviewed());
+  EXPECT_EQ("v2", select->SuggestedValue());
+  EXPECT_TRUE(select->matches(AtomicString(":autofill"), ASSERT_NO_EXCEPTION));
+
+  // Removing a non-previewed option must still tear down the autofill preview
+  // so that page scripts cannot probe which option is previewed by removing
+  // options one by one and observing when :autofill stops matching.
+  opt0->remove();
+  EXPECT_FALSE(select->IsPreviewed());
+  EXPECT_EQ("", select->SuggestedValue());
+  EXPECT_FALSE(select->matches(AtomicString(":autofill"), ASSERT_NO_EXCEPTION));
+}
+
 TEST_F(HTMLSelectElementTest, SaveRestoreSelectSingleFormControlState) {
   SetHtmlInnerHTML(
       "<!DOCTYPE HTML><select id='sel'>"
