@@ -116,6 +116,7 @@ class CORE_EXPORT ArrayBufferContents {
   // Resets the internal memory so that the ArrayBufferContents is empty.
   void Reset();
 
+  // Prefer using the ByteSpan*() over Data*().
   void* Data() const {
     DCHECK(!IsShared());
     return DataMaybeShared();
@@ -139,21 +140,16 @@ class CORE_EXPORT ArrayBufferContents {
   }
   bool IsValid() const { return backing_store_ && backing_store_->Data(); }
   base::span<uint8_t> ByteSpan() const {
-    // SAFETY: `BackingStore` guarantees that `Data()` points to at least
-    // `DataLength()` many bytes.
-    return UNSAFE_BUFFERS(base::span(
-        base::unchecked, static_cast<uint8_t*>(Data()), DataLength()));
+    DCHECK(!IsShared());
+    return ByteSpanMaybeShared();
   }
   base::span<uint8_t> ByteSpanShared() const {
     DCHECK(IsShared());
     return ByteSpanMaybeShared();
   }
   base::span<uint8_t> ByteSpanMaybeShared() const {
-    // SAFETY: `BackingStore` guarantees that `Data()` points to at least
-    // `DataLength()` many bytes.
-    return UNSAFE_BUFFERS(base::span(base::unchecked,
-                                     static_cast<uint8_t*>(DataMaybeShared()),
-                                     DataLength()));
+    return backing_store_ ? base::span(backing_store_->ByteSpan())
+                          : base::span<uint8_t>();
   }
 
   std::shared_ptr<v8::BackingStore> BackingStore() const {
