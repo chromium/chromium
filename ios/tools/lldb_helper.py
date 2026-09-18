@@ -60,6 +60,26 @@ def get_descendant_pids(pid: int) -> list[int]:
 def cleanup(session: str, app: Optional[str]) -> int:
     print(f"Cleaning up session '{session}'...")
 
+    # If the session exists, gracefully detach LLDB and wait for the pane to
+    # exit so ptrace-attached simulator processes do not become un-reapable
+    # <defunct> zombies in launchd_sim.
+    if subprocess.run(['tmux', 'has-session', '-t', session],
+                      capture_output=True).returncode == 0:
+        subprocess.run(['tmux', 'send-keys', '-t', session, 'C-c'],
+                       capture_output=True)
+        time.sleep(0.2)
+        subprocess.run([
+            'tmux', 'send-keys', '-t', session, 'process detach', 'Enter',
+            'quit', 'Enter'
+        ],
+                       capture_output=True)
+        deadline = time.time() + 5.0
+        while time.time() < deadline:
+            if subprocess.run(['tmux', 'has-session', '-t', session],
+                              capture_output=True).returncode != 0:
+                break
+            time.sleep(0.1)
+
     # 1. Find and kill all pane processes running in this tmux session
     pane_pids = []
     try:

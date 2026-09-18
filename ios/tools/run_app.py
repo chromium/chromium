@@ -7,6 +7,7 @@
 import argparse
 import os
 import plistlib
+import re
 import subprocess
 import sys
 import time
@@ -109,7 +110,11 @@ def _run_app(out_dir: str,
     time.sleep(1)
     try:
         exec_name = os.path.splitext(app_name)[0]
-        pgrep_out = subprocess.check_output(['pgrep', '-x', exec_name],
+        pgrep_pattern = (
+            rf'{simulator_udid}.*/{re.escape(app_name)}/'
+            rf'{re.escape(exec_name)}(\s|$)'
+        )
+        pgrep_out = subprocess.check_output(['pgrep', '-f', pgrep_pattern],
                                             text=True).strip()
         if pgrep_out:
             app_pid = pgrep_out.splitlines()[0]
