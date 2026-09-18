@@ -914,6 +914,42 @@ TEST_F(OtpManagerImplTest,
   EXPECT_TRUE(future.Get().empty());
 }
 
+// Tests that when the driver is for an embedded frame tree (e.g. fenced frame),
+// no query is issued to the SMS backend even if field and main frame origins
+// match.
+TEST_F(OtpManagerImplTest, EmbeddedFrameTreeNoQueryIssued) {
+  autofill_driver().SetIsEmbedded(true);
+
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(0);
+  AddFormWithOtpField(
+      /*field_origin=*/url::Origin::Create(GURL("https://example.test")),
+      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
+}
+
+// Tests that `GetOtpSuggestions` immediately returns empty suggestions when the
+// driver is for an embedded frame tree (e.g. fenced frame).
+TEST_F(OtpManagerImplTest, EmbeddedFrameTreeGetOtpSuggestionsReturnsEmpty) {
+  autofill_driver().SetIsEmbedded(true);
+
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(0);
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
+
+  const FormStructure* form = AddFormWithOtpField(
+      /*field_origin=*/url::Origin::Create(GURL("https://example.test")),
+      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
+  ASSERT_TRUE(form);
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(*form, *form->field(0), future.GetCallback());
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+}
+
 // Tests that `GetOtpSuggestions` returns OTP suggestions when the form is on a
 // same-TLD+1 origin and `kAutofillRestrictOtpToSameTldPlusOne` is enabled.
 TEST_F(OtpManagerImplTest,

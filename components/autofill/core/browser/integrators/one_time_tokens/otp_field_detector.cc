@@ -77,7 +77,8 @@ void OtpFieldDetector::OnFieldTypesDetermined(AutofillManager& manager,
                                               FieldTypeSource source,
                                               bool small_forms_were_parsed) {
   const FormStructure* form_structure = manager.FindCachedFormById(form);
-  if (form_structure && IsOtpForm(*form_structure)) {
+  if (!manager.driver().IsEmbedded() && form_structure &&
+      IsOtpForm(*form_structure)) {
     AddFormAndNotifyIfNecessary(form);
   } else {
     RemoveFormAndNotifyIfNecessary(form);
@@ -97,7 +98,8 @@ void OtpFieldDetector::OnAutofillManagerStateChanged(
     AutofillManager& manager,
     AutofillDriver::LifecycleState old_state,
     AutofillDriver::LifecycleState new_state) {
-  if (new_state != AutofillDriver::LifecycleState::kActive) {
+  if (new_state != AutofillDriver::LifecycleState::kActive ||
+      manager.driver().IsEmbedded()) {
     manager.ForEachCachedForm([&](const FormStructure& form) {
       RemoveFormAndNotifyIfNecessary(form.global_id());
     });

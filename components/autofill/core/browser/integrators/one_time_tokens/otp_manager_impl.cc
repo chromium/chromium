@@ -89,7 +89,8 @@ void OtpManagerImpl::GetOtpSuggestions(
     const FormStructure& form,
     const FormFieldData& field,
     OtpManagerImpl::GetOtpSuggestionsCallback callback) {
-  if (field.origin().opaque() || !OtpFieldDetector::IsOtpForm(form)) {
+  if (owner_->driver().IsEmbedded() || field.origin().opaque() ||
+      !OtpFieldDetector::IsOtpForm(form)) {
     std::move(callback).Run({});
     return;
   }
@@ -150,7 +151,9 @@ void OtpManagerImpl::OnFieldTypesDetermined(
     AutofillManager::Observer::FieldTypeSource source,
     bool small_forms_were_parsed) {
   // On non-android platforms and in tests the backend may be not initialized.
-  if (!one_time_token_service_) {
+  // Furthermore, do not retrieve or subscribe to OTPs for embedded frame trees
+  // (such as fenced frames or GuestViews).
+  if (!one_time_token_service_ || manager.driver().IsEmbedded()) {
     return;
   }
 

@@ -236,6 +236,19 @@ TEST_P(OtpFieldDetectorAutofillManagerObserverTest, IsOtpFieldPresent) {
   EXPECT_FALSE(otp_field_detector().IsOtpFieldPresent());
 }
 
+// Verify that OTP fields in embedded frame trees (e.g. fenced frames) do not
+// register as present.
+TEST_P(OtpFieldDetectorAutofillManagerObserverTest,
+       IsOtpFieldPresent_EmbeddedFrameTreeIgnored) {
+  autofill_driver().SetIsEmbedded(true);
+  EXPECT_FALSE(otp_field_detector().IsOtpFieldPresent());
+
+  FormData form = CreateSimpleOtp();
+  AddOtpToThePage(form);
+
+  EXPECT_FALSE(otp_field_detector().IsOtpFieldPresent());
+}
+
 // Verify that the OtpFieldsDetectedCallback is triggered when an OTP form is
 // detected.
 TEST_P(OtpFieldDetectorAutofillManagerObserverTest, DiscoverOTPs) {
