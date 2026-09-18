@@ -141,14 +141,13 @@ void VpnListForwarder::OnExtensionUnloaded(
 }
 
 void VpnListForwarder::OnShutdown(extensions::ExtensionRegistry* registry) {
-  CHECK(extension_registry_, base::NotFatalUntil::M160);
+  DCHECK(extension_registry_);
   extension_registry_->RemoveObserver(this);
   extension_registry_ = nullptr;
 }
 
 void VpnListForwarder::ActiveUserChanged(user_manager::User* active_user) {
-  CHECK_EQ(user_manager::UserManager::Get()->GetPrimaryUser(), active_user,
-           base::NotFatalUntil::M160);
+  DCHECK_EQ(user_manager::UserManager::Get()->GetPrimaryUser(), active_user);
   active_user->AddProfileCreatedObserver(
       base::BindOnce(&VpnListForwarder::AttachToPrimaryUserProfile,
                      weak_factory_.GetWeakPtr()));
@@ -172,7 +171,7 @@ void VpnListForwarder::AttachToPrimaryUserProfile() {
 }
 
 void VpnListForwarder::AttachToPrimaryUserExtensionRegistry() {
-  CHECK(!extension_registry_, base::NotFatalUntil::M160);
+  DCHECK(!extension_registry_);
   extension_registry_ =
       extensions::ExtensionRegistry::Get(GetProfileForPrimaryUser());
   extension_registry_->AddObserver(this);

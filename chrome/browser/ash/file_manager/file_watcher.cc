@@ -31,7 +31,7 @@ namespace {
 base::FilePathWatcher* CreateAndStartFilePathWatcher(
     const base::FilePath& watch_path,
     const base::FilePathWatcher::Callback& callback) {
-  CHECK(!callback.is_null(), base::NotFatalUntil::M160);
+  DCHECK(!callback.is_null());
 
   std::unique_ptr<base::FilePathWatcher> watcher(new base::FilePathWatcher);
   if (!watcher->Watch(watch_path, base::FilePathWatcher::Type::kNonRecursive,
@@ -79,22 +79,22 @@ FileWatcher::FileWatcher(const base::FilePath& virtual_path)
     : sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
       virtual_path_(virtual_path) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
 FileWatcher::~FileWatcher() {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   sequenced_task_runner_->DeleteSoon(FROM_HERE, local_file_watcher_.get());
 }
 
 void FileWatcher::AddListener(const url::Origin& listener) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   origins_[listener]++;
 }
 
 void FileWatcher::RemoveListener(const url::Origin& listener) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = origins_.find(listener);
   if (it == origins_.end()) {
     LOG(ERROR) << " Listener [" << listener
@@ -123,9 +123,9 @@ void FileWatcher::WatchLocalFile(
     const base::FilePath& local_path,
     const base::FilePathWatcher::Callback& file_watcher_callback,
     BoolCallback callback) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
-  CHECK(!callback.is_null(), base::NotFatalUntil::M160);
-  CHECK(!local_file_watcher_, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!callback.is_null());
+  DCHECK(!local_file_watcher_);
 
   // If this is a crostini SSHFS path, use CrostiniFileWatcher.
   crostini_file_watcher_ = GetForPath(profile, local_path);
@@ -145,9 +145,9 @@ void FileWatcher::WatchLocalFile(
 
 void FileWatcher::OnWatcherStarted(BoolCallback callback,
                                    base::FilePathWatcher* file_watcher) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
-  CHECK(!callback.is_null(), base::NotFatalUntil::M160);
-  CHECK(!local_file_watcher_, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!callback.is_null());
+  DCHECK(!local_file_watcher_);
 
   if (file_watcher) {
     local_file_watcher_ = file_watcher;

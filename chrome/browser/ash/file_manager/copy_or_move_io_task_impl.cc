@@ -71,7 +71,7 @@ storage::FileSystemOperationRunner::OperationID StartCopyOnIOThread(
     storage::FileSystemOperation::ErrorBehavior error_behavior,
     std::unique_ptr<storage::CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
     storage::FileSystemOperation::StatusCallback complete_callback) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   return file_system_context->operation_runner()->Copy(
       source_url, destination_url, options, error_behavior,
       std::move(copy_or_move_hook_delegate), std::move(complete_callback));
@@ -86,7 +86,7 @@ storage::FileSystemOperationRunner::OperationID StartMoveOnIOThread(
     storage::FileSystemOperation::ErrorBehavior error_behavior,
     std::unique_ptr<storage::CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
     storage::FileSystemOperation::StatusCallback complete_callback) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   return file_system_context->operation_runner()->Move(
       source_url, destination_url, options, error_behavior,
       std::move(copy_or_move_hook_delegate), std::move(complete_callback));
@@ -98,7 +98,7 @@ storage::FileSystemOperationRunner::OperationID StartMoveOnIOThread(
 bool IsCrossFileSystem(Profile* const profile,
                        const storage::FileSystemURL& source_url,
                        const storage::FileSystemURL& destination_url) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   file_manager::VolumeManager* const volume_manager =
       file_manager::VolumeManager::Get(profile);
@@ -141,11 +141,9 @@ CopyOrMoveIOTaskImpl::CopyOrMoveIOTaskImpl(
       file_system_context_(file_system_context),
       source_sizes_(progress_->sources.size()),
       item_progresses(progress_->sources.size()) {
-  CHECK(type == OperationType::kCopy || type == OperationType::kMove,
-        base::NotFatalUntil::M160);
+  DCHECK(type == OperationType::kCopy || type == OperationType::kMove);
   if (!destination_file_names.empty()) {
-    CHECK_EQ(progress_->sources.size(), destination_file_names.size(),
-             base::NotFatalUntil::M160);
+    DCHECK_EQ(progress_->sources.size(), destination_file_names.size());
   }
   destination_file_names_ = std::move(destination_file_names);
 }
@@ -260,7 +258,7 @@ void CopyOrMoveIOTaskImpl::StartTransfer() {
 // Computes the total size of all source files and stores it in
 // |progress_.total_bytes|.
 void CopyOrMoveIOTaskImpl::GetFileSize(size_t idx) {
-  CHECK(idx < progress_->sources.size(), base::NotFatalUntil::M160);
+  DCHECK(idx < progress_->sources.size());
 
   const base::FilePath& source = progress_->sources[idx].url.path();
   const base::FilePath& destination = progress_->GetDestinationFolder().path();
@@ -315,7 +313,7 @@ void CopyOrMoveIOTaskImpl::GotFileSize(size_t idx,
     return;
   }
 
-  CHECK(idx < progress_->sources.size(), base::NotFatalUntil::M160);
+  DCHECK(idx < progress_->sources.size());
   if (error != base::File::FILE_OK) {
     progress_->sources[idx].error = error;
     LOG(ERROR) << "Could not get size of source file: error " << error << " "
@@ -329,8 +327,7 @@ void CopyOrMoveIOTaskImpl::GotFileSize(size_t idx,
   progress_->sources[idx].is_directory = file_info.is_directory;
 
   // Return early if we didn't yet get the file size for all files.
-  CHECK_LT(files_preprocessed_, progress_->sources.size(),
-           base::NotFatalUntil::M160);
+  DCHECK_LT(files_preprocessed_, progress_->sources.size());
   if (++files_preprocessed_ < progress_->sources.size()) {
     return;
   }
@@ -477,7 +474,7 @@ void CopyOrMoveIOTaskImpl::GotSharedDriveMetadata(
 // Tries to find an unused filename in the destination folder for a specific
 // entry being transferred.
 void CopyOrMoveIOTaskImpl::GenerateDestinationURL(size_t idx) {
-  CHECK(idx < progress_->sources.size(), base::NotFatalUntil::M160);
+  DCHECK(idx < progress_->sources.size());
 
   // In the event no `destination_file_names_` exist, fall back to the
   // `BaseName` from the source URL.
@@ -497,7 +494,7 @@ void CopyOrMoveIOTaskImpl::GenerateDestinationURL(size_t idx) {
 void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
     size_t idx,
     base::FileErrorOr<storage::FileSystemURL> destination_result) {
-  CHECK(idx < progress_->sources.size(), base::NotFatalUntil::M160);
+  DCHECK(idx < progress_->sources.size());
 
   if (!destination_result.has_value()) {
     progress_->outputs.emplace_back(progress_->GetDestinationFolder(),
@@ -510,7 +507,7 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
   const storage::FileSystemURL& destination_url = destination_result.value();
 
   progress_->outputs.emplace_back(destination_url, std::nullopt);
-  CHECK_EQ(idx + 1, progress_->outputs.size(), base::NotFatalUntil::M160);
+  DCHECK_EQ(idx + 1, progress_->outputs.size());
 
   // Historical behavior: automatically rename the file (keepboth) if there
   // is a conflict. This is handled by the backend during the copy/move process.
@@ -520,8 +517,8 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
 void CopyOrMoveIOTaskImpl::ContinueCopyOrMoveFile(
     size_t idx,
     storage::FileSystemURL destination_url) {
-  CHECK(idx < progress_->sources.size(), base::NotFatalUntil::M160);
-  CHECK(idx < progress_->outputs.size(), base::NotFatalUntil::M160);
+  DCHECK(idx < progress_->sources.size());
+  DCHECK(idx < progress_->outputs.size());
 
   const storage::FileSystemURL& source_url = progress_->sources[idx].url;
 
@@ -646,7 +643,7 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress(
   }
 
   // The |size| is only valid for ProgressType::kProgress.
-  CHECK_EQ(ProgressType::kProgress, type, base::NotFatalUntil::M160);
+  DCHECK_EQ(ProgressType::kProgress, type);
   int64_t& last_size = individual_progress.at(destination_path);
   int64_t delta = size - last_size;
   last_size = size;
@@ -667,7 +664,7 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress(
 
 void CopyOrMoveIOTaskImpl::OnEncryptedFileSkipped(size_t idx,
                                                   storage::FileSystemURL url) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   progress_->skipped_encrypted_files.emplace_back(std::move(url));
   progress_->sources[idx].error = base::File::FILE_ERROR_FAILED;
   progress_->outputs[idx].error = base::File::FILE_ERROR_FAILED;
@@ -675,8 +672,8 @@ void CopyOrMoveIOTaskImpl::OnEncryptedFileSkipped(size_t idx,
 
 void CopyOrMoveIOTaskImpl::OnCopyOrMoveComplete(size_t idx,
                                                 base::File::Error error) {
-  CHECK(idx < progress_->sources.size(), base::NotFatalUntil::M160);
-  CHECK(idx < progress_->outputs.size(), base::NotFatalUntil::M160);
+  DCHECK(idx < progress_->sources.size());
+  DCHECK(idx < progress_->outputs.size());
 
   operation_id_.reset();
 
@@ -709,7 +706,7 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveComplete(size_t idx,
   // Look for source errors and set the complete state to State::Error if any
   // source errors are found.
   for (const auto& source : progress_->sources) {
-    CHECK(source.error.has_value(), base::NotFatalUntil::M160);
+    DCHECK(source.error.has_value());
     if (source.error.value() != base::File::FILE_OK) {
       LOG(ERROR) << "Cannot copy or move " << Redact(source.url) << ": "
                  << base::File::ErrorToString(source.error.value());

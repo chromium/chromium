@@ -454,24 +454,24 @@ void VolumeManager::Shutdown() {
 }
 
 void VolumeManager::AddObserver(VolumeManagerObserver* observer) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
-  CHECK(observer, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(observer);
   observers_.AddObserver(observer);
 }
 
 void VolumeManager::RemoveObserver(VolumeManagerObserver* observer) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
-  CHECK(observer, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(observer);
   observers_.RemoveObserver(observer);
 }
 
 std::vector<base::WeakPtr<Volume>> VolumeManager::GetVolumeList() {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::vector<base::WeakPtr<Volume>> result;
   result.reserve(mounted_volumes_.size());
   for (const auto& volume : mounted_volumes_) {
-    CHECK(volume, base::NotFatalUntil::M160);
+    DCHECK(volume);
     result.push_back(volume->AsWeakPtr());
   }
   return result;
@@ -479,11 +479,11 @@ std::vector<base::WeakPtr<Volume>> VolumeManager::GetVolumeList() {
 
 base::WeakPtr<Volume> VolumeManager::FindVolumeById(
     const std::string& volume_id) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (const Volumes::const_iterator it = mounted_volumes_.find(volume_id);
       it != mounted_volumes_.end()) {
-    CHECK(*it, base::NotFatalUntil::M160);
+    DCHECK(*it);
     return (*it)->AsWeakPtr();
   }
 
@@ -492,10 +492,10 @@ base::WeakPtr<Volume> VolumeManager::FindVolumeById(
 
 base::WeakPtr<Volume> VolumeManager::FindVolumeFromPath(
     const base::FilePath& path) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   for (const auto& volume : mounted_volumes_) {
-    CHECK(volume, base::NotFatalUntil::M160);
+    DCHECK(volume);
     const base::FilePath& volume_mount_path = volume->mount_path();
     if (path == volume_mount_path || volume_mount_path.IsParent(path)) {
       return volume->AsWeakPtr();
@@ -508,7 +508,7 @@ base::WeakPtr<Volume> VolumeManager::FindVolumeFromPath(
 void VolumeManager::AddSshfsCrostiniVolume(
     const base::FilePath& sshfs_mount_path,
     const base::FilePath& remote_mount_path) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Ignore if volume already exists.
   if (!DoMountEvent(Volume::CreateForSshfsCrostini(sshfs_mount_path,
                                                    remote_mount_path))) {
@@ -533,7 +533,7 @@ void VolumeManager::AddSftpGuestOsVolume(
     const base::FilePath& sftp_mount_path,
     const base::FilePath& remote_mount_path,
     const guest_os::VmType vm_type) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DoMountEvent(Volume::CreateForSftpGuestOs(
       std::move(display_name), sftp_mount_path, remote_mount_path, vm_type));
 }
@@ -541,7 +541,7 @@ void VolumeManager::AddSftpGuestOsVolume(
 void VolumeManager::RemoveSshfsCrostiniVolume(
     const base::FilePath& sshfs_mount_path,
     RemoveSshfsCrostiniVolumeCallback callback) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   disk_mount_manager_->UnmountPath(
       sshfs_mount_path.value(),
       base::BindOnce(&VolumeManager::OnSshfsCrostiniUnmountCallback,
@@ -553,7 +553,7 @@ void VolumeManager::RemoveSftpGuestOsVolume(
     const base::FilePath& sftp_mount_path,
     const guest_os::VmType vm_type,
     RemoveSshfsCrostiniVolumeCallback callback) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   disk_mount_manager_->UnmountPath(
       sftp_mount_path.value(),
       base::BindOnce(&VolumeManager::OnSftpGuestOsUnmountCallback,
@@ -563,31 +563,31 @@ void VolumeManager::RemoveSftpGuestOsVolume(
 
 bool VolumeManager::RegisterAndroidFilesDirectoryForTesting(
     const base::FilePath& path) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   bool result =
       storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
           file_manager::util::GetAndroidFilesMountPointName(),
           storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
           path);
-  CHECK(result, base::NotFatalUntil::M160);
+  DCHECK(result);
   return DoMountEvent(Volume::CreateForAndroidFiles(path));
 }
 
 bool VolumeManager::RegisterMediaViewForTesting(
     const std::string& root_document_id) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return DoMountEvent(Volume::CreateForMediaView(root_document_id));
 }
 
 bool VolumeManager::RemoveAndroidFilesDirectoryForTesting(
     const base::FilePath& path) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DoUnmountEvent(*Volume::CreateForAndroidFiles(path));
   return true;
 }
 
 void VolumeManager::RemoveDownloadsDirectoryForTesting() {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::FilePath path;
   if (FindDownloadsMountPointPath(profile_, &path)) {
     DoUnmountEvent(*Volume::CreateForDownloads(path));
@@ -596,7 +596,7 @@ void VolumeManager::RemoveDownloadsDirectoryForTesting() {
 
 bool VolumeManager::RegisterDownloadsDirectoryForTesting(
     const base::FilePath& path) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::FilePath old_path;
   if (FindDownloadsMountPointPath(profile_, &old_path)) {
@@ -624,7 +624,7 @@ bool VolumeManager::RegisterDownloadsDirectoryForTesting(
 
 bool VolumeManager::RegisterCrostiniDirectoryForTesting(
     const base::FilePath& path) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const bool ok =
       storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
@@ -652,7 +652,7 @@ bool VolumeManager::AddVolumeForTesting(base::FilePath path,
 }
 
 bool VolumeManager::AddVolumeForTesting(std::unique_ptr<Volume> volume) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return DoMountEvent(std::move(volume));
 }
 
@@ -664,14 +664,14 @@ void VolumeManager::RemoveVolumeForTesting(
     const base::FilePath& device_path,
     const std::string& drive_label,
     const std::string& file_system_type) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DoUnmountEvent(*Volume::CreateForTesting(path, volume_type, device_type,
                                            read_only, device_path, drive_label,
                                            file_system_type));
 }
 
 void VolumeManager::RemoveVolumeForTesting(const std::string& volume_id) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DoUnmountEvent(volume_id);
 }
 

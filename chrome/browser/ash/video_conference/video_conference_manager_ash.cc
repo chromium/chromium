@@ -93,7 +93,7 @@ void VideoConferenceManagerAsh::SetSystemMediaDeviceStatus(
 
 void VideoConferenceManagerAsh::CreateBackgroundImage() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  CHECK(profile, base::NotFatalUntil::M160);
+  DCHECK(profile);
   SystemAppLaunchParams params;
   params.launch_source = apps::LaunchSource::kFromShelf;
   LaunchSystemWebAppAsync(profile, SystemWebAppType::VC_BACKGROUND, params);
@@ -180,7 +180,7 @@ void VideoConferenceManagerAsh::SendUpdatedState() {
 VideoConferenceTrayController* VideoConferenceManagerAsh::GetTrayController() {
   VideoConferenceTrayController* tray_controller =
       VideoConferenceTrayController::Get();
-  CHECK(tray_controller, base::NotFatalUntil::M160);
+  DCHECK(tray_controller);
   return tray_controller;
 }
 

@@ -78,7 +78,7 @@ DnsResolverPresentRoutine::DnsResolverPresentRoutine(
 DnsResolverPresentRoutine::~DnsResolverPresentRoutine() = default;
 
 bool DnsResolverPresentRoutine::CanRun() {
-  CHECK(remote_cros_network_config_, base::NotFatalUntil::M160);
+  DCHECK(remote_cros_network_config_);
   return true;
 }
 
@@ -112,7 +112,7 @@ void DnsResolverPresentRoutine::AnalyzeResultsAndExecuteCallback() {
 }
 
 void DnsResolverPresentRoutine::FetchActiveNetworks() {
-  CHECK(remote_cros_network_config_, base::NotFatalUntil::M160);
+  DCHECK(remote_cros_network_config_);
   remote_cros_network_config_->GetNetworkStateList(
       chromeos::network_config::mojom::NetworkFilter::New(
           chromeos::network_config::mojom::FilterType::kActive,

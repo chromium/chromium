@@ -302,7 +302,7 @@ class VolumeManager
     static std::string_view GetKey(std::string_view a) { return a; }
 
     static std::string_view GetKey(const std::unique_ptr<Volume>& volume) {
-      CHECK(volume, base::NotFatalUntil::M160);
+      DCHECK(volume);
       return volume->volume_id();
     }
   };

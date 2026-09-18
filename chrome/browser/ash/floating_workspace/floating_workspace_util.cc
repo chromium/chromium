@@ -61,7 +61,7 @@ bool IsFloatingWorkspaceEnabled(const Profile* profile) {
     const PrefService::Preference* floating_workspace_pref =
         pref_service->FindPreference(pref_name);
 
-    CHECK(floating_workspace_pref, base::NotFatalUntil::M160);
+    DCHECK(floating_workspace_pref);
 
     if (floating_workspace_pref->IsManaged() &&
         pref_service->GetBoolean(pref_name)) {

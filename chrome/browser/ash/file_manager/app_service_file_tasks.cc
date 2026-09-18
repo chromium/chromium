@@ -200,13 +200,13 @@ void FindAppServiceTasks(Profile* profile,
                          const std::vector<GURL>& file_urls,
                          const std::vector<std::string>& dlp_source_urls,
                          std::vector<FullTaskDescriptor>* result_list) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
-  CHECK_EQ(entries.size(), file_urls.size(), base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_EQ(entries.size(), file_urls.size());
   // App Service uses the file extension in the URL for file_handlers for Web
   // Apps.
 #if DCHECK_IS_ON()
   for (const GURL& url : file_urls) {
-    CHECK(url.is_valid(), base::NotFatalUntil::M160);
+    DCHECK(url.is_valid());
   }
 #endif  // DCHECK_IS_ON()
 
@@ -290,9 +290,8 @@ void ExecuteAppServiceTask(
     const std::vector<storage::FileSystemURL>& file_system_urls,
     const std::vector<std::string>& mime_types,
     FileTaskFinishedCallback done) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
-  CHECK_EQ(file_system_urls.size(), mime_types.size(),
-           base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_EQ(file_system_urls.size(), mime_types.size());
 
   // App Service doesn't exist in Incognito mode but apps can be
   // launched (ie. default handler to open a download from its
@@ -336,12 +335,11 @@ void ExecuteAppServiceTask(
     intent_files.push_back(std::move(file));
   }
 
-  CHECK(task.task_type == TASK_TYPE_WEB_APP ||
-            task.task_type == TASK_TYPE_FILE_HANDLER ||
-            task.task_type == TASK_TYPE_BRUSCHETTA_APP ||
-            task.task_type == TASK_TYPE_CROSTINI_APP ||
-            task.task_type == TASK_TYPE_ARC_APP,
-        base::NotFatalUntil::M160);
+  DCHECK(task.task_type == TASK_TYPE_WEB_APP ||
+         task.task_type == TASK_TYPE_FILE_HANDLER ||
+         task.task_type == TASK_TYPE_BRUSCHETTA_APP ||
+         task.task_type == TASK_TYPE_CROSTINI_APP ||
+         task.task_type == TASK_TYPE_ARC_APP);
 
   apps::IntentPtr intent = std::make_unique<apps::Intent>(
       apps_util::kIntentActionView, std::move(intent_files));
@@ -392,7 +390,7 @@ bool ChooseAndSetDefaultTaskFromPolicyPrefs(
     return true;
   }
 
-  CHECK_EQ(default_handlers_for_entries.size(), 1U, base::NotFatalUntil::M160);
+  DCHECK_EQ(default_handlers_for_entries.size(), 1U);
   const auto& policy_id = *default_handlers_for_entries.begin();
 
   std::vector<FullTaskDescriptor*> filtered_tasks;

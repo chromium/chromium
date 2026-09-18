@@ -135,14 +135,14 @@ UdpProberImpl::UdpProberImpl(
       tag_(tag),
       timeout_after_host_resolution_(timeout_after_host_resolution),
       callback_(std::move(callback)) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
-  CHECK(!data_.empty(), base::NotFatalUntil::M160);
-  CHECK(callback_, base::NotFatalUntil::M160);
-  CHECK(!host_port_pair_.IsEmpty(), base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!data_.empty());
+  DCHECK(callback_);
+  DCHECK(!host_port_pair_.IsEmpty());
 
   network::mojom::NetworkContext* network_context =
       network_context_getter_.Run();
-  CHECK(network_context, base::NotFatalUntil::M160);
+  DCHECK(network_context);
 
   host_resolver_ = network::SimpleHostResolver::Create(network_context);
 
@@ -170,7 +170,7 @@ void UdpProberImpl::OnHostResolutionComplete(
     const net::ResolveErrorInfo&,
     const net::AddressList& resolved_addresses,
     const net::HostResolverEndpointResults&) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (result != net::OK) {
     CHECK(resolved_addresses.empty());
@@ -186,7 +186,7 @@ void UdpProberImpl::OnHostResolutionComplete(
   auto pending_receiver = udp_socket_remote_.BindNewPipeAndPassReceiver();
   udp_socket_remote_.set_disconnect_handler(
       base::BindOnce(&UdpProberImpl::OnDisconnect, weak_factory_.GetWeakPtr()));
-  CHECK(udp_socket_remote_.is_bound(), base::NotFatalUntil::M160);
+  DCHECK(udp_socket_remote_.is_bound());
 
   auto pending_remote =
       udp_socket_listener_receiver_.BindNewPipeAndPassRemote();
@@ -207,7 +207,7 @@ void UdpProberImpl::OnHostResolutionComplete(
 void UdpProberImpl::OnConnectComplete(
     int result,
     const std::optional<net::IPEndPoint>& local_addr_out) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (result != net::OK) {
     OnDone(result, ProbeExitEnum::kConnectFailure);
     return;
@@ -219,7 +219,7 @@ void UdpProberImpl::OnConnectComplete(
 }
 
 void UdpProberImpl::OnSendComplete(int result) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (result != net::OK) {
     OnDone(result, ProbeExitEnum::kSendFailure);
@@ -231,7 +231,7 @@ void UdpProberImpl::OnSendComplete(int result) {
 void UdpProberImpl::OnReceived(int32_t result,
                                const std::optional<net::IPEndPoint>& src_ip,
                                std::optional<base::span<const uint8_t>> data) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (result != net::OK) {
     OnDone(result, ProbeExitEnum::kNetworkErrorOnReceiveFailure);
@@ -250,7 +250,7 @@ void UdpProberImpl::OnReceived(int32_t result,
 }
 
 void UdpProberImpl::OnDone(int result, ProbeExitEnum probe_exit_enum) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Invalidate pending callbacks.
   weak_factory_.InvalidateWeakPtrs();
@@ -264,7 +264,7 @@ void UdpProberImpl::OnDone(int result, ProbeExitEnum probe_exit_enum) {
 }
 
 void UdpProberImpl::OnDisconnect() {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   OnDone(net::ERR_FAILED, ProbeExitEnum::kMojoDisconnectFailure);
 }

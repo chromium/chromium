@@ -42,7 +42,7 @@ EmptyTrashIOTask::~EmptyTrashIOTask() {
 
 void EmptyTrashIOTask::Execute(IOTask::ProgressCallback /*progress_callback*/,
                                IOTask::CompleteCallback complete_callback) {
-  CHECK(!complete_callback_, base::NotFatalUntil::M160);
+  DCHECK(!complete_callback_);
   complete_callback_ = std::move(complete_callback);
 
   // A map containing paths which are enabled for trashing.
@@ -55,7 +55,7 @@ void EmptyTrashIOTask::Execute(IOTask::ProgressCallback /*progress_callback*/,
     return;
   }
 
-  CHECK_EQ(in_flight_, 0, base::NotFatalUntil::M160);
+  DCHECK_EQ(in_flight_, 0);
   progress_.state = State::kInProgress;
   for (const trash::TrashPathsMap::value_type& location : locations) {
     base::FilePath dir =
@@ -85,7 +85,7 @@ void EmptyTrashIOTask::Execute(IOTask::ProgressCallback /*progress_callback*/,
 }
 
 void EmptyTrashIOTask::OnRemoved(const size_t i, const bool ok) {
-  CHECK_LT(i, progress_.outputs.size(), base::NotFatalUntil::M160);
+  DCHECK_LT(i, progress_.outputs.size());
   if (EntryStatus& entry = progress_.outputs[i]; ok) {
     VLOG(1) << "Removed " << entry.url.path();
     entry.error = base::File::FILE_OK;
@@ -94,7 +94,7 @@ void EmptyTrashIOTask::OnRemoved(const size_t i, const bool ok) {
     entry.error = base::File::FILE_ERROR_FAILED;
   }
 
-  CHECK_GT(in_flight_, 0, base::NotFatalUntil::M160);
+  DCHECK_GT(in_flight_, 0);
   if (--in_flight_ > 0) {
     // Still waiting for some deletion tasks to finish.
     return;
@@ -118,7 +118,7 @@ void EmptyTrashIOTask::OnRemoved(const size_t i, const bool ok) {
 }
 
 void EmptyTrashIOTask::Complete() {
-  CHECK(complete_callback_, base::NotFatalUntil::M160);
+  DCHECK(complete_callback_);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(complete_callback_), std::move(progress_)));

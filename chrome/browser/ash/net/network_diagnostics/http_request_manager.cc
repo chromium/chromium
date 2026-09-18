@@ -64,7 +64,7 @@ HttpRequestManager::~HttpRequestManager() = default;
 void HttpRequestManager::MakeRequest(const GURL& url,
                                      const base::TimeDelta& timeout,
                                      HttpRequestCallback callback) {
-  CHECK(url.is_valid(), base::NotFatalUntil::M160);
+  DCHECK(url.is_valid());
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -93,7 +93,7 @@ void HttpRequestManager::SetURLLoaderFactoryForTesting(
 void HttpRequestManager::OnURLLoadComplete(
     HttpRequestCallback callback,
     scoped_refptr<net::HttpResponseHeaders> headers) {
-  CHECK(simple_url_loader_, base::NotFatalUntil::M160);
+  DCHECK(simple_url_loader_);
   bool connected = headers && headers->response_code() == net::HTTP_NO_CONTENT;
   simple_url_loader_.reset();
   std::move(callback).Run(connected);

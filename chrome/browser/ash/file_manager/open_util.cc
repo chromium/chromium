@@ -159,7 +159,7 @@ void OpenItemWithMetadata(Profile* profile,
                           platform_util::OpenOperationCallback callback,
                           base::File::Error error,
                           const base::File::Info& file_info) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error != base::File::FILE_OK) {
     std::move(callback).Run(error == base::File::FILE_ERROR_NOT_FOUND
                                 ? platform_util::OPEN_FAILED_PATH_NOT_FOUND
@@ -189,7 +189,7 @@ void ShowItemInFolderWithMetadata(Profile* profile,
                                   platform_util::OpenOperationCallback callback,
                                   base::File::Error error,
                                   const base::File::Info& file_info) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error != base::File::FILE_OK) {
     std::move(callback).Run(error == base::File::FILE_ERROR_NOT_FOUND
                                 ? platform_util::OPEN_FAILED_PATH_NOT_FOUND
@@ -208,7 +208,7 @@ void OpenItem(Profile* profile,
               const base::FilePath& file_path,
               platform_util::OpenItemType expected_type,
               platform_util::OpenOperationCallback callback) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // This is unfortunately necessary as file browser handlers operate on URLs.
   GURL url;
@@ -228,7 +228,7 @@ void OpenItem(Profile* profile,
 void ShowItemInFolder(Profile* profile,
                       const base::FilePath& file_path,
                       platform_util::OpenOperationCallback callback) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Convert Fusebox paths if possible.
   fusebox::Server* fusebox_server = fusebox::Server::GetInstance();

@@ -1281,7 +1281,7 @@ int GetLocaleBasedWeekStart() {
   // start, since there are no daylight saving starts/ends in June worldwide.
   base::Time fixed_date;
   bool result = base::Time::FromString("15 Jun 2021 12:00 GMT", &fixed_date);
-  CHECK(result, base::NotFatalUntil::M160);
+  DCHECK(result);
   int local_day_of_week = 2;  // 15 Jun 2021 is Tuesday.
   // Adjust local_day_of_week according to the current timezone. We are using
   // 12:00pm UTC above, so only need to check if the local time difference is
@@ -1308,7 +1308,7 @@ void AddFileManagerFeatureStrings(
     const variations::VariationsService& variations_service,
     Profile* profile,
     base::DictValue* dict) {
-  CHECK(profile, base::NotFatalUntil::M160);
+  DCHECK(profile);
 
   dict->Set("HIDE_SPACE_INFO", ash::demo_mode::IsDeviceInDemoMode());
   dict->Set("ARC_VM_ENABLED", arc::IsArcVmEnabled());

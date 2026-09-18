@@ -264,8 +264,8 @@ void ApnMigrator::OnSetShillCustomApnListFailure(
 
 void ApnMigrator::MigrateNetwork(const NetworkState& network,
                                  const std::string& username_hash) {
-  CHECK(ash::features::IsApnRevampEnabled(), base::NotFatalUntil::M160);
-  CHECK(!username_hash.empty(), base::NotFatalUntil::M160);
+  DCHECK(ash::features::IsApnRevampEnabled());
+  DCHECK(!username_hash.empty());
 
   // Return early if the network is already in the process of being migrated.
   if (iccids_in_migration_.contains(network.iccid())) {
@@ -275,9 +275,8 @@ void ApnMigrator::MigrateNetwork(const NetworkState& network,
     return;
   }
 
-  CHECK(!managed_cellular_pref_handler_->ContainsApnMigratedIccid(
-            network.iccid()),
-        base::NotFatalUntil::M160);
+  DCHECK(!managed_cellular_pref_handler_->ContainsApnMigratedIccid(
+      network.iccid()));
 
   // Get the pre-revamp APN list.
   const base::ListValue* custom_apn_list =
@@ -544,8 +543,8 @@ void ApnMigrator::CreateDefaultThenAttachCustomApns(
     bool can_use_default_apn_as_attach,
     const std::string& guid,
     const std::string& iccid) {
-  CHECK(!attach_apn.is_null(), base::NotFatalUntil::M160);
-  CHECK(!default_apn.is_null(), base::NotFatalUntil::M160);
+  DCHECK(!attach_apn.is_null());
+  DCHECK(!default_apn.is_null());
   NET_LOG(EVENT) << "Migrating default_apn: " << default_apn->access_point_name
                  << " in the enabled state; default_apn is also type attach: "
                  << can_use_default_apn_as_attach

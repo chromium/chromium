@@ -52,7 +52,7 @@ mojom::RoutineType SignalStrengthRoutine::Type() {
 }
 
 bool SignalStrengthRoutine::CanRun() {
-  CHECK(remote_cros_network_config_, base::NotFatalUntil::M160);
+  DCHECK(remote_cros_network_config_);
   return true;
 }
 
@@ -74,7 +74,7 @@ void SignalStrengthRoutine::AnalyzeResultsAndExecuteCallback() {
 }
 
 void SignalStrengthRoutine::FetchActiveWirelessNetworks() {
-  CHECK(remote_cros_network_config_, base::NotFatalUntil::M160);
+  DCHECK(remote_cros_network_config_);
   // The usage of `base::Unretained(this)` here is safe because
   // |remote_cros_network_config_| is a mojo::Remote owned by |this|.
   remote_cros_network_config_->GetNetworkStateList(
