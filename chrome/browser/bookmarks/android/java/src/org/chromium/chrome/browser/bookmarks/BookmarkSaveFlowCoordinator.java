@@ -33,6 +33,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -280,6 +281,9 @@ public class BookmarkSaveFlowCoordinator implements ActivityStateListener {
     }
 
     private class BookmarkSaveFlowBottomSheetContent implements BottomSheetContent {
+        private static final BottomSheetType BOTTOM_SHEET_TYPE =
+                new BottomSheetType.Builder().setUserInitiated(true).build();
+
         private final View mContentView;
 
         BookmarkSaveFlowBottomSheetContent(View contentView) {
@@ -304,6 +308,11 @@ public class BookmarkSaveFlowCoordinator implements ActivityStateListener {
         @Override
         public void destroy() {
             BookmarkSaveFlowCoordinator.this.destroy();
+        }
+
+        @Override
+        public BottomSheetType getSheetType() {
+            return BOTTOM_SHEET_TYPE;
         }
 
         @Override
