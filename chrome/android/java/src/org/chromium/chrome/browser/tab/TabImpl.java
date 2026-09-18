@@ -2045,7 +2045,7 @@ class TabImpl implements Tab, TabInternal {
 
         // For incognito we fall through to startSettings(), which will redirect to the original
         // profile's window, similar to Win/Mac/Linux.
-        if (SettingsInTab.isEnabled() && !isIncognito()) return false;
+        if (SettingsInTab.isFeatureEnabled() && !isIncognito()) return false;
 
         // TODO(crbug.com/456164910): Use the URL path to open deeplinks into Settings.
         SettingsNavigationFactory.createSettingsNavigation().startSettings(getContext());

@@ -130,8 +130,8 @@ public class NativePageTest {
         String url = "chrome://settings";
         GURL gurl = new GURL(url);
         Assert.assertEquals(
-                "Settings page should not be a native page on phone",
-                NativePageType.NONE,
+                "Settings page should be a native page on phone",
+                NativePageType.SETTINGS,
                 NativePage.nativePageType(gurl, null, false, false, false));
     }
 

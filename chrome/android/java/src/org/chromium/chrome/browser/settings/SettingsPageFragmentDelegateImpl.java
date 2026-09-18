@@ -116,8 +116,6 @@ public class SettingsPageFragmentDelegateImpl
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
             Tab tab) {
-        assert SettingsInTab.isEnabled()
-                : "SettingsInTab feature must be enabled to use this class.";
         mActivity = activity;
         mProfile = profile;
         mWindowAndroid = windowAndroid;

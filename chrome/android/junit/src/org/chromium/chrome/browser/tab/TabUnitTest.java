@@ -1038,6 +1038,59 @@ public class TabUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw320dp")
+    @EnableFeatures({ChromeFeatureList.ANDROID_SETTINGS_URL, ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testOnUpdateUrl_RegularProfile_SettingsOnPhone_DoesNotCallStartSettings() {
+        assertFalse(SettingsInTab.shouldOpenSettingsInTab());
+        assertTrue(SettingsInTab.isFeatureEnabled());
+        SettingsNavigation mockSettingsNavigation = mock(SettingsNavigation.class);
+        SettingsNavigationFactory.setInstanceForTesting(mockSettingsNavigation);
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+
+        TabImpl tab =
+                new TabImpl(TAB1_ID, mProfile, TabLaunchType.FROM_CHROME_UI) {
+                    @Override
+                    public boolean isInitialized() {
+                        return true;
+                    }
+                };
+        tab.updateWindowAndroid(mWindowAndroid);
+
+        GURL settingsUrl = new GURL("chrome://settings");
+        handleDidFinishNavigation(tab, settingsUrl);
+
+        verify(mockSettingsNavigation, never()).startSettings(any());
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    @EnableFeatures({ChromeFeatureList.ANDROID_SETTINGS_URL, ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testOnUpdateUrl_IncognitoProfile_SettingsOnPhone_CallsStartSettings() {
+        assertFalse(SettingsInTab.shouldOpenSettingsInTab());
+        assertTrue(SettingsInTab.isFeatureEnabled());
+        SettingsNavigation mockSettingsNavigation = mock(SettingsNavigation.class);
+        SettingsNavigationFactory.setInstanceForTesting(mockSettingsNavigation);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+
+        TabImpl tab =
+                new TabImpl(TAB1_ID, mProfile, TabLaunchType.FROM_CHROME_UI) {
+                    @Override
+                    public boolean isInitialized() {
+                        return true;
+                    }
+
+                    @Override
+                    public void goBack() {}
+                };
+        tab.updateWindowAndroid(mWindowAndroid);
+
+        GURL settingsUrl = new GURL("chrome://settings");
+        handleDidFinishNavigation(tab, settingsUrl);
+
+        verify(mockSettingsNavigation).startSettings(any());
+    }
+
+    @Test
     public void testShow_unfreezesFrozenNativePageWhenAlreadyShown() {
         TabImplJni.setInstanceForTesting(mNativeMock);
         doReturn(mActivity).when(mWeakReferenceContext).get();

@@ -314,7 +314,7 @@ public interface NativePage {
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_BRICKS_NATIVE_PAGE)) {
             return NativePageType.BRICKS;
         } else if (UrlConstants.SETTINGS_HOST.equals(host)
-                && SettingsInTab.isEnabled()
+                && SettingsInTab.isFeatureEnabled()
                 && !isIncognito) {
             return NativePageType.SETTINGS;
         } else {

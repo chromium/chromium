@@ -230,12 +230,13 @@ public class NativePageFactoryTest {
     @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     @Config(qualifiers = "sw320dp")
-    public void testCreateSettingsPageOnPhone_ReturnsNull() {
+    public void testCreateSettingsPageOnPhone() {
         MockNativePage page =
                 (MockNativePage)
                         mNativePageFactory.createNativePageForURL(
                                 UrlConstants.SETTINGS_URL, null, mTab, false, null);
-        Assert.assertNull(page);
+        Assert.assertNotNull(page);
+        Assert.assertEquals(NativePageType.SETTINGS, page.type);
     }
 
     @Test

@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.printing.PrintHelper;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsPage;
 import org.chromium.chrome.browser.settings.SettingsPageFragmentDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -454,7 +453,6 @@ public class NativePageFactory {
         }
 
         protected NativePage buildSettingsPage(Tab tab, String url) {
-            assert SettingsInTab.isEnabled();
             // The fragment delegate acts both as a delegate and as a back press handler.
             var fragmentDelegate =
                     new SettingsPageFragmentDelegateImpl(
