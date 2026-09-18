@@ -88,19 +88,19 @@ use bitflags::{Flag, Flags};
 struct MyFlags(u8);
 
 impl Flags for MyFlags {
+    type Bits = u8;
+
     const FLAGS: &'static [Flag<Self>] = &[
         Flag::new("A", MyFlags(1)),
         Flag::new("B", MyFlags(1 << 1)),
     ];
 
-    type Bits = u8;
+    fn bits(&self) -> Self::Bits {
+        self.0
+    }
 
     fn from_bits_retain(bits: Self::Bits) -> Self {
         MyFlags(bits)
-    }
-
-    fn bits(&self) -> Self::Bits {
-        self.0
     }
 }
 ```

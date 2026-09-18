@@ -22,6 +22,7 @@ mod intersects;
 mod is_all;
 mod is_empty;
 mod iter;
+mod iter_equal_names;
 mod known_bits;
 mod parser;
 mod remove;
@@ -30,7 +31,6 @@ mod truncate;
 mod union;
 mod unknown;
 mod unknown_bits;
-mod iter_equal_names;
 
 mod custom {
     pub const NAME: &'static str = "custom";

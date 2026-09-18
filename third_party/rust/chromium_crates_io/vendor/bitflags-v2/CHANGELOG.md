@@ -1,3 +1,11 @@
+# 2.13.2
+
+## What's Changed
+* Flags: adjust order of elements in manual implementation example by @DanielEScherzer in https://github.com/bitflags/bitflags/pull/494
+* Re-pull const declarations outside of nested const by @KodrAus in https://github.com/bitflags/bitflags/pull/496
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.13.1...2.13.2
+
 # 2.13.1
 
 ## What's Changed

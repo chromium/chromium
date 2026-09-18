@@ -193,6 +193,7 @@ macro_rules! __impl_public_bitflags {
 
                 fn from_name(name) {
                     mod __bitflags_flag_names {
+                        #[allow(unused_imports)]
                         use super::*;
 
                         $(
@@ -549,6 +550,7 @@ macro_rules! __impl_public_bitflags_consts {
         impl $crate::Flags for $PublicBitFlags {
             const FLAGS: &'static [$crate::Flag<$PublicBitFlags>] = {
                 mod __bitflags_flag_names {
+                    #[allow(unused_imports)]
                     use super::*;
 
                     $(
