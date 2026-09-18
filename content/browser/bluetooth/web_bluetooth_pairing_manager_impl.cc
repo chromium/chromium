@@ -110,7 +110,7 @@ constexpr int WebBluetoothPairingManagerImpl::kMaxPairAttempts;
 WebBluetoothPairingManagerImpl::WebBluetoothPairingManagerImpl(
     WebBluetoothPairingManagerDelegate* pairing_manager_delegate)
     : pairing_manager_delegate_(pairing_manager_delegate) {
-  DCHECK(pairing_manager_delegate_);
+  CHECK(pairing_manager_delegate_, base::NotFatalUntil::M160);
 }
 
 WebBluetoothPairingManagerImpl::~WebBluetoothPairingManagerImpl() {
@@ -227,7 +227,7 @@ void WebBluetoothPairingManagerImpl::PairDevice(
     blink::WebBluetoothDeviceId device_id,
     int num_pair_attempts,
     device::BluetoothDevice::ConnectCallback callback) {
-  DCHECK(device_id.IsValid());
+  CHECK(device_id.IsValid(), base::NotFatalUntil::M160);
   if (pending_pair_device_ids_.contains(device_id)) {
     std::move(callback).Run(
         BluetoothDevice::ConnectErrorCode::ERROR_AUTH_CANCELED);

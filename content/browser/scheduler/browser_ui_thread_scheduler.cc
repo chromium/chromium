@@ -52,7 +52,7 @@ BrowserUIThreadScheduler::CreateForTesting(
   return scheduler;
 }
 BrowserUIThreadScheduler* BrowserUIThreadScheduler::Get() {
-  DCHECK(g_browser_ui_thread_scheduler);
+  CHECK(g_browser_ui_thread_scheduler, base::NotFatalUntil::M160);
   return g_browser_ui_thread_scheduler;
 }
 BrowserUIThreadScheduler::BrowserUIThreadScheduler()
@@ -103,8 +103,9 @@ void BrowserUIThreadScheduler::PostFeatureListInit() {
 
 void BrowserUIThreadScheduler::CommonSequenceManagerSetup(
     base::sequence_manager::SequenceManager* sequence_manager) {
-  DCHECK_EQ(static_cast<size_t>(sequence_manager->GetPriorityCount()),
-            static_cast<size_t>(internal::BrowserTaskPriority::kPriorityCount));
+  CHECK_EQ(static_cast<size_t>(sequence_manager->GetPriorityCount()),
+           static_cast<size_t>(internal::BrowserTaskPriority::kPriorityCount),
+           base::NotFatalUntil::M160);
   sequence_manager->EnableCrashKeys("ui_scheduler_async_stack");
 }
 

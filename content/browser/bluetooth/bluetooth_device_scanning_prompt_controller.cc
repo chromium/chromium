@@ -66,7 +66,7 @@ void BluetoothDeviceScanningPromptController::ShowPermissionPrompt() {
 
 void BluetoothDeviceScanningPromptController::OnBluetoothScanningPromptEvent(
     BluetoothScanningPrompt::Event event) {
-  DCHECK(web_bluetooth_service_);
+  CHECK(web_bluetooth_service_, base::NotFatalUntil::M160);
 
   web_bluetooth_service_->OnBluetoothScanningPromptEvent(event, this);
   prompt_event_received_ = true;

@@ -21,7 +21,7 @@ void BucketManager::BindReceiver(
     mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
     mojo::ReportBadMessageCallback bad_message_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M160);
 
   blink::StorageKey storage_key = context->GetBucketStorageKey();
   auto it = hosts_.find(storage_key);
@@ -38,16 +38,16 @@ void BucketManager::BindReceiver(
 
   auto [insert_it, insert_succeeded] = hosts_.insert(
       {storage_key, std::make_unique<BucketManagerHost>(this, storage_key)});
-  DCHECK(insert_succeeded);
+  CHECK(insert_succeeded, base::NotFatalUntil::M160);
   insert_it->second->BindReceiver(std::move(receiver), context);
 }
 
 void BucketManager::OnHostReceiverDisconnect(BucketManagerHost* host,
                                              base::PassKey<BucketManagerHost>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(host != nullptr);
-  DCHECK_GT(hosts_.count(host->storage_key()), 0u);
-  DCHECK_EQ(hosts_[host->storage_key()].get(), host);
+  CHECK(host != nullptr, base::NotFatalUntil::M160);
+  CHECK_GT(hosts_.count(host->storage_key()), 0u, base::NotFatalUntil::M160);
+  CHECK_EQ(hosts_[host->storage_key()].get(), host, base::NotFatalUntil::M160);
 
   if (host->has_connected_receivers())
     return;

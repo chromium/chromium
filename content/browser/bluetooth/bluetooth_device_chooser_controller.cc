@@ -171,7 +171,7 @@ bool MatchesFilters(
     const ManufacturerDataMap& device_manufacturer_data,
     const std::optional<std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>>&
         filters) {
-  DCHECK(HasValidFilter(filters));
+  CHECK(HasValidFilter(filters), base::NotFatalUntil::M160);
   for (const auto& filter : filters.value()) {
     if (MatchesFilter(device_name, device_uuids, device_manufacturer_data,
                       filter)) {
@@ -264,10 +264,10 @@ BluetoothDeviceChooserController::~BluetoothDeviceChooserController() {
 void BluetoothDeviceChooserController::GetDevice(
     blink::mojom::WebBluetoothRequestDeviceOptionsPtr options,
     Callback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // GetDevice should only be called once.
-  DCHECK(callback_.is_null());
+  CHECK(callback_.is_null(), base::NotFatalUntil::M160);
 
   callback_ = std::move(callback);
   options_ = std::move(options);
@@ -467,7 +467,7 @@ void BluetoothDeviceChooserController::PopulateConnectedDevices() {
 }
 
 void BluetoothDeviceChooserController::StartDeviceDiscovery() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (discovery_session_.get() && discovery_session_->IsActive()) {
     // Already running; just increase the timeout.
@@ -487,7 +487,7 @@ void BluetoothDeviceChooserController::StartDeviceDiscovery() {
 }
 
 void BluetoothDeviceChooserController::StopDeviceDiscovery() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   StopDiscoverySession(std::move(discovery_session_));
   if (chooser_) {
@@ -497,7 +497,7 @@ void BluetoothDeviceChooserController::StopDeviceDiscovery() {
 
 void BluetoothDeviceChooserController::OnStartDiscoverySessionSuccess(
     std::unique_ptr<device::BluetoothDiscoverySession> discovery_session) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   DVLOG(1) << "Started discovery session.";
   if (chooser_) {
     discovery_session_ = std::move(discovery_session);
@@ -517,12 +517,12 @@ void BluetoothDeviceChooserController::OnStartDiscoverySessionFailed() {
 void BluetoothDeviceChooserController::OnBluetoothChooserEvent(
     BluetoothChooserEvent event,
     const std::string& device_address) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   switch (event) {
     case BluetoothChooserEvent::RESCAN:
       device_ids_.clear();
-      DCHECK(chooser_);
+      CHECK(chooser_, base::NotFatalUntil::M160);
       CheckAdapterAndStartGettingDevices();
       // No need to close the chooser so we return.
       return;
@@ -555,7 +555,7 @@ void BluetoothDeviceChooserController::OnBluetoothChooserEvent(
 
 void BluetoothDeviceChooserController::PostSuccessCallback(
     const std::string& device_address) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
 
   if (!base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
@@ -567,7 +567,7 @@ void BluetoothDeviceChooserController::PostSuccessCallback(
 
 void BluetoothDeviceChooserController::PostErrorCallback(
     WebBluetoothResult error) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
 
   if (!base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,

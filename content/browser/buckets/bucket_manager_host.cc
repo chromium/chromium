@@ -39,7 +39,7 @@ enum class PersistenceMetric {
 BucketManagerHost::BucketManagerHost(BucketManager* manager,
                                      const blink::StorageKey& storage_key)
     : manager_(manager), storage_key_(storage_key) {
-  DCHECK(manager != nullptr);
+  CHECK(manager != nullptr, base::NotFatalUntil::M160);
 
   // base::Unretained is safe here because this BucketManagerHost owns
   // `receivers_`. So, the unretained BucketManagerHost is guaranteed to
@@ -162,7 +162,7 @@ void BucketManagerHost::DeleteBucket(const std::string& name,
 }
 
 void BucketManagerHost::RemoveBucketHost(storage::BucketId id) {
-  DCHECK(bucket_map_.contains(id));
+  CHECK(bucket_map_.contains(id), base::NotFatalUntil::M160);
   bucket_map_.erase(id);
 }
 

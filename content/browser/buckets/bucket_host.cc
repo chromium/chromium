@@ -39,7 +39,7 @@ BucketHost::~BucketHost() = default;
 mojo::PendingRemote<blink::mojom::BucketHost>
 BucketHost::CreateStorageBucketBinding(
     base::WeakPtr<BucketContext> bucket_context) {
-  DCHECK(bucket_context);
+  CHECK(bucket_context, base::NotFatalUntil::M160);
   mojo::PendingRemote<blink::mojom::BucketHost> remote;
   receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver(), bucket_context);
   return remote;
@@ -48,7 +48,7 @@ BucketHost::CreateStorageBucketBinding(
 void BucketHost::PassStorageBucketBinding(
     base::WeakPtr<BucketContext> bucket_context,
     mojo::PendingReceiver<blink::mojom::BucketHost> receiver) {
-  DCHECK(bucket_context);
+  CHECK(bucket_context, base::NotFatalUntil::M160);
   receivers_.Add(this, std::move(receiver), bucket_context);
 }
 

@@ -29,7 +29,7 @@ BluetoothAdapterFactoryWrapper::BluetoothAdapterFactoryWrapper() {
 BluetoothAdapterFactoryWrapper::~BluetoothAdapterFactoryWrapper() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // All observers should have been removed already.
-  DCHECK(adapter_observers_.empty());
+  CHECK(adapter_observers_.empty(), base::NotFatalUntil::M160);
   // Clear adapters.
   SetAdapterInternal(/*adapter=*/nullptr, /*is_override_adapter=*/true);
   SetAdapterInternal(/*adapter=*/nullptr, /*is_override_adapter=*/false);
@@ -53,7 +53,7 @@ void BluetoothAdapterFactoryWrapper::AcquireAdapter(
     WebBluetoothServiceImpl* service,
     AcquireAdapterCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!GetAdapter(service));
+  CHECK(!GetAdapter(service), base::NotFatalUntil::M160);
 
   MaybeAddAdapterObserver(service);
   scoped_refptr<BluetoothAdapter> active_adapter = GetActiveAdapter();
@@ -75,7 +75,8 @@ void BluetoothAdapterFactoryWrapper::AcquireAdapter(
     return;
   }
 
-  DCHECK(BluetoothAdapterFactory::Get()->IsLowEnergySupported());
+  CHECK(BluetoothAdapterFactory::Get()->IsLowEnergySupported(),
+        base::NotFatalUntil::M160);
   BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&BluetoothAdapterFactoryWrapper::OnGetAdapter,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -176,7 +177,7 @@ void BluetoothAdapterFactoryWrapper::RemoveAdapterObserver(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   size_t removed = adapter_observers_.erase(service);
-  DCHECK(removed);
+  CHECK(removed, base::NotFatalUntil::M160);
   scoped_refptr<BluetoothAdapter> active_adapter = GetActiveAdapter();
   if (active_adapter) {
     active_adapter->RemoveObserver(service);

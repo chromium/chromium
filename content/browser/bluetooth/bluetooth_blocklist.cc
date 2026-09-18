@@ -210,8 +210,9 @@ BluetoothBlocklist::BluetoothBlocklist() {
 void BluetoothBlocklist::PopulateWithDefaultValues() {
   blocklisted_uuids_.clear();
 
-  DCHECK(BluetoothUUID("00001800-0000-1000-8000-00805f9b34fb") ==
-         BluetoothUUID("1800"));
+  CHECK(BluetoothUUID("00001800-0000-1000-8000-00805f9b34fb") ==
+            BluetoothUUID("1800"),
+        base::NotFatalUntil::M160);
 
   // Blocklist UUIDs updated 2021-01-06 from:
   // https://github.com/WebBluetoothCG/registries/blob/master/gatt_blocklist.txt

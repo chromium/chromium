@@ -33,7 +33,7 @@ namespace {
 void GetPhotoStateOnIOThread(const std::string& source_id,
                              MediaStreamManager* media_stream_manager,
                              ImageCaptureImpl::GetPhotoStateCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   const base::UnguessableToken session_id =
       media_stream_manager->VideoDeviceIdToSessionId(source_id);
@@ -49,7 +49,7 @@ void SetPhotoOptionsOnIOThread(
     MediaStreamManager* media_stream_manager,
     media::mojom::PhotoSettingsPtr settings,
     ImageCaptureImpl::SetPhotoOptionsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   const base::UnguessableToken session_id =
       media_stream_manager->VideoDeviceIdToSessionId(source_id);
@@ -62,7 +62,7 @@ void SetPhotoOptionsOnIOThread(
 void TakePhotoOnIOThread(const std::string& source_id,
                          MediaStreamManager* media_stream_manager,
                          ImageCaptureImpl::TakePhotoCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                        "image_capture_impl.cc::TakePhotoOnIOThread",
                        TRACE_EVENT_SCOPE_PROCESS);
@@ -93,7 +93,7 @@ void ImageCaptureImpl::Create(
 
 void ImageCaptureImpl::GetPhotoState(const std::string& source_id,
                                      GetPhotoStateCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                        "ImageCaptureImpl::GetPhotoState",
                        TRACE_EVENT_SCOPE_PROCESS);
@@ -114,7 +114,7 @@ void ImageCaptureImpl::GetPhotoState(const std::string& source_id,
 void ImageCaptureImpl::SetPhotoOptions(const std::string& source_id,
                                        media::mojom::PhotoSettingsPtr settings,
                                        SetPhotoOptionsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                        "ImageCaptureImpl::SetPhotoOptions",
                        TRACE_EVENT_SCOPE_PROCESS);
@@ -144,7 +144,7 @@ void ImageCaptureImpl::SetPhotoOptions(const std::string& source_id,
 
 void ImageCaptureImpl::TakePhoto(const std::string& source_id,
                                  TakePhotoCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                        "ImageCaptureImpl::TakePhoto",
                        TRACE_EVENT_SCOPE_PROCESS);
@@ -172,7 +172,7 @@ ImageCaptureImpl::~ImageCaptureImpl() = default;
 
 void ImageCaptureImpl::OnGetPhotoState(GetPhotoStateCallback callback,
                                        media::mojom::PhotoStatePtr state) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (!HasPanTiltZoomPermissionGranted()) {
     state->pan = media::mojom::Range::New();
     state->tilt = media::mojom::Range::New();
@@ -182,7 +182,7 @@ void ImageCaptureImpl::OnGetPhotoState(GetPhotoStateCallback callback,
 }
 
 bool ImageCaptureImpl::HasPanTiltZoomPermissionGranted() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   return MediaDevicesPermissionChecker::
       HasPanTiltZoomPermissionGrantedOnUIThread(

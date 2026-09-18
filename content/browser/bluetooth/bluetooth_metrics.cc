@@ -82,7 +82,7 @@ void RecordConnectGATTOutcome(UMAConnectGATTOutcome outcome) {
 }
 
 void RecordConnectGATTOutcome(CacheQueryOutcome outcome) {
-  DCHECK_EQ(outcome, CacheQueryOutcome::kNoDevice);
+  CHECK_EQ(outcome, CacheQueryOutcome::kNoDevice, base::NotFatalUntil::M160);
   RecordConnectGATTOutcome(UMAConnectGATTOutcome::kNoDevice);
 }
 

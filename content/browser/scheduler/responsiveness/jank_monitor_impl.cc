@@ -37,7 +37,7 @@ JankMonitorImpl::JankMonitorImpl()
       timer_running_(false),
       janky_task_id_(0),
       last_activity_time_us_(0) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   DETACH_FROM_SEQUENCE(monitor_sequence_checker_);
 }
 
@@ -54,7 +54,7 @@ void JankMonitorImpl::RemoveObserver(content::JankMonitor::Observer* observer) {
 }
 
 void JankMonitorImpl::SetUp() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Dependencies in SetUp() and Destroy():
   // * Target thread --(may schedule the timer on)--> Monitor thread.
@@ -74,7 +74,7 @@ void JankMonitorImpl::SetUp() {
 }
 
 void JankMonitorImpl::Destroy() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Destroy shuts down the monitor timer and the metric source in parallel.
   // |timer_| is shut down and destroyed on the monitor thread. |metric_source_|
@@ -93,7 +93,7 @@ void JankMonitorImpl::Destroy() {
 
 void JankMonitorImpl::FinishDestroyMetricSource() {
   // Destruction of MetricSource takes place on the UI thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   metric_source_ = nullptr;
 }
@@ -113,13 +113,13 @@ void JankMonitorImpl::TearDownOnIOThread() {
 void JankMonitorImpl::WillRunTaskOnUIThread(
     const base::PendingTask* task,
     bool /* was_blocked_or_low_priority */) {
-  DCHECK(ui_thread_exec_state_);
+  CHECK(ui_thread_exec_state_, base::NotFatalUntil::M160);
   WillRunTaskOrEvent(ui_thread_exec_state_.get(),
                      reinterpret_cast<uintptr_t>(task));
 }
 
 void JankMonitorImpl::DidRunTaskOnUIThread(const base::PendingTask* task) {
-  DCHECK(ui_thread_exec_state_);
+  CHECK(ui_thread_exec_state_, base::NotFatalUntil::M160);
   DidRunTaskOrEvent(ui_thread_exec_state_.get(),
                     reinterpret_cast<uintptr_t>(task));
 }
@@ -127,24 +127,24 @@ void JankMonitorImpl::DidRunTaskOnUIThread(const base::PendingTask* task) {
 void JankMonitorImpl::WillRunTaskOnIOThread(
     const base::PendingTask* task,
     bool /* was_blocked_or_low_priority */) {
-  DCHECK(io_thread_exec_state_);
+  CHECK(io_thread_exec_state_, base::NotFatalUntil::M160);
   WillRunTaskOrEvent(io_thread_exec_state_.get(),
                      reinterpret_cast<uintptr_t>(task));
 }
 
 void JankMonitorImpl::DidRunTaskOnIOThread(const base::PendingTask* task) {
-  DCHECK(io_thread_exec_state_);
+  CHECK(io_thread_exec_state_, base::NotFatalUntil::M160);
   DidRunTaskOrEvent(io_thread_exec_state_.get(),
                     reinterpret_cast<uintptr_t>(task));
 }
 
 void JankMonitorImpl::WillRunEventOnUIThread(uintptr_t opaque_identifier) {
-  DCHECK(ui_thread_exec_state_);
+  CHECK(ui_thread_exec_state_, base::NotFatalUntil::M160);
   WillRunTaskOrEvent(ui_thread_exec_state_.get(), opaque_identifier);
 }
 
 void JankMonitorImpl::DidRunEventOnUIThread(uintptr_t opaque_identifier) {
-  DCHECK(ui_thread_exec_state_);
+  CHECK(ui_thread_exec_state_, base::NotFatalUntil::M160);
   DidRunTaskOrEvent(ui_thread_exec_state_.get(), opaque_identifier);
 }
 
@@ -178,7 +178,7 @@ void JankMonitorImpl::StartTimerIfNecessary() {
   if (!timer_)
     return;
 
-  DCHECK_EQ(timer_->IsRunning(), timer_running_);
+  CHECK_EQ(timer_->IsRunning(), timer_running_, base::NotFatalUntil::M160);
 
   // Already running. Maybe both UI and IO threads saw the timer stopped, and
   // one attempt has already succeeded.
@@ -197,7 +197,7 @@ void JankMonitorImpl::StartTimerIfNecessary() {
 
 void JankMonitorImpl::StopTimerIfIdle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(monitor_sequence_checker_);
-  DCHECK(timer_->IsRunning());
+  CHECK(timer_->IsRunning(), base::NotFatalUntil::M160);
 
   auto now_us = (base::TimeTicks::Now() - base::TimeTicks()).InMicroseconds();
   if (now_us - last_activity_time_us_ < kInactivityThresholdUs)
@@ -213,7 +213,7 @@ std::unique_ptr<MetricSource> JankMonitorImpl::CreateMetricSource() {
 
 void JankMonitorImpl::DestroyOnMonitorThread() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(monitor_sequence_checker_);
-  DCHECK(timer_);
+  CHECK(timer_, base::NotFatalUntil::M160);
 
   timer_->Stop();
   timer_ = nullptr;
@@ -237,7 +237,7 @@ void JankMonitorImpl::OnCheckJankiness() {
     return;
   }
 
-  DCHECK(!janky_task_id_);
+  CHECK(!janky_task_id_, base::NotFatalUntil::M160);
   // Jankiness is checked in the order of UI, IO thread.
   task_id = io_thread_exec_state_->CheckJankiness();
   if (task_id.has_value()) {
@@ -245,7 +245,7 @@ void JankMonitorImpl::OnCheckJankiness() {
     return;
   }
 
-  DCHECK(!janky_task_id_);
+  CHECK(!janky_task_id_, base::NotFatalUntil::M160);
   StopTimerIfIdle();
 }
 
@@ -261,7 +261,7 @@ void JankMonitorImpl::OnJankStarted(uintptr_t opaque_identifier) {
 
 void JankMonitorImpl::OnJankStopped(uintptr_t opaque_identifier) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(monitor_sequence_checker_);
-  DCHECK_NE(opaque_identifier, 0u);
+  CHECK_NE(opaque_identifier, 0u, base::NotFatalUntil::M160);
   if (janky_task_id_ != opaque_identifier)
     return;
 

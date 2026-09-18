@@ -36,8 +36,9 @@ UrlInfo::UrlInfo(const UrlInfoInit& init)
       is_ad_tagged_for_site_keying(init.is_ad_tagged_for_site_keying_),
       cross_origin_isolation_key(init.cross_origin_isolation_key_),
       process_selection_user_data(init.process_selection_user_data_) {
-  DCHECK(init.is_sandboxed_ ||
-         init.unique_sandbox_id_ == kInvalidUniqueSandboxId);
+  CHECK(
+      init.is_sandboxed_ || init.unique_sandbox_id_ == kInvalidUniqueSandboxId,
+      base::NotFatalUntil::M160);
 }
 
 UrlInfo::~UrlInfo() = default;

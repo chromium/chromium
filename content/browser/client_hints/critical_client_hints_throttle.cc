@@ -63,7 +63,7 @@ void CriticalClientHintsThrottle::BeforeWillProcessResponse(
     const GURL& response_url,
     const network::mojom::URLResponseHead& response_head,
     RestartWithURLReset* restart_with_url_reset) {
-  DCHECK_EQ(response_url, response_url_);
+  CHECK_EQ(response_url, response_url_, base::NotFatalUntil::M160);
   MaybeRestartWithHints(response_head, restart_with_url_reset);
 }
 

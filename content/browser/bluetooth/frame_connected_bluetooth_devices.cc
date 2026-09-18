@@ -44,7 +44,8 @@ bool FrameConnectedBluetoothDevices::IsConnectedToDeviceWithId(
   if (connection_iter == device_id_to_connection_map_.end()) {
     return false;
   }
-  DCHECK(connection_iter->second->gatt_connection->IsConnected());
+  CHECK(connection_iter->second->gatt_connection->IsConnected(),
+        base::NotFatalUntil::M160);
   return true;
 }
 

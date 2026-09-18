@@ -11,13 +11,15 @@
 namespace content::responsiveness {
 
 void BrowserUINativeEventObserver::RegisterObserver() {
-  DCHECK([NSApp conformsToProtocol:@protocol(NativeEventProcessor)]);
+  CHECK([NSApp conformsToProtocol:@protocol(NativeEventProcessor)],
+        base::NotFatalUntil::M160);
   id<NativeEventProcessor> processor =
       static_cast<id<NativeEventProcessor>>(NSApp);
   [processor addNativeEventProcessorObserver:this];
 }
 void BrowserUINativeEventObserver::UnregisterObserver() {
-  DCHECK([NSApp conformsToProtocol:@protocol(NativeEventProcessor)]);
+  CHECK([NSApp conformsToProtocol:@protocol(NativeEventProcessor)],
+        base::NotFatalUntil::M160);
   id<NativeEventProcessor> processor =
       static_cast<id<NativeEventProcessor>>(NSApp);
   [processor removeNativeEventProcessorObserver:this];
