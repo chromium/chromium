@@ -4,17 +4,14 @@
 
 #include "remoting/host/input_monitor/local_hotkey_input_monitor_x11.h"
 
-#include <sys/select.h>
-#include <unistd.h>
-
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "remoting/host/input_monitor/local_input_monitor_x11_common.h"
+#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
 #include "ui/gfx/x/xinput.h"
 
@@ -73,6 +70,8 @@ void LocalHotkeyInputMonitorX11::Core::StartOnInputThread() {
     return;
   }
 
+  UpdateXTestDeviceIds();
+
   auto mask = CommonXIEventMaskForRootWindow();
   connection_->xinput().XISelectEvents(
       {connection_->default_root(),
@@ -83,6 +82,30 @@ void LocalHotkeyInputMonitorX11::Core::StartOnInputThread() {
 void LocalHotkeyInputMonitorX11::Core::StopOnInputThread() {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
   connection_->RemoveEventObserver(this);
+}
+
+void LocalHotkeyInputMonitorX11::Core::UpdateXTestDeviceIds() {
+  DCHECK(input_task_runner_->BelongsToCurrentThread());
+  xtest_device_ids_.clear();
+
+  auto reply =
+      connection_->xinput().XIQueryDevice({x11::Input::DeviceId::All}).Sync();
+  if (!reply) {
+    LOG(ERROR) << "XIQueryDevice failed.";
+    return;
+  }
+  for (const auto& info : reply->infos) {
+    if (info.name.ends_with("XTEST keyboard") ||
+        info.name.ends_with("XTEST pointer")) {
+      xtest_device_ids_.insert(info.deviceid);
+    }
+  }
+}
+
+bool LocalHotkeyInputMonitorX11::Core::IsXTestDevice(
+    x11::Input::DeviceId device_id) const {
+  DCHECK(input_task_runner_->BelongsToCurrentThread());
+  return xtest_device_ids_.contains(device_id);
 }
 
 void LocalHotkeyInputMonitorX11::Core::OnEvent(const x11::Event& event) {
@@ -104,15 +127,30 @@ void LocalHotkeyInputMonitorX11::Core::OnEvent(const x11::Event& event) {
     return;
   }
 
+  // Ignore events injected via XTEST so remote input cannot manipulate local
+  // modifier state or trigger local hotkeys.
+  if (IsXTestDevice(raw->sourceid)) {
+    return;
+  }
+
   const bool down = raw->opcode == x11::Input::RawDeviceEvent::RawKeyPress;
   const auto key_sym =
       connection_->KeycodeToKeysym(static_cast<x11::KeyCode>(raw->detail), 0);
 
   if (key_sym == XK_Control_L || key_sym == XK_Control_R) {
-    ctrl_pressed_ = down;
+    if (down) {
+      pressed_ctrl_keys_.insert(key_sym);
+    } else {
+      pressed_ctrl_keys_.erase(key_sym);
+    }
   } else if (key_sym == XK_Alt_L || key_sym == XK_Alt_R) {
-    alt_pressed_ = down;
-  } else if (key_sym == XK_Escape && down && alt_pressed_ && ctrl_pressed_) {
+    if (down) {
+      pressed_alt_keys_.insert(key_sym);
+    } else {
+      pressed_alt_keys_.erase(key_sym);
+    }
+  } else if (key_sym == XK_Escape && down && !pressed_alt_keys_.empty() &&
+             !pressed_ctrl_keys_.empty()) {
     caller_task_runner_->PostTask(FROM_HERE, std::move(disconnect_callback_));
   }
 }

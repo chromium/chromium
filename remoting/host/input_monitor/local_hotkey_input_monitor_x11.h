@@ -5,6 +5,9 @@
 #ifndef REMOTING_HOST_INPUT_MONITOR_LOCAL_HOTKEY_INPUT_MONITOR_X11_H_
 #define REMOTING_HOST_INPUT_MONITOR_LOCAL_HOTKEY_INPUT_MONITOR_X11_H_
 
+#include <cstdint>
+
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
@@ -12,7 +15,7 @@
 #include "remoting/host/input_monitor/local_hotkey_input_monitor.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/future.h"
+#include "ui/gfx/x/xinput.h"
 
 namespace remoting {
 
@@ -45,6 +48,8 @@ class LocalHotkeyInputMonitorX11 : public LocalHotkeyInputMonitor {
     ~Core() override;
     void StartOnInputThread();
     void StopOnInputThread();
+    void UpdateXTestDeviceIds();
+    bool IsXTestDevice(x11::Input::DeviceId device_id) const;
     // x11::EventObserver:
     void OnEvent(const x11::Event& event) override;
     // Task runner on which public methods of this class must be called.
@@ -53,10 +58,11 @@ class LocalHotkeyInputMonitorX11 : public LocalHotkeyInputMonitor {
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
     // Used to send session disconnect requests.
     base::OnceClosure disconnect_callback_;
-    // True when Alt is pressed.
-    bool alt_pressed_ = false;
-    // True when Ctrl is pressed.
-    bool ctrl_pressed_ = false;
+    // Local Control and Alt keysyms currently held down.
+    base::flat_set<uint32_t> pressed_ctrl_keys_;
+    base::flat_set<uint32_t> pressed_alt_keys_;
+    // Cached XTEST slave device IDs to ignore synthetic events.
+    base::flat_set<x11::Input::DeviceId> xtest_device_ids_;
     raw_ptr<x11::Connection> connection_ = nullptr;
   };
   scoped_refptr<Core> core_;
