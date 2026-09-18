@@ -10,6 +10,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.IntDef;
+
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -21,6 +24,7 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
@@ -45,6 +49,7 @@ import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SigninPromoAction;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.ui.base.WindowAndroid;
@@ -52,10 +57,71 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Mediator managing business logic and menu items for the Account Menu popup. */
 @NullMarked
 public class AccountMenuMediator
         implements SigninManager.SignInStateObserver, ProfileDataCache.Observer {
+    /**
+     * Events recorded for the account menu: the menu being shown, along with the sign-in state it
+     * was shown in, and the item the user selected in it. These values are persisted to logs.
+     * Entries should not be renumbered and numeric values should never be reused.
+     */
+    // LINT.IfChange(AccountMenuEvent)
+    @IntDef({
+        Event.SHOWN_SIGNED_OUT,
+        Event.SHOWN_SIGNED_OUT_SIGNIN_DISABLED,
+        Event.SHOWN_SIGNED_IN,
+        Event.SHOWN_SIGNED_IN_WITH_ERROR,
+        Event.SIGNIN_PROMO_CLICKED,
+        Event.PASSWORDS_AND_AUTOFILL_CLICKED,
+        Event.NEW_INCOGNITO_TAB_CLICKED,
+        Event.NEW_INCOGNITO_WINDOW_CLICKED,
+        Event.MANAGE_GOOGLE_ACCOUNT_CLICKED,
+        Event.ACCOUNT_SETTINGS_CLICKED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface Event {
+        /** The menu was shown, the user is signed out and the sign-in promo card is shown. */
+        int SHOWN_SIGNED_OUT = 0;
+
+        /**
+         * The menu was shown, the user is signed out and sign-in is disallowed, so no promo card is
+         * shown.
+         */
+        int SHOWN_SIGNED_OUT_SIGNIN_DISABLED = 1;
+
+        /** The menu was shown, the user is signed in and the identity card is shown. */
+        int SHOWN_SIGNED_IN = 2;
+
+        /** The menu was shown, the user is signed in but has an error requiring their attention. */
+        int SHOWN_SIGNED_IN_WITH_ERROR = 3;
+
+        /** The user selected the sign-in button on the promo card. */
+        int SIGNIN_PROMO_CLICKED = 4;
+
+        /** The user selected the "Passwords and autofill" item. */
+        int PASSWORDS_AND_AUTOFILL_CLICKED = 5;
+
+        /** The user selected the "New Incognito tab" item. */
+        int NEW_INCOGNITO_TAB_CLICKED = 6;
+
+        /** The user selected the "New Incognito window" item. */
+        int NEW_INCOGNITO_WINDOW_CLICKED = 7;
+
+        /** The user selected the "Manage your Google Account" item. */
+        int MANAGE_GOOGLE_ACCOUNT_CLICKED = 8;
+
+        /** The user selected the account settings item, shown to signed-in users. */
+        int ACCOUNT_SETTINGS_CLICKED = 9;
+
+        int COUNT = 10;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountMenuEvent)
+
     private final Context mContext;
     private final Profile mProfile;
     private final WindowAndroid mWindowAndroid;
@@ -89,30 +155,35 @@ public class AccountMenuMediator
             }
         }
 
-        updateMenuItems();
+        updateMenuItems(/* recordShownMetrics= */ false);
     }
 
     // SigninManager.SignInStateObserver implementation.
     @Override
     public void onSignInAllowedChanged() {
-        updateMenuItems();
+        updateMenuItems(/* recordShownMetrics= */ false);
     }
 
     @Override
     public void onSignedIn() {
-        updateMenuItems();
+        updateMenuItems(/* recordShownMetrics= */ false);
     }
 
     @Override
     public void onSignedOut() {
-        updateMenuItems();
+        updateMenuItems(/* recordShownMetrics= */ false);
     }
 
-    /** Populates the menu action items. */
-    public void updateMenuItems() {
+    /**
+     * Populates the menu action items.
+     *
+     * @param recordShownMetrics Whether to record that the menu became visible to the user. Only
+     *     set by the coordinator when it is about to show the popup.
+     */
+    public void updateMenuItems(boolean recordShownMetrics) {
         mModelList.clear();
 
-        maybeAddHeader();
+        maybeAddHeader(recordShownMetrics);
 
         mModelList.add(
                 new ListItem(
@@ -121,6 +192,7 @@ public class AccountMenuMediator
                                 R.string.menu_passwords_and_autofill,
                                 R.drawable.ic_password_manager_24dp,
                                 v -> {
+                                    recordEvent(Event.PASSWORDS_AND_AUTOFILL_CLICKED);
                                     mDismissCallback.run();
                                     openAutofillSettings();
                                 })));
@@ -140,6 +212,7 @@ public class AccountMenuMediator
                                     R.string.profile_menu_account_settings_button,
                                     R.drawable.settings_cog,
                                     v -> {
+                                        recordEvent(Event.ACCOUNT_SETTINGS_CLICKED);
                                         mDismissCallback.run();
                                         openAccountSettings();
                                     },
@@ -148,8 +221,9 @@ public class AccountMenuMediator
 
         if (IncognitoUtils.isIncognitoModeEnabled(mProfile)) {
             mModelList.add(new ListItem(ItemType.DIVIDER, new PropertyModel()));
+            boolean openAsWindow = IncognitoUtils.shouldOpenIncognitoAsWindow();
             int titleRes =
-                    IncognitoUtils.shouldOpenIncognitoAsWindow()
+                    openAsWindow
                             ? R.string.menu_new_incognito_window
                             : R.string.menu_new_incognito_tab;
             mModelList.add(
@@ -159,6 +233,10 @@ public class AccountMenuMediator
                                     titleRes,
                                     R.drawable.ic_incognito_24dp,
                                     v -> {
+                                        recordEvent(
+                                                openAsWindow
+                                                        ? Event.NEW_INCOGNITO_WINDOW_CLICKED
+                                                        : Event.NEW_INCOGNITO_TAB_CLICKED);
                                         mDismissCallback.run();
                                         openIncognito();
                                     })));
@@ -195,18 +273,36 @@ public class AccountMenuMediator
         }
     }
 
-    private void maybeAddHeader() {
+    private void maybeAddHeader(boolean recordShownMetrics) {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
-        if (identityManager != null) {
-            AccountInfo accountInfo = identityManager.getPrimaryAccountInfo();
-            if (accountInfo != null) {
-                addIdentityCard(identityManager, accountInfo);
-                return;
-            }
-        }
-        if (mSigninManager != null && mSigninManager.isSigninAllowed()) {
+        AccountInfo accountInfo =
+                identityManager == null ? null : identityManager.getPrimaryAccountInfo();
+
+        final @Event int shownEvent;
+        if (identityManager != null && accountInfo != null) {
+            addIdentityCard(identityManager, accountInfo);
+            SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+            boolean hasIdentityError =
+                    syncService != null
+                            && syncService.getUserActionableError() != UserActionableError.NONE;
+            shownEvent =
+                    hasIdentityError ? Event.SHOWN_SIGNED_IN_WITH_ERROR : Event.SHOWN_SIGNED_IN;
+        } else if (mSigninManager != null && mSigninManager.isSigninAllowed()) {
             addPromoCard();
+            shownEvent = Event.SHOWN_SIGNED_OUT;
+            if (recordShownMetrics) {
+                // The promo card is part of the menu, so sign-in was offered to the user.
+                SigninMetricsUtils.logSigninOffered(
+                        SigninPromoAction.NO_SIGNIN_PROMO,
+                        SigninAccessPoint.ACCOUNT_MENU_SIGNED_OUT_STATE);
+            }
+        } else {
+            shownEvent = Event.SHOWN_SIGNED_OUT_SIGNIN_DISABLED;
+        }
+
+        if (recordShownMetrics) {
+            recordEvent(shownEvent);
         }
     }
 
@@ -229,6 +325,7 @@ public class AccountMenuMediator
                         ItemType.PROMO_CARD,
                         PromoCardProperties.createModel(
                                 v -> {
+                                    recordEvent(Event.SIGNIN_PROMO_CLICKED);
                                     mDismissCallback.run();
                                     startSigninFlow();
                                 })));
@@ -322,9 +419,15 @@ public class AccountMenuMediator
                                     R.string.manage_your_google_account,
                                     R.drawable.ic_google_services_24dp,
                                     v -> {
+                                        recordEvent(Event.MANAGE_GOOGLE_ACCOUNT_CLICKED);
                                         mDismissCallback.run();
                                         mSigninLauncher.openManageGoogleAccount(mContext);
                                     })));
         }
+    }
+
+    /** Records an account menu event: the menu being shown, or an item being selected in it. */
+    private static void recordEvent(@Event int event) {
+        RecordHistogram.recordEnumeratedHistogram("Signin.AccountMenu.Event", event, Event.COUNT);
     }
 }

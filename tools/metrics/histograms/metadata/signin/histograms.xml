@@ -621,6 +621,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountMenu.Event" enum="AccountMenuEvent"
+    expires_after="2027-09-30">
+  <owner>mlbipin@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records interactions with the account menu, which is opened from the toolbar
+    avatar button. Recorded when account menu is shown and is interacted with.
+    Android desktop only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountPref.RemovedCount{SigninState}" units="accounts"
     expires_after="2027-02-07">
   <owner>droger@chromium.org</owner>
