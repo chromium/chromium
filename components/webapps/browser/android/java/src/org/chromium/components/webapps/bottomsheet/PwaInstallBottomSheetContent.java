@@ -12,6 +12,7 @@ import androidx.annotation.StringRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.webapps.R;
 
 /**
@@ -20,6 +21,11 @@ import org.chromium.components.webapps.R;
  */
 @NullMarked
 public class PwaInstallBottomSheetContent implements BottomSheetContent {
+    private static final BottomSheetType ACTIVE_TYPE =
+            new BottomSheetType.Builder().setUserInitiated(true).setModal(true).build();
+    private static final BottomSheetType PASSIVE_TYPE =
+            new BottomSheetType.Builder().setUserInitiated(false).setModal(true).build();
+
     /** The view for our bottom sheet. */
     private final PwaInstallBottomSheetView mView;
 
@@ -63,6 +69,11 @@ public class PwaInstallBottomSheetContent implements BottomSheetContent {
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return mPriority == ContentPriority.HIGH ? ACTIVE_TYPE : PASSIVE_TYPE;
+    }
 
     @Override
     public int getPriority() {
