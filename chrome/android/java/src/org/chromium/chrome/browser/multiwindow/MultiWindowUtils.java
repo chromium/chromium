@@ -1326,6 +1326,7 @@ public class MultiWindowUtils implements ActivityStateListener {
             int persistedTaskId = ChromeMultiInstancePersistentStore.readTaskId(id);
 
             // Exclude ids not satisfying requirements.
+            @SupportedProfileType
             int profileType = ChromeMultiInstancePersistentStore.readProfileType(id);
             if (includeOtr && profileType != SupportedProfileType.OFF_THE_RECORD) continue;
             if (includeRegular && profileType != SupportedProfileType.REGULAR) continue;

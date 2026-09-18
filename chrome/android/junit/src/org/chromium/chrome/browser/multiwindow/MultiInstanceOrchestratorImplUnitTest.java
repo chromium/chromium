@@ -1387,7 +1387,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // otherIncognitoWindowExists.
         createActiveInstances(
                 /* count= */ 1, SupportedProfileType.REGULAR, /* startId= */ SOURCE_WINDOW_ID);
-        var otherWindowType =
+        @SupportedProfileType
+        int otherWindowType =
                 otherIncognitoWindowExists
                         ? SupportedProfileType.OFF_THE_RECORD
                         : SupportedProfileType.REGULAR;

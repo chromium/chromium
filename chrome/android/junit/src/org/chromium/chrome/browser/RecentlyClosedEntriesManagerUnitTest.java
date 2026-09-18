@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.ntp.SessionRecentlyClosedEntry;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -1084,7 +1085,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
                             NextTabPolicySupplier nextTabPolicySupplier,
-                            int supportedProfileType) {
+                            @SupportedProfileType int supportedProfileType) {
                         return mTabModelSelector;
                     }
 
@@ -1141,7 +1142,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
                             NextTabPolicySupplier nextTabPolicySupplier,
-                            int supportedProfileType) {
+                            @SupportedProfileType int supportedProfileType) {
                         return mTabModelSelector;
                     }
 

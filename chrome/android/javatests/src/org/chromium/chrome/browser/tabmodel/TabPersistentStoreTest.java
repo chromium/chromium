@@ -272,7 +272,7 @@ public class TabPersistentStoreTest {
                         OneshotSupplier<ProfileProvider> profileProviderSupplier,
                         TabCreatorManager tabCreatorManager,
                         NextTabPolicySupplier nextTabPolicySupplier,
-                        int supportedProfileType) {
+                        @SupportedProfileType int supportedProfileType) {
                     try {
                         return new TestTabModelSelector(
                                 context, profileProviderSupplier, tabCreatorManager);

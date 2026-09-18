@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.WindowMode
 import org.chromium.chrome.browser.multiwindow.MultiWindowMetricsUtils.WindowingMode;
 import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
 import org.chromium.chrome.browser.preferences.MultiInstanceSharedPreferences;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -51,7 +52,7 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
     private static final int NORMAL_TAB_COUNT = 20;
     private static final int INCOGNITO_TAB_COUNT = 5;
     private static final int TAB_COUNT_FOR_RELAUNCH = 15;
-    private static final int PROFILE_TYPE = 1;
+    private static final @SupportedProfileType int PROFILE_TYPE = SupportedProfileType.REGULAR;
     private static final int LATEST_PERSISTENT_STATE_ID = 100;
 
     private static final String URL = "https://example.com";

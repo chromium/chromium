@@ -529,6 +529,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                             ? SupportedProfileType.OFF_THE_RECORD
                             : SupportedProfileType.REGULAR;
 
+            @SupportedProfileType
             int persistedProfileType = ChromeMultiInstancePersistentStore.readProfileType(windowId);
             if (persistedProfileType != SupportedProfileType.UNSET) {
                 // The profile type based on the new window intent and the value from the
