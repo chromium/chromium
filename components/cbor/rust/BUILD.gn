@@ -22,8 +22,6 @@ if (!is_cronet_build) {
       cpp_namespace = "cbor::rust"
       h_out = "${target_gen_dir}/cbor_rust.h"
     }
-
-    deps = [ "//base" ]
   }
 
   rust_static_library("cbor_rust_unittests") {

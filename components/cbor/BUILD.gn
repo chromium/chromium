@@ -36,7 +36,7 @@ component("cbor") {
   ]
 
   if (!is_cronet_build) {
-    public_deps = [
+    deps += [
       "//build/rust/crubit",
       "//components/cbor/rust:cbor_rust_bindings",
     ]
