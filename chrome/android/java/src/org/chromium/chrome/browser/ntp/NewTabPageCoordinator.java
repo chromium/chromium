@@ -103,6 +103,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -219,7 +220,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private @TriState int mCanShowComposeplateButton;
     private boolean mIsComposeplatePolicyEnabled;
     private boolean mIsComposeplateViewInitialized;
-    private @Nullable Supplier<GURL> mComposeplateUrlSupplier;
     private @Nullable ComposeplateCoordinator mComposeplateCoordinator;
     // Previous visibility states for metrics.
     private @TriState int mPreviousVoiceSearchButtonVisible;
@@ -262,6 +262,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      * @param sideUiStateProviderSupplier Supplier for the {@link SideUiStateProvider}.
      * @param homeSurfaceTracker Tracker recording whether this NTP acts as the home surface.
      * @param backPressManager Manages back press dispatching.
+     * @param templateUrlService The {@link TemplateUrlService} of the current profile.
      */
     public NewTabPageCoordinator(
             NewTabPageManager manager,
@@ -280,7 +281,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             Supplier<Integer> tabStripHeightSupplier,
             OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
-            BackPressManager backPressManager) {
+            BackPressManager backPressManager,
+            TemplateUrlService templateUrlService) {
         mBackPressManager = backPressManager;
         mManager = manager;
         mActivity = activity;
@@ -298,7 +300,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mIsLff = isLff;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mSearchEngineService = SearchEngineService.getForProfile(mProfile);
-        mSearchProviderInfoDelegate = new SearchProviderInfoDelegate();
+        mSearchProviderInfoDelegate = new SearchProviderInfoDelegate(templateUrlService);
 
         Resources resources = mActivity.getResources();
         mNtpSearchBoxTopMarginWithoutLogo =
@@ -364,7 +366,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      * @param uiConfig UiConfig that will provide the preferred display style for NTP based on the
      *     available space.
      * @param lifecycleDispatcher Activity lifecycle dispatcher.
-     * @param composeplateUrlSupplier Supplier providing the composeplate URL.
      */
     @Initializer
     public void initialize(
@@ -374,13 +375,11 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             FeedSurfaceScrollDelegate scrollDelegate,
             TouchEnabledDelegate touchEnabledDelegate,
             UiConfig uiConfig,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            Supplier<GURL> composeplateUrlSupplier) {
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;
         mUiConfig = uiConfig;
         mUiConfig.setHorizontalInset(getSideUiWidthDp());
-        mComposeplateUrlSupplier = composeplateUrlSupplier;
 
         mContextMenuStartPosition =
                 ReturnToChromeUtil.calculateContextMenuStartPosition(mActivity.getResources());
@@ -596,7 +595,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             return;
         }
 
-        GURL composeplateUrl = assumeNonNull(mComposeplateUrlSupplier).get();
+        GURL composeplateUrl = mSearchProviderInfoDelegate.getComposeplateUrl();
         if (composeplateUrl == null) return;
 
         mManager.loadUrl(new LoadUrlParams(composeplateUrl), /* incognito= */ false);
@@ -1477,7 +1476,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mModel.set(NewTabPageLayoutProperties.DELEGATE, null);
 
         mSearchBoxScrollListener = null;
-        mComposeplateUrlSupplier = null;
         mScrollDelegate = null;
 
         if (mCallbackController != null) {

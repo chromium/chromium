@@ -4,23 +4,37 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link SearchProviderInfoDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SearchProviderInfoDelegateUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private TemplateUrlService mTemplateUrlService;
+
     private SearchProviderInfoDelegate mDelegate;
 
     @Before
     public void setUp() {
-        mDelegate = new SearchProviderInfoDelegate();
+        mDelegate = new SearchProviderInfoDelegate(mTemplateUrlService);
     }
 
     @Test
@@ -67,5 +81,15 @@ public class SearchProviderInfoDelegateUnitTest {
 
         mDelegate.setShowingNonStandardGoogleLogo(/* showingNonStandardGoogleLogo= */ false);
         assertFalse(mDelegate.getShowingNonStandardGoogleLogo());
+    }
+
+    @Test
+    public void testGetComposeplateUrl() {
+        GURL composeplateUrl = JUnitTestGURLs.URL_1;
+        when(mTemplateUrlService.getComposeplateUrl()).thenReturn(composeplateUrl);
+        assertEquals(composeplateUrl, mDelegate.getComposeplateUrl());
+
+        when(mTemplateUrlService.getComposeplateUrl()).thenReturn(null);
+        assertNull(mDelegate.getComposeplateUrl());
     }
 }

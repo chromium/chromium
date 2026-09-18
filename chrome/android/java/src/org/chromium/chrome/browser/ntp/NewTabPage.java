@@ -556,7 +556,8 @@ public class NewTabPage
                         mTabStripHeightSupplier,
                         sideUiStateProviderSupplier,
                         homeSurfaceTracker,
-                        backPressManager);
+                        backPressManager,
+                        mTemplateUrlService);
 
         initializeFeedSurfaceProvider(
                 activity,
@@ -616,8 +617,7 @@ public class NewTabPage
                 mFeedSurfaceProvider.getScrollDelegate(),
                 mFeedSurfaceProvider.getTouchEnabledDelegate(),
                 mFeedSurfaceProvider.getUiConfig(),
-                lifecycleDispatcher,
-                () -> assumeNonNull(mTemplateUrlService.getComposeplateUrl()));
+                lifecycleDispatcher);
 
         sTotalCount++;
         NewTabPageUma.recordSimultaneousNtpCount(sTotalCount);

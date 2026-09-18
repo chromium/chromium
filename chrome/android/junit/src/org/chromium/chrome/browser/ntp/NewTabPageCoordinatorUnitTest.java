@@ -110,7 +110,6 @@ import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
@@ -151,7 +150,6 @@ public class NewTabPageCoordinatorUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Supplier<Integer> mTabStripHeightSupplier;
-    @Mock private Supplier<GURL> mComposeplateUrlSupplier;
     @Mock private SearchEngineService mSearchEngineService;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private IdentityManager mIdentityManager;
@@ -455,7 +453,8 @@ public class NewTabPageCoordinatorUnitTest {
                         mTabStripHeightSupplier,
                         new OneshotSupplierImpl<>(),
                         mHomeSurfaceTracker,
-                        mBackPressManager);
+                        mBackPressManager,
+                        mTemplateUrlService);
 
         mCoordinator.initialize(
                 mTileGroupDelegate,
@@ -464,8 +463,7 @@ public class NewTabPageCoordinatorUnitTest {
                 mScrollDelegate,
                 mTouchEnabledDelegate,
                 mUiConfig,
-                mLifecycleDispatcher,
-                mComposeplateUrlSupplier);
+                mLifecycleDispatcher);
     }
 
     private void verifyIsHomeSurface(boolean isHomeSurface) {
