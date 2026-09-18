@@ -13,6 +13,12 @@ namespace autofill {
 // Test API for `OtpManagerImpl`.
 class OtpManagerImplTestApi {
  public:
+  static constexpr base::TimeDelta kSmsOtpSubscriptionDuration =
+      OtpManagerImpl::kSmsOtpSubscriptionDuration;
+
+  static constexpr base::TimeDelta kGmailOtpTickleSubscriptionDuration =
+      OtpManagerImpl::kGmailOtpTickleSubscriptionDuration;
+
   explicit OtpManagerImplTestApi(OtpManagerImpl& manager) : manager_(manager) {}
 
   void SetReceivedOtps(std::vector<one_time_tokens::OneTimeToken> otps) {

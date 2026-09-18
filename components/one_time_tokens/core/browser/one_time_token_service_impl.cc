@@ -87,10 +87,11 @@ ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(
       RetrieveGmailOtpIfNeeded(expiration);
       return subscription;
     }
-    default:
-      NOTREACHED() << "OneTimeTokenServiceImpl::Subscribe: Unsupported source "
-                   << static_cast<int>(source);
+    case OneTimeTokenSource::kUnknown:
+      break;
   }
+  NOTREACHED() << "OneTimeTokenServiceImpl::Subscribe: Unsupported source "
+               << static_cast<int>(source);
 }
 
 ExpiringSubscription OneTimeTokenServiceImpl::SubscribeToTickles(
@@ -126,9 +127,10 @@ bool OneTimeTokenServiceImpl::HasPendingRequests(
       return gmail_.backend && gmail_.backend->HasPendingRequests();
     case OneTimeTokenSource::kOnDeviceSms:
       return sms_.has_pending_request;
-    default:
-      return false;
+    case OneTimeTokenSource::kUnknown:
+      break;
   }
+  return false;
 }
 
 void OneTimeTokenServiceImpl::RequestOneTimeToken(

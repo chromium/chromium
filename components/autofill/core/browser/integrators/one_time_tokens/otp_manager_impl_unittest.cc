@@ -1087,18 +1087,20 @@ TEST_F(OtpManagerImplTest, TickleSubscriptionCreatedInConstructor) {
       sub_manager;
   SetUpTickleSubscription(mock_ott_service, sub_manager);
 
-  EXPECT_CALL(mock_ott_service,
-              SubscribeToTickles(
-                  one_time_tokens::OneTimeTokenSource::kGmail,
-                  base::Time::Now() +
-                      OtpManagerImpl::kGmailOtpTickleSubscriptionDuration,
-                  _));
+  EXPECT_CALL(
+      mock_ott_service,
+      SubscribeToTickles(
+          one_time_tokens::OneTimeTokenSource::kGmail,
+          base::Time::Now() +
+              OtpManagerImplTestApi::kGmailOtpTickleSubscriptionDuration,
+          _));
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
   EXPECT_TRUE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
   EXPECT_EQ(
       test_api(otp_manager).gmail_otp_tickle_subscription().GetExpirationTime(),
-      base::Time::Now() + OtpManagerImpl::kGmailOtpTickleSubscriptionDuration);
+      base::Time::Now() +
+          OtpManagerImplTestApi::kGmailOtpTickleSubscriptionDuration);
 }
 
 // Tests that an existing tickle subscription's expiration is renewed when an
@@ -1127,7 +1129,8 @@ TEST_F(OtpManagerImplTest, TickleSubscriptionRenewedOnOtpFormParsed) {
       initial_expiration);
   EXPECT_EQ(
       test_api(otp_manager).gmail_otp_tickle_subscription().GetExpirationTime(),
-      base::Time::Now() + OtpManagerImpl::kGmailOtpTickleSubscriptionDuration);
+      base::Time::Now() +
+          OtpManagerImplTestApi::kGmailOtpTickleSubscriptionDuration);
 }
 
 // Tests that a tickle subscription is recreated when an OTP form is parsed if
@@ -1145,7 +1148,8 @@ TEST_F(OtpManagerImplTest,
 
   // Fast-forward past expiration so the subscription expires.
   task_environment_.FastForwardBy(
-      OtpManagerImpl::kGmailOtpTickleSubscriptionDuration + base::Minutes(1));
+      OtpManagerImplTestApi::kGmailOtpTickleSubscriptionDuration +
+      base::Minutes(1));
   EXPECT_FALSE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
 
   // Parsing an OTP form should recreate the subscription with a new 5-minute
@@ -1154,7 +1158,8 @@ TEST_F(OtpManagerImplTest,
   EXPECT_TRUE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
   EXPECT_EQ(
       test_api(otp_manager).gmail_otp_tickle_subscription().GetExpirationTime(),
-      base::Time::Now() + OtpManagerImpl::kGmailOtpTickleSubscriptionDuration);
+      base::Time::Now() +
+          OtpManagerImplTestApi::kGmailOtpTickleSubscriptionDuration);
 }
 
 // Tests that receiving a push notification tickle triggers OnTickleReceived
@@ -1399,8 +1404,8 @@ TEST_F(OtpManagerImplTest,
   EXPECT_FALSE(second_future.IsReady());
 
   // Fast-forward past subscription expiration.
-  task_environment_.FastForwardBy(OtpManagerImpl::kSmsOtpSubscriptionDuration +
-                                  base::Seconds(1));
+  task_environment_.FastForwardBy(
+      OtpManagerImplTestApi::kSmsOtpSubscriptionDuration + base::Seconds(1));
   EXPECT_TRUE(second_future.IsReady());
   EXPECT_TRUE(second_future.Get().empty());
 }
