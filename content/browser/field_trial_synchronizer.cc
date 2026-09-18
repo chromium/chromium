@@ -40,7 +40,7 @@ void NotifyAllRenderersOfFieldTrial(const std::string& field_trial_name,
                                     bool is_overridden) {
   // To iterate over RenderProcessHosts, or to send messages to the hosts, we
   // need to be on the UI thread.
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Low anonymity or overridden field trials must not be written to persistent
   // data, otherwise they might end up being logged in metrics.
@@ -77,7 +77,7 @@ void NotifyAllRenderersOfFieldTrial(const std::string& field_trial_name,
 // static
 void FieldTrialSynchronizer::CreateInstance() {
   // Only 1 instance is allowed per process.
-  DCHECK(!g_instance);
+  CHECK(!g_instance, base::NotFatalUntil::M160);
   g_instance = new FieldTrialSynchronizer();
 }
 
@@ -87,7 +87,7 @@ FieldTrialSynchronizer::FieldTrialSynchronizer() {
   // anonymity property for more fine-grained access).
   bool success = base::FieldTrialListIncludingLowAnonymity::AddObserver(this);
   // Ensure the observer was actually registered.
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M160);
 
   variations::VariationsIdsProvider::GetInstance()->AddObserver(this);
   base::RuntimeFieldTrialOverrides::GetInstance()->AddObserver(this);
@@ -116,7 +116,7 @@ void FieldTrialSynchronizer::OnFieldTrialGroupFinalized(
 void FieldTrialSynchronizer::NotifyAllRenderersOfVariationsHeader() {
   // To iterate over RenderProcessHosts, or to send messages to the hosts, we
   // need to be on the UI thread.
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   absl::flat_hash_set<BrowserContext*> browser_contexts;
   for (RenderProcessHost::iterator it(RenderProcessHost::AllHostsIterator());
        !it.IsAtEnd(); it.Advance()) {
@@ -179,7 +179,7 @@ void FieldTrialSynchronizer::OnRuntimeFieldTrialOverride(
     const base::RuntimeFieldTrialOverrides::RuntimeOverrideInfo& override_info,
     std::string_view previous_override_trial_name) {
   // Runtime FieldTrial Overrides only happen on the main/UI thread.
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // When an override is applied, the overridden trial and/or the previous
   // override should be removed from the persistent data.

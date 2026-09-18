@@ -13,12 +13,12 @@
 namespace content {
 
 PaymentAppContextImpl::PaymentAppContextImpl() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 void PaymentAppContextImpl::Init(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   payment_app_database_ =
       std::make_unique<PaymentAppDatabase>(std::move(service_worker_context));
 }
@@ -26,7 +26,7 @@ void PaymentAppContextImpl::Init(
 void PaymentAppContextImpl::CreatePaymentManagerForOrigin(
     const url::Origin& origin,
     mojo::PendingReceiver<payments::mojom::PaymentManager> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   auto payment_manager =
       std::make_unique<PaymentManager>(this, origin, std::move(receiver));
   payment_managers_[payment_manager.get()] = std::move(payment_manager);
@@ -34,19 +34,19 @@ void PaymentAppContextImpl::CreatePaymentManagerForOrigin(
 
 void PaymentAppContextImpl::PaymentManagerHadConnectionError(
     PaymentManager* payment_manager) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(payment_managers_.contains(payment_manager));
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(payment_managers_.contains(payment_manager), base::NotFatalUntil::M160);
 
   payment_managers_.erase(payment_manager);
 }
 
 PaymentAppDatabase* PaymentAppContextImpl::payment_app_database() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   return payment_app_database_.get();
 }
 
 PaymentAppContextImpl::~PaymentAppContextImpl() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 }  // namespace content

@@ -71,11 +71,11 @@ void InstalledPaymentAppsFinderImpl::GetAllPaymentApps(
 void InstalledPaymentAppsFinderImpl::CheckPermissionForPaymentApps(
     GetAllPaymentAppsCallback callback,
     PaymentApps apps) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   PermissionController* permission_controller =
       browser_context_->GetPermissionController();
-  DCHECK(permission_controller);
+  CHECK(permission_controller, base::NotFatalUntil::M160);
 
   PaymentApps permitted_apps;
   for (auto& app : apps) {

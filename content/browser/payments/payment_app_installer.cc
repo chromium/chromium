@@ -48,7 +48,7 @@ class SelfDeleteInstaller
         method_(method),
         supported_delegations_(supported_delegations),
         callback_(std::move(callback)) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   }
 
   SelfDeleteInstaller(const SelfDeleteInstaller& other) = delete;
@@ -57,7 +57,7 @@ class SelfDeleteInstaller
   void Init(WebContents* web_contents,
             GlobalRenderFrameHostId requesting_frame_id,
             bool use_cache) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     AddRef();  // Balanced by Release() in FinishInstallation.
 
@@ -83,12 +83,12 @@ class SelfDeleteInstaller
   void OnFindReadyRegistrationForScope(
       blink::ServiceWorkerStatusCode status,
       scoped_refptr<ServiceWorkerRegistration> registration) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     if (AbortInstallIfWebContentsOrBrowserContextIsGone())
       return;
 
     if (status == blink::ServiceWorkerStatusCode::kOk && registration) {
-      DCHECK_EQ(scope_, registration->scope());
+      CHECK_EQ(scope_, registration->scope(), base::NotFatalUntil::M160);
       // The service worker is already registered and activated (i.e., ready).
       // Use the existing service worker.
       registration_id_ = registration->id();
@@ -120,7 +120,7 @@ class SelfDeleteInstaller
                             const GURL& scope,
                             const ServiceWorkerRegistrationInformation&
                                 service_worker_info) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     if (AbortInstallIfWebContentsOrBrowserContextIsGone())
       return;
 
@@ -129,7 +129,7 @@ class SelfDeleteInstaller
   }
 
   void OnVersionActivated(int64_t version_id, const GURL& scope) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     if (AbortInstallIfWebContentsOrBrowserContextIsGone())
       return;
 
@@ -140,7 +140,7 @@ class SelfDeleteInstaller
   void OnErrorReported(int64_t version_id,
                        const GURL& scope,
                        const ErrorInfo& info) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     if (AbortInstallIfWebContentsOrBrowserContextIsGone())
       return;
 
@@ -151,7 +151,7 @@ class SelfDeleteInstaller
   }
 
   void OnRegisterServiceWorkerResult(blink::ServiceWorkerStatusCode status) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     if (AbortInstallIfWebContentsOrBrowserContextIsGone())
       return;
 
@@ -169,7 +169,7 @@ class SelfDeleteInstaller
   // If web contents or browser context are gone, then aborts payment and
   // returns true. Should be called on UI thread.
   bool AbortInstallIfWebContentsOrBrowserContextIsGone() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     if (!web_contents_ || !web_contents_->GetBrowserContext()) {
       FinishInstallation(false);
@@ -180,9 +180,9 @@ class SelfDeleteInstaller
   }
 
   void SetPaymentAppIntoDatabase() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(web_contents_);
-    DCHECK(web_contents_->GetBrowserContext());
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+    CHECK(web_contents_, base::NotFatalUntil::M160);
+    CHECK(web_contents_->GetBrowserContext(), base::NotFatalUntil::M160);
 
     StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
         web_contents_->GetBrowserContext()->GetDefaultStoragePartition());
@@ -197,7 +197,7 @@ class SelfDeleteInstaller
   }
 
   void OnSetPaymentAppInfo(payments::mojom::PaymentHandlerStatus status) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     FinishInstallation(status == payments::mojom::PaymentHandlerStatus::SUCCESS
                            ? true
@@ -205,7 +205,7 @@ class SelfDeleteInstaller
   }
 
   void FinishInstallation(bool success) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     // Do nothing if this function has been called.
     if (callback_.is_null())
@@ -254,7 +254,7 @@ void PaymentAppInstaller::Install(
     const std::string& method,
     const SupportedDelegations& supported_delegations,
     InstallPaymentAppCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto installer = base::MakeRefCounted<SelfDeleteInstaller>(
       app_name, app_icon, sw_url, scope, method, supported_delegations,

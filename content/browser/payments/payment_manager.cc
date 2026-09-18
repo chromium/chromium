@@ -37,19 +37,19 @@ PaymentManager::PaymentManager(
     : payment_app_context_(payment_app_context),
       origin_(origin),
       receiver_(this, std::move(receiver)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(payment_app_context);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(payment_app_context, base::NotFatalUntil::M160);
 
   receiver_.set_disconnect_handler(base::BindOnce(
       &PaymentManager::OnConnectionError, weak_ptr_factory_.GetWeakPtr()));
 }
 
 PaymentManager::~PaymentManager() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 void PaymentManager::Init(const GURL& context_url, const std::string& scope) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!context_url.is_valid()) {
     receiver_.ResetWithReason(
@@ -102,7 +102,7 @@ void PaymentManager::SetUserHint(const std::string& user_hint) {
 void PaymentManager::EnableDelegations(
     const std::vector<payments::mojom::PaymentDelegation>& delegations,
     PaymentManager::EnableDelegationsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (scope_.is_empty()) {
     receiver_.ResetWithReason(static_cast<uint32_t>(ReasonCode::kInvalidState),
                               kInvalidPaymentManagerStateMessage);
@@ -114,7 +114,7 @@ void PaymentManager::EnableDelegations(
 }
 
 void PaymentManager::OnConnectionError() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   payment_app_context_->PaymentManagerHadConnectionError(this);
 }
 

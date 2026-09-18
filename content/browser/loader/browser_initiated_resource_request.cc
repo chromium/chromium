@@ -21,7 +21,7 @@ void UpdateAdditionalHeadersForBrowserInitiatedRequest(
     bool should_update_existing_headers,
     const blink::RendererPreferences& renderer_preferences,
     bool is_for_worker_script) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Set the DoNotTrack header if appropriate.
   // https://w3c.github.io/dnt/drafts/tracking-dnt.html#expression-format

@@ -33,7 +33,7 @@ class CrossOriginReadBlockingChecker::BlobIOState {
   ~BlobIOState() { DCHECK_CURRENTLY_ON(BrowserThread::IO); }
 
   void StartSniffing() {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
     blob_reader_ = blob_data_handle_->CreateReader();
     const storage::BlobReader::Status size_status = blob_reader_->CalculateSize(
         base::BindOnce(&BlobIOState::DidCalculateSize, base::Unretained(this)));
@@ -51,7 +51,7 @@ class CrossOriginReadBlockingChecker::BlobIOState {
 
  private:
   void DidCalculateSize(int result) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
     size_t buf_size = net::kMaxBytesToSniff;
     if (buf_size > blob_reader_->total_size()) {
       buf_size = blob_reader_->total_size();
@@ -103,7 +103,7 @@ CrossOriginReadBlockingChecker::CrossOriginReadBlockingChecker(
     network::orb::PerFactoryState* orb_state,
     base::OnceCallback<void(Result)> callback)
     : callback_(std::move(callback)) {
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M160);
 
   orb_analyzer_ = network::orb::ResponseAnalyzer::Create(orb_state);
   auto decision =
@@ -173,8 +173,8 @@ void CrossOriginReadBlockingChecker::OnReadComplete(
   // reached yet.
   if (orb_decision == network::orb::ResponseAnalyzer::Decision::kSniffMore) {
     orb_decision = orb_analyzer_->HandleEndOfSniffableResponseBody();
-    DCHECK_NE(network::orb::ResponseAnalyzer::Decision::kSniffMore,
-              orb_decision);
+    CHECK_NE(network::orb::ResponseAnalyzer::Decision::kSniffMore, orb_decision,
+             base::NotFatalUntil::M160);
   }
 
   switch (orb_decision) {

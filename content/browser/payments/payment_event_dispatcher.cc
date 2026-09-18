@@ -31,7 +31,7 @@ void DidFindRegistration(
     PaymentEventDispatcher::ServiceWorkerStartCallback callback,
     blink::ServiceWorkerStatusCode service_worker_status,
     scoped_refptr<ServiceWorkerRegistration> service_worker_registration) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (service_worker_status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(nullptr, service_worker_status);
@@ -40,7 +40,7 @@ void DidFindRegistration(
 
   ServiceWorkerVersion* active_version =
       service_worker_registration->active_version();
-  DCHECK(active_version);
+  CHECK(active_version, base::NotFatalUntil::M160);
   active_version->RunAfterStartWorker(
       ServiceWorkerMetrics::EventType::PAYMENT_REQUEST,
       base::BindOnce(std::move(callback),
@@ -118,21 +118,21 @@ void OnResponseForAbortPayment(base::WeakPtr<PaymentAppProviderImpl> provider,
 
 PaymentEventDispatcher::PaymentEventDispatcher() = default;
 PaymentEventDispatcher::~PaymentEventDispatcher() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 void PaymentEventDispatcher::DispatchAbortPaymentEvent(
     PaymentAppProvider::AbortCallback callback,
     scoped_refptr<ServiceWorkerVersion> active_version,
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (service_worker_status != blink::ServiceWorkerStatusCode::kOk) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
-  DCHECK(active_version);
+  CHECK(active_version, base::NotFatalUntil::M160);
 
   int event_finish_id = active_version->StartRequest(
       ServiceWorkerMetrics::EventType::CAN_MAKE_PAYMENT, base::DoNothing());
@@ -153,7 +153,7 @@ void PaymentEventDispatcher::AbortPayment(
     const std::string& payment_request_id,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     PaymentAppProvider::AbortCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   service_worker_context->FindReadyRegistrationForIdOnly(
       registration_id,
@@ -172,7 +172,7 @@ void PaymentEventDispatcher::DispatchCanMakePaymentEvent(
     PaymentAppProvider::CanMakePaymentCallback callback,
     scoped_refptr<ServiceWorkerVersion> active_version,
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (service_worker_status != blink::ServiceWorkerStatusCode::kOk) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -183,7 +183,7 @@ void PaymentEventDispatcher::DispatchCanMakePaymentEvent(
     return;
   }
 
-  DCHECK(active_version);
+  CHECK(active_version, base::NotFatalUntil::M160);
 
   int event_finish_id = active_version->StartRequest(
       ServiceWorkerMetrics::EventType::CAN_MAKE_PAYMENT, base::DoNothing());
@@ -206,7 +206,7 @@ void PaymentEventDispatcher::CanMakePayment(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     CanMakePaymentEventDataPtr event_data,
     PaymentAppProvider::CanMakePaymentCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   service_worker_context->FindReadyRegistrationForIdOnly(
       registration_id,
@@ -225,7 +225,7 @@ void PaymentEventDispatcher::DispatchPaymentRequestEvent(
     PaymentAppProvider::InvokePaymentAppCallback callback,
     scoped_refptr<ServiceWorkerVersion> active_version,
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (service_worker_status != blink::ServiceWorkerStatusCode::kOk) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -236,7 +236,7 @@ void PaymentEventDispatcher::DispatchPaymentRequestEvent(
     return;
   }
 
-  DCHECK(active_version);
+  CHECK(active_version, base::NotFatalUntil::M160);
 
   int event_finish_id = active_version->StartRequest(
       ServiceWorkerMetrics::EventType::PAYMENT_REQUEST, base::DoNothing());
@@ -256,7 +256,7 @@ void PaymentEventDispatcher::InvokePayment(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     PaymentRequestEventDataPtr event_data,
     PaymentAppProvider::InvokePaymentAppCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   service_worker_context->FindReadyRegistrationForIdOnly(
       registration_id,
@@ -275,7 +275,7 @@ void PaymentEventDispatcher::FindRegistration(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     int64_t registration_id,
     PaymentEventDispatcher::ServiceWorkerStartCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   service_worker_context->FindReadyRegistrationForIdOnly(
       registration_id,
@@ -284,7 +284,7 @@ void PaymentEventDispatcher::FindRegistration(
 
 void PaymentEventDispatcher::OnClosingOpenedWindow(
     PaymentEventResponseType reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   InvokeRespondWithCallback* callback = invoke_respond_with_callback_.get();
 

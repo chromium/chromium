@@ -60,7 +60,7 @@ PrefetchURLLoader::PrefetchURLLoader(
       is_signed_exchange_handling_enabled_(
           signed_exchange_utils::IsSignedExchangeHandlingEnabled(
               browser_context)) {
-  DCHECK(network_loader_factory_);
+  CHECK(network_loader_factory_, base::NotFatalUntil::M160);
   CHECK(!resource_request.trusted_params ||
         resource_request.trusted_params->isolation_info.request_type() ==
             net::IsolationInfo::RequestType::kOther ||
@@ -120,7 +120,7 @@ void PrefetchURLLoader::FollowRedirect(
     return;
   }
 
-  DCHECK(loader_);
+  CHECK(loader_, base::NotFatalUntil::M160);
   loader_->FollowRedirect(std::move(headers_update_params), std::nullopt);
 }
 
@@ -143,7 +143,7 @@ void PrefetchURLLoader::OnReceiveResponse(
   if (is_signed_exchange_handling_enabled_ &&
       signed_exchange_utils::ShouldHandleAsSignedHTTPExchange(
           resource_request_.url, *response)) {
-    DCHECK(!signed_exchange_prefetch_handler_);
+    CHECK(!signed_exchange_prefetch_handler_, base::NotFatalUntil::M160);
     const bool keep_entry_for_prefetch_cache =
         !!prefetched_signed_exchange_cache_adapter_;
 
@@ -169,7 +169,8 @@ void PrefetchURLLoader::OnReceiveResponse(
   // we redirect back here for the inner response.
   if (resource_request_.load_flags &
       net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME) {
-    DCHECK(!recursive_prefetch_token_generator_.is_null());
+    CHECK(!recursive_prefetch_token_generator_.is_null(),
+          base::NotFatalUntil::M160);
     base::UnguessableToken recursive_prefetch_token =
         std::move(recursive_prefetch_token_generator_).Run(resource_request_);
     response->recursive_prefetch_token = recursive_prefetch_token;
@@ -195,7 +196,7 @@ void PrefetchURLLoader::OnReceiveResponse(
   }
 
   // Just drain the original response's body here.
-  DCHECK(!pipe_drainer_);
+  CHECK(!pipe_drainer_, base::NotFatalUntil::M160);
   pipe_drainer_ =
       std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
 
@@ -258,7 +259,7 @@ bool PrefetchURLLoader::SendEmptyBody() {
     client_receiver_.reset();
     return false;
   }
-  DCHECK(response_);
+  CHECK(response_, base::NotFatalUntil::M160);
   forwarding_client_->OnReceiveResponse(std::move(response_),
                                         std::move(consumer), std::nullopt);
   return true;

@@ -127,7 +127,7 @@ bool MerkleIntegritySourceStream::FilterDataImpl(base::span<char>* output,
 
   // Clear any previous output before continuing.
   if (!CopyPartialOutput(output)) {
-    DCHECK(output->empty());
+    CHECK(output->empty(), base::NotFatalUntil::M160);
     return true;
   }
 
@@ -136,7 +136,7 @@ bool MerkleIntegritySourceStream::FilterDataImpl(base::span<char>* output,
     base::span<const char> record;
     if (!ConsumeBytes(input, record_size_ + SHA256_DIGEST_LENGTH, &record,
                       &storage)) {
-      DCHECK(input->empty());
+      CHECK(input->empty(), base::NotFatalUntil::M160);
       if (!upstream_eof_reached) {
         return true;  // Wait for more data later.
       }
@@ -155,8 +155,8 @@ bool MerkleIntegritySourceStream::FilterDataImpl(base::span<char>* output,
   }
 
   if (final_record_done_) {
-    DCHECK(upstream_eof_reached);
-    DCHECK(input->empty());
+    CHECK(upstream_eof_reached, base::NotFatalUntil::M160);
+    CHECK(input->empty(), base::NotFatalUntil::M160);
   }
   return true;
 }
@@ -182,7 +182,7 @@ bool MerkleIntegritySourceStream::ConsumeBytes(base::span<const char>* input,
                                                std::string* storage) {
   // This comes from the requirement that, when ConsumeBytes returns false, the
   // next call must use the same |len|.
-  DCHECK_LT(partial_input_.size(), len);
+  CHECK_LT(partial_input_.size(), len, base::NotFatalUntil::M160);
 
   // Return data directly from |input| if possible.
   if (partial_input_.empty() && input->size() >= len) {
@@ -207,7 +207,7 @@ bool MerkleIntegritySourceStream::ConsumeBytes(base::span<const char>* input,
 bool MerkleIntegritySourceStream::ProcessRecord(base::span<const char> record,
                                                 bool is_final,
                                                 base::span<char>* output) {
-  DCHECK(partial_output_.empty());
+  CHECK(partial_output_.empty(), base::NotFatalUntil::M160);
 
   // Check the hash.
   SHA256_CTX ctx;
@@ -241,7 +241,7 @@ bool MerkleIntegritySourceStream::ProcessRecord(base::span<const char> record,
   CopyClamped(&record, output);
 
   // If it didn't all fit, save the remaining in |partial_output_|.
-  DCHECK(record.empty() || output->empty());
+  CHECK(record.empty() || output->empty(), base::NotFatalUntil::M160);
   partial_output_.append(record.data(), record.size());
   return true;
 }

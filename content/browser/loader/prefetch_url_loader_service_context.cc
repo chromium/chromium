@@ -25,7 +25,7 @@ using BindContext = SubresourceProxyingURLLoaderService::BindContext;
 base::UnguessableToken GenerateRecursivePrefetchToken(
     base::WeakPtr<BindContext> current_context,
     const network::ResourceRequest& request) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   // If the relevant frame has gone away before this method is called
   // asynchronously, we cannot generate and store a {token, IsolationInfo} pair
   // in the frame's `prefetch_isolation_infos` LRU cache, so we'll create and
@@ -70,7 +70,7 @@ PrefetchURLLoaderServiceContext::PrefetchURLLoaderServiceContext(
                       scoped_refptr<BindContext>>& loader_factory_receivers)
     : browser_context_(browser_context),
       loader_factory_receivers_(loader_factory_receivers) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   accept_langs_ =
       GetContentClient()->browser()->GetAcceptLangs(browser_context);
 
@@ -145,7 +145,7 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
     // verify that the request meets the necessary security requirements, and
     // populate `resource_request`'s IsolationInfo appropriately.
     EnsureCrossOriginFactory();
-    DCHECK(current_context.cross_origin_factory);
+    CHECK(current_context.cross_origin_factory, base::NotFatalUntil::M160);
 
     // An invalid request could indicate a compromised renderer
     // inappropriately modifying the request, so we immediately complete it
@@ -328,7 +328,7 @@ bool PrefetchURLLoaderServiceContext::IsValidCrossOriginPrefetch(
   const BindContext& current_context = *current_bind_context();
   // Presence of |render_frame_host| is guaranteed by the caller - the caller
   // calls earlier EnsureCrossOriginFactory which has the same DCHECK.
-  DCHECK(current_context.render_frame_host);
+  CHECK(current_context.render_frame_host, base::NotFatalUntil::M160);
   if (!resource_request.request_initiator->opaque() &&
       resource_request.request_initiator.value() !=
           current_context.render_frame_host->GetLastCommittedOrigin()) {
@@ -358,7 +358,7 @@ void PrefetchURLLoaderServiceContext::EnsureCrossOriginFactory() {
     return;
   }
 
-  DCHECK(current_context.render_frame_host);
+  CHECK(current_context.render_frame_host, base::NotFatalUntil::M160);
   std::unique_ptr<network::PendingSharedURLLoaderFactory> factories =
       current_context.render_frame_host
           ->CreateCrossOriginPrefetchLoaderFactoryBundle();

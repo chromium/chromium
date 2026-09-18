@@ -24,8 +24,8 @@ bool PaymentAppProviderUtil::IsValidInstallablePaymentApp(
     const GURL& sw_js_url,
     const GURL& sw_scope,
     std::string* error_message) {
-  DCHECK(manifest_url.is_valid() && sw_js_url.is_valid() &&
-         sw_scope.is_valid());
+  CHECK(manifest_url.is_valid() && sw_js_url.is_valid() && sw_scope.is_valid(),
+        base::NotFatalUntil::M160);
 
   // Scope will be checked against service worker js url when registering, but
   // we check it here earlier to avoid presenting unusable payment handlers.

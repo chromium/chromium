@@ -379,7 +379,7 @@ void ManifestManagerHost::ParseManifestFromString(
     const GURL& manifest_url,
     const std::string& manifest_contents,
     ParseManifestCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   GetManifestManager().ParseManifestFromString(
       document_url, manifest_url, manifest_contents,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -395,7 +395,7 @@ void ManifestManagerHost::OnParseManifestFromStringResponse(
     const GURL& manifest_url,
     ParseManifestCallback callback,
     blink::mojom::ManifestPtr manifest) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   manifest = ValidateParsedManifestFromString(document_url, manifest_url,
                                               std::move(manifest));
   std::move(callback).Run(std::move(manifest));

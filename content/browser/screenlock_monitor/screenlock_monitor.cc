@@ -18,12 +18,12 @@ ScreenlockMonitor::ScreenlockMonitor(
     std::unique_ptr<ScreenlockMonitorSource> source)
     : observers_(new base::ObserverListThreadSafe<ScreenlockObserver>()),
       source_(std::move(source)) {
-  DCHECK(!g_screenlock_monitor);
+  CHECK(!g_screenlock_monitor, base::NotFatalUntil::M160);
   g_screenlock_monitor = this;
 }
 
 ScreenlockMonitor::~ScreenlockMonitor() {
-  DCHECK_EQ(this, g_screenlock_monitor);
+  CHECK_EQ(this, g_screenlock_monitor, base::NotFatalUntil::M160);
   g_screenlock_monitor = nullptr;
 }
 

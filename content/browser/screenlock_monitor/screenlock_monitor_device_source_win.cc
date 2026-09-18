@@ -63,7 +63,7 @@ ScreenlockMonitorDeviceSource::SessionMessageWindow::SessionMessageWindow() {
   // session, and not from other users connected to the same session host.
   bool registered = register_session_notification_function_(
       gfx::SingletonHwnd::GetInstance()->hwnd(), NOTIFY_FOR_THIS_SESSION);
-  DCHECK(registered);
+  CHECK(registered, base::NotFatalUntil::M160);
 }
 
 ScreenlockMonitorDeviceSource::SessionMessageWindow::~SessionMessageWindow() {}

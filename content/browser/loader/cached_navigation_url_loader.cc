@@ -31,7 +31,7 @@ CachedNavigationURLLoader::CachedNavigationURLLoader(
 void CachedNavigationURLLoader::OnResponseStarted() {
   GlobalRequestID global_id = GlobalRequestID::MakeBrowserInitiated();
 
-  DCHECK(cached_response_head_);
+  CHECK(cached_response_head_, base::NotFatalUntil::M160);
   delegate_->OnResponseStarted(
       /*url_loader_client_endpoints=*/nullptr, std::move(cached_response_head_),
       /*response_body=*/mojo::ScopedDataPipeConsumerHandle(), global_id,

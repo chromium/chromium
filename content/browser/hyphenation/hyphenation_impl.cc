@@ -33,9 +33,10 @@ struct Dictionaries {
 #if !BUILDFLAG(IS_ANDROID)
   void SetDirectory(const base::FilePath& new_dir) {
     DVLOG(1) << __func__ << " " << new_dir;
-    DCHECK(hyphenation::HyphenationImpl::GetTaskRunner()
-               ->RunsTasksInCurrentSequence());
-    DCHECK(!new_dir.empty());
+    CHECK(hyphenation::HyphenationImpl::GetTaskRunner()
+              ->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M160);
+    CHECK(!new_dir.empty(), base::NotFatalUntil::M160);
     if (new_dir == dir || !base::PathExists(new_dir))
       return;
     dir = new_dir;
@@ -56,8 +57,9 @@ bool IsValidLocale(const std::string& locale) {
 }
 
 base::File GetDictionaryFile(const std::string& locale) {
-  DCHECK(hyphenation::HyphenationImpl::GetTaskRunner()
-             ->RunsTasksInCurrentSequence());
+  CHECK(hyphenation::HyphenationImpl::GetTaskRunner()
+            ->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M160);
   Dictionaries* dictionaries = Dictionaries::Get();
 #if !BUILDFLAG(IS_ANDROID)
   const base::FilePath& dir = dictionaries->dir;
@@ -71,7 +73,7 @@ base::File GetDictionaryFile(const std::string& locale) {
   // If the |locale| is already in the cache, duplicate the file and return it.
   if (!inserted.second)
     return file.Duplicate();
-  DCHECK(!file.IsValid());
+  CHECK(!file.IsValid(), base::NotFatalUntil::M160);
 
 #if BUILDFLAG(IS_ANDROID)
   base::FilePath dir("/system/usr/hyphen-data");
@@ -111,8 +113,8 @@ scoped_refptr<base::SequencedTaskRunner> HyphenationImpl::GetTaskRunner() {
 void HyphenationImpl::RegisterGetDictionary() {
   content::ContentBrowserClient* content_browser_client =
       content::GetContentClient()->browser();
-  DCHECK(content_browser_client);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(content_browser_client, base::NotFatalUntil::M160);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   static bool registered = false;
   if (registered)
     return;
@@ -134,7 +136,8 @@ void HyphenationImpl::SetDirectory(const base::FilePath& dir) {
 
 void HyphenationImpl::OpenDictionary(const std::string& locale,
                                      OpenDictionaryCallback callback) {
-  DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(GetTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M160);
   if (IsValidLocale(locale))
     std::move(callback).Run(GetDictionaryFile(locale));
   else

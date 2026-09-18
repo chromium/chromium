@@ -334,7 +334,7 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
   }
 
   void OnLoaderDisconnected() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     auto disconnected_loader_receiver_id = loader_receivers_.current_receiver();
 
     // The context of `disconnected_loader_receiver_id`, an KeepAliveURLLoader
@@ -352,7 +352,7 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
   }
 
   void RemoveLoader(mojo::ReceiverId loader_receiver_id) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     TRACE_EVENT("loading", "KeepAliveURLLoaderFactoriesBase::RemoveLoader",
                 "loader_id", loader_receiver_id);
 
@@ -438,7 +438,7 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactories final
       scoped_refptr<network::SharedURLLoaderFactory>
           subresource_proxying_factory_bundle,
       scoped_refptr<PolicyContainerHost> policy_container_host) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     CHECK(policy_container_host);
     TRACE_EVENT("loading", "KeepAliveURLLoaderFactories::BindFactory");
 
@@ -463,7 +463,7 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactories final
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     TRACE_EVENT("loading", "KeepAliveURLLoaderFactories::CreateLoaderAndStart",
                 "request_id", request_id);
     if (!base::FeatureList::IsEnabled(
@@ -495,7 +495,7 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactories final
   }
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     loader_factory_receivers_.Add(this, std::move(receiver),
                                   loader_factory_receivers_.current_context());
@@ -537,7 +537,7 @@ class KeepAliveURLLoaderService::FetchLaterLoaderFactories final
           receiver,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       scoped_refptr<PolicyContainerHost> policy_container_host) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     CHECK(policy_container_host);
     TRACE_EVENT("loading", "FetchLaterLoaderFactories::BindFactory");
 
@@ -560,7 +560,7 @@ class KeepAliveURLLoaderService::FetchLaterLoaderFactories final
       const network::ResourceRequest& resource_request,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     TRACE_EVENT("loading", "FetchLaterLoaderFactories::CreateLoader",
                 "request_id", request_id);
     if (!base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI)) {
@@ -586,7 +586,7 @@ class KeepAliveURLLoaderService::FetchLaterLoaderFactories final
   void Clone(
       mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>
           receiver) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     loader_factory_receivers_.Add(this, std::move(receiver),
                                   loader_factory_receivers_.current_context());
@@ -606,7 +606,7 @@ KeepAliveURLLoaderService::KeepAliveURLLoaderService(
     StoragePartitionImpl* storage_partition)
     : storage_partition_(storage_partition),
       retry_counts_(kMaxRetryCountsCacheSize) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(storage_partition_);
 
   url_loader_factories_ = std::make_unique<KeepAliveURLLoaderFactories>(this);
@@ -622,7 +622,7 @@ KeepAliveURLLoaderService::BindFactory(
     scoped_refptr<network::SharedURLLoaderFactory>
         subresource_proxying_factory_bundle,
     scoped_refptr<PolicyContainerHost> policy_container_host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(subresource_proxying_factory_bundle);
   CHECK(policy_container_host);
 
@@ -638,7 +638,7 @@ KeepAliveURLLoaderService::BindFetchLaterLoaderFactory(
     scoped_refptr<network::SharedURLLoaderFactory>
         subresource_proxying_factory_bundle,
     scoped_refptr<PolicyContainerHost> policy_container_host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(subresource_proxying_factory_bundle);
   CHECK(policy_container_host);
 

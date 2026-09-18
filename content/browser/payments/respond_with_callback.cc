@@ -42,7 +42,7 @@ void RespondWithCallback::FinishServiceWorkerRequest() {
 }
 
 void RespondWithCallback::ClearRespondWithCallbackAndCloseWindow() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (!event_dispatcher_)
     return;
 
@@ -67,7 +67,7 @@ CanMakePaymentRespondWithCallback::~CanMakePaymentRespondWithCallback() =
 
 void CanMakePaymentRespondWithCallback::OnResponseForCanMakePayment(
     CanMakePaymentResponsePtr response) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   FinishServiceWorkerRequest();
   std::move(callback_).Run(std::move(response));
   delete this;
@@ -75,8 +75,9 @@ void CanMakePaymentRespondWithCallback::OnResponseForCanMakePayment(
 
 void CanMakePaymentRespondWithCallback::OnServiceWorkerError(
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_NE(service_worker_status, blink::ServiceWorkerStatusCode::kOk);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_NE(service_worker_status, blink::ServiceWorkerStatusCode::kOk,
+           base::NotFatalUntil::M160);
 
   CanMakePaymentEventResponseType response_type =
       CanMakePaymentEventResponseType::BROWSER_ERROR;
@@ -105,7 +106,7 @@ InvokeRespondWithCallback::InvokeRespondWithCallback(
 
 void InvokeRespondWithCallback::AbortPaymentSinceOpennedWindowClosing(
     PaymentEventResponseType reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   FinishServiceWorkerRequest();
   RespondToPaymentRequestWithErrorAndDeleteSelf(reason);
@@ -115,7 +116,7 @@ InvokeRespondWithCallback::~InvokeRespondWithCallback() = default;
 
 void InvokeRespondWithCallback::OnResponseForPaymentRequest(
     PaymentHandlerResponsePtr response) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   FinishServiceWorkerRequest();
   std::move(callback_).Run(std::move(response));
   ClearRespondWithCallbackAndCloseWindow();
@@ -123,8 +124,9 @@ void InvokeRespondWithCallback::OnResponseForPaymentRequest(
 
 void InvokeRespondWithCallback::OnServiceWorkerError(
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_NE(service_worker_status, blink::ServiceWorkerStatusCode::kOk);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_NE(service_worker_status, blink::ServiceWorkerStatusCode::kOk,
+           base::NotFatalUntil::M160);
 
   PaymentEventResponseType response_type =
       PaymentEventResponseType::PAYMENT_EVENT_BROWSER_ERROR;
@@ -141,7 +143,7 @@ void InvokeRespondWithCallback::OnServiceWorkerError(
 
 void InvokeRespondWithCallback::RespondToPaymentRequestWithErrorAndDeleteSelf(
     PaymentEventResponseType response_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   std::move(callback_).Run(
       content::PaymentAppProviderUtil::CreateBlankPaymentHandlerResponse(
           response_type));
@@ -161,7 +163,7 @@ AbortRespondWithCallback::~AbortRespondWithCallback() = default;
 
 // PaymentHandlerResponseCallback implementation.
 void AbortRespondWithCallback::OnResponseForAbortPayment(bool payment_aborted) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   FinishServiceWorkerRequest();
   std::move(callback_).Run(payment_aborted);
 
@@ -173,8 +175,9 @@ void AbortRespondWithCallback::OnResponseForAbortPayment(bool payment_aborted) {
 
 void AbortRespondWithCallback::OnServiceWorkerError(
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_NE(service_worker_status, blink::ServiceWorkerStatusCode::kOk);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_NE(service_worker_status, blink::ServiceWorkerStatusCode::kOk,
+           base::NotFatalUntil::M160);
   std::move(callback_).Run(/*payment_aborted=*/false);
   // Do not call ClearRespondWithCallbackAndCloseWindow() here, because payment
   // has not been aborted. The service worker either rejected, timed out, or

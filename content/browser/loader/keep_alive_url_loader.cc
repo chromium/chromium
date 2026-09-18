@@ -283,7 +283,7 @@ class KeepAliveURLLoader::ForwardingClient final
 
   // network::mojom::URLLoaderClient overrides:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     TRACE_EVENT("loading",
                 "KeepAliveURLLoader::ForwardingClient::OnReceiveEarlyHints",
                 "request_id", request_id());

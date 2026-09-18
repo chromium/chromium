@@ -44,7 +44,7 @@ void SubresourceProxyingURLLoaderService::BindContext::OnDidCommitNavigation(
 }
 
 SubresourceProxyingURLLoaderService::BindContext::~BindContext() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (total_tokens_generated > 0) {
     base::UmaHistogramCounts100(
         "Prefetch.RecursivePrefetch.TokensPerDocument",
@@ -58,7 +58,7 @@ SubresourceProxyingURLLoaderService::SubresourceProxyingURLLoaderService(
           std::make_unique<PrefetchURLLoaderServiceContext>(
               browser_context,
               loader_factory_receivers_)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext>
@@ -70,7 +70,7 @@ SubresourceProxyingURLLoaderService::GetFactory(
     base::WeakPtr<RenderFrameHostImpl> render_frame_host,
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto bind_context = base::MakeRefCounted<BindContext>(
       frame_tree_node_id, subresource_proxying_factory_bundle,
@@ -93,7 +93,7 @@ void SubresourceProxyingURLLoaderService::CreateLoaderAndStart(
     const network::ResourceRequest& resource_request_in,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!PrefetchURLLoaderServiceContext::IsPrefetchRequest(
           resource_request_in)) {
@@ -135,7 +135,7 @@ SubresourceProxyingURLLoaderService::~SubresourceProxyingURLLoaderService() =
 
 void SubresourceProxyingURLLoaderService::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   loader_factory_receivers_.Add(this, std::move(receiver),
                                 loader_factory_receivers_.current_context());
 }

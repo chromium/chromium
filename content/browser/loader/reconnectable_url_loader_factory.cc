@@ -117,7 +117,7 @@ class ReconnectableURLLoaderFactoryForIOThread::URLLoaderFactoryForIOThread
   explicit URLLoaderFactoryForIOThread(
       scoped_refptr<ReconnectableURLLoaderFactoryForIOThread> factory_getter)
       : factory_getter_(std::move(factory_getter)) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
     CHECK(factory_getter_);
   }
 
@@ -134,7 +134,8 @@ class ReconnectableURLLoaderFactoryForIOThread::URLLoaderFactoryForIOThread
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
-    DCHECK(BrowserThread::CurrentlyOn(BrowserThread::IO));
+    CHECK(BrowserThread::CurrentlyOn(BrowserThread::IO),
+          base::NotFatalUntil::M160);
     factory_getter_->GetURLLoaderFactory()->CreateLoaderAndStart(
         std::move(receiver), request_id, options, url_request,
         std::move(client), traffic_annotation);
@@ -161,7 +162,7 @@ class ReconnectableURLLoaderFactoryForIOThread::URLLoaderFactoryForIOThread
 scoped_refptr<network::SharedURLLoaderFactory>
 ReconnectableURLLoaderFactoryForIOThread::PendingURLLoaderFactoryForIOThread::
     CreateFactory() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   return base::MakeRefCounted<URLLoaderFactoryForIOThread>(
       std::move(factory_getter_));
 }
@@ -175,7 +176,7 @@ ReconnectableURLLoaderFactoryForIOThread::
           std::move(create_url_loader_factory_callback)) {}
 
 void ReconnectableURLLoaderFactoryForIOThread::Initialize() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Create a mojo::PendingRemote<URLLoaderFactory> synchronously and push it to
   // the IO thread. If the pipe errors out later due to a network service crash,
@@ -202,7 +203,7 @@ ReconnectableURLLoaderFactoryForIOThread::CloneForIOThread() {
 
 network::mojom::URLLoaderFactory*
 ReconnectableURLLoaderFactoryForIOThread::GetURLLoaderFactory() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (url_loader_factory_ && url_loader_factory_.is_connected() &&
       is_test_url_loader_factory_ ==
@@ -227,7 +228,7 @@ void ReconnectableURLLoaderFactoryForIOThread::Reset() {
 }
 
 void ReconnectableURLLoaderFactoryForIOThread::FlushForTesting() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   base::RunLoop run_loop;
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -239,7 +240,7 @@ void ReconnectableURLLoaderFactoryForIOThread::FlushForTesting() {
 
 void ReconnectableURLLoaderFactoryForIOThread::FlushOnIOThreadForTesting(
     base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   if (url_loader_factory_) {
     url_loader_factory_.FlushAsyncForTesting(std::move(callback));  // IN-TEST
   }
@@ -256,8 +257,8 @@ void ReconnectableURLLoaderFactoryForIOThread::InitializeOnIOThread(
 
 void ReconnectableURLLoaderFactoryForIOThread::ReinitializeOnIOThread(
     mojo::Remote<network::mojom::URLLoaderFactory> network_factory) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(network_factory.is_bound());
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(network_factory.is_bound(), base::NotFatalUntil::M160);
   // Set a disconnect handler so that connection errors on the pipes are
   // noticed, but the class doesn't actually do anything when the error is
   // observed - instead, a new pipe is created in GetURLLoaderFactory() as
@@ -273,7 +274,7 @@ void ReconnectableURLLoaderFactoryForIOThread::
     HandleNetworkFactoryRequestOnUIThread(
         mojo::PendingReceiver<network::mojom::URLLoaderFactory>
             network_factory_receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
   create_url_loader_factory_callback_.Run(&factory_remote);
@@ -298,7 +299,7 @@ ReconnectableURLLoaderFactoryForIOThreadWrapper::
       factory_for_io_thread_(
           base::MakeRefCounted<ReconnectableURLLoaderFactoryForIOThread>(
               create_url_loader_factory_callback)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 ReconnectableURLLoaderFactoryForIOThreadWrapper::

@@ -394,7 +394,7 @@ DirectSocketsServiceImpl::~DirectSocketsServiceImpl() = default;
 void DirectSocketsServiceImpl::CreateForFrame(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (!base::FeatureList::IsEnabled(blink::features::kDirectSockets)) {
     mojo::ReportBadMessage(
         "features::kDirectSockets is disabled by command line parameters or a "
@@ -423,7 +423,7 @@ void DirectSocketsServiceImpl::CreateForFrame(
 void DirectSocketsServiceImpl::CreateForSharedWorker(
     SharedWorkerHost& shared_worker,
     mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (!base::FeatureList::IsEnabled(blink::features::kDirectSockets)) {
     mojo::ReportBadMessage(
         "features::kDirectSockets is disabled by command line parameters or a "
@@ -454,7 +454,7 @@ void DirectSocketsServiceImpl::CreateForSharedWorker(
 void DirectSocketsServiceImpl::CreateForServiceWorker(
     ServiceWorkerVersion& service_worker,
     mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (!base::FeatureList::IsEnabled(blink::features::kDirectSockets)) {
     mojo::ReportBadMessage(
         "features::kDirectSockets is disabled by command line parameters or a "
@@ -700,7 +700,7 @@ void DirectSocketsServiceImpl::OnResolveCompleteForTCPSocket(
     return;
   }
 
-  DCHECK(!resolved_addresses.empty());
+  CHECK(!resolved_addresses.empty(), base::NotFatalUntil::M160);
 
   auto socket_options = network::mojom::TCPConnectedSocketOptions::New();
   if (options->send_buffer_size.has_value()) {
@@ -768,7 +768,7 @@ void DirectSocketsServiceImpl::OnResolveCompleteForUDPSocket(
     return;
   }
 
-  DCHECK(!resolved_addresses.empty());
+  CHECK(!resolved_addresses.empty(), base::NotFatalUntil::M160);
 
   const auto& peer_addr = resolved_addresses.front();
   if (base::FeatureList::IsEnabled(

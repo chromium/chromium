@@ -966,13 +966,13 @@ std::map<GlobalRequestID, JobStack>& GetInFlightJobStackMap() {
 
 // static
 void DevToolsURLLoaderInterceptor::RegisterJob(InterceptionJob* job) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   GetInFlightJobStackMap()[job->global_req_id()].push_back(job);
 }
 
 // static
 void DevToolsURLLoaderInterceptor::UnregisterJob(InterceptionJob* job) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   auto& map = GetInFlightJobStackMap();
   auto it = map.find(job->global_req_id());
   if (it == map.end()) {
@@ -989,7 +989,7 @@ void DevToolsURLLoaderInterceptor::HandleAuthRequest(
     GlobalRequestID req_id,
     const net::AuthChallengeInfo& auth_info,
     HandleAuthRequestCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   auto& map = GetInFlightJobStackMap();
   auto it = map.find(req_id);
   if (it != map.end()) {
@@ -2277,7 +2277,7 @@ void InterceptionJob::OnAuthRequest(
   CHECK(pending_auth_callback_.is_null(), base::NotFatalUntil::M159);
   CHECK_EQ(ResolutionState::kNone, waiting_for_resolution_,
            base::NotFatalUntil::M159);
-  DCHECK(CanHandleAuth());
+  CHECK(CanHandleAuth(), base::NotFatalUntil::M160);
 
   state_ = State::kAuthRequired;
   auto request_info = BuildRequestInfo(nullptr);

@@ -74,7 +74,7 @@ HapticsManagerImplWin::SetStaticsProviderForTesting(
 void HapticsManagerImplWin::PlayHaptics(blink::mojom::HapticEffect effect,
                                         double intensity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Clamp intensity defensively; the renderer is expected to have clamped it.
   intensity = std::clamp(intensity, 0.0, 1.0);
@@ -158,7 +158,7 @@ bool HapticsManagerImplWin::EnsureStatics() {
 
 void HapticsManagerImplWin::PrimeHapticsController() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!EnsureStatics()) {
     return;

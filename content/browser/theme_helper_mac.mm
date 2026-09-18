@@ -30,7 +30,7 @@ namespace {
 
 void FillScrollbarThemeParams(
     content::mojom::UpdateScrollbarThemeParams* params) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
   [defaults synchronize];
@@ -55,7 +55,7 @@ void FillScrollbarThemeParams(
 }
 
 void SendSystemColorsChangedMessage(content::mojom::Renderer* renderer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
   [defaults synchronize];

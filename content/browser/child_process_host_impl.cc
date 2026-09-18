@@ -166,7 +166,7 @@ base::Process& ChildProcessHostImpl::GetPeerProcess() {
       if (!peer_process_.IsValid()) {
         peer_process_ = process.Duplicate();
       }
-      DCHECK(peer_process_.IsValid());
+      CHECK(peer_process_.IsValid(), base::NotFatalUntil::M160);
     }
   }
 
@@ -183,8 +183,8 @@ ChildProcessHostImpl::GetMojoInvitation() {
 }
 
 void ChildProcessHostImpl::CreateChannel() {
-  DCHECK(!channel_);
-  DCHECK(child_process_);
+  CHECK(!channel_, base::NotFatalUntil::M160);
+  CHECK(child_process_, base::NotFatalUntil::M160);
 
   mojo::ScopedMessagePipeHandle bootstrap =
       mojo_invitation_->AttachMessagePipe(kLegacyIpcBootstrapAttachmentName);
@@ -193,7 +193,7 @@ void ChildProcessHostImpl::CreateChannel() {
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
-  DCHECK(channel_);
+  CHECK(channel_, base::NotFatalUntil::M160);
 
   // Since we're initializing a legacy IPC Channel, we will use its connection
   // status to monitor child process lifetime instead of using the status of
@@ -203,7 +203,7 @@ void ChildProcessHostImpl::CreateChannel() {
   }
 
   bool initialized = InitChannel();
-  DCHECK(initialized);
+  CHECK(initialized, base::NotFatalUntil::M160);
 }
 
 bool ChildProcessHostImpl::InitChannel() {
