@@ -760,4 +760,151 @@ TEST_F(DisplayAdElementMonitorTest, LargeStickyAdNotDetectedWithLargeJitter) {
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
 }
 
+TEST_F(DisplayAdElementMonitorTest, StickyVideoAdDetected) {
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <div style="height: 2000px"></div>
+    <img id="ad" style="position:fixed; left:0px; top:400px; width:800px; height:200px;">
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  auto* ad_element =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
+
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(MockClient(), OnLargeStickyAdDetected())
+      .Times(testing::AnyNumber());
+  ad_element->SetIsAdRelated(NoProvenance{});
+  ad_element->UpdateToVideoAd();
+  UpdateLifecycle();
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kVideoAdDetected));
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+
+  // Scroll down. The distance should be > ad height (200px).
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 250), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+
+  UpdateLifecycle();
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+}
+
+TEST_F(DisplayAdElementMonitorTest, StickyNonVideoAd) {
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <div style="height: 2000px"></div>
+    <img id="ad" style="position:fixed; left:0px; top:400px; width:800px; height:200px;">
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  auto* ad_element =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
+
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(0);
+  ad_element->SetIsAdRelated(NoProvenance{});
+  UpdateLifecycle();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+
+  // Scroll down. The distance should be > ad height (200px).
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 250), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+
+  EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(1);
+  UpdateLifecycle();
+
+  // Stickiness is detected for the ad, but it is not a video ad, so
+  // kStickyVideoAdDetected must not be counted.
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+}
+
+TEST_F(DisplayAdElementMonitorTest, NonStickyVideoAd) {
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <div style="height: 2000px"></div>
+    <img id="ad" style="position:absolute; left:0px; top:400px; width:800px; height:200px;">
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  auto* ad_element =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
+
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(0);
+  ad_element->SetIsAdRelated(NoProvenance{});
+  ad_element->UpdateToVideoAd();
+  UpdateLifecycle();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+
+  // Scroll down. The ad is absolutely positioned, so it moves with the page
+  // and is not sticky.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 250), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+
+  UpdateLifecycle();
+
+  // Stickiness is not detected for the video ad, so
+  // kStickyVideoAdDetected must not be counted.
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+}
+
+TEST_F(DisplayAdElementMonitorTest,
+       StickyAdUpdatedToVideoAdAfterStickinessDetected) {
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <div style="height: 2000px"></div>
+    <img id="ad" style="position:fixed; left:0px; top:400px; width:800px; height:200px;">
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  auto* ad_element =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
+
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(0);
+  ad_element->SetIsAdRelated(NoProvenance{});
+  UpdateLifecycle();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+
+  // Scroll down. The distance should be > ad height (200px).
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 250), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+
+  EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(1);
+  UpdateLifecycle();
+
+  // Stickiness is confirmed detected, but not yet tagged as video ad.
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kVideoAdDetected));
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+
+  // Tag the ad as video ad after stickiness detection.
+  ad_element->UpdateToVideoAd();
+  UpdateLifecycle();
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kVideoAdDetected));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+}
+
 }  // namespace blink

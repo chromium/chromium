@@ -118,6 +118,10 @@ void DisplayAdElementMonitor::UpdateToVideoAd() {
     is_video_ad_ = true;
   }
   MaybeRecordVideoAdUseCounter();
+
+  if (is_sticky_ad_ && !is_sticky_video_ad_) {
+    UpdateToStickyVideoAd();
+  }
 }
 
 void DisplayAdElementMonitor::MaybeRecordVideoAdUseCounter() {
@@ -384,23 +388,41 @@ void DisplayAdElementMonitor::UpdateToStickyAd(
     const LocalFrame& local_root_main_frame,
     const gfx::Rect& main_frame_viewport,
     const gfx::Rect& ad_visible_rect) {
-  if (is_sticky_ad_) {
-    return;
-  }
+  CHECK(!is_sticky_ad_);
+
   is_sticky_ad_ = true;
 
   // Determine if the newly sticky ad matches any sub-types (e.g., "large
-  // sticky ad") to record metrics and send notifications.
+  // sticky ad", "sticky video ad") to record metrics and send notifications.
   //
-  // Sub-type checks are done only once upon initial stickiness detection.
-  // We assume stickiness is the strictest condition, so other requirements
-  // should already be met. We accept potential false negatives (e.g., if the ad
+  // For large sticky ads, geometry checks are done only once upon initial
+  // stickiness detection. We accept potential false negatives (e.g., if the ad
   // resizes to become large later) in favor of simplicity and performance.
+  // For sticky video ads, detection is recorded either here (if already tagged
+  // as a video ad) or when the ad transitions to a video ad later via
+  // `UpdateToVideoAd`.
   if (MeetsLargeStickyAdGeometry(main_frame_viewport, ad_visible_rect)) {
     UseCounter::Count(local_root_main_frame.GetDocument(),
                       WebFeature::kLargeStickyAd);
 
     local_root_main_frame.Client()->OnLargeStickyAdDetected();
+  }
+
+  if (is_video_ad_ && !is_sticky_video_ad_) {
+    UpdateToStickyVideoAd();
+  }
+}
+
+void DisplayAdElementMonitor::UpdateToStickyVideoAd() {
+  CHECK(is_sticky_ad_);
+  CHECK(is_video_ad_);
+  CHECK(!is_sticky_video_ad_);
+
+  is_sticky_video_ad_ = true;
+
+  if (LocalFrame* frame = element_->GetDocument().GetFrame()) {
+    UseCounter::Count(frame->LocalFrameRoot().GetDocument(),
+                      WebFeature::kStickyVideoAdDetected);
   }
 }
 

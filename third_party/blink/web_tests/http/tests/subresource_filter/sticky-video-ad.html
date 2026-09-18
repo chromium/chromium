@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+div.bottom {
+  position: absolute;
+  top: 10000px;
+  left: 0px;
+  width: 1px;
+  height: 1px;
+}
+p {
+  position: fixed;
+}
+</style>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+</head>
+<body marginwidth="0" marginheight="0">
+<!-- To trigger the first contentful paint at the very start -->
+<p>some content</p>
+<!-- To be positioned further down in the main page to make the page scrollable -->
+<div class="bottom"></div>
+<script>
+const kStickyVideoAdDetected = 6023;
+
+function waitForFirstContentfulPaint() {
+  return new Promise(resolve => {
+    if (performance.getEntriesByName('first-contentful-paint').length > 0) {
+      resolve();
+    } else {
+      new PerformanceObserver((list, observer) => {
+        if (list.getEntriesByName('first-contentful-paint').length > 0) {
+          observer.disconnect();
+          resolve();
+        }
+      }).observe({type: 'paint', buffered: true});
+    }
+  });
+}
+
+function forceLayoutUpdate() {
+  return new Promise((resolve) => requestAnimationFrame(() => { setTimeout(() => { resolve(); }) }));
+}
+
+function waitForVideoMetadata(video) {
+  return new Promise((resolve, reject) => {
+    if (video.readyState >= 1) {
+      resolve();
+    } else {
+      video.addEventListener('loadedmetadata', resolve, {once: true});
+      video.addEventListener('error', () => reject(new Error('Failed to load video')), {once: true});
+    }
+  });
+}
+
+function appendStickyVideoAdFromAdScript() {
+  return new Promise((resolve, reject) => {
+    if (window.testRunner) {
+      testRunner.setDisallowedSubresourcePathSuffixes(
+          ["append-sticky-video-ad-script.js"], /*block_subresources=*/false);
+    }
+    const script = document.createElement('script');
+    script.src = "resources/append-sticky-video-ad-script.js";
+    script.onload = () => {
+      const video = document.getElementById('ad-video');
+      waitForVideoMetadata(video).then(resolve, reject);
+    };
+    script.onerror = () => reject(new Error('Failed to load ad script'));
+    document.body.appendChild(script);
+  });
+}
+
+promise_test(async function(t) {
+  await appendStickyVideoAdFromAdScript();
+
+  // Wait for FCP and force a layout update so that the ad element monitor is
+  // aware of the ad candidate.
+  await waitForFirstContentfulPaint();
+  await forceLayoutUpdate();
+  assert_false(internals.isUseCounted(document, kStickyVideoAdDetected));
+
+  // Scroll down to 1px.
+  window.scrollTo(0, 1);
+
+  // Force a layout update. At this point the scrolling position hasn't changed
+  // much since the monitor first saw the candidate, so we expect no use
+  // counter for kStickyVideoAdDetected.
+  await forceLayoutUpdate();
+  assert_false(internals.isUseCounted(document, kStickyVideoAdDetected));
+
+  // Scroll down to 5000px.
+  window.scrollTo(0, 5000);
+
+  // Force a layout update. At this point the scrolling position has changed by
+  // a distance greater than the candidate's height, so the use counter
+  // kStickyVideoAdDetected should be recorded.
+  await forceLayoutUpdate();
+  assert_true(internals.isUseCounted(document, kStickyVideoAdDetected));
+}, "Test UseCounter for sticky video ad when the video has a fixed position.");
+</script>
+</body>
+</html>

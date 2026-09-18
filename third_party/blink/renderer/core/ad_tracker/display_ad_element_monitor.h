@@ -90,6 +90,12 @@ class CORE_EXPORT DisplayAdElementMonitor final
                         const gfx::Rect& main_frame_viewport,
                         const gfx::Rect& ad_visible_rect);
 
+  // Updates the internal state to reflect that the ad is a sticky video ad, and
+  // records the kStickyVideoAdDetected use counter.
+  void UpdateToStickyVideoAd();
+
+  // Records the video ad UseCounter if the element is a video ad with
+  // non-trivial geometry.
   void MaybeRecordVideoAdUseCounter();
 
   Member<Element> element_;
@@ -101,6 +107,7 @@ class CORE_EXPORT DisplayAdElementMonitor final
   bool did_record_video_ad_use_counter_ = false;
 
   bool is_sticky_ad_ = false;
+  bool is_sticky_video_ad_ = false;
   std::optional<StickyAdMeasurement> sticky_ad_measurement_;
 
   // Caches the last known value of the DevTools "Highlight ads" setting. This
