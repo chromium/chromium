@@ -6,17 +6,15 @@ This directory contains the generic, subsystem-agnostic AI Agent Harness
 infrastructure for Chromium.
 
 It is currently **quarantined** within `components/webapps/_agents/_harness/` as
-a pilot implementation. By keeping reusable templates, personas, universal
-guidelines (`AGENTS.md`), and skills self-contained here, initial changes avoid
-modifying the shared repository root while remaining structurally identical for
-future promotion.
+a pilot implementation. By keeping reusable templates, personas, and skills
+self-contained here, initial changes avoid modifying the shared repository root
+while remaining structurally identical for future promotion.
 
 ## Directory Structure
 
 ```
 _harness/
 ├── README.md                 # This file
-├── AGENTS.md                 # Universal guidelines (C++, Mojo, Testing)
 ├── DESIGNS.md                # Standard design doc template
 ├── PLANS.md                  # Standard execution plan template
 ├── REVIEWS.md                # Review spec & critique dimensions
@@ -123,8 +121,7 @@ additional subsystems (e.g. `components/autofill/`, `components/omnibox/`), this
 directory will be promoted to the repository root:
 
 1. Move contents of `components/webapps/_agents/_harness/` to repo-root
-   `_agents/` (with `_harness/AGENTS.md` promoted to
-   `{workspace_root}/_agents/AGENTS.md`).
+   `_agents/`.
 2. Update project `AGENTS.md` and manifests (`agents.json`, `skills.json`) to
    inherit from `_agents/`.
 3. Introduce the `harness-bootstrap` scaffolder skill and central

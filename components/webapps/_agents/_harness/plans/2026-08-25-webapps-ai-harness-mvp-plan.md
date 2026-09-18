@@ -108,6 +108,13 @@ ______________________________________________________________________
   `rules/*.md` subdirectories and `RULES.md` routers in favor of consolidated
   `AGENTS.md` files per subsystem and `_harness/AGENTS.md` for universal
   Chromium guidelines (per `agent-rules.md`).
+- **2026-09-17:** Consolidated Spatial Map into Hub AGENTS.md: Folded
+  `DEPENDENCIES.md` and `CODE_STRUCTURE.md` directly into
+  `components/webapps/AGENTS.md` as an Ecosystem Map linking both machine rules
+  (`AGENTS.md`) and human docs (`README.md`). Deleted `CODE_STRUCTURE.md` to
+  eliminate context indirection and multi-hop retrieval drop-off. Deleted
+  `_harness/AGENTS.md` to prevent false always-on trigger activation and
+  priority inversion.
 
 ______________________________________________________________________
 

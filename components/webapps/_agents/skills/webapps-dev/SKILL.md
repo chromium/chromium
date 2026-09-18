@@ -13,9 +13,7 @@ WebApps ecosystem.
 
 ## Project Context, Rules, and Invariants
 
-- **Central Hub:** [AGENTS.md](/components/webapps/AGENTS.md)
-- **Directory Layout & Layering:**
-  [CODE_STRUCTURE.md](/components/webapps/_agents/CODE_STRUCTURE.md)
+- **Central Hub & Directory Map:** [AGENTS.md](/components/webapps/AGENTS.md)
 
 ## Testing Procedures & Gotchas
 
