@@ -21,6 +21,7 @@ class IOSSecurityInterstitialJavaScriptFeature : public web::JavaScriptFeature {
 
  private:
   friend class base::NoDestructor<IOSSecurityInterstitialJavaScriptFeature>;
+  friend class IOSSecurityInterstitialJavaScriptFeatureTest;
 
   // JavaScriptFeature overrides
   std::optional<std::string> GetScriptMessageHandlerName() const override;

@@ -35,11 +35,17 @@ source_set("security_interstitials") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ios_blocking_page_tab_helper_unittest.mm" ]
+  sources = [
+    "ios_blocking_page_tab_helper_unittest.mm",
+    "ios_security_interstitial_java_script_feature_unittest.mm",
+  ]
   deps = [
     ":security_interstitials",
+    "//base",
     "//ios/web",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//url",
   ]
 }

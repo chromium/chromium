@@ -52,6 +52,12 @@ void IOSSecurityInterstitialJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
+  // Interstitial commands are only sent in response to user taps on the
+  // interstitial page.
+  if (!script_message.is_user_interacting()) {
+    return;
+  }
+
   if (!script_message.legacy_body() ||
       !script_message.legacy_body()->is_dict()) {
     return;
