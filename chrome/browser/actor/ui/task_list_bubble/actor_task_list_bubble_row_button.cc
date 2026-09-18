@@ -7,10 +7,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
-#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -51,10 +49,7 @@ const gfx::VectorIcon& GetRowIcon(actor::ActorTask::State state) {
     return features::IsRoundedIconsEnabled() ? kTaskSparkIcon
                                              : kTaskSparkOldIcon;
   }
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiNewIcon)) {
-    return kCursorSparkIcon;
-  }
-  return glic::GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON);
+  return kCursorSparkIcon;
 }
 
 ui::ColorId GetRowColor(bool is_enabled,
