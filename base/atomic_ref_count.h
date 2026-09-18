@@ -36,10 +36,19 @@ class AtomicRefCount {
   // Insert barriers to ensure that state written before the reference count
   // became zero will be visible to a thread that has just made the count zero.
   bool Decrement() {
-    // TODO(jbroman): Technically this doesn't need to be an acquire operation
-    // unless the result is 1 (i.e., the ref count did indeed reach zero).
-    // However, there are toolchain issues that make that not work as well at
-    // present (notably TSAN doesn't like it).
+    // Technically this doesn't need to be an acquire operation unless the
+    // result is 1 (i.e., the ref count did indeed reach zero). However,
+    // separating the acquire step into a branch (via an acquire fence or
+    // load) is not advantageous:
+    // - On x86_64, `fetch_sub` with `acq_rel` compiles to the same machine
+    //   code as `release` with an acquire fence.
+    // - On ARM64 with LSE, `fetch_sub` with `acq_rel` compiles to a single
+    //   4-byte `ldaddal` instruction, whereas splitting the acquire requires
+    //   an extra instruction at every inlined call site (`dmb ishld` or
+    //   `ldar`) and is no faster for uncontended objects with low reference
+    //   counts.
+    // - TSAN does not support `std::atomic_thread_fence(memory_order_acquire)`,
+    //   so an explicit acquire load would be needed for TSAN builds.
     return ref_count_.fetch_sub(1, std::memory_order_acq_rel) != 1;
   }
 
