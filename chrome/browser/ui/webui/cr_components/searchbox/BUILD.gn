@@ -112,6 +112,7 @@ source_set("searchbox_impl") {
   if (!is_android) {
     deps += [
       "//chrome/browser/new_tab_page",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/tabs",

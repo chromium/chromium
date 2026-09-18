@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -19,7 +18,10 @@ OmniboxPopupWebContentsHelper::OmniboxPopupWebContentsHelper(
   if (BrowserWindowInterface* browser =
           GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
               web_contents)) {
-    if (auto* location_bar = browser->GetFeatures().location_bar()) {
+    // The window can be absent in unit tests that stub out the browser.
+    BrowserWindow* const browser_window = BrowserWindow::FromBrowser(browser);
+    if (auto* location_bar =
+            browser_window ? browser_window->GetLocationBar() : nullptr) {
       set_omnibox_controller(location_bar->GetOmniboxController());
     }
   }

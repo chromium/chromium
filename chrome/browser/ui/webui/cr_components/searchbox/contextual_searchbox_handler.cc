@@ -99,7 +99,7 @@
 #include "ui/gfx/geometry/size.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -1387,8 +1387,11 @@ void ContextualSearchboxHandler::OnDriveUploadClicked(
                           : nullptr;
 
   // Block deactivation while the Drive picker dialog is active.
+  // The window can be absent in unit tests that stub out the browser.
+  BrowserWindow* const browser_window =
+      BrowserWindow::FromBrowser(browser_window_interface);
   if (auto* location_bar =
-          browser_window_interface->GetFeatures().location_bar()) {
+          browser_window ? browser_window->GetLocationBar() : nullptr) {
     if (auto* presenter_delegate = location_bar->GetPresenterDelegate()) {
       if (auto* presenter = presenter_delegate->GetOmniboxPopupAimPresenter()) {
         drive_picker_deactivation_blocker_ =
@@ -2052,7 +2055,6 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
                                /*additional_params=*/{}, is_voice_search);
 }
 
-
 void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
     const std::string& query_text,
     WindowOpenDisposition disposition,
@@ -2111,7 +2113,6 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
   ComputeAndOpenQueryUrl(query_text, disposition, aim_entry_point,
                          std::move(additional_params), is_voice_search);
 }
-
 
 void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     const std::string& query_text,
@@ -2274,10 +2275,12 @@ void ContextualSearchboxHandler::ProcessContextAndOpenUrl(
         if (auto* ui_service =
                 contextual_tasks::ContextualTasksUiServiceFactory::
                     GetForBrowserContext(profile_)) {
-          auto* location_bar =
+          BrowserWindow* const browser_window =
               browser_window_interface
-                  ? browser_window_interface->GetFeatures().location_bar()
+                  ? BrowserWindow::FromBrowser(browser_window_interface)
                   : nullptr;
+          auto* location_bar =
+              browser_window ? browser_window->GetLocationBar() : nullptr;
           if (location_bar) {
             if (auto* controller = location_bar->GetOmniboxController()) {
               if (auto* popup_state_manager =
@@ -2361,10 +2364,12 @@ void ContextualSearchboxHandler::OpenUrl(
         webui::GetBrowserWindowInterface(web_contents_);
     // Explicitly dismiss the popup and revert the location bar for any
     // query submitted from the Omnibox popup (side panel, web search, voice).
-    auto* location_bar =
+    BrowserWindow* const browser_window =
         browser_window_interface
-            ? browser_window_interface->GetFeatures().location_bar()
+            ? BrowserWindow::FromBrowser(browser_window_interface)
             : nullptr;
+    auto* location_bar =
+        browser_window ? browser_window->GetLocationBar() : nullptr;
     if (location_bar) {
       if (auto* controller = location_bar->GetOmniboxController()) {
         if (auto* popup_state_manager = controller->popup_state_manager()) {

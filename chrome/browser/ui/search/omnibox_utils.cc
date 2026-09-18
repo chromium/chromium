@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/search/omnibox_utils.h"
 
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -33,7 +33,9 @@ LocationBar* GetLocationBar(content::WebContents* web_contents) {
     return nullptr;
   }
 
-  return bwi->GetFeatures().location_bar();
+  // The window can be absent in unit tests that stub out the browser.
+  BrowserWindow* const browser_window = BrowserWindow::FromBrowser(bwi);
+  return browser_window ? browser_window->GetLocationBar() : nullptr;
 }
 
 OmniboxView* GetOmniboxView(content::WebContents* web_contents) {

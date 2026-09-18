@@ -17,7 +17,7 @@
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -404,7 +404,6 @@ WindowOpenDisposition WebuiOmniboxHandler::ComputeWindowOpenDisposition(
                    meta_key, shift_key);
 }
 
-
 bool WebuiOmniboxHandler::ShouldShowFirstContextualDescription() const {
   return omnibox::kAskGShowFirstDescription.Get() &&
          autocomplete_controller() &&
@@ -539,8 +538,11 @@ void WebuiOmniboxHandler::OnTabWillDetach(
 
 void WebuiOmniboxHandler::OnTabDidInsert(tabs::TabInterface* tab) {
   if (auto* browser_window_interface = tab->GetBrowserWindowInterface()) {
+    // The window can be absent in unit tests that stub out the browser.
+    BrowserWindow* const browser_window =
+        BrowserWindow::FromBrowser(browser_window_interface);
     if (auto* location_bar =
-            browser_window_interface->GetFeatures().location_bar()) {
+            browser_window ? browser_window->GetLocationBar() : nullptr) {
       if (auto* omnibox_controller = location_bar->GetOmniboxController()) {
         edit_model_observation_.Reset();
         autocomplete_controller_observation_.Reset();

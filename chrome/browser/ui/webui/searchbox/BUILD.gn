@@ -92,6 +92,7 @@ source_set("searchbox") {
       "//chrome/browser/contextual_tasks",
       "//chrome/browser/resources/new_tab_page:resources",
       "//chrome/browser/resources/new_tab_page:resources_grit",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:tab_ui_helper",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/search",

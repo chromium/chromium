@@ -28,7 +28,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -1537,8 +1537,11 @@ OmniboxPopupUI* OmniboxContextMenuController::GetOmniboxPopupUI(
     return nullptr;
   }
 
+  // The window can be absent in unit tests that stub out the browser.
+  BrowserWindow* const browser_window =
+      BrowserWindow::FromBrowser(browser_window_interface);
   LocationBar* location_bar =
-      browser_window_interface->GetFeatures().location_bar();
+      browser_window ? browser_window->GetLocationBar() : nullptr;
   if (!location_bar) {
     return nullptr;
   }
