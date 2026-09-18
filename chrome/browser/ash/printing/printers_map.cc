@@ -70,7 +70,7 @@ std::vector<Printer> PrintersMap::Get() const {
 }
 
 void PrintersMap::Insert(PrinterClass printer_class, const Printer& printer) {
-  DCHECK(!IsExistingPrinter(printer.id()));
+  CHECK(!IsExistingPrinter(printer.id()), base::NotFatalUntil::M160);
 
   printers_[printer_class][printer.id()] = printer;
 }
@@ -138,7 +138,7 @@ void PrintersMap::Remove(PrinterClass printer_class,
   printers_[printer_class].erase(printer_id);
   printer_statuses_.erase(printer_id);
 
-  DCHECK(!IsExistingPrinter(printer_id));
+  CHECK(!IsExistingPrinter(printer_id), base::NotFatalUntil::M160);
 }
 
 bool PrintersMap::IsPrinterInClass(PrinterClass printer_class,

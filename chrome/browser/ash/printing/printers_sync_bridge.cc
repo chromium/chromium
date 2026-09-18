@@ -99,7 +99,7 @@ class PrintersSyncBridge::StoreProxy {
 
   // Commits writes to the database and updates metadata.
   void Commit(std::unique_ptr<DataTypeStore::WriteBatch> batch) {
-    DCHECK(store_);
+    CHECK(store_, base::NotFatalUntil::M160);
     store_->CommitWriteBatch(
         std::move(batch),
         base::BindOnce(&StoreProxy::OnCommit, weak_ptr_factory_.GetWeakPtr()));
@@ -198,7 +198,7 @@ PrintersSyncBridge::~PrintersSyncBridge() = default;
 std::optional<syncer::ModelError> PrintersSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  DCHECK(change_processor()->IsTrackingMetadata());
+  CHECK(change_processor()->IsTrackingMetadata(), base::NotFatalUntil::M160);
 
   std::unique_ptr<DataTypeStore::WriteBatch> batch =
       store_delegate_->CreateWriteBatch(std::move(metadata_change_list));
@@ -210,7 +210,8 @@ std::optional<syncer::ModelError> PrintersSyncBridge::MergeFullSyncData(
       const sync_pb::PrinterSpecifics& specifics =
           change->data().specifics.printer();
 
-      DCHECK_EQ(change->storage_key(), specifics.id());
+      CHECK_EQ(change->storage_key(), specifics.id(),
+               base::NotFatalUntil::M160);
       sync_entity_ids.insert(specifics.id());
 
       // Write the update to local storage even if we already have it.
@@ -265,7 +266,7 @@ PrintersSyncBridge::ApplyIncrementalSyncChanges(
         // guarantees that this will be the newest version of the object.
         const sync_pb::PrinterSpecifics& specifics =
             change->data().specifics.printer();
-        DCHECK_EQ(id, specifics.id());
+        CHECK_EQ(id, specifics.id(), base::NotFatalUntil::M160);
         StoreSpecifics(std::make_unique<sync_pb::PrinterSpecifics>(specifics),
                        batch.get());
       }
@@ -311,7 +312,7 @@ std::string PrintersSyncBridge::GetClientTag(
 
 std::string PrintersSyncBridge::GetStorageKey(
     const EntityData& entity_data) const {
-  DCHECK(entity_data.specifics.has_printer());
+  CHECK(entity_data.specifics.has_printer(), base::NotFatalUntil::M160);
   return entity_data.specifics.printer().id();
 }
 
@@ -325,7 +326,7 @@ PrintersSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
 
 bool PrintersSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
-  DCHECK(entity_data.specifics.has_printer());
+  CHECK(entity_data.specifics.has_printer(), base::NotFatalUntil::M160);
   return !entity_data.specifics.printer().id().empty();
 }
 
@@ -333,7 +334,7 @@ bool PrintersSyncBridge::IsEntityDataValid(
 ConflictResolution PrintersSyncBridge::ResolveConflict(
     const std::string& storage_key,
     const EntityData& remote_data) const {
-  DCHECK(remote_data.specifics.has_printer());
+  CHECK(remote_data.specifics.has_printer(), base::NotFatalUntil::M160);
 
   auto iter = all_data_.find(storage_key);
   // If the local printer doesn't exist, it must have been deleted. In this
@@ -376,7 +377,7 @@ bool PrintersSyncBridge::UpdatePrinter(
 bool PrintersSyncBridge::UpdatePrinterLocked(
     std::unique_ptr<sync_pb::PrinterSpecifics> printer) {
   data_lock_.AssertAcquired();
-  DCHECK(printer->has_id());
+  CHECK(printer->has_id(), base::NotFatalUntil::M160);
   auto iter = all_data_.find(printer->id());
   if (iter == all_data_.end()) {
     AddPrinterLocked(std::move(printer));
@@ -394,7 +395,7 @@ bool PrintersSyncBridge::UpdatePrinterLocked(
 }
 
 bool PrintersSyncBridge::RemovePrinter(const std::string& id) {
-  DCHECK(store_delegate_->Ready());
+  CHECK(store_delegate_->Ready(), base::NotFatalUntil::M160);
 
   std::unique_ptr<DataTypeStore::WriteBatch> batch =
       store_delegate_->CreateWriteBatch(/*metadata_change_list=*/nullptr);

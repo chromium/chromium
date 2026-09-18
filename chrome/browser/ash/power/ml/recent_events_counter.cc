@@ -16,9 +16,10 @@ namespace ml {
 RecentEventsCounter::RecentEventsCounter(base::TimeDelta duration,
                                          int num_buckets)
     : duration_(duration), num_buckets_(num_buckets) {
-  DCHECK_GT(num_buckets_, 0);
+  CHECK_GT(num_buckets_, 0, base::NotFatalUntil::M160);
   bucket_duration_ = duration_ / num_buckets_;
-  DCHECK_EQ(duration_, bucket_duration_ * num_buckets_);
+  CHECK_EQ(duration_, bucket_duration_ * num_buckets_,
+           base::NotFatalUntil::M160);
   event_count_.resize(num_buckets_, 0);
 }
 
@@ -61,7 +62,7 @@ void RecentEventsCounter::Log(base::TimeDelta timestamp) {
 }
 
 int RecentEventsCounter::GetTotal(base::TimeDelta now) const {
-  DCHECK_GE(now, latest_);
+  CHECK_GE(now, latest_, base::NotFatalUntil::M160);
   if (now >= first_bucket_time_ + 2 * duration_) {
     return 0;
   }
@@ -80,12 +81,12 @@ int RecentEventsCounter::GetTotal(base::TimeDelta now) const {
 }
 
 int RecentEventsCounter::GetBucketIndex(base::TimeDelta timestamp) const {
-  DCHECK_GE(timestamp, base::TimeDelta());
+  CHECK_GE(timestamp, base::TimeDelta(), base::NotFatalUntil::M160);
 
   const int index =
       base::ClampFloor((timestamp % duration_) / bucket_duration_);
-  DCHECK_GE(index, 0);
-  DCHECK_LT(index, num_buckets_);
+  CHECK_GE(index, 0, base::NotFatalUntil::M160);
+  CHECK_LT(index, num_buckets_, base::NotFatalUntil::M160);
   return index;
 }
 

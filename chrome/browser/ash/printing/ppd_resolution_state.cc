@@ -17,7 +17,7 @@ PpdResolutionState::~PpdResolutionState() = default;
 
 void PpdResolutionState::MarkResolutionSuccessful(
     const chromeos::Printer::PpdReference& ppd_reference) {
-  DCHECK(is_inflight_);
+  CHECK(is_inflight_, base::NotFatalUntil::M160);
 
   ppd_reference_ = ppd_reference;
   is_inflight_ = false;
@@ -25,7 +25,7 @@ void PpdResolutionState::MarkResolutionSuccessful(
 }
 
 void PpdResolutionState::MarkResolutionFailed() {
-  DCHECK(is_inflight_);
+  CHECK(is_inflight_, base::NotFatalUntil::M160);
 
   is_inflight_ = false;
   is_ppd_resolution_successful_ = false;
@@ -33,21 +33,21 @@ void PpdResolutionState::MarkResolutionFailed() {
 
 void PpdResolutionState::SetUsbManufacturer(
     const std::string& usb_manufacturer) {
-  DCHECK(!is_inflight_);
-  DCHECK(!is_ppd_resolution_successful_);
+  CHECK(!is_inflight_, base::NotFatalUntil::M160);
+  CHECK(!is_ppd_resolution_successful_, base::NotFatalUntil::M160);
 
   usb_manufacturer_ = usb_manufacturer;
 }
 
 const chromeos::Printer::PpdReference& PpdResolutionState::GetPpdReference()
     const {
-  DCHECK(!is_inflight_);
-  DCHECK(is_ppd_resolution_successful_);
+  CHECK(!is_inflight_, base::NotFatalUntil::M160);
+  CHECK(is_ppd_resolution_successful_, base::NotFatalUntil::M160);
   return ppd_reference_;
 }
 
 const std::string& PpdResolutionState::GetUsbManufacturer() const {
-  DCHECK(!is_inflight_);
+  CHECK(!is_inflight_, base::NotFatalUntil::M160);
   return usb_manufacturer_;
 }
 

@@ -125,7 +125,7 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
   // CupsPrintJobManager overrides:
   // Must be run from the UI thread.
   void CancelPrintJob(CupsPrintJob* job) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     job->set_state(CupsPrintJob::State::STATE_CANCELLED);
     NotifyJobCanceled(job->GetWeakPtr());
     // Ideally we should wait for IPP response.
@@ -148,14 +148,14 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
     const std::string printer_id =
         base::UTF16ToUTF8(document->settings().device_name());
     const std::string key = CupsPrintJob::CreateUniqueId(printer_id, job_id);
-    DCHECK(!printer_metrics_cache_.contains(key));
+    CHECK(!printer_metrics_cache_.contains(key), base::NotFatalUntil::M160);
     printer_metrics_cache_.emplace(
         key, PrinterMetrics{job->settings().printer_manually_selected(),
                             job->settings().printer_status_reason()});
 
     // This event occurs after the print job has been successfully sent to the
     // spooler which is when we begin tracking the print queue.
-    DCHECK(document);
+    CHECK(document, base::NotFatalUntil::M160);
     std::u16string title = ::printing::SimplifyDocumentTitle(document->name());
     if (title.empty()) {
       title = ::printing::SimplifyDocumentTitle(
@@ -179,7 +179,7 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
                       ::printing::PrintJob::Source source,
                       const std::string& source_id,
                       const printing::proto::PrintSettings& settings) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
     if (!profile) {
@@ -248,7 +248,7 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
   }
 
   void PostQuery() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
     // The set of active printers is expected to be small.
     std::set<std::string> printer_ids;
@@ -267,7 +267,7 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
   // could be in |jobs| but those are ignored as we will not emit updates for
   // them after they are completed.
   void UpdateJobs(std::unique_ptr<CupsWrapper::QueryResult> result) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
     // If the query failed, either retry or purge.
     if (!result->success) {
@@ -280,7 +280,7 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
         PurgeJobs();
       } else {
         // Backoff the polling frequency. Give CUPS a chance to recover.
-        DCHECK_GE(1, retry_count_);
+        CHECK_GE(1, retry_count_, base::NotFatalUntil::M160);
         ScheduleQuery(retry_count_);
       }
       return;
@@ -348,7 +348,7 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
 
   // Mark remaining jobs as errors and remove active jobs.
   void PurgeJobs() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
     for (const auto& entry : jobs_) {
       // Declare all lost jobs errors.
@@ -364,7 +364,7 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
 
   // Notify observers that a state update has occurred for |job|.
   void NotifyJobStateUpdate(base::WeakPtr<CupsPrintJob> job) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
     if (!job)
       return;

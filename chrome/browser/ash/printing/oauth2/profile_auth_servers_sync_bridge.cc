@@ -69,7 +69,7 @@ std::unique_ptr<ProfileAuthServersSyncBridge>
 ProfileAuthServersSyncBridge::Create(
     Observer* observer,
     syncer::OnceDataTypeStoreFactory store_factory) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   return base::WrapUnique(new ProfileAuthServersSyncBridge(
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::PRINTERS_AUTHORIZATION_SERVERS,
@@ -83,8 +83,8 @@ ProfileAuthServersSyncBridge::CreateForTesting(
     Observer* observer,
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     syncer::OnceDataTypeStoreFactory store_factory) {
-  DCHECK(observer);
-  DCHECK(change_processor);
+  CHECK(observer, base::NotFatalUntil::M160);
+  CHECK(change_processor, base::NotFatalUntil::M160);
   return base::WrapUnique(new ProfileAuthServersSyncBridge(
       std::move(change_processor), std::move(store_factory), observer));
 }
@@ -93,9 +93,9 @@ ProfileAuthServersSyncBridge::~ProfileAuthServersSyncBridge() = default;
 
 void ProfileAuthServersSyncBridge::AddAuthorizationServer(
     const GURL& server_uri) {
-  DCHECK(initialization_completed_);
+  CHECK(initialization_completed_, base::NotFatalUntil::M160);
   const std::string key = server_uri.spec();
-  DCHECK(!key.empty());
+  CHECK(!key.empty(), base::NotFatalUntil::M160);
   servers_uris_.insert(key);
   auto batch = store_->CreateWriteBatch();
   batch->WriteData(key, ToSpecifics(key).SerializeAsString());
@@ -188,7 +188,7 @@ ProfileAuthServersSyncBridge::MergeFullSyncData(
     const sync_pb::PrintersAuthorizationServerSpecifics& specifics =
         change->data().specifics.printers_authorization_server();
     const std::string& remote_uri = specifics.uri();
-    DCHECK_EQ(change->storage_key(), remote_uri);
+    CHECK_EQ(change->storage_key(), remote_uri, base::NotFatalUntil::M160);
     auto [unused, is_new] = servers_uris_.insert(remote_uri);
     if (is_new) {
       added_local_uris.insert(remote_uri);
@@ -273,7 +273,8 @@ std::string ProfileAuthServersSyncBridge::GetClientTag(
 
 std::string ProfileAuthServersSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) const {
-  DCHECK(entity_data.specifics.has_printers_authorization_server());
+  CHECK(entity_data.specifics.has_printers_authorization_server(),
+        base::NotFatalUntil::M160);
   return entity_data.specifics.printers_authorization_server().uri();
 }
 
@@ -287,7 +288,8 @@ ProfileAuthServersSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
 
 bool ProfileAuthServersSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
-  DCHECK(entity_data.specifics.has_printers_authorization_server());
+  CHECK(entity_data.specifics.has_printers_authorization_server(),
+        base::NotFatalUntil::M160);
   return !entity_data.specifics.printers_authorization_server().uri().empty();
 }
 

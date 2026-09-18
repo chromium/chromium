@@ -18,7 +18,7 @@ void QueryIppPrinter(const std::string& host,
                      const std::string& path,
                      bool encrypted,
                      PrinterInfoCallback callback) {
-  DCHECK(!host.empty());
+  CHECK(!host.empty(), base::NotFatalUntil::M160);
 
   // Add a printer status to every response.
   printing::PrinterStatus printer_status;

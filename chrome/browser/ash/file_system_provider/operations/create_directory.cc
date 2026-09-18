@@ -48,14 +48,14 @@ bool CreateDirectory::Execute(int request_id) {
 void CreateDirectory::OnSuccess(/*request_id=*/int,
                                 /*result=*/const RequestValue&,
                                 bool has_more) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
   std::move(callback_).Run(base::File::FILE_OK);
 }
 
 void CreateDirectory::OnError(/*request_id=*/int,
                               /*result=*/const RequestValue&,
                               base::File::Error error) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
   std::move(callback_).Run(error);
 }
 

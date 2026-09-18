@@ -125,7 +125,7 @@ class ServerPrintersProviderImpl : public ServerPrintersProvider {
     fetchers_.erase(it);
     // When old and new printers are empty and there is no change in
     // completeness status we leave here.
-    DCHECK(servers_.contains(server_url));
+    CHECK(servers_.contains(server_url), base::NotFatalUntil::M160);
     if (servers_.at(server_url).printers.empty() && printers.empty() &&
         previous_complete == IsComplete()) {
       return;

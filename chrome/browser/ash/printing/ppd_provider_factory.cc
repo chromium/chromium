@@ -26,7 +26,7 @@ namespace ash {
 namespace {
 
 network::mojom::URLLoaderFactory* GetURLLoaderFactory() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   return g_browser_process->system_network_context_manager()
       ->GetURLLoaderFactory();
 }

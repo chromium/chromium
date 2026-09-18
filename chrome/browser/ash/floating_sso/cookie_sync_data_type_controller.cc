@@ -35,7 +35,7 @@ CookieSyncDataTypeController::~CookieSyncDataTypeController() = default;
 syncer::DataTypeController::PreconditionState
 CookieSyncDataTypeController::GetPreconditionState(
     const PreconditionContext& context) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M160);
 
   if (!prefs_->GetBoolean(chromeos::prefs::kFloatingSsoEnabled)) {
     return PreconditionState::kMustStopAndClearData;
@@ -45,7 +45,7 @@ CookieSyncDataTypeController::GetPreconditionState(
 }
 
 void CookieSyncDataTypeController::OnFloatingSsoPrefChanged() {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M160);
   sync_service_->DataTypePreconditionChanged(type());
 }
 

@@ -56,13 +56,13 @@ void HttpExchange::Clear() {
 
 void HttpExchange::AddParamString(const std::string& name,
                                   const std::string& value) {
-  DCHECK(!name.empty());
+  CHECK(!name.empty(), base::NotFatalUntil::M160);
   content_.Set(name, value);
 }
 
 void HttpExchange::AddParamArrayString(const std::string& name,
                                        const std::vector<std::string>& value) {
-  DCHECK(!name.empty());
+  CHECK(!name.empty(), base::NotFatalUntil::M160);
   base::ListValue list_node;
   for (const auto& value_element : value) {
     list_node.Append(value_element);

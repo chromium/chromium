@@ -45,7 +45,7 @@ bool WriteFile::Execute(int request_id) {
   // Length is not passed directly since it can be accessed via data.byteLength.
 
   // Set the data directly on base::Value() to avoid an extra string copy.
-  DCHECK(buffer_.get());
+  CHECK(buffer_.get(), base::NotFatalUntil::M160);
 
   base::DictValue options_as_value = options.ToValue();
   options_as_value.Set("data", base::Value(buffer_->first(length_)));
@@ -64,7 +64,7 @@ void WriteFile::OnSuccess(/*request_id=*/int,
                           /*result=*/const RequestValue&,
                           /*has_more=*/bool) {
   TRACE_EVENT0("file_system_provider", "WriteFile::OnSuccess");
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
   std::move(callback_).Run(base::File::FILE_OK);
 }
 
@@ -72,7 +72,7 @@ void WriteFile::OnError(/*request_id=*/int,
                         /*result=*/const RequestValue&,
                         base::File::Error error) {
   TRACE_EVENT0("file_system_provider", "WriteFile::OnError");
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
   std::move(callback_).Run(error);
 }
 

@@ -23,7 +23,7 @@ class ProxyImpl : public CupsPrintersManagerProxy,
 
   ~ProxyImpl() override {
     // Verify that the active manager has been unset when we're cleaned up.
-    DCHECK(active_manager_ == nullptr);
+    CHECK(active_manager_ == nullptr, base::NotFatalUntil::M160);
   }
 
   void AddObserver(CupsPrintersManager::Observer* observer) override {

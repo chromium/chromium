@@ -1166,7 +1166,7 @@ class CupsPrintersManagerImpl
 
     std::map<std::string, PrinterSetupTracker>::iterator it =
         printers_being_setup_.find(printer_id);
-    DCHECK(it != printers_being_setup_.end());
+    CHECK(it != printers_being_setup_.end(), base::NotFatalUntil::M160);
 
     if (result == PrinterSetupResult::kSuccess) {
       installed_printer_fingerprints_[printer_id] = it->second.fingerprint;

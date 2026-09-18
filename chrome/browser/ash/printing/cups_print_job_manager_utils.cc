@@ -201,7 +201,7 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
                     CupsPrintJob* print_job) {
   static absl::flat_hash_map<int, std::string> old_status;
 
-  DCHECK_EQ(job.id, print_job->job_id());
+  CHECK_EQ(job.id, print_job->job_id(), base::NotFatalUntil::M160);
 
   CupsPrintJob::State old_state = print_job->state();
 

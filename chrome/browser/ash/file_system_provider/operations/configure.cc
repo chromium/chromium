@@ -34,14 +34,14 @@ bool Configure::Execute(int request_id) {
 void Configure::OnSuccess(/*request_id=*/int,
                           /*result=*/const RequestValue&,
                           /*has_more=*/bool) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
   std::move(callback_).Run(base::File::FILE_OK);
 }
 
 void Configure::OnError(/*request_id=*/int,
                         /*result=*/const RequestValue&,
                         base::File::Error error) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
   std::move(callback_).Run(error);
 }
 

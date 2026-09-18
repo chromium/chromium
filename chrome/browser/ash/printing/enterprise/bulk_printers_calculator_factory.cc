@@ -52,7 +52,7 @@ BulkPrintersCalculatorFactory::GetForDevice() {
 
 void BulkPrintersCalculatorFactory::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!shutdown_);
+  CHECK(!shutdown_, base::NotFatalUntil::M160);
   shutdown_ = true;
   printers_by_user_.clear();
   device_printers_.reset();
@@ -60,13 +60,13 @@ void BulkPrintersCalculatorFactory::Shutdown() {
 
 BulkPrintersCalculatorFactory::BulkPrintersCalculatorFactory() {
   // Only one factory should exist.
-  DCHECK(!g_bulk_printers_factory);
+  CHECK(!g_bulk_printers_factory, base::NotFatalUntil::M160);
   g_bulk_printers_factory = this;
 }
 
 BulkPrintersCalculatorFactory::~BulkPrintersCalculatorFactory() {
   // Ensure that an instance was created sometime in the past.
-  DCHECK(g_bulk_printers_factory);
+  CHECK(g_bulk_printers_factory, base::NotFatalUntil::M160);
   g_bulk_printers_factory = nullptr;
 }
 

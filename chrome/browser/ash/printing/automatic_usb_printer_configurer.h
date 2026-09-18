@@ -74,7 +74,7 @@ class AutomaticUsbPrinterConfigurer {
   // the original one sent in UpdateListOfConnectedPrinters(), but the printer
   // id never changes.
   const chromeos::Printer& Printer(const std::string& printer_id) const {
-    DCHECK(connected_printers_.contains(printer_id));
+    CHECK(connected_printers_.contains(printer_id), base::NotFatalUntil::M160);
     return connected_printers_.at(printer_id).printer;
   }
 

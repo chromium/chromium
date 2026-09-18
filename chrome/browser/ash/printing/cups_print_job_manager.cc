@@ -35,7 +35,7 @@ void CupsPrintJobManager::NotifyJobCreated(base::WeakPtr<CupsPrintJob> job) {
 }
 
 void CupsPrintJobManager::NotifyJobStarted(base::WeakPtr<CupsPrintJob> job) {
-  DCHECK(job);
+  CHECK(job, base::NotFatalUntil::M160);
   print_job_start_times_[job->GetUniqueId()] = base::TimeTicks::Now();
 
   for (Observer& observer : observers_)
@@ -81,7 +81,7 @@ void CupsPrintJobManager::NotifyJobDone(base::WeakPtr<CupsPrintJob> job) {
 // recorded for done and cancelled print jobs without accounting for the added
 // time a job may spend in a suspended or error state.
 void CupsPrintJobManager::RecordJobDuration(base::WeakPtr<CupsPrintJob> job) {
-  DCHECK(job);
+  CHECK(job, base::NotFatalUntil::M160);
 
   auto it = print_job_start_times_.find(job->GetUniqueId());
   if (it == print_job_start_times_.end())

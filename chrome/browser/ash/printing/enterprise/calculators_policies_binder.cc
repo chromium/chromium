@@ -156,10 +156,10 @@ CalculatorsPoliciesBinder::CalculatorsPoliciesBinder(
       blocklist_name_(blocklist_name),
       allowlist_name_(allowlist_name),
       calculator_(calculator) {
-  DCHECK(access_mode_name);
-  DCHECK(blocklist_name);
-  DCHECK(allowlist_name);
-  DCHECK(calculator);
+  CHECK(access_mode_name, base::NotFatalUntil::M160);
+  CHECK(blocklist_name, base::NotFatalUntil::M160);
+  CHECK(allowlist_name, base::NotFatalUntil::M160);
+  CHECK(calculator, base::NotFatalUntil::M160);
 }
 
 CalculatorsPoliciesBinder::~CalculatorsPoliciesBinder() = default;

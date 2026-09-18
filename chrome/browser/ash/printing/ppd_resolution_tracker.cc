@@ -33,14 +33,14 @@ bool PpdResolutionTracker::IsResolutionPending(
 
 bool PpdResolutionTracker::WasResolutionSuccessful(
     const std::string& printer_id) const {
-  DCHECK(PrinterStateExists(printer_id));
+  CHECK(PrinterStateExists(printer_id), base::NotFatalUntil::M160);
 
   return printer_state_.at(printer_id).WasResolutionSuccessful();
 }
 
 void PpdResolutionTracker::MarkResolutionPending(
     const std::string& printer_id) {
-  DCHECK(!PrinterStateExists(printer_id));
+  CHECK(!PrinterStateExists(printer_id), base::NotFatalUntil::M160);
 
   // Default state of PpdResolution is when resolution is inflight.
   printer_state_[printer_id] = PpdResolutionState();
@@ -49,15 +49,15 @@ void PpdResolutionTracker::MarkResolutionPending(
 void PpdResolutionTracker::MarkResolutionSuccessful(
     const std::string& printer_id,
     const chromeos::Printer::PpdReference& ppd_reference) {
-  DCHECK(PrinterStateExists(printer_id));
-  DCHECK(IsResolutionPending(printer_id));
+  CHECK(PrinterStateExists(printer_id), base::NotFatalUntil::M160);
+  CHECK(IsResolutionPending(printer_id), base::NotFatalUntil::M160);
 
   printer_state_.at(printer_id).MarkResolutionSuccessful(ppd_reference);
 }
 
 void PpdResolutionTracker::MarkResolutionFailed(const std::string& printer_id) {
-  DCHECK(PrinterStateExists(printer_id));
-  DCHECK(IsResolutionPending(printer_id));
+  CHECK(PrinterStateExists(printer_id), base::NotFatalUntil::M160);
+  CHECK(IsResolutionPending(printer_id), base::NotFatalUntil::M160);
 
   printer_state_.at(printer_id).MarkResolutionFailed();
 }
@@ -65,21 +65,21 @@ void PpdResolutionTracker::MarkResolutionFailed(const std::string& printer_id) {
 void PpdResolutionTracker::SetManufacturer(
     const std::string& printer_id,
     const std::string& usb_manufacturer) {
-  DCHECK(PrinterStateExists(printer_id));
+  CHECK(PrinterStateExists(printer_id), base::NotFatalUntil::M160);
 
   printer_state_.at(printer_id).SetUsbManufacturer(usb_manufacturer);
 }
 
 const std::string& PpdResolutionTracker::GetManufacturer(
     const std::string& printer_id) const {
-  DCHECK(PrinterStateExists(printer_id));
+  CHECK(PrinterStateExists(printer_id), base::NotFatalUntil::M160);
 
   return printer_state_.at(printer_id).GetUsbManufacturer();
 }
 
 const chromeos::Printer::PpdReference& PpdResolutionTracker::GetPpdReference(
     const std::string& printer_id) const {
-  DCHECK(PrinterStateExists(printer_id));
+  CHECK(PrinterStateExists(printer_id), base::NotFatalUntil::M160);
 
   return printer_state_.at(printer_id).GetPpdReference();
 }

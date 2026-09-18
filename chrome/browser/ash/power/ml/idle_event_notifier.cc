@@ -74,9 +74,9 @@ IdleEventNotifier::IdleEventNotifier(
       touch_counter_(
           std::make_unique<RecentEventsCounter>(kUserInputEventsDuration,
                                                 kNumUserInputEventsBuckets)) {
-  DCHECK(power_manager_client);
+  CHECK(power_manager_client, base::NotFatalUntil::M160);
   power_manager_client_observation_.Observe(power_manager_client);
-  DCHECK(detector);
+  CHECK(detector, base::NotFatalUntil::M160);
   user_activity_observation_.Observe(detector);
 }
 
@@ -210,7 +210,7 @@ IdleEventNotifier::ActivityData IdleEventNotifier::ConvertActivityData(
   }
 
   if (internal_data_->video_start_time && internal_data_->video_end_time) {
-    DCHECK(!video_playing_);
+    CHECK(!video_playing_, base::NotFatalUntil::M160);
     data.video_playing_time = internal_data_->video_end_time.value() -
                               internal_data_->video_start_time.value();
     data.time_since_video_ended =
@@ -227,7 +227,7 @@ IdleEventNotifier::ActivityData IdleEventNotifier::ConvertActivityData(
 
 void IdleEventNotifier::UpdateActivityData(ActivityType type) {
   const base::Time now = base::Time::Now();
-  DCHECK(internal_data_);
+  CHECK(internal_data_, base::NotFatalUntil::M160);
   internal_data_->last_activity_time = now;
 
   const base::TimeDelta time_since_boot = boot_clock_.GetTimeSinceBoot();

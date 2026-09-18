@@ -79,7 +79,7 @@ void OnCustomizedDefaultWallpaperResizedAndSaved(
     const base::FilePath& resized_small_path,
     const base::FilePath& resized_large_path,
     bool success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (!success) {
     LOG(WARNING) << "Failed to save resized customized default wallpaper";
     return;
@@ -165,7 +165,7 @@ void StartSettingCustomizedDefaultWallpaper(PrefService* local_state,
                                             const GURL& wallpaper_url,
                                             const base::FilePath& file_path) {
   // Should fail if this ever happens in tests.
-  DCHECK(wallpaper_url.is_valid());
+  CHECK(wallpaper_url.is_valid(), base::NotFatalUntil::M160);
   if (!wallpaper_url.is_valid()) {
     if (!wallpaper_url.is_empty()) {
       LOG(WARNING) << "Invalid Customized Wallpaper URL '"

@@ -120,9 +120,11 @@ base::Time GetModificationTimeFromDriveMetadata(
 // DriveFS. Must be run on a blocking task runner.
 bool CopyFileToDriveFsBlocking(const base::FilePath& source,
                                const base::FilePath& destination) {
-  DCHECK_EQ(destination.BaseName().value(), kDriveFsWallpaperFileName);
+  CHECK_EQ(destination.BaseName().value(), kDriveFsWallpaperFileName,
+           base::NotFatalUntil::M160);
   const base::FilePath directory = destination.DirName();
-  DCHECK_EQ(directory.BaseName().value(), kDriveFsWallpaperDirName);
+  CHECK_EQ(directory.BaseName().value(), kDriveFsWallpaperDirName,
+           base::NotFatalUntil::M160);
   if (!base::DirectoryExists(directory) && !base::CreateDirectory(directory)) {
     DVLOG(1) << "Failed to create DriveFS '" << kDriveFsWallpaperDirName
              << "' directory";
@@ -158,7 +160,7 @@ WallpaperChangeWaiter::WallpaperChangeWaiter(
       path_to_watch_(base::FilePath(base::FilePath::kSeparators)
                          .Append(GetWallpaperRelativePath())),
       callback_(std::move(callback)) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
   auto* drive_integration_service = GetDriveIntegrationService(account_id);
   if (!drive_integration_service) {
     std::move(callback_).Run(/*success=*/false);
@@ -213,7 +215,7 @@ base::FilePath WallpaperDriveFsDelegateImpl::GetWallpaperPath(
     return base::FilePath();
   }
   auto mount_path = drive_integration_service->GetMountPointPath();
-  DCHECK(!mount_path.empty());
+  CHECK(!mount_path.empty(), base::NotFatalUntil::M160);
   return mount_path.Append(GetWallpaperRelativePath());
 }
 

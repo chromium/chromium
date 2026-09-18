@@ -22,7 +22,7 @@ PrintJobHistoryServiceImpl::PrintJobHistoryServiceImpl(
     : print_job_database_(std::move(print_job_database)),
       print_job_manager_(print_job_manager),
       print_job_history_cleaner_(print_job_database_.get(), pref_service) {
-  DCHECK(print_job_manager_);
+  CHECK(print_job_manager_, base::NotFatalUntil::M160);
   print_job_manager_->AddObserver(this);
   print_job_database_->Initialize(
       base::BindOnce(&PrintJobHistoryServiceImpl::OnPrintJobDatabaseInitialized,
@@ -30,7 +30,7 @@ PrintJobHistoryServiceImpl::PrintJobHistoryServiceImpl(
 }
 
 PrintJobHistoryServiceImpl::~PrintJobHistoryServiceImpl() {
-  DCHECK(print_job_manager_);
+  CHECK(print_job_manager_, base::NotFatalUntil::M160);
   print_job_manager_->RemoveObserver(this);
 }
 

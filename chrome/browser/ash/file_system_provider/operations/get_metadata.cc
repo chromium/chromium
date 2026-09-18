@@ -179,7 +179,7 @@ GetMetadata::GetMetadata(
       entry_path_(entry_path),
       fields_(fields),
       callback_(std::move(callback)) {
-  DCHECK_NE(0, fields_);
+  CHECK_NE(0, fields_, base::NotFatalUntil::M160);
 }
 
 GetMetadata::~GetMetadata() = default;
@@ -217,7 +217,7 @@ bool GetMetadata::Execute(int request_id) {
 void GetMetadata::OnSuccess(/*request_id=*/int,
                             const RequestValue& result,
                             bool has_more) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
   std::unique_ptr<EntryMetadata> metadata(new EntryMetadata);
   const bool convert_result = ConvertRequestValueToFileInfo(
       result, fields_, entry_path_.AsUTF8Unsafe() == FILE_PATH_LITERAL("/"),
@@ -235,7 +235,7 @@ void GetMetadata::OnSuccess(/*request_id=*/int,
 void GetMetadata::OnError(/*request_id=*/int,
                           /*result=*/const RequestValue&,
                           base::File::Error error) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
   std::move(callback_).Run(nullptr, error);
 }
 

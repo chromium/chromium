@@ -48,7 +48,7 @@ PrintJobDatabaseImpl::~PrintJobDatabaseImpl() = default;
 void PrintJobDatabaseImpl::Initialize(InitializeCallback callback) {
   if (init_status_ == InitStatus::PENDING)
     return;
-  DCHECK_EQ(init_status_, InitStatus::UNINITIALIZED);
+  CHECK_EQ(init_status_, InitStatus::UNINITIALIZED, base::NotFatalUntil::M160);
   init_status_ = InitStatus::PENDING;
   database_->Init(base::BindOnce(&PrintJobDatabaseImpl::OnInitialized,
                                  weak_ptr_factory_.GetWeakPtr(),

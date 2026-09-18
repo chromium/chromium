@@ -111,7 +111,7 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
   // PrinterDetector override.
   void RegisterPrintersFoundCallback(OnPrintersFoundCallback cb) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-    DCHECK(!on_printers_found_callback_);
+    CHECK(!on_printers_found_callback_, base::NotFatalUntil::M160);
     on_printers_found_callback_ = std::move(cb);
   }
 
@@ -206,14 +206,14 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
   // device::mojom::UsbDeviceManagerClient implementation.
   void OnDeviceAdded(device::mojom::UsbDeviceInfoPtr device_info) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-    DCHECK(device_info);
+    CHECK(device_info, base::NotFatalUntil::M160);
     DoAddDevice(*device_info);
   }
 
   // device::mojom::UsbDeviceManagerClient implementation.
   void OnDeviceRemoved(device::mojom::UsbDeviceInfoPtr device_info) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-    DCHECK(device_info);
+    CHECK(device_info, base::NotFatalUntil::M160);
     if (!UsbDeviceIsPrinter(*device_info)) {
       return;
     }

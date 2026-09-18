@@ -39,8 +39,8 @@ AuthorizationServerData::AuthorizationServerData(
 AuthorizationServerData::~AuthorizationServerData() = default;
 
 void AuthorizationServerData::Initialize(StatusCallback callback) {
-  DCHECK(!callback_);
-  DCHECK(callback);
+  CHECK(!callback_, base::NotFatalUntil::M160);
+  CHECK(callback, base::NotFatalUntil::M160);
   callback_ = std::move(callback);
   InitializationProcedure();
 }

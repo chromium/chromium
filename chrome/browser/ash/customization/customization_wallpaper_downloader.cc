@@ -64,7 +64,7 @@ constexpr net::NetworkTrafficAnnotationTag
 
 void CreateWallpaperDirectory(const base::FilePath& wallpaper_dir,
                               bool* success) {
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M160);
 
   *success = CreateDirectoryAndGetError(wallpaper_dir, nullptr);
   if (!*success) {
@@ -76,7 +76,7 @@ void CreateWallpaperDirectory(const base::FilePath& wallpaper_dir,
 void RenameTemporaryFile(const base::FilePath& from,
                          const base::FilePath& to,
                          bool* success) {
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M160);
 
   base::File::Error error;
   if (base::ReplaceFile(from, to, &error)) {
@@ -107,16 +107,16 @@ CustomizationWallpaperDownloader::CustomizationWallpaperDownloader(
       retries_(0),
       retry_delay_(base::Seconds(kRetrySleepSeconds)),
       on_wallpaper_fetch_completed_(std::move(on_wallpaper_fetch_completed)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 CustomizationWallpaperDownloader::~CustomizationWallpaperDownloader() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 void CustomizationWallpaperDownloader::StartRequest() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(wallpaper_url_.is_valid());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(wallpaper_url_.is_valid(), base::NotFatalUntil::M160);
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = wallpaper_url_;
@@ -141,7 +141,7 @@ void CustomizationWallpaperDownloader::StartRequest() {
 }
 
 void CustomizationWallpaperDownloader::Retry() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   ++retries_;
 
   const double delay_seconds = std::min(
@@ -157,7 +157,7 @@ void CustomizationWallpaperDownloader::Retry() {
 }
 
 void CustomizationWallpaperDownloader::Start() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   std::unique_ptr<bool> success(new bool(false));
 
   base::OnceClosure mkdir_closure =
@@ -173,14 +173,14 @@ void CustomizationWallpaperDownloader::Start() {
 
 void CustomizationWallpaperDownloader::OnWallpaperDirectoryCreated(
     std::unique_ptr<bool> success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (*success)
     StartRequest();
 }
 
 void CustomizationWallpaperDownloader::OnSimpleLoaderComplete(
     base::FilePath response_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   const bool error = response_path.empty();
 
@@ -209,7 +209,7 @@ void CustomizationWallpaperDownloader::OnSimpleLoaderComplete(
 
 void CustomizationWallpaperDownloader::OnTemporaryFileRenamed(
     std::unique_ptr<bool> success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   std::move(on_wallpaper_fetch_completed_).Run(*success, wallpaper_url_);
 }
 

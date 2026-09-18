@@ -67,7 +67,7 @@ TetherServiceFactory::~TetherServiceFactory() = default;
 std::unique_ptr<KeyedService>
 TetherServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  DCHECK(NetworkHandler::IsInitialized());
+  CHECK(NetworkHandler::IsInitialized(), base::NotFatalUntil::M160);
 
   if (!IsFeatureAllowed(context)) {
     return nullptr;

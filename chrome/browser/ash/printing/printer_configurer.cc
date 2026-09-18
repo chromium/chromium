@@ -146,8 +146,8 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
       : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
         ppd_provider_(ppd_provider),
         dlc_service_client_(dlc_service_client) {
-    DCHECK(ppd_provider_);
-    DCHECK(dlc_service_client_);
+    CHECK(ppd_provider_, base::NotFatalUntil::M160);
+    CHECK(dlc_service_client_, base::NotFatalUntil::M160);
   }
 
   PrinterConfigurerImpl(const PrinterConfigurerImpl&) = delete;
@@ -157,9 +157,9 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
 
   void SetUpPrinterInCups(const Printer& printer,
                           PrinterSetupCallback callback) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    DCHECK(!printer.id().empty());
-    DCHECK(printer.HasUri());
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+    CHECK(!printer.id().empty(), base::NotFatalUntil::M160);
+    CHECK(printer.HasUri(), base::NotFatalUntil::M160);
     PRINTER_LOG(USER) << printer.id() << ": Printer setup requested for "
                       << printer.make_and_model();
     ppd_filename_.clear();
@@ -205,7 +205,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
                       std::optional<T> response) {
     // It's expected that the printscanmgr daemon posts callbacks on the UI
     // thread.
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
     if (!response) {
       PRINTER_LOG(ERROR) << printer.id() << ": Null response to OnAddedPrinter";
@@ -243,7 +243,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
                       PpdProvider::CallbackResultCode result,
                       const std::string& ppd_contents,
                       const std::string& ppd_filename) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
     ppd_filename_ = ppd_filename;
 
@@ -251,7 +251,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
                        << PpdProvider::CallbackResultCodeName(result);
     switch (result) {
       case PpdProvider::SUCCESS:
-        DCHECK(!ppd_contents.empty());
+        CHECK(!ppd_contents.empty(), base::NotFatalUntil::M160);
         {
           PRINTER_LOG(DEBUG)
               << printer.id() << " PPD filename: " << ppd_filename;
@@ -301,7 +301,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
                           PrinterSetupCallback cb,
                           PpdProvider::CallbackResultCode result,
                           const std::string& license_name) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     PRINTER_LOG(EVENT) << printer.id() << ": License resolution Result: "
                        << PpdProvider::CallbackResultCodeName(result);
     switch (result) {
@@ -342,7 +342,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
       const Printer& printer,
       PrinterSetupCallback cb,
       const DlcserviceClient::InstallResult& result) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
     if (result.root_path.empty()) {
       // Empty path of the plugin location means failure.

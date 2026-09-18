@@ -268,7 +268,7 @@ std::unique_ptr<AuthorizationZonesManager> AuthorizationZonesManager::Create(
     PrefService* local_state,
     Profile* profile,
     syncer::OnceDataTypeStoreFactory store_factory) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   return std::make_unique<AuthorizationZonesManagerImpl>(
       local_state, profile, std::move(store_factory));
 }
@@ -280,7 +280,7 @@ AuthorizationZonesManager::CreateForTesting(
     std::unique_ptr<ClientIdsDatabase> client_ids_database,
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     syncer::OnceDataTypeStoreFactory store_factory) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   return std::make_unique<AuthorizationZonesManagerImpl>(
       profile, std::move(auth_zone_creator), std::move(client_ids_database),
       std::move(change_processor), std::move(store_factory));

@@ -16,12 +16,12 @@ CupsPrintJobNotificationManager::CupsPrintJobNotificationManager(
     Profile* profile,
     CupsPrintJobManager* print_job_manager)
     : print_job_manager_(print_job_manager), profile_(profile) {
-  DCHECK(print_job_manager_);
+  CHECK(print_job_manager_, base::NotFatalUntil::M160);
   print_job_manager_->AddObserver(this);
 }
 
 CupsPrintJobNotificationManager::~CupsPrintJobNotificationManager() {
-  DCHECK(print_job_manager_);
+  CHECK(print_job_manager_, base::NotFatalUntil::M160);
   print_job_manager_->RemoveObserver(this);
 }
 

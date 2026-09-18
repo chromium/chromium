@@ -54,7 +54,7 @@ void MergeReferenceToSpecifics(sync_pb::PrinterPPDReference* specifics,
 
 std::unique_ptr<chromeos::Printer> SpecificsToPrinter(
     const sync_pb::PrinterSpecifics& specifics) {
-  DCHECK(!specifics.id().empty());
+  CHECK(!specifics.id().empty(), base::NotFatalUntil::M160);
 
   auto printer = std::make_unique<chromeos::Printer>(specifics.id());
   printer->set_display_name(specifics.display_name());
@@ -96,7 +96,7 @@ std::unique_ptr<chromeos::Printer> SpecificsToPrinter(
 
 std::unique_ptr<sync_pb::PrinterSpecifics> PrinterToSpecifics(
     const chromeos::Printer& printer) {
-  DCHECK(!printer.id().empty());
+  CHECK(!printer.id().empty(), base::NotFatalUntil::M160);
 
   auto specifics = std::make_unique<sync_pb::PrinterSpecifics>();
   specifics->set_id(printer.id());
@@ -107,7 +107,7 @@ std::unique_ptr<sync_pb::PrinterSpecifics> PrinterToSpecifics(
 void MergePrinterToSpecifics(const chromeos::Printer& printer,
                              sync_pb::PrinterSpecifics* specifics) {
   // Never update id it needs to be stable.
-  DCHECK_EQ(printer.id(), specifics->id());
+  CHECK_EQ(printer.id(), specifics->id(), base::NotFatalUntil::M160);
 
   if (!printer.display_name().empty())
     specifics->set_display_name(printer.display_name());

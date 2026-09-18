@@ -22,7 +22,7 @@ PrintServersProviderFactory* PrintServersProviderFactory::Get() {
 
 base::WeakPtr<PrintServersProvider>
 PrintServersProviderFactory::GetForAccountId(const AccountId& account_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   auto found = providers_by_user_.find(account_id);
   if (found != providers_by_user_.end()) {
     return found->second->AsWeakPtr();
@@ -34,7 +34,7 @@ PrintServersProviderFactory::GetForAccountId(const AccountId& account_id) {
 
 base::WeakPtr<PrintServersProvider> PrintServersProviderFactory::GetForProfile(
     Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
@@ -45,7 +45,7 @@ base::WeakPtr<PrintServersProvider> PrintServersProviderFactory::GetForProfile(
 
 base::WeakPtr<PrintServersProvider>
 PrintServersProviderFactory::GetForDevice() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (!device_provider_) {
     device_provider_ = PrintServersProvider::Create();
   }
@@ -54,12 +54,12 @@ PrintServersProviderFactory::GetForDevice() {
 
 void PrintServersProviderFactory::RemoveForAccountId(
     const AccountId& account_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   providers_by_user_.erase(account_id);
 }
 
 void PrintServersProviderFactory::ShutdownForTesting() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   providers_by_user_.clear();
   device_provider_ = nullptr;
 }

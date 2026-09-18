@@ -41,7 +41,7 @@ void DriveShareAction::LaunchAction(
     views::View* root_view,
     apps::IntentPtr intent) {
   controller_ = controller;
-  DCHECK(intent->drive_share_url.has_value());
+  CHECK(intent->drive_share_url.has_value(), base::NotFatalUntil::M160);
   if (!ash::NewWindowDelegate::GetInstance()) {
     return;
   }

@@ -32,8 +32,8 @@ PrintingManager::PrintingManager(
     : print_job_history_service_(print_job_history_service),
       history_service_(history_service),
       cups_print_job_manager_(cups_print_job_manager) {
-  DCHECK(history_service_);
-  DCHECK(cups_print_job_manager_);
+  CHECK(history_service_, base::NotFatalUntil::M160);
+  CHECK(cups_print_job_manager_, base::NotFatalUntil::M160);
   history_service_observation_.Observe(history_service_.get());
   cups_print_job_manager_->AddObserver(this);
 
@@ -44,8 +44,8 @@ PrintingManager::PrintingManager(
 }
 
 PrintingManager::~PrintingManager() {
-  DCHECK(history_service_);
-  DCHECK(cups_print_job_manager_);
+  CHECK(history_service_, base::NotFatalUntil::M160);
+  CHECK(cups_print_job_manager_, base::NotFatalUntil::M160);
   history_service_observation_.Reset();
   cups_print_job_manager_->RemoveObserver(this);
 }
@@ -191,7 +191,7 @@ void PrintingManager::RemoveAndUpdatePrintJob(base::WeakPtr<CupsPrintJob> job) {
 }
 
 void PrintingManager::NotifyPrintJobObservers(base::WeakPtr<CupsPrintJob> job) {
-  DCHECK(job);
+  CHECK(job, base::NotFatalUntil::M160);
   for (auto& observer : print_job_observers_) {
     observer->OnPrintJobUpdate(CupsPrintJobToMojom(*job));
   }

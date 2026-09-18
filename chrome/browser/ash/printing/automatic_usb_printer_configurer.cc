@@ -28,9 +28,9 @@ AutomaticUsbPrinterConfigurer::AutomaticUsbPrinterConfigurer(
       notification_controller_(notification_controller),
       ppd_provider_(ppd_provider),
       refresh_callback_(refresh_callback) {
-  DCHECK(installation_manager);
-  DCHECK(notification_controller);
-  DCHECK(ppd_provider);
+  CHECK(installation_manager, base::NotFatalUntil::M160);
+  CHECK(notification_controller, base::NotFatalUntil::M160);
+  CHECK(ppd_provider, base::NotFatalUntil::M160);
 }
 
 AutomaticUsbPrinterConfigurer::~AutomaticUsbPrinterConfigurer() = default;
@@ -225,8 +225,10 @@ void AutomaticUsbPrinterConfigurer::FinalizeConfiguration(
     const chromeos::Printer& printer,
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-  DCHECK(!configured_printers_.contains(printer.id()));
-  DCHECK(!unconfigured_printers_.contains(printer.id()));
+  CHECK(!configured_printers_.contains(printer.id()),
+        base::NotFatalUntil::M160);
+  CHECK(!unconfigured_printers_.contains(printer.id()),
+        base::NotFatalUntil::M160);
 
   if (success) {
     // The printer is ready to use

@@ -30,7 +30,7 @@ base::TimeDelta BootClock::GetTimeSinceBoot() const {
 
   struct timespec ts = {0};
   const int ret = clock_gettime(CLOCK_BOOTTIME, &ts);
-  DCHECK_EQ(ret, 0);
+  CHECK_EQ(ret, 0, base::NotFatalUntil::M160);
   return base::TimeDelta::FromTimeSpec(ts);
 }
 

@@ -51,8 +51,8 @@ struct Bucket {
 // |original_value| = 299.
 template <size_t N>
 int Bucketize(int original_value, const std::array<Bucket, N>& buckets) {
-  DCHECK_GE(original_value, 0);
-  DCHECK(!buckets.empty());
+  CHECK_GE(original_value, 0, base::NotFatalUntil::M160);
+  CHECK(!buckets.empty(), base::NotFatalUntil::M160);
   for (const auto& bucket : buckets) {
     if (original_value < bucket.boundary_end) {
       return bucket.rounding * (original_value / bucket.rounding);

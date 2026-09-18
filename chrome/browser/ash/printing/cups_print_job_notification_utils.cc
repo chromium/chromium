@@ -44,7 +44,8 @@ std::u16string GetAppShortNameUTF16(Profile* profile,
 }
 
 std::u16string GetNotificationTitleForFailure(const CupsPrintJob& job) {
-  DCHECK_EQ(CupsPrintJob::State::STATE_FAILED, job.state());
+  CHECK_EQ(CupsPrintJob::State::STATE_FAILED, job.state(),
+           base::NotFatalUntil::M160);
 
   switch (job.error_code()) {
     case PrinterErrorCode::CLIENT_UNAUTHORIZED:
@@ -59,7 +60,8 @@ std::u16string GetNotificationTitleForFailure(const CupsPrintJob& job) {
 }
 
 std::u16string GetNotificationTitleForError(const CupsPrintJob& job) {
-  DCHECK_EQ(CupsPrintJob::State::STATE_ERROR, job.state());
+  CHECK_EQ(CupsPrintJob::State::STATE_ERROR, job.state(),
+           base::NotFatalUntil::M160);
 
   switch (job.error_code()) {
     case PrinterErrorCode::PAPER_JAM:

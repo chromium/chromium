@@ -100,14 +100,14 @@ int GetRoundedOrInvalidEngagementScore(content::WebContents* contents) {
 
   auto* service = site_engagement::SiteEngagementService::Get(
       contents->GetBrowserContext());
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M160);
 
   // Scores range from 0 to 100. Round down to a multiple of 10 to conform to
   // privacy guidelines.
   double raw_score = service->GetScore(contents->GetVisibleURL());
   int rounded_score = static_cast<int>(raw_score / 10) * 10;
-  DCHECK_LE(0, rounded_score);
-  DCHECK_GE(100, rounded_score);
+  CHECK_LE(0, rounded_score, base::NotFatalUntil::M160);
+  CHECK_GE(100, rounded_score, base::NotFatalUntil::M160);
   return rounded_score;
 }
 
@@ -134,7 +134,7 @@ UserActivityManager::UserActivityManager(
       session_manager_(session_manager),
       receiver_(this, std::move(receiver)),
       power_manager_client_(power_manager_client) {
-  DCHECK(ukm_logger_);
+  CHECK(ukm_logger_, base::NotFatalUntil::M160);
 
   DCHECK(detector);
   user_activity_observation_.Observe(detector);

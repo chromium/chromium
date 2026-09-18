@@ -315,7 +315,8 @@ void TetherService::UpdateEnabledState() {
 }
 
 void TetherService::OnShutdownComplete() {
-  DCHECK(tether_component_->status() == TetherComponent::Status::SHUT_DOWN);
+  CHECK(tether_component_->status() == TetherComponent::Status::SHUT_DOWN,
+        base::NotFatalUntil::M160);
   tether_component_->RemoveObserver(this);
   tether_component_.reset();
   PA_LOG(VERBOSE) << "TetherComponent was shut down.";
@@ -580,7 +581,8 @@ TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
 
 void TetherService::RecordTetherFeatureState() {
   TetherFeatureState tether_feature_state = GetTetherFeatureState();
-  DCHECK(tether_feature_state != TetherFeatureState::TETHER_FEATURE_STATE_MAX);
+  CHECK(tether_feature_state != TetherFeatureState::TETHER_FEATURE_STATE_MAX,
+        base::NotFatalUntil::M160);
 
   // If the feature is shut down, there is no need to log a metric. Since this
   // state occurs every time the user logs out (as of crbug.com/40548859),

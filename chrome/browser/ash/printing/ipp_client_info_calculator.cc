@@ -80,7 +80,7 @@ class IppClientInfoCalculatorImpl : public IppClientInfoCalculator {
 
  private:
   IppClientInfoPtr GetOsInfo() const override {
-    DCHECK(os_info_);
+    CHECK(os_info_, base::NotFatalUntil::M160);
     return os_info_.Clone();
   }
 
@@ -108,7 +108,7 @@ class IppClientInfoCalculatorImpl : public IppClientInfoCalculator {
   }
 
   void CalculateClientInfoWithOSVersion(const std::string& chrome_milestone) {
-    DCHECK(base::SysInfo::IsRunningOnChromeOS());
+    CHECK(base::SysInfo::IsRunningOnChromeOS(), base::NotFatalUntil::M160);
     os_info_ = IppClientInfo::New(
         IppClientInfo::ClientType::kOperatingSystem, kOsInfoClientName,
         base::SysInfo::OperatingSystemVersion(), chrome_milestone,

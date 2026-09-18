@@ -94,7 +94,8 @@ class SyncedPrintersManagerImpl : public SyncedPrintersManager,
 
   void UpdateSavedPrinterLocked(const chromeos::Printer& printer_arg) {
     lock_.AssertAcquired();
-    DCHECK_EQ(chromeos::Printer::SRC_USER_PREFS, printer_arg.source());
+    CHECK_EQ(chromeos::Printer::SRC_USER_PREFS, printer_arg.source(),
+             base::NotFatalUntil::M160);
 
     // Need a local copy since we may set the id.
     chromeos::Printer printer = printer_arg;

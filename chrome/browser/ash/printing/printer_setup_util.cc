@@ -40,7 +40,7 @@ namespace {
 
 void LogPrinterSetup(const chromeos::Printer& printer,
                      PrinterSetupResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   base::UmaHistogramEnumeration(
       printer.IsZeroconf()
@@ -173,7 +173,7 @@ void CapabilitiesFetchedFromService(
 void FetchCapabilities(const std::string& application_locale,
                        const std::string& printer_id,
                        GetPrinterCapabilitiesCallback cb) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (::printing::IsOopPrintingEnabled()) {
@@ -210,7 +210,7 @@ void OnPrinterInstalled(
     base::OnceCallback<void(
         const std::optional<::printing::PrinterSemanticCapsAndDefaults>&)> cb,
     PrinterSetupResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   LogPrinterSetup(printer, result);
   if (result != PrinterSetupResult::kSuccess) {
@@ -229,7 +229,7 @@ void SetUpPrinter(const ApplicationLocaleStorage* application_locale_storage,
                   const chromeos::Printer& printer,
                   GetPrinterCapabilitiesCallback cb) {
   CHECK(application_locale_storage);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Log printer configuration for selected printer.
   base::UmaHistogramEnumeration("Printing.CUPS.ProtocolUsed",

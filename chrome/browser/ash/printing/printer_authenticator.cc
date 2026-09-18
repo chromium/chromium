@@ -52,15 +52,15 @@ PrinterAuthenticator::PrinterAuthenticator(
     : cups_manager_(printers_manager),
       auth_manager_(auth_manager),
       printer_(printer) {
-  DCHECK(printers_manager);
-  DCHECK(auth_manager);
+  CHECK(printers_manager, base::NotFatalUntil::M160);
+  CHECK(auth_manager, base::NotFatalUntil::M160);
 }
 
 PrinterAuthenticator::~PrinterAuthenticator() = default;
 
 void PrinterAuthenticator::ObtainAccessTokenIfNeeded(
     oauth2::StatusCallback callback) {
-  DCHECK(!callback_);
+  CHECK(!callback_, base::NotFatalUntil::M160);
   callback_ = std::move(callback);
   cups_manager_->FetchPrinterStatus(
       printer_.id(), base::BindOnce(&PrinterAuthenticator::OnGetPrinterStatus,

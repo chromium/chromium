@@ -115,7 +115,7 @@ void QueryIppPrinter(const std::string& host,
                      const std::string& path,
                      bool encrypted,
                      PrinterInfoCallback callback) {
-  DCHECK(!host.empty());
+  CHECK(!host.empty(), base::NotFatalUntil::M160);
 
   // QueryPrinterImpl could block on a network call for a noticable amount of
   // time (100s of ms). Also the user is waiting on this result.  Thus, run at

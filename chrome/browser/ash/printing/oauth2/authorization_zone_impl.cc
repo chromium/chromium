@@ -55,8 +55,8 @@ std::string RandBase64String() {
 // from Section 2.3 of [RFC3986], with a minimum length of 43 characters
 // and a maximum length of 128 characters."
 std::string CodeChallengeS256(const std::string& code_verifier) {
-  DCHECK_GE(code_verifier.size(), 43u);
-  DCHECK_LE(code_verifier.size(), 128u);
+  CHECK_GE(code_verifier.size(), 43u, base::NotFatalUntil::M160);
+  CHECK_LE(code_verifier.size(), 128u, base::NotFatalUntil::M160);
   return base::Base64Encode(crypto::SHA256HashString(code_verifier));
 }
 
@@ -141,7 +141,8 @@ AuthorizationZoneImpl::~AuthorizationZoneImpl() = default;
 
 void AuthorizationZoneImpl::InitAuthorization(const std::string& scope,
                                               StatusCallback callback) {
-  DCHECK_LE(waiting_authorizations_.size(), kMaxNumberOfSessions);
+  CHECK_LE(waiting_authorizations_.size(), kMaxNumberOfSessions,
+           base::NotFatalUntil::M160);
 
   // If there are too many callbacks waiting, remove the oldest one.
   if (waiting_authorizations_.size() == kMaxNumberOfSessions) {
@@ -306,7 +307,8 @@ void AuthorizationZoneImpl::MarkEndpointAccessTokenAsExpired(
 }
 
 void AuthorizationZoneImpl::AuthorizationProcedure() {
-  DCHECK_LE(pending_authorizations_.size(), kMaxNumberOfSessions);
+  CHECK_LE(pending_authorizations_.size(), kMaxNumberOfSessions,
+           base::NotFatalUntil::M160);
 
   for (auto& wa : waiting_authorizations_) {
     // Remove the oldest pending authorization if there are too many of them.
@@ -373,7 +375,7 @@ void AuthorizationZoneImpl::OnSendTokenRequestCallback(
   // Find the session for which the request was completed.
   auto it_session = std::ranges::find(
       sessions_, session, &std::unique_ptr<AuthorizationServerSession>::get);
-  DCHECK(it_session != sessions_.end());
+  CHECK(it_session != sessions_.end(), base::NotFatalUntil::M160);
 
   // Get the list of callbacks to run and copy the data.
   std::vector<StatusCallback> callbacks = session->TakeWaitingList();
@@ -409,7 +411,7 @@ void AuthorizationZoneImpl::OnTokenExchangeRequestCallback(
 
     // Find the corresponding IppEndpointTokenFetcher object.
     auto it_endpoint = ipp_endpoints_.find(ipp_endpoint);
-    DCHECK(it_endpoint != ipp_endpoints_.end());
+    CHECK(it_endpoint != ipp_endpoints_.end(), base::NotFatalUntil::M160);
     IppEndpointTokenFetcher* endpoint = it_endpoint->second.get();
 
     // Try to find a new session for IPP endpoint and perform Token Exchange
@@ -426,7 +428,7 @@ void AuthorizationZoneImpl::ResultForIppEndpoint(
     StatusCode status,
     std::string data) {
   auto it = ipp_endpoints_.find(ipp_endpoint);
-  DCHECK(it != ipp_endpoints_.end());
+  CHECK(it != ipp_endpoints_.end(), base::NotFatalUntil::M160);
   // The list of callbacks to run.
   std::vector<StatusCallback> callbacks = it->second->TakeWaitingList();
   // Erase the IPP Endpoint in case of an error.
@@ -444,7 +446,7 @@ void AuthorizationZoneImpl::OnAccessTokenForEndpointCallback(
     StatusCode status,
     std::string data) {
   auto it = ipp_endpoints_.find(ipp_endpoint);
-  DCHECK(it != ipp_endpoints_.end());
+  CHECK(it != ipp_endpoints_.end(), base::NotFatalUntil::M160);
   IppEndpointTokenFetcher* endpoint = it->second.get();
 
   switch (status) {

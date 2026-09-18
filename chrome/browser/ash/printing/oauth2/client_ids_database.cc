@@ -38,8 +38,8 @@ class ClientIdsDatabaseImpl : public ClientIdsDatabase {
 
   void StoreId(const GURL& url, const std::string& client_id) override {
     const std::string key = url.spec();
-    DCHECK(!data_.FindString(key));
-    DCHECK(!client_id.empty());
+    CHECK(!data_.FindString(key), base::NotFatalUntil::M160);
+    CHECK(!client_id.empty(), base::NotFatalUntil::M160);
     data_.Set(key, client_id);
     local_state_->SetDict(ash::prefs::kPrintingOAuth2AuthorizationServers,
                           data_.Clone());

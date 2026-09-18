@@ -161,7 +161,7 @@ std::string GetLocaleSpecificStringImpl(const base::DictValue& root,
 }
 
 void CheckWallpaperCacheExists(const base::FilePath& path, bool* exists) {
-  DCHECK(exists);
+  CHECK(exists, base::NotFatalUntil::M160);
   *exists = base::PathExists(path);
 }
 
@@ -422,7 +422,7 @@ StartupCustomizationDocument::configured_locales() const {
 
 const std::string& StartupCustomizationDocument::initial_locale_default()
     const {
-  DCHECK_GT(configured_locales_.size(), 0UL);
+  CHECK_GT(configured_locales_.size(), 0UL, base::NotFatalUntil::M160);
   return configured_locales_.front();
 }
 
@@ -459,11 +459,11 @@ ServicesCustomizationDocument::ApplyingTask::ApplyingTask(
 }
 
 ServicesCustomizationDocument::ApplyingTask::~ApplyingTask() {
-  DCHECK(!engaged_);
+  CHECK(!engaged_, base::NotFatalUntil::M160);
 }
 
 void ServicesCustomizationDocument::ApplyingTask::Finished(bool success) {
-  DCHECK(engaged_);
+  CHECK(engaged_, base::NotFatalUntil::M160);
   if (engaged_) {
     engaged_ = false;
     document_->ApplyingTaskFinished(success);
@@ -835,7 +835,7 @@ std::string ServicesCustomizationDocument::GetOemAppsFolderNameImpl(
 void ServicesCustomizationDocument::StartOEMWallpaperDownload(
     const GURL& wallpaper_url,
     std::unique_ptr<ServicesCustomizationDocument::ApplyingTask> applying) {
-  DCHECK(wallpaper_url.is_valid());
+  CHECK(wallpaper_url.is_valid(), base::NotFatalUntil::M160);
 
   const base::FilePath dir = GetCustomizedWallpaperCacheDir();
   const base::FilePath file = GetCustomizedWallpaperDownloadedFileName();
@@ -874,7 +874,7 @@ void ServicesCustomizationDocument::CheckAndApplyWallpaper() {
   }
 
   // Should fail if this ever happens in tests.
-  DCHECK(wallpaper_url.is_valid());
+  CHECK(wallpaper_url.is_valid(), base::NotFatalUntil::M160);
   if (!wallpaper_url.is_valid()) {
     if (!wallpaper_url.is_empty()) {
       LOG(WARNING) << "Invalid Customized Wallpaper URL '"
@@ -900,9 +900,9 @@ void ServicesCustomizationDocument::CheckAndApplyWallpaper() {
 void ServicesCustomizationDocument::OnCheckedWallpaperCacheExists(
     std::unique_ptr<bool> exists,
     std::unique_ptr<ServicesCustomizationDocument::ApplyingTask> applying) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(exists);
-  DCHECK(applying);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(exists, base::NotFatalUntil::M160);
+  CHECK(applying, base::NotFatalUntil::M160);
 
   ApplyWallpaper(*exists, std::move(applying));
 }
@@ -936,7 +936,7 @@ void ServicesCustomizationDocument::ApplyWallpaper(
     return;
   }
 
-  DCHECK(wallpaper_url.is_valid());
+  CHECK(wallpaper_url.is_valid(), base::NotFatalUntil::M160);
 
   // Never update system-wide wallpaper (i.e. do not check
   // current_url == wallpaper_url.spec() )
@@ -956,7 +956,7 @@ void ServicesCustomizationDocument::OnOEMWallpaperDownloaded(
     bool success,
     const GURL& wallpaper_url) {
   if (success) {
-    DCHECK(wallpaper_url.is_valid());
+    CHECK(wallpaper_url.is_valid(), base::NotFatalUntil::M160);
 
     VLOG(1) << "Setting default wallpaper to '"
             << GetCustomizedWallpaperDownloadedFileName().value() << "' ('"
@@ -975,7 +975,8 @@ void ServicesCustomizationDocument::ApplyingTaskStarted() {
 }
 
 void ServicesCustomizationDocument::ApplyingTaskFinished(bool success) {
-  DCHECK_GT(apply_tasks_started_, apply_tasks_finished_);
+  CHECK_GT(apply_tasks_started_, apply_tasks_finished_,
+           base::NotFatalUntil::M160);
   ++apply_tasks_finished_;
 
   apply_tasks_success_ += success;

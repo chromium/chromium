@@ -39,7 +39,8 @@ struct TaskResults {
 // be parsed, returns data with empty list of servers.
 // This needs to not run on UI thread as it can be very slow.
 TaskResults ParseData(int task_id, std::unique_ptr<std::string> data) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M160);
   TaskResults task_data;
   task_data.task_id = task_id;
 
@@ -146,20 +147,20 @@ class PrintServersProviderImpl : public PrintServersProvider {
       : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   }
 
   PrintServersProviderImpl(const PrintServersProviderImpl&) = delete;
   PrintServersProviderImpl& operator=(const PrintServersProviderImpl&) = delete;
 
   ~PrintServersProviderImpl() override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   }
 
   // This method sets the allowlist to calculate resultant list of servers.
   void SetAllowlistPref(PrefService* prefs,
                         const std::string& allowlist_pref) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     if (prefs_ != nullptr && !allowlist_pref_.empty()) {
       // Some unit tests may create more than one profile with the same user.
       return;
@@ -191,18 +192,18 @@ class PrintServersProviderImpl : public PrintServersProvider {
   }
 
   void AddObserver(PrintServersProvider::Observer* observer) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     observers_.AddObserver(observer);
     observer->OnServersChanged(IsCompleted(), result_servers_);
   }
 
   void RemoveObserver(PrintServersProvider::Observer* observer) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     observers_.RemoveObserver(observer);
   }
 
   void ClearData() override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     const bool previously_completed = IsCompleted();
     const bool previously_empty = result_servers_.empty();
     last_processed_task_ = ++last_received_task_;
@@ -215,7 +216,7 @@ class PrintServersProviderImpl : public PrintServersProvider {
   }
 
   void SetData(std::unique_ptr<std::string> data) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     const bool previously_completed = IsCompleted();
     task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
@@ -244,7 +245,7 @@ class PrintServersProviderImpl : public PrintServersProvider {
 
   // Called when a new allowlist is available.
   void UpdateAllowlist() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     allowlist_ = std::nullopt;
     // Fetch and parse the allowlist.
     const PrefService::Preference* pref =
@@ -292,7 +293,7 @@ class PrintServersProviderImpl : public PrintServersProvider {
   // Called on computation completion. |task_data| corresponds to finalized
   // task.
   void OnComputationComplete(TaskResults&& task_data) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     if (task_data.task_id <= last_processed_task_) {
       // The task is outdated (e.g.: ClearData() was called in the meantime).
       return;

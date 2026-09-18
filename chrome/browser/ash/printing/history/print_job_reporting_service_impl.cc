@@ -43,7 +43,7 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
           report_queue)
       : report_queue_(std::move(report_queue)),
         cros_settings_(CrosSettings::Get()) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     UpdateShouldReport();
     should_report_subscription_ = cros_settings_->AddSettingsObserver(
         kReportDevicePrintJobs,
@@ -54,7 +54,7 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
   ~PrintJobReportingServiceImpl() override = default;
 
   void OnPrintJobFinished(const print::PrintJobInfo& print_job_info) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     if (!should_report_) {
       VLOG(1) << "Reporting disabled for print job: " << print_job_info.id();
       return;
@@ -77,7 +77,7 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
 
  private:
   void UpdateShouldReport() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     if (cros_settings_->PrepareTrustedValues(base::BindOnce(
             &PrintJobReportingServiceImpl::UpdateShouldReport,
             weak_factory_.GetWeakPtr())) != CrosSettingsProvider::TRUSTED) {
@@ -87,7 +87,7 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
   }
 
   void Enqueue(em::PrintJobEvent event) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     report_queue_->Enqueue(
         std::make_unique<em::PrintJobEvent>(std::move(event)),
         ::reporting::Priority::SLOW_BATCH, base::DoNothing());
