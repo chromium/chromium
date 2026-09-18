@@ -2105,4 +2105,15 @@ TEST_F(ContextualTasksUiTest, ThreadSwitch_DifferentQuery_CreatesNewTask) {
   observer.reset();
 }
 
+TEST_F(ContextualTasksUiTest, CreateWebUIController) {
+  ContextualTasksUIConfig config;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+
+  ASSERT_TRUE(controller);
+  EXPECT_NE(controller->GetAs<ContextualTasksUI>(), nullptr);
+}
+
 }  // namespace contextual_tasks
