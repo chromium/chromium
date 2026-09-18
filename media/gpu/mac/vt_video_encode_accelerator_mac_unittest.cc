@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -507,6 +508,33 @@ std::vector<VideoCodecProfile> GetTestEncodeCodecProfiles(
 #endif
 }
 
+// Encodes a single keyframe and waits until the encoder has delivered its
+// output (or reported an error).
+//
+// VideoToolbox is allowed to buffer frames internally before emitting output:
+// ConfigureCompressionSession() sets
+// kVTCompressionPropertyKey_MaxFrameDelayCount to the number of input buffers,
+// so a single VTCompressionSessionEncodeFrame() call is not guaranteed to
+// produce a bitstream buffer. Whether output is emitted right away depends on
+// the codec, on whether the hardware or the software encoder is selected, and
+// on machine load, which made tests that encode exactly one frame flaky.
+//
+// Flush() calls VTCompressionSessionCompleteFrames() which forces the pending
+// frame out, and its callback only runs once every output has been returned to
+// the client, so quitting on either signal is safe.
+void EncodeKeyFrameAndWaitForOutput(VideoEncodeAccelerator* encoder,
+                                    scoped_refptr<VideoFrame> frame,
+                                    base::RunLoop& encode_loop) {
+  encoder->Encode(std::move(frame), /*force_keyframe=*/true);
+  encoder->Flush(base::BindOnce(
+      [](base::OnceClosure quit_closure, bool success) {
+        EXPECT_TRUE(success);
+        std::move(quit_closure).Run();
+      },
+      encode_loop.QuitClosure()));
+  encode_loop.Run();
+}
+
 }  // namespace
 
 // Verifies that a camera capture frame backed by a mappable NV12 IOSurface
@@ -573,8 +601,8 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeCameraCaptureNv12Frame) {
     EXPECT_EQ(frame->storage_type(), VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
     EXPECT_TRUE(frame->HasMappableSharedImage());
 
-    encoder->Encode(frame, /*force_keyframe=*/true);
-    encode_loop.Run();
+    EncodeKeyFrameAndWaitForOutput(encoder.get(), std::move(frame),
+                                   encode_loop);
 
     // Verify that the camera frame was encoded into a valid keyframe bitstream.
     EXPECT_EQ(client.bitstream_buffer_count(), 1u);
@@ -682,8 +710,8 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeOpaqueSharedImageRgbFrames) {
       EXPECT_TRUE(frame->HasSharedImage());
       EXPECT_FALSE(frame->HasMappableSharedImage());
 
-      encoder->Encode(frame, /*force_keyframe=*/true);
-      encode_loop.Run();
+      EncodeKeyFrameAndWaitForOutput(encoder.get(), std::move(frame),
+                                     encode_loop);
 
       // Verify that the opaque RGB frame was encoded into a valid keyframe
       // bitstream, and that sRGB input is converted and tagged as BT.709.
