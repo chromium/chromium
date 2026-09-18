@@ -77,7 +77,7 @@ void HttpsFirewallRoutine::Run() {
 
 void HttpsFirewallRoutine::AnalyzeResultsAndExecuteCallback() {
   // There should at least `kTotalAdditionalHostsToQuery` (=3) URLs to query.
-  DCHECK(num_urls_to_query_);
+  CHECK(num_urls_to_query_, base::NotFatalUntil::M160);
   double dns_resolution_failure_rate =
       static_cast<double>(dns_resolution_failures_) /
       static_cast<double>(num_urls_to_query_);
@@ -89,7 +89,7 @@ void HttpsFirewallRoutine::AnalyzeResultsAndExecuteCallback() {
   } else {
     // When `dns_resolution_failure_rate` is below the threshold, there must be
     // probes that is not "DNS failure".
-    DCHECK(num_no_dns_failure_tls_probes_attempted_);
+    CHECK(num_no_dns_failure_tls_probes_attempted_, base::NotFatalUntil::M160);
     double tls_probe_failure_rate =
         static_cast<double>(tls_probe_failures_) /
         static_cast<double>(num_no_dns_failure_tls_probes_attempted_);
@@ -113,7 +113,7 @@ void HttpsFirewallRoutine::AnalyzeResultsAndExecuteCallback() {
 }
 
 void HttpsFirewallRoutine::ProbeNextUrl() {
-  DCHECK(urls_to_query_.size() > 0);
+  CHECK(urls_to_query_.size() > 0, base::NotFatalUntil::M160);
 
   auto url = urls_to_query_.back();
   urls_to_query_.pop_back();
@@ -156,7 +156,7 @@ void HttpsFirewallRoutine::OnProbeComplete(
 
 network::mojom::NetworkContext* HttpsFirewallRoutine::GetNetworkContext() {
   Profile* profile = util::GetUserProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   return profile->GetDefaultStoragePartition()->GetNetworkContext();
 }

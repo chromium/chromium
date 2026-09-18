@@ -53,7 +53,7 @@ GatewayCanBePingedRoutine::GatewayCanBePingedRoutine(
 GatewayCanBePingedRoutine::~GatewayCanBePingedRoutine() = default;
 
 bool GatewayCanBePingedRoutine::CanRun() {
-  DCHECK(remote_cros_network_config_);
+  CHECK(remote_cros_network_config_, base::NotFatalUntil::M160);
   return true;
 }
 
@@ -105,7 +105,7 @@ bool GatewayCanBePingedRoutine::BelowLatencyThreshold() {
 }
 
 void GatewayCanBePingedRoutine::FetchActiveNetworks() {
-  DCHECK(remote_cros_network_config_);
+  CHECK(remote_cros_network_config_, base::NotFatalUntil::M160);
   remote_cros_network_config_->GetNetworkStateList(
       NetworkFilter::New(FilterType::kActive, NetworkType::kAll,
                          chromeos::network_config::mojom::kNoLimit),
@@ -115,7 +115,7 @@ void GatewayCanBePingedRoutine::FetchActiveNetworks() {
 
 void GatewayCanBePingedRoutine::FetchManagedProperties(
     const std::vector<std::string>& guids) {
-  DCHECK(remote_cros_network_config_);
+  CHECK(remote_cros_network_config_, base::NotFatalUntil::M160);
   guids_remaining_ = guids.size();
   for (const std::string& guid : guids) {
     remote_cros_network_config_->GetManagedProperties(
@@ -197,7 +197,7 @@ void GatewayCanBePingedRoutine::OnNetworkStateListReceived(
 
 void GatewayCanBePingedRoutine::OnManagedPropertiesReceived(
     ManagedPropertiesPtr managed_properties) {
-  DCHECK(guids_remaining_ > 0);
+  CHECK(guids_remaining_ > 0, base::NotFatalUntil::M160);
   if (managed_properties) {
     if (managed_properties->ip_configs.has_value() &&
         managed_properties->ip_configs->size() != 0) {
@@ -235,7 +235,7 @@ void GatewayCanBePingedRoutine::OnManagedPropertiesReceived(
 void GatewayCanBePingedRoutine::OnTestICMPCompleted(
     bool is_default_network_ping_result,
     const std::optional<std::string> status) {
-  DCHECK(gateways_remaining_ > 0);
+  CHECK(gateways_remaining_ > 0, base::NotFatalUntil::M160);
   std::string result_ip;
   base::TimeDelta result_latency;
   bool failed_ping =

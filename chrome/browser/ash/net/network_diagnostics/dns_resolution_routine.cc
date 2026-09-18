@@ -47,10 +47,10 @@ Profile* GetUserProfile() {
 DnsResolutionRoutine::DnsResolutionRoutine(mojom::RoutineCallSource source)
     : NetworkDiagnosticsRoutine(source) {
   profile_ = GetUserProfile();
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
   network_context_ =
       profile_->GetDefaultStoragePartition()->GetNetworkContext();
-  DCHECK(network_context_);
+  CHECK(network_context_, base::NotFatalUntil::M160);
   set_verdict(mojom::RoutineVerdict::kNotRun);
 }
 

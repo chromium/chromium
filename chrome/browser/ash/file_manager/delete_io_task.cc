@@ -76,7 +76,7 @@ void DeleteIOTask::Complete(State state) {
 }
 
 void DeleteIOTask::DeleteFile(size_t idx) {
-  DCHECK(idx < progress_.sources.size());
+  CHECK(idx < progress_.sources.size(), base::NotFatalUntil::M160);
   const storage::FileSystemURL file_url = progress_.sources[idx].url;
   content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -89,7 +89,7 @@ void DeleteIOTask::DeleteFile(size_t idx) {
 }
 
 void DeleteIOTask::OnDeleteComplete(size_t idx, base::File::Error error) {
-  DCHECK(idx < progress_.sources.size());
+  CHECK(idx < progress_.sources.size(), base::NotFatalUntil::M160);
   operation_id_.reset();
   progress_.sources[idx].error = error;
   progress_.bytes_transferred += 1;

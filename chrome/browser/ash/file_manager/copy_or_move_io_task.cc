@@ -35,7 +35,8 @@ CopyOrMoveIOTask::CopyOrMoveIOTask(
     : IOTask(show_notification),
       profile_(profile),
       file_system_context_(file_system_context) {
-  DCHECK(type == OperationType::kCopy || type == OperationType::kMove);
+  CHECK(type == OperationType::kCopy || type == OperationType::kMove,
+        base::NotFatalUntil::M160);
   progress_.state = State::kQueued;
   progress_.type = type;
   progress_.SetDestinationFolder(std::move(destination_folder), profile);
@@ -63,7 +64,8 @@ CopyOrMoveIOTask::CopyOrMoveIOTask(
                        profile,
                        file_system_context,
                        show_notification) {
-  DCHECK_EQ(source_urls.size(), destination_file_names.size());
+  CHECK_EQ(source_urls.size(), destination_file_names.size(),
+           base::NotFatalUntil::M160);
   destination_file_names_ = std::move(destination_file_names);
 }
 

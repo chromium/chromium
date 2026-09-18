@@ -64,7 +64,7 @@ storage::FileSystemOperationRunner::OperationID StartCreateDirectoryOnIOThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const storage::FileSystemURL url,
     storage::FileSystemOperationRunner::StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   return file_system_context->operation_runner()->CreateDirectory(
       url, /*exclusive=*/false, /*recursive=*/true, std::move(callback));
 }
@@ -253,7 +253,7 @@ void TrashIOTask::ValidateAndDecrementFreeSpace(
 // Computes the total size of all source files and stores it in
 // `progress_.total_bytes`.
 void TrashIOTask::GetFileSize(size_t source_idx) {
-  DCHECK(source_idx < progress_.sources.size());
+  CHECK(source_idx < progress_.sources.size(), base::NotFatalUntil::M160);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -272,7 +272,7 @@ void TrashIOTask::GetFileSize(size_t source_idx) {
 void TrashIOTask::GotFileSize(size_t source_idx,
                               base::File::Error error,
                               const base::File::Info& file_info) {
-  DCHECK(source_idx < progress_.sources.size());
+  CHECK(source_idx < progress_.sources.size(), base::NotFatalUntil::M160);
   if (error != base::File::FILE_OK) {
     progress_.sources[source_idx].error = error;
     Complete(State::kError);
@@ -457,8 +457,8 @@ void TrashIOTask::OnSetDirectoryPermissions(
 }
 
 void TrashIOTask::GenerateDestinationURL(size_t source_idx, size_t output_idx) {
-  DCHECK(source_idx < progress_.sources.size());
-  DCHECK(source_idx < trash_entries_.size());
+  CHECK(source_idx < progress_.sources.size(), base::NotFatalUntil::M160);
+  CHECK(source_idx < trash_entries_.size(), base::NotFatalUntil::M160);
 
   const TrashEntry& entry = trash_entries_[source_idx];
   const auto trash_path = MakeRelativeFromBasePath(
@@ -525,8 +525,8 @@ void TrashIOTask::OnWriteMetadata(size_t source_idx,
 void TrashIOTask::TrashFile(size_t source_idx,
                             size_t output_idx,
                             const storage::FileSystemURL& destination_url) {
-  DCHECK(source_idx < progress_.sources.size());
-  DCHECK(output_idx < progress_.outputs.size());
+  CHECK(source_idx < progress_.sources.size(), base::NotFatalUntil::M160);
+  CHECK(output_idx < progress_.outputs.size(), base::NotFatalUntil::M160);
   progress_.outputs.emplace_back(destination_url, std::nullopt);
 
   last_progress_size_ = 0;
@@ -556,8 +556,8 @@ void TrashIOTask::TrashFile(size_t source_idx,
 void TrashIOTask::OnMoveComplete(size_t source_idx,
                                  size_t output_idx,
                                  base::File::Error error) {
-  DCHECK(source_idx < progress_.sources.size());
-  DCHECK(output_idx < progress_.outputs.size());
+  CHECK(source_idx < progress_.sources.size(), base::NotFatalUntil::M160);
+  CHECK(output_idx < progress_.outputs.size(), base::NotFatalUntil::M160);
   if (error != base::File::FILE_OK) {
     LOG(ERROR) << "Failed to move the file to trash folder: " << error;
     RecordFailedTrashingMetric(
@@ -581,8 +581,8 @@ void TrashIOTask::OnMoveComplete(size_t source_idx,
 void TrashIOTask::TrashComplete(size_t source_idx,
                                 size_t output_idx,
                                 base::File::Error error) {
-  DCHECK(source_idx < progress_.sources.size());
-  DCHECK(output_idx < progress_.outputs.size());
+  CHECK(source_idx < progress_.sources.size(), base::NotFatalUntil::M160);
+  CHECK(output_idx < progress_.outputs.size(), base::NotFatalUntil::M160);
   operation_id_.reset();
   progress_.sources[source_idx].error = error;
   progress_.outputs[output_idx].error = error;

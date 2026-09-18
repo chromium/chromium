@@ -22,7 +22,7 @@ FakeUdpSocket::~FakeUdpSocket() = default;
 void FakeUdpSocket::Connect(const net::IPEndPoint& remote_addr,
                             network::mojom::UDPSocketOptionsPtr options,
                             ConnectCallback callback) {
-  DCHECK(task_environment_);
+  CHECK(task_environment_, base::NotFatalUntil::M160);
 
   task_environment_->FastForwardBy(connection_delay_);
   if (mojo_disconnect_on_connect_) {
@@ -68,8 +68,8 @@ void FakeUdpSocket::LeaveGroup(
 }
 
 void FakeUdpSocket::ReceiveMore(uint32_t num_additional_datagrams) {
-  DCHECK(remote_.is_bound());
-  DCHECK(task_environment_);
+  CHECK(remote_.is_bound(), base::NotFatalUntil::M160);
+  CHECK(task_environment_, base::NotFatalUntil::M160);
 
   task_environment_->FastForwardBy(receive_delay_);
   if (mojo_disconnect_on_receive_) {
@@ -98,7 +98,7 @@ void FakeUdpSocket::Send(
     base::span<const uint8_t> data,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     SendCallback callback) {
-  DCHECK(task_environment_);
+  CHECK(task_environment_, base::NotFatalUntil::M160);
 
   task_environment_->FastForwardBy(send_delay_);
   if (mojo_disconnect_on_send_) {
@@ -114,14 +114,14 @@ void FakeUdpSocket::Close() {
 
 void FakeUdpSocket::BindReceiver(
     mojo::PendingReceiver<network::mojom::UDPSocket> socket) {
-  DCHECK(!receiver_.is_bound());
+  CHECK(!receiver_.is_bound(), base::NotFatalUntil::M160);
 
   receiver_.Bind(std::move(socket));
 }
 
 void FakeUdpSocket::BindRemote(
     mojo::PendingRemote<network::mojom::UDPSocketListener> socket_listener) {
-  DCHECK(!remote_.is_bound());
+  CHECK(!remote_.is_bound(), base::NotFatalUntil::M160);
 
   remote_.Bind(std::move(socket_listener));
 }

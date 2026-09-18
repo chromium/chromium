@@ -37,7 +37,7 @@ namespace network_diagnostics {
 namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 NetworkDiagnostics::NetworkDiagnostics(DebugDaemonClient* debug_daemon_client) {
-  DCHECK(debug_daemon_client);
+  CHECK(debug_daemon_client, base::NotFatalUntil::M160);
   if (debug_daemon_client) {
     debug_daemon_client_ = debug_daemon_client;
   }

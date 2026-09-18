@@ -165,8 +165,9 @@ struct TaskDescriptor {
                  const std::string& in_action_id)
       : app_id(in_app_id), task_type(in_task_type), action_id(in_action_id) {
     // For web apps, the action_id must be a full valid URL if it exists.
-    DCHECK(task_type != TASK_TYPE_WEB_APP || action_id.empty() ||
-           GURL(action_id).is_valid());
+    CHECK(task_type != TASK_TYPE_WEB_APP || action_id.empty() ||
+              GURL(action_id).is_valid(),
+          base::NotFatalUntil::M160);
   }
   TaskDescriptor() = default;
 

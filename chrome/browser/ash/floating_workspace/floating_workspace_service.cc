@@ -782,7 +782,7 @@ bool FloatingWorkspaceService::AreRequiredAppTypesInitialized() {
   apps::AppRegistryCache* cache =
       apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
           multi_user_util::GetAccountIdFromProfile(profile_));
-  DCHECK(cache);
+  CHECK(cache, base::NotFatalUntil::M160);
   const std::set<apps::AppType>& initialized_types =
       cache->InitializedAppTypes();
   if (!initialized_types.contains(apps::AppType::kWeb)) {
@@ -905,7 +905,7 @@ void FloatingWorkspaceService::SetUpServiceAndObservers(
   // If we don't have an apps cache then we observe the wrapper to
   // wait for it to be ready.
   auto& apps_cache_wrapper = apps::AppRegistryCacheWrapper::Get();
-  DCHECK(&apps_cache_wrapper);
+  CHECK(&apps_cache_wrapper, base::NotFatalUntil::M160);
   auto* apps_cache = apps_cache_wrapper.GetAppRegistryCache(
       multi_user_util::GetAccountIdFromProfile(profile_));
   if (apps_cache) {

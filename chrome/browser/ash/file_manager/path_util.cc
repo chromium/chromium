@@ -786,9 +786,9 @@ bool ConvertPathInsideVMToFileSystemURL(
 bool ConvertPathToArcUrl(const FilePath& path,
                          GURL* const arc_url_out,
                          bool* const requires_sharing_out) {
-  DCHECK(arc_url_out);
-  DCHECK(requires_sharing_out);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(arc_url_out, base::NotFatalUntil::M160);
+  CHECK(requires_sharing_out, base::NotFatalUntil::M160);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   *requires_sharing_out = false;
 
   // Obtain the primary profile. This information is required because currently
@@ -971,7 +971,7 @@ void ConvertToContentUrls(
     Profile* profile,
     const std::vector<storage::FileSystemURL>& file_system_urls,
     ConvertToContentUrlsCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (file_system_urls.empty()) {
     std::move(callback).Run(std::vector<GURL>(), std::vector<FilePath>());
@@ -1034,7 +1034,7 @@ void ConvertToContentUrls(
 bool ReplacePrefix(std::string* const s,
                    std::string_view prefix,
                    std::string_view replacement) {
-  DCHECK(s);
+  CHECK(s, base::NotFatalUntil::M160);
   if (s->starts_with(prefix) &&
       (prefix.ends_with('/') || s->size() <= prefix.size() ||
        (*s)[prefix.size()] == '/')) {
@@ -1160,9 +1160,9 @@ bool ExtractMountNameFileSystemNameFullPath(const FilePath& absolute_path,
                                             std::string* mount_name,
                                             std::string* file_system_name,
                                             std::string* full_path) {
-  DCHECK(absolute_path.IsAbsolute());
-  DCHECK(mount_name);
-  DCHECK(full_path);
+  CHECK(absolute_path.IsAbsolute(), base::NotFatalUntil::M160);
+  CHECK(mount_name, base::NotFatalUntil::M160);
+  CHECK(full_path, base::NotFatalUntil::M160);
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   FilePath virtual_path;

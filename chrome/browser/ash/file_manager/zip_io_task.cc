@@ -148,7 +148,8 @@ void ZipIOTask::Execute(IOTask::ProgressCallback progress_callback,
 }
 
 void ZipIOTask::OnFilePreprocessed() {
-  DCHECK_LT(files_preprocessed_, progress_.sources.size());
+  CHECK_LT(files_preprocessed_, progress_.sources.size(),
+           base::NotFatalUntil::M160);
   files_preprocessed_++;
   if (files_preprocessed_ < progress_.sources.size()) {
     return;
@@ -218,7 +219,7 @@ void ZipIOTask::ZipItems(
 }
 
 void ZipIOTask::OnZipProgress() {
-  DCHECK(zip_file_creator_);
+  CHECK(zip_file_creator_, base::NotFatalUntil::M160);
   progress_.bytes_transferred = zip_file_creator_->GetProgress().bytes;
   if (speedometer_.Update(progress_.bytes_transferred)) {
     const base::TimeDelta remaining_time = speedometer_.GetRemainingTime();
@@ -238,7 +239,7 @@ void ZipIOTask::OnZipProgress() {
 }
 
 void ZipIOTask::OnZipComplete() {
-  DCHECK(zip_file_creator_);
+  CHECK(zip_file_creator_, base::NotFatalUntil::M160);
   progress_.bytes_transferred = zip_file_creator_->GetProgress().bytes;
   switch (zip_file_creator_->GetResult()) {
     case ZipFileCreator::kSuccess:

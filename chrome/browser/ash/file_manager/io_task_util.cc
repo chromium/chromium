@@ -16,7 +16,7 @@ void GetFileMetadataOnIOThread(
     const storage::FileSystemURL& url,
     storage::FileSystemOperation::GetMetadataFieldSet fields,
     storage::FileSystemOperation::GetMetadataCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   file_system_context->operation_runner()->GetMetadata(url, fields,
                                                        std::move(callback));
 }
@@ -25,7 +25,7 @@ storage::FileSystemOperationRunner::OperationID StartDeleteOnIOThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const storage::FileSystemURL& file_url,
     storage::FileSystemOperation::StatusCallback status_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   return file_system_context->operation_runner()->Remove(
       file_url, /*recursive=*/true, std::move(status_callback));
 }
@@ -36,7 +36,7 @@ storage::FileSystemOperationRunner::OperationID StartMoveFileLocalOnIOThread(
     const storage::FileSystemURL destination_url,
     storage::FileSystemOperation::CopyOrMoveOptionSet options,
     storage::FileSystemOperation::StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   return file_system_context->operation_runner()->MoveFileLocal(
       source_url, destination_url, options, std::move(callback));
 }

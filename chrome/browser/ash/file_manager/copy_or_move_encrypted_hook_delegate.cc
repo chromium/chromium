@@ -21,7 +21,7 @@ void CheckFileCompleted(
     CopyOrMoveEncryptedHookDelegate::ErrorCallback finish_callback,
     drive::FileError error,
     drivefs::mojom::FileMetadataPtr metadata) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (metadata &&
       drive::util::IsEncryptedMimeType(metadata->content_mime_type)) {
     skip_callback.Run(std::move(source_url));
@@ -39,7 +39,7 @@ void CheckFile(Profile* profile,
                    skip_callback,
                CopyOrMoveEncryptedHookDelegate::ErrorCallback finish_callback) {
   // We can only access drive integration service from the UI thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   drive::DriveIntegrationService* drive_integration_service =
       drive::util::GetIntegrationServiceByProfile(profile);
   if (!drive_integration_service) {
@@ -64,7 +64,7 @@ CopyOrMoveEncryptedHookDelegate::CopyOrMoveEncryptedHookDelegate(
     : on_file_skipped_(std::move(on_file_skipped)),
       check_file_(google_apis::CreateRelayCallback(
           base::BindRepeating(&CheckFile, profile))) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 CopyOrMoveEncryptedHookDelegate::~CopyOrMoveEncryptedHookDelegate() = default;

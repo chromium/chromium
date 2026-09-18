@@ -130,7 +130,7 @@ FileBrowserHandlerExecutor::SetupFileAccessPermissions(
     scoped_refptr<storage::FileSystemContext> file_system_context_handler,
     const scoped_refptr<const Extension>& handler_extension,
     const std::vector<FileSystemURL>& file_urls) {
-  DCHECK(handler_extension.get());
+  CHECK(handler_extension.get(), base::NotFatalUntil::M160);
 
   auto* backend = ash::FileSystemBackend::Get(*file_system_context_handler);
 
@@ -215,7 +215,7 @@ void FileBrowserHandlerExecutor::ExecuteAfterSetupFileAccess(
 void FileBrowserHandlerExecutor::ExecuteDoneOnUIThread(
     bool success,
     std::string failure_reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (done_) {
     // In a multiprofile session, extension handlers will open on the desktop
     // corresponding to the profile that owns the files, so return
@@ -232,7 +232,7 @@ void FileBrowserHandlerExecutor::ExecuteDoneOnUIThread(
 void FileBrowserHandlerExecutor::ExecuteFileActionsOnUIThread(
     std::unique_ptr<FileDefinitionList> file_definition_list,
     std::unique_ptr<EntryDefinitionList> entry_definition_list) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (file_definition_list->empty() || entry_definition_list->empty()) {
     ExecuteDoneOnUIThread(false, "File list empty");

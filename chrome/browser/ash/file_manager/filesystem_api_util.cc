@@ -60,7 +60,7 @@ void GetMimeTypeAfterGetMetadataForProvidedFileSystem(
     base::OnceCallback<void(const std::optional<std::string>&)> callback,
     std::unique_ptr<ash::file_system_provider::EntryMetadata> metadata,
     base::File::Error result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (result != base::File::FILE_OK || !metadata->mime_type.get()) {
     std::move(callback).Run(std::nullopt);
@@ -74,7 +74,7 @@ void GetMimeTypeAfterGetMetadataForProvidedFileSystem(
 void GetMimeTypeAfterGetMimeTypeForArcContentFileSystem(
     base::OnceCallback<void(const std::optional<std::string>&)> callback,
     const std::optional<std::string>& mime_type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (mime_type.has_value()) {
     std::move(callback).Run(mime_type.value());
   } else {
@@ -87,8 +87,8 @@ void OnResolveToContentUrl(
     Profile* profile,
     const base::FilePath& path,
     const GURL& content_url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   if (content_url.is_valid()) {
     auto* runner =
@@ -143,7 +143,7 @@ void PrepareFileAfterCheckExistOnIOThread(
     const storage::FileSystemURL& url,
     storage::FileSystemOperation::StatusCallback callback,
     base::File::Error error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (error != base::File::FILE_ERROR_NOT_FOUND) {
     std::move(callback).Run(error);
@@ -166,7 +166,7 @@ void PrepareFileOnIOThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const storage::FileSystemURL& url,
     base::OnceCallback<void(bool)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   auto* const operation_runner = file_system_context->operation_runner();
   operation_runner->FileExists(
@@ -179,7 +179,7 @@ void PrepareFileOnIOThread(
 }  // namespace
 
 bool IsUnderNonNativeLocalPath(Profile* profile, const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   GURL url;
   if (!util::ConvertAbsoluteFilePathToFileSystemUrl(
@@ -198,7 +198,7 @@ bool IsUnderNonNativeLocalPath(Profile* profile, const base::FilePath& path) {
 }
 
 bool IsDriveLocalPath(Profile* profile, const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   GURL url;
   if (!util::ConvertAbsoluteFilePathToFileSystemUrl(
@@ -229,8 +229,8 @@ void GetNonNativeLocalPathMimeType(
     Profile* profile,
     const base::FilePath& path,
     base::OnceCallback<void(const std::optional<std::string>&)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(HasNonNativeMimeTypeProvider(profile, path));
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(HasNonNativeMimeTypeProvider(profile, path), base::NotFatalUntil::M160);
 
   auto* drive_integration_service =
       drive::util::GetIntegrationServiceByProfile(profile);
@@ -335,8 +335,8 @@ void GetNonNativeLocalPathMimeType(
 void IsNonNativeLocalPathDirectory(Profile* profile,
                                    const base::FilePath& path,
                                    base::OnceCallback<void(bool)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(IsUnderNonNativeLocalPath(profile, path));
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(IsUnderNonNativeLocalPath(profile, path), base::NotFatalUntil::M160);
 
   util::CheckIfDirectoryExists(
       GetFileManagerFileSystemContext(profile), path,
@@ -347,8 +347,8 @@ void PrepareNonNativeLocalFileForWritableApp(
     Profile* profile,
     const base::FilePath& path,
     base::OnceCallback<void(bool)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(IsUnderNonNativeLocalPath(profile, path));
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(IsUnderNonNativeLocalPath(profile, path), base::NotFatalUntil::M160);
 
   GURL url;
   if (!util::ConvertAbsoluteFilePathToFileSystemUrl(
@@ -362,9 +362,9 @@ void PrepareNonNativeLocalFileForWritableApp(
 
   scoped_refptr<storage::FileSystemContext> const file_system_context =
       GetFileManagerFileSystemContext(profile);
-  DCHECK(file_system_context);
+  CHECK(file_system_context, base::NotFatalUntil::M160);
   auto* const backend = ash::FileSystemBackend::Get(*file_system_context);
-  DCHECK(backend);
+  CHECK(backend, base::NotFatalUntil::M160);
   const storage::FileSystemURL internal_url =
       backend->CreateInternalURL(file_system_context.get(), path);
 

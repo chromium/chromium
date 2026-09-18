@@ -55,7 +55,7 @@ mojom::RoutineType HasSecureWiFiConnectionRoutine::Type() {
 }
 
 bool HasSecureWiFiConnectionRoutine::CanRun() {
-  DCHECK(remote_cros_network_config_);
+  CHECK(remote_cros_network_config_, base::NotFatalUntil::M160);
   return true;
 }
 
@@ -99,7 +99,7 @@ void HasSecureWiFiConnectionRoutine::AnalyzeResultsAndExecuteCallback() {
 }
 
 void HasSecureWiFiConnectionRoutine::FetchActiveWiFiNetworks() {
-  DCHECK(remote_cros_network_config_);
+  CHECK(remote_cros_network_config_, base::NotFatalUntil::M160);
   remote_cros_network_config_->GetNetworkStateList(
       NetworkFilter::New(FilterType::kActive, NetworkType::kWiFi,
                          chromeos::network_config::mojom::kNoLimit),

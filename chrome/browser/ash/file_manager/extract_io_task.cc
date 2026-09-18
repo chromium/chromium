@@ -72,7 +72,7 @@ ExtractIOTask::ExtractIOTask(
 }
 
 ExtractIOTask::~ExtractIOTask() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 void ExtractIOTask::ZipListenerCallback(uint64_t bytes) {
@@ -97,7 +97,7 @@ void ExtractIOTask::FinishedExtraction(base::FilePath directory, bool success) {
     any_archive_failed_ = true;
   }
 
-  DCHECK_GT(extractCount_, 0u);
+  CHECK_GT(extractCount_, 0u, base::NotFatalUntil::M160);
   if (--extractCount_ == 0) {
     cancellation_chain_ = base::DoNothing();
     progress_.state = any_archive_failed_ ? State::kError : State::kSuccess;
@@ -154,7 +154,7 @@ void ExtractIOTask::ExtractIntoNewDirectory(
     base::FilePath destination_directory,
     base::FilePath source_file,
     bool created_ok) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (created_ok) {
     // Accumulate the new cancellation callback into the cancellation chain.
     cancellation_chain_ =
@@ -219,7 +219,7 @@ bool CreateExtractionDirectory(const base::FilePath& destination_directory) {
 void ExtractIOTask::ExtractArchive(
     size_t index,
     base::FileErrorOr<storage::FileSystemURL> destination_result) {
-  DCHECK(index < progress_.sources.size());
+  CHECK(index < progress_.sources.size(), base::NotFatalUntil::M160);
   const base::FilePath source_file = progress_.sources[index].url.path();
   if (!destination_result.has_value()) {
     ZipExtractCallback(base::FilePath(), false);
@@ -284,7 +284,7 @@ void ExtractIOTask::GotFreeDiskSpace(std::optional<int64_t> free_space) {
 }
 
 void ExtractIOTask::ZipInfoCallback(unzip::mojom::InfoPtr info) {
-  DCHECK_GT(extractCount_, 0u);
+  CHECK_GT(extractCount_, 0u, base::NotFatalUntil::M160);
   if (info->size_is_valid) {
     progress_.total_bytes += info->size;
   }

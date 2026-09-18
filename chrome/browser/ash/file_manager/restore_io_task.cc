@@ -228,8 +228,8 @@ void RestoreIOTask::OnRestoreItem(size_t idx, base::File::Error error) {
 }
 
 void RestoreIOTask::RestoreComplete(size_t idx, base::File::Error error) {
-  DCHECK(idx < progress_.sources.size());
-  DCHECK(idx < progress_.outputs.size());
+  CHECK(idx < progress_.sources.size(), base::NotFatalUntil::M160);
+  CHECK(idx < progress_.outputs.size(), base::NotFatalUntil::M160);
   operation_id_.reset();
   progress_.sources[idx].error = error;
   progress_.outputs[idx].error = error;

@@ -46,7 +46,7 @@ mojom::RoutineType LanConnectivityRoutine::Type() {
 }
 
 bool LanConnectivityRoutine::CanRun() {
-  DCHECK(remote_cros_network_config_);
+  CHECK(remote_cros_network_config_, base::NotFatalUntil::M160);
   return true;
 }
 
@@ -66,7 +66,7 @@ void LanConnectivityRoutine::AnalyzeResultsAndExecuteCallback() {
 }
 
 void LanConnectivityRoutine::FetchActiveNetworks() {
-  DCHECK(remote_cros_network_config_);
+  CHECK(remote_cros_network_config_, base::NotFatalUntil::M160);
   // The usage of `base::Unretained(this)` here is safe because
   // |remote_cros_network_config_| is a mojo::Remote owned by |this|.
   remote_cros_network_config_->GetNetworkStateList(

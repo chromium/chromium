@@ -48,7 +48,7 @@ void ComputeSpaceNeedToBeFreedAfterGetMetadata(
     GetNecessaryFreeSpaceCallback callback,
     base::File::Error result,
     const base::File::Info& file_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   if (result != base::File::FILE_OK) {
     std::move(callback).Run(-1);
     return;
@@ -66,7 +66,7 @@ void GetMetadataOnIOThread(const base::FilePath& path,
                            scoped_refptr<storage::FileSystemContext> context,
                            const storage::FileSystemURL& url,
                            GetNecessaryFreeSpaceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   context->operation_runner()->GetMetadata(
       url, {storage::FileSystemOperation::GetMetadataField::kSize},
       base::BindOnce(&ComputeSpaceNeedToBeFreedAfterGetMetadata, path,
@@ -81,7 +81,7 @@ void ComputeSpaceNeedToBeFreed(
     scoped_refptr<storage::FileSystemContext> context,
     const storage::FileSystemURL& url,
     GetNecessaryFreeSpaceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&GetMetadataOnIOThread, profile->GetPath(), context, url,
@@ -142,7 +142,7 @@ void SnapshotManager::FileRefsHolder::FreeSpaceAndCreateSnapshotFile(
     const storage::FileSystemURL& url,
     int64_t needed_space,
     LocalPathCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (needed_space < 0) {
     std::move(callback).Run(base::FilePath());
@@ -172,7 +172,7 @@ void SnapshotManager::FileRefsHolder::OnCreateSnapshotFile(
     const base::File::Info& file_info,
     const base::FilePath& platform_path,
     scoped_refptr<storage::ShareableFileReference> file_ref) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (result != base::File::FILE_OK) {
     std::move(callback).Run(base::FilePath());
@@ -194,7 +194,7 @@ void SnapshotManager::CreateManagedSnapshot(
     LocalPathCallback callback) {
   scoped_refptr<storage::FileSystemContext> context(
       util::GetFileManagerFileSystemContext(profile_));
-  DCHECK(context.get());
+  CHECK(context.get(), base::NotFatalUntil::M160);
 
   GURL url;
   if (!util::ConvertAbsoluteFilePathToFileSystemUrl(
@@ -216,11 +216,11 @@ void SnapshotManager::CreateManagedSnapshotAfterSpaceComputed(
     const storage::FileSystemURL& filesystem_url,
     LocalPathCallback callback,
     int64_t needed_space) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   scoped_refptr<storage::FileSystemContext> context(
       util::GetFileManagerFileSystemContext(profile_));
-  DCHECK(context.get());
+  CHECK(context.get(), base::NotFatalUntil::M160);
 
   // Free up space if needed and start creating the snapshot.
   content::GetIOThreadTaskRunner({})->PostTask(

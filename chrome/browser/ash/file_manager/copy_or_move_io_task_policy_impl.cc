@@ -329,7 +329,8 @@ CopyOrMoveIOTaskPolicyImpl::GetHookDelegate(size_t idx) {
     return defaultHook;
   }
 
-  DCHECK_LT(idx, file_transfer_analysis_delegates_.size());
+  CHECK_LT(idx, file_transfer_analysis_delegates_.size(),
+           base::NotFatalUntil::M160);
   if (!file_transfer_analysis_delegates_[idx]) {
     // If scanning is disabled, use the normal delegate.
     // Scanning can be disabled if some source_urls lie on a file system for
@@ -350,12 +351,12 @@ CopyOrMoveIOTaskPolicyImpl::GetHookDelegate(size_t idx) {
 }
 
 void CopyOrMoveIOTaskPolicyImpl::MaybeScanForDisallowedFiles(size_t idx) {
-  DCHECK_LE(idx, progress_->sources.size());
+  CHECK_LE(idx, progress_->sources.size(), base::NotFatalUntil::M160);
   if (idx == progress_->sources.size()) {
     ScanningCompleted();
     return;
   }
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!settings_[idx].has_value()) {
     // Skip checking if connectors aren't enabled.
@@ -369,8 +370,8 @@ void CopyOrMoveIOTaskPolicyImpl::MaybeScanForDisallowedFiles(size_t idx) {
   // value to the js side to show the proper singular/plural scanning label.
   progress_callback_.Run(*progress_);
 
-  DCHECK_EQ(file_transfer_analysis_delegates_.size(),
-            progress_->sources.size());
+  CHECK_EQ(file_transfer_analysis_delegates_.size(), progress_->sources.size(),
+           base::NotFatalUntil::M160);
 
   file_transfer_analysis_delegates_[idx] =
       enterprise_connectors::FileTransferAnalysisDelegate::Create(
@@ -491,9 +492,9 @@ void CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed(
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
     IsTransferAllowedCallback callback) {
-  DCHECK(!report_only_scans_);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(file_transfer_analysis_delegates_[idx]);
+  CHECK(!report_only_scans_, base::NotFatalUntil::M160);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(file_transfer_analysis_delegates_[idx], base::NotFatalUntil::M160);
   auto result =
       file_transfer_analysis_delegates_[idx]->GetAnalysisResultAfterScan(
           source_url);
@@ -504,7 +505,7 @@ void CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed(
     std::move(callback).Run(base::File::FILE_OK);
     return;
   }
-  DCHECK(result.IsUnknown() || result.IsBlocked());
+  CHECK(result.IsUnknown() || result.IsBlocked(), base::NotFatalUntil::M160);
 
   if (base::FeatureList::IsEnabled(
           ash::features::kFileTransferEnterpriseConnectorUI)) {

@@ -140,26 +140,26 @@ void FakeNetworkContext::SetUdpSendCode(net::Error udp_send_code) {
 }
 
 void FakeNetworkContext::SetDisconnectDuringUdpSendAttempt(bool disconnect) {
-  DCHECK(fake_udp_socket_);
+  CHECK(fake_udp_socket_, base::NotFatalUntil::M160);
 
   fake_udp_socket_->set_disconnect_during_udp_send_attempt(disconnect);
 }
 
 void FakeNetworkContext::SetUdpOnReceivedCode(net::Error udp_on_received_code) {
-  DCHECK(fake_udp_socket_);
+  CHECK(fake_udp_socket_, base::NotFatalUntil::M160);
 
   fake_udp_socket_->set_udp_on_received_code(udp_on_received_code);
 }
 
 void FakeNetworkContext::SetUdpOnReceivedData(
     base::span<const uint8_t> udp_on_received_data) {
-  DCHECK(fake_udp_socket_);
+  CHECK(fake_udp_socket_, base::NotFatalUntil::M160);
 
   fake_udp_socket_->set_udp_on_received_data(std::move(udp_on_received_data));
 }
 
 void FakeNetworkContext::SetDisconnectDuringUdpReceiveAttempt(bool disconnect) {
-  DCHECK(fake_udp_socket_);
+  CHECK(fake_udp_socket_, base::NotFatalUntil::M160);
 
   fake_udp_socket_->set_disconnect_during_udp_receive_attempt(disconnect);
 }
