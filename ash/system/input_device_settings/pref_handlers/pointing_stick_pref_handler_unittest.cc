@@ -21,40 +21,30 @@
 namespace ash {
 
 namespace {
-const std::string kDictFakeKey = "fake_key";
-const std::string kDictFakeValue = "fake_value";
+constexpr char kDictFakeKey[] = "fake_key";
+constexpr char kDictFakeValue[] = "fake_value";
 
-const std::string kPointingStickKey1 = "device_key1";
-const std::string kPointingStickKey2 = "device_key2";
+constexpr char kPointingStickKey1[] = "device_key1";
+constexpr char kPointingStickKey2[] = "device_key2";
 
 constexpr char kUserEmail[] = "example@email.com";
 constexpr char kUserEmail2[] = "example2@email.com";
-const AccountId account_id_1 = AccountId::FromUserEmail(kUserEmail);
-const AccountId account_id_2 = AccountId::FromUserEmail(kUserEmail2);
 
-const int kTestSensitivity = 2;
-const bool kTestSwapRight = false;
-const bool kTestAccelerationEnabled = false;
+constexpr int kTestSensitivity = 2;
+constexpr bool kTestSwapRight = false;
+constexpr bool kTestAccelerationEnabled = false;
 
-const mojom::PointingStickSettings kPointingStickSettingsDefault(
-    /*swap_right=*/kDefaultSwapRight,
-    /*sensitivity=*/kDefaultSensitivity,
-    /*acceleration_enabled=*/kDefaultAccelerationEnabled);
+mojom::PointingStickSettings CreatePointingStickSettings1() {
+  return mojom::PointingStickSettings{/*swap_right=*/true,
+                                      /*sensitivity=*/1,
+                                      /*acceleration_enabled=*/false};
+}
 
-const mojom::PointingStickSettings kPointingStickSettingsNotDefault(
-    /*swap_right=*/!kDefaultSwapRight,
-    /*sensitivity=*/1,
-    /*acceleration_enabled=*/!kDefaultAccelerationEnabled);
-
-const mojom::PointingStickSettings kPointingStickSettings1(
-    /*swap_right=*/true,
-    /*sensitivity=*/1,
-    /*acceleration_enabled=*/false);
-
-const mojom::PointingStickSettings kPointingStickSettings2(
-    /*swap_right=*/false,
-    /*sensitivity=*/3,
-    /*acceleration_enabled=*/true);
+mojom::PointingStickSettings CreatePointingStickSettings2() {
+  return mojom::PointingStickSettings{/*swap_right=*/false,
+                                      /*sensitivity=*/3,
+                                      /*acceleration_enabled=*/true};
+}
 
 }  // namespace
 
@@ -227,6 +217,19 @@ class PointingStickPrefHandlerTest : public AshTestBase {
   }
 
  protected:
+  const AccountId account_id_1 = AccountId::FromUserEmail(kUserEmail);
+  const AccountId account_id_2 = AccountId::FromUserEmail(kUserEmail2);
+
+  const mojom::PointingStickSettings kPointingStickSettingsDefault{
+      /*swap_right=*/kDefaultSwapRight,
+      /*sensitivity=*/kDefaultSensitivity,
+      /*acceleration_enabled=*/kDefaultAccelerationEnabled};
+
+  const mojom::PointingStickSettings kPointingStickSettingsNotDefault{
+      /*swap_right=*/!kDefaultSwapRight,
+      /*sensitivity=*/1,
+      /*acceleration_enabled=*/!kDefaultAccelerationEnabled};
+
   std::unique_ptr<PointingStickPrefHandlerImpl> pref_handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 };
@@ -264,8 +267,10 @@ TEST_F(PointingStickPrefHandlerTest, UpdateLoginScreenPointingStickSettings) {
 }
 
 TEST_F(PointingStickPrefHandlerTest, MultipleDevices) {
-  CallUpdatePointingStickSettings(kPointingStickKey1, kPointingStickSettings1);
-  CallUpdatePointingStickSettings(kPointingStickKey2, kPointingStickSettings2);
+  CallUpdatePointingStickSettings(kPointingStickKey1,
+                                  CreatePointingStickSettings1());
+  CallUpdatePointingStickSettings(kPointingStickKey2,
+                                  CreatePointingStickSettings2());
 
   const auto& devices_dict =
       pref_service_->GetDict(prefs::kPointingStickDeviceSettingsDictPref);
@@ -273,17 +278,18 @@ TEST_F(PointingStickPrefHandlerTest, MultipleDevices) {
 
   auto* settings_dict = devices_dict.FindDict(kPointingStickKey1);
   ASSERT_NE(nullptr, settings_dict);
-  CheckPointingStickSettingsAndDictAreEqual(kPointingStickSettings1,
+  CheckPointingStickSettingsAndDictAreEqual(CreatePointingStickSettings1(),
                                             *settings_dict);
 
   settings_dict = devices_dict.FindDict(kPointingStickKey2);
   ASSERT_NE(nullptr, settings_dict);
-  CheckPointingStickSettingsAndDictAreEqual(kPointingStickSettings2,
+  CheckPointingStickSettingsAndDictAreEqual(CreatePointingStickSettings2(),
                                             *settings_dict);
 }
 
 TEST_F(PointingStickPrefHandlerTest, PreservesOldSettings) {
-  CallUpdatePointingStickSettings(kPointingStickKey1, kPointingStickSettings1);
+  CallUpdatePointingStickSettings(kPointingStickKey1,
+                                  CreatePointingStickSettings1());
 
   auto devices_dict =
       pref_service_->GetDict(prefs::kPointingStickDeviceSettingsDictPref)
@@ -298,7 +304,8 @@ TEST_F(PointingStickPrefHandlerTest, PreservesOldSettings) {
                          std::move(devices_dict));
 
   // Update the settings again and verify the fake key and value still exist.
-  CallUpdatePointingStickSettings(kPointingStickKey1, kPointingStickSettings1);
+  CallUpdatePointingStickSettings(kPointingStickKey1,
+                                  CreatePointingStickSettings1());
 
   const auto& updated_devices_dict =
       pref_service_->GetDict(prefs::kPointingStickDeviceSettingsDictPref);
@@ -311,7 +318,8 @@ TEST_F(PointingStickPrefHandlerTest, PreservesOldSettings) {
 }
 
 TEST_F(PointingStickPrefHandlerTest, LastUpdated) {
-  CallUpdatePointingStickSettings(kPointingStickKey1, kPointingStickSettings1,
+  CallUpdatePointingStickSettings(kPointingStickKey1,
+                                  CreatePointingStickSettings1(),
                                   /*is_external=*/true);
   auto devices_dict =
       pref_service_->GetDict(prefs::kPointingStickDeviceSettingsDictPref)
@@ -322,7 +330,7 @@ TEST_F(PointingStickPrefHandlerTest, LastUpdated) {
   ASSERT_NE(nullptr, time_stamp1);
 
   mojom::PointingStickSettingsPtr updated_settings =
-      kPointingStickSettings1.Clone();
+      CreatePointingStickSettings1().Clone();
   updated_settings->swap_right = !updated_settings->swap_right;
   CallUpdatePointingStickSettings(kPointingStickKey1, *updated_settings);
 
@@ -338,23 +346,26 @@ TEST_F(PointingStickPrefHandlerTest, LastUpdated) {
 }
 
 TEST_F(PointingStickPrefHandlerTest, UpdateSettings) {
-  CallUpdatePointingStickSettings(kPointingStickKey1, kPointingStickSettings1);
-  CallUpdatePointingStickSettings(kPointingStickKey2, kPointingStickSettings2);
+  CallUpdatePointingStickSettings(kPointingStickKey1,
+                                  CreatePointingStickSettings1());
+  CallUpdatePointingStickSettings(kPointingStickKey2,
+                                  CreatePointingStickSettings2());
 
   auto devices_dict =
       pref_service_->GetDict(prefs::kPointingStickDeviceSettingsDictPref)
           .Clone();
   auto* settings_dict = devices_dict.FindDict(kPointingStickKey1);
   ASSERT_NE(nullptr, settings_dict);
-  CheckPointingStickSettingsAndDictAreEqual(kPointingStickSettings1,
+  CheckPointingStickSettingsAndDictAreEqual(CreatePointingStickSettings1(),
                                             *settings_dict);
 
   settings_dict = devices_dict.FindDict(kPointingStickKey2);
   ASSERT_NE(nullptr, settings_dict);
-  CheckPointingStickSettingsAndDictAreEqual(kPointingStickSettings2,
+  CheckPointingStickSettingsAndDictAreEqual(CreatePointingStickSettings2(),
                                             *settings_dict);
 
-  mojom::PointingStickSettings updated_settings = kPointingStickSettings1;
+  mojom::PointingStickSettings updated_settings =
+      CreatePointingStickSettings1();
   updated_settings.swap_right = !updated_settings.swap_right;
 
   // Update the settings again and verify the settings are updated in place.
@@ -372,20 +383,22 @@ TEST_F(PointingStickPrefHandlerTest, UpdateSettings) {
   const auto* unchanged_settings_dict =
       updated_devices_dict.FindDict(kPointingStickKey2);
   ASSERT_NE(nullptr, unchanged_settings_dict);
-  CheckPointingStickSettingsAndDictAreEqual(kPointingStickSettings2,
+  CheckPointingStickSettingsAndDictAreEqual(CreatePointingStickSettings2(),
                                             *unchanged_settings_dict);
 }
 
 TEST_F(PointingStickPrefHandlerTest, UpdateSettingsInternal) {
-  CallUpdatePointingStickSettings(kPointingStickKey1, kPointingStickSettings1,
+  CallUpdatePointingStickSettings(kPointingStickKey1,
+                                  CreatePointingStickSettings1(),
                                   /*is_external=*/false);
 
   const auto& settings_dict =
       pref_service_->GetDict(prefs::kPointingStickInternalSettings);
-  CheckPointingStickSettingsAndDictAreEqual(kPointingStickSettings1,
+  CheckPointingStickSettingsAndDictAreEqual(CreatePointingStickSettings1(),
                                             settings_dict);
 
-  mojom::PointingStickSettings updated_settings = kPointingStickSettings1;
+  mojom::PointingStickSettings updated_settings =
+      CreatePointingStickSettings1();
   updated_settings.swap_right = !updated_settings.swap_right;
 
   // Update the settings again and verify the settings are updated in place.
@@ -399,7 +412,7 @@ TEST_F(PointingStickPrefHandlerTest, UpdateSettingsInternal) {
 }
 
 TEST_F(PointingStickPrefHandlerTest, NewSettingAddedRoundTrip) {
-  mojom::PointingStickSettings test_settings = kPointingStickSettings1;
+  mojom::PointingStickSettings test_settings = CreatePointingStickSettings1();
   test_settings.swap_right = !kDefaultSwapRight;
 
   CallUpdatePointingStickSettings(kPointingStickKey1, test_settings);
@@ -426,7 +439,7 @@ TEST_F(PointingStickPrefHandlerTest, NewSettingAddedRoundTrip) {
 }
 
 TEST_F(PointingStickPrefHandlerTest, NewSettingAddedRoundTripInternal) {
-  mojom::PointingStickSettings test_settings = kPointingStickSettings1;
+  mojom::PointingStickSettings test_settings = CreatePointingStickSettings1();
   test_settings.swap_right = !kDefaultSwapRight;
 
   CallUpdatePointingStickSettings(kPointingStickKey1, test_settings,
@@ -570,7 +583,7 @@ TEST_F(PointingStickPrefHandlerTest, SettingsUpdateMetricTest) {
 class PointingStickSettingsPrefConversionTest
     : public PointingStickPrefHandlerTest,
       public testing::WithParamInterface<
-          std::tuple<std::string, mojom::PointingStickSettings>> {
+          std::tuple<std::string, mojom::PointingStickSettings (*)()>> {
  public:
   PointingStickSettingsPrefConversionTest() = default;
   PointingStickSettingsPrefConversionTest(
@@ -582,7 +595,9 @@ class PointingStickSettingsPrefConversionTest
   // testing::Test:
   void SetUp() override {
     PointingStickPrefHandlerTest::SetUp();
-    std::tie(device_key_, settings_) = GetParam();
+    mojom::PointingStickSettings (*settings_factory)() = nullptr;
+    std::tie(device_key_, settings_factory) = GetParam();
+    settings_ = settings_factory();
   }
 
  protected:
@@ -595,8 +610,8 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     PointingStickSettingsPrefConversionTest,
     testing::Combine(testing::Values(kPointingStickKey1, kPointingStickKey2),
-                     testing::Values(kPointingStickSettings1,
-                                     kPointingStickSettings2)));
+                     testing::Values(&CreatePointingStickSettings1,
+                                     &CreatePointingStickSettings2)));
 
 TEST_P(PointingStickSettingsPrefConversionTest, CheckConversion) {
   CallUpdatePointingStickSettings(device_key_, settings_);

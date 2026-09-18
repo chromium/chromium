@@ -21,26 +21,9 @@
 namespace ash {
 
 namespace {
-const std::string kGraphicsTabletKey1 = "device_key1";
-const std::string kGraphicsTabletKey2 = "device_key2";
-
+constexpr char kGraphicsTabletKey1[] = "device_key1";
+constexpr char kGraphicsTabletKey2[] = "device_key2";
 constexpr char kUserEmail[] = "example@email.com";
-const AccountId account_id_1 = AccountId::FromUserEmail(kUserEmail);
-
-const mojom::ButtonRemapping button_remapping1(
-    /*name=*/"test1",
-    /*button=*/
-    mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
-    /*remapping_action=*/
-    mojom::RemappingAction::NewAcceleratorAction(
-        ash::AcceleratorAction::kBrightnessDown));
-const mojom::ButtonRemapping button_remapping2(
-    /*name=*/"test2",
-    /*button=*/
-    mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kLeft),
-    /*remapping_action=*/
-    mojom::RemappingAction::NewKeyEvent(
-        mojom::KeyEvent::New(::ui::KeyboardCode::VKEY_0, 1, 2, 3, "0")));
 }  // namespace
 
 class GraphicsTabletPrefHandlerTest : public AshTestBase {
@@ -131,6 +114,22 @@ class GraphicsTabletPrefHandlerTest : public AshTestBase {
   }
 
  protected:
+  const AccountId account_id_1 = AccountId::FromUserEmail(kUserEmail);
+  const mojom::ButtonRemapping button_remapping1{
+      /*name=*/"test1",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
+      /*remapping_action=*/
+      mojom::RemappingAction::NewAcceleratorAction(
+          ash::AcceleratorAction::kBrightnessDown)};
+  const mojom::ButtonRemapping button_remapping2{
+      /*name=*/"test2",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kLeft),
+      /*remapping_action=*/
+      mojom::RemappingAction::NewKeyEvent(
+          mojom::KeyEvent::New(::ui::KeyboardCode::VKEY_0, 1, 2, 3, "0"))};
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<GraphicsTabletPrefHandlerImpl> pref_handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;

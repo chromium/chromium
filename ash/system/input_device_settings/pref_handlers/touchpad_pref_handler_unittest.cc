@@ -23,79 +23,56 @@
 namespace ash {
 
 namespace {
-const std::string kDictFakeKey = "fake_key";
-const std::string kDictFakeValue = "fake_value";
+constexpr char kDictFakeKey[] = "fake_key";
+constexpr char kDictFakeValue[] = "fake_value";
 
-const std::string kTouchpadKey1 = "device_key1";
-const std::string kTouchpadKey2 = "device_key2";
-const std::string kTouchpadKey3 = "device_key3";
+constexpr char kTouchpadKey1[] = "device_key1";
+constexpr char kTouchpadKey2[] = "device_key2";
+constexpr char kTouchpadKey3[] = "device_key3";
 
 constexpr char kUserEmail[] = "example@email.com";
 constexpr char kUserEmail2[] = "example2@email.com";
-const AccountId account_id_1 = AccountId::FromUserEmail(kUserEmail);
-const AccountId account_id_2 = AccountId::FromUserEmail(kUserEmail2);
 
-const int kTestSensitivity = 2;
-const bool kTestReverseScrolling = false;
-const bool kTestAccelerationEnabled = false;
-const bool kTestTapToClickEnabled = false;
-const bool kTestThreeFingerClickEnabled = false;
-const bool kTestTapDraggingEnabled = false;
-const bool kTestScrollAcceleration = false;
-const int kTestHapticSensitivity = 2;
-const bool kTestHapticFeedbackEnabled = false;
+constexpr int kTestSensitivity = 2;
+constexpr bool kTestReverseScrolling = false;
+constexpr bool kTestAccelerationEnabled = false;
+constexpr bool kTestTapToClickEnabled = false;
+constexpr bool kTestThreeFingerClickEnabled = false;
+constexpr bool kTestTapDraggingEnabled = false;
+constexpr bool kTestScrollAcceleration = false;
+constexpr int kTestHapticSensitivity = 2;
+constexpr bool kTestHapticFeedbackEnabled = false;
 
-const mojom::TouchpadSettings kTouchpadSettingsDefault(
-    /*sensitivity=*/kDefaultSensitivity,
-    /*reverse_scrolling=*/kDefaultReverseScrolling,
-    /*acceleration_enabled=*/kDefaultAccelerationEnabled,
-    /*tap_to_click_enabled=*/kDefaultTapToClickEnabled,
-    /*three_finger_click_enabled=*/kDefaultThreeFingerClickEnabled,
-    /*tap_dragging_enabled=*/kDefaultTapDraggingEnabled,
-    /*scroll_sensitivity=*/kDefaultScrollSensitivity,
-    /*scroll_acceleration=*/kDefaultScrollAccelerationEnabled,
-    /*haptic_sensitivity=*/kDefaultHapticSensitivity,
-    /*haptic_enabled=*/kDefaultHapticFeedbackEnabled,
-    /*simulate_right_click=*/ui::mojom::SimulateRightClickModifier::kNone);
+mojom::TouchpadSettings CreateTouchpadSettings1() {
+  return mojom::TouchpadSettings{
+      /*sensitivity=*/1,
+      /*reverse_scrolling=*/false,
+      /*acceleration_enabled=*/false,
+      /*tap_to_click_enabled=*/false,
+      /*three_finger_click_enabled=*/false,
+      /*tap_dragging_enabled=*/false,
+      /*scroll_sensitivity=*/1,
+      /*scroll_acceleration=*/false,
+      /*haptic_sensitivity=*/1,
+      /*haptic_enabled=*/false,
+      /*simulate_right_click=*/ui::mojom::SimulateRightClickModifier::kNone};
+}
 
-const mojom::TouchpadSettings kTouchpadSettingsNotDefault(
-    /*sensitivity=*/1,
-    /*reverse_scrolling=*/!kDefaultReverseScrolling,
-    /*acceleration_enabled=*/!kDefaultAccelerationEnabled,
-    /*tap_to_click_enabled=*/!kDefaultTapToClickEnabled,
-    /*three_finger_click_enabled=*/!kDefaultThreeFingerClickEnabled,
-    /*tap_dragging_enabled=*/!kDefaultTapDraggingEnabled,
-    /*scroll_sensitivity=*/1,
-    /*scroll_acceleration=*/!kDefaultScrollAccelerationEnabled,
-    /*haptic_sensitivity=*/1,
-    /*haptic_enabled=*/!kDefaultHapticFeedbackEnabled,
-    /*simulate_right_click=*/ui::mojom::SimulateRightClickModifier::kNone);
+mojom::TouchpadSettings CreateTouchpadSettings2() {
+  return mojom::TouchpadSettings{
+      /*sensitivity=*/3,
+      /*reverse_scrolling=*/false,
+      /*acceleration_enabled=*/false,
+      /*tap_to_click_enabled=*/false,
+      /*three_finger_click_enabled=*/false,
+      /*tap_dragging_enabled=*/false,
+      /*scroll_sensitivity=*/3,
+      /*scroll_acceleration=*/false,
+      /*haptic_sensitivity=*/3,
+      /*haptic_enabled=*/false,
+      /*simulate_right_click=*/ui::mojom::SimulateRightClickModifier::kNone};
+}
 
-const mojom::TouchpadSettings kTouchpadSettings1(
-    /*sensitivity=*/1,
-    /*reverse_scrolling=*/false,
-    /*acceleration_enabled=*/false,
-    /*tap_to_click_enabled=*/false,
-    /*three_finger_click_enabled=*/false,
-    /*tap_dragging_enabled=*/false,
-    /*scroll_sensitivity=*/1,
-    /*scroll_acceleration=*/false,
-    /*haptic_sensitivity=*/1,
-    /*haptic_enabled=*/false,
-    /*simulate_right_click=*/ui::mojom::SimulateRightClickModifier::kNone);
-
-const mojom::TouchpadSettings kTouchpadSettings2(
-    /*sensitivity=*/3,
-    /*reverse_scrolling=*/false,
-    /*acceleration_enabled=*/false,
-    /*tap_to_click_enabled=*/false,
-    /*three_finger_click_enabled=*/false,
-    /*tap_dragging_enabled=*/false,
-    /*scroll_sensitivity=*/3,
-    /*scroll_acceleration=*/false,
-    /*haptic_sensitivity=*/3,
-    /*haptic_enabled=*/false,
-    /*simulate_right_click=*/ui::mojom::SimulateRightClickModifier::kNone);
 }  // namespace
 
 class TouchpadPrefHandlerTest : public AshTestBase {
@@ -399,6 +376,35 @@ class TouchpadPrefHandlerTest : public AshTestBase {
   }
 
  protected:
+  const AccountId account_id_1 = AccountId::FromUserEmail(kUserEmail);
+  const AccountId account_id_2 = AccountId::FromUserEmail(kUserEmail2);
+
+  const mojom::TouchpadSettings kTouchpadSettingsDefault{
+      /*sensitivity=*/kDefaultSensitivity,
+      /*reverse_scrolling=*/kDefaultReverseScrolling,
+      /*acceleration_enabled=*/kDefaultAccelerationEnabled,
+      /*tap_to_click_enabled=*/kDefaultTapToClickEnabled,
+      /*three_finger_click_enabled=*/kDefaultThreeFingerClickEnabled,
+      /*tap_dragging_enabled=*/kDefaultTapDraggingEnabled,
+      /*scroll_sensitivity=*/kDefaultScrollSensitivity,
+      /*scroll_acceleration=*/kDefaultScrollAccelerationEnabled,
+      /*haptic_sensitivity=*/kDefaultHapticSensitivity,
+      /*haptic_enabled=*/kDefaultHapticFeedbackEnabled,
+      /*simulate_right_click=*/ui::mojom::SimulateRightClickModifier::kNone};
+
+  const mojom::TouchpadSettings kTouchpadSettingsNotDefault{
+      /*sensitivity=*/1,
+      /*reverse_scrolling=*/!kDefaultReverseScrolling,
+      /*acceleration_enabled=*/!kDefaultAccelerationEnabled,
+      /*tap_to_click_enabled=*/!kDefaultTapToClickEnabled,
+      /*three_finger_click_enabled=*/!kDefaultThreeFingerClickEnabled,
+      /*tap_dragging_enabled=*/!kDefaultTapDraggingEnabled,
+      /*scroll_sensitivity=*/1,
+      /*scroll_acceleration=*/!kDefaultScrollAccelerationEnabled,
+      /*haptic_sensitivity=*/1,
+      /*haptic_enabled=*/!kDefaultHapticFeedbackEnabled,
+      /*simulate_right_click=*/ui::mojom::SimulateRightClickModifier::kNone};
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TouchpadPrefHandlerImpl> pref_handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
@@ -433,8 +439,8 @@ TEST_F(TouchpadPrefHandlerTest, UpdateLoginScreenTouchpadSettings) {
 }
 
 TEST_F(TouchpadPrefHandlerTest, MultipleDevices) {
-  CallUpdateTouchpadSettings(kTouchpadKey1, kTouchpadSettings1);
-  CallUpdateTouchpadSettings(kTouchpadKey2, kTouchpadSettings2);
+  CallUpdateTouchpadSettings(kTouchpadKey1, CreateTouchpadSettings1());
+  CallUpdateTouchpadSettings(kTouchpadKey2, CreateTouchpadSettings2());
 
   const auto& devices_dict =
       pref_service_->GetDict(prefs::kTouchpadDeviceSettingsDictPref);
@@ -442,15 +448,17 @@ TEST_F(TouchpadPrefHandlerTest, MultipleDevices) {
 
   auto* settings_dict = devices_dict.FindDict(kTouchpadKey1);
   ASSERT_NE(nullptr, settings_dict);
-  CheckTouchpadSettingsAndDictAreEqual(kTouchpadSettings1, *settings_dict);
+  CheckTouchpadSettingsAndDictAreEqual(CreateTouchpadSettings1(),
+                                       *settings_dict);
 
   settings_dict = devices_dict.FindDict(kTouchpadKey2);
   ASSERT_NE(nullptr, settings_dict);
-  CheckTouchpadSettingsAndDictAreEqual(kTouchpadSettings2, *settings_dict);
+  CheckTouchpadSettingsAndDictAreEqual(CreateTouchpadSettings2(),
+                                       *settings_dict);
 }
 
 TEST_F(TouchpadPrefHandlerTest, PreservesOldSettings) {
-  CallUpdateTouchpadSettings(kTouchpadKey1, kTouchpadSettings1);
+  CallUpdateTouchpadSettings(kTouchpadKey1, CreateTouchpadSettings1());
 
   auto devices_dict =
       pref_service_->GetDict(prefs::kTouchpadDeviceSettingsDictPref).Clone();
@@ -464,7 +472,7 @@ TEST_F(TouchpadPrefHandlerTest, PreservesOldSettings) {
                          std::move(devices_dict));
 
   // Update the settings again and verify the fake key and value still exist.
-  CallUpdateTouchpadSettings(kTouchpadKey1, kTouchpadSettings1);
+  CallUpdateTouchpadSettings(kTouchpadKey1, CreateTouchpadSettings1());
 
   const auto& updated_devices_dict =
       pref_service_->GetDict(prefs::kTouchpadDeviceSettingsDictPref);
@@ -477,7 +485,7 @@ TEST_F(TouchpadPrefHandlerTest, PreservesOldSettings) {
 }
 
 TEST_F(TouchpadPrefHandlerTest, LastUpdated) {
-  CallUpdateTouchpadSettings(kTouchpadKey1, kTouchpadSettings1,
+  CallUpdateTouchpadSettings(kTouchpadKey1, CreateTouchpadSettings1(),
                              /*is_external=*/true);
   auto devices_dict =
       pref_service_->GetDict(prefs::kTouchpadDeviceSettingsDictPref).Clone();
@@ -486,7 +494,8 @@ TEST_F(TouchpadPrefHandlerTest, LastUpdated) {
   auto* time_stamp1 = settings_dict->Find(prefs::kLastUpdatedKey);
   ASSERT_NE(nullptr, time_stamp1);
 
-  mojom::TouchpadSettingsPtr updated_settings = kTouchpadSettings1.Clone();
+  mojom::TouchpadSettingsPtr updated_settings =
+      CreateTouchpadSettings1().Clone();
   updated_settings->reverse_scrolling = !updated_settings->reverse_scrolling;
   CallUpdateTouchpadSettings(kTouchpadKey1, *updated_settings);
 
@@ -502,20 +511,22 @@ TEST_F(TouchpadPrefHandlerTest, LastUpdated) {
 }
 
 TEST_F(TouchpadPrefHandlerTest, UpdateSettings) {
-  CallUpdateTouchpadSettings(kTouchpadKey1, kTouchpadSettings1);
-  CallUpdateTouchpadSettings(kTouchpadKey2, kTouchpadSettings2);
+  CallUpdateTouchpadSettings(kTouchpadKey1, CreateTouchpadSettings1());
+  CallUpdateTouchpadSettings(kTouchpadKey2, CreateTouchpadSettings2());
 
   auto devices_dict =
       pref_service_->GetDict(prefs::kTouchpadDeviceSettingsDictPref).Clone();
   auto* settings_dict = devices_dict.FindDict(kTouchpadKey1);
   ASSERT_NE(nullptr, settings_dict);
-  CheckTouchpadSettingsAndDictAreEqual(kTouchpadSettings1, *settings_dict);
+  CheckTouchpadSettingsAndDictAreEqual(CreateTouchpadSettings1(),
+                                       *settings_dict);
 
   settings_dict = devices_dict.FindDict(kTouchpadKey2);
   ASSERT_NE(nullptr, settings_dict);
-  CheckTouchpadSettingsAndDictAreEqual(kTouchpadSettings2, *settings_dict);
+  CheckTouchpadSettingsAndDictAreEqual(CreateTouchpadSettings2(),
+                                       *settings_dict);
 
-  mojom::TouchpadSettings updated_settings = kTouchpadSettings1;
+  mojom::TouchpadSettings updated_settings = CreateTouchpadSettings1();
   updated_settings.reverse_scrolling = !updated_settings.reverse_scrolling;
 
   // Update the settings again and verify the settings are updated in place.
@@ -533,19 +544,20 @@ TEST_F(TouchpadPrefHandlerTest, UpdateSettings) {
   const auto* unchanged_settings_dict =
       updated_devices_dict.FindDict(kTouchpadKey2);
   ASSERT_NE(nullptr, unchanged_settings_dict);
-  CheckTouchpadSettingsAndDictAreEqual(kTouchpadSettings2,
+  CheckTouchpadSettingsAndDictAreEqual(CreateTouchpadSettings2(),
                                        *unchanged_settings_dict);
 }
 
 TEST_F(TouchpadPrefHandlerTest, UpdateSettingsInternal) {
-  CallUpdateTouchpadSettings(kTouchpadKey1, kTouchpadSettings1,
+  CallUpdateTouchpadSettings(kTouchpadKey1, CreateTouchpadSettings1(),
                              /*is_external=*/false);
 
   const auto& settings_dict =
       pref_service_->GetDict(prefs::kTouchpadInternalSettings);
-  CheckTouchpadSettingsAndDictAreEqual(kTouchpadSettings1, settings_dict);
+  CheckTouchpadSettingsAndDictAreEqual(CreateTouchpadSettings1(),
+                                       settings_dict);
 
-  mojom::TouchpadSettings updated_settings = kTouchpadSettings1;
+  mojom::TouchpadSettings updated_settings = CreateTouchpadSettings1();
   updated_settings.reverse_scrolling = !updated_settings.reverse_scrolling;
 
   // Update the settings again and verify the settings are updated in place.
@@ -558,7 +570,7 @@ TEST_F(TouchpadPrefHandlerTest, UpdateSettingsInternal) {
 }
 
 TEST_F(TouchpadPrefHandlerTest, NewSettingAddedRoundTrip) {
-  mojom::TouchpadSettings test_settings = kTouchpadSettings1;
+  mojom::TouchpadSettings test_settings = CreateTouchpadSettings1();
   test_settings.reverse_scrolling = !kDefaultReverseScrolling;
 
   CallUpdateTouchpadSettings(kTouchpadKey1, test_settings);
@@ -584,7 +596,7 @@ TEST_F(TouchpadPrefHandlerTest, NewSettingAddedRoundTrip) {
 }
 
 TEST_F(TouchpadPrefHandlerTest, NewSettingAddedRoundTripInternal) {
-  mojom::TouchpadSettings test_settings = kTouchpadSettings1;
+  mojom::TouchpadSettings test_settings = CreateTouchpadSettings1();
   test_settings.reverse_scrolling = !kDefaultReverseScrolling;
 
   CallUpdateTouchpadSettings(kTouchpadKey1, test_settings,
@@ -797,7 +809,7 @@ TEST_F(TouchpadPrefHandlerTest, SettingsUpdateMetricTest) {
 class TouchpadSettingsPrefConversionTest
     : public TouchpadPrefHandlerTest,
       public testing::WithParamInterface<
-          std::tuple<std::string, mojom::TouchpadSettings>> {
+          std::tuple<std::string, mojom::TouchpadSettings (*)()>> {
  public:
   TouchpadSettingsPrefConversionTest() = default;
   TouchpadSettingsPrefConversionTest(
@@ -809,7 +821,9 @@ class TouchpadSettingsPrefConversionTest
   // testing::Test:
   void SetUp() override {
     TouchpadPrefHandlerTest::SetUp();
-    std::tie(device_key_, settings_) = GetParam();
+    mojom::TouchpadSettings (*settings_factory)() = nullptr;
+    std::tie(device_key_, settings_factory) = GetParam();
+    settings_ = settings_factory();
   }
 
  protected:
@@ -822,7 +836,8 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     TouchpadSettingsPrefConversionTest,
     testing::Combine(testing::Values(kTouchpadKey1, kTouchpadKey2),
-                     testing::Values(kTouchpadSettings1, kTouchpadSettings2)));
+                     testing::Values(&CreateTouchpadSettings1,
+                                     &CreateTouchpadSettings2)));
 
 TEST_P(TouchpadSettingsPrefConversionTest, CheckConversion) {
   CallUpdateTouchpadSettings(device_key_, settings_);
