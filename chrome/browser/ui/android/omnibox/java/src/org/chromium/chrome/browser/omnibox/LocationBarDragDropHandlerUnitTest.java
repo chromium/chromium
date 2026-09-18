@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -20,8 +22,13 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ContentProvider;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
 import android.net.Uri;
+import android.os.Process;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 import android.view.View;
@@ -43,10 +50,14 @@ import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowContentResolver;
 import org.robolectric.shadows.ShadowMimeTypeMap;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -55,6 +66,7 @@ import java.util.List;
 
 /** Unit tests for {@link LocationBarDragDropHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
 public class LocationBarDragDropHandlerUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -71,6 +83,7 @@ public class LocationBarDragDropHandlerUnitTest {
     @Mock private DragAndDropPermissions mDragAndDropPermissions;
     @Mock private ContentProvider mContentProvider;
     @Mock private Intent mIntent;
+    @Mock private PackageManager mPackageManager;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<OmniboxLoadUrlParams> mLoadUrlParamsCaptor;
@@ -90,6 +103,29 @@ public class LocationBarDragDropHandlerUnitTest {
         shadowMimeTypeMap.addExtensionMimeTypeMapping("png", "image/png");
         shadowMimeTypeMap.addExtensionMimeTypeMapping("txt", "text/plain");
         shadowMimeTypeMap.addExtensionMimeTypeMapping("pdf", "application/pdf");
+    }
+
+    /**
+     * Installs an application context whose PackageManager resolves {@code authority} to a provider
+     * declared by {@code packageName}.
+     */
+    private void setResolvedProviderPackage(String authority, String packageName) {
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = packageName;
+        providerInfo.applicationInfo = new ApplicationInfo();
+        providerInfo.applicationInfo.uid =
+                packageName.equals(mContext.getPackageName())
+                        ? Process.myUid()
+                        : Process.myUid() + 1;
+        when(mPackageManager.resolveContentProvider(eq(authority), anyInt()))
+                .thenReturn(providerInfo);
+        ContextUtils.initApplicationContextForTests(
+                new ContextWrapper(mContext) {
+                    @Override
+                    public PackageManager getPackageManager() {
+                        return mPackageManager;
+                    }
+                });
     }
 
     @Test
@@ -136,6 +172,7 @@ public class LocationBarDragDropHandlerUnitTest {
     }
 
     @Test
+    @DisableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
     public void testOnDrag_Drop_FileUri() {
         when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
         when(mDragEvent.getClipData()).thenReturn(mClipData);
@@ -156,6 +193,118 @@ public class LocationBarDragDropHandlerUnitTest {
     }
 
     @Test
+    @EnableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
+    public void testOnDrag_Drop_FileUri_DefenseEnabled() {
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(mClipData);
+        when(mClipData.getItemCount()).thenReturn(1);
+        when(mClipData.getItemAt(0)).thenReturn(mClipDataItem);
+
+        Uri fileUri = Uri.parse("file:///path/to/file.txt");
+        when(mClipDataItem.getUri()).thenReturn(fileUri);
+
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+
+        assertFalse(mHandler.onDrag(new View(mContext), mDragEvent));
+
+        verify(mOmniboxStub, never()).loadUrl(any());
+    }
+
+    @Test
+    @EnableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
+    public void testOnDrag_Drop_ContentUriFromThisApp() {
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(mClipData);
+        when(mClipData.getItemCount()).thenReturn(1);
+        when(mClipData.getItemAt(0)).thenReturn(mClipDataItem);
+
+        Uri contentUri = Uri.parse("content://com.example.fileprovider/downloads/report.csv");
+        when(mClipDataItem.getUri()).thenReturn(contentUri);
+
+        setResolvedProviderPackage("com.example.fileprovider", mContext.getPackageName());
+
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mActivity.requestDragAndDropPermissions(mDragEvent))
+                .thenReturn(mDragAndDropPermissions);
+
+        assertFalse(mHandler.onDrag(new View(mContext), mDragEvent));
+
+        verify(mOmniboxStub, never()).loadUrl(any());
+        verify(mTab, never()).addObserver(any());
+        verify(mDragAndDropPermissions).release();
+    }
+
+    @Test
+    @EnableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
+    public void testOnDrag_Drop_UppercaseFileUri_DefenseEnabled() {
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(mClipData);
+        when(mClipData.getItemCount()).thenReturn(1);
+        when(mClipData.getItemAt(0)).thenReturn(mClipDataItem);
+
+        Uri fileUri = Uri.parse("FILE:///path/to/file.txt");
+        when(mClipDataItem.getUri()).thenReturn(fileUri);
+
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+
+        assertFalse(mHandler.onDrag(new View(mContext), mDragEvent));
+
+        verify(mOmniboxStub, never()).loadUrl(any());
+    }
+
+    @Test
+    @EnableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
+    public void testOnDrag_Drop_UppercaseContentUriFromThisApp() {
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(mClipData);
+        when(mClipData.getItemCount()).thenReturn(1);
+        when(mClipData.getItemAt(0)).thenReturn(mClipDataItem);
+
+        Uri contentUri = Uri.parse("CONTENT://com.example.fileprovider/downloads/report.csv");
+        when(mClipDataItem.getUri()).thenReturn(contentUri);
+
+        setResolvedProviderPackage("com.example.fileprovider", mContext.getPackageName());
+
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mActivity.requestDragAndDropPermissions(mDragEvent))
+                .thenReturn(mDragAndDropPermissions);
+
+        assertFalse(mHandler.onDrag(new View(mContext), mDragEvent));
+
+        verify(mOmniboxStub, never()).loadUrl(any());
+        verify(mTab, never()).addObserver(any());
+        verify(mDragAndDropPermissions).release();
+    }
+
+    @Test
+    @DisableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
+    public void testOnDrag_Drop_ContentUriFromThisApp_DefenseDisabled() {
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(mClipData);
+        when(mClipData.getItemCount()).thenReturn(1);
+        when(mClipData.getItemAt(0)).thenReturn(mClipDataItem);
+
+        Uri contentUri = Uri.parse("content://com.example.fileprovider/downloads/report.csv");
+        when(mClipDataItem.getUri()).thenReturn(contentUri);
+
+        when(mContentProvider.getType(contentUri)).thenReturn("text/csv");
+        ShadowContentResolver.registerProviderInternal(
+                "com.example.fileprovider", mContentProvider);
+
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mActivity.requestDragAndDropPermissions(mDragEvent))
+                .thenReturn(mDragAndDropPermissions);
+
+        assertTrue(mHandler.onDrag(new View(mContext), mDragEvent));
+
+        verify(mOmniboxStub).loadUrl(mLoadUrlParamsCaptor.capture());
+        assertEquals(
+                "content://com.example.fileprovider/downloads/report.csv",
+                mLoadUrlParamsCaptor.getValue().url);
+    }
+
+    @Test
+    @EnableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
     public void testOnDrag_Drop_ContentUri() {
         when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
         when(mDragEvent.getClipData()).thenReturn(mClipData);
@@ -189,6 +338,7 @@ public class LocationBarDragDropHandlerUnitTest {
     }
 
     @Test
+    @EnableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
     public void testOnDrag_Drop_ContentUri_LoadFailed() {
         when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
         when(mDragEvent.getClipData()).thenReturn(mClipData);
@@ -217,6 +367,7 @@ public class LocationBarDragDropHandlerUnitTest {
     }
 
     @Test
+    @EnableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
     public void testOnDrag_Drop_ContentUri_TabDestroyed() {
         when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
         when(mDragEvent.getClipData()).thenReturn(mClipData);
@@ -322,6 +473,7 @@ public class LocationBarDragDropHandlerUnitTest {
     }
 
     @Test
+    @DisableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
     public void testFindUriToLoad() {
         ClipData.Item item1 = mock(ClipData.Item.class);
         ClipData.Item item2 = mock(ClipData.Item.class);
@@ -350,6 +502,25 @@ public class LocationBarDragDropHandlerUnitTest {
         when(mClipDescription.getMimeType(1)).thenReturn("application/pdf");
 
         assertEquals(contentUri, mHandler.findUriToLoad(mContext, mClipData, mClipDescription));
+    }
+
+    @Test
+    @EnableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
+    public void testFindUriToLoad_SkipsContentUriFromThisApp() {
+        Uri thisAppUri = Uri.parse("content://com.example.fileprovider/downloads/report.csv");
+        Uri otherAppUri = Uri.parse("content://com.example.provider/document.pdf");
+        ClipData clipData =
+                new ClipData(
+                        "clip",
+                        new String[] {"text/csv", "application/pdf"},
+                        new ClipData.Item(thisAppUri));
+        clipData.addItem(new ClipData.Item(otherAppUri));
+
+        when(mContentProvider.getType(otherAppUri)).thenReturn("application/pdf");
+        ShadowContentResolver.registerProviderInternal("com.example.provider", mContentProvider);
+        setResolvedProviderPackage("com.example.fileprovider", mContext.getPackageName());
+
+        assertEquals(otherAppUri, mHandler.findUriToLoad(mContext, clipData, mClipDescription));
     }
 
     @Test
