@@ -26,6 +26,7 @@
 #include "third_party/libgav1/src/src/decoder_state.h"
 #include "third_party/libgav1/src/src/gav1/status_code.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
+#include "third_party/libgav1/src/src/utils/constants.h"
 #include "third_party/libgav1/src/src/utils/types.h"
 #include "third_party/webrtc/common_video/h264/h264_common.h"
 #include "third_party/webrtc/common_video/h264/sps_parser.h"
