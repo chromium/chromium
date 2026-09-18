@@ -471,7 +471,9 @@ TEST_F(LayoutTreeBuilderTraversalTest,
             container->GetLayoutObject());
   EXPECT_EQ(LayoutTreeBuilderTraversal::NextSiblingLayoutObject(*button),
             interest_button_layout);
-  EXPECT_EQ(interest_button_layout->PreviousSibling(), nullptr);
+  EXPECT_NE(interest_button_layout->PreviousSibling(), nullptr);
+  EXPECT_TRUE(interest_button_layout->NextSibling() &&
+              interest_button_layout->NextSibling()->IsText());
 }
 
 }  // namespace blink

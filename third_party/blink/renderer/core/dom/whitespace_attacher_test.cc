@@ -579,7 +579,8 @@ TEST_F(WhitespaceAttacherTest, RemoveSpaceForScrollMarkerGroup) {
       LayoutTreeBuilderTraversal::NextLayoutSibling(*scroll_marker_group);
   ASSERT_TRUE(space2);
   EXPECT_TRUE(space2->IsTextNode());
-  EXPECT_TRUE(space2->GetLayoutObject());
+  // ::scroll-marker-group is blockified, so subsequent whitespace collapses.
+  EXPECT_FALSE(space2->GetLayoutObject());
 
   To<Element>(scroller)->SetInlineStyleProperty(CSSPropertyID::kDisplay,
                                                 CSSValueID::kFlex);
