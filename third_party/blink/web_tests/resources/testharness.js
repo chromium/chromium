@@ -88,7 +88,7 @@
                                                  status: harness_status.structured_clone(),
                                                  asserts: asserts.map(assert => assert.structured_clone())});
                          }]
-        }
+        };
 
         on_event(window, 'load', function() {
           setTimeout(() => {
@@ -203,7 +203,7 @@
             }
         });
         this.message_events = new_events;
-    }
+    };
 
     WindowTestEnvironment.prototype.next_default_test_name = function() {
         var suffix = this.name_counter > 0 ? " " + this.name_counter : "";
@@ -225,8 +225,8 @@
     WindowTestEnvironment.prototype.test_timeout = function() {
         var metas = document.getElementsByTagName("meta");
         for (var i = 0; i < metas.length; i++) {
-            if (metas[i].name == "timeout") {
-                if (metas[i].content == "long") {
+            if (metas[i].name === "timeout") {
+                if (metas[i].content === "long") {
                     return settings.harness_timeout.long;
                 }
                 break;
@@ -487,7 +487,7 @@
         this.all_loaded = false;
         this.on_loaded_callback = null;
         Promise.resolve().then(function() {
-            this.all_loaded = true
+            this.all_loaded = true;
             if (this.on_loaded_callback) {
                 this.on_loaded_callback();
             }
@@ -563,7 +563,7 @@
         // The worker object may be from another execution context,
         // so do not use instanceof here.
         return 'ServiceWorker' in global_scope &&
-            Object.prototype.toString.call(worker) == '[object ServiceWorker]';
+            Object.prototype.toString.call(worker) === '[object ServiceWorker]';
     }
 
     var seen_func_name = Object.create(null);
@@ -810,7 +810,7 @@
         return bring_promise_to_current_realm(promise)
             .then(test.unreached_func("Should have rejected: " + description))
             .catch(function(e) {
-                assert_throws_js_impl(constructor, function() { throw e },
+                assert_throws_js_impl(constructor, function() { throw e; },
                                       description, "promise_rejects_js");
             });
     }
@@ -862,8 +862,56 @@
         return bring_promise_to_current_realm(promise)
             .then(test.unreached_func("Should have rejected: " + description))
             .catch(function(e) {
-                assert_throws_dom_impl(type, function() { throw e }, description,
+                assert_throws_dom_impl(type, function() { throw e; }, description,
                                        "promise_rejects_dom", constructor);
+            });
+    }
+
+/**
+     * Assert that a `Promise` is rejected with a `QuotaExceededError` with the
+     * expected values.
+     *
+     * For the remaining arguments, there are two ways of calling
+     * `promise_rejects_quotaexceedederror`:
+     *
+     * 1) If the `QuotaExceededError` is expected to come from the
+     *    current global, the second argument should be the promise
+     *    expected to reject, the third and a fourth the expected
+     *    `requested` and `quota` property values, and the fifth,
+     *    optional, argument is the assertion description.
+     *
+     * 2) If the `QuotaExceededError` is expected to come from some
+     *    other global, the second argument should be the
+     *    `QuotaExceededError` constructor from that global, the third
+     *    argument should be the promise expected to reject, the fourth
+     *    and fifth the expected `requested` and `quota` property
+     *    values, and the sixth, optional, argument is the assertion
+     *    description.
+     *
+     */
+    function promise_rejects_quotaexceedederror(test, promiseOrConstructor, requestedOrPromise, quotaOrRequested, descriptionOrQuota, maybeDescription)
+    {
+        let constructor, promise, requested, quota, description;
+        if (typeof promiseOrConstructor === "function" &&
+            promiseOrConstructor.name === "QuotaExceededError") {
+            constructor = promiseOrConstructor;
+            promise = requestedOrPromise;
+            requested = quotaOrRequested;
+            quota = descriptionOrQuota;
+            description = maybeDescription;
+        } else {
+            constructor = self.QuotaExceededError;
+            promise = promiseOrConstructor;
+            requested = requestedOrPromise;
+            quota = quotaOrRequested;
+            description = descriptionOrQuota;
+            assert(maybeDescription === undefined,
+                   "Too many args passed to no-constructor version of promise_rejects_quotaexceedederror");
+        }
+        return bring_promise_to_current_realm(promise)
+            .then(test.unreached_func("Should have rejected: " + description))
+            .catch(function(e) {
+                assert_throws_quotaexceedederror_impl(function() { throw e; }, requested, quota, description, "promise_rejects_quotaexceedederror", constructor);
             });
     }
 
@@ -881,7 +929,7 @@
         return bring_promise_to_current_realm(promise)
             .then(test.unreached_func("Should have rejected: " + description))
             .catch(function(e) {
-                assert_throws_exactly_impl(exception, function() { throw e },
+                assert_throws_exactly_impl(exception, function() { throw e; },
                                            description, "promise_rejects_exactly");
             });
     }
@@ -907,7 +955,7 @@
      */
     function EventWatcher(test, watchedNode, eventTypes, timeoutPromise)
     {
-        if (typeof eventTypes == 'string') {
+        if (typeof eventTypes === 'string') {
             eventTypes = [eventTypes];
         }
 
@@ -972,7 +1020,7 @@
             if (waitingFor) {
                 return Promise.reject('Already waiting for an event or events');
             }
-            if (typeof types == 'string') {
+            if (typeof types === 'string') {
                 types = [types];
             }
             if (options && options.record && options.record === 'all') {
@@ -987,7 +1035,7 @@
 
                     // This should always fail, otherwise we should have
                     // resolved the promise.
-                    assert_true(waitingFor.types.length == 0,
+                    assert_true(waitingFor.types.length === 0,
                                 'Timed out waiting for ' + waitingFor.types.join(', '));
                     var result = recordedEvents;
                     recordedEvents = null;
@@ -1132,7 +1180,7 @@
      *
      * Typically this function is called implicitly on page load; it's
      * only necessary for users to call this when either the
-     * ``explicit_done`` or ``single_page`` properties have been set
+     * ``explicit_done`` or ``single_test`` properties have been set
      * via the :js:func:`setup` function.
      *
      * For single page tests this marks the test as complete and sets its status.
@@ -1240,6 +1288,7 @@
     expose(promise_test, 'promise_test');
     expose(promise_rejects_js, 'promise_rejects_js');
     expose(promise_rejects_dom, 'promise_rejects_dom');
+    expose(promise_rejects_quotaexceedederror, 'promise_rejects_quotaexceedederror');
     expose(promise_rejects_exactly, 'promise_rejects_exactly');
     expose(generate_tests, 'generate_tests');
     expose(setup, 'setup');
@@ -1400,6 +1449,8 @@
                 return "-0";
             }
             return String(val);
+        case "bigint":
+            return String(val) + 'n';
         case "object":
             if (val === null) {
                 return "null";
@@ -1423,11 +1474,11 @@
                 case Node.COMMENT_NODE:
                     return "Comment node <!--" + truncate(val.data, 60) + "-->";
                 case Node.DOCUMENT_NODE:
-                    return "Document node with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
+                    return "Document node with " + val.childNodes.length + (val.childNodes.length === 1 ? " child" : " children");
                 case Node.DOCUMENT_TYPE_NODE:
                     return "DocumentType node";
                 case Node.DOCUMENT_FRAGMENT_NODE:
-                    return "DocumentFragment node with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
+                    return "DocumentFragment node with " + val.childNodes.length + (val.childNodes.length === 1 ? " child" : " children");
                 default:
                     return "Node object of unknown type";
                 }
@@ -1771,19 +1822,24 @@
     /**
      * Assert that ``actual`` is a number less than ``expected``.
      *
-     * @param {number} actual - Test value.
-     * @param {number} expected - Number that ``actual`` must be less than.
+     * @param {number|bigint} actual - Test value.
+     * @param {number|bigint} expected - Value that ``actual`` must be less than.
      * @param {string} [description] - Description of the condition being tested.
      */
     function assert_less_than(actual, expected, description)
     {
         /*
-         * Test if a primitive number is less than another
+         * Test if a primitive number (or bigint) is less than another
          */
-        assert(typeof actual === "number",
+        assert(typeof actual === "number" || typeof actual === "bigint",
                "assert_less_than", description,
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
+
+        assert(typeof actual === typeof expected,
+               "assert_less_than", description,
+               "expected a ${type_expected} but got a ${type_actual}",
+               {type_expected:typeof expected, type_actual:typeof actual});
 
         assert(actual < expected,
                "assert_less_than", description,
@@ -1795,19 +1851,24 @@
     /**
      * Assert that ``actual`` is a number greater than ``expected``.
      *
-     * @param {number} actual - Test value.
-     * @param {number} expected - Number that ``actual`` must be greater than.
+     * @param {number|bigint} actual - Test value.
+     * @param {number|bigint} expected - Value that ``actual`` must be greater than.
      * @param {string} [description] - Description of the condition being tested.
      */
     function assert_greater_than(actual, expected, description)
     {
         /*
-         * Test if a primitive number is greater than another
+         * Test if a primitive number (or bigint) is greater than another
          */
-        assert(typeof actual === "number",
+        assert(typeof actual === "number" || typeof actual === "bigint",
                "assert_greater_than", description,
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
+
+        assert(typeof actual === typeof expected,
+               "assert_greater_than", description,
+               "expected a ${type_expected} but got a ${type_actual}",
+               {type_expected:typeof expected, type_actual:typeof actual});
 
         assert(actual > expected,
                "assert_greater_than", description,
@@ -1820,20 +1881,30 @@
      * Assert that ``actual`` is a number greater than ``lower`` and less
      * than ``upper`` but not equal to either.
      *
-     * @param {number} actual - Test value.
-     * @param {number} lower - Number that ``actual`` must be greater than.
-     * @param {number} upper - Number that ``actual`` must be less than.
+     * @param {number|bigint} actual - Test value.
+     * @param {number|bigint} lower - Value that ``actual`` must be greater than.
+     * @param {number|bigint} upper - Value that ``actual`` must be less than.
      * @param {string} [description] - Description of the condition being tested.
      */
     function assert_between_exclusive(actual, lower, upper, description)
     {
         /*
-         * Test if a primitive number is between two others
+         * Test if a primitive number (or bigint) is between two others
          */
-        assert(typeof actual === "number",
+        assert(typeof lower === typeof upper,
+               "assert_between_exclusive", description,
+               "expected lower (${type_lower}) and upper (${type_upper}) types to match (test error)",
+               {type_lower:typeof lower, type_upper:typeof upper});
+
+        assert(typeof actual === "number" || typeof actual === "bigint",
                "assert_between_exclusive", description,
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
+
+        assert(typeof actual === typeof lower,
+               "assert_between_exclusive", description,
+               "expected a ${type_lower} but got a ${type_actual}",
+               {type_lower:typeof lower, type_actual:typeof actual});
 
         assert(actual > lower && actual < upper,
                "assert_between_exclusive", description,
@@ -1846,20 +1917,25 @@
     /**
      * Assert that ``actual`` is a number less than or equal to ``expected``.
      *
-     * @param {number} actual - Test value.
-     * @param {number} expected - Number that ``actual`` must be less
+     * @param {number|bigint} actual - Test value.
+     * @param {number|bigint} expected - Value that ``actual`` must be less
      * than or equal to.
      * @param {string} [description] - Description of the condition being tested.
      */
     function assert_less_than_equal(actual, expected, description)
     {
         /*
-         * Test if a primitive number is less than or equal to another
+         * Test if a primitive number (or bigint) is less than or equal to another
          */
-        assert(typeof actual === "number",
+        assert(typeof actual === "number" || typeof actual === "bigint",
                "assert_less_than_equal", description,
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
+
+        assert(typeof actual === typeof expected,
+               "assert_less_than_equal", description,
+               "expected a ${type_expected} but got a ${type_actual}",
+               {type_expected:typeof expected, type_actual:typeof actual});
 
         assert(actual <= expected,
                "assert_less_than_equal", description,
@@ -1871,20 +1947,25 @@
     /**
      * Assert that ``actual`` is a number greater than or equal to ``expected``.
      *
-     * @param {number} actual - Test value.
-     * @param {number} expected - Number that ``actual`` must be greater
+     * @param {number|bigint} actual - Test value.
+     * @param {number|bigint} expected - Value that ``actual`` must be greater
      * than or equal to.
      * @param {string} [description] - Description of the condition being tested.
      */
     function assert_greater_than_equal(actual, expected, description)
     {
         /*
-         * Test if a primitive number is greater than or equal to another
+         * Test if a primitive number (or bigint) is greater than or equal to another
          */
-        assert(typeof actual === "number",
+        assert(typeof actual === "number" || typeof actual === "bigint",
                "assert_greater_than_equal", description,
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
+
+        assert(typeof actual === typeof expected,
+               "assert_greater_than_equal", description,
+               "expected a ${type_expected} but got a ${type_actual}",
+               {type_expected:typeof expected, type_actual:typeof actual});
 
         assert(actual >= expected,
                "assert_greater_than_equal", description,
@@ -1897,20 +1978,30 @@
      * Assert that ``actual`` is a number greater than or equal to ``lower`` and less
      * than or equal to ``upper``.
      *
-     * @param {number} actual - Test value.
-     * @param {number} lower - Number that ``actual`` must be greater than or equal to.
-     * @param {number} upper - Number that ``actual`` must be less than or equal to.
+     * @param {number|bigint} actual - Test value.
+     * @param {number|bigint} lower - Value that ``actual`` must be greater than or equal to.
+     * @param {number|bigint} upper - Value that ``actual`` must be less than or equal to.
      * @param {string} [description] - Description of the condition being tested.
      */
     function assert_between_inclusive(actual, lower, upper, description)
     {
         /*
-         * Test if a primitive number is between to two others or equal to either of them
+         * Test if a primitive number (or bigint) is between to two others or equal to either of them
          */
-        assert(typeof actual === "number",
+        assert(typeof lower === typeof upper,
+               "assert_between_inclusive", description,
+               "expected lower (${type_lower}) and upper (${type_upper}) types to match (test error)",
+               {type_lower:typeof lower, type_upper:typeof upper});
+
+        assert(typeof actual === "number" || typeof actual === "bigint",
                "assert_between_inclusive", description,
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
+
+        assert(typeof actual === typeof lower,
+               "assert_between_inclusive", description,
+               "expected a ${type_lower} but got a ${type_actual}",
+               {type_lower:typeof lower, type_actual:typeof actual});
 
         assert(actual >= lower && actual <= upper,
                "assert_between_inclusive", description,
@@ -2121,7 +2212,7 @@
                    {func:func});
 
             // Basic sanity-check on the passed-in constructor
-            assert(typeof constructor == "function",
+            assert(typeof constructor === "function",
                    assertion_type, description,
                    "${constructor} is not a constructor",
                    {constructor:constructor});
@@ -2196,7 +2287,7 @@
             assert(maybeDescription === undefined,
                    "Too many args passed to no-constructor version of assert_throws_dom, or accidentally explicitly passed undefined");
         }
-        assert_throws_dom_impl(type, func, description, "assert_throws_dom", constructor)
+        assert_throws_dom_impl(type, func, description, "assert_throws_dom", constructor);
     }
     expose_assert(assert_throws_dom, "assert_throws_dom");
 
@@ -2229,8 +2320,8 @@
                    {func:func});
 
             // Sanity-check our type
-            assert(typeof type == "number" ||
-                   typeof type == "string",
+            assert(typeof type === "number" ||
+                   typeof type === "string",
                    assertion_type, description,
                    "${type} is not a number or string",
                    {type:type});
@@ -2254,7 +2345,6 @@
                 NETWORK_ERR: 'NetworkError',
                 ABORT_ERR: 'AbortError',
                 URL_MISMATCH_ERR: 'URLMismatchError',
-                QUOTA_EXCEEDED_ERR: 'QuotaExceededError',
                 TIMEOUT_ERR: 'TimeoutError',
                 INVALID_NODE_TYPE_ERR: 'InvalidNodeTypeError',
                 DATA_CLONE_ERR: 'DataCloneError'
@@ -2279,7 +2369,6 @@
                 NetworkError: 19,
                 AbortError: 20,
                 URLMismatchError: 21,
-                QuotaExceededError: 22,
                 TimeoutError: 23,
                 InvalidNodeTypeError: 24,
                 DataCloneError: 25,
@@ -2310,12 +2399,19 @@
             if (typeof type === "number") {
                 if (type === 0) {
                     throw new AssertionError('Test bug: ambiguous DOMException code 0 passed to assert_throws_dom()');
-                } else if (!(type in code_name_map)) {
+                }
+                if (type === 22) {
+                    throw new AssertionError('Test bug: QuotaExceededError needs to be tested for using assert_throws_quotaexceedederror()');
+                }
+                if (!(type in code_name_map)) {
                     throw new AssertionError('Test bug: unrecognized DOMException code "' + type + '" passed to assert_throws_dom()');
                 }
                 name = code_name_map[type];
                 required_props.code = type;
             } else if (typeof type === "string") {
+                if (name === "QuotaExceededError") {
+                    throw new AssertionError('Test bug: QuotaExceededError needs to be tested for using assert_throws_quotaexceedederror()');
+                }
                 name = type in codename_name_map ? codename_name_map[type] : type;
                 if (!(name in name_code_map)) {
                     throw new AssertionError('Test bug: unrecognized DOMException code name or name "' + type + '" passed to assert_throws_dom()');
@@ -2347,6 +2443,137 @@
                    "${func} threw an exception from the wrong global",
                    {func});
 
+        }
+    }
+
+    /**
+     * Assert a `QuotaExceededError` with the expected values is thrown.
+     *
+     * There are two ways of calling `assert_throws_quotaexceedederror`:
+     *
+     * 1) If the `QuotaExceededError` is expected to come from the
+     *    current global, the first argument should be the function
+     *    expected to throw, the second and a third the expected
+     *    `requested` and `quota` property values, and the fourth,
+     *    optional, argument is the assertion description.
+     *
+     * 2) If the `QuotaExceededError` is expected to come from some
+     *    other global, the first argument should be the
+     *    `QuotaExceededError` constructor from that global, the second
+     *    argument should be the function expected to throw, the third
+     *    and fourth the expected `requested` and `quota` property
+     *    values, and the fifth, optional, argument is the assertion
+     *    description.
+     *
+     * For the `requested` and `quota` values, instead of `null` or a
+     * number, the caller can provide a function which determines
+     * whether the value is acceptable by returning a boolean.
+     *
+     */
+    function assert_throws_quotaexceedederror(funcOrConstructor, requestedOrFunc, quotaOrRequested, descriptionOrQuota, maybeDescription)
+    {
+        let constructor, func, requested, quota, description;
+        if (funcOrConstructor.name === "QuotaExceededError") {
+            constructor = funcOrConstructor;
+            func = requestedOrFunc;
+            requested = quotaOrRequested;
+            quota = descriptionOrQuota;
+            description = maybeDescription;
+        } else {
+            constructor = self.QuotaExceededError;
+            func = funcOrConstructor;
+            requested = requestedOrFunc;
+            quota = quotaOrRequested;
+            description = descriptionOrQuota;
+            assert(maybeDescription === undefined,
+                   "Too many args passed to no-constructor version of assert_throws_quotaexceedederror");
+        }
+        assert_throws_quotaexceedederror_impl(func, requested, quota, description, "assert_throws_quotaexceedederror", constructor);
+    }
+    expose_assert(assert_throws_quotaexceedederror, "assert_throws_quotaexceedederror");
+
+    /**
+     * Similar to `assert_throws_quotaexceedederror` but allows
+     * specifying the assertion type
+     * (`"assert_throws_quotaexceedederror"` or
+     * `"promise_rejects_quotaexceedederror"`, in practice). The
+     * `constructor` argument must be the `QuotaExceededError`
+     * constructor from the global we expect the exception to come from.
+     */
+    function assert_throws_quotaexceedederror_impl(func, requested, quota, description, assertion_type, constructor)
+    {
+        try {
+            func.call(this);
+            assert(false, assertion_type, description, "${func} did not throw",
+                   {func});
+        } catch (e) {
+            if (e instanceof AssertionError) {
+                throw e;
+            }
+
+            // Basic sanity-checks on the thrown exception.
+            assert(typeof e === "object",
+                   assertion_type, description,
+                   "${func} threw ${e} with type ${type}, not an object",
+                   {func, e, type:typeof e});
+
+            assert(e !== null,
+                   assertion_type, description,
+                   "${func} threw null, not an object",
+                   {func});
+
+            // Sanity-check our requested and quota.
+            assert(requested === null ||
+                   typeof requested === "number" ||
+                   typeof requested === "function",
+                   assertion_type, description,
+                   "${requested} is not null, a number, or a function",
+                   {requested});
+            assert(quota === null ||
+                   typeof quota === "number" ||
+                   typeof quota === "function",
+                   assertion_type, description,
+                   "${quota} is not null or a number",
+                   {quota});
+
+            const required_props = {
+                code: 22,
+                name: "QuotaExceededError"
+            };
+            if (typeof requested !== "function") {
+                required_props.requested = requested;
+            }
+            if (typeof quota !== "function") {
+                required_props.quota = quota;
+            }
+
+            for (const [prop, expected] of Object.entries(required_props)) {
+                assert(prop in e && e[prop] == expected,
+                       assertion_type, description,
+                       "${func} threw ${e} that is not a correct QuotaExceededError: property ${prop} is equal to ${actual}, expected ${expected}",
+                       {func, e, prop, actual:e[prop], expected});
+            }
+
+            if (typeof requested === "function") {
+                assert(requested(e.requested),
+                       assertion_type, description,
+                       "${func} threw ${e} that is not a correct QuotaExceededError: requested value ${requested} did not pass the requested predicate",
+                       {func, e, requested});
+            }
+            if (typeof quota === "function") {
+                assert(quota(e.quota),
+                       assertion_type, description,
+                       "${func} threw ${e} that is not a correct QuotaExceededError: quota value ${quota} did not pass the quota predicate",
+                       {func, e, quota});
+            }
+
+            // Check that the exception is from the right global.  This check is last
+            // so more specific, and more informative, checks on the properties can
+            // happen in case a totally incorrect exception is thrown.
+            assert(e.constructor === constructor,
+                   assertion_type, description,
+                   "${func} threw an exception from the wrong global",
+                   {func});
         }
     }
 
@@ -2459,7 +2686,7 @@
     function assert_implements(condition, description) {
         assert(!!condition, "assert_implements", description);
     }
-    expose_assert(assert_implements, "assert_implements")
+    expose_assert(assert_implements, "assert_implements");
 
     /**
      * Assert that an optional feature is implemented, based on a 'truthy' condition.
@@ -2573,11 +2800,11 @@
         2: "Timeout",
         3: "Not Run",
         4: "Optional Feature Unsupported",
-    }
+    };
 
     Test.prototype.format_status = function() {
         return this.status_formats[this.status];
-    }
+    };
 
     Test.prototype.structured_clone = function()
     {
@@ -2887,7 +3114,7 @@
         return new Promise(resolve => {
             this.step_wait_func(cond, resolve, description, timeout, interval);
         });
-    }
+    };
 
     /*
      * Private method for registering cleanup functions. `testharness.js`
@@ -3120,7 +3347,7 @@
             throw new Error("AbortController is not supported in this browser");
         }
         return this._abortController.signal;
-    }
+    };
 
     /**
      * A RemoteTest object mirrors a Test object on a remote worker. The
@@ -3196,11 +3423,11 @@
                 function(callback) {
                     callback();
                 });
-    }
+    };
 
     RemoteTest.prototype.format_status = function() {
         return Test.prototype.status_formats[this.status];
-    }
+    };
 
     /*
      * A RemoteContext listens for test events from a remote test context, such
@@ -3472,7 +3699,7 @@
         this.all_done_callbacks = [];
 
         this.hide_test_state = false;
-        this.pending_remotes = [];
+        this.remotes = [];
 
         this.current_test = null;
         this.asserts_run = [];
@@ -3514,26 +3741,26 @@
         for (var p in properties) {
             if (properties.hasOwnProperty(p)) {
                 var value = properties[p];
-                if (p == "allow_uncaught_exception") {
+                if (p === "allow_uncaught_exception") {
                     this.allow_uncaught_exception = value;
-                } else if (p == "explicit_done" && value) {
+                } else if (p === "explicit_done" && value) {
                     this.wait_for_finish = true;
-                } else if (p == "explicit_timeout" && value) {
+                } else if (p === "explicit_timeout" && value) {
                     this.timeout_length = null;
                     if (this.timeout_id)
                     {
                         clearTimeout(this.timeout_id);
                     }
-                } else if (p == "single_test" && value) {
+                } else if (p === "single_test" && value) {
                     this.set_file_is_test();
-                } else if (p == "timeout_multiplier") {
+                } else if (p === "timeout_multiplier") {
                     this.timeout_multiplier = value;
                     if (this.timeout_length) {
                          this.timeout_length *= this.timeout_multiplier;
                     }
-                } else if (p == "hide_test_state") {
+                } else if (p === "hide_test_state") {
                     this.hide_test_state = value;
-                } else if (p == "output") {
+                } else if (p === "output") {
                     this.output = value;
                 } else if (p === "debug") {
                     settings.debug = value;
@@ -3626,11 +3853,14 @@
 
     Tests.prototype.push = function(test)
     {
+        if (this.phase === this.phases.COMPLETE) {
+            return;
+        }
         if (this.phase < this.phases.HAVE_TESTS) {
             this.start();
         }
         this.num_pending++;
-        test.index = this.tests.push(test);
+        test.index = this.tests.push(test) - 1;
         this.notify_test_state(test);
     };
 
@@ -3643,11 +3873,11 @@
     };
 
     Tests.prototype.all_done = function() {
-        return (this.tests.length > 0 || this.pending_remotes.length > 0) &&
+        return (this.tests.length > 0 || this.remotes.length > 0) &&
                 test_environment.all_loaded &&
                 (this.num_pending === 0 || this.is_aborted) && !this.wait_for_finish &&
                 !this.processing_callbacks &&
-                !this.pending_remotes.some(function(w) { return w.running; });
+                !this.remotes.some(function(w) { return w.running; });
     };
 
     Tests.prototype.start = function() {
@@ -3716,7 +3946,8 @@
                   function(test, testDone)
                   {
                       if (test.phase === test.phases.INITIAL) {
-                          test.phase = test.phases.COMPLETE;
+                          test.phase = test.phases.HAS_RESULT;
+                          test.done();
                           testDone();
                       } else {
                           add_test_done_callback(test, testDone);
@@ -3727,14 +3958,14 @@
     };
 
     Tests.prototype.set_assert = function(assert_name, args) {
-        this.asserts_run.push(new AssertRecord(this.current_test, assert_name, args))
-    }
+        this.asserts_run.push(new AssertRecord(this.current_test, assert_name, args));
+    };
 
     Tests.prototype.set_assert_status = function(index, status, stack) {
         let assert_record = this.asserts_run[index];
         assert_record.status = status;
         assert_record.stack = stack;
-    }
+    };
 
     /**
      * Update the harness status to reflect an unrecoverable harness error that
@@ -3876,7 +4107,7 @@
         }
 
         var remoteContext = this.create_remote_worker(worker);
-        this.pending_remotes.push(remoteContext);
+        this.remotes.push(remoteContext);
         return remoteContext.done;
     };
 
@@ -3899,7 +4130,7 @@
         }
 
         var remoteContext = this.create_remote_window(remote);
-        this.pending_remotes.push(remoteContext);
+        this.remotes.push(remoteContext);
         return remoteContext.done;
     };
 
@@ -4111,8 +4342,8 @@
             } else {
                 var root = output_document.documentElement;
                 var is_html = (root &&
-                               root.namespaceURI == "http://www.w3.org/1999/xhtml" &&
-                               root.localName == "html");
+                               root.namespaceURI === "http://www.w3.org/1999/xhtml" &&
+                               root.localName === "html");
                 var is_svg = (output_document.defaultView &&
                               "SVGSVGElement" in output_document.defaultView &&
                               root instanceof output_document.defaultView.SVGSVGElement);
@@ -4557,7 +4788,7 @@
      */
     function AssertionError(message)
     {
-        if (typeof message == "string") {
+        if (typeof message === "string") {
             message = sanitize_unpaired_surrogates(message);
         }
         this.message = message;
@@ -4603,7 +4834,7 @@
         }
 
         return lines.slice(i).join("\n");
-    }
+    };
 
     function OptionalFeatureUnsupportedError(message)
     {
@@ -4913,7 +5144,7 @@ table#results.assertions > tbody > tr > td:last-child {\
     width:35%;\
 }\
 \
-table#results > thead > > tr > th {\
+table#results > thead > tr > th {\
     padding:0;\
     padding-bottom:0.5em;\
     border-bottom:medium solid black;\
