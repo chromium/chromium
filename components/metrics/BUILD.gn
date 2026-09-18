@@ -88,7 +88,6 @@ if (!is_cronet_build && is_android) {
     sources = [ "android/junit/src/org/chromium/components/metrics/LimitedEntropyRandomizationSourceTest.java" ]
     deps = [
       ":metrics_java",
-      "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//third_party/junit",
     ]

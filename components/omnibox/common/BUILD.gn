@@ -70,7 +70,6 @@ if (is_android) {
       "//components/cached_flags:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
-      "//third_party/omnibox_proto:omnibox_proto_java",
       "//ui/android:ui_java",
     ]
   }

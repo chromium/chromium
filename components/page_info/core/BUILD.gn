@@ -16,9 +16,7 @@ if (is_android) {
     proto_path = "//"
     sources = [ "proto/about_this_site_metadata.proto" ]
 
-    deps = [
-      "//components/optimization_guide/proto:optimization_guide_proto_java",
-    ]
+    deps = []
   }
 }
 

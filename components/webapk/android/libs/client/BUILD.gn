@@ -31,7 +31,6 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base/test:test_support_java",
     "//components/webapk/android/libs/common:java",
     "//testing/android/junit:junit_test_support",
     "//third_party/junit",

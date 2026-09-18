@@ -18,7 +18,6 @@ android_library("background_task_update_scheduler_java") {
     "//build/android:build_java",
     "//components/background_task_scheduler:background_task_scheduler_java",
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
-    "//third_party/android_deps:chromium_play_services_availability_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 }

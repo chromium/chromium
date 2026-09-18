@@ -30,9 +30,7 @@ robolectric_library("junit_test_support") {
   sources = [ "java/src/org/chromium/components/content_relationship_verification/OriginVerifierUnitTestSupport.java" ]
   deps = [
     ":java",
-    "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_browser_browser_java",
-    "//third_party/mockito:mockito_java",
   ]
 }
 

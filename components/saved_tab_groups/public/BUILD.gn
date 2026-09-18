@@ -206,7 +206,6 @@ if (is_android) {
       "//base:base_java",
       "//components/tab_groups:tab_groups_java",
       "//third_party/mockito:mockito_java",
-      "//ui/android:ui_java_test_support",
       "//url:gurl_java",
     ]
   }
@@ -218,10 +217,8 @@ if (is_android) {
     deps = [
       ":java",
       "//base:base_java",
-      "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//components/saved_tab_groups/public:java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/junit",
     ]
   }

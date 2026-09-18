@@ -77,9 +77,6 @@ android_library("test_utils_java") {
     ":delegate_java",
     ":java",
     "//base:base_java",
-    "//base:base_java_test_support",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/jni_zero:jni_zero_java",
     "//third_party/mockito:mockito_java",
   ]
 }
@@ -106,10 +103,8 @@ android_library("junit") {
     "//base:promise_java",
     "//base:supplier_java",
     "//components/favicon/android:java",
-    "//components/search_engines/android:test_utils_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:robolectric_all_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/junit",

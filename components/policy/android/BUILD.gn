@@ -59,7 +59,6 @@ android_library("policy_java_test_support") {
     ":policy_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",
   ]

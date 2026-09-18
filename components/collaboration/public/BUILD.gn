@@ -277,10 +277,8 @@ if (is_android) {
       "//components/data_sharing:test_support_java",
       "//components/data_sharing/public:public_java",
       "//components/saved_tab_groups/public:java",
-      "//components/signin/public/android:java",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/junit",
-      "//third_party/mockito:mockito_java",
       "//url:gurl_junit_test_support",
       "//url:url_java",
     ]

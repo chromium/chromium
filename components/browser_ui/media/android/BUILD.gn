@@ -77,7 +77,6 @@ robolectric_library("junit") {
     ":java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base/test:test_support_java",
     "//components/browser_ui/notifications/android:java",
     "//components/browser_ui/notifications/android:test_support_java",
     "//content/public/android:content_java",

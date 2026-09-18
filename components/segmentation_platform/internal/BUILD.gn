@@ -410,7 +410,6 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//build/android:build_java",
-      "//components/optimization_guide/proto:optimization_guide_proto_java",
       "//components/segmentation_platform/public:public_java",
       "//third_party/jni_zero:jni_zero_java",
     ]

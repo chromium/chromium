@@ -47,9 +47,7 @@ robolectric_library("junit") {
     "//base:service_loader_java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
-    "//content/public/test/android:content_java_test_support",
     "//third_party/junit",
-    "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
   ]
 }
@@ -65,7 +63,6 @@ android_library("javatests") {
     "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_transit",
-    "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
