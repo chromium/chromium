@@ -99,62 +99,61 @@ static Byte ReadByte(IByteInPtr pp)
 static SRes SzDecodePpmd(const Byte *props, unsigned propsSize, UInt64 inSize, ILookInStreamPtr inStream,
     Byte *outBuffer, SizeT outSize, ISzAllocPtr allocMain)
 {
-  CPpmd7 ppmd;
-  CByteInToLook s;
-  SRes res = SZ_OK;
-
-  s.vt.Read = ReadByte;
-  s.inStream = inStream;
-  s.begin = s.end = s.cur = NULL;
-  s.extra = False;
-  s.res = SZ_OK;
-  s.processed = 0;
+  CPpmd7 *ppmd;
+  SRes res;
+  unsigned order;
+  UInt32 memSize;
 
   if (propsSize != 5)
     return SZ_ERROR_UNSUPPORTED;
+  order = props[0];
+  memSize = GetUi32(props + 1);
+  if (order < PPMD7_MIN_ORDER ||
+      order > PPMD7_MAX_ORDER ||
+      memSize < PPMD7_MIN_MEM_SIZE ||
+      memSize > PPMD7_MAX_MEM_SIZE)
+    return SZ_ERROR_UNSUPPORTED;
+  if ((ppmd = (CPpmd7 *)ISzAlloc_Alloc(allocMain, sizeof(CPpmd7))) == NULL)
+    return SZ_ERROR_MEM;
+  Ppmd7_Construct(ppmd);
+  res = SZ_ERROR_MEM;
+  if (Ppmd7_Alloc(ppmd, memSize, allocMain))
+  {
+    CByteInToLook s;
+    s.vt.Read = ReadByte;
+    s.inStream = inStream;
+    s.begin = s.end = s.cur = NULL;
+    s.extra = False;
+    s.res = SZ_OK;
+    s.processed = 0;
 
-  {
-    unsigned order = props[0];
-    UInt32 memSize = GetUi32(props + 1);
-    if (order < PPMD7_MIN_ORDER ||
-        order > PPMD7_MAX_ORDER ||
-        memSize < PPMD7_MIN_MEM_SIZE ||
-        memSize > PPMD7_MAX_MEM_SIZE)
-      return SZ_ERROR_UNSUPPORTED;
-    Ppmd7_Construct(&ppmd);
-    if (!Ppmd7_Alloc(&ppmd, memSize, allocMain))
-      return SZ_ERROR_MEM;
-    Ppmd7_Init(&ppmd, order);
-  }
-  {
-    ppmd.rc.dec.Stream = &s.vt;
-    if (!Ppmd7z_RangeDec_Init(&ppmd.rc.dec))
-      res = SZ_ERROR_DATA;
-    else if (!s.extra)
+    Ppmd7_Init(ppmd, order);
+    ppmd->rc.dec.Stream = &s.vt;
+    res = SZ_ERROR_DATA;
+    if (Ppmd7z_RangeDec_Init(&ppmd->rc.dec) && !s.extra)
     {
       Byte *buf = outBuffer;
       const Byte *lim = buf + outSize;
       for (; buf != lim; buf++)
       {
-        int sym = Ppmd7z_DecodeSymbol(&ppmd);
+        int sym = Ppmd7z_DecodeSymbol(ppmd);
         if (s.extra || sym < 0)
           break;
         *buf = (Byte)sym;
       }
-      if (buf != lim)
-        res = SZ_ERROR_DATA;
-      else if (!Ppmd7z_RangeDec_IsFinishedOK(&ppmd.rc.dec))
-      {
-        /* if (Ppmd7z_DecodeSymbol(&ppmd) != PPMD7_SYM_END || !Ppmd7z_RangeDec_IsFinishedOK(&ppmd.rc.dec)) */
-        res = SZ_ERROR_DATA;
-      }
+      if (buf == lim)
+        if (Ppmd7z_RangeDec_IsFinishedOK(&ppmd->rc.dec)
+            // || (Ppmd7z_DecodeSymbol(&ppmd) == PPMD7_SYM_END && Ppmd7z_RangeDec_IsFinishedOK(&ppmd.rc.dec))
+            )
+          res = SZ_OK;
     }
     if (s.extra)
       res = (s.res != SZ_OK ? s.res : SZ_ERROR_DATA);
     else if (s.processed + (size_t)(s.cur - s.begin) != inSize)
       res = SZ_ERROR_DATA;
+    Ppmd7_Free(ppmd, allocMain);
   }
-  Ppmd7_Free(&ppmd, allocMain);
+  ISzAlloc_Free(allocMain, ppmd);
   return res;
 }
 
