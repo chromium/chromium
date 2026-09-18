@@ -2571,7 +2571,7 @@
 <translation id="2981113813906970160">顯示大型滑鼠游標</translation>
 <translation id="2981728693230031897">使用 Gemini 歸納本頁摘要</translation>
 <translation id="2983102365694924129">以你的網站活動做為依據。這項設定已關閉。</translation>
-<translation id="2983311431122838216">Google 搜尋中的問問 AI 模式</translation>
+<translation id="2983311431122838216">問問 Google 搜尋的 AI 模式</translation>
 <translation id="2983373101216420412">充電盒電量為 <ph name="PERCENTAGE" />%。</translation>
 <translation id="2983818520079887040">設定...</translation>
 <translation id="2984727013951557074">系統仍在將檔案同步到 Google 雲端硬碟。</translation>
@@ -10688,7 +10688,7 @@
 <translation id="967624055006145463">已儲存的資料</translation>
 <translation id="96774243435178359">受管理的印表機</translation>
 <translation id="968000525894980488">開啟 Google Play 服務。</translation>
-<translation id="968037381421390582">貼上「<ph name="SEARCH_TERMS" />」並執行搜尋</translation>
+<translation id="968037381421390582">貼上「<ph name="SEARCH_TERMS" />」並搜尋</translation>
 <translation id="969096075394517431">變更語言</translation>
 <translation id="969574218206797926">Chromium 會將閒置分頁占用的記憶體釋出給使用中的分頁和其他應用程式</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 個分頁}other{# 個分頁}}</translation>

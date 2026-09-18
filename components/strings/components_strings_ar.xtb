@@ -1111,7 +1111,7 @@
 <translation id="2658843814961855121">قانون عمل وتوظيف</translation>
 <translation id="2660779039299703961">حدث</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{ما من كلمات مرور}=1{كلمة مرور واحدة (للقائمة <ph name="DOMAIN_LIST" />)}=2{كلمتا مرور (للقائمة <ph name="DOMAIN_LIST" />)}few{# كلمات مرور (للقائمة <ph name="DOMAIN_LIST" />)}many{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />)}other{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />)}}</translation>
-<translation id="2666092431469916601">أعلى</translation>
+<translation id="2666092431469916601">في الأعلى</translation>
 <translation id="2666117266261740852">إغلاق علامات التبويب والتطبيقات الأخرى</translation>
 <translation id="266935134738038806">زيارة الموقع الإلكتروني</translation>
 <translation id="2672201172023654893">لا تتم إدارة متصفّحك.</translation>

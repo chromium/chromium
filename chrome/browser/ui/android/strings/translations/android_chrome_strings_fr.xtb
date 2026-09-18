@@ -755,7 +755,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4137746084635924146">Langue actuelle de l'appareil</translation>
 <translation id="414128724510021958">Versions pour ordinateur demandées par défaut</translation>
 <translation id="4162867837470729563">Liste des options de partage ouverte à pleine hauteur.</translation>
-<translation id="4164642020717536140">Navigation Web rapide et sécurisée</translation>
+<translation id="4164642020717536140">Naviguez sur le Web de manière rapide et sécurisée</translation>
 <translation id="4165077084524712774">Autres outils</translation>
 <translation id="4170577491341606575">Chargement de vos données\u2026</translation>
 <translation id="4176838562184310003">Chrome ne s'est pas arrêté correctement et peut essayer de restaurer vos fenêtres et onglets perdus. Il est possible que certaines fenêtres soient réduites une fois restaurées.</translation>
@@ -1414,7 +1414,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6787600234697426339">Limite de <ph name="MAX_INSTANCE_COUNT" /> fenêtres atteinte</translation>
 <translation id="6795633245022906657">Ouvrir rapidement un nouvel onglet. Pour modifier ce raccourci, accédez aux paramètres.</translation>
-<translation id="679588508577699489">Définir Chrome comme votre navigateur par défaut</translation>
+<translation id="679588508577699489">Définir Chrome comme navigateur par défaut</translation>
 <translation id="679845623837196966">Afficher la liste de lecture</translation>
 <translation id="679956319013005046">Pour définir votre service préféré pour la saisie automatique, commencez par l'ajouter dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">La fenêtre sera fermée</translation>

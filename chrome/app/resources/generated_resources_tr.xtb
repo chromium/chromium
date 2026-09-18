@@ -4325,7 +4325,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4305817255990598646">Anahtar</translation>
 <translation id="4306489587293957491">Gir</translation>
 <translation id="4306810703452026910">Chrome, bu siteden gönderilen bildirimleri spam olarak işaretlemeyi durduracak</translation>
-<translation id="4307992518367153382">Temel Bilgiler</translation>
+<translation id="4307992518367153382">Temel</translation>
 <translation id="4309035504231554969">Bilinmeyen bir nedenden dolayı yükleme başarısız oldu.</translation>
 <translation id="4309183709806093061">Sistem sesini de paylaşın. Geri bildirim gönderilmemesi için bu cihazın sesi kapatılacak.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K aktif)</translation>
@@ -6784,7 +6784,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6247620186971210352">Uygulama bulunamadı</translation>
 <translation id="6247708409970142803">%<ph name="PERCENTAGE" /></translation>
 <translation id="6247802389331535091">Sistem: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="6248988683584659830">Ayarlarda ara</translation>
+<translation id="6248988683584659830">Ayarlarda arayın</translation>
 <translation id="6249200942125593849">A11y'yi yönetin</translation>
 <translation id="6250186368828697007">Ekranınızı paylaşırken ayrıntılar gizlenir</translation>
 <translation id="6250887692313997958">Bölünmüş görünüme eklenecek bir sekme seçin</translation>
