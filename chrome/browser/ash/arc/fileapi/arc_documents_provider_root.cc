@@ -87,12 +87,12 @@ ArcDocumentsProviderRoot::ArcDocumentsProviderRoot(
       root_id_(root_id),
       read_only_(read_only),
       mime_types_(mime_types) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   runner_->AddObserver(this);
 }
 
 ArcDocumentsProviderRoot::~ArcDocumentsProviderRoot() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   runner_->RemoveObserver(this);
 }
 
@@ -100,7 +100,7 @@ void ArcDocumentsProviderRoot::GetFileInfo(
     const base::FilePath& path,
     storage::FileSystemOperation::GetMetadataFieldSet fields,
     GetFileInfoCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (path.IsAbsolute()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND,
                             base::File::Info());
@@ -129,7 +129,7 @@ void ArcDocumentsProviderRoot::GetFileInfo(
 
 void ArcDocumentsProviderRoot::ReadDirectory(const base::FilePath& path,
                                              ReadDirectoryCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   ResolveToDocumentId(
       path,
       base::BindOnce(&ArcDocumentsProviderRoot::ReadDirectoryWithDocumentId,
@@ -138,7 +138,7 @@ void ArcDocumentsProviderRoot::ReadDirectory(const base::FilePath& path,
 
 void ArcDocumentsProviderRoot::DeleteFile(const base::FilePath& path,
                                           StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (read_only_) {
     std::move(callback).Run(base::File::FILE_ERROR_ACCESS_DENIED);
     return;
@@ -151,7 +151,7 @@ void ArcDocumentsProviderRoot::DeleteFile(const base::FilePath& path,
 
 void ArcDocumentsProviderRoot::CreateFile(const base::FilePath& path,
                                           StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (read_only_) {
     std::move(callback).Run(base::File::FILE_ERROR_ACCESS_DENIED);
     return;
@@ -164,7 +164,7 @@ void ArcDocumentsProviderRoot::CreateFile(const base::FilePath& path,
 
 void ArcDocumentsProviderRoot::CreateDirectory(const base::FilePath& path,
                                                StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (read_only_) {
     std::move(callback).Run(base::File::FILE_ERROR_ACCESS_DENIED);
     return;
@@ -178,7 +178,7 @@ void ArcDocumentsProviderRoot::CreateDirectory(const base::FilePath& path,
 void ArcDocumentsProviderRoot::CopyFileLocal(const base::FilePath& src_path,
                                              const base::FilePath& dest_path,
                                              StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (read_only_) {
     std::move(callback).Run(base::File::FILE_ERROR_ACCESS_DENIED);
     return;
@@ -197,7 +197,7 @@ void ArcDocumentsProviderRoot::CopyFileLocal(const base::FilePath& src_path,
 void ArcDocumentsProviderRoot::MoveFileLocal(const base::FilePath& src_path,
                                              const base::FilePath& dest_path,
                                              StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (read_only_) {
     std::move(callback).Run(base::File::FILE_ERROR_ACCESS_DENIED);
     return;
@@ -214,7 +214,7 @@ void ArcDocumentsProviderRoot::AddWatcher(
     const base::FilePath& path,
     WatcherNotificationCallback watcher_callback,
     WatcherStatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (path_to_watcher_data_.count(path)) {
     std::move(callback).Run(base::File::FILE_ERROR_FAILED);
     return;
@@ -237,7 +237,7 @@ void ArcDocumentsProviderRoot::AddWatcher(
 
 void ArcDocumentsProviderRoot::RemoveWatcher(const base::FilePath& path,
                                              WatcherStatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   auto iter = path_to_watcher_data_.find(path);
   if (iter == path_to_watcher_data_.end()) {
     std::move(callback).Run(base::File::FILE_ERROR_FAILED);
@@ -260,7 +260,7 @@ void ArcDocumentsProviderRoot::RemoveWatcher(const base::FilePath& path,
 void ArcDocumentsProviderRoot::ResolveToContentUrl(
     const base::FilePath& path,
     ResolveToContentUrlCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   ResolveToDocumentId(
       path, base::BindOnce(
                 &ArcDocumentsProviderRoot::ResolveToContentUrlWithDocumentId,
@@ -270,7 +270,7 @@ void ArcDocumentsProviderRoot::ResolveToContentUrl(
 void ArcDocumentsProviderRoot::GetExtraFileMetadata(
     const base::FilePath& path,
     GetExtraMetadataCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (path.IsAbsolute()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND, {});
@@ -282,19 +282,19 @@ void ArcDocumentsProviderRoot::GetExtraFileMetadata(
 }
 
 void ArcDocumentsProviderRoot::SetDirectoryCacheExpireSoonForTesting() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   directory_cache_expire_soon_ = true;
 }
 
 void ArcDocumentsProviderRoot::OnWatchersCleared() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   // Mark all watchers invalid.
   for (auto& entry : path_to_watcher_data_)
     entry.second = kInvalidWatcherData;
 }
 
 void ArcDocumentsProviderRoot::GetRootSize(GetRootSizeCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (root_id_.empty()) {
     // Exit early if ID is missing for the given provider authority.
     std::move(callback).Run(true /* error */, 0, 0);
@@ -309,7 +309,7 @@ void ArcDocumentsProviderRoot::GetRootSize(GetRootSizeCallback callback) {
 
 void ArcDocumentsProviderRoot::OnGetRootSize(GetRootSizeCallback callback,
                                              mojom::RootSizePtr root_size) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (root_size.is_null() || root_size->available_bytes < 0) {
     // The root_size and its available bytes are required from the file system.
     std::move(callback).Run(true /* error */, 0, 0);
@@ -331,12 +331,12 @@ void ArcDocumentsProviderRoot::GetFileInfoFromDocument(
     storage::FileSystemOperation::GetMetadataFieldSet fields,
     base::File::Error error,
     const mojom::DocumentPtr& document) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (error != base::File::FILE_OK) {
     std::move(callback).Run(error, {});
     return;
   }
-  DCHECK(document);
+  CHECK(document, base::NotFatalUntil::M160);
 
   base::File::Info info;
   if (fields.Has(storage::FileSystemOperation::GetMetadataField::kSize)) {
@@ -361,7 +361,7 @@ void ArcDocumentsProviderRoot::GetFileInfoFromDocument(
 void ArcDocumentsProviderRoot::ReadDirectoryWithDocumentId(
     ReadDirectoryCallback callback,
     const std::string& document_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (document_id.empty()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND, {});
     return;
@@ -377,7 +377,7 @@ void ArcDocumentsProviderRoot::ReadDirectoryWithNameToDocumentMap(
     ReadDirectoryCallback callback,
     base::File::Error error,
     const NameToDocumentMap& mapping) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (error != base::File::FILE_OK) {
     std::move(callback).Run(error, {});
     return;
@@ -411,7 +411,7 @@ void ArcDocumentsProviderRoot::DeleteFileWithParentDocumentId(
     StatusCallback callback,
     const std::string& document_id,
     const std::string& parent_document_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (document_id.empty()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
@@ -428,7 +428,7 @@ void ArcDocumentsProviderRoot::OnFileDeleted(
     StatusCallback callback,
     const std::string& parent_document_id,
     bool success) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (success) {
     ClearDirectoryCache(parent_document_id);
   }
@@ -440,7 +440,7 @@ void ArcDocumentsProviderRoot::CreateFileAfterConflictCheck(
     StatusCallback callback,
     const base::FilePath& path,
     const std::string& document_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (!document_id.empty()) {
     std::move(callback).Run(base::File::FILE_ERROR_EXISTS);
     return;
@@ -456,7 +456,7 @@ void ArcDocumentsProviderRoot::CreateFileWithParentDocumentId(
     StatusCallback callback,
     const base::FilePath& basename,
     const std::string& parent_document_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (parent_document_id.empty()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
@@ -475,7 +475,7 @@ void ArcDocumentsProviderRoot::CreateDirectoryAfterConflictCheck(
     StatusCallback callback,
     const base::FilePath& path,
     const std::string& document_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (!document_id.empty()) {
     std::move(callback).Run(base::File::FILE_ERROR_EXISTS);
     return;
@@ -492,7 +492,7 @@ void ArcDocumentsProviderRoot::CreateDirectoryWithParentDocumentId(
     StatusCallback callback,
     const base::FilePath& basename,
     const std::string& parent_document_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (parent_document_id.empty()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
@@ -509,7 +509,7 @@ void ArcDocumentsProviderRoot::OnFileCreated(
     StatusCallback callback,
     const std::string& parent_document_id,
     mojom::DocumentPtr document) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (document.is_null()) {
     std::move(callback).Run(base::File::FILE_ERROR_FAILED);
     return;
@@ -523,7 +523,7 @@ void ArcDocumentsProviderRoot::RenameFileInternal(
     const base::FilePath& path,
     const std::string& display_name,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   ResolveToDocumentId(
       path, base::BindOnce(&ArcDocumentsProviderRoot::RenameFileWithDocumentId,
                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -547,7 +547,7 @@ void ArcDocumentsProviderRoot::RenameFileWithParentDocumentId(
     const std::string& display_name,
     const std::string& document_id,
     const std::string& parent_document_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (document_id.empty()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
@@ -565,7 +565,7 @@ void ArcDocumentsProviderRoot::OnFileRenamed(
     StatusCallback callback,
     const std::string& parent_document_id,
     mojom::DocumentPtr document) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (document.is_null()) {
     std::move(callback).Run(base::File::FILE_ERROR_FAILED);
     return;
@@ -582,7 +582,7 @@ void ArcDocumentsProviderRoot::CopyFileWithSourceDocumentId(
     const base::FilePath& target_path,
     const std::string& source_display_name,
     const std::string& source_document_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (source_document_id.empty()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
@@ -603,7 +603,7 @@ void ArcDocumentsProviderRoot::CopyFileWithTargetParentDocumentId(
     const std::string& source_document_id,
     const std::string& target_display_name_to_rename,
     const std::string& target_parent_document_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (target_parent_document_id.empty()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
@@ -620,7 +620,7 @@ void ArcDocumentsProviderRoot::OnFileCopied(
     const std::string& target_display_name_to_rename,
     const std::string& target_parent_document_id,
     mojom::DocumentPtr document) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (document.is_null()) {
     std::move(callback).Run(base::File::FILE_ERROR_FAILED);
     return;
@@ -639,7 +639,7 @@ void ArcDocumentsProviderRoot::MoveFileInternal(
     const base::FilePath& source_path,
     const base::FilePath& target_path,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   ResolveToDocumentId(
       source_path,
       base::BindOnce(&ArcDocumentsProviderRoot::MoveFileWithSourceDocumentId,
@@ -654,7 +654,7 @@ void ArcDocumentsProviderRoot::MoveFileWithSourceDocumentId(
     const base::FilePath& target_path,
     const std::string& source_display_name,
     const std::string& source_document_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (source_document_id.empty()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;

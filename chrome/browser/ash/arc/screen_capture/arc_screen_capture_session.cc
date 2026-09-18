@@ -150,7 +150,7 @@ mojo::PendingRemote<mojom::ScreenCaptureSession>
 ArcScreenCaptureSession::Initialize(content::DesktopMediaID desktop_id,
                                     const std::string& display_name,
                                     bool enable_notification) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   display_root_window_ =
       content::DesktopMediaID::GetNativeWindowById(desktop_id);
   if (!display_root_window_) {
@@ -192,7 +192,7 @@ ArcScreenCaptureSession::Initialize(content::DesktopMediaID desktop_id,
 }
 
 void ArcScreenCaptureSession::Close() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   delete this;
 }
 
@@ -212,7 +212,7 @@ ArcScreenCaptureSession::~ArcScreenCaptureSession() {
 }
 
 void ArcScreenCaptureSession::NotificationStop() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   Close();
 }
 
@@ -238,7 +238,7 @@ void ArcScreenCaptureSession::SetOutputBuffer(
     uint64_t buffer_format_modifier,
     uint32_t stride,
     SetOutputBufferCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (!graphics_buffer.is_valid()) {
     LOG(ERROR) << "Invalid handle passed into SetOutputBuffer";
     std::move(callback).Run();
@@ -300,7 +300,7 @@ void ArcScreenCaptureSession::QueryCompleted(
     std::unique_ptr<DesktopTexture> desktop_texture,
     std::unique_ptr<PendingBuffer> pending_buffer,
     gpu::SyncToken sync_token) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto* ri = GetContextProvider()->RasterInterface();
   auto* sii = GetContextProvider()->SharedImageInterface();
@@ -326,7 +326,7 @@ void ArcScreenCaptureSession::QueryCompleted(
 
 void ArcScreenCaptureSession::OnDesktopCaptured(
     std::unique_ptr<viz::CopyOutputResult> result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (result->IsEmpty() || result->size().width() < size_.width() - 1 ||
       result->size().width() > size_.width() + 1 ||
@@ -345,9 +345,11 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
     return;
   }
 
-  DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
-  DCHECK_EQ(result->destination(),
-            viz::CopyOutputResult::Destination::kSharedImage);
+  CHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA,
+           base::NotFatalUntil::M160);
+  CHECK_EQ(result->destination(),
+           viz::CopyOutputResult::Destination::kSharedImage,
+           base::NotFatalUntil::M160);
 
   auto* ri = GetContextProvider()->RasterInterface();
   if (!ri) {
@@ -410,7 +412,7 @@ void ArcScreenCaptureSession::CopyDesktopTextureToGpuBuffer(
 }
 
 void ArcScreenCaptureSession::OnAnimationStep(base::TimeTicks timestamp) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   CompositorAnimationObserver::ResetIfActive();
   if (texture_queue_.size() >= kQueueSizeToForceUpdate) {
     DVLOG(3) << "AnimationStep callback forcing update due to texture queue "
@@ -461,18 +463,18 @@ void ArcScreenCaptureSession::OnAnimationStep(base::TimeTicks timestamp) {
 
 void ArcScreenCaptureSession::OnCompositingShuttingDown(
     ui::Compositor* compositor) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   compositor->RemoveAnimationObserver(this);
 }
 
 void ArcScreenCaptureSession::OnContextLost() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   Close();
 }
 
 void ArcScreenCaptureSession::OnWillRemoveDisplays(
     const display::Displays& removed_displays) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   bool removed = false;
   for (const auto& display : removed_displays) {
     removed |= (display.id() == display_id_);

@@ -22,8 +22,8 @@ ArcContentFileSystemBackendDelegate::~ArcContentFileSystemBackendDelegate() =
 
 storage::AsyncFileUtil* ArcContentFileSystemBackendDelegate::GetAsyncFileUtil(
     storage::FileSystemType type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeArcContent, type);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeArcContent, type, base::NotFatalUntil::M160);
   return async_file_util_.get();
 }
 
@@ -34,8 +34,9 @@ ArcContentFileSystemBackendDelegate::CreateFileStreamReader(
     int64_t max_bytes_to_read,
     const base::Time& expected_modification_time,
     storage::FileSystemContext* context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeArcContent, url.type());
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeArcContent, url.type(),
+           base::NotFatalUntil::M160);
   GURL arc_url = FileSystemUrlToArcUrl(url);
   return std::make_unique<ArcContentFileSystemFileStreamReader>(arc_url,
                                                                 offset);

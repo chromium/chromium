@@ -92,7 +92,7 @@ void ArcScreenCaptureBridge::RequestPermission(
     const std::string& display_name,
     const std::string& package_name,
     RequestPermissionCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   std::unique_ptr<DesktopMediaPicker> picker =
       DesktopMediaPicker::Create(nullptr);
   std::vector<std::unique_ptr<DesktopMediaList>> source_lists;
@@ -129,7 +129,7 @@ void ArcScreenCaptureBridge::PermissionPromptCallback(
     const std::string& package_name,
     base::expected<content::DesktopMediaID,
                    blink::mojom::MediaStreamRequestResult> result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto found = pending_permissions_map_.find(package_name);
   if (found == pending_permissions_map_.end()) {
@@ -196,7 +196,7 @@ void ArcScreenCaptureBridge::OpenSession(
     const std::string& package_name,
     const gfx::Size& size,
     OpenSessionCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   auto found = granted_permissions_map_.find(package_name);
   if (found == granted_permissions_map_.end()) {
     LOG(ERROR) << "Attempt to open screen capture session without granted "

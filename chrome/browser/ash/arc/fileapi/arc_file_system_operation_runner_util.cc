@@ -25,20 +25,20 @@ namespace {
 
 // TODO(crbug.com/206352868): Use correct BrowserContext.
 ArcFileSystemOperationRunner* GetArcFileSystemOperationRunner() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   return ArcFileSystemOperationRunner::GetForBrowserContext(
       ArcServiceManager::Get()->browser_context());
 }
 
 template <typename T>
 void PostToIOThread(base::OnceCallback<void(T)> callback, T result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
 void GetFileSizeOnUIThread(const GURL& url, GetFileSizeCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   auto* runner = GetArcFileSystemOperationRunner();
   if (!runner) {
     DLOG(ERROR) << "ArcFileSystemOperationRunner unavailable. "
@@ -51,7 +51,7 @@ void GetFileSizeOnUIThread(const GURL& url, GetFileSizeCallback callback) {
 
 void OpenFileSessionToWriteOnUIThread(const GURL& url,
                                       OpenFileSessionToWriteCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   auto* runner = GetArcFileSystemOperationRunner();
   if (!runner) {
     DLOG(ERROR) << "ArcFileSystemOperationRunner unavailable. "
@@ -64,7 +64,7 @@ void OpenFileSessionToWriteOnUIThread(const GURL& url,
 
 void OpenFileSessionToReadOnUIThread(const GURL& url,
                                      OpenFileSessionToReadCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   auto* runner = GetArcFileSystemOperationRunner();
   if (!runner) {
     DLOG(ERROR) << "ArcFileSystemOperationRunner unavailable. "
@@ -77,7 +77,7 @@ void OpenFileSessionToReadOnUIThread(const GURL& url,
 
 void CloseFileSessionOnUIThread(const std::string& url_id,
                                 const CloseStatus status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   auto* runner = GetArcFileSystemOperationRunner();
   if (!runner) {
     DLOG(ERROR) << "ArcFileSystemOperationRunner unavailable. "
@@ -96,7 +96,7 @@ void CloseFileSessionOnUIThread(const std::string& url_id,
 }  // namespace
 
 void GetFileSizeOnIOThread(const GURL& url, GetFileSizeCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&GetFileSizeOnUIThread, url,
                                 base::BindOnce(&PostToIOThread<int64_t>,
@@ -105,7 +105,7 @@ void GetFileSizeOnIOThread(const GURL& url, GetFileSizeCallback callback) {
 
 void OpenFileSessionToWriteOnIOThread(const GURL& url,
                                       OpenFileSessionToWriteCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&OpenFileSessionToWriteOnUIThread, url,
@@ -115,7 +115,7 @@ void OpenFileSessionToWriteOnIOThread(const GURL& url,
 
 void OpenFileSessionToReadOnIOThread(const GURL& url,
                                      OpenFileSessionToReadCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&OpenFileSessionToReadOnUIThread, url,

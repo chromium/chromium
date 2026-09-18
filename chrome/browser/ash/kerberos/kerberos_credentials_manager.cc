@@ -310,10 +310,10 @@ KerberosCredentialsManager::KerberosCredentialsManager(PrefService* local_state,
           base::BindRepeating(&KerberosCredentialsManager::GetKerberosFiles,
                               base::Unretained(this)))),
       backoff_entry_for_managed_accounts_(&kBackoffPolicyForManagedAccounts) {
-  DCHECK(primary_profile_);
+  CHECK(primary_profile_, base::NotFatalUntil::M160);
   const user_manager::User* primary_user =
       ProfileHelper::Get()->GetUserByProfile(primary_profile);
-  DCHECK(primary_user);
+  CHECK(primary_user, base::NotFatalUntil::M160);
 
   // Set up expansions:
   //   '${LOGIN_ID}'    -> 'user'
@@ -433,7 +433,7 @@ void KerberosCredentialsManager::OnPolicyUpdated(
 
 void KerberosCredentialsManager::OnPolicyServiceInitialized(
     policy::PolicyDomain domain) {
-  DCHECK(domain == policy::POLICY_DOMAIN_CHROME);
+  CHECK(domain == policy::POLICY_DOMAIN_CHROME, base::NotFatalUntil::M160);
 
   if (policy_service_->IsInitializationComplete(policy::POLICY_DOMAIN_CHROME)) {
     VLOG(1) << "Policy service initialized";
@@ -711,7 +711,7 @@ void KerberosCredentialsManager::OnGetKerberosFiles(
   // happen when switching from an account with ticket to an account without
   // ticket. In that case, the files must go.
   if (response.files().has_krb5cc()) {
-    DCHECK(response.files().has_krb5conf());
+    CHECK(response.files().has_krb5conf(), base::NotFatalUntil::M160);
     kerberos_files_handler_->SetFiles(response.files().krb5cc(),
                                       response.files().krb5conf());
   } else {
@@ -878,7 +878,7 @@ void KerberosCredentialsManager::UpdateAccountsFromPref(bool is_retry) {
 
     // Get the principal. Should always be set.
     const std::string* principal_string = account_dict.FindString(kPrincipal);
-    DCHECK(principal_string);
+    CHECK(principal_string, base::NotFatalUntil::M160);
     std::string principal = *principal_string;
     if (!principal_expander_->ExpandString(&principal)) {
       VLOG(1) << "Failed to expand principal '" << principal << "'";

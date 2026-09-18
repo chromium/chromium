@@ -24,7 +24,7 @@ ArcDocumentsProviderFileStreamReader::ArcDocumentsProviderFileStreamReader(
     const storage::FileSystemURL& url,
     int64_t offset)
     : offset_(offset), content_url_resolved_(false) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   ResolveToContentUrlOnIOThread(
       url, base::BindOnce(
@@ -33,14 +33,14 @@ ArcDocumentsProviderFileStreamReader::ArcDocumentsProviderFileStreamReader(
 }
 
 ArcDocumentsProviderFileStreamReader::~ArcDocumentsProviderFileStreamReader() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 }
 
 int ArcDocumentsProviderFileStreamReader::Read(
     net::IOBuffer* buffer,
     int buffer_length,
     net::CompletionOnceCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   if (!content_url_resolved_) {
     pending_operations_.emplace_back(
         base::BindOnce(&ArcDocumentsProviderFileStreamReader::RunPendingRead,
@@ -55,7 +55,7 @@ int ArcDocumentsProviderFileStreamReader::Read(
 
 int64_t ArcDocumentsProviderFileStreamReader::GetLength(
     GetLengthCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   if (!content_url_resolved_) {
     pending_operations_.emplace_back(base::BindOnce(
         &ArcDocumentsProviderFileStreamReader::RunPendingGetLength,
@@ -69,8 +69,8 @@ int64_t ArcDocumentsProviderFileStreamReader::GetLength(
 
 void ArcDocumentsProviderFileStreamReader::OnResolveToContentUrl(
     const GURL& content_url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(!content_url_resolved_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(!content_url_resolved_, base::NotFatalUntil::M160);
 
   if (content_url.is_valid()) {
     underlying_reader_ = std::make_unique<ArcContentFileSystemFileStreamReader>(
@@ -89,8 +89,8 @@ void ArcDocumentsProviderFileStreamReader::RunPendingRead(
     scoped_refptr<net::IOBuffer> buffer,
     int buffer_length,
     net::CompletionOnceCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(content_url_resolved_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(content_url_resolved_, base::NotFatalUntil::M160);
   // Create two copies of |callback| though it can still only called at most
   // once. This is safe because Read() is guaranteed not to call |callback| if
   // it returns synchronously.
@@ -105,8 +105,8 @@ void ArcDocumentsProviderFileStreamReader::RunPendingRead(
 
 void ArcDocumentsProviderFileStreamReader::RunPendingGetLength(
     GetLengthCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(content_url_resolved_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(content_url_resolved_, base::NotFatalUntil::M160);
   // Create two copies of |callback| though it can still only called at most
   // once. This is safe because GetLength() is guaranteed not to call |callback|
   // if it returns synchronously.

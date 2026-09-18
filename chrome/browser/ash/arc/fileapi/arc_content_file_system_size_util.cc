@@ -59,7 +59,7 @@ void OnOpenFileToTruncate(int64_t length,
 void TruncateOnIOThread(const GURL& content_url,
                         int64_t length,
                         TruncateCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   file_system_operation_runner_util::OpenFileSessionToWriteOnIOThread(
       content_url,
       base::BindOnce(&OnOpenFileToTruncate, length, std::move(callback)));

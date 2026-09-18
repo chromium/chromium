@@ -517,7 +517,7 @@ void WebApkInstallTask::DeliverResult(WebApkInstallStatus result) {
 
   RecordWebApkInstallResult(package_name_to_update_.has_value(), result);
 
-  DCHECK(result_callback_);
+  CHECK(result_callback_, base::NotFatalUntil::M160);
   std::move(result_callback_).Run(result == WebApkInstallStatus::kSuccess);
 }
 

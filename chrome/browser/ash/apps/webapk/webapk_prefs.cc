@@ -89,7 +89,7 @@ base::flat_set<std::string> GetInstalledWebApkPackageNames(Profile* profile) {
   for (const auto kv : generated_webapks) {
     const std::string* package_name =
         kv.second.GetDict().FindString(kPackageNameKey);
-    DCHECK(package_name);
+    CHECK(package_name, base::NotFatalUntil::M160);
     package_names.insert(*package_name);
   }
 

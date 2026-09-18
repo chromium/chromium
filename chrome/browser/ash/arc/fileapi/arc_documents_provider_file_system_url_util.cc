@@ -19,7 +19,7 @@ namespace {
 void OnResolveToContentUrlOnUIThread(
     ArcDocumentsProviderRoot::ResolveToContentUrlCallback callback,
     const GURL& url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), url));
 }
@@ -27,7 +27,7 @@ void OnResolveToContentUrlOnUIThread(
 void ResolveToContentUrlOnUIThread(
     const storage::FileSystemURL& url,
     ArcDocumentsProviderRoot::ResolveToContentUrlCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   ArcDocumentsProviderRootMap* roots =
       ArcDocumentsProviderRootMap::GetForArcBrowserContext();
@@ -53,7 +53,7 @@ void ResolveToContentUrlOnUIThread(
 void ResolveToContentUrlOnIOThread(
     const storage::FileSystemURL& url,
     ArcDocumentsProviderRoot::ResolveToContentUrlCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

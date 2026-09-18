@@ -22,7 +22,7 @@ namespace {
 
 void SerializeAndSend(extensions::NativeMessageHost* native_message_host,
                       const base::DictValue& message) {
-  DCHECK(native_message_host);
+  CHECK(native_message_host, base::NotFatalUntil::M160);
   std::string message_string;
   if (!base::JSONWriter::Write(message, &message_string)) {
     NOTREACHED();
@@ -36,7 +36,7 @@ namespace arc {
 
 FakeArcSupport::FakeArcSupport(ArcSupportHost* support_host)
     : support_host_(support_host) {
-  DCHECK(support_host_);
+  CHECK(support_host_, base::NotFatalUntil::M160);
   support_host_->SetRequestOpenAppCallbackForTesting(base::BindRepeating(
       &FakeArcSupport::Open, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -49,7 +49,7 @@ FakeArcSupport::~FakeArcSupport() {
 }
 
 void FakeArcSupport::Open(Profile* profile) {
-  DCHECK(!native_message_host_);
+  CHECK(!native_message_host_, base::NotFatalUntil::M160);
   native_message_host_ = ArcSupportMessageHost::Create(profile);
   native_message_host_->Start(this);
   support_host_->SetMessageHost(
@@ -57,13 +57,13 @@ void FakeArcSupport::Open(Profile* profile) {
 }
 
 void FakeArcSupport::Close() {
-  DCHECK(native_message_host_);
+  CHECK(native_message_host_, base::NotFatalUntil::M160);
   native_message_host_->OnMessage("{\"event\": \"onWindowClosed\"}");
   UnsetMessageHost();
 }
 
 void FakeArcSupport::ClickAgreeButton() {
-  DCHECK_EQ(ui_page_, ArcSupportHost::UIPage::TERMS);
+  CHECK_EQ(ui_page_, ArcSupportHost::UIPage::TERMS, base::NotFatalUntil::M160);
   base::DictValue message;
   message.Set("event", "onAgreed");
   message.Set("tosContent", tos_content_);
@@ -77,7 +77,7 @@ void FakeArcSupport::ClickAgreeButton() {
 }
 
 void FakeArcSupport::ClickCancelButton() {
-  DCHECK_EQ(ui_page_, ArcSupportHost::UIPage::TERMS);
+  CHECK_EQ(ui_page_, ArcSupportHost::UIPage::TERMS, base::NotFatalUntil::M160);
   base::DictValue message;
   message.Set("event", "onCanceled");
   message.Set("tosContent", tos_content_);
@@ -93,25 +93,25 @@ void FakeArcSupport::ClickCancelButton() {
 }
 
 void FakeArcSupport::ClickRetryButton() {
-  DCHECK(native_message_host_);
-  DCHECK_EQ(ui_page_, ArcSupportHost::UIPage::ERROR);
+  CHECK(native_message_host_, base::NotFatalUntil::M160);
+  CHECK_EQ(ui_page_, ArcSupportHost::UIPage::ERROR, base::NotFatalUntil::M160);
   native_message_host_->OnMessage("{\"event\": \"onRetryClicked\"}");
 }
 
 void FakeArcSupport::ClickSendFeedbackButton() {
-  DCHECK(native_message_host_);
-  DCHECK_EQ(ui_page_, ArcSupportHost::UIPage::ERROR);
+  CHECK(native_message_host_, base::NotFatalUntil::M160);
+  CHECK_EQ(ui_page_, ArcSupportHost::UIPage::ERROR, base::NotFatalUntil::M160);
   native_message_host_->OnMessage("{\"event\": \"onSendFeedbackClicked\"}");
 }
 
 void FakeArcSupport::ClickRunNetworkTestsButton() {
-  DCHECK(native_message_host_);
-  DCHECK_EQ(ui_page_, ArcSupportHost::UIPage::ERROR);
+  CHECK(native_message_host_, base::NotFatalUntil::M160);
+  CHECK_EQ(ui_page_, ArcSupportHost::UIPage::ERROR, base::NotFatalUntil::M160);
   native_message_host_->OnMessage("{\"event\": \"onRunNetworkTestsClicked\"}");
 }
 
 void FakeArcSupport::TosLoadResult(bool success) {
-  DCHECK(native_message_host_);
+  CHECK(native_message_host_, base::NotFatalUntil::M160);
   native_message_host_->OnMessage(
       base::StrCat({"{\"event\": \"onTosLoadResult\", \"success\": ",
                     base::ToString(success), "}"}));
@@ -139,7 +139,7 @@ void FakeArcSupport::PostMessageFromNativeHost(
     const std::string& message_string) {
   std::optional<base::Value> parsed_json = base::JSONReader::Read(
       message_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  DCHECK(parsed_json);
+  CHECK(parsed_json, base::NotFatalUntil::M160);
 
   const base::DictValue& message = parsed_json->GetDict();
   const std::string* action = message.FindString("action");

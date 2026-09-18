@@ -52,12 +52,12 @@ WebApkManager::WebApkManager(Profile* profile)
     : profile_(profile),
       install_queue_(std::make_unique<WebApkInstallQueue>(profile_)),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
-  DCHECK(web_app::AreWebAppsEnabled(profile_));
+  CHECK(web_app::AreWebAppsEnabled(profile_), base::NotFatalUntil::M160);
   proxy_ = AppServiceProxyFactory::GetForProfile(profile_);
   apk_service_ = ash::ApkWebAppService::Get(profile_);
-  DCHECK(apk_service_);
+  CHECK(apk_service_, base::NotFatalUntil::M160);
   app_list_prefs_ = ArcAppListPrefs::Get(profile_);
-  DCHECK(app_list_prefs_);
+  CHECK(app_list_prefs_, base::NotFatalUntil::M160);
 
   // Always observe AppListPrefs, even when the rest of WebAPKs is not enabled,
   // so that we can detect WebAPK uninstalls that happen when the feature is

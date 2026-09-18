@@ -187,7 +187,7 @@ bool ParseDocumentsProviderUrl(const storage::FileSystemURL& url,
     path->clear();
   } else {
     bool success = root_path.AppendRelativePath(url_path_stripped, path);
-    DCHECK(success);
+    CHECK(success, base::NotFatalUntil::M160);
   }
   return true;
 }

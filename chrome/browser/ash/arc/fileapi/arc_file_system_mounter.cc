@@ -47,7 +47,7 @@ ArcFileSystemMounter* ArcFileSystemMounter::GetForBrowserContext(
 
 ArcFileSystemMounter::ArcFileSystemMounter(content::BrowserContext* context,
                                            ArcBridgeService* bridge_service) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
@@ -64,7 +64,7 @@ ArcFileSystemMounter::ArcFileSystemMounter(content::BrowserContext* context,
 }
 
 ArcFileSystemMounter::~ArcFileSystemMounter() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();

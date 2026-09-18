@@ -38,7 +38,7 @@ void OnGetFileInfoOnUIThread(
     ArcDocumentsProviderRoot::GetFileInfoCallback callback,
     base::File::Error result,
     const base::File::Info& info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result, info));
 }
@@ -47,7 +47,7 @@ void OnReadDirectoryOnUIThread(
     storage::AsyncFileUtil::ReadDirectoryCallback callback,
     base::File::Error result,
     std::vector<ArcDocumentsProviderRoot::ThinFileInfo> files) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   storage::AsyncFileUtil::EntryList entries;
   entries.reserve(files.size());
@@ -68,7 +68,7 @@ void OnReadDirectoryOnUIThread(
 void OnCreateFileOnUIThread(
     ArcDocumentsProviderAsyncFileUtil::EnsureFileExistsCallback callback,
     base::File::Error result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   base::File::Error result_to_report = result;
   bool created = false;
   if (result == base::File::FILE_OK) {
@@ -83,7 +83,7 @@ void OnCreateFileOnUIThread(
 
 void OnStatusCallbackOnUIThread(storage::AsyncFileUtil::StatusCallback callback,
                                 base::File::Error result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
@@ -92,7 +92,7 @@ void GetFileInfoOnUIThread(
     const storage::FileSystemURL& url,
     storage::FileSystemOperation::GetMetadataFieldSet fields,
     ArcDocumentsProviderRoot::GetFileInfoCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   ArcDocumentsProviderRootMap* roots =
       ArcDocumentsProviderRootMap::GetForArcBrowserContext();
@@ -120,7 +120,7 @@ void GetFileInfoOnUIThread(
 void ReadDirectoryOnUIThread(
     const storage::FileSystemURL& url,
     storage::AsyncFileUtil::ReadDirectoryCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   ArcDocumentsProviderRootMap* roots =
       ArcDocumentsProviderRootMap::GetForArcBrowserContext();
@@ -144,7 +144,7 @@ void ReadDirectoryOnUIThread(
 
 void DeleteFileOnUIThread(const storage::FileSystemURL& url,
                           storage::AsyncFileUtil::StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   ArcDocumentsProviderRootMap* roots =
       ArcDocumentsProviderRootMap::GetForArcBrowserContext();
@@ -169,7 +169,7 @@ void DeleteFileOnUIThread(const storage::FileSystemURL& url,
 void CreateFileOnUIThread(
     const storage::FileSystemURL& url,
     ArcDocumentsProviderAsyncFileUtil::EnsureFileExistsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   ArcDocumentsProviderRootMap* roots =
       ArcDocumentsProviderRootMap::GetForArcBrowserContext();
@@ -194,7 +194,7 @@ void CreateFileOnUIThread(
 void CreateDirectoryOnUIThread(
     const storage::FileSystemURL& url,
     storage::AsyncFileUtil::StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   ArcDocumentsProviderRootMap* roots =
       ArcDocumentsProviderRootMap::GetForArcBrowserContext();
@@ -219,7 +219,7 @@ void CreateDirectoryOnUIThread(
 void CopyFileLocalOnUIThread(const storage::FileSystemURL& src_url,
                              const storage::FileSystemURL& dest_url,
                              storage::AsyncFileUtil::StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   ArcDocumentsProviderRootMap* roots =
       ArcDocumentsProviderRootMap::GetForArcBrowserContext();
@@ -255,7 +255,7 @@ void CopyFileLocalOnUIThread(const storage::FileSystemURL& src_url,
 void MoveFileLocalOnUIThread(const storage::FileSystemURL& src_url,
                              const storage::FileSystemURL& dest_url,
                              storage::AsyncFileUtil::StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   ArcDocumentsProviderRootMap* roots =
       ArcDocumentsProviderRootMap::GetForArcBrowserContext();
@@ -301,7 +301,7 @@ void ArcDocumentsProviderAsyncFileUtil::CreateOrOpen(
     const storage::FileSystemURL& url,
     uint32_t file_flags,
     CreateOrOpenCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   // TODO(nya): Implement this function if it is ever called.
   NOTIMPLEMENTED();
   std::move(callback).Run(base::File(base::File::FILE_ERROR_INVALID_OPERATION),
@@ -312,8 +312,9 @@ void ArcDocumentsProviderAsyncFileUtil::EnsureFileExists(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
     EnsureFileExistsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, url.type());
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, url.type(),
+           base::NotFatalUntil::M160);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -326,9 +327,11 @@ void ArcDocumentsProviderAsyncFileUtil::CreateDirectory(
     bool exclusive,
     bool recursive,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, url.type());
-  DCHECK(!recursive);  // Files app doesn't create directory with |recursive|.
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, url.type(),
+           base::NotFatalUntil::M160);
+  CHECK(!recursive, base::NotFatalUntil::M160);  // Files app doesn't create
+                                                 // directory with |recursive|.
 
   // Even when |exclusive| is false, we report File::FILE_ERROR_EXISTS when a
   // directory already exists at |url| for simpler ArcDocumentsProviderRoot
@@ -344,8 +347,9 @@ void ArcDocumentsProviderAsyncFileUtil::GetFileInfo(
     const storage::FileSystemURL& url,
     GetMetadataFieldSet fields,
     GetFileInfoCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, url.type());
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, url.type(),
+           base::NotFatalUntil::M160);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -356,8 +360,9 @@ void ArcDocumentsProviderAsyncFileUtil::ReadDirectory(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
     ReadDirectoryCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, url.type());
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, url.type(),
+           base::NotFatalUntil::M160);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -370,7 +375,7 @@ void ArcDocumentsProviderAsyncFileUtil::Touch(
     const base::Time& last_access_time,
     const base::Time& last_modified_time,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   // Touch operation is not supported by documents providers.
   // The failure on touch operation will just be ignored and preceding operation
   // like copy, move, will succeed.
@@ -382,7 +387,7 @@ void ArcDocumentsProviderAsyncFileUtil::Truncate(
     const storage::FileSystemURL& url,
     int64_t length,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   // Truncate() doesn't work well on ARC P/R container. It works on ARCVM R+
   // because the mojo proxy for ARCVM implements the feature.
   // TODO(b/223247850) Fix this.
@@ -409,9 +414,11 @@ void ArcDocumentsProviderAsyncFileUtil::CopyFileLocal(
     CopyOrMoveOptionSet options,
     CopyFileProgressCallback progress_callback,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, src_url.type());
-  DCHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, dest_url.type());
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, src_url.type(),
+           base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, dest_url.type(),
+           base::NotFatalUntil::M160);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&CopyFileLocalOnUIThread, src_url, dest_url,
@@ -424,9 +431,11 @@ void ArcDocumentsProviderAsyncFileUtil::MoveFileLocal(
     const storage::FileSystemURL& dest_url,
     CopyOrMoveOptionSet options,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, src_url.type());
-  DCHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, dest_url.type());
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, src_url.type(),
+           base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, dest_url.type(),
+           base::NotFatalUntil::M160);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&MoveFileLocalOnUIThread, src_url, dest_url,
@@ -438,7 +447,7 @@ void ArcDocumentsProviderAsyncFileUtil::CopyInForeignFile(
     const base::FilePath& src_file_path,
     const storage::FileSystemURL& dest_url,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   NOTREACHED();  // Read-only file system.
 }
 
@@ -446,8 +455,9 @@ void ArcDocumentsProviderAsyncFileUtil::DeleteFile(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, url.type());
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, url.type(),
+           base::NotFatalUntil::M160);
 
   // TODO(fukino): Report an error if the document at |url| is not a file.
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -459,8 +469,9 @@ void ArcDocumentsProviderAsyncFileUtil::DeleteDirectory(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, url.type());
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, url.type(),
+           base::NotFatalUntil::M160);
 
   // TODO(fukino): Report an error if the document at |url| is not a directory.
   // TODO(fukino): Report an error if the document at |url| is a directory which
@@ -474,8 +485,9 @@ void ArcDocumentsProviderAsyncFileUtil::DeleteRecursively(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, url.type());
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, url.type(),
+           base::NotFatalUntil::M160);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -486,7 +498,7 @@ void ArcDocumentsProviderAsyncFileUtil::CreateSnapshotFile(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
     CreateSnapshotFileCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   NOTIMPLEMENTED();  // TODO(crbug.com/40496703): Implement this function.
   std::move(callback).Run(base::File::FILE_ERROR_FAILED, base::File::Info(),
                           base::FilePath(),

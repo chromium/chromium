@@ -68,7 +68,7 @@ int ArcContentFileSystemFileStreamReader::Read(
     net::IOBuffer* buffer,
     int buffer_length,
     net::CompletionOnceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   if (file_) {
     ReadInternal(buffer, buffer_length, std::move(callback));
     return net::ERR_IO_PENDING;
@@ -84,7 +84,7 @@ int ArcContentFileSystemFileStreamReader::Read(
 
 int64_t ArcContentFileSystemFileStreamReader::GetLength(
     GetLengthCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   file_system_operation_runner_util::GetFileSizeOnIOThread(
       arc_url_,
       base::BindOnce(&ArcContentFileSystemFileStreamReader::OnGetFileSize,
@@ -106,9 +106,9 @@ void ArcContentFileSystemFileStreamReader::ReadInternal(
     net::IOBuffer* buffer,
     int buffer_length,
     net::CompletionOnceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(file_);
-  DCHECK(file_->IsValid());
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(file_, base::NotFatalUntil::M160);
+  CHECK(file_->IsValid(), base::NotFatalUntil::M160);
 
   // |file_| is alive on ReadFile(), since the destructor will destruct
   // |task_runner_| along with |file_| and ReadFile() won't be called.
@@ -123,7 +123,7 @@ void ArcContentFileSystemFileStreamReader::ReadInternal(
 void ArcContentFileSystemFileStreamReader::OnRead(
     net::CompletionOnceCallback callback,
     std::optional<size_t> result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   if (!result.has_value()) {
     CloseInternal(CloseStatus::kStatusError);
     std::move(callback).Run(net::ERR_FAILED);
@@ -135,7 +135,7 @@ void ArcContentFileSystemFileStreamReader::OnRead(
 void ArcContentFileSystemFileStreamReader::OnGetFileSize(
     GetLengthCallback callback,
     int64_t size) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   if (size < 0) {
     CloseInternal(CloseStatus::kStatusError);
     std::move(callback).Run(base::unexpected(net::ERR_FAILED));
@@ -149,9 +149,9 @@ void ArcContentFileSystemFileStreamReader::OnOpenFileSession(
     int buffer_length,
     net::CompletionOnceCallback callback,
     mojom::FileSessionPtr file_handle) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(!file_);
-  DCHECK(session_id_.empty());
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(!file_, base::NotFatalUntil::M160);
+  CHECK(session_id_.empty(), base::NotFatalUntil::M160);
 
   if (file_handle.is_null() || file_handle->url_id.empty()) {
     // The file_handle and its url_id are required from the file system.
@@ -160,7 +160,7 @@ void ArcContentFileSystemFileStreamReader::OnOpenFileSession(
   }
 
   session_id_ = std::move(file_handle->url_id);
-  DCHECK(session_id_.length() > 0);
+  CHECK(session_id_.length() > 0, base::NotFatalUntil::M160);
   mojo::PlatformHandle platform_handle =
       mojo::UnwrapPlatformHandle(std::move(file_handle->fd));
   if (!platform_handle.is_valid()) {
@@ -190,9 +190,9 @@ void ArcContentFileSystemFileStreamReader::OnSeekFile(
     int buffer_length,
     net::CompletionOnceCallback callback,
     int seek_result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(file_);
-  DCHECK(file_->IsValid());
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(file_, base::NotFatalUntil::M160);
+  CHECK(file_->IsValid(), base::NotFatalUntil::M160);
   switch (seek_result) {
     case 0:
       // File stream is ready. Resume Read().
@@ -221,9 +221,9 @@ void ArcContentFileSystemFileStreamReader::ConsumeFileContents(
     net::CompletionOnceCallback callback,
     scoped_refptr<net::IOBufferWithSize> temporary_buffer,
     int64_t num_bytes_to_consume) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(file_);
-  DCHECK(file_->IsValid());
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(file_, base::NotFatalUntil::M160);
+  CHECK(file_->IsValid(), base::NotFatalUntil::M160);
   if (num_bytes_to_consume == 0) {
     // File stream is ready. Resume Read().
     ReadInternal(buf.get(), buffer_length, std::move(callback));
@@ -250,14 +250,15 @@ void ArcContentFileSystemFileStreamReader::OnConsumeFileContents(
     scoped_refptr<net::IOBufferWithSize> temporary_buffer,
     int64_t num_bytes_to_consume,
     std::optional<size_t> read_result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   if (!read_result.has_value()) {
     LOG(ERROR) << "Failed to consume the file stream.";
     CloseInternal(CloseStatus::kStatusError);
     std::move(callback).Run(net::ERR_FAILED);
     return;
   }
-  DCHECK_GE(num_bytes_to_consume, static_cast<int64_t>(read_result.value()));
+  CHECK_GE(num_bytes_to_consume, static_cast<int64_t>(read_result.value()),
+           base::NotFatalUntil::M160);
   num_bytes_to_consume -= read_result.value();
   ConsumeFileContents(buf, buffer_length, std::move(callback), temporary_buffer,
                       num_bytes_to_consume);

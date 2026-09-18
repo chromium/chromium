@@ -23,18 +23,18 @@ ArcDocumentsProviderFileStreamWriter::ArcDocumentsProviderFileStreamWriter(
     const storage::FileSystemURL& url,
     int64_t offset)
     : offset_(offset), content_url_resolved_(false), arc_url_(url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 }
 
 ArcDocumentsProviderFileStreamWriter::~ArcDocumentsProviderFileStreamWriter() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 }
 
 int ArcDocumentsProviderFileStreamWriter::Write(
     net::IOBuffer* buffer,
     int buffer_length,
     net::CompletionOnceCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!content_url_resolved_) {
     pending_operations_.emplace_back(base::BindOnce(
@@ -59,7 +59,7 @@ int ArcDocumentsProviderFileStreamWriter::Write(
 
 int ArcDocumentsProviderFileStreamWriter::Cancel(
     net::CompletionOnceCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!content_url_resolved_) {
     pending_operations_.emplace_back(
@@ -75,7 +75,7 @@ int ArcDocumentsProviderFileStreamWriter::Cancel(
 int ArcDocumentsProviderFileStreamWriter::Flush(
     storage::FlushMode flush_mode,
     net::CompletionOnceCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!content_url_resolved_) {
     pending_operations_.emplace_back(base::BindOnce(
@@ -90,8 +90,8 @@ int ArcDocumentsProviderFileStreamWriter::Flush(
 
 void ArcDocumentsProviderFileStreamWriter::OnResolveToContentUrl(
     const GURL& content_url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(!content_url_resolved_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(!content_url_resolved_, base::NotFatalUntil::M160);
 
   if (content_url.is_valid()) {
     underlying_writer_ = std::make_unique<ArcContentFileSystemFileStreamWriter>(
@@ -109,8 +109,8 @@ void ArcDocumentsProviderFileStreamWriter::RunPendingWrite(
     scoped_refptr<net::IOBuffer> buffer,
     int buffer_length,
     net::CompletionOnceCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(content_url_resolved_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(content_url_resolved_, base::NotFatalUntil::M160);
   // Create two copies of |callback| though it can still only called at most
   // once. This is safe because Write() is guaranteed not to call |callback| if
   // it returns synchronously.
@@ -125,8 +125,8 @@ void ArcDocumentsProviderFileStreamWriter::RunPendingWrite(
 
 void ArcDocumentsProviderFileStreamWriter::RunPendingCancel(
     net::CompletionOnceCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(content_url_resolved_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(content_url_resolved_, base::NotFatalUntil::M160);
   // Create two copies of |callback| though it can still only called at most
   // once. This is safe because Cancel() is guaranteed not to call |callback| if
   // it returns synchronously.
@@ -141,8 +141,8 @@ void ArcDocumentsProviderFileStreamWriter::RunPendingCancel(
 void ArcDocumentsProviderFileStreamWriter::RunPendingFlush(
     storage::FlushMode flush_mode,
     net::CompletionOnceCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(content_url_resolved_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(content_url_resolved_, base::NotFatalUntil::M160);
   // Create two copies of |callback| though it can still only called at most
   // once. This is safe because Flush() is guaranteed not to call |callback| if
   // it returns synchronously.

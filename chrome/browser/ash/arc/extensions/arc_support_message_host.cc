@@ -28,7 +28,7 @@ ArcSupportMessageHost::~ArcSupportMessageHost() {
   // disconnects to this instance on shutdown already.
   ArcSessionManager* arc_session_manager = ArcSessionManager::Get();
   if (arc_session_manager) {
-    DCHECK(arc_session_manager->support_host());
+    CHECK(arc_session_manager->support_host(), base::NotFatalUntil::M160);
     arc_session_manager->support_host()->UnsetMessageHost(this);
   }
 }
@@ -44,17 +44,17 @@ void ArcSupportMessageHost::SetObserver(Observer* observer) {
   // We assume that the observer instance is only ArcSupportHost, which is
   // currently system unique. This is also used to reset the observere,
   // so |observer| xor |observer_| needs to be nullptr.
-  DCHECK(!observer != !observer_);
+  CHECK(!observer != !observer_, base::NotFatalUntil::M160);
   observer_ = observer;
 }
 
 void ArcSupportMessageHost::Start(Client* client) {
-  DCHECK(!client_);
+  CHECK(!client_, base::NotFatalUntil::M160);
   client_ = client;
 
   ArcSessionManager* arc_session_manager = ArcSessionManager::Get();
   if (arc_session_manager) {
-    DCHECK(arc_session_manager->support_host());
+    CHECK(arc_session_manager->support_host(), base::NotFatalUntil::M160);
     arc_session_manager->support_host()->SetMessageHost(this);
   }
 }

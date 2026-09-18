@@ -23,12 +23,12 @@ ArcDocumentsProviderBackendDelegate::ArcDocumentsProviderBackendDelegate() =
     default;
 
 ArcDocumentsProviderBackendDelegate::~ArcDocumentsProviderBackendDelegate() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 }
 
 storage::AsyncFileUtil* ArcDocumentsProviderBackendDelegate::GetAsyncFileUtil(
     storage::FileSystemType type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   return &async_file_util_;
 }
 
@@ -39,7 +39,7 @@ ArcDocumentsProviderBackendDelegate::CreateFileStreamReader(
     int64_t max_bytes_to_read,
     const base::Time& expected_modification_time,
     storage::FileSystemContext* context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   return std::make_unique<ArcDocumentsProviderFileStreamReader>(url, offset);
 }
@@ -49,14 +49,14 @@ ArcDocumentsProviderBackendDelegate::CreateFileStreamWriter(
     const storage::FileSystemURL& url,
     int64_t offset,
     storage::FileSystemContext* context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   return std::make_unique<ArcDocumentsProviderFileStreamWriter>(url, offset);
 }
 
 storage::WatcherManager* ArcDocumentsProviderBackendDelegate::GetWatcherManager(
     storage::FileSystemType type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   return &watcher_manager_;
 }
 

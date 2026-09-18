@@ -22,7 +22,7 @@ namespace apps {
 // Queue of WebApks to be installed or updated.
 WebApkInstallQueue::WebApkInstallQueue(Profile* profile) : profile_(profile) {
   arc::ArcServiceManager* arc_service_manager = arc::ArcServiceManager::Get();
-  DCHECK(arc_service_manager);
+  CHECK(arc_service_manager, base::NotFatalUntil::M160);
   arc_service_manager->arc_bridge_service()->webapk()->AddObserver(this);
 }
 
@@ -74,7 +74,7 @@ void WebApkInstallQueue::OnConnectionClosed() {
 }
 
 std::unique_ptr<WebApkInstallTask> WebApkInstallQueue::PopTaskForTest() {
-  DCHECK(!current_install_);
+  CHECK(!current_install_, base::NotFatalUntil::M160);
   std::unique_ptr<WebApkInstallTask> task;
   if (!pending_installs_.empty()) {
     task = std::move(pending_installs_.front());
