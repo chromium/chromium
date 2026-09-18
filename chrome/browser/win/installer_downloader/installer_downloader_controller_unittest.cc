@@ -177,13 +177,12 @@ TEST_F(InstallerDownloaderControllerTest,
               &GURL::spec,
               AllOf(
                   // GUID in the iid= query param.
-                  ContainsRegex(
-                      "iid=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-"
-                      "[0-9a-f]{12}"),
+                  ContainsRegex("iid%3D%7B[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-"
+                                "[0-9a-f]{4}-[0-9a-f]{12}%7D"),
                   // Metrics flag.
-                  HasSubstr("&stats=1"),
+                  HasSubstr("%26usagestats%3D1"),
                   // Language substitution.
-                  HasSubstr("&lang=en"),
+                  HasSubstr("%26lang%3Den"),
                   // No leftover placeholders.
                   Not(HasSubstr("IIDGUID")), Not(HasSubstr("STATS")),
                   Not(HasSubstr("LANGUAGE")))),
@@ -198,7 +197,7 @@ TEST_F(InstallerDownloaderControllerTest, DownloadUrlStatsEnabled) {
   const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp"));
   EXPECT_CALL(*mock_model_,
               StartDownload(
-                  Property(&GURL::spec, HasSubstr("&stats=1")),
+                  Property(&GURL::spec, HasSubstr("%26usagestats%3D1")),
                   destination.AppendASCII(kDownloadedInstallerFileName), _, _));
 
   controller_->OnDownloadRequestAccepted(destination);
@@ -210,7 +209,7 @@ TEST_F(InstallerDownloaderControllerTest, DownloadUrlStatsDisabled) {
   const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp"));
   EXPECT_CALL(*mock_model_,
               StartDownload(
-                  Property(&GURL::spec, HasSubstr("&stats=0")),
+                  Property(&GURL::spec, HasSubstr("%26usagestats%3D0")),
                   destination.AppendASCII(kDownloadedInstallerFileName), _, _));
 
   controller_->OnDownloadRequestAccepted(destination);
@@ -222,7 +221,7 @@ TEST_F(InstallerDownloaderControllerTest, DownloadUrlLanguageSubstitution) {
   const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp"));
   EXPECT_CALL(*mock_model_,
               StartDownload(
-                  Property(&GURL::spec, AllOf(HasSubstr("&lang=en"),
+                  Property(&GURL::spec, AllOf(HasSubstr("%26lang%3Den"),
                                               Not(HasSubstr("LANGUAGE")))),
                   destination.AppendASCII(kDownloadedInstallerFileName), _, _));
 
@@ -372,6 +371,7 @@ TEST_F(InstallerDownloaderControllerTest, LogsDownloadResultMetric) {
         download_completion_callback = std::move(callback);
       });
   EXPECT_CALL(*mock_model_, PreventFutureDisplay()).Times(1);
+  EXPECT_CALL(*mock_model_, RecordDownloadCompleted()).Times(1);
 
   controller_->OnDownloadRequestAccepted(
       base::FilePath(FILE_PATH_LITERAL("C:\\tmp"))
