@@ -1497,6 +1497,7 @@ public final class ProductionSupportedFlagList {
                 "Controls whether XSLT is supported by the browser. Disabling this flag disables"
                         + " all XSLT processing."),
         Flag.baseFeature("UseRustCborParser", "Enables the Rust-based CBOR parser instead of C++."),
+        Flag.baseFeature("UseRustCborWriter", "Enables the Rust-based CBOR writer instead of C++."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER,
                 "Enables automatic triggering of prefetch ahead of prerender in WebView."),
