@@ -36,8 +36,8 @@ gfx::Size GetNineboxImageSize(int elevation,
   auto values = Shadow::MakeShadowValues(
       elevation, Shadow::Style::kMaterialDesign, std::nullopt, is_pill_shaped);
   gfx::Rect bounds(0, 0, 1, 1);
-  bounds.Inset(
-      -decoration::GetNineboxApertureInsetsForShadows(values, rounded_corners));
+  bounds.Inset(-decoration::ShadowGenerator::GetNineboxApertureInsets(
+      values, rounded_corners));
   return bounds.size();
 }
 
@@ -49,8 +49,8 @@ gfx::Size GetMinContentSize(
     bool is_pill_shaped = false) {
   auto values = Shadow::MakeShadowValues(
       elevation, Shadow::Style::kMaterialDesign, std::nullopt, is_pill_shaped);
-  gfx::Insets insets =
-      decoration::GetNineboxApertureInsetsForShadows(values, rounded_corners);
+  gfx::Insets insets = decoration::ShadowGenerator::GetNineboxApertureInsets(
+      values, rounded_corners);
   return gfx::Size(insets.width(), insets.height());
 }
 

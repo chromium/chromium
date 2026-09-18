@@ -24,13 +24,6 @@
 namespace ui::decoration {
 
 // static
-gfx::Insets ShadowGenerator::GetNineboxApertureInsets(
-    const gfx::ShadowValues& shadows,
-    const gfx::RoundedCornersF& rounded_corners) {
-  return GetNineboxApertureInsetsForShadows(shadows, rounded_corners);
-}
-
-// static
 gfx::Insets ShadowGenerator::GetMargins(const gfx::ShadowValues& shadows) {
   return gfx::ShadowValue::GetMargin(shadows);
 }
@@ -58,7 +51,8 @@ void ShadowGenerator::Draw(gfx::Canvas* canvas,
   canvas->sk_canvas()->drawRRect(r_rect, flags);
 }
 
-gfx::Insets GetNineboxApertureInsetsForShadows(
+// static
+gfx::Insets ShadowGenerator::GetNineboxApertureInsets(
     const gfx::ShadowValues& shadows,
     const gfx::RoundedCornersF& rounded_corners) {
   DCHECK(!shadows.empty());

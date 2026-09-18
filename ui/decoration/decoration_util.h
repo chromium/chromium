@@ -23,11 +23,14 @@ namespace ui::decoration {
 
 // Generator for shadow decoration rendering and insets.
 struct ShadowGenerator {
+  static gfx::Insets GetMargins(const gfx::ShadowValues& shadows);
+
+  // Returns the insets for the ninebox aperture given the shadows and corner
+  // radius. Represents the total space need to draw the full range of blur and
+  // the corner rounding around the aperture.
   static gfx::Insets GetNineboxApertureInsets(
       const gfx::ShadowValues& shadows,
       const gfx::RoundedCornersF& rounded_corners);
-
-  static gfx::Insets GetMargins(const gfx::ShadowValues& shadows);
 
   static void Draw(gfx::Canvas* canvas,
                    const gfx::ShadowValues& shadows,
@@ -57,13 +60,6 @@ using ShadowDetails = DecorationDetails<gfx::ShadowValues, ShadowGenerator>;
 //                                          Right Inset =  max(r_UR, r_LR)
 //
 gfx::Insets GetInsetsForRoundedCorners(
-    const gfx::RoundedCornersF& rounded_corners);
-
-// Returns the insets for the ninebox aperture given the shadows and corner
-// radius. Represents the total space need to draw  the full range of blur and
-// the corner rounding around the aperture.
-gfx::Insets GetNineboxApertureInsetsForShadows(
-    const gfx::ShadowValues& shadows,
     const gfx::RoundedCornersF& rounded_corners);
 
 }  // namespace ui::decoration
