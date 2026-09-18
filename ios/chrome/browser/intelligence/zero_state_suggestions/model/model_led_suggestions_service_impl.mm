@@ -127,8 +127,10 @@ void ModelLedSuggestionsServiceImpl::OnPageContextGenerated(
   }
 
   request.set_allocated_page_context(response.value().release());
-  request.set_locale(
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+  request.set_locale(GetApplicationContext()
+                         ->GetApplicationLocaleStorage()
+                         ->GetTag()
+                         .tag_string());
 
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       result_callback = base::BindOnce(

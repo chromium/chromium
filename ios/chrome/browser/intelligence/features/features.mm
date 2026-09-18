@@ -92,7 +92,8 @@ bool IsPageActionMenuEnabled() {
   ApplicationLocaleStorage* locale_storage =
       GetApplicationContext()->GetApplicationLocaleStorage();
   std::string locale =
-      locale_storage ? base::ToLowerASCII(locale_storage->Get()) : "";
+      locale_storage ? base::ToLowerASCII(locale_storage->GetTag().tag_string())
+                     : "";
 
   std::string normalized_locale;
   base::ReplaceChars(locale, "_", "-", &normalized_locale);
@@ -324,8 +325,8 @@ bool IsZeroStateSuggestionsEnabled() {
   ApplicationLocaleStorage* locale_storage =
       GetApplicationContext()->GetApplicationLocaleStorage();
   bool is_launched_locale =
-      locale_storage &&
-      base::EqualsCaseInsensitiveASCII(locale_storage->Get(), "en-us");
+      locale_storage && base::EqualsCaseInsensitiveASCII(
+                            locale_storage->GetTag().tag_string(), "en-us");
 
   if (is_launched_country && is_launched_locale) {
     return true;
@@ -347,8 +348,8 @@ bool IsZeroStateSuggestionsWCGDEnabled() {
   ApplicationLocaleStorage* locale_storage =
       GetApplicationContext()->GetApplicationLocaleStorage();
   bool is_launched_locale =
-      locale_storage &&
-      base::EqualsCaseInsensitiveASCII(locale_storage->Get(), "en-us");
+      locale_storage && base::EqualsCaseInsensitiveASCII(
+                            locale_storage->GetTag().tag_string(), "en-us");
 
   if (is_launched_country && is_launched_locale) {
     return true;
@@ -569,8 +570,8 @@ bool IsModelBasedPageClassificationEnabled() {
   ApplicationLocaleStorage* locale_storage =
       GetApplicationContext()->GetApplicationLocaleStorage();
   bool is_launched_locale =
-      locale_storage &&
-      base::EqualsCaseInsensitiveASCII(locale_storage->Get(), "en-us");
+      locale_storage && base::EqualsCaseInsensitiveASCII(
+                            locale_storage->GetTag().tag_string(), "en-us");
 
   if (!is_launched_country || !is_launched_locale) {
     return false;

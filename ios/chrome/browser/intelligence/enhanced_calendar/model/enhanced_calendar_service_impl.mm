@@ -92,8 +92,10 @@ void EnhancedCalendarServiceImpl::ExecuteEnhancedCalendarRequest(
   request.set_surrounding_text(request_params->surrounding_text);
 
   // Set the user locale.
-  const std::string locale =
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  const std::string locale(GetApplicationContext()
+                               ->GetApplicationLocaleStorage()
+                               ->GetTag()
+                               .tag_string());
   request.set_user_locale(locale);
 
   // Set the prompt, if it exists.

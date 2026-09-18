@@ -78,7 +78,7 @@ TEST_F(ActorFeaturesTest, IsPageActionMenuEnabled_EnabledLocale) {
 
   ApplicationLocaleStorage* locale_storage =
       TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
-  std::string original_locale = locale_storage->Get();
+  std::string original_locale(locale_storage->GetTag().tag_string());
   locale_storage->Set("zh_TW");
 
   EXPECT_TRUE(IsPageActionMenuEnabled());
@@ -93,7 +93,7 @@ TEST_F(ActorFeaturesTest, IsPageActionMenuEnabled_DisabledLocale) {
 
   ApplicationLocaleStorage* locale_storage =
       TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
-  std::string original_locale = locale_storage->Get();
+  std::string original_locale(locale_storage->GetTag().tag_string());
   locale_storage->Set("xx-XX");
 
   EXPECT_FALSE(IsPageActionMenuEnabled());
@@ -118,7 +118,7 @@ TEST_F(ActorFeaturesTest,
 
   ApplicationLocaleStorage* locale_storage =
       TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
-  std::string original_locale = locale_storage->Get();
+  std::string original_locale(locale_storage->GetTag().tag_string());
   locale_storage->Set("en-US");
 
   EXPECT_TRUE(IsZeroStateSuggestionsEnabled());
@@ -140,7 +140,7 @@ TEST_F(ActorFeaturesTest,
 
   ApplicationLocaleStorage* locale_storage =
       TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
-  std::string original_locale = locale_storage->Get();
+  std::string original_locale(locale_storage->GetTag().tag_string());
   locale_storage->Set("en-US");
 
   EXPECT_TRUE(IsZeroStateSuggestionsEnabled());
@@ -161,7 +161,7 @@ TEST_F(ActorFeaturesTest,
 
   ApplicationLocaleStorage* locale_storage =
       TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
-  std::string original_locale = locale_storage->Get();
+  std::string original_locale(locale_storage->GetTag().tag_string());
   locale_storage->Set("en-US");
 
   EXPECT_FALSE(IsZeroStateSuggestionsEnabled());
@@ -183,7 +183,7 @@ TEST_F(ActorFeaturesTest,
 
   ApplicationLocaleStorage* locale_storage =
       TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
-  std::string original_locale = locale_storage->Get();
+  std::string original_locale(locale_storage->GetTag().tag_string());
   locale_storage->Set("en-US");
 
   EXPECT_TRUE(IsZeroStateSuggestionsEnabled());
@@ -204,7 +204,7 @@ TEST_F(ActorFeaturesTest,
 
   ApplicationLocaleStorage* locale_storage =
       TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
-  std::string original_locale = locale_storage->Get();
+  std::string original_locale(locale_storage->GetTag().tag_string());
   locale_storage->Set("fr-FR");
 
   EXPECT_FALSE(IsZeroStateSuggestionsEnabled());
@@ -226,7 +226,7 @@ TEST_F(ActorFeaturesTest,
 
   ApplicationLocaleStorage* locale_storage =
       TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
-  std::string original_locale = locale_storage->Get();
+  std::string original_locale(locale_storage->GetTag().tag_string());
   locale_storage->Set("fr-FR");
 
   EXPECT_TRUE(IsZeroStateSuggestionsEnabled());
