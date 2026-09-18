@@ -139,6 +139,10 @@ class CORE_EXPORT V8ScriptValueSerializer
   bool AdoptSharedValueConveyor(v8::Isolate* isolate,
                                 v8::SharedValueConveyor&& conveyor) override;
 
+  // Stores the blob in `serialized_script_value_` and returns an identifier for
+  // use with `serializer_`. The identifier is an index.
+  String AttachBlob(scoped_refptr<BlobDataHandle> blob_data);
+
   ScriptState* script_state_;
   scoped_refptr<SerializedScriptValue> serialized_script_value_;
   v8::ValueSerializer serializer_;

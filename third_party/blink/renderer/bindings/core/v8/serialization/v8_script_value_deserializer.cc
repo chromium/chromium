@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
@@ -437,12 +438,13 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
     case kBlobTag: {
       if (Version() < 3)
         return nullptr;
-      String uuid, type;
+      String blob_index_string, type;
       uint64_t size;
-      if (!ReadUTF8String(&uuid) || !ReadUTF8String(&type) ||
-          !ReadUint64(&size))
+      if (!ReadUTF8String(&blob_index_string) || !ReadUTF8String(&type) ||
+          !ReadUint64(&size)) {
         return nullptr;
-      auto blob_handle = GetBlobDataHandle(uuid);
+      }
+      auto blob_handle = GetBlobDataHandle(blob_index_string);
       if (!blob_handle)
         return nullptr;
       return MakeGarbageCollected<Blob>(std::move(blob_handle));
@@ -906,15 +908,16 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
 File* V8ScriptValueDeserializer::ReadFile() {
   if (Version() < 3)
     return nullptr;
-  String path, name, relative_path, uuid, type;
+  String path, name, relative_path, blob_index_string, type;
   uint32_t has_snapshot = 0;
   uint64_t size = 0;
   std::optional<base::Time> last_modified;
   if (!ReadUTF8String(&path) || (Version() >= 4 && !ReadUTF8String(&name)) ||
       (Version() >= 4 && !ReadUTF8String(&relative_path)) ||
-      !ReadUTF8String(&uuid) || !ReadUTF8String(&type) ||
-      (Version() >= 4 && !ReadUint32(&has_snapshot)))
+      !ReadUTF8String(&blob_index_string) || !ReadUTF8String(&type) ||
+      (Version() >= 4 && !ReadUint32(&has_snapshot))) {
     return nullptr;
+  }
   if (has_snapshot) {
     double last_modified_ms = 0;
     if (!ReadUint64(&size) || !ReadDouble(&last_modified_ms))
@@ -931,7 +934,7 @@ File* V8ScriptValueDeserializer::ReadFile() {
     return nullptr;
   const File::UserVisibility user_visibility =
       is_user_visible ? File::kIsUserVisible : File::kIsNotUserVisible;
-  auto blob_handle = GetBlobDataHandle(uuid);
+  auto blob_handle = GetBlobDataHandle(blob_index_string);
   if (!blob_handle)
     return nullptr;
   return File::CreateFromSerialization(path, name, relative_path,
@@ -962,13 +965,18 @@ DOMRectReadOnly* V8ScriptValueDeserializer::ReadDOMRectReadOnly() {
 }
 
 scoped_refptr<BlobDataHandle> V8ScriptValueDeserializer::GetBlobDataHandle(
-    const String& uuid) {
-  BlobDataHandleMap& handles = serialized_script_value_->BlobDataHandles();
-  BlobDataHandleMap::const_iterator it = handles.find(uuid);
-  if (it != handles.end())
-    return it->value;
-
-  return nullptr;
+    const String& blob_index_string) {
+  // The key used to be a UUID, now it is an index. We don't have to worry about
+  // deserialization failing for UUIDs that were previously stored to disk
+  // because UUID lookup always failed in disk storage contexts anyway.
+  const BlobDataHandleArray& handles =
+      serialized_script_value_->BlobDataHandles();
+  std::optional<uint32_t> blob_index =
+      StringToUint(blob_index_string, NumberParsingOptions());
+  if (!blob_index || *blob_index >= handles.size()) {
+    return nullptr;
+  }
+  return handles[static_cast<wtf_size_t>(*blob_index)];
 }
 
 v8::MaybeLocal<v8::Object> V8ScriptValueDeserializer::ReadHostObject(

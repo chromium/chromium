@@ -10,16 +10,6 @@
 
 namespace mojo {
 
-blink::Vector<scoped_refptr<blink::BlobDataHandle>> StructTraits<
-    blink::mojom::blink::CloneableMessage::DataView,
-    blink::BlinkCloneableMessage>::blobs(blink::BlinkCloneableMessage& input) {
-  blink::Vector<scoped_refptr<blink::BlobDataHandle>> result;
-  result.ReserveInitialCapacity(input.message->BlobDataHandles().size());
-  for (const auto& blob : input.message->BlobDataHandles())
-    result.push_back(blob.value);
-  return result;
-}
-
 bool StructTraits<blink::mojom::blink::CloneableMessage::DataView,
                   blink::BlinkCloneableMessage>::
     Read(blink::mojom::blink::CloneableMessage::DataView data,
@@ -29,11 +19,8 @@ bool StructTraits<blink::mojom::blink::CloneableMessage::DataView,
     return false;
   out->message = blink::SerializedScriptValue::Create(message_view.data());
 
-  blink::Vector<scoped_refptr<blink::BlobDataHandle>> blobs;
-  if (!data.ReadBlobs(&blobs))
+  if (!data.ReadBlobs(&out->message->BlobDataHandles())) {
     return false;
-  for (auto& blob : blobs) {
-    out->message->BlobDataHandles().Set(blob->Uuid(), blob);
   }
   if (!data.ReadSenderOrigin(&out->sender_origin)) {
     return false;

@@ -43,15 +43,16 @@ enum SerializationTag : uint8_t {
                           // transferred MessagePort.
   kMojoHandleTag = 'h',   // index:int -> MojoHandle. Fills the result with
                           // transferred MojoHandle.
-  kBlobTag = 'b',  // uuid:WebCoreString, type:WebCoreString, size:uint64_t ->
+  // In M155 and earlier, the index was a UUID.
+  kBlobTag = 'b',  // index:WebCoreString, type:WebCoreString, size:uint64_t ->
                    // Blob (ref)
-  kBlobIndexTag = 'i',             // index:int32_t -> Blob (ref)
-  kFileTag = 'f',                  // file:RawFile -> File (ref)
-  kFileIndexTag = 'e',             // index:int32_t -> File (ref)
-  kDOMFileSystemTag = 'd',         // type:int32_t, name:WebCoreString,
-                                   // uuid:WebCoreString -> FileSystem (ref)
-  kFileSystemFileHandleTag = 'n',  // name:WebCoreString, index:uint32_t
-                                   // -> FileSystemFileHandle (ref)
+  kBlobIndexTag = 'i',                  // index:int32_t -> Blob (ref)
+  kFileTag = 'f',                       // file:RawFile -> File (ref)
+  kFileIndexTag = 'e',                  // index:int32_t -> File (ref)
+  kDOMFileSystemTag = 'd',              // type:int32_t, name:WebCoreString,
+                                        // url:WebCoreString -> FileSystem (ref)
+  kFileSystemFileHandleTag = 'n',       // name:WebCoreString, index:uint32_t
+                                        // -> FileSystemFileHandle (ref)
   kFileSystemDirectoryHandleTag = 'N',  // name:WebCoreString, index:uint32_t ->
                                         // FileSystemDirectoryHandle (ref)
   kFileListTag =

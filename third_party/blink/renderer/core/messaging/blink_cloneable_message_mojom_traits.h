@@ -28,8 +28,10 @@ struct CORE_EXPORT StructTraits<blink::mojom::CloneableMessageDataView,
     return mojo_base::BigBuffer(input.message->GetWireData());
   }
 
-  static blink::Vector<scoped_refptr<blink::BlobDataHandle>> blobs(
-      blink::BlinkCloneableMessage& input);
+  static const blink::Vector<scoped_refptr<blink::BlobDataHandle>>& blobs(
+      blink::BlinkCloneableMessage& input) {
+    return input.message->BlobDataHandles();
+  }
 
   static const scoped_refptr<const blink::SecurityOrigin>& sender_origin(
       blink::BlinkCloneableMessage& input) {

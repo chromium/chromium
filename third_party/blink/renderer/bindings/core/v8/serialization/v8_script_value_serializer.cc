@@ -446,10 +446,8 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
       WriteAndRequireInterfaceTag(kBlobIndexTag);
       WriteUint32(static_cast<uint32_t>(index));
     } else {
-      serialized_script_value_->BlobDataHandles().Set(
-          blob->Uuid(), blob->GetBlobDataHandle());
       WriteAndRequireInterfaceTag(kBlobTag);
-      WriteUTF8String(blob->Uuid());
+      WriteUTF8String(AttachBlob(blob->GetBlobDataHandle()));
       WriteUTF8String(blob->type());
       WriteUint64(blob->size());
     }
@@ -919,12 +917,10 @@ bool V8ScriptValueSerializer::WriteFile(File* file,
         file->LastModifiedTimeForSerialization(), file->size());
     WriteUint32(static_cast<uint32_t>(index));
   } else {
-    serialized_script_value_->BlobDataHandles().Set(file->Uuid(),
-                                                    file->GetBlobDataHandle());
     WriteUTF8String(file->HasBackingFile() ? file->GetPath() : g_empty_string);
     WriteUTF8String(file->name());
     WriteUTF8String(file->webkitRelativePath());
-    WriteUTF8String(file->Uuid());
+    WriteUTF8String(AttachBlob(file->GetBlobDataHandle()));
     WriteUTF8String(file->type());
     // Historically we sometimes wouldn't write metadata. This next integer was
     // 1 or 0 to indicate if metadata is present. Now we always write metadata,
@@ -1126,6 +1122,28 @@ bool V8ScriptValueSerializer::AdoptSharedValueConveyor(
   }
   serialized_script_value_->shared_value_conveyor_.emplace(std::move(conveyor));
   return true;
+}
+
+String V8ScriptValueSerializer::AttachBlob(
+    scoped_refptr<BlobDataHandle> blob_data) {
+  // The blob used to be keyed on its UUID from the BlobRegistry/
+  // BlobStorageContext, however there was no actual connection to that
+  // system here. Now the blob "key" is simply an index into an array. This
+  // is not backwards-compatible, however the only feature that actually
+  // stores blobs to disk and successfully reads them back is IndexedDB,
+  // which uses `blob_info_array_` (above). The features that use
+  // `BlobDataHandles()` code path for disk [de]serialization never
+  // succeeded with blobs because there was no code that re-created
+  // `BlobDataHandles()` before deserialization. (This does work for
+  // in-memory serialization/deserialization, such as broadcast channels.)
+  //
+  // To avoid complicated updates to serialization/deserialization code and
+  // SerializedScriptValue::kWireFormatVersion, we keep storing the key as a
+  // string.
+  BlobDataHandleArray& handles = serialized_script_value_->BlobDataHandles();
+  String blob_key = String::Number(handles.size());
+  handles.push_back(std::move(blob_data));
+  return blob_key;
 }
 
 }  // namespace blink
