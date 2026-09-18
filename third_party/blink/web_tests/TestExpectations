@@ -1607,10 +1607,6 @@ crbug.com/663847 fast/events/context-no-deselect.html [ Failure Pass ]
 
 
 crbug.com/654477 [ Win ] compositing/video/video-controls-layer-creation.html [ Failure Pass ]
-crbug.com/654477 fast/hidpi/video-controls-in-hidpi.html [ Failure ]
-crbug.com/654477 fast/layers/video-layer.html [ Failure ]
-# These could likely be removed - see https://chromium-review.googlesource.com/c/chromium/src/+/1252141
-crbug.com/654477 media/controls-focus-ring.html [ Failure ]
 
 crbug.com/637930 http/tests/media/video-buffered.html [ Failure Pass ]
 
