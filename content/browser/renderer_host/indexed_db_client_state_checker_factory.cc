@@ -77,7 +77,7 @@ class DocumentIndexedDBClientStateChecker final
 
   std::tuple<bool, ScopedKeepActive> DisallowInactiveClient(
       IndexedDBDisallowActivationReason reason) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     // This client is currently blocking another client, for example because it
     // has a transaction that holds locks needed by the another client or
     // because it has a connection that prevents a version change in another

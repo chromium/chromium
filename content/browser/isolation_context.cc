@@ -16,7 +16,7 @@ IsolationContext::IsolationContext(BrowserContext* browser_context)
       default_isolation_state_(
           OriginAgentClusterIsolationState::CreateForDefaultIsolation(
               browser_context)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 IsolationContext::IsolationContext(
@@ -30,7 +30,7 @@ IsolationContext::IsolationContext(
       is_guest_(is_guest),
       is_fenced_(is_fenced),
       default_isolation_state_(default_isolation_state) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 }  // namespace content

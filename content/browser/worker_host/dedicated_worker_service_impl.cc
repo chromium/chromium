@@ -44,7 +44,7 @@ void DedicatedWorkerServiceImpl::NotifyWorkerCreated(
     DedicatedWorkerHost* host) {
   bool inserted =
       dedicated_worker_hosts_.emplace(host->GetToken(), host).second;
-  DCHECK(inserted);
+  CHECK(inserted, base::NotFatalUntil::M160);
 
   for (Observer& observer : observers_) {
     observer.OnWorkerCreated(host->GetToken(), host->GetProcessHost()->GetID(),
@@ -57,7 +57,7 @@ void DedicatedWorkerServiceImpl::NotifyBeforeWorkerDestroyed(
     const blink::DedicatedWorkerToken& dedicated_worker_token,
     DedicatedWorkerCreator creator) {
   size_t removed = dedicated_worker_hosts_.erase(dedicated_worker_token);
-  DCHECK_EQ(1u, removed);
+  CHECK_EQ(1u, removed, base::NotFatalUntil::M160);
 
   for (Observer& observer : observers_) {
     observer.OnBeforeWorkerDestroyed(dedicated_worker_token, creator);
@@ -83,7 +83,7 @@ bool DedicatedWorkerServiceImpl::HasToken(
 DedicatedWorkerHost*
 DedicatedWorkerServiceImpl::GetDedicatedWorkerHostFromToken(
     const blink::DedicatedWorkerToken& dedicated_worker_token) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   auto it = dedicated_worker_hosts_.find(dedicated_worker_token);
   if (it == dedicated_worker_hosts_.end())
     return nullptr;

@@ -111,7 +111,7 @@ mojo::Remote<webnn::mojom::WebNNCompilerService> LaunchCompilerProcess(
     const base::FilePath& ep_library_path,
     const webnn::EpDeviceInfo& target_device,
     ServiceProcessHostPreloadLibraries::PassKey pass_key) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   ServiceProcessHost::Options options;
   options.WithDisplayName(base::StrCat(
@@ -167,7 +167,7 @@ mojo::Remote<webnn::mojom::WebNNCompilerService> LaunchCompilerProcess(
 // static
 void WebNNBrowserHostImpl::Create(
     mojo::PendingReceiver<webnn::mojom::WebNNBrowserHost> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   // The instance is owned by its receiver and deleted when it disconnects.
   mojo::MakeSelfOwnedReceiver(std::make_unique<WebNNBrowserHostImpl>(
                                   base::PassKey<WebNNBrowserHostImpl>()),
@@ -176,7 +176,7 @@ void WebNNBrowserHostImpl::Create(
 
 WebNNBrowserHostImpl::WebNNBrowserHostImpl(
     base::PassKey<WebNNBrowserHostImpl>) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 WebNNBrowserHostImpl::~WebNNBrowserHostImpl() = default;
@@ -184,7 +184,7 @@ WebNNBrowserHostImpl::~WebNNBrowserHostImpl() = default;
 #if BUILDFLAG(IS_WIN)
 void WebNNBrowserHostImpl::EnsureExecutionProvidersReady(
     EnsureExecutionProvidersReadyCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   webnn::EnsureExecutionProvidersReady(std::move(callback));
 }
 
@@ -196,7 +196,7 @@ void WebNNBrowserHostImpl::RequestCompilerContext(
         compiler_context_receiver,
     mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
     RequestCompilerContextCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), /*success=*/false);
@@ -247,7 +247,7 @@ void WebNNBrowserHostImpl::OnEpsResolvedForCompilerContext(
     RequestCompilerContextCallback callback,
     base::flat_map<std::string, webnn::mojom::EpPackageInfoPtr>
         ep_package_info_map) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   const auto ep_it = ep_package_info_map.find(target_device.ep_name);
   if (ep_it == ep_package_info_map.end()) {
@@ -288,7 +288,7 @@ void WebNNBrowserHostImpl::OnDisconnected(
     const webnn::EpDeviceInfo& device_info,
     uint32_t reason,
     const std::string& description) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   webnn_compiler_remotes_.erase(device_info);
 
   // `reason` comes from a less-trusted child process. Verify it matches a
@@ -322,7 +322,7 @@ void WebNNBrowserHostImpl::OnDisconnected(
 // function here from `weights_file_provider.cc`.
 void WebNNBrowserHostImpl::CreateWeightsFile(
     CreateWeightsFileCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   webnn::CreateWeightsFile(std::move(callback));
 }
 
@@ -330,7 +330,7 @@ void WebNNBrowserHostImpl::CreateWeightsFile(
 void WebNNBrowserHostImpl::CopyCompiledModel(
     const base::FilePath& compiler_model_path,
     CopyCompiledModelCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   base::FilePath temp_dir;
   if (!base::GetTempDir(&temp_dir)) {

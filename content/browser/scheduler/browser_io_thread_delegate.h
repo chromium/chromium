@@ -36,7 +36,7 @@ class CONTENT_EXPORT BrowserIOThreadDelegate : public base::Thread::Delegate {
 
   static std::unique_ptr<BrowserIOThreadDelegate> CreateForTesting(
       base::sequence_manager::SequenceManager* sequence_manager) {
-    DCHECK(sequence_manager);
+    CHECK(sequence_manager, base::NotFatalUntil::M160);
     return base::WrapUnique(new BrowserIOThreadDelegate(sequence_manager));
   }
 

@@ -650,7 +650,7 @@ void VideoCaptureManager::RequestRefreshFrameForClient(
 
 void VideoCaptureManager::InvalidateBuffersForClient(
     VideoCaptureController* controller) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (IsControllerPointerValid(controller)) {
     if (!controller->IsDeviceAlive()) {

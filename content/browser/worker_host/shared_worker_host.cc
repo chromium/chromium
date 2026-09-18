@@ -198,8 +198,8 @@ SharedWorkerHost::SharedWorkerHost(
       reporting_source_(base::UnguessableToken::Create()),
       creator_policy_container_host_(std::move(creator_policy_container_host)),
       network_restrictions_id_(base::UnguessableToken::Create()) {
-  DCHECK(GetProcessHost());
-  DCHECK(GetProcessHost()->IsInitializedAndNotDead());
+  CHECK(GetProcessHost(), base::NotFatalUntil::M160);
+  CHECK(GetProcessHost()->IsInitializedAndNotDead(), base::NotFatalUntil::M160);
 
   GetProcessHost()->AddObserver(this);
 
@@ -256,7 +256,7 @@ SharedWorkerHost::~SharedWorkerHost() {
 }
 
 RenderProcessHost* SharedWorkerHost::GetProcessHost() const {
-  DCHECK(site_instance_->HasProcess());
+  CHECK(site_instance_->HasProcess(), base::NotFatalUntil::M160);
   return site_instance_->GetProcess();
 }
 
@@ -266,11 +266,12 @@ void SharedWorkerHost::Start(
         outside_fetch_client_settings_object,
     ContentBrowserClient* client,
     WorkerScriptFetcherResult result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!started_);
-  DCHECK(result.main_script_load_params);
-  DCHECK(result.subresource_loader_factories);
-  DCHECK(!result.subresource_loader_factories->pending_default_factory());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!started_, base::NotFatalUntil::M160);
+  CHECK(result.main_script_load_params, base::NotFatalUntil::M160);
+  CHECK(result.subresource_loader_factories, base::NotFatalUntil::M160);
+  CHECK(!result.subresource_loader_factories->pending_default_factory(),
+        base::NotFatalUntil::M160);
 
   started_ = true;
   final_response_url_ = result.final_response_url;
@@ -517,8 +518,8 @@ void SharedWorkerHost::Start(
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 SharedWorkerHost::CreateNetworkFactoryForSubresources(
     bool* bypass_redirect_checks) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(bypass_redirect_checks);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(bypass_redirect_checks, base::NotFatalUntil::M160);
 
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       CreateNetworkFactoryParamsForSubresources();
@@ -593,7 +594,7 @@ blink::mojom::PermissionStatus SharedWorkerHost::GetPermissionStatus(
 void SharedWorkerHost::BindCacheStorageForBucket(
     const storage::BucketInfo& bucket,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   BindCacheStorageInternal(std::move(receiver), bucket.ToBucketLocator());
 }
 
@@ -698,7 +699,7 @@ void SharedWorkerHost::AllowWebLocks(const GURL& url,
 
 void SharedWorkerHost::CreateWebTransportConnector(
     mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   const url::Origin origin = GetWorkerStorageKey().origin();
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
@@ -710,7 +711,7 @@ void SharedWorkerHost::CreateWebTransportConnector(
 
 void SharedWorkerHost::CreateWebSocketConnector(
     mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   const blink::StorageKey& storage_key = GetWorkerStorageKey();
 
   mojo::MakeSelfOwnedReceiver(
@@ -753,7 +754,7 @@ net::IsolationInfo SharedWorkerHost::ComputeIsolationInfoForWebSocket() const {
 
 void SharedWorkerHost::BindCacheStorage(
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   BindCacheStorageInternal(
       std::move(receiver),
       storage::BucketLocator::ForDefaultBucket(GetWorkerStorageKey()));
@@ -761,7 +762,7 @@ void SharedWorkerHost::BindCacheStorage(
 
 void SharedWorkerHost::CreateBroadcastChannelProvider(
     mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto* storage_partition_impl = GetStoragePartitionImpl();
 
@@ -775,7 +776,7 @@ void SharedWorkerHost::CreateBroadcastChannelProvider(
 
 void SharedWorkerHost::CreateBlobUrlStoreProvider(
     mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto* storage_partition_impl = GetStoragePartitionImpl();
 
@@ -809,7 +810,7 @@ void SharedWorkerHost::CreateBucketManagerHost(
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 void SharedWorkerHost::BindPressureService(
     mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!network::IsOriginPotentiallyTrustworthy(
           GetWorkerStorageKey().origin())) {
@@ -895,7 +896,7 @@ void SharedWorkerHost::OnConnected(int connection_request_id) {
 void SharedWorkerHost::OnContextClosed() {
   // Not possible: there is no Mojo connection on which OnContextClosed can
   // be called.
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M160);
 
   RecordDestructionSource(SharedWorkerHostDestructionSource::kOnContextClosed);
   Destruct();
@@ -1086,12 +1087,12 @@ void SharedWorkerHost::AddClient(
 
 void SharedWorkerHost::SetServiceWorkerHandle(
     std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   service_worker_handle_ = std::move(service_worker_handle);
 }
 
 void SharedWorkerHost::PruneNonExistentClients() {
-  DCHECK(!started_);
+  CHECK(!started_, base::NotFatalUntil::M160);
 
   auto it = clients_.begin();
   auto end = clients_.end();

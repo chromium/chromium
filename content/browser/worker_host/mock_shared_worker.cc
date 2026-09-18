@@ -163,7 +163,7 @@ void MockSharedWorkerFactory::CreateSharedWorker(
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
         dip_reporting_observer,
     bool cross_origin_isolated) {
-  DCHECK(!create_params_);
+  CHECK(!create_params_, base::NotFatalUntil::M160);
   create_params_ = std::make_unique<CreateParams>();
   create_params_->info = std::move(info);
   create_params_->pause_on_start = pause_on_start;

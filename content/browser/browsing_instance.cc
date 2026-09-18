@@ -43,7 +43,7 @@ BrowsingInstance::BrowsingInstance(
       default_site_instance_group_(nullptr),
       web_exposed_isolation_info_(web_exposed_isolation_info),
       is_fixed_storage_partition_(is_fixed_storage_partition) {
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M160);
   if (is_guest) {
     CHECK(is_fixed_storage_partition);
   }
@@ -155,7 +155,8 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
       // via RegisterSiteInstance().
       site_instance->SetSiteInfoToDefault(
           site_info.GetStoragePartitionConfig());
-      DCHECK_EQ(default_site_instance_, site_instance.get());
+      CHECK_EQ(default_site_instance_, site_instance.get(),
+               base::NotFatalUntil::M160);
     }
 
     // Add |site_info| to the set so we can keep track of all the sites the
@@ -168,8 +169,9 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
 }
 
 void BrowsingInstance::RegisterSiteInstance(SiteInstanceImpl* site_instance) {
-  DCHECK(site_instance->browsing_instance_.get() == this);
-  DCHECK(site_instance->HasSite());
+  CHECK(site_instance->browsing_instance_.get() == this,
+        base::NotFatalUntil::M160);
+  CHECK(site_instance->HasSite(), base::NotFatalUntil::M160);
 
   // Verify that the SiteInstance's StoragePartitionConfig matches this
   // BrowsingInstance's StoragePartitionConfig if it already has one.
@@ -190,7 +192,7 @@ void BrowsingInstance::RegisterSiteInstance(SiteInstanceImpl* site_instance) {
   // Explicitly prevent the default SiteInstance from being added since
   // the map is only supposed to contain instances that map to a single site.
   if (site_instance->IsDefaultSiteInstance()) {
-    DCHECK(!ShouldUseDefaultSiteInstanceGroup());
+    CHECK(!ShouldUseDefaultSiteInstanceGroup(), base::NotFatalUntil::M160);
     CHECK(!default_site_instance_);
     default_site_instance_ = site_instance;
     return;
@@ -211,8 +213,9 @@ void BrowsingInstance::RegisterSiteInstance(SiteInstanceImpl* site_instance) {
 }
 
 void BrowsingInstance::UnregisterSiteInstance(SiteInstanceImpl* site_instance) {
-  DCHECK(site_instance->browsing_instance_.get() == this);
-  DCHECK(site_instance->HasSite());
+  CHECK(site_instance->browsing_instance_.get() == this,
+        base::NotFatalUntil::M160);
+  CHECK(site_instance->HasSite(), base::NotFatalUntil::M160);
 
   if (site_instance == default_site_instance_) {
     // The last reference to the default SiteInstance is being destroyed.
@@ -237,10 +240,10 @@ BrowsingInstanceId BrowsingInstance::NextBrowsingInstanceId() {
 BrowsingInstance::~BrowsingInstance() {
   // We should only be deleted when all of the SiteInstances that refer to
   // us are gone.
-  DCHECK(site_instance_map_.empty());
-  DCHECK_EQ(0u, active_contents_count_);
-  DCHECK(!default_site_instance_);
-  DCHECK(!default_site_instance_group_);
+  CHECK(site_instance_map_.empty(), base::NotFatalUntil::M160);
+  CHECK_EQ(0u, active_contents_count_, base::NotFatalUntil::M160);
+  CHECK(!default_site_instance_, base::NotFatalUntil::M160);
+  CHECK(!default_site_instance_group_, base::NotFatalUntil::M160);
 
   // Remove any origin isolation opt-ins related to this instance.
   ChildProcessSecurityPolicyImpl* policy =
@@ -268,8 +271,9 @@ SiteInfo BrowsingInstance::ComputeSiteInfoForURL(
 
   // The WebExposedIsolationInfos must be compatible for this function to make
   // sense.
-  DCHECK(WebExposedIsolationInfo::AreCompatible(
-      url_info.web_exposed_isolation_info, web_exposed_isolation_info_));
+  CHECK(WebExposedIsolationInfo::AreCompatible(
+            url_info.web_exposed_isolation_info, web_exposed_isolation_info_),
+        base::NotFatalUntil::M160);
 
   // If the passed in UrlInfo has a null WebExposedIsolationInfo, meaning that
   // it is compatible with any isolation state, we reuse the isolation state of
@@ -280,7 +284,8 @@ SiteInfo BrowsingInstance::ComputeSiteInfoForURL(
 }
 
 int BrowsingInstance::EstimateOriginAgentClusterOverhead() {
-  DCHECK(SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled());
+  CHECK(SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled(),
+        base::NotFatalUntil::M160);
 
   std::set<SiteInfo> site_info_set;
   std::set<SiteInfo> site_info_set_no_oac;
@@ -320,7 +325,8 @@ int BrowsingInstance::EstimateOriginAgentClusterOverhead() {
     site_info_set_no_oac.insert(
         site_info.GetNonOriginKeyedEquivalentForMetrics(isolation_context_));
   }
-  DCHECK_GE(site_info_set.size(), site_info_set_no_oac.size());
+  CHECK_GE(site_info_set.size(), site_info_set_no_oac.size(),
+           base::NotFatalUntil::M160);
   int result = site_info_set.size() - site_info_set_no_oac.size();
   return result;
 }
@@ -330,7 +336,7 @@ void BrowsingInstance::IncrementActiveContentsCount() {
 }
 
 void BrowsingInstance::DecrementActiveContentsCount() {
-  DCHECK_LT(0u, active_contents_count_);
+  CHECK_LT(0u, active_contents_count_, base::NotFatalUntil::M160);
   active_contents_count_--;
 }
 

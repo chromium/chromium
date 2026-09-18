@@ -90,7 +90,8 @@ class NetworkInterfaceChangeHelper {
     // AddressTrackerLinux's sequence using
     // |network_interface_change_listener_pending_|.
     if (!network_interface_change_listener_) {
-      DCHECK(network_interface_change_listener_pending_);
+      CHECK(network_interface_change_listener_pending_,
+            base::NotFatalUntil::M160);
       network_interface_change_listener_.Bind(
           std::move(network_interface_change_listener_pending_));
     }
@@ -221,7 +222,8 @@ void NetworkServiceClient::OnNetworkServiceInitialized(
     network::mojom::NetworkService* service) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   if (IsOutOfProcessNetworkService()) {
-    DCHECK(!net::NetworkChangeNotifier::CreateIfNeeded());
+    CHECK(!net::NetworkChangeNotifier::CreateIfNeeded(),
+          base::NotFatalUntil::M160);
     service->GetNetworkChangeManager(
         network_change_manager_.BindNewPipeAndPassReceiver());
 #if BUILDFLAG(IS_LINUX)

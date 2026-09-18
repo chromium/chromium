@@ -295,7 +295,8 @@ FencedFrameProperties::GenerateURNConfigVectorForConfigs(
     const std::vector<FencedFrameConfig>& nested_configs) {
   std::vector<std::pair<GURL, FencedFrameConfig>> nested_urn_config_pairs;
   const size_t kMaxAdAuctionAdComponents = blink::kMaxAdAuctionAdComponents;
-  DCHECK_LE(nested_configs.size(), kMaxAdAuctionAdComponents);
+  CHECK_LE(nested_configs.size(), kMaxAdAuctionAdComponents,
+           base::NotFatalUntil::M160);
   for (const FencedFrameConfig& config : nested_configs) {
     // Give each config its own urn:uuid. This ensures that if the same config
     // is loaded into multiple fenced frames, they will not share the same

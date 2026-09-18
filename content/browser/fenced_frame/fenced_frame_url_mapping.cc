@@ -69,7 +69,7 @@ void FencedFrameURLMapping::ImportPendingAdComponents(
 std::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
     const GURL& url,
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
-  DCHECK(url.is_valid());
+  CHECK(url.is_valid(), base::NotFatalUntil::M160);
   CHECK(blink::IsValidFencedFrameURL(url));
 
   auto it = AddMappingForUrl(url);
@@ -104,7 +104,7 @@ FencedFrameURLMapping::AddMappingForUrl(const GURL& url) {
 
   // Create a urn::uuid.
   GURL urn_uuid = GenerateUrnUuid();
-  DCHECK(!IsMapped(urn_uuid));
+  CHECK(!IsMapped(urn_uuid), base::NotFatalUntil::M160);
 
   return urn_uuid_to_url_map_
       .emplace(urn_uuid, FencedFrameConfig(urn_uuid, url))
@@ -128,10 +128,11 @@ std::optional<GURL> FencedFrameURLMapping::GeneratePendingMappedURN() {
 void FencedFrameURLMapping::ConvertFencedFrameURNToURL(
     const GURL& urn_uuid,
     MappingResultObserver* observer) {
-  DCHECK(blink::IsValidUrnUuidURL(urn_uuid));
+  CHECK(blink::IsValidUrnUuidURL(urn_uuid), base::NotFatalUntil::M160);
 
   if (IsPendingMapped(urn_uuid)) {
-    DCHECK(!pending_urn_uuid_to_url_map_.at(urn_uuid).count(observer));
+    CHECK(!pending_urn_uuid_to_url_map_.at(urn_uuid).count(observer),
+          base::NotFatalUntil::M160);
     pending_urn_uuid_to_url_map_.at(urn_uuid).emplace(observer);
     return;
   }
@@ -178,7 +179,7 @@ FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
   auto pending_it = pending_urn_uuid_to_url_map_.find(urn_uuid);
   CHECK(pending_it != pending_urn_uuid_to_url_map_.end());
 
-  DCHECK(!IsMapped(urn_uuid));
+  CHECK(!IsMapped(urn_uuid), base::NotFatalUntil::M160);
 
   std::optional<FencedFrameConfig> config = std::nullopt;
 

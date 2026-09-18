@@ -50,7 +50,7 @@ BrowserIOThreadDelegate::GetDefaultTaskRunner() {
 BrowserIOThreadDelegate::~BrowserIOThreadDelegate() = default;
 
 void BrowserIOThreadDelegate::BindToCurrentThread() {
-  DCHECK(sequence_manager_);
+  CHECK(sequence_manager_, base::NotFatalUntil::M160);
   sequence_manager_->BindToMessagePump(
       base::MessagePump::Create(base::MessagePumpType::IO));
   sequence_manager_->SetDefaultTaskQueue(task_queues_->GetDefaultTaskQueue());

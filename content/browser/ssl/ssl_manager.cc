@@ -59,7 +59,7 @@ void OnAllowCertificate(SSLErrorHandler* handler,
                         SSLHostStateDelegate* state_delegate,
                         bool record_decision,
                         CertificateRequestResultType decision) {
-  DCHECK(handler->ssl_info().is_valid());
+  CHECK(handler->ssl_info().is_valid(), base::NotFatalUntil::M160);
   switch (decision) {
     case CERTIFICATE_REQUEST_RESULT_TYPE_CONTINUE:
       // Note that we should not call SetMaxSecurityStyle here, because
@@ -113,11 +113,11 @@ void SSLManager::OnSSLCertificateError(
     net::Error net_error,
     const net::SSLInfo& ssl_info,
     bool fatal) {
-  DCHECK(delegate.get());
+  CHECK(delegate.get(), base::NotFatalUntil::M160);
   DVLOG(1) << "OnSSLCertificateError() cert_error: " << net_error
            << " url: " << url.spec() << " cert_status: " << std::hex
            << ssl_info.cert_status;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   WebContents* web_contents = nullptr;
   FrameTreeNode* frame_tree_node = nullptr;
@@ -165,7 +165,7 @@ SSLManager::SSLManager(NavigationControllerImpl* controller)
     : controller_(controller),
       ssl_host_state_delegate_(
           controller->GetBrowserContext()->GetSSLHostStateDelegate()) {
-  DCHECK(controller_);
+  CHECK(controller_, base::NotFatalUntil::M160);
 
   SSLManagerSet* managers = static_cast<SSLManagerSet*>(
       controller_->GetBrowserContext()->GetUserData(kSSLManagerKeyName));
@@ -284,7 +284,7 @@ void SSLManager::DidRunContentWithCertErrors(const GURL& security_origin) {
 
 void SSLManager::OnCertError(std::unique_ptr<SSLErrorHandler> handler) {
   // First we check if we know the policy for this error.
-  DCHECK(handler->ssl_info().is_valid());
+  CHECK(handler->ssl_info().is_valid(), base::NotFatalUntil::M160);
 
   SSLHostStateDelegate::CertJudgment judgment;
   if (net::IsLocalhost(handler->request_url()) &&
@@ -308,7 +308,8 @@ void SSLManager::OnCertError(std::unique_ptr<SSLErrorHandler> handler) {
     return;
   }
 
-  DCHECK(net::IsCertificateError(handler->cert_error()));
+  CHECK(net::IsCertificateError(handler->cert_error()),
+        base::NotFatalUntil::M160);
   OnCertErrorInternal(std::move(handler));
 }
 
@@ -431,7 +432,7 @@ void SSLManager::UpdateLastCommittedEntry(int add_content_status_flags,
     // trees.
     RenderFrameHostImpl* rfh =
         controller_->frame_tree().root()->current_frame_host();
-    DCHECK(rfh);
+    CHECK(rfh, base::NotFatalUntil::M160);
     CHECK_NE(RenderFrameHostLifecycleStateImpl::kPrerendering,
              rfh->GetOutermostMainFrame()->lifecycle_state());
     WebContentsImpl* contents =

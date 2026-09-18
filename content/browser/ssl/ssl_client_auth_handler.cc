@@ -38,7 +38,7 @@ class SSLClientAuthHandler::ClientCertificateDelegateImpl
   // ClientCertificateDelegate implementation:
   void ContinueWithCertificate(scoped_refptr<net::X509Certificate> cert,
                                scoped_refptr<net::SSLPrivateKey> key) override {
-    DCHECK(!continue_called_);
+    CHECK(!continue_called_, base::NotFatalUntil::M160);
     continue_called_ = true;
     if (handler_) {
       handler_->delegate_->ContinueWithCertificate(std::move(cert),
@@ -64,7 +64,7 @@ SSLClientAuthHandler::SSLClientAuthHandler(
       cert_request_info_(cert_request_info),
       client_cert_store_(std::move(client_cert_store)),
       delegate_(delegate) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (web_contents_) {
     CHECK_EQ(web_contents_->GetBrowserContext(), browser_context_.get());
   }
@@ -80,7 +80,7 @@ SSLClientAuthHandler::~SSLClientAuthHandler() {
 }
 
 void SSLClientAuthHandler::SelectCertificate() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (client_cert_store_) {
     client_cert_store_->GetClientCerts(
@@ -103,7 +103,7 @@ void SSLClientAuthHandler::DidGetClientCerts(
 
 void SSLClientAuthHandler::DidGetClientCertsOnPostTask(
     net::ClientCertIdentityList client_certs) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!browser_context_) {
     delegate_->CancelCertificateSelection();

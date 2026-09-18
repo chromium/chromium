@@ -247,20 +247,20 @@ void BrowserTaskQueues::OnStartupComplete() {
   }
 
   // Update ServiceWorker task queue priority.
-  DCHECK_EQ(
+  CHECK_EQ(
       static_cast<BrowserTaskPriority>(
           GetBrowserTaskQueue(QueueType::kServiceWorkerStorageControlResponse)
               ->GetQueuePriority()),
-      BrowserTaskPriority::kHighestPriority);
+      BrowserTaskPriority::kHighestPriority, base::NotFatalUntil::M160);
   GetBrowserTaskQueue(QueueType::kServiceWorkerStorageControlResponse)
       ->SetQueuePriority(BrowserTaskPriority::kHighPriority);
 
   if (startup_queue_prioritized_) {
     // Update Startup task queue priority back to normal priority now that
     // startup has completed.
-    DCHECK_EQ(static_cast<BrowserTaskPriority>(
-                  GetBrowserTaskQueue(QueueType::kStartup)->GetQueuePriority()),
-              BrowserTaskPriority::kHighestPriority);
+    CHECK_EQ(static_cast<BrowserTaskPriority>(
+                 GetBrowserTaskQueue(QueueType::kStartup)->GetQueuePriority()),
+             BrowserTaskPriority::kHighestPriority, base::NotFatalUntil::M160);
     GetBrowserTaskQueue(QueueType::kStartup)
         ->SetQueuePriority(BrowserTaskPriority::kNormalPriority);
     startup_queue_prioritized_ = false;

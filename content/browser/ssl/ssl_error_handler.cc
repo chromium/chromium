@@ -26,25 +26,25 @@ SSLErrorHandler::SSLErrorHandler(WebContents* web_contents,
       cert_error_(net_error),
       fatal_(fatal),
       web_contents_(web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 SSLErrorHandler::~SSLErrorHandler() {}
 
 void SSLErrorHandler::CancelRequest() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (delegate_)
     delegate_->CancelSSLRequest(net::ERR_ABORTED, &ssl_info());
 }
 
 void SSLErrorHandler::DenyRequest() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (delegate_)
     delegate_->CancelSSLRequest(cert_error_, &ssl_info());
 }
 
 void SSLErrorHandler::ContinueRequest() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (delegate_)
     delegate_->ContinueSSLRequest();
 }

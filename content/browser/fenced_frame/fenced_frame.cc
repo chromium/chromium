@@ -70,7 +70,7 @@ FencedFrame::FencedFrame(
 }
 
 FencedFrame::~FencedFrame() {
-  DCHECK(frame_tree_);
+  CHECK(frame_tree_, base::NotFatalUntil::M160);
   frame_tree_->Shutdown();
   frame_tree_.reset();
 }
@@ -79,8 +79,9 @@ void FencedFrame::Navigate(const GURL& url,
                            base::TimeTicks navigation_start_time) {
   // We don't need guard against a bad message in the case of prerendering since
   // we wouldn't even establish the mojo connection in that case.
-  DCHECK_NE(RenderFrameHost::LifecycleState::kPrerendering,
-            owner_render_frame_host_->GetLifecycleState());
+  CHECK_NE(RenderFrameHost::LifecycleState::kPrerendering,
+           owner_render_frame_host_->GetLifecycleState(),
+           base::NotFatalUntil::M160);
 
   if (!blink::IsValidUrnUuidURL(url) && !blink::IsValidFencedFrameURL(url)) {
     bad_message::ReceivedBadMessage(owner_render_frame_host_->GetProcess(),
@@ -147,7 +148,7 @@ bool FencedFrame::IsHidden() {
 }
 
 FrameTreeNodeId FencedFrame::GetOuterDelegateFrameTreeNodeId() {
-  DCHECK(outer_delegate_frame_tree_node_);
+  CHECK(outer_delegate_frame_tree_node_, base::NotFatalUntil::M160);
   return outer_delegate_frame_tree_node_->frame_tree_node_id();
 }
 
@@ -191,8 +192,8 @@ FencedFrame::InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
     blink::mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
     const blink::RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token) {
-  DCHECK(remote_frame_interfaces);
-  DCHECK(outer_delegate_frame_tree_node_);
+  CHECK(remote_frame_interfaces, base::NotFatalUntil::M160);
+  CHECK(outer_delegate_frame_tree_node_, base::NotFatalUntil::M160);
 
   scoped_refptr<SiteInstanceImpl> site_instance =
       SiteInstanceImpl::CreateForFencedFrame(
@@ -285,7 +286,7 @@ FencedFrame::InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
 }
 
 const base::UnguessableToken& FencedFrame::GetDevToolsFrameToken() const {
-  DCHECK(frame_tree_);
+  CHECK(frame_tree_, base::NotFatalUntil::M160);
   return frame_tree_->GetMainFrame()->GetDevToolsFrameToken();
 }
 

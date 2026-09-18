@@ -39,14 +39,14 @@ std::unique_ptr<MetricSource> Watcher::CreateMetricSource() {
 
 void Watcher::WillRunTaskOnUIThread(const base::PendingTask* task,
                                     bool was_blocked_or_low_priority) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   WillRunTask(task, was_blocked_or_low_priority,
               &currently_running_metadata_ui_);
 }
 
 void Watcher::DidRunTaskOnUIThread(const base::PendingTask* task) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Capturing `this` is safe because the callback is invoked synchronously by
   // `DidRunTask()`.
@@ -62,7 +62,7 @@ void Watcher::DidRunTaskOnUIThread(const base::PendingTask* task) {
 
 void Watcher::WillRunTaskOnIOThread(const base::PendingTask* task,
                                     bool was_blocked_or_low_priority) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   WillRunTask(task, was_blocked_or_low_priority,
               &currently_running_metadata_io_);

@@ -65,11 +65,11 @@ SharedWorkerServiceImpl::SharedWorkerServiceImpl(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context)
     : storage_partition_(storage_partition),
       service_worker_context_(std::move(service_worker_context)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 SharedWorkerServiceImpl::~SharedWorkerServiceImpl() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Note: This ideally should dchecks that |worker_hosts_| is empty,
   // but some tests do not tear down everything correctly.
@@ -101,7 +101,7 @@ bool SharedWorkerServiceImpl::TerminateWorker(
     const std::string& name,
     const blink::StorageKey& storage_key,
     const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   SharedWorkerHost* worker_host =
       FindMatchingSharedWorkerHost(url, name, storage_key, same_site_cookies);
@@ -131,7 +131,7 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     const blink::MessagePortChannel& message_port,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     const std::optional<blink::StorageKey>& storage_key_override) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   RenderFrameHostImpl* render_frame_host =
       RenderFrameHostImpl::FromID(client_render_frame_host_id);
@@ -346,7 +346,7 @@ void SharedWorkerServiceImpl::ConnectToWorker(
 
 SharedWorkerHost* SharedWorkerServiceImpl::GetSharedWorkerHostFromToken(
     const blink::SharedWorkerToken& worker_token) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   auto it = shared_worker_hosts_.find(worker_token);
   if (it == shared_worker_hosts_.end())
     return nullptr;
@@ -354,8 +354,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::GetSharedWorkerHostFromToken(
 }
 
 void SharedWorkerServiceImpl::DestroyHost(SharedWorkerHost* host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(host);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(host, base::NotFatalUntil::M160);
   shared_worker_hosts_.erase(host->token());
   worker_hosts_.erase(worker_hosts_.find(host));
 }
@@ -402,7 +402,7 @@ void SharedWorkerServiceImpl::NotifyClientRemoved(
   CHECK(it != shared_worker_client_counts_.end());
 
   int& count = it->second;
-  DCHECK_GT(count, 0);
+  CHECK_GT(count, 0, base::NotFatalUntil::M160);
   --count;
 
   // Only notify if there are no longer any active connections from this frame
@@ -425,8 +425,9 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
     const blink::MessagePortChannel& message_port,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     const std::optional<blink::StorageKey>& storage_key_override) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!blob_url_loader_factory || instance.url().SchemeIsBlob());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!blob_url_loader_factory || instance.url().SchemeIsBlob(),
+        base::NotFatalUntil::M160);
 
   StoragePartitionImpl* partition =
       static_cast<StoragePartitionImpl*>(creator.GetStoragePartition());
@@ -460,8 +461,9 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
 
   RenderProcessHost* worker_process_host = site_instance->GetOrCreateProcess(
       ProcessAllocationContext{ProcessAllocationSource::kSharedWorker});
-  DCHECK(worker_process_host);
-  DCHECK(worker_process_host->InSameStoragePartition(partition));
+  CHECK(worker_process_host, base::NotFatalUntil::M160);
+  CHECK(worker_process_host->InSameStoragePartition(partition),
+        base::NotFatalUntil::M160);
 
   if (!worker_process_host->Init()) {
     DVLOG(1) << "Couldn't start a new process for shared worker.";
@@ -477,7 +479,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
           this, instance, std::move(site_instance),
           std::move(content_security_policies),
           creator.policy_container_host()->Clone()));
-  DCHECK(insertion_result.second);
+  CHECK(insertion_result.second, base::NotFatalUntil::M160);
   SharedWorkerHost* host = insertion_result.first->get();
   shared_worker_hosts_[host->token()] = host;
 
@@ -564,7 +566,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
 
   // Ensures that WorkerScriptFetcher::CreateAndStart() doesn't synchronously
   // destroy the SharedWorkerHost.
-  DCHECK(weak_host);
+  CHECK(weak_host, base::NotFatalUntil::M160);
 
   return host;
 }
@@ -575,7 +577,7 @@ void SharedWorkerServiceImpl::StartWorker(
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     std::optional<WorkerScriptFetcherResult> result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // The host may already be gone if something forcibly terminated the worker
   // before it could start (e.g., in tests, a UI action or the renderer process

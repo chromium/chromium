@@ -37,8 +37,9 @@ ProtoPriority ToProtoPriority(BrowserTaskPriority priority) {
 
 ProtoPriority TaskPriorityToProto(
     base::sequence_manager::TaskQueue::QueuePriority priority) {
-  DCHECK_LT(static_cast<size_t>(priority),
-            static_cast<size_t>(BrowserTaskPriority::kPriorityCount));
+  CHECK_LT(static_cast<size_t>(priority),
+           static_cast<size_t>(BrowserTaskPriority::kPriorityCount),
+           base::NotFatalUntil::M160);
   return ToProtoPriority(static_cast<BrowserTaskPriority>(priority));
 }
 
@@ -61,8 +62,9 @@ base::ThreadType ToThreadType(BrowserTaskPriority priority) {
 
 base::ThreadType TaskPriorityToThreadType(
     base::sequence_manager::TaskQueue::QueuePriority priority) {
-  DCHECK_LT(static_cast<size_t>(priority),
-            static_cast<size_t>(BrowserTaskPriority::kPriorityCount));
+  CHECK_LT(static_cast<size_t>(priority),
+           static_cast<size_t>(BrowserTaskPriority::kPriorityCount),
+           base::NotFatalUntil::M160);
   return ToThreadType(static_cast<BrowserTaskPriority>(priority));
 }
 

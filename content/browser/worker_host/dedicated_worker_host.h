@@ -239,7 +239,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
 
   const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
       const {
-    DCHECK(worker_client_security_state_);
+    CHECK(worker_client_security_state_, base::NotFatalUntil::M160);
     return worker_client_security_state_->cross_origin_embedder_policy;
   }
 

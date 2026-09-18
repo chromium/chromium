@@ -93,7 +93,7 @@ void AddCongestedSlices(std::set<int>* congested_slices,
 Calculator::Congestion::Congestion(base::TimeTicks start_time,
                                    base::TimeTicks end_time)
     : start_time(start_time), end_time(end_time) {
-  DCHECK_LE(start_time, end_time);
+  CHECK_LE(start_time, end_time, base::NotFatalUntil::M160);
 }
 
 Calculator::Calculator(
@@ -114,7 +114,7 @@ Calculator::Calculator(
                                   base::Unretained(this)))) {
   // This class assumes construction and access from the UI thread from all
   // methods that aren't explicitly flagged otherwise (i.e. *OnIOThread()).
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   OnApplicationStateChanged(
       base::android::ApplicationStatusListener::GetState());
@@ -125,15 +125,15 @@ Calculator::Calculator(
 #endif
 
 Calculator::~Calculator() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 void Calculator::TaskOrEventFinishedOnUIThread(
     base::TimeTicks queue_time,
     base::TimeTicks execution_start_time,
     base::TimeTicks execution_finish_time) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_GE(execution_start_time, queue_time);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_GE(execution_start_time, queue_time, base::NotFatalUntil::M160);
 
   if (execution_finish_time - queue_time >= kCongestionThreshold) {
     GetCongestionOnUIThread().emplace_back(queue_time, execution_finish_time);
@@ -151,8 +151,8 @@ void Calculator::TaskOrEventFinishedOnIOThread(
     base::TimeTicks queue_time,
     base::TimeTicks execution_start_time,
     base::TimeTicks execution_finish_time) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_GE(execution_start_time, queue_time);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_GE(execution_start_time, queue_time, base::NotFatalUntil::M160);
 
   if (execution_finish_time - queue_time >= kCongestionThreshold) {
     base::AutoLock lock(io_thread_lock_);
@@ -165,8 +165,8 @@ void Calculator::TaskOrEventFinishedOnIOThread(
 }
 
 void Calculator::OnFirstIdle() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!past_first_idle_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!past_first_idle_, base::NotFatalUntil::M160);
   past_first_idle_ = true;
 }
 
@@ -174,12 +174,13 @@ void Calculator::EmitResponsiveness(CongestionType congestion_type,
                                     size_t num_congested_slices,
                                     StartupStage startup_stage,
                                     uint64_t event_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   static constexpr size_t kMaxCongestedSlices =
       kMeasurementPeriod / kCongestionThreshold;
   static constexpr size_t kBucketCount = 50;
-  DCHECK_LE(num_congested_slices, kMaxCongestedSlices);
+  CHECK_LE(num_congested_slices, kMaxCongestedSlices,
+           base::NotFatalUntil::M160);
   base::trace_event::HistogramScope scoped_event(event_id);
   switch (congestion_type) {
     case CongestionType::kExecutionOnly: {
@@ -301,13 +302,13 @@ void Calculator::EmitCongestedIntervalTraceEvent(CongestionType congestion_type,
 }
 
 base::TimeTicks Calculator::GetLastCalculationTime() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   return last_calculation_time_;
 }
 
 void Calculator::CalculateResponsivenessIfNecessary(
     base::TimeTicks current_time) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   base::TimeTicks last_activity_time = most_recent_activity_time_;
   most_recent_activity_time_ = current_time;
@@ -397,7 +398,7 @@ void Calculator::CalculateResponsiveness(
     std::vector<CongestionList> congestions_from_multiple_threads,
     base::TimeTicks start_time,
     base::TimeTicks end_time) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   while (start_time < end_time) {
     const base::TimeTicks current_interval_end_time =
@@ -442,19 +443,19 @@ void Calculator::CalculateResponsiveness(
 }
 
 Calculator::CongestionList& Calculator::GetExecutionCongestionOnUIThread() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   return execution_congestion_on_ui_thread_;
 }
 
 Calculator::CongestionList& Calculator::GetCongestionOnUIThread() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   return congestion_on_ui_thread_;
 }
 
 #if BUILDFLAG(IS_ANDROID)
 void Calculator::OnApplicationStateChanged(
     base::android::ApplicationState state) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   switch (state) {
     case base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES:
     case base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES:

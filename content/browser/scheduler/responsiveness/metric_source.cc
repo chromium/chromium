@@ -17,12 +17,12 @@ namespace responsiveness {
 MetricSource::Delegate::~Delegate() = default;
 
 MetricSource::MetricSource(Delegate* delegate) : delegate_(delegate) {
-  DCHECK(delegate_);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(delegate_, base::NotFatalUntil::M160);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 void MetricSource::SetUp() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   RegisterMessageLoopObserverUI();
   native_event_observer_ui_ = CreateNativeEventObserver();
@@ -33,9 +33,9 @@ void MetricSource::SetUp() {
 }
 
 void MetricSource::Destroy(base::ScopedClosureRunner on_finish_destroy) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
-  DCHECK(!destroy_was_called_);
+  CHECK(!destroy_was_called_, base::NotFatalUntil::M160);
   destroy_was_called_ = true;
 
   message_loop_observer_ui_.reset();
@@ -62,7 +62,7 @@ MetricSource::CreateNativeEventObserver() {
 }
 
 MetricSource::~MetricSource() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 void MetricSource::RegisterMessageLoopObserverUI() {
@@ -88,7 +88,7 @@ void MetricSource::RegisterMessageLoopObserverIO() {
 }
 
 void MetricSource::SetUpOnIOThread() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   RegisterMessageLoopObserverIO();
 
@@ -97,7 +97,7 @@ void MetricSource::SetUpOnIOThread() {
 
 void MetricSource::TearDownOnIOThread(
     base::ScopedClosureRunner on_finish_destroy) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   delegate_->TearDownOnIOThread();
 
@@ -111,7 +111,7 @@ void MetricSource::TearDownOnIOThread(
 
 void MetricSource::TearDownOnUIThread(
     base::ScopedClosureRunner on_finish_destroy) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   delegate_->TearDownOnUIThread();
   // |on_finish_destroy| isn't further passed on. It gets run here and might

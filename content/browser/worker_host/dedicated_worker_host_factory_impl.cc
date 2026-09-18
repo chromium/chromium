@@ -92,8 +92,8 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
       creator_policies_(creator_policies.Clone()),
       creator_coep_reporter_(std::move(creator_coep_reporter)),
       creator_network_restrictions_id_(creator_network_restrictions_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(creator_client_security_state_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(creator_client_security_state_, base::NotFatalUntil::M160);
 }
 
 DedicatedWorkerHostFactoryImpl::~DedicatedWorkerHostFactoryImpl() = default;
@@ -111,7 +111,7 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
       "loading",
       "DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad",
       "script_url", script_url);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   base::TimeTicks start_time = base::TimeTicks::Now();
 
   // This function is known to be heap allocation heavy and performance

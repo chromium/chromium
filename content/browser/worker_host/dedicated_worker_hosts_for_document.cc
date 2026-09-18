@@ -53,9 +53,11 @@ DedicatedWorkerHostsForDocument::GetBackForwardCacheBlockingDetails() const {
 }
 
 void DedicatedWorkerHostsForDocument::OnEnterBackForwardCache() {
-  DCHECK(BackForwardCache::IsBackForwardCacheFeatureEnabled());
-  DCHECK_EQ(render_frame_host().GetLifecycleState(),
-            RenderFrameHost::LifecycleState::kInBackForwardCache);
+  CHECK(BackForwardCache::IsBackForwardCacheFeatureEnabled(),
+        base::NotFatalUntil::M160);
+  CHECK_EQ(render_frame_host().GetLifecycleState(),
+           RenderFrameHost::LifecycleState::kInBackForwardCache,
+           base::NotFatalUntil::M160);
 
   for (auto worker : dedicated_workers_) {
     if (base::WeakPtr<ServiceWorkerClient> service_worker_client =
@@ -66,9 +68,11 @@ void DedicatedWorkerHostsForDocument::OnEnterBackForwardCache() {
 }
 
 void DedicatedWorkerHostsForDocument::OnRestoreFromBackForwardCache() {
-  DCHECK(BackForwardCache::IsBackForwardCacheFeatureEnabled());
-  DCHECK_EQ(render_frame_host().GetLifecycleState(),
-            RenderFrameHost::LifecycleState::kInBackForwardCache);
+  CHECK(BackForwardCache::IsBackForwardCacheFeatureEnabled(),
+        base::NotFatalUntil::M160);
+  CHECK_EQ(render_frame_host().GetLifecycleState(),
+           RenderFrameHost::LifecycleState::kInBackForwardCache,
+           base::NotFatalUntil::M160);
 
   for (auto worker : dedicated_workers_) {
     if (base::WeakPtr<ServiceWorkerClient> service_worker_client =

@@ -31,7 +31,7 @@ WorkerScriptLoaderFactory::WorkerScriptLoaderFactory(
       isolation_info_(isolation_info),
       browser_context_getter_(browser_context_getter),
       loader_factory_(std::move(loader_factory)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (service_worker_handle) {
     service_worker_handle_ = service_worker_handle->AsWeakPtr();
@@ -39,7 +39,7 @@ WorkerScriptLoaderFactory::WorkerScriptLoaderFactory(
 }
 
 WorkerScriptLoaderFactory::~WorkerScriptLoaderFactory() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 void WorkerScriptLoaderFactory::CreateLoaderAndStart(
@@ -49,13 +49,13 @@ void WorkerScriptLoaderFactory::CreateLoaderAndStart(
     const network::ResourceRequest& resource_request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   DCHECK(resource_request.destination ==
              network::mojom::RequestDestination::kWorker ||
          resource_request.destination ==
              network::mojom::RequestDestination::kSharedWorker)
       << resource_request.destination;
-  DCHECK(!script_loader_);
+  CHECK(!script_loader_, base::NotFatalUntil::M160);
 
   // Create a WorkerScriptLoader to load the script.
   auto script_loader = std::make_unique<WorkerScriptLoader>(
