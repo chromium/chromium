@@ -210,6 +210,9 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
 
 - (void)updateCustomLeadingViewVisibility:(BOOL)visible
                                  animated:(BOOL)animated {
+  if (!_customLeadingView) {
+    return;
+  }
   CGFloat targetAlpha = visible ? 1.0 : 0.0;
   if (_customLeadingView.hidden == !visible &&
       _customLeadingView.alpha == targetAlpha) {
