@@ -35,6 +35,9 @@ BASE_DECLARE_FEATURE(kIOSSignalSharingEnabled);
 // Controls whether a report is uploaded when a profile is opened.
 BASE_DECLARE_FEATURE(kUploadReportOnProfileOpen);
 
+// Controls whether Chrome Enterprise UMA metrics collection is enabled.
+BASE_DECLARE_FEATURE(kChromeEnterpriseUMAMetricsCollection);
+
 }  // namespace enterprise_reporting
 
 #endif  // COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORTING_FEATURES_H_
