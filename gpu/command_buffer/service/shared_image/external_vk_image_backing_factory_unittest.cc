@@ -34,6 +34,7 @@
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
+#include "ui/gfx/skia_span_util.h"
 #include "ui/gl/buildflags.h"
 
 #if BUILDFLAG(USE_DAWN)
@@ -588,6 +589,100 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, ReadbackToMemory) {
                                   cc::ExactPixelComparator()))
         << "plane_index=" << plane;
   }
+}
+
+TEST_P(ExternalVkImageBackingFactoryWithFormatTest, InitialPixelUploadSuccess) {
+  const auto format = get_format();
+  if (!format.is_single_plane()) {
+    GTEST_SKIP() << "Initial pixel data only supported for single-plane";
+  }
+
+  const gfx::Size size(16, 16);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  const SharedImageInfo si_info{format,
+                                size,
+                                color_space,
+                                kTopLeft_GrSurfaceOrigin,
+                                kPremul_SkAlphaType,
+                                usage,
+                                "TestLabel"};
+
+  std::vector<SkBitmap> bitmaps = AllocateRedBitmaps(format, size);
+  const auto pixel_data = gfx::SkPixmapToSpan(bitmaps[0].pixmap());
+
+  auto mailbox = Mailbox::Generate();
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, si_info, /*is_thread_safe=*/false, pixel_data);
+  EXPECT_NE(backing, nullptr);
+  if (!backing) {
+    return;
+  }
+  EXPECT_TRUE(backing->IsCleared());
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image_ref =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+  EXPECT_TRUE(shared_image_ref);
+
+  VerifyPixelsWithReadbackGanesh(mailbox, bitmaps);
+}
+
+TEST_P(ExternalVkImageBackingFactoryWithFormatTest,
+       InitialPixelUploadInvalidSize) {
+  const auto format = get_format();
+  if (!format.is_single_plane()) {
+    GTEST_SKIP() << "Initial pixel data only supported for single-plane";
+  }
+
+  const gfx::Size size(16, 16);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  const SharedImageInfo si_info{format,
+                                size,
+                                color_space,
+                                kTopLeft_GrSurfaceOrigin,
+                                kPremul_SkAlphaType,
+                                usage,
+                                "TestLabel"};
+
+  std::vector<SkBitmap> bitmaps = AllocateRedBitmaps(format, size);
+  const auto pixel_data = gfx::SkPixmapToSpan(bitmaps[0].pixmap());
+
+  // Provide pixel data with invalid size.
+  auto mailbox = Mailbox::Generate();
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, si_info, /*is_thread_safe=*/false,
+      pixel_data.first(pixel_data.size() - 1));
+  EXPECT_EQ(backing, nullptr);
+}
+
+TEST_P(ExternalVkImageBackingFactoryWithFormatTest,
+       InitialPixelUploadMultiplanarNotSupported) {
+  const auto format = get_format();
+  if (format.is_single_plane()) {
+    GTEST_SKIP() << "Test only covers multiplanar formats";
+  }
+
+  const gfx::Size size(16, 16);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  const SharedImageInfo si_info{format,
+                                size,
+                                color_space,
+                                kTopLeft_GrSurfaceOrigin,
+                                kPremul_SkAlphaType,
+                                usage,
+                                "TestLabel"};
+
+  std::vector<uint8_t> pixel_data(format.EstimatedSizeInBytes(size), 0x12);
+  auto mailbox = Mailbox::Generate();
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, si_info, /*is_thread_safe=*/false,
+      base::span<const uint8_t>(pixel_data));
+  EXPECT_EQ(backing, nullptr);
 }
 
 std::string TestParamToString(

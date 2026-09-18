@@ -1,5 +1,6 @@
 # crbug.com/462477487
 -ExternalVkImageBackingFactoryWithFormatTest.Basic/*
+-ExternalVkImageBackingFactoryWithFormatTest.InitialPixelUpload*/*
 -ExternalVkImageBackingFactoryWithFormatTest.ReadbackToMemory/*
 -ExternalVkImageBackingFactoryWithFormatTest.Upload/*
 

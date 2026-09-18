@@ -254,7 +254,10 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
       return nullptr;
     }
     SkPixmap pixmap(image_info, pixel_data.data(), image_info.minRowBytes());
-    backing->UploadToVkImage({pixmap});
+    if (!backing->UploadToVkImage({pixmap})) {
+      DLOG(ERROR) << "Failed to upload initial pixel data to VkImage";
+      return nullptr;
+    }
 
     // Mark the backing as cleared.
     backing->SetCleared();
