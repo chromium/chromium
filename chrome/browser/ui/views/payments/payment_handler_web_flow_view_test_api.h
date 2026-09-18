@@ -58,6 +58,17 @@ class PaymentHandlerWebFlowViewTestApi {
     return controller_->indicator_phase_;
   }
 
+  void OnMediaAccessResponse(
+      content::MediaResponseCallback original_callback,
+      const blink::mojom::StreamDevicesSet& stream_devices_set,
+      blink::mojom::MediaStreamRequestResult result,
+      std::unique_ptr<content::MediaStreamUI> ui) {
+    controller_->OnMediaAccessResponse(
+        controller_->weak_ptr_factory_.GetWeakPtr(),
+        std::move(original_callback), stream_devices_set, result,
+        std::move(ui));
+  }
+
  private:
   const raw_ref<PaymentHandlerWebFlowViewController> controller_;
 };

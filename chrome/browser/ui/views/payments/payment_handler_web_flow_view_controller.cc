@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -445,6 +446,7 @@ bool PaymentHandlerWebFlowViewController::CanContentViewBeScrollable() {
 }
 
 void PaymentHandlerWebFlowViewController::Stop() {
+  chip_model_.reset();
   delay_prompt_timer_.Stop();
   indicator_chip_collapse_timer_.Stop();
   indicator_dismiss_timer_.Stop();
@@ -544,33 +546,21 @@ void PaymentHandlerWebFlowViewController::RequestMediaAccessPermission(
       !(base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccess) ||
         base::FeatureList::IsEnabled(
             features::kPaymentHandlerCameraAccessUx))) {
+    base::UmaHistogramBoolean("PaymentRequest.Camera.AccessRequested", false);
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
         /*ui=*/nullptr);
     return;
   }
-  content::MediaResponseCallback response_callback = base::BindOnce(
-      [](base::WeakPtr<PaymentHandlerWebFlowViewController> controller,
-         content::MediaResponseCallback original_callback,
-         const blink::mojom::StreamDevicesSet& stream_devices_set,
-         blink::mojom::MediaStreamRequestResult result,
-         std::unique_ptr<content::MediaStreamUI> ui) {
-        if (controller &&
-            (result ==
-                 blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED ||
-             result == blink::mojom::MediaStreamRequestResult::
-                           PERMISSION_DENIED_BY_CONTROLLER ||
-             result == blink::mojom::MediaStreamRequestResult::
-                           PERMISSION_DISMISSED)) {
-          controller->ShowBlockedCameraIndicator();
-        }
-        std::move(original_callback)
-            .Run(stream_devices_set, result, std::move(ui));
-      },
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
+  base::UmaHistogramBoolean("PaymentRequest.Camera.AccessRequested", true);
+
   MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
-      web_contents, request, std::move(response_callback),
+      web_contents, request,
+      base::BindOnce(
+          &PaymentHandlerWebFlowViewController::OnMediaAccessResponse,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       /*extension=*/nullptr);
 }
 
@@ -667,6 +657,26 @@ void PaymentHandlerWebFlowViewController::AbortPayment() {
   state()->OnPaymentResponseError(
       mojom::PaymentEventResponseType::PAYMENT_HANDLER_INSECURE_NAVIGATION,
       errors::kPaymentHandlerInsecureNavigation);
+}
+
+void PaymentHandlerWebFlowViewController::OnMediaAccessResponse(
+    base::WeakPtr<PaymentHandlerWebFlowViewController> controller,
+    content::MediaResponseCallback original_callback,
+    const blink::mojom::StreamDevicesSet& stream_devices_set,
+    blink::mojom::MediaStreamRequestResult result,
+    std::unique_ptr<content::MediaStreamUI> ui) {
+  base::UmaHistogramEnumeration("PaymentRequest.Camera.RequestOutcome", result);
+
+  if (controller &&
+      (result == blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED ||
+       result == blink::mojom::MediaStreamRequestResult::
+                     PERMISSION_DENIED_BY_CONTROLLER ||
+       result ==
+           blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED)) {
+    controller->ShowBlockedCameraIndicator();
+  }
+
+  std::move(original_callback).Run(stream_devices_set, result, std::move(ui));
 }
 
 void PaymentHandlerWebFlowViewController::SetHeaderColorsAndOriginLabelText() {
@@ -968,6 +978,9 @@ void PaymentHandlerWebFlowViewController::OnRequestsFinalized() {
 
 void PaymentHandlerWebFlowViewController::OnRequestDecided(
     permissions::PermissionAction action) {
+  base::UmaHistogramEnumeration("PaymentRequest.Camera.PromptAction", action,
+                                permissions::PermissionAction::NUM);
+
   if (!chip_model_ || !permission_dashboard_view()) {
     return;
   }

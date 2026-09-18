@@ -34,6 +34,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PaymentRequest.Camera.AccessRequested" enum="Boolean"
+    expires_after="2027-01-31">
+  <owner>luisantunes@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records true if a media access request inside the Payment Handler window is
+    a valid video camera request, and false otherwise. Recorded right after
+    media permission access is requested.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.Camera.PromptAction" enum="PermissionAction"
+    expires_after="2027-01-31">
+  <owner>luisantunes@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records the resolution of a camera permission prompt inside the Payment
+    Handler window. Recorded when the user decides on the prompt or when it is
+    ignored on window close.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.Camera.RequestOutcome"
+    enum="MediaStreamRequestResult" expires_after="2027-01-31">
+  <owner>luisantunes@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records the outcome of a camera access request inside the Payment Handler
+    window. Recorded when the video capture request completes.
+  </summary>
+</histogram>
+
 <histogram name="PaymentRequest.CanMakePayment.CallAllowedByPref"
     enum="Boolean" expires_after="2026-10-06">
   <owner>smcgruer@chromium.org</owner>
