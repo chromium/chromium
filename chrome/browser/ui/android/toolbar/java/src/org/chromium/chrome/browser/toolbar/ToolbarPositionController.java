@@ -921,11 +921,22 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         boolean isLayoutChanged =
                 onToEdgeChange(
                         /* systemTopInset= */ 0, /* consumeTopInset= */ false, LayoutType.BROWSING);
+
+        // isLayoutChanged only says whether the call above changed anything. Selecting a tab in
+        // the tab switcher already removed the padding, through onToEdgeChange() with
+        // LayoutType.HUB on the inset observer, and ToolbarPhone#onToEdgeChange only asks for a
+        // layout, so mControlContainerHeight can still be the padded height when we get here.
+        int laidOutHeight = mControlContainer.getToolbarHeight() + mHairlineHeight;
+
         // During toolbar swiping, it is possible that the toolbar's layout has been forced to
         // update before its position is moved to the bottom. In this case, skips calling
         // doSynchronousLayoutAndCapture() again.
         if (isLayoutChanged) {
             mControlContainer.doSynchronousLayout(/* forceCaptureAfterLayout= */ true);
+        } else if (mControlContainerHeight > laidOutHeight) {
+            // No need to capture here. The controls are locked shown, so the user is looking
+            // at the real view; the texture catches up when the compositor settles.
+            mControlContainer.doSynchronousLayout(/* forceCaptureAfterLayout= */ false);
         }
     }
 

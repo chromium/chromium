@@ -332,6 +332,7 @@ public class ToolbarPositionControllerTest {
             ObservableSuppliers.createMonotonic();
     private HistogramWatcher mStartupExpectation;
     private int mTopAnchorViewId = CONTROL_CONTAINER_ID;
+    private int mHairlineHeight;
 
     public static class FakeKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
         private boolean mIsShowing;
@@ -364,6 +365,8 @@ public class ToolbarPositionControllerTest {
         doReturn(mProgressBarLayoutParams).when(mProgressBarContainer).getLayoutParams();
         doReturn(mProgressBarParent).when(mProgressBarContainer).getParent();
         mContext = ContextUtils.getApplicationContext();
+        mHairlineHeight =
+                mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_hairline_height);
         doReturn(mContext.getResources()).when(mProgressBarContainer).getResources();
         mBottomControlsStacker =
                 new BottomControlsStacker(mBrowserControlsSizer, mContext, mWindowAndroid);
@@ -1172,7 +1175,7 @@ public class ToolbarPositionControllerTest {
 
         // 3. Test active tab is not NTP, and layout changed.
         // We need onToEdgeChange to return true.
-        // maybeForceToolbarLayoutUpdateAndCapture calls onToEdgeChange(0, false,
+        // maybeForceBottomToolbarLayoutUpdateAndCapture calls onToEdgeChange(0, false,
         // LayoutType.BROWSING).
         // Set mTopInset to something non-zero first.
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
@@ -1186,6 +1189,35 @@ public class ToolbarPositionControllerTest {
         clearInvocations(mControlContainer);
         mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ false);
         verify(mControlContainer, never()).doSynchronousLayout(anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testMaybeForceCapture_StaleControlContainerHeight() {
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        assertControlsAtBottom();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        mActivityTabSupplier.set(mTab);
+
+        // 1. Toolbar + hairline is just the normal height, so there is nothing stale to fix.
+        // Comparing against the toolbar alone would force a layout here on every transition.
+        mControlContainerHeightSupplier.set(TOOLBAR_HEIGHT + mHairlineHeight);
+        clearInvocations(mControlContainer);
+
+        mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ false);
+
+        verify(mControlContainer, never()).doSynchronousLayout(anyBoolean());
+
+        // 2. The hub already removed the padding, so onToEdgeChange() reports no change, but
+        // the container is still measured at the padded height.
+        int topInset = 50;
+        mControlContainerHeightSupplier.set(TOOLBAR_HEIGHT + mHairlineHeight + topInset);
+        clearInvocations(mControlContainer);
+
+        mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ false);
+
+        // The capture is deliberately not forced; the Android view is on screen on this path.
+        verify(mControlContainer).doSynchronousLayout(false);
     }
 
     @Test
