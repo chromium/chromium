@@ -232,6 +232,9 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
     case optimization_guide::proto::Action::kSelect:
       action.mutable_select()->set_tab_id(tab_id);
       break;
+    case optimization_guide::proto::Action::kDragAndRelease:
+      action.mutable_drag_and_release()->set_tab_id(tab_id);
+      break;
     case optimization_guide::proto::Action::kType:
       action.mutable_type()->set_tab_id(tab_id);
       break;

@@ -22,6 +22,8 @@ std::optional<std::string> ToolTypeToToolDisplayString(ToolType tool) {
       return "Scrolling";
     case ToolType::kSelect:
       return "Selecting";
+    case ToolType::kDragAndRelease:
+      return "Dragging";
     case ToolType::kNavigate:
       return "Navigating";
     case ToolType::kBack:

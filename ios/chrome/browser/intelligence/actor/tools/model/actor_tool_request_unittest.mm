@@ -46,6 +46,11 @@ std::vector<ToolRequestTestCase> GetTestCases() {
   }
   {
     optimization_guide::proto::Action action;
+    action.mutable_drag_and_release()->set_tab_id(kTabId);
+    test_cases.push_back({action, ToolType::kDragAndRelease});
+  }
+  {
+    optimization_guide::proto::Action action;
     action.mutable_navigate()->set_tab_id(kTabId);
     test_cases.push_back({action, ToolType::kNavigate});
   }

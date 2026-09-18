@@ -24,6 +24,8 @@ ToolType ActorToolRequest::GetToolType() const {
       return ToolType::kScroll;
     case optimization_guide::proto::Action::kSelect:
       return ToolType::kSelect;
+    case optimization_guide::proto::Action::kDragAndRelease:
+      return ToolType::kDragAndRelease;
     case optimization_guide::proto::Action::kNavigate:
       return ToolType::kNavigate;
     case optimization_guide::proto::Action::kBack:
@@ -72,6 +74,11 @@ web::WebStateID ActorToolRequest::GetTargetWebStateId() const {
     case optimization_guide::proto::Action::kSelect:
       if (action_.select().has_tab_id()) {
         tab_id = action_.select().tab_id();
+      }
+      break;
+    case optimization_guide::proto::Action::kDragAndRelease:
+      if (action_.drag_and_release().has_tab_id()) {
+        tab_id = action_.drag_and_release().tab_id();
       }
       break;
     case optimization_guide::proto::Action::kNavigate:

@@ -26,6 +26,9 @@ enum class ToolType {
   kScroll,
   // Tool for selecting an option or element.
   kSelect,
+  // Tool for dragging and releasing from a source target to a destination
+  // target.
+  kDragAndRelease,
   // Tool for navigating to a specific URL.
   kNavigate,
   // Tool for navigating back in history.

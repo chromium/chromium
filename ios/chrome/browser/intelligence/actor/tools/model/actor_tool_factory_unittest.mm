@@ -70,6 +70,7 @@ TEST_F(ActorToolFactoryTest, GetSupportedCapabilities) {
                   optimization_guide::proto::Action::kScroll,
                   optimization_guide::proto::Action::kScrollTo,
                   optimization_guide::proto::Action::kSelect,
+                  optimization_guide::proto::Action::kDragAndRelease,
                   optimization_guide::proto::Action::kAttemptLogin,
                   optimization_guide::proto::Action::kAttemptFormFilling,
                   optimization_guide::proto::Action::kCloseTab,
@@ -205,6 +206,9 @@ class ActorToolFactoryTabIdRequiredTest
       case optimization_guide::proto::Action::kSelect:
         action.mutable_select()->set_tab_id(tab_id);
         break;
+      case optimization_guide::proto::Action::kDragAndRelease:
+        action.mutable_drag_and_release()->set_tab_id(tab_id);
+        break;
       case optimization_guide::proto::Action::kType:
         action.mutable_type()->set_tab_id(tab_id);
         break;
@@ -298,6 +302,17 @@ INSTANTIATE_TEST_SUITE_P(
               a.mutable_select()->mutable_target()->mutable_coordinate()->set_x(
                   0);
             }},
+        TabIdRequiredTestParam{"DragAndRelease",
+                               [](optimization_guide::proto::Action& a) {
+                                 a.mutable_drag_and_release()
+                                     ->mutable_from_target()
+                                     ->mutable_coordinate()
+                                     ->set_x(0);
+                                 a.mutable_drag_and_release()
+                                     ->mutable_to_target()
+                                     ->mutable_coordinate()
+                                     ->set_x(10);
+                               }},
         TabIdRequiredTestParam{
             "Type",
             [](optimization_guide::proto::Action& a) {

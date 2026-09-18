@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/attempt_form_filling_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/attempt_login_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/click_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/drag_and_release_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/history_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/navigate_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/scroll_to_tool.h"
@@ -40,6 +41,7 @@ bool RequiresTabId(const ActorToolRequest& request) {
     case optimization_guide::proto::Action::kScroll:
     case optimization_guide::proto::Action::kScrollTo:
     case optimization_guide::proto::Action::kSelect:
+    case optimization_guide::proto::Action::kDragAndRelease:
     case optimization_guide::proto::Action::kAttemptLogin:
     case optimization_guide::proto::Action::kAttemptFormFilling:
     case optimization_guide::proto::Action::kCloseTab:
@@ -106,6 +108,9 @@ ActorToolFactory::CreateTool(const ActorToolRequest& request,
       return HistoryTool::Create(target_web_state, request.action().forward());
     case optimization_guide::proto::Action::kSelect:
       return SelectTool::Create(target_web_state, request.action().select());
+    case optimization_guide::proto::Action::kDragAndRelease:
+      return DragAndReleaseTool::Create(target_web_state,
+                                        request.action().drag_and_release());
     case optimization_guide::proto::Action::kType:
       return TypeTool::Create(target_web_state, request.action().type());
     case optimization_guide::proto::Action::kWait:
@@ -163,6 +168,7 @@ ActorToolFactory::GetSupportedCapabilities() const {
       optimization_guide::proto::Action::kScroll,
       optimization_guide::proto::Action::kScrollTo,
       optimization_guide::proto::Action::kSelect,
+      optimization_guide::proto::Action::kDragAndRelease,
       optimization_guide::proto::Action::kAttemptLogin,
       optimization_guide::proto::Action::kAttemptFormFilling,
       optimization_guide::proto::Action::kCloseTab,

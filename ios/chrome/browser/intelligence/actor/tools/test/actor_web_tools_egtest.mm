@@ -596,4 +596,110 @@
   GREYAssertTrue(success, @"Select value did not match");
 }
 
+#pragma mark - DragAndReleaseTool Tests
+
+// Tests that the DragAndReleaseTool can successfully drag and drop an element
+// given coordinates.
+- (void)testDragAndReleaseTool_dragsByCoordinates {
+  const std::string dragHTML =
+      R"(
+      <div id='source' draggable='true'
+           style='width: 80px; height: 80px; background: red;'>Source</div>
+      <div id='target'
+           style='width: 80px; height: 80px; background: blue;
+                  margin-top: 50px;'
+           ondragover='event.preventDefault();'
+           ondrop='this.innerText="Dropped";'>Target</div>
+      )";
+  [ChromeEarlGrey loadURL:[self URLForHTML:dragHTML]];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:[ElementSelector
+                                           selectorWithCSSSelector:"#source"]];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:[ElementSelector
+                                           selectorWithCSSSelector:"#target"]];
+
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::DragAndReleaseAction* dragAction =
+      action.mutable_drag_and_release();
+  dragAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+
+  [self setCoordinatesOnTarget:dragAction->mutable_from_target()
+                  withSelector:"#source"];
+  [self setCoordinatesOnTarget:dragAction->mutable_to_target()
+                  withSelector:"#target"];
+
+  GREYAssertNil([self executeAction:action], @"Action execution failed.");
+
+  [ChromeEarlGrey waitForWebStateContainingText:"Dropped"];
+}
+
+// Tests that the DragAndReleaseTool can successfully drag an element
+// given its document and node identifiers for the source target.
+- (void)testDragAndReleaseTool_dragsByIdentifiers {
+  const std::string dragHTML =
+      R"(
+      <input type='range' id='slider' min='0' max='100' value='0'
+             style='width: 200px;'>
+      )";
+  [ChromeEarlGrey loadURL:[self URLForHTML:dragHTML]];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:[ElementSelector
+                                           selectorWithCSSSelector:"#slider"]];
+
+  NSData* apcData = [ActorAppInterface fetchLatestAPC];
+  optimization_guide::proto::PageContext pageContext;
+  GREYAssertTrue(pageContext.ParseFromArray([apcData bytes], [apcData length]),
+                 @"Failed to parse PageContext");
+
+  std::string mainFrameToken = pageContext.annotated_page_content()
+                                   .main_frame_data()
+                                   .document_identifier()
+                                   .serialized_token();
+  FindNodeResult result = FindNodeWithPredicate(
+      pageContext.annotated_page_content().root_node(),
+      [](const optimization_guide::proto::ContentNode& n) {
+        return n.content_attributes().has_form_control_data() &&
+               n.content_attributes().form_control_data().form_control_type() ==
+                   optimization_guide::proto::FormControlType::
+                       FORM_CONTROL_TYPE_INPUT_RANGE;
+      },
+      mainFrameToken);
+
+  GREYAssertTrue(result.node != nullptr, @"Failed to find slider node");
+  int nodeId = result.node->content_attributes().common_ancestor_dom_node_id();
+
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::DragAndReleaseAction* dragAction =
+      action.mutable_drag_and_release();
+  dragAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+
+  dragAction->mutable_from_target()->set_content_node_id(nodeId);
+  dragAction->mutable_from_target()
+      ->mutable_document_identifier()
+      ->set_serialized_token(result.frame_token);
+
+  base::Value rect = [ChromeEarlGrey
+      evaluateJavaScript:
+          @"const r = "
+          @"document.querySelector('#slider').getBoundingClientRect(); "
+          @"[r.left + r.width, r.top + r.height / 2]"];
+  GREYAssertTrue(rect.is_list() && rect.GetList().size() == 2,
+                 @"Failed to get rect");
+  dragAction->mutable_to_target()->mutable_coordinate()->set_x(
+      static_cast<int>(rect.GetList()[0].GetDouble()));
+  dragAction->mutable_to_target()->mutable_coordinate()->set_y(
+      static_cast<int>(rect.GetList()[1].GetDouble()));
+
+  GREYAssertNil([self executeAction:action], @"Action execution failed.");
+
+  bool success = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        base::Value value = [ChromeEarlGrey
+            evaluateJavaScript:@"document.querySelector('#slider').value"];
+        return value.is_string() && value.GetString() == "100";
+      });
+  GREYAssertTrue(success, @"Slider value did not reach 100 after drag");
+}
+
 @end
