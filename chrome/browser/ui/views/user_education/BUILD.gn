@@ -150,6 +150,7 @@ source_set("impl") {
     "//components/desktop_to_mobile_promos",
     "//components/feature_engagement/public",
     "//components/send_tab_to_self:features",
+    "//components/skills:features",
     "//components/user_education/views",
     "//components/user_education/webui",
     "//content/public/browser",

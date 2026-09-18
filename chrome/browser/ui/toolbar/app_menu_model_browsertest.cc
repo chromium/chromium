@@ -497,20 +497,16 @@ IN_PROC_BROWSER_TEST_F(SkillsMenuModelTest, SkillsMenuStandalone) {
 
   ASSERT_TRUE(model.GetIndexOfCommandId(AppMenuModel::kSkillsMenuPlaceholder)
                   .has_value());
-  ui::MenuModel* skills_submenu = model.GetSubmenuModelAt(
-      model.GetIndexOfCommandId(AppMenuModel::kSkillsMenuPlaceholder).value());
+  const size_t skills_index =
+      model.GetIndexOfCommandId(AppMenuModel::kSkillsMenuPlaceholder).value();
+  ui::MenuModel* skills_submenu = model.GetSubmenuModelAt(skills_index);
   ASSERT_NE(skills_submenu, nullptr);
   ASSERT_EQ(2ul, skills_submenu->GetItemCount());
   EXPECT_EQ(IDC_MANAGE_SKILLS, skills_submenu->GetCommandIdAt(0));
   EXPECT_EQ(IDC_BROWSE_SKILLS, skills_submenu->GetCommandIdAt(1));
   EXPECT_TRUE(skills_submenu->IsEnabledAt(0));
   EXPECT_TRUE(skills_submenu->IsEnabledAt(1));
-  EXPECT_FALSE(
-      model
-          .GetIconAt(
-              model.GetIndexOfCommandId(AppMenuModel::kSkillsMenuPlaceholder)
-                  .value())
-          .IsEmpty());
+  EXPECT_FALSE(model.GetIconAt(skills_index).IsEmpty());
   EXPECT_FALSE(skills_submenu->GetIconAt(0).IsEmpty());
   EXPECT_FALSE(skills_submenu->GetIconAt(1).IsEmpty());
 }

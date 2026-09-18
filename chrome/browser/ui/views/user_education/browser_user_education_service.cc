@@ -117,6 +117,7 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/skills/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -2741,6 +2742,11 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       dictation::kDictation,
       user_education::Metadata(153, "amyasinghal@google.com",
                                "Shown on the Dictation context menu item.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      features::kSkillsAppMenu,
+      user_education::Metadata(158, "xinlongyi@google.com",
+                               "Shown on the Skills item in the app menu.")));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   registry.RegisterFeature(user_education::NewBadgeSpecification(

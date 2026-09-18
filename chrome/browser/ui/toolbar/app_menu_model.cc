@@ -2267,6 +2267,10 @@ void AppMenuModel::Build() {
                                         sub_menus_.back().get(), kContractIcon);
     SetElementIdentifierAt(GetIndexOfCommandId(kSkillsMenuPlaceholder).value(),
                            kSkillsMenuItem);
+    SetIsNewFeatureAt(
+        GetIndexOfCommandId(kSkillsMenuPlaceholder).value(),
+        BrowserUserEducationInterface::From(browser())->MaybeShowNewBadgeFor(
+            features::kSkillsAppMenu));
   }
 
   AddItemWithStringIdAndVectorIcon(

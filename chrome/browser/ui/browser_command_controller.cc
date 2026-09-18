@@ -90,6 +90,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -124,6 +125,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/skills/features.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -1226,9 +1228,13 @@ void BrowserCommandController::HandleCommandWithDisposition(
       break;
     case IDC_MANAGE_SKILLS:
       ShowSkillsYourSkills(webui::GetBrowserForOpeningWebUi(browser_));
+      BrowserUserEducationInterface::From(browser_)->NotifyNewBadgeFeatureUsed(
+          features::kSkillsAppMenu);
       break;
     case IDC_BROWSE_SKILLS:
       ShowSkillsBrowse(webui::GetBrowserForOpeningWebUi(browser_));
+      BrowserUserEducationInterface::From(browser_)->NotifyNewBadgeFeatureUsed(
+          features::kSkillsAppMenu);
       break;
     case IDC_SHOW_BOOKMARK_SIDE_PANEL:
       SidePanelUI::From(browser_)->Show(SidePanelEntryId::kBookmarks,

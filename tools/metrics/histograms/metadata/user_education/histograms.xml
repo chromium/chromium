@@ -64,6 +64,8 @@ chromium-metrics-reviews@google.com.
   <variant name="SideBySideLinkMenuNewBadge"
       summary="Promotion for Split View in the render view context menu when
                right clicking a link."/>
+  <variant name="SkillsAppMenu"
+      summary="Shown on the Skills item in the app menu."/>
   <variant name="TabstripDeclutter"
       summary="Promotion for Close Unused Tabs in the app menu."/>
   <variant name="VerticalTabsNewBadge"
