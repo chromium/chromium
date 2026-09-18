@@ -156,39 +156,6 @@
 
 namespace {
 
-// Deprecated 10/2025
-inline constexpr char kSessionStorageFormatPref[] =
-    "ios.session.storage.format";
-inline constexpr char kSessionStorageMigrationStatusPref[] =
-    "ios.session.storage.migration-status";
-inline constexpr char kSessionStorageMigrationStartedTimePref[] =
-    "ios.session.storage.migration-start-time";
-inline constexpr char kTipsInMagicStackDisabledPref[] =
-    "tips_magic_stack.disabled";
-inline constexpr char kHomeCustomizationMagicStackSetUpListEnabled[] =
-    "ios.home_customization.magic_stack.set_up_list.enabled";
-// Preference that represents the sorting order of the Following feed content.
-inline constexpr char kNTPFollowingFeedSortType[] =
-    "ios.ntp.following_feed.sort_type";
-// Number of times the First Follow UI has been shown.
-inline constexpr char kFirstFollowUIShownCount[] =
-    "follow.first_follow_ui_modal_count";
-// Number of times the First Follow UI has been shown with Follow UI Update
-// enabled.
-inline constexpr char kFirstFollowUpdateUIShownCount[] =
-    "follow.first_follow_update_ui_modal_count";
-inline constexpr char kLongFollowingFeedVisitTimeAggregateKey[] =
-    "LongFollowingFeedInteractionTimeDelta";
-inline constexpr char kLastInteractionTimeForFollowingGoodVisits[] =
-    "LastInteractionTimeForGoodVisitsFollowing";
-inline constexpr char kLastInteractionTimeForGoodVisits[] =
-    "LastInteractionTimeForGoodVisits";
-inline constexpr char kLongFeedVisitTimeAggregateKey[] =
-    "LongFeedInteractionTimeDelta";
-inline constexpr char kLastUsedFeedForGoodVisitsKey[] =
-    "LastUsedFeedForGoodVisits";
-inline constexpr char kLegacySyncSessionsGUID[] = "sync.session_sync_guid";
-
 // Deprecated 12/2025.
 inline constexpr char kAutofillStatesDataDir[] = "autofill.states_data_dir";
 
@@ -254,6 +221,10 @@ constexpr char kInvalidationPerSenderActiveRegistrationTokens[] =
 // Deprecated 09/2026.
 inline constexpr char kMigratedToQuickDeletePrefValues[] =
     "browser.migrated_to_quick_delete_pref_values";
+inline constexpr char kHomeCustomizationMagicStackSetUpListEnabled[] =
+    "ios.home_customization.magic_stack.set_up_list.enabled";
+inline constexpr char kNTPFollowingFeedSortType[] =
+    "ios.ntp.following_feed.sort_type";
 
 // Renames a boolean pref within a PrefService.
 void RenameBooleanPref(std::string_view target_pref_name,
@@ -937,28 +908,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Preference associated with the Gemini Settings policy state.
   registry->RegisterIntegerPref(optimization_guide::prefs::kGeminiSettings, 0);
 
-  // Deprecated 10/2025
-  registry->RegisterIntegerPref(kSessionStorageFormatPref, 0);
-  registry->RegisterIntegerPref(kSessionStorageMigrationStatusPref, 0);
-  registry->RegisterTimePref(kSessionStorageMigrationStartedTimePref,
-                             base::Time());
-  registry->RegisterBooleanPref(kTipsInMagicStackDisabledPref, false);
-  registry->RegisterBooleanPref(kHomeCustomizationMagicStackSetUpListEnabled,
-                                true);
-
-  // Deprecated 10/2025.
-  registry->RegisterIntegerPref(kNTPFollowingFeedSortType, 2);
   // Use `safety_check::prefs::kSafetyCheckHomeModuleEnabled` instead.
   registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, true);
-  registry->RegisterIntegerPref(kFirstFollowUIShownCount, 0);
-  registry->RegisterIntegerPref(kFirstFollowUpdateUIShownCount, 0);
-  registry->RegisterDoublePref(kLongFollowingFeedVisitTimeAggregateKey, 0.0);
-  registry->RegisterTimePref(kLastInteractionTimeForFollowingGoodVisits,
-                             base::Time());
-  registry->RegisterTimePref(kLastInteractionTimeForGoodVisits, base::Time());
-  registry->RegisterDoublePref(kLongFeedVisitTimeAggregateKey, 0.0);
-  registry->RegisterIntegerPref(kLastUsedFeedForGoodVisitsKey, 0);
 
   // Deprecated 10/2025. Use
   // `ntp_tiles::prefs::kTabResumptionHomeModuleEnabled` instead.
@@ -986,7 +938,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 true);
 
   // Deprecated 10/2025.
-  registry->RegisterStringPref(kLegacySyncSessionsGUID, std::string());
   registry->RegisterBooleanPref(kFingerprintingProtectionEnabled, true);
 
   // Deprecated 11/2025.
@@ -1025,6 +976,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated 09/2026.
   registry->RegisterBooleanPref(kMigratedToQuickDeletePrefValues, false);
+
+  // Deprecated 09/2026
+  registry->RegisterBooleanPref(kHomeCustomizationMagicStackSetUpListEnabled,
+                                false);
+  registry->RegisterIntegerPref(kNTPFollowingFeedSortType, 0);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1067,14 +1023,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
   // Added 10/2025.
-  prefs->ClearPref(kSessionStorageFormatPref);
-  prefs->ClearPref(kSessionStorageMigrationStatusPref);
-  prefs->ClearPref(kSessionStorageMigrationStartedTimePref);
-  prefs->ClearPref(kTipsInMagicStackDisabledPref);
-  prefs->ClearPref(kHomeCustomizationMagicStackSetUpListEnabled);
-  prefs->ClearPref(kNTPFollowingFeedSortType);
-
-  // Added 10/2025.
   RenameBooleanPref(safety_check::prefs::kSafetyCheckHomeModuleEnabled,
                     prefs::kHomeCustomizationMagicStackSafetyCheckEnabled,
                     prefs);
@@ -1090,14 +1038,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
       prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, prefs);
   RenameBooleanPref(ntp_tiles::prefs::kMostVisitedHomeModuleEnabled,
                     prefs::kHomeCustomizationMostVisitedEnabled, prefs);
-  prefs->ClearPref(kFirstFollowUIShownCount);
-  prefs->ClearPref(kFirstFollowUpdateUIShownCount);
-  prefs->ClearPref(kLongFollowingFeedVisitTimeAggregateKey);
-  prefs->ClearPref(kLastInteractionTimeForFollowingGoodVisits);
-  prefs->ClearPref(kLastInteractionTimeForGoodVisits);
-  prefs->ClearPref(kLongFeedVisitTimeAggregateKey);
-  prefs->ClearPref(kLastUsedFeedForGoodVisitsKey);
-  prefs->ClearPref(kLegacySyncSessionsGUID);
   prefs->ClearPref(kFingerprintingProtectionEnabled);
 
   // Added 11/2025.
@@ -1134,6 +1074,8 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Deprecated 09/2026.
   prefs->ClearPref(kMigratedToQuickDeletePrefValues);
+  prefs->ClearPref(kHomeCustomizationMagicStackSetUpListEnabled);
+  prefs->ClearPref(kNTPFollowingFeedSortType);
 }
 
 void MigrateObsoleteUserDefault() {
