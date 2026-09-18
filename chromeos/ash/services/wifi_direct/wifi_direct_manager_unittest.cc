@@ -378,6 +378,81 @@ TEST_F(WifiDirectManagerTest, GroupOwnerEvents) {
                                           kDurationTime, 1);
 }
 
+TEST_F(WifiDirectManagerTest, DestroyManagerWithActiveOwnerGroup) {
+  ShillManagerClient::Get()
+      ->GetTestInterface()
+      ->SetSimulateCreateP2PGroupResult(FakeShillSimulatedResult::kSuccess,
+                                        shill::kCreateP2PGroupResultSuccess);
+  auto credentials = mojom::WifiCredentials::New();
+  credentials->ssid = kAssignedSSID;
+  credentials->passphrase = kAssignedPassphrase;
+  WifiP2POperationTestResult result_arguments =
+      CreateWifiDirectGroup(std::move(credentials));
+  ASSERT_EQ(result_arguments.result, WifiDirectOperationResult::kSuccess);
+  ASSERT_TRUE(result_arguments.wifi_direct_connection.is_valid());
+
+  mojo::Remote<mojom::WifiDirectConnection> wifi_direct_connection(
+      std::move(result_arguments.wifi_direct_connection));
+  ExpectConnectionsCount(1);
+  EXPECT_EQ(-1, ShillManagerClient::Get()
+                    ->GetTestInterface()
+                    ->GetRecentlyDestroyedP2PGroupId());
+
+  task_environment_.FastForwardBy(kDurationTime);
+
+  // Destroy the manager while the remote endpoint is still held; the platform
+  // group should be torn down rather than left running.
+  wifi_direct_manager_.reset();
+  EXPECT_EQ(kTestShillId, ShillManagerClient::Get()
+                              ->GetTestInterface()
+                              ->GetRecentlyDestroyedP2PGroupId());
+  histogram_tester_.ExpectTotalCount(kGroupOwnerDisconnectReasonHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGroupOwnerDisconnectReasonHistogram,
+      WifiP2PMetricsLogger::DisconnectReason::kClientInitiated, 1);
+  histogram_tester_.ExpectTotalCount(kWifiP2PConnectionDurationHistogram, 1);
+  histogram_tester_.ExpectTimeBucketCount(kWifiP2PConnectionDurationHistogram,
+                                          kDurationTime, 1);
+}
+
+TEST_F(WifiDirectManagerTest, DestroyManagerWithActiveClientConnection) {
+  ShillManagerClient::Get()
+      ->GetTestInterface()
+      ->SetSimulateConnectToP2PGroupResult(
+          FakeShillSimulatedResult::kSuccess,
+          shill::kConnectToP2PGroupResultSuccess);
+  auto credentials = mojom::WifiCredentials::New();
+  credentials->ssid = kAssignedSSID;
+  credentials->passphrase = kAssignedPassphrase;
+  WifiP2POperationTestResult result_arguments =
+      ConnectToWifiDirectGroup(std::move(credentials), 5200u);
+  ASSERT_EQ(result_arguments.result, WifiDirectOperationResult::kSuccess);
+  ASSERT_TRUE(result_arguments.wifi_direct_connection.is_valid());
+
+  mojo::Remote<mojom::WifiDirectConnection> wifi_direct_connection(
+      std::move(result_arguments.wifi_direct_connection));
+  ExpectConnectionsCount(1);
+  EXPECT_EQ(-1, ShillManagerClient::Get()
+                    ->GetTestInterface()
+                    ->GetRecentlyDisconnectedP2PGroupId());
+
+  task_environment_.FastForwardBy(kDurationTime);
+
+  // Destroy the manager while the remote endpoint is still held; the platform
+  // client connection should be disconnected.
+  wifi_direct_manager_.reset();
+  EXPECT_EQ(kTestShillId, ShillManagerClient::Get()
+                              ->GetTestInterface()
+                              ->GetRecentlyDisconnectedP2PGroupId());
+  histogram_tester_.ExpectTotalCount(kGroupClientDisconnectReasonHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGroupClientDisconnectReasonHistogram,
+      WifiP2PMetricsLogger::DisconnectReason::kClientInitiated, 1);
+  histogram_tester_.ExpectTotalCount(kWifiP2PConnectionDurationHistogram, 1);
+  histogram_tester_.ExpectTimeBucketCount(kWifiP2PConnectionDurationHistogram,
+                                          kDurationTime, 1);
+}
+
 TEST_F(WifiDirectManagerTest, GetWifiP2PCapabilities) {
   auto capabilities_dict =
       base::DictValue().Set(shill::kP2PCapabilitiesGroupReadinessProperty,

@@ -25,10 +25,10 @@ class WifiDirectConnection;
 // 1. create Wifi direct group.
 // 2. connect to Wifi direct group.
 // 3. own the WifiDirectConnection instance.
-// 4. TODO: destroy Wifi direct group.
-// 5. TODO: disconnect Wifi direct group.
-// 6. TODO: observe on WifiP2PController to handle Wifi direct group
-// disconnections notified by Shill.
+// 4. destroy or disconnect the Wifi direct group when the client drops its
+//    endpoint or when this manager is destroyed.
+// 5. observe WifiP2PController to handle Wifi direct group disconnections
+//    notified by Shill.
 class WifiDirectManager : public mojom::WifiDirectManager,
                           public WifiP2PController::Observer {
  public:

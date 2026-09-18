@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/wifi_direct/wifi_direct_manager.h"
 
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/wifi_p2p/wifi_p2p_group.h"
 #include "chromeos/ash/components/wifi_p2p/wifi_p2p_metrics_logger.h"
 #include "chromeos/ash/services/wifi_direct/wifi_direct_connection.h"
@@ -60,7 +61,29 @@ WifiDirectManager::WifiDirectManager() {
   wifi_p2p_controller_observation_.Observe(WifiP2PController::Get());
 }
 
-WifiDirectManager::~WifiDirectManager() = default;
+WifiDirectManager::~WifiDirectManager() {
+  if (!WifiP2PController::IsInitialized()) {
+    return;
+  }
+  // Tear down any platform groups still owned by this instance so they do not
+  // outlive the manager when it is replaced or shut down.
+  for (const auto& [shill_id, connection] :
+       shill_id_to_wifi_direct_connection_) {
+    NET_LOG(EVENT) << "WifiDirectManager destroyed; tearing down Wifi direct "
+                      "group with Shill id: "
+                   << shill_id;
+    if (connection->IsOwner()) {
+      WifiP2PController::Get()->DestroyWifiP2PGroup(shill_id,
+                                                    base::DoNothing());
+    } else {
+      WifiP2PController::Get()->DisconnectFromWifiP2PGroup(shill_id,
+                                                           base::DoNothing());
+    }
+    WifiP2PMetricsLogger::RecordWifiP2PDisconnectReason(
+        WifiP2PMetricsLogger::DisconnectReason::kClientInitiated,
+        connection->IsOwner());
+  }
+}
 
 void WifiDirectManager::BindPendingReceiver(
     mojo::PendingReceiver<mojom::WifiDirectManager> pending_receiver) {
