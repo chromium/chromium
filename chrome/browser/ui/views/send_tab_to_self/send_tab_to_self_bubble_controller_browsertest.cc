@@ -458,6 +458,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
   EXPECT_FALSE(entry.GetPageContext().scroll_position.IsEmpty());
 }
 
+// Tests that when sending a tab on an empty page, no scroll position is
+// attached and the kPageNotScrolled outcome is recorded.
 IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
                        ScrollPositionPropagated_EmptyPage) {
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
@@ -485,11 +487,49 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome",
-      ScrollPositionGenerationOutcome::kLinkGenerationError, 1);
+      ScrollPositionGenerationOutcome::kPageNotScrolled, 1);
   histogram_tester.ExpectTotalCount(
       "Sharing.SendTabToSelf.ScrollPosition.GenerationTime", 1);
 
   // The scroll position should be empty because the page has no content.
+  EXPECT_TRUE(entry.GetPageContext().scroll_position.IsEmpty());
+}
+
+// Tests that when sending a tab on an unscrolled page, no scroll position is
+// attached and the kPageNotScrolled outcome is recorded.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
+                       ScrollPositionPropagated_UnscrolledPage) {
+  GURL test_url =
+      embedded_test_server()->GetURL("/send_tab_to_self/scroll.html");
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
+
+  StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
+  ASSERT_TRUE(sync_service);
+
+  SendTabToSelfBubbleController* controller =
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
+  // Increase the timeout for tests to avoid flakiness on slow bots.
+  controller->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
+
+  TestSendTabToSelfModelObserver observer(
+      sync_service->GetSendTabToSelfModel());
+
+  base::HistogramTester histogram_tester;
+  controller->OnDeviceSelected("device_1", "device_name_1");
+  SendTabToSelfEntry entry = observer.WaitForNextEntry();
+
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), entry.GetURL());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome",
+      ScrollPositionGenerationOutcome::kPageNotScrolled, 1);
+  histogram_tester.ExpectTotalCount(
+      "Sharing.SendTabToSelf.ScrollPosition.GenerationTime", 1);
+
+  // The scroll position should be empty because the page was not scrolled.
   EXPECT_TRUE(entry.GetPageContext().scroll_position.IsEmpty());
 }
 
@@ -547,6 +587,53 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
   // target paragraph.
   EXPECT_THAT(entry.GetPageContext().scroll_position.text_fragment.text_start,
               AnyOf(HasSubstr("fox"), HasSubstr("jumps"), HasSubstr("dog")));
+}
+
+// Tests that when sending a tab on a scrolled page where the reading position
+// has no text content (resulting in a link generation error), no scroll
+// position is attached and the `kLinkGenerationError` outcome is recorded.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
+                       ScrollPositionPropagated_LinkGenerationError) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
+
+  // Add a non-text scrollable element and scroll the page. The reading position
+  // hit-test will land on a non-text element on a scrolled page, failing
+  // selector generation with a link generation error.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      "document.body.style.margin = '0';"
+      "document.body.innerHTML = '<div style=\"height: 5000px;\"></div>';"
+      "window.scrollTo(0, 500);"));
+
+  StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
+  ASSERT_TRUE(sync_service);
+
+  SendTabToSelfBubbleController* controller =
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
+  // Increase the timeout for tests to avoid flakiness on slow bots.
+  controller->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
+
+  TestSendTabToSelfModelObserver observer(
+      sync_service->GetSendTabToSelfModel());
+
+  base::HistogramTester histogram_tester;
+  controller->OnDeviceSelected("device_1", "device_name_1");
+  SendTabToSelfEntry entry = observer.WaitForNextEntry();
+
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), entry.GetURL());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome",
+      ScrollPositionGenerationOutcome::kLinkGenerationError, 1);
+  histogram_tester.ExpectTotalCount(
+      "Sharing.SendTabToSelf.ScrollPosition.GenerationTime", 1);
+
+  // The scroll position should be empty because link generation failed.
+  EXPECT_TRUE(entry.GetPageContext().scroll_position.IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,

@@ -167,6 +167,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Link generation error"/>
   <int value="6" label="Invalid selector"/>
   <int value="7" label="Renderer timeout"/>
+  <int value="8" label="Page not scrolled"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/send_tab_to_self/metrics_util.h:ScrollPositionGenerationOutcome) -->

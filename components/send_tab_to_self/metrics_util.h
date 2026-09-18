@@ -189,7 +189,8 @@ enum class ScrollPositionGenerationOutcome {
   kLinkGenerationError = 5,
   kInvalidSelector = 6,
   kRendererTimeout = 7,
-  kMaxValue = kRendererTimeout,
+  kPageNotScrolled = 8,
+  kMaxValue = kPageNotScrolled,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sharing/enums.xml:SendTabToSelfScrollPositionGenerationOutcome)
 

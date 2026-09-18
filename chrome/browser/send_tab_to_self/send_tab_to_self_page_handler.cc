@@ -208,6 +208,10 @@ SendTabToSelfPageHandler::ProcessSelectorGenerationResult(
     return {ScrollPositionGenerationOutcome::kRendererTimeout, {}};
   }
 
+  if (error == shared_highlighting::LinkGenerationError::kNotScrolled) {
+    return {ScrollPositionGenerationOutcome::kPageNotScrolled, {}};
+  }
+
   if (error != shared_highlighting::LinkGenerationError::kNone) {
     return {ScrollPositionGenerationOutcome::kLinkGenerationError, {}};
   }
