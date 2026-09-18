@@ -13,19 +13,15 @@ option java_outer_classname = 'RichAnswerTemplateProto';
 
 package omnibox;
 
-import "answer_data.proto";
 import "formatted_string.proto";
 
 // Template to render the standard Rich Answer.
 // Next ID: 11
 message RichAnswerTemplate {
-  // Although multiple answers can be represented, we can assume there will only
-  // be one answer.
-  repeated AnswerData answers = 6;
   optional FormattedString attribution = 7;
   optional SuggestionEnhancements enhancements = 5;
 
-  reserved 1 to 4, 10;
+  reserved 1 to 4, 6, 10;
 }
 
 message SuggestionEnhancements {

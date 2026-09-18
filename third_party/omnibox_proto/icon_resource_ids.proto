@@ -237,7 +237,9 @@ enum IconResourceIds {
 
   // Bookmarks
   BOOKMARKS = 76;
+
   COLORED_SEARCH_LOUPE_WITH_SPARKLE = 84;
+
   SEARCH_LOUPE_WITH_SPARKLE = 86;
 
   // follow_up
@@ -256,13 +258,17 @@ enum IconResourceIds {
   //////////////////////////////////////////////////////////////////
   // Google Material Icons
   //////////////////////////////////////////////////////////////////
+
+  // Icon: Google Symbols:location_pin
   LOCATION_PIN = 74;
+
+  // Icon: Google Symbols:newsmode
   STORY_SUGGESTION = 77;
 
   // Icon: Google Symbols:group:FILL@0;wght@400;GRAD@0;opsz@48
   GROUP_SYMBOL = 78;
 
-  // http://shortn/_0sp4vlu2bM
+  // Icon: Google Symbols:celebration:FILL@0;wght@400;GRAD@0;opsz@24
   CELEBRATION = 79;
 
   // Icon: Google Symbols:update:FILL@0;wght@400;GRAD@0;opsz@24
@@ -341,6 +347,9 @@ enum IconResourceIds {
   // Icon: Google Symbols:acute:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   // AIM 'Fast' model icon.
   ACUTE = 107;
+
+  // Icon: Luminous Symbols:image_create:wght@200;opsz@24;FILL@0
+  IMAGE_CREATE = 108;
 }
 
 enum IconPositions {

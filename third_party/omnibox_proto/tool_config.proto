@@ -20,10 +20,11 @@ import "tool_mode.proto";
 import "url_param.proto";
 
 // Configuration for a tool mode.
-// Next ID: 14
+// Next ID: 15
 // LINT.IfChange(ToolConfig)
 message ToolConfig {
   // The tool mode.
+  //
   // Note: Clients should use the *Value accessor variant (e.g. getToolValue())
   // rather than enum accessors to be future-proof against new open enum values
   // served by the backend without requiring client updates.
@@ -52,5 +53,8 @@ message ToolConfig {
 
   // Optional tooltip for the tool in a menu.
   string menu_tooltip = 13;
+
+  // Optional accessibility label for the tool chip.
+  string chip_a11y_label = 14;
 }
 // LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ToolConfig)

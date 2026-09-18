@@ -12,6 +12,7 @@ option java_package = 'org.chromium.components.omnibox';
 option java_outer_classname = 'SearchboxConfigProto';
 
 package omnibox;
+
 import "rule_set.proto";
 import "input_type_config.proto";
 import "model_config.proto";
@@ -22,7 +23,8 @@ import "tool_config.proto";
 // Next ID: 15
 message SearchboxConfig {
   // The rule set to use for the searchbox.
-  // This is deprecated (only used for legacy xGA client and Chrome)
+  // This message is mostly deprecated (with exception of the
+  // rule_set.max_total_inputs field).
   // For validation use *_config.rule instead.
   // For allowed primitives use presence of the *_configs instead.
   optional RuleSet rule_set = 1;

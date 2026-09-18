@@ -16,4 +16,7 @@ package omnibox;
 message AimEligibilityClientRequest {
   // The client's locale in IETF BCP 47 language tag format.
   string client_locale = 1;
+
+  // The client's country code in lowercase ISO 3166-1 alpha-2 format.
+  string client_country = 2;
 }

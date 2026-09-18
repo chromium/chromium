@@ -102,6 +102,9 @@ message AimEligibilityResponse {
   // from entering Co-Browse mode (bypassing interception).
   repeated QueryParam no_cobrowse_params = 13;
 
+  // Controls whether the user is eligible for the Contextual Searchbox.
   optional bool is_contextual_searchbox_eligible = 14;
+
+  // Controls whether the user is eligible for the Contextual Omnibox.
   optional bool is_contextual_omnibox_eligible = 15;
 }

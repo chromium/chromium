@@ -118,6 +118,8 @@ enum ToolMode {
   kAimGenPrompt = 10,
   // Enables Agent Task mode.
   kAgentTask = 11,
+  // Enables Search More mode.
+  kSearchMore = 12,
 };
 // LINT.ThenChange(//third_party/omnibox_proto/tool_mode.proto:ToolMode)
 
