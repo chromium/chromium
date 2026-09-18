@@ -8684,21 +8684,6 @@
             ]
         }
     ],
-    "EnterpriseReleaseNotes": [
-        {
-            "platforms": [
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnterpriseReleaseNotes"
-                    ]
-                }
-            ]
-        }
-    ],
     "EraseLegacyQueueOnDataLoss": [
         {
             "platforms": [
