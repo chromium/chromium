@@ -2,6 +2,11 @@
 
 All notable changes to memo-map are documented here.
 
+## 0.3.4
+
+* Fixed key references from `iter` and `keys` becoming dangling when an insertion resized the map.
+* Fixed `MemoMap` being `Sync` when its key or value type was not `Sync`.
+
 ## 0.3.3
 
 * Added `MemoMap::get_or_insert_owned` and `MemoMap::get_or_try_insert_owned`.

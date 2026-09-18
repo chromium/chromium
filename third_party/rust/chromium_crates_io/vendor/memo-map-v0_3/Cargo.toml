@@ -13,8 +13,14 @@
 edition = "2018"
 rust-version = "1.43"
 name = "memo-map"
-version = "0.3.3"
+version = "0.3.4"
 authors = ["Armin Ronacher <armin.ronacher@active-4.com>"]
+build = false
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "A crate implementing a synchronized map for memoization"
 readme = "README.md"
 keywords = [
@@ -23,3 +29,7 @@ keywords = [
 ]
 license = "Apache-2.0"
 repository = "https://github.com/mitsuhiko/memo-map"
+
+[lib]
+name = "memo_map"
+path = "src/lib.rs"

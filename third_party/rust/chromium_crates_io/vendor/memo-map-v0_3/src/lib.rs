@@ -12,7 +12,7 @@
 //! implement something similar to lazy loading in places where the API
 //! has been constrained to references before.
 //!
-//! The values in the map are individually boxed up so that resizing of the
+//! The entries in the map are individually boxed up so that resizing of the
 //! map retains the previously issued references.
 //!
 //! ```
@@ -38,11 +38,14 @@
 //! reference to the memo map.  This is so that it can ensure that there are no
 //! borrows outstanding that would be invalidated through the removal of the item.
 use std::borrow::Borrow;
+use std::cell::UnsafeCell;
 use std::collections::hash_map::{self, Entry, RandomState};
 use std::collections::HashMap;
 use std::convert::Infallible;
 use std::hash::{BuildHasher, Hash};
+use std::marker::PhantomPinned;
 use std::mem::{transmute, ManuallyDrop};
+use std::pin::Pin;
 use std::sync::{Mutex, MutexGuard};
 
 macro_rules! lock {
@@ -64,11 +67,155 @@ macro_rules! get_mut {
     };
 }
 
-/// An insert only, thread safe hash map to memoize values.
-#[derive(Debug)]
-pub struct MemoMap<K, V, S = RandomState> {
-    inner: Mutex<HashMap<K, Box<V>, S>>,
+struct StableEntryInner<K, V> {
+    key: K,
+    value: UnsafeCell<V>,
+    _pin: PhantomPinned,
 }
+
+struct StableEntry<K, V>(Pin<Box<StableEntryInner<K, V>>>);
+
+impl<K, V> StableEntry<K, V> {
+    fn new(key: K, value: V) -> Self {
+        StableEntry(Box::pin(StableEntryInner {
+            key,
+            value: UnsafeCell::new(value),
+            _pin: PhantomPinned,
+        }))
+    }
+
+    fn key(&self) -> &K {
+        &self.0.key
+    }
+
+    fn value(&self) -> &V {
+        // SAFETY: Values are only mutated through an exclusive borrow of the
+        // MemoMap. Shared access to a MemoMap never changes existing values.
+        unsafe { &*self.0.value.get() }
+    }
+
+    fn value_ptr(&self) -> *mut V {
+        self.0.value.get()
+    }
+
+    fn into_value(self) -> V {
+        // SAFETY: The entry has been removed from the map, and an exclusive
+        // borrow of the MemoMap ensures no references into it are outstanding.
+        unsafe { Pin::into_inner_unchecked(self.0) }
+            .value
+            .into_inner()
+    }
+}
+
+impl<K: Clone, V: Clone> Clone for StableEntry<K, V> {
+    fn clone(&self) -> Self {
+        StableEntry::new(self.key().clone(), self.value().clone())
+    }
+}
+
+impl<K: Hash, V> Hash for StableEntry<K, V> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.key().hash(state);
+    }
+}
+
+impl<K: PartialEq, V> PartialEq for StableEntry<K, V> {
+    fn eq(&self, other: &Self) -> bool {
+        self.key().eq(other.key())
+    }
+}
+
+impl<K: Eq, V> Eq for StableEntry<K, V> {}
+
+impl<K, V, Q: ?Sized> Borrow<BorrowedKey<Q>> for StableEntry<K, V>
+where
+    K: Borrow<Q>,
+{
+    fn borrow(&self) -> &BorrowedKey<Q> {
+        BorrowedKey::from_ref(self.key().borrow())
+    }
+}
+
+#[repr(transparent)]
+struct BorrowedKey<Q: ?Sized>(Q);
+
+impl<Q: ?Sized> BorrowedKey<Q> {
+    fn from_ref(key: &Q) -> &Self {
+        // SAFETY: BorrowedKey is transparent over Q, so their references have
+        // identical layouts and metadata.
+        unsafe { &*(key as *const Q as *const BorrowedKey<Q>) }
+    }
+}
+
+impl<Q: Hash + ?Sized> Hash for BorrowedKey<Q> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
+    }
+}
+
+impl<Q: PartialEq + ?Sized> PartialEq for BorrowedKey<Q> {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.eq(&other.0)
+    }
+}
+
+impl<Q: Eq + ?Sized> Eq for BorrowedKey<Q> {}
+
+type InnerMap<K, V, S> = HashMap<StableEntry<K, V>, (), S>;
+
+struct DebugMap<'a, K, V, S>(&'a InnerMap<K, V, S>);
+
+impl<K: std::fmt::Debug, V: std::fmt::Debug, S> std::fmt::Debug for DebugMap<'_, K, V, S> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut map = f.debug_map();
+        for entry in self.0.keys() {
+            map.entry(entry.key(), entry.value());
+        }
+        map.finish()
+    }
+}
+
+/// An insert only, thread safe hash map to memoize values.
+///
+/// Keys and values need to be [`Sync`] for the map itself to be [`Sync`],
+/// because references to both can be returned after the internal lock is
+/// released.
+///
+/// ```compile_fail
+/// use memo_map::MemoMap;
+/// use std::cell::Cell;
+///
+/// fn assert_sync<T: Sync>() {}
+/// assert_sync::<MemoMap<u32, Cell<u32>>>();
+/// ```
+///
+/// ```compile_fail
+/// use memo_map::MemoMap;
+/// use std::cell::Cell;
+///
+/// fn assert_sync<T: Sync>() {}
+/// assert_sync::<MemoMap<Cell<u32>, u32>>();
+/// ```
+pub struct MemoMap<K, V, S = RandomState> {
+    inner: Mutex<InnerMap<K, V, S>>,
+}
+
+impl<K: std::fmt::Debug, V: std::fmt::Debug, S> std::fmt::Debug for MemoMap<K, V, S> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let inner = lock!(self.inner);
+        f.debug_struct("MemoMap")
+            .field("inner", &DebugMap(&inner))
+            .finish()
+    }
+}
+
+// SAFETY: Moving a MemoMap between threads moves all stored keys, values, and
+// the hash builder, so each of them must be Send.
+unsafe impl<K: Send, V: Send, S: Send> Send for MemoMap<K, V, S> {}
+
+// SAFETY: Access to the hash map is synchronized, and the keys and values are
+// additionally Sync because shared references to them can outlive the lock.
+unsafe impl<K: Send + Sync, V: Send + Sync, S: Send> Sync for MemoMap<K, V, S> {}
 
 impl<K: Clone, V: Clone, S: Clone> Clone for MemoMap<K, V, S> {
     fn clone(&self) -> Self {
@@ -119,10 +266,10 @@ where
     /// it's sibling [`get_or_try_insert`](Self::get_or_try_insert).
     pub fn insert(&self, key: K, value: V) -> bool {
         let mut inner = lock!(self.inner);
-        match inner.entry(key) {
+        match inner.entry(StableEntry::new(key, value)) {
             Entry::Occupied(_) => false,
             Entry::Vacant(vacant) => {
-                vacant.insert(Box::new(value));
+                vacant.insert(());
                 true
             }
         }
@@ -134,7 +281,15 @@ where
     /// [`clear`](Self::clear) in that it requires a mutable reference to
     /// the map.
     pub fn replace(&mut self, key: K, value: V) {
-        lock!(self.inner).insert(key, Box::new(value));
+        let mut inner = lock!(self.inner);
+        if let Some((entry, _)) = inner.get_key_value(BorrowedKey::from_ref(&key)) {
+            // SAFETY: replace requires an exclusive borrow of the MemoMap, so
+            // no references to a stored value can be outstanding.
+            let old_value = unsafe { std::mem::replace(&mut *entry.value_ptr(), value) };
+            drop(old_value);
+        } else {
+            inner.insert(StableEntry::new(key, value), ());
+        }
     }
 
     /// Returns true if the map contains a value for the specified key.
@@ -146,7 +301,7 @@ where
         Q: Hash + Eq + ?Sized,
         K: Borrow<Q>,
     {
-        lock!(self.inner).contains_key(key)
+        lock!(self.inner).contains_key(BorrowedKey::from_ref(key))
     }
 
     /// Returns a reference to the value corresponding to the key.
@@ -159,21 +314,25 @@ where
         K: Borrow<Q>,
     {
         let inner = lock!(self.inner);
-        let value = inner.get(key)?;
-        Some(unsafe { transmute::<&V, &V>(&**value) })
+        let value = inner.get_key_value(BorrowedKey::from_ref(key))?.0.value();
+        Some(unsafe { transmute::<&V, &V>(value) })
     }
 
     /// Returns a mutable reference to the value corresponding to the key.
     ///
     /// The key may be any borrowed form of the map's key type, but [`Hash`] and
     /// [`Eq`] on the borrowed form must match those for the key type.
+    #[allow(clippy::mutable_key_type)] // Only the non-hashed value is mutable.
     pub fn get_mut<Q>(&mut self, key: &Q) -> Option<&mut V>
     where
         Q: Hash + Eq + ?Sized,
         K: Borrow<Q>,
     {
         get_mut!(let map, self.inner);
-        Some(unsafe { transmute::<&mut V, &mut V>(&mut **map.get_mut(key)?) })
+        let entry = map.get_key_value(BorrowedKey::from_ref(key))?.0;
+        // SAFETY: get_mut requires an exclusive borrow of the MemoMap, so no
+        // other references to the value can be outstanding.
+        Some(unsafe { &mut *entry.value_ptr() })
     }
 
     /// Returns a reference to the value corresponding to the key or inserts.
@@ -191,13 +350,23 @@ where
         F: FnOnce() -> Result<V, E>,
     {
         let mut inner = lock!(self.inner);
-        let value = if let Some(value) = inner.get(key) {
-            value
-        } else {
-            inner.insert(key.to_owned(), Box::new(creator()?));
-            inner.get(key).unwrap()
+        let key = BorrowedKey::from_ref(key);
+        if let Some((entry, _)) = inner.get_key_value(key) {
+            return Ok(unsafe { transmute::<&V, &V>(entry.value()) });
+        }
+
+        let entry = StableEntry::new(key.0.to_owned(), creator()?);
+        let value_ptr = match inner.entry(entry) {
+            Entry::Occupied(entry) => entry.key().value_ptr(),
+            Entry::Vacant(entry) => {
+                let value_ptr = entry.key().value_ptr();
+                entry.insert(());
+                value_ptr
+            }
         };
-        Ok(unsafe { transmute::<&V, &V>(&**value) })
+        // SAFETY: the entry is individually boxed and cannot be removed while
+        // the returned reference keeps the MemoMap borrowed.
+        Ok(unsafe { &*value_ptr })
     }
 
     /// Like [`get_or_insert`](Self::get_or_insert) but with an owned key.
@@ -217,12 +386,22 @@ where
         F: FnOnce() -> Result<V, E>,
     {
         let mut inner = lock!(self.inner);
-        let entry = inner.entry(key);
-        let value = match entry {
-            Entry::Occupied(ref val) => val.get(),
-            Entry::Vacant(entry) => entry.insert(Box::new(creator()?)),
+        if let Some((entry, _)) = inner.get_key_value(BorrowedKey::from_ref(&key)) {
+            return Ok(unsafe { transmute::<&V, &V>(entry.value()) });
+        }
+
+        let entry = StableEntry::new(key, creator()?);
+        let value_ptr = match inner.entry(entry) {
+            Entry::Occupied(entry) => entry.key().value_ptr(),
+            Entry::Vacant(entry) => {
+                let value_ptr = entry.key().value_ptr();
+                entry.insert(());
+                value_ptr
+            }
         };
-        Ok(unsafe { transmute::<&V, &V>(&**value) })
+        // SAFETY: the entry is individually boxed and cannot be removed while
+        // the returned reference keeps the MemoMap borrowed.
+        Ok(unsafe { &*value_ptr })
     }
 
     /// Returns a reference to the value corresponding to the key or inserts.
@@ -267,7 +446,9 @@ where
         Q: Hash + Eq + ?Sized,
         K: Borrow<Q>,
     {
-        lock!(self.inner).remove(key).map(|x| *x)
+        lock!(self.inner)
+            .remove_entry(BorrowedKey::from_ref(key))
+            .map(|(entry, ())| entry.into_value())
     }
 
     /// Clears the map, removing all elements.
@@ -308,9 +489,12 @@ where
         let guard = lock!(self.inner);
         let iter = guard.iter();
         Iter {
-            iter: unsafe {
-                transmute::<hash_map::Iter<'_, K, Box<V>>, hash_map::Iter<'_, K, Box<V>>>(iter)
-            },
+            iter: ManuallyDrop::new(unsafe {
+                transmute::<
+                    hash_map::Iter<'_, StableEntry<K, V>, ()>,
+                    hash_map::Iter<'_, StableEntry<K, V>, ()>,
+                >(iter)
+            }),
             guard: ManuallyDrop::new(guard),
         }
     }
@@ -319,13 +503,15 @@ where
     /// references to the values.  The iterator element type is `(&'a K, &'a mut V)`.
     ///
     /// This iterator requires a mutable reference to the map.
+    #[allow(clippy::mutable_key_type)] // Only the non-hashed values are mutable.
     pub fn iter_mut(&mut self) -> IterMut<'_, K, V> {
         get_mut!(let map, self.inner);
         IterMut {
             iter: unsafe {
-                transmute::<hash_map::IterMut<'_, K, Box<V>>, hash_map::IterMut<'_, K, Box<V>>>(
-                    map.iter_mut(),
-                )
+                transmute::<
+                    hash_map::IterMut<'_, StableEntry<K, V>, ()>,
+                    hash_map::IterMut<'_, StableEntry<K, V>, ()>,
+                >(map.iter_mut())
             },
         }
     }
@@ -334,13 +520,15 @@ where
     /// element type is `&'a mut V`.
     ///
     /// This iterator requires a mutable reference to the map.
+    #[allow(clippy::mutable_key_type)] // Only the non-hashed values are mutable.
     pub fn values_mut(&mut self) -> ValuesMut<'_, K, V> {
         get_mut!(let map, self.inner);
         ValuesMut {
             iter: unsafe {
-                transmute::<hash_map::ValuesMut<'_, K, Box<V>>, hash_map::ValuesMut<'_, K, Box<V>>>(
-                    map.values_mut(),
-                )
+                transmute::<
+                    hash_map::IterMut<'_, StableEntry<K, V>, ()>,
+                    hash_map::IterMut<'_, StableEntry<K, V>, ()>,
+                >(map.iter_mut())
             },
         }
     }
@@ -357,13 +545,16 @@ where
 /// This struct is created by the [`iter`](MemoMap::iter) method on [`MemoMap`].
 /// See its documentation for more information.
 pub struct Iter<'a, K, V, S> {
-    guard: ManuallyDrop<MutexGuard<'a, HashMap<K, Box<V>, S>>>,
-    iter: hash_map::Iter<'a, K, Box<V>>,
+    iter: ManuallyDrop<hash_map::Iter<'a, StableEntry<K, V>, ()>>,
+    guard: ManuallyDrop<MutexGuard<'a, InnerMap<K, V, S>>>,
 }
 
-impl<'a, K, V, S> Drop for Iter<'a, K, V, S> {
+impl<K, V, S> Drop for Iter<'_, K, V, S> {
     fn drop(&mut self) {
         unsafe {
+            // The iterator borrows data protected by the guard, so it must be
+            // dropped before the guard unlocks the map.
+            ManuallyDrop::drop(&mut self.iter);
             ManuallyDrop::drop(&mut self.guard);
         }
     }
@@ -373,7 +564,9 @@ impl<'a, K, V, S> Iterator for Iter<'a, K, V, S> {
     type Item = (&'a K, &'a V);
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.iter.next().map(|(k, v)| (k, &**v))
+        self.iter
+            .next()
+            .map(|(entry, ())| (entry.key(), entry.value()))
     }
 }
 
@@ -395,27 +588,33 @@ impl<'a, K, V, S> Iterator for Keys<'a, K, V, S> {
 
 /// A mutable iterator over a [`MemoMap`].
 pub struct IterMut<'a, K, V> {
-    iter: hash_map::IterMut<'a, K, Box<V>>,
+    iter: hash_map::IterMut<'a, StableEntry<K, V>, ()>,
 }
 
 impl<'a, K, V> Iterator for IterMut<'a, K, V> {
     type Item = (&'a K, &'a mut V);
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.iter.next().map(|(k, v)| (k, &mut **v))
+        self.iter.next().map(|(entry, ())| {
+            // SAFETY: IterMut holds an exclusive borrow of the MemoMap.
+            (entry.key(), unsafe { &mut *entry.value_ptr() })
+        })
     }
 }
 
 /// A mutable iterator over a [`MemoMap`].
 pub struct ValuesMut<'a, K, V> {
-    iter: hash_map::ValuesMut<'a, K, Box<V>>,
+    iter: hash_map::IterMut<'a, StableEntry<K, V>, ()>,
 }
 
 impl<'a, K, V> Iterator for ValuesMut<'a, K, V> {
     type Item = &'a mut V;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.iter.next().map(|v| &mut **v)
+        self.iter.next().map(|(entry, ())| {
+            // SAFETY: ValuesMut holds an exclusive borrow of the MemoMap.
+            unsafe { &mut *entry.value_ptr() }
+        })
     }
 }
 
@@ -448,7 +647,7 @@ mod tests {
         memo.insert(1, "one");
         memo.insert(2, "two");
         memo.insert(3, "three");
-        let mut values = memo.keys().map(|k| *k).collect::<Vec<_>>();
+        let mut values = memo.keys().copied().collect::<Vec<_>>();
         values.sort();
         assert_eq!(values, vec![1, 2, 3]);
     }
@@ -518,6 +717,31 @@ mod tests {
             dbg!(key, val);
             assert_eq!(memo.get(&key.to_string()), Some(val));
         }
+    }
+
+    #[test]
+    fn test_key_ref_after_resize() {
+        let memo = MemoMap::new();
+        memo.insert(0usize, 0usize);
+
+        let key = memo.keys().next().unwrap();
+        let iterations = if cfg!(miri) { 100 } else { 10000 };
+        for value in 1..iterations {
+            memo.insert(value, value);
+        }
+
+        assert_eq!(*key, 0);
+    }
+
+    #[test]
+    fn test_borrowed_key_lookup() {
+        let mut memo = MemoMap::new();
+        memo.insert("key".to_string(), 42);
+
+        assert!(memo.contains_key("key"));
+        assert_eq!(memo.get("key"), Some(&42));
+        *memo.get_mut("key").unwrap() = 43;
+        assert_eq!(memo.remove("key"), Some(43));
     }
 
     #[test]

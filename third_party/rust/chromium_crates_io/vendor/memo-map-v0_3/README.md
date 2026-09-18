@@ -1,6 +1,5 @@
 # memo-map
 
-[![Build Status](https://github.com/mitsuhiko/memo-map/workflows/Tests/badge.svg?branch=main)](https://github.com/mitsuhiko/memo-map/actions?query=workflow%3ATests)
 [![Crates.io](https://img.shields.io/crates/d/memo-map.svg)](https://crates.io/crates/memo-map)
 [![License](https://img.shields.io/github/license/mitsuhiko/memo-map)](https://github.com/mitsuhiko/memo-map/blob/main/LICENSE)
 [![rustc 1.41.0](https://img.shields.io/badge/rust-1.43%2B-orange.svg)](https://img.shields.io/badge/rust-1.43%2B-orange.svg)

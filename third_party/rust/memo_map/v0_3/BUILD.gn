@@ -26,7 +26,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "A crate implementing a synchronized map for memoization"
   cargo_pkg_repository = "https://github.com/mitsuhiko/memo-map"
-  cargo_pkg_version = "0.3.3"
+  cargo_pkg_version = "0.3.4"
 
   allow_unsafe = true
 
