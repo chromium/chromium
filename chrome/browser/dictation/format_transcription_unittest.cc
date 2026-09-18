@@ -4,7 +4,6 @@
 
 #include "chrome/browser/dictation/format_transcription.h"
 
-#include <optional>
 #include <string>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,17 +78,44 @@ TEST(FormatTranscriptionTest, WhitespaceNeeded) {
   EXPECT_FALSE(WhitespaceNeeded(u"Hello，", u"world"));
 }
 
+TEST(FormatTranscriptionTest, TrimTrailingPeriodIfSingleSentence) {
+  // Empty and whitespace-only strings.
+  EXPECT_EQ(TrimTrailingPeriodIfSingleSentence(u""), u"");
+  EXPECT_EQ(TrimTrailingPeriodIfSingleSentence(u"   "), u"   ");
+  EXPECT_EQ(TrimTrailingPeriodIfSingleSentence(u"Jane Doe"), u"Jane Doe");
+  EXPECT_EQ(TrimTrailingPeriodIfSingleSentence(u"How are you?"),
+            u"How are you?");
+  EXPECT_EQ(TrimTrailingPeriodIfSingleSentence(u"Great!"), u"Great!");
+  EXPECT_EQ(TrimTrailingPeriodIfSingleSentence(u"Jane Doe."), u"Jane Doe");
+  EXPECT_EQ(TrimTrailingPeriodIfSingleSentence(u"Jane Doe. "), u"Jane Doe ");
+  EXPECT_EQ(TrimTrailingPeriodIfSingleSentence(u"Pi is 3.14"), u"Pi is 3.14");
+  EXPECT_EQ(TrimTrailingPeriodIfSingleSentence(u"3.14."), u"3.14");
+  EXPECT_EQ(TrimTrailingPeriodIfSingleSentence(u"Thinking..."), u"Thinking...");
+
+  // Multiple sentences should preserve all periods.
+  EXPECT_EQ(
+      TrimTrailingPeriodIfSingleSentence(u"First sentence. Second sentence."),
+      u"First sentence. Second sentence.");
+  EXPECT_EQ(
+      TrimTrailingPeriodIfSingleSentence(u"Hello! How are you? All good."),
+      u"Hello! How are you? All good.");
+}
+
 TEST(FormatTranscriptionTest, FormatTranscription) {
   // Empty inputs.
   EXPECT_EQ(FormatTranscription(u"", u"Hello"), u"");
   EXPECT_EQ(FormatTranscription(u"Hello", u""), u"Hello");
   EXPECT_EQ(FormatTranscription(u"", u""), u"");
-  EXPECT_EQ(FormatTranscription(u"Hello", std::nullopt), u"Hello");
 
-  // Prepends whitespace when needed.
+  // Prepends whitespace when needed and trims trailing period for single
+  // sentences.
+  EXPECT_EQ(FormatTranscription(u"Jane Doe.", u"Hello"), u" Jane Doe");
+  EXPECT_EQ(FormatTranscription(u"Jane Doe.", u"Hello "), u"Jane Doe");
   EXPECT_EQ(FormatTranscription(u"world", u"Hello"), u" world");
   EXPECT_EQ(FormatTranscription(u"world", u"Hello "), u"world");
-  EXPECT_EQ(FormatTranscription(u".", u"Hello"), u".");
+  EXPECT_EQ(FormatTranscription(u"First sentence. Second sentence.", u"Hello"),
+            u" First sentence. Second sentence.");
+  EXPECT_EQ(FormatTranscription(u"...", u"Hello"), u"...");
 }
 
 }  // namespace
