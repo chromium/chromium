@@ -78,4 +78,11 @@ void WebUIPageActionView::SetVisible(bool visible) {
   }
 }
 
+IconLabelBubbleView* WebUIPageActionView::GetIconLabelBubbleViewNotMigrated() {
+  // It is a configuration issue if this gets called, as Chrome should never
+  // start up with some page actions not migrated while running with WebUI
+  // toolbar at the same time.
+  NOTREACHED();
+}
+
 }  // namespace page_actions
