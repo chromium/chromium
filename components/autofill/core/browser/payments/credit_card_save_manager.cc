@@ -63,6 +63,7 @@
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/strike_database/strike_database.h"
@@ -198,6 +199,7 @@ void LogPromptOfferMetricForCreditCardSave(
 
   switch (metric) {
     case SaveCardPromptOffer::kCvcMissingForPotentialUpdate:
+    case SaveCardPromptOffer::kCvcMissingForUnionPayUpload:
       // The other kNotShown entries below offer save via the omnibox icon
       // without popping up the bubble, and will later call
       // LogSaveCreditCardPromptOfferMetricDesktop(~) from
@@ -358,9 +360,9 @@ bool CreditCardSaveManager::ProceedWithSavingIfApplicable(
     bool is_credit_card_upstream_enabled,
     ukm::SourceId ukm_source_id) {
   // Prioritize card upload save if it is allowed. Check if card upload save
-  // should be offer and attempt to offer card upload save. Card upload is only
-  // offered if import_type is local card or new card. It can't be duplicate or
-  // server card.
+  // should be offered and attempt to offer card upload save. Card upload is
+  // only offered if import_type is local card or new card. It can't be
+  // duplicate or server card.
   if (is_credit_card_upstream_enabled &&
       (credit_card_import_type == payments::PaymentsFormDataImporter::
                                       CreditCardImportType::kLocalCard ||
@@ -559,6 +561,37 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
             .with_should_request_expiration_date_from_user(false)
             .with_same_last_four_as_server_card_but_different_expiration_date(
                 true)
+            .with_num_strikes(GetCreditCardSaveStrikeDatabase()->GetStrikes(
+                base::UTF16ToUTF8(upload_request_.card.LastFourDigits())))
+            .with_card_save_type(
+                payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly),
+        payments_data_manager().GetPaymentsSigninStateForMetrics());
+    LogCardUploadDecisions(ukm_source_id, upload_decision_metrics_);
+    return;
+  }
+
+  // UnionPay cards require CVC for upload save. If CVC is missing, abort
+  // offering upload.
+  if (upload_request_.card.network() == kUnionPay &&
+      upload_request_.cvc.empty()) {
+    LogPromptOfferMetricForCreditCardSave(
+        SaveCardPromptOffer::kCvcMissingForUnionPayUpload,
+        /*is_upload_save=*/true,
+        payments::PaymentsAutofillClient::SaveCreditCardOptions()
+            .with_should_request_name_from_user(should_request_name_from_user_)
+            .with_should_request_expiration_date_from_user(false)
+            .with_num_strikes(GetCreditCardSaveStrikeDatabase()->GetStrikes(
+                base::UTF16ToUTF8(upload_request_.card.LastFourDigits())))
+            .with_card_save_type(
+                payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly));
+
+    autofill_metrics::LogSaveCardPromptOfferMetric(
+        SaveCardPromptOffer::kCvcMissingForUnionPayUpload,
+        /*is_upload_save=*/true,
+        /*is_reshow=*/false,
+        payments::PaymentsAutofillClient::SaveCreditCardOptions()
+            .with_should_request_name_from_user(should_request_name_from_user_)
+            .with_should_request_expiration_date_from_user(false)
             .with_num_strikes(GetCreditCardSaveStrikeDatabase()->GetStrikes(
                 base::UTF16ToUTF8(upload_request_.card.LastFourDigits())))
             .with_card_save_type(
