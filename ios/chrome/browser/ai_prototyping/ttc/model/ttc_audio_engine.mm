@@ -6,14 +6,28 @@
 
 #import <AVFAudio/AVFAudio.h>
 
+#import <cmath>
+#import <vector>
+
 #import "base/functional/bind.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
+#import "base/task/thread_pool/thread_pool_instance.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_player.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_recorder.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
 namespace {
+
+// Test audio tone generation constants.
+// Generates a 440Hz sine wave at 24kHz in 20ms chunks (480 samples each)
+// for 1.0 second (50 total chunks).
+constexpr double kTestToneFrequency = 440.0;
+constexpr double kTestToneSampleRate = 24000.0;
+constexpr size_t kTestToneChunkSampleCount = 480;
+constexpr size_t kTestToneTotalChunks = 50;
+constexpr double kTestToneAmplitude = 8000.0;
 
 // Domain for errors originated by TTCAudioEngine.
 NSString* const kTTCAudioEngineErrorDomain = @"org.chromium.ttc.audio";
@@ -24,7 +38,7 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
 
 }  // namespace
 
-@interface TTCAudioEngine () <TTCAudioRecorderDelegate>
+@interface TTCAudioEngine () <TTCAudioRecorderDelegate, TTCAudioPlayerDelegate>
 @end
 
 @implementation TTCAudioEngine {
@@ -38,32 +52,65 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
   // Audio recorder component managing microphone tap, resampling, and RMS.
   TTCAudioRecorder* _recorder;
 
+  // Audio player component managing response scheduling, buffer conversion,
+  // and buffer drain.
+  TTCAudioPlayer* _player;
+
   // Flag indicating whether microphone capture is active.
   BOOL _isRecording;
 
   // Flag tracking whether asynchronous audio session configuration and
   // engine startup are currently pending on base::ThreadPool.
   BOOL _isStarting;
+
+  // Whether microphone input is routed directly to the speaker for local
+  // testing.
+  BOOL _loopbackEnabled;
+
+  // Whether synthesized streaming playback (e.g. test tone or model voice) is
+  // currently active on the player node.
+  BOOL _isStreamingPlaybackActive;
+
+  // Allows unit tests running in headless or mock environments without physical
+  // audio hardware to simulate that the audio engine is running.
+  BOOL _isAudioEngineRunningForTesting;
 }
+
+@synthesize loopbackEnabled = _loopbackEnabled;
 
 - (BOOL)isRecording {
   return _isRecording;
 }
 
-- (instancetype)initWithRecorder:(TTCAudioRecorder*)recorder {
+- (BOOL)isPlaying {
+  return _player.isPlaying;
+}
+
+- (instancetype)initWithRecorder:(TTCAudioRecorder*)recorder
+                          player:(TTCAudioPlayer*)player {
   self = [super init];
   if (self) {
     _audioEngine = [[AVAudioEngine alloc] init];
     _recorder = recorder;
     _recorder.delegate = self;
+    _player = player;
+    _player.delegate = self;
+    [_player attachToAudioEngine:_audioEngine error:nil];
     _isRecording = NO;
     _isStarting = NO;
+    _loopbackEnabled = NO;
+    _isStreamingPlaybackActive = NO;
   }
   return self;
 }
 
+- (instancetype)initWithRecorder:(TTCAudioRecorder*)recorder {
+  return [self initWithRecorder:recorder player:[[TTCAudioPlayer alloc] init]];
+}
+
 - (instancetype)init {
-  return [self initWithRecorder:[[TTCAudioRecorder alloc] init]];
+  return [self initWithRecorder:[[TTCAudioRecorder alloc] init]
+                         player:[[TTCAudioPlayer alloc] init]];
 }
 
 - (void)dealloc {
@@ -155,7 +202,7 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
 
   _isRecording = NO;
 
-  if (_audioEngine.isRunning) {
+  if (!_player.isPlaying && _audioEngine.isRunning) {
     [_audioEngine stop];
   }
 
@@ -165,25 +212,123 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
   }
 }
 
+- (void)playStreamingAudioChunk:(NSData*)pcm24kData {
+  if (pcm24kData.length == 0) {
+    return;
+  }
+
+  NSError* engineError = nil;
+  if (![self ensureEngineRunningWithError:&engineError]) {
+    if ([self.delegate
+            respondsToSelector:@selector(audioEngine:didEncounterError:)]) {
+      [self.delegate audioEngine:self didEncounterError:engineError];
+    }
+    return;
+  }
+
+  if (!_isStreamingPlaybackActive) {
+    // If loopback buffers were queued on the player node, flush them so
+    // synthesized audio begins immediately without delay.
+    [_player stopPlaybackImmediately];
+    _isStreamingPlaybackActive = YES;
+  }
+
+  [_player playStreamingAudioChunk:pcm24kData];
+}
+
+- (void)stopPlaybackImmediately {
+  _isStreamingPlaybackActive = NO;
+  [_player stopPlaybackImmediately];
+  if (!_isRecording && !_isStarting && _audioEngine.isRunning) {
+    [_audioEngine stop];
+  }
+}
+
+- (void)playTestTone {
+  for (size_t chunkIndex = 0; chunkIndex < kTestToneTotalChunks; ++chunkIndex) {
+    std::vector<int16_t> samples(kTestToneChunkSampleCount);
+    for (size_t i = 0; i < kTestToneChunkSampleCount; ++i) {
+      size_t globalSampleIndex = chunkIndex * kTestToneChunkSampleCount + i;
+      double t = static_cast<double>(globalSampleIndex) / kTestToneSampleRate;
+      double sineValue = std::sin(2.0 * M_PI * kTestToneFrequency * t);
+      samples[i] = static_cast<int16_t>(sineValue * kTestToneAmplitude);
+    }
+    NSData* chunkData = [NSData dataWithBytes:samples.data()
+                                       length:samples.size() * sizeof(int16_t)];
+    [self playStreamingAudioChunk:chunkData];
+  }
+}
+
+- (void)stopTestTone {
+  [self stopPlaybackImmediately];
+}
+
 - (void)setIsRecordingForTesting:(BOOL)isRecording {
   _isRecording = isRecording;
 }
 
+- (void)setIsAudioEngineRunningForTesting:(BOOL)isRunning {
+  _isAudioEngineRunningForTesting = isRunning;
+}
+
 - (void)disconnect {
   _isStarting = NO;
+  _isStreamingPlaybackActive = NO;
   [self stopRecording];
+  [self stopPlaybackImmediately];
+  if (_audioEngine.isRunning) {
+    [_audioEngine stop];
+  }
   _recorder.delegate = nil;
   [_recorder reset];
+  _player.delegate = nil;
+  [_player detachFromAudioEngine:_audioEngine];
+  [_player reset];
   [self restoreAudioSessionCategory];
 }
 
 #pragma mark - TTCAudioRecorderDelegate
 
 - (void)audioRecorder:(TTCAudioRecorder*)recorder
-    didUpdateInputEnergy:(float)rms {
+    didUpdateInputEnergy:(float)energy {
   if ([self.delegate
           respondsToSelector:@selector(audioEngine:didUpdateInputEnergy:)]) {
-    [self.delegate audioEngine:self didUpdateInputEnergy:rms];
+    [self.delegate audioEngine:self didUpdateInputEnergy:energy];
+  }
+}
+
+- (void)audioRecorder:(TTCAudioRecorder*)recorder
+     didCaptureBuffer:(AVAudioPCMBuffer*)buffer {
+  if (_loopbackEnabled && !_isStreamingPlaybackActive &&
+      buffer.frameLength > 0) {
+    [_player playPCMBuffer:buffer];
+  }
+}
+
+#pragma mark - TTCAudioPlayerDelegate
+
+- (void)audioPlayerDidStartPlayback:(TTCAudioPlayer*)player {
+  if ([self.delegate
+          respondsToSelector:@selector(audioEngineDidStartPlayback:)]) {
+    [self.delegate audioEngineDidStartPlayback:self];
+  }
+}
+
+- (void)audioPlayerDidStopPlayback:(TTCAudioPlayer*)player {
+  _isStreamingPlaybackActive = NO;
+  if (!_isRecording && !_isStarting && _audioEngine.isRunning) {
+    [_audioEngine stop];
+  }
+  if ([self.delegate
+          respondsToSelector:@selector(audioEngineDidStopPlayback:)]) {
+    [self.delegate audioEngineDidStopPlayback:self];
+  }
+}
+
+- (void)audioPlayer:(TTCAudioPlayer*)player didEncounterError:(NSError*)error {
+  if ([self.delegate
+          respondsToSelector:@selector(audioEngine:didEncounterError:)]) {
+    [self.delegate audioEngine:self didEncounterError:error];
   }
 }
 
@@ -192,6 +337,9 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
 // Configures the AVAudioSession for simultaneous recording and playback,
 // defaulting to speaker and enabling Bluetooth routes. Returns an error if
 // configuration or session activation fails.
+// NOTE: When mic loopback is enabled on a physical device with the built-in
+// speaker, acoustic coupling between speaker and microphone can cause feedback.
+// Headphones or AirPods are strongly recommended for local loopback testing.
 - (NSError*)configureAudioSession {
   NSError* error = nil;
   AVAudioSession* session = [AVAudioSession sharedInstance];
@@ -214,6 +362,29 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
   }
 
   return error;
+}
+
+// Ensures the audio session is configured and the AVAudioEngine graph is
+// running before scheduling playback buffers.
+- (BOOL)ensureEngineRunningWithError:(NSError**)error {
+  if (_audioEngine.isRunning || _isAudioEngineRunningForTesting) {
+    return YES;
+  }
+
+  if (!_previousCategory) {
+    _previousCategory = [AVAudioSession sharedInstance].category;
+  }
+
+  NSError* sessionError = [self configureAudioSession];
+  if (sessionError) {
+    if (error) {
+      *error = sessionError;
+    }
+    return NO;
+  }
+
+  [_audioEngine prepare];
+  return [_audioEngine startAndReturnError:error];
 }
 
 // Handles completion of background audio session configuration on the main
@@ -269,17 +440,22 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
     return;
   }
 
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(^{
-        AVAudioSession* session = [AVAudioSession sharedInstance];
-        NSError* error = nil;
-        [session setCategory:previousCategory error:&error];
-        [session
-              setActive:NO
-            withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
-                  error:&error];
-      }));
+  auto restoreBlock = ^{
+    AVAudioSession* session = [AVAudioSession sharedInstance];
+    NSError* error = nil;
+    [session setCategory:previousCategory error:&error];
+    [session setActive:NO
+           withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
+                 error:&error];
+  };
+
+  if (base::ThreadPoolInstance::Get()) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(restoreBlock));
+  } else {
+    restoreBlock();
+  }
 }
 
 // Verifies the hardware input node is accessible, installs the audio recorder

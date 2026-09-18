@@ -43,11 +43,16 @@ class TTCMediatorTest : public PlatformTest {
   id mock_consumer_ = nil;
 };
 
-// Tests that attaching a consumer immediately triggers initial state
-// hydration.
+// Tests that attaching a consumer pushes initial session state, 0.0 RMS energy,
+// and initial loopback/playback states.
 TEST_F(TTCMediatorTest, TestSetConsumerPushesInitialState) {
+  OCMStub([mock_audio_engine_ loopbackEnabled]).andReturn(NO);
+  OCMStub([mock_audio_engine_ isPlaying]).andReturn(NO);
+
   OCMExpect([mock_consumer_ setSessionState:TTCSessionState::kIdle]);
   OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
+  OCMExpect([mock_consumer_ setLoopbackEnabled:NO]);
+  OCMExpect([mock_consumer_ setTestAudioPlaying:NO]);
 
   mediator_.consumer = mock_consumer_;
 
@@ -136,6 +141,72 @@ TEST_F(TTCMediatorTest, TestStopSessionUpdatesState) {
   EXPECT_OCMOCK_VERIFY(mock_audio_engine_);
 }
 
+// Tests that setting loopback enabled updates the audio engine and consumer.
+TEST_F(TTCMediatorTest, TestSetLoopbackEnabledUpdatesEngineAndConsumer) {
+  mediator_.consumer = mock_consumer_;
+
+  OCMExpect([mock_audio_engine_ setLoopbackEnabled:YES]);
+  OCMExpect([mock_consumer_ setLoopbackEnabled:YES]);
+
+  [mediator_ setLoopbackEnabled:YES];
+
+  EXPECT_OCMOCK_VERIFY(mock_audio_engine_);
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that playTestAudio triggers audio engine test tone generation.
+TEST_F(TTCMediatorTest, TestPlayTestAudioCallsEngine) {
+  mediator_.consumer = mock_consumer_;
+  OCMExpect([mock_consumer_ setTestAudioPlaying:YES]);
+  OCMExpect([mock_audio_engine_ playTestTone]);
+
+  [mediator_ playTestAudio];
+
+  EXPECT_OCMOCK_VERIFY(mock_audio_engine_);
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that stopTestAudio stops audio engine test tone generation.
+TEST_F(TTCMediatorTest, TestStopTestAudioCallsEngine) {
+  mediator_.consumer = mock_consumer_;
+  OCMExpect([mock_consumer_ setTestAudioPlaying:NO]);
+  OCMExpect([mock_audio_engine_ stopTestTone]);
+
+  [mediator_ stopTestAudio];
+
+  EXPECT_OCMOCK_VERIFY(mock_audio_engine_);
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that playback lifecycle events from audio engine update the consumer
+// when test audio is active.
+TEST_F(TTCMediatorTest,
+       TestAudioEnginePlaybackLifecycleUpdatesConsumerWhenActive) {
+  mediator_.consumer = mock_consumer_;
+
+  OCMExpect([mock_consumer_ setTestAudioPlaying:YES]);
+  [mediator_ playTestAudio];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  OCMExpect([mock_consumer_ setTestAudioPlaying:NO]);
+  [mediator_ audioEngineDidStopPlayback:mock_audio_engine_];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that playback events from audio engine are ignored by test audio UI
+// when test audio is not active.
+TEST_F(TTCMediatorTest, TestAudioEnginePlaybackIgnoredWhenTestAudioInactive) {
+  mediator_.consumer = mock_consumer_;
+
+  [[mock_consumer_ reject] setTestAudioPlaying:YES];
+  [[mock_consumer_ reject] setTestAudioPlaying:NO];
+
+  [mediator_ audioEngineDidStartPlayback:mock_audio_engine_];
+  [mediator_ audioEngineDidStopPlayback:mock_audio_engine_];
+
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
 // Tests that audio engine energy updates are forwarded to the consumer when
 // listening.
 TEST_F(TTCMediatorTest, TestAudioEngineDelegateUpdatesEnergy) {
@@ -215,12 +286,17 @@ TEST_F(TTCMediatorTest, TestAudioEngineDelegateEncounterError) {
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
-// Tests that viewWillAppear rehydrates consumer state.
+// Tests that calling viewWillAppear triggers complete hydration of consumer.
 TEST_F(TTCMediatorTest, TestViewWillAppearHydratesConsumer) {
+  OCMStub([mock_audio_engine_ loopbackEnabled]).andReturn(YES);
+  OCMStub([mock_audio_engine_ isPlaying]).andReturn(NO);
+
   mediator_.consumer = mock_consumer_;
 
   OCMExpect([mock_consumer_ setSessionState:TTCSessionState::kIdle]);
   OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
+  OCMExpect([mock_consumer_ setLoopbackEnabled:YES]);
+  OCMExpect([mock_consumer_ setTestAudioPlaying:NO]);
 
   [mediator_ viewWillAppear];
 

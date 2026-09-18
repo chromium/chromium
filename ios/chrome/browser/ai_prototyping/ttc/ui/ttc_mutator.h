@@ -17,6 +17,15 @@
 // Gracefully terminates the active voice session.
 - (void)stopSession;
 
+// Enables or disables local microphone loopback to the speaker.
+- (void)setLoopbackEnabled:(BOOL)enabled;
+
+// Plays a 440Hz test audio tone at 24kHz through the speaker.
+- (void)playTestAudio;
+
+// Stops test audio playback.
+- (void)stopTestAudio;
+
 // Notifies the mutator that the UI has appeared, triggering state hydration.
 - (void)viewWillAppear;
 

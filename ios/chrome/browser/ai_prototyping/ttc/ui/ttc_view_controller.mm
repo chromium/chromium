@@ -24,6 +24,10 @@ constexpr CGFloat kCardCornerRadius = 12.0;
 constexpr CGFloat kCardInternalPadding = 12.0;
 constexpr CGFloat kCardItemSpacing = 8.0;
 
+constexpr CGFloat kTestAudioButtonVerticalInset = 12.0;
+constexpr CGFloat kTestAudioButtonHorizontalInset = 16.0;
+constexpr CGFloat kMinButtonHeight = 44.0;
+
 // UI string constants.
 NSString* const kHeaderTitleText = @"TalkToChrome";
 NSString* const kStatusLabelIdleText = @"Tap to start conversation";
@@ -33,15 +37,25 @@ NSString* const kStatusLabelListeningText = @"Listening... Speak now";
 NSString* const kStatusLabelModelSpeakingText = @"Model speaking...";
 NSString* const kStatusLabelErrorText = @"Session error occurred";
 NSString* const kEnergyMeterLabelText = @"Microphone Input Level";
+NSString* const kDiagnosticsTitleText = @"Developer Diagnostics";
+NSString* const kLoopbackSwitchLabelText = @"Mic Loopback (Hear Yourself)";
+NSString* const kLoopbackDescriptionText =
+    @"Routes mic capture directly to speaker for local hardware testing.";
+NSString* const kPlayTestAudioButtonText = @"Play Test Audio (24kHz)";
+NSString* const kStopTestAudioButtonText = @"Stop Test Audio";
 
 }  // namespace
 
 @implementation TTCViewController {
   TTCSessionState _currentState;
+  BOOL _isTestAudioPlaying;
+  BOOL _isLoopbackEnabled;
 
   UIButton* _micButton;
   UILabel* _statusLabel;
   UIProgressView* _energyLevelMeter;
+  UISwitch* _loopbackSwitch;
+  UIButton* _testAudioButton;
 }
 
 @synthesize feature = _feature;
@@ -55,6 +69,8 @@ NSString* const kEnergyMeterLabelText = @"Microphone Input Level";
   if (self) {
     _feature = feature;
     _currentState = TTCSessionState::kIdle;
+    _isTestAudioPlaying = NO;
+    _isLoopbackEnabled = NO;
   }
   return self;
 }
@@ -128,9 +144,13 @@ NSString* const kEnergyMeterLabelText = @"Microphone Input Level";
   // Microphone Input Level Card.
   UIView* meterCard = [self createMeterCard];
 
+  // Developer Diagnostics Card.
+  UIView* diagnosticsCard = [self createDiagnosticsCard];
+
   // Main Vertical Content Stack.
-  UIStackView* mainStack = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ headerStack, micContainer, meterCard ]];
+  UIStackView* mainStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+    headerStack, micContainer, meterCard, diagnosticsCard
+  ]];
   mainStack.translatesAutoresizingMaskIntoConstraints = NO;
   mainStack.axis = UILayoutConstraintAxisVertical;
   mainStack.spacing = kContentStackSpacing;
@@ -169,8 +189,10 @@ NSString* const kEnergyMeterLabelText = @"Microphone Input Level";
     [_micButton.heightAnchor constraintEqualToConstant:kMicButtonSize],
   ]];
 
-  // Re-apply current session state.
+  // Re-apply hydrated session and diagnostic states.
   [self setSessionState:_currentState];
+  [self setLoopbackEnabled:_isLoopbackEnabled];
+  [self setTestAudioPlaying:_isTestAudioPlaying];
 }
 
 #pragma mark - AIPrototypingViewControllerProtocol
@@ -227,6 +249,32 @@ NSString* const kEnergyMeterLabelText = @"Microphone Input Level";
   [_energyLevelMeter setProgress:rms animated:YES];
 }
 
+- (void)setTestAudioPlaying:(BOOL)isPlaying {
+  _isTestAudioPlaying = isPlaying;
+  if (!_testAudioButton) {
+    return;
+  }
+  UIButtonConfiguration* config = _testAudioButton.configuration;
+  if (!config) {
+    return;
+  }
+  if (isPlaying) {
+    config.title = kStopTestAudioButtonText;
+    config.baseForegroundColor = [UIColor colorNamed:kRedColor];
+  } else {
+    config.title = kPlayTestAudioButtonText;
+    config.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+  }
+  _testAudioButton.configuration = config;
+}
+
+- (void)setLoopbackEnabled:(BOOL)enabled {
+  _isLoopbackEnabled = enabled;
+  if (_loopbackSwitch) {
+    _loopbackSwitch.on = enabled;
+  }
+}
+
 - (void)didEncounterError:(NSString*)errorMessage {
   _statusLabel.text = errorMessage ?: kStatusLabelErrorText;
   _statusLabel.textColor = [UIColor colorNamed:kRedColor];
@@ -242,6 +290,18 @@ NSString* const kEnergyMeterLabelText = @"Microphone Input Level";
   }
 
   [self.ttcMutator startSession];
+}
+
+- (void)loopbackSwitchChanged:(UISwitch*)sender {
+  [self.ttcMutator setLoopbackEnabled:sender.isOn];
+}
+
+- (void)testAudioButtonTapped:(UIButton*)sender {
+  if (_isTestAudioPlaying) {
+    [self.ttcMutator stopTestAudio];
+  } else {
+    [self.ttcMutator playTestAudio];
+  }
 }
 
 #pragma mark - Private UI Helpers
@@ -285,6 +345,95 @@ NSString* const kEnergyMeterLabelText = @"Microphone Input Level";
                                             constant:kCardInternalPadding],
     [cardStack.trailingAnchor constraintEqualToAnchor:cardView.trailingAnchor
                                              constant:-kCardInternalPadding],
+  ]];
+
+  return cardView;
+}
+
+// Creates a card showing developer diagnostic controls: loopback toggle and
+// test audio playback.
+- (UIView*)createDiagnosticsCard {
+  UIView* cardView = [[UIView alloc] init];
+  cardView.translatesAutoresizingMaskIntoConstraints = NO;
+  cardView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  cardView.layer.cornerRadius = kCardCornerRadius;
+  cardView.layer.masksToBounds = YES;
+
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
+  titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  titleLabel.text = kDiagnosticsTitleText;
+
+  UILabel* switchLabel = [[UILabel alloc] init];
+  switchLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  switchLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  switchLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  switchLabel.numberOfLines = 0;
+  switchLabel.text = kLoopbackSwitchLabelText;
+
+  _loopbackSwitch = [[UISwitch alloc] init];
+  _loopbackSwitch.translatesAutoresizingMaskIntoConstraints = NO;
+  _loopbackSwitch.accessibilityLabel = kLoopbackSwitchLabelText;
+  _loopbackSwitch.on = _isLoopbackEnabled;
+  [_loopbackSwitch addTarget:self
+                      action:@selector(loopbackSwitchChanged:)
+            forControlEvents:UIControlEventValueChanged];
+
+  UIStackView* switchRow = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ switchLabel, _loopbackSwitch ]];
+  switchRow.translatesAutoresizingMaskIntoConstraints = NO;
+  switchRow.axis = UILayoutConstraintAxisHorizontal;
+  switchRow.alignment = UIStackViewAlignmentCenter;
+  switchRow.distribution = UIStackViewDistributionEqualSpacing;
+
+  UILabel* descLabel = [[UILabel alloc] init];
+  descLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  descLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+  descLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  descLabel.numberOfLines = 0;
+  descLabel.text = kLoopbackDescriptionText;
+
+  _testAudioButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  _testAudioButton.translatesAutoresizingMaskIntoConstraints = NO;
+  UIButtonConfiguration* config =
+      [UIButtonConfiguration filledButtonConfiguration];
+  config.baseBackgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  config.baseForegroundColor = _isTestAudioPlaying
+                                   ? [UIColor colorNamed:kRedColor]
+                                   : [UIColor colorNamed:kBlueColor];
+  config.contentInsets = NSDirectionalEdgeInsetsMake(
+      kTestAudioButtonVerticalInset, kTestAudioButtonHorizontalInset,
+      kTestAudioButtonVerticalInset, kTestAudioButtonHorizontalInset);
+  config.title =
+      _isTestAudioPlaying ? kStopTestAudioButtonText : kPlayTestAudioButtonText;
+  _testAudioButton.configuration = config;
+  [_testAudioButton addTarget:self
+                       action:@selector(testAudioButtonTapped:)
+             forControlEvents:UIControlEventTouchUpInside];
+
+  UIStackView* cardStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+    titleLabel, switchRow, descLabel, _testAudioButton
+  ]];
+  cardStack.translatesAutoresizingMaskIntoConstraints = NO;
+  cardStack.axis = UILayoutConstraintAxisVertical;
+  cardStack.spacing = kCardItemSpacing;
+
+  [cardView addSubview:cardStack];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [cardStack.topAnchor constraintEqualToAnchor:cardView.topAnchor
+                                        constant:kCardInternalPadding],
+    [cardStack.bottomAnchor constraintEqualToAnchor:cardView.bottomAnchor
+                                           constant:-kCardInternalPadding],
+    [cardStack.leadingAnchor constraintEqualToAnchor:cardView.leadingAnchor
+                                            constant:kCardInternalPadding],
+    [cardStack.trailingAnchor constraintEqualToAnchor:cardView.trailingAnchor
+                                             constant:-kCardInternalPadding],
+
+    [_testAudioButton.heightAnchor
+        constraintGreaterThanOrEqualToConstant:kMinButtonHeight],
   ]];
 
   return cardView;

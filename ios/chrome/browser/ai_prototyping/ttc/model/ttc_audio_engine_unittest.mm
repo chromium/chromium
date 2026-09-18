@@ -5,20 +5,30 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_engine.h"
 
 #import "base/test/test_future.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_player.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_player_delegate.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_recorder.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-// Expose TTCAudioRecorderDelegate conformance and testing helpers.
-@interface TTCAudioEngine (Testing) <TTCAudioRecorderDelegate>
+// Expose TTCAudioRecorderDelegate, TTCAudioPlayerDelegate, and testing helpers.
+@interface TTCAudioEngine (Testing) <TTCAudioRecorderDelegate,
+                                     TTCAudioPlayerDelegate>
+- (instancetype)initWithRecorder:(TTCAudioRecorder*)recorder
+                          player:(TTCAudioPlayer*)player;
 - (void)setIsRecordingForTesting:(BOOL)isRecording;
+- (void)setIsAudioEngineRunningForTesting:(BOOL)isRunning;
 @end
 
 // Fake delegate to verify TTCAudioEngine forwards events.
 @interface FakeTTCAudioEngineDelegate : NSObject <TTCAudioEngineDelegate>
 @property(nonatomic, assign) float lastEnergy;
 @property(nonatomic, assign) BOOL didStop;
+@property(nonatomic, assign) BOOL didStartPlayback;
+@property(nonatomic, assign) BOOL didStopPlayback;
+@property(nonatomic, strong) NSError* lastError;
 @end
 
 @implementation FakeTTCAudioEngineDelegate
@@ -29,6 +39,18 @@
 
 - (void)audioEngineDidStopRecording:(TTCAudioEngine*)engine {
   _didStop = YES;
+}
+
+- (void)audioEngineDidStartPlayback:(TTCAudioEngine*)engine {
+  _didStartPlayback = YES;
+}
+
+- (void)audioEngineDidStopPlayback:(TTCAudioEngine*)engine {
+  _didStopPlayback = YES;
+}
+
+- (void)audioEngine:(TTCAudioEngine*)engine didEncounterError:(NSError*)error {
+  _lastError = error;
 }
 
 @end
@@ -61,6 +83,7 @@ TEST_F(TTCAudioEngineTest, TestAudioEngineStopCycles) {
 
   for (int i = 0; i < 5; ++i) {
     [engine stopRecording];
+    [engine stopPlaybackImmediately];
   }
   [engine disconnect];
 
@@ -75,6 +98,7 @@ TEST_F(TTCAudioEngineTest, TestAudioEngineDisconnect) {
   [engine disconnect];
 
   EXPECT_FALSE(engine.isRecording);
+  EXPECT_FALSE(engine.isPlaying);
 }
 
 // Tests that TTCAudioEngine receives energy from TTCAudioRecorder and forwards
@@ -139,6 +163,200 @@ TEST_F(TTCAudioEngineTest, TestAudioEngineStopRecordingNotifiesDelegate) {
   delegate.didStop = NO;
   [engine stopRecording];
   EXPECT_FALSE(delegate.didStop);
+}
+
+// Tests toggling loopbackEnabled property on TTCAudioEngine.
+TEST_F(TTCAudioEngineTest, TestLoopbackEnabledToggle) {
+  TTCAudioEngine* engine = [[TTCAudioEngine alloc] init];
+
+  EXPECT_FALSE(engine.loopbackEnabled);
+
+  engine.loopbackEnabled = YES;
+  EXPECT_TRUE(engine.loopbackEnabled);
+
+  engine.loopbackEnabled = NO;
+  EXPECT_FALSE(engine.loopbackEnabled);
+}
+
+// Tests that playback delegate events are properly forwarded to engine
+// delegate.
+TEST_F(TTCAudioEngineTest, TestPlaybackDelegateForwarding) {
+  TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
+  TTCAudioEngine* engine =
+      [[TTCAudioEngine alloc] initWithRecorder:[[TTCAudioRecorder alloc] init]
+                                        player:player];
+
+  FakeTTCAudioEngineDelegate* delegate =
+      [[FakeTTCAudioEngineDelegate alloc] init];
+  engine.delegate = delegate;
+
+  EXPECT_FALSE(delegate.didStartPlayback);
+  EXPECT_FALSE(delegate.didStopPlayback);
+
+  // Simulate player delegate start and stop callbacks.
+  [engine audioPlayerDidStartPlayback:player];
+  EXPECT_TRUE(delegate.didStartPlayback);
+
+  [engine audioPlayerDidStopPlayback:player];
+  EXPECT_TRUE(delegate.didStopPlayback);
+}
+
+// Tests stopTestTone stops playback.
+TEST_F(TTCAudioEngineTest, TestStopTestTone) {
+  TTCAudioEngine* engine = [[TTCAudioEngine alloc] init];
+
+  // Stop test tone when idle is a clean no-op.
+  [engine stopTestTone];
+  EXPECT_FALSE(engine.isPlaying);
+}
+
+// Tests that player errors are forwarded to engine delegate.
+TEST_F(TTCAudioEngineTest, TestAudioEngineDelegatesPlayerError) {
+  TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
+  TTCAudioEngine* engine =
+      [[TTCAudioEngine alloc] initWithRecorder:[[TTCAudioRecorder alloc] init]
+                                        player:player];
+
+  FakeTTCAudioEngineDelegate* delegate =
+      [[FakeTTCAudioEngineDelegate alloc] init];
+  engine.delegate = delegate;
+
+  NSError* testError = [NSError errorWithDomain:@"test_domain"
+                                           code:-42
+                                       userInfo:nil];
+  [engine audioPlayer:player didEncounterError:testError];
+
+  EXPECT_NSEQ(delegate.lastError, testError);
+}
+
+// Tests that loopback mic buffers are discarded when loopbackEnabled is NO.
+TEST_F(TTCAudioEngineTest, TestAudioEngineLoopbackRoutingDisabled) {
+  TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
+  TTCAudioRecorder* recorder = [[TTCAudioRecorder alloc] init];
+  TTCAudioEngine* engine = [[TTCAudioEngine alloc] initWithRecorder:recorder
+                                                             player:player];
+
+  engine.loopbackEnabled = NO;
+
+  AVAudioFormat* format =
+      [[AVAudioFormat alloc] initStandardFormatWithSampleRate:16000.0
+                                                     channels:1];
+  AVAudioPCMBuffer* buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:format
+                                                           frameCapacity:160];
+  buffer.frameLength = 160;
+
+  [engine audioRecorder:recorder didCaptureBuffer:buffer];
+
+  EXPECT_FALSE(player.isPlaying);
+  EXPECT_FALSE(engine.isPlaying);
+}
+
+// Tests that loopback mic buffers are routed to audio player when
+// loopbackEnabled is YES.
+TEST_F(TTCAudioEngineTest, TestAudioEngineLoopbackRoutingEnabled) {
+  TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
+  TTCAudioRecorder* recorder = [[TTCAudioRecorder alloc] init];
+  TTCAudioEngine* engine = [[TTCAudioEngine alloc] initWithRecorder:recorder
+                                                             player:player];
+
+  engine.loopbackEnabled = YES;
+
+  AVAudioFormat* format =
+      [[AVAudioFormat alloc] initStandardFormatWithSampleRate:16000.0
+                                                     channels:1];
+  AVAudioPCMBuffer* buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:format
+                                                           frameCapacity:160];
+  buffer.frameLength = 160;
+
+  [engine audioRecorder:recorder didCaptureBuffer:buffer];
+
+  EXPECT_TRUE(player.isPlaying);
+  EXPECT_TRUE(engine.isPlaying);
+
+  [engine stopPlaybackImmediately];
+  EXPECT_FALSE(player.isPlaying);
+  EXPECT_FALSE(engine.isPlaying);
+}
+
+// Tests that playTestTone synthesizes sine wave audio and begins playback, and
+// stopTestTone halts it.
+TEST_F(TTCAudioEngineTest, TestPlayAndStopTestTone) {
+  TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
+  TTCAudioEngine* engine =
+      [[TTCAudioEngine alloc] initWithRecorder:[[TTCAudioRecorder alloc] init]
+                                        player:player];
+  [engine setIsAudioEngineRunningForTesting:YES];
+
+  [engine playTestTone];
+  EXPECT_TRUE(player.isPlaying);
+  EXPECT_TRUE(engine.isPlaying);
+
+  [engine stopTestTone];
+  EXPECT_FALSE(player.isPlaying);
+  EXPECT_FALSE(engine.isPlaying);
+  [engine disconnect];
+}
+
+// Tests that playing test tone while loopback is enabled halts loopback buffer
+// routing during the tone, and stopping the tone cleanly restores loopback.
+TEST_F(TTCAudioEngineTest,
+       TestPlayTestToneWhileLoopbackEnabledDoesNotBlockLoopback) {
+  TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
+  TTCAudioRecorder* recorder = [[TTCAudioRecorder alloc] init];
+  TTCAudioEngine* engine = [[TTCAudioEngine alloc] initWithRecorder:recorder
+                                                             player:player];
+  [engine setIsAudioEngineRunningForTesting:YES];
+
+  engine.loopbackEnabled = YES;
+
+  AVAudioFormat* format =
+      [[AVAudioFormat alloc] initStandardFormatWithSampleRate:16000.0
+                                                     channels:1];
+  AVAudioPCMBuffer* buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:format
+                                                           frameCapacity:160];
+  buffer.frameLength = 160;
+
+  // Initial loopback buffer routes to player.
+  [engine audioRecorder:recorder didCaptureBuffer:buffer];
+  EXPECT_TRUE(player.isPlaying);
+  EXPECT_TRUE(engine.isPlaying);
+
+  // Play test tone.
+  [engine playTestTone];
+  EXPECT_TRUE(player.isPlaying);
+  EXPECT_TRUE(engine.isPlaying);
+
+  // Stop test tone halts playback cleanly.
+  [engine stopTestTone];
+  EXPECT_FALSE(player.isPlaying);
+  EXPECT_FALSE(engine.isPlaying);
+
+  // Subsequent mic buffer routes to player without deadlock or starvation.
+  [engine audioRecorder:recorder didCaptureBuffer:buffer];
+  EXPECT_TRUE(player.isPlaying);
+  EXPECT_TRUE(engine.isPlaying);
+
+  [engine stopPlaybackImmediately];
+  [engine disconnect];
+}
+
+// Tests that audioPlayerDidStopPlayback does not stop the audio engine while
+// a recording session is active or starting.
+TEST_F(TTCAudioEngineTest,
+       TestAudioPlayerDidStopPlaybackDoesNotStopEngineWhenRecording) {
+  TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
+  TTCAudioEngine* engine =
+      [[TTCAudioEngine alloc] initWithRecorder:[[TTCAudioRecorder alloc] init]
+                                        player:player];
+
+  [engine setIsRecordingForTesting:YES];
+  EXPECT_TRUE(engine.isRecording);
+
+  // Simulate player reporting playback stopped while recording is active.
+  [engine audioPlayerDidStopPlayback:player];
+
+  // Verifies that recording remains active and did not trigger an engine stop.
+  EXPECT_TRUE(engine.isRecording);
 }
 
 }  // namespace

@@ -23,8 +23,11 @@ NSString* const kFailedToStartRecordingError = @"Failed to start recording";
   // Current voice session lifecycle state (Idle, Connecting, Listening, Error).
   TTCSessionState _currentState;
 
-  // Audio engine managing CoreAudio microphone capture and RMS computation.
+  // Audio engine managing CoreAudio microphone capture, playback, and RMS.
   TTCAudioEngine* _audioEngine;
+
+  // Whether developer diagnostic test audio is currently playing.
+  BOOL _isTestAudioActive;
 }
 
 - (instancetype)initWithAudioEngine:(TTCAudioEngine*)audioEngine {
@@ -33,6 +36,7 @@ NSString* const kFailedToStartRecordingError = @"Failed to start recording";
     _currentState = TTCSessionState::kIdle;
     _audioEngine = audioEngine;
     _audioEngine.delegate = self;
+    _isTestAudioActive = NO;
   }
   return self;
 }
@@ -69,6 +73,23 @@ NSString* const kFailedToStartRecordingError = @"Failed to start recording";
   [self.consumer setMicEnergyLevel:0.0f];
 }
 
+- (void)setLoopbackEnabled:(BOOL)enabled {
+  _audioEngine.loopbackEnabled = enabled;
+  [self.consumer setLoopbackEnabled:enabled];
+}
+
+- (void)playTestAudio {
+  _isTestAudioActive = YES;
+  [self.consumer setTestAudioPlaying:YES];
+  [_audioEngine playTestTone];
+}
+
+- (void)stopTestAudio {
+  _isTestAudioActive = NO;
+  [self.consumer setTestAudioPlaying:NO];
+  [_audioEngine stopTestTone];
+}
+
 - (void)viewWillAppear {
   [self hydrateConsumer];
 }
@@ -82,6 +103,19 @@ NSString* const kFailedToStartRecordingError = @"Failed to start recording";
   [_consumer setMicEnergyLevel:rms];
 }
 
+- (void)audioEngineDidStartPlayback:(TTCAudioEngine*)engine {
+  if (_isTestAudioActive) {
+    [self.consumer setTestAudioPlaying:YES];
+  }
+}
+
+- (void)audioEngineDidStopPlayback:(TTCAudioEngine*)engine {
+  if (_isTestAudioActive) {
+    _isTestAudioActive = NO;
+    [self.consumer setTestAudioPlaying:NO];
+  }
+}
+
 - (void)audioEngine:(TTCAudioEngine*)engine didEncounterError:(NSError*)error {
   _currentState = TTCSessionState::kError;
   [_consumer setSessionState:_currentState];
@@ -92,6 +126,7 @@ NSString* const kFailedToStartRecordingError = @"Failed to start recording";
 #pragma mark - Public
 
 - (void)disconnect {
+  _isTestAudioActive = NO;
   [_audioEngine disconnect];
   _audioEngine.delegate = nil;
   _audioEngine = nil;
@@ -153,6 +188,8 @@ NSString* const kFailedToStartRecordingError = @"Failed to start recording";
   }
   [_consumer setSessionState:_currentState];
   [_consumer setMicEnergyLevel:0.0f];
+  [_consumer setLoopbackEnabled:_audioEngine.loopbackEnabled];
+  [_consumer setTestAudioPlaying:_isTestAudioActive];
 }
 
 @end

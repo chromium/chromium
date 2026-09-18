@@ -33,6 +33,12 @@ enum class TTCSessionState {
 // Updates the microphone input energy level in RMS (normalized 0.0 - 1.0).
 - (void)setMicEnergyLevel:(float)rms;
 
+// Updates whether the test audio tone is currently playing through the speaker.
+- (void)setTestAudioPlaying:(BOOL)isPlaying;
+
+// Updates whether microphone loopback mode is enabled.
+- (void)setLoopbackEnabled:(BOOL)enabled;
+
 // Displays an error message in the status label.
 - (void)didEncounterError:(NSString*)errorMessage;
 
