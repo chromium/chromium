@@ -1036,6 +1036,7 @@ if (!is_android) {
     deps = [
       "//chrome/test:test_support",
       "//ui/native_theme:test_support",
+      "//ui/views/controls/webview",
     ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
