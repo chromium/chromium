@@ -70,6 +70,25 @@ public final class TabLaunchTypeUtils {
     }
 
     /**
+     * Returns true if the given launch type explicitly specifies that the tab should belong to a
+     * tab group.
+     *
+     * @param type The launch type to inspect.
+     * @return True if the tab should be launched into a tab group.
+     */
+    public static boolean shouldLaunchAsGroupedTab(@TabLaunchType int type) {
+        assertValidLaunchType(type);
+        return switch (type) {
+            case TabLaunchType.FROM_TAB_GROUP_UI,
+                    TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP,
+                    TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                    TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP ->
+                    true;
+            default -> false;
+        };
+    }
+
+    /**
      * Returns true if the launch type requires calculating adjacency relative to an opener or
      * parent tab rather than appending to the end of the tab model.
      *

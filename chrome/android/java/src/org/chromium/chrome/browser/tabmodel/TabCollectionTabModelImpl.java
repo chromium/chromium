@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabLaunchTypeUtils;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
@@ -2098,10 +2099,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                         && parentTab.getTabGroupId() != null;
 
         return mModelDelegate.isTabModelRestored()
-                && (tabLaunchType == TabLaunchType.FROM_TAB_GROUP_UI
-                        || tabLaunchType == TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP
-                        || tabLaunchType == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                        || tabLaunchType == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP
+                && (TabLaunchTypeUtils.shouldLaunchAsGroupedTab(tabLaunchType)
                         || shouldGroupWithParentForTabListInterface);
     }
 

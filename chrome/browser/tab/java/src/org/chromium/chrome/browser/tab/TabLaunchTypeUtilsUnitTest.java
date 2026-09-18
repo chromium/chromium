@@ -35,6 +35,13 @@ public class TabLaunchTypeUtilsUnitTest {
                     TabLaunchType.FROM_BROWSER_ACTIONS,
                     TabLaunchType.FROM_RESTORE_TABS_UI);
 
+    private static final Set<Integer> GROUPED_TYPES =
+            Set.of(
+                    TabLaunchType.FROM_TAB_GROUP_UI,
+                    TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP,
+                    TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                    TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP);
+
     private static final Set<Integer> ADJACENT_TYPES =
             Set.of(
                     TabLaunchType.FROM_LINK,
@@ -63,6 +70,10 @@ public class TabLaunchTypeUtilsUnitTest {
                     RESTORE_TYPES.contains(type),
                     TabLaunchTypeUtils.isRestoreLaunch(type));
             assertEquals(
+                    "shouldLaunchAsGroupedTab mismatch for type " + type,
+                    GROUPED_TYPES.contains(type),
+                    TabLaunchTypeUtils.shouldLaunchAsGroupedTab(type));
+            assertEquals(
                     "shouldOpenAdjacent mismatch for type " + type,
                     ADJACENT_TYPES.contains(type),
                     TabLaunchTypeUtils.shouldOpenAdjacent(type));
@@ -82,6 +93,10 @@ public class TabLaunchTypeUtilsUnitTest {
                     "isRestoreLaunch should assert for invalid type " + type,
                     AssertionError.class,
                     () -> TabLaunchTypeUtils.isRestoreLaunch(type));
+            assertThrows(
+                    "shouldLaunchAsGroupedTab should assert for invalid type " + type,
+                    AssertionError.class,
+                    () -> TabLaunchTypeUtils.shouldLaunchAsGroupedTab(type));
             assertThrows(
                     "shouldOpenAdjacent should assert for invalid type " + type,
                     AssertionError.class,
