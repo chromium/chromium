@@ -472,11 +472,11 @@ new command, add it to `_processCommand`, write and call the module processor fo
    ```sh
    ./tools/append_notices.py
    ```
-4. Upload the filtered `node_modules` to Google Cloud Storage and update `DEPS`:
+4. Upload the filtered `node_modules` to Google Cloud Storage and update `DEPS` files (`DEPS` and Chromium's root `../../DEPS`):
    ```sh
    ./tools/update_node_modules.py --force
    ```
-5. Upload a CL with `package.json`, `package-lock.json`, `DEPS`, and any updated `README.chromium` / `licenses/` via `git cl upload` and submit for review.
+5. Upload a CL with `package.json`, `package-lock.json`, `DEPS`, `../../DEPS`, and any updated `README.chromium` / `licenses/` via `git cl upload` and submit for review.
 
 ### Publish new `npm` release
 
