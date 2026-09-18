@@ -1427,12 +1427,12 @@
     {
         "name": "play-services-base",
         "group": "com.google.android.gms",
-        "version": "18.10.1"
+        "version": "18.11.0"
     },
     {
         "name": "play-services-basement",
         "group": "com.google.android.gms",
-        "version": "18.11.0"
+        "version": "18.12.0"
     },
     {
         "name": "play-services-cast",
@@ -1707,7 +1707,7 @@
     {
         "name": "protobuf-javalite",
         "group": "com.google.protobuf",
-        "version": "4.36.1"
+        "version": "4.36.2"
     },
     {
         "name": "protobuf-lite",
