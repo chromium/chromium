@@ -95,6 +95,7 @@ class AndroidDriverFactory(DriverFactory):
     options.enable_mobile(
       android_package=self.package_name,
       android_activity=self.activity_name,
+      device_serial=self.device.serial,
     )
     # We clean up the application dir and place several files there, so
     # we need to keep the data when running webdriver.

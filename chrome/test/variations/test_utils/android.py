@@ -14,6 +14,7 @@ import logging
 from typing import List, Optional
 
 from chrome.test.variations.test_utils import SRC_DIR
+from chrome.test.variations.test_utils.helper import find_gsutil_cmd
 
 # The root for the module pylib/android is under build/android.
 sys.path.append(os.path.join(SRC_DIR, 'build', 'android'))
@@ -45,19 +46,28 @@ def _is_require_signed(channel: str) -> bool:
   return channel == 'stable'
 
 
-def install_chrome(channel: str, device: device_utils.DeviceUtils) -> str:
-  """Installs Chrome to the device and returns the package name."""
+def _installer_args(product: str,
+                    channel: str,
+                    device: device_utils.DeviceUtils) -> List[str]:
+  """Returns the command to install `product` from the release bucket."""
   args = [
-    _INSTALLER_SCRIPT_PY, f'--product=chrome',
-    # TODO(b/563029158): Revert once clank/bin/install_chrome.py defaults to
-    # Standalone Chrome for M154+.
-    '--package=Chrome',
+    _INSTALLER_SCRIPT_PY, f'--product={product}',
     f'--channel={channel}', f'--serial={device.serial}',
     f'--adb={adb_wrapper.AdbWrapper.GetAdbPath()}',
+    f'--gsutil={find_gsutil_cmd()}',
   ]
   args.append('--signed' if _is_require_signed(channel) else '--unsigned')
+  return args
+
+
+def install_chrome(channel: str, device: device_utils.DeviceUtils) -> str:
+  """Installs Chrome to the device and returns the package name."""
+  args = _installer_args('chrome', channel, device)
+  # TODO(b/563029158): Revert once clank/bin/install_chrome.py defaults to
+  # Standalone Chrome for M154+.
+  args.append('--package=Chrome')
   try:
-    subprocess.check_output(args=args)
+    subprocess.check_output(args=args, stderr=subprocess.STDOUT)
   except subprocess.CalledProcessError as e:
     logging.error('Subprocess error caught %s', e.output.decode())
     raise RuntimeError('Chrome installation failed.')
@@ -69,14 +79,9 @@ def install_webview(
   device: device_utils.DeviceUtils
   ) -> packaging.version.Version:
   """Installs Webview to the device and returns the installed version."""
-  args = [
-    _INSTALLER_SCRIPT_PY, f'--product=webview',
-    f'--channel={channel}', f'--serial={device.serial}',
-    f'--adb={adb_wrapper.AdbWrapper.GetAdbPath()}',
-  ]
-  args.append('--signed' if _is_require_signed(channel) else '--unsigned')
+  args = _installer_args('webview', channel, device)
   try:
-    subprocess.check_output(args=args)
+    subprocess.check_output(args=args, stderr=subprocess.STDOUT)
   except subprocess.CalledProcessError as e:
     logging.error('Subprocess error caught %s', e.output.decode())
     raise RuntimeError('Webview installation failed.')

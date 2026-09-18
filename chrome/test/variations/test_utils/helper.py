@@ -4,12 +4,35 @@
 
 import functools
 import logging
+import os
 import platform
+import shutil
 import subprocess
 import threading
 
+from chrome.test.variations.test_utils.defines import SRC_DIR
 import packaging
 import packaging.version
+
+GSUTIL_PATH = os.path.join(
+    SRC_DIR, 'third_party', 'catapult', 'third_party', 'gsutil', 'gsutil')
+
+
+@functools.lru_cache
+def find_gsutil_cmd() -> str:
+  """Returns the gsutil command to use to access GCS buckets.
+
+  'gsutil.py' (from depot_tools) is preferred as it authenticates via
+  luci-auth. The 'gsutil' bundled in third_party/catapult is only used as a
+  last resort: plain 'gsutil' is deprecated and falls back to anonymous
+  access, which cannot read the internal buckets.
+  """
+  if gsutil := (shutil.which('gsutil.py') or shutil.which('gsutil')):
+    return gsutil
+  if os.path.exists(GSUTIL_PATH):
+    return GSUTIL_PATH
+  raise RuntimeError("Please specify script path for gsutil or run "
+                     "'sudo apt install google-cloud-sdk' and try again.")
 
 
 def check_chrome_version(downloaded_chrome: str) -> packaging.version.Version:

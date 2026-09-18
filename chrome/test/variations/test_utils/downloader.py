@@ -7,7 +7,6 @@ download_chrome_{platform}(version) returns a folder that contains Chrome
 binary and chromedriver so it is ready to run a webdriver test.
 """
 
-import functools
 import json
 import os
 import shutil
@@ -20,27 +19,15 @@ import packaging
 from typing import List, Optional
 from urllib.request import urlopen
 
-GSUTIL_PATH = os.path.join(
-    SRC_DIR, 'third_party', 'catapult', 'third_party', 'gsutil', 'gsutil')
-
 CHROME_DIR = os.path.join(SRC_DIR, "_chrome")
 
-
-@functools.lru_cache
-def _find_gsutil_cmd() -> str:
-  if gsutil := (shutil.which('gsutil.py') or shutil.which('gsutil')):
-    return gsutil
-  if os.path.exists(GSUTIL_PATH):
-    return GSUTIL_PATH
-  raise RuntimeError("Please specify script path for gsutil or run "
-                     "'sudo apt install google-cloud-sdk' and try again.")
 
 def _download_files_from_gcs(version: str, files: List[str]) -> str:
   downloaded_dir = os.path.join(CHROME_DIR, version)
   os.makedirs(downloaded_dir, exist_ok=True)
 
   # TODO: we can compare the local md5 if existed to avoid repetitive downloads
-  gs_cmd = [_find_gsutil_cmd(), "cp"]
+  gs_cmd = [helper.find_gsutil_cmd(), "cp"]
   gs_cmd.extend([f'gs://chrome-unsigned/desktop-5c0tCh/{version}/{file}'
                  for file in files])
   gs_cmd.extend([downloaded_dir])
