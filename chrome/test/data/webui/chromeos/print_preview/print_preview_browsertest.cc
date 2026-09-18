@@ -1301,6 +1301,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest, OpenDialog) {
   RunTestCase("OpenDialog");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest, SeeMoreButton) {
+  RunTestCase("SeeMoreButton");
+}
+
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest,
                        UpdateRecentDestinations) {
   RunTestCase("UpdateRecentDestinations");

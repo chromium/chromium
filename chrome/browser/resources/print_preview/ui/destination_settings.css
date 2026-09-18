@@ -1,0 +1,19 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./print_preview_shared.css.js
+ * #include=print-preview-shared
+ * #css_wrapper_metadata_end */
+
+#seeMore {
+  --cr-button-border: none;
+  --cr-button-height: 34px;
+  display: flex;
+  margin-inline-end: var(--print-preview-sidebar-margin);
+  margin-inline-start: auto;
+  margin-top: 12px;
+  width: fit-content;
+}

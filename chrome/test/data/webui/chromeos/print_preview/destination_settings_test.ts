@@ -559,6 +559,35 @@ suite('DestinationSettingsTest', function() {
         });
   });
 
+  // Tests that clicking the "See More" button opens the dialog.
+  test('SeeMoreButton', async () => {
+    recentDestinations = destinations.slice(0, 5).map(
+        destination => makeRecentDestination(destination));
+    const seeMoreButton = destinationSettings.$.seeMore;
+
+    // The button should be disabled before initialization.
+    assertTrue(seeMoreButton.disabled);
+
+    // The button should be enabled after loading destination store.
+    const whenCapabilitiesDone =
+        nativeLayer.whenCalled('getPrinterCapabilities');
+    initialize();
+    await whenCapabilitiesDone;
+    await waitBeforeNextRender(destinationSettings);
+    assertFalse(seeMoreButton.disabled);
+
+    // The button should open the dialog after clicking.
+    seeMoreButton.click();
+    await waitBeforeNextRender(destinationSettings);
+    assertTrue(destinationSettings.$.destinationDialog.get().isOpen());
+
+    // The button should be disabled when destination settings is disabled.
+    destinationSettings.state = State.ERROR;
+    destinationSettings.disabled = true;
+    await waitBeforeNextRender(destinationSettings);
+    assertTrue(seeMoreButton.disabled);
+  });
+
   /**
    * @param expectedDestinationIds An array of the expected
    *     recent destination ids.

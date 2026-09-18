@@ -1,6 +1,19 @@
 <style include="print-preview-shared">
+  /* The 16px PIN checkbox is vertically centered in a 38px container, leaving
+   * 11px of space above the checkbox. A 9px bottom margin results in a 20px gap
+   * from the top of the checkbox. */
   :host([has-pin-setting_]) {
-    margin-bottom: 0 !important;
+    margin-bottom: 9px !important;
+  }
+
+  #seeMore {
+    --cr-button-border: none;
+    --cr-button-height: 34px;
+    display: flex;
+    margin-inline-end: var(--print-preview-sidebar-margin);
+    margin-inline-start: auto;
+    margin-top: 12px;
+    width: fit-content;
   }
 </style>
 
@@ -17,6 +30,13 @@
       on-selected-option-change="onSelectedDestinationOptionChange_"
       state="[[state]]" error="[[error]]">
   </print-preview-destination-select-cros>
+  <cr-button id="seeMore"
+      disabled="[[shouldDisableSeeMore_(
+                      loaded_, destinationState, state, disabled)]]"
+      aria-label="$i18n{seeMoreDestinationsLabel}"
+      on-click="onSeeMoreClick_">
+    $i18n{seeMoreButton}
+  </cr-button>
   <cr-lazy-render id="destinationDialog">
     <template>
       <print-preview-destination-dialog-cros

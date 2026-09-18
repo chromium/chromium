@@ -17,6 +17,11 @@ export function getHtml(this: DestinationSettingsElement) {
     .recentDestinationList="${this.displayedDestinations_}"
     @selected-option-change="${this.onSelectedOptionChange_}">
 </print-preview-destination-select>
+<cr-button id="seeMore" ?disabled="${this.shouldDisableSeeMore_()}"
+    aria-label="$i18n{seeMoreDestinationsLabel}"
+    @click="${this.onSeeMoreClick_}">
+  $i18n{seeMoreButton}
+</cr-button>
 <cr-lazy-render-lit id="destinationDialog"
     .template="${() => html`
       <print-preview-destination-dialog

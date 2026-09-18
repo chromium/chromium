@@ -273,6 +273,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
       {"searchResultsBubbleText", IDS_SEARCH_RESULTS_BUBBLE_TEXT},
       {"selectButton", IDS_PRINT_PREVIEW_BUTTON_SELECT},
       {"seeMore", IDS_PRINT_PREVIEW_SEE_MORE},
+      {"seeMoreButton", IDS_PRINT_PREVIEW_SEE_MORE_BUTTON},
       {"seeMoreDestinationsLabel",
        IDS_PRINT_PREVIEW_SEE_MORE_DESTINATIONS_LABEL},
 #if BUILDFLAG(IS_CHROMEOS)

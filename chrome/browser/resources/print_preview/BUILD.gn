@@ -120,6 +120,7 @@ build_webui("build") {
     "ui/destination_list.css",
     "ui/destination_list_item.css",
     "ui/destination_select.css",
+    "ui/destination_settings.css",
     "ui/dpi_settings.css",
     "ui/duplex_settings.css",
     "ui/header.css",

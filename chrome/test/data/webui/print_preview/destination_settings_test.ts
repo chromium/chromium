@@ -361,6 +361,32 @@ suite('DestinationSettingsTest', function() {
     assertTrue(destinationSettings.$.destinationDialog.get().isOpen());
   });
 
+  // Tests that clicking the "See More" button opens the dialog.
+  test('SeeMoreButton', async () => {
+    recentDestinations = destinations.slice(0, 5).map(
+        destination => makeRecentDestination(destination));
+    const seeMoreButton = destinationSettings.$.seeMore;
+
+    // The button should be disabled before initialization.
+    assertTrue(seeMoreButton.disabled);
+
+    // The button should be enabled after loading destination store.
+    await initialize();
+    await microtasksFinished();
+    assertFalse(seeMoreButton.disabled);
+
+    // The button should open the dialog after clicking.
+    seeMoreButton.click();
+    await microtasksFinished();
+    assertTrue(destinationSettings.$.destinationDialog.get().isOpen());
+
+    // The button should be disabled when destination settings is disabled.
+    destinationSettings.state = State.ERROR;
+    destinationSettings.disabled = true;
+    await microtasksFinished();
+    assertTrue(seeMoreButton.disabled);
+  });
+
   /**
    * @param expectedDestinationIds An array of the expected
    *     recent destination ids.
