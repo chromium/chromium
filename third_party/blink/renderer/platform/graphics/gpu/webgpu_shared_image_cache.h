@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/functional/function_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -21,10 +20,6 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
-
-namespace cc {
-class PaintCanvas;
-}  // namespace cc
 
 namespace gpu {
 namespace raster {
@@ -158,13 +153,21 @@ class PLATFORM_EXPORT WebGpuSharedImageLease final
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const;
   gpu::SyncToken GetSyncToken() const;
 
+  scoped_refptr<gpu::ClientSharedImage> shared_image() const {
+    return resource_.shared_image_;
+  }
+  gpu::SyncToken sync_token() const { return resource_.sync_token_; }
   void SetSyncToken(const gpu::SyncToken& sync_token) {
     resource_.sync_token_ = sync_token;
   }
+  bool is_cleared() const { return resource_.is_cleared_; }
   void SetCleared() { resource_.is_cleared_ = true; }
-
-  void DrawToBackingSharedImage(
-      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper()
+      const {
+    return resource_.context_provider_wrapper_;
+  }
+  gpu::raster::RasterInterface* RasterInterface() const;
+  bool IsGpuContextLost() const;
 
   void WaitSyncToken(const gpu::SyncToken& sync_token);
 
@@ -173,9 +176,6 @@ class PLATFORM_EXPORT WebGpuSharedImageLease final
   size_t GetSize() const override;
 
  private:
-  gpu::raster::RasterInterface* RasterInterface() const;
-  bool IsGpuContextLost() const;
-
   Resource resource_;
   base::WeakPtr<WebGpuSharedImageCache> cache_;
 };

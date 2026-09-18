@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/webgpu/external_texture_helper.h"
 
 #include "base/debug/crash_logging.h"
+#include "cc/paint/paint_recorder.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_transformation.h"
 #include "media/base/video_util.h"
@@ -17,6 +19,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_view.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
@@ -440,10 +443,35 @@ std::optional<ExternalTexture> CreateExternalTexture(
 
     media::PaintCanvasVideoRenderer::PaintParams params;
     params.dest_rect = gfx::RectF(shared_image->size());
-    lease->DrawToBackingSharedImage([&](cc::PaintCanvas& canvas) {
-      video_renderer->Paint(media_video_frame.get(), &canvas, media_flags,
-                            params, raster_context_provider);
-    });
+    if (!lease->IsGpuContextLost()) {
+      cc::PaintRecorder recorder;
+      video_renderer->Paint(media_video_frame.get(), recorder.beginRecording(),
+                            media_flags, params, raster_context_provider);
+      if (cc::PaintRecord last_recording = recorder.finishRecordingAsPicture();
+          last_recording.has_draw_ops()) {
+        const bool needs_clear = !lease->is_cleared();
+        lease->SetCleared();
+
+        auto& context_provider =
+            lease->context_provider_wrapper()->ContextProvider();
+        CanvasImageProvider image_provider(
+            context_provider.ImageDecodeCache(kN32_SkColorType),
+            lease->shared_image()->format() == viz::SinglePlaneFormat::kRGBA_F16
+                ? context_provider.ImageDecodeCache(kRGBA_F16_SkColorType)
+                : nullptr,
+            lease->shared_image()->color_space(),
+            lease->shared_image()->format(),
+            cc::PlaybackImageProvider::RasterMode::kGpu,
+            lease->context_provider_wrapper());
+
+        lease->SetSyncToken(lease->RasterInterface()->RasterSharedImage(
+            lease->shared_image(), lease->sync_token(),
+            std::move(last_recording), &image_provider, needs_clear));
+
+        image_provider.ReleaseLockedImages();
+        image_provider.UnbindTextureBackedImages();
+      }
+    }
   }
 
   // The copy or draw operation above might have encountered GPU context loss,

@@ -10,13 +10,10 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "cc/paint/display_item_list.h"
-#include "cc/paint/paint_recorder.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -80,40 +77,6 @@ gpu::raster::RasterInterface* WebGpuSharedImageLease::RasterInterface() const {
 
 bool WebGpuSharedImageLease::IsGpuContextLost() const {
   return ::blink::IsGpuContextLost(resource_.context_provider_wrapper_.get());
-}
-
-void WebGpuSharedImageLease::DrawToBackingSharedImage(
-    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
-  if (IsGpuContextLost()) {
-    return;
-  }
-
-  cc::PaintRecorder recorder;
-  draw_callback(*recorder.beginRecording());
-  if (cc::PaintRecord last_recording = recorder.finishRecordingAsPicture();
-      last_recording.has_draw_ops()) {
-    const bool needs_clear = !resource_.is_cleared_;
-    resource_.is_cleared_ = true;
-
-    auto& context_provider =
-        resource_.context_provider_wrapper_->ContextProvider();
-    CanvasImageProvider image_provider(
-        context_provider.ImageDecodeCache(kN32_SkColorType),
-        resource_.shared_image_->format() == viz::SinglePlaneFormat::kRGBA_F16
-            ? context_provider.ImageDecodeCache(kRGBA_F16_SkColorType)
-            : nullptr,
-        resource_.shared_image_->color_space(),
-        resource_.shared_image_->format(),
-        cc::PlaybackImageProvider::RasterMode::kGpu,
-        resource_.context_provider_wrapper_);
-
-    resource_.sync_token_ = RasterInterface()->RasterSharedImage(
-        resource_.shared_image_, resource_.sync_token_,
-        std::move(last_recording), &image_provider, needs_clear);
-
-    image_provider.ReleaseLockedImages();
-    image_provider.UnbindTextureBackedImages();
-  }
 }
 
 void WebGpuSharedImageLease::OnMemoryDump(
