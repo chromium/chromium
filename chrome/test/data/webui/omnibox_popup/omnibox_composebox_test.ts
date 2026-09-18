@@ -2886,5 +2886,17 @@ suite('OmniboxComposeboxTest', () => {
 
       assertEquals('Ask AI Mode', omniboxComposebox.inputPlaceholder);
     });
+
+    test('passes richImageSuggestionsEnabled to matches dropdown', async () => {
+      loadTimeData.overrideValues({
+        composeboxRichImageSuggestionsEnabled: true,
+      });
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      omniboxComposebox = document.createElement('cr-omnibox-composebox');
+      document.body.appendChild(omniboxComposebox);
+      await microtasksFinished();
+
+      assertTrue(omniboxComposebox.$.matches.richImageSuggestionsEnabled);
+    });
   });
 });
