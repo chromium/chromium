@@ -16,7 +16,6 @@
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_row_button.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_delegate_impl.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -115,9 +114,7 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_));
     glic_split_button_controller_ =
         std::make_unique<glic::GlicSplitButtonController>(
-            browser_window_interface_.get(),
-            std::make_unique<glic::GlicSplitButtonDelegateImpl>(
-                browser_window_interface_.get(), mock_glic_service_));
+            browser_window_interface_.get(), mock_glic_service_);
     controller_ =
         ActorTaskListBubbleController::From(browser_window_interface_.get());
     ASSERT_TRUE(controller_);

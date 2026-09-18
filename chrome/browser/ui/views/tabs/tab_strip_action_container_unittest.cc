@@ -11,7 +11,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_delegate_impl.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -156,9 +155,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     if (auto* glic_service = glic::GlicKeyedService::Get(profile)) {
       glic_split_button_controller_ =
           std::make_unique<glic::GlicSplitButtonController>(
-              browser_window_interface_.get(),
-              std::make_unique<glic::GlicSplitButtonDelegateImpl>(
-                  browser_window_interface_.get(), glic_service));
+              browser_window_interface_.get(), glic_service);
     }
 
     tab_strip_action_container_ = std::make_unique<TabStripActionContainer>(

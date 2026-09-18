@@ -18,7 +18,6 @@
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_delegate_impl.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_view_delegate.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -76,10 +75,7 @@ class MockGlicSplitButtonController : public glic::GlicSplitButtonController {
  public:
   MockGlicSplitButtonController(BrowserWindowInterface* browser,
                                 glic::GlicKeyedService* glic_service)
-      : glic::GlicSplitButtonController(
-            browser,
-            std::make_unique<glic::GlicSplitButtonDelegateImpl>(browser,
-                                                                glic_service)) {
+      : glic::GlicSplitButtonController(browser, glic_service) {
     SetActorNudgeControllerForTesting(nullptr);
     SetActorNudgeControllerForTesting(
         std::make_unique<MockGlicActorNudgeController>(browser, this));

@@ -9,13 +9,11 @@ import("//chrome/common/features.gni")
 
 source_set("browser_ui") {
   sources = [
-    "gemini_split_button_delegate.h",
     "glic_actor_nudge_controller.h",
     "glic_actor_task_icon_manager.h",
     "glic_actor_task_icon_manager_factory.h",
     "glic_nudge_controller.h",
     "glic_split_button_controller.h",
-    "glic_split_button_delegate_impl.h",
     "glic_split_button_view_delegate.h",
     "glic_tab_indicator_helper.h",
   ]
@@ -27,7 +25,6 @@ source_set("browser_ui") {
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/tab_list",
-    "//chrome/browser/ui/side_panel",
     "//components/keyed_service/core",
     "//components/skills/public",
     "//ui/base/unowned_user_data",
@@ -57,15 +54,15 @@ source_set("browser_ui") {
 
 source_set("impl") {
   sources = [
-    "gemini_split_button_delegate.cc",
     "glic_actor_nudge_controller.cc",
     "glic_actor_task_icon_manager.cc",
     "glic_actor_task_icon_manager_factory.cc",
+    "glic_button_controller.cc",
+    "glic_button_controller.h",
     "glic_nudge_controller.cc",
     "glic_nudge_controller_impl.cc",
     "glic_nudge_controller_impl.h",
     "glic_split_button_controller.cc",
-    "glic_split_button_delegate_impl.cc",
     "glic_split_button_view_delegate.cc",
     "glic_tab_indicator_helper.cc",
   ]
@@ -213,8 +210,8 @@ if (!is_android) {
     testonly = true
     sources = [
       "glic_actor_task_icon_manager_unittest.cc",
+      "glic_button_controller_unittest.cc",
       "glic_selection_widget_unittest.cc",
-      "glic_split_button_controller_unittest.cc",
     ]
     deps = [
       ":browser_ui",

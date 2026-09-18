@@ -32,7 +32,6 @@
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_delegate_impl.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -601,9 +600,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
             GetUserDataFactory().CreateInstance<glic::GlicIphController>(
                 *browser, browser, *glic_service);
         glic_split_button_controller_ =
-            std::make_unique<glic::GlicSplitButtonController>(
-                browser, std::make_unique<glic::GlicSplitButtonDelegateImpl>(
-                             browser, glic_service));
+            std::make_unique<glic::GlicSplitButtonController>(browser,
+                                                              glic_service);
       }
     }
 
