@@ -63,7 +63,6 @@ class GlicWebContentsManager;
 class GlicZeroStateSuggestionsManager;
 
 BASE_DECLARE_FEATURE(kGlicRemoveDaisyChainingWhenFreShowing);
-BASE_DECLARE_FEATURE(kGlicUnbindOnClose);
 BASE_DECLARE_FEATURE(kGlicRemoveBlankInstancesOnClose);
 
 struct TabGroupBinding {
@@ -345,7 +344,6 @@ class GlicInstanceImpl : public GlicInstance,
     base::CallbackListSubscription destruction_subscription;
     base::CallbackListSubscription tab_activation_subscription;
     base::CallbackListSubscription tab_detach_subscription;
-    bool user_input_submitted_while_bound = false;
     base::Time last_active_time;
   };
 
@@ -370,7 +368,6 @@ class GlicInstanceImpl : public GlicInstance,
   void CloseInternal(EmbedderKey key,
                      EmbedderEntry& entry,
                      const CloseOptions& options = {});
-  bool ShouldUnbindOnClose(EmbedderKey key, const EmbedderEntry& entry);
   void MaybeShowHostUi(
       GlicUiEmbedder* embedder,
       mojom::InvocationSource source,

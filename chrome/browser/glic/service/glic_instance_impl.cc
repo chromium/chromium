@@ -130,11 +130,6 @@ BASE_FEATURE(kGlicSuppressAnimationsOnDetach, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicRemoveDaisyChainingWhenFreShowing,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
-BASE_FEATURE(kGlicUnbindOnClose, base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-BASE_FEATURE(kGlicUnbindOnClose, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 namespace {
 
@@ -601,38 +596,6 @@ void GlicInstanceImpl::CloseInternal(EmbedderKey key,
   }
 }
 
-bool GlicInstanceImpl::ShouldUnbindOnClose(EmbedderKey key,
-                                           const EmbedderEntry& entry) {
-  // Determines whether the instance should be unbound from the embedder when
-  // closed. Unbinding occurs only when all of the following conditions are met:
-  // - Both `kGlicUnbindOnClose` and `kGlicDefaultToLastActiveConversation`
-  //   flags are enabled.
-  // - The user has not submitted input (ie. sent a prompt) while the tab was
-  //   bound.
-  // - The instance is scoped to a tab (not a floating panel or window).
-  // - The tab was pinned as a result of clicking an entrypoint (e.g., clicking
-  //   the entrypoint), rather than being pinned via one of the other mechanisms
-  //   (eg. actuation, daisy chaining, explicit pinning, etc.)
-  if (!base::FeatureList::IsEnabled(kGlicUnbindOnClose)) {
-    return false;
-  }
-  if (!base::FeatureList::IsEnabled(
-          features::kGlicDefaultToLastActiveConversation)) {
-    return false;
-  }
-  tabs::TabInterface* tab = GetTabFromEmbedderKey(key);
-  if (!tab) {
-    return false;
-  }
-  auto usage = GetSharingManagerInternal().GetPinnedTabUsage(tab->GetHandle());
-  // This is the pin trigger used for entrypoint clicks.
-  // TODO(b/501090068): Figure out how to separate this from invoke pin
-  // triggers.
-  return usage &&
-         (usage->pin_event.trigger == GlicPinTrigger::kInstanceCreation &&
-          !entry.user_input_submitted_while_bound);
-}
-
 GlicUiEmbedder* GlicInstanceImpl::GetEmbedderForTab(tabs::TabInterface* tab) {
   return GetEmbedderForKey(GetEmbedderKeyForTab(tab));
 }
@@ -804,9 +767,6 @@ void GlicInstanceImpl::PrepareForOpen() {
 
 void GlicInstanceImpl::OnUserInputSubmitted(mojom::WebClientMode mode,
                                             mojom::PromptType /*prompt_type*/) {
-  for (auto& [key, entry] : embedders_) {
-    entry.user_input_submitted_while_bound = true;
-  }
   last_prompt_submission_time_ = base::TimeTicks::Now();
   if (coordinator_delegate_) {
     tabs::TabInterface* tab =
@@ -1594,13 +1554,6 @@ void GlicInstanceImpl::DidCloseFor(EmbedderKey key,
   MaybeDeactivateEmbedder(key);
 
   NotifyVisibilityChange();
-
-  auto* entry = GetEmbedderEntry(key);
-  if (reason == EmbedderCloseReason::kExplicitlyClosed && entry &&
-      ShouldUnbindOnClose(key, *entry)) {
-    // Unbind might delete 'this'
-    UnbindEmbedder(key);
-  }
 }
 
 void GlicInstanceImpl::ClientReadyToShow(
