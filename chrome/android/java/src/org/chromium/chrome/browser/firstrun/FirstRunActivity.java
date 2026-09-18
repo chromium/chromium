@@ -236,6 +236,8 @@ public class FirstRunActivity extends FirstRunActivityBase
 
     private final List<FirstRunPage> mPages = new ArrayList<>();
     private final List<Integer> mFreProgressStates = new ArrayList<>();
+    private final SafetyPromoFirstRunState mSafetyPromoFirstRunState =
+            new SafetyPromoFirstRunState();
 
     private FirstRunPageTransformer mPageTransformer;
     private ViewPager2 mPager;
@@ -260,6 +262,9 @@ public class FirstRunActivity extends FirstRunActivityBase
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        // TODO(crbug.com/534388538): Resume the FRE where the user left off, including the
+        // carousel card. Returning from the launcher creates a new activity, so this bundle is
+        // dropped and progress has to be persisted outside the activity.
         if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()) {
             // Called by Android right before the First Run Activity is destroyed (toggle dark mode,
             // etc.). Before activity recreation, store which page the user was looking at.
@@ -289,6 +294,11 @@ public class FirstRunActivity extends FirstRunActivityBase
     @Override
     public void setHistorySyncStepCompleted(boolean val) {
         mHistorySyncStepCompleted = val;
+    }
+
+    @Override
+    public SafetyPromoFirstRunState getSafetyPromoFirstRunState() {
+        return mSafetyPromoFirstRunState;
     }
 
     /** Creates first page and sets up adapter. Should result UI being shown on the screen. */
@@ -391,10 +401,15 @@ public class FirstRunActivity extends FirstRunActivityBase
             mPages.add(new FirstRunPage<>(SafetyPromoFirstRunFragment.class, () -> true));
             mFreProgressStates.add(MobileFreProgress.SAFETY_PROMO_SHOWN);
 
+            // Only show the carousel detail page if the user clicked a specific promo card on the
+            // preceding overview page. If the user clicked "Start browsing", the carousel is
+            // skipped.
             mPages.add(
                     new FirstRunPage<>(
                             SafetyPromoCarouselFirstRunFragment.class,
-                            FirstRunUtils::shouldShowSafetyFrePromoCarousel));
+                            () ->
+                                    FirstRunUtils.shouldShowSafetyFrePromoCarousel()
+                                            && mSafetyPromoFirstRunState.hasSelectedItem()));
             // TODO(crbug.com/543028748): Introduce and log a dedicated MobileFreProgress state for
             // the carousel page instead of reusing SAFETY_PROMO_SHOWN.
             mFreProgressStates.add(MobileFreProgress.SAFETY_PROMO_SHOWN);

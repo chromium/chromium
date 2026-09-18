@@ -25,6 +25,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.List;
@@ -44,7 +46,6 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
 
     private Context mContext;
     private SafetyPromoCarouselView mView;
-    private SafetyPromoCarouselCoordinator mCoordinator;
 
     @Before
     public void setUp() {
@@ -55,12 +56,13 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
                                 .inflate(
                                         R.layout.safety_promo_fre_carousel_portrait_view,
                                         /* root= */ null);
-        mCoordinator =
-                new SafetyPromoCarouselCoordinator(mContext, mView, mAdvancePage, TEST_ITEMS);
     }
 
     @Test
     public void testInitialization() {
+        new SafetyPromoCarouselCoordinator(
+                mContext, mView, ObservableSuppliers.createNullable(), mAdvancePage, TEST_ITEMS);
+
         RecyclerView recyclerView = mView.getRecyclerView();
         assertNotNull(recyclerView.getAdapter());
         assertEquals(3, recyclerView.getAdapter().getItemCount());
@@ -69,65 +71,71 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
         LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         assertEquals(LinearLayoutManager.HORIZONTAL, layoutManager.getOrientation());
 
-        TextView titleView = mView.findViewById(R.id.safety_promo_carousel_title);
-        assertEquals(
-                mContext.getString(R.string.safety_fre_promo_password_manager_carousel_title),
-                titleView.getText().toString());
+        assertHeader(SafetyPromoItem.PASSWORD_MANAGER);
+    }
 
-        TextView subtitleView = mView.findViewById(R.id.safety_promo_carousel_subtitle);
-        assertEquals(
-                mContext.getString(R.string.safety_fre_promo_password_manager_carousel_subtitle),
-                subtitleView.getText().toString());
+    @Test
+    public void testSelectedItem_appliedBeforeFirstDraw() {
+        SettableNullableObservableSupplier<SafetyPromoItem> supplier =
+                ObservableSuppliers.createNullable(SafetyPromoItem.INCOGNITO);
+        new SafetyPromoCarouselCoordinator(mContext, mView, supplier, mAdvancePage, TEST_ITEMS);
+
+        assertHeader(SafetyPromoItem.INCOGNITO);
+    }
+
+    @Test
+    public void testSelectedItemSetAfterConstruction_updatesHeader() {
+        SettableNullableObservableSupplier<SafetyPromoItem> supplier =
+                ObservableSuppliers.createNullable();
+        new SafetyPromoCarouselCoordinator(mContext, mView, supplier, mAdvancePage, TEST_ITEMS);
+
+        assertHeader(SafetyPromoItem.PASSWORD_MANAGER);
+
+        supplier.set(SafetyPromoItem.INCOGNITO);
+
+        assertHeader(SafetyPromoItem.INCOGNITO);
+    }
+
+    @Test
+    public void testSelectedItemChanged_updatesHeader() {
+        SettableNullableObservableSupplier<SafetyPromoItem> supplier =
+                ObservableSuppliers.createNullable(SafetyPromoItem.PASSWORD_MANAGER);
+        new SafetyPromoCarouselCoordinator(mContext, mView, supplier, mAdvancePage, TEST_ITEMS);
+
+        supplier.set(SafetyPromoItem.ENHANCED_SAFE_BROWSING);
+
+        assertHeader(SafetyPromoItem.ENHANCED_SAFE_BROWSING);
+    }
+
+    @Test
+    public void testDestroy_stopsObservingSelectedItem() {
+        SettableNullableObservableSupplier<SafetyPromoItem> supplier =
+                ObservableSuppliers.createNullable(SafetyPromoItem.PASSWORD_MANAGER);
+        SafetyPromoCarouselCoordinator coordinator =
+                new SafetyPromoCarouselCoordinator(
+                        mContext, mView, supplier, mAdvancePage, TEST_ITEMS);
+
+        coordinator.destroy();
+        supplier.set(SafetyPromoItem.ENHANCED_SAFE_BROWSING);
+
+        assertHeader(SafetyPromoItem.PASSWORD_MANAGER);
     }
 
     @Test
     public void testContinueButton_triggersCallback() {
+        new SafetyPromoCarouselCoordinator(
+                mContext, mView, ObservableSuppliers.createNullable(), mAdvancePage, TEST_ITEMS);
+
         mView.findViewById(R.id.fre_continue_button).performClick();
+
         verify(mAdvancePage).run();
     }
 
-    @Test
-    public void testUpdateHeaderForPosition() {
+    private void assertHeader(SafetyPromoItem item) {
         TextView titleView = mView.findViewById(R.id.safety_promo_carousel_title);
+        assertEquals(mContext.getString(item.carouselTitleResId), titleView.getText().toString());
         TextView subtitleView = mView.findViewById(R.id.safety_promo_carousel_subtitle);
-
-        // Update to position 1 (Enhanced Safe Browsing)
-        mCoordinator.updateHeaderForPosition(1);
         assertEquals(
-                mContext.getString(R.string.safety_fre_promo_enhanced_safe_browsing_carousel_title),
-                titleView.getText().toString());
-        assertEquals(
-                mContext.getString(
-                        R.string.safety_fre_promo_enhanced_safe_browsing_carousel_subtitle),
-                subtitleView.getText().toString());
-
-        // Update to position 2 (Incognito)
-        mCoordinator.updateHeaderForPosition(2);
-        assertEquals(
-                mContext.getString(R.string.safety_fre_promo_incognito_carousel_title),
-                titleView.getText().toString());
-        assertEquals(
-                mContext.getString(R.string.safety_fre_promo_incognito_carousel_subtitle),
-                subtitleView.getText().toString());
-
-        // Update back to position 0 (Password Manager)
-        mCoordinator.updateHeaderForPosition(0);
-        assertEquals(
-                mContext.getString(R.string.safety_fre_promo_password_manager_carousel_title),
-                titleView.getText().toString());
-        assertEquals(
-                mContext.getString(R.string.safety_fre_promo_password_manager_carousel_subtitle),
-                subtitleView.getText().toString());
-
-        // Out of bounds positions should not change the header
-        mCoordinator.updateHeaderForPosition(-1);
-        assertEquals(
-                mContext.getString(R.string.safety_fre_promo_password_manager_carousel_title),
-                titleView.getText().toString());
-
-        mCoordinator.updateHeaderForPosition(10);
-        assertEquals(
-                mContext.getString(R.string.safety_fre_promo_password_manager_carousel_title),
-                titleView.getText().toString());
+                mContext.getString(item.carouselSubtitleResId), subtitleView.getText().toString());
     }
 }

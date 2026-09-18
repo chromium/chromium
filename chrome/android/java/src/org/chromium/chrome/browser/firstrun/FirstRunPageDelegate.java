@@ -115,4 +115,7 @@ public interface FirstRunPageDelegate {
 
     /** Sets whether the History Sync screen has been completed. */
     void setHistorySyncStepCompleted(boolean completed);
+
+    /** Returns the state shared between the Safety FRE promo pages. */
+    SafetyPromoFirstRunState getSafetyPromoFirstRunState();
 }

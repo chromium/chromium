@@ -25,6 +25,8 @@ import org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselView;
 /** A {@link Fragment} for the horizontal swipable Carousel page during the Safety FRE promo. */
 @NullMarked
 public class SafetyPromoCarouselFirstRunFragment extends Fragment implements FirstRunFragment {
+    private @Nullable SafetyPromoCarouselCoordinator mCoordinator;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater,
@@ -43,12 +45,23 @@ public class SafetyPromoCarouselFirstRunFragment extends Fragment implements Fir
         container.addView(view);
 
         var pageDelegate = assumeNonNull(getPageDelegate());
-        new SafetyPromoCarouselCoordinator(
-                getContext(),
-                view,
-                pageDelegate::advanceToNextPage,
-                FirstRunUtils.getItemsForSafetyFrePromoArm(
-                        ChromeFeatureList.sSafetyFrePromoArm.getValue()));
+        mCoordinator =
+                new SafetyPromoCarouselCoordinator(
+                        getContext(),
+                        view,
+                        pageDelegate.getSafetyPromoFirstRunState().getSelectedItemSupplier(),
+                        pageDelegate::advanceToNextPage,
+                        FirstRunUtils.getItemsForSafetyFrePromoArm(
+                                ChromeFeatureList.sSafetyFrePromoArm.getValue()));
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (mCoordinator != null) {
+            mCoordinator.destroy();
+            mCoordinator = null;
+        }
+        super.onDestroyView();
     }
 
     @Override

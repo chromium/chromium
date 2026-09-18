@@ -22,6 +22,11 @@ import java.util.List;
 /** View for the Safety Promo during the First Run Experience (FRE). */
 @NullMarked
 public class SafetyPromoFirstRunView extends RelativeLayout {
+    /** Listener interface for click events on individual safety promo cards. */
+    public interface CardClickListener {
+        void onCardClicked(SafetyPromoItem item);
+    }
+
     private ButtonCompat mContinueButton;
     private LinearLayout mCardsContainer;
 
@@ -41,19 +46,19 @@ public class SafetyPromoFirstRunView extends RelativeLayout {
         return mContinueButton;
     }
 
-    public void setCards(List<SafetyPromoItem> items) {
+    public void setCards(List<SafetyPromoItem> items, CardClickListener listener) {
         assert mCardsContainer != null;
         mCardsContainer.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(getContext());
         for (SafetyPromoItem item : items) {
             View cardView =
                     inflater.inflate(R.layout.safety_promo_card_item, mCardsContainer, false);
-            bindCard(cardView, item);
+            bindCard(cardView, item, listener);
             mCardsContainer.addView(cardView);
         }
     }
 
-    private static void bindCard(View cardView, SafetyPromoItem item) {
+    private static void bindCard(View cardView, SafetyPromoItem item, CardClickListener listener) {
         ImageView iconView = cardView.findViewById(R.id.card_icon);
         TextView titleView = cardView.findViewById(R.id.card_title);
         TextView subtitleView = cardView.findViewById(R.id.card_subtitle);
@@ -61,5 +66,6 @@ public class SafetyPromoFirstRunView extends RelativeLayout {
         iconView.setImageResource(item.cardIconResId);
         titleView.setText(item.cardTitleResId);
         subtitleView.setText(item.cardSubtitleResId);
+        cardView.setOnClickListener(_ -> listener.onCardClicked(item));
     }
 }
