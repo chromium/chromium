@@ -779,6 +779,31 @@ public class SettingsSearchCoordinatorUnitTest {
         assertTrue(searchBox.isFocused());
     }
 
+    @Test
+    public void testExitSearchState_whenColumnModeCacheIsStale_showsSearchBox() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = true;
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        assertNotNull(searchBox);
+
+        // Simulate the layout callbacks having cached single-column mode even though the live
+        // layout is two-column. In two-column mode the sliding pane is not slideable, so nothing
+        // else would ever restore the search box. https://crbug.com/562493964
+        mCoordinator.setUseMultiColumnForTesting(false);
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_SEARCH);
+        searchBox.setVisibility(View.GONE);
+
+        mCoordinator.exitSearchState();
+        ShadowLooper.idleMainLooper();
+
+        // Search box is visible.
+        assertEquals(View.VISIBLE, searchBox.getVisibility());
+    }
+
     /**
      * Subclass of Fragment to represent the initial detail pane fragment (e.g. Google services).
      */

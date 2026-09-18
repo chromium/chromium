@@ -1025,6 +1025,15 @@ public class SettingsSearchCoordinator
         View queryContainer = requireViewById(R.id.search_query_container);
         queryContainer.setVisibility(View.GONE);
 
+        // |mUseMultiColumn| is a cache of the column mode that is only refreshed from layout
+        // change callbacks. Those callbacks can report a transient single-column value (e.g. while
+        // the settings fragment is detached) and never fire again once the layout has settled,
+        // leaving the cache stale. That matters here because in two-column mode nothing else
+        // restores the search box: the SlidingPaneLayout is not slideable, so its panel-closed
+        // callback never runs and the search box would stay hidden forever. Re-read the live
+        // column mode so search always recovers. https://crbug.com/562493964
+        syncColumnModeIfStale();
+
         // In single-column mode, search box visibility is handled by
         // SlidingPaneLayout#SimplePanelSlideListener set up in initializeMultiColumnSearchUi
         // for mutli-column settings, and by FragmentManager.FragmentLifecycleCallbacks set up
@@ -1485,6 +1494,16 @@ public class SettingsSearchCoordinator
                     }
                 };
         targetView.getViewTreeObserver().addOnGlobalLayoutListener(listener);
+    }
+
+    /**
+     * Refreshes the cached column mode ({@code mUseMultiColumn}) if it no longer matches the live
+     * layout, moving the search UI to the container for the current layout as a side effect.
+     */
+    private void syncColumnModeIfStale() {
+        if (mUseMultiColumnSupplier.getAsBoolean() == mUseMultiColumn) return;
+
+        onConfigurationChangedInternal();
     }
 
     @VisibleForTesting(otherwise = PRIVATE)
