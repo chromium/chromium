@@ -1828,6 +1828,7 @@ source_set("browser_view_layout_delegate_impl") {
     "//chrome/browser/ui/tabs:features",
     "//chrome/browser/ui/tabs:tab_model",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs/organizer",
     "//chrome/browser/ui/views/infobars",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/window_feature_controller",

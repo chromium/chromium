@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
@@ -209,6 +210,11 @@ BrowserViewLayoutDelegateImpl::GetAnimationController() const {
 ExclusiveAccessBubbleViews*
 BrowserViewLayoutDelegateImpl::GetExclusiveAccessBubble() const {
   return browser_view_->GetExclusiveAccessBubble();
+}
+
+OrganizerPanelController*
+BrowserViewLayoutDelegateImpl::GetOrganizerPanelController() const {
+  return OrganizerPanelController::From(browser_view_->browser());
 }
 
 bool BrowserViewLayoutDelegateImpl::IsTopControlsSlideBehaviorEnabled() const {

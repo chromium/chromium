@@ -20,6 +20,7 @@
 
 class BrowserView;
 class BrowserWindowInterface;
+class OrganizerPanelHost;
 
 namespace actions {
 class ActionItem;
@@ -45,7 +46,9 @@ class OrganizerPanelController {
 
   bool IsOrganizerPanelVisible() const;
 
-  void SetOrganizerVisible(bool visible);
+  void SetOrganizerVisible(bool visible, bool immediate = false);
+
+  const OrganizerPanelHost* GetCurrentHost() const;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void OpenForExtension(const extensions::ExtensionId& extension_id);

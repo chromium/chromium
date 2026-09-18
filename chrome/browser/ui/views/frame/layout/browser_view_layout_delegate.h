@@ -14,6 +14,7 @@
 class BrowserAnimationController;
 class ExclusiveAccessBubbleViews;
 class ImmersiveModeController;
+class OrganizerPanelController;
 
 namespace gfx {
 class Rect;
@@ -54,6 +55,7 @@ class BrowserViewLayoutDelegate {
   virtual const ImmersiveModeController* GetImmersiveModeController() const = 0;
   virtual BrowserAnimationController* GetAnimationController() const = 0;
   virtual ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const = 0;
+  virtual OrganizerPanelController* GetOrganizerPanelController() const = 0;
   virtual bool IsTopControlsSlideBehaviorEnabled() const = 0;
   virtual float GetTopControlsSlideBehaviorShownRatio() const = 0;
   virtual gfx::NativeView GetHostViewForAnchoring() const = 0;

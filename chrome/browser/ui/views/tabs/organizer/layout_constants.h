@@ -15,6 +15,10 @@ namespace organizer_panel {
 inline constexpr int kOrganizerPanelMinWidth =
     tabs::kVerticalTabStripDefaultUncollapsedWidth;
 
+// Min amount larger the organizer panel should be than an uncollapsed vertical
+// tab strip.
+inline constexpr int kOrganizerPanelMinOverlap = 20;
+
 // Background color of the organizer panel.
 inline constexpr ui::ColorId kOrganizerPanelBackgroundColor =
     ui::kColorSysSurface2;

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/animations/side_panel_animations.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_content_view.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_tray_view.h"
 #include "ui/base/ui_base_features.h"
@@ -547,11 +549,18 @@ BrowserViewTabbedLayoutImpl::CalculateOrganizerPanelAnimation() const {
                             OrganizerPanelAnimations::kVisibleWidth)
           .value_or(0.0);
   if (anim.reveal_amount > 0.0) {
-    anim.location =
-        organizer_panel::ShouldShowOrganizerPanelInVerticalTabStrip() &&
-                layout_data_->tab_strip_type == TabStripType::kVertical
-            ? OrganizerPanelLocation::kVerticalTabStrip
-            : OrganizerPanelLocation::kOrganizerTray;
+    auto* const host =
+        delegate().GetOrganizerPanelController()->GetCurrentHost();
+    if (views().organizer_tray &&
+        host == OrganizerPanelHost::FromView(views().organizer_tray)) {
+      anim.location = OrganizerPanelLocation::kOrganizerTray;
+    } else if (views().vertical_tab_strip_region_view &&
+               host == OrganizerPanelHost::FromView(
+                           views().vertical_tab_strip_region_view)) {
+      anim.location = OrganizerPanelLocation::kVerticalTabStrip;
+    } else {
+      anim.location = OrganizerPanelLocation::kNone;
+    }
   }
   return anim;
 }

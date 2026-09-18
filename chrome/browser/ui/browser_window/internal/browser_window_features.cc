@@ -625,12 +625,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
               profile, browser->GetTabStripModel(), browser->GetSessionID());
     }
 
-    if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
-      organizer_panel_controller_ =
-          GetUserDataFactory().CreateInstance<OrganizerPanelController>(
-              *browser, *browser, browser_actions_->root_action_item());
-    }
-
     std::optional<bool> restored_state_collapsed =
         BrowserInitState::From(browser)->is_vertical_tabs_initially_collapsed();
     std::optional<int> restored_state_uncollapsed_width =
@@ -654,6 +648,13 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
                 SessionServiceFactory::GetForProfile(browser_->GetProfile()),
                 browser_->GetSessionID(), restored_state_collapsed,
                 restored_state_uncollapsed_width);
+
+    // This relies on the vertical tab strip state controller.
+    if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
+      organizer_panel_controller_ =
+          GetUserDataFactory().CreateInstance<OrganizerPanelController>(
+              *browser, *browser, browser_actions_->root_action_item());
+    }
   }
 
   // Constructed last, out of alphabetical order:
