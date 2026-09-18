@@ -354,7 +354,6 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
 
   // Control (Disabled).
   EXPECT_FALSE(IsNewTabPageUICleanupEnabled());
-  EXPECT_FALSE(IsNewTabPageUICleanupPaddingEnabled());
   EXPECT_FALSE(ShouldApplyFakeboxBackgroundAndShadow());
   EXPECT_EQ(DoodleTopMargin(SearchEngineLogoState::kLogo,
                             IPhonePortraitTraitCollection()),
@@ -383,7 +382,6 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         kNewTabPageUICleanup, {{kNewTabPageUICleanupArmParam, "1"}});
     EXPECT_TRUE(IsNewTabPageUICleanupEnabled());
-    EXPECT_TRUE(IsNewTabPageUICleanupPaddingEnabled());
     EXPECT_TRUE(ShouldApplyFakeboxBackgroundAndShadow());
     EXPECT_EQ(FakeToolbarHeight() + kLogoTopPaddingTight,
               LogoTopPadding(SearchEngineLogoState::kLogo,
@@ -412,7 +410,6 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         kNewTabPageUICleanup, {{kNewTabPageUICleanupArmParam, "2"}});
     EXPECT_TRUE(IsNewTabPageUICleanupEnabled());
-    EXPECT_TRUE(IsNewTabPageUICleanupPaddingEnabled());
     EXPECT_TRUE(ShouldApplyFakeboxBackgroundAndShadow());
     EXPECT_EQ(FakeToolbarHeight() + kLogoTopPaddingMedium,
               LogoTopPadding(SearchEngineLogoState::kLogo,
@@ -441,7 +438,6 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         kNewTabPageUICleanup, {{kNewTabPageUICleanupArmParam, "3"}});
     EXPECT_TRUE(IsNewTabPageUICleanupEnabled());
-    EXPECT_TRUE(IsNewTabPageUICleanupPaddingEnabled());
     EXPECT_TRUE(ShouldApplyFakeboxBackgroundAndShadow());
     EXPECT_EQ(FakeToolbarHeight() + kLogoTopPaddingPreferred,
               LogoTopPadding(SearchEngineLogoState::kLogo,
@@ -470,7 +466,6 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         kNewTabPageUICleanup, {{kNewTabPageUICleanupArmParam, "4"}});
     EXPECT_FALSE(IsNewTabPageUICleanupEnabled());
-    EXPECT_FALSE(IsNewTabPageUICleanupPaddingEnabled());
     EXPECT_TRUE(ShouldApplyFakeboxBackgroundAndShadow());
     EXPECT_EQ(DoodleTopMargin(SearchEngineLogoState::kLogo,
                               IPhonePortraitTraitCollection()),
@@ -500,10 +495,8 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpersIPad) {
   if (IsIPhone()) {
     GTEST_SKIP() << "Test unsupported on iPhone";
   }
-
   // Control (Disabled).
   EXPECT_FALSE(IsNewTabPageUICleanupEnabled());
-  EXPECT_FALSE(IsNewTabPageUICleanupPaddingEnabled());
   EXPECT_FALSE(ShouldApplyFakeboxBackgroundAndShadow());
   EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo),
             LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
@@ -521,10 +514,9 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpersIPad) {
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         kNewTabPageUICleanup, {{kNewTabPageUICleanupArmParam, "1"}});
     EXPECT_TRUE(IsNewTabPageUICleanupEnabled());
-    EXPECT_FALSE(IsNewTabPageUICleanupPaddingEnabled());
     EXPECT_TRUE(ShouldApplyFakeboxBackgroundAndShadow());
-    EXPECT_EQ(NTPUICleanupVariation::kDisabled,
-              GetNewTabPageUICleanupPaddingVariation());
+    EXPECT_EQ(NTPUICleanupVariation::kTightPadding,
+              GetNewTabPageUICleanupVariation());
     EXPECT_EQ(
         FakeToolbarHeight() + kLogoTopPaddingPreferred,
         LogoTopPadding(SearchEngineLogoState::kLogo, IPadTraitCollection()));
@@ -545,8 +537,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpersIPad) {
     EXPECT_EQ(kMostVisitedTopPaddingPreferred,
               MostVisitedTopPadding(IPadTraitCollection()));
     EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
-    EXPECT_EQ(kNTPShrunkLogoSearchFieldBottomPadding,
-              HeaderBottomPadding(IPadTraitCollection()));
+    EXPECT_EQ(0, HeaderBottomPadding(IPadTraitCollection()));
   }
 
   // Medium Padding (Arm 2).
@@ -555,10 +546,9 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpersIPad) {
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         kNewTabPageUICleanup, {{kNewTabPageUICleanupArmParam, "2"}});
     EXPECT_TRUE(IsNewTabPageUICleanupEnabled());
-    EXPECT_FALSE(IsNewTabPageUICleanupPaddingEnabled());
     EXPECT_TRUE(ShouldApplyFakeboxBackgroundAndShadow());
-    EXPECT_EQ(NTPUICleanupVariation::kDisabled,
-              GetNewTabPageUICleanupPaddingVariation());
+    EXPECT_EQ(NTPUICleanupVariation::kMediumPadding,
+              GetNewTabPageUICleanupVariation());
     EXPECT_EQ(
         FakeToolbarHeight() + kLogoTopPaddingPreferred,
         LogoTopPadding(SearchEngineLogoState::kLogo, IPadTraitCollection()));
@@ -579,8 +569,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpersIPad) {
     EXPECT_EQ(kMostVisitedTopPaddingPreferred,
               MostVisitedTopPadding(IPadTraitCollection()));
     EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
-    EXPECT_EQ(kNTPShrunkLogoSearchFieldBottomPadding,
-              HeaderBottomPadding(IPadTraitCollection()));
+    EXPECT_EQ(0, HeaderBottomPadding(IPadTraitCollection()));
   }
 
   // Preferred Padding (Arm 3).
@@ -589,10 +578,9 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpersIPad) {
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         kNewTabPageUICleanup, {{kNewTabPageUICleanupArmParam, "3"}});
     EXPECT_TRUE(IsNewTabPageUICleanupEnabled());
-    EXPECT_FALSE(IsNewTabPageUICleanupPaddingEnabled());
     EXPECT_TRUE(ShouldApplyFakeboxBackgroundAndShadow());
-    EXPECT_EQ(NTPUICleanupVariation::kDisabled,
-              GetNewTabPageUICleanupPaddingVariation());
+    EXPECT_EQ(NTPUICleanupVariation::kPreferredPadding,
+              GetNewTabPageUICleanupVariation());
     EXPECT_EQ(
         FakeToolbarHeight() + kLogoTopPaddingPreferred,
         LogoTopPadding(SearchEngineLogoState::kLogo, IPadTraitCollection()));
@@ -613,8 +601,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpersIPad) {
     EXPECT_EQ(kMostVisitedTopPaddingPreferred,
               MostVisitedTopPadding(IPadTraitCollection()));
     EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
-    EXPECT_EQ(kNTPShrunkLogoSearchFieldBottomPadding,
-              HeaderBottomPadding(IPadTraitCollection()));
+    EXPECT_EQ(0, HeaderBottomPadding(IPadTraitCollection()));
   }
 
   // Fakebox Background and Shadow Update (Arm 4).
@@ -623,7 +610,6 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpersIPad) {
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         kNewTabPageUICleanup, {{kNewTabPageUICleanupArmParam, "4"}});
     EXPECT_FALSE(IsNewTabPageUICleanupEnabled());
-    EXPECT_FALSE(IsNewTabPageUICleanupPaddingEnabled());
     EXPECT_TRUE(ShouldApplyFakeboxBackgroundAndShadow());
     EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo),
               LogoToFakeboxPadding(SearchEngineLogoState::kLogo,

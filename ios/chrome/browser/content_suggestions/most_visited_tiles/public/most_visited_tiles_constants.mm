@@ -25,7 +25,7 @@ CGFloat MostVisitedIconTitleSpacing() {
       ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
     return kMostVisitedIconTitleSpacingWithoutBackground;
   }
-  if (IsNewTabPageUICleanupPaddingEnabled()) {
+  if (IsNewTabPageUICleanupEnabled()) {
     return kMostVisitedIconTitleSpacingUICleanup;
   }
   return kMostVisitedIconTitleSpacing;

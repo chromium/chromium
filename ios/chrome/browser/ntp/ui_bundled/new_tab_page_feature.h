@@ -121,12 +121,4 @@ bool ShouldApplyFakeboxBackgroundAndShadow();
 // Returns the enabled variation of feature kNewTabPageUICleanup.
 NTPUICleanupVariation GetNewTabPageUICleanupVariation();
 
-// Returns the enabled padding variation of feature kNewTabPageUICleanup.
-// On iPad, returns NTPUICleanupVariation::kDisabled.
-NTPUICleanupVariation GetNewTabPageUICleanupPaddingVariation();
-
-// Whether padding and spacing changes for New Tab Page UI cleanup are enabled.
-// Returns false on iPad.
-bool IsNewTabPageUICleanupPaddingEnabled();
-
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_

@@ -200,7 +200,7 @@ constexpr CGFloat kStackViewSpacing = 12.0;
   AddSameConstraints(container, backgroundView);
 
   [container addSubview:moduleView];
-  CGFloat bottomPadding = IsNewTabPageUICleanupPaddingEnabled()
+  CGFloat bottomPadding = IsNewTabPageUICleanupEnabled()
                               ? kMVTContainerBottomPaddingUICleanup
                               : kMVTContainerBottomPadding;
   [NSLayoutConstraint activateConstraints:@[
