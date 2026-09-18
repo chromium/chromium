@@ -8,12 +8,9 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
-#include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/search/test/test_result.h"
-#include "test_search_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace app_list {
@@ -58,12 +55,6 @@ std::vector<std::unique_ptr<ChromeSearchResult>> MakeListResults(
   std::vector<ash::SearchResultDisplayType> display_types(
       ids.size(), ash::SearchResultDisplayType::kList);
   return MakeResults(ids, display_types, categories, best_match_ranks, scores);
-}
-
-SearchProvider* SimpleProvider(ash::AppListSearchResultType result_type) {
-  kProvider =
-      std::make_unique<TestSearchProvider>(result_type, base::Seconds(0));
-  return kProvider.get();
 }
 
 }  // namespace app_list
