@@ -12,6 +12,7 @@
 #import "base/no_destructor.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/ode/on_device_encryption_metrics_reporter.h"
+#import "components/password_manager/core/browser/ode/on_device_encryption_state_tracker.h"
 #import "components/password_manager/core/browser/ode/password_trusted_vault_on_device_encryption_state_tracker.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/sync/service/sync_service.h"
@@ -65,12 +66,15 @@ IOSChromeOnDeviceEncryptionMetricsReporterFactory::BuildServiceInstanceFor(
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
+  // TODO(crbug.com/540854648): Implement passkey tracker on iOS, for now pass
+  // a no-op tracker.
+  auto passkey_tracker =
+      std::make_unique<password_manager::OnDeviceEncryptionStateTracker>();
   auto password_tracker = std::make_unique<
       password_manager::PasswordTrustedVaultOnDeviceEncryptionStateTracker>(
       sync_service);
 
-  // TODO(crbug.com/540854648): Implement passkey tracker.
   return std::make_unique<password_manager::OnDeviceEncryptionMetricsReporter>(
-      /*passkey_tracker=*/nullptr, std::move(password_tracker),
+      std::move(passkey_tracker), std::move(password_tracker),
       CHECK_DEREF(profile->GetPrefs()));
 }
