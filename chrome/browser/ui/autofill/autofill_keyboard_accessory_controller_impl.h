@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
+#include "chrome/browser/ui/autofill/key_press_handler_registration.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
@@ -24,6 +25,10 @@
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace input {
+struct NativeWebKeyboardEvent;
+}  // namespace input
 
 class Profile;
 
@@ -145,6 +150,18 @@ class AutofillKeyboardAccessoryControllerImpl
   // Updates `selected_suggestion_index_` and mirrors the new selection state to
   // `ManualFillingController`.
   void SetSelectedSuggestionIndex(std::optional<int> index);
+
+  // Handles a key press `event` of the frame the suggestions belong to. It is
+  // called for as long as `key_press_registration_` is registered. Returns true
+  // if the event was consumed by the keyboard accessory and should not be
+  // forwarded to the renderer.
+  // TODO(crbug.com/542535472): Handle arrow keys to preview suggestions. Until
+  // then, this is a no-op that never consumes an event.
+  bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event);
+
+  // Keeps `HandleKeyPressEvent()` registered with the frame the suggestions
+  // belong to.
+  KeyPressHandlerRegistration key_press_registration_;
 
   // Tracks the currently selected suggestion in the accessory view. Used to
   // deduplicate redundant or stale select/unselect events from the Java

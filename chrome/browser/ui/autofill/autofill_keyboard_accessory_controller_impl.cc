@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -53,8 +54,10 @@
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -360,6 +363,7 @@ void AutofillKeyboardAccessoryControllerImpl::Recycle(
   }
   controller_common_ = std::move(controller_common);
   suggestions_.clear();
+  key_press_registration_.Unregister();
   mouse_metrics_recorder_.reset();
 }
 
@@ -392,6 +396,7 @@ void AutofillKeyboardAccessoryControllerImpl::Hide(
     delegate_->ClearPreviewedForm();
     delegate_->OnSuggestionsHidden(reason);
   }
+  key_press_registration_.Unregister();
   popup_hide_helper_.reset();
   AutofillMetrics::LogAutofillSuggestionHidingReason(
       suggestions_filling_product_, reason);
@@ -799,6 +804,20 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
     }
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAndroidKeyboardAccessoryHoverPreview)) {
+    key_press_registration_.Register(
+        rfh,
+        base::BindRepeating(
+            // Cannot bind HandleKeyPressEvent() directly because of its
+            // return value.
+            [](base::WeakPtr<AutofillKeyboardAccessoryControllerImpl> weak_this,
+               const input::NativeWebKeyboardEvent& event) {
+              return weak_this && weak_this->HandleKeyPressEvent(event);
+            },
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
   if (!barrier_for_accepting_ || ShouldResetIdleBarrier(trigger_source_)) {
     barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
         kIgnoreEarlyClicksOnSuggestionsDuration);
@@ -1065,6 +1084,11 @@ void AutofillKeyboardAccessoryControllerImpl::
   for (const Suggestion& suggestion : suggestions_) {
     labels_.push_back(CreateLabel(suggestion));
   }
+}
+
+bool AutofillKeyboardAccessoryControllerImpl::HandleKeyPressEvent(
+    const input::NativeWebKeyboardEvent& event) {
+  return false;
 }
 
 }  // namespace autofill
