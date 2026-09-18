@@ -4,9 +4,13 @@
 
 #include "components/history/core/browser/url_database.h"
 
+#include <algorithm>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -132,6 +136,57 @@ bool URLDatabase::GetURLRow(URLID url_id, URLRow* info) {
     return FillURLRow(statement, info);
   }
   return false;
+}
+
+bool URLDatabase::GetURLRows(base::span<const URLID> url_ids,
+                             base::flat_map<URLID, URLRow>* url_rows) {
+  CHECK(url_rows);
+  url_rows->clear();
+  if (url_ids.empty()) {
+    return true;
+  }
+
+  std::vector<std::pair<URLID, URLRow>> rows;
+  rows.reserve(url_ids.size());
+
+  // 250 items easily fits the default 150-item page size in a single query
+  // while staying well below SQLite's max variable limits.
+  constexpr size_t kBatchSize = 250;
+
+  for (size_t chunk_start = 0; chunk_start < url_ids.size();
+       chunk_start += kBatchSize) {
+    const size_t chunk_end = std::min(chunk_start + kBatchSize, url_ids.size());
+    const size_t chunk_size = chunk_end - chunk_start;
+
+    std::string sql = "SELECT" HISTORY_URL_ROW_FIELDS "FROM urls WHERE id IN (";
+    sql.reserve(sql.size() + chunk_size * 2);
+    for (size_t j = 0; j < chunk_size; ++j) {
+      if (j > 0) {
+        sql.push_back(',');
+      }
+      sql.push_back('?');
+    }
+    sql.push_back(')');
+
+    sql::Statement statement(GetDB().GetUniqueStatement(sql));
+
+    for (size_t j = 0; j < chunk_size; ++j) {
+      statement.BindInt64(static_cast<int>(j), url_ids[chunk_start + j]);
+    }
+
+    while (statement.Step()) {
+      URLRow row;
+      if (FillURLRow(statement, &row)) {
+        rows.emplace_back(row.id(), std::move(row));
+      }
+    }
+
+    if (!statement.Succeeded()) {
+      return false;
+    }
+  }
+  *url_rows = base::flat_map<URLID, URLRow>(std::move(rows));
+  return true;
 }
 
 URLID URLDatabase::GetRowForURL(const GURL& url, URLRow* info) {

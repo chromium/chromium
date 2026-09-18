@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_id.h"
@@ -66,6 +68,12 @@ class URLDatabase {
   // Looks up a url given an id. Fills info with the data. Returns true on
   // success and false otherwise.
   bool GetURLRow(URLID url_id, URLRow* info);
+
+  // Looks up multiple URLs given their IDs. Clears `url_rows` and populates
+  // it with the found rows, keyed by URLID. Returns true on success (even if
+  // some IDs were not found in the database).
+  bool GetURLRows(base::span<const URLID> url_ids,
+                  base::flat_map<URLID, URLRow>* url_rows);
 
   // Looks up the given URL and if it exists, fills the given pointers with the
   // associated info and returns the ID of that URL. If the info pointer is
