@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
 
 U_NAMESPACE_BEGIN
@@ -17,9 +18,8 @@ U_NAMESPACE_END
 namespace base {
 namespace test {
 
-// In unit tests, prefer ScopedRestoreICUDefaultLocale over
-// calling base::i18n::SetICUDefaultLocale() directly. This scoper makes it
-// harder to accidentally forget to reset the locale.
+// DEPRECATED: prefer base::i18n::ScopedDefaultIcuLocale, which takes a
+// type-safe base::i18n::LanguageTag instead of a locale string.
 class ScopedRestoreICUDefaultLocale {
  public:
   ScopedRestoreICUDefaultLocale();
@@ -30,7 +30,7 @@ class ScopedRestoreICUDefaultLocale {
   ~ScopedRestoreICUDefaultLocale();
 
  private:
-  const std::string default_locale_;
+  const i18n::ScopedDefaultIcuLocale scoped_locale_;
 };
 
 // In unit tests, prefer ScopedRestoreDefaultTimezone over
