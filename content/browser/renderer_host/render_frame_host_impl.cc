@@ -10418,8 +10418,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     blink::NavigationDownloadPolicy download_policy;
 
     MaybeRecordAdClickMainFrameNavigationMetrics(
-        /*initiator_frame=*/this, /*target_frame=*/target_frame,
-        validated_params_url, params->user_gesture, params->started_by_ad);
+        /*initiator_frame=*/this, params->user_gesture, params->started_by_ad);
 
     target_frame->frame_tree_node()->navigator().NavigateFromFrameProxy(
         target_frame, validated_params_url,
@@ -10452,17 +10451,11 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
 
     // Try recording the AdClickMainFrameNavigation use counter for navigation
     // targeting this page's main frame, or targeting a new tab.
-    if (params->disposition != WindowOpenDisposition::CURRENT_TAB) {
-      // A different tab is navigating, but we don't have the target frame yet.
-      // Set `target_frame` to nullptr and we should get another chance to
-      // record it in BeginNavigation.
+    if (params->disposition != WindowOpenDisposition::CURRENT_TAB ||
+        IsOutermostMainFrame()) {
       MaybeRecordAdClickMainFrameNavigationMetrics(
-          /*initiator_frame=*/initiator_frame, /*target_frame=*/nullptr, GURL(),
-          params->user_gesture, params->started_by_ad);
-    } else if (IsOutermostMainFrame()) {
-      MaybeRecordAdClickMainFrameNavigationMetrics(
-          /*initiator_frame=*/initiator_frame, /*target_frame=*/this,
-          validated_url, params->user_gesture, params->started_by_ad);
+          /*initiator_frame=*/initiator_frame, params->user_gesture,
+          params->started_by_ad);
     }
   }
 
@@ -10772,8 +10765,8 @@ void RenderFrameHostImpl::CreateNewWindow(
 
   if (params->started_with_transient_activation) {
     MaybeRecordAdClickMainFrameNavigationMetrics(
-        /*initiator_frame=*/this, /*target_frame=*/nullptr, GURL(),
-        params->started_with_transient_activation, params->started_by_ad);
+        /*initiator_frame=*/this, params->started_with_transient_activation,
+        params->started_by_ad);
   }
 
   if (is_new_browsing_instance || !new_frame_tree) {
@@ -11937,8 +11930,7 @@ void RenderFrameHostImpl::BeginNavigation(
         begin_params->initiator_frame_token.value());
     if (IsOutermostMainFrame()) {
       MaybeRecordAdClickMainFrameNavigationMetrics(
-          /*initiator_frame=*/initiator_frame, /*target_frame=*/this,
-          validated_common_params->url,
+          /*initiator_frame=*/initiator_frame,
           begin_params->started_with_transient_activation,
           begin_params->started_by_ad);
     }

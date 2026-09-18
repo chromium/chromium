@@ -1128,58 +1128,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(HasAdNavWithoutGestureUseCounter(url));
 }
 
-IN_PROC_BROWSER_TEST_F(AdClickMetricsBrowserTest,
-                       LocationAssign_FromAdScriptWithoutGesture_SameSite) {
-  GURL url =
-      embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  GURL new_url = embedded_test_server()->GetURL(
-      "a.com", "/ad_tagging/frame_factory.html?same_site=true");
-
-  content::TestNavigationObserver navigation_observer(GetWebContents());
-  // Use a script that is tagged as an ad.
-  EXPECT_TRUE(content::ExecJs(
-      GetWebContents()->GetPrimaryMainFrame(),
-      content::JsReplace("executeLocationAssignFromAdScript($1)", new_url),
-      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  navigation_observer.Wait();
-
-  EXPECT_FALSE(
-      navigation_observer.last_navigation_started_with_transient_activation());
-  EXPECT_TRUE(navigation_observer.last_navigation_started_by_ad());
-
-  NavigateAwayToFlushUseCounterUKM(GetWebContents());
-
-  EXPECT_FALSE(HasAdNavWithoutGestureUseCounter(url));
-  EXPECT_FALSE(HasAdClickMainFrameNavigationUseCounterForUrl(url));
-}
-
-IN_PROC_BROWSER_TEST_F(AdClickMetricsBrowserTest,
-                       LocationAssign_FromAdScriptWithoutGesture) {
-  GURL url =
-      embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  GURL new_url =
-      embedded_test_server()->GetURL("c.com", "/ad_tagging/frame_factory.html");
-
-  content::TestNavigationObserver navigation_observer(GetWebContents());
-  // Use a script that is tagged as an ad.
-  EXPECT_TRUE(content::ExecJs(
-      GetWebContents()->GetPrimaryMainFrame(),
-      content::JsReplace("executeLocationAssignFromAdScript($1)", new_url),
-      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  navigation_observer.Wait();
-
-  EXPECT_FALSE(
-      navigation_observer.last_navigation_started_with_transient_activation());
-  EXPECT_TRUE(navigation_observer.last_navigation_started_by_ad());
-
-  NavigateAwayToFlushUseCounterUKM(GetWebContents());
-
-  EXPECT_TRUE(HasAdNavWithoutGestureUseCounter(url));
-}
 
 IN_PROC_BROWSER_TEST_F(AdClickMetricsBrowserTest,
                        WindowOpen_FromNonAdScriptWithGesture) {
