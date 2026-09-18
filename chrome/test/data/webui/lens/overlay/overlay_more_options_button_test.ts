@@ -135,4 +135,65 @@ suite('OverlayFeedbackButton', () => {
     assertEquals(UserAction.kSendFeedback, action);
     return testBrowserProxy.handler.whenCalled('feedbackRequestedByOverlay');
   });
+
+  test(
+      'verify focus moving outside more options closes more options menu',
+      async () => {
+        const moreOptionsMenu =
+            lensOverlayElement.shadowRoot!.querySelector<HTMLElement>(
+                '#moreOptionsMenu');
+        lensOverlayElement.$.moreOptionsButton.click();
+        await waitAfterNextRender(lensOverlayElement);
+        assertEquals(window.getComputedStyle(moreOptionsMenu!).display, 'flex');
+        assertTrue(lensOverlayElement.getMoreOptionsMenuVisibleForTesting());
+
+        lensOverlayElement.$.moreOptions.dispatchEvent(new FocusEvent(
+            'focusout',
+            {bubbles: true, relatedTarget: lensOverlayElement.$.closeButton}));
+        await waitAfterNextRender(lensOverlayElement);
+        assertEquals(window.getComputedStyle(moreOptionsMenu!).display, 'none');
+        assertFalse(lensOverlayElement.getMoreOptionsMenuVisibleForTesting());
+      });
+
+  test(
+      'verify focus leaving the overlay closes more options menu', async () => {
+        const moreOptionsMenu =
+            lensOverlayElement.shadowRoot!.querySelector<HTMLElement>(
+                '#moreOptionsMenu');
+        lensOverlayElement.$.moreOptionsButton.click();
+        await waitAfterNextRender(lensOverlayElement);
+        assertEquals(window.getComputedStyle(moreOptionsMenu!).display, 'flex');
+        assertTrue(lensOverlayElement.getMoreOptionsMenuVisibleForTesting());
+
+        // Clicking outside of the overlay's WebContents (e.g. on a side panel
+        // search result) fires a focusout with a null `relatedTarget`, since
+        // focus leaves the document entirely.
+        lensOverlayElement.$.moreOptions.dispatchEvent(
+            new FocusEvent('focusout', {bubbles: true, relatedTarget: null}));
+        await waitAfterNextRender(lensOverlayElement);
+        assertEquals(window.getComputedStyle(moreOptionsMenu!).display, 'none');
+        assertFalse(lensOverlayElement.getMoreOptionsMenuVisibleForTesting());
+      });
+
+  test(
+      'verify focus moving within more options keeps more options menu open',
+      async () => {
+        const moreOptionsMenu =
+            lensOverlayElement.shadowRoot!.querySelector<HTMLElement>(
+                '#moreOptionsMenu');
+        lensOverlayElement.$.moreOptionsButton.click();
+        await waitAfterNextRender(lensOverlayElement);
+        assertEquals(window.getComputedStyle(moreOptionsMenu!).display, 'flex');
+        assertTrue(lensOverlayElement.getMoreOptionsMenuVisibleForTesting());
+
+        // Tabbing from the button onto a menu item must not close the menu.
+        const menuItem =
+            moreOptionsMenu!.querySelector<HTMLElement>('.menu-item');
+        assertTrue(!!menuItem);
+        lensOverlayElement.$.moreOptions.dispatchEvent(new FocusEvent(
+            'focusout', {bubbles: true, relatedTarget: menuItem}));
+        await waitAfterNextRender(lensOverlayElement);
+        assertEquals(window.getComputedStyle(moreOptionsMenu!).display, 'flex');
+        assertTrue(lensOverlayElement.getMoreOptionsMenuVisibleForTesting());
+      });
 });
