@@ -683,10 +683,9 @@ void HidService::OnPermissionRevoked(const url::Origin& origin) {
       std::erase_if(watcher_ids_, [&](const auto& watcher_entry) {
         const auto* device_info =
             delegate->GetDeviceInfo(browser_context, watcher_entry.first);
-        if (!device_info)
-          return true;
-
-        if (delegate->HasDevicePermission(browser_context, render_frame_host_,
+        // Only retain the watcher if the device exists and permission is held.
+        if (device_info &&
+            delegate->HasDevicePermission(browser_context, render_frame_host_,
                                           origin_, *device_info)) {
           return false;
         }

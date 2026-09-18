@@ -56,11 +56,13 @@ namespace {
 
 using ::base::test::InvokeFuture;
 using ::base::test::RunClosure;
+using ::base::test::RunOnceClosure;
 using ::base::test::TestFuture;
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::ElementsAre;
 using ::testing::Expectation;
+using ::testing::Ref;
 using ::testing::Return;
 
 enum HidServiceCreationType {
@@ -1170,6 +1172,111 @@ TEST_P(HidServiceTest, OpenDevicesThenRevokePermission) {
   for (auto& connection : connections) {
     EXPECT_FALSE(connection.is_connected());
   }
+}
+
+TEST_P(HidServiceTest, RevokeDevicePermissionWithNullDeviceInfo) {
+  auto service_creation_type = GetParam();
+  const auto& service = GetService(service_creation_type);
+
+  EXPECT_CALL(hid_delegate(), HasDevicePermission).WillRepeatedly(Return(true));
+
+  auto device_info = device::mojom::HidDeviceInfo::New();
+  device_info->guid = kTestGuid;
+  ConnectDevice(*device_info);
+  CheckHidServiceConnectedState(service_creation_type, false);
+
+  FakeHidConnectionClient connection_client;
+  EXPECT_CALL(hid_delegate(), IncrementConnectionCount);
+  EXPECT_CALL(hid_delegate(), GetDeviceInfo)
+      .WillOnce(Return(device_info.get()));
+  auto connection = OpenDevice(service, device_info, connection_client);
+  CheckHidServiceConnectedState(service_creation_type, true);
+
+  // Configure GetDeviceInfo to return nullptr, simulating unavailable device
+  // info or null BrowserContext during permission revocation.
+  EXPECT_CALL(hid_delegate(), GetDeviceInfo(_, kTestGuid))
+      .WillOnce(Return(nullptr));
+
+  TestFuture<void> disconnect_future;
+  connection.set_disconnect_handler(disconnect_future.GetCallback());
+
+  TestFuture<void> decrement_future;
+  url::Origin origin = url::Origin::Create(GURL(kTestUrl));
+  EXPECT_CALL(hid_delegate(),
+              DecrementConnectionCount(GetBrowserContext(service_creation_type),
+                                       origin))
+      .WillOnce(RunOnceClosure(decrement_future.GetCallback()));
+
+  hid_delegate().OnPermissionRevoked(origin);
+
+  EXPECT_TRUE(decrement_future.Wait());
+  EXPECT_TRUE(disconnect_future.Wait());
+  CheckHidServiceConnectedState(service_creation_type, false);
+  EXPECT_FALSE(connection.is_connected());
+}
+
+TEST_P(HidServiceTest, RevokeDevicePermissionPartialMultiDevice) {
+  auto service_creation_type = GetParam();
+  const auto& service = GetService(service_creation_type);
+
+  EXPECT_CALL(hid_delegate(), HasDevicePermission).WillRepeatedly(Return(true));
+
+  const std::string kGuid1 = "guid-1";
+  const std::string kGuid2 = "guid-2";
+
+  auto device_info1 = device::mojom::HidDeviceInfo::New();
+  device_info1->guid = kGuid1;
+  ConnectDevice(*device_info1);
+
+  auto device_info2 = device::mojom::HidDeviceInfo::New();
+  device_info2->guid = kGuid2;
+  ConnectDevice(*device_info2);
+
+  CheckHidServiceConnectedState(service_creation_type, false);
+
+  FakeHidConnectionClient connection_client1;
+  FakeHidConnectionClient connection_client2;
+
+  EXPECT_CALL(hid_delegate(), IncrementConnectionCount).Times(2);
+  EXPECT_CALL(hid_delegate(), GetDeviceInfo)
+      .WillOnce(Return(device_info1.get()))
+      .WillOnce(Return(device_info2.get()));
+
+  auto connection1 = OpenDevice(service, device_info1, connection_client1);
+  auto connection2 = OpenDevice(service, device_info2, connection_client2);
+  CheckHidServiceConnectedState(service_creation_type, true);
+
+  // Device 1 returns nullptr for GetDeviceInfo, while Device 2 returns valid
+  // info and retains permission.
+  EXPECT_CALL(hid_delegate(), GetDeviceInfo(_, kGuid1))
+      .WillOnce(Return(nullptr));
+  EXPECT_CALL(hid_delegate(), GetDeviceInfo(_, kGuid2))
+      .WillOnce(Return(device_info2.get()));
+  EXPECT_CALL(hid_delegate(), HasDevicePermission(_, _, _, Ref(*device_info2)))
+      .WillOnce(Return(true));
+
+  TestFuture<void> disconnect_future1;
+  connection1.set_disconnect_handler(disconnect_future1.GetCallback());
+
+  TestFuture<void> decrement_future;
+  url::Origin origin = url::Origin::Create(GURL(kTestUrl));
+  EXPECT_CALL(hid_delegate(), DecrementConnectionCount(_, origin))
+      .WillRepeatedly(Return());
+  EXPECT_CALL(hid_delegate(),
+              DecrementConnectionCount(GetBrowserContext(service_creation_type),
+                                       origin))
+      .WillOnce(RunOnceClosure(decrement_future.GetCallback()))
+      .RetiresOnSaturation();
+
+  hid_delegate().OnPermissionRevoked(origin);
+
+  EXPECT_TRUE(decrement_future.Wait());
+  EXPECT_TRUE(disconnect_future1.Wait());
+
+  // Device 1 was severed and disconnected, but Device 2 remains connected.
+  EXPECT_FALSE(connection1.is_connected());
+  EXPECT_TRUE(connection2.is_connected());
+  CheckHidServiceConnectedState(service_creation_type, true);
 }
 
 TEST_P(HidServiceTest, OpenDevicesThenHidServiceReset) {
