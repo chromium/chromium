@@ -224,4 +224,16 @@ TEST(ConsentKitUrlBuilderTest, BuildUrlWithDarkMode) {
   EXPECT_EQ(presentation_params[1].GetInt(), 2);  // 2 is DARK
 }
 
+TEST(ConsentKitUrlBuilderTest, BuildWebViewUrl) {
+  ConsentKitUrlBuilder builder;
+  builder.SetUseWebViewEndpoint(true);
+
+  GURL url = builder.Build();
+
+  ASSERT_TRUE(url.is_valid());
+  EXPECT_EQ(url.path(), "/signedin/embedded/landing");
+  std::string value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(url, "origin", &value));
+}
+
 }  // namespace drive
