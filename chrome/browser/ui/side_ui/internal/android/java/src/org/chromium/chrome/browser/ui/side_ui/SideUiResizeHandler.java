@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
@@ -47,33 +48,51 @@ import java.lang.annotation.RetentionPolicy;
 /* package */ final class SideUiResizeHandler implements View.OnTouchListener {
 
     /**
-     * Gesture transitions on the handle, recorded for every touch event except {@link
-     * MotionEvent#ACTION_MOVE} with a drag in progress, which fires per frame. The expected states
-     * are recorded as well, so that the unexpected ones can be read as a rate.
+     * Gesture transitions on the handle. Both {@link MotionEvent#ACTION_MOVE} states fire per
+     * frame, so they are throttled to {@link #MOVE_THROTTLE_MS} and can be compared against each
+     * other. The other states are recorded once per touch event, so that the unexpected ones can be
+     * read as a rate over the expected ones.
      */
     // LINT.IfChange(AndroidSideUiResizeHandleTouchState)
     @IntDef({
         TouchState.DRAG_STARTED,
-        TouchState.DRAG_STARTED_WITH_STALE_DRAG,
+        TouchState.MOVE_WITH_DRAG,
         TouchState.COMMITTED_ON_UP,
         TouchState.COMMITTED_ON_CANCEL,
+        TouchState.DRAG_STARTED_WITH_STALE_DRAG,
+        TouchState.MOVE_WITHOUT_DRAG,
         TouchState.UP_WITHOUT_DRAG,
-        TouchState.CANCEL_WITHOUT_DRAG,
-        TouchState.MOVE_WITHOUT_DRAG
+        TouchState.CANCEL_WITHOUT_DRAG
     })
     @Retention(RetentionPolicy.SOURCE)
     /* package */ @interface TouchState {
+        // Expected states, in the order a gesture goes through them.
         int DRAG_STARTED = 0;
-        int DRAG_STARTED_WITH_STALE_DRAG = 1;
+        int MOVE_WITH_DRAG = 1;
         int COMMITTED_ON_UP = 2;
         int COMMITTED_ON_CANCEL = 3;
-        int UP_WITHOUT_DRAG = 4;
-        int CANCEL_WITHOUT_DRAG = 5;
-        int MOVE_WITHOUT_DRAG = 6;
-        int COUNT = 7;
+
+        // Unexpected states, in the same order.
+        int DRAG_STARTED_WITH_STALE_DRAG = 4;
+        int MOVE_WITHOUT_DRAG = 5;
+        int UP_WITHOUT_DRAG = 6;
+        int CANCEL_WITHOUT_DRAG = 7;
+        int COUNT = 8;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidSideUiResizeHandleTouchState)
+
+    /**
+     * The minimum time between two {@link MotionEvent#ACTION_MOVE} records, in ms. Moves fire per
+     * frame, so they are throttled to keep them from swamping the other states.
+     */
+    private static final int MOVE_THROTTLE_MS = 50;
+
+    /**
+     * The value the move timestamps are reset to, one throttle window before the epoch of {@link
+     * SystemClock#elapsedRealtime()}, so that the next move of either state is never throttled.
+     */
+    private static final long NO_MOVE_RECORDED = -MOVE_THROTTLE_MS;
 
     /* package */ static final String TOUCH_STATE_HISTOGRAM =
             "Android.SideUi.ResizeHandle.TouchState";
@@ -92,6 +111,20 @@ import java.lang.annotation.RetentionPolicy;
      * The container's width in px when the in-progress drag started, or null if there isn't one.
      */
     private @Nullable @Px Integer mDragStartWidthPx;
+
+    /**
+     * The {@link SystemClock#elapsedRealtime()} of the last {@link TouchState#MOVE_WITH_DRAG}
+     * record, or {@link #NO_MOVE_RECORDED} if none was recorded since the last {@link
+     * MotionEvent#ACTION_DOWN}.
+     */
+    private long mLastMoveWithDragRecordTimeMs = NO_MOVE_RECORDED;
+
+    /**
+     * The {@link SystemClock#elapsedRealtime()} of the last {@link TouchState#MOVE_WITHOUT_DRAG}
+     * record, or {@link #NO_MOVE_RECORDED} if none was recorded since the last {@link
+     * MotionEvent#ACTION_DOWN}.
+     */
+    private long mLastMoveWithoutDragRecordTimeMs = NO_MOVE_RECORDED;
 
     /**
      * @param context The {@link Context} used to create the handle {@link View}.
@@ -155,6 +188,9 @@ import java.lang.annotation.RetentionPolicy;
                         isDragging()
                                 ? TouchState.DRAG_STARTED_WITH_STALE_DRAG
                                 : TouchState.DRAG_STARTED);
+                // Let the next gesture record its first move of either state right away.
+                mLastMoveWithDragRecordTimeMs = NO_MOVE_RECORDED;
+                mLastMoveWithoutDragRecordTimeMs = NO_MOVE_RECORDED;
                 mDragStartRawX = event.getRawX();
                 mDragStartWidthPx = mContainer.getView().getWidth();
                 // Make sure no ancestor steals the gesture halfway through the drag.
@@ -163,11 +199,18 @@ import java.lang.annotation.RetentionPolicy;
                 }
                 return true;
             case MotionEvent.ACTION_MOVE:
+                long nowMs = SystemClock.elapsedRealtime();
                 if (!isDragging()) {
-                    recordTouchState(TouchState.MOVE_WITHOUT_DRAG);
+                    if (nowMs - mLastMoveWithoutDragRecordTimeMs >= MOVE_THROTTLE_MS) {
+                        recordTouchState(TouchState.MOVE_WITHOUT_DRAG);
+                        mLastMoveWithoutDragRecordTimeMs = nowMs;
+                    }
                     return false;
                 }
-                // Not recorded: this fires per frame and would swamp every other state.
+                if (nowMs - mLastMoveWithDragRecordTimeMs >= MOVE_THROTTLE_MS) {
+                    recordTouchState(TouchState.MOVE_WITH_DRAG);
+                    mLastMoveWithDragRecordTimeMs = nowMs;
+                }
                 mContainer.onResizeLive(computeProposedWidthPx(event));
                 return true;
             case MotionEvent.ACTION_UP:

@@ -479,12 +479,13 @@ chromium-metrics-reviews@google.com.
 
 <enum name="AndroidSideUiResizeHandleTouchState">
   <int value="0" label="Drag started"/>
-  <int value="1" label="Drag started while a stale drag was in progress"/>
+  <int value="1" label="ACTION_MOVE with a drag in progress"/>
   <int value="2" label="Drag committed on ACTION_UP"/>
   <int value="3" label="Drag committed on ACTION_CANCEL"/>
-  <int value="4" label="ACTION_UP without a drag in progress"/>
-  <int value="5" label="ACTION_CANCEL without a drag in progress"/>
-  <int value="6" label="ACTION_MOVE without a drag in progress"/>
+  <int value="4" label="Drag started while a stale drag was in progress"/>
+  <int value="5" label="ACTION_MOVE without a drag in progress"/>
+  <int value="6" label="ACTION_UP without a drag in progress"/>
+  <int value="7" label="ACTION_CANCEL without a drag in progress"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/side_ui/internal/android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiResizeHandler.java:AndroidSideUiResizeHandleTouchState) -->

@@ -125,6 +125,7 @@ public class SideUiResizeHandlerTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(TOUCH_STATE_HISTOGRAM, TouchState.DRAG_STARTED)
+                        .expectIntRecord(TOUCH_STATE_HISTOGRAM, TouchState.MOVE_WITH_DRAG)
                         .expectIntRecord(TOUCH_STATE_HISTOGRAM, TouchState.COMMITTED_ON_UP)
                         // Recorded by the trailing event below.
                         .expectIntRecord(TOUCH_STATE_HISTOGRAM, TouchState.MOVE_WITHOUT_DRAG)
@@ -164,6 +165,7 @@ public class SideUiResizeHandlerTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(TOUCH_STATE_HISTOGRAM, TouchState.DRAG_STARTED)
+                        .expectIntRecord(TOUCH_STATE_HISTOGRAM, TouchState.MOVE_WITH_DRAG)
                         .expectIntRecord(TOUCH_STATE_HISTOGRAM, TouchState.COMMITTED_ON_CANCEL)
                         // Recorded by the trailing event below.
                         .expectIntRecord(TOUCH_STATE_HISTOGRAM, TouchState.MOVE_WITHOUT_DRAG)
@@ -190,8 +192,10 @@ public class SideUiResizeHandlerTest {
                         .expectIntRecord(TOUCH_STATE_HISTOGRAM, TouchState.MOVE_WITHOUT_DRAG)
                         .build();
 
+        // The second move is throttled, so only one record is expected.
         dispatch(handler, MotionEvent.ACTION_MOVE, 150f);
-        dispatch(handler, MotionEvent.ACTION_UP, 150f);
+        dispatch(handler, MotionEvent.ACTION_MOVE, 160f);
+        dispatch(handler, MotionEvent.ACTION_UP, 160f);
 
         verify(mSideUiContainer, never()).onResizeLive(anyInt());
         verify(mSideUiContainer, never()).onResizeCommitted(anyInt());
@@ -204,6 +208,7 @@ public class SideUiResizeHandlerTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(TOUCH_STATE_HISTOGRAM, TouchState.DRAG_STARTED)
+                        .expectIntRecord(TOUCH_STATE_HISTOGRAM, TouchState.MOVE_WITH_DRAG)
                         .expectIntRecord(
                                 TOUCH_STATE_HISTOGRAM, TouchState.DRAG_STARTED_WITH_STALE_DRAG)
                         .build();
