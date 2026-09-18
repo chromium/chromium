@@ -4,6 +4,7 @@
 
 source_set("contextual_cueing") {
   sources = [
+    "contextual_cueing_enums.cc",
     "contextual_cueing_enums.h",
     "contextual_cueing_utils.cc",
     "contextual_cueing_utils.h",

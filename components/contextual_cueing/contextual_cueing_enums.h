@@ -88,6 +88,8 @@ enum class ContextualCueingDecision {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingDecision)
 
+const char* GetName(ContextualCueingDecision decision);
+
 // LINT.IfChange(ContextualCueingInteraction)
 enum class ContextualCueingInteraction {
   kCueClicked = 0,
@@ -98,6 +100,8 @@ enum class ContextualCueingInteraction {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingInteraction)
 
+const char* GetName(ContextualCueingInteraction interaction);
+
 // LINT.IfChange(CueFormFactor)
 enum class CueFormFactor {
   kIcon = 0,
@@ -106,6 +110,8 @@ enum class CueFormFactor {
   kMaxValue = kAnchoredMessage,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:CueFormFactor)
+
+const char* GetName(CueFormFactor form_factor);
 
 }  // namespace contextual_cueing
 

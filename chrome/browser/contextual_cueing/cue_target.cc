@@ -32,6 +32,15 @@ const char* GetName(CueTargetType type) {
   }
 }
 
+const char* GetName(CueIntrusiveness intrusiveness) {
+  switch (intrusiveness) {
+    case CueIntrusiveness::kLoud:
+      return "Loud";
+    case CueIntrusiveness::kQuiet:
+      return "Quiet";
+  }
+}
+
 bool CueTarget::SupportsIntrusiveness(CueIntrusiveness intrusiveness) const {
   if (RequiresModelExecution()) {
     return intrusiveness == CueIntrusiveness::kLoud;
