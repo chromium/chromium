@@ -14,9 +14,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,9 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.RequestContext;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
@@ -38,8 +33,7 @@ import java.util.Arrays;
 
 /** Unit tests for OptimizationGuideBridge. */
 // TODO(kamalchoudhury): Include requestContextMetadata when Logic in production code is completed
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class OptimizationGuideBridgeUnitTest {
     private static final String TEST_URL = "https://testurl.com/";
     private static final String TEST_URL2 = "https://testurl2.com/";
@@ -57,9 +51,6 @@ public class OptimizationGuideBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"OptimizationHints"})
     public void testRegisterOptimizationTypes() {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(1);
         bridge.registerOptimizationTypes(
@@ -78,9 +69,6 @@ public class OptimizationGuideBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"OptimizationHints"})
     public void testRegisterOptimizationTypes_withoutNativeBridge() {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(0);
         bridge.registerOptimizationTypes(
@@ -93,9 +81,6 @@ public class OptimizationGuideBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"OptimizationHints"})
     public void testRegisterOptimizationTypes_noOptimizationTypes() {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(1);
         bridge.registerOptimizationTypes(null);
@@ -104,9 +89,6 @@ public class OptimizationGuideBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"OptimizationHints"})
     public void testCanApplyOptimization_withoutNativeBridge() {
         GURL gurl = new GURL(TEST_URL);
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(0);
@@ -124,9 +106,6 @@ public class OptimizationGuideBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"OptimizationHints"})
     public void testCanApplyOptimization() {
         GURL gurl = new GURL(TEST_URL);
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(1);
@@ -142,9 +121,6 @@ public class OptimizationGuideBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"OptimizationHints"})
     public void testCanApplyOptimizationOnDemand_withoutNativeBridge() {
         GURL gurl = new GURL(TEST_URL);
         GURL gurl2 = new GURL(TEST_URL2);
@@ -195,9 +171,6 @@ public class OptimizationGuideBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"OptimizationHints"})
     public void testCanApplyOptimizationOnDemand() {
         GURL gurl = new GURL(TEST_URL);
         GURL gurl2 = new GURL(TEST_URL2);

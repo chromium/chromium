@@ -11,9 +11,6 @@ import static org.mockito.Mockito.verify;
 
 import android.util.Base64;
 
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.filters.SmallTest;
-
 import com.google.protobuf.ByteString;
 
 import org.junit.Assert;
@@ -26,8 +23,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -36,16 +32,13 @@ import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.HintsProto.KeyRepresentation;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.components.optimization_guide.proto.PushNotificationProto.HintNotificationPayload;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
 /** Unit tests for OptimizationGuidePushNotificationManager. */
-@RunWith(BaseJUnit4ClassRunner.class)
-// Batch this per class since the test is setting global feature state.
-@Batch(Batch.PER_CLASS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class OptimizationGuidePushNotificationManagerUnitTest {
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
 
@@ -78,15 +71,12 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
 
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-
         for (OptimizationType type : OptimizationType.values()) {
             OptimizationGuidePushNotificationManager.clearCacheForOptimizationType(type);
         }
     }
 
     @Test
-    @SmallTest
     public void testBasicSuccessCaseNoNative() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
 
@@ -124,8 +114,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testNativeCalled() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(true);
 
@@ -146,7 +134,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testClearAllOnFeatureOff() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
 
@@ -176,7 +163,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisabledTest(message = "https://crbug.com/458450979")
     public void testOverflow() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
@@ -225,7 +211,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIdenticalDeduplicated() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
 
@@ -251,7 +236,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIncompleteNotPersisted() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
 
@@ -285,7 +269,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPayloadOptional() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
 
@@ -304,7 +287,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCacheDecodingErrors_Success() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
 
@@ -336,7 +318,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCacheDecodingErrors_InvalidProtobuf() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
 
@@ -374,7 +355,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCacheDecodingErrors_Base64Error() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
 

@@ -92,32 +92,27 @@ android_library("native_java_unittests") {
   sources = [ "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridgeNativeUnitTest.java" ]
 }
 
-android_library("unit_device_javatests") {
-  testonly = true
-
+robolectric_library("junit") {
   sources = [
-    "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridgeUnitTest.java",
-    "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuidePushNotificationManagerUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridgeUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuidePushNotificationManagerUnitTest.java",
   ]
 
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:base_junit_test_support",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
-    "//chrome/test/android:chrome_java_unit_test_support",
     "//components/optimization_guide/proto:optimization_guide_proto_java",
-    "//content/public/android:content_full_java",
-    "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:protobuf_lite_runtime_java",
-    "//third_party/androidx:androidx_test_rules_java",
-    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 }
 
