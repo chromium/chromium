@@ -297,6 +297,7 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
   // class.
   void InjectTimerTaskRunnerToService(MediaEngagementService* service) {
     service->clock_ = &test_clock_;
+    service->task_runner_for_test_ = task_runner_;
 
     for (auto observer : service->contents_observers_)
       observer.second->SetTaskRunnerForTest(task_runner_);
@@ -306,6 +307,7 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
   void InjectTimerTaskRunner() {
     if (!injected_clock_) {
       GetService()->clock_ = &test_clock_;
+      GetService()->task_runner_for_test_ = task_runner_;
       injected_clock_ = true;
     }
 
@@ -884,15 +886,8 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementSessionRestoreBrowserTest,
   ExpectScores(MediaEngagementService::Get(browser->GetProfile()), url, 1, 0);
 }
 
-// TODO(crbug.com/541174985): Flaky on LSAN builders.
-// TODO(crbug.com/551552509): Flaky on Linux.
-#if defined(LEAK_SANITIZER) || BUILDFLAG(IS_LINUX)
-#define MAYBE_RestoredSession_Playback_MEI DISABLED_RestoredSession_Playback_MEI
-#else
-#define MAYBE_RestoredSession_Playback_MEI RestoredSession_Playback_MEI
-#endif
 IN_PROC_BROWSER_TEST_F(MediaEngagementSessionRestoreBrowserTest,
-                       MAYBE_RestoredSession_Playback_MEI) {
+                       RestoredSession_Playback_MEI) {
   const GURL& url = http_server().GetURL("/engagement_test.html");
 
   LoadTestPageAndWaitForPlayAndAudible(url, false);
@@ -1061,15 +1056,4 @@ IN_PROC_BROWSER_TEST_F(
 
   base::RunLoop().RunUntilIdle();
 }
-
-
-
-// TODO(crbug.com/349253812): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_SendEngagementLevelToRenderFrameOnFencedFrame \
-  DISABLED_SendEngagementLevelToRenderFrameOnFencedFrame
-#else
-#define MAYBE_SendEngagementLevelToRenderFrameOnFencedFrame \
-  SendEngagementLevelToRenderFrameOnFencedFrame
-#endif
 

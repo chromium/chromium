@@ -60,7 +60,7 @@ MediaEngagementContentsObserver::MediaEngagementContentsObserver(
     MediaEngagementService* service)
     : WebContentsObserver(web_contents),
       service_(service),
-      task_runner_(nullptr) {}
+      task_runner_(service->task_runner_for_test_) {}
 
 MediaEngagementContentsObserver::~MediaEngagementContentsObserver() = default;
 
@@ -93,6 +93,17 @@ base::TimeDelta MediaEngagementContentsObserver::PlaybackTimer::Elapsed()
 void MediaEngagementContentsObserver::PlaybackTimer::Reset() {
   recorded_time_ = base::TimeDelta();
   start_time_.reset();
+}
+
+void MediaEngagementContentsObserver::PlaybackTimer::SetClockForTest(
+    base::Clock* clock) {
+  if (IsRunning()) {
+    clock_ = clock;
+    start_time_ = clock_->Now();
+    recorded_time_ = base::TimeDelta();
+  } else {
+    clock_ = clock;
+  }
 }
 
 void MediaEngagementContentsObserver::WebContentsDestroyed() {
@@ -468,6 +479,23 @@ void MediaEngagementContentsObserver::UpdateAudioContextTimer() {
 void MediaEngagementContentsObserver::SetTaskRunnerForTest(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   task_runner_ = std::move(task_runner);
+  for (auto& pair : player_states_) {
+    pair.second.playback_timer->SetClockForTest(service_->clock_);  // IN-TEST
+  }
+  if (playback_timer_.IsRunning()) {
+    playback_timer_.Stop();
+    UpdatePageTimer();
+  }
+  if (audio_context_timer_.IsRunning()) {
+    audio_context_timer_.Stop();
+    UpdateAudioContextTimer();
+  }
+  for (auto& pair : audible_players_) {
+    if (pair.second.second && pair.second.second->IsRunning()) {
+      pair.second.second = nullptr;
+      UpdatePlayerTimer(pair.first);
+    }
+  }
 }
 
 void MediaEngagementContentsObserver::ReadyToCommitNavigation(

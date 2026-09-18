@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/media_engagement_score.h"
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"
@@ -24,6 +25,7 @@ class Profile;
 
 namespace base {
 class Clock;
+class SequencedTaskRunner;
 }
 
 namespace content {
@@ -125,6 +127,9 @@ class MediaEngagementService : public KeyedService,
 
   // An internal clock for testing.
   raw_ptr<base::Clock> clock_;
+
+  // An internal task runner for testing.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_for_test_;
 
   std::vector<MediaEngagementScore> GetAllStoredScores() const;
 

@@ -124,6 +124,7 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
     bool IsRunning() const;
     base::TimeDelta Elapsed() const;
     void Reset();
+    void SetClockForTest(base::Clock* clock);
 
    private:
     // The clock is owned by |service_| which already owns |this|.
