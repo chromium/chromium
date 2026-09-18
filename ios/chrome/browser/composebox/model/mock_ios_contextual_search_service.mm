@@ -168,5 +168,8 @@ MockIOSContextualSearchService::CreateTestingProfileService(
       ios::TemplateURLServiceFactory::GetForProfile(profile),
       static_cast<variations::VariationsClient*>(variations_client_service),
       ::GetChannel(),
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+      std::string(GetApplicationContext()
+                      ->GetApplicationLocaleStorage()
+                      ->GetTag()
+                      .tag_string()));
 }

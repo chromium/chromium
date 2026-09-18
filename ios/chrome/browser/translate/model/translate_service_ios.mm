@@ -47,7 +47,10 @@ void TranslateServiceIOS::Initialize() {
   download_manager->set_url_loader_factory(
       GetApplicationContext()->GetSharedURLLoaderFactory());
   download_manager->set_application_locale(
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+      std::string(GetApplicationContext()
+                      ->GetApplicationLocaleStorage()
+                      ->GetTag()
+                      .tag_string()));
 }
 
 // static

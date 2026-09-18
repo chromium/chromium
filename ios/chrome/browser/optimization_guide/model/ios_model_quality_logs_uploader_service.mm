@@ -64,7 +64,10 @@ void IOSModelQualityLogsUploaderService::SetSystemMetadata(
   metrics::MetricsLog::RecordCoreSystemProfile(
       metrics::GetVersionString(), metrics::AsProtobufChannel(::GetChannel()),
       /*is_extended_stable_channel=*/false,
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+      std::string(GetApplicationContext()
+                      ->GetApplicationLocaleStorage()
+                      ->GetTag()
+                      .tag_string()),
       /*package_name=*/std::string(),
       logging_metadata->mutable_system_profile());
   // Remove identifiers for privacy reasons.

@@ -27,7 +27,7 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState(
           &prediction_model_store_,
           shared_url_loader_factory,
           local_state,
-          application_locale_storage->Get(),
+          std::string(application_locale_storage->GetTag().tag_string()),
           OptimizationGuideLogger::GetInstance(),
           base::BindRepeating(&unzip::LaunchInProcessUnzipper)) {
   prediction_manager_.MaybeInitializeModelDownloads(

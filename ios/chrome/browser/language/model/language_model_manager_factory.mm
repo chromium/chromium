@@ -56,8 +56,10 @@ LanguageModelManagerFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   std::unique_ptr<language::LanguageModelManager> manager =
       std::make_unique<language::LanguageModelManager>(
-          profile->GetPrefs(),
-          GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+          profile->GetPrefs(), GetApplicationContext()
+                                   ->GetApplicationLocaleStorage()
+                                   ->GetTag()
+                                   .tag_string());
   PrepareLanguageModels(profile, manager.get());
   return manager;
 }

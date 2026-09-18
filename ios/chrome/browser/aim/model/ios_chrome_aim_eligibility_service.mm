@@ -46,8 +46,10 @@ std::string IOSChromeAimEligibilityService::GetLocaleImpl() const {
   std::string locale =
       GetApplicationContext() &&
               GetApplicationContext()->GetApplicationLocaleStorage()
-          ? GetApplicationContext()->GetApplicationLocaleStorage()->Get(
-                ApplicationLocaleStorage::LocaleFormat::kBCP47)
+          ? std::string(GetApplicationContext()
+                            ->GetApplicationLocaleStorage()
+                            ->GetTag()
+                            .tag_string())
           : "";
   if (locale.empty()) {
     NSString* locale_identifier = [NSLocale currentLocale].localeIdentifier;

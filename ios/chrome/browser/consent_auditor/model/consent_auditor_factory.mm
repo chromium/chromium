@@ -63,6 +63,9 @@ std::unique_ptr<KeyedService> ConsentAuditorFactory::BuildServiceInstanceFor(
   // The locale doesn't change at runtime, so we can pass it directly.
   return std::make_unique<consent_auditor::ConsentAuditorImpl>(
       std::move(consent_sync_bridge),
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+      std::string(GetApplicationContext()
+                      ->GetApplicationLocaleStorage()
+                      ->GetTag()
+                      .tag_string()),
       base::DefaultClock::GetInstance());
 }

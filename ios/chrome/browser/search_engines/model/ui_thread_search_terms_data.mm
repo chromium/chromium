@@ -47,7 +47,10 @@ std::string UIThreadSearchTermsData::GoogleBaseURLValue() const {
 
 std::string UIThreadSearchTermsData::GetApplicationLocale() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  return std::string(GetApplicationContext()
+                         ->GetApplicationLocaleStorage()
+                         ->GetTag()
+                         .tag_string());
 }
 
 std::u16string UIThreadSearchTermsData::GetRlzParameterValue(

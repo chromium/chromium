@@ -147,7 +147,10 @@ std::string IOSConfigurator::GetChannel() const {
 }
 
 std::string IOSConfigurator::GetLang() const {
-  return GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  return std::string(GetApplicationContext()
+                         ->GetApplicationLocaleStorage()
+                         ->GetTag()
+                         .tag_string());
 }
 
 std::string IOSConfigurator::GetOSLongName() const {

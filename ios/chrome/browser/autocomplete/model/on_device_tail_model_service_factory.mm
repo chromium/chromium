@@ -41,8 +41,10 @@ OnDeviceTailModelServiceFactory::~OnDeviceTailModelServiceFactory() = default;
 std::unique_ptr<KeyedService>
 OnDeviceTailModelServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  const std::string locale =
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  const std::string locale(GetApplicationContext()
+                               ->GetApplicationLocaleStorage()
+                               ->GetTag()
+                               .tag_string());
   if (!OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled(locale)) {
     return nullptr;
   }

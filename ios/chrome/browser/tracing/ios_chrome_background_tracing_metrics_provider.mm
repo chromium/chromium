@@ -41,7 +41,10 @@ void IOSChromeBackgroundTracingMetricsProvider::RecordCoreSystemProfileMetrics(
     metrics::MetricsLog::RecordCoreSystemProfile(
         metrics::GetVersionString(), metrics::AsProtobufChannel(::GetChannel()),
         /*is_extended_stable_channel=*/false,
-        GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+        std::string(GetApplicationContext()
+                        ->GetApplicationLocaleStorage()
+                        ->GetTag()
+                        .tag_string()),
         /*package_name=*/std::string(), &system_profile_proto);
   }
 }

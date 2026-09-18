@@ -77,7 +77,9 @@ IOSPersonalContextEligibilityServiceFactory::BuildServiceInstanceFor(
   ApplicationContext* application_context = GetApplicationContext();
   std::string locale =
       application_context && application_context->GetApplicationLocaleStorage()
-          ? application_context->GetApplicationLocaleStorage()->Get()
+          ? std::string(application_context->GetApplicationLocaleStorage()
+                            ->GetTag()
+                            .tag_string())
           : std::string();
 
   return std::make_unique<

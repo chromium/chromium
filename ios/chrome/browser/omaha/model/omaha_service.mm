@@ -124,8 +124,10 @@ void OmahaService::Start(
                      shared_url_loader_factory->Clone()),
       std::move(upgrade_recommended_callback));
 
-  service->locale_lang_ =
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  service->locale_lang_ = GetApplicationContext()
+                              ->GetApplicationLocaleStorage()
+                              ->GetTag()
+                              .tag_string();
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&OmahaService::SendOrScheduleNextPing,
                                 base::Unretained(service)));

@@ -294,7 +294,10 @@ std::string IOSChromeMetricsServiceClient::GetApplicationLocale() {
     return language::GetApplicationLocale(
         GetApplicationContext()->GetLocalState());
   }
-  return GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  return std::string(GetApplicationContext()
+                         ->GetApplicationLocaleStorage()
+                         ->GetTag()
+                         .tag_string());
 }
 
 const network_time::NetworkTimeTracker*

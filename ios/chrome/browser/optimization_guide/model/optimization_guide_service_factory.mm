@@ -62,8 +62,12 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
 
   auto service = std::make_unique<OptimizationGuideService>(
       proto_db_provider, profile_path, profile->IsOffTheRecord(),
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get(), hint_store,
-      profile->GetPrefs(), BrowserListFactory::GetForProfile(profile),
+      std::string(GetApplicationContext()
+                      ->GetApplicationLocaleStorage()
+                      ->GetTag()
+                      .tag_string()),
+      hint_store, profile->GetPrefs(),
+      BrowserListFactory::GetForProfile(profile),
       GetApplicationContext()->GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile), std::move(delegate),
       base::BindRepeating(&ProfileIOS::GetNetworkContext,
