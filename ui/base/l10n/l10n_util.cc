@@ -49,7 +49,7 @@
 #include "ui/base/ui_base_paths.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/locale_utils.h"
+#include "base/i18n/android_locale.h"
 #include "ui/base/l10n/l10n_util_android.h"
 #endif
 
@@ -146,10 +146,7 @@ std::vector<LanguageTag> GetCandidates() {
   }
 #elif BUILDFLAG(IS_ANDROID)
   // On Android, query java.util.Locale for the default locale.
-  if (std::optional<LanguageTag> language_tag =
-          GetLanguageTagFromString(base::android::GetDefaultLocaleString())) {
-    candidates.push_back(*std::move(language_tag));
-  }
+  candidates.push_back(base::i18n::GetAndroidDefaultLocale());
 #elif defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS)
   for (const char* var_name : {"LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG"}) {
     const char* val = std::getenv(var_name);

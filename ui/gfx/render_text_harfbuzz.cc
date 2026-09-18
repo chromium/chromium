@@ -63,7 +63,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/locale_utils.h"
+#include "base/i18n/android_locale.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #include <hb.h>
@@ -1544,7 +1544,7 @@ void ShapeRunWithFont(const ShapeRunWithFontInput& in,
 std::string GetApplicationLocale() {
 #if BUILDFLAG(IS_ANDROID)
   // TODO(etienneb): Android locale should work the same way than base locale.
-  return base::android::GetDefaultLocaleString();
+  return std::string(base::i18n::GetAndroidDefaultLocale().tag_string());
 #else
   return base::i18n::GetConfiguredLocale();
 #endif

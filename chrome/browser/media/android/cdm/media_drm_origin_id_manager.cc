@@ -9,10 +9,10 @@
 #include <utility>
 
 #include "base/android/android_info.h"
-#include "base/android/locale_utils.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/android_locale.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -78,7 +78,8 @@ std::string_view GetDetailedUserAgent() {
   // Use NoDestructor to avoid computing this string multiple times for every
   // provisioning request.
   static const base::NoDestructor<std::string> user_agent([] {
-    std::string locale = base::android::GetDefaultLocaleString();
+    std::string locale =
+        std::string(base::i18n::GetAndroidDefaultLocale().tag_string());
     // Example Format: Widevine CDM v1.0 (Linux; U; Android 35;
     // en-US; Build/BP1A.250505.005; user)
     return base::StringPrintf(

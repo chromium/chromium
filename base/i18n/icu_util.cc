@@ -38,7 +38,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_assets.h"
 #include "base/android/jni_android.h"
-#include "base/android/locale_utils.h"
+#include "base/i18n/android_locale.h"
 #endif
 
 #if BUILDFLAG(IS_IOS)
@@ -382,7 +382,7 @@ bool DoCommonInitialization() {
   // in PostEarlyInitialization. Initialize the default ICU locale using the
   // system default.
   if (base::android::IsJavaAvailable()) {
-    SetICUDefaultLocale(base::android::GetDefaultLocaleString());
+    SetICUDefaultLocale(base::i18n::GetAndroidDefaultLocale().tag_string());
   } else {
     SetICUDefaultLocale("en-US");
   }

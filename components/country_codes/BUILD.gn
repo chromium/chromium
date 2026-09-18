@@ -10,7 +10,10 @@ component("country_codes") {
     "country_codes.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//base:i18n",
+  ]
 
   deps = [ "//components/prefs" ]
 

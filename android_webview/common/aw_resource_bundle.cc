@@ -5,10 +5,10 @@
 #include "android_webview/common/aw_resource_bundle.h"
 
 #include "android_webview/common/aw_descriptors.h"
-#include "base/android/locale_utils.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/i18n/android_locale.h"
 #include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
@@ -29,7 +29,7 @@ void InitIcuAndResourceBundleBrowserSide() {
   TRACE_EVENT0("startup", "InitIcuAndResourceBundleBrowserSide");
   ui::SetLocalePaksStoredInApk(true);
   std::string locale_string = ui::ResourceBundle::InitSharedInstanceWithLocale(
-      base::android::GetDefaultLocaleString(), nullptr,
+      std::string(base::i18n::GetAndroidDefaultLocale().tag_string()), nullptr,
       ui::ResourceBundle::LOAD_COMMON_RESOURCES);
   std::optional<LanguageTag> locale_tag =
       GetLanguageTagFromString(locale_string);

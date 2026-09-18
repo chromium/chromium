@@ -1280,8 +1280,6 @@ component("base") {
       "android/java_handler_thread.h",
       "android/java_runtime.cc",
       "android/java_runtime.h",
-      "android/locale_utils.cc",
-      "android/locale_utils.h",
       "android/meminfo_dump_provider.cc",
       "android/meminfo_dump_provider.h",
       "android/memory_pressure_listener_android.cc",
@@ -3288,6 +3286,14 @@ component("i18n") {
 
   if (is_win) {
     public_deps += [ "//base/i18n:win_i18n" ]
+  }
+
+  if (is_android) {
+    sources += [
+      "i18n/android_locale.cc",
+      "i18n/android_locale.h",
+    ]
+    deps += [ ":base_jni" ]
   }
 }
 

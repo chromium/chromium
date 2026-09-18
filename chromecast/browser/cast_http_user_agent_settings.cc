@@ -14,7 +14,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/locale_utils.h"
+#include "base/i18n/android_locale.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -22,7 +22,7 @@ namespace {
 std::string GetLocale() {
 #if BUILDFLAG(IS_ANDROID)
   // TODO(byungchul): Use transient locale set when new app starts.
-  return base::android::GetDefaultLocaleString();
+  return std::string(base::i18n::GetAndroidDefaultLocale().tag_string());
 #else
   return base::i18n::GetConfiguredLocale();
 #endif

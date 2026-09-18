@@ -34,7 +34,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_assets.h"
-#include "base/android/locale_utils.h"
+#include "base/i18n/android_locale.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #endif
 
@@ -167,7 +167,7 @@ void ContentTestSuiteBase::InitializeResourceBundle() {
   if (!ui::ResourceBundle::HasSharedInstance()) {
 #if BUILDFLAG(IS_ANDROID)
     ui::ResourceBundle::InitSharedInstanceWithLocale(
-        base::android::GetDefaultLocaleString(), NULL,
+        std::string(base::i18n::GetAndroidDefaultLocale().tag_string()), NULL,
         ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
 
     ui::LoadMainAndroidPackFile("assets/content_shell.pak",

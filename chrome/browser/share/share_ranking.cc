@@ -27,7 +27,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/android/locale_utils.h"
+#include "base/i18n/android_locale.h"
 
 // Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/share/jni_headers/ShareRankingBridge_jni.h"
@@ -538,7 +538,8 @@ ShareRanking::Ranking ShareRanking::GetDefaultInitialRankingForType(
   // blocking disk IO (!) while it checks whether we have a string pack for the
   // various eligible locales. We don't care about strings here, so just go with
   // what the system is set to, and don't block on the UI thread.
-  std::string locale = base::android::GetDefaultLocaleString();
+  std::string locale =
+      std::string(base::i18n::GetAndroidDefaultLocale().tag_string());
 #else
   std::string locale = l10n_util::GetApplicationLocale("", false);
 #endif

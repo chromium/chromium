@@ -24,7 +24,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/locale_utils.h"
+#include "base/i18n/android_locale.h"
 #endif
 
 namespace country_codes {
@@ -129,7 +129,7 @@ CountryId GetCurrentCountryID() {
 #elif BUILDFLAG(IS_ANDROID)
 
 CountryId GetCurrentCountryID() {
-  return CountryId(base::android::GetDefaultCountryCode());
+  return CountryId(base::i18n::GetAndroidDefaultCountryCode());
 }
 
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)

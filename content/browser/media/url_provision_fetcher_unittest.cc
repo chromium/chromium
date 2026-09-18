@@ -25,7 +25,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
-#include "base/android/locale_utils.h"
+#include "base/i18n/android_locale.h"
 #include "base/strings/stringprintf.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -100,7 +100,7 @@ TEST_F(URLProvisionFetcherTest, UserAgent) {
   expected_user_agent = base::StringPrintf(
       "Widevine CDM v1.0 (Linux; U; Android %d; %s; Build/%s; %s)",
       base::android::android_info::sdk_int(),
-      base::android::GetDefaultLocaleString().c_str(),
+      std::string(base::i18n::GetAndroidDefaultLocale().tag_string()).c_str(),
       base::android::android_info::android_build_id(),
       base::android::android_info::build_type());
 #else
