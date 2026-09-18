@@ -713,12 +713,13 @@ export class SettingsContactInfoPageElement extends
     this.setOtpFillingToggleChecked_(true);
   }
 
-  private async onGmailOtpFillingPrefOrAccountChange_(
-      showToggle: boolean,
-      accountInfo: chrome.autofillPrivate.AccountInfo|null) {
-    const currentEmail = (showToggle && accountInfo) ? accountInfo.email : null;
+  private async onGmailOtpFillingPrefOrAccountChange_() {
+    const currentEmail =
+        (this.showGmailOtpFillingToggle_ && this.accountInfo_) ?
+        this.accountInfo_.email :
+        null;
 
-    if (!showToggle || !currentEmail) {
+    if (!this.showGmailOtpFillingToggle_ || !currentEmail) {
       this.resetOtpFillingState_();
       return;
     }
