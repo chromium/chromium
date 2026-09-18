@@ -151,3 +151,4 @@ crbug.com/563223568 GeminiContainerTestCase/testOpenAndCloseGeminiTwice [ Pass F
 crbug.com/563223568 GeminiContainerTestCase/testOpenSettingsFromToolbar [ Pass Failure ]
 crbug.com/493866369 [ Device ] SendTabToSelfCoordinatorTestCase/testShareTabViaDirectTargetAndVerifyErrorSnackbarOnNetworkFailure [ Pass Failure ]
 crbug.com/493866369 [ Device ] SendTabToSelfCoordinatorTestCase/testShareTabViaDirectTargetInShareSheetAndVerifySuccessSnackbar [ Pass Failure ]
+crbug.com/563344456 BubblePresenterTestCase/testSendTabToSelfOmniboxIPH [ Pass Failure ]
