@@ -15,6 +15,8 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_command_line.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
@@ -2550,7 +2552,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
 
   base::HistogramTester histogram_tester;
 
-  handler_->RequestReadabilityDistillation();
+  handler_->RequestReadabilityDistillation(base::DoNothing());
   run_loop.Run();
 
   // After distillation by RequestReadabilityDistillation, ensure the
@@ -2559,6 +2561,168 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.TimeFromTreeChangedToDistillationComplete",
       0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerDistillerTest,
+    RequestReadabilityDistillation_LegacyPathSendsContentToPage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  handler_ = CreateHandler();
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Wait for the initial distillation triggered by navigation to complete.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return handler_->dom_distiller_content().has_value(); }));
+
+  // The distilled content still reaches the renderer through UpdateContent,
+  // even though the request itself discards the callback.
+  base::RunLoop run_loop;
+  std::string received_title;
+  std::string received_content;
+  EXPECT_CALL(page_, UpdateContent(testing::_, testing::_))
+      .WillOnce([&](const std::string& title, const std::string& content) {
+        received_title = title;
+        received_content = content;
+        run_loop.Quit();
+      });
+
+  handler_->RequestReadabilityDistillation(base::DoNothing());
+  run_loop.Run();
+
+  EXPECT_FALSE(received_title.empty());
+  EXPECT_FALSE(received_content.empty());
+}
+
+class ReadAnythingUntrustedPageHandlerDistillerRefactorTest
+    : public ReadAnythingUntrustedPageHandlerTest {
+ public:
+  ReadAnythingUntrustedPageHandlerDistillerRefactorTest()
+      : ReadAnythingUntrustedPageHandlerTest(
+            {features::kReadAnythingWithReadability,
+             features::kReadAnythingDistillerRefactor},
+            {features::kReadAnythingReadAloudPhraseHighlighting}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
+    RequestReadabilityDistillation_Success_RunsCallbackWithContent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  handler_ = CreateHandler();
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  base::test::TestFuture<const std::string&, const std::string&> future;
+  handler_->RequestReadabilityDistillation(future.GetCallback());
+
+  auto [title, content] = future.Get();
+  EXPECT_FALSE(title.empty());
+  EXPECT_FALSE(content.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
+    RequestReadabilityDistillation_NonHttpUrl_RunsCallbackWithEmptyContent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  handler_ = CreateHandler();
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  base::test::TestFuture<const std::string&, const std::string&> future;
+  handler_->RequestReadabilityDistillation(future.GetCallback());
+
+  auto [title, content] = future.Get();
+  EXPECT_TRUE(title.empty());
+  EXPECT_TRUE(content.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
+    RequestReadabilityDistillation_OverwrittenCallbackAbortsFirst) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  handler_ = CreateHandler();
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  base::test::TestFuture<const std::string&, const std::string&> future1;
+  base::test::TestFuture<const std::string&, const std::string&> future2;
+
+  handler_->RequestReadabilityDistillation(future1.GetCallback());
+  // Immediately issue a second request, superseding the first.
+  handler_->RequestReadabilityDistillation(future2.GetCallback());
+
+  auto [title1, content1] = future1.Get();
+  EXPECT_TRUE(title1.empty());
+  EXPECT_TRUE(content1.empty());
+
+  auto [title2, content2] = future2.Get();
+  EXPECT_FALSE(title2.empty());
+  EXPECT_FALSE(content2.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
+    RequestReadabilityDistillation_UnstartedRequestAbortsPrevious) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  handler_ = CreateHandler();
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  base::test::TestFuture<const std::string&, const std::string&> future1;
+  base::test::TestFuture<const std::string&, const std::string&> future2;
+
+  handler_->RequestReadabilityDistillation(future1.GetCallback());
+
+  // Issue a second request that can't start a distillation. The first request
+  // is superseded even though the second one never runs.
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kEnableAutomation);
+  handler_->RequestReadabilityDistillation(future2.GetCallback());
+
+  auto [title1, content1] = future1.Get();
+  EXPECT_TRUE(title1.empty());
+  EXPECT_TRUE(content1.empty());
+
+  auto [title2, content2] = future2.Get();
+  EXPECT_TRUE(title2.empty());
+  EXPECT_TRUE(content2.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
+    RequestReadabilityDistillation_NavigationAbortsInFlightRequest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  handler_ = CreateHandler();
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  base::test::TestFuture<const std::string&, const std::string&> future;
+  handler_->RequestReadabilityDistillation(future.GetCallback());
+
+  // Simulate PrimaryPageChanged while distillation is in flight.
+  handler_->PrimaryPageChanged();
+
+  auto [title, content] = future.Get();
+  EXPECT_TRUE(title.empty());
+  EXPECT_TRUE(content.empty());
 }
 
 // In order to test that Readability isn't used in automated tests,

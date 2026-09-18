@@ -67,7 +67,12 @@ class MockAXTreeDistiller : public AXTreeDistiller {
 class MockReadAnythingUntrustedPageHandler
     : public read_anything::mojom::UntrustedPageHandler {
  public:
-  MockReadAnythingUntrustedPageHandler() = default;
+  MockReadAnythingUntrustedPageHandler() {
+    ON_CALL(*this, RequestReadabilityDistillation(testing::_))
+        .WillByDefault([](RequestReadabilityDistillationCallback callback) {
+          std::move(callback).Run("", "");
+        });
+  }
 
   MOCK_METHOD(void,
               GetDependencyParserModel,
@@ -156,7 +161,10 @@ class MockReadAnythingUntrustedPageHandler
               (read_anything::mojom::ReadAnythingDistillationState new_state),
               (override));
   MOCK_METHOD(void, OnSpeechEngineStalled, (), (override));
-  MOCK_METHOD(void, RequestReadabilityDistillation, (), (override));
+  MOCK_METHOD(void,
+              RequestReadabilityDistillation,
+              (RequestReadabilityDistillationCallback),
+              (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
   BindNewPipeAndPassRemote() {
@@ -6096,7 +6104,8 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
   // Sanity check: Ensure content is actually there before we start.
   ASSERT_EQ(controller().GetDomDistillerContentHtml(), stale_content);
 
-  EXPECT_CALL(page_handler_, RequestReadabilityDistillation()).Times(1);
+  EXPECT_CALL(page_handler_, RequestReadabilityDistillation(testing::_))
+      .Times(1);
 
   ProcessModelUpdates();
 
@@ -6127,7 +6136,8 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
 
   // Since the URL of the active tree is still "https://example.com/page",
   // RequestReadabilityDistillation() should NOT be called.
-  EXPECT_CALL(page_handler_, RequestReadabilityDistillation()).Times(0);
+  EXPECT_CALL(page_handler_, RequestReadabilityDistillation(testing::_))
+      .Times(0);
 
   ProcessModelUpdates();
 
@@ -6174,7 +6184,8 @@ TEST_F(
 
   // Since the URL changed to "https://example.com/page2",
   // RequestReadabilityDistillation() SHOULD be called.
-  EXPECT_CALL(page_handler_, RequestReadabilityDistillation()).Times(1);
+  EXPECT_CALL(page_handler_, RequestReadabilityDistillation(testing::_))
+      .Times(1);
 
   ProcessModelUpdates();
 

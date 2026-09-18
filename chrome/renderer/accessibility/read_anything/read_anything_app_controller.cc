@@ -17,6 +17,7 @@
 #include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "base/json/string_escape.h"
@@ -453,7 +454,11 @@ void ReadAnythingAppController::ProcessModelUpdates() {
       model_.set_requires_readability_distillation(false);
     } else {
       PrepareForNewContentDistillation();
-      page_handler_->RequestReadabilityDistillation();
+      // In the legacy path, distillation results are sent via UpdateContent()
+      // rather than this callback, so the callback does not need to be handled.
+      // TODO(b/543987370): Implement readability interface path when refactor
+      // flag is enabled.
+      page_handler_->RequestReadabilityDistillation(base::DoNothing());
     }
   }
 
@@ -622,7 +627,10 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
       SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
                                kDistillationInProgress);
 
-      page_handler_->RequestReadabilityDistillation();
+      // Distillation data will be received via this callback once refactored.
+      // TODO(b/543987370): Replace with ReadabilityDistiller to handle the
+      // callback.
+      page_handler_->RequestReadabilityDistillation(base::DoNothing());
     }
     return;
   }
