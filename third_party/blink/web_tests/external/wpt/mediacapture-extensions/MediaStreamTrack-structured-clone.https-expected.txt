@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Transferring a MediaStreamTrack within the same realm yields a live track and detaches the original
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'structuredClone' on 'Window': MediaStreamTrack could not be serialized."
+[FAIL] A failed serialization leaves the track transferable
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'structuredClone' on 'Window': MediaStreamTrack could not be serialized."
+[FAIL] Transferring a detached track throws
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'structuredClone' on 'Window': MediaStreamTrack could not be serialized."
+[FAIL] A track in the transfer list is detached even if the value does not reference it
+  assert_equals: expected "ended" but got "live"
+Harness: the test ran to completion.
+

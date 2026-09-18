@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Stopping the original track does not end a transferred clone
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTracks with clones cannot be transferred."
+[FAIL] Destroying the capturing context ends a transferred track
+  assert_true: got a track from the iframe: {"error":"DataCloneError: Failed to execute 'postMessage' on 'Window': MediaStreamTrack could not be serialized."} expected true got false
+Harness: the test ran to completion.
+

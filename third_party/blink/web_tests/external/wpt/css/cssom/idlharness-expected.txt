@@ -1,13 +1,9 @@
 This is a testharness.js-based test.
-Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSSStyleRule interface: existence and properties of interface object
   assert_equals: prototype of CSSStyleRule is not CSSGroupingRule expected function "function CSSGroupingRule() { [native code] }" but got function "function CSSRule() { [native code] }"
 [FAIL] CSSStyleRule interface: existence and properties of interface prototype object
   assert_equals: prototype of CSSStyleRule.prototype is not CSSGroupingRule.prototype expected object "[object CSSGroupingRule]" but got object "[object CSSRule]"
-[FAIL] CSSImportRule interface: sheet.cssRules[0] must inherit property "layerName" with the proper type
-  assert_equals: expected "string" but got "object"
-[FAIL] CSSImportRule interface: sheet.cssRules[0] must inherit property "supportsText" with the proper type
-  assert_equals: expected "string" but got "object"
 [FAIL] CSSPageDescriptors interface: existence and properties of interface object
   assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
 [FAIL] CSSPageDescriptors interface object length

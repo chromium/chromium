@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Terminating a worker holding a transferred track leaves the source's other tracks live
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTracks with clones cannot be transferred."
+[FAIL] Terminating a worker while a track is in transfer to it leaves the source's other tracks live
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTracks with clones cannot be transferred."
+[FAIL] Terminating a worker holding a clone made in the worker leaves the source's other tracks live
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTracks with clones cannot be transferred."
+[FAIL] A worker closing itself while holding a transferred track leaves the source's other tracks live
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTracks with clones cannot be transferred."
+[FAIL] Terminating a worker holding the only track of a source lets a new capture start
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTracks with clones cannot be transferred."
+Harness: the test ran to completion.
+

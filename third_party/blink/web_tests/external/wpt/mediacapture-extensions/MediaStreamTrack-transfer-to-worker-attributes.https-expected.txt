@@ -1,0 +1,104 @@
+This is a testharness.js-based test.
+Found 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Transferring a audio track to a worker
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTrack could not be serialized."
+[FAIL] audio: id is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: kind is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: label is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: readyState is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: enabled is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: muted is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: contentHint is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: settings have the same keys
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: settings.deviceId is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: settings.groupId is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: settings.sampleRate is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: settings.sampleSize is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: settings.echoCancellation is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: settings.autoGainControl is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: settings.noiseSuppression is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: settings.latency is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: settings.channelCount is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: constraints have the same keys
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: constraints.deviceId.exact is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: constraints.channelCount is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: constraints.autoGainControl.ideal is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: constraints.advanced is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: transferred-from track is ended synchronously
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] audio: no ended event on the transferred-from track
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] Transferring a video track to a worker
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTrack could not be serialized."
+[FAIL] video: id is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: kind is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: label is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: readyState is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: enabled is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: muted is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: contentHint is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: settings have the same keys
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: settings.deviceId is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: settings.groupId is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: settings.width is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: settings.height is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: settings.frameRate is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: settings.aspectRatio is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: settings.facingMode is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: settings.resizeMode is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: constraints have the same keys
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: constraints.deviceId.exact is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: constraints.width is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: constraints.frameRate.max is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: constraints.advanced is preserved
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: transferred-from track is ended synchronously
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] video: no ended event on the transferred-from track
+  assert_not_equals: transfer succeeded got disallowed value undefined
+[FAIL] Transferring an ended track to a worker yields an ended track
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTrack has ended."
+Harness: the test ran to completion.
+

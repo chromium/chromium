@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] MediaStream, MediaStreamTrack and MediaStreamTrackEvent are exposed in a dedicated worker
+  assert_equals: expected "function" but got "undefined"
+[FAIL] An empty MediaStream can be constructed in a dedicated worker
+  promise_test: Unhandled rejection with value: object "Error: Worker: ReferenceError: MediaStream is not defined"
+[FAIL] A MediaStream can be constructed from transferred tracks in a dedicated worker
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTrack could not be serialized."
+[FAIL] A MediaStream can be constructed from another MediaStream in a dedicated worker
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTrack could not be serialized."
+[FAIL] MediaStream.getTrackById() works in a dedicated worker
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTrack could not be serialized."
+[FAIL] MediaStream.addTrack() and removeTrack() work in a dedicated worker
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTrack could not be serialized."
+[FAIL] MediaStream.clone() works in a dedicated worker
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTrack could not be serialized."
+[FAIL] MediaStreamTrackEvent can be constructed in a dedicated worker
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTrack could not be serialized."
+[FAIL] A MediaStream in a dedicated worker becomes inactive when its tracks are stopped
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': MediaStreamTrack could not be serialized."
+Harness: the test ran to completion.
+
