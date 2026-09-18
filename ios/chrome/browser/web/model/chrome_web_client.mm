@@ -718,12 +718,12 @@ bool ChromeWebClient::IsSmoothScrollingSupported() const {
          ios::provider::IsFullscreenSmoothScrollingSupported();
 }
 
-bool ChromeWebClient::IsUniversalOptOutEnabled(
+web::UniversalOptOutState ChromeWebClient::GetUniversalOptOutState(
     web::BrowserState* browser_state) const {
   if (!universal_optout::features::IsUniversalOptOutEnabled() ||
       !base::FeatureList::IsEnabled(
           universal_optout::features::kUniversalOptOutSettings)) {
-    return false;
+    return web::UniversalOptOutState::kNotEligible;
   }
 
   ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
@@ -731,5 +731,13 @@ bool ChromeWebClient::IsUniversalOptOutEnabled(
   PrefService* prefs = profile->GetPrefs();
   CHECK(prefs);
 
-  return prefs->GetBoolean(universal_optout::prefs::kUniversalOptOutEnabled);
+  if (prefs->GetBoolean(universal_optout::prefs::kUniversalOptOutEnabled)) {
+    return web::UniversalOptOutState::kEnabled;
+  }
+
+  if (prefs->GetBoolean(universal_optout::prefs::kUniversalOptOutEligible)) {
+    return web::UniversalOptOutState::kEligible;
+  }
+
+  return web::UniversalOptOutState::kNotEligible;
 }

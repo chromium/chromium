@@ -85,7 +85,7 @@ class ChromeWebClient : public web::WebClient {
   web::CobaltController* GetCobaltController(
       web::BrowserState* browser_state) const override;
   bool IsSmoothScrollingSupported() const override;
-  bool IsUniversalOptOutEnabled(
+  web::UniversalOptOutState GetUniversalOptOutState(
       web::BrowserState* browser_state) const override;
 
  private:

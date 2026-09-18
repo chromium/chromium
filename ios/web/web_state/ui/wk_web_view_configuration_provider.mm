@@ -230,7 +230,8 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
 
   if (@available(iOS 27, *)) {
     bool is_universal_opt_out_enabled =
-        GetWebClient()->IsUniversalOptOutEnabled(browser_state_);
+        GetWebClient()->GetUniversalOptOutState(browser_state_) ==
+        UniversalOptOutState::kEnabled;
     SetUniversalOptOutEnabled(is_universal_opt_out_enabled);
   }
 }

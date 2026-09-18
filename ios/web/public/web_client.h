@@ -62,6 +62,13 @@ enum class JSErrorReportLoggingLevel : short {
   FULL
 };
 
+// Represents the Universal Opt Out state for a browser state.
+enum class UniversalOptOutState {
+  kNotEligible,
+  kEligible,
+  kEnabled,
+};
+
 // Setter and getter for the client.  The client should be set early, before any
 // web code is called.
 void SetWebClient(WebClient* client);
@@ -245,8 +252,9 @@ class WebClient {
   // Returns whether smooth scrolling is supported.
   virtual bool IsSmoothScrollingSupported() const;
 
-  // Returns whether Universal Opt Out is enabled for `browser_state`.
-  virtual bool IsUniversalOptOutEnabled(BrowserState* browser_state) const;
+  // Returns the Universal Opt Out state for `browser_state`.
+  virtual UniversalOptOutState GetUniversalOptOutState(
+      BrowserState* browser_state) const;
 };
 
 }  // namespace web

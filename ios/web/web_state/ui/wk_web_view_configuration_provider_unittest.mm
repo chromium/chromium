@@ -101,6 +101,30 @@ API_AVAILABLE(ios(27)) {
                     .defaultWebpagePreferences.globalPrivacyControlEnabled);
   }
 }
+
+// Tests that ResetWithWebViewConfiguration updates defaultWebpagePreferences
+// based on GetUniversalOptOutState for iOS 27+.
+TEST_F(WKWebViewConfigurationProviderTest,
+       ResetWithWebViewConfigurationUniversalOptOut)
+API_AVAILABLE(ios(27)) {
+  if (@available(iOS 27, *)) {
+    GetWebClient()->SetUniversalOptOutState(UniversalOptOutState::kNotEligible);
+    WKWebViewConfigurationProvider& provider = GetProvider();
+    provider.ResetWithWebViewConfiguration(nil);
+    EXPECT_FALSE(provider.GetWebViewConfiguration()
+                     .defaultWebpagePreferences.globalPrivacyControlEnabled);
+
+    GetWebClient()->SetUniversalOptOutState(UniversalOptOutState::kEligible);
+    provider.ResetWithWebViewConfiguration(nil);
+    EXPECT_FALSE(provider.GetWebViewConfiguration()
+                     .defaultWebpagePreferences.globalPrivacyControlEnabled);
+
+    GetWebClient()->SetUniversalOptOutState(UniversalOptOutState::kEnabled);
+    provider.ResetWithWebViewConfiguration(nil);
+    EXPECT_TRUE(provider.GetWebViewConfiguration()
+                    .defaultWebpagePreferences.globalPrivacyControlEnabled);
+  }
+}
 #endif
 
 // Tests that internal configuration object can not be changed by clients.

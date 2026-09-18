@@ -662,9 +662,9 @@ TEST_F(ChromeWebClientTest, GetJavaScriptFeatures_ClientSideDetection) {
   }
 }
 
-// Tests that IsUniversalOptOutEnabled reflects the kUniversalOptOutEnabled
-// pref.
-TEST_F(ChromeWebClientTest, IsUniversalOptOutEnabled) {
+// Tests that GetUniversalOptOutState reflects the kUniversalOptOutEnabled
+// and kUniversalOptOutEligible prefs.
+TEST_F(ChromeWebClientTest, GetUniversalOptOutState) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
@@ -675,10 +675,19 @@ TEST_F(ChromeWebClientTest, IsUniversalOptOutEnabled) {
 
   ChromeWebClient web_client;
   profile()->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEligible, false);
+  profile()->GetPrefs()->SetBoolean(
       universal_optout::prefs::kUniversalOptOutEnabled, false);
-  EXPECT_FALSE(web_client.IsUniversalOptOutEnabled(profile()));
+  EXPECT_EQ(web::UniversalOptOutState::kNotEligible,
+            web_client.GetUniversalOptOutState(profile()));
+
+  profile()->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEligible, true);
+  EXPECT_EQ(web::UniversalOptOutState::kEligible,
+            web_client.GetUniversalOptOutState(profile()));
 
   profile()->GetPrefs()->SetBoolean(
       universal_optout::prefs::kUniversalOptOutEnabled, true);
-  EXPECT_TRUE(web_client.IsUniversalOptOutEnabled(profile()));
+  EXPECT_EQ(web::UniversalOptOutState::kEnabled,
+            web_client.GetUniversalOptOutState(profile()));
 }

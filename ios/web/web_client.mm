@@ -163,8 +163,9 @@ bool WebClient::IsSmoothScrollingSupported() const {
   return false;
 }
 
-bool WebClient::IsUniversalOptOutEnabled(BrowserState* browser_state) const {
-  return false;
+UniversalOptOutState WebClient::GetUniversalOptOutState(
+    BrowserState* browser_state) const {
+  return UniversalOptOutState::kNotEligible;
 }
 
 }  // namespace web
