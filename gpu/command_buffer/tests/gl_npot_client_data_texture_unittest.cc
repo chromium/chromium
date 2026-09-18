@@ -45,7 +45,7 @@ void BlitTexture(GLuint program) {
 
 }  // namespace
 
-class GLNPOTHostTwiddledTextureTest : public testing::TestWithParam<bool> {
+class GLNPOTClientDataTextureTest : public testing::TestWithParam<bool> {
  protected:
   void SetUp() override {
     GLManager::Options options;
@@ -53,7 +53,7 @@ class GLNPOTHostTwiddledTextureTest : public testing::TestWithParam<bool> {
     options.size = gfx::Size(256, 256);
 
     GpuDriverBugWorkarounds workarounds;
-    workarounds.use_tex_sub_image_for_host_twiddled_npot_uploads = GetParam();
+    workarounds.use_tex_sub_image_for_client_data_npot_uploads = GetParam();
     gl_.InitializeWithWorkarounds(options, workarounds);
 
     if (!IsApplicable()) {
@@ -104,13 +104,13 @@ class GLNPOTHostTwiddledTextureTest : public testing::TestWithParam<bool> {
   GLuint fbo_ = 0;
 };
 
-INSTANTIATE_TEST_SUITE_P(GLNPOTHostTwiddledTextureTests,
-                         GLNPOTHostTwiddledTextureTest,
+INSTANTIATE_TEST_SUITE_P(GLNPOTClientDataTextureTests,
+                         GLNPOTClientDataTextureTest,
                          ::testing::Bool());
 
 // Test that non-power-of-two uploads of RGB10_A2 with
 // UNSIGNED_INT_2_10_10_10_REV data succeed and verify texture contents.
-TEST_P(GLNPOTHostTwiddledTextureTest, RGB10A2) {
+TEST_P(GLNPOTClientDataTextureTest, RGB10A2) {
   if (!IsApplicable()) {
     return;
   }
@@ -185,7 +185,7 @@ TEST_P(GLNPOTHostTwiddledTextureTest, RGB10A2) {
 // Test that non-power-of-two uploads of SRGB8_ALPHA8 with UNSIGNED_BYTE data
 // succeed and verify texture contents, including non-default unpack alignment
 // and skip pixels.
-TEST_P(GLNPOTHostTwiddledTextureTest, SRGB8Alpha8) {
+TEST_P(GLNPOTClientDataTextureTest, SRGB8Alpha8) {
   if (!IsApplicable()) {
     return;
   }
