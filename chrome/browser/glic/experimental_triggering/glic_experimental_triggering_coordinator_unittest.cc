@@ -8,6 +8,7 @@
 #include <optional>
 #include <variant>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -308,7 +309,13 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest, NoRequestPayload) {
   EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
 }
 
-TEST_F(GlicExperimentalTriggeringCoordinatorTest, GetScreenshotRequest) {
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       GetScreenshotRequest_FeatureDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      features::kGlicExperimentalTriggeringScreenshot);
+
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
   ExperimentalTriggeringRequest request;
   request.version = 1;
   request.context_id = kTestContextId;
@@ -316,6 +323,45 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest, GetScreenshotRequest) {
   request.payload = GetScreenshotRequest{
       .public_key = {'k', 'e', 'y'},
       .auth_secret = {'s', 'e', 'c'},
+      .request_token = {'t', 'o', 'k', 'e', 'n'},
+  };
+
+  auto response = coordinator_->OnRequest(
+      kTestContextId, request,
+      ScopedIncomingMessageResultLogger(
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      update_future.GetRepeatingCallback(), nullptr);
+
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
+  EXPECT_EQ(response->task_update->data_type,
+            TaskUpdate::DataType::kErrorMessage);
+  EXPECT_EQ(response->task_update->data, "Screenshot feature is disabled.");
+
+  // Should also notify the callback with kErrorDisabled.
+  auto update = update_future.Take();
+  ASSERT_TRUE(update.screenshot_result.has_value());
+  EXPECT_EQ(update.screenshot_result->status,
+            ScreenshotResult::Status::kErrorDisabled);
+  EXPECT_EQ(update.screenshot_result->request_token,
+            std::vector<uint8_t>({'t', 'o', 'k', 'e', 'n'}));
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       GetScreenshotRequest_FeatureEnabled_NoInstance) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      features::kGlicExperimentalTriggeringScreenshot);
+
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  request.payload = GetScreenshotRequest{
+      .public_key = {'k', 'e', 'y'},
+      .auth_secret = {'s', 'e', 'c'},
+      .request_token = {'t', 'o', 'k', 'e', 'n'},
   };
 
   auto response = SendRequest(request);
@@ -324,6 +370,47 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest, GetScreenshotRequest) {
   EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
   EXPECT_EQ(response->task_update->data_type,
             TaskUpdate::DataType::kErrorMessage);
+  EXPECT_EQ(response->task_update->data,
+            "No active Glic instance available for screenshot.");
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       GetCapabilities_ReflectsStateAndFeatureFlag) {
+  // 1. When state is kUnavailable, capabilities is always empty.
+  EXPECT_TRUE(
+      GlicExperimentalTriggeringCoordinator::GetCapabilities(
+          syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable)
+          .empty());
+
+  // 2. When screenshot feature is disabled.
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(
+        features::kGlicExperimentalTriggeringScreenshot);
+
+    EXPECT_TRUE(GlicExperimentalTriggeringCoordinator::GetCapabilities(
+                    syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady)
+                    .empty());
+    EXPECT_TRUE(
+        GlicExperimentalTriggeringCoordinator::GetCapabilities(
+            syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn)
+            .empty());
+  }
+
+  // 3. When screenshot feature is enabled.
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(
+        features::kGlicExperimentalTriggeringScreenshot);
+
+    EXPECT_EQ(GlicExperimentalTriggeringCoordinator::GetCapabilities(
+                  syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady),
+              base::flat_set<std::string>{kGlicCapabilityScreenshot});
+    EXPECT_EQ(
+        GlicExperimentalTriggeringCoordinator::GetCapabilities(
+            syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn),
+        base::flat_set<std::string>{kGlicCapabilityScreenshot});
+  }
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorTest, UnrecognizedStopActuation) {
@@ -840,6 +927,12 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
        GetScreenshotRequest_InvalidRequest_EmptyRequestToken) {
+  // The invalid-request path is only reachable once the screenshot feature is
+  // enabled; otherwise the request is rejected as disabled.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      features::kGlicExperimentalTriggeringScreenshot);
+
   StartActuationSession();
 
   EXPECT_CALL(test_triggering_manager_, CaptureAndUploadEncryptedScreenshot)
@@ -882,6 +975,12 @@ class GlicExperimentalTriggeringCoordinatorScreenshotCaptureTest
 
 TEST_P(GlicExperimentalTriggeringCoordinatorScreenshotCaptureTest,
        HandlesCaptureResult) {
+  // The capture path is only reachable once the screenshot feature is enabled;
+  // otherwise the request is rejected up front as disabled.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      features::kGlicExperimentalTriggeringScreenshot);
+
   StartActuationSession();
 
   const auto& test_case = GetParam();

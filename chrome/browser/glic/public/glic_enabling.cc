@@ -29,6 +29,8 @@
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_coordinator.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
@@ -1581,6 +1583,12 @@ std::optional<int> GlicEnabling::GetExperimentalTriggeringVersion() const {
     return std::nullopt;
   }
   return kExperimentalTriggeringVersion;
+}
+
+base::flat_set<std::string>
+GlicEnabling::GetExperimentalTriggeringCapabilities() const {
+  return GlicExperimentalTriggeringCoordinator::GetCapabilities(
+      GetExperimentalTriggeringState());
 }
 
 RequiredExperimentalOptIn GlicEnabling::GetRequiredExperimentalOptIn() const {

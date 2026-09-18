@@ -11,6 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -523,6 +524,10 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // Returns the state of experimental triggering.
   syncer::DeviceInfo::GlicExperimentalTriggeringState
   GetExperimentalTriggeringState() const;
+
+  // Returns the capabilities supported for Glic experimental triggering, or
+  // an empty set if unavailable.
+  base::flat_set<std::string> GetExperimentalTriggeringCapabilities() const;
 
   // Returns the version of the Glic experimental triggering protocol
   // supported by the current client, or std::nullopt if unavailable.

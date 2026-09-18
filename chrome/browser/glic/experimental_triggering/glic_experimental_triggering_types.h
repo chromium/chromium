@@ -17,6 +17,9 @@
 
 namespace glic {
 
+// Capabilities supported for experimental triggering.
+inline constexpr char kGlicCapabilityScreenshot[] = "screenshot";
+
 // Outcome of a device opt-in request for experimental triggering.
 enum class DeviceOptInResult {
   kUnknown,

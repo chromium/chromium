@@ -850,6 +850,30 @@ class ExperimentalTriggeringUpdatesHandler
           sequence_generator_.GetNext());
     }
 
+    if (!base::FeatureList::IsEnabled(
+            features::kGlicExperimentalTriggeringScreenshot)) {
+      result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
+                                   kUnexpectedRequestPayload);
+      SendScreenshotResult(ScreenshotResult::Status::kErrorDisabled,
+                           /*file_token=*/std::string_view(),
+                           screenshot_req.request_token);
+      return CreateResponseMessage(context_id_, TaskUpdate::State::kFailed,
+                                   TaskUpdate::DataType::kErrorMessage,
+                                   "Screenshot feature is disabled.",
+                                   task_metadata,
+                                   sequence_generator_.GetNext());
+    }
+
+    if (screenshot_req.request_token.empty()) {
+      result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
+                                   kUnexpectedRequestPayload);
+      return CreateScreenshotResultResponse(
+          context_id_,
+          CreateScreenshotResult(
+              ScreenshotResult::Status::kErrorInvalidRequest),
+          task_metadata, sequence_generator_.GetNext());
+    }
+
     GlicInstance* instance = instance_.get();
     if (!instance) {
       result_logger.set_result(
@@ -871,16 +895,6 @@ class ExperimentalTriggeringUpdatesHandler
           TaskUpdate::DataType::kErrorMessage,
           "GlicExperimentalTriggeringManager is not available.", task_metadata,
           sequence_generator_.GetNext());
-    }
-
-    if (screenshot_req.request_token.empty()) {
-      result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
-                                   kUnexpectedRequestPayload);
-      return CreateScreenshotResultResponse(
-          context_id_,
-          CreateScreenshotResult(
-              ScreenshotResult::Status::kErrorInvalidRequest),
-          task_metadata, sequence_generator_.GetNext());
     }
 
     auto response = CreateResponseMessage(
@@ -1475,6 +1489,22 @@ void GlicExperimentalTriggeringCoordinator::OnUpdatesHandlerCleanup(
   if (it != context_id_to_updates_handler_map_.end()) {
     context_id_to_updates_handler_map_.erase(it);
   }
+}
+
+// static
+base::flat_set<std::string>
+GlicExperimentalTriggeringCoordinator::GetCapabilities(
+    syncer::DeviceInfo::GlicExperimentalTriggeringState state) {
+  if (state ==
+      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable) {
+    return {};
+  }
+  base::flat_set<std::string> capabilities;
+  if (base::FeatureList::IsEnabled(
+          features::kGlicExperimentalTriggeringScreenshot)) {
+    capabilities.insert(kGlicCapabilityScreenshot);
+  }
+  return capabilities;
 }
 
 }  // namespace glic

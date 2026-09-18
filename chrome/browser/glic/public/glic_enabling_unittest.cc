@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -19,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
@@ -1652,6 +1654,48 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
   EXPECT_TRUE(enabling.HasConsented());
   EXPECT_TRUE(enabling.GetUserEnabledActuationOnWeb());
   EXPECT_TRUE(enabling.GetExperimentalTriggeringEnabled());
+}
+
+TEST_F(GlicEnablingProfileReadyStateTestBase,
+       GetExperimentalTriggeringCapabilities_UnavailableReturnsEmpty) {
+  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
+  // With experimental triggering unavailable, capabilities must be empty.
+  EXPECT_TRUE(enabling.GetExperimentalTriggeringCapabilities().empty());
+}
+
+TEST_F(GlicEnablingProfileReadyStateTestBase,
+       GetExperimentalTriggeringCapabilities_ScreenshotFlag) {
+  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
+  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb,
+                                    true);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicExperimentalTriggeringEnabled,
+                                    true);
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicExperimentalTriggering},
+        /*disabled_features=*/{
+            features::kGlicExperimentalTriggeringScreenshot});
+
+    EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
+              syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
+    EXPECT_TRUE(enabling.GetExperimentalTriggeringCapabilities().empty());
+  }
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicExperimentalTriggering,
+                              features::kGlicExperimentalTriggeringScreenshot},
+        /*disabled_features=*/{});
+
+    EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
+              syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
+    EXPECT_EQ(enabling.GetExperimentalTriggeringCapabilities(),
+              base::flat_set<std::string>{kGlicCapabilityScreenshot});
+  }
 }
 
 class GlicEnablingCombinedObserverTest

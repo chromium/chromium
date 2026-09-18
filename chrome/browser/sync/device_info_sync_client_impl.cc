@@ -131,6 +131,15 @@ DeviceInfoSyncClientImpl::GetGlicExperimentalTriggeringVersion() const {
   return service->enabling().GetExperimentalTriggeringVersion();
 }
 
+base::flat_set<std::string>
+DeviceInfoSyncClientImpl::GetGlicExperimentalTriggeringCapabilities() const {
+  auto* service = glic::GlicKeyedService::Get(profile_);
+  if (!service) {
+    return {};
+  }
+  return service->enabling().GetExperimentalTriggeringCapabilities();
+}
+
 std::optional<syncer::DeviceInfo::PersonalContextInfo>
 DeviceInfoSyncClientImpl::GetLocalPersonalContextInfo() const {
   if (!base::FeatureList::IsEnabled(
