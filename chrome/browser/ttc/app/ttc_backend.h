@@ -10,6 +10,9 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/functional/callback.h"
+#include "base/values.h"
 #include "chrome/browser/ttc/app/public/tool_types.h"
 #include "url/gurl.h"
 
@@ -30,7 +33,10 @@ class TtcBackend {
                                          const std::string& error_message) = 0;
     virtual void OnTranscriptions(const std::string& input_transcription,
                                   const std::string& output_transcription) = 0;
-    virtual void OnAudioOutput(const std::vector<uint8_t>& audio_data,
+    // `audio_data` holds signed 16-bit PCM samples. The buffer is only valid
+    // for the duration of the call; implementations that retain the audio must
+    // copy it.
+    virtual void OnAudioOutput(base::span<const int16_t> audio_data,
                                int64_t sequence_number) = 0;
     virtual void OnGenerationStateChanged(bool started,
                                           bool completed,
@@ -49,8 +55,8 @@ class TtcBackend {
   // Sends dynamic tool definitions to the backend server.
   virtual void SendToolSetUpdate(const std::vector<ToolDefinition>& tools) = 0;
 
-  // Sends raw PCM audio chunk to the backend server.
-  virtual void SendAudioChunk(const std::vector<uint8_t>& audio_data) = 0;
+  // Sends a chunk of signed PCM16 audio to the backend server.
+  virtual void SendAudioChunk(base::span<const int16_t> audio_data) = 0;
 
   // Submits a user text query to the backend server.
   virtual void SendTextInput(const std::string& text) = 0;

@@ -65,7 +65,7 @@ class ConversationImpl : public Conversation, public TtcBackend::Observer {
                                const std::string& error_message) override;
   void OnTranscriptions(const std::string& input_transcription,
                         const std::string& output_transcription) override;
-  void OnAudioOutput(const std::vector<uint8_t>& audio_data,
+  void OnAudioOutput(base::span<const int16_t> audio_data,
                      int64_t sequence_number) override;
   void OnGenerationStateChanged(bool started,
                                 bool completed,
@@ -77,7 +77,7 @@ class ConversationImpl : public Conversation, public TtcBackend::Observer {
   TtcBackend* backend() { return backend_.get(); }
 
  private:
-  void OnCapturedAudio(const std::vector<uint8_t>& pcm_data,
+  void OnCapturedAudio(base::span<const int16_t> pcm_data,
                        const media::AudioParameters& params);
   void OnAudioEnergy(float energy);
   void OnPlaybackCompleted(int64_t sequence_number);

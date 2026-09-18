@@ -43,7 +43,7 @@ class TtcMesClient
   void set_observer(Observer* observer) override;
   void Connect() override;
   void SendToolSetUpdate(const std::vector<ToolDefinition>& tools) override;
-  void SendAudioChunk(const std::vector<uint8_t>& audio_data) override;
+  void SendAudioChunk(base::span<const int16_t> audio_data) override;
   void SendTextInput(const std::string& text) override;
   void SendContextUpdate(
       const GURL& url,
@@ -62,11 +62,14 @@ class TtcMesClient
   // Constructor for unit test mocks.
   TtcMesClient();
 
+  // Dispatches a decoded server frame to the observer. Protected so tests can
+  // feed frames without standing up a live MES session.
+  void HandleServerFrame(
+      const optimization_guide::proto::TtcServerFrame& frame);
+
  private:
   void OnStreamingResult(
       optimization_guide::OptimizationGuideModelStreamingResult result);
-  void HandleServerFrame(
-      const optimization_guide::proto::TtcServerFrame& frame);
   void HandleToolCall(const optimization_guide::proto::ToolCall& tool_call);
   void OnToolExecutionComplete(const std::string& call_id,
                                const std::string& tool_name,

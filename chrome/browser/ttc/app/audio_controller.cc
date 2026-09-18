@@ -252,7 +252,7 @@ base::CallbackListSubscription AudioController::AddPlaybackCompletionListener(
   return completion_callbacks_.Add(std::move(callback));
 }
 
-void AudioController::PlayAudio(base::span<const uint8_t> pcm_data,
+void AudioController::PlayAudio(base::span<const int16_t> pcm_data,
                                 const media::AudioParameters& params,
                                 int64_t sequence_number) {
   // Ignore empty or placeholder/preamble chunks (< 2 samples = 4 bytes) that
@@ -263,13 +263,13 @@ void AudioController::PlayAudio(base::span<const uint8_t> pcm_data,
   {
     base::AutoLock auto_lock(playback_lock_);
     playback_queue_.push_back(
-        {std::vector<uint8_t>(pcm_data.begin(), pcm_data.end()), 0,
+        {std::vector<int16_t>(pcm_data.begin(), pcm_data.end()), 0,
          sequence_number});
   }
   CreateAudioOutputDevice(params);
 }
 
-void AudioController::PlayAudio(base::span<const uint8_t> pcm_data,
+void AudioController::PlayAudio(base::span<const int16_t> pcm_data,
                                 int64_t sequence_number) {
   PlayAudio(pcm_data, GetDefaultPlaybackAudioParameters(), sequence_number);
 }
@@ -333,9 +333,8 @@ void AudioController::Capture(const media::AudioBus* audio_source,
 }
 
 void AudioController::DeliverCapturedAudio(const media::AudioBus& audio_bus) {
-  std::vector<uint8_t> pcm_data(audio_bus.frames() * audio_bus.channels() *
-                                sizeof(int16_t));
-  audio_bus.ToInterleavedBytes<media::SignedInt16SampleTypeTraits>(
+  std::vector<int16_t> pcm_data(audio_bus.frames() * audio_bus.channels());
+  audio_bus.ToInterleaved<media::SignedInt16SampleTypeTraits>(
       base::span(pcm_data));
 
   float sum_squares = 0.0f;
@@ -358,7 +357,7 @@ void AudioController::OnCaptureError(media::AudioCapturerSource::ErrorCode code,
 
 void AudioController::OnCaptureMuted(bool is_muted) {}
 
-void AudioController::OnCapturedAudioOnMainThread(std::vector<uint8_t> pcm_data,
+void AudioController::OnCapturedAudioOnMainThread(std::vector<int16_t> pcm_data,
                                                   media::AudioParameters params,
                                                   float energy) {
   capture_callbacks_.Notify(pcm_data, params);
@@ -380,8 +379,7 @@ int AudioController::Render(base::TimeDelta delay,
     base::AutoLock auto_lock(playback_lock_);
     while (frames_rendered < dest->frames() && !playback_queue_.empty()) {
       auto& chunk = playback_queue_.front();
-      const size_t bytes_per_frame = sizeof(int16_t);
-      const size_t total_chunk_frames = chunk.pcm_data.size() / bytes_per_frame;
+      const size_t total_chunk_frames = chunk.pcm_data.size();
       const size_t frames_available_in_chunk =
           total_chunk_frames - chunk.read_offset;
 
@@ -389,13 +387,8 @@ int AudioController::Render(base::TimeDelta delay,
           std::min(static_cast<size_t>(dest->frames() - frames_rendered),
                    frames_available_in_chunk);
 
-      base::span<const uint8_t> chunk_bytes(chunk.pcm_data);
-      base::span<const uint8_t> sub_span =
-          chunk_bytes.subspan(chunk.read_offset * bytes_per_frame,
-                              frames_to_copy * bytes_per_frame);
-
-      auto mono_samples =
-          base::subtle::reinterpret_span<const int16_t>(sub_span);
+      base::span<const int16_t> mono_samples =
+          base::span(chunk.pcm_data).subspan(chunk.read_offset, frames_to_copy);
       base::span<float> ch0 = dest->channel(0);
       for (size_t i = 0; i < frames_to_copy; ++i) {
         ch0[frames_rendered + i] =
