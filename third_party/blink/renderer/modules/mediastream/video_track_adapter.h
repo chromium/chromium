@@ -84,6 +84,22 @@ class MODULES_EXPORT VideoTrackAdapter
   void OnFrameDroppedOnVideoTaskRunner(
       media::VideoCaptureFrameDropReason reason);
 
+  // Creates and delivers a black frame of |size| to all tracks that have
+  // registered a frame delivery callback.
+  //
+  // Unlike a bare media::VideoFrame::CreateBlackFrame(), the frame is stamped
+  // so that it survives the pipeline: it continues the source's timestamp
+  // timeline rather than restarting at zero, and it carries |capture_version|
+  // rather than a default-constructed one. Without both, the frame is
+  // discarded downstream and the consumer is left displaying the last real
+  // frame indefinitely.
+  //
+  // Must be called on the video task runner.
+  void DeliverBlackFrameOnVideoTaskRunner(
+      const gfx::Size& size,
+      media::CaptureVersion capture_version,
+      base::TimeTicks estimated_capture_time);
+
   // Called when it is guaranteed that all subsequent frames delivered
   // over DeliverFrameOnVideoTaskRunner() will have a capture-target version
   // that is equal-to-or-greater-than the given capture-target version.
@@ -206,6 +222,13 @@ class MODULES_EXPORT VideoTrackAdapter
   // Resolution configured on the video source, accessed on the video task
   // runner.
   std::optional<gfx::Size> source_frame_size_;
+
+  // Media timestamp of the most recently delivered frame, and the wall time at
+  // which it was delivered. Used to place a synthesized black frame on the same
+  // timeline as the real frames instead of restarting it at zero. Accessed on
+  // the video task runner.
+  base::TimeDelta last_frame_timestamp_;
+  base::TimeTicks last_frame_arrival_time_;
 };
 
 }  // namespace blink
