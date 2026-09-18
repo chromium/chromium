@@ -828,6 +828,117 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(' world', input.value);
     assertEquals(0, input.selectionStart);
     assertEquals(0, input.selectionEnd);
+
+    // Verify Undo restores the cut text and re-selects it.
+    input.dispatchEvent(new InputEvent('beforeinput', {
+      inputType: 'historyUndo',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertEquals('hello world', input.value);
+    assertEquals(0, input.selectionStart);
+    assertEquals(5, input.selectionEnd);
+
+    // Verify Redo re-cuts the text.
+    input.dispatchEvent(new InputEvent('beforeinput', {
+      inputType: 'historyRedo',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertEquals(' world', input.value);
+    assertEquals(0, input.selectionStart);
+    assertEquals(0, input.selectionEnd);
+  });
+
+  test('CutUndoRedoAfterPaste', async () => {
+    // Start with empty input.
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      sequenceNumber: 9,
+      text: '',
+      selection: {start: 0, end: 0},
+      isFocused: true,
+    }));
+    await microtasksFinished();
+    handler.reset();
+
+    const input = searchbox.$.input.inputElement;
+
+    // Paste "hello world".
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/plain', 'hello world');
+    const pasteEvent = new ClipboardEvent('paste', {
+      clipboardData: dataTransfer,
+      cancelable: true,
+      bubbles: true,
+      composed: true,
+    });
+    searchbox.$.input.dispatchEvent(pasteEvent);
+    await microtasksFinished();
+    assertEquals('hello world', input.value);
+
+    // Select "world" (indices 6 to 11).
+    input.setSelectionRange(6, 11);
+
+    // Cut "world".
+    const cutEvent = new ClipboardEvent('cut', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    searchbox.$.input.dispatchEvent(cutEvent);
+    await microtasksFinished();
+    assertEquals('hello ', input.value);
+    assertEquals(6, input.selectionStart);
+    assertEquals(6, input.selectionEnd);
+
+    // Undo should restore the cut text ("world") instead of undoing paste
+    // (which would have cleared the input).
+    input.dispatchEvent(new InputEvent('beforeinput', {
+      inputType: 'historyUndo',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertEquals('hello world', input.value);
+    assertEquals(6, input.selectionStart);
+    assertEquals(11, input.selectionEnd);
+
+    // Undoing again should undo the paste, returning to empty string.
+    input.dispatchEvent(new InputEvent('beforeinput', {
+      inputType: 'historyUndo',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertEquals('', input.value);
+
+    // Redo should restore pasted text "hello world".
+    input.dispatchEvent(new InputEvent('beforeinput', {
+      inputType: 'historyRedo',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertEquals('hello world', input.value);
+
+    // Redoing again should re-apply the cut ("hello ").
+    input.dispatchEvent(new InputEvent('beforeinput', {
+      inputType: 'historyRedo',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertEquals('hello ', input.value);
+    assertEquals(6, input.selectionStart);
+    assertEquals(6, input.selectionEnd);
   });
 
   test('WordDeletionUndoRedo', async () => {
