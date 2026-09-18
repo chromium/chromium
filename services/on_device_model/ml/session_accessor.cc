@@ -361,10 +361,6 @@ void SessionAccessor::CreateInternal(
           on_device_model::CapabilityFlags::kImageInput),
       .enable_audio_input = params->capabilities.Has(
           on_device_model::CapabilityFlags::kAudioInput),
-      .enable_speculative_decoding =
-          base::FeatureList::IsEnabled(
-              on_device_model::features::kOnDeviceModelSpeculativeDecoding) &&
-          (params->top_k <= 1 || params->temperature == 0.0f),
       .allow_speculative_decoding = base::FeatureList::IsEnabled(
           on_device_model::features::kOnDeviceModelSpeculativeDecoding),
   };

@@ -142,10 +142,6 @@ struct ChromeMLAdaptationDescriptor {
   // Whether this model will handle InputPieces containing audio.
   bool enable_audio_input;
 
-  // TODO(crbug.com/517228178): Remove once internal code migrates to
-  // `allow_speculative_decoding`.
-  bool enable_speculative_decoding = false;
-
   // Whether the session is allowed to use speculative decoding (MTP).
   bool allow_speculative_decoding = false;
 };
