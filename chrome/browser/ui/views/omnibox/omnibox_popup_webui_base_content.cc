@@ -146,6 +146,7 @@ void OmniboxPopupWebUIBaseContent::CloseUI() {
   if (!is_shown_) {
     return;
   }
+  TRACE_EVENT("omnibox", "OmniboxPopupWebUIBaseContent::CloseUI");
 
   is_shown_ = false;
 

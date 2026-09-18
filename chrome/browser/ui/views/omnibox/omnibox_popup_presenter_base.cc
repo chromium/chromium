@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -269,6 +270,7 @@ void OmniboxPopupPresenterBase::OnWidgetPresented(
 }
 
 void OmniboxPopupPresenterBase::Hide() {
+  TRACE_EVENT("omnibox", "OmniboxPopupPresenterBase::Hide");
   permission_observation_.Reset();
   is_prompt_showing_ = false;
   is_handling_prompt_dismissal_ = false;
