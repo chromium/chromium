@@ -167,6 +167,12 @@ suite('OtherGoogleDataDialog', function() {
     setSignedInAndDseState(SignedInState.SIGNED_OUT, /*isGoogleDse=*/ true);
     await microtasksFinished();
     assertFalse(isChildVisible(dialog, '#myActivityLink'));
+
+    // Case 6: User has undefined signedInState (e.g. ChromeOS Guest mode),
+    // MyActivity link should be hidden.
+    webUIListenerCallback('sync-status-changed', {});
+    await microtasksFinished();
+    assertFalse(isChildVisible(dialog, '#myActivityLink'));
   });
 
   test('SearchHistoryVisibility', async function() {
@@ -217,6 +223,14 @@ suite('OtherGoogleDataDialog', function() {
     await microtasksFinished();
     assertFalse(isChildVisible(dialog, '#googleSearchHistoryLink'));
     assertFalse(isChildVisible(dialog, '#nonGoogleSearchHistoryLink'));
+
+    // Case 7: User has undefined signedInState (e.g. ChromeOS Guest mode) and
+    // has Google as their DSE, Google search history link and non-Google search
+    // history row should be hidden.
+    webUIListenerCallback('sync-status-changed', {});
+    await microtasksFinished();
+    assertFalse(isChildVisible(dialog, '#googleSearchHistoryLink'));
+    assertFalse(isChildVisible(dialog, '#nonGoogleSearchHistoryLink'));
   });
 
   test('DialogTitle', async function() {
@@ -261,6 +275,10 @@ suite('OtherGoogleDataDialog', function() {
     assertTrue(isChildVisible(dialog, '#geminiAppsActivityLink'));
 
     setSignedInAndDseState(SignedInState.SIGNED_OUT, /*isGoogleDse=*/ true);
+    await microtasksFinished();
+    assertFalse(isChildVisible(dialog, '#geminiAppsActivityLink'));
+
+    webUIListenerCallback('sync-status-changed', {});
     await microtasksFinished();
     assertFalse(isChildVisible(dialog, '#geminiAppsActivityLink'));
 

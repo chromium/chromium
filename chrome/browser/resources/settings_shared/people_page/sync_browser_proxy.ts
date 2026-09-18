@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 // clang-format on
 
@@ -35,7 +35,7 @@ export enum SignedInState {
  * @see chrome/browser/ui/webui/settings/people_handler.cc
  */
 export interface SyncStatus {
-  statusAction: StatusAction;
+  statusAction?: StatusAction;
   disabled?: boolean;
   domain?: string;
   hasError?: boolean;
@@ -77,7 +77,11 @@ export enum StatusAction {
  * sync controls.
  */
 export function shouldShowSyncTogglesForStatusAction(
-    statusAction: StatusAction): boolean {
+    statusAction: StatusAction|undefined): boolean {
+  if (statusAction === undefined) {
+    return false;
+  }
+
   switch (statusAction) {
     case StatusAction.ENTER_PASSPHRASE:
     case StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS:
@@ -89,7 +93,7 @@ export function shouldShowSyncTogglesForStatusAction(
     case StatusAction.UPGRADE_CLIENT:
       return false;
     default:
-      assertNotReached();
+      assertNotReachedCase(statusAction);
   }
 }
 
