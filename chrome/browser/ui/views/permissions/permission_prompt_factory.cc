@@ -193,7 +193,9 @@ bool CanCurrentRequestUseModalUI(
     // We are already displaying the scrim for an embedded permission prompt.
     return true;
   }
-  return tabs::TabInterface::GetFromContents(web_contents)->CanShowModalUI();
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  return tab && tab->CanShowModalUI();
 }
 
 std::unique_ptr<permissions::PermissionPrompt> CreatePwaPrompt(

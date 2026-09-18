@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -15,11 +17,14 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "url/gurl.h"
 
 class EmbeddedPermissionPromptUiTest : public DialogBrowserTest {
  public:
@@ -81,6 +86,34 @@ IN_PROC_BROWSER_TEST_F(DefaultParamEmbeddedPermissionPromptUiTest,
 IN_PROC_BROWSER_TEST_F(DefaultParamEmbeddedPermissionPromptUiTest,
                        InvokeUi_camera_microphone) {
   ShowAndVerifyUi();
+}
+
+// Regression test for crbug.com/562105979: Verify clicking an embedded
+// permission element in a non-tab WebContents does not crash and shows no
+// prompt.
+IN_PROC_BROWSER_TEST_F(DefaultParamEmbeddedPermissionPromptUiTest,
+                       NonTabWebContentsDoesNotShowPrompt) {
+  std::unique_ptr<content::WebContents> non_tab_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfile()));
+  permissions::PermissionRequestManager::CreateForWebContents(
+      non_tab_contents.get());
+  ASSERT_EQ(nullptr,
+            tabs::TabInterface::MaybeGetFromContents(non_tab_contents.get()));
+
+  ASSERT_TRUE(content::NavigateToURL(
+      non_tab_contents.get(),
+      embedded_https_test_server().GetURL(
+          "example.com", "/permissions/permission_element.html")));
+  permissions::PermissionRequestManager::FromWebContents(non_tab_contents.get())
+      ->set_requesting_origin_for_testing(GURL("https://example.com"));
+
+  permissions::PermissionRequestObserver observer(non_tab_contents.get());
+  ASSERT_TRUE(content::ExecJs(non_tab_contents.get(), "clickById('camera')"));
+  observer.Wait();
+
+  EXPECT_FALSE(observer.request_shown());
+  EXPECT_TRUE(observer.is_view_recreate_failed());
 }
 
 class WindowMiddleEmbeddedPermissionPromptUiTest
