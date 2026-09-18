@@ -830,7 +830,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4300949869324911380"><ph name="TAB_TITLE" />, Medya Kaydeden Birden Çok Seçili Sekme</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4306489587293957491">Gir</translation>
-<translation id="4307992518367153382">Temel Bilgiler</translation>
+<translation id="4307992518367153382">Temel</translation>
 <translation id="4311652497846705514">PDF açılsın mı?</translation>
 <translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Spam olabilir}other{Spam olabilir (#)}}</translation>
 <translation id="4315292299997584267"><ph name="DEVICE_TYPE" /> cihazındaki şifrelerinize ve daha fazlasına ulaşmak için bu sitede ve Chrome'da oturum açın</translation>
@@ -1302,7 +1302,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="623755660902014047">Okuma Modu</translation>
 <translation id="6246073558347462570">Bağlam pop-up penceresi</translation>
 <translation id="6247557882553405851">Google Şifre Yöneticisi</translation>
-<translation id="6248988683584659830">Ayarlarda ara</translation>
+<translation id="6248988683584659830">Ayarlarda arayın</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, Birden Çok Seçili Sabit Gizli Sekme</translation>
 <translation id="6251449557817521191">Chrome geçmişinizi burada görüntüleyin</translation>
 <translation id="6254139308321626268">Bir PDF dosyası görüntülüyorsunuz</translation>

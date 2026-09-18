@@ -265,7 +265,7 @@
 <translation id="2056878612599315956">网站已被暂停</translation>
 <translation id="2063047797624276601">您的组织已开启“增强型安全浏览”功能</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 项下载失败}other{# 项下载失败}}</translation>
-<translation id="2066690553719545730">始终显示 AI 模式</translation>
+<translation id="2066690553719545730">总是显示 AI 模式</translation>
 <translation id="2067805253194386918">文本</translation>
 <translation id="2079545284768500474">撤销</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 条结果，共 <ph name="TOTAL_RESULTS" /> 条</translation>
