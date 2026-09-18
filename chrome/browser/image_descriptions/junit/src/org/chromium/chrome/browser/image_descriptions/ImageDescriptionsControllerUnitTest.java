@@ -4,14 +4,6 @@
 
 package org.chromium.chrome.browser.image_descriptions;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -22,7 +14,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
+import android.app.Activity;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -33,11 +25,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowToast;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -50,16 +43,13 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.widget.ToastManager;
 
 /** Unit tests for {@link ImageDescriptionsController} */
-@RunWith(BaseJUnit4ClassRunner.class)
-public class ImageDescriptionsControllerTest {
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowToast.class})
+public class ImageDescriptionsControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule
-    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock private ImageDescriptionsController.Natives mControllerJniMock;
 
@@ -74,13 +64,17 @@ public class ImageDescriptionsControllerTest {
 
     @Mock private MockWebContents mWebContents;
 
+    private Activity mActivity;
     private SharedPreferencesManager mManager;
     private ImageDescriptionsController mController;
     private ImageDescriptionsControllerDelegate mDelegate;
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.launchActivity(null);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        ToastManager.resetForTesting();
+        ShadowToast.reset();
 
         ProfileJni.setInstanceForTesting(mProfileJniMock);
         when(mProfileJniMock.fromWebContents(mWebContents)).thenReturn(mProfile);
@@ -99,8 +93,7 @@ public class ImageDescriptionsControllerTest {
 
     @After
     public void tearDown() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> DeviceConditions.sForceConnectionTypeForTesting = false);
+        DeviceConditions.sForceConnectionTypeForTesting = false;
     }
 
     private void resetSharedPreferences() {
@@ -110,15 +103,11 @@ public class ImageDescriptionsControllerTest {
     }
 
     private void simulateMenuItemClick() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mController.onImageDescriptionsMenuItemSelected(
-                            mActivityTestRule.getActivity(), mModalDialogManager, mWebContents);
-                });
+        mController.onImageDescriptionsMenuItemSelected(
+                mActivity, mModalDialogManager, mWebContents);
     }
 
     @Test
-    @SmallTest
     public void testSharedPrefs_justOnceCounter() {
         mDelegate.getImageDescriptionsJustOnce(false, mWebContents);
         Assert.assertEquals(
@@ -143,7 +132,6 @@ public class ImageDescriptionsControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testSharedPrefs_dontAskAgain() {
         Assert.assertFalse(
                 "By default, dont ask again should be false",
@@ -159,7 +147,6 @@ public class ImageDescriptionsControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testUserPrefs_userEnablesFeature() {
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                 .thenReturn(false);
@@ -180,7 +167,6 @@ public class ImageDescriptionsControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testUserPrefs_userDisablesFeature() {
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                 .thenReturn(true);
@@ -194,7 +180,6 @@ public class ImageDescriptionsControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testUserPrefs_userGetsDescriptionsJustOnce() {
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                 .thenReturn(false);
@@ -208,7 +193,6 @@ public class ImageDescriptionsControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testMenuItemSelected_featureEnabled() {
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                 .thenReturn(true);
@@ -224,20 +208,13 @@ public class ImageDescriptionsControllerTest {
                 .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
 
-        onView(withText(R.string.image_descriptions_toast_off))
-                .inRoot(
-                        withDecorView(
-                                not(
-                                        is(
-                                                mActivityTestRule
-                                                        .getActivity()
-                                                        .getWindow()
-                                                        .getDecorView()))))
-                .check(matches(isDisplayed()));
+        Assert.assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.image_descriptions_toast_off),
+                        R.id.toast_text));
     }
 
     @Test
-    @SmallTest
     public void testMenuItemSelected_featureEnabled_onlyOnWifi_ethernetConnected()
             throws Exception {
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
@@ -252,11 +229,8 @@ public class ImageDescriptionsControllerTest {
                 mController.onlyOnWifiEnabled(mProfile));
 
         // Setup ETHERNET connection
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    DeviceConditions.sForceConnectionTypeForTesting = true;
-                    DeviceConditions.mConnectionTypeForTesting = ConnectionType.CONNECTION_ETHERNET;
-                });
+        DeviceConditions.sForceConnectionTypeForTesting = true;
+        DeviceConditions.mConnectionTypeForTesting = ConnectionType.CONNECTION_ETHERNET;
 
         simulateMenuItemClick();
 
@@ -265,20 +239,13 @@ public class ImageDescriptionsControllerTest {
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
         verify(mControllerJniMock, never()).getImageDescriptionsOnce(eq(mWebContents));
 
-        onView(withText(R.string.image_descriptions_toast_off))
-                .inRoot(
-                        withDecorView(
-                                not(
-                                        is(
-                                                mActivityTestRule
-                                                        .getActivity()
-                                                        .getWindow()
-                                                        .getDecorView()))))
-                .check(matches(isDisplayed()));
+        Assert.assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.image_descriptions_toast_off),
+                        R.id.toast_text));
     }
 
     @Test
-    @SmallTest
     public void testMenuItemSelected_featureEnabled_onlyOnWifi_noWifi() throws Exception {
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                 .thenReturn(true);
@@ -292,11 +259,8 @@ public class ImageDescriptionsControllerTest {
                 mController.onlyOnWifiEnabled(mProfile));
 
         // Setup no wifi condition.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    DeviceConditions.sForceConnectionTypeForTesting = true;
-                    DeviceConditions.mConnectionTypeForTesting = ConnectionType.CONNECTION_NONE;
-                });
+        DeviceConditions.sForceConnectionTypeForTesting = true;
+        DeviceConditions.mConnectionTypeForTesting = ConnectionType.CONNECTION_NONE;
 
         simulateMenuItemClick();
 
@@ -304,20 +268,13 @@ public class ImageDescriptionsControllerTest {
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
         verify(mControllerJniMock, times(1)).getImageDescriptionsOnce(eq(mWebContents));
 
-        onView(withText(R.string.image_descriptions_toast_just_once))
-                .inRoot(
-                        withDecorView(
-                                not(
-                                        is(
-                                                mActivityTestRule
-                                                        .getActivity()
-                                                        .getWindow()
-                                                        .getDecorView()))))
-                .check(matches(isDisplayed()));
+        Assert.assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.image_descriptions_toast_just_once),
+                        R.id.toast_text));
     }
 
     @Test
-    @SmallTest
     public void testMenuItemSelected_dontAskAgainEnabled() {
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                 .thenReturn(false);
@@ -332,20 +289,13 @@ public class ImageDescriptionsControllerTest {
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
         verify(mControllerJniMock, times(1)).getImageDescriptionsOnce(eq(mWebContents));
 
-        onView(withText(R.string.image_descriptions_toast_just_once))
-                .inRoot(
-                        withDecorView(
-                                not(
-                                        is(
-                                                mActivityTestRule
-                                                        .getActivity()
-                                                        .getWindow()
-                                                        .getDecorView()))))
-                .check(matches(isDisplayed()));
+        Assert.assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.image_descriptions_toast_just_once),
+                        R.id.toast_text));
     }
 
     @Test
-    @SmallTest
     public void testMenuItemSelected_featureDisabled() {
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                 .thenReturn(false);
