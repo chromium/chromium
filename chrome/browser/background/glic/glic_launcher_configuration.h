@@ -30,10 +30,10 @@ class GlicLauncherConfiguration {
   explicit GlicLauncherConfiguration(Observer* manager);
   ~GlicLauncherConfiguration();
 
-  // Returns whether the glic launcher is enabled. If `is_default_value` is
+  // Returns whether the glic launcher icon is enabled. If `is_default_value` is
   // provided, then it will be updated to reflect if the glic launcher enabled
   // pref is the default value.
-  static bool IsEnabled(bool* is_default_value = nullptr);
+  static bool IsLauncherIconEnabled(bool* is_default_value = nullptr);
 
   static ui::Accelerator GetToggleHotkey();
 

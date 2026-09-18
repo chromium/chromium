@@ -93,7 +93,7 @@ class GlicBackgroundModeManager::AcceleratorRegistrar
 GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
     : configuration_(std::make_unique<GlicLauncherConfiguration>(this)),
       status_tray_(status_tray),
-      enabled_pref_(GlicLauncherConfiguration::IsEnabled()),
+      enabled_pref_(GlicLauncherConfiguration::IsLauncherIconEnabled()),
       expected_registered_hotkeys_(
           ShouldRegisterGlobalHotkey()
               ? std::vector<ui::Accelerator>{GlicLauncherConfiguration::

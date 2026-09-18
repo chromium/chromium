@@ -58,12 +58,12 @@ class GlicLauncherConfigurationTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI};
 };
 
-TEST_F(GlicLauncherConfigurationTest, IsEnabled) {
-  EXPECT_FALSE(GlicLauncherConfiguration::IsEnabled());
+TEST_F(GlicLauncherConfigurationTest, IsLauncherIconEnabled) {
+  EXPECT_FALSE(GlicLauncherConfiguration::IsLauncherIconEnabled());
 
   local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
 
-  EXPECT_TRUE(GlicLauncherConfiguration::IsEnabled());
+  EXPECT_TRUE(GlicLauncherConfiguration::IsLauncherIconEnabled());
 }
 
 TEST_F(GlicLauncherConfigurationTest, GetToggleHotkey_Default) {

@@ -116,7 +116,7 @@ GlicLauncherConfiguration::GlicLauncherConfiguration(Observer* manager)
 GlicLauncherConfiguration::~GlicLauncherConfiguration() = default;
 
 // static
-bool GlicLauncherConfiguration::IsEnabled(bool* is_default_value) {
+bool GlicLauncherConfiguration::IsLauncherIconEnabled(bool* is_default_value) {
   PrefService* const pref_service = g_browser_process->local_state();
   if (!pref_service) {
     if (is_default_value) {
@@ -169,7 +169,7 @@ void GlicLauncherConfiguration::OnCheckIsDefaultBrowserFinished(
 // static
 void GlicLauncherConfiguration::CheckDefaultBrowserToEnableLauncher() {
   bool is_enabled_default = false;
-  const bool is_launcher_enabled = IsEnabled(&is_enabled_default);
+  const bool is_launcher_enabled = IsLauncherIconEnabled(&is_enabled_default);
   if (is_enabled_default && !is_launcher_enabled) {
     auto& callback = GetCheckDefaultBrowserTestOverride();
     if (callback) {
@@ -192,7 +192,7 @@ void GlicLauncherConfiguration::
 }
 
 void GlicLauncherConfiguration::OnEnabledPrefChanged() {
-  manager_->OnEnabledChanged(IsEnabled());
+  manager_->OnEnabledChanged(IsLauncherIconEnabled());
 }
 
 void GlicLauncherConfiguration::OnGlobalHotkeyPrefChanged() {

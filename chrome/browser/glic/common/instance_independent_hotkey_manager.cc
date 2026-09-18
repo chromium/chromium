@@ -63,7 +63,10 @@ InstanceIndependentHotkeyManager::InstanceIndependentHotkeyManager(
 InstanceIndependentHotkeyManager::~InstanceIndependentHotkeyManager() = default;
 
 void InstanceIndependentHotkeyManager::UpdateHotkeyRegistration() {
-  if (GlicLauncherConfiguration::IsEnabled() &&
+  const bool registration_allowed =
+      base::FeatureList::IsEnabled(features::kGlicHotkeyLocalScope) ||
+      GlicLauncherConfiguration::IsLauncherIconEnabled();
+  if (registration_allowed &&
       GlicEnabling::IsEnabledAndConsentForProfile(profile_)) {
     if (!hotkey_manager_) {
       hotkey_manager_ = std::make_unique<LocalHotkeyManager>(
