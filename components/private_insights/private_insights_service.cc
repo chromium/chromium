@@ -136,9 +136,9 @@ PrivateInsightsService::PrivateInsightsService(
   base::FilePath base_dir = private_insights_dir.AppendASCII("base_dir");
   base::FilePath cache_dir = private_insights_dir.AppendASCII("cache_dir");
 
-  std::unique_ptr<FcpHttpRequestManager> http_request_manager;
+  scoped_refptr<FcpHttpRequestManager> http_request_manager;
   if (url_loader_factory) {
-    http_request_manager = std::make_unique<FcpHttpRequestManager>(
+    http_request_manager = base::MakeRefCounted<FcpHttpRequestManager>(
         std::move(url_loader_factory),
         base::SequencedTaskRunner::GetCurrentDefault());
   }

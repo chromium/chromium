@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -114,10 +115,8 @@ class FcpHttpRequestRunner : public network::SimpleURLLoaderStreamConsumer {
 // Wraps scoped_refptr<network::SharedURLLoaderFactory> to ensure that network
 // requests and factory destruction occur on the UI sequence, while managing
 // active request runners (FcpHttpRequestRunner) and request cancelation.
-//
-// WARNING: The caller must ensure that an instance of this class outlives all
-// network requests initiated through it, including any posted UI tasks.
-class FcpHttpRequestManager {
+class FcpHttpRequestManager
+    : public base::RefCountedDeleteOnSequence<FcpHttpRequestManager> {
  public:
   FcpHttpRequestManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -125,8 +124,6 @@ class FcpHttpRequestManager {
 
   FcpHttpRequestManager(const FcpHttpRequestManager&) = delete;
   FcpHttpRequestManager& operator=(const FcpHttpRequestManager&) = delete;
-
-  ~FcpHttpRequestManager();
 
   // Starts the request on the UI thread. Can be called from any thread.
   // `latch` must remain valid until all requests complete and `latch->Wait()`
@@ -142,6 +139,10 @@ class FcpHttpRequestManager {
   void CancelRequest(uint64_t request_id);
 
  private:
+  friend class base::RefCountedDeleteOnSequence<FcpHttpRequestManager>;
+  friend class base::DeleteHelper<FcpHttpRequestManager>;
+  ~FcpHttpRequestManager();
+
   void StartRequestOnUI(FcpHttpRequestHandle* handle,
                         std::string upload_body,
                         fcp::client::http::HttpRequestCallback* callback,
@@ -168,7 +169,7 @@ class FcpHttpRequestManager {
 class FcpHttpRequestHandle : public fcp::client::http::HttpRequestHandle {
  public:
   // `manager` must outlive `this`.
-  FcpHttpRequestHandle(FcpHttpRequestManager* manager,
+  FcpHttpRequestHandle(scoped_refptr<FcpHttpRequestManager> manager,
                        uint64_t request_id,
                        std::unique_ptr<fcp::client::http::HttpRequest> request);
   ~FcpHttpRequestHandle() override;
@@ -199,7 +200,7 @@ class FcpHttpRequestHandle : public fcp::client::http::HttpRequestHandle {
   void Cancel() override;
 
  private:
-  raw_ptr<FcpHttpRequestManager> manager_;
+  scoped_refptr<FcpHttpRequestManager> manager_;
   uint64_t request_id_;
   std::unique_ptr<fcp::client::http::HttpRequest> request_;
   std::unique_ptr<fcp::client::http::HttpResponse> response_;
@@ -212,7 +213,7 @@ class FcpHttpRequestHandle : public fcp::client::http::HttpRequestHandle {
 class FcpHttpClient : public fcp::client::http::HttpClient {
  public:
   // The caller must ensure that `request_manager` outlives `this`.
-  explicit FcpHttpClient(FcpHttpRequestManager* request_manager);
+  explicit FcpHttpClient(scoped_refptr<FcpHttpRequestManager> request_manager);
   ~FcpHttpClient() override;
 
   FcpHttpClient(const FcpHttpClient&) = delete;
@@ -228,7 +229,7 @@ class FcpHttpClient : public fcp::client::http::HttpClient {
       override;
 
  private:
-  raw_ptr<FcpHttpRequestManager> request_manager_;
+  scoped_refptr<FcpHttpRequestManager> request_manager_;
 };
 
 }  // namespace private_insights

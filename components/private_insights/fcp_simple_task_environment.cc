@@ -42,7 +42,7 @@ class SingleExampleIterator : public fcp::client::ExampleIterator {
 FcpSimpleTaskEnvironment::FcpSimpleTaskEnvironment(
     std::string base_dir,
     std::string cache_dir,
-    std::unique_ptr<FcpHttpRequestManager> http_request_manager,
+    scoped_refptr<FcpHttpRequestManager> http_request_manager,
     bool use_attestation_transparency_verifier)
     : base_dir_(std::move(base_dir)),
       cache_dir_(std::move(cache_dir)),
@@ -73,7 +73,7 @@ bool FcpSimpleTaskEnvironment::TrainingConditionsSatisfied() {
 
 std::unique_ptr<fcp::client::http::HttpClient>
 FcpSimpleTaskEnvironment::CreateHttpClient() {
-  return std::make_unique<FcpHttpClient>(http_request_manager_.get());
+  return std::make_unique<FcpHttpClient>(http_request_manager_);
 }
 
 inline constexpr char kEndorsementOptionsParsingOutcomeHistogram[] =
