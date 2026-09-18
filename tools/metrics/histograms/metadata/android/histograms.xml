@@ -6294,6 +6294,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- LINT.IfChange(TabItemPickerLoadResult) -->
+
 <histogram name="Android.TabItemPicker.OnDemandLoadDuration.{Result}"
     units="ms" expires_after="2027-07-07">
   <owner>ckitagawa@chromium.org</owner>
@@ -6304,12 +6306,16 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Result">
     <variant name="Abandoned" summary="Page load abandoned on destroy"/>
+    <variant name="Cancelled"
+        summary="Page load cancelled because the tab was deselected"/>
     <variant name="Crash" summary="Page crashed"/>
     <variant name="Destroyed" summary="Page was destroyed"/>
     <variant name="Failure" summary="Page load failed"/>
     <variant name="Success" summary="Page load succeeded"/>
   </token>
 </histogram>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/chrome_item_picker/TabItemPickerCoordinator.java:TabItemPickerLoadResult) -->
 
 <histogram name="Android.TabItemPicker.OnDemandThumbnailFetchDuration"
     units="ms" expires_after="2027-07-07">

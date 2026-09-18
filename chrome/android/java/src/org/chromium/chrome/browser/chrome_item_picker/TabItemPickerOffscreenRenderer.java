@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.actor.OffscreenRenderingManager;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxTabUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.utilities.OnDemandBackgroundTabCaptureConfig;
 import org.chromium.content_public.browser.WebContents;
@@ -56,7 +55,7 @@ public class TabItemPickerOffscreenRenderer {
         if (!OnDemandBackgroundTabCaptureConfig.isOffscreenRenderingEnabled()
                 || mActivity.isFinishing()
                 || mActivity.isDestroyed()
-                || FuseboxTabUtils.isTabActive(tab)) {
+                || TabItemPickerTabUtils.hasLoadedContent(tab)) {
             return;
         }
         if (!mOffscreenRenderingTabs.add(tab)) {

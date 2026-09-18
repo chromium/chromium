@@ -35,6 +35,16 @@ public final class OnDemandBackgroundTabCaptureConfig {
         return isOptimizationEnabled();
     }
 
+    /**
+     * Returns whether an in-flight background tab load should be cancelled when the tab is
+     * deselected in the tab item picker.
+     */
+    public static boolean isCancelLoadOnDeselectionEnabled() {
+        return isOptimizationEnabled()
+                && ChromeFeatureList.sOnDemandBackgroundTabContextCaptureCancelLoadOnDeselection
+                        .getValue();
+    }
+
     /** Returns whether early completion on first visually non-empty paint is enabled. */
     public static boolean isEarlyFirstPaintEnabled() {
         return isOptimizationEnabled()

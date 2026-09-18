@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.VisibleForTesting;
+import androidx.collection.ArraySet;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -427,6 +428,29 @@ public class TabItemPickerCoordinator {
                 return;
             }
 
+            if (OnDemandBackgroundTabCaptureConfig.isCancelLoadOnDeselectionEnabled()) {
+                Set<Integer> selectedTabIds = new ArraySet<>();
+                for (TabListEditorItemSelectionId item : selectedItems) {
+                    if (item.isTabId()) {
+                        selectedTabIds.add(item.getTabId());
+                    }
+                }
+
+                List<Tab> tabsToCancel = new ArrayList<>();
+                for (Tab loadingTab : mLoadingTabsToStartTimes.keySet()) {
+                    if (!selectedTabIds.contains(loadingTab.getId())) {
+                        tabsToCancel.add(loadingTab);
+                    }
+                }
+                // Cancelling notifies mLoadIfNeededCallback with LoadResult.CANCELLED, which
+                // performs the teardown and mutates mLoadingTabsToStartTimes, so the tabs must
+                // be collected before cancelling any of them.
+                TabLoadingService tabLoadingService = TabLoadingService.getInstance();
+                for (Tab tabToCancel : tabsToCancel) {
+                    tabLoadingService.cancelLoadIfNeeded(tabToCancel);
+                }
+            }
+
             // The maximum number of tabs that can be selected is determined by
             // mAllowedSelectionCount, which should always be sufficiently small that there is
             // no point caching which tabs have already been loaded. It is also safer to update
@@ -451,7 +475,7 @@ public class TabItemPickerCoordinator {
             Tab tab = mTabModelSelector.getTabById(tabId);
             if (tab == null
                     || !FuseboxTabUtils.isTabEligibleForAttachment(tab)
-                    || FuseboxTabUtils.isTabActive(tab)) {
+                    || TabItemPickerTabUtils.hasLoadedContent(tab)) {
                 return;
             }
 
@@ -467,8 +491,12 @@ public class TabItemPickerCoordinator {
 
             mOffscreenRenderer.startOffscreenRenderingIfNeeded(tab);
 
-            // Clear the thumbnail to avoid showing a stale thumbnail immediately after selection.
-            mTabContentManager.removeTabThumbnail(tab.getId(), /* forceRemoval= */ true);
+            if (!OnDemandBackgroundTabCaptureConfig.isCancelLoadOnDeselectionEnabled()) {
+                // Clear the thumbnail to avoid showing a stale thumbnail immediately after
+                // selection. When cancellation is enabled the thumbnail is instead retained until
+                // the load genuinely fails, so that cancelling leaves the existing one intact.
+                mTabContentManager.removeTabThumbnail(tab.getId(), /* forceRemoval= */ true);
+            }
 
             mLoadingTabsToStartTimes.put(tab, SystemClock.elapsedRealtime());
             tabLoadingService.addLoadIfNeededCallback(tab, mLoadIfNeededCallback);
@@ -480,6 +508,7 @@ public class TabItemPickerCoordinator {
             }
         }
 
+        // LINT.IfChange(TabItemPickerLoadResult)
         private static String getLoadResultString(@LoadResult int result) {
             switch (result) {
                 case LoadResult.SUCCESS:
@@ -490,18 +519,28 @@ public class TabItemPickerCoordinator {
                     return "Crash";
                 case LoadResult.DESTROYED:
                     return "Destroyed";
+                case LoadResult.CANCELLED:
+                    return "Cancelled";
                 default:
                     return "Unknown";
             }
         }
+
+        // LINT.ThenChange(//tools/metrics/histograms/metadata/android/histograms.xml:TabItemPickerLoadResult)
 
         /**
          * Handles completion of a tab load request from {@link TabLoadingService}.
          *
          * <p>On success, proceeds to capture and cache the tab thumbnail via {@link
          * TabContentManager}. Offscreen rendering is kept active during thumbnail capture and torn
-         * down upon thumbnail callback completion. On failure or if destroyed, offscreen rendering
-         * is immediately stopped and the loading spinner is hidden.
+         * down upon thumbnail callback completion.
+         *
+         * <p>On any other result offscreen rendering is stopped immediately and the loading spinner
+         * is hidden. The stale thumbnail is additionally discarded when the load genuinely failed,
+         * but retained on {@link LoadResult#CANCELLED} so a deselected card keeps its image.
+         *
+         * <p>Once this coordinator itself has been destroyed only offscreen rendering is torn down,
+         * since the picker UI it would otherwise update is already gone.
          */
         private void onTabLoadFinished(Tab tab, @LoadResult int result) {
             if (mIsDestroyed) {
@@ -518,6 +557,14 @@ public class TabItemPickerCoordinator {
             }
 
             if (result != LoadResult.SUCCESS) {
+                // Drop the stale thumbnail only when the load actually failed, so the card falls
+                // back to a placeholder. Cancellation deliberately leaves it intact. This must
+                // happen before hiding the spinner, which triggers a thumbnail re-fetch. When
+                // cancellation is disabled the thumbnail was already cleared at selection time.
+                if (result != LoadResult.CANCELLED
+                        && OnDemandBackgroundTabCaptureConfig.isCancelLoadOnDeselectionEnabled()) {
+                    mTabContentManager.removeTabThumbnail(tab.getId(), /* forceRemoval= */ true);
+                }
                 mOffscreenRenderer.stopOffscreenRenderingIfNeeded(tab);
                 var controller = mControllerSupplier.get();
                 if (controller != null) {
@@ -555,6 +602,9 @@ public class TabItemPickerCoordinator {
             for (var entry : mLoadingTabsToStartTimes.entrySet()) {
                 Tab tab = entry.getKey();
                 if (tab != null) {
+                    // Only stop observing. The loads themselves are deliberately left running:
+                    // the picker is torn down right after the user confirms a selection, and
+                    // cancelling here would abort the loads for the tabs they just picked.
                     tabLoadingService.removeLoadIfNeededCallback(tab, mLoadIfNeededCallback);
                 }
 
@@ -598,7 +648,7 @@ public class TabItemPickerCoordinator {
                 int tabId = item.getTabId();
                 Tab tab = mTabModelSelector.getTabById(tabId);
 
-                if (tab != null && FuseboxTabUtils.isTabActive(tab)) {
+                if (TabItemPickerTabUtils.hasLoadedContent(tab)) {
                     activePickedCount++;
                 }
                 if (mCachedTabIds.contains(tabId)) {

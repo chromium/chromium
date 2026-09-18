@@ -19,6 +19,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -39,13 +41,20 @@ public class TabLoadingService {
      * Possible outcomes of a tab load request. Used to indicate the final state of the tab when
      * notifying registered callbacks.
      */
-    @IntDef({LoadResult.SUCCESS, LoadResult.FAILURE, LoadResult.CRASH, LoadResult.DESTROYED})
+    @IntDef({
+        LoadResult.SUCCESS,
+        LoadResult.FAILURE,
+        LoadResult.CRASH,
+        LoadResult.DESTROYED,
+        LoadResult.CANCELLED
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LoadResult {
         int SUCCESS = 0;
         int FAILURE = 1;
         int CRASH = 2;
         int DESTROYED = 3;
+        int CANCELLED = 4;
     }
 
     /** Callback interface to be notified when a queued tab finishes loading or fails. */
@@ -249,6 +258,57 @@ public class TabLoadingService {
     public boolean isTabQueuedForLoad(int tabId) {
         ThreadUtils.assertOnUiThread();
         return mQueuedTabs.get(tabId) != null;
+    }
+
+    /**
+     * Cancels an in-flight or queued load for the given tab.
+     *
+     * <p>If the tab is actively loading, this aborts the load and sets {@code needsReload} to true
+     * to preserve dirty state for future navigations. Any waiting pending tabs are immediately
+     * scheduled.
+     *
+     * <p>Registered callbacks are notified with {@link LoadResult#CANCELLED} so consumers can tear
+     * down any UI they put up for the load.
+     *
+     * @param tab The tab to cancel loading for.
+     * @return true if an active or pending load for the tab was cancelled.
+     */
+    public boolean cancelLoadIfNeeded(Tab tab) {
+        ThreadUtils.assertOnUiThread();
+        boolean removedPending = mPendingTabs.remove(tab);
+        mTabLoadGenerations.delete(tab.getId());
+        boolean wasQueued = mQueuedTabs.get(tab.getId()) != null;
+        boolean wasLoading = mLoadingTabs.remove(tab);
+
+        // The observer is attached to both actively loading and pending tabs, so it must be
+        // detached in either case to avoid observing tabs the service no longer tracks.
+        if (wasLoading || removedPending) {
+            tab.removeObserver(sObserver);
+        }
+
+        if (wasLoading && !tab.isDestroyed()) {
+            tab.stopLoading();
+            WebContents webContents = tab.getWebContents();
+            if (webContents != null && !webContents.isDestroyed()) {
+                // The load was aborted midway, so the tab holds partially rendered content.
+                // Marking it for reload ensures a later activation re-fetches the page rather
+                // than surfacing that half-loaded state to the user.
+                NavigationController navigationController = webContents.getNavigationController();
+                if (navigationController != null) {
+                    navigationController.setNeedsReload();
+                }
+            }
+        }
+
+        // Notify before scheduling pending tabs so consumers observe the cancellation while the
+        // service state is already consistent. This also clears the tab from mQueuedTabs.
+        removeCallbacksAndNotify(tab, LoadResult.CANCELLED);
+
+        if (wasLoading) {
+            maybeLoadQueuedTabs();
+            return true;
+        }
+        return removedPending || wasQueued;
     }
 
     private boolean startTabLoad(Tab tab, boolean notifyOnFailure) {

@@ -2778,6 +2778,9 @@ const FeatureEntry::FeatureParam
         {"limit_concurrent_load_if_needed", "true"},
         {"minimum_concurrent_load_if_needed", "1"},
         {"maximum_concurrent_load_if_needed", "4"}};
+const FeatureEntry::FeatureParam
+    kOnDemandBackgroundTabContextCaptureOptimization_CancelOnDeselection[] = {
+        {"cancel_load_on_deselection", "true"}};
 
 const FeatureEntry::FeatureVariation
     kOnDemandBackgroundTabContextCaptureOptimizationVariations[] = {
@@ -2787,6 +2790,9 @@ const FeatureEntry::FeatureVariation
          kOnDemandBackgroundTabContextCaptureOptimization_1000MsDelay, nullptr},
         {"LimitConcurrentLoads1To4Tabs",
          kOnDemandBackgroundTabContextCaptureOptimization_LimitConcurrentLoads,
+         nullptr},
+        {"CancelLoadOnDeselection",
+         kOnDemandBackgroundTabContextCaptureOptimization_CancelOnDeselection,
          nullptr}};
 
 #endif  // BUILDFLAG(IS_ANDROID)

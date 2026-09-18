@@ -2459,6 +2459,10 @@ public abstract class ChromeFeatureList {
     public static final MutableBooleanParamWithSafeDefault sInlinePdfV2EnableFormFilling =
             sInlinePdfV2.newBooleanParam("enable_form_filling", false);
     public static final MutableBooleanParamWithSafeDefault
+            sOnDemandBackgroundTabContextCaptureCancelLoadOnDeselection =
+                    sOnDemandBackgroundTabContextCaptureOptimization.newBooleanParam(
+                            "cancel_load_on_deselection", true);
+    public static final MutableBooleanParamWithSafeDefault
             sOnDemandBackgroundTabContextCaptureLimitConcurrentLoadIfNeeded =
                     sOnDemandBackgroundTabContextCaptureOptimization.newBooleanParam(
                             "limit_concurrent_load_if_needed", true);

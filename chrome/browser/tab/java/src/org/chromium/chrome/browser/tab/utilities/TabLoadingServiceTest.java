@@ -35,6 +35,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.utilities.TabLoadingService.LoadIfNeededCallback;
 import org.chromium.chrome.browser.tab.utilities.TabLoadingService.LoadResult;
+import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link TabLoadingService}. */
@@ -45,6 +47,8 @@ public class TabLoadingServiceTest {
     @Mock private Tab mTab;
     @Mock private Tab mTab2;
     @Mock private Tab mTab3;
+    @Mock private WebContents mWebContents;
+    @Mock private NavigationController mNavigationController;
     @Mock private LoadIfNeededCallback mCallback;
     @Mock private LoadIfNeededCallback mCallback3;
     @Mock private LoadIfNeededCallback mSecondCallback;
@@ -401,6 +405,124 @@ public class TabLoadingServiceTest {
 
         verify(mCallback3).onLoadFinished(mTab3, LoadResult.DESTROYED);
         assertFalse(mService.isTabQueuedForLoad(TAB_ID_3));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    public void testCancelLoadIfNeeded_ActivelyLoadingTab() {
+        configureConcurrentServiceWithMemoryGb(2);
+        setupTabForLoad(mTab, TAB_ID);
+        setupTabForLoad(mTab2, TAB_ID_2);
+        setupTabForLoad(mTab3, TAB_ID_3);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+
+        mService.queueLoadIfNeeded(mTab);
+        mService.queueLoadIfNeeded(mTab2);
+        mService.queueLoadIfNeeded(mTab3);
+
+        assertTrue(mService.cancelLoadIfNeeded(mTab));
+        verify(mTab).stopLoading();
+        verify(mNavigationController).setNeedsReload();
+        verify(mTab3).loadIfNeeded(true);
+        assertFalse(mService.isTabQueuedForLoad(TAB_ID));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    public void testCancelLoadIfNeeded_PendingTab() {
+        configureConcurrentServiceWithMemoryGb(2);
+        setupTabForLoad(mTab, TAB_ID);
+        setupTabForLoad(mTab2, TAB_ID_2);
+        when(mTab3.getId()).thenReturn(TAB_ID_3);
+        when(mTab3.isFrozen()).thenReturn(true);
+
+        mService.queueLoadIfNeeded(mTab);
+        mService.queueLoadIfNeeded(mTab2);
+        mService.queueLoadIfNeeded(mTab3);
+
+        assertTrue(mService.cancelLoadIfNeeded(mTab3));
+        verify(mTab3, never()).stopLoading();
+        assertFalse(mService.isTabQueuedForLoad(TAB_ID_3));
+
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        mTabObserverCaptor.getValue().onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
+        verify(mTab3, never()).loadIfNeeded(true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    public void testCancelLoadIfNeeded_PendingTabRemovesObserver() {
+        configureConcurrentServiceWithMemoryGb(2);
+        setupTabForLoad(mTab, TAB_ID);
+        setupTabForLoad(mTab2, TAB_ID_2);
+        when(mTab3.getId()).thenReturn(TAB_ID_3);
+        when(mTab3.isFrozen()).thenReturn(true);
+
+        mService.queueLoadIfNeeded(mTab);
+        mService.queueLoadIfNeeded(mTab2);
+        mService.queueLoadIfNeeded(mTab3);
+        verify(mTab3).addObserver(any(TabObserver.class));
+
+        assertTrue(mService.cancelLoadIfNeeded(mTab3));
+        verify(mTab3).removeObserver(any(TabObserver.class));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    public void testCancelLoadIfNeeded_NotifiesCallbacks() {
+        configureConcurrentServiceWithMemoryGb(2);
+        setupTabForLoad(mTab, TAB_ID);
+        mService.queueLoadIfNeeded(mTab);
+        mService.addLoadIfNeededCallback(mTab, mCallback);
+
+        assertTrue(mService.cancelLoadIfNeeded(mTab));
+
+        verify(mCallback).onLoadFinished(mTab, LoadResult.CANCELLED);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    public void testCancelLoadIfNeeded_DestroyedTabSkipsStopLoading() {
+        configureConcurrentServiceWithMemoryGb(2);
+        setupTabForLoad(mTab, TAB_ID);
+        mService.queueLoadIfNeeded(mTab);
+        when(mTab.isDestroyed()).thenReturn(true);
+
+        assertTrue(mService.cancelLoadIfNeeded(mTab));
+
+        verify(mTab, never()).stopLoading();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    public void testCancelLoadIfNeeded_DestroyedTabStillSchedulesPendingTab() {
+        configureConcurrentServiceWithMemoryGb(2);
+        setupTabForLoad(mTab, TAB_ID);
+        setupTabForLoad(mTab2, TAB_ID_2);
+        setupTabForLoad(mTab3, TAB_ID_3);
+        mService.queueLoadIfNeeded(mTab);
+        mService.queueLoadIfNeeded(mTab2);
+        mService.queueLoadIfNeeded(mTab3);
+        when(mTab.isDestroyed()).thenReturn(true);
+
+        assertTrue(mService.cancelLoadIfNeeded(mTab));
+
+        verify(mTab3).loadIfNeeded(true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    public void testCancelLoadIfNeeded_DestroyedWebContentsSkipsNeedsReload() {
+        configureConcurrentServiceWithMemoryGb(2);
+        setupTabForLoad(mTab, TAB_ID);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.isDestroyed()).thenReturn(true);
+        mService.queueLoadIfNeeded(mTab);
+
+        assertTrue(mService.cancelLoadIfNeeded(mTab));
+
+        verify(mNavigationController, never()).setNeedsReload();
     }
 
     private void setupTabForLoad(Tab tab, int id) {

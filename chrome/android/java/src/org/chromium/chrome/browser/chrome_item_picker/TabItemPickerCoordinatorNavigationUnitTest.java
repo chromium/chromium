@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.inOrder;
@@ -76,6 +77,9 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
     @Mock private TabListEditorCoordinator mTabListEditorCoordinator;
     @Mock private TabListEditorController mTabListEditorController;
     @Mock private TabContentManager mTabContentManager;
+    @Mock private OffscreenRenderingManager mOffscreenRenderingManager;
+    @Mock private WebContents mWebContents;
+    @Mock private RenderWidgetHostView mRenderWidgetHostView;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mCallbackCaptor;
 
@@ -669,5 +673,179 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         mNavigationProvider.destroy();
 
         verify(mockOffscreenManager).stopOffscreenRendering(tab);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+    })
+    public void testSelectionKeepsExistingThumbnail() {
+        selectLoadableTab(101);
+
+        verify(mTabContentManager, never()).removeTabThumbnail(anyInt(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+    })
+    public void testDeselectionKeepsExistingThumbnail() {
+        Tab tab = selectLoadableTab(101);
+
+        mNavigationProvider.onSelectionStateChange(new HashSet<>());
+
+        verify(tab).stopLoading();
+        verify(mTabContentManager, never()).removeTabThumbnail(anyInt(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+                + ":cancel_load_on_deselection/false"
+    })
+    public void testDeselectionDoesNotCancelWhenParamDisabled() {
+        Tab tab = selectLoadableTab(101);
+        clearInvocations(tab);
+
+        mNavigationProvider.onSelectionStateChange(new HashSet<>());
+
+        verify(tab, never()).stopLoading();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE)
+    @DisableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    public void testDeselectionDoesNotCancelWhenOptimizationDisabled() {
+        Tab tab = selectLoadableTab(101);
+        clearInvocations(tab);
+
+        mNavigationProvider.onSelectionStateChange(new HashSet<>());
+
+        verify(tab, never()).stopLoading();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE)
+    @DisableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    public void testSelectionClearsThumbnailWhenOptimizationDisabled() {
+        selectLoadableTab(101);
+
+        verify(mTabContentManager).removeTabThumbnail(101, /* forceRemoval= */ true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE)
+    @DisableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    public void testReselectionSkipsActiveTabWhenOptimizationDisabled() {
+        Tab tab = selectLoadableTab(101);
+        verify(tab).addObserver(mTabObserverCaptor.capture());
+        mTabObserverCaptor.getValue().onPageLoadFinished(tab, JUnitTestGURLs.URL_1);
+        simulateCancelledRendererState(tab);
+        clearInvocations(tab);
+
+        mNavigationProvider.onSelectionStateChange(selectionFor(101));
+
+        verify(tab, never()).loadIfNeeded(anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+    })
+    public void testLoadFailureRemovesStaleThumbnail() {
+        Tab tab = selectLoadableTab(101);
+        verify(tab).addObserver(mTabObserverCaptor.capture());
+
+        mTabObserverCaptor.getValue().onPageLoadFailed(tab, 500);
+
+        verify(mTabContentManager).removeTabThumbnail(101, /* forceRemoval= */ true);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+    })
+    public void testReselectionAfterCancelReloadsTab() {
+        Tab tab = selectLoadableTab(101);
+        mNavigationProvider.onSelectionStateChange(new HashSet<>());
+        simulateCancelledRendererState(tab);
+        clearInvocations(tab);
+
+        mNavigationProvider.onSelectionStateChange(selectionFor(101));
+
+        verify(tab).loadIfNeeded(anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+    })
+    public void testReselectionSkipsTabWithLoadedContent() {
+        Tab tab = selectLoadableTab(101);
+        mNavigationProvider.onSelectionStateChange(new HashSet<>());
+        simulateCancelledRendererState(tab);
+        when(tab.needsReload()).thenReturn(false);
+        clearInvocations(tab);
+
+        mNavigationProvider.onSelectionStateChange(selectionFor(101));
+
+        verify(tab, never()).loadIfNeeded(anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+    })
+    public void testDestroyKeepsSelectedTabLoading() {
+        Tab tab = selectLoadableTab(101);
+        clearInvocations(tab);
+
+        mNavigationProvider.destroy();
+
+        verify(tab, never()).stopLoading();
+    }
+
+    /**
+     * Simulates the state a tab is left in after its on-demand load is cancelled: the renderer is
+     * still alive, but the content must be reloaded.
+     */
+    private void simulateCancelledRendererState(Tab tab) {
+        when(tab.isInitialized()).thenReturn(true);
+        when(tab.isFrozen()).thenReturn(false);
+        when(tab.needsReload()).thenReturn(true);
+        when(mWebContents.getRenderWidgetHostView()).thenReturn(mRenderWidgetHostView);
+    }
+
+    private static Set<TabListEditorItemSelectionId> selectionFor(int... tabIds) {
+        Set<TabListEditorItemSelectionId> selection = new HashSet<>();
+        for (int tabId : tabIds) {
+            selection.add(TabListEditorItemSelectionId.createTabId(tabId));
+        }
+        return selection;
+    }
+
+    /** Mocks a frozen, eligible tab and selects it so that a load is started. */
+    private Tab selectLoadableTab(int tabId) {
+        OffscreenRenderingManager.setInstanceForTesting(mOffscreenRenderingManager);
+
+        Tab tab = mockTabActiveState(tabId, false);
+        when(tab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(tab.loadIfNeeded(anyBoolean())).thenReturn(true);
+        when(tab.isLoading()).thenReturn(true);
+
+        when(tab.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.isDestroyed()).thenReturn(false);
+
+        captureAndSpyNavigationProvider();
+
+        mNavigationProvider.onSelectionStateChange(selectionFor(tabId));
+        return tab;
     }
 }
