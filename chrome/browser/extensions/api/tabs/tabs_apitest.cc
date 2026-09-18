@@ -505,6 +505,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_UpdateWindowShowState) {
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+// Android PiP windows extend AsyncInitializationActivity rather than
+// ChromeActivity, so they do not create a ChromeAndroidTask or
+// ExtensionWindowControllerBridge. Because of this, Android PiP windows are
+// invisible to chrome.windows.getAll() and chrome.windows.update().
+// If this changes, we should enable this test on Android.
+#if !BUILDFLAG(IS_ANDROID)
+// Verify that extensions cannot resize Picture-in-Picture windows beyond the
+// set bounds (https://crbug.com/514080341).
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest,
+                       Update_PictureInPictureWindowResize) {
+  ASSERT_TRUE(RunExtensionTest("tabs/update_picture_in_picture",
+                               {.extension_url = "test.html"}))
+      << message_;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, IncognitoDisabledByPref) {
   IncognitoModePrefs::SetAvailability(
       profile()->GetPrefs(), policy::IncognitoModeAvailability::kDisabled);
