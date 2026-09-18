@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_GLIC_WEB_CONTENTS_MANAGER_H_
 #define CHROME_BROWSER_GLIC_HOST_GLIC_WEB_CONTENTS_MANAGER_H_
 
-#include <memory>
-
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/glic/glic_enums.h"
@@ -53,6 +51,10 @@ class GlicWebContentsManager {
   // while warming in the background pool, or when attached to a host but
   // hidden). Once about to be shown or showing, this is guaranteed non-null.
   virtual content::WebContents* active_web_contents() const = 0;
+
+  // Returns the WebClient (guest) WebContents, or nullptr if none exists (e.g.
+  // before the guest is attached in WebUI mode).
+  virtual content::WebContents* guest_contents() const = 0;
 
   // Notifies the manager when actuation state changes.
   virtual void OnActuatingChanged(bool actuating) = 0;

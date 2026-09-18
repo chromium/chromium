@@ -212,12 +212,18 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsWarmingTest,
                .GetWarmedContainerForTesting() != nullptr;
   }));
 
-  content::WebContents* web_contents =
-      coordinator()
-          .GetWebContentsWarmingPoolForTesting()
-          .GetWarmedWebContents();
-  ASSERT_TRUE(web_contents);
-  content::WaitForLoadStop(web_contents);
+  {
+    // Note: The container is in the warming pool (no active GlicInstance or
+    // Host has been attached yet), so WebClient does not connect while warming.
+    // Wait for the warmed WebContents to finish loading instead.
+    auto warmed_contents = coordinator()
+                               .GetWebContentsWarmingPoolForTesting()
+                               .GetWarmedWebContents();
+    ASSERT_TRUE(warmed_contents);
+    content::WaitForLoadStop(warmed_contents->guest_contents
+                                 ? warmed_contents->guest_contents.get()
+                                 : warmed_contents->webui_contents.get());
+  }
 
   // 2. Simulate memory pressure.
   base::MemoryPressureListener::NotifyMemoryPressure(
@@ -227,8 +233,10 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsWarmingTest,
   // expected. Client memory might be 0 if the guest hasn't loaded yet for the
   // warmed instance.
 
-  histogram_tester.ExpectSampleValueGreaterThan(
-      "Glic.Instance.AvgWebUIPrivateMemoryFootprint.CriticalPressure", 0);
+  if (!features::IsGlicNoWebviewEnabled()) {
+    histogram_tester.ExpectSampleValueGreaterThan(
+        "Glic.Instance.AvgWebUIPrivateMemoryFootprint.CriticalPressure", 0);
+  }
 
   histogram_tester.ExpectTotalCount(
       "Glic.Instance.AvgClientPrivateMemoryFootprint.CriticalPressure", 1);

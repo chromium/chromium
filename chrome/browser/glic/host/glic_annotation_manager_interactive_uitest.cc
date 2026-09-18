@@ -1286,9 +1286,17 @@ IN_PROC_BROWSER_TEST_F(
       // contents isn't visible.
       CheckResult(
           [&]() {
-            return content::EvalJs(
-                       GetHost()->webui_contents()->GetInnerWebContents()[0],
-                       R"js(
+            content::RenderFrameHost* frame = FindGlicGuestMainFrame();
+            if (!frame && GetHost() && GetHost()->webui_contents() &&
+                !GetHost()->webui_contents()->GetInnerWebContents().empty()) {
+              frame = GetHost()
+                          ->webui_contents()
+                          ->GetInnerWebContents()[0]
+                          ->GetPrimaryMainFrame();
+            }
+            CHECK(frame);
+            return content::EvalJs(frame,
+                                   R"js(
               new Promise(resolve => {
                 window.scrollToPromise.catch(e => {
                   resolve(e.reason);

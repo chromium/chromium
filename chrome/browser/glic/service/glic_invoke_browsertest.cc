@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/public/glic_context_menu_invocation_helper.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
@@ -1235,11 +1236,13 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kCancelled);
 
   ASSERT_TRUE(instance_wp);
-  auto* ui_contents = static_cast<GlicInstanceImpl*>(instance_wp.get())
-                          ->host()
-                          .webui_contents();
-  ASSERT_TRUE(ui_contents);
-  EXPECT_EQ(ui_contents->GetVisibility(), content::Visibility::HIDDEN);
+  auto* host = &static_cast<GlicInstanceImpl*>(instance_wp.get())->host();
+
+  content::WebContents* contents =
+      host->contents_manager()->active_web_contents();
+  if (contents) {
+    EXPECT_EQ(contents->GetVisibility(), content::Visibility::HIDDEN);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,

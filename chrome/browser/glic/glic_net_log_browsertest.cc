@@ -33,7 +33,9 @@ const char kTestGlicURL[] = "about:blank?main-page";
 class GlicNetLogBrowserTest : public InProcessBrowserTest {
  public:
   GlicNetLogBrowserTest() {
-    feature_list_.InitWithFeatures({}, {features::kGlicWarming});
+    // TODO(b/559775860): revisit this test for GlicNoWebview.
+    feature_list_.InitWithFeatures(
+        {}, {features::kGlicWarming, features::kGlicNoWebview});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

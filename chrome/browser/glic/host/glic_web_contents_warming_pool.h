@@ -102,6 +102,11 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWarmedContainerFate)
 
+  struct WarmedWebContents {
+    raw_ptr<content::WebContents> webui_contents = nullptr;
+    raw_ptr<content::WebContents> guest_contents = nullptr;
+  };
+
   bool HasWarmedContainerForTesting() const;
   base::OneShotTimer& GetDelayTimerForTesting() {
     return backfill_scheduler_.GetTimerForTesting();
@@ -113,7 +118,7 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
     return expiry_timer_.IsRunning();
   }
   GlicWebContentsManager* GetWarmedContainerForTesting() const;
-  content::WebContents* GetWarmedWebContents() const;
+  std::optional<WarmedWebContents> GetWarmedWebContents() const;
 
  protected:
   // Provides derived classes access to the profile when overriding

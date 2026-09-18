@@ -408,10 +408,10 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// Flaky on Linux only.
+// Flaky on Linux and not supported on ChromeOS (auth is part of OS session).
 // TODO(crbug.com/561614245): Deflake and re-enable. Likely the same
 // multi-instance breakage as the two tests above.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AccountInvalidatedWhileGlicOpen \
   DISABLED_AccountInvalidatedWhileGlicOpen
 #else

@@ -79,6 +79,11 @@ class GlicBrowserTest : public InProcessBrowserTest {
 
 class SharedGlicBrowserTest : public glic::GlicBrowserTest {
  public:
+  SharedGlicBrowserTest() {
+    // TODO(b/559775860): revisit this test for GlicNoWebview.
+    scoped_feature_list_.InitAndDisableFeature(features::kGlicNoWebview);
+  }
+
   // Set up the Glic UI for testing. This runs after the browser is launched.
   void SetUpOnMainThread() override {
     glic::GlicBrowserTest::SetUpOnMainThread();
@@ -99,6 +104,9 @@ class SharedGlicBrowserTest : public glic::GlicBrowserTest {
 
  protected:
   raw_ptr<content::WebContents> web_contents_ = nullptr;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Ensure basic incognito window doesn't cause a crash. Simply opens an

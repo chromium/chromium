@@ -39,6 +39,9 @@ class FakeWebContentsManager : public GlicWebContentsManager {
   content::WebContents* active_web_contents() const override {
     return web_contents_;
   }
+  content::WebContents* guest_contents() const override {
+    return web_client_manager_.web_client_contents();
+  }
   base::CallbackListSubscription RegisterWebContentsChangedCallback(
       WebContentsChangedCallback callback) override {
     return base::CallbackListSubscription();
@@ -65,12 +68,6 @@ class TestGlicWebContentsWarmingPool : public GlicWebContentsWarmingPool {
   TestGlicWebContentsWarmingPool(Profile* profile,
                                  content::TestWebContentsFactory* factory)
       : GlicWebContentsWarmingPool(profile), factory_(factory) {}
-
-  content::WebContents* GetWarmedWebContents() {
-    return GetWarmedContainerForTesting()
-               ? GetWarmedContainerForTesting()->active_web_contents()
-               : nullptr;
-  }
 
  private:
   std::unique_ptr<GlicWebContentsManager> CreateContainer() override {
@@ -268,7 +265,9 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerReplacesCrashedContainer) {
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
   ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
-  content::WebContents* contents = warming_pool.GetWarmedWebContents();
+  auto warmed_contents = warming_pool.GetWarmedWebContents();
+  ASSERT_TRUE(warmed_contents);
+  content::WebContents* contents = warmed_contents->webui_contents;
   ASSERT_TRUE(contents);
 
   // Crash the container.
@@ -423,11 +422,15 @@ TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Crashed) {
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
   ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+  auto warmed_contents = warming_pool.GetWarmedWebContents();
+  ASSERT_TRUE(warmed_contents);
+  content::WebContents* contents = warmed_contents->webui_contents;
+  ASSERT_TRUE(contents);
 
   // Crash the container.
-  content::WebContentsTester::For(warming_pool.GetWarmedWebContents())
-      ->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, 0);
-  ASSERT_TRUE(warming_pool.GetWarmedWebContents()->IsCrashed());
+  content::WebContentsTester::For(contents)->SetIsCrashed(
+      base::TERMINATION_STATUS_PROCESS_CRASHED, 0);
+  ASSERT_TRUE(contents->IsCrashed());
 
   // Trigger a check that replaces it.
   warming_pool.TakeContainer();

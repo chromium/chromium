@@ -168,6 +168,9 @@ IN_PROC_BROWSER_TEST_F(GuestUtilBrowserTest, OnGuestAdded_NonGlic) {
 }
 
 IN_PROC_BROWSER_TEST_F(GuestUtilBrowserTest, OnGuestAdded_Glic) {
+  if (features::IsGlicNoWebviewEnabled()) {
+    GTEST_SKIP() << "GuestView is not used in NoWebview mode.";
+  }
   EXPECT_EQ(0ULL, GetGuestViewManager(factory()).GetCurrentGuestCount());
 
   ASSERT_OK(OpenGlicForActiveTab());

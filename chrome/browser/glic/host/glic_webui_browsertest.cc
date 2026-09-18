@@ -22,7 +22,10 @@ class GlicWebUiBrowserTest : public glic::GlicBrowserTest {
         {
             {features::kGlicCSPConfig, {}},
         },
-        {});
+        {
+            // TODO(b/559775860): revisit this test for GlicNoWebview.
+            features::kGlicNoWebview,
+        });
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

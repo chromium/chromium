@@ -31,7 +31,6 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
-#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -322,10 +321,10 @@ GlicInstanceCoordinatorImpl::GetAllUnhibernatedWebContents() {
     }
   }
   if (web_contents_warming_pool_) {
-    if (auto* webui_contents =
+    if (auto warmed_contents =
             web_contents_warming_pool_->GetWarmedWebContents()) {
-      result.push_back(
-          {webui_contents, GetGlicGuestWebContents(webui_contents)});
+      result.push_back({warmed_contents->webui_contents.get(),
+                        warmed_contents->guest_contents.get()});
     }
   }
   return result;

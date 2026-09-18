@@ -37,6 +37,7 @@ class GlicWebUIContentsManager : public content::WebContentsObserver,
   void AttachToHost(Host* host) override;
   void SetVisibility(content::Visibility visibility) override;
   content::WebContents* active_web_contents() const override;
+  content::WebContents* guest_contents() const override;
   void OnActuatingChanged(bool actuating) override;
   void OnTaskTabsVisibilityChanged(bool has_visible_tab) override;
   base::CallbackListSubscription RegisterWebContentsChangedCallback(

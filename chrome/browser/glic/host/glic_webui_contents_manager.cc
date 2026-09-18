@@ -187,6 +187,10 @@ content::WebContents* GlicWebUIContentsManager::active_web_contents() const {
   return WebContentsObserver::web_contents();
 }
 
+content::WebContents* GlicWebUIContentsManager::guest_contents() const {
+  return web_client_manager_.web_client_contents();
+}
+
 void GlicWebUIContentsManager::OnActuatingChanged(bool actuating) {
   if (!actuating) {
     // Cleanup the capturers even if the webcontents are gone.

@@ -210,9 +210,13 @@ IN_PROC_BROWSER_TEST_F(GlicManualWarmingPoolBrowserTest,
         return warming_pool.HasWarmedContainerForTesting();
       },
       "Wait for initial cold warming"));
-  auto* warmed_container = warming_pool.GetWarmedContainerForTesting();
-  ASSERT_TRUE(warmed_container);
-  content::WaitForLoadStop(warmed_container->active_web_contents());
+  {
+    auto warmed_contents = warming_pool.GetWarmedWebContents();
+    ASSERT_TRUE(warmed_contents);
+    content::WaitForLoadStop(warmed_contents->guest_contents
+                                 ? warmed_contents->guest_contents.get()
+                                 : warmed_contents->webui_contents.get());
+  }
 
   ProfileDestructionWaiter profile_destruction_waiter(new_profile);
   profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(

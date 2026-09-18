@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
+#include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/glic_webui_contents_manager.h"
 #include "chrome/browser/glic/public/features.h"
@@ -321,8 +322,23 @@ GlicWebContentsWarmingPool::GetWarmedContainerForTesting() const {
   return warmed_container_.get();
 }
 
-content::WebContents* GlicWebContentsWarmingPool::GetWarmedWebContents() const {
-  return warmed_container_ ? warmed_container_->active_web_contents() : nullptr;
+std::optional<GlicWebContentsWarmingPool::WarmedWebContents>
+GlicWebContentsWarmingPool::GetWarmedWebContents() const {
+  if (!warmed_container_) {
+    return std::nullopt;
+  }
+  if (features::IsGlicNoWebviewEnabled()) {
+    auto* no_webview_container =
+        static_cast<GlicNoWebviewContentsManager*>(warmed_container_.get());
+    return WarmedWebContents{
+        .webui_contents = no_webview_container->overlay_contents(),
+        .guest_contents = no_webview_container->guest_contents(),
+    };
+  }
+  return WarmedWebContents{
+      .webui_contents = warmed_container_->active_web_contents(),
+      .guest_contents = warmed_container_->guest_contents(),
+  };
 }
 
 }  // namespace glic

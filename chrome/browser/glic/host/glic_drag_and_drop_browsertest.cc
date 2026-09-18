@@ -23,6 +23,7 @@
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/test/mock_realtime_reporting_client.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
@@ -76,7 +77,12 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
             GlicTestJsPath("./glic_drag_and_drop_browsertest.js")) {
     feature_list_.InitWithFeatures({features::kGlicDragAndDropFileUpload,
                                     features::kGlicWebDragAndDropFileUpload},
-                                   {});
+                                   {
+    // TODO(b/559775860): Fails with GlicNoWebview enabled on these platforms.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+                                       features::kGlicNoWebview
+#endif
+                                   });
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

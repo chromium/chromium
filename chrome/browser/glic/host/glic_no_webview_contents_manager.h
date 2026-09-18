@@ -113,6 +113,7 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   void AttachToHost(Host* host) override;
   void SetVisibility(content::Visibility visibility) override;
   content::WebContents* active_web_contents() const override;
+  content::WebContents* guest_contents() const override;
   void OnActuatingChanged(bool actuating) override;
   void OnTaskTabsVisibilityChanged(bool has_visible_tab) override;
   base::CallbackListSubscription RegisterWebContentsChangedCallback(
@@ -130,9 +131,6 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   void OnGuestProcessGone(base::TerminationStatus status) override;
   void OnWebClientCreated() override;
   void OnWebClientStateChanged(mojom::WebClientState state) override;
-
-  // Returns the guest WebContents, or nullptr if destroyed.
-  content::WebContents* guest_contents() const;
 
   // Returns the loading/error overlay WebContents if currently allocated.
   content::WebContents* overlay_contents() const;

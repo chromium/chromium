@@ -151,7 +151,8 @@ class GlicPolicyTest : public PolicyTest {
               // the time we wait for it.
               {features::kGlicMaxLoadingTimeMs.name, "500"},
           }}},
-        {});
+        // TODO(b/559775860): revisit this test for GlicNoWebview.
+        {features::kGlicNoWebview});
   }
 
   GlicPolicyTest(const GlicPolicyTest&) = delete;

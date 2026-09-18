@@ -212,9 +212,14 @@ GlicActorGeneralUiTest::CheckActorTabDataHasAnnotatedPageContentCache() {
 
 MultiStep GlicActorGeneralUiTest::OpenDevToolsWindow() {
   return Steps(Do([this]() {
-    content::WebContents* contents = GetGlicContents();
-    DevToolsWindowTesting::OpenDevToolsWindowSync(contents,
-                                                  /*is_docked=*/false);
+    content::WebContents* contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    DevToolsWindow* devtools = DevToolsWindowTesting::OpenDevToolsWindowSync(
+        contents, /*is_docked=*/false);
+    BrowserWindowInterface* devtools_browser =
+        DevToolsWindowTesting::Get(devtools)->browser();
+    ASSERT_TRUE(devtools_browser);
+    ui_test_utils::WaitUntilBrowserBecomeActive(devtools_browser);
   }));
 }
 

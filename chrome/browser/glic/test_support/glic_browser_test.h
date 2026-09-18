@@ -957,6 +957,14 @@ class GlicBrowserTestMixin : public T {
   }
 
   [[nodiscard]] TestResult<> WaitForWebUiState(mojom::WebUiState state) {
+    if (features::IsGlicNoWebviewEnabled()) {
+      if (state == mojom::WebUiState::kReady) {
+        return WaitForGlicClient();
+      } else {
+        return base::unexpected(
+            "WaitForWebUiState does not work with GlicNoWebview");
+      }
+    }
     auto state_to_string = [](mojom::WebUiState state) -> std::string {
       std::stringstream ss;
       ss << state;
