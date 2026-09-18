@@ -9063,6 +9063,7 @@ from previous Chrome versions.
   <int value="-1765998205"
       label="AccessibilityPopulateSupplementalDescriptionApi:disabled"/>
   <int value="-1765921578" label="BlinkExtensionDiagnostics:enabled"/>
+  <int value="-1765759601" label="HeapVectorPromptlyFree:enabled"/>
   <int value="-1765313360"
       label="AutofillDisableBnplCountryCheckForTesting:enabled"/>
   <int value="-1765004425"
@@ -10395,6 +10396,7 @@ from previous Chrome versions.
   <int value="-1369089674" label="ArcTouchModeMouse:enabled"/>
   <int value="-1368913664" label="TabSearch:disabled"/>
   <int value="-1368499577" label="OnTheFlyMhtmlHashComputation:enabled"/>
+  <int value="-1368279394" label="HeapVectorPromptlyFree:disabled"/>
   <int value="-1367479795" label="CookieDeprecationFacilitatedTesting:enabled"/>
   <int value="-1367447724"
       label="IncognitoClearBrowsingDataDialogForDesktop:disabled"/>

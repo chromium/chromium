@@ -1500,6 +1500,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER,
                 "Enables automatic triggering of prefetch ahead of prerender in WebView."),
+        Flag.baseFeature(
+                BlinkFeatures.HEAP_VECTOR_PROMPTLY_FREE,
+                "Whether blink::HeapVector promptly frees its backing store via"
+                        + " Allocator::FreeVectorBacking()."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
