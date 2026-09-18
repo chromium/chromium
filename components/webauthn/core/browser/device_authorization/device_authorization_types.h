@@ -61,6 +61,9 @@ using PopulatePlatformDataCallback =
     base::OnceCallback<void(sync_pb::GetDeviceAuthorizationKeyRequest)>;
 using FetchDeviceAuthKeysCallback =
     base::OnceCallback<void(DeviceAuthFetchResult)>;
+using GetCachedKeysCallback =
+    base::OnceCallback<void(std::optional<DeviceAuthorizationKeys>)>;
+using StoreKeysCallback = base::OnceCallback<void(bool success)>;
 
 }  // namespace webauthn
 

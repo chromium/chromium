@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_WEBAUTHN_MODEL_IOS_DEVICE_AUTHORIZATION_CLIENT_H_
 
 #import <memory>
-#import <optional>
 
 #import "base/memory/weak_ptr.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_client.h"
@@ -28,10 +27,11 @@ class IOSDeviceAuthorizationClient
   ~IOSDeviceAuthorizationClient() override;
 
   // webauthn::DeviceAuthorizationClient implementation.
-  std::optional<webauthn::DeviceAuthorizationKeys> GetCachedKeys(
-      const GaiaId& gaia_id) override;
-  bool StoreKeys(const GaiaId& gaia_id,
-                 const webauthn::DeviceAuthorizationKeys& keys) override;
+  void GetCachedKeys(const GaiaId& gaia_id,
+                     webauthn::GetCachedKeysCallback callback) override;
+  void StoreKeys(const GaiaId& gaia_id,
+                 const webauthn::DeviceAuthorizationKeys& keys,
+                 webauthn::StoreKeysCallback callback) override;
   void PopulatePlatformData(
       const GaiaId& gaia_id,
       sync_pb::GetDeviceAuthorizationKeyRequest request,

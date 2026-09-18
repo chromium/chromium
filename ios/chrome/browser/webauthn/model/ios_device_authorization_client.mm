@@ -16,6 +16,8 @@
 #import "base/functional/callback.h"
 #import "base/rand_util.h"
 #import "base/strings/string_view_util.h"
+#import "base/task/task_traits.h"
+#import "base/task/thread_pool.h"
 #import "components/metrics/metrics_reporting_choice_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
@@ -58,15 +60,23 @@ IOSDeviceAuthorizationClient::IOSDeviceAuthorizationClient()
 
 IOSDeviceAuthorizationClient::~IOSDeviceAuthorizationClient() = default;
 
-std::optional<webauthn::DeviceAuthorizationKeys>
-IOSDeviceAuthorizationClient::GetCachedKeys(const GaiaId& gaia_id) {
-  return GetDeviceAuthorizationKeys(gaia_id.ToString());
+void IOSDeviceAuthorizationClient::GetCachedKeys(
+    const GaiaId& gaia_id,
+    webauthn::GetCachedKeysCallback callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&GetDeviceAuthorizationKeys, gaia_id.ToString()),
+      std::move(callback));
 }
 
-bool IOSDeviceAuthorizationClient::StoreKeys(
+void IOSDeviceAuthorizationClient::StoreKeys(
     const GaiaId& gaia_id,
-    const webauthn::DeviceAuthorizationKeys& keys) {
-  return StoreDeviceAuthorizationKeys(gaia_id.ToString(), keys);
+    const webauthn::DeviceAuthorizationKeys& keys,
+    webauthn::StoreKeysCallback callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&StoreDeviceAuthorizationKeys, gaia_id.ToString(), keys),
+      std::move(callback));
 }
 
 void IOSDeviceAuthorizationClient::PopulatePlatformData(

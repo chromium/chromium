@@ -37,12 +37,13 @@ source_set("credential_provider") {
     "user_defaults_credential_store.h",
     "user_defaults_credential_store.mm",
   ]
+  public_deps =
+      [ "//components/webauthn/core/browser/device_authorization:types" ]
   deps = [
     ":ui",
     "//base",
     "//components/sync/protocol",
     "//components/webauthn/core/browser:passkey_model",
-    "//components/webauthn/core/browser/device_authorization/proto",
     "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
     "//ios/chrome/common/app_group",
   ]
@@ -159,7 +160,7 @@ source_set("unit_tests") {
     ":net_util",
     "//base/test:test_support",
     "//components/sync/protocol",
-    "//components/webauthn/core/browser/device_authorization/proto",
+    "//components/webauthn/core/browser/device_authorization:types",
     "//net/base:registry_controlled_domains",
     "//testing/gtest",
   ]

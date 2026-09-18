@@ -15,6 +15,8 @@ namespace {
 
 using ::base::apple::CFToNSPtrCast;
 using ::base::apple::NSToCFOwnershipCast;
+using ::webauthn::DeviceAuthorizationKey;
+using ::webauthn::DeviceAuthorizationKeys;
 
 // Service identifier for Device Authorization Keys in the iOS Keychain.
 NSString* const kDeviceAuthorizationKeyKeychainService =

@@ -58,19 +58,21 @@ class TestDeviceAuthorizationClient : public DeviceAuthorizationClient {
   TestDeviceAuthorizationClient() = default;
   ~TestDeviceAuthorizationClient() override = default;
 
-  std::optional<DeviceAuthorizationKeys> GetCachedKeys(
-      const GaiaId& gaia_id) override {
+  void GetCachedKeys(const GaiaId& gaia_id,
+                     GetCachedKeysCallback callback) override {
     auto it = storage_.find(gaia_id);
     if (it == storage_.end()) {
-      return std::nullopt;
+      std::move(callback).Run(std::nullopt);
+      return;
     }
-    return it->second;
+    std::move(callback).Run(it->second);
   }
 
-  bool StoreKeys(const GaiaId& gaia_id,
-                 const DeviceAuthorizationKeys& keys) override {
+  void StoreKeys(const GaiaId& gaia_id,
+                 const DeviceAuthorizationKeys& keys,
+                 StoreKeysCallback callback) override {
     storage_[gaia_id] = keys;
-    return true;
+    std::move(callback).Run(true);
   }
 
   void PopulatePlatformData(const GaiaId& gaia_id,
@@ -147,12 +149,13 @@ TEST_F(DeviceAuthorizationServiceImplTest,
   auto* key = cached_keys.add_keys();
   key->set_version(kKeyProtoVersion);
   key->set_key(kKeyBytes);
-  client_->StoreKeys(gaia_id, cached_keys);
+  TestFuture<bool> store_future;
+  client_->StoreKeys(gaia_id, cached_keys, store_future.GetCallback());
+  ASSERT_TRUE(store_future.Get());
 
   TestFuture<DeviceAuthFetchResult> future;
   service_->GetOrFetchKeys(future.GetCallback());
 
-  ASSERT_TRUE(future.IsReady());
   const DeviceAuthFetchResult& result = future.Get();
   EXPECT_EQ(result.status(), DeviceAuthFetchResult::Status::kSuccess);
   ASSERT_TRUE(result.keys());
@@ -189,8 +192,9 @@ TEST_F(DeviceAuthorizationServiceImplTest,
   EXPECT_THAT(result.keys()->keys(), SizeIs(1));
   EXPECT_EQ(result.keys()->keys(0).key(), kKeyBytes);
 
-  std::optional<DeviceAuthorizationKeys> stored =
-      client_->GetCachedKeys(gaia_id);
+  TestFuture<std::optional<DeviceAuthorizationKeys>> stored_future;
+  client_->GetCachedKeys(gaia_id, stored_future.GetCallback());
+  const std::optional<DeviceAuthorizationKeys>& stored = stored_future.Get();
   ASSERT_TRUE(stored.has_value());
   EXPECT_THAT(stored->keys(), SizeIs(1));
   EXPECT_EQ(stored->keys(0).key(), kKeyBytes);
@@ -237,7 +241,9 @@ TEST_F(DeviceAuthorizationServiceImplTest,
   EXPECT_FALSE(result.keys());
   ASSERT_TRUE(result.reauth_params());
   EXPECT_EQ(result.reauth_params()->web_fallback_url(), kFakeWebFallbackUrl);
-  EXPECT_FALSE(client_->GetCachedKeys(gaia_id).has_value());
+  TestFuture<std::optional<DeviceAuthorizationKeys>> stored_future;
+  client_->GetCachedKeys(gaia_id, stored_future.GetCallback());
+  EXPECT_FALSE(stored_future.Get().has_value());
 }
 
 // Test that passing `reauth_proof_token` bypasses cached keys, passes the token
@@ -252,7 +258,9 @@ TEST_F(DeviceAuthorizationServiceImplTest,
   auto* key = cached_keys.add_keys();
   key->set_version(kKeyProtoVersion);
   key->set_key("old_cached_key");
-  client_->StoreKeys(gaia_id, cached_keys);
+  TestFuture<bool> store_future;
+  client_->StoreKeys(gaia_id, cached_keys, store_future.GetCallback());
+  ASSERT_TRUE(store_future.Get());
 
   SetResponseForEndpoint(CreateSuccessResponse());
 
@@ -277,8 +285,9 @@ TEST_F(DeviceAuthorizationServiceImplTest,
   EXPECT_EQ(sent_request.reauth_proof_token(), kCustomRapt);
 
   // Stored keys should be updated to newly fetched key.
-  std::optional<DeviceAuthorizationKeys> stored =
-      client_->GetCachedKeys(gaia_id);
+  TestFuture<std::optional<DeviceAuthorizationKeys>> stored_future;
+  client_->GetCachedKeys(gaia_id, stored_future.GetCallback());
+  const std::optional<DeviceAuthorizationKeys>& stored = stored_future.Get();
   ASSERT_TRUE(stored.has_value());
   EXPECT_EQ(stored->keys(0).key(), kKeyBytes);
 }

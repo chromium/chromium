@@ -62,6 +62,11 @@ class DeviceAuthorizationServiceImpl : public DeviceAuthorizationService {
   void FetchKeysImpl(std::optional<std::string> reauth_proof_token,
                      FetchDeviceAuthKeysCallback callback);
 
+  // Callback invoked when local cached keys have been retrieved.
+  void OnCachedKeysFetched(const GaiaId& gaia_id,
+                           FetchDeviceAuthKeysCallback callback,
+                           std::optional<DeviceAuthorizationKeys> cached_keys);
+
   // Callback invoked when the client finishes populating platform data.
   void OnPlatformDataPopulated(
       const GaiaId& gaia_id,
@@ -72,6 +77,11 @@ class DeviceAuthorizationServiceImpl : public DeviceAuthorizationService {
       const GaiaId& gaia_id,
       base::expected<sync_pb::GetDeviceAuthorizationKeyResponse,
                      DeviceAuthorizationKeysFetcher::Error> response);
+
+  // Callback invoked when keys have been stored in the local cache.
+  void OnKeysStored(FetchDeviceAuthKeysCallback callback,
+                    DeviceAuthorizationKeys keys,
+                    bool success);
 
   // Used to obtain the primary account and authenticate requests.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;

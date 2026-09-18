@@ -20,16 +20,16 @@ class DeviceAuthorizationClient {
  public:
   virtual ~DeviceAuthorizationClient() = default;
 
-  // Returns keys stored locally on the device for the given `gaia_id`, or
-  // `std::nullopt` if there are none.
-  // TODO(crbug.com/405036154): Make the APIs async.
-  virtual std::optional<DeviceAuthorizationKeys> GetCachedKeys(
-      const GaiaId& gaia_id) = 0;
+  // Asynchronously returns keys stored locally on the device for the given
+  // `gaia_id`, or `std::nullopt` if there are none.
+  virtual void GetCachedKeys(const GaiaId& gaia_id,
+                             GetCachedKeysCallback callback) = 0;
 
-  // Persists fetched keys on the device for the given `gaia_id`. Returns true
-  // on success.
-  virtual bool StoreKeys(const GaiaId& gaia_id,
-                         const DeviceAuthorizationKeys& keys) = 0;
+  // Asynchronously persists fetched keys on the device for the given `gaia_id`.
+  // Calls `callback` with true on success, false on failure.
+  virtual void StoreKeys(const GaiaId& gaia_id,
+                         const DeviceAuthorizationKeys& keys,
+                         StoreKeysCallback callback) = 0;
 
   // Asynchronously populates embedder-specific platform data (e.g. device
   // integrity signals) for the given `gaia_id` into `request`.

@@ -26,6 +26,8 @@ namespace {
 using ::base::apple::CFToNSPtrCast;
 using ::base::apple::NSToCFOwnershipCast;
 using ::base::test::EqualsProto;
+using ::webauthn::DeviceAuthorizationKey;
+using ::webauthn::DeviceAuthorizationKeys;
 
 constexpr char kGaiaId1[] = "123456789012345678901";
 constexpr char kGaiaId2[] = "987654321098765432109";

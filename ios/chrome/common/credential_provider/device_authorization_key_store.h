@@ -10,26 +10,27 @@
 #import <optional>
 #import <string>
 
-#import "components/webauthn/core/browser/device_authorization/proto/device_authorization_key.pb.h"
+#import "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 
-// Type alias for device authorization keys proto message.
-using DeviceAuthorizationKey =
-    sync_pb::GetDeviceAuthorizationKeyResponse::DeviceAuthorizationKey;
-using DeviceAuthorizationKeys =
-    sync_pb::GetDeviceAuthorizationKeyResponse::DeviceAuthorizationKeys;
-
-// Saves or updates all device authorization keys for the account identified by
-// `gaia_id` in the local iOS Keychain. Overwrites any existing keys for this
-// account. Returns true on success, false if any error occurs.
+// Synchronously saves or updates all device authorization keys for the account
+// identified by `gaia_id` in the local iOS Keychain. Overwrites any existing
+// keys for this account. Returns true on success, false if any error occurs.
+//
+// Should not be called on the main thread, as the iOS Keychain APIs may
+// block the calling thread.
 // TODO(crbug.com/405036154): Support `cache_version` parameter and
 // invalidation.
-bool StoreDeviceAuthorizationKeys(const std::string& gaia_id,
-                                  const DeviceAuthorizationKeys& keys);
+bool StoreDeviceAuthorizationKeys(
+    const std::string& gaia_id,
+    const webauthn::DeviceAuthorizationKeys& keys);
 
-// Retrieves all stored device authorization keys for the account identified by
-// `gaia_id` from the local iOS Keychain. Returns `std::nullopt` if no keys are
-// found or if an error occurs.
-std::optional<DeviceAuthorizationKeys> GetDeviceAuthorizationKeys(
+// Synchronously retrieves all stored device authorization keys for the account
+// identified by `gaia_id` from the local iOS Keychain. Returns `std::nullopt`
+// if no keys are found or if an error occurs.
+//
+// Should not be called on the main thread, as the iOS Keychain APIs may
+// block the calling thread.
+std::optional<webauthn::DeviceAuthorizationKeys> GetDeviceAuthorizationKeys(
     const std::string& gaia_id);
 
 #endif  // IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_DEVICE_AUTHORIZATION_KEY_STORE_H_
