@@ -21,7 +21,6 @@ build_webui("build") {
     "log_types.ts",
     "logging_tab.ts",
     "nearby_internals.ts",
-    "np_list_object.ts",
     "ui_trigger_list_object.ts",
     "ui_trigger_tab.ts",
   ]
@@ -30,7 +29,6 @@ build_webui("build") {
     "nearby_contact_browser_proxy.ts",
     "nearby_http_browser_proxy.ts",
     "nearby_prefs_browser_proxy.ts",
-    "nearby_presence_browser_proxy.ts",
     "nearby_ui_trigger_browser_proxy.ts",
     "types.ts",
   ]

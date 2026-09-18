@@ -113,16 +113,6 @@ cr-button {
   flex-direction: row;
 }
 
-np-object:last-child {
-  border-bottom: var(--standard-border);
-}
-
-np-object {
-  border-inline-end: var(--standard-border);
-  border-inline-start: var(--standard-border);
-  border-top: var(--standard-border);
-}
-
 /** CSS for logs panel */
 #logsPanel {
   width: 60%;
@@ -132,14 +122,6 @@ np-object {
   flex-direction: column;
   border-left: 1px solid rgba(0,0,0,0.12);
   min-width: 450px;
-}
-
-#devicesSection {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 6px;
-  white-space: pre-wrap;
 }
 
 .select-div {

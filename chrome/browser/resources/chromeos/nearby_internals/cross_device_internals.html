@@ -90,17 +90,6 @@
         </div>
       </div>
     </div>
-
-    <div class='control' id='remoteDevicesControl'>
-      <div class='control-title'>Returned Objects</div>
-      <iron-list items="[[npDiscoveredDevicesList_]]" as="generic-object"
-        id="devicesSection">
-        <template>
-          <np-object device="[[generic-object]]">
-          </np-object>
-        </template>
-      </iron-list>
-    </div>
   </section>
 
   <div id="logsPanel">

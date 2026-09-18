@@ -17,14 +17,9 @@ export enum FeatureValues {
  * added, add it here.
  */
 export enum ActionValues {
-  START_SCAN = 0,
-  STOP_SCAN = 1,
-  SYNC_CREDENTIALS = 2,
-  FIRST_TIME_FLOW = 3,
   RESET_NEARBY_SHARE = 4,
   ADD_PUSH_NOTIFICATION_CLIENT = 5,
   SHOW_RECEIVED_NOTIFICATION = 6,
-  SEND_UPDATE_CREDENTIALS_MESSAGE = 7,
 }
 
 /**
@@ -124,18 +119,6 @@ export interface TransferMetadataStatus {
 export interface TimestampedMessage {
   message: string;
   time: number;
-}
-
-
-/**
- * A Nearby Presence Device object to be used for displaying nearby devices
- * during testing.
- */
-export interface PresenceDevice {
-  connectable: boolean;
-  type: string;
-  endpoint_id: string;
-  actions: string;
 }
 
 /**

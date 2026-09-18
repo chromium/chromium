@@ -5,7 +5,6 @@
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import './shared_style.css.js';
-import './np_list_object.js';
 import './logging_tab.js';
 import './log_object.js';
 import './log_types.js';
@@ -21,9 +20,8 @@ import {getTemplate} from './cross_device_internals.html.js';
 import {NearbyLogsBrowserProxy} from './cross_device_logs_browser_proxy.js';
 import type {LogTypesElement} from './log_types.js';
 import {NearbyPrefsBrowserProxy} from './nearby_prefs_browser_proxy.js';
-import {NearbyPresenceBrowserProxy} from './nearby_presence_browser_proxy.js';
 import {NearbyUiTriggerBrowserProxy} from './nearby_ui_trigger_browser_proxy.js';
-import type {LogMessage, LogProvider, PresenceDevice, SelectOption} from './types.js';
+import type {LogMessage, LogProvider, SelectOption} from './types.js';
 import {ActionValues, FeatureValues, Severity} from './types.js';
 
 /**
@@ -66,12 +64,6 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
 
   static get properties() {
     return {
-
-      npDiscoveredDevicesList_: {
-        type: Array,
-        value: () => [],
-      },
-
       featuresList_: {
         type: Array,
         value: [
@@ -83,16 +75,7 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
 
       nearbyInfraActionList_: {
         type: Array,
-        value: [
-          {name: 'NP: Start Scan', value: ActionValues.START_SCAN},
-          {name: 'NP: Stop Scan', value: ActionValues.STOP_SCAN},
-          {name: 'NP: Sync Credentials', value: ActionValues.SYNC_CREDENTIALS},
-          {name: 'NP: First time flow', value: ActionValues.FIRST_TIME_FLOW},
-          {
-            name: 'NP: Send Update Credentials Message',
-            value: ActionValues.SEND_UPDATE_CREDENTIALS_MESSAGE,
-          },
-        ],
+        value: () => [],
       },
 
       logLevelList_: {
@@ -148,7 +131,6 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
     };
   }
 
-  declare private npDiscoveredDevicesList_: PresenceDevice[];
   declare private featuresList_: SelectOption[];
   declare private nearbyInfraActionList_: SelectOption[];
   declare private nearbyShareActionList_: SelectOption[];
@@ -167,8 +149,6 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
   };
   declare private currentLogTypes: FeatureValues[];
 
-  private nearbyPresenceBrowserProxy_: NearbyPresenceBrowserProxy =
-      NearbyPresenceBrowserProxy.getInstance();
   private prefsBrowserProxy_: NearbyPrefsBrowserProxy =
       NearbyPrefsBrowserProxy.getInstance();
   private nearbyUITriggerBrowserProxy_: NearbyUiTriggerBrowserProxy =
@@ -181,17 +161,7 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.nearbyPresenceBrowserProxy_.initialize();
     this.nearbyUITriggerBrowserProxy_.initialize();
-    this.addWebUiListener(
-        'presence-device-found',
-        (device: PresenceDevice) => this.onPresenceDeviceFound_(device));
-    this.addWebUiListener(
-        'presence-device-changed',
-        (device: PresenceDevice) => this.onPresenceDeviceChanged_(device));
-    this.addWebUiListener(
-        'presence-device-lost',
-        (device: PresenceDevice) => this.onPresenceDeviceLost_(device));
     this.set('actionsSelectList_', this.nearbyInfraActionList_);
 
     this.addWebUiListener(
@@ -228,24 +198,8 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
         this.shadowRoot!.querySelector('#actionSelect');
     if (actionSelect) {
       switch (Number(actionSelect.value)) {
-        case ActionValues.START_SCAN:
-          this.nearbyPresenceBrowserProxy_.sendStartScan();
-          break;
-        case ActionValues.STOP_SCAN:
-          this.nearbyPresenceBrowserProxy_.sendStopScan();
-          break;
-        case ActionValues.SYNC_CREDENTIALS:
-          this.nearbyPresenceBrowserProxy_.sendSyncCredentials();
-          break;
-        case ActionValues.FIRST_TIME_FLOW:
-          this.nearbyPresenceBrowserProxy_.sendFirstTimeFlow();
-          break;
         case ActionValues.RESET_NEARBY_SHARE:
           this.prefsBrowserProxy_.clearNearbyPrefs();
-          break;
-        case ActionValues.SEND_UPDATE_CREDENTIALS_MESSAGE:
-          this.nearbyPresenceBrowserProxy_
-              .sendUpdateCredentialsPushNotificationMessage();
           break;
         case ActionValues.SHOW_RECEIVED_NOTIFICATION:
           this.nearbyUITriggerBrowserProxy_
@@ -255,75 +209,6 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
           break;
       }
     }
-  }
-
-  private onPresenceDeviceFound_(device: PresenceDevice): void {
-    const type = device['type'];
-    const endpointId = device['endpoint_id'];
-    const actions = device['actions'];
-
-    // If there is not a device with this endpoint_id currently in the devices
-    // list, add it.
-    if (!this.npDiscoveredDevicesList_.find(
-            listDevice => listDevice.endpoint_id === endpointId)) {
-      this.unshift('npDiscoveredDevicesList_', {
-        'connectable': true,
-        'type': type,
-        'endpoint_id': endpointId,
-        'actions': actions,
-      });
-    }
-  }
-
-  // TODO(b/277820435): Add and update device name for devices that have names
-  // included.
-  private onPresenceDeviceChanged_(device: PresenceDevice): void {
-    const type = device['type'];
-    const endpointId = device['endpoint_id'];
-    const actions = device['actions'];
-
-    const index = this.npDiscoveredDevicesList_.findIndex(
-        listDevice => listDevice.endpoint_id === endpointId);
-
-    // If a device was changed but we don't have a record of it being found,
-    // add it to the array like performActiononPresenceDeviceFound__().
-    if (index === -1) {
-      this.unshift('npDiscoveredDevicesList_', {
-        'connectable': true,
-        'type': type,
-        'endpoint_id': endpointId,
-        'actions': actions,
-      });
-      return;
-    }
-
-    this.npDiscoveredDevicesList_[index] = {
-      'connectable': true,
-      'type': type,
-      'endpoint_id': endpointId,
-      'actions': actions,
-    };
-  }
-
-  private onPresenceDeviceLost_(device: PresenceDevice): void {
-    const type = device['type'];
-    const endpointId = device['endpoint_id'];
-    const actions = device['actions'];
-
-    const index = this.npDiscoveredDevicesList_.findIndex(
-        listDevice => listDevice.endpoint_id === endpointId);
-
-    // The device was not found in the list.
-    if (index === -1) {
-      return;
-    }
-
-    this.npDiscoveredDevicesList_[index] = {
-      'connectable': false,
-      'type': type,
-      'endpoint_id': endpointId,
-      'actions': actions,
-    };
   }
 
 
