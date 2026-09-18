@@ -4693,9 +4693,17 @@ class ClientSideDetectionHostScamDetectionTest
       histogram_tester_.ExpectUniqueSample(
           "SBClientPhishing.IntelligentScanVerdict",
           intelligent_scan_verdict.value(), 1);
+      histogram_tester_.ExpectUniqueSample(
+          "SBClientPhishing.IntelligentScanVerdict." +
+              GetRequestTypeName(expected_request_type),
+          intelligent_scan_verdict.value(), 1);
     } else {
       histogram_tester_.ExpectTotalCount(
           "SBClientPhishing.IntelligentScanVerdict", 0);
+      histogram_tester_.ExpectTotalCount(
+          "SBClientPhishing.IntelligentScanVerdict." +
+              GetRequestTypeName(expected_request_type),
+          0);
     }
   }
 

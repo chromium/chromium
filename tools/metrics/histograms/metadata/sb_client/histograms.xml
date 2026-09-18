@@ -911,15 +911,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
-<histogram name="SBClientPhishing.IntelligentScanVerdict"
+<histogram name="SBClientPhishing.IntelligentScanVerdict{RequestType}"
     enum="IntelligentScanVerdict" expires_after="2027-03-07">
   <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@Google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Logs what the IntelligentScanVerdict from ClientPhishingResponse was. This
-    is only logged in Client Side Phishing Protection after the server response
-    comes back and the field IntelligentScanVerdict is populated.
+    Logs what the IntelligentScanVerdict from ClientPhishingResponse was for a
+    specific {RequestType}. This is only logged in Client Side Phishing
+    Protection after the server response comes back and the field
+    IntelligentScanVerdict is populated.
   </summary>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.iOS.VisualClassificationEarlyReturnReason"

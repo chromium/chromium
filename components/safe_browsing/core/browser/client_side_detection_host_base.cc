@@ -1435,6 +1435,10 @@ void ClientSideDetectionHostBase::MaybeShowPhishingWarning(
     base::UmaHistogramExactLinear("SBClientPhishing.IntelligentScanVerdict",
                                   intelligent_scan_verdict.value(),
                                   IntelligentScanVerdict_MAX + 1);
+    base::UmaHistogramExactLinear(
+        base::StrCat(
+            {"SBClientPhishing.IntelligentScanVerdict.", request_type_name}),
+        intelligent_scan_verdict.value(), IntelligentScanVerdict_MAX + 1);
   }
 
   bool should_show_scam_warning = false;

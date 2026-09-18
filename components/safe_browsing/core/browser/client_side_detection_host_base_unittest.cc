@@ -981,6 +981,67 @@ TEST_F(ClientSideDetectionHostBaseTest,
       0);
 }
 
+TEST_F(ClientSideDetectionHostBaseTest,
+       MaybeShowPhishingWarning_LogsIntelligentScanVerdict) {
+  SetSafeBrowsingState(&prefs_, SafeBrowsingState::ENHANCED_PROTECTION);
+  base::HistogramTester histograms;
+  GURL phishing_url("https://example.com/");
+
+  host_->CallMaybeShowPhishingWarning(
+      /*is_from_cache=*/false, ClientSideDetectionType::FORCE_REQUEST,
+      /*did_match_high_confidence_allowlist=*/std::nullopt, phishing_url,
+      /*is_phishing=*/false,
+      /*response_code=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  histograms.ExpectUniqueSample(
+      "SBClientPhishing.IntelligentScanVerdict",
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE, 1);
+  histograms.ExpectUniqueSample(
+      "SBClientPhishing.IntelligentScanVerdict.ForceRequest",
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE, 1);
+}
+
+TEST_F(
+    ClientSideDetectionHostBaseTest,
+    MaybeShowPhishingWarning_EnhancedProtectionDisabled_DoesNotLogIntelligentScanVerdict) {
+  SetSafeBrowsingState(&prefs_, SafeBrowsingState::STANDARD_PROTECTION);
+  base::HistogramTester histograms;
+  GURL phishing_url("https://example.com/");
+
+  host_->CallMaybeShowPhishingWarning(
+      /*is_from_cache=*/false, ClientSideDetectionType::FORCE_REQUEST,
+      /*did_match_high_confidence_allowlist=*/std::nullopt, phishing_url,
+      /*is_phishing=*/false,
+      /*response_code=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  histograms.ExpectTotalCount("SBClientPhishing.IntelligentScanVerdict", 0);
+  histograms.ExpectTotalCount(
+      "SBClientPhishing.IntelligentScanVerdict.ForceRequest", 0);
+}
+
+TEST_F(
+    ClientSideDetectionHostBaseTest,
+    MaybeShowPhishingWarning_NoIntelligentScanVerdict_DoesNotLogIntelligentScanVerdict) {
+  SetSafeBrowsingState(&prefs_, SafeBrowsingState::ENHANCED_PROTECTION);
+  base::HistogramTester histograms;
+  GURL phishing_url("https://example.com/");
+
+  host_->CallMaybeShowPhishingWarning(
+      /*is_from_cache=*/false, ClientSideDetectionType::FORCE_REQUEST,
+      /*did_match_high_confidence_allowlist=*/std::nullopt, phishing_url,
+      /*is_phishing=*/false,
+      /*response_code=*/std::nullopt,
+      /*intelligent_scan_verdict=*/std::nullopt);
+
+  histograms.ExpectTotalCount("SBClientPhishing.IntelligentScanVerdict", 0);
+  histograms.ExpectTotalCount(
+      "SBClientPhishing.IntelligentScanVerdict.ForceRequest", 0);
+}
+
 // Unit tests for ExtractClipboardData
 class ClientSideDetectionHostBaseClipboardDataTest
     : public ClientSideDetectionHostBaseTest {
