@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.printing;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
 import android.os.Build.VERSION_CODES;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
@@ -31,6 +32,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -63,6 +65,7 @@ import org.chromium.printing.PrintManagerDelegate;
 import org.chromium.printing.Printable;
 import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.widget.ToastManager;
@@ -962,6 +965,59 @@ public class PrintingControllerTest {
 
                     // Cleanup
                     printingController.onFinish();
+                });
+    }
+
+    /**
+     * Test to verify that if the Activity is finishing, calling startPendingPrint() will
+     * immediately invoke the pending print callback and not start printing.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Printing"})
+    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/562625776
+    public void testStartPendingPrintWhenActivityIsFinishing() throws Throwable {
+        WebPageStation page = mActivityTestRule.startOnUrl(URL);
+        Tab tab = page.getTab();
+        WindowAndroid window = tab.getWindowAndroid();
+        Activity activity = window.getActivity().get();
+        Assert.assertNotNull(activity);
+
+        PrintManagerDelegate failIfCalledPrintManager =
+                new PrintManagerDelegate() {
+                    @Override
+                    public boolean print(
+                            String printJobName,
+                            PrintDocumentAdapter documentAdapter,
+                            @Nullable PrintAttributes attributes) {
+                        Assert.fail("print() must not be called for a finishing Activity.");
+                        return false;
+                    }
+                };
+
+        Runnable mockCallback = Mockito.mock(Runnable.class);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrintingControllerImpl printingController =
+                            (PrintingControllerImpl) PrintingControllerImpl.getInstance(window);
+                    printingController.setPendingPrint(
+                            new TabPrinter(tab), failIfCalledPrintManager, -1, -1);
+                    printingController.setPendingPrintCallback(mockCallback);
+
+                    activity.finish();
+                    Assert.assertTrue(activity.isFinishing());
+
+                    printingController.startPendingPrint();
+
+                    // The callback should have been invoked immediately because the Activity is
+                    // finishing.
+                    Mockito.verify(mockCallback, Mockito.times(1)).run();
+                    Assert.assertFalse(printingController.isBusy());
+                    Assert.assertTrue(printingController.hasPrintingFinished());
+
+                    // Cleanup
+                    printingController.onActivityDestroyed();
                 });
     }
 
