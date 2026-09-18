@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
@@ -134,7 +135,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Common) {
   RunSidePanelTest("side_panel/read_anything/common_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, RectCalculations) {
+// TODO(crbug.com/502069860): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RectCalculations DISABLED_RectCalculations
+#else
+#define MAYBE_RectCalculations RectCalculations
+#endif
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_RectCalculations) {
   RunSidePanelTest("side_panel/read_anything/rect_calculations_test.js",
                    "mocha.run()");
 }
