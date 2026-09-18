@@ -2291,8 +2291,6 @@ chromium-metrics-reviews@google.com.
   <int value="1214" label="GoogleLocationServicesEnabled"/>
   <int value="1215" label="ProvisionManagedClientCertificateForUser"/>
   <int value="1216" label="LocalUserFilesAllowed"/>
-  <int value="1218"
-      label="SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins"/>
   <int value="1219" label="DefaultWebPrintingSetting"/>
   <int value="1220" label="WebPrintingAllowedForUrls"/>
   <int value="1221" label="WebPrintingBlockedForUrls"/>
