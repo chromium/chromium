@@ -41,7 +41,6 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -145,7 +144,8 @@ public class TabBottomSheetManagerTest {
     public void tearDown() {
         if (mManager != null) {
             ThreadUtils.runOnUiThreadBlocking(
-                    () -> mManager.tryToCloseBottomSheet(/* animate= */ true));
+                    () -> mManager.tryToCloseBottomSheet(/* animate= */ false));
+            CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
         }
     }
 
@@ -822,15 +822,13 @@ public class TabBottomSheetManagerTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562625930
     public void testTryToShowBottomSheet_ReuseExistingSheetAndExpand() {
         NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
 
         // 1. Show the bottom sheet starting in peek mode.
         showBottomSheetAndBlockUntilReady(
                 mockDelegate, /* animate= */ false, /* startsExpanded= */ false);
-        assertTrue(mManager.isSheetShowing());
-        assertTrue(mManager.isInPeekMode());
+        CriteriaHelper.pollUiThread(() -> mManager.isInPeekMode());
 
         // 2. Call tryToShowBottomSheet again with the same delegate to expand the sheet.
         ThreadUtils.runOnUiThreadBlocking(
