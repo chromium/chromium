@@ -234,9 +234,17 @@ WebUIContentSettingImageControl::ShowContentSettingsBubbleImpl(ImageType type) {
       views::BubbleBorder::TOP_RIGHT);
   bubble_contents->SetHighlightedElement(model->GetElementIdentifier());
 
+  ContentSettingBubbleContents* bubble_contents_ptr = bubble_contents.get();
   views::Widget* bubble_widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_contents));
   if (bubble_widget) {
+    if (views::BubbleFrameView* const frame_view =
+            bubble_contents_ptr->GetBubbleFrameView()) {
+      if (views::Label* title_label = frame_view->default_title()) {
+        title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
+        title_label->SetEnabledColor(kColorActivityIndicatorForeground);
+      }
+    }
     bubble_reopen_suppressor_.Observe(bubble_widget);
     last_tracked_bubble_type_ = type;
     bubble_widget->Show();
