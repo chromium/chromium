@@ -588,12 +588,6 @@ inline constexpr char kDefaultBrowserPipTextVideoDescription[] =
     "When enabled, displays a text video in the default browser "
     "picture-in-picture instead of the current one.";
 
-inline constexpr char kDefaultBrowserPromoIpadInstructionsName[] =
-    "Default Browser Promo iPad Instructions";
-inline constexpr char kDefaultBrowserPromoIpadInstructionsDescription[] =
-    "When enabled, displays default browser promo instructions specifically "
-    "adapted for iPad.";
-
 inline constexpr char kDefaultBrowserPromoOverflowMenuName[] =
     "Default Browser Promo in Overflow Menu";
 inline constexpr char kDefaultBrowserPromoOverflowMenuDescription[] =
