@@ -97,6 +97,15 @@ TEST(UrlUtilTest, ValidateLaunchUrlWebSafe) {
   // at runtime, but must never be launch targets.
   EXPECT_FALSE(ValidateLaunchUrlWebSafe(GURL("mailto:user@example.com")));
   EXPECT_FALSE(ValidateLaunchUrlWebSafe(GURL("web+example:payload")));
+
+  // Extension and Android-specific privileged/intent schemes should be rejected
+  // in WebSafe context.
+  EXPECT_FALSE(ValidateLaunchUrlWebSafe(
+      GURL("chrome-extension://abcdefghijklmnopabcdefghijklmnop/index.html")));
+  EXPECT_FALSE(ValidateLaunchUrlWebSafe(
+      GURL("content://packagename.providername/path")));
+  EXPECT_FALSE(ValidateLaunchUrlWebSafe(
+      GURL("intent://example.com/#Intent;scheme=http;end")));
 }
 
 TEST(UrlUtilTest, ValidateUrlRejectsNestedSchemes) {

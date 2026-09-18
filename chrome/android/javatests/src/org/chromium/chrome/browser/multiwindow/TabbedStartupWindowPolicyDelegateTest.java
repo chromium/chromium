@@ -9,6 +9,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,6 +26,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
@@ -45,6 +49,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -52,6 +59,11 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Collections;
@@ -66,6 +78,8 @@ import java.util.Set;
 @MinAndroidSdkLevel(VERSION_CODES.S)
 @EnableFeatures(ChromeFeatureList.SYNC_RESTORE_ON_STARTUP_PREF)
 public class TabbedStartupWindowPolicyDelegateTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
@@ -75,10 +89,25 @@ public class TabbedStartupWindowPolicyDelegateTest {
 
     private final Set<ChromeTabbedActivity> mExtraActivities = new HashSet<>();
 
+    @Mock private SyncService mSyncService;
+
     @Before
     public void setUp() {
+        // Mock an active History sync session so TabbedStartupWindowPolicyDelegate's
+        // PrefChangeRegistrar observers automatically sync native preference updates to
+        // ChromeMultiInstancePersistentStore.
+        when(mSyncService.getAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.HISTORY));
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+
         mActivityTestRule.startOnBlankPage();
         DeviceInfo.setIsDesktopForTesting(true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabbedStartupWindowPolicyDelegate.getInstance().resetForTesting();
+                    TabbedStartupWindowPolicyDelegate.getInstance()
+                            .initializeWithNative(ProfileManager.getLastUsedRegularProfile());
+                });
     }
 
     @After
@@ -98,11 +127,14 @@ public class TabbedStartupWindowPolicyDelegateTest {
                 () -> {
                     ((MultiInstanceOrchestratorImpl) MultiInstanceOrchestratorImpl.getInstance())
                             .clearAssignmentsForTesting();
-                    TabbedStartupWindowPolicyDelegate.getInstance().resetPolicy();
-                    ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
-                            TabbedStartupWindowPolicyDelegate.PREF_UNSET);
-                    ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(
-                            Collections.emptyList());
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+                    prefService.clearPref(Pref.RESTORE_ON_STARTUP);
+                    prefService.clearPref(Pref.URLS_TO_RESTORE_ON_STARTUP);
+                    when(mSyncService.getAccountInfo()).thenReturn(null);
+                    TabbedStartupWindowPolicyDelegate.getInstance().syncStateChanged();
+                    TabbedStartupWindowPolicyDelegate.getInstance().resetForTesting();
+                    SyncServiceFactory.setInstanceForTesting(null);
                     ChromeMultiInstancePersistentStore.clearSessionStartupPolicy();
                     ChromeMultiInstancePersistentStore.deleteInstanceState(2);
                 });
@@ -149,6 +181,51 @@ public class TabbedStartupWindowPolicyDelegateTest {
 
         // Verify: Standard startup claims URLS and opens the configured URLs.
         assertTabUrls(newActivity, STARTUP_URLS);
+    }
+
+    @Test
+    @SmallTest
+    public void testStandardStartup_RestoreOnStartup_UrlsPref_FiltersUnsafeUrls() throws Exception {
+        // Setup: Configure startup URLs with a mix of web-safe and privileged/disallowed schemes.
+        setRestoreOnStartupUrlsPref(
+                List.of(
+                        UrlConstants.GOOGLE_URL,
+                        "javascript:alert(1)",
+                        "file:///sdcard/secret",
+                        "content://media/external/file/1",
+                        "intent://example.com/#Intent;scheme=http;end",
+                        "data:text/html,<script>alert(1)</script>",
+                        "wss://example.com",
+                        "chrome-extension://abcdefghijklmnopabcdefghijklmnop/index.html",
+                        UrlConstants.CHROME_WEBSTORE_URL));
+
+        // Act: Standard startup launch (preferNew = false).
+        ChromeTabbedActivity newActivity = createNewWindow(/* preferNew= */ false);
+
+        // Verify: Unsafe schemes are filtered out and only web-safe URLs are opened.
+        assertTabUrls(newActivity, STARTUP_URLS);
+    }
+
+    @Test
+    @SmallTest
+    public void testStandardStartup_RestoreOnStartup_UrlsPref_AllUnsafeUrls_OpensNtp()
+            throws Exception {
+        // Setup: Configure startup URLs containing only disallowed schemes.
+        setRestoreOnStartupUrlsPref(
+                List.of(
+                        "javascript:alert(1)",
+                        "file:///sdcard/secret",
+                        "content://media/external/file/1",
+                        "intent://example.com/#Intent;scheme=http;end",
+                        "data:text/html,<script>alert(1)</script>",
+                        "wss://example.com",
+                        "chrome-extension://abcdefghijklmnopabcdefghijklmnop/index.html"));
+
+        // Act: Standard startup launch (preferNew = false).
+        ChromeTabbedActivity newActivity = createNewWindow(/* preferNew= */ false);
+
+        // Verify: When all configured URLs are rejected, startup falls back to a single NTP.
+        assertSingleNtpTab(newActivity);
     }
 
     @Test
@@ -221,14 +298,30 @@ public class TabbedStartupWindowPolicyDelegateTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabbedStartupWindowPolicyDelegate.getInstance().resetPolicy();
-                    ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(pref);
+                    // Updating the native preference triggers TabbedStartupWindowPolicyDelegate's
+                    // PrefChangeRegistrar observer (updateCachedRestoreOnStartupPref), which
+                    // verifies that History sync is active and persists the pref value to
+                    // ChromeMultiInstancePersistentStore.
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                            .setInteger(Pref.RESTORE_ON_STARTUP, pref);
                 });
     }
 
     private void setRestoreOnStartupUrlsPref(List<String> startupUrls) {
-        setRestoreOnStartupPref(SessionStartupPref.URLS);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(startupUrls));
+                () -> {
+                    TabbedStartupWindowPolicyDelegate.getInstance().resetPolicy();
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+                    // Setting the native SessionStartupPref updates both kRestoreOnStartup (to
+                    // URLS) and kURLsToRestoreOnStartup, synchronously firing
+                    // TabbedStartupWindowPolicyDelegate's PrefChangeRegistrar observers. Those
+                    // observers validate the URLs via JNI GetSessionStartupUrls() and persist both
+                    // SessionStartupPref.URLS and the filtered URL list to
+                    // ChromeMultiInstancePersistentStore.
+                    TabbedStartupWindowPolicyDelegateJni.get()
+                            .setSessionStartupUrlsForTesting(prefService, startupUrls);
+                });
     }
 
     private ChromeTabbedActivity createNewWindow(boolean preferNew) {
