@@ -79,7 +79,7 @@ import java.util.concurrent.TimeoutException;
 // TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
 @DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 @Batch(Batch.PER_CLASS)
-public class TabMediaIndicatorTest {
+public class TabAlertIndicatorTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
