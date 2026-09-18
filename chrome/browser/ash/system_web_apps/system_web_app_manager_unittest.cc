@@ -822,7 +822,7 @@ TEST_P(SystemWebAppManagerInstallationTest, AbandonFailedInstallsLocaleChange) {
   system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
 
   system_web_app_manager().set_current_version(base::Version("1.0.0.0"));
-  system_web_app_manager().SetCurrentLocale("en/us");
+  system_web_app_manager().SetCurrentLocale("en-US");
   StartAndWaitForAppsToSynchronize();
   EXPECT_TRUE(IsInstalled(AppUrl1()));
   EXPECT_FALSE(WasReinstalled(AppUrl1()));
@@ -830,7 +830,7 @@ TEST_P(SystemWebAppManagerInstallationTest, AbandonFailedInstallsLocaleChange) {
 
   // Bump the version number, and an update will trigger, and force
   // reinstallation of both apps.
-  system_web_app_manager().SetCurrentLocale("en/au");
+  system_web_app_manager().SetCurrentLocale("en-AU");
   system_web_app_manager().ResetForTesting();
 
   {
@@ -874,7 +874,7 @@ TEST_P(SystemWebAppManagerInstallationTest, AbandonFailedInstallsLocaleChange) {
 
   // Bump the version, and it works.
   system_web_app_manager().ResetForTesting();
-  system_web_app_manager().SetCurrentLocale("fr/fr");
+  system_web_app_manager().SetCurrentLocale("fr-FR");
   system_web_app_manager().Start();
   AwaitSystemWebAppCommandsCompletePostStartup();
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();

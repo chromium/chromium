@@ -23,7 +23,7 @@ TEST(ApplicationLocaleStorageTest, GetBCP47Format) {
   locale_storage.Set("es_419");
   EXPECT_EQ(locale_storage.Get(
                 ApplicationLocaleStorage::LocaleFormat::kChromeNormalized),
-            "es_419");
+            "es-419");
   EXPECT_EQ(locale_storage.Get(ApplicationLocaleStorage::LocaleFormat::kBCP47),
             "es-419");
 }

@@ -393,7 +393,7 @@ TEST_F(AndroidTelemetryServiceTest, GetReport_ValidateAllFields) {
   ON_CALL(*download_item_, GetFileNameToReportUser())
       .WillByDefault(testing::Return(
           base::FilePath(FILE_PATH_LITERAL(kItemTargetFilePath))));
-  g_browser_process->SetApplicationLocale("en_US");
+  g_browser_process->SetApplicationLocale("en-US");
   std::unique_ptr<ClientSafeBrowsingReportRequest> report =
       GetReport(download_item_.get());
   ASSERT_TRUE(report);
@@ -407,7 +407,7 @@ TEST_F(AndroidTelemetryServiceTest, GetReport_ValidateAllFields) {
   ASSERT_TRUE(report->has_page_url());
   EXPECT_EQ(kTabURL, report->page_url());
 
-  EXPECT_EQ(report->locale(), "en_US");
+  EXPECT_EQ(report->locale(), "en-US");
 
   ASSERT_TRUE(report->has_download_item_info());
   ASSERT_TRUE(report->download_item_info().has_url());
