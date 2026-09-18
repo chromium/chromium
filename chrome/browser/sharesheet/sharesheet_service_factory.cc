@@ -7,11 +7,13 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/common/content_switches.h"
 
 namespace sharesheet {
@@ -65,6 +67,10 @@ SharesheetServiceFactory::BuildServiceInstanceForBrowserContext(
 }
 
 bool SharesheetServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationSharesheet.Get()) {
+    return false;
+  }
   return true;
 }
 
