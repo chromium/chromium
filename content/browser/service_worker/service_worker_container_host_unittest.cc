@@ -49,6 +49,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
@@ -701,6 +702,43 @@ TEST_F(ServiceWorkerContainerHostTest,
   EXPECT_EQ(GURL(), test_browser_client.logs()[2].script_url);
 
   SetBrowserClientForTesting(old_browser_client);
+}
+
+// Tests that the container host's registration logic correctly forwards and
+// stores the ancestor frame type (specifically kFencedFrame) that was cached
+// on the ServiceWorkerClient.
+TEST_F(ServiceWorkerContainerHostTest, Register_AncestorFrameType) {
+  // Set up a ServiceWorkerClient and its associated container host for
+  // a mock window client.
+  CommittedServiceWorkerClient service_worker_client =
+      PrepareServiceWorkerContainerHost(GURL("https://www.example.com/foo"));
+
+  // Manually set the ancestor frame type of the client to kFencedFrame.
+  // This simulates the client having been determined to be nested within a
+  // fenced frame during navigation commit.
+  service_worker_client->SetAncestorFrameTypeForTesting(
+      blink::mojom::AncestorFrameType::kFencedFrame);
+
+  // Trigger registration of a service worker using the container host's
+  // Mojo interface. This exercises the path that forwards the cached ancestor
+  // frame type from the client to the context registration logic.
+  const GURL kScope("https://www.example.com/new_scope");
+  EXPECT_EQ(blink::mojom::ServiceWorkerErrorType::kNone,
+            Register(service_worker_client.host_remote().get(), kScope,
+                     GURL("https://www.example.com/bar")));
+
+  // Verify that the resulting service worker registration was correctly
+  // created and populated with the correct ancestor frame type (kFencedFrame).
+  scoped_refptr<ServiceWorkerRegistration> registration;
+  for (const auto& [id, reg] : context_->GetLiveRegistrations()) {
+    if (reg->scope() == kScope) {
+      registration = reg;
+      break;
+    }
+  }
+  ASSERT_TRUE(registration);
+  EXPECT_EQ(registration->ancestor_frame_type(),
+            blink::mojom::AncestorFrameType::kFencedFrame);
 }
 
 TEST_F(ServiceWorkerContainerHostTest, AllowServiceWorker) {

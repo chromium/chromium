@@ -504,6 +504,14 @@ ServiceWorkerClient::CommitResponse(
     auto* rfh = RenderFrameHostImpl::FromID(*rfh_id);
     // `rfh` may be null in tests (but it should not happen in production).
     if (rfh) {
+      // Cache the ancestor frame type (whether the frame is nested within a
+      // fenced frame) at commit time while the RenderFrameHost is still alive.
+      // This caches it on the ServiceWorkerClient, so it remains accessible
+      // even if the RenderFrameHost is later destroyed before a service
+      // worker registration IPC is processed.
+      if (rfh->IsNestedWithinFencedFrame()) {
+        ancestor_frame_type_ = blink::mojom::AncestorFrameType::kFencedFrame;
+      }
       rfh->AddServiceWorkerClient(client_uuid(),
                                   weak_ptr_factory_.GetWeakPtr());
       // A window client hosted by a privileged WebContents (see //chrome's

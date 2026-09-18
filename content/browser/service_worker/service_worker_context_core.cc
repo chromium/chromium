@@ -561,7 +561,8 @@ void ServiceWorkerContextCore::RegisterServiceWorker(
         outside_fetch_client_settings_object,
     RegistrationCallback callback,
     const GlobalRenderFrameHostId& requesting_frame_id,
-    const PolicyContainerPolicies& policy_container_policies) {
+    const PolicyContainerPolicies& policy_container_policies,
+    const blink::mojom::AncestorFrameType ancestor_frame_type) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   std::string error_message;
   if (!IsValidRegisterRequest(script_url, options.scope, key, &error_message)) {
@@ -570,12 +571,6 @@ void ServiceWorkerContextCore::RegisterServiceWorker(
         blink::mojom::kInvalidServiceWorkerRegistrationId);
     return;
   }
-
-  auto* render_frame_host = RenderFrameHostImpl::FromID(requesting_frame_id);
-  const blink::mojom::AncestorFrameType ancestor_frame_type =
-      render_frame_host && render_frame_host->IsNestedWithinFencedFrame()
-          ? blink::mojom::AncestorFrameType::kFencedFrame
-          : blink::mojom::AncestorFrameType::kNormalFrame;
 
   was_service_worker_registered_ = true;
   job_coordinator_->Register(

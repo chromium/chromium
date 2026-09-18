@@ -222,7 +222,8 @@ void ServiceWorkerContainerHostForClient::Register(
                      weak_ptr_factory_.GetWeakPtr(), GURL(script_url),
                      GURL(options->scope), std::move(wrapped_callback),
                      trace_id, mojo::GetBadMessageCallback()),
-      global_frame_id, policy_container_policies_);
+      global_frame_id, policy_container_policies_,
+      service_worker_client().ancestor_frame_type());
 }
 
 void ServiceWorkerContainerHostForClient::GetRegistration(

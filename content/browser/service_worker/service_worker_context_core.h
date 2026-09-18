@@ -36,6 +36,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 
 class GURL;
@@ -424,7 +425,9 @@ class CONTENT_EXPORT ServiceWorkerContextCore
           outside_fetch_client_settings_object,
       RegistrationCallback callback,
       const GlobalRenderFrameHostId& requesting_frame_id,
-      const PolicyContainerPolicies& policy_container_policies);
+      const PolicyContainerPolicies& policy_container_policies,
+      blink::mojom::AncestorFrameType ancestor_frame_type =
+          blink::mojom::AncestorFrameType::kNormalFrame);
 
   // If `is_immediate` is true, unregister clears the active worker from the
   // registration without waiting for the controlled clients to unload.

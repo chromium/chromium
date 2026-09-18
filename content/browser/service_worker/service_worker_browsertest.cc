@@ -4883,6 +4883,53 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFencedFrameBrowserTest,
             EvalJs(fenced_frame, "backgroundFetchFromServiceWorker()"));
 }
 
+// Tests that a service worker registered from a nested iframe within a fenced
+// frame is correctly classified with the kFencedFrame ancestor frame type.
+// This is verified by ensuring the service worker is barred from performing
+// background fetch, which is restricted in fenced frames.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerFencedFrameBrowserTest,
+                       AncestorFrameTypeIsStoredForNestedFrameInFencedFrame) {
+  WorkerRunningStatusObserver observer(public_context());
+
+  // Navigate the main frame to a page that can register service workers.
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
+  const GURL kFencedFrameUrl =
+      embedded_test_server()->GetURL("/service_worker/fenced_frame.html");
+
+  // Create a fenced frame nested inside the main frame.
+  RenderFrameHost* fenced_frame = fenced_frame_test_helper().CreateFencedFrame(
+      shell()->web_contents()->GetPrimaryMainFrame(), kFencedFrameUrl);
+
+  // Inside the fenced frame, programmatically create a nested iframe.
+  EXPECT_TRUE(ExecJs(fenced_frame,
+                     "const iframe = document.createElement('iframe');"
+                     "iframe.src = '/service_worker/fenced_frame.html';"
+                     "document.body.appendChild(iframe);"));
+  WaitForLoadStop(shell()->web_contents());
+
+  // Retrieve the RenderFrameHost of the newly created nested iframe and
+  // verify it is indeed recognized as being nested within a fenced frame.
+  RenderFrameHost* nested_iframe = ChildFrameAt(fenced_frame, 0);
+  ASSERT_TRUE(nested_iframe);
+  EXPECT_TRUE(nested_iframe->IsNestedWithinFencedFrame());
+
+  // Register the service worker from the nested iframe context.
+  EXPECT_EQ("ok - service worker registered",
+            EvalJs(nested_iframe, "RegisterServiceWorker()"));
+  observer.WaitUntilRunning();
+
+  // Verify that the service worker is blocked from calling background
+  // fetch, confirming that the registration stored the kFencedFrame ancestor
+  // frame type for this worker.
+  constexpr char kExpectedError[] =
+      "Failed to execute 'fetch' on 'BackgroundFetchManager': "
+      "backgroundFetch is not allowed in fenced frames.";
+  EXPECT_EQ(kExpectedError,
+            EvalJs(nested_iframe, "backgroundFetchFromServiceWorker()"));
+}
+
 class ServiceWorkerFencedFrameProcessAllocationBrowserTest
     : public ServiceWorkerFencedFrameBrowserTest,
       public testing::WithParamInterface<bool> {

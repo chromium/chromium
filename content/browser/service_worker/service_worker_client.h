@@ -27,6 +27,7 @@
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "services/network/public/mojom/document_isolation_policy.mojom-forward.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
@@ -287,6 +288,14 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // commit. See also comments for RenderFrameHost::GetFrameTreeNodeId()
   // for more details.
   GlobalRenderFrameHostId GetRenderFrameHostId() const;
+
+  blink::mojom::AncestorFrameType ancestor_frame_type() const {
+    return ancestor_frame_type_;
+  }
+  void SetAncestorFrameTypeForTesting(
+      blink::mojom::AncestorFrameType ancestor_frame_type) {
+    ancestor_frame_type_ = ancestor_frame_type;
+  }
 
   // For service worker clients. For window clients, this is not populated until
   // after navigation commit.
@@ -677,6 +686,11 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // The frame tree node ID that is set in the constructor and is reset in
   // CommitResponse().
   FrameTreeNodeId ongoing_navigation_frame_tree_node_id_;
+
+  // Set in CommitResponse() so it remains available after the RenderFrameHost
+  // is destroyed.
+  blink::mojom::AncestorFrameType ancestor_frame_type_ =
+      blink::mojom::AncestorFrameType::kNormalFrame;
 
   // URLLoaderFactory used for navigation preload etc.
   // Only set/used for clients for prefetch.
