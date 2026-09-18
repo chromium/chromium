@@ -101,7 +101,7 @@ export class TestComposeboxMixinElement extends TestElementBase {
               @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
               @match-focusin="${this.onMatchFocusin}"
               @match-click="${this.onMatchClick}"
-              ?hidden="${!this.showDropdown || !this.dropdownNeeded}"
+              ?hidden="${this.shouldHideDropdown()}"
               .lastQueriedInput="${this.lastQueriedInput}">
           </cr-composebox-dropdown>
           <cr-composebox-file-inputs id="fileInputs"

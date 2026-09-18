@@ -2951,6 +2951,10 @@ export const ComposeboxEmbedderMixin =
           return this.inputModel.hasNonTabFiles();
         }
 
+        shouldHideDropdown(): boolean {
+          return !this.showDropdown || !this.dropdownNeeded;
+        }
+
         shouldShowDivider(): boolean {
           if (this.tabFaviconChipsToCoinsEnabled && this.hasTabs()) {
             if (!this.hasNonTabFiles()) {
@@ -3286,6 +3290,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
     tabId: number,
     onTabLoaded: (faviconDataUrl?: string) => void,
   }>): Promise<void>;
+  shouldHideDropdown(): boolean;
   shouldShowDivider(): boolean;
   shouldShowSubmitButton(): boolean;
   computeShowDropdown(): boolean;
