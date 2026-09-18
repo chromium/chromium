@@ -2575,10 +2575,6 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
     hats_notification_controller_ =
         new HatsNotificationController(profile, kHatsSlowAndLaggyDeepDive);
   } else if (HatsNotificationController::ShouldShowSurveyToProfile(
-                 profile, kHatsEntSurvey)) {
-    hats_notification_controller_ =
-        new HatsNotificationController(profile, kHatsEntSurvey);
-  } else if (HatsNotificationController::ShouldShowSurveyToProfile(
                  profile, kHatsStabilitySurvey)) {
     hats_notification_controller_ =
         new HatsNotificationController(profile, kHatsStabilitySurvey);
@@ -2850,23 +2846,6 @@ bool UserSessionManager::IsFullRestoreEnabled(Profile* profile) {
 
 void UserSessionManager::OnUserEligibleForOnboardingSurvey(Profile* profile) {
   onboarding_user_activity_counter_.reset();
-
-  if (profile != ProfileManager::GetActiveUserProfile())
-    return;
-
-  DCHECK(!session_manager::SessionManager::Get()->IsUserSessionBlocked());
-
-  // Do not run more than one HATS survey.
-  if (hats_notification_controller_)
-    return;
-
-  if (!HatsNotificationController::ShouldShowSurveyToProfile(
-          profile, kHatsOnboardingSurvey)) {
-    return;
-  }
-
-  hats_notification_controller_ =
-      new HatsNotificationController(profile, kHatsOnboardingSurvey);
 }
 
 void UserSessionManager::LoadShillProfile(const AccountId& account_id) {

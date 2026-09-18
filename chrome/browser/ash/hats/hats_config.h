@@ -67,10 +67,8 @@ struct HatsConfig {
 
 // CrOS HaTS configs are declared here and defined in hats_config.cc
 extern const HatsConfig kHatsGeneralSurvey;
-extern const HatsConfig kHatsEntSurvey;
 extern const HatsConfig kHatsStabilitySurvey;
 extern const HatsConfig kHatsPerformanceSurvey;
-extern const HatsConfig kHatsOnboardingSurvey;
 extern const HatsConfig kHatsArcGamesSurvey;
 extern const HatsConfig kHatsAudioSurvey;
 extern const HatsConfig kHatsAudioOutputProcSurvey;

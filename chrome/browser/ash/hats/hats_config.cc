@@ -54,14 +54,6 @@ const HatsConfig kHatsGeneralSurvey = {
     ash::prefs::kHatsSurveyCycleEndTimestamp,  // cycle_end_timestamp_pref_name
 };
 
-// ENT Survey -- shown after login, along with the General Survey
-const HatsConfig kHatsEntSurvey = {
-    ash::features::kHappinessTrackingSystemEnt,  // feature
-    base::Days(7),                               // new_device_threshold
-    ash::prefs::kHatsEntDeviceIsSelected,        // is_selected_pref_name
-    ash::prefs::kHatsEntSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
-};
-
 // Stability Survey -- shown after login, along with the General Survey
 const HatsConfig kHatsStabilitySurvey = {
     ash::features::kHappinessTrackingSystemStability,  // feature
@@ -78,15 +70,6 @@ const HatsConfig kHatsPerformanceSurvey = {
     ash::prefs::kHatsPerformanceDeviceIsSelected,  // is_selected_pref_name
     ash::prefs::
         kHatsPerformanceSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
-};
-
-// Onboarding Experience Survey -- shown after completing the Onboarding Dialog
-const HatsConfig kHatsOnboardingSurvey = {
-    ash::features::kHappinessTrackingSystemOnboarding,  // feature
-    base::Minutes(30),                                  // new_device_threshold
-    ash::prefs::kHatsOnboardingDeviceIsSelected,        // is_selected_pref_name
-    ash::prefs::
-        kHatsOnboardingSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
 // ARC++ Games Survey -- shown after a user played a top XX ARC++ game

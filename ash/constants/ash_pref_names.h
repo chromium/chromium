@@ -3607,16 +3607,6 @@ inline constexpr char kHatsCameraAppDeviceIsSelected[] =
 inline constexpr char kHatsDeviceIsSelected[] = "hats_device_is_selected";
 
 // An int64 pref. This is the timestamp, microseconds after epoch, that
-// indicates the end of the ENT survey
-inline constexpr char kHatsEntSurveyCycleEndTs[] =
-    "hats_ent_cycle_end_timestamp";
-
-// A boolean pref. Indicates if the device is selected for the HaTS ENT
-// survey
-inline constexpr char kHatsEntDeviceIsSelected[] =
-    "hats_ent_device_is_selected";
-
-// An int64 pref. This is the timestamp, microseconds after epoch, that
 // indicated the end of the most recent general camera survey cycle.
 inline constexpr char kHatsGeneralCameraSurveyCycleEndTs[] =
     "hats_general_camera_cycle_end_timestamp";
@@ -3664,16 +3654,6 @@ inline constexpr char kHatsOfficeSurveyIsSelected[] = "hats_office_is_selected";
 // indicated the end of the most recent Office integration survey cycle.
 inline constexpr char kHatsOfficeSurveyCycleEndTs[] =
     "hats_office_end_timestamp";
-
-// An int64 pref. This is the timestamp, microseconds after epoch, that
-// indicates the end of the Onboarding Experience survey
-inline constexpr char kHatsOnboardingSurveyCycleEndTs[] =
-    "hats_onboarding_cycle_end_timestamp";
-
-// A boolean pref. Indicates if the device is selected for the HaTS Onboarding
-// Experience survey
-inline constexpr char kHatsOnboardingDeviceIsSelected[] =
-    "hats_onboarding_device_is_selected";
 
 // An int64 pref. This is the timestamp, microseconds after epoch, that
 // indicates the end of the most recent OS Settings Search survey cycle.

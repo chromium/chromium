@@ -2003,20 +2003,12 @@ BASE_FEATURE(kHappinessTrackingSystemBatteryLife,
 BASE_FEATURE(kHappinessTrackingSystemPeripherals,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables the Happiness Tracking System for the Ent survey.
-BASE_FEATURE(kHappinessTrackingSystemEnt, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables the Happiness Tracking System for the Stability survey.
 BASE_FEATURE(kHappinessTrackingSystemStability,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables the Happiness Tracking System for the Performance survey.
 BASE_FEATURE(kHappinessTrackingSystemPerformance,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables or disables the Happiness Tracking System for Onboarding Experience.
-BASE_FEATURE(kHappinessTrackingSystemOnboarding,
-             "HappinessTrackingOnboardingExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables the Happiness Tracking System for ARC Games survey.

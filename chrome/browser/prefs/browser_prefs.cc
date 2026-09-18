@@ -1014,6 +1014,14 @@ inline constexpr char kHatsLauncherAppsSurveyCycleEndTs[] =
     "hats_launcher_apps_cycle_end_timestamp";
 inline constexpr char kHatsLauncherAppsSurveyIsSelected[] =
     "hats_launcher_apps_is_selected";
+inline constexpr char kHatsEntSurveyCycleEndTs[] =
+    "hats_ent_cycle_end_timestamp";
+inline constexpr char kHatsEntDeviceIsSelected[] =
+    "hats_ent_device_is_selected";
+inline constexpr char kHatsOnboardingSurveyCycleEndTs[] =
+    "hats_onboarding_cycle_end_timestamp";
+inline constexpr char kHatsOnboardingDeviceIsSelected[] =
+    "hats_onboarding_device_is_selected";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Deprecated 09/2026.
@@ -1408,6 +1416,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kNSSCertsMigratedToServerCertDb, 0);
   registry->RegisterInt64Pref(kHatsLauncherAppsSurveyCycleEndTs, 0);
   registry->RegisterBooleanPref(kHatsLauncherAppsSurveyIsSelected, false);
+  registry->RegisterInt64Pref(kHatsEntSurveyCycleEndTs, 0);
+  registry->RegisterBooleanPref(kHatsEntDeviceIsSelected, false);
+  registry->RegisterInt64Pref(kHatsOnboardingSurveyCycleEndTs, 0);
+  registry->RegisterBooleanPref(kHatsOnboardingDeviceIsSelected, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Deprecated 09/2026.
@@ -2758,6 +2770,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kNSSCertsMigratedToServerCertDb);
   profile_prefs->ClearPref(kHatsLauncherAppsSurveyCycleEndTs);
   profile_prefs->ClearPref(kHatsLauncherAppsSurveyIsSelected);
+  profile_prefs->ClearPref(kHatsEntSurveyCycleEndTs);
+  profile_prefs->ClearPref(kHatsEntDeviceIsSelected);
+  profile_prefs->ClearPref(kHatsOnboardingSurveyCycleEndTs);
+  profile_prefs->ClearPref(kHatsOnboardingDeviceIsSelected);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Added 09/2026.
