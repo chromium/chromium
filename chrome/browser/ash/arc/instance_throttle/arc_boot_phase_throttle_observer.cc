@@ -42,7 +42,7 @@ void ArcBootPhaseThrottleObserver::StartObserving(
   ThrottleObserver::StartObserving(context, callback);
 
   auto* session_manager = ArcSessionManager::Get();
-  DCHECK(session_manager);
+  CHECK(session_manager, base::NotFatalUntil::M160);
   session_manager->AddObserver(this);
 
   SessionRestore::AddObserver(this);
@@ -55,7 +55,7 @@ void ArcBootPhaseThrottleObserver::StartObserving(
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   // ArcServiceManager and objects owned by the manager are created very early
   // in `ChromeBrowserMainPartsAsh::PreMainMessageLoopRun()` too.
-  DCHECK(arc_service_manager);
+  CHECK(arc_service_manager, base::NotFatalUntil::M160);
   arc_service_manager->arc_bridge_service()->app()->AddObserver(this);
   arc_service_manager->arc_bridge_service()->intent_helper()->AddObserver(this);
 }
@@ -65,7 +65,7 @@ void ArcBootPhaseThrottleObserver::StopObserving() {
   SessionRestore::RemoveObserver(this);
 
   auto* session_manager = ArcSessionManager::Get();
-  DCHECK(session_manager);
+  CHECK(session_manager, base::NotFatalUntil::M160);
   session_manager->RemoveObserver(this);
 
   ThrottleObserver::StopObserving();
@@ -145,7 +145,7 @@ void ArcBootPhaseThrottleObserver::MaybeSetActive() {
       IsArcPlayStoreEnabledPreferenceManagedForProfile(profile);
 
   auto* session_manager = ArcSessionManager::Get();
-  DCHECK(session_manager);
+  CHECK(session_manager, base::NotFatalUntil::M160);
   const bool opt_in_boot =
       !session_manager->skipped_terms_of_service_negotiation();
 

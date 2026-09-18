@@ -56,7 +56,7 @@ void ActionHighlight::OnViewRemovedFromWidget(views::View*) {
 
 void ActionHighlight::UpdateWidgetBounds() {
   auto* widget = GetWidget();
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M160);
 
   const int overall_radius = GetOverallRadius();
   auto origin_pos =

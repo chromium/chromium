@@ -22,14 +22,14 @@ namespace {
 
 void OnAddWatcherOnUIThread(storage::WatcherManager::StatusCallback callback,
                             base::File::Error result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
 void OnRemoveWatcherOnUIThread(storage::WatcherManager::StatusCallback callback,
                                base::File::Error result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
@@ -37,7 +37,7 @@ void OnRemoveWatcherOnUIThread(storage::WatcherManager::StatusCallback callback,
 void OnNotificationOnUIThread(
     storage::WatcherManager::NotificationCallback notification_callback,
     ArcDocumentsProviderRoot::ChangeType change_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(notification_callback), change_type));
 }
@@ -46,7 +46,7 @@ void AddWatcherOnUIThread(
     const storage::FileSystemURL& url,
     storage::WatcherManager::StatusCallback callback,
     storage::WatcherManager::NotificationCallback notification_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   ArcDocumentsProviderRootMap* roots =
       ArcDocumentsProviderRootMap::GetForArcBrowserContext();
@@ -74,7 +74,7 @@ void AddWatcherOnUIThread(
 void RemoveWatcherOnUIThread(
     const storage::FileSystemURL& url,
     ArcDocumentsProviderRoot::WatcherStatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   ArcDocumentsProviderRootMap* roots =
       ArcDocumentsProviderRootMap::GetForArcBrowserContext();
@@ -102,7 +102,7 @@ ArcDocumentsProviderWatcherManager::ArcDocumentsProviderWatcherManager() =
     default;
 
 ArcDocumentsProviderWatcherManager::~ArcDocumentsProviderWatcherManager() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 }
 
 void ArcDocumentsProviderWatcherManager::AddWatcher(
@@ -110,7 +110,7 @@ void ArcDocumentsProviderWatcherManager::AddWatcher(
     bool recursive,
     StatusCallback callback,
     NotificationCallback notification_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (recursive) {
     // Recursive watching is not supported.
@@ -134,7 +134,7 @@ void ArcDocumentsProviderWatcherManager::RemoveWatcher(
     const FileSystemURL& url,
     bool recursive,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (recursive) {
     // Recursive watching is not supported.
@@ -153,21 +153,21 @@ void ArcDocumentsProviderWatcherManager::RemoveWatcher(
 void ArcDocumentsProviderWatcherManager::OnAddWatcher(
     StatusCallback callback,
     base::File::Error result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   std::move(callback).Run(result);
 }
 
 void ArcDocumentsProviderWatcherManager::OnRemoveWatcher(
     StatusCallback callback,
     base::File::Error result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   std::move(callback).Run(result);
 }
 
 void ArcDocumentsProviderWatcherManager::OnNotification(
     NotificationCallback notification_callback,
     ChangeType change_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   std::move(notification_callback).Run(change_type);
 }
 

@@ -21,10 +21,10 @@ aura::Window* GetPipContainer() {
   if (!exo::WMHelper::HasInstance())
     return nullptr;
   auto* const wm_helper = exo::WMHelper::GetInstance();
-  DCHECK(wm_helper);
+  CHECK(wm_helper, base::NotFatalUntil::M160);
   aura::Window* const pip_container =
       wm_helper->GetPrimaryDisplayContainer(ash::kShellWindowId_PipContainer);
-  DCHECK(pip_container);
+  CHECK(pip_container, base::NotFatalUntil::M160);
   return pip_container;
 }
 

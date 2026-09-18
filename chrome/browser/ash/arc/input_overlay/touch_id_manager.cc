@@ -26,14 +26,14 @@ TouchIdManager::~TouchIdManager() = default;
 
 int TouchIdManager::ObtainTouchID() {
   // In this use case, it shouldn't happen that all bits are set.
-  DCHECK(touch_ids_ != ~0);
+  CHECK(touch_ids_ != ~0, base::NotFatalUntil::M160);
   int first_unset_pos = std::log2(~touch_ids_ & -(~touch_ids_));
   touch_ids_ |= 1 << first_unset_pos;
   return first_unset_pos;
 }
 
 void TouchIdManager::ReleaseTouchID(int touch_id) {
-  DCHECK(touch_id >= 0 && touch_id < kMaxTouchIDs);
+  CHECK(touch_id >= 0 && touch_id < kMaxTouchIDs, base::NotFatalUntil::M160);
   touch_ids_ &= ~(1 << touch_id);
 }
 

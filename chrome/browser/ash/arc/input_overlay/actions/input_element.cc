@@ -47,7 +47,7 @@ std::unique_ptr<InputElement> InputElement::CreateActionTapMouseElement(
   if (mouse_action == kPrimaryClick) {
     element->mouse_flags_ = ui::EF_LEFT_MOUSE_BUTTON;
   } else {
-    DCHECK(mouse_action == kSecondaryClick);
+    CHECK(mouse_action == kSecondaryClick, base::NotFatalUntil::M160);
     element->mouse_flags_ = ui::EF_RIGHT_MOUSE_BUTTON;
   }
   return element;
@@ -61,7 +61,8 @@ std::unique_ptr<InputElement> InputElement::CreateActionMoveKeyElement(
   std::ranges::copy(keys, std::back_inserter(element->keys_));
   // There are four and only four keys representing move up, left, down and
   // right.
-  DCHECK(element->keys_.size() == kActionMoveKeysSize);
+  CHECK(element->keys_.size() == kActionMoveKeysSize,
+        base::NotFatalUntil::M160);
   return element;
 }
 
@@ -77,8 +78,9 @@ std::unique_ptr<InputElement> InputElement::CreateActionMoveMouseElement(
     element->mouse_types_.emplace(ui::EventType::kMouseMoved);
     element->mouse_types_.emplace(ui::EventType::kMouseExited);
   } else {
-    DCHECK(mouse_action == kPrimaryDragMove ||
-           mouse_action == kSecondaryDragMove);
+    CHECK(
+        mouse_action == kPrimaryDragMove || mouse_action == kSecondaryDragMove,
+        base::NotFatalUntil::M160);
     element->mouse_types_.emplace(ui::EventType::kMousePressed);
     element->mouse_types_.emplace(ui::EventType::kMouseDragged);
     element->mouse_types_.emplace(ui::EventType::kMouseReleased);
@@ -153,7 +155,7 @@ bool InputElement::IsUnbound() const {
 }
 
 void InputElement::SetKey(size_t index, ui::DomCode code) {
-  DCHECK(index < keys_.size());
+  CHECK(index < keys_.size(), base::NotFatalUntil::M160);
   if (index >= keys_.size()) {
     return;
   }

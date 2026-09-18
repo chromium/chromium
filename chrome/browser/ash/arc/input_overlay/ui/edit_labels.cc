@@ -100,7 +100,7 @@ std::u16string EditLabels::CalculateActionName() {
   bool all_unassigned = true;
   // If at least one label is unassigned, it needs to show error state.
   missing_assign_ = false;
-  DCHECK_GE(labels_.size(), 1u);
+  CHECK_GE(labels_.size(), 1u, base::NotFatalUntil::M160);
   for (arc::input_overlay::EditLabel* label : labels_) {
     if (label->IsInputUnbound()) {
       missing_assign_ = true;
@@ -144,12 +144,12 @@ std::u16string EditLabels::CalculateKeyListForA11yLabel() const {
 }
 
 bool EditLabels::IsFirstLabelUnassigned() const {
-  DCHECK_GE(labels_.size(), 1u);
+  CHECK_GE(labels_.size(), 1u, base::NotFatalUntil::M160);
   return labels_[0]->IsInputUnbound();
 }
 
 void EditLabels::PerformPulseAnimationOnFirstLabel() {
-  DCHECK_GE(labels_.size(), 1u);
+  CHECK_GE(labels_.size(), 1u, base::NotFatalUntil::M160);
   labels_[0]->PerformPulseAnimation(/*pulse_count=*/0);
 }
 
@@ -190,7 +190,8 @@ void EditLabels::InitForActionMoveKeyboard() {
     if (i == 0 || i == 2) {
       AddChildView(std::make_unique<views::View>());
     } else {
-      DCHECK_LT(labels_.size(), size_t(Direction::kMaxValue) + 1);
+      CHECK_LT(labels_.size(), size_t(Direction::kMaxValue) + 1,
+               base::NotFatalUntil::M160);
       labels_.emplace_back(AddChildView(std::make_unique<EditLabel>(
           controller_, action_, for_editing_list_, labels_.size())));
     }
@@ -200,7 +201,7 @@ void EditLabels::InitForActionMoveKeyboard() {
 void EditLabels::UpdateNameTag() {
   // If at least one label is unassigned, it needs to show error state.
   missing_assign_ = false;
-  DCHECK_GE(labels_.size(), 1u);
+  CHECK_GE(labels_.size(), 1u, base::NotFatalUntil::M160);
   for (arc::input_overlay::EditLabel* label : labels_) {
     if (label->IsInputUnbound()) {
       missing_assign_ = true;

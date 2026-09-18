@@ -251,15 +251,15 @@ bool Action::ParseUserAddedActionFromProto(const ActionProto& proto) {
 }
 
 void Action::OverwriteDefaultActionFromProto(const ActionProto& proto) {
-  DCHECK(IsDefaultAction());
+  CHECK(IsDefaultAction(), base::NotFatalUntil::M160);
   if (proto.has_input_element()) {
     auto input_element = InputElement::ConvertFromProto(proto.input_element());
-    DCHECK(input_element);
+    CHECK(input_element, base::NotFatalUntil::M160);
     current_input_ = std::move(input_element);
   }
   if (!proto.positions().empty()) {
     auto position = Position::ConvertFromProto(proto.positions()[0]);
-    DCHECK(position);
+    CHECK(position, base::NotFatalUntil::M160);
     current_positions_[0] = *position;
     position.reset();
   }
@@ -267,7 +267,7 @@ void Action::OverwriteDefaultActionFromProto(const ActionProto& proto) {
 }
 
 bool Action::InitByAddingNewAction(const gfx::Point& target_pos) {
-  DCHECK(touch_injector_);
+  CHECK(touch_injector_, base::NotFatalUntil::M160);
   id_ = touch_injector_->GetNextNewActionID();
   is_new_ = true;
 
@@ -321,7 +321,7 @@ void Action::BindPosition(const gfx::Point& new_touch_center) {
 }
 
 const InputElement& Action::GetCurrentDisplayedInput() {
-  DCHECK(current_input_);
+  CHECK(current_input_, base::NotFatalUntil::M160);
   return *current_input_;
 }
 
@@ -334,7 +334,7 @@ bool Action::IsOverlapped(const InputElement& input_element) {
 }
 
 const Position& Action::GetCurrentDisplayedPosition() {
-  DCHECK(!original_positions_.empty());
+  CHECK(!original_positions_.empty(), base::NotFatalUntil::M160);
 
   return (!current_positions_.empty() ? current_positions_[0]
                                       : original_positions_[0]);
@@ -443,11 +443,11 @@ bool Action::IsRepeatedKeyEvent(const ui::KeyEvent& key_event) {
 bool Action::VerifyOnKeyRelease(ui::DomCode code) {
   if (!touch_id_) {
     // The simulated touch events may be released by other events forcely.
-    DCHECK_EQ(keys_pressed_.size(), 0u);
+    CHECK_EQ(keys_pressed_.size(), 0u, base::NotFatalUntil::M160);
     return false;
   }
 
-  DCHECK_NE(keys_pressed_.size(), 0u);
+  CHECK_NE(keys_pressed_.size(), 0u, base::NotFatalUntil::M160);
   if (keys_pressed_.size() == 0 || !keys_pressed_.contains(code)) {
     return false;
   }
@@ -464,7 +464,7 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
     // Check if the default action is customized.
     bool customized = false;
 
-    DCHECK(original_type_);
+    CHECK(original_type_, base::NotFatalUntil::M160);
     if (*original_type_ != GetType()) {
       customized = true;
     }
@@ -537,13 +537,14 @@ void Action::UpdateTouchDownPositions() {
   on_left_or_middle_side_ =
       touch_down_positions_[0].x() <= content_bounds.width() / 2;
 
-  DCHECK_EQ(touch_down_positions_.size(), original_positions_.size());
+  CHECK_EQ(touch_down_positions_.size(), original_positions_.size(),
+           base::NotFatalUntil::M160);
 }
 
 void Action::OnTouchReleased() {
   last_touch_root_location_.set_x(0);
   last_touch_root_location_.set_y(0);
-  DCHECK(touch_id_);
+  CHECK(touch_id_, base::NotFatalUntil::M160);
   TouchIdManager::GetInstance()->ReleaseTouchID(*touch_id_);
   touch_id_ = std::nullopt;
   keys_pressed_.clear();
@@ -562,7 +563,7 @@ void Action::OnTouchCancelled() {
 void Action::CreateTouchEvent(ui::EventType type,
                               const base::TimeTicks& time_stamp,
                               std::list<ui::TouchEvent>& touch_events) {
-  DCHECK(touch_id_);
+  CHECK(touch_id_, base::NotFatalUntil::M160);
   touch_events.emplace_back(
       type, last_touch_root_location_, last_touch_root_location_, time_stamp,
       ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));

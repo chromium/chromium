@@ -22,7 +22,7 @@ namespace {
 
 void OnGetFileSize(storage::AsyncFileUtil::GetFileInfoCallback callback,
                    int64_t size) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   base::File::Info info;
   base::File::Error error = base::File::FILE_OK;
   if (size == -1) {
@@ -79,7 +79,7 @@ void ArcContentFileSystemAsyncFileUtil::GetFileInfo(
     const storage::FileSystemURL& url,
     GetMetadataFieldSet fields,
     GetFileInfoCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   file_system_operation_runner_util::GetFileSizeOnIOThread(
       FileSystemUrlToArcUrl(url),
       base::BindOnce(&OnGetFileSize, std::move(callback)));
@@ -113,7 +113,7 @@ void ArcContentFileSystemAsyncFileUtil::Truncate(
     const storage::FileSystemURL& url,
     int64_t length,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   // Truncate() doesn't work well on ARC P/R container. It works on ARCVM R+
   // because the mojo proxy for ARCVM implements the feature.
   // TODO(b/223247850) Fix this.

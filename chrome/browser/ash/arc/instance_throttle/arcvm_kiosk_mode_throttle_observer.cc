@@ -15,7 +15,7 @@ void ArcvmKioskModeThrottleObserver::StartObserving(
     content::BrowserContext* context,
     const ObserverStateChangedCallback& callback) {
   ThrottleObserver::StartObserving(context, callback);
-  DCHECK(user_manager::UserManager::IsInitialized());
+  CHECK(user_manager::UserManager::IsInitialized(), base::NotFatalUntil::M160);
   if (user_manager::UserManager::Get()->IsLoggedInAsKioskArcvmApp()) {
     SetEnforced(true);
     SetActive(true);

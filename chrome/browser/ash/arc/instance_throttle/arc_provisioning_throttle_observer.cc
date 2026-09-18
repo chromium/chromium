@@ -17,7 +17,7 @@ void ArcProvisioningThrottleObserver::StartObserving(
     content::BrowserContext* context,
     const ObserverStateChangedCallback& callback) {
   auto* session_manager = ArcSessionManager::Get();
-  DCHECK(session_manager);
+  CHECK(session_manager, base::NotFatalUntil::M160);
   session_manager->AddObserver(this);
   ThrottleObserver::StartObserving(context, callback);
 }
@@ -26,7 +26,7 @@ void ArcProvisioningThrottleObserver::StopObserving() {
   ThrottleObserver::StopObserving();
 
   auto* session_manager = ArcSessionManager::Get();
-  DCHECK(session_manager);
+  CHECK(session_manager, base::NotFatalUntil::M160);
   session_manager->RemoveObserver(this);
 }
 

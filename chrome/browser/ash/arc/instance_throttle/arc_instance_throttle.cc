@@ -144,7 +144,7 @@ void SetArcVmCpuRestriction(CpuRestrictionState cpu_restriction_state,
   request.set_cpu_cgroup(vm_tools::concierge::CPU_CGROUP_ARCVM);
   switch (cpu_restriction_state) {
     case CpuRestrictionState::CPU_RESTRICTION_FOREGROUND:
-      DCHECK(!use_quota);
+      CHECK(!use_quota, base::NotFatalUntil::M160);
       request.set_cpu_restriction_state(
           vm_tools::concierge::CPU_RESTRICTION_FOREGROUND);
       break;
@@ -307,7 +307,7 @@ ArcInstanceThrottle::ArcInstanceThrottle(content::BrowserContext* context,
   }
 
   StartObservers();
-  DCHECK(bridge_);
+  CHECK(bridge_, base::NotFatalUntil::M160);
   bridge_->power()->AddObserver(this);
 
   ArcMetricsService::GetForBrowserContext(context)->AddBootTypeObserver(this);

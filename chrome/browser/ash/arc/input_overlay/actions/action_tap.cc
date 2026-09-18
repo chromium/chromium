@@ -61,7 +61,7 @@ class ActionTap::ActionTapView : public ActionView {
   ~ActionTapView() override = default;
 
   void SetViewContent(BindingOption binding_option) override {
-    DCHECK(!action_->IsDeleted());
+    CHECK(!action_->IsDeleted(), base::NotFatalUntil::M160);
     InputElement* input_binding =
         GetInputBindingByBindingOption(action_, binding_option);
     if (!input_binding) {
@@ -93,7 +93,8 @@ class ActionTap::ActionTapView : public ActionView {
   }
 
   void OnBindingToMouse(std::string mouse_action) override {
-    DCHECK(mouse_action == kPrimaryClick || mouse_action == kSecondaryClick);
+    CHECK(mouse_action == kPrimaryClick || mouse_action == kSecondaryClick,
+          base::NotFatalUntil::M160);
     if (mouse_action != kPrimaryClick && mouse_action != kSecondaryClick) {
       return;
     }
@@ -116,7 +117,7 @@ class ActionTap::ActionTapView : public ActionView {
   }
 
   void MayUpdateLabelPosition(bool moving) override {
-    DCHECK_EQ(labels_.size(), 1u);
+    CHECK_EQ(labels_.size(), 1u, base::NotFatalUntil::M160);
 
     labels_[0]->UpdateLabelPositionType(
         GetTapLabelPosition(GetTouchCenterInWindow()));
@@ -126,7 +127,7 @@ class ActionTap::ActionTapView : public ActionView {
   }
 
   void ChildPreferredSizeChanged(View* child) override {
-    DCHECK_EQ(1u, labels_.size());
+    CHECK_EQ(1u, labels_.size(), base::NotFatalUntil::M160);
     MayUpdateLabelPosition(false);
     SetPositionFromCenterPosition(action_->GetUICenterPosition());
   }
@@ -234,7 +235,8 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
       (IsMouseBound(*current_input_) && !origin.IsMouseEvent())) {
     return false;
   }
-  DCHECK_NE(IsKeyboardBound(*current_input_), IsMouseBound(*current_input_));
+  CHECK_NE(IsKeyboardBound(*current_input_), IsMouseBound(*current_input_),
+           base::NotFatalUntil::M160);
   LogEvent(origin);
   // Rewrite for key event.
   const auto content_bounds = touch_injector_->content_bounds_f();
@@ -282,7 +284,7 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
                                 const gfx::Transform* rotation_transform,
                                 std::list<ui::TouchEvent>& rewritten_events,
                                 bool& keep_original_event) {
-  DCHECK(key_event);
+  CHECK(key_event, base::NotFatalUntil::M160);
   if (!IsSameDomCode(key_event->code(), current_input_->keys()[0])) {
     return false;
   }
@@ -293,7 +295,8 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
   }
 
   if (key_event->type() == ui::EventType::kKeyPressed) {
-    DCHECK_LT(current_position_idx_, touch_down_positions_.size());
+    CHECK_LT(current_position_idx_, touch_down_positions_.size(),
+             base::NotFatalUntil::M160);
     // TODO(b/308486017): "Modifier key + regular key" support is TBD. Currently
     // it is not supported.
     if (ContainShortcutEventFlags(key_event)) {
@@ -330,7 +333,7 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
                                   const gfx::RectF& content_bounds,
                                   const gfx::Transform* rotation_transform,
                                   std::list<ui::TouchEvent>& rewritten_events) {
-  DCHECK(mouse_event);
+  CHECK(mouse_event, base::NotFatalUntil::M160);
 
   const auto type = mouse_event->type();
   if (!current_input_->mouse_types().contains(type) ||
@@ -340,9 +343,9 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
   }
 
   if (type == ui::EventType::kMousePressed) {
-    DCHECK(!touch_id_);
+    CHECK(!touch_id_, base::NotFatalUntil::M160);
   } else if (type == ui::EventType::kMouseReleased) {
-    DCHECK(touch_id_);
+    CHECK(touch_id_, base::NotFatalUntil::M160);
   }
 
   if (!touch_id_) {

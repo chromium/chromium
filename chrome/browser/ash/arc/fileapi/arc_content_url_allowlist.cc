@@ -41,7 +41,7 @@ ArcContentUrlAllowlist::Database::~Database() {
 
 bool ArcContentUrlAllowlist::Database::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!db_.is_open());
+  CHECK(!db_.is_open(), base::NotFatalUntil::M160);
 
   if (db_path_.empty()) {
     if (!db_.OpenInMemory()) {

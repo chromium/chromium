@@ -109,7 +109,7 @@ Position::~Position() = default;
 // static
 std::unique_ptr<Position> Position::ConvertFromProto(
     const PositionProto& proto) {
-  DCHECK_EQ(proto.anchor_to_target().size(), 2);
+  CHECK_EQ(proto.anchor_to_target().size(), 2, base::NotFatalUntil::M160);
   auto position = std::make_unique<Position>(PositionType::kDefault);
   position->set_anchor_to_target(
       gfx::Vector2dF(proto.anchor_to_target()[0], proto.anchor_to_target()[1]));

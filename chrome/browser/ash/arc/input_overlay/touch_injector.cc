@@ -195,11 +195,11 @@ std::unique_ptr<Action> CreateRawAction(ActionType type,
 // Calculate the window content bounds (excluding caption if it exists) in the
 // root window.
 gfx::RectF CalculateWindowContentBounds(aura::Window* window) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M160);
   auto* widget = views::Widget::GetWidgetForNativeView(window);
-  DCHECK(widget->non_client_view());
+  CHECK(widget->non_client_view(), base::NotFatalUntil::M160);
   auto* frame_view = widget->non_client_view()->frame_view();
-  DCHECK(frame_view);
+  CHECK(frame_view, base::NotFatalUntil::M160);
   const int height = frame_view->GetBoundsForClientView().y();
   auto bounds = gfx::RectF(window->bounds());
   bounds.Inset(gfx::InsetsF::TLBR(height, 0, 0, 0));
@@ -255,7 +255,7 @@ TouchInjector::~TouchInjector() {
 }
 
 void TouchInjector::ParseActions(const base::DictValue& root) {
-  DCHECK(actions_.empty());
+  CHECK(actions_.empty(), base::NotFatalUntil::M160);
   if (enable_mouse_lock_) {
     ParseMouseLock(root);
   }
@@ -324,7 +324,7 @@ void TouchInjector::OnInputBindingChange(
 }
 
 void TouchInjector::OnBindingSave() {
-  DCHECK(display_overlay_controller_);
+  CHECK(display_overlay_controller_, base::NotFatalUntil::M160);
   OnSaveProtoFile();
 }
 
@@ -333,7 +333,7 @@ void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
   for (const ActionProto& action_proto : proto.actions()) {
     if (action_proto.id() <= kMaxDefaultActionID) {
       auto* action = GetActionById(action_proto.id());
-      DCHECK(action);
+      CHECK(action, base::NotFatalUntil::M160);
       if (!action) {
         continue;
       }
@@ -613,7 +613,8 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
       return nullptr;
     }
   } else {
-    DCHECK(touch_event->type() != ui::EventType::kTouchPressed);
+    CHECK(touch_event->type() != ui::EventType::kTouchPressed,
+          base::NotFatalUntil::M160);
     if (touch_event->type() == ui::EventType::kTouchPressed) {
       return nullptr;
     }
@@ -626,7 +627,7 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
     // Generate new touch id that we can manage and add to map.
     std::optional<int> managed_touch_id =
         TouchIdManager::GetInstance()->ObtainTouchID();
-    DCHECK(managed_touch_id);
+    CHECK(managed_touch_id, base::NotFatalUntil::M160);
     TouchPointInfo touch_point = {
         .rewritten_touch_id = *managed_touch_id,
         .touch_root_location = root_location_f,
@@ -636,7 +637,7 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
                             root_location_f);
   } else if (touch_event->type() == ui::EventType::kTouchReleased) {
     std::optional<int> managed_touch_id = it->second.rewritten_touch_id;
-    DCHECK(managed_touch_id);
+    CHECK(managed_touch_id, base::NotFatalUntil::M160);
     rewritten_touch_infos_.erase(original_id);
     TouchIdManager::GetInstance()->ReleaseTouchID(*managed_touch_id);
     return CreateTouchEvent(touch_event, original_id, *managed_touch_id,
@@ -646,7 +647,7 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
   // Update this id's stored location to this newest location.
   it->second.touch_root_location = root_location_f;
   std::optional<int> managed_touch_id = it->second.rewritten_touch_id;
-  DCHECK(managed_touch_id);
+  CHECK(managed_touch_id, base::NotFatalUntil::M160);
   return CreateTouchEvent(touch_event, original_id, *managed_touch_id,
                           root_location_f);
 }
@@ -779,7 +780,7 @@ void TouchInjector::RemoveAction(Action* action) {
   auto it = std::find_if(
       actions_.begin(), actions_.end(),
       [&](const std::unique_ptr<Action>& p) { return action == p.get(); });
-  DCHECK(it != actions_.end());
+  CHECK(it != actions_.end(), base::NotFatalUntil::M160);
   if (it->get()->IsDefaultAction()) {
     // Default action is from JSON. Since it reads mapping data from JSON first
     // and then from proto, only deleting the default action from `action_`
@@ -793,9 +794,10 @@ void TouchInjector::RemoveAction(Action* action) {
   NotifyActionRemoved(*action);
 
   // It may need to turn on the flag `kEmpty` after removing an action.
-  DCHECK_EQ(false,
-            IsFlagSet(window_->GetProperty(ash::kArcGameControlsFlagsKey),
-                      ash::ArcGameControlsFlag::kEmpty));
+  CHECK_EQ(false,
+           IsFlagSet(window_->GetProperty(ash::kArcGameControlsFlagsKey),
+                     ash::ArcGameControlsFlag::kEmpty),
+           base::NotFatalUntil::M160);
   if (GetActiveActionsSize() == 0u) {
     UpdateFlagAndProperty(window_, ash::ArcGameControlsFlag::kEmpty,
                           /*enable_flag=*/true);
@@ -812,16 +814,16 @@ void TouchInjector::ChangeActionType(Action* action, ActionType action_type) {
 }
 
 void TouchInjector::RemoveActionNewState(Action* action) {
-  DCHECK(action->is_new());
+  CHECK(action->is_new(), base::NotFatalUntil::M160);
   action->set_is_new(false);
   NotifyActionNewStateRemoved(*action);
 }
 
 void TouchInjector::OverwriteDefaultAction(const ActionProto& proto,
                                            Action* action) {
-  DCHECK(action);
-  DCHECK_LE(proto.id(), kMaxDefaultActionID);
-  DCHECK_EQ(proto.id(), action->id());
+  CHECK(action, base::NotFatalUntil::M160);
+  CHECK_LE(proto.id(), kMaxDefaultActionID, base::NotFatalUntil::M160);
+  CHECK_EQ(proto.id(), action->id(), base::NotFatalUntil::M160);
   if (action->GetType() != proto.action_type()) {
     auto new_action = CreateRawAction(proto.action_type(), this);
     new_action->InitByChangingActionType(action);
@@ -843,7 +845,7 @@ void TouchInjector::ReplaceActionInternal(Action* action,
   auto it = std::find_if(
       actions_.begin(), actions_.end(),
       [&](const std::unique_ptr<Action>& p) { return action == p.get(); });
-  DCHECK(it != actions_.end());
+  CHECK(it != actions_.end(), base::NotFatalUntil::M160);
   actions_[it - actions_.begin()] = std::move(new_action);
 }
 
@@ -893,7 +895,7 @@ void TouchInjector::RecordMenuStateOnLaunch() {
 
 int TouchInjector::GetRewrittenTouchIdForTesting(ui::PointerId original_id) {
   auto it = rewritten_touch_infos_.find(original_id);
-  DCHECK(it != rewritten_touch_infos_.end());
+  CHECK(it != rewritten_touch_infos_.end(), base::NotFatalUntil::M160);
 
   return it->second.rewritten_touch_id;
 }
@@ -901,7 +903,7 @@ int TouchInjector::GetRewrittenTouchIdForTesting(ui::PointerId original_id) {
 gfx::PointF TouchInjector::GetRewrittenRootLocationForTesting(
     ui::PointerId original_id) {
   auto it = rewritten_touch_infos_.find(original_id);
-  DCHECK(it != rewritten_touch_infos_.end());
+  CHECK(it != rewritten_touch_infos_.end(), base::NotFatalUntil::M160);
 
   return it->second.touch_root_location;
 }

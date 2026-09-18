@@ -59,10 +59,10 @@ ArcDocumentsProviderRootMap::GetForArcBrowserContext() {
 
 ArcDocumentsProviderRootMap::ArcDocumentsProviderRootMap(Profile* profile)
     : runner_(ArcFileSystemOperationRunner::GetForBrowserContext(profile)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   // ArcDocumentsProviderRootMap is created only for the profile with ARC
   // in ArcDocumentsProviderRootMapFactory.
-  DCHECK(runner_);
+  CHECK(runner_, base::NotFatalUntil::M160);
 
   for (const auto& spec : kDocumentsProviderAllowlist) {
     RegisterRoot(spec.authority, spec.root_document_id, spec.root_id,
@@ -71,14 +71,14 @@ ArcDocumentsProviderRootMap::ArcDocumentsProviderRootMap(Profile* profile)
 }
 
 ArcDocumentsProviderRootMap::~ArcDocumentsProviderRootMap() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(map_.empty());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(map_.empty(), base::NotFatalUntil::M160);
 }
 
 ArcDocumentsProviderRoot* ArcDocumentsProviderRootMap::ParseAndLookup(
     const storage::FileSystemURL& url,
     base::FilePath* path) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   std::string authority;
   std::string root_id;
@@ -98,7 +98,7 @@ ArcDocumentsProviderRoot* ArcDocumentsProviderRootMap::ParseAndLookup(
 ArcDocumentsProviderRoot* ArcDocumentsProviderRootMap::Lookup(
     const std::string& authority,
     const std::string& root_id) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto iter = map_.find(Key(authority, root_id));
   if (iter == map_.end())
@@ -112,7 +112,7 @@ void ArcDocumentsProviderRootMap::RegisterRoot(
     const std::string& root_id,
     bool read_only,
     const std::vector<std::string>& mime_types) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   Key key(authority, root_id);
   if (map_.find(key) != map_.end()) {
@@ -127,7 +127,7 @@ void ArcDocumentsProviderRootMap::RegisterRoot(
 
 void ArcDocumentsProviderRootMap::UnregisterRoot(const std::string& authority,
                                                  const std::string& root_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!map_.erase(Key(authority, root_id))) {
     VLOG(1) << "Trying to unregister (" << authority << ", " << root_id
@@ -136,7 +136,7 @@ void ArcDocumentsProviderRootMap::UnregisterRoot(const std::string& authority,
 }
 
 void ArcDocumentsProviderRootMap::Shutdown() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // ArcDocumentsProviderRoot has a reference to another KeyedService
   // (ArcFileSystemOperationRunner), so we need to destruct them on shutdown.

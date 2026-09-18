@@ -182,7 +182,7 @@ class EditingList::AddContainerButton : public views::Button {
   }
 
   void UpdateTitle(bool is_zero_state) {
-    DCHECK(title_);
+    CHECK(title_, base::NotFatalUntil::M160);
     title_->SetText(l10n_util::GetStringUTF16(
         is_zero_state ? IDS_INPUT_OVERLAY_EDITING_LIST_FIRST_CONTROL_LABEL
                       : IDS_INPUT_OVERLAY_EDITING_LIST_NEW_CONTROL_LABEL));
@@ -248,7 +248,7 @@ EditingList::~EditingList() {
 
 void EditingList::UpdateWidget() {
   auto* widget = GetWidget();
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M160);
 
   controller_->UpdateWidgetBoundsInRootWindow(
       widget, gfx::Rect(GetWidgetMagneticPositionLocal(), GetPreferredSize()));
@@ -299,7 +299,7 @@ void EditingList::Init() {
 }
 
 bool EditingList::HasControls() const {
-  DCHECK(controller_);
+  CHECK(controller_, base::NotFatalUntil::M160);
   return controller_->GetActiveActionsSize() != 0u;
 }
 
@@ -364,8 +364,8 @@ void EditingList::AddControlListContent() {
   // | ---------------------- |
   // | ......                 |
   // --------------------------
-  DCHECK(controller_);
-  DCHECK(scroll_content_);
+  CHECK(controller_, base::NotFatalUntil::M160);
+  CHECK(scroll_content_, base::NotFatalUntil::M160);
   for (const auto& action : controller_->touch_injector()->actions()) {
     if (action->IsDeleted()) {
       continue;

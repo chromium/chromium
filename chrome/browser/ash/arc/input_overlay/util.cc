@@ -83,7 +83,7 @@ std::string GetCurrentSystemVersion() {
 }
 
 void ResetFocusTo(views::View* view) {
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M160);
   if (auto* focus_manager = view->GetFocusManager()) {
     focus_manager->SetFocusedView(view);
   }

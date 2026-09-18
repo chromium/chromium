@@ -78,7 +78,7 @@ class ActionMove::ActionMoveMouseView : public ActionView {
   void MayUpdateLabelPosition(bool moving) override {}
 
   void ChildPreferredSizeChanged(View* child) override {
-    DCHECK_EQ(labels_.size(), 1u);
+    CHECK_EQ(labels_.size(), 1u, base::NotFatalUntil::M160);
     if (views::AsViewClass<ActionLabel>(child) != labels_[0]) {
       return;
     }
@@ -116,7 +116,7 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     if (labels_.empty()) {
       labels_ = ActionLabel::Show(this, ActionType::MOVE, *input_binding);
     } else {
-      DCHECK(labels_.size() == keys.size());
+      CHECK(labels_.size() == keys.size(), base::NotFatalUntil::M160);
       for (size_t i = 0; i < keys.size(); i++) {
         labels_[i]->SetTextActionLabel(std::move(GetDisplayText(keys[i])));
       }
@@ -136,7 +136,7 @@ class ActionMove::ActionMoveKeyView : public ActionView {
   void MayUpdateLabelPosition(bool moving) override {}
 
   void ChildPreferredSizeChanged(View* child) override {
-    DCHECK_EQ(labels_.size(), kActionMoveKeysSize);
+    CHECK_EQ(labels_.size(), kActionMoveKeysSize, base::NotFatalUntil::M160);
     if (labels_.size() != kActionMoveKeysSize) {
       return;
     }
@@ -161,8 +161,8 @@ class ActionMove::ActionMoveKeyView : public ActionView {
       top = std::min(top, label->bounds().y());
       bottom = std::max(bottom, label->bounds().bottom());
     }
-    DCHECK_LT(left, right);
-    DCHECK_LT(top, bottom);
+    CHECK_LT(left, right, base::NotFatalUntil::M160);
+    CHECK_LT(top, bottom, base::NotFatalUntil::M160);
 
     auto size = TouchPoint::GetSize(ActionType::MOVE);
     size.SetToMax(gfx::Size(right - left, bottom - top));
@@ -225,7 +225,7 @@ bool ActionMove::ParseJsonFromKeyboard(const base::DictValue& value) {
   }
   std::vector<ui::DomCode> keycodes;
   for (const base::Value& val : *list) {
-    DCHECK(val.is_string());
+    CHECK(val.is_string(), base::NotFatalUntil::M160);
     auto key = ui::KeycodeConverter::CodeStringToDomCode(val.GetString());
     if (key == ui::DomCode::NONE) {
       LOG(ERROR) << "Key code is invalid for move key action: " << name_
@@ -306,7 +306,8 @@ bool ActionMove::RewriteEvent(const ui::Event& origin,
       (IsMouseBound(*current_input_) && !origin.IsMouseEvent())) {
     return false;
   }
-  DCHECK_NE(IsKeyboardBound(*current_input_), IsMouseBound(*current_input_));
+  CHECK_NE(IsKeyboardBound(*current_input_), IsMouseBound(*current_input_),
+           base::NotFatalUntil::M160);
   LogEvent(origin);
 
   // Rewrite for key event.
@@ -334,7 +335,7 @@ bool ActionMove::RewriteEvent(const ui::Event& origin,
 gfx::PointF ActionMove::GetUICenterPosition() {
   const auto& content_bounds = touch_injector_->content_bounds_f();
   if (original_positions().empty()) {
-    DCHECK(IsMouseBound(*current_input_));
+    CHECK(IsMouseBound(*current_input_), base::NotFatalUntil::M160);
     return gfx::PointF(content_bounds.width() / 2, content_bounds.height() / 2);
   }
   return GetCurrentDisplayedPosition().CalculatePosition(content_bounds);
@@ -390,7 +391,7 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
   }
 
   size_t index = it - keys.begin();
-  DCHECK(index < kActionMoveKeysSize);
+  CHECK(index < kActionMoveKeysSize, base::NotFatalUntil::M160);
 
   if (key_event->type() == ui::EventType::kKeyPressed) {
     // TODO(b/308486017): "Modifier key + regular key" support is TBD. Currently
@@ -400,7 +401,8 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
     }
 
     if (!touch_id_) {
-      DCHECK_LT(current_position_idx_, touch_down_positions_.size());
+      CHECK_LT(current_position_idx_, touch_down_positions_.size(),
+               base::NotFatalUntil::M160);
       if (current_position_idx_ >= touch_down_positions_.size()) {
         return false;
       }
@@ -443,7 +445,7 @@ bool ActionMove::RewriteMouseEvent(
     const gfx::RectF& content_bounds,
     const gfx::Transform* rotation_transform,
     std::list<ui::TouchEvent>& rewritten_events) {
-  DCHECK(mouse_event);
+  CHECK(mouse_event, base::NotFatalUntil::M160);
 
   const auto type = mouse_event->type();
   if (!current_input_->mouse_types().contains(type) ||
@@ -465,12 +467,12 @@ bool ActionMove::RewriteMouseEvent(
 
   if (type == ui::EventType::kMouseEntered ||
       type == ui::EventType::kMousePressed) {
-    DCHECK(!touch_id_);
+    CHECK(!touch_id_, base::NotFatalUntil::M160);
   }
   // Mouse might be unlocked before ui::EventType::kMouseExited, so no need to
   // check ui::EventType::kMouseExited.
   if (type == ui::EventType::kMouseReleased) {
-    DCHECK(touch_id_);
+    CHECK(touch_id_, base::NotFatalUntil::M160);
   }
   if (!touch_id_) {
     if (current_position_idx_ < touch_down_positions_.size()) {
@@ -483,8 +485,9 @@ bool ActionMove::RewriteMouseEvent(
              type == ui::EventType::kMouseReleased) {
     CreateTouchReleasedEvent(mouse_event->time_stamp(), rewritten_events);
   } else {
-    DCHECK(type == ui::EventType::kMouseMoved ||
-           type == ui::EventType::kMouseDragged);
+    CHECK(type == ui::EventType::kMouseMoved ||
+              type == ui::EventType::kMouseDragged,
+          base::NotFatalUntil::M160);
     CreateTouchMovedEvent(mouse_event->time_stamp(), rewritten_events);
   }
   return true;
@@ -495,7 +498,7 @@ void ActionMove::CalculateMoveVector(gfx::PointF& touch_press_pos,
                                      bool key_press,
                                      const gfx::RectF& content_bounds,
                                      const gfx::Transform* rotation_transform) {
-  DCHECK_LT(direction_index, kActionMoveKeysSize);
+  CHECK_LT(direction_index, kActionMoveKeysSize, base::NotFatalUntil::M160);
   auto new_move = gfx::Vector2dF(UNSAFE_TODO(kDirection[direction_index])[0],
                                  UNSAFE_TODO(kDirection[direction_index])[1]);
   const float display_scale_factor =
@@ -555,7 +558,7 @@ gfx::PointF ActionMove::TransformLocationInPixels(
     ratio = orig_point.y() / content_bounds.height();
     float y = ratio * target_area->height() + target_area->y();
     new_pos.SetPoint(x, y);
-    DCHECK(target_area->Contains(new_pos));
+    CHECK(target_area->Contains(new_pos), base::NotFatalUntil::M160);
   } else {
     new_pos.SetPoint(root_location.x(), root_location.y());
   }
