@@ -34,16 +34,7 @@ def __step_config(ctx, step_config):
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/mojom/mojom_parser.py",
             "remote": remote_run and runtime.os != "windows",
             "timeout": "2m",
-            # Intermediate .mojom-module files are only consumed by downstream
-            # mojom_bindings_generator actions (which run remotely on RBE) and
-            # are not needed on local disk during compilation.
-            # Note: Setting output_local=False here does not change behavior
-            # when -output_local_strategy=full (default for developer builds) is
-            # used, as HashFS NeedFlush still flushes all outputs in that mode.
-            # Rather, this prevents the rule from forcefully overriding
-            # -output_local_strategy=minimum or -output_local_strategy=graph,
-            # avoiding unnecessary downloads and fs-flush I/O contention.
-            "output_local": False,
+            "output_local": True,
             "platform_ref": platform_ref,
             "remote_command": platform.remote_python_bin,  # only run on Linux worker even for CI Windows.
         },
