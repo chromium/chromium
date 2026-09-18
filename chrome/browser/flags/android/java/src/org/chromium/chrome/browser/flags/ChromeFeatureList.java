@@ -1796,7 +1796,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sDebugToolbarPositioning =
             newMutableFlagWithSafeDefault(DEBUG_TOOLBAR_POSITIONING, false);
     public static final MutableFlagWithSafeDefault sDefaultBrowserPromoFre =
-            newMutableFlagWithSafeDefault(DEFAULT_BROWSER_PROMO_FRE, false);
+            newMutableFlagWithSafeDefault(DEFAULT_BROWSER_PROMO_FRE, true);
     public static final MutableFlagWithSafeDefault sDisableGridTabSwitcher =
             newMutableFlagWithSafeDefault(DISABLE_GRID_TAB_SWITCHER, false);
     public static final MutableFlagWithSafeDefault sEnableSwipeToSwitchPane =
