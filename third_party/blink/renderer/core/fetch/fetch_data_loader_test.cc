@@ -114,24 +114,13 @@ class FetchDataLoaderTest : public testing::Test {
 class FetchDataLoaderBlobTest : public FetchDataLoaderTest {
  public:
   FetchDataLoaderBlobTest()
-      : fake_task_runner_(base::MakeRefCounted<scheduler::FakeTaskRunner>()),
-        blob_registry_receiver_(
-            &fake_blob_registry_,
-            blob_registry_remote_.BindNewPipeAndPassReceiver()) {
-    BlobDataHandle::SetBlobRegistryForTesting(blob_registry_remote_.get());
-  }
-
-  ~FetchDataLoaderBlobTest() override {
-    BlobDataHandle::SetBlobRegistryForTesting(nullptr);
-  }
+      : fake_task_runner_(base::MakeRefCounted<scheduler::FakeTaskRunner>()) {}
 
  protected:
   scoped_refptr<scheduler::FakeTaskRunner> fake_task_runner_;
 
  private:
-  FakeBlobRegistry fake_blob_registry_;
-  mojo::Remote<mojom::blink::BlobRegistry> blob_registry_remote_;
-  mojo::Receiver<mojom::blink::BlobRegistry> blob_registry_receiver_;
+  ScopedFakeBlobRegistry blob_registry_;
 };
 
 ACTION_P(QUITLOOP, loop) {

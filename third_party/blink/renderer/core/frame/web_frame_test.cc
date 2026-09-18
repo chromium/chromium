@@ -238,6 +238,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
+#include "third_party/blink/renderer/platform/wtf/uuid.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
 #include "ui/base/mojom/menu_source_type.mojom-blink.h"
@@ -12083,11 +12084,11 @@ TEST(WebFrameGlobalReuseTest, ReuseForMainFrameIfEnabled) {
 class BlobRegistryForSaveImageFromDataURL : public mojom::blink::BlobRegistry {
  public:
   void Register(mojo::PendingReceiver<mojom::blink::Blob> blob,
-                const String& uuid,
                 const String& content_type,
                 const String& content_disposition,
                 Vector<mojom::blink::DataElementPtr> elements,
                 RegisterCallback callback) override {
+    const String uuid = CreateCanonicalUuidString();
     DCHECK_EQ(elements.size(), 1u);
     DCHECK(elements[0]->is_bytes());
 
@@ -12098,7 +12099,7 @@ class BlobRegistryForSaveImageFromDataURL : public mojom::blink::BlobRegistry {
         base::span(*bytes->embedded_data).first(static_cast<uint32_t>(length)));
     mojo::MakeSelfOwnedReceiver(std::make_unique<FakeBlob>(uuid, body),
                                 std::move(blob));
-    std::move(callback).Run();
+    std::move(callback).Run(uuid);
   }
 
   void RegisterFromStream(

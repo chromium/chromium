@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/testing/file_backed_blob_factory_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/blob/testing/fake_blob_registry.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -1630,6 +1631,7 @@ TEST(V8ScriptValueSerializerTest, TransferOffscreenCanvas) {
 
 TEST(V8ScriptValueSerializerTest, RoundTripBlob) {
   test::TaskEnvironment task_environment;
+  ScopedFakeBlobRegistry blob_registry;
   V8TestingScope scope;
   const char kHelloWorld[] = "Hello world!";
   Blob* blob = Blob::Create(
@@ -1665,6 +1667,7 @@ TEST(V8ScriptValueSerializerTest, DecodeBlobWithoutHandles) {
 
 TEST(V8ScriptValueSerializerTest, RoundTripBlobIndex) {
   test::TaskEnvironment task_environment;
+  ScopedFakeBlobRegistry blob_registry;
   V8TestingScope scope;
   const char kHelloWorld[] = "Hello world!";
   Blob* blob = Blob::Create(
@@ -1757,6 +1760,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileNative) {
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileBackedByBlob) {
   test::TaskEnvironment task_environment;
+  ScopedFakeBlobRegistry blob_registry;
   V8TestingScope scope;
   const base::Time kModificationTime = base::Time::UnixEpoch();
   scoped_refptr<BlobDataHandle> blob_data_handle = BlobDataHandle::Create();
@@ -1795,6 +1799,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileNativeSnapshot) {
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileNonNativeSnapshot) {
   test::TaskEnvironment task_environment;
+  ScopedFakeBlobRegistry blob_registry;
   // Preserving behavior, filesystem URL is not preserved across cloning.
   KURL url("filesystem:http://example.com/isolated/hash/non-native-file");
   V8TestingScope scope;

@@ -6,12 +6,15 @@
 
 #include "base/notimplemented.h"
 #include "base/run_loop.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom-blink.h"
+#include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace {
 namespace mojob = ::blink::mojom::blink;
@@ -132,16 +135,31 @@ class FakeBlobRegistry::DataPipeDrainerClient
   uint64_t length_ = 0;
 };
 
-FakeBlobRegistry::FakeBlobRegistry(bool support_binary_blob_bodies)
-    : support_binary_blob_bodies_(support_binary_blob_bodies) {}
+FakeBlobRegistry::FakeBlobRegistry(
+    bool support_binary_blob_bodies,
+    mojo::PendingReceiver<mojom::blink::BlobRegistry> receiver)
+    : support_binary_blob_bodies_(support_binary_blob_bodies),
+      receiver_(this, std::move(receiver)) {}
 FakeBlobRegistry::~FakeBlobRegistry() = default;
 
+ScopedFakeBlobRegistry::ScopedFakeBlobRegistry(bool support_binary_blob_bodies)
+    : registry_(base::ThreadPool::CreateSequencedTaskRunner({}),
+                support_binary_blob_bodies,
+                remote_.BindNewPipeAndPassReceiver()) {
+  registry_.FlushPostedTasksForTesting();
+  BlobDataHandle::SetBlobRegistryForTesting(remote_.get());
+}
+
+ScopedFakeBlobRegistry::~ScopedFakeBlobRegistry() {
+  BlobDataHandle::SetBlobRegistryForTesting(nullptr);
+}
+
 void FakeBlobRegistry::Register(mojo::PendingReceiver<mojom::blink::Blob> blob,
-                                const String& uuid,
                                 const String& content_type,
                                 const String& content_disposition,
                                 Vector<mojom::blink::DataElementPtr> elements,
                                 RegisterCallback callback) {
+  const String uuid = CreateCanonicalUuidString();
   Vector<mojom::blink::DataElementPtr> body_elements;
   if (support_binary_blob_bodies_) {
     body_elements = std::move(elements);
@@ -153,11 +171,11 @@ void FakeBlobRegistry::Register(mojo::PendingReceiver<mojom::blink::Blob> blob,
   // DataElementReader will delete itself when it creates FakeBlob.
   DataElementReader* element_reader =
       new DataElementReader(std::move(blob), uuid, std::move(body_elements));
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       BindOnce(&DataElementReader::CreateFakeBlob, Unretained(element_reader)));
 
-  std::move(callback).Run();
+  std::move(callback).Run(uuid);
 }
 
 void FakeBlobRegistry::RegisterFromStream(

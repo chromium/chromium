@@ -287,23 +287,20 @@ scoped_refptr<BlobDataHandle> BlobDataHandle::Create(
 }
 
 BlobDataHandle::BlobDataHandle()
-    : uuid_(CreateCanonicalUuidString()),
-      size_(0),
-      is_single_unknown_size_file_(false) {
+    : size_(0), is_single_unknown_size_file_(false) {
   GetThreadSpecificRegistry()->Register(
-      blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_, "", "", {});
+      blob_remote_.InitWithNewPipeAndPassReceiver(), "", "", {}, &uuid_);
 }
 
 BlobDataHandle::BlobDataHandle(std::unique_ptr<BlobData> data, uint64_t size)
-    : uuid_(CreateCanonicalUuidString()),
-      type_(data->ContentType()),
+    : type_(data->ContentType()),
       size_(size),
       is_single_unknown_size_file_(data->IsSingleUnknownSizeFile()) {
   auto elements = data->ReleaseElements();
   TRACE_EVENT0("Blob", "Registry::RegisterBlob");
   GetThreadSpecificRegistry()->Register(
-      blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
-      type_.IsNull() ? "" : type_, "", std::move(elements));
+      blob_remote_.InitWithNewPipeAndPassReceiver(),
+      type_.IsNull() ? "" : type_, "", std::move(elements), &uuid_);
 }
 
 BlobDataHandle::BlobDataHandle(
@@ -312,12 +309,12 @@ BlobDataHandle::BlobDataHandle(
     const String& content_type,
     uint64_t size,
     bool synchronous_register)
-    : uuid_(CreateCanonicalUuidString()),
-      type_(content_type),
+    : type_(content_type),
       size_(size),
       is_single_unknown_size_file_(size ==
                                    std::numeric_limits<uint64_t>::max()) {
   if (file_backed_blob_factory) {
+    uuid_ = CreateCanonicalUuidString();
     if (synchronous_register) {
       file_backed_blob_factory->RegisterBlobSync(
           blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
@@ -335,8 +332,8 @@ BlobDataHandle::BlobDataHandle(
     elements.push_back(DataElement::NewFile(std::move(file_element)));
     TRACE_EVENT0("Blob", "Registry::RegisterBlob");
     GetThreadSpecificRegistry()->Register(
-        blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
-        type_.IsNull() ? "" : type_, "", std::move(elements));
+        blob_remote_.InitWithNewPipeAndPassReceiver(),
+        type_.IsNull() ? "" : type_, "", std::move(elements), &uuid_);
   }
 }
 

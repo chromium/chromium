@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/testing/file_backed_blob_factory_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/blob/testing/fake_blob_registry.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -194,6 +195,7 @@ TEST(SerializedScriptValueTest, UserSelectedFile) {
 
 TEST(SerializedScriptValueTest, FileConstructorFile) {
   test::TaskEnvironment task_environment;
+  ScopedFakeBlobRegistry blob_registry;
   V8TestingScope scope;
   scoped_refptr<BlobDataHandle> blob_data_handle = BlobDataHandle::Create();
   auto* original_file = MakeGarbageCollected<File>(

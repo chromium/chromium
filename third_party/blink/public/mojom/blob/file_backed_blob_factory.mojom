@@ -12,6 +12,7 @@ import "third_party/blink/public/mojom/blob/data_element.mojom";
 // This interface is channel-associated (for frames).
 interface FileBackedBlobFactory {
     // Registers a file backed blob.
+    // TODO(crbug.com/40529364): get rid of UUID parameter.
     RegisterBlob(pending_receiver<blink.mojom.Blob> blob, string uuid,
         string content_type,
         blink.mojom.DataElementFile file);

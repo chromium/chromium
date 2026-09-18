@@ -196,6 +196,7 @@ class PLATFORM_EXPORT BlobDataHandle
     return base::AdoptRef(new BlobDataHandle(uuid, type, size));
   }
 
+  // For reinflation from IPC.
   static scoped_refptr<BlobDataHandle> Create(
       const String& uuid,
       const String& type,
@@ -245,7 +246,7 @@ class PLATFORM_EXPORT BlobDataHandle
 
   // This UUID is deprecated and should not be used to reference the blob in the
   // backend (BlobRegistry). TODO(crbug.com/40529364): remove.
-  const String uuid_;
+  String uuid_;
   const String type_;
   const uint64_t size_;
   const bool is_single_unknown_size_file_;

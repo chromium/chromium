@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage_blob_client_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/blob/testing/fake_blob_registry.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 using blink::mojom::CacheStorageError;
@@ -375,6 +376,7 @@ class CacheStorageTest : public PageTestBase {
   std::unique_ptr<ErrorCacheForTests> cache_;
   std::unique_ptr<mojo::AssociatedReceiver<mojom::blink::CacheStorageCache>>
       receiver_;
+  ScopedFakeBlobRegistry blob_registry_;
 };
 
 V8RequestInfo* RequestToRequestInfo(Request* value) {
