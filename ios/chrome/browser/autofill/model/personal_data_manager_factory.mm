@@ -76,7 +76,10 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
       IdentityManagerFactory::GetForProfile(profile), history_service,
       sync_service, StrikeDatabaseFactory::GetForProfile(profile),
       autofill_image_fetcher,
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+      std::string(GetApplicationContext()
+                      ->GetApplicationLocaleStorage()
+                      ->GetTag()
+                      .tag_string()),
       GetCountryCodeFromVariations(), /*autofill_optimization_guide=*/nullptr);
 }
 

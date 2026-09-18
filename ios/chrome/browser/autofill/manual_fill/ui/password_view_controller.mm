@@ -214,9 +214,10 @@ enum ManualFallbackItemType : NSInteger {
   headerItem.urls = @[ [[CrURL alloc]
       initWithGURL:google_util::AppendGoogleLocaleParam(
                        GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
-                       GetApplicationContext()
-                           ->GetApplicationLocaleStorage()
-                           ->Get())] ];
+                       std::string(GetApplicationContext()
+                                       ->GetApplicationLocaleStorage()
+                                       ->GetTag()
+                                       .tag_string()))] ];
 
   [self presentHeaderItem:headerItem];
 }

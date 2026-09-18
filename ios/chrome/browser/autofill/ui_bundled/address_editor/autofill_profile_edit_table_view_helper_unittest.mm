@@ -117,8 +117,10 @@ class AutofillProfileEditTableViewHelperTest
     zip_ = base::SysUTF16ToNSString(
         profile_->GetRawInfo(autofill::ADDRESS_HOME_ZIP));
     country_ = base::SysUTF16ToNSString(profile_->GetInfo(
-        autofill::ADDRESS_HOME_COUNTRY,
-        GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
+        autofill::ADDRESS_HOME_COUNTRY, GetApplicationContext()
+                                            ->GetApplicationLocaleStorage()
+                                            ->GetTag()
+                                            .tag_string()));
     phone_home_whole_number_ = base::SysUTF16ToNSString(
         profile_->GetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER));
     email_ =

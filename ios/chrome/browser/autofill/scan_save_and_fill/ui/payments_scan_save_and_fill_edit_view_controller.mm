@@ -389,8 +389,10 @@ void StyleButtonForConfirmation(UIButtonConfiguration* config) {
                                    expirationYear];
   }
 
-  std::string appLocale =
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  std::string appLocale(GetApplicationContext()
+                            ->GetApplicationLocaleStorage()
+                            ->GetTag()
+                            .tag_string());
 
   base::UmaHistogramBoolean(
       "IOS.ScanCardOfferToSave.ValidNumber",
