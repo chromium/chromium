@@ -105,13 +105,6 @@ void ConversationImpl::SendContextUpdate(
   }
 }
 
-void ConversationImpl::SendToolSetUpdate(
-    const std::vector<ToolDefinition>& tools) {
-  if (backend_) {
-    backend_->SendToolSetUpdate(tools);
-  }
-}
-
 void ConversationImpl::OnPageContextChanged() {
   NOTIMPLEMENTED();
 }
@@ -166,6 +159,18 @@ void ConversationImpl::OnStreamingStateChanged(
     bool connected,
     const std::string& session_id,
     const std::string& error_message) {
+  // TODO(b/561651267): Technically we only need to send this when a session is
+  // established. This method can be called after an already created session
+  // reconnects after a temporary disconnection. Differentiating this state
+  // would require us to cache the session_id, and ideally TtcBackend::Observer
+  // would just expose a separate notification for this.
+  if (connected && !session_id.empty()) {
+    // `backend_` is necessarily alive here since it invoked this
+    // TtcBackend::Observer call.
+    CHECK(backend_);
+    backend_->SendToolSetUpdate(session_controller_->GetToolDefinitions());
+  }
+
   for (auto& observer : observers_) {
     observer.OnConversationStateChanged(connected, session_id, error_message);
   }

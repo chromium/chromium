@@ -45,6 +45,8 @@ struct ToolDefinition {
   ToolDefinition(const ToolDefinition&) = delete;
   ToolDefinition& operator=(const ToolDefinition&) = delete;
 
+  ToolDefinition Clone() const;
+
   std::string name;
   std::string description;
   base::DictValue parameters_json_schema;

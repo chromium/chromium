@@ -15,6 +15,16 @@ ToolDefinition::~ToolDefinition() = default;
 ToolDefinition::ToolDefinition(ToolDefinition&&) = default;
 ToolDefinition& ToolDefinition::operator=(ToolDefinition&&) = default;
 
+ToolDefinition ToolDefinition::Clone() const {
+  ToolDefinition copy;
+  copy.name = name;
+  copy.description = description;
+  copy.parameters_json_schema = parameters_json_schema.Clone();
+  copy.behavior = behavior;
+  copy.verbalization = verbalization;
+  return copy;
+}
+
 ToolResponse::ToolResponse(std::variant<base::DictValue, ToolError> value)
     : value_(std::move(value)) {
   // The factories cannot produce a failure with nothing to report, but this

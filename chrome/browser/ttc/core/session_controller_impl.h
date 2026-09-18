@@ -42,6 +42,7 @@ class SessionControllerImpl : public SessionController,
   void GetPageContext(FetchCompleteCallback callback) override;
   void ProcessToolCall(const ToolRequest& tool_request,
                        ToolResponseCallback tool_response_callback) override;
+  std::vector<ToolDefinition> GetToolDefinitions() override;
   void UserAudioLevelUpdate(float audio_level) override;
 
   // SessionViewDelegate implementation:

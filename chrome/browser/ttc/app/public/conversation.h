@@ -6,12 +6,10 @@
 #define CHROME_BROWSER_TTC_APP_PUBLIC_CONVERSATION_H_
 
 #include <string>
-#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "chrome/browser/ttc/app/public/tool_types.h"
 #include "url/gurl.h"
 
 namespace optimization_guide::proto {
@@ -60,7 +58,6 @@ class Conversation {
       const GURL& url,
       const std::string& title,
       const optimization_guide::proto::AnnotatedPageContent& apc) = 0;
-  virtual void SendToolSetUpdate(const std::vector<ToolDefinition>& tools) = 0;
 
   // Invoked when the page the session is operating on has changed, and so the
   // conversation's page context may be stale.

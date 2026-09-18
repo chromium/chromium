@@ -36,6 +36,9 @@ class SessionController {
   virtual void ProcessToolCall(const ToolRequest& tool_request,
                                ToolResponseCallback tool_response_callback) = 0;
 
+  // Returns a list of available tools to use for this session.
+  virtual std::vector<ToolDefinition> GetToolDefinitions() = 0;
+
   // Called when the level (loudness) of the user's captured microphone audio
   // changes. `audio_level` is normalized to the [0, 1] range.
   virtual void UserAudioLevelUpdate(float audio_level) = 0;

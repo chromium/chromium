@@ -88,14 +88,8 @@ void SessionControllerImpl::ProcessToolCall(
                                    std::move(tool_response_callback));
 }
 
-BrowserWindowInterface* SessionControllerImpl::GetBrowserWindowInterface() {
-#if BUILDFLAG(IS_ANDROID)
-  return nullptr;
-#else
-  ProfileBrowserCollection* browsers =
-      ProfileBrowserCollection::GetForProfile(service_->profile());
-  return browsers ? browsers->GetLastActiveBrowser() : nullptr;
-#endif
+std::vector<ToolDefinition> SessionControllerImpl::GetToolDefinitions() {
+  return tool_controller_.GetToolDefinitions();
 }
 
 void SessionControllerImpl::UserAudioLevelUpdate(float audio_level) {
@@ -106,6 +100,16 @@ void SessionControllerImpl::UserAudioLevelUpdate(float audio_level) {
   }
 
   session_view_->UpdateAudioLevel(audio_level);
+}
+
+BrowserWindowInterface* SessionControllerImpl::GetBrowserWindowInterface() {
+#if BUILDFLAG(IS_ANDROID)
+  return nullptr;
+#else
+  ProfileBrowserCollection* browsers =
+      ProfileBrowserCollection::GetForProfile(service_->profile());
+  return browsers ? browsers->GetLastActiveBrowser() : nullptr;
+#endif
 }
 
 void SessionControllerImpl::OnSessionInitialized() {

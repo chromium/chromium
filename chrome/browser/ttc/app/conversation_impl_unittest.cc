@@ -89,6 +89,7 @@ class FakeSessionController : public SessionController {
   explicit FakeSessionController(Profile* profile) : profile_(profile) {}
   ~FakeSessionController() override = default;
 
+  // SessionController overrides:
   void GetPageContext(FetchCompleteCallback callback) override {}
   Profile* GetProfile() override { return profile_; }
   void ProcessToolCall(const ToolRequest& tool_request,
@@ -97,15 +98,28 @@ class FakeSessionController : public SessionController {
     last_request_.arguments = tool_request.arguments.Clone();
     std::move(tool_response).Run(ToolResponse::Success());
   }
-
+  std::vector<ToolDefinition> GetToolDefinitions() override {
+    std::vector<ToolDefinition> tools;
+    for (const ToolDefinition& tool : tools_) {
+      tools.push_back(tool.Clone());
+    }
+    return tools;
+  }
   void UserAudioLevelUpdate(float audio_level) override {}
   void OnSessionInitialized() override {}
 
   const ToolRequest& last_request() const { return last_request_; }
 
+  void AddToolDefinition(const std::string& name) {
+    ToolDefinition tool;
+    tool.name = name;
+    tools_.push_back(std::move(tool));
+  }
+
  private:
   raw_ptr<Profile> profile_;
   ToolRequest last_request_;
+  std::vector<ToolDefinition> tools_;
 };
 
 }  // namespace
@@ -399,18 +413,53 @@ TEST_F(ConversationImplTest, SendTextInputForwardsToBackend) {
   conversation.SendTextInput("hello world");
 }
 
-TEST_F(ConversationImplTest, SendToolSetUpdateForwardsToBackend) {
+TEST_F(ConversationImplTest, ConnectionSendsToolSetUpdate) {
   auto mock_backend = std::make_unique<MockTtcBackend>();
   MockTtcBackend* backend_ptr = mock_backend.get();
 
+  session_controller_.AddToolDefinition("navigate");
+
   ConversationImpl conversation(std::move(mock_backend), nullptr,
                                 session_controller_);
-  std::vector<ToolDefinition> tools;
-  ToolDefinition tool;
-  tool.name = "test_tool";
-  tools.push_back(std::move(tool));
-  EXPECT_CALL(*backend_ptr, SendToolSetUpdate(testing::_)).Times(1);
-  conversation.SendToolSetUpdate(tools);
+
+  std::vector<std::string> sent_tool_names;
+  EXPECT_CALL(*backend_ptr, SendToolSetUpdate(testing::_))
+      .WillOnce([&sent_tool_names](const std::vector<ToolDefinition>& tools) {
+        for (const ToolDefinition& tool : tools) {
+          sent_tool_names.push_back(tool.name);
+        }
+      });
+  conversation.OnStreamingStateChanged(/*connected=*/true, "sess_123", "");
+  EXPECT_THAT(sent_tool_names, testing::ElementsAre("navigate"));
+}
+
+TEST_F(ConversationImplTest, ConnectionWithoutSessionIdSkipsToolSetUpdate) {
+  auto mock_backend = std::make_unique<MockTtcBackend>();
+  MockTtcBackend* backend_ptr = mock_backend.get();
+
+  session_controller_.AddToolDefinition("navigate");
+
+  ConversationImpl conversation(std::move(mock_backend), nullptr,
+                                session_controller_);
+
+  // The backend reports the transport as connected before the server session
+  // is set up, at which point there is no session to send the tool set for.
+  EXPECT_CALL(*backend_ptr, SendToolSetUpdate(testing::_)).Times(0);
+  conversation.OnStreamingStateChanged(/*connected=*/true, "", "");
+}
+
+TEST_F(ConversationImplTest, DisconnectionDoesNotSendToolSetUpdate) {
+  auto mock_backend = std::make_unique<MockTtcBackend>();
+  MockTtcBackend* backend_ptr = mock_backend.get();
+
+  session_controller_.AddToolDefinition("navigate");
+
+  ConversationImpl conversation(std::move(mock_backend), nullptr,
+                                session_controller_);
+
+  EXPECT_CALL(*backend_ptr, SendToolSetUpdate(testing::_)).Times(0);
+  conversation.OnStreamingStateChanged(/*connected=*/false, "sess_123",
+                                       "some error");
 }
 
 }  // namespace ttc

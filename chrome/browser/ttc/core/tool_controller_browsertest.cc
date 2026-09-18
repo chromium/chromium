@@ -84,6 +84,41 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
   EXPECT_EQ(*response.error().message, "Unsupported tool");
 }
 
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
+  ASSERT_EQ(tools.size(), 1u);
+
+  const ToolDefinition& open_url = tools[0];
+  EXPECT_EQ(open_url.name, "open_url");
+  EXPECT_FALSE(open_url.description.empty());
+  EXPECT_EQ(open_url.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(open_url.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+
+  const base::DictValue& schema = open_url.parameters_json_schema;
+  const std::string* schema_type = schema.FindString("type");
+  ASSERT_TRUE(schema_type);
+  EXPECT_EQ(*schema_type, "object");
+
+  const std::string* url_type =
+      schema.FindStringByDottedPath("properties.url.type");
+  ASSERT_TRUE(url_type);
+  EXPECT_EQ(*url_type, "string");
+
+  const std::string* new_tab_type =
+      schema.FindStringByDottedPath("properties.new_tab.type");
+  ASSERT_TRUE(new_tab_type);
+  EXPECT_EQ(*new_tab_type, "boolean");
+
+  const base::ListValue* required = schema.FindList("required");
+  ASSERT_TRUE(required);
+  EXPECT_EQ(*required, base::ListValue().Append("url").Append("new_tab"));
+}
+
 }  // namespace
 
 }  // namespace ttc

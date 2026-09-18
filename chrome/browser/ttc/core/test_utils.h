@@ -33,10 +33,6 @@ class MockConversation : public Conversation {
                const std::string&,
                const optimization_guide::proto::AnnotatedPageContent&),
               (override));
-  MOCK_METHOD(void,
-              SendToolSetUpdate,
-              (const std::vector<ToolDefinition>&),
-              (override));
   MOCK_METHOD(void, OnPageContextChanged, (), (override));
 };
 

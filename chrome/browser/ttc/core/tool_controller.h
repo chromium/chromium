@@ -29,6 +29,10 @@ class ToolController {
   void ProcessToolCall(const ToolRequest& tool_request,
                        ToolResponseCallback callback);
 
+  // Returns the definitions of the tools this controller can execute, for
+  // registration with the model backend.
+  std::vector<ToolDefinition> GetToolDefinitions();
+
  private:
   void EnsureTaskCreated(actor::ActorKeyedService* actor_service);
 
