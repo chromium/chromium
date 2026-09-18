@@ -28,7 +28,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TwaDisclosureUi;
@@ -148,9 +147,9 @@ public class DisclosureUiPickerTest {
 
     @Test
     @Feature("TrustedWebActivities")
-    @DisabledTest // This needs to be re-worked for Q.
     public void picksSnackbar_whenAutomotive() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        setNotificationsEnabled(true);
         setChannelEnabled(WEBAPPS, true);
         setChannelEnabled(WEBAPPS_QUIET, true);
 
