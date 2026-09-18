@@ -37,6 +37,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
+#include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/prefs/pref_service.h"
@@ -102,6 +103,12 @@ class MockActorOneTimeTokenFillingService
                const std::string&,
                base::OnceCallback<void(bool)>),
               (override));
+  MOCK_METHOD(
+      void,
+      FetchUserDataProcessingConsent,
+      (base::OnceCallback<void(
+           std::optional<one_time_tokens::UserDataProcessingConsentStates>)>),
+      (override));
 
   base::WeakPtr<ActorOneTimeTokenFillingService> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
@@ -233,6 +240,17 @@ class AttemptOtpFillingToolTest : public testing::Test {
     ON_CALL(delegate_->mock_otp_service(),
             GetLoginContextShouldUseStrongMatching())
         .WillByDefault(Return(false));
+    ON_CALL(delegate_->mock_otp_service(), FetchUserDataProcessingConsent)
+        .WillByDefault(
+            [](base::OnceCallback<void(
+                   std::optional<
+                       one_time_tokens::UserDataProcessingConsentStates>)>
+                   callback) {
+              std::move(callback).Run(
+                  one_time_tokens::UserDataProcessingConsentStates{
+                      .comms_apps = one_time_tokens::ConsentState::kEnabled,
+                      .google_apps = one_time_tokens::ConsentState::kEnabled});
+            });
   }
 
   PrefService* prefs() { return profile_->GetPrefs(); }
@@ -324,6 +342,8 @@ using mojom::ActionResultPtr;
 using mojom::ActionResultCode::kOk;
 using mojom::ActionResultCode::kOtpFieldNotFound;
 using mojom::ActionResultCode::kOtpFillFailure;
+using mojom::ActionResultCode::kOtpGmailConsentRequired;
+using mojom::ActionResultCode::kOtpGoogleConsentRequired;
 using mojom::ActionResultCode::kOtpNoLastTabObservation;
 using mojom::ActionResultCode::kOtpRetrievalError;
 using mojom::ActionResultCode::kOtpTargetFrameNotFound;
@@ -430,6 +450,7 @@ TEST_F(AttemptOtpFillingToolTest,
        Validate_GmailOtpFillingDisabledWithinCoolOffPeriod) {
   EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog).Times(0);
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp).Times(0);
+  EXPECT_CALL(delegate().mock_otp_service(), FetchUserDataProcessingConsent);
   AttemptOtpFillingTool tool = CreateTool({PageTarget(gfx::Point(10, 10))});
   SetAutofillGmailOtpFillingEnabled(prefs(), false);
   SetAutofillGmailOtpFillingActivationDismissalTimestamp(
@@ -689,6 +710,9 @@ TEST_F(AttemptOtpFillingToolTest,
 }
 
 TEST_F(AttemptOtpFillingToolTest, Validate_GmailOtpFillingEnabled) {
+  EXPECT_CALL(delegate().mock_otp_service(), FetchUserDataProcessingConsent)
+      .Times(1);
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog).Times(0);
   AttemptOtpFillingTool tool = CreateTool({PageTarget(gfx::Point(10, 10))});
   SetAutofillGmailOtpFillingEnabled(prefs(), true);
 
@@ -696,6 +720,147 @@ TEST_F(AttemptOtpFillingToolTest, Validate_GmailOtpFillingEnabled) {
   tool.Validate(future.GetCallback());
 
   EXPECT_EQ(kOk, future.Take()->code);
+}
+
+TEST_F(AttemptOtpFillingToolTest,
+       Validate_GmailOtpFillingEnabled_CommsAppsConsentDisabled) {
+  EXPECT_CALL(delegate().mock_otp_service(), FetchUserDataProcessingConsent)
+      .WillOnce([](base::OnceCallback<void(
+                       std::optional<
+                           one_time_tokens::UserDataProcessingConsentStates>)>
+                       callback) {
+        std::move(callback).Run(
+            one_time_tokens::UserDataProcessingConsentStates{
+                .comms_apps = one_time_tokens::ConsentState::kDisabled,
+                .google_apps = one_time_tokens::ConsentState::kEnabled});
+      });
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog).Times(0);
+  AttemptOtpFillingTool tool = CreateTool({PageTarget(gfx::Point(10, 10))});
+  SetAutofillGmailOtpFillingEnabled(prefs(), true);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Validate(future.GetCallback());
+
+  EXPECT_EQ(kOtpGmailConsentRequired, future.Take()->code);
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kGmailSmartFeaturesConsentRequired, 1);
+}
+
+TEST_F(AttemptOtpFillingToolTest,
+       Validate_GmailOtpFillingEnabled_GoogleAppsConsentDisabled) {
+  EXPECT_CALL(delegate().mock_otp_service(), FetchUserDataProcessingConsent)
+      .WillOnce([](base::OnceCallback<void(
+                       std::optional<
+                           one_time_tokens::UserDataProcessingConsentStates>)>
+                       callback) {
+        std::move(callback).Run(
+            one_time_tokens::UserDataProcessingConsentStates{
+                .comms_apps = one_time_tokens::ConsentState::kEnabled,
+                .google_apps = one_time_tokens::ConsentState::kDisabled});
+      });
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog).Times(0);
+  AttemptOtpFillingTool tool = CreateTool({PageTarget(gfx::Point(10, 10))});
+  SetAutofillGmailOtpFillingEnabled(prefs(), true);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Validate(future.GetCallback());
+
+  EXPECT_EQ(kOtpGoogleConsentRequired, future.Take()->code);
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kGoogleSmartFeaturesConsentRequired, 1);
+}
+
+TEST_F(AttemptOtpFillingToolTest,
+       Validate_GmailOtpFillingEnabled_ConsentFetchReturnsNullopt) {
+  EXPECT_CALL(delegate().mock_otp_service(), FetchUserDataProcessingConsent)
+      .WillOnce([](base::OnceCallback<void(
+                       std::optional<
+                           one_time_tokens::UserDataProcessingConsentStates>)>
+                       callback) { std::move(callback).Run(std::nullopt); });
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog).Times(0);
+  AttemptOtpFillingTool tool = CreateTool({PageTarget(gfx::Point(10, 10))});
+  SetAutofillGmailOtpFillingEnabled(prefs(), true);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Validate(future.GetCallback());
+
+  EXPECT_EQ(kOtpUnableToFill, future.Take()->code);
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::
+          kUnableToRetrieveGmailAndGoogleSmartFeaturesConsent,
+      1);
+}
+
+TEST_F(AttemptOtpFillingToolTest, Validate_CommsAppsConsentDisabled) {
+  EXPECT_CALL(delegate().mock_otp_service(), FetchUserDataProcessingConsent)
+      .WillOnce([](base::OnceCallback<void(
+                       std::optional<
+                           one_time_tokens::UserDataProcessingConsentStates>)>
+                       callback) {
+        std::move(callback).Run(
+            one_time_tokens::UserDataProcessingConsentStates{
+                .comms_apps = one_time_tokens::ConsentState::kDisabled,
+                .google_apps = one_time_tokens::ConsentState::kEnabled});
+      });
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog).Times(0);
+  AttemptOtpFillingTool tool = CreateTool({PageTarget(gfx::Point(10, 10))});
+  SetAutofillGmailOtpFillingEnabled(prefs(), false);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Validate(future.GetCallback());
+
+  EXPECT_EQ(kOtpGmailConsentRequired, future.Take()->code);
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kGmailSmartFeaturesConsentRequired, 1);
+}
+
+TEST_F(AttemptOtpFillingToolTest, Validate_GoogleAppsConsentDisabled) {
+  EXPECT_CALL(delegate().mock_otp_service(), FetchUserDataProcessingConsent)
+      .WillOnce([](base::OnceCallback<void(
+                       std::optional<
+                           one_time_tokens::UserDataProcessingConsentStates>)>
+                       callback) {
+        std::move(callback).Run(
+            one_time_tokens::UserDataProcessingConsentStates{
+                .comms_apps = one_time_tokens::ConsentState::kEnabled,
+                .google_apps = one_time_tokens::ConsentState::kDisabled});
+      });
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog).Times(0);
+  AttemptOtpFillingTool tool = CreateTool({PageTarget(gfx::Point(10, 10))});
+  SetAutofillGmailOtpFillingEnabled(prefs(), false);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Validate(future.GetCallback());
+
+  EXPECT_EQ(kOtpGoogleConsentRequired, future.Take()->code);
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kGoogleSmartFeaturesConsentRequired, 1);
+}
+
+TEST_F(AttemptOtpFillingToolTest, Validate_ConsentFetchReturnsNullopt) {
+  EXPECT_CALL(delegate().mock_otp_service(), FetchUserDataProcessingConsent)
+      .WillOnce([](base::OnceCallback<void(
+                       std::optional<
+                           one_time_tokens::UserDataProcessingConsentStates>)>
+                       callback) { std::move(callback).Run(std::nullopt); });
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog).Times(0);
+  AttemptOtpFillingTool tool = CreateTool({PageTarget(gfx::Point(10, 10))});
+  SetAutofillGmailOtpFillingEnabled(prefs(), false);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Validate(future.GetCallback());
+
+  EXPECT_EQ(kOtpUnableToFill, future.Take()->code);
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::
+          kUnableToRetrieveGmailAndGoogleSmartFeaturesConsent,
+      1);
 }
 
 TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_FormNotFound) {

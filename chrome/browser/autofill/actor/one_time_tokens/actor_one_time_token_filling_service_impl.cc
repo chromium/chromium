@@ -682,6 +682,18 @@ void ActorOneTimeTokenFillingServiceImpl::OnBackendLogMessage(
       ::actor::JournalDetailsBuilder().Add("message", message).Build());
 }
 
+void ActorOneTimeTokenFillingServiceImpl::FetchUserDataProcessingConsent(
+    FetchUserDataProcessingConsentCallback callback) {
+  one_time_tokens::OneTimeTokenService* service =
+      OneTimeTokenServiceFactory::GetForProfile(profile_);
+  if (!service) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+    return;
+  }
+  service->FetchUserDataProcessingConsent(std::move(callback));
+}
+
 base::WeakPtr<ActorOneTimeTokenFillingService>
 ActorOneTimeTokenFillingServiceImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

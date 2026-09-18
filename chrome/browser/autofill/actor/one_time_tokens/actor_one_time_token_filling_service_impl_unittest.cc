@@ -42,6 +42,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
+#include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "components/security_state/core/security_state.h"
@@ -137,7 +138,14 @@ class FakeOneTimeTokenService : public one_time_tokens::OneTimeTokenService {
   void FetchUserDataProcessingConsent(
       one_time_tokens::OneTimeTokenService::
           FetchUserDataProcessingConsentCallback callback) override {
-    std::move(callback).Run(/*consent_states=*/std::nullopt);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), consent_states_));
+  }
+
+  void set_consent_states(
+      std::optional<one_time_tokens::UserDataProcessingConsentStates>
+          consent_states) {
+    consent_states_ = consent_states;
   }
 
   void SetCachedTokens(std::vector<one_time_tokens::OneTimeToken> tokens) {
@@ -159,6 +167,8 @@ class FakeOneTimeTokenService : public one_time_tokens::OneTimeTokenService {
       one_time_tokens::OneTimeTokenService::CallbackSignature>
       subscription_manager_;
   std::vector<one_time_tokens::OneTimeToken> cached_tokens_;
+  std::optional<one_time_tokens::UserDataProcessingConsentStates>
+      consent_states_;
   bool has_pending_requests_ = false;
   mutable int subscribe_call_count_ = 0;
   mutable int get_recent_tokens_call_count_ = 0;
@@ -1305,6 +1315,35 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
 
   EXPECT_EQ(future.Get(),
             base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown));
+}
+
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       FetchUserDataProcessingConsent) {
+  otp_service().set_consent_states(
+      one_time_tokens::UserDataProcessingConsentStates{
+          .comms_apps = one_time_tokens::ConsentState::kEnabled,
+          .google_apps = one_time_tokens::ConsentState::kDisabled});
+  base::test::TestFuture<
+      std::optional<one_time_tokens::UserDataProcessingConsentStates>>
+      future;
+  service().FetchUserDataProcessingConsent(future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            (one_time_tokens::UserDataProcessingConsentStates{
+                .comms_apps = one_time_tokens::ConsentState::kEnabled,
+                .google_apps = one_time_tokens::ConsentState::kDisabled}));
+}
+
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       FetchUserDataProcessingConsent_NullService) {
+  OneTimeTokenServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating(
+                     [](content::BrowserContext* context)
+                         -> std::unique_ptr<KeyedService> { return nullptr; }));
+  base::test::TestFuture<
+      std::optional<one_time_tokens::UserDataProcessingConsentStates>>
+      future;
+  service().FetchUserDataProcessingConsent(future.GetCallback());
+  EXPECT_EQ(future.Get(), std::nullopt);
 }
 
 }  // namespace

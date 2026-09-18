@@ -35,6 +35,7 @@
 #include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
+#include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -55,6 +56,20 @@ const char* PredictedOtpTypeToString(AttemptOtpFillingToolRequest::OtpType type)
       return "Email";
     case AttemptOtpFillingToolRequest::OtpType::kAuthenticatorApp:
       return "AuthenticatorApp";
+  }
+  NOTREACHED();
+}
+
+const char* ConsentStateToString(one_time_tokens::ConsentState state) {
+  switch (state) {
+    case one_time_tokens::ConsentState::kUndefined:
+      return "Undefined";
+    case one_time_tokens::ConsentState::kUnknown:
+      return "Unknown";
+    case one_time_tokens::ConsentState::kEnabled:
+      return "Enabled";
+    case one_time_tokens::ConsentState::kDisabled:
+      return "Disabled";
   }
   NOTREACHED();
 }
@@ -155,6 +170,64 @@ void AttemptOtpFillingTool::Validate(ToolCallback callback) {
           .Add("within_cool_off_period", within_cool_off_period)
           .Build());
 
+  tool_delegate()
+      .GetActorOneTimeTokenFillingService()
+      .FetchUserDataProcessingConsent(base::BindOnce(
+          &AttemptOtpFillingTool::OnUserDataProcessingConsentFetched,
+          weak_factory_.GetWeakPtr(), std::move(callback),
+          gmail_otp_filling_enabled, within_cool_off_period));
+}
+
+void AttemptOtpFillingTool::OnUserDataProcessingConsentFetched(
+    ToolCallback callback,
+    bool gmail_otp_filling_enabled,
+    bool within_cool_off_period,
+    std::optional<one_time_tokens::UserDataProcessingConsentStates>
+        consent_states) {
+  if (!consent_states.has_value()) {
+    RecordAttemptOtpFillingEvent(
+        AttemptOtpFillingToolEvent::
+            kUnableToRetrieveGmailAndGoogleSmartFeaturesConsent);
+    LogJournalEvent("AttemptOtpFillingTool::OnUserDataProcessingConsentFetched",
+                    JournalDetailsBuilder()
+                        .Add("error", "Consent states fetch returned nullopt")
+                        .Build());
+
+    std::move(callback).Run(MakeResult(
+        mojom::ActionResultCode::kOtpUnableToFill,
+        /*requires_page_stabilization=*/false,
+        "Could not retrieve Gmail and Google Smart Features consent."));
+    return;
+  }
+
+  LogJournalEvent("AttemptOtpFillingTool::OnUserDataProcessingConsentFetched",
+                  JournalDetailsBuilder()
+                      .Add("In-product User Data Processing (iUDP, comms_apps)",
+                           ConsentStateToString(consent_states->comms_apps))
+                      .Add("Google User Data Processing (gUDP, google_apps)",
+                           ConsentStateToString(consent_states->google_apps))
+                      .Build());
+
+  if (consent_states->comms_apps == one_time_tokens::ConsentState::kDisabled) {
+    RecordAttemptOtpFillingEvent(
+        AttemptOtpFillingToolEvent::kGmailSmartFeaturesConsentRequired);
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kOtpGmailConsentRequired,
+                   /*requires_page_stabilization=*/false,
+                   "Gmail Smart Features consent is required."));
+    return;
+  }
+
+  if (consent_states->google_apps == one_time_tokens::ConsentState::kDisabled) {
+    RecordAttemptOtpFillingEvent(
+        AttemptOtpFillingToolEvent::kGoogleSmartFeaturesConsentRequired);
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kOtpGoogleConsentRequired,
+                   /*requires_page_stabilization=*/false,
+                   "Google Smart Features consent is required."));
+    return;
+  }
+
   if (gmail_otp_filling_enabled) {
     std::move(callback).Run(MakeOkResult());
     return;
@@ -168,12 +241,13 @@ void AttemptOtpFillingTool::Validate(ToolCallback callback) {
                    /*requires_page_stabilization=*/false,
                    "Gmail OTP disabled and within cool-off period for Gmail "
                    "OTP opt-in dialog."));
-  } else {
-    RecordGmailOtpOptInCardInteraction(GmailOtpOptInCardInteraction::kShowCard);
-    tool_delegate().RequestToShowGmailOtpOptInDialog(
-        base::BindOnce(&AttemptOtpFillingTool::OnGmailOtpOptInResponse,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
   }
+
+  RecordGmailOtpOptInCardInteraction(GmailOtpOptInCardInteraction::kShowCard);
+  tool_delegate().RequestToShowGmailOtpOptInDialog(
+      base::BindOnce(&AttemptOtpFillingTool::OnGmailOtpOptInResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AttemptOtpFillingTool::OnGmailOtpOptInResponse(

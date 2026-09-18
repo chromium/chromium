@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_TOOL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -23,6 +24,7 @@
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
+#include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 
 namespace actor {
 
@@ -59,6 +61,12 @@ class AttemptOtpFillingTool : public Tool {
   tabs::TabHandle GetTargetTab() const override;
 
  private:
+  void OnUserDataProcessingConsentFetched(
+      ToolCallback callback,
+      bool gmail_otp_filling_enabled,
+      bool within_cool_off_period,
+      std::optional<one_time_tokens::UserDataProcessingConsentStates>
+          consent_states);
   void OnGmailOtpOptInResponse(ToolCallback callback,
                                webui::mojom::GmailOtpOptInResultPtr response);
   void OnGmailOtpConfirmationResponse(

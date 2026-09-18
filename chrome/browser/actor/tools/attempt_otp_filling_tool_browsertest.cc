@@ -40,6 +40,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
+#include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -100,6 +101,10 @@ class MockKeyedOneTimeTokenService
                one_time_tokens::OneTimeTokenService::Callback,
                base::OnceClosure),
               (override));
+  MOCK_METHOD(void,
+              FetchUserDataProcessingConsent,
+              (FetchUserDataProcessingConsentCallback),
+              (override));
 };
 
 class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
@@ -131,6 +136,15 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
 
     ASSERT_TRUE(embedded_https_test_server().Start());
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    ON_CALL(GetMockOtpService(), FetchUserDataProcessingConsent)
+        .WillByDefault([](one_time_tokens::OneTimeTokenService::
+                              FetchUserDataProcessingConsentCallback callback) {
+          std::move(callback).Run(
+              one_time_tokens::UserDataProcessingConsentStates{
+                  .comms_apps = one_time_tokens::ConsentState::kEnabled,
+                  .google_apps = one_time_tokens::ConsentState::kEnabled});
+        });
 
     // Allow no-op calls to Subscribe for SMS from Autofill OtpManager.
     EXPECT_CALL(
@@ -653,6 +667,40 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
 
   ExpectErrorResult(result, mojom::ActionResultCode::kOtpInsecureContext);
+}
+
+// `AttemptOtpFillingTool` fails and does not retrieve an OTP when iUDP/gUDP
+// consent is disabled, even if Gmail OTP filling pref is enabled.
+IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
+                       ToolFailsWhenConsentDisabled) {
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field,
+                       GetDomNodeOnPage(*main_frame(), "#otp"));
+
+  EXPECT_CALL(GetMockOtpService(), FetchUserDataProcessingConsent)
+      .WillOnce([](one_time_tokens::OneTimeTokenService::
+                       FetchUserDataProcessingConsentCallback callback) {
+        std::move(callback).Run(
+            one_time_tokens::UserDataProcessingConsentStates{
+                .comms_apps = one_time_tokens::ConsentState::kDisabled,
+                .google_apps = one_time_tokens::ConsentState::kEnabled});
+      });
+  EXPECT_CALL(GetMockOtpService(),
+              Subscribe(one_time_tokens::OneTimeTokenSource::kGmail, _, _, _))
+      .Times(0);
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          /*for_signin=*/true);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpGmailConsentRequired);
 }
 
 // Tests verifying if the OTP filling attempt is part of an ongoing actor login

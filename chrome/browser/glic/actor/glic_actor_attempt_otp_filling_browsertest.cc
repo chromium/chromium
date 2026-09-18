@@ -30,6 +30,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/one_time_tokens/core/browser/mock_one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -87,6 +88,16 @@ class GlicActorAttemptOtpFillingBrowserTest
     EXPECT_CALL(GetMockOtpService(), GetCachedOneTimeTokens())
         .WillRepeatedly(
             []() { return std::vector<one_time_tokens::OneTimeToken>(); });
+    // Allow default calls to FetchUserDataProcessingConsent.
+    EXPECT_CALL(GetMockOtpService(), FetchUserDataProcessingConsent)
+        .WillRepeatedly(
+            [](one_time_tokens::OneTimeTokenService::
+                   FetchUserDataProcessingConsentCallback callback) {
+              std::move(callback).Run(
+                  one_time_tokens::UserDataProcessingConsentStates{
+                      .comms_apps = one_time_tokens::ConsentState::kEnabled,
+                      .google_apps = one_time_tokens::ConsentState::kEnabled});
+            });
   }
 
   void SetUpBrowserContextKeyedServices(

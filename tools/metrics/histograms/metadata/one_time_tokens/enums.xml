@@ -108,6 +108,9 @@ found in the LICENSE file.
   <int value="16" label="FillingOtpError"/>
   <int value="17" label="GmailOtpConfirmationResponseNotValid"/>
   <int value="18" label="GmailOtpConfirmationDeclinedByUser"/>
+  <int value="19" label="GmailSmartFeaturesConsentRequired"/>
+  <int value="20" label="GoogleSmartFeaturesConsentRequired"/>
+  <int value="21" label="UnableToRetrieveGmailAndGoogleSmartFeaturesConsent"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_metrics.h:AttemptOtpFillingEvent) -->

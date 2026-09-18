@@ -87,6 +87,8 @@ class ActorOneTimeTokenFillingServiceImpl
   FormFillingContextStatus ValidateFormFillingContext(
       tabs::TabHandle tab_handle,
       base::span<const FieldGlobalId> trigger_field_ids) const override;
+  void FetchUserDataProcessingConsent(
+      FetchUserDataProcessingConsentCallback callback) override;
   base::WeakPtr<ActorOneTimeTokenFillingService> GetWeakPtr() override;
 
   // content::WebContentsObserver:

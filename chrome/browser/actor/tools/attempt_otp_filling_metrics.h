@@ -39,7 +39,10 @@ enum class AttemptOtpFillingToolEvent {
   kFillingOtpError = 16,
   kGmailOtpConfirmationResponseNotValid = 17,
   kGmailOtpConfirmationDeclinedByUser = 18,
-  kMaxValue = kGmailOtpConfirmationDeclinedByUser
+  kGmailSmartFeaturesConsentRequired = 19,
+  kGoogleSmartFeaturesConsentRequired = 20,
+  kUnableToRetrieveGmailAndGoogleSmartFeaturesConsent = 21,
+  kMaxValue = kUnableToRetrieveGmailAndGoogleSmartFeaturesConsent
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:AttemptOtpFillingEvent)
 
