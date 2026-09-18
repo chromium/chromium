@@ -964,6 +964,7 @@ source_set("browser_tests") {
     "//components/favicon/content",
     "//components/optimization_guide/content/browser:test_support",
     "//components/page_content_annotations/content",
+    "//components/page_content_annotations/content:metrics",
     "//components/prefs",
     "//components/skills:features",
     "//components/skills/public",
@@ -1101,6 +1102,9 @@ source_set("browser_tests") {
   }
   if (enable_print_preview) {
     deps += [ "//chrome/browser/printing" ]
+  }
+  if (enable_pdf) {
+    deps += [ "//chrome/browser/pdf:pdf_extension_test_utils" ]
   }
 
   data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]

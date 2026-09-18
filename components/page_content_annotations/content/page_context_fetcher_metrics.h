@@ -13,6 +13,8 @@ inline constexpr char kPdfTextExtractionSizeHistogram[] =
     "Glic.PageContextFetcher.PdfTextExtraction.Size";
 inline constexpr char kPdfTextExtractionStatusHistogram[] =
     "Glic.PageContextFetcher.PdfTextExtraction.Status";
+inline constexpr char kPdfContentsRequestedHistogram[] =
+    "Glic.TabContext.PdfContentsRequested";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -37,6 +39,22 @@ enum class PdfTextExtractionStatus {
   kMaxValue = kPdfDocumentNotLoaded,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:PdfTextExtractionStatus)
+
+// Combination of tracked states for when a PDF contents request is made by
+// Glic.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+
+// LINT.IfChange(PdfRequestStates)
+enum class PdfRequestStates {
+  kPdfMainDoc_PdfFound = 0,
+  kPdfMainDoc_PdfNotFound = 1,
+  kNonPdfMainDoc_PdfFound = 2,
+  kNonPdfMainDoc_PdfNotFound = 3,
+  kMaxValue = kNonPdfMainDoc_PdfNotFound,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:PdfRequestStates)
 
 void RecordPdfTextExtractionStatus(PdfTextExtractionStatus status);
 

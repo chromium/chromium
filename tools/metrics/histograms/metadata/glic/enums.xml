@@ -1411,12 +1411,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_app_controller.ts:PanelWebUiStateErrorReason) -->
 
+<!-- LINT.IfChange(PdfRequestStates) -->
+
 <enum name="PdfRequestStates">
   <int value="0" label="PDF main doc; PDF found"/>
   <int value="1" label="PDF main doc; PDF not found"/>
   <int value="2" label="Non-PDF main doc; PDF found"/>
   <int value="3" label="Non-PDF main doc; PDF not found"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/page_content_annotations/content/page_context_fetcher_metrics.h:PdfRequestStates) -->
 
 <!-- LINT.IfChange(PdfTextExtractionStatus) -->
 

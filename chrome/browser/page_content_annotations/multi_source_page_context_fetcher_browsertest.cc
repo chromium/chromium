@@ -5,6 +5,7 @@
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/command_line.h"
@@ -16,6 +17,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -25,13 +27,17 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
+#include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -43,6 +49,11 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "components/pdf/browser/pdf_document_helper.h"
+#endif
 
 namespace page_content_annotations {
 
@@ -1598,5 +1609,270 @@ IN_PROC_BROWSER_TEST_F(HighDsfMultiSourcePageContextFetcherBrowserTest,
   EXPECT_EQ(bitmap.width(), max_width_pixels);
   EXPECT_NEAR(bitmap.height(), expected_scaled_height, 1);
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+class PdfMultiSourcePageContextFetcherBrowserTest
+    : public base::test::WithFeatureOverride,
+      public MultiSourcePageContextFetcherBrowserTest {
+ public:
+  PdfMultiSourcePageContextFetcherBrowserTest()
+      : base::test::WithFeatureOverride(kGlicEmbeddedPdfBytesExtraction) {}
+};
+
+// The embedded PDF bytes extraction support should not affect the extraction of
+// top-level document PDF.
+IN_PROC_BROWSER_TEST_P(PdfMultiSourcePageContextFetcherBrowserTest,
+                       FetchesTopLevelPdfBytes) {
+  base::HistogramTester histograms;
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL(kHostA, "/pdf/test.pdf")));
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents()));
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  FetchPageContextOptions options;
+  options.pdf_options.emplace(PdfOptions::Format::kBytes,
+                              /*size_limit=*/1024 * 1024);
+
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->pdf_result.has_value());
+  const auto* pdf_bytes =
+      std::get_if<std::vector<uint8_t>>(&result->pdf_result->data);
+  ASSERT_TRUE(pdf_bytes);
+  ASSERT_GT(pdf_bytes->size(), 0u);
+  EXPECT_FALSE(result->pdf_result->size_exceeded);
+
+  // The extraction request is on a top-level document PDF.
+  histograms.ExpectUniqueSample(kPdfContentsRequestedHistogram,
+                                PdfRequestStates::kPdfMainDoc_PdfFound, 1);
+}
+
+// When feature is enabled, embedded PDF bytes are also extracted.
+IN_PROC_BROWSER_TEST_P(PdfMultiSourcePageContextFetcherBrowserTest,
+                       FetchesEmbeddedPdfBytes) {
+  base::HistogramTester histograms;
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL(kHostA, "/iframe.html")));
+
+  // Embeds a cross-origin PDF. This is for verifying the result PDF document
+  // origin is actually the origin of the embedded PDF, instead of the top-level
+  // page origin.
+  ASSERT_TRUE(content::NavigateIframeToURL(web_contents(), /*iframe_id=*/"test",
+                                           GetURL(kHostB, "/pdf/test.pdf")));
+  content::RenderFrameHost* pdf_frame =
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(pdf_frame);
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(pdf_frame));
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  FetchPageContextOptions options;
+  options.pdf_options.emplace(PdfOptions::Format::kBytes,
+                              /*size_limit=*/1024 * 1024);
+
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+  ASSERT_TRUE(result);
+
+  if (IsParamFeatureEnabled()) {
+    ASSERT_TRUE(result->pdf_result.has_value());
+    EXPECT_EQ(result->pdf_result->origin, url::Origin::Create(GetURL(kHostB)));
+    const auto* pdf_bytes =
+        std::get_if<std::vector<uint8_t>>(&result->pdf_result->data);
+    ASSERT_TRUE(pdf_bytes);
+    ASSERT_GT(pdf_bytes->size(), 0u);
+    EXPECT_FALSE(result->pdf_result->size_exceeded);
+
+    // When feature is enabled, `PageContextFetcher` searches and extracts
+    // embedded PDF in the page.
+    histograms.ExpectUniqueSample(kPdfContentsRequestedHistogram,
+                                  PdfRequestStates::kNonPdfMainDoc_PdfFound, 1);
+  } else {
+    // When feature is disabled, the extraction is not attempted because it is
+    // restricted to top-level PDF only.
+    EXPECT_FALSE(result->pdf_result.has_value());
+
+    histograms.ExpectUniqueSample(kPdfContentsRequestedHistogram,
+                                  PdfRequestStates::kNonPdfMainDoc_PdfNotFound,
+                                  1);
+  }
+}
+
+// When there are multiple embedded PDFs, the extraction should prefer the one
+// that is in viewport.
+IN_PROC_BROWSER_TEST_P(PdfMultiSourcePageContextFetcherBrowserTest,
+                       FetchesEmbeddedPdfBytesMultipleCandidates) {
+  base::HistogramTester histograms;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURL(kHostA, "/pdf/two_embedded_pdfs.html")));
+  content::RenderFrameHost* top_pdf_frame =
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  content::RenderFrameHost* bottom_pdf_frame =
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1);
+  ASSERT_TRUE(top_pdf_frame);
+  ASSERT_TRUE(bottom_pdf_frame);
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(top_pdf_frame));
+
+  // Initially the extraction candidate should be top PDF as it is in viewport
+  // while the bottom one is out of viewport.
+  pdf::PDFDocumentHelper* top_candidate =
+      PageContextFetcher::GetPDFExtractionCandidate(*web_contents());
+  ASSERT_TRUE(top_candidate);
+  const content::GlobalRenderFrameHostId top_candidate_id =
+      top_candidate->render_frame_host().GetGlobalId();
+
+  // There is a very large space between the top PDF and the bottom PDF. When
+  // page is opened, only the top PDF is in viewport. Scroll to the bottom of
+  // the page so that the top PDF is out of viewport while the bottom PDF is in
+  // viewport.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), "window.scrollTo(0, document.body.scrollHeight);"));
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(bottom_pdf_frame));
+
+  // Wait until the window is scrolled to the bottom, so that the bottom PDF is
+  // in viewport and becomes the extraction candidate.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    pdf::PDFDocumentHelper* candidate =
+        PageContextFetcher::GetPDFExtractionCandidate(*web_contents());
+    return candidate &&
+           candidate->render_frame_host().GetGlobalId() != top_candidate_id;
+  }));
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  FetchPageContextOptions options;
+  options.pdf_options.emplace(PdfOptions::Format::kBytes,
+                              /*size_limit=*/1024 * 1024);
+
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+  ASSERT_TRUE(result);
+
+  if (IsParamFeatureEnabled()) {
+    ASSERT_TRUE(result->pdf_result.has_value());
+    const auto* pdf_bytes =
+        std::get_if<std::vector<uint8_t>>(&result->pdf_result->data);
+    ASSERT_TRUE(pdf_bytes);
+
+    // The bottom PDF is extracted because it is in viewport, which has a much
+    // smaller size: 2376 bytes than the top one: 9500 bytes.
+    ASSERT_GT(pdf_bytes->size(), 0u);
+    ASSERT_LT(pdf_bytes->size(), 3000u);
+    EXPECT_FALSE(result->pdf_result->size_exceeded);
+
+    // When feature is enabled, `PageContextFetcher` searches and extracts
+    // embedded PDF in the page.
+    histograms.ExpectUniqueSample(kPdfContentsRequestedHistogram,
+                                  PdfRequestStates::kNonPdfMainDoc_PdfFound, 1);
+  } else {
+    // When feature is disabled, the extraction is not attempted because it is
+    // restricted to top-level PDF only.
+    EXPECT_FALSE(result->pdf_result.has_value());
+
+    histograms.ExpectUniqueSample(kPdfContentsRequestedHistogram,
+                                  PdfRequestStates::kNonPdfMainDoc_PdfNotFound,
+                                  1);
+  }
+}
+
+// When there is no in-viewport embedded PDF, the out-of-viewport one should be
+// extracted.
+IN_PROC_BROWSER_TEST_P(PdfMultiSourcePageContextFetcherBrowserTest,
+                       FetchesEmbeddedPdfBytesOutOfViewportPDF) {
+  base::HistogramTester histograms;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURL(kHostA, "/pdf/out_of_viewport_embedded_pdf.html")));
+
+  // The page has an embedded PDF with a very large space on top of it, so it is
+  // out of viewport.
+  content::RenderFrameHost* pdf_frame =
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(pdf_frame);
+
+  // Since the PDF stays out-of-viewport the entire time, it never starts to
+  // load. Use `EnsurePDFHasLoadedWithOptions` to force the PDF to load, which
+  // simulates the scenario where user scrolls down so that the PDF loads, but
+  // later scrolls away so that the PDF is out-of-viewport. Such PDF should
+  // still be extracted.
+  // Note: `wait_for_hit_test_data` is set to false, otherwise
+  // `EnsurePDFHasLoadedWithOptions` will time out.
+  pdf_extension_test_util::EnsurePDFHasLoadedOptions pdf_loaded_options{
+      .wait_for_hit_test_data = false};
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoadedWithOptions(
+      pdf_frame, pdf_loaded_options));
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  FetchPageContextOptions options;
+  options.pdf_options.emplace(PdfOptions::Format::kBytes,
+                              /*size_limit=*/1024 * 1024);
+
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+  ASSERT_TRUE(result);
+
+  if (IsParamFeatureEnabled()) {
+    ASSERT_TRUE(result->pdf_result.has_value());
+    const auto* pdf_bytes =
+        std::get_if<std::vector<uint8_t>>(&result->pdf_result->data);
+    ASSERT_TRUE(pdf_bytes);
+
+    // The out-of-viewport PDF should be extracted.
+    ASSERT_GT(pdf_bytes->size(), 0u);
+    EXPECT_FALSE(result->pdf_result->size_exceeded);
+
+    // When feature is enabled, `PageContextFetcher` searches and extracts
+    // embedded PDF in the page.
+    histograms.ExpectUniqueSample(kPdfContentsRequestedHistogram,
+                                  PdfRequestStates::kNonPdfMainDoc_PdfFound, 1);
+  } else {
+    // When feature is disabled, the extraction is not attempted because it is
+    // restricted to top-level PDF only.
+    EXPECT_FALSE(result->pdf_result.has_value());
+
+    histograms.ExpectUniqueSample(kPdfContentsRequestedHistogram,
+                                  PdfRequestStates::kNonPdfMainDoc_PdfNotFound,
+                                  1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(PdfMultiSourcePageContextFetcherBrowserTest,
+                       PageWithoutPdf) {
+  base::HistogramTester histograms;
+  // This page does not contain any PDF.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL(kHostA, "/iframe.html")));
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  FetchPageContextOptions options;
+  options.pdf_options.emplace(PdfOptions::Format::kBytes,
+                              /*size_limit=*/1024 * 1024);
+
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+  ASSERT_TRUE(result);
+
+  // No extraction should take place since there is no PDF.
+  ASSERT_FALSE(result->pdf_result.has_value());
+
+  // Histogram records a sample that this is not a top-level document PDF, and
+  // there is also no embedded PDF found.
+  histograms.ExpectUniqueSample(kPdfContentsRequestedHistogram,
+                                PdfRequestStates::kNonPdfMainDoc_PdfNotFound,
+                                1);
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PdfMultiSourcePageContextFetcherBrowserTest);
+
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace page_content_annotations

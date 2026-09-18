@@ -2798,4 +2798,65 @@ INSTANTIATE_TEST_SUITE_P(
     &PageContentAnnotationsServiceContentExtractionPdfHangingTest::
         DescribeParams);
 
+class PageContentAnnotationsServiceContentExtractionEmbeddedPdfTest
+    : public PageContentAnnotationsServiceContentExtractionPdfTest {
+ public:
+  PageContentAnnotationsServiceContentExtractionEmbeddedPdfTest() = default;
+  ~PageContentAnnotationsServiceContentExtractionEmbeddedPdfTest() override =
+      default;
+
+  void InitializeFeatureList() override {
+    PageContentAnnotationsServiceContentExtractionPdfTest::
+        InitializeFeatureList();
+    embedded_pdf_bytes_extraction_.InitAndEnableFeature(
+        kGlicEmbeddedPdfBytesExtraction);
+  }
+
+ private:
+  base::test::ScopedFeatureList embedded_pdf_bytes_extraction_;
+};
+
+// Feature `kGlicEmbeddedPdfBytesExtraction` does not affect PDF text
+// extraction. PDF text extraction is still restricted to top-level PDF only,
+// even if the feature is enabled.
+IN_PROC_BROWSER_TEST_P(
+    PageContentAnnotationsServiceContentExtractionEmbeddedPdfTest,
+    PDFTextExtractionDoesNotSupportEmbeddedPDF) {
+  base::HistogramTester histogram_tester;
+
+  // Set up the observer for page content extraction.
+  FakeExtractionServiceObserver observer;
+  auto* service = PageContentExtractionServiceFactory::GetForProfile(
+      browser()->GetProfile());
+  observer.Observe(service);
+
+  // Navigate to a page that embeds a PDF.
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("/pdf/two_embedded_pdfs.html"),
+      /*number_of_navigations=*/1);
+
+  // Text extraction does not support embedded PDF. The PDF text extraction is
+  // never attempted. The request for PDF text is not created because the page
+  // fails the MIME type being `application/pdf` check. Instead, a request for
+  // `AnnotatedPageContent` is made.
+  observer.Wait();
+  const PageContent& page_content = observer.page_content_future_.Get();
+  RefCountedAnnotatedPageContentPtr annotated_page_content_ptr =
+      GetAnnotatedPageContentPtrFromPageContent(page_content);
+  ASSERT_TRUE(annotated_page_content_ptr);
+
+  histogram_tester.ExpectUniqueSample(
+      kPageContentExtractionRequestTypeHistogram,
+      ExtractionRequestType::kAnnotatedPageContent, 1);
+  histogram_tester.ExpectTotalCount(kPdfTextExtractionStatusHistogram, 0);
+  histogram_tester.ExpectTotalCount(kPdfTextExtractionLatencyHistogram, 0);
+  histogram_tester.ExpectTotalCount(kPdfTextExtractionSizeHistogram, 0);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageContentAnnotationsServiceContentExtractionEmbeddedPdfTest,
+    ::testing::Combine(::testing::Bool(), ::testing::Bool()),
+    &PageContentAnnotationsServiceContentExtractionPdfTest::DescribeParams);
+
 }  // namespace page_content_annotations

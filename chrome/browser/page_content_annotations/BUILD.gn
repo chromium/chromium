@@ -250,12 +250,19 @@ if (is_android) {
       "//content/test:browsertest_support",
       "//content/test:test_support",
       "//net:test_support",
+      "//pdf:buildflags",
       "//skia",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/blink/public/common",
       "//ui/gfx/codec",
     ]
+    if (enable_pdf) {
+      deps += [
+        "//chrome/browser/pdf:pdf_extension_test_utils",
+        "//components/pdf/browser",
+      ]
+    }
   }
 }
 

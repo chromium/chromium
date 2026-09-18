@@ -494,22 +494,18 @@ class ApiTests extends ApiTestFixtureBase {
     });
   }
 
-  async testGetContextFromFocusedTabWithPdfFile() {
+  async testGetContextFromFocusedTabWithTopLevelPdf() {
     assertDefined(this.host.getContextFromFocusedTab);
     await this.host.setTabContextPermissionState(true);
 
-    // Pdf pages have two loads: one of the WebContents, and another of the
-    // element within an iframe that contains the actual pdf. We need to wait
-    // for both to be finished before running the test. The cpp side waits for
-    // the WebContents to be loaded, but we must still wait here.
-    const result: TabContextResult = await runUntil(async () => {
-      const result = await this.host.getContextFromFocusedTab!({pdfData: true});
-      if (!result || !result.pdfDocumentData ||
-          !result.pdfDocumentData.pdfData) {
-        return undefined;
-      }
-      return result;
-    });
+    // The C++ part of this browser test already ensures the PDF has been loaded
+    // by `pdf_extension_test_util::EnsurePDFHasLoaded`.
+    const result = await this.host.getContextFromFocusedTab({pdfData: true});
+    assertDefined(result);
+    assertDefined(result.pdfDocumentData);
+    assertDefined(result.pdfDocumentData.pdfData);
+    assertEquals(
+        result.pdfDocumentData.origin, new URL(result.tabData.url).origin);
 
     assertEquals(
         new URL(result.tabData.url).pathname, '/pdf/test.pdf',
@@ -525,6 +521,85 @@ class ApiTests extends ApiTestFixtureBase {
         `PDF data is too short. length=${pdfData.byteLength}`);
     assertEquals('%PDF', new TextDecoder().decode(pdfData.slice(0, 4)));
     assertFalse(result.pdfDocumentData!.pdfSizeLimitExceeded);
+  }
+
+  async testGetContextFromFocusedTabWithEmbeddedPdf() {
+    assertDefined(this.host.getContextFromFocusedTab);
+    assertDefined(this.host.getHostCapabilities);
+    await this.host.setTabContextPermissionState(true);
+
+    const embeddedPdfExtractionSupported = this.host.getHostCapabilities().has(
+        HostCapability.EMBEDDED_PDF_BYTES_EXTRACTION);
+    const result = await this.host.getContextFromFocusedTab(
+        {pdfData: embeddedPdfExtractionSupported});
+
+    if (embeddedPdfExtractionSupported) {
+      // Embedded PDF bytes extraction should only be requested if the host has
+      // the capability.
+      // The C++ part of this browser test already ensures the PDF has been
+      // loaded by `pdf_extension_test_util::EnsurePDFHasLoaded`.
+      assertDefined(result);
+      assertDefined(result.pdfDocumentData);
+      assertDefined(result.pdfDocumentData.pdfData);
+      assertEquals(
+          result.pdfDocumentData.origin, this.testParams.expectedPdfOrigin);
+
+      assertEquals(
+          new URL(result.tabData.url).pathname, '/iframe.html',
+          `Tab data has unexpected url ${result.tabData.url}`);
+
+      // Original PDF size is 7984 bytes, because Chrome reserializes the PDF,
+      // the size can change, but it shouldn't be too small.
+      const pdfData: Uint8Array =
+          await readStream(result.pdfDocumentData!.pdfData!);
+      assertTrue(
+          pdfData.byteLength > 5000,
+          `PDF data is too short. length=${pdfData.byteLength}`);
+      assertEquals('%PDF', new TextDecoder().decode(pdfData.slice(0, 4)));
+      assertFalse(result.pdfDocumentData!.pdfSizeLimitExceeded);
+    } else {
+      // The host does not support embedded PDF bytes extraction, the context
+      // request should not request PDF data.
+      assertDefined(result);
+      assertEquals(
+          new URL(result.tabData.url).pathname, '/iframe.html',
+          `Tab data has unexpected url ${result.tabData.url}`);
+      assertUndefined(result.pdfDocumentData);
+    }
+  }
+
+  async testGetContextFromFocusedTabWithEmbeddedPdfFeatureDisabled() {
+    assertDefined(this.host.getContextFromFocusedTab);
+    assertDefined(this.host.getHostCapabilities);
+    await this.host.setTabContextPermissionState(true);
+
+    const result = await this.host.getContextFromFocusedTab({pdfData: true});
+
+    // The host does not support embedded PDF bytes extraction, the context
+    // request should not request PDF data.
+    assertDefined(result);
+    assertEquals(
+        new URL(result.tabData.url).pathname, '/iframe.html',
+        `Tab data has unexpected url ${result.tabData.url}`);
+    assertUndefined(result.pdfDocumentData);
+  }
+
+  async testGetContextFromFocusedTabWithoutPdf() {
+    assertDefined(this.host.getContextFromFocusedTab);
+    assertDefined(this.host.getHostCapabilities);
+    await this.host.setTabContextPermissionState(true);
+
+    const embeddedPdfExtractionSupported = this.host.getHostCapabilities().has(
+        HostCapability.EMBEDDED_PDF_BYTES_EXTRACTION);
+
+    const result = await this.host.getContextFromFocusedTab({
+      pdfData: embeddedPdfExtractionSupported,
+    });
+    assertDefined(result);
+    assertEquals(
+        new URL(result.tabData.url).pathname, '/iframe.html',
+        `Tab data has unexpected url ${result.tabData.url}`);
+    assertUndefined(result.pdfDocumentData);
   }
 
   async testGetContextFromFocusedTabWithUnFocusablePage() {

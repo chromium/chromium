@@ -38,6 +38,10 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "pdf/mojom/pdf.mojom.h"
+
+namespace pdf {
+class PDFDocumentHelper;
+}
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace content {
@@ -209,6 +213,8 @@ class PageContextFetcher : public content::WebContentsObserver {
                            AddIframeInfoNoUrlOrigin);
   FRIEND_TEST_ALL_PREFIXES(PageContextFetcherIframeInfoTest,
                            NoIframeInfoWhenFeatureDisabled);
+  FRIEND_TEST_ALL_PREFIXES(PdfMultiSourcePageContextFetcherBrowserTest,
+                           FetchesEmbeddedPdfBytesMultipleCandidates);
 
   // Redacts a screenshot by painting over sensitive regions with
   // `redaction_color`.
@@ -218,6 +224,11 @@ class PageContextFetcher : public content::WebContentsObserver {
       SkColor4f redaction_color);
 
 #if BUILDFLAG(ENABLE_PDF)
+  // Finds the `PDFDocumentHelper` of the PDF extraction candidate in
+  // `WebContents`.
+  static pdf::PDFDocumentHelper* GetPDFExtractionCandidate(
+      content::WebContents& contents);
+
   void FetchPdfContent(const PdfOptions& options);
   void ReceivedPdfBytes(url::Origin pdf_origin,
                         uint32_t pdf_size_limit,

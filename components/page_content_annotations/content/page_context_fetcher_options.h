@@ -117,7 +117,14 @@ class ScreenshotOptions {
 class PdfOptions {
  public:
   enum class Format {
+    // Bytes extraction is supported on:
+    // - Top-level document PDF rendered in Chrome PDF viewer.
+    // - Embedded PDF rendered in Chrome PDF viewer, if feature
+    // `kGlicEmbeddedPdfBytesExtraction` is enabled.
     kBytes,
+
+    // Text extraction is supported on top-level document PDF rendered in Chrome
+    // PDF viewer.
     kText,
   };
 
