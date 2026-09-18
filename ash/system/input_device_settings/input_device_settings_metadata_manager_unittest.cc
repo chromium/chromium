@@ -19,10 +19,7 @@ namespace ash {
 
 namespace {
 
-const std::string test_device_key = "0000:0001";
-
-const AccountId account_1 =
-    AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("123"));
+constexpr char test_device_key[] = "0000:0001";
 
 }  // namespace
 
@@ -47,6 +44,9 @@ class InputDeviceSettingsMetadataManagerTest : public AshTestBase {
   }
 
  protected:
+  const AccountId account_1 =
+      AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("123"));
+
   std::unique_ptr<InputDeviceSettingsMetadataManager> manager_;
   TestImageDownloader image_downloader_;
 

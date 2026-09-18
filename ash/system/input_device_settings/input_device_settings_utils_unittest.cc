@@ -25,58 +25,7 @@ namespace ash {
 namespace {
 
 constexpr char kTestPrefKey[] = "test_key";
-const AccountId account_id = AccountId::FromUserEmail("example@email.com");
 
-const mojom::ButtonRemapping button_remapping1(
-    /*name=*/"test1",
-    /*button=*/
-    mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
-    /*remapping_action=*/
-    mojom::RemappingAction::NewAcceleratorAction(
-        ash::AcceleratorAction::kBrightnessDown));
-const mojom::ButtonRemapping button_remapping2(
-    /*name=*/"test2",
-    /*button=*/
-    mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kLeft),
-    /*remapping_action=*/
-    mojom::RemappingAction::NewKeyEvent(
-        mojom::KeyEvent::New(::ui::KeyboardCode::VKEY_0,
-                             1,
-                             2,
-                             3,
-                             /*key_display=*/"0")));
-const mojom::ButtonRemapping button_remapping3(
-    /*name=*/"test3",
-    /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_1),
-    /*remapping_action=*/
-    mojom::RemappingAction::NewKeyEvent(
-        mojom::KeyEvent::New(::ui::KeyboardCode::VKEY_2,
-                             4,
-                             5,
-                             6,
-                             /*key_display=*/"2")));
-const mojom::ButtonRemapping button_remapping4(
-    /*name=*/"test4",
-    /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_3),
-    /*remapping_action=*/nullptr);
-const mojom::ButtonRemapping button_remapping5(
-    /*name=*/"test5",
-    /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_3),
-    /*remapping_action=*/
-    mojom::RemappingAction::NewStaticShortcutAction(
-        mojom::StaticShortcutAction::kCopy));
-const mojom::ButtonRemapping button_remapping6(
-    /*name=*/"test6",
-    /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_A),
-    /*remapping_action=*/
-    mojom::RemappingAction::NewStaticShortcutAction(
-        mojom::StaticShortcutAction::kCopy));
-const mojom::ButtonRemapping button_remapping7(
-    /*name=*/"test7",
-    /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_LEFT),
-    /*remapping_action=*/
-    mojom::RemappingAction::NewStaticShortcutAction(
-        mojom::StaticShortcutAction::kCopy));
 }  // namespace
 
 class DeviceKeyTest : public testing::TestWithParam<
@@ -104,6 +53,7 @@ TEST_P(DeviceKeyTest, BuildDeviceKey) {
 }
 
 TEST(GetLoginScreenSettingsDictTest, RetrieveSettingsDict) {
+  const AccountId account_id = AccountId::FromUserEmail("example@email.com");
   auto local_state = std::make_unique<TestingPrefServiceSimple>();
   user_manager::KnownUser::RegisterPrefs(local_state->registry());
   user_manager::KnownUser known_user(local_state.get());
@@ -118,6 +68,7 @@ TEST(GetLoginScreenSettingsDictTest, RetrieveSettingsDict) {
 }
 
 TEST(GetLoginScreenButtonRemappingListTest, RetrieveButtonRemappingList) {
+  const AccountId account_id = AccountId::FromUserEmail("example@email.com");
   auto local_state = std::make_unique<TestingPrefServiceSimple>();
   user_manager::KnownUser::RegisterPrefs(local_state->registry());
   user_manager::KnownUser known_user(local_state.get());
@@ -133,7 +84,59 @@ TEST(GetLoginScreenButtonRemappingListTest, RetrieveButtonRemappingList) {
   EXPECT_NE(nullptr, valid_button_remapping_list);
 }
 
-class ButtonRemappingConversionTest : public AshTestBase {};
+class ButtonRemappingConversionTest : public AshTestBase {
+ protected:
+  const mojom::ButtonRemapping button_remapping1{
+      /*name=*/"test1",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
+      /*remapping_action=*/
+      mojom::RemappingAction::NewAcceleratorAction(
+          ash::AcceleratorAction::kBrightnessDown)};
+  const mojom::ButtonRemapping button_remapping2{
+      /*name=*/"test2",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kLeft),
+      /*remapping_action=*/
+      mojom::RemappingAction::NewKeyEvent(
+          mojom::KeyEvent::New(::ui::KeyboardCode::VKEY_0,
+                               1,
+                               2,
+                               3,
+                               /*key_display=*/"0"))};
+  const mojom::ButtonRemapping button_remapping3{
+      /*name=*/"test3",
+      /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_1),
+      /*remapping_action=*/
+      mojom::RemappingAction::NewKeyEvent(
+          mojom::KeyEvent::New(::ui::KeyboardCode::VKEY_2,
+                               4,
+                               5,
+                               6,
+                               /*key_display=*/"2"))};
+  const mojom::ButtonRemapping button_remapping4{
+      /*name=*/"test4",
+      /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_3),
+      /*remapping_action=*/nullptr};
+  const mojom::ButtonRemapping button_remapping5{
+      /*name=*/"test5",
+      /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_3),
+      /*remapping_action=*/
+      mojom::RemappingAction::NewStaticShortcutAction(
+          mojom::StaticShortcutAction::kCopy)};
+  const mojom::ButtonRemapping button_remapping6{
+      /*name=*/"test6",
+      /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_A),
+      /*remapping_action=*/
+      mojom::RemappingAction::NewStaticShortcutAction(
+          mojom::StaticShortcutAction::kCopy)};
+  const mojom::ButtonRemapping button_remapping7{
+      /*name=*/"test7",
+      /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_LEFT),
+      /*remapping_action=*/
+      mojom::RemappingAction::NewStaticShortcutAction(
+          mojom::StaticShortcutAction::kCopy)};
+};
 
 TEST_F(ButtonRemappingConversionTest, ConvertButtonRemappingToDict) {
   const base::DictValue dict1 = ConvertButtonRemappingToDict(

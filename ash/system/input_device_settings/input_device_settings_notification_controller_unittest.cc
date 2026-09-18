@@ -38,30 +38,6 @@ constexpr char kTopRowKeyNoMatchNudgeId[] = "top-row-key-no-match-nudge-id";
 constexpr char kSixPackKeyNoMatchNudgeId[] = "six-patch-key-no-match-nudge-id";
 constexpr char kCapsLockNoMatchNudgeId[] = "caps-lock-no-match-nudge-id";
 
-const mojom::Mouse kMouse1 = mojom::Mouse(
-    /*name=*/"Razer Basilisk V3",
-    /*is_external=*/true,
-    /*id=*/1,
-    /*device_key=*/"fake-device-key1",
-    /*customization_restriction=*/
-    mojom::CustomizationRestriction::kAllowCustomizations,
-    /*mouse_button_config=*/mojom::MouseButtonConfig::kNoConfig,
-    mojom::MouseSettings::New(),
-    mojom::BatteryInfo::New(),
-    mojom::CompanionAppInfo::New());
-
-const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(
-    /*name=*/"Wacom Intuos S",
-    /*id=*/2,
-    /*device_key=*/"fake-device-key2",
-    /*customization_restriction=*/
-    ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
-    /*graphics_tablet_button_config=*/
-    mojom::GraphicsTabletButtonConfig::kNoConfig,
-    mojom::GraphicsTabletSettings::New(),
-    mojom::BatteryInfo::New(),
-    mojom::CompanionAppInfo::New());
-
 int GetPrefNotificationCount(const char* pref_name) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
@@ -180,6 +156,31 @@ class InputDeviceSettingsNotificationControllerTest : public AshTestBase {
     message_center_.reset();
     AshTestBase::TearDown();
   }
+
+ protected:
+  const mojom::Mouse kMouse1 = mojom::Mouse(
+      /*name=*/"Razer Basilisk V3",
+      /*is_external=*/true,
+      /*id=*/1,
+      /*device_key=*/"fake-device-key1",
+      /*customization_restriction=*/
+      mojom::CustomizationRestriction::kAllowCustomizations,
+      /*mouse_button_config=*/mojom::MouseButtonConfig::kNoConfig,
+      mojom::MouseSettings::New(),
+      mojom::BatteryInfo::New(),
+      mojom::CompanionAppInfo::New());
+
+  const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(
+      /*name=*/"Wacom Intuos S",
+      /*id=*/2,
+      /*device_key=*/"fake-device-key2",
+      /*customization_restriction=*/
+      ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
+      /*graphics_tablet_button_config=*/
+      mojom::GraphicsTabletButtonConfig::kNoConfig,
+      mojom::GraphicsTabletSettings::New(),
+      mojom::BatteryInfo::New(),
+      mojom::CompanionAppInfo::New());
 
  private:
   MockNewWindowDelegate new_window_delegate_;

@@ -28,35 +28,48 @@ using DeviceId = InputDeviceSettingsController::DeviceId;
 
 namespace {
 
-const char kUserEmail[] = "example@email.com";
+constexpr char kUserEmail[] = "example@email.com";
+constexpr char kBluetoothDeviceName[] = "Bluetooth Device";
+constexpr char kBluetoothDevicePublicAddress[] = "01:23:45:67:89:AB";
 
-const char kBluetoothDeviceName[] = "Bluetooth Device";
-const char kBluetoothDevicePublicAddress[] = "01:23:45:67:89:AB";
+ui::KeyboardDevice CreateSampleKeyboardInternal() {
+  return {5, ui::INPUT_DEVICE_INTERNAL, "kSampleKeyboardInternal"};
+}
 
-const ui::KeyboardDevice kSampleKeyboardInternal = {
-    5, ui::INPUT_DEVICE_INTERNAL, "kSampleKeyboardInternal"};
-const ui::KeyboardDevice kSampleKeyboardBluetooth = {
-    10, ui::INPUT_DEVICE_BLUETOOTH, "kSampleKeyboardBluetooth"};
-const ui::KeyboardDevice kSampleKeyboardUsb = {15, ui::INPUT_DEVICE_USB,
-                                               "kSampleKeyboardUsb"};
-const ui::KeyboardDevice kSampleKeyboardUsb2 = {16, ui::INPUT_DEVICE_USB,
-                                                "kSampleKeyboardUsb2"};
-const ui::KeyboardDevice kLogitechMXKeysKeyboard = {
-    20,
-    ui::INPUT_DEVICE_BLUETOOTH,
-    "Logitech MX Keys",
-    /*phys=*/"",
-    /*sys_path=*/base::FilePath(),
-    /*vendor=*/0x046d,
-    /*product=*/0xb35b,
-    /*version=*/0x0};
+ui::KeyboardDevice CreateSampleKeyboardBluetooth() {
+  return {10, ui::INPUT_DEVICE_BLUETOOTH, "kSampleKeyboardBluetooth"};
+}
 
-const ui::InputDevice kSampleMouseUsb = {20, ui::INPUT_DEVICE_USB,
-                                         "kSampleMouseUsb"};
-const ui::InputDevice kSampleMouseBluetooth = {25, ui::INPUT_DEVICE_BLUETOOTH,
-                                               "kSampleMouseBluetooth"};
-const ui::InputDevice kSampleMouseInternal = {30, ui::INPUT_DEVICE_INTERNAL,
-                                              "kSampleMouseInternal"};
+ui::KeyboardDevice CreateSampleKeyboardUsb() {
+  return {15, ui::INPUT_DEVICE_USB, "kSampleKeyboardUsb"};
+}
+
+ui::KeyboardDevice CreateSampleKeyboardUsb2() {
+  return {16, ui::INPUT_DEVICE_USB, "kSampleKeyboardUsb2"};
+}
+
+ui::KeyboardDevice CreateLogitechMXKeysKeyboard() {
+  return {20,
+          ui::INPUT_DEVICE_BLUETOOTH,
+          "Logitech MX Keys",
+          /*phys=*/"",
+          /*sys_path=*/base::FilePath(),
+          /*vendor=*/0x046d,
+          /*product=*/0xb35b,
+          /*version=*/0x0};
+}
+
+ui::InputDevice CreateSampleMouseUsb() {
+  return {20, ui::INPUT_DEVICE_USB, "kSampleMouseUsb"};
+}
+
+ui::InputDevice CreateSampleMouseBluetooth() {
+  return {25, ui::INPUT_DEVICE_BLUETOOTH, "kSampleMouseBluetooth"};
+}
+
+ui::InputDevice CreateSampleMouseInternal() {
+  return {30, ui::INPUT_DEVICE_INTERNAL, "kSampleMouseInternal"};
+}
 
 template <typename Comp = std::ranges::less>
 void SortDevices(std::vector<ui::KeyboardDevice>& devices, Comp comp = {}) {
@@ -134,6 +147,15 @@ class InputDeviceStateNotifierTest : public AshTestBase {
   }
 
  protected:
+  const ui::KeyboardDevice kSampleKeyboardInternal =
+      CreateSampleKeyboardInternal();
+  const ui::KeyboardDevice kSampleKeyboardBluetooth =
+      CreateSampleKeyboardBluetooth();
+  const ui::KeyboardDevice kSampleKeyboardUsb = CreateSampleKeyboardUsb();
+  const ui::KeyboardDevice kSampleKeyboardUsb2 = CreateSampleKeyboardUsb2();
+  const ui::KeyboardDevice kLogitechMXKeysKeyboard =
+      CreateLogitechMXKeysKeyboard();
+
   std::unique_ptr<InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>>
       notifier_;
   base::flat_map<DeviceId, mojom::KeyboardPtr> keyboards_;
@@ -341,6 +363,15 @@ class InputDeviceStateLoginScreenNotifierTest : public NoSessionAshTestBase {
   }
 
  protected:
+  const ui::KeyboardDevice kSampleKeyboardInternal =
+      CreateSampleKeyboardInternal();
+  const ui::KeyboardDevice kSampleKeyboardBluetooth =
+      CreateSampleKeyboardBluetooth();
+  const ui::KeyboardDevice kSampleKeyboardUsb = CreateSampleKeyboardUsb();
+  const ui::KeyboardDevice kSampleKeyboardUsb2 = CreateSampleKeyboardUsb2();
+  const ui::KeyboardDevice kLogitechMXKeysKeyboard =
+      CreateLogitechMXKeysKeyboard();
+
   std::unique_ptr<InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>>
       notifier_;
   base::flat_map<DeviceId, mojom::KeyboardPtr> keyboards_;
@@ -504,59 +535,54 @@ INSTANTIATE_TEST_SUITE_P(
         // Empty at start and add 3 devices.
         InputDeviceNotifierParamaterizedTestData(
             {},
-            {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
-             kSampleKeyboardUsb},
-            {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
-             kSampleKeyboardUsb},
+            {CreateSampleKeyboardInternal(), CreateSampleKeyboardBluetooth(),
+             CreateSampleKeyboardUsb()},
+            {CreateSampleKeyboardInternal(), CreateSampleKeyboardBluetooth(),
+             CreateSampleKeyboardUsb()},
             {}),
 
         // 3 devices at start and all are removed.
         InputDeviceNotifierParamaterizedTestData(
-            {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
-             kSampleKeyboardUsb},
-            {},
-            {},
-            {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
-             kSampleKeyboardUsb}),
+            {CreateSampleKeyboardInternal(), CreateSampleKeyboardBluetooth(),
+             CreateSampleKeyboardUsb()},
+            {}, {},
+            {CreateSampleKeyboardInternal(), CreateSampleKeyboardBluetooth(),
+             CreateSampleKeyboardUsb()}),
 
         // 3 devices at start and none are removed.
         InputDeviceNotifierParamaterizedTestData(
-            {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
-             kSampleKeyboardUsb},
-            {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
-             kSampleKeyboardUsb},
-            {},
-            {}),
+            {CreateSampleKeyboardInternal(), CreateSampleKeyboardBluetooth(),
+             CreateSampleKeyboardUsb()},
+            {CreateSampleKeyboardInternal(), CreateSampleKeyboardBluetooth(),
+             CreateSampleKeyboardUsb()},
+            {}, {}),
 
         // 2 devices at start and middle id device is added.
         InputDeviceNotifierParamaterizedTestData(
-            {kSampleKeyboardInternal, kSampleKeyboardUsb},
-            {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
-             kSampleKeyboardUsb},
-            {kSampleKeyboardBluetooth},
-            {}),
+            {CreateSampleKeyboardInternal(), CreateSampleKeyboardUsb()},
+            {CreateSampleKeyboardInternal(), CreateSampleKeyboardBluetooth(),
+             CreateSampleKeyboardUsb()},
+            {CreateSampleKeyboardBluetooth()}, {}),
 
         // 1 device at start which is removed when another is added.
-        InputDeviceNotifierParamaterizedTestData({kSampleKeyboardInternal},
-                                                 {kSampleKeyboardBluetooth},
-                                                 {kSampleKeyboardBluetooth},
-                                                 {kSampleKeyboardInternal}),
+        InputDeviceNotifierParamaterizedTestData(
+            {CreateSampleKeyboardInternal()}, {CreateSampleKeyboardBluetooth()},
+            {CreateSampleKeyboardBluetooth()},
+            {CreateSampleKeyboardInternal()}),
 
         // 2 devices at start and a low id device is added.
         InputDeviceNotifierParamaterizedTestData(
-            {kSampleKeyboardBluetooth, kSampleKeyboardUsb},
-            {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
-             kSampleKeyboardUsb},
-            {kSampleKeyboardInternal},
-            {}),
+            {CreateSampleKeyboardBluetooth(), CreateSampleKeyboardUsb()},
+            {CreateSampleKeyboardInternal(), CreateSampleKeyboardBluetooth(),
+             CreateSampleKeyboardUsb()},
+            {CreateSampleKeyboardInternal()}, {}),
 
         // 2 devices at start and a high id device is added.
         InputDeviceNotifierParamaterizedTestData(
-            {kSampleKeyboardInternal, kSampleKeyboardBluetooth},
-            {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
-             kSampleKeyboardUsb},
-            {kSampleKeyboardUsb},
-            {})));
+            {CreateSampleKeyboardInternal(), CreateSampleKeyboardBluetooth()},
+            {CreateSampleKeyboardInternal(), CreateSampleKeyboardBluetooth(),
+             CreateSampleKeyboardUsb()},
+            {CreateSampleKeyboardUsb()}, {})));
 
 TEST_P(InputDeviceNotifierParamaterizedTest,
        OnInputDeviceConfigurationChanged) {
@@ -612,6 +638,10 @@ class InputDeviceMouseNotifierTest : public AshTestBase {
   }
 
  protected:
+  const ui::InputDevice kSampleMouseUsb = CreateSampleMouseUsb();
+  const ui::InputDevice kSampleMouseBluetooth = CreateSampleMouseBluetooth();
+  const ui::InputDevice kSampleMouseInternal = CreateSampleMouseInternal();
+
   InputDeviceNotifierParamaterizedTestData test_data_;
   std::unique_ptr<InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>>
       notifier_;
