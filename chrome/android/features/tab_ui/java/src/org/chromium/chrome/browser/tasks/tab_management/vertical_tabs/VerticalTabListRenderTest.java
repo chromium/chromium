@@ -53,8 +53,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
-import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
@@ -304,11 +302,9 @@ public class VerticalTabListRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     view[0] = inflateAndAttachView(R.layout.vertical_tab_item);
-                    UiTabState uiTabState =
-                            new UiTabState(0, null, null, TabIndicatorStatus.DYNAMIC, false);
                     PropertyModel model =
                             createTabListItemModelBuilder("AI Tab", /* groupId= */ null)
-                                    .with(TabProperties.ACTOR_UI_STATE, uiTabState)
+                                    .with(TabProperties.ALERT_STATE, TabAlert.ACTOR_ACCESSING)
                                     .with(
                                             TabProperties.TAB_ACTION_BUTTON_DATA,
                                             new TabActionButtonData(
@@ -331,11 +327,9 @@ public class VerticalTabListRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     view[0] = inflateAndAttachView(R.layout.vertical_tab_item);
-                    UiTabState uiTabState =
-                            new UiTabState(0, null, null, TabIndicatorStatus.STATIC, false);
                     PropertyModel model =
                             createTabListItemModelBuilder("AI Tab", /* groupId= */ null)
-                                    .with(TabProperties.ACTOR_UI_STATE, uiTabState)
+                                    .with(TabProperties.ALERT_STATE, TabAlert.ACTOR_WAITING_ON_USER)
                                     .with(
                                             TabProperties.TAB_ACTION_BUTTON_DATA,
                                             new TabActionButtonData(
@@ -409,12 +403,10 @@ public class VerticalTabListRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     view[0] = inflateAndAttachView(R.layout.vertical_tab_item);
-                    UiTabState uiTabState =
-                            new UiTabState(0, null, null, TabIndicatorStatus.DYNAMIC, false);
                     PropertyModel model =
                             createTabListItemModelBuilder(
                                             "Child AI Tab", /* groupId= */ Token.createRandom())
-                                    .with(TabProperties.ACTOR_UI_STATE, uiTabState)
+                                    .with(TabProperties.ALERT_STATE, TabAlert.ACTOR_ACCESSING)
                                     .with(
                                             TabProperties.TAB_ACTION_BUTTON_DATA,
                                             new TabActionButtonData(
@@ -437,12 +429,10 @@ public class VerticalTabListRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     view[0] = inflateAndAttachView(R.layout.vertical_tab_item);
-                    UiTabState uiTabState =
-                            new UiTabState(0, null, null, TabIndicatorStatus.DYNAMIC, false);
                     PropertyModel model =
                             createTabListItemModelBuilder("Active AI Tab", /* groupId= */ null)
                                     .with(TabProperties.IS_SELECTED, true)
-                                    .with(TabProperties.ACTOR_UI_STATE, uiTabState)
+                                    .with(TabProperties.ALERT_STATE, TabAlert.ACTOR_ACCESSING)
                                     .with(
                                             TabProperties.TAB_ACTION_BUTTON_DATA,
                                             new TabActionButtonData(
@@ -465,12 +455,10 @@ public class VerticalTabListRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     view[0] = inflateAndAttachView(R.layout.vertical_tab_item);
-                    UiTabState uiTabState =
-                            new UiTabState(0, null, null, TabIndicatorStatus.STATIC, false);
                     PropertyModel model =
                             createTabListItemModelBuilder("Active AI Tab", /* groupId= */ null)
                                     .with(TabProperties.IS_SELECTED, true)
-                                    .with(TabProperties.ACTOR_UI_STATE, uiTabState)
+                                    .with(TabProperties.ALERT_STATE, TabAlert.ACTOR_WAITING_ON_USER)
                                     .with(
                                             TabProperties.TAB_ACTION_BUTTON_DATA,
                                             new TabActionButtonData(
@@ -520,13 +508,10 @@ public class VerticalTabListRenderTest {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         view[0] = inflateAndAttachView(R.layout.vertical_tab_item);
-                        UiTabState uiTabState =
-                                new UiTabState(0, null, null, TabIndicatorStatus.DYNAMIC, false);
                         PropertyModel model =
                                 createTabListItemModelBuilder("AI Media Tab", /* groupId= */ null)
                                         .with(TabProperties.IS_GLIC_ACTIVE, true)
-                                        .with(TabProperties.ACTOR_UI_STATE, uiTabState)
-                                        .with(TabProperties.ALERT_STATE, TabAlert.AUDIO_PLAYING)
+                                        .with(TabProperties.ALERT_STATE, TabAlert.ACTOR_ACCESSING)
                                         .with(
                                                 TabProperties.TAB_ACTION_BUTTON_DATA,
                                                 new TabActionButtonData(

@@ -70,6 +70,11 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
+    boolean supportsActorTabAlerts() {
+        return true;
+    }
+
+    @Override
     @TabAlert
     int getAlertState(Tab representativeTab, PropertyModel model) {
         if (TabProperties.isTabGroupHeader(model)) return TabAlert.NONE;

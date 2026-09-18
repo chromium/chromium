@@ -49,19 +49,6 @@ found in the LICENSE file.
         app:indicatorSize="@dimen/vertical_tab_item_icon_size"
         app:trackThickness="@dimen/vertical_tab_item_loading_spinner_thickness" />
 
-    <!-- Actuation Indicator (Cursor Spark). -->
-    <ImageView
-        android:id="@+id/actuation_spark"
-        android:layout_width="@dimen/vertical_tab_item_actuation_icon_size"
-        android:layout_height="@dimen/vertical_tab_item_actuation_icon_size"
-        android:layout_gravity="center"
-        android:scaleType="fitCenter"
-        android:padding="@dimen/vertical_tab_item_actuation_icon_padding"
-        android:src="@drawable/ic_arrow_selector_spark_24dp"
-        android:visibility="gone"
-        android:importantForAccessibility="no"
-        app:tint="@macro/default_icon_color_accent1" />
-
     <!-- Actuation Spinner (Ring Overlay). -->
     <ImageView
         android:id="@+id/actuation_spinner"
@@ -79,6 +66,7 @@ found in the LICENSE file.
         android:layout_width="@dimen/vertical_tab_item_icon_size"
         android:layout_height="@dimen/vertical_tab_item_icon_size"
         android:layout_gravity="center"
+        android:scaleType="fitCenter"
         android:visibility="gone"
         android:importantForAccessibility="no" />
 </FrameLayout>

@@ -70,7 +70,7 @@ found in the LICENSE file.
         app:layout_constrainedWidth="true"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/favicon_container"
-        app:layout_constraintEnd_toStartOf="@id/actuation_spark"
+        app:layout_constraintEnd_toStartOf="@id/alert_indicator_icon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginStart="@dimen/vertical_tab_item_favicon_margin_end"
@@ -80,31 +80,15 @@ found in the LICENSE file.
         android:ellipsize="end"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
-    <!-- Actuation Indicator (Cursor Spark) -->
-    <ImageView
-        android:id="@+id/actuation_spark"
-        android:layout_width="@dimen/vertical_tab_item_actuation_icon_size"
-        android:layout_height="@dimen/vertical_tab_item_actuation_icon_size"
-        android:scaleType="fitCenter"
-        android:padding="@dimen/vertical_tab_item_actuation_icon_padding"
-        app:layout_constraintEnd_toStartOf="@id/alert_indicator_icon"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginEnd="@dimen/vertical_tab_item_alert_indicator_margin_end"
-        android:src="@drawable/ic_arrow_selector_spark_24dp"
-        app:tint="@macro/default_icon_color_accent1"
-        android:visibility="gone"
-        android:importantForAccessibility="no" />
-
     <!-- Actuation Spinner (Ring Overlay) -->
     <ImageView
         android:id="@+id/actuation_spinner"
         android:layout_width="@dimen/vertical_tab_item_actuation_icon_size"
         android:layout_height="@dimen/vertical_tab_item_actuation_icon_size"
-        app:layout_constraintStart_toStartOf="@id/actuation_spark"
-        app:layout_constraintEnd_toEndOf="@id/actuation_spark"
-        app:layout_constraintTop_toTopOf="@id/actuation_spark"
-        app:layout_constraintBottom_toBottomOf="@id/actuation_spark"
+        app:layout_constraintStart_toStartOf="@id/alert_indicator_icon"
+        app:layout_constraintEnd_toEndOf="@id/alert_indicator_icon"
+        app:layout_constraintTop_toTopOf="@id/alert_indicator_icon"
+        app:layout_constraintBottom_toBottomOf="@id/alert_indicator_icon"
         android:src="@drawable/tab_indicator_spinner"
         app:tint="@macro/default_icon_color_accent1"
         android:visibility="gone"
@@ -115,6 +99,7 @@ found in the LICENSE file.
         android:id="@+id/alert_indicator_icon"
         android:layout_width="@dimen/vertical_tab_item_icon_size"
         android:layout_height="@dimen/vertical_tab_item_icon_size"
+        android:scaleType="fitCenter"
         app:layout_constraintEnd_toStartOf="@id/action_button"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

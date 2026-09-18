@@ -80,6 +80,11 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
      */
     abstract boolean isChildTabRepresentedByGroupCard(Tab tab);
 
+    /** Whether this layout displays Actor tab alert indicators on the tab item. */
+    boolean supportsActorTabAlerts() {
+        return false;
+    }
+
     /**
      * Resolves the visual alert state indicator (e.g. playing audio) for a tab card or group
      * header.
@@ -94,6 +99,13 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
         if (alertState == TabAlert.GLIC_ACCESSING || alertState == TabAlert.GLIC_SHARING) {
             // Glic accessing and sharing states use dedicated tab underlines on the vertical tab
             // strip and are not shown in the grid tab switcher.
+            return TabAlert.NONE;
+        }
+        if (!supportsActorTabAlerts()
+                && (alertState == TabAlert.ACTOR_ACCESSING
+                        || alertState == TabAlert.ACTOR_WAITING_ON_USER)) {
+            // In the grid tab switcher, Actor states use dedicated thumbnail overlays via
+            // TabProperties.ACTOR_UI_STATE rather than card header alert icons.
             return TabAlert.NONE;
         }
         return alertState;

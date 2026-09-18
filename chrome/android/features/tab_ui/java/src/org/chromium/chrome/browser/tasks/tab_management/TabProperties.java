@@ -349,7 +349,6 @@ public class TabProperties {
                 // go/keep-sorted start
                 ACCESSIBILITY_DELEGATE,
                 ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER,
-                ACTOR_UI_STATE,
                 ALERT_STATE,
                 CARD_TYPE,
                 CONTENT_DESCRIPTION_TEXT_RESOLVER,
