@@ -1481,16 +1481,13 @@ export class OmniboxPopupSearchboxElement extends
     // (selectedMatchIndex > 0 or non-default match/action highlighted),
     // restores typed query and resets match selection to index 0. Dropdown
     // stays open and focus stays in Omnibox.
-    const defaultMatchSelection = {
-      line: 0,
-      state: SelectionLineState.kNormal,
-      actionIndex: 0,
-    };
-    const hasTemporaryText = this.virtualFocusEnabled ?
-        !selectionsEqual(this.selection, defaultMatchSelection) :
-        this.selectedMatchIndex > 0 ||
-            (dropdown && dropdown.selection &&
-             dropdown.selection.state !== SelectionLineState.kNormal);
+    const selectedLine = this.virtualFocusEnabled ? this.selection.line :
+                                                    this.selectedMatchIndex;
+    const selectedState = this.virtualFocusEnabled ?
+        this.selection.state :
+        (dropdown?.selection?.state ?? SelectionLineState.kNormal);
+    const hasTemporaryText =
+        selectedLine > 0 || selectedState !== SelectionLineState.kNormal;
     if (this.dropdownIsVisible && hasTemporaryText) {
       dropdown.selectFirst();
       this.selectedMatchIndex = 0;
