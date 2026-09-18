@@ -65,8 +65,10 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
+// Flaky: https://crbug.com/543295316
 AX_TEST_F(
-    'ChromeVoxLiveRegionsTest', 'LiveRegionChangeAtomic', async function() {
+    'ChromeVoxLiveRegionsTest', 'DISABLED_LiveRegionChangeAtomic',
+    async function() {
       LiveRegions.LIVE_REGION_QUEUE_TIME_MS = 0;
       const mockFeedback = this.createMockFeedback();
       const rootNode = await this.runWithLoadedTree(`
