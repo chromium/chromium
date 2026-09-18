@@ -422,6 +422,63 @@ TEST_F(ActiveTabTest, CapturingFeedbackDisallowed) {
 #endif
 }
 
+TEST_F(ActiveTabTest, ChromeSchemeNavigationsClearActiveTab) {
+  auto expect_has_active_tab = [this](bool expected, const GURL& url) {
+    SCOPED_TRACE(testing::Message()
+                 << "url: " << url << ", expected: " << expected);
+    EXPECT_EQ(expected, IsGrantedForTab(extension.get(), web_contents()));
+    EXPECT_EQ(expected, extension->permissions_data()->CanCaptureVisiblePage(
+                            url, tab_id(), nullptr,
+                            CaptureRequirement::kActiveTabOrAllUrls));
+  };
+
+  const GURL kVersionUrl("chrome://version");
+  NavigateAndCommit(kVersionUrl);
+
+  // Grant activeTab on chrome://version.
+  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  expect_has_active_tab(true, kVersionUrl);
+
+  // Same-document navigations on chrome://version (such as hash changes or
+  // SPA pushState transitions) should NOT clear activeTab.
+  const GURL kVersionWithRef("chrome://version/#foo");
+  auto hash_sim = content::NavigationSimulator::CreateRendererInitiated(
+      kVersionWithRef, web_contents()->GetPrimaryMainFrame());
+  hash_sim->CommitSameDocument();
+  EXPECT_EQ(kVersionWithRef, web_contents()->GetLastCommittedURL());
+  expect_has_active_tab(true, kVersionWithRef);
+
+  const GURL kVersionSubpage("chrome://version/subpage");
+  auto push_state_sim = content::NavigationSimulator::CreateRendererInitiated(
+      kVersionSubpage, web_contents()->GetPrimaryMainFrame());
+  push_state_sim->CommitSameDocument();
+  EXPECT_EQ(kVersionSubpage, web_contents()->GetLastCommittedURL());
+  expect_has_active_tab(true, kVersionSubpage);
+
+  // A non-same-document navigation on the same origin (such as a reload)
+  // should clear activeTab on chrome-scheme pages.
+  content::NavigationSimulator::Reload(web_contents());
+  expect_has_active_tab(false, web_contents()->GetLastCommittedURL());
+
+  // Re-grant activeTab and test a same-origin non-same-document navigation to a
+  // different query/path on a chrome-scheme page.
+  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  expect_has_active_tab(true, web_contents()->GetLastCommittedURL());
+
+  const GURL kVersionWithQuery("chrome://version/?foo");
+  NavigateAndCommit(kVersionWithQuery);
+  expect_has_active_tab(false, kVersionWithQuery);
+
+  // Re-grant activeTab and test a cross-host navigation between different
+  // chrome-scheme pages (e.g. chrome://version to chrome://newtab).
+  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  expect_has_active_tab(true, web_contents()->GetLastCommittedURL());
+
+  const GURL kNewTabUrl("chrome://newtab");
+  NavigateAndCommit(kNewTabUrl);
+  expect_has_active_tab(false, kNewTabUrl);
+}
+
 TEST_F(ActiveTabTest, Unloading) {
   // Some semi-arbitrary setup.
   GURL google("http://www.google.com");

@@ -17,6 +17,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/network_permissions_updater.h"
@@ -260,8 +261,23 @@ void ActiveTabPermissionGranter::DidFinishNavigation(
     return;
   }
 
-  // Only clear the granted permissions for cross-origin navigations.
-  if (navigation_handle->IsSameOrigin()) {
+  // ActiveTab permissions persist across same-origin navigations on standard
+  // web origins, allowing extensions to continue operating across page loads on
+  // the same site. We treat chrome-scheme pages differently from most web pages
+  // because chrome:// URLs represent internal browser surfaces and sensitive
+  // settings rather than a single unified web site. ActiveTab grants on
+  // chrome-scheme pages are intended to be ephemeral and scoped to the user's
+  // explicit invocation on that specific page view (e.g. to take a screenshot).
+  // Different paths or states within chrome:// can expose vastly different
+  // capabilities, and persisting activeTab across navigations would allow
+  // extensions to carry permissions into other internal surfaces.
+  // Therefore, clear activeTab for any non-same-document navigation on a
+  // chrome-scheme page, even if it is same-origin.
+  content::RenderFrameHost* render_frame_host =
+      navigation_handle->GetRenderFrameHost();
+  if (navigation_handle->IsSameOrigin() && render_frame_host &&
+      render_frame_host->GetLastCommittedOrigin().scheme() !=
+          content::kChromeUIScheme) {
     return;
   }
 
