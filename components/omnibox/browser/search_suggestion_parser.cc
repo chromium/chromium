@@ -632,7 +632,6 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
   }
   DCHECK(!match_contents_.empty());
   ClassifyMatchContents(true, input_text);
-  ClassifyAnnotation();
 }
 
 SearchSuggestionParser::SuggestResult::SuggestResult(
@@ -699,9 +698,15 @@ void SearchSuggestionParser::SuggestResult::ClassifyMatchContents(
       ClassifyAllMatchesInString(input_text, match_contents_, true);
 }
 
-void SearchSuggestionParser::SuggestResult::ClassifyAnnotation() {
+ACMatchClassifications
+SearchSuggestionParser::SuggestResult::ClassifyAnnotation() const {
+  if (annotation_.empty()) {
+    return {};
+  }
+
   // Only use the server-provided `suggest_template_info` formatting if the
   // template's secondary text is non-empty, has fragments, and matches
+  // `annotation_`. Otherwise the fragment indices would not apply to
   // `annotation_`.
   if (SuggestTemplateInfoHasSecondaryText(suggest_template_info_) &&
       suggest_template_info_->secondary_text().fragments_size() > 0 &&
@@ -710,16 +715,12 @@ void SearchSuggestionParser::SuggestResult::ClassifyAnnotation() {
     auto classifications = ClassifyFormattedString(
         suggest_template_info_->secondary_text(), ACMatchClassification::DIM);
     if (!classifications.empty()) {
-      annotation_class_ = std::move(classifications);
-      return;
+      return classifications;
     }
   }
 
-  if (!annotation_.empty()) {
-    annotation_class_ = {ACMatchClassification(0, ACMatchClassification::DIM)};
-  } else {
-    annotation_class_.clear();
-  }
+  // The fallback for annotations is dimmed text.
+  return {ACMatchClassification(0, ACMatchClassification::DIM)};
 }
 
 void SearchSuggestionParser::SuggestResult::SetRichAnswerTemplate(
@@ -730,7 +731,6 @@ void SearchSuggestionParser::SuggestResult::SetRichAnswerTemplate(
 void SearchSuggestionParser::SuggestResult::SetSuggestTemplateInfo(
     const omnibox::SuggestTemplateInfo& suggest_template_info) {
   suggest_template_info_ = suggest_template_info;
-  ClassifyAnnotation();
 }
 
 void SearchSuggestionParser::SuggestResult::SetMatchContents(
@@ -741,7 +741,6 @@ void SearchSuggestionParser::SuggestResult::SetMatchContents(
 void SearchSuggestionParser::SuggestResult::SetAnnotation(
     const std::u16string& annotation) {
   annotation_ = annotation;
-  ClassifyAnnotation();
 }
 
 int SearchSuggestionParser::SuggestResult::CalculateRelevance(
