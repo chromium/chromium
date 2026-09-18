@@ -72,8 +72,9 @@ CBOR_EXPORT BASE_DECLARE_FEATURE(kUseRustCborParser);
 // unconditionally use rust types once Cronet supports Crubit dependencies.
 #if BUILDFLAG(USE_CBOR_RUST)
 namespace rust {
+struct MapKey;
 struct Value;
-}
+}  // namespace rust
 #endif
 
 class CBOR_EXPORT Reader {
@@ -225,6 +226,8 @@ class CBOR_EXPORT Reader {
   DecoderError GetErrorCode() { return error_code_; }
 
 #if BUILDFLAG(USE_CBOR_RUST)
+  // Members of `Reader` to access the private `INVALID_UTF8` `Value` ctor.
+  static Value ConvertRustMapKeyToCpp(const cbor::rust::MapKey& rust_key);
   static Value ConvertRustValueToCpp(const cbor::rust::Value& rust_val);
 #endif
 

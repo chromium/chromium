@@ -115,21 +115,6 @@ const char kOutOfRangeIntegerValue[] =
 const char kMapKeyDuplicate[] = "Duplicate map keys are not allowed.";
 const char kUnknownError[] = "An unknown error occured.";
 
-#if BUILDFLAG(USE_CBOR_RUST)
-
-Value ConvertRustMapKeyToCpp(const cbor::rust::MapKey& rust_key) {
-  switch (rust_key.kind().tag) {
-    case cbor::rust::MapKeyKind::Tag::Int:
-      return Value(*rust_key.as_int());
-    case cbor::rust::MapKeyKind::Tag::String:
-      return Value(rust_key.as_string()->to_string_view(), Value::Type::STRING);
-    case cbor::rust::MapKeyKind::Tag::Bytestring:
-      return Value(rust_key.as_bytestring()->to_span());
-  }
-  NOTREACHED();
-}
-#endif
-
 class [[nodiscard]] ScopedMetricsReporter {
  public:
   ScopedMetricsReporter(size_t payload_size,
@@ -199,6 +184,25 @@ Reader::Reader(base::span<const uint8_t> data)
 Reader::~Reader() = default;
 
 #if BUILDFLAG(USE_CBOR_RUST)
+// static
+Value Reader::ConvertRustMapKeyToCpp(const cbor::rust::MapKey& rust_key) {
+  switch (rust_key.kind().tag) {
+    case cbor::rust::MapKeyKind::Tag::Int:
+      return Value(*rust_key.as_int());
+    case cbor::rust::MapKeyKind::Tag::String:
+      return Value(rust_key.as_string()->to_string_view(), Value::Type::STRING);
+    case cbor::rust::MapKeyKind::Tag::Bytestring:
+      return Value(rust_key.as_bytestring()->to_span());
+    case cbor::rust::MapKeyKind::Tag::InvalidUtf8:
+      // Unreachable when parsing (`allow_invalid_utf8` does not apply to map
+      // keys); exists so `Writer` can encode test-only `INVALID_UTF8` keys.
+      return Value(rust_key.as_invalid_utf8()->to_span(),
+                   Value::Type::INVALID_UTF8);
+  }
+  NOTREACHED();
+}
+
+// static
 Value Reader::ConvertRustValueToCpp(const cbor::rust::Value& rust_val) {
   switch (rust_val.kind().tag) {
     case cbor::rust::ValueKind::Tag::Int:

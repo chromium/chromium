@@ -9,6 +9,8 @@
 #include <string>
 #include <string_view>
 
+#include "base/numerics/safe_conversions.h"
+#include "components/cbor/cbor_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,7 +18,25 @@
    https://github.com/cbor/test-vectors/blob/master/appendix_a.json. */
 namespace cbor {
 
-TEST(CBORWriterTest, TestWriteUint) {
+class CBORWriterTest : public testing::TestWithParam<bool> {
+ protected:
+  std::optional<std::vector<uint8_t>> DoWrite(
+      const Value& node,
+      size_t max_nesting_level = Writer::kDefaultMaxNestingDepth) {
+    Writer::Config config;
+    config.max_nesting_level = base::checked_cast<int>(max_nesting_level);
+    config.use_rust = GetParam();
+    return Writer::Write(node, config);
+  }
+
+  std::optional<std::vector<uint8_t>> DoWrite(const Value& node,
+                                              Writer::Config config) {
+    config.use_rust = GetParam();
+    return Writer::Write(node, config);
+  }
+};
+
+TEST_P(CBORWriterTest, TestWriteUint) {
   struct UintTestCase {
     const int64_t value;
     const std::string_view cbor;
@@ -41,13 +61,13 @@ TEST(CBORWriterTest, TestWriteUint) {
        std::string_view("\x1b\x7f\xff\xff\xff\xff\xff\xff\xff")}};
 
   for (const UintTestCase& test_case : kUintTestCases) {
-    auto cbor = Writer::Write(Value(test_case.value));
+    auto cbor = DoWrite(Value(test_case.value));
     ASSERT_TRUE(cbor.has_value());
     EXPECT_THAT(cbor.value(), testing::ElementsAreArray(test_case.cbor));
   }
 }
 
-TEST(CBORWriterTest, TestWriteNegativeInteger) {
+TEST_P(CBORWriterTest, TestWriteNegativeInteger) {
   static const struct {
     const int64_t negative_int;
     const std::string_view cbor;
@@ -70,13 +90,13 @@ TEST(CBORWriterTest, TestWriteNegativeInteger) {
     SCOPED_TRACE(testing::Message() << "testing  negative int at index: "
                                     << test_case.negative_int);
 
-    auto cbor = Writer::Write(Value(test_case.negative_int));
+    auto cbor = DoWrite(Value(test_case.negative_int));
     ASSERT_TRUE(cbor.has_value());
     EXPECT_THAT(cbor.value(), testing::ElementsAreArray(test_case.cbor));
   }
 }
 
-TEST(CBORWriterTest, TestWriteBytes) {
+TEST_P(CBORWriterTest, TestWriteBytes) {
   struct BytesTestCase {
     const std::vector<uint8_t> bytes;
     const std::string_view cbor;
@@ -88,13 +108,13 @@ TEST(CBORWriterTest, TestWriteBytes) {
   };
 
   for (const BytesTestCase& test_case : kBytesTestCases) {
-    auto cbor = Writer::Write(Value(test_case.bytes));
+    auto cbor = DoWrite(Value(test_case.bytes));
     ASSERT_TRUE(cbor.has_value());
     EXPECT_THAT(cbor.value(), testing::ElementsAreArray(test_case.cbor));
   }
 }
 
-TEST(CBORWriterTest, TestWriteString) {
+TEST_P(CBORWriterTest, TestWriteString) {
   struct StringTestCase {
     const std::string string;
     const std::string_view cbor;
@@ -113,13 +133,13 @@ TEST(CBORWriterTest, TestWriteString) {
     SCOPED_TRACE(testing::Message()
                  << "testing encoding string : " << test_case.string);
 
-    auto cbor = Writer::Write(Value(test_case.string));
+    auto cbor = DoWrite(Value(test_case.string));
     ASSERT_TRUE(cbor.has_value());
     EXPECT_THAT(cbor.value(), testing::ElementsAreArray(test_case.cbor));
   }
 }
 
-TEST(CBORWriterTest, TestWriteArray) {
+TEST_P(CBORWriterTest, TestWriteArray) {
   static const uint8_t kArrayTestCaseCbor[] = {
       // clang-format off
       0x98, 0x19,  // array of 25 elements
@@ -132,14 +152,14 @@ TEST(CBORWriterTest, TestWriteArray) {
   for (int64_t i = 1; i <= 25; i++) {
     array.push_back(Value(i));
   }
-  auto cbor = Writer::Write(Value(array));
+  auto cbor = DoWrite(Value(array));
   ASSERT_TRUE(cbor.has_value());
   EXPECT_THAT(cbor.value(),
               testing::ElementsAreArray(kArrayTestCaseCbor,
                                         std::size(kArrayTestCaseCbor)));
 }
 
-TEST(CBORWriterTest, TestWriteMap) {
+TEST_P(CBORWriterTest, TestWriteMap) {
   static const uint8_t kMapTestCaseCbor[] = {
       // clang-format off
       0xb8, 0x19, // map of 25 pairs:
@@ -257,13 +277,13 @@ TEST(CBORWriterTest, TestWriteMap) {
   map[Value(int64_t(std::numeric_limits<uint32_t>::max()))] = Value("h");
   map[Value(int64_t(4294967296))] = Value("i");
   map[Value(std::numeric_limits<int64_t>::max())] = Value("j");
-  auto cbor = Writer::Write(Value(map));
+  auto cbor = DoWrite(Value(map));
   ASSERT_TRUE(cbor.has_value());
   EXPECT_THAT(cbor.value(), testing::ElementsAreArray(
                                 kMapTestCaseCbor, std::size(kMapTestCaseCbor)));
 }
 
-TEST(CBORWriterTest, TestWriteMapWithArray) {
+TEST_P(CBORWriterTest, TestWriteMapWithArray) {
   static const uint8_t kMapArrayTestCaseCbor[] = {
       // clang-format off
       0xa2,  // map of 2 pairs
@@ -282,14 +302,14 @@ TEST(CBORWriterTest, TestWriteMapWithArray) {
   array.push_back(Value(2));
   array.push_back(Value(3));
   map[Value("b")] = Value(array);
-  auto cbor = Writer::Write(Value(map));
+  auto cbor = DoWrite(Value(map));
   ASSERT_TRUE(cbor.has_value());
   EXPECT_THAT(cbor.value(),
               testing::ElementsAreArray(kMapArrayTestCaseCbor,
                                         std::size(kMapArrayTestCaseCbor)));
 }
 
-TEST(CBORWriterTest, TestWriteNestedMap) {
+TEST_P(CBORWriterTest, TestWriteNestedMap) {
   static const uint8_t kNestedMapTestCase[] = {
       // clang-format off
       0xa2,  // map of 2 pairs
@@ -311,14 +331,14 @@ TEST(CBORWriterTest, TestWriteNestedMap) {
   nested_map[Value("c")] = Value(2);
   nested_map[Value("d")] = Value(3);
   map[Value("b")] = Value(nested_map);
-  auto cbor = Writer::Write(Value(map));
+  auto cbor = DoWrite(Value(map));
   ASSERT_TRUE(cbor.has_value());
   EXPECT_THAT(cbor.value(),
               testing::ElementsAreArray(kNestedMapTestCase,
                                         std::size(kNestedMapTestCase)));
 }
 
-TEST(CBORWriterTest, TestSignedExchangeExample) {
+TEST_P(CBORWriterTest, TestSignedExchangeExample) {
   // Example adopted from:
   // https://wicg.github.io/webpackage/draft-yasskin-http-origin-signed-responses.html
   static const uint8_t kSignedExchangeExample[] = {
@@ -358,14 +378,14 @@ TEST(CBORWriterTest, TestSignedExchangeExample) {
   map[Value("z")] = Value(4);
   map[Value("aa")] = Value(5);
 
-  auto cbor = Writer::Write(Value(map));
+  auto cbor = DoWrite(Value(map));
   ASSERT_TRUE(cbor.has_value());
   EXPECT_THAT(cbor.value(),
               testing::ElementsAreArray(kSignedExchangeExample,
                                         std::size(kSignedExchangeExample)));
 }
 
-TEST(CBORWriterTest, TestWriteSimpleValue) {
+TEST_P(CBORWriterTest, TestWriteSimpleValue) {
   static const struct {
     Value::SimpleValue simple_value;
     const std::string_view cbor;
@@ -376,31 +396,35 @@ TEST(CBORWriterTest, TestWriteSimpleValue) {
       {Value::SimpleValue::UNDEFINED, std::string_view("\xf7")}};
 
   for (const auto& test_case : kSimpleTestCase) {
-    auto cbor = Writer::Write(Value(test_case.simple_value));
+    auto cbor = DoWrite(Value(test_case.simple_value));
     ASSERT_TRUE(cbor.has_value());
     EXPECT_THAT(cbor.value(), testing::ElementsAreArray(test_case.cbor));
   }
 }
 
-TEST(CBORWriterTest, TestWriteNoneFails) {
-  EXPECT_FALSE(Writer::Write(Value()).has_value());
+TEST_P(CBORWriterTest, TestWriteNoneFails) {
+  EXPECT_FALSE(DoWrite(Value()).has_value());
 
   Value::ArrayValue array;
   array.emplace_back(1);
   array.emplace_back();
-  EXPECT_FALSE(Writer::Write(Value(std::move(array))).has_value());
+  EXPECT_FALSE(DoWrite(Value(std::move(array))).has_value());
 
   Value::MapValue map;
   map[Value(1)] = Value();
-  EXPECT_FALSE(Writer::Write(Value(std::move(map))).has_value());
+  EXPECT_FALSE(DoWrite(Value(std::move(map))).has_value());
+
+  Value::MapValue map_with_none_key;
+  map_with_none_key.emplace(Value(), Value(1));
+  EXPECT_FALSE(DoWrite(Value(std::move(map_with_none_key))).has_value());
 }
 
-TEST(CBORWriterTest, TestWriteInvalidUtf8) {
+TEST_P(CBORWriterTest, TestWriteInvalidUtf8) {
   Writer::Config config;
   config.allow_invalid_utf8_for_testing = true;
 
   Value invalid_str = Value::InvalidUTF8StringValueForTesting("\xff\xfe");
-  auto cbor = Writer::Write(invalid_str, config);
+  auto cbor = DoWrite(invalid_str, config);
   ASSERT_TRUE(cbor.has_value());
   EXPECT_THAT(cbor.value(),
               testing::ElementsAreArray(std::string_view("\x62\xff\xfe")));
@@ -415,7 +439,7 @@ TEST(CBORWriterTest, TestWriteInvalidUtf8) {
       Value::InvalidUTF8StringValueForTesting("\xfe");
   map[Value("a")] = Value(2);
   map[Value(1)] = Value("int_key");
-  auto map_cbor = Writer::Write(Value(map), config);
+  auto map_cbor = DoWrite(Value(map), config);
   ASSERT_TRUE(map_cbor.has_value());
   static const uint8_t kExpectedMapCbor[] = {
       0xa6,                                       // map of 6 pairs
@@ -440,7 +464,7 @@ TEST(CBORWriterTest, TestWriteInvalidUtf8) {
 // For major type 0, 2, 3, empty CBOR array, and empty CBOR map, the nesting
 // depth is expected to be 0 since the CBOR decoder does not need to parse
 // any nested CBOR value elements.
-TEST(CBORWriterTest, TestWriteSingleLayer) {
+TEST_P(CBORWriterTest, TestWriteSingleLayer) {
   const Value simple_uint = Value(1);
   const Value simple_string = Value("a");
   const std::vector<uint8_t> byte_data = {0x01, 0x02, 0x03, 0x04};
@@ -456,33 +480,33 @@ TEST(CBORWriterTest, TestWriteSingleLayer) {
   const Value single_layer_cbor_map = Value(simple_map);
   const Value single_layer_cbor_array = Value(simple_array);
 
-  EXPECT_TRUE(Writer::Write(simple_uint, 0).has_value());
-  EXPECT_TRUE(Writer::Write(simple_string, 0).has_value());
-  EXPECT_TRUE(Writer::Write(simple_bytestring, 0).has_value());
+  EXPECT_TRUE(DoWrite(simple_uint, 0).has_value());
+  EXPECT_TRUE(DoWrite(simple_string, 0).has_value());
+  EXPECT_TRUE(DoWrite(simple_bytestring, 0).has_value());
 
-  EXPECT_TRUE(Writer::Write(empty_array_value, 0).has_value());
-  EXPECT_TRUE(Writer::Write(empty_map_value, 0).has_value());
+  EXPECT_TRUE(DoWrite(empty_array_value, 0).has_value());
+  EXPECT_TRUE(DoWrite(empty_map_value, 0).has_value());
 
-  EXPECT_FALSE(Writer::Write(single_layer_cbor_array, 0).has_value());
-  EXPECT_TRUE(Writer::Write(single_layer_cbor_array, 1).has_value());
+  EXPECT_FALSE(DoWrite(single_layer_cbor_array, 0).has_value());
+  EXPECT_TRUE(DoWrite(single_layer_cbor_array, 1).has_value());
 
-  EXPECT_FALSE(Writer::Write(single_layer_cbor_map, 0).has_value());
-  EXPECT_TRUE(Writer::Write(single_layer_cbor_map, 1).has_value());
+  EXPECT_FALSE(DoWrite(single_layer_cbor_map, 0).has_value());
+  EXPECT_TRUE(DoWrite(single_layer_cbor_map, 1).has_value());
 }
 
 // Major type 5 nested CBOR map value with following structure.
 //     {"a": 1,
 //      "b": {"c": 2,
 //            "d": 3}}
-TEST(CBORWriterTest, NestedMaps) {
+TEST_P(CBORWriterTest, NestedMaps) {
   Value::MapValue cbor_map;
   cbor_map[Value("a")] = Value(1);
   Value::MapValue nested_map;
   nested_map[Value("c")] = Value(2);
   nested_map[Value("d")] = Value(3);
   cbor_map[Value("b")] = Value(nested_map);
-  EXPECT_TRUE(Writer::Write(Value(cbor_map), 2).has_value());
-  EXPECT_FALSE(Writer::Write(Value(cbor_map), 1).has_value());
+  EXPECT_TRUE(DoWrite(Value(cbor_map), 2).has_value());
+  EXPECT_FALSE(DoWrite(Value(cbor_map), 1).has_value());
 }
 
 // Testing Write() function for following CBOR structure with depth of 3.
@@ -492,7 +516,7 @@ TEST(CBORWriterTest, NestedMaps) {
 //      {"a": 1,
 //       "b": {"c": 2,
 //             "d": 3}}]
-TEST(CBORWriterTest, UnbalancedNestedContainers) {
+TEST_P(CBORWriterTest, UnbalancedNestedContainers) {
   Value::ArrayValue cbor_array;
   Value::MapValue cbor_map;
   Value::MapValue nested_map;
@@ -506,8 +530,8 @@ TEST(CBORWriterTest, UnbalancedNestedContainers) {
   cbor_array.push_back(Value(3));
   cbor_array.push_back(Value(cbor_map));
 
-  EXPECT_TRUE(Writer::Write(Value(cbor_array), 3).has_value());
-  EXPECT_FALSE(Writer::Write(Value(cbor_array), 2).has_value());
+  EXPECT_TRUE(DoWrite(Value(cbor_array), 3).has_value());
+  EXPECT_FALSE(DoWrite(Value(cbor_array), 2).has_value());
 }
 
 // Testing Write() function for following CBOR structure.
@@ -519,7 +543,7 @@ TEST(CBORWriterTest, UnbalancedNestedContainers) {
 //                   "g": [6, 7, [8]]}}}
 // Since above CBOR contains 5 nesting levels. Thus, Write() is expected to
 // return empty optional object when maximum nesting layer size is set to 4.
-TEST(CBORWriterTest, OverlyNestedCBOR) {
+TEST_P(CBORWriterTest, OverlyNestedCBOR) {
   Value::MapValue map;
   Value::MapValue nested_map;
   Value::MapValue inner_nested_map;
@@ -539,8 +563,19 @@ TEST(CBORWriterTest, OverlyNestedCBOR) {
   nested_map[Value("h")] = Value(inner_nested_map);
   map[Value("b")] = Value(nested_map);
 
-  EXPECT_TRUE(Writer::Write(Value(map), 5).has_value());
-  EXPECT_FALSE(Writer::Write(Value(map), 4).has_value());
+  EXPECT_TRUE(DoWrite(Value(map), 5).has_value());
+  EXPECT_FALSE(DoWrite(Value(map), 4).has_value());
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CBORWriterTest,
+#if BUILDFLAG(USE_CBOR_RUST)
+                         testing::Bool(),
+#else
+                         testing::Values(false),
+#endif
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Rust" : "Cpp";
+                         });
 
 }  // namespace cbor

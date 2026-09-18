@@ -11,6 +11,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/cbor/cbor_export.h"
 #include "components/cbor/values.h"
@@ -53,6 +54,8 @@
 
 namespace cbor {
 
+CBOR_EXPORT BASE_DECLARE_FEATURE(kUseRustCborWriter);
+
 class CBOR_EXPORT Writer {
  public:
   // Default that should be sufficiently large for most use cases.
@@ -70,6 +73,10 @@ class CBOR_EXPORT Writer {
     // Writers with this setting will produce invalid CBOR, so it may only be
     // enabled in tests.
     bool allow_invalid_utf8_for_testing = false;
+
+    // Selects the CBOR writer to use. When unset, follows `kUseRustCborWriter`.
+    // Setting this to true requires BUILDFLAG(USE_CBOR_RUST).
+    std::optional<bool> use_rust;
   };
 
   Writer(const Writer&) = delete;
