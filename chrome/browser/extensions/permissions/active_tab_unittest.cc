@@ -9,6 +9,8 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -32,7 +34,9 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/network_permissions_updater.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
@@ -71,6 +75,29 @@ enum PermittedFeature {
   PERMITTED_SCRIPT_ONLY,
   PERMITTED_CAPTURE_ONLY,
   PERMITTED_BOTH
+};
+
+class TestPermissionsManagerObserver : public PermissionsManager::Observer {
+ public:
+  explicit TestPermissionsManagerObserver(PermissionsManager* manager) {
+    observation_.Observe(manager);
+  }
+  TestPermissionsManagerObserver(const TestPermissionsManagerObserver&) =
+      delete;
+  TestPermissionsManagerObserver& operator=(
+      const TestPermissionsManagerObserver&) = delete;
+  ~TestPermissionsManagerObserver() override = default;
+
+  void OnActiveTabPermissionGranted(const Extension& extension) override {
+    active_tab_granted_count_++;
+  }
+
+  int active_tab_granted_count() const { return active_tab_granted_count_; }
+
+ private:
+  int active_tab_granted_count_ = 0;
+  base::ScopedObservation<PermissionsManager, PermissionsManager::Observer>
+      observation_{this};
 };
 
 class ActiveTabTest : public ChromeRenderViewHostTestHarness {
@@ -112,6 +139,19 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
 
   ActiveTabPermissionGranter* active_tab_permission_granter() {
     return ActiveTabPermissionGranter::FromWebContents(web_contents());
+  }
+
+  // Waits for any in-flight CORS origin access updates and their completion
+  // callbacks (like NotifyGranted) to complete. Because updates on the network
+  // service pipe are processed in FIFO order, queuing an update and waiting
+  // for its completion guarantees that all preceding updates have finished.
+  void WaitForPendingCorsUpdates(const Extension& target_extension) {
+    base::test::TestFuture<void> future;
+    NetworkPermissionsUpdater::UpdateExtension(
+        *profile(), target_extension,
+        NetworkPermissionsUpdater::ContextSet::kAllRelatedContexts,
+        future.GetCallback());
+    EXPECT_TRUE(future.Wait());
   }
 
   bool IsAllowed(const scoped_refptr<const Extension>& extension_refptr,
@@ -565,6 +605,91 @@ TEST_F(ActiveTabWithServiceTest, FileURLs) {
   EXPECT_TRUE(extension->permissions_data()->CanCaptureVisiblePage(
       web_contents->GetLastCommittedURL(), tab_id, nullptr,
       CaptureRequirement::kActiveTabOrAllUrls));
+}
+
+// Tests that if active tab permission is revoked (e.g. by navigating to a
+// different origin) before the network service round-trip completes, no
+// notification is sent to observers.
+TEST_F(ActiveTabTest, NoNotificationAfterGrantRevoked) {
+  TestPermissionsManagerObserver observer(PermissionsManager::Get(profile()));
+
+  GURL google("http://www.google.com");
+  NavigateAndCommit(google);
+
+  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  EXPECT_TRUE(active_tab_permission_granter()->IsGranted(extension.get()));
+  EXPECT_EQ(0, observer.active_tab_granted_count());
+
+  // Navigating to a new origin revokes the active tab grant before the
+  // network service round-trip finishes.
+  GURL chromium("http://www.chromium.org");
+  NavigateAndCommit(chromium);
+  EXPECT_FALSE(active_tab_permission_granter()->IsGranted(extension.get()));
+  EXPECT_EQ(0, observer.active_tab_granted_count());
+
+  // Wait for in-flight round-trips to complete.
+  WaitForPendingCorsUpdates(*extension);
+
+  // The notification should not be dispatched since the grant was revoked.
+  EXPECT_EQ(0, observer.active_tab_granted_count());
+  EXPECT_TRUE(IsBlocked(extension, google));
+  EXPECT_TRUE(IsBlocked(extension, chromium));
+}
+
+// Tests that explicitly clearing an active tab permission before the network
+// service round-trip completes also drops the notification.
+TEST_F(ActiveTabTest, NoNotificationAfterClearActiveExtension) {
+  TestPermissionsManagerObserver observer(PermissionsManager::Get(profile()));
+
+  GURL google("http://www.google.com");
+  NavigateAndCommit(google);
+
+  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  EXPECT_TRUE(active_tab_permission_granter()->IsGranted(extension.get()));
+  EXPECT_EQ(0, observer.active_tab_granted_count());
+
+  active_tab_permission_granter()->ClearActiveExtensionAndNotify(
+      extension->id());
+  EXPECT_FALSE(active_tab_permission_granter()->IsGranted(extension.get()));
+
+  WaitForPendingCorsUpdates(*extension);
+
+  EXPECT_EQ(0, observer.active_tab_granted_count());
+  EXPECT_TRUE(IsBlocked(extension, google));
+}
+
+// Tests that if an extension grant is revoked and then re-granted on a new
+// origin before the original network service round-trip finishes, the stale
+// notification is dropped and only the new grant notification fires.
+TEST_F(ActiveTabTest, NoStaleNotificationAfterReGrantOnNewPage) {
+  TestPermissionsManagerObserver observer(PermissionsManager::Get(profile()));
+
+  GURL google("http://www.google.com");
+  NavigateAndCommit(google);
+
+  // Grant on google.com (network round-trip #1 queued).
+  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  EXPECT_TRUE(active_tab_permission_granter()->IsGranted(extension.get()));
+  EXPECT_EQ(0, observer.active_tab_granted_count());
+
+  // Navigate to chromium.org, which revokes the grant.
+  GURL chromium("http://www.chromium.org");
+  NavigateAndCommit(chromium);
+  EXPECT_FALSE(active_tab_permission_granter()->IsGranted(extension.get()));
+  EXPECT_EQ(0, observer.active_tab_granted_count());
+
+  // Re-grant on chromium.org (network round-trip #2 queued).
+  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  EXPECT_TRUE(active_tab_permission_granter()->IsGranted(extension.get()));
+  EXPECT_EQ(0, observer.active_tab_granted_count());
+
+  // Wait for all round-trips to complete.
+  WaitForPendingCorsUpdates(*extension);
+
+  // Only the second grant notification should have fired.
+  EXPECT_EQ(1, observer.active_tab_granted_count());
+  EXPECT_TRUE(IsAllowed(extension, chromium));
+  EXPECT_TRUE(IsBlocked(extension, google));
 }
 
 }  // namespace

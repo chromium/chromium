@@ -202,6 +202,12 @@ bool ActiveTabPermissionGranter::IsGranted(const Extension* extension) const {
 void ActiveTabPermissionGranter::NotifyGranted(
     scoped_refptr<const Extension> extension,
     URLPatternSet new_hosts) {
+  // If the grant was revoked (e.g. via navigation, explicit revocation, or
+  // unload) while the network service round-trip was in flight, do nothing.
+  if (!IsGranted(extension.get())) {
+    return;
+  }
+
   content::BrowserContext* browser_context =
       web_contents()->GetBrowserContext();
   if (!ExtensionRegistry::Get(browser_context)
@@ -276,6 +282,9 @@ void ActiveTabPermissionGranter::OnExtensionUnloaded(
 }
 
 void ActiveTabPermissionGranter::ClearGrantedExtensionsAndNotify() {
+  // Invalidate any in-flight NotifyGranted() callbacks so that stale
+  // permissions from the previous document are not delivered to the new page.
+  weak_factory_.InvalidateWeakPtrs();
   ClearGrantedExtensionsAndNotify(granted_extensions_);
 }
 
