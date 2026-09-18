@@ -7,6 +7,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_bytebuffer.h"
+#include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/webrtc/api/video/video_common.h"
 
@@ -14,6 +15,10 @@
 #include "content/public/android/content_jni_headers/ScreenCapture_jni.h"
 
 namespace content {
+
+BASE_FEATURE(kDesktopCaptureAndroidFrameBufferReuse,
+             "DesktopCaptureAndroidFrameBufferReuse",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -63,6 +68,8 @@ DesktopCapturerAndroid::~DesktopCapturerAndroid() {
 
 void DesktopCapturerAndroid::Start(Callback* callback) {
   callback_ = callback;
+  frame_is_dirty_ = false;
+  queue_.Reset();
 
   JNIEnv* env = base::android::AttachCurrentThread();
   screen_capture_.Reset(
@@ -86,15 +93,23 @@ void DesktopCapturerAndroid::CaptureFrame() {
     return;
   }
 
-  if (!next_frame_) {
+  if (!queue_.current_frame()) {
     callback_->OnCaptureResult(webrtc::DesktopCapturer::Result::ERROR_TEMPORARY,
                                nullptr);
     return;
   }
 
+  std::unique_ptr<webrtc::DesktopFrame> frame = queue_.current_frame()->Share();
+  if (frame_is_dirty_) {
+    frame->mutable_updated_region()->SetRect(
+        webrtc::DesktopRect::MakeSize(frame->size()));
+    frame_is_dirty_ = false;
+  } else {
+    frame->mutable_updated_region()->Clear();
+  }
+
   callback_->OnCaptureResult(webrtc::DesktopCapturer::Result::SUCCESS,
-                             std::move(next_frame_));
-  next_frame_.reset();
+                             std::move(frame));
 }
 
 bool DesktopCapturerAndroid::SelectSource(SourceId id) {
@@ -169,44 +184,54 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
   const auto height = plane.crop_bottom - plane.crop_top;
   const webrtc::DesktopSize size(width.ValueOrDie<int32_t>(),
                                  height.ValueOrDie<int32_t>());
-  next_frame_ =
-      std::make_unique<webrtc::BasicDesktopFrame>(size, webrtc::FOURCC_ABGR);
+  if (base::FeatureList::IsEnabled(kDesktopCaptureAndroidFrameBufferReuse)) {
+    queue_.MoveToNextFrame();
+    if (!queue_.current_frame() ||
+        !queue_.current_frame()->size().equals(size) ||
+        queue_.current_frame()->IsShared()) {
+      queue_.ReplaceCurrentFrame(webrtc::SharedDesktopFrame::Wrap(
+          std::make_unique<webrtc::BasicDesktopFrame>(size,
+                                                      webrtc::FOURCC_ABGR)));
+    }
+  } else {
+    queue_.ReplaceCurrentFrame(webrtc::SharedDesktopFrame::Wrap(
+        std::make_unique<webrtc::BasicDesktopFrame>(size,
+                                                    webrtc::FOURCC_ABGR)));
+  }
+
+  webrtc::DesktopFrame* current_frame = queue_.current_frame();
 
   // We don't have access to this information to Android, but this is only
   // used for mouse cursor stuff, which we don't support currently.
-  next_frame_->set_top_left(webrtc::DesktopVector());
-
-  // We don't have damage information on Android, so damage the whole frame.
-  next_frame_->mutable_updated_region()->SetRect(
-      webrtc::DesktopRect::MakeSize(next_frame_->size()));
+  current_frame->set_top_left(webrtc::DesktopVector());
 
   // TODO(crbug.com/352187279): Set DPI based on display.
-  next_frame_->set_dpi(webrtc::DesktopVector());
+  current_frame->set_dpi(webrtc::DesktopVector());
 
   // TODO(crbug.com/352187279): The cursor is captured for screen capture but
   // not for window capture. Currently there is no way to determine if we are
   // doing screen or window capture on Android. If we can determine this and set
   // it conditionally here we also need a way to get the cursor position by
   // implementing `MouseCursorMonitor`.
-  next_frame_->set_may_contain_cursor(true);
+  current_frame->set_may_contain_cursor(true);
 
   // Calculate the time delta from the previous frame's timestamp. It does not
   // seem guaranteed that the timestamp we get from Android is always monotonic,
   // and there's no guarantee about how it is not monotonic (e.g. unsigned
   // wrapping), so don't provide a timestamp in this case.
   if (last_frame_time_ns_ == 0 || timestamp_ns <= last_frame_time_ns_) {
-    next_frame_->set_capture_time_ms(0);
+    current_frame->set_capture_time_ms(0);
   } else {
-    next_frame_->set_capture_time_ms((timestamp_ns - last_frame_time_ns_) /
-                                     base::Time::kNanosecondsPerMillisecond);
+    current_frame->set_capture_time_ms((timestamp_ns - last_frame_time_ns_) /
+                                       base::Time::kNanosecondsPerMillisecond);
   }
   last_frame_time_ns_ = timestamp_ns;
 
   // TODO(crbug.com/352187279): Create `DesktopCapturerId` for Android.
-  next_frame_->set_capturer_id(webrtc::DesktopCapturerId::kUnknown);
+  current_frame->set_capturer_id(webrtc::DesktopCapturerId::kUnknown);
 
   // There is no way to get an ICC profile on Android.
-  next_frame_->set_icc_profile({});
+  current_frame->set_icc_profile({});
 
   JNIEnv* env = base::android::AttachCurrentThread();
   const auto span = base::android::JavaByteBufferToSpan(env, plane.buf);
@@ -231,12 +256,13 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
            span.size_bytes());
 
   // TODO(crbug.com/352187279): Extract to `SharedMemory` instead of copying if
-  // possible, or, use `ScreenCaptureFrameQueue` and `ResolutionTracker` to
-  // reuse frames.
-  next_frame_->CopyPixelsFrom(
+  // possible.
+  current_frame->CopyPixelsFrom(
       span.get_at(offset.ValueOrDie()),
       static_cast<uint32_t>(plane.row_stride.ValueOrDie()),
       webrtc::DesktopRect::MakeSize(size));
+
+  frame_is_dirty_ = true;
 
   jni_zero::RunRunnable(plane.release_cb);
 }

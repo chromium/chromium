@@ -678,6 +678,7 @@ public class ScreenCaptureTest {
         final Image image2 = createMockImage();
         when(reader.acquireLatestImage()).thenReturn(image2).thenReturn(null);
         releaseCb0.run();
+        shadowOf(Looper.myLooper()).idle();
         verify(image0).close();
         assertEquals(2, handler.getAcquiredImageCountForTesting());
         assertEquals(1, pendingReleases.size());

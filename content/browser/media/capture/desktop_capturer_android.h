@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
@@ -16,8 +17,12 @@
 #include "content/common/content_export.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
+#include "third_party/webrtc/modules/desktop_capture/screen_capture_frame_queue.h"
+#include "third_party/webrtc/modules/desktop_capture/shared_desktop_frame.h"
 
 namespace content {
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDesktopCaptureAndroidFrameBufferReuse);
 
 class CONTENT_EXPORT DesktopCapturerAndroidJniInterface {
  public:
@@ -131,7 +136,8 @@ class CONTENT_EXPORT DesktopCapturerAndroid final
   raw_ptr<Callback> callback_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> screen_capture_;
 
-  std::unique_ptr<webrtc::DesktopFrame> next_frame_;
+  webrtc::ScreenCaptureFrameQueue<webrtc::SharedDesktopFrame> queue_;
+  bool frame_is_dirty_ = false;
   int64_t last_frame_time_ns_ = 0;
   bool finishing_ = false;
   std::unique_ptr<DesktopCapturerAndroidJniInterface> jni_interface_;

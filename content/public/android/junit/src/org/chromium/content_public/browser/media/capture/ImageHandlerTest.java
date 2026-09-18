@@ -16,6 +16,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
@@ -390,6 +391,7 @@ public class ImageHandlerTest {
 
         // Release. This should trigger an attempt to acquire another image.
         releaseCb.getValue().run();
+        shadowOf(Looper.getMainLooper()).idle();
 
         verify(image1).close();
         assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());

@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -254,8 +255,35 @@ TEST_F(DesktopCapturerAndroidTest, CaptureAndTemporaryError) {
   EXPECT_EQ(UNSAFE_BUFFERS(base::span(frame1->data(), buffer.size())),
             base::span(buffer));
 
+  // Subsequent capture without a new frame should deliver the cached frame with
+  // an empty updated_region (supporting zero-hertz and refresh frame requests).
   const auto& [result2, frame2] = CaptureFrame();
-  EXPECT_EQ(result2, webrtc::DesktopCapturer::Result::ERROR_TEMPORARY);
+  EXPECT_EQ(result2, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame2);
+  EXPECT_TRUE(frame2->updated_region().is_empty());
+}
+
+TEST_F(DesktopCapturerAndroidTest, DirtyRegionRestoredOnNewFrame) {
+  StartCapturer(/*start_success=*/true);
+
+  PushRgbaFrame();
+  const auto& [result1, frame1] = CaptureFrame();
+  EXPECT_EQ(result1, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame1);
+  EXPECT_FALSE(frame1->updated_region().is_empty());
+
+  // Subsequent capture without new frame is not dirty (0 Hz).
+  const auto& [result2, frame2] = CaptureFrame();
+  EXPECT_EQ(result2, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame2);
+  EXPECT_TRUE(frame2->updated_region().is_empty());
+
+  // When a new frame arrives, it becomes dirty again.
+  PushRgbaFrame();
+  const auto& [result3, frame3] = CaptureFrame();
+  EXPECT_EQ(result3, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame3);
+  EXPECT_FALSE(frame3->updated_region().is_empty());
 }
 
 TEST_F(DesktopCapturerAndroidTest, MultipleFramesArriveBeforeCapture) {
@@ -493,6 +521,76 @@ TEST_F(DesktopCapturerAndroidTest,
                    kCropRect.right(), kCropRect.bottom()),
                "");
   EXPECT_FALSE(release_cb.WasRun());
+}
+
+TEST_F(DesktopCapturerAndroidTest, FrameBufferReuse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDesktopCaptureAndroidFrameBufferReuse);
+
+  StartCapturer(/*start_success=*/true);
+
+  // Push and capture frame 1.
+  PushRgbaFrame();
+  auto [result1, frame1] = CaptureFrame();
+  EXPECT_EQ(result1, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame1);
+  const uint8_t* const frame1_data = frame1->data();
+
+  // Push and capture frame 2.
+  PushRgbaFrame();
+  auto [result2, frame2] = CaptureFrame();
+  EXPECT_EQ(result2, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame2);
+  const uint8_t* const frame2_data = frame2->data();
+
+  // Frame 1 and Frame 2 should use different buffers in the 2-frame queue.
+  EXPECT_NE(frame1_data, frame2_data);
+
+  // Release frame 1 so its slot in the queue is no longer shared.
+  frame1.reset();
+
+  // Push and capture frame 3. It should reuse frame 1's buffer.
+  PushRgbaFrame();
+  auto [result3, frame3] = CaptureFrame();
+  EXPECT_EQ(result3, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame3);
+  EXPECT_EQ(frame3->data(), frame1_data);
+
+  // Release frame 2 so its slot in the queue is no longer shared.
+  frame2.reset();
+
+  // Push and capture frame 4. It should reuse frame 2's buffer.
+  PushRgbaFrame();
+  auto [result4, frame4] = CaptureFrame();
+  EXPECT_EQ(result4, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame4);
+  EXPECT_EQ(frame4->data(), frame2_data);
+}
+
+TEST_F(DesktopCapturerAndroidTest, ZeroHertzWithFrameBufferReuse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDesktopCaptureAndroidFrameBufferReuse);
+
+  StartCapturer(/*start_success=*/true);
+
+  PushRgbaFrame();
+  const auto& [result1, frame1] = CaptureFrame();
+  EXPECT_EQ(result1, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame1);
+  EXPECT_FALSE(frame1->updated_region().is_empty());
+
+  // Subsequent capture without new frame is not dirty (0 Hz).
+  const auto& [result2, frame2] = CaptureFrame();
+  EXPECT_EQ(result2, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame2);
+  EXPECT_TRUE(frame2->updated_region().is_empty());
+
+  // When a new frame arrives, it becomes dirty again.
+  PushRgbaFrame();
+  const auto& [result3, frame3] = CaptureFrame();
+  EXPECT_EQ(result3, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame3);
+  EXPECT_FALSE(frame3->updated_region().is_empty());
 }
 
 }  // namespace content

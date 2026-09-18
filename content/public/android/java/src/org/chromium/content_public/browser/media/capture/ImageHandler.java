@@ -173,7 +173,7 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
             if (mAcquiredImageCount == 0) closeNow();
         } else {
             // Now that we closed an image, we may be able to acquire a new image.
-            onImageAvailable(reader);
+            mHandler.post(() -> onImageAvailable(reader));
         }
     }
 
