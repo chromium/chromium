@@ -17,6 +17,14 @@ class PLATFORM_EXPORT ProcessHeap final {
  public:
   static void Init();
 
+  static bool IsHeapVectorPromptlyFreeEnabled() {
+    return is_heap_vector_promptly_free_enabled_;
+  }
+
+  static void SetHeapVectorPromptlyFreeEnabledForTesting(bool enabled) {
+    is_heap_vector_promptly_free_enabled_ = enabled;
+  }
+
   static size_t TotalAllocatedObjectSize() {
     return cppgc::ProcessHeapStatistics::TotalAllocatedObjectSize();
   }
@@ -24,6 +32,9 @@ class PLATFORM_EXPORT ProcessHeap final {
   static size_t TotalAllocatedSpace() {
     return cppgc::ProcessHeapStatistics::TotalAllocatedSpace();
   }
+
+ private:
+  static bool is_heap_vector_promptly_free_enabled_;
 };
 
 }  // namespace blink

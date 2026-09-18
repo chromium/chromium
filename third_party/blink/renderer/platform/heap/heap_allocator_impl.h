@@ -6,17 +6,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HEAP_ALLOCATOR_IMPL_H_
 
 #include "base/bits.h"
-#include "build/buildflag.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_table_backing.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector_backing.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/process_heap.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/heap/write_barrier.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
-#include "third_party/blink/renderer/platform/wtf/wtf_buildflags.h"
 #include "v8/include/cppgc/explicit-management.h"
 #include "v8/include/cppgc/heap-consistency.h"
 #include "v8/include/cppgc/internal/api-constants.h"
@@ -24,12 +23,6 @@
 #include "v8/include/cppgc/visitor.h"
 
 namespace blink {
-
-#if BUILDFLAG(ENABLE_HEAP_VECTOR_PROMPTLY_FREE)
-inline constexpr bool kEnableHeapVectorPromptlyFree = true;
-#else
-inline constexpr bool kEnableHeapVectorPromptlyFree = false;
-#endif
 
 template <typename T>
 void GenerationalBarrierForBacking(
@@ -86,11 +79,9 @@ class PLATFORM_EXPORT HeapAllocator {
 
   template <typename T>
   static void FreeVectorBacking(T* array) {
-    if constexpr (!kEnableHeapVectorPromptlyFree) {
+    if (!array || !ProcessHeap::IsHeapVectorPromptlyFreeEnabled()) {
       return;
     }
-    if (!array)
-      return;
 
     HeapVectorBacking<T>::FromArray(array)->Free(
         ThreadStateStorageFor<ThreadingTrait<T>::kAffinity>::GetState()

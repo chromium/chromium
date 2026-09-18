@@ -797,6 +797,7 @@ BASE_FEATURE_PARAM(size_t,
                    "timeout_ms",
                    20);
 
+BASE_FEATURE(kHeapVectorPromptlyFree, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kImageLoadingPrioritizationFix, base::FEATURE_ENABLED_BY_DEFAULT);
 

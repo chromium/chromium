@@ -3354,4 +3354,31 @@ TEST_F(HeapTest, OverAlignedHeapVectorTracingAndGC) {
 }
 #endif  // defined(ARCH_CPU_64_BITS)
 
+TEST_F(HeapTest, HeapVectorPromptlyFree) {
+  const bool was_enabled = ProcessHeap::IsHeapVectorPromptlyFreeEnabled();
+
+  PreciselyCollectGarbage();
+  const size_t initial_size = GetOverallObjectSize();
+
+  ProcessHeap::SetHeapVectorPromptlyFreeEnabledForTesting(true);
+  {
+    HeapVector<Member<IntWrapper>> vector(100);
+    EXPECT_GT(GetOverallObjectSize(), initial_size);
+    vector.clear();
+    EXPECT_EQ(GetOverallObjectSize(), initial_size);
+  }
+
+  ProcessHeap::SetHeapVectorPromptlyFreeEnabledForTesting(false);
+  {
+    HeapVector<Member<IntWrapper>> vector(100);
+    EXPECT_GT(GetOverallObjectSize(), initial_size);
+    vector.clear();
+    EXPECT_GT(GetOverallObjectSize(), initial_size);
+    PreciselyCollectGarbage();
+    EXPECT_EQ(GetOverallObjectSize(), initial_size);
+  }
+
+  ProcessHeap::SetHeapVectorPromptlyFreeEnabledForTesting(was_enabled);
+}
+
 }  // namespace blink
