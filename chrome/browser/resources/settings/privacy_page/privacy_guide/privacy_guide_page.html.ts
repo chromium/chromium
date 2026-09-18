@@ -1,7 +1,15 @@
-<!-- #html_wrapper_imports_start
-import {PrivacyGuideStep} from './constants.js';
-#html_wrapper_imports_end -->
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import {PrivacyGuideStep} from './constants.js';
+import type {SettingsPrivacyGuidePageElement} from './privacy_guide_page.js';
+
+export function getHtml(this: SettingsPrivacyGuidePageElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div id="privacyGuideCard" @keydown="${this.onKeydown_}" part="privacyGuideCard"
     style="--privacy-guide-translate-multiplier: ${this.translateMultiplier_}">
   <div id="background" aria-hidden="true"
@@ -64,3 +72,6 @@ import {PrivacyGuideStep} from './constants.js';
     </div>
   ` : ''}
 </div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

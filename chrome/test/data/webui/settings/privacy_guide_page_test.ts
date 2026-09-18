@@ -334,17 +334,18 @@ suite('PrivacyGuidePage', function() {
   test('arrowKeyNavigation', async function() {
     const pgCard =
         page.shadowRoot.querySelector<HTMLElement>('#privacyGuideCard');
-    assertTrue(!!pgCard);
     const arrowLeftEvent = new KeyboardEvent(
         'keydown', {cancelable: true, key: 'ArrowLeft', keyCode: 37});
     const arrowRightEvent = new KeyboardEvent(
         'keydown', {cancelable: true, key: 'ArrowRight', keyCode: 39});
     async function dispatchArrowLeftEvent() {
-      pgCard!.dispatchEvent(arrowLeftEvent);
+      assertTrue(!!pgCard);
+      pgCard.dispatchEvent(arrowLeftEvent);
       await microtasksFinished();
     }
     async function dispatchArrowRightEvent() {
-      pgCard!.dispatchEvent(arrowRightEvent);
+      assertTrue(!!pgCard);
+      pgCard.dispatchEvent(arrowRightEvent);
       await microtasksFinished();
     }
 

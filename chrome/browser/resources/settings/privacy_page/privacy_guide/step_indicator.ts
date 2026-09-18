@@ -84,8 +84,6 @@ export class StepIndicatorElement extends StepIndicatorElementBase {
   }
 }
 
-export type StepIndicator = StepIndicatorElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'step-indicator': StepIndicatorElement;

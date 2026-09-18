@@ -1,7 +1,16 @@
-<!-- #html_wrapper_imports_start
-import {ThirdPartyCookieBlockingSetting} from '../../site_settings/site_settings_browser_proxy.js';
-#html_wrapper_imports_end -->
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import {ThirdPartyCookieBlockingSetting} from '../../site_settings/site_settings_browser_proxy.js';
+
+import type {PrivacyGuideCookiesFragmentElement} from './privacy_guide_cookies_fragment.js';
+
+export function getHtml(this: PrivacyGuideCookiesFragmentElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div class="settings-fragment-header" focus-element tabindex="-1">
   <picture>
     <source
@@ -112,3 +121,6 @@ import {ThirdPartyCookieBlockingSetting} from '../../site_settings/site_settings
     </settings-collapse-radio-button>
   </settings-radio-group>
 </div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

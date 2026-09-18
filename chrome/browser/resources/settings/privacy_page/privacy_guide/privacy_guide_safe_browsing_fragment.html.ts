@@ -1,7 +1,16 @@
-<!-- #html_wrapper_imports_start
-import {SafeBrowsingSetting} from '../security/safe_browsing_types.js';
-#html_wrapper_imports_end -->
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import {SafeBrowsingSetting} from '../security/safe_browsing_types.js';
+
+import type {PrivacyGuideSafeBrowsingFragmentElement} from './privacy_guide_safe_browsing_fragment.js';
+
+export function getHtml(this: PrivacyGuideSafeBrowsingFragmentElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div class="settings-fragment-header" focus-element tabindex="-1">
   <picture>
     <source
@@ -101,3 +110,6 @@ import {SafeBrowsingSetting} from '../security/safe_browsing_types.js';
     </settings-collapse-radio-button>
   </settings-radio-group>
 </div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

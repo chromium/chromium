@@ -103,15 +103,16 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
 
   protected accessor privacyGuideStep_: PrivacyGuideStep;
   protected accessor stepIndicatorModel_: StepIndicatorModel;
-  private privacyGuideStepToComponentsMap_:
-      Map<PrivacyGuideStep, PrivacyGuideStepComponents>;
-  private syncBrowserProxy_: SyncBrowserProxy =
-      SyncBrowserProxyImpl.getInstance();
   private accessor syncStatus_: SyncStatus;
-  private animationsEnabled_: boolean = true;
   protected accessor translateMultiplier_: number = 1;
+
+  private animationsEnabled_: boolean = true;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  private syncBrowserProxy_: SyncBrowserProxy =
+      SyncBrowserProxyImpl.getInstance();
+  private privacyGuideStepToComponentsMap_:
+      Map<PrivacyGuideStep, PrivacyGuideStepComponents>;
 
   constructor() {
     super();
@@ -530,8 +531,6 @@ declare global {
     'settings-privacy-guide-page': SettingsPrivacyGuidePageElement;
   }
 }
-
-export type PrivacyGuidePageElement = SettingsPrivacyGuidePageElement;
 
 customElements.define(
     SettingsPrivacyGuidePageElement.is, SettingsPrivacyGuidePageElement);

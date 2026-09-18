@@ -17,6 +17,7 @@ import {getHtml} from './privacy_guide_dialog.html.js';
 
 export interface SettingsPrivacyGuideDialogElement {
   $: {
+    backToSettingsButton: HTMLElement,
     dialog: HTMLDialogElement,
   };
 }
@@ -36,10 +37,7 @@ export class SettingsPrivacyGuideDialogElement extends CrLitElement {
 
   override firstUpdated() {
     this.$.dialog.showModal();
-
-    const elementToFocus =
-        this.shadowRoot.querySelector<HTMLElement>('#backToSettingsButton')!;
-    elementToFocus.focus();
+    this.$.backToSettingsButton.focus();
   }
 
   protected onDialogCancel_(e: Event) {
@@ -76,8 +74,6 @@ declare global {
     'settings-privacy-guide-dialog': SettingsPrivacyGuideDialogElement;
   }
 }
-
-export type PrivacyGuideDialogElement = SettingsPrivacyGuideDialogElement;
 
 customElements.define(
     SettingsPrivacyGuideDialogElement.is, SettingsPrivacyGuideDialogElement);
