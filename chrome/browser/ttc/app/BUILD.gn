@@ -70,6 +70,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//media",
+    "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

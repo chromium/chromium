@@ -14,8 +14,12 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "media/audio/audio_system_impl.h"
+#include "media/audio/mock_audio_manager.h"
+#include "media/audio/test_audio_thread.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/channel_layout.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,12 +27,30 @@ namespace ttc {
 
 class AudioControllerTest : public testing::Test {
  public:
-  AudioControllerTest() = default;
-  ~AudioControllerTest() override = default;
+  AudioControllerTest() {
+    audio_manager_.SetHasInputDevices(true);
+    audio_manager_.SetInputStreamParameters(
+        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                               media::ChannelLayoutConfig::Stereo(),
+                               /*sample_rate=*/44100,
+                               /*frames_per_buffer=*/441));
+  }
+
+  ~AudioControllerTest() override { audio_manager_.Shutdown(); }
 
  protected:
+  // Returns a factory handing out AudioSystems backed by `audio_manager_`.
+  AudioController::AudioSystemFactory GetAudioSystemFactory() {
+    return base::BindLambdaForTesting(
+        [this]() -> std::unique_ptr<media::AudioSystem> {
+          return std::make_unique<media::AudioSystemImpl>(&audio_manager_);
+        });
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  media::MockAudioManager audio_manager_{
+      std::make_unique<media::TestAudioThread>()};
 };
 
 TEST_F(AudioControllerTest, LoopbackCaptureToPlayback) {
@@ -266,10 +288,15 @@ TEST_F(AudioControllerTest, StartAndStopCaptureWithFakeBinder) {
         binder_called = true;
       });
 
-  AudioController controller(fake_binder);
+  AudioController controller(fake_binder, GetAudioSystemFactory());
   EXPECT_FALSE(controller.is_capturing());
 
   controller.StartCapture();
+  EXPECT_TRUE(controller.is_capturing());
+
+  // The stream is only created once the device parameters have been received.
+  EXPECT_FALSE(binder_called);
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(binder_called);
   EXPECT_TRUE(controller.is_capturing());
 

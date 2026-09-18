@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -32,6 +33,11 @@ namespace audio {
 class OutputDevice;
 }
 
+namespace media {
+class AudioBus;
+class AudioSystem;
+}  // namespace media
+
 namespace ttc {
 
 // Implements the AudioIO subsystem for TTC. Manages microphone
@@ -48,9 +54,12 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
       base::RepeatingCallback<void(int64_t sequence_number)>;
   using AudioStreamFactoryBinder = base::RepeatingCallback<void(
       mojo::PendingReceiver<media::mojom::AudioStreamFactory>)>;
+  using AudioSystemFactory =
+      base::RepeatingCallback<std::unique_ptr<media::AudioSystem>()>;
 
   explicit AudioController(
-      AudioStreamFactoryBinder factory_binder = AudioStreamFactoryBinder());
+      AudioStreamFactoryBinder factory_binder = AudioStreamFactoryBinder(),
+      AudioSystemFactory audio_system_factory = AudioSystemFactory());
   ~AudioController() override;
 
   AudioController(const AudioController&) = delete;
@@ -58,11 +67,15 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
 
   // --- Audio Capture (Microphone Input) ---
   // Starts capturing microphone audio from `device_id` (or default if empty).
+  // The device's parameters are queried asynchronously, so the capture stream
+  // is only opened once they have been received.
   void StartCapture(std::string_view device_id = "");
   void StopCapture();
-  bool is_capturing() const { return audio_capturer_source_ != nullptr; }
+  bool is_capturing() const { return capture_requested_; }
 
-  // Subscribes to incoming captured audio frames (16kHz mono PCM16 by default).
+  // Subscribes to incoming captured audio frames. Audio is always delivered in
+  // GetBackendInputAudioParameters() format, regardless of the format the
+  // capture device runs at.
   base::CallbackListSubscription AddAudioCaptureListener(
       AudioCaptureCallback callback);
 
@@ -109,12 +122,20 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
   void OnRenderError() override;
 
   static media::AudioParameters GetDefaultPlaybackAudioParameters();
-  static media::AudioParameters GetDefaultCaptureAudioParameters();
+
+  // Format captured audio is converted to before being delivered to capture
+  // listeners: 16kHz mono PCM16, in chunks of kCaptureChunkDuration.
+  static media::AudioParameters GetBackendInputAudioParameters();
+
   static AudioStreamFactoryBinder GetDefaultAudioStreamFactoryBinder();
   [[nodiscard]] static base::AutoReset<AudioStreamFactoryBinder>
   SetDefaultAudioStreamFactoryBinderForTesting(AudioStreamFactoryBinder binder);
 
  private:
+  // Converts device-native capture audio into
+  // GetBackendInputAudioParameters() format.
+  class CaptureConverter;
+
   struct QueuedAudioChunk {
     std::vector<uint8_t> pcm_data;
     size_t read_offset = 0;
@@ -122,6 +143,12 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
   };
 
   void CreateAudioOutputDevice(const media::AudioParameters& params);
+  media::AudioSystem* GetAudioSystem();
+  void OnInputDeviceParametersReceived(
+      const std::string& device_id,
+      const std::optional<media::AudioParameters>& device_params);
+  // Called on the realtime capture thread.
+  void DeliverCapturedAudio(const media::AudioBus& audio_bus);
   void OnCapturedAudioOnMainThread(std::vector<uint8_t> pcm_data,
                                    media::AudioParameters params,
                                    float energy);
@@ -129,6 +156,8 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   AudioStreamFactoryBinder factory_binder_;
+  AudioSystemFactory audio_system_factory_;
+  std::unique_ptr<media::AudioSystem> audio_system_;
 
   base::RepeatingCallbackList<void(const std::vector<uint8_t>&,
                                    const media::AudioParameters&)>
@@ -141,7 +170,15 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
       capture_callback_runner_;
   base::RepeatingCallback<void(int64_t)> render_callback_runner_;
 
+  // True from StartCapture() until StopCapture(), including while the device
+  // parameters query is in flight.
+  bool capture_requested_ = false;
+  std::string capture_device_id_;
   scoped_refptr<media::AudioCapturerSource> audio_capturer_source_;
+  // Created before the capture stream is started and destroyed after it is
+  // stopped; only used on the realtime capture thread in between.
+  std::unique_ptr<CaptureConverter> capture_converter_;
+
   std::unique_ptr<audio::OutputDevice> output_device_;
 
   mutable base::Lock playback_lock_;

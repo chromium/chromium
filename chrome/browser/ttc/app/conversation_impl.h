@@ -32,9 +32,6 @@ namespace ttc {
 
 class SessionController;
 
-// Downsamples 48kHz 16-bit mono PCM to 16kHz using a 3:1 moving average filter.
-std::vector<uint8_t> Downsample48kHzTo16kHz(base::span<const uint8_t> pcm_data);
-
 // Manages a voice/multimodal conversation session with the TTC model.
 // Wires AudioController to TtcBackend for bidirectional streaming, handling
 // speech capture, audio playback, interruptions, transcripts, and tools.
