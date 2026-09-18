@@ -19,7 +19,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/native_library.h"
-#include "base/notreached.h"
 #include "gpu/config/skia_limits.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
 #include "gpu/vulkan/skia_vk_memory_allocator_impl.h"
@@ -266,10 +265,6 @@ GrDirectContext* AwVulkanContextProvider::GetGrContext() {
   return globals_->gr_context.get();
 }
 
-gpu::GraphiteSharedContext* AwVulkanContextProvider::GetGraphiteContext() {
-  NOTREACHED();
-}
-
 GrVkSecondaryCBDrawContext*
 AwVulkanContextProvider::GetGrSecondaryCBDrawContext() {
   CHECK(active_draw_state_);
@@ -307,11 +302,6 @@ bool AwVulkanContextProvider::InitializeGrContext(
   // GrContext is created in Globals, so nothing to do here besides DCHECK.
   DCHECK(globals_);
   return globals_->gr_context.get() != nullptr;
-}
-
-bool AwVulkanContextProvider::InitializeGraphiteContext(
-    const skgpu::graphite::ContextOptions& options) {
-  NOTREACHED();
 }
 
 void AwVulkanContextProvider::SecondaryCBDrawBegin(
