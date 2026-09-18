@@ -121,6 +121,7 @@ source_set("unit_tests") {
   deps = [
     ":global_media_controls",
     ":test_support",
+    "//base/i18n:test_support",
     "//base/test:test_support",
     "//components/global_media_controls/public/mojom:device_service",
     "//components/media_message_center:test_support",

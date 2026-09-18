@@ -5,8 +5,8 @@
 #include "components/global_media_controls/public/views/media_progress_view.h"
 
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/rtl.h"
-#include "base/test/icu_test_util.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/timer/mock_timer.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -97,7 +97,6 @@ class MediaProgressViewTest : public views::ViewsTestBase {
   MOCK_METHOD1(OnProgressUpdated, void(base::TimeDelta));
 
  private:
-  base::test::ScopedRestoreICUDefaultLocale restore_default_locale_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<MediaProgressView> view_ = nullptr;
   raw_ptr<base::MockOneShotTimer> update_progress_timer_ = nullptr;
@@ -201,7 +200,8 @@ TEST_F(MediaProgressViewTest, MouseLongPressEventSeekTo) {
 }
 
 TEST_F(MediaProgressViewTest, MouseLongPressEventSeekToForRTL) {
-  base::i18n::SetICUDefaultLocale("he");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("he"));
 
   media_session::MediaPosition media_position(
       /*playback_rate=*/1, /*duration=*/base::Seconds(600),
