@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -111,8 +112,12 @@ IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTest, testIsEligible) {
   ASSERT_OK(OpenGlicForActiveTab());
   EXPECT_FALSE(target.IsEligible());
 
-  // Eligible again once the panel is closed.
+  // Ineligible immediately after closing because of active user backoff.
   ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
+  EXPECT_FALSE(target.IsEligible());
+
+  // Eligible again once the last invoked timestamp is cleared.
+  GetProfile()->GetPrefs()->ClearPref(prefs::kGlicLastInvokedTime);
   EXPECT_TRUE(target.IsEligible());
 
   // Ineligible if Glic is not pinned to the tabstrip.

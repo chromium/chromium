@@ -10,7 +10,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/suggestions/glic_cue_tab_state.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
@@ -29,10 +31,6 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#endif
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -40,6 +38,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#endif
 
 namespace glic {
 namespace {
@@ -190,6 +192,80 @@ TEST_F(GlicCueTargetTest, IsEligible_NoBrowserWindow) {
   EXPECT_CALL(*mock_tab_, GetBrowserWindowInterface())
       .WillRepeatedly(testing::Return(nullptr));
   EXPECT_FALSE(target_->IsEligible());
+}
+
+TEST_F(GlicCueTargetTest, IsEligible_ActiveUserBackoff) {
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
+  EXPECT_CALL(*mock_glic_keyed_service_, IsPanelShowingForBrowser(testing::_))
+      .WillRepeatedly(testing::Return(false));
+
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile_));
+  sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+
+  // Never invoked -> Eligible.
+  profile_->GetPrefs()->ClearPref(prefs::kGlicLastInvokedTime);
+  EXPECT_TRUE(target_->IsEligible());
+
+  // Invoked 1 day ago (< 2 days default) -> Ineligible.
+  profile_->GetPrefs()->SetTime(prefs::kGlicLastInvokedTime,
+                                base::Time::Now() - base::Days(1));
+  EXPECT_FALSE(target_->IsEligible());
+
+  // Invoked 3 days ago (>= 2 days default) -> Eligible.
+  profile_->GetPrefs()->SetTime(prefs::kGlicLastInvokedTime,
+                                base::Time::Now() - base::Days(3));
+  EXPECT_TRUE(target_->IsEligible());
+}
+
+TEST_F(GlicCueTargetTest, IsEligible_ActiveUserBackoff_CustomParam) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kGlicContextualCueV2ActiveUserBackoff,
+      {{"MinDaysSinceLastInvocation", "5"}});
+
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
+  EXPECT_CALL(*mock_glic_keyed_service_, IsPanelShowingForBrowser(testing::_))
+      .WillRepeatedly(testing::Return(false));
+
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile_));
+  sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+
+  // Invoked 3 days ago (< 5 days) -> Ineligible.
+  profile_->GetPrefs()->SetTime(prefs::kGlicLastInvokedTime,
+                                base::Time::Now() - base::Days(3));
+  EXPECT_FALSE(target_->IsEligible());
+
+  // Invoked 6 days ago (>= 5 days) -> Eligible.
+  profile_->GetPrefs()->SetTime(prefs::kGlicLastInvokedTime,
+                                base::Time::Now() - base::Days(6));
+  EXPECT_TRUE(target_->IsEligible());
+}
+
+TEST_F(GlicCueTargetTest, IsEligible_ActiveUserBackoff_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kGlicContextualCueV2ActiveUserBackoff);
+
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
+  EXPECT_CALL(*mock_glic_keyed_service_, IsPanelShowingForBrowser(testing::_))
+      .WillRepeatedly(testing::Return(false));
+
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile_));
+  sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+
+  // Invoked 1 hour ago -> Still eligible because feature is disabled.
+  profile_->GetPrefs()->SetTime(prefs::kGlicLastInvokedTime,
+                                base::Time::Now() - base::Hours(1));
+  EXPECT_TRUE(target_->IsEligible());
 }
 #endif
 
