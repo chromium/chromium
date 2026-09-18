@@ -2174,6 +2174,84 @@ suite('ContactInfoPageUiTest', function() {
         assertTrue(!!toggle);
         assertFalse(toggle.checked);
       });
+
+  test(
+      'OtpFillingToggleAccountSwitchDuringInFlightFetchErrorIgnoresStale',
+      async function() {
+        loadTimeData.overrideValues({autofillGmailOtpFillingEnabled: true});
+        const autofillManager = new TestAutofillManager();
+
+        const accountAResolvers = Promise.withResolvers<ConsentStates>();
+        const accountBResolvers = Promise.withResolvers<ConsentStates>();
+
+        const accountA: chrome.autofillPrivate.AccountInfo = {
+          email: 'userA@gmail.com',
+          isSyncEnabledForAutofillProfiles: true,
+          isEligibleForAddressAccountStorage: true,
+        };
+        const accountB: chrome.autofillPrivate.AccountInfo = {
+          email: 'userB@gmail.com',
+          isSyncEnabledForAutofillProfiles: true,
+          isEligibleForAddressAccountStorage: true,
+        };
+
+        let fetchCount = 0;
+        autofillManager.fetchUserDataProcessingConsent = () => {
+          autofillManager.methodCalled('fetchUserDataProcessingConsent');
+          fetchCount++;
+          return fetchCount === 1 ? accountAResolvers.promise :
+                                    accountBResolvers.promise;
+        };
+
+        const {page} = await createContactInfoPageForGmailOtpFilling({
+          gmailOtpFilling: true,
+          autofillManager,
+          accountInfo: accountA,
+        });
+
+        // Account A's fetch is in flight.
+        assertEquals(
+            1, autofillManager.getCallCount('fetchUserDataProcessingConsent'));
+
+        // Switch to Account B before Account A's fetch settles.
+        autofillManager.resetResolver('fetchUserDataProcessingConsent');
+        const changeListener =
+            autofillManager.lastCallback.setPersonalDataManagerListener!;
+        changeListener([], [], [], [], accountB);
+        await autofillManager.whenCalled('fetchUserDataProcessingConsent');
+        assertEquals(
+            1, autofillManager.getCallCount('fetchUserDataProcessingConsent'));
+
+        // Account A rejects with an error (stale error).
+        accountAResolvers.reject(new Error('Network failure'));
+        await flushTasks();
+
+        // Toggle should NOT fall back to enabled by Account A's stale error,
+        // and loading state should remain active while Account B's fetch is in
+        // flight.
+        assertTrue(
+            !!page.shadowRoot!.querySelector('#otpFillingLoadingRow'),
+            'loading row should be visible while Account B fetch is in flight');
+        assertFalse(
+            !!page.shadowRoot!.querySelector('#autofillOtpFillingToggle'),
+            'toggle should be un-stamped while Account B fetch is in flight');
+        assertFalse(
+            page.get('otpFillingTogglePref_.value'),
+            'backing pref should not be enabled by stale Account A error');
+
+        // Account B resolves with DISABLED consent.
+        accountBResolvers.resolve({
+          commsApps: ConsentState.DISABLED,
+          googleApps: ConsentState.DISABLED,
+        });
+        await flushTasks();
+
+        const toggle =
+            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#autofillOtpFillingToggle');
+        assertTrue(!!toggle);
+        assertFalse(toggle.checked);
+      });
 });
 
 suite('ContactInfoPageAddressTests', function() {

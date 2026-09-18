@@ -713,7 +713,7 @@ export class SettingsContactInfoPageElement extends
     this.setOtpFillingToggleChecked_(true);
   }
 
-  private onGmailOtpFillingPrefOrAccountChange_(
+  private async onGmailOtpFillingPrefOrAccountChange_(
       showToggle: boolean,
       accountInfo: chrome.autofillPrivate.AccountInfo|null) {
     const currentEmail = (showToggle && accountInfo) ? accountInfo.email : null;
@@ -745,47 +745,39 @@ export class SettingsContactInfoPageElement extends
     this.isOtpConsentLoading_ = true;
 
     const fetchEmail = currentEmail;
-    this.fetchConsentWithMinDuration_()
-        .then(consent => {
-          // Check whether the page is still connected to the DOM and the
-          // account has not changed or state reset in case the user navigated
-          // away, switched accounts, or turned off the pref during the RPC.
-          if (!this.isConnected ||
-              this.lastCheckedAccountEmail_ !== fetchEmail) {
-            return;
-          }
-          if (consent?.commsApps ===
-                  chrome.autofillPrivate.UserDataProcessingConsentState
-                      .ENABLED &&
-              consent?.googleApps ===
-                  chrome.autofillPrivate.UserDataProcessingConsentState
-                      .ENABLED) {
-            this.setOtpFillingToggleChecked_(true);
-          } else {
-            // We explicitly don't align the preference value with the
-            // current UI state, since an `UNKNOWN` value could be a temporary
-            // result from the service. Furthermore, the user could re-consent
-            // and then the original preference value is preserved in this way.
-            this.setOtpFillingToggleChecked_(false);
-          }
-        })
-        .catch(() => {
-          // Check whether the page is still connected to the DOM and the
-          // account has not changed or state reset in case the user navigated
-          // away, switched accounts, or turned off the pref during the RPC.
-          if (!this.isConnected ||
-              this.lastCheckedAccountEmail_ !== fetchEmail) {
-            return;
-          }
-          this.onGmailOtpConsentBackendNetworkError_();
-        })
-        .finally(() => {
-          if (!this.isConnected ||
-              this.lastCheckedAccountEmail_ !== fetchEmail) {
-            return;
-          }
-          this.isOtpConsentLoading_ = false;
-        });
+    try {
+      const consent = await this.fetchConsentWithMinDuration_();
+      // Check whether the page is still connected to the DOM and the
+      // account has not changed or state reset in case the user navigated
+      // away, switched accounts, or turned off the pref during the RPC.
+      if (!this.isConnected || this.lastCheckedAccountEmail_ !== fetchEmail) {
+        return;
+      }
+      if (consent?.commsApps ===
+              chrome.autofillPrivate.UserDataProcessingConsentState.ENABLED &&
+          consent?.googleApps ===
+              chrome.autofillPrivate.UserDataProcessingConsentState.ENABLED) {
+        this.setOtpFillingToggleChecked_(true);
+      } else {
+        // We explicitly don't align the preference value with the
+        // current UI state, since an `UNKNOWN` value could be a temporary
+        // result from the service. Furthermore, the user could re-consent
+        // and then the original preference value is preserved in this way.
+        this.setOtpFillingToggleChecked_(false);
+      }
+    } catch {
+      // Check whether the page is still connected to the DOM and the
+      // account has not changed or state reset in case the user navigated
+      // away, switched accounts, or turned off the pref during the RPC.
+      if (!this.isConnected || this.lastCheckedAccountEmail_ !== fetchEmail) {
+        return;
+      }
+      this.onGmailOtpConsentBackendNetworkError_();
+    } finally {
+      if (this.isConnected && this.lastCheckedAccountEmail_ === fetchEmail) {
+        this.isOtpConsentLoading_ = false;
+      }
+    }
   }
 
   /**
