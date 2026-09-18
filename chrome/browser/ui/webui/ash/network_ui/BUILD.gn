@@ -21,7 +21,6 @@ static_library("network_ui") {
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/network_ui:network_diagnostics_resource_provider",
     "//ash/webui/network_ui:network_health_resource_provider",
-    "//ash/webui/network_ui:traffic_counters_resource_provider",
     "//base",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/net/network_health",

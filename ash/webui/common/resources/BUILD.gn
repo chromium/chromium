@@ -124,7 +124,6 @@ web_component_files_ts = [
   "quick_unlock/setup_pin_keyboard.ts",
   "shortcut_input_ui/shortcut_input.ts",
   "shortcut_input_ui/shortcut_input_key.ts",
-  "traffic_counters/traffic_counters.ts",
 ]
 
 ts_files_ts = [
@@ -148,7 +147,6 @@ ts_files_ts = [
   "shortcut_input_ui/shortcut_utils.ts",
   "logging/webui_syslog_emitter.ts",
   "typescript_utils/strict_query.ts",
-  "traffic_counters/traffic_counters_adapter.ts",
 ]
 
 mojo_files_ts = [
@@ -494,7 +492,6 @@ generate_definitions_js_files = [
   "shortcut_input_ui/shortcut_input_key.html.js",
   "shortcut_input_ui/icons.html.js",
   "shortcut_input_ui/shortcut_input.html.js",
-  "traffic_counters/traffic_counters.html.js",
   "util.js",
 ]
 

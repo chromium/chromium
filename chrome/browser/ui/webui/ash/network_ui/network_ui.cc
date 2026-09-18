@@ -18,7 +18,6 @@
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/network_ui/network_diagnostics_resource_provider.h"
 #include "ash/webui/network_ui/network_health_resource_provider.h"
-#include "ash/webui/network_ui/traffic_counters_resource_provider.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -1121,7 +1120,6 @@ NetworkUI::NetworkUI(PrefService* local_state, content::WebUI* web_ui)
   cellular_setup::AddNonStringLoadTimeData(html);
   ui::network_element::AddLocalizedStrings(html);
   ui::network_element::AddOncLocalizedStrings(html);
-  traffic_counters::AddResources(html);
 
   webui::SetupWebUIDataSource(html, kNetworkUiResources,
                               IDR_NETWORK_UI_NETWORK_HTML);

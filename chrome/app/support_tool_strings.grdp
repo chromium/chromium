@@ -156,9 +156,6 @@
         <message name="IDS_SUPPORT_TOOL_CHROMEOS_CONNECTED_INPUT_DEVICES" desc="Information about connected input devices to a ChromeOS device.">
             ChromeOS Connected Input Devices
         </message>
-        <message name="IDS_SUPPORT_TOOL_CHROMEOS_TRAFFIC_COUNTERS" desc="Network traffic counters on ChromeOS. Traffic counters are data counts for an associated network device.">
-            ChromeOS Traffic Counters
-        </message>
         <message name="IDS_SUPPORT_TOOL_CHROMEOS_VIRTUAL_KEYBOARD" desc="Virtual keyboard details on ChromeOS.">
             ChromeOS Virtual Keyboard
         </message>

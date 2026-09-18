@@ -44,8 +44,6 @@ static_library("system_logs") {
     "system_logs_writer.h",
     "touch_log_source.cc",
     "touch_log_source.h",
-    "traffic_counters_log_source.cc",
-    "traffic_counters_log_source.h",
     "ui_hierarchy_log_source.cc",
     "ui_hierarchy_log_source.h",
     "virtual_keyboard_log_source.cc",

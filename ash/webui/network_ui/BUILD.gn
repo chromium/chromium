@@ -31,17 +31,3 @@ source_set("network_health_resource_provider") {
     "//ui/base",
   ]
 }
-
-source_set("traffic_counters_resource_provider") {
-  sources = [
-    "traffic_counters_resource_provider.cc",
-    "traffic_counters_resource_provider.h",
-  ]
-
-  deps = [
-    "//ash/constants",
-    "//chromeos/strings/",
-    "//content/public/browser",
-    "//ui/base",
-  ]
-}

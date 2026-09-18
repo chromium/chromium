@@ -12,7 +12,6 @@
 #include "ash/public/cpp/hotspot_config_service.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/webui/network_ui/network_health_resource_provider.h"
-#include "ash/webui/network_ui/traffic_counters_resource_provider.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -1109,7 +1108,6 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   cellular_setup::AddNonStringLoadTimeData(html_source);
   cellular_setup::AddLocalizedStrings(html_source);
   network_health::AddResources(html_source);
-  traffic_counters::AddResources(html_source);
 
   html_source->AddBoolean(
       "bypassConnectivityCheck",
