@@ -8,9 +8,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,14 +17,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.payments.intent.WebPaymentIntentHelper;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.payments.mojom.PaymentEventResponseType;
 import org.chromium.payments.mojom.PaymentItem;
@@ -39,8 +34,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Tests for the Android intent-based payment app. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures({
+    PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES,
+    PaymentFeatureList.SURFACE_WALLET_ERROR_CODE_FROM_INTENT
+})
 public class AndroidPaymentAppUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private AndroidIntentLauncher mLauncherMock;
@@ -56,7 +54,6 @@ public class AndroidPaymentAppUnitTest {
 
     @Before
     public void setUp() {
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         // Reset test results.
         mErrorMessage = null;
         mPaymentMethodName = null;
@@ -68,9 +65,7 @@ public class AndroidPaymentAppUnitTest {
         mMethods.put("https://company.com/pay", new PaymentMethodData());
     }
 
-    @SmallTest
     @Test
-    @UiThreadTest
     public void testNoReadyToPayDebugInfo() throws Exception {
         AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ false);
         queryReadyToPay(app);
@@ -78,9 +73,7 @@ public class AndroidPaymentAppUnitTest {
                 .showReadyToPayDebugInfo(Mockito.any());
     }
 
-    @SmallTest
     @Test
-    @UiThreadTest
     public void testShowReadyToPayDebugInfo() throws Exception {
         AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ true);
         queryReadyToPay(app);
@@ -95,21 +88,15 @@ public class AndroidPaymentAppUnitTest {
                                         + " [{\"https://company.com/pay\": null}]}"));
     }
 
-    @SmallTest
     @Test
-    @UiThreadTest
     public void testSetHasEnrolledInstrument() throws Exception {
-        AndroidPaymentApp app =
-                createApp(
-                        /* showReadyToPayDebugInfo= */ false);
+        AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ false);
         Assert.assertFalse(app.hasEnrolledInstrument());
         app.setHasEnrolledInstrument(true);
         Assert.assertTrue(app.hasEnrolledInstrument());
     }
 
-    @SmallTest
     @Test
-    @UiThreadTest
     public void testSuccessfulPayment() throws Exception {
         AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ false);
         queryReadyToPay(app);
@@ -119,9 +106,7 @@ public class AndroidPaymentAppUnitTest {
         Assert.assertEquals("{}", mPaymentDetails);
     }
 
-    @SmallTest
     @Test
-    @UiThreadTest
     public void testCancelledPayment() throws Exception {
         AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ false);
         queryReadyToPay(app);
@@ -134,9 +119,7 @@ public class AndroidPaymentAppUnitTest {
         Assert.assertNull(mPaymentDetails);
     }
 
-    @SmallTest
     @Test
-    @UiThreadTest
     public void testInternalAppErrorPayment() throws Exception {
         AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ false);
         queryReadyToPay(app);
@@ -149,9 +132,7 @@ public class AndroidPaymentAppUnitTest {
         Assert.assertNull(mPaymentDetails);
     }
 
-    @SmallTest
     @Test
-    @UiThreadTest
     @EnableFeatures({PaymentFeatureList.SURFACE_WALLET_ERROR_CODE_FROM_INTENT})
     public void testInternalAppErrorPaymentWithWalletErrorCode() throws Exception {
         AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ false);
@@ -165,9 +146,7 @@ public class AndroidPaymentAppUnitTest {
         Assert.assertNull(mPaymentDetails);
     }
 
-    @SmallTest
     @Test
-    @UiThreadTest
     @DisableFeatures({PaymentFeatureList.SURFACE_WALLET_ERROR_CODE_FROM_INTENT})
     public void
             surfaceWalletErrorCodeFromIntentDisabled_testInternalAppErrorPaymentWithWalletErrorCode()
@@ -219,7 +198,8 @@ public class AndroidPaymentAppUnitTest {
                         mReadyToPayResponse = isReadyToPay;
                     }
                 });
-        CriteriaHelper.pollUiThreadNested(() -> mReadyToPayQueryFinished);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertTrue(mReadyToPayQueryFinished);
         Assert.assertTrue("Payment app should be ready to pay", mReadyToPayResponse);
     }
 
@@ -270,6 +250,7 @@ public class AndroidPaymentAppUnitTest {
         data.putExtras(extras);
         app.onIntentCompleted(resultCode, data);
 
-        CriteriaHelper.pollUiThreadNested(() -> mInvokePaymentAppFinished);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertTrue(mInvokePaymentAppFinished);
     }
 }
