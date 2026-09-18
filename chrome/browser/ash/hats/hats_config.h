@@ -87,7 +87,6 @@ extern const HatsConfig kHatsBluetoothRevampSurvey;
 extern const HatsConfig kHatsBatteryLifeSurvey;
 extern const HatsConfig kHatsPeripheralsSurvey;
 extern const HatsConfig kHatsOsSettingsSearchSurvey;
-extern const HatsConfig kHatsBorealisGamesSurvey;
 extern const HatsConfig kHatsOfficeSurvey;
 extern const HatsConfig kHatsSlowAndLaggyDeepDive;
 

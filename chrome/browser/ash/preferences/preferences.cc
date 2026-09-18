@@ -671,14 +671,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       ash::prefs::kHatsOsSettingsSearchSurveyIsSelected, false);
 
-  // Borealis HaTS survey prefs for game satisfaction.
-  registry->RegisterInt64Pref(ash::prefs::kHatsBorealisGamesSurveyCycleEndTs,
-                              0);
-  registry->RegisterBooleanPref(ash::prefs::kHatsBorealisGamesSurveyIsSelected,
-                                false);
-  registry->RegisterTimePref(
-      ash::prefs::kHatsBorealisGamesLastInteractionTimestamp, base::Time());
-
   registry->RegisterBooleanPref(prefs::kShowDisplaySizeScreenEnabled, true);
 
   registry->RegisterDictionaryPref(ash::prefs::kTotalUniqueOsSettingsChanged);

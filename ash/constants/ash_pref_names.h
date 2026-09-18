@@ -3593,21 +3593,6 @@ inline constexpr char kHatsBluetoothRevampIsSelected[] =
     "hats_bluetooth_revamp_is_selected";
 
 // An int64 pref. This is the timestamp, microseconds after epoch, that
-// indicated the end of the most recent Borealis games survey cycle.
-inline constexpr char kHatsBorealisGamesSurveyCycleEndTs[] =
-    "hats_borealis_games_end_timestamp";
-
-// A boolean pref. Indicated if the device is selected for the Borealis games
-// survey.
-inline constexpr char kHatsBorealisGamesSurveyIsSelected[] =
-    "hats_borealis_games_is_selected";
-
-// An base::Time pref. This is the timestamp that indicates the end of the
-// most recent Borealis games survey interaction.
-inline constexpr char kHatsBorealisGamesLastInteractionTimestamp[] =
-    "hats_borealis_games_last_interaction_timestamp";
-
-// An int64 pref. This is the timestamp, microseconds after epoch, that
 // indicates the end of the most recent Camera App survey cycle.
 inline constexpr char kHatsCameraAppSurveyCycleEndTs[] =
     "hats_camera_app_cycle_end_timestamp";
