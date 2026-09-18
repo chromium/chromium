@@ -21,7 +21,6 @@ import type {GooglePhotosAlbum, WallpaperCollection} from '../personalization_ap
 import {TopicSource} from '../personalization_app.mojom-webui.js';
 
 import {isAmbientModeAllowed} from './load_time_booleans.js';
-import {logPersonalizationPathUMA} from './personalization_metrics_logger.js';
 import {getTemplate} from './personalization_router_element.html.js';
 import {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
 
@@ -232,9 +231,6 @@ export class PersonalizationRouterElement extends PolymerElement {
       this.setProperties({path_: Paths.ROOT, queryParams_: {}});
     }
 
-    if (isPathValid(path)) {
-      logPersonalizationPathUMA(path as Paths);
-    }
     // Update the page title when the path changes.
     // TODO(b/228967523): Wallpaper related pages have been handled in their
     // specific Polymer elements so they are skipped here. See if we can move

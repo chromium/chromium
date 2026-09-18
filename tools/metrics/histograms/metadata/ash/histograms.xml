@@ -6057,15 +6057,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Personalization.Path" enum="PersonalizationPath"
-    expires_after="2025-05-11">
-  <owner>jasontt@chromium.org</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Emitted when a user navigates to a valid path in personalization hub.
-  </summary>
-</histogram>
-
 <histogram name="Ash.PhantomWindowController.Show.PresentationTime" units="ms"
     expires_after="2027-05-21">
   <owner>xdai@chromium.org</owner>
@@ -8372,16 +8363,6 @@ chromium-metrics-reviews@google.com.
     the unit_id field. Older versions of ChromeOS (pre M107) did not set this
     field, so this metric tracks how many users selected an older online
     wallpaper and have not updated it since.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Wallpaper.Preview.Show" enum="BooleanHit"
-    expires_after="2024-12-30">
-  <owner>jasontt@chromium.org</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Tracks the preview mode usage for wallpaper. Recorded each time the
-    wallpaper image is previewed.
   </summary>
 </histogram>
 

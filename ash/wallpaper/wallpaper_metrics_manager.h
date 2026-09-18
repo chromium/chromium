@@ -42,7 +42,6 @@ class ASH_EXPORT WallpaperMetricsManager : public WallpaperControllerObserver {
   // WallpaperControllerObserver:
   void OnOnlineWallpaperSet(const OnlineWallpaperParams& params) override;
   void OnWallpaperChanged() override;
-  void OnWallpaperPreviewStarted() override;
 
   void LogSettingTimeOfDayWallpaperAfterOobe(uint64_t unit_id, bool success);
   void LogWallpaperResult(WallpaperType type, SetWallpaperResult reason);

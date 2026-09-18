@@ -3916,7 +3916,6 @@ TEST_P(WallpaperControllerTest, ConfirmPreviewWallpaper) {
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &user_wallpaper_info));
   EXPECT_TRUE(user_wallpaper_info.MatchesSelection(default_wallpaper_info));
-  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Preview.Show", 1);
 
   // Now confirm the preview wallpaper, verify that there's no wallpaper change
   // because the wallpaper is already shown.
@@ -5998,7 +5997,6 @@ TEST_P(WallpaperControllerTest, ConfirmGooglePhotosPreviewWallpaper) {
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &user_wallpaper_info));
   EXPECT_TRUE(user_wallpaper_info.MatchesSelection(default_wallpaper_info));
-  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Preview.Show", 1);
 
   // Now confirm the preview wallpaper, verify that there's no wallpaper
   // change because the wallpaper is already shown.
@@ -6059,7 +6057,6 @@ TEST_P(WallpaperControllerTest, CancelGooglePhotosPreviewWallpaper) {
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &user_wallpaper_info));
   EXPECT_TRUE(user_wallpaper_info.MatchesSelection(default_wallpaper_info));
-  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Preview.Show", 1);
 
   // Now cancel the preview. Verify the wallpaper changes back to the default
   // and the user wallpaper info remains unchanged.
@@ -6112,7 +6109,6 @@ TEST_P(WallpaperControllerTest, GooglePhotosWallpaperSyncedDuringPreview) {
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &user_wallpaper_info));
   EXPECT_TRUE(user_wallpaper_info.MatchesSelection(default_wallpaper_info));
-  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Preview.Show", 1);
 
   // Now set a custom wallpaper for the user and disable preview (this happens
   // if a custom wallpaper set on another device is being synced). Verify

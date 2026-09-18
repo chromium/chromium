@@ -99,10 +99,6 @@ void WallpaperMetricsManager::OnWallpaperChanged() {
       WallpaperType::kCount);
 }
 
-void WallpaperMetricsManager::OnWallpaperPreviewStarted() {
-  base::UmaHistogramBoolean("Ash.Wallpaper.Preview.Show", true);
-}
-
 void WallpaperMetricsManager::LogSettingTimeOfDayWallpaperAfterOobe(
     const uint64_t unit_id,
     const bool success) {
