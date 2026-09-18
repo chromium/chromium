@@ -734,9 +734,7 @@ bool CorsURLLoaderFactory::IsValidRequest(
   // for details):
   // * kEmbed: used by PDF pages to embed subresources.
   // * kObject: used by wpt tests.
-  if (base::FeatureList::IsEnabled(
-          features::kRestrictFrameDestinationsToNavigate) &&
-      (request.destination == mojom::RequestDestination::kDocument ||
+  if ((request.destination == mojom::RequestDestination::kDocument ||
        request.destination == mojom::RequestDestination::kFrame ||
        request.destination == mojom::RequestDestination::kIframe ||
        request.destination == mojom::RequestDestination::kFencedframe) &&

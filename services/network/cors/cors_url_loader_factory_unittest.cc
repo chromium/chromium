@@ -297,9 +297,6 @@ TEST_F(CorsURLLoaderFactoryTest, DisallowedLoadFlagToUntrustedLoader) {
 }
 
 TEST_F(CorsURLLoaderFactoryTest, DocumentDestinationRequiresNavigateMode) {
-  AddScopedFeatureList().InitAndEnableFeature(
-      features::kRestrictFrameDestinationsToNavigate);
-
   ResourceRequest request;
   request.mode = mojom::RequestMode::kNoCors;
   request.credentials_mode = mojom::CredentialsMode::kOmit;
