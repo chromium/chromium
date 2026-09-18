@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
@@ -74,19 +75,16 @@ public class TabSwitcherActionMenuPTTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562154154
     public void testOpenNewTabFromIncognito() {
         IncognitoNewTabPageStation incognitoNtp =
-                mCtaTestRule
-                        .startOnBlankPage()
-                        .openTabSwitcherActionMenu()
-                        .selectNewIncognitoTabOrWindow();
+                mCtaTestRule.startOnBlankPage().openNewIncognitoTabOrWindowFast();
 
         RegularNewTabPageStation page =
                 incognitoNtp.openTabSwitcherActionMenu().selectNewTabOrWindow();
 
         assertFalse(page.getTabModelSelector().isIncognitoSelected());
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            assertNotEquals(mCtaTestRule.getActivity(), page.getActivity());
             assertEquals(1, getTabCountOnUiThread(page.getActivity().getCurrentTabModel()));
         } else {
             assertEquals(2, getTabCountOnUiThread(page.getActivity().getCurrentTabModel()));
