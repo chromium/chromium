@@ -84,6 +84,10 @@ base::DictValue ProvisioningDomainProxyConfigToDict(
 
 // Parses a single "proxy-match" routing rule dictionary into a RoutingRule
 // struct.
+// On iOS the `ports` field is ignored: WebKit's proxy configuration API cannot
+// match on port, so the returned rule is widened to all ports of the matched
+// destinations. If no domains/subnets are declared, stripping ports widens the
+// rule to all traffic (`*`). See crbug.com/552534571.
 std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
     const base::DictValue& match_dict);
 

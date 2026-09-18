@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "components/enterprise/net/core/auth_scope_metadata.h"
 #include "components/policy/core/common/values_util.h"
 #include "net/base/proxy_chain.h"
@@ -22,6 +23,10 @@
 #include "net/base/proxy_string_util.h"
 #include "net/http/http_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_IOS)
+#include "base/logging.h"
+#endif  // BUILDFLAG(IS_IOS)
 
 namespace enterprise_net {
 
@@ -242,6 +247,26 @@ ParseProxy(const base::DictValue& proxy_dict) {
           std::move(proxy_chain), std::move(auth), std::move(extra_headers)));
 }
 
+#if BUILDFLAG(IS_IOS)
+// Clears `ports` so that the rule matches every port of its destinations.
+// WebKit's proxy configuration API cannot match on port, so the only way to
+// honor a rule that declares ports is to proxy the whole host/address.
+void StripPortMatchers(std::vector<uint16_t>& ports, bool is_wildcard_rule) {
+  if (ports.empty()) {
+    return;
+  }
+
+  const char* affected_destinations =
+      is_wildcard_rule ? "all destinations" : "the matched destinations";
+  DVLOG(1) << "PvD routing rule declares " << ports.size()
+           << " port matcher(s), but WebKit's proxy configuration API cannot "
+              "match on port. Proxying all ports for "
+           << affected_destinations << ".";
+
+  ports.clear();
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 }  // namespace
 
 std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
@@ -301,9 +326,17 @@ std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
     }
   }
 
+  // A rule without domains and subnets is scoped only by its ports, so dropping
+  // them widens it to every destination.
+  const bool is_wildcard_rule = domains.empty() && subnets.empty();
+
+#if BUILDFLAG(IS_IOS)
+  StripPortMatchers(ports, is_wildcard_rule);
+#endif  // BUILDFLAG(IS_IOS)
+
   net::ProxyHostMatchingRules destination_matchers;
 
-  if (domains.empty() && subnets.empty()) {
+  if (is_wildcard_rule) {
     // If no domain or subnet patterns are specified, match all traffic ("*").
     if (!ports.empty()) {
       for (uint16_t port : ports) {
