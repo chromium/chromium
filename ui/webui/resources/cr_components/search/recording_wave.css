@@ -10,15 +10,14 @@
 :host {
   --bar-max-height: 40px;
   --color-recording-wave: #c9d2ff;
-  --recording-wave-top-padding: 10px;
 
-  align-items: flex-start;
+  align-items: center;
 
   /* 100% is relative to height of 'cr-composebox' (or 'cr-searchbox')
    * since 'animated_glow' (the immediate parent) is absolutely positioned.
    * Height of 'cr-composebox' is determined by 'div' with id 'composebox'.
    */
-  block-size: calc(100% - var(--recording-wave-top-padding));
+  block-size: calc(100% - var(--recording-wave-top-padding, 0));
   display: flex;
   inline-size: 100%;
   justify-content: flex-start;
@@ -31,8 +30,9 @@
    * will resize and affect others in its context. Cut the edge tic tacs
    * off with this.
    */
-  overflow-x: hidden;
-  padding-block-start: var(--recording-wave-top-padding, 10px);
+  overflow-x: clip;
+  overflow-y: visible;
+  padding-block-start: var(--recording-wave-top-padding, 0);
   position: relative;
 }
 
