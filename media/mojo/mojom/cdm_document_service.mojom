@@ -4,9 +4,9 @@
 
 module media.mojom;
 
-import "mojo/public/mojom/base/unguessable_token.mojom";
-import "mojo/public/mojom/base/file_path.mojom";
 import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // Contains data linked to an origin that the CDM stores in the browser
 // process.
@@ -41,11 +41,12 @@ interface CdmDocumentService {
   // - |signed_data_signature|: the signature of the signed data block.
   // - |platform_key_certificate|: the device specific certificate for the
   //                               requested service.
-  ChallengePlatform(string service_id, string challenge) =>
-      (bool success,
-       string signed_data,
-       string signed_data_signature,
-       string platform_key_certificate);
+  [EnableIf=is_chromeos]
+  ChallengePlatform(string service_id, string challenge)
+      => (bool success,
+          string signed_data,
+          string signed_data_signature,
+          string platform_key_certificate);
 
   // Requests a particular version of the device's Storage Id (or latest
   // available version if 0 is specified). This returns the requested

@@ -47,9 +47,11 @@ class MEDIA_MOJO_EXPORT MojoCdmHelper final : public CdmAuxiliaryHelper,
   void QueryStatus(QueryStatusCB callback) final;
   void EnableProtection(uint32_t desired_protection_mask,
                         EnableProtectionCB callback) final;
+#if BUILDFLAG(IS_CHROMEOS)
   void ChallengePlatform(const std::string& service_id,
                          const std::string& challenge,
                          ChallengePlatformCB callback) final;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void GetStorageId(uint32_t version, StorageIdCB callback) final;
 #if BUILDFLAG(IS_WIN)
   void GetMediaFoundationCdmData(GetMediaFoundationCdmDataCB callback) final;

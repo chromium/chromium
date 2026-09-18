@@ -260,6 +260,7 @@ CdmDocumentServiceImpl::~CdmDocumentServiceImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void CdmDocumentServiceImpl::ChallengePlatform(
     const std::string& service_id,
     const std::string& challenge,
@@ -267,10 +268,6 @@ void CdmDocumentServiceImpl::ChallengePlatform(
   DVLOG(2) << __func__;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // TODO(crbug.com/40499115). This should be commented out at the mojom
-  // level so that it's only available for ChromeOS.
-
-#if BUILDFLAG(IS_CHROMEOS)
   bool success = platform_verification::PerformBrowserChecks(
       render_frame_host().GetMainFrame());
   if (!success) {
@@ -287,13 +284,8 @@ void CdmDocumentServiceImpl::ChallengePlatform(
       service_id, challenge,
       base::BindOnce(&CdmDocumentServiceImpl::OnPlatformChallenged,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
-#else
-  // Not supported, so return failure.
-  std::move(callback).Run(false, std::string(), std::string(), std::string());
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 void CdmDocumentServiceImpl::OnPlatformChallenged(
     ChallengePlatformCallback callback,
     PlatformVerificationResult result,
