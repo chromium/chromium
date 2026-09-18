@@ -471,7 +471,7 @@ TEST_P(HatsNotificationControllerTest, ShouldShowSurveyToProfile) {
             GetParam().should_be_selected);
 }
 
-const std::vector<HatsScenario> kHatsScenario{
+constexpr HatsScenario kHatsScenario[] = {
     // Prio HaTS, any other HaTS was shown very long time ago.
     {.prioritized = true,
      .prev_prio_hats =
