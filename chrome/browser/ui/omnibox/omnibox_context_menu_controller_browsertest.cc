@@ -1724,6 +1724,57 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
                                      ui::SimpleMenuModel::kDefaultIconSize));
 }
 
+IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
+                       TabsSubmenuEnabledForDeselectionWhenTabContextDisabled) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
+
+  auto* web_contents = GetWebContents();
+  auto owning_window = gfx::NativeWindow();
+  TestOmniboxPopupFileSelector file_selector(owning_window);
+
+  auto* web_ui = web_contents->GetWebUI();
+  auto* popup_ui = web_ui->GetController()->GetAs<OmniboxPopupUI>();
+  auto* handler = popup_ui->composebox_handler();
+
+  // Set input state where BROWSER_TAB is allowed but disabled, which is what
+  // the browser reports once the total input limit is reached.
+  omnibox::InputState test_state;
+  test_state.allowed_input_types.emplace_back(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+  test_state.disabled_input_types.emplace_back(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+  handler->input_state_model()->set_state_for_testing(test_state);
+
+  GURL url1(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(AddTabAtIndex(1, url1, ui::PAGE_TRANSITION_TYPED));
+
+  // Mark the added tab as attached.
+  auto* tab_strip_model = browser()->GetTabStripModel();
+  int32_t tab1_id = tab_strip_model->GetTabAtIndex(1)->GetHandle().raw_value();
+  handler->selected_tabs[base::UnguessableToken::Create()] = tab1_id;
+
+  OmniboxContextMenuController controller(&file_selector, web_contents);
+
+  // The submenu command ID should be enabled so the attached tab can be
+  // removed.
+  EXPECT_TRUE(
+      controller.IsCommandIdEnabled(IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU));
+
+  // The submenu label and icon should not be styled as disabled.
+  auto* menu_model = controller.menu_model();
+  std::optional<size_t> submenu_index =
+      menu_model->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU);
+  ASSERT_TRUE(submenu_index.has_value());
+  EXPECT_EQ(menu_model->GetLabelAt(submenu_index.value()), u"Sharing 1 tab");
+  EXPECT_NE(menu_model->GetForegroundColorId(submenu_index.value()),
+            ui::kColorMenuItemForegroundDisabled);
+  EXPECT_EQ(
+      menu_model->GetIconAt(submenu_index.value()),
+      ui::ImageModel::FromVectorIcon(kTabOldIcon, ui::kColorMenuIcon,
+                                     ui::SimpleMenuModel::kDefaultIconSize));
+}
+
 IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
                        VerifyTabEnablementWhenLimitReached_NonPec) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

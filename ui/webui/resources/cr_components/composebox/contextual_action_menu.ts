@@ -792,15 +792,13 @@ export class ContextualActionMenuElement extends
   }
 
   protected isShareTabsTriggerDisabled_(): boolean {
-    return (this.inputState?.disabledInputTypes || [])
-        .includes(InputType.kBrowserTab);
+    return this.selectedTabIds.size === 0 &&
+        (this.inputState?.disabledInputTypes ||
+         []).includes(InputType.kBrowserTab);
   }
 
   // Checks if a tab item in the context menu should be disabled.
   protected isTabDisabled_(tab: TabInfo): boolean {
-    if (this.isShareTabsTriggerDisabled_()) {
-      return true;
-    }
     const isRestored = this.contextManagementInComposeboxEnabled &&
         (this.aimThreadRestoredTabs || [])
             .some(

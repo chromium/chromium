@@ -783,6 +783,11 @@ std::u16string OmniboxContextMenuController::GetShareTabsTooltip() const {
 }
 
 bool OmniboxContextMenuController::IsTabContextEnabled() const {
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
+      std::ranges::any_of(GetRecentTabs(), &TabInfo::is_checked)) {
+    return true;
+  }
+
   if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
     auto it = input_type_info_.find(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
     return it != input_type_info_.end() && it->second.enabled;

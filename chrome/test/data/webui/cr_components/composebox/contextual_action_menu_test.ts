@@ -2030,6 +2030,79 @@ suite('ContextualActionMenu', () => {
     assertEquals(thirdItem, actionMenu.shadowRoot.activeElement);
   });
 
+  test('Attached tabs stay deselectable at the input limit', async () => {
+    actionMenu.remove();
+    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    actionMenu.contextManagementInComposeboxEnabled = true;
+    const tab1 = createTabSuggestion({tabId: 1, title: 'Tab 1'});
+    const tab2 = createTabSuggestion({tabId: 2, title: 'Tab 2'});
+
+    actionMenu.tabSuggestions = [tab1, tab2];
+    // Attaching tab1 reaches the limit of one total input. The browser then
+    // reports every allowed input type as disabled.
+    actionMenu.selectedTabIds = new Map([[1, 'uuid1']]);
+    actionMenu.inputState = new MockInputState({
+      allowedInputTypes: [InputType.kBrowserTab],
+      disabledInputTypes: [InputType.kBrowserTab],
+      maxTotalInputs: 1,
+    });
+    document.body.appendChild(actionMenu);
+    await microtasksFinished();
+
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    // The entry point must stay actionable so the flyout can be opened.
+    const trigger = $$<HTMLButtonElement>(actionMenu, '#shareTabsTrigger');
+    assertTrue(!!trigger);
+    assertTrue(isVisible(trigger));
+    assertFalse(trigger.disabled);
+
+    const flyout = $$(actionMenu, '.share-tabs-flyout') as HTMLElement;
+    assertTrue(!!flyout);
+    triggerKeyDown(trigger, 'ArrowRight');
+    await actionMenu.updateComplete;
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await microtasksFinished();
+
+    const buttons = Array.from(
+        flyout.querySelectorAll<HTMLButtonElement>('button.dropdown-item'));
+    assertEquals(2, buttons.length);
+    assertFalse(buttons[0]!.disabled);  // tab1 (attached) -> deselectable
+    assertTrue(buttons[1]!.disabled);   // tab2 (unattached) -> at the limit
+
+    // Clicking the attached tab removes it from the context.
+    const deleteEvent = eventToPromise<CustomEvent<{tabId: number}>>(
+        'delete-tab-context', actionMenu);
+    buttons[0]!.click();
+    const event = await deleteEvent;
+    assertEquals(1, event.detail.tabId);
+  });
+
+  test('Tab entry point stays disabled when no tabs are attached', async () => {
+    actionMenu.remove();
+    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    actionMenu.contextManagementInComposeboxEnabled = true;
+    actionMenu.tabSuggestions = [createTabSuggestion({tabId: 1, title: 'Tab'})];
+    actionMenu.selectedTabIds = new Map();
+    // Tabs are unavailable for a reason unrelated to the input limit, e.g. the
+    // active tool does not support them.
+    actionMenu.inputState = new MockInputState({
+      allowedInputTypes: [InputType.kBrowserTab],
+      disabledInputTypes: [InputType.kBrowserTab],
+    });
+    document.body.appendChild(actionMenu);
+    await microtasksFinished();
+
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    const trigger = $$<HTMLButtonElement>(actionMenu, '#shareTabsTrigger');
+    assertTrue(!!trigger);
+    assertTrue(isVisible(trigger));
+    assertTrue(trigger.disabled);
+  });
+
   test('focuses Share Tabs when opening the + menu via keydown', async () => {
     actionMenu.remove();
     actionMenu = document.createElement('cr-composebox-contextual-action-menu');
