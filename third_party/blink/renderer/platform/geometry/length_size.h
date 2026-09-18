@@ -36,6 +36,9 @@ class LengthSize {
       : width_(width), height_(height) {}
 
   bool operator==(const LengthSize& o) const {
+    if (this == &o) [[unlikely]] {
+      return true;
+    }
     return width_ == o.width_ && height_ == o.height_;
   }
 

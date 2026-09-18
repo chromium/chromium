@@ -4,9 +4,13 @@
 
 #include "third_party/blink/renderer/platform/geometry/length.h"
 
+#include <utility>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
+#include "third_party/blink/renderer/platform/geometry/length_box.h"
+#include "third_party/blink/renderer/platform/geometry/length_size.h"
 
 namespace blink {
 
@@ -585,6 +589,169 @@ TEST_F(LengthTest, NanCensoring) {
   float expr_result = round_expr.GetCalculationValue().Evaluate(0);
   EXPECT_TRUE(std::isfinite(expr_result));
   EXPECT_EQ(0.f, expr_result);
+}
+
+TEST_F(LengthTest, MoveConstructor) {
+  // Move non-calculated length.
+  {
+    Length original = Length::Fixed(42.0f);
+    Length moved(std::move(original));
+    EXPECT_TRUE(moved.IsFixed());
+    EXPECT_EQ(42.0f, moved.Pixels());
+    EXPECT_FALSE(moved.Quirk());
+    EXPECT_TRUE(original.IsAuto());
+    EXPECT_FALSE(original.Quirk());
+  }
+
+  // Move calculated length.
+  {
+    Length original = CreateLength(PixelsAndPercent(ten_px));
+    EXPECT_TRUE(original.IsCalculated());
+    EXPECT_EQ(1u, original.GetCalculatedCountForTest());
+
+    Length moved(std::move(original));
+    EXPECT_TRUE(moved.IsCalculated());
+    EXPECT_EQ(1u, moved.GetCalculatedCountForTest());
+    EXPECT_TRUE(original.IsAuto());
+    EXPECT_FALSE(original.Quirk());
+  }
+}
+
+TEST_F(LengthTest, MoveAssignment) {
+  // Self-move.
+  {
+    Length len = Length::Fixed(42.0f);
+    len = std::move(*&len);
+    EXPECT_TRUE(len.IsFixed());
+    EXPECT_EQ(42.0f, len.Pixels());
+
+    Length calc = CreateLength(PixelsAndPercent(ten_px));
+    EXPECT_EQ(1u, calc.GetCalculatedCountForTest());
+    calc = std::move(*&calc);
+    EXPECT_TRUE(calc.IsCalculated());
+    EXPECT_EQ(1u, calc.GetCalculatedCountForTest());
+  }
+
+  // Move primitive into primitive.
+  {
+    Length dst = Length::Auto();
+    Length src = Length::Percent(50.0f);
+    dst = std::move(src);
+    EXPECT_TRUE(dst.IsPercent());
+    EXPECT_EQ(50.0f, dst.Percent());
+    EXPECT_TRUE(src.IsAuto());
+  }
+
+  // Move calculated into primitive.
+  {
+    Length dst = Length::Fixed(10.0f);
+    Length src = CreateLength(PixelsAndPercent(ten_px));
+    EXPECT_EQ(1u, src.GetCalculatedCountForTest());
+
+    dst = std::move(src);
+    EXPECT_TRUE(dst.IsCalculated());
+    EXPECT_EQ(1u, dst.GetCalculatedCountForTest());
+    EXPECT_TRUE(src.IsAuto());
+  }
+
+  // Move primitive into calculated (releases old calculation handle).
+  {
+    Length dst = CreateLength(PixelsAndPercent(ten_px));
+    Length extra_ref = dst;
+    EXPECT_EQ(2u, dst.GetCalculatedCountForTest());
+
+    Length src = Length::Fixed(20.0f);
+    dst = std::move(src);
+    EXPECT_TRUE(dst.IsFixed());
+    EXPECT_EQ(20.0f, dst.Pixels());
+    EXPECT_EQ(1u, extra_ref.GetCalculatedCountForTest());
+    EXPECT_TRUE(src.IsAuto());
+  }
+
+  // Move calculated into calculated (releases old handle, transfers new).
+  {
+    Length dst = CreateLength(PixelsAndPercent(ten_px));
+    Length dst_ref = dst;
+    EXPECT_EQ(2u, dst.GetCalculatedCountForTest());
+
+    Length src = CreateLength(PixelsAndPercent(twenty_px));
+    EXPECT_EQ(1u, src.GetCalculatedCountForTest());
+
+    dst = std::move(src);
+    EXPECT_TRUE(dst.IsCalculated());
+    EXPECT_EQ(1u, dst.GetCalculatedCountForTest());
+    EXPECT_EQ(1u, dst_ref.GetCalculatedCountForTest());
+    EXPECT_TRUE(src.IsAuto());
+  }
+}
+
+TEST_F(LengthTest, CopyAssignment) {
+  // Self-copy.
+  {
+    Length len = Length::Fixed(42.0f);
+    len = *&len;
+    EXPECT_TRUE(len.IsFixed());
+    EXPECT_EQ(42.0f, len.Pixels());
+
+    Length calc = CreateLength(PixelsAndPercent(ten_px));
+    EXPECT_EQ(1u, calc.GetCalculatedCountForTest());
+    calc = *&calc;
+    EXPECT_TRUE(calc.IsCalculated());
+    EXPECT_EQ(1u, calc.GetCalculatedCountForTest());
+  }
+
+  // Fast path (primitive to primitive).
+  {
+    Length a = Length::Fixed(10.0f);
+    Length b = Length::Percent(20.0f);
+    a = b;
+    EXPECT_TRUE(a.IsPercent());
+    EXPECT_EQ(20.0f, a.Percent());
+  }
+
+  // Slow path (calculated refcount maintenance).
+  {
+    Length c1 = CreateLength(PixelsAndPercent(ten_px));
+    EXPECT_EQ(1u, c1.GetCalculatedCountForTest());
+
+    Length c2 = Length::Fixed(5.0f);
+    c2 = c1;
+    EXPECT_TRUE(c2.IsCalculated());
+    EXPECT_EQ(2u, c1.GetCalculatedCountForTest());
+    EXPECT_EQ(2u, c2.GetCalculatedCountForTest());
+
+    c2 = Length::Auto();
+    EXPECT_EQ(1u, c1.GetCalculatedCountForTest());
+  }
+}
+
+TEST_F(LengthTest, GeometryEquality) {
+  // LengthBox equality including self-identity fast-path.
+  {
+    LengthBox box1(Length::Fixed(1), Length::Fixed(2), Length::Fixed(3),
+                   Length::Fixed(4));
+    EXPECT_TRUE(box1 == box1);
+
+    LengthBox box2(Length::Fixed(1), Length::Fixed(2), Length::Fixed(3),
+                   Length::Fixed(4));
+    EXPECT_TRUE(box1 == box2);
+
+    LengthBox box3(Length::Fixed(1), Length::Fixed(2), Length::Fixed(3),
+                   Length::Fixed(5));
+    EXPECT_FALSE(box1 == box3);
+  }
+
+  // LengthSize equality including self-identity fast-path.
+  {
+    LengthSize size1(Length::Fixed(10), Length::Percent(20));
+    EXPECT_TRUE(size1 == size1);
+
+    LengthSize size2(Length::Fixed(10), Length::Percent(20));
+    EXPECT_TRUE(size1 == size2);
+
+    LengthSize size3(Length::Fixed(10), Length::Percent(30));
+    EXPECT_FALSE(size1 == size3);
+  }
 }
 
 }  // namespace blink

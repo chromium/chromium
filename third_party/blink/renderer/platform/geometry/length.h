@@ -157,7 +157,7 @@ class PLATFORM_EXPORT Length {
   explicit Length(const CalculationValue*);
 
   Length(const Length& length) : quirk_(length.quirk_), type_(length.type_) {
-    if (IsCalculated()) {
+    if (IsCalculated()) [[unlikely]] {
       calculation_handle_ = length.calculation_handle_;
       IncrementCalculatedCount();
     } else {
@@ -165,39 +165,57 @@ class PLATFORM_EXPORT Length {
     }
   }
 
+  Length(Length&& length) noexcept
+      : calculation_handle_(length.calculation_handle_),
+        quirk_(length.quirk_),
+        type_(length.type_) {
+    length.type_ = kAuto;
+    length.value_ = 0;
+    length.quirk_ = false;
+  }
+
   Length& operator=(const Length& length) {
-    if (length.IsCalculated()) {
-      length.IncrementCalculatedCount();
+    if (type_ != kCalculated && length.type_ != kCalculated) [[likely]] {
+      value_ = length.value_;
+      quirk_ = length.quirk_;
+      type_ = length.type_;
+      return *this;
     }
-    if (IsCalculated()) {
+    return AssignSlow(length);
+  }
+
+  Length& operator=(Length&& length) noexcept {
+    if (this == &length) [[unlikely]] {
+      return *this;
+    }
+    if (IsCalculated()) [[unlikely]] {
       DecrementCalculatedCount();
     }
-    type_ = length.type_;
+    calculation_handle_ = length.calculation_handle_;
     quirk_ = length.quirk_;
-    if (length.IsCalculated()) {
-      calculation_handle_ = length.calculation_handle_;
-    } else {
-      value_ = length.value_;
-    }
+    type_ = length.type_;
+    length.type_ = kAuto;
+    length.value_ = 0;
+    length.quirk_ = false;
     return *this;
   }
 
   ~Length() {
-    if (IsCalculated())
+    if (IsCalculated()) [[unlikely]] {
       DecrementCalculatedCount();
+    }
   }
 
   bool operator==(const Length& o) const {
     if (type_ != o.type_ || quirk_ != o.quirk_) {
       return false;
     }
-    if (type_ == kCalculated) {
+    if (type_ == kCalculated) [[unlikely]] {
       return IsCalculatedEqual(o);
-    } else {
-      // For everything that doesn't use value_, it is defined to be zero,
-      // so we can compare here unconditionally.
-      return value_ == o.value_;
     }
+    // For everything that doesn't use value_, it is defined to be zero,
+    // so we can compare here unconditionally.
+    return value_ == o.value_;
   }
 
   static const Length& Auto() { return g_auto_length; }
@@ -405,6 +423,7 @@ class PLATFORM_EXPORT Length {
   }
   void IncrementCalculatedCount() const;
   void DecrementCalculatedCount() const;
+  NOINLINE Length& AssignSlow(const Length& length);
 
   union {
     // If kType == kCalculated.
