@@ -260,7 +260,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(bool, IsActorTaskActive, (), (override));
   MOCK_METHOD(void,
               OnPasswordFilled,
-              (PasswordManagerDriver*, const GURL&),
+              (PasswordManagerDriver*),
               (override));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,

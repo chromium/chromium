@@ -319,8 +319,8 @@ class ChromePasswordManagerClient
   void UpdateFormManagers() override;
   void NavigateToManagePasswordsPage(
       password_manager::ManagePasswordsReferrer referrer) override;
-  void OnPasswordFilled(password_manager::PasswordManagerDriver* driver,
-                        const GURL& url) override;
+  void OnPasswordFilled(
+      password_manager::PasswordManagerDriver* driver) override;
 
 #if BUILDFLAG(IS_ANDROID)
   void NavigateToManagePasskeysPage(

@@ -617,7 +617,7 @@ class PasswordManagerClient {
   virtual bool IsActorTaskActive();
 
   // Notifies the client that a password fill event occurred.
-  virtual void OnPasswordFilled(PasswordManagerDriver* driver, const GURL& url);
+  virtual void OnPasswordFilled(PasswordManagerDriver* driver);
 };
 
 }  // namespace password_manager

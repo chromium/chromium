@@ -230,8 +230,8 @@ bool PasswordManagerClient::IsActorTaskActive() {
   return false;
 }
 
-void PasswordManagerClient::OnPasswordFilled(PasswordManagerDriver* driver,
-                                             const GURL& url) {}
+void PasswordManagerClient::OnPasswordFilled(
+    PasswordManagerDriver* driver) {}
 
 bool PasswordManagerClient::IsChromeSigninPage() const {
   return false;

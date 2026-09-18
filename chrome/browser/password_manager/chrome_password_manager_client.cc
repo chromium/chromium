@@ -1417,8 +1417,7 @@ void ChromePasswordManagerClient::NavigateToManagePasswordsPage(
 }
 
 void ChromePasswordManagerClient::OnPasswordFilled(
-    password_manager::PasswordManagerDriver* driver,
-    const GURL& url) {
+    password_manager::PasswordManagerDriver* driver) {
   if (critical_action_logger_) {
     critical_action_logger_->MaybeLogCriticalAction(driver);
   }

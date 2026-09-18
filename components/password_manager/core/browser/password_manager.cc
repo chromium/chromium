@@ -1047,7 +1047,7 @@ void PasswordManager::OnInformAboutUserInput(PasswordManagerDriver* driver,
         manager->OnPasswordFilledManually();
       }
       if (!had_actor_filled_password_before && HasActorFilledPassword(*form)) {
-        client_->OnPasswordFilled(driver, form->url);
+        client_->OnPasswordFilled(driver);
       }
     }
   }

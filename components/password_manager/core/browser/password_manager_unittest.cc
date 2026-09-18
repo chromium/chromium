@@ -288,7 +288,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(void, UpdateFormManagers, (), (override));
   MOCK_METHOD(void,
               OnPasswordFilled,
-              (PasswordManagerDriver*, const GURL&),
+              (PasswordManagerDriver*),
               (override));
   MOCK_METHOD(void,
               AutomaticPasswordSave,
@@ -1707,7 +1707,7 @@ TEST_P(PasswordManagerTest, OnInformAboutUserInput_ActorFilledPassword) {
       autofill::FieldPropertiesFlags::kAutofilledActorLogin);
 
   // Expect client_->OnPasswordFilled to be called.
-  EXPECT_CALL(client_, OnPasswordFilled(&driver_, form_data.url())).Times(1);
+  EXPECT_CALL(client_, OnPasswordFilled(&driver_)).Times(1);
 
   manager()->OnInformAboutUserInput(&driver_, form_data);
   Mock::VerifyAndClearExpectations(&client_);
