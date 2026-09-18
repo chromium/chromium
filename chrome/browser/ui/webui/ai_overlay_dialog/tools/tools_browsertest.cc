@@ -418,25 +418,36 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, Scroll) {
 
 IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, FindAndHighlightSuccess) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL("data:text/html,<html><body><p>This is a test paragraph "
-                      "that we want to find.</p></body></html>")));
+      browser(), embedded_test_server()->GetURL("/title1.html")));
 
   base::test::TestFuture<FindAndHighlightResult> future;
-  tools()->FindAndHighlight("test paragraph", future.GetCallback());
+  tools()->FindAndHighlight("This page has no title", future.GetCallback());
 
   EXPECT_TRUE(future.Get().has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, FindAndHighlightNotFound) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL("data:text/html,<html><body><p>This is a test paragraph "
-                      "that we want to find.</p></body></html>")));
+      browser(), embedded_test_server()->GetURL("/title1.html")));
 
   base::test::TestFuture<FindAndHighlightResult> future;
   tools()->FindAndHighlight("missing text", future.GetCallback());
 
   EXPECT_FALSE(future.Get().has_value());
   EXPECT_EQ("No match found", future.Get().error());
+}
+
+IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest,
+                       FindAndHighlightBlocksNonHttpSchemes) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+
+  base::test::TestFuture<FindAndHighlightResult> future;
+  tools()->FindAndHighlight("Google Chrome", future.GetCallback());
+
+  EXPECT_FALSE(future.Get().has_value());
+  EXPECT_EQ("FindAndHighlight is only supported on HTTP/HTTPS pages",
+            future.Get().error());
 }
 
 IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, PlayVideoNoMediaSession) {

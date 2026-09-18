@@ -351,6 +351,11 @@ void AiOverlayTools::FindAndHighlight(const std::string& query,
     std::move(callback).Run(base::unexpected("No active tab"));
     return;
   }
+  if (!contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+    std::move(callback).Run(base::unexpected(
+        "FindAndHighlight is only supported on HTTP/HTTPS pages"));
+    return;
+  }
 
   content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
   if (annotation_document_.AsRenderFrameHostIfValid() != rfh) {
