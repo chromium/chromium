@@ -237,9 +237,8 @@ AudioParameters AudioManagerPulse::GetPreferredOutputStreamParameters(
     if (input_params.channel_layout() != CHANNEL_LAYOUT_DISCRETE)
       channel_layout_config = input_params.channel_layout_config();
 
-    buffer_size =
-        std::min(kMaximumOutputBufferSize,
-                 std::max(buffer_size, input_params.frames_per_buffer()));
+    buffer_size = std::clamp(input_params.frames_per_buffer(), buffer_size,
+                             kMaximumOutputBufferSize);
   }
 
   int user_buffer_size = GetUserBufferSize();

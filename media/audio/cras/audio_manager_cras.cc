@@ -346,9 +346,8 @@ AudioParameters AudioManagerCras::GetPreferredOutputStreamParameters(
     sample_rate = input_params.sample_rate();
     if (!buffer_size) {  // Not user-provided.
       buffer_size =
-          std::min(static_cast<int>(limits::kMaxAudioBufferSize),
-                   std::max(static_cast<int>(limits::kMinAudioBufferSize),
-                            input_params.frames_per_buffer()));
+          std::clamp(input_params.frames_per_buffer(),
+                     limits::kMinAudioBufferSize, limits::kMaxAudioBufferSize);
     }
     return AudioParameters(
         AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,

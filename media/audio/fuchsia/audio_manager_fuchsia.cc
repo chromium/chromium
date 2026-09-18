@@ -118,7 +118,7 @@ AudioParameters AudioManagerFuchsia::GetPreferredOutputStreamParameters(
     // Round period to a whole number of the CPU scheduling periods.
     period = round(period / base::kAudioSchedulingPeriod) *
              base::kAudioSchedulingPeriod;
-    period = std::min(kMaxBufferPeriod, std::max(period, kMinBufferPeriod));
+    period = std::clamp(period, kMinBufferPeriod, kMaxBufferPeriod);
 
     params.set_frames_per_buffer(
         AudioTimestampHelper::TimeToFrames(period, params.sample_rate()));

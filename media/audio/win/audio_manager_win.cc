@@ -17,6 +17,7 @@
 // indirectly via //base.
 #undef LogSeverity
 
+#include <algorithm>
 #include <utility>
 
 #include "base/command_line.h"
@@ -422,9 +423,8 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
 
     // Allow non-default buffer sizes if we have a valid min and max.
     if (min_buffer_size > 0 && max_buffer_size > 0) {
-      buffer_size =
-          std::min(max_buffer_size,
-                   std::max(input_params.frames_per_buffer(), min_buffer_size));
+      buffer_size = std::clamp(input_params.frames_per_buffer(),
+                               min_buffer_size, max_buffer_size);
     }
   }
 

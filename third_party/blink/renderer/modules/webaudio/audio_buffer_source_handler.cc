@@ -215,8 +215,7 @@ AudioBufferSourceHandler::ProcessFastPath(double virtual_delta_frames,
 
   while (frames_to_process > 0) {
     const int frames_to_end = end_frame - read_index;
-    int frames_this_time = std::min(frames_to_process, frames_to_end);
-    frames_this_time = std::max(0, frames_this_time);
+    int frames_this_time = std::clamp(frames_to_end, 0, frames_to_process);
     const size_t frames_this_time_size =
         base::checked_cast<size_t>(frames_this_time);
 

@@ -232,8 +232,8 @@ void PeriodicWaveImpl::WaveDataForFundamentalFrequency(
   // before aliasing occurs.
   float pitch_range = 1 + cents_above_lowest_frequency / cents_per_range_;
 
-  pitch_range = std::max(pitch_range, 0.0f);
-  pitch_range = std::min(pitch_range, static_cast<float>(NumberOfRanges() - 1));
+  pitch_range =
+      std::clamp(pitch_range, 0.0f, static_cast<float>(NumberOfRanges() - 1));
 
   // The words "lower" and "higher" refer to the table data having the lower and
   // higher numbers of partials.  It's a little confusing since the range index

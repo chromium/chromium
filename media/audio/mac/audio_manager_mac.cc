@@ -1012,10 +1012,8 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
     // If passed in via the input_params we allow buffer sizes to go as
     // low as the the kMinAudioBufferSize, ignoring what
     // ChooseBufferSize() normally returns.
-    buffer_size =
-        std::min(static_cast<int>(limits::kMaxAudioBufferSize),
-                 std::max(scaled_buffer_size,
-                          static_cast<int>(limits::kMinAudioBufferSize)));
+    buffer_size = std::clamp(scaled_buffer_size, limits::kMinAudioBufferSize,
+                             limits::kMaxAudioBufferSize);
   } else {
     buffer_size = ChooseBufferSize(false, hardware_sample_rate);
   }
