@@ -424,6 +424,63 @@ public class TabUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.PDF_REUSE_FRAGMENT})
+    public void testOnViewDetachedFromWindow_doesNotCrashWhenNativePageIsFrozen() {
+        TabImplJni.setInstanceForTesting(mNativeMock);
+        View view = new View(ContextUtils.getApplicationContext());
+
+        doReturn(mTabWebContentsDelegateAndroid)
+                .when(mDelegateFactory)
+                .createWebContentsDelegate(any(Tab.class));
+        doReturn(mNativePage)
+                .when(mDelegateFactory)
+                .createNativePage(any(String.class), any(), any(Tab.class), any());
+        doReturn(false).when(mNativePage).isFrozen();
+        doReturn(view).when(mNativePage).getView();
+        doReturn(mWindowAndroid).when(mWebContents).getTopLevelNativeWindow();
+        doReturn(mChromeActivity).when(mWeakReferenceContext).get();
+
+        mTab =
+                new TabImpl(TAB1_ID, mProfile, TabLaunchType.FROM_CHROME_UI) {
+                    @Override
+                    public WindowAndroid getWindowAndroid() {
+                        return mWindowAndroid;
+                    }
+
+                    @Override
+                    void updateWindowAndroid(WindowAndroid windowAndroid) {}
+
+                    @Override
+                    public WebContents getWebContents() {
+                        return mWebContents;
+                    }
+
+                    @Override
+                    public boolean isNativePage() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isHidden() {
+                        return false;
+                    }
+
+                    @Override
+                    void pushNativePageStateToNavigationEntry() {}
+                };
+        mTab.showNativePage(mNativePage);
+        mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
+        assertEquals(mNativePage, mTab.getNativePage());
+
+        mTab.freezeNativePage();
+        assertTrue(mTab.getNativePage().isFrozen());
+
+        // When the old view is detached from window after freezing (e.g. during activity
+        // destruction), onViewDetachedFromWindow should not query getView() on FrozenNativePage.
+        mTab.getAttachStateChangeListenerForTesting().onViewDetachedFromWindow(view);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.PDF_REUSE_FRAGMENT})
     public void testUpdateAttachment_reattachHiddenFreezesWhenViewHasNoParent() {
         TabImplJni.setInstanceForTesting(mNativeMock);
 

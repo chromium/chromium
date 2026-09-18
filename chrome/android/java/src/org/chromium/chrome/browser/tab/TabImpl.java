@@ -439,13 +439,17 @@ class TabImpl implements Tab, TabInternal {
 
                     @Override
                     public void onViewDetachedFromWindow(View view) {
-                        if (isNativePage() && assumeNonNull(getNativePage()).getView() == view) {
+                        NativePage nativePage = getNativePage();
+                        if (isNativePage()
+                                && nativePage != null
+                                && !nativePage.isFrozen()
+                                && nativePage.getView() == view) {
                             if (mNativePageSmoothTransitionDelegate != null) {
                                 mNativePageSmoothTransitionDelegate.cancel();
                                 mNativePageSmoothTransitionDelegate = null;
                             } else {
                                 // reset ntp view state.
-                                assumeNonNull(getView()).setAlpha(1f);
+                                view.setAlpha(1f);
                             }
                         }
                         mIsViewAttachedToWindow = false;
@@ -690,11 +694,14 @@ class TabImpl implements Tab, TabInternal {
 
     @Override
     public void freezeNativePage() {
-        if (mNativePage == null
-                || mNativePage.isFrozen()
-                || assumeNonNull(mNativePage.getView()).getParent() != null) {
+        if (mNativePage == null || mNativePage.isFrozen()) {
             return;
         }
+        View view = mNativePage.getView();
+        if (view == null || view.getParent() != null) {
+            return;
+        }
+        view.removeOnAttachStateChangeListener(mAttachStateChangeListener);
         mNativePage = FrozenNativePage.freeze(mNativePage);
         updateInteractableState();
     }
@@ -3444,6 +3451,10 @@ class TabImpl implements Tab, TabInternal {
 
     boolean isArchivedForTesting() {
         return getTabModelType() == TabModelType.ARCHIVED;
+    }
+
+    OnAttachStateChangeListener getAttachStateChangeListenerForTesting() {
+        return mAttachStateChangeListener;
     }
 
     @NativeMethods
