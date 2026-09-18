@@ -32,9 +32,15 @@ bool OmniboxEverywhereWidgetDelegate::IsPointInDraggableRegion(
 
 int OmniboxEverywhereWidgetDelegate::NonClientHitTest(
     const gfx::Point& point) const {
+#if BUILDFLAG(IS_MAC)
+  // On MacOS, we rely on window dragging and therefore return HTCAPTION. We
+  // avoid doing this on Aura because it causes the native context menu to
+  // be shown when right-clicking, and we use custom event handling to implement
+  // the window dragging.
   if (IsPointInDraggableRegion(point)) {
     return HTCAPTION;
   }
+#endif  // BUILDFLAG(IS_MAC)
   return HTNOWHERE;
 }
 
