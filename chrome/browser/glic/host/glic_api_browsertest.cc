@@ -10,12 +10,14 @@
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/test_future.h"
+#include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -3481,7 +3483,39 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetUserProfileInfo) {
       "Glic.Api.RequestHostLatency.GetUserProfileInfo", 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testRequestHeader) {
+// Test fixture that monitors HTTP requests on the embedded HTTPS test server.
+// Only testRequestHeader requires request monitoring; keeping observation
+// scoped to this fixture avoids incurring monitoring overhead and cross-thread
+// data race risks in unrelated tests.
+class GlicApiTestWithRequestMonitor : public GlicApiTest {
+ public:
+  GlicApiTestWithRequestMonitor() {
+    // Register the request monitor before the server starts (required by
+    // EmbeddedTestServer). We only monitor the HTTPS test server since Glic
+    // WebClient tests run exclusively over HTTPS.
+    embedded_https_test_server().RegisterRequestMonitor(base::BindRepeating(
+        &GlicApiTestWithRequestMonitor::OnHttpRequest, base::Unretained(this)));
+  }
+
+  // Returns a copy of observed requests. Requests are appended on the
+  // EmbeddedTestServer's IO thread and read on the test's main UI thread, so
+  // access is synchronized with a lock to prevent data races.
+  std::vector<net::test_server::HttpRequest> requests() const {
+    base::AutoLock auto_lock(lock_);
+    return requests_;
+  }
+
+ private:
+  void OnHttpRequest(const net::test_server::HttpRequest& request) {
+    base::AutoLock auto_lock(lock_);
+    requests_.push_back(request);
+  }
+
+  mutable base::Lock lock_;
+  std::vector<net::test_server::HttpRequest> requests_ GUARDED_BY(lock_);
+};
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithRequestMonitor, testRequestHeader) {
   if (GetParam().no_webview) {
     GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
   }
@@ -3503,13 +3537,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testRequestHeader) {
           testing::Pair(testing::StrCaseEq("x-glic-chrome-version"),
                         version_info::GetVersionNumber())));
 
+  const std::vector<net::test_server::HttpRequest> captured_requests =
+      requests();
   auto find_request = [&](std::string_view path) {
-    const auto it = std::ranges::find_if(
-        embedded_test_server_requests_, [&](const auto& request) {
+    const auto it =
+        std::ranges::find_if(captured_requests, [&](const auto& request) {
           return request.GetURL().GetPath() == path &&
                  request.method == net::test_server::METHOD_GET;
         });
-    return it == embedded_test_server_requests_.end() ? nullptr : &(*it);
+    return it == captured_requests.end() ? nullptr : &(*it);
   };
 
   auto* main_request = find_request(GetGuestURL().GetPath());
@@ -5023,6 +5059,11 @@ auto DefaultTestParamSet() {
 
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTest,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestWithRequestMonitor,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 

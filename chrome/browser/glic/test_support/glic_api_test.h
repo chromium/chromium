@@ -213,19 +213,10 @@ class GlicApiBrowserTestMixin : public T {
     Base::embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&GlicApiBrowserTestMixin::FakeRpcRequestHandler));
 
-    Base::embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
-        &GlicApiBrowserTestMixin::OnEmbeddedTestServerHttpRequest,
-        base::Unretained(this)));
-
     Base::embedded_https_test_server().RegisterRequestHandler(
         base::BindRepeating(&GlicApiBrowserTestMixin::SorryHtmlRequestHandler));
     Base::embedded_https_test_server().RegisterRequestHandler(
         base::BindRepeating(&GlicApiBrowserTestMixin::FakeRpcRequestHandler));
-
-    Base::embedded_https_test_server().RegisterRequestMonitor(
-        base::BindRepeating(
-            &GlicApiBrowserTestMixin::OnEmbeddedTestServerHttpRequest,
-            base::Unretained(this)));
 
     features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
@@ -444,11 +435,6 @@ class GlicApiBrowserTestMixin : public T {
   }
 
  private:
-  void OnEmbeddedTestServerHttpRequest(
-      const net::test_server::HttpRequest& request) {
-    VLOG(1) << "EmbeddedTestServerHttpRequest: " << request.relative_url;
-    embedded_test_server_requests_.push_back(request);
-  }
   void ProcessTestResult(content::GlobalRenderFrameHostId frame_id,
                          const ExecuteTestOptions& options,
                          const content::EvalJsResult& result_in) {
@@ -639,9 +625,6 @@ class GlicApiBrowserTestMixin : public T {
   base::test::ScopedFeatureList features_;
   std::set<content::GlobalRenderFrameHostId> next_step_required_;
   std::optional<base::Value> step_data_;
-
- protected:
-  std::vector<net::test_server::HttpRequest> embedded_test_server_requests_;
 };
 
 using GlicApiBrowserTest = GlicApiBrowserTestMixin<GlicBrowserTest>;
