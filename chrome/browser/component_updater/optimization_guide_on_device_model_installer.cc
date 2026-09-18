@@ -293,9 +293,8 @@ class ManifestConfigInstallerPolicy final : public ComponentInstallerPolicy {
   }
 
   bool RequiresNetworkEncryption() const override {
-    // TODO(crbug.com/562129749): Check whether RequiresNetworkEncryption is
-    // actually required for these components.
-    return true;
+    // The same manifest is delivered to all users.
+    return false;
   }
 
   update_client::CrxInstaller::Result OnCustomInstall(
@@ -306,8 +305,8 @@ class ManifestConfigInstallerPolicy final : public ComponentInstallerPolicy {
   }
 
   bool AllowCachedCopies() const override {
-    // TODO(crbug.com/562129749): Consider setting AllowCachedCopies to true.
-    return false;
+    // Manifest component is small, and should delta compress well.
+    return true;
   }
 
   bool AllowUpdatesOnMeteredConnections() const override {
