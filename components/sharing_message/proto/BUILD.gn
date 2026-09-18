@@ -25,7 +25,11 @@ proto_library("proto") {
     "sms_fetch_message_test_proto3_optional.proto",
     "timestamp.proto",
   ]
-  deps = [ "//third_party/protobuf:any_proto" ]
+  import_dirs = [ "//" ]
+  deps = [
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//third_party/protobuf:any_proto",
+  ]
 }
 
 # base::Value serialization for the actuator downstream messages, used by

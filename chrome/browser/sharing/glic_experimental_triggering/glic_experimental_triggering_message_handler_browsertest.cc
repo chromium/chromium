@@ -27,7 +27,12 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_features.h"
+#include "components/actor/core/actor_features.h"
+#include "components/actor/core/actor_switches.h"
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/sharing_message/mock_sharing_message_sender.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
@@ -35,6 +40,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -51,6 +57,14 @@ constexpr int64_t kDefaultSequenceNumber = 42;
 constexpr char kDefaultServerConfig[] = "test_config";
 constexpr char kDefaultP256dh[] = "test_p256dh";
 constexpr char kDefaultAuthSecret[] = "test_auth_secret";
+constexpr char kScriptToolsContextId[] = "test_script_tools_context";
+constexpr char kTestToolName[] = "test_tool";
+constexpr char kTestToolResult[] = "tool_result";
+
+// Named `...Proto` to avoid colliding with the same-named glic structs.
+using ExecuteActionsResponseProto =
+    components_sharing_message::GlicExperimentalTriggering::
+        ExperimentalTriggeringResponse::ExecuteActionsResponse;
 
 components_sharing_message::SharingMessage CreateTriggeringMessage(
     int64_t sequence_number = kDefaultSequenceNumber,
@@ -65,6 +79,36 @@ components_sharing_message::SharingMessage CreateTriggeringMessage(
       sequence_number);
   // Set the current version by default to test the version check success path.
   triggering->set_glic_experimental_triggering_version(1);
+  return message;
+}
+
+// Returns a triggering message carrying an ExecuteActions request with a single
+// ScriptTool action. `context_id` and `document_token` are left unset when
+// empty.
+components_sharing_message::SharingMessage CreateExecuteScriptToolMessage(
+    std::string_view tool_name,
+    std::string_view context_id = {},
+    std::string_view document_token = {},
+    std::string_view input_arguments = "{}") {
+  components_sharing_message::SharingMessage message =
+      CreateTriggeringMessage();
+  if (!context_id.empty()) {
+    message.mutable_glic_experimental_triggering()->set_context_id(
+        std::string(context_id));
+  }
+  optimization_guide::proto::ScriptToolAction* script_action =
+      message.mutable_glic_experimental_triggering()
+          ->mutable_request()
+          ->mutable_execute_actions_request()
+          ->mutable_actions()
+          ->add_actions()
+          ->mutable_script_tool();
+  script_action->set_tool_name(std::string(tool_name));
+  script_action->set_input_arguments(std::string(input_arguments));
+  if (!document_token.empty()) {
+    script_action->mutable_document_identifier()->set_serialized_token(
+        std::string(document_token));
+  }
   return message;
 }
 
@@ -1215,6 +1259,101 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
         "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
         GlicExperimentalTriggeringIncomingMessageResult::kUserNotOptedIn, 1);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       ExecuteActionsFeatureDisabled) {
+  OptIn();
+  components_sharing_message::SharingMessage message =
+      CreateExecuteScriptToolMessage(kTestToolName);
+
+  std::unique_ptr<components_sharing_message::ResponseMessage> response =
+      SendMessageAndWait(std::move(message));
+  ASSERT_TRUE(response);
+  EXPECT_TRUE(response->has_glic_experimental_triggering());
+  EXPECT_EQ(
+      response->glic_experimental_triggering().response().task_update().state(),
+      components_sharing_message::GlicExperimentalTriggering::
+          ExperimentalTriggeringResponse::TaskUpdate::FAILED);
+  EXPECT_EQ(
+      response->glic_experimental_triggering().response().task_update().data(),
+      "Script tool execution is not enabled.");
+}
+
+class GlicExperimentalTriggeringScriptToolsBrowserTest
+    : public GlicExperimentalTriggeringMessageHandlerBrowserTest {
+ public:
+  GlicExperimentalTriggeringScriptToolsBrowserTest() {
+    script_tools_feature_list_.InitWithFeatures(
+        {features::kGlicExperimentalTriggeringScriptTools,
+         actor::kGlicActorEnableScriptTools, blink::features::kWebMCP},
+        {});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    GlicExperimentalTriggeringMessageHandlerBrowserTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitch(actor::switches::kDisableActorSafetyChecks);
+  }
+
+ private:
+  base::test::ScopedFeatureList script_tools_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringScriptToolsBrowserTest,
+                       ExecuteActionsDirectExecution) {
+  OptIn();
+
+  content::WebContents* web_contents =
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  ASSERT_TRUE(content::ExecJs(
+      web_contents, content::JsReplace(R"(
+    document.modelContext.registerTool({
+      name: $1,
+      description: "A test tool",
+      execute: async (args) => {
+        return $2;
+      },
+    });
+  )",
+                                       kTestToolName, kTestToolResult)));
+
+  components_sharing_message::SharingMessage message =
+      CreateExecuteScriptToolMessage(
+          kTestToolName, kScriptToolsContextId,
+          optimization_guide::DocumentIdentifierUserData::
+              GetOrCreateForCurrentDocument(web_contents->GetPrimaryMainFrame())
+                  ->serialized_token());
+
+  base::test::TestFuture<components_sharing_message::ServerChannelConfiguration,
+                         components_sharing_message::SharingMessage>
+      future;
+  SetupMessageSenderMock(&future);
+
+  std::unique_ptr<components_sharing_message::ResponseMessage> response =
+      SendMessageAndWait(std::move(message));
+  EXPECT_FALSE(response);
+
+  auto [server_channel, received_message] = future.Take();
+  EXPECT_TRUE(received_message.has_glic_experimental_triggering());
+  EXPECT_EQ(received_message.glic_experimental_triggering().context_id(),
+            kScriptToolsContextId);
+  EXPECT_TRUE(received_message.glic_experimental_triggering().has_response());
+  EXPECT_TRUE(received_message.glic_experimental_triggering()
+                  .response()
+                  .has_execute_actions_response());
+  const ExecuteActionsResponseProto& exec_resp =
+      received_message.glic_experimental_triggering()
+          .response()
+          .execute_actions_response();
+  ASSERT_TRUE(exec_resp.has_actions_result());
+  EXPECT_EQ(exec_resp.actions_result().action_result(),
+            static_cast<int32_t>(actor::mojom::ActionResultCode::kOk));
+  ASSERT_EQ(exec_resp.actions_result().script_tool_results_size(), 1);
+  EXPECT_EQ(exec_resp.actions_result().script_tool_results(0).tool_name(),
+            kTestToolName);
+  EXPECT_EQ(exec_resp.actions_result().script_tool_results(0).result(),
+            kTestToolResult);
 }
 
 #if BUILDFLAG(IS_ANDROID)

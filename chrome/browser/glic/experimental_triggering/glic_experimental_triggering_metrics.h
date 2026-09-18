@@ -36,7 +36,17 @@ enum class GlicExperimentalTriggeringIncomingMessageResult {
   // A processing path exited without setting a result. Any samples in this
   // bucket indicate an instrumentation gap that should be fixed.
   kResultNotSet = 15,
-  kMaxValue = kResultNotSet,
+  kScriptToolsDisabled = 16,
+  kNonScriptToolAction = 17,
+  // No open tab matched the document identifier of a requested action, e.g.
+  // because the user navigated away or closed the tab.
+  kTabNotFound = 18,
+  // A request arrived for a context that is already executing a task.
+  kTaskAlreadyRunning = 19,
+  // The profile is not allowed to act on the web, either because of enterprise
+  // policy or because the account is not eligible.
+  kCannotActOnWeb = 20,
+  kMaxValue = kCannotActOnWeb,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicExperimentalTriggeringIncomingMessageResult)
 

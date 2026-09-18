@@ -805,6 +805,7 @@ source_set("unit_tests") {
     ":impl",
     "//base/test:test_support",
     "//chrome/browser:global_features",
+    "//chrome/browser/actor/ui:test_support",
     "//chrome/browser/background/glic",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/glic/actor",

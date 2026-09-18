@@ -4,6 +4,8 @@
 
 syntax = "proto2";
 
+import "components/optimization_guide/proto/features/actions_data.proto";
+
 option java_multiple_files = true;
 option java_package = "org.chromium.components.sharing_message.proto";
 
@@ -85,12 +87,20 @@ message GlicExperimentalTriggering {
       optional bytes request_token = 3;
     }
 
+    // TODO(crbug.com/541366310): Add a script execution capability to
+    // DeviceInfo before expanding beyond a limited prototype, so the server
+    // knows whether this Chrome instance supports script execution.
+    message ExecuteActionsRequest {
+      optional optimization_guide.proto.Actions actions = 1;
+    }
+
     oneof payload {
       TriggerActuationRequest trigger_actuation_request = 1;
       StopActuationRequest stop_actuation_request = 2;
       DeviceOptInRequest device_opt_in_request = 3;
       GetScreenshotRequest get_screenshot_request = 4;
       ContinueActuationRequest continue_actuation_request = 5;
+      ExecuteActionsRequest execute_actions_request = 6;
     }
   }
 
@@ -166,10 +176,15 @@ message GlicExperimentalTriggering {
       optional bytes request_token = 4;
     }
 
+    message ExecuteActionsResponse {
+      optional optimization_guide.proto.ActionsResult actions_result = 1;
+    }
+
     oneof payload {
       TaskUpdate task_update = 3;
       DeviceOptInResult device_opt_in_result = 4;
       ScreenshotResult screenshot_result = 5;
+      ExecuteActionsResponse execute_actions_response = 6;
     }
   }
 

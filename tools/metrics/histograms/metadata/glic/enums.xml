@@ -335,6 +335,11 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="No Actionable Request"/>
   <int value="14" label="Unexpected Request Payload"/>
   <int value="15" label="Result Not Set (instrumentation gap)"/>
+  <int value="16" label="Script Tools Disabled"/>
+  <int value="17" label="Non Script Tool Action"/>
+  <int value="18" label="Tab Not Found"/>
+  <int value="19" label="Task Already Running"/>
+  <int value="20" label="Cannot Act On Web"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h:GlicExperimentalTriggeringIncomingMessageResult) -->

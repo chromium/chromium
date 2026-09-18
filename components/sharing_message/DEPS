@@ -5,6 +5,7 @@ include_rules = [
   "+components/favicon/core",
   "+components/favicon_base",
   "+components/optimization_guide/core",
+  "+components/optimization_guide/proto",
   "+components/prefs",
   "+components/send_tab_to_self",
   "+components/strings",

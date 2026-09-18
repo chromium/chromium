@@ -27,6 +27,8 @@ namespace content {
 class BrowserContext;
 }
 
+class Profile;
+
 namespace optimization_guide::proto {
 class Actions;
 class AgentContainerConfig;
@@ -60,6 +62,23 @@ BuildToolRequestResult BuildToolRequest(
 // `actions` is empty.
 bool ValidateActionsAreScriptTools(
     const optimization_guide::proto::Actions& actions);
+
+// Resolves document identifiers to tab IDs for script tool actions in `actions`
+// that lack a tab ID, searching open tabs within `profile`.
+// `active_tab` is used solely as a fast-path cache for document identifier
+// resolution; actions do not fall back to `active_tab` if both `tab_id` and
+// `document_identifier` are missing.
+// Normally tab IDs should be pre-populated; this is primarily to support the
+// Glic experimental triggering path.
+// TODO(crbug.com/541366310): Remove or consolidate once callers populate tab
+// IDs directly.
+// Returns true if every script tool action has a valid tab ID or a document
+// identifier successfully resolved to an open tab in `profile`, false
+// otherwise.
+bool PopulateTabIdsForScriptToolActions(
+    Profile& profile,
+    optimization_guide::proto::Actions& actions,
+    tabs::TabInterface* active_tab = nullptr);
 
 // Builds the ActionsResult proto from the output of a call to the
 // ActorKeyedService::PerformActions API and fetches new observations for

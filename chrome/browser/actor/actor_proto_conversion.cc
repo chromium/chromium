@@ -6,12 +6,14 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <map>
 #include <memory>
 #include <optional>
 #include <variant>
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -22,6 +24,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -47,6 +50,8 @@
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
@@ -60,11 +65,13 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/origin_gating/core/task_policy_config.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -72,15 +79,11 @@
 #include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #else
-#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "components/tabs/public/tab_interface.h"
 #endif
 
 namespace actor {
@@ -960,6 +963,116 @@ bool ValidateActionsAreScriptTools(
       return false;
     }
   }
+  return true;
+}
+
+namespace {
+
+tabs::TabInterface* FindTabForDocumentIdentifier(
+    Profile& profile,
+    std::string_view token,
+    tabs::TabInterface* active_tab) {
+  if (token.empty() ||
+      !base::UnguessableToken::DeserializeFromString(token).has_value()) {
+    return nullptr;
+  }
+
+  if (active_tab && active_tab->GetContents() &&
+      active_tab->GetContents()->GetBrowserContext() == &profile &&
+      optimization_guide::GetRenderFrameForDocumentIdentifier(
+          *active_tab->GetContents(), token)) {
+    return active_tab;
+  }
+
+  tabs::TabInterface* matching_tab = nullptr;
+  auto check_browser = [&token, &matching_tab,
+                        active_tab](BrowserWindowInterface* browser) {
+    TabListInterface* tab_list = TabListInterface::From(browser);
+    if (!tab_list) {
+      return true;
+    }
+    const std::vector<tabs::TabInterface*> tabs = tab_list->GetAllTabs();
+    auto it = std::ranges::find_if(tabs, [&](tabs::TabInterface* tab) {
+      return tab && tab != active_tab && tab->GetContents() &&
+             optimization_guide::GetRenderFrameForDocumentIdentifier(
+                 *tab->GetContents(), token);
+    });
+    if (it != tabs.end()) {
+      matching_tab = *it;
+      return false;
+    }
+    return true;
+  };
+
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+  if (auto* browser_collection =
+          ProfileBrowserCollection::GetForProfile(&profile)) {
+    browser_collection->ForEach(check_browser,
+                                BrowserCollection::Order::kActivation);
+  }
+#else
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&profile, &check_browser](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != &profile) {
+          return true;
+        }
+        return check_browser(browser);
+      },
+      BrowserCollection::Order::kActivation);
+#endif
+  return matching_tab;
+}
+
+}  // namespace
+
+// Normally tab IDs should be pre-populated before action execution; this
+// function exists primarily to support the Glic experimental triggering path
+// where callers provide document identifiers instead of tab IDs.
+// TODO(crbug.com/541366310): Remove or consolidate once callers populate tab
+// IDs directly.
+bool PopulateTabIdsForScriptToolActions(
+    Profile& profile,
+    optimization_guide::proto::Actions& actions,
+    tabs::TabInterface* active_tab) {
+  CHECK(base::FeatureList::IsEnabled(
+      features::kGlicExperimentalTriggeringScriptTools));
+  std::map<std::string, tabs::TabInterface*, std::less<>> resolved_tabs;
+
+  for (auto& action : *actions.mutable_actions()) {
+    if (action.action_case() !=
+        optimization_guide::proto::Action::kScriptTool) {
+      continue;
+    }
+
+    auto& script_tool = *action.mutable_script_tool();
+    if (script_tool.has_tab_id() && script_tool.tab_id() > 0) {
+      continue;
+    }
+
+    if (!script_tool.has_document_identifier() ||
+        script_tool.document_identifier().serialized_token().empty()) {
+      return false;
+    }
+
+    const std::string& doc_token =
+        script_tool.document_identifier().serialized_token();
+
+    tabs::TabInterface* tab = nullptr;
+    auto it = resolved_tabs.find(doc_token);
+    if (it != resolved_tabs.end()) {
+      tab = it->second;
+    } else {
+      tab = FindTabForDocumentIdentifier(profile, doc_token, active_tab);
+      resolved_tabs.emplace(doc_token, tab);
+    }
+
+    if (!tab) {
+      return false;
+    }
+
+    script_tool.set_tab_id(tab->GetHandle().raw_value());
+  }
+
   return true;
 }
 

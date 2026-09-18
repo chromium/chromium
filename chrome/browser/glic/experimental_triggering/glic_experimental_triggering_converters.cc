@@ -168,6 +168,16 @@ ExperimentalTriggeringRequest ProtoToRequest(
         break;
       }
       case components_sharing_message::GlicExperimentalTriggering::
+          ExperimentalTriggeringRequest::kExecuteActionsRequest: {
+        ExecuteActionsRequest exec_actions_req;
+        if (req_proto.execute_actions_request().has_actions()) {
+          exec_actions_req.actions =
+              req_proto.execute_actions_request().actions();
+        }
+        request.payload = std::move(exec_actions_req);
+        break;
+      }
+      case components_sharing_message::GlicExperimentalTriggering::
           ExperimentalTriggeringRequest::PAYLOAD_NOT_SET:
         request.payload = RequestPayloadNotSet();
         break;
@@ -288,6 +298,13 @@ ResponseToTriggeringProto(const ExperimentalTriggeringResponse& response) {
           response.screenshot_result->request_token.data(),
           response.screenshot_result->request_token.size());
     }
+  }
+
+  if (response.execute_actions_response.has_value()) {
+    auto* proto_execute_actions_response =
+        triggering.mutable_response()->mutable_execute_actions_response();
+    *proto_execute_actions_response->mutable_actions_result() =
+        response.execute_actions_response->actions_result;
   }
 
   return triggering;

@@ -271,6 +271,8 @@ BASE_FEATURE(kGlicExperimentalTriggeringOpenWindowIfNone,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicExperimentalTriggeringOsNotification,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicExperimentalTriggeringScriptTools,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicBackgroundTriggering, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kGlicExperimentalTriggeringOptInURL{

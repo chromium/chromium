@@ -470,7 +470,11 @@ void ActorTask::Stop(StoppedReason stop_reason) {
   }
 
   if (callback_for_act_) {
-    DCHECK(state_ == State::kActing || state_ == State::kWaitingOnUser);
+    // A task can be stopped while still in `kCreated` if an Act request is
+    // waiting on asynchronous tab addition (e.g. via `kGlicEarlyAddTaskTabs`)
+    // before transitioning to `kActing`.
+    DCHECK(state_ == State::kActing || state_ == State::kWaitingOnUser ||
+           state_ == State::kCreated);
     mojom::ActionResultPtr result = MakeResult(result_code);
     action_tracker_for_metrics_->OnFinishedAct(*result);
     std::move(callback_for_act_)
@@ -508,6 +512,9 @@ void ActorTask::Pause(bool from_actor, bool cancel_existing_action) {
   // Invoke the callback before changing states so that the client sees the Act
   // result before seeing the state transition.
   if (callback_for_act_ && cancel_existing_action) {
+    // A task can be paused while still in `kCreated` if an Act request is
+    // waiting on asynchronous tab addition (e.g. via `kGlicEarlyAddTaskTabs`)
+    // before transitioning to `kActing`.
     DCHECK(state_ == State::kActing || state_ == State::kWaitingOnUser ||
            state_ == State::kCreated);
     mojom::ActionResultPtr result =

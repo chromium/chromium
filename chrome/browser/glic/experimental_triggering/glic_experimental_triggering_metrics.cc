@@ -95,10 +95,11 @@ void MaybeRecordInitialSharingMessageDeliveryLatency(
     return;
   }
   const auto& request = triggering.request();
-  // Only log for the first sharing message arriving in Chrome (OptIn or
-  // TriggerActuation).
+  // Only log for the first sharing message arriving in Chrome (OptIn,
+  // TriggerActuation, or ExecuteActions).
   if (!request.has_device_opt_in_request() &&
-      !request.has_trigger_actuation_request()) {
+      !request.has_trigger_actuation_request() &&
+      !request.has_execute_actions_request()) {
     return;
   }
   if (!triggering.has_task_metadata() ||
