@@ -48,13 +48,15 @@ include_rules = [
   "+chrome/browser/ui/web_applications/test",
   "+chrome/browser/upgrade_detector",
   "+chrome/browser/web_applications/mojom",
-  "+chrome/browser/web_applications/test",
   "+chrome/browser/web_applications/user_display_mode.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/test/base",
 ]
 
 specific_include_rules = {
+  ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/web_applications/test",
+  ],
   ".*browsertest\\.cc": [
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   ],
