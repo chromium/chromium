@@ -6465,6 +6465,9 @@ crbug.com/42204365 virtual/javascript-source-phase-imports/external/wpt/wasm/web
 crbug.com/42204365 virtual/javascript-source-phase-imports/external/wpt/wasm/webapi/esm-integration/wasm-import-wasm-export.tentative.html [ Pass ]
 crbug.com/42204365 virtual/javascript-source-phase-imports/wpt_internal/js/source-phase-imports/invalid-module-types-throw.html [ Pass ]
 
+# Wide arithmetic proposal staging: https://crbug.com/552767209
+crbug.com/552767209 external/wpt/wasm/proposals/wide-arithmetic/core/wide-arithmetic.wast.js.tentative.html [ Failure Pass ]
+
 # Sheriff 2022-10-19
 crbug.com/1376307 [ Fuchsia ] tables/mozilla_expected_failures/bugs/bug1055-2.html [ Failure ]
 
