@@ -268,12 +268,13 @@ class CORE_EXPORT HTMLCanvasElement final
   bool LowLatencyEnabled() const override;
   UkmParameters GetUkmParameters() override;
   void SetNeedsCompositingUpdate() override;
-  // Also implements/overrides OffscreenCanvasPlaceholder
   void UpdateDrawnElementGeometry(Element&,
                                   const gfx::Transform*,
+                                  const FloatClipRect*,
                                   bool update_hit_test_order) override;
   void UpdateDrawnElementGeometry(ElementImage&,
                                   const gfx::Transform*,
+                                  const FloatClipRect*,
                                   bool update_hit_test_order) override;
   void ClearDrawnElementGeometry(Element&) override;
   void ClearDrawnElementGeometry(ElementImage&) override;

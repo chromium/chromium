@@ -9,6 +9,12 @@ dictionary UpdateElementGeometryOptions {
   // at the top of the canvas's hit testing stack.
   boolean preserveHitTestOrder = false;
 
+  // Sets the element's canvas clip used for hit testing, evaluated in the
+  // coordinate space of `canvasTransform`.
+  // If omitted, the pre-existing value of the element's canvas clip is
+  // preserved.
+  DOMRectInit clip;
+
   // Sets the element's canvas transform. If omitted, the pre-existing
   // value of the element's canvas transform is preserved.
   DOMMatrixInit canvasTransform;

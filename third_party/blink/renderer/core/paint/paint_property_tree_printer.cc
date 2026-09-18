@@ -181,6 +181,7 @@ void UpdateDebugNames(const LayoutObject& object,
   SetDebugName(properties.TransformIsolationNode(), "TransformIsolationNode",
                object);
 
+  SetDebugName(properties.ElementCanvasClip(), "ElementCanvasClip", object);
   SetDebugName(properties.ClipPathClip(), "ClipPathClip", object);
   SetDebugName(properties.MaskClip(), "MaskClip", object);
   SetDebugName(properties.CssClip(), "CssClip", object);

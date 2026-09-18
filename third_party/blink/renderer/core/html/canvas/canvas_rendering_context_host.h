@@ -36,6 +36,7 @@ class CanvasRenderingContext;
 class CanvasResourceDispatcher;
 class ComputedStyle;
 class ElementImage;
+class FloatClipRect;
 class KURL;
 class LayoutLocale;
 class PlainTextPainter;
@@ -169,9 +170,11 @@ class CORE_EXPORT CanvasRenderingContextHost
   enum UpdateGeometryBehavior { kUpdateHitTestOrder, kPreserveHitTestOrder };
   virtual void UpdateDrawnElementGeometry(Element&,
                                           const gfx::Transform*,
+                                          const FloatClipRect*,
                                           bool update_hit_test_order) = 0;
   virtual void UpdateDrawnElementGeometry(ElementImage&,
                                           const gfx::Transform*,
+                                          const FloatClipRect*,
                                           bool update_hit_test_order) = 0;
   virtual void ClearDrawnElementGeometry(Element&) = 0;
   virtual void ClearDrawnElementGeometry(ElementImage&) = 0;

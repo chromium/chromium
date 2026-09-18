@@ -89,6 +89,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
+#include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -1695,14 +1696,19 @@ V8UnionDOMMatrixOrUndefined::Ret BaseRenderingContext2D::DrawElementInternal(
 
   if ((!options || !options->preserveElementGeometry()) &&
       element_canvas_transform_enabled) {
+    FloatClipRect canvas_clip;
+    if (sx && sy && swidth && sheight) {
+      canvas_clip = FloatClipRect(gfx::RectF(*sx, *sy, *swidth, *sheight));
+    }
+
     if (element->IsElement()) {
       Host()->UpdateDrawnElementGeometry(*element->GetAsElement(),
-                                         &result_transform,
-                                         /*update_hit_test_geometry*/ true);
+                                         &result_transform, &canvas_clip,
+                                         /*update_hit_test_order=*/true);
     } else if (element->IsElementImage()) {
       Host()->UpdateDrawnElementGeometry(*element->GetAsElementImage(),
-                                         &result_transform,
-                                         /*update_hit_test_geometry*/ true);
+                                         &result_transform, &canvas_clip,
+                                         /*update_hit_test_order=*/true);
     }
   }
 

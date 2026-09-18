@@ -55,6 +55,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_encode_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
@@ -122,6 +123,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -136,6 +138,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "v8/include/v8.h"
@@ -775,6 +778,7 @@ void HTMLCanvasElement::SetNeedsCompositingUpdate() {
 void HTMLCanvasElement::UpdateDrawnElementGeometry(
     Element& element,
     const gfx::Transform* transform,
+    const FloatClipRect* clip,
     bool update_hit_test_order) {
   if (element.CanvasForDrawing() != this) {
     return;
@@ -785,24 +789,30 @@ void HTMLCanvasElement::UpdateDrawnElementGeometry(
   if (transform) {
     element.SetCanvasTransform(*transform);
   }
+  if (clip) {
+    element.SetCanvasClip(*clip);
+  }
 }
 
 void HTMLCanvasElement::UpdateDrawnElementGeometry(
     ElementImage& element_image,
     const gfx::Transform* transform,
+    const FloatClipRect* clip,
     bool update_hit_test_order) {
   if (element_image.GetCanvasNodeId() != GetDomNodeId()) {
     return;
   }
   if (Element* element = DynamicTo<Element>(
           DOMNodeIds::NodeForId(element_image.GetNodeId()))) {
-    UpdateDrawnElementGeometry(*element, transform, update_hit_test_order);
+    UpdateDrawnElementGeometry(*element, transform, clip,
+                               update_hit_test_order);
   }
 }
 
 void HTMLCanvasElement::ClearDrawnElementGeometry(Element& element) {
   hit_testable_descendants_.erase(&element);
   element.ClearCanvasTransform();
+  element.ClearCanvasClip();
 }
 
 void HTMLCanvasElement::ClearDrawnElementGeometry(ElementImage& element_image) {
@@ -1123,7 +1133,23 @@ void HTMLCanvasElement::updateElementGeometry(
     transform_ptr = &transform;
   }
 
-  UpdateDrawnElementGeometry(*element, transform_ptr,
+  const FloatClipRect* clip_ptr = nullptr;
+  FloatClipRect clip;
+  if (options->hasClip()) {
+    const DOMRectInit* rect = options->clip();
+    double x = rect->x();
+    double y = rect->y();
+    double width = rect->width();
+    double height = rect->height();
+    if (std::isfinite(x) && std::isfinite(y) && std::isfinite(width) &&
+        std::isfinite(height)) {
+      CanvasRenderingContext::AdjustRectForCanvas(x, y, width, height);
+      clip = FloatClipRect(gfx::RectF(x, y, width, height));
+      clip_ptr = &clip;
+    }
+  }
+
+  UpdateDrawnElementGeometry(*element, transform_ptr, clip_ptr,
                              !options->preserveHitTestOrder());
 }
 

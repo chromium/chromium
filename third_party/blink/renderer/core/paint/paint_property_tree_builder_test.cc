@@ -8264,6 +8264,50 @@ TEST_P(PaintPropertyTreeBuilderTest, ElementCanvasTransformPropertyTree) {
   EXPECT_EQ(canvas_transform, properties->Translate()->Parent());
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, ElementCanvasClipPropertyTree) {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  SetBodyInnerHTML(R"HTML(
+    <canvas layoutsubtree id="canvas">
+      <div id="target" style="translate: 10px 20px"></div>
+    </canvas>
+  )HTML");
+
+  auto* target_element = GetDocument().getElementById(AtomicString("target"));
+  const auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  const auto* canvas_clip = properties->ElementCanvasClip();
+  ASSERT_TRUE(canvas_clip);
+  EXPECT_TRUE(canvas_clip->LayoutClipRect().IsInfinite());
+  ASSERT_TRUE(properties->Effect());
+  EXPECT_EQ(canvas_clip, &properties->Effect()->CanvasChildContentClip());
+
+  target_element->SetCanvasClip(FloatClipRect(gfx::RectF(10, 20, 30, 40)));
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(
+      target_element->GetLayoutObject()->PaintingLayer()->SelfNeedsRepaint());
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(canvas_clip, properties->ElementCanvasClip());
+  EXPECT_FALSE(canvas_clip->LayoutClipRect().IsInfinite());
+  EXPECT_EQ(gfx::RectF(10, 20, 30, 40), canvas_clip->PaintClipRect().Rect());
+  EXPECT_EQ(properties->ElementCanvasTransform(),
+            &canvas_clip->LocalTransformSpace());
+  auto* canvas_element = GetDocument().getElementById(AtomicString("canvas"));
+  EXPECT_EQ(&canvas_element->GetLayoutObject()
+                 ->FirstFragment()
+                 .ContentsProperties()
+                 .Clip(),
+            canvas_clip->Parent());
+
+  target_element->ClearCanvasClip();
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(
+      target_element->GetLayoutObject()->PaintingLayer()->SelfNeedsRepaint());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(canvas_clip, properties->ElementCanvasClip());
+  EXPECT_TRUE(canvas_clip->LayoutClipRect().IsInfinite());
+}
+
 TEST_P(PaintPropertyTreeBuilderTest, LineClampFloatClipping) {
   ScopedCSSLineClampForTest feature_(true);
 

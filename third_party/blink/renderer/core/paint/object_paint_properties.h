@@ -160,19 +160,20 @@ class CORE_EXPORT ObjectPaintProperties
 
     // Clips
     kFirstClip = 29,
-    kClipPathClip = kFirstClip,
-    kMaskClip = 30,
-    kCssClip = 31,
-    kOverflowControlsClip = 32,
-    kBackgroundClip = 33,
-    kPixelMovingFilterClipExpander = 34,
-    kInnerBorderRadiusClip = 35,
-    kOverflowClip = 36,
-    kCssClipFixedPosition = 37,
-    kInnerBorderShapeClip = 38,
-    kLineClampFloatClip = 39,
+    kElementCanvasClip = kFirstClip,
+    kClipPathClip = 30,
+    kMaskClip = 31,
+    kCssClip = 32,
+    kOverflowControlsClip = 33,
+    kBackgroundClip = 34,
+    kPixelMovingFilterClipExpander = 35,
+    kInnerBorderRadiusClip = 36,
+    kOverflowClip = 37,
+    kCssClipFixedPosition = 38,
+    kInnerBorderShapeClip = 39,
+    kLineClampFloatClip = 40,
     kLastClip = kLineClampFloatClip,
-    kClipAlias = 40,
+    kClipAlias = 41,
 
     // Should be updated whenever a higher value NodeType is added.
     kNumFields = kClipAlias + 1,
@@ -385,7 +386,10 @@ class CORE_EXPORT ObjectPaintProperties
   // Clip node declarations.
   //
   // The hierarchy of the clip subtree created by a LayoutObject is as follows:
-  // [ ViewTransitionClip ]
+  // [ ElementCanvasClip ]
+  // |   Clip created for HTML-in-Canvas children. Evaluated in the coordinate
+  // |   space of ElementCanvasTransform.
+  // +-[ ViewTransitionClip ]
   // |   Clip created only when there is an active ViewTransition. This is used
   // |   to clip the element's painting to a subset close to the viewport.
   // |   See https://drafts.csswg.org/css-view-transitions-1/
@@ -437,6 +441,7 @@ class CORE_EXPORT ObjectPaintProperties
   //       This serves as a parent to subtree clips on an element with paint
   //       containment. It is the deepest child of any clip tree on the contain:
   //       paint element.
+  ADD_CLIP(ElementCanvasClip, NodeId::kElementCanvasClip)
   ADD_CLIP(ClipPathClip, NodeId::kClipPathClip)
   ADD_CLIP(MaskClip, NodeId::kMaskClip)
   ADD_CLIP(CssClip, NodeId::kCssClip)

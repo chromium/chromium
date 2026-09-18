@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
+#include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
@@ -150,9 +151,11 @@ class CORE_EXPORT OffscreenCanvas final
   void ClearRenderedText() override;
   void UpdateDrawnElementGeometry(Element&,
                                   const gfx::Transform*,
+                                  const FloatClipRect*,
                                   bool update_hit_test_order) override;
   void UpdateDrawnElementGeometry(ElementImage&,
                                   const gfx::Transform*,
+                                  const FloatClipRect*,
                                   bool update_hit_test_order) override;
   void ClearDrawnElementGeometry(Element&) override;
   void ClearDrawnElementGeometry(ElementImage&) override;
@@ -164,6 +167,7 @@ class CORE_EXPORT OffscreenCanvas final
 
     // Fields populated by updateElementGeometry.
     std::optional<gfx::Transform> transform;
+    std::optional<FloatClipRect> clip;
     bool update_hit_test_order = false;
 
     // Set to `true` by clearElementGeometry.
@@ -292,6 +296,7 @@ class CORE_EXPORT OffscreenCanvas final
   void QueueUpdate(ElementGeometryUpdate update);
   void QueueElementGeometryUpdate(DOMNodeId element_id,
                                   const gfx::Transform* transform,
+                                  const FloatClipRect* clip,
                                   bool update_hit_test_order);
   void QueueClearElementGeometry(DOMNodeId element_id);
   void ProcessPendingElementGeometryUpdates();

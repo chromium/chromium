@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observation.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
+#include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/tracked_element_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -809,6 +810,18 @@ RareDataUpdate<void> NodeRareData::SetCanvasTransform(
 
 void NodeRareData::ClearCanvasTransform() {
   SetFieldToNullIfExists(FieldId::kCanvasTransform);
+}
+
+const FloatClipRect* NodeRareData::GetCanvasClip() const {
+  return GetWrappedField<FloatClipRect>(FieldId::kCanvasClip);
+}
+
+RareDataUpdate<void> NodeRareData::SetCanvasClip(const FloatClipRect& clip) {
+  return SetWrappedField<FloatClipRect>(FieldId::kCanvasClip, clip);
+}
+
+void NodeRareData::ClearCanvasClip() {
+  SetFieldToNullIfExists(FieldId::kCanvasClip);
 }
 
 RareDataUpdate<void> NodeRareData::SetOverscrollContainer(Element* element) {

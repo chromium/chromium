@@ -15,6 +15,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_geometry_update_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_update_element_geometry_options.h"
@@ -158,11 +159,12 @@ void ApplyElementGeometryUpdatesOnMainThread(
         if (update.clear_element_geometry) {
           canvas->ClearDrawnElementGeometry(*element);
         } else {
-          canvas->UpdateDrawnElementGeometry(*element,
-                                             update.transform.has_value()
-                                                 ? &update.transform.value()
-                                                 : nullptr,
-                                             update.update_hit_test_order);
+          canvas->UpdateDrawnElementGeometry(
+              *element,
+              update.transform.has_value() ? &update.transform.value()
+                                           : nullptr,
+              update.clip.has_value() ? &update.clip.value() : nullptr,
+              update.update_hit_test_order);
         }
         if (seen_elements.insert(element).is_new_entry) {
           updated_elements.push_back(element);
@@ -499,12 +501,31 @@ void OffscreenCanvas::updateElementGeometry(
     transform = matrix->Matrix();
     transform_ptr = &transform;
   }
+
+  const FloatClipRect* clip_ptr = nullptr;
+  FloatClipRect clip;
+  if (options->hasClip()) {
+    const DOMRectInit* rect = options->clip();
+    double x = rect->x();
+    double y = rect->y();
+    double width = rect->width();
+    double height = rect->height();
+    if (std::isfinite(x) && std::isfinite(y) && std::isfinite(width) &&
+        std::isfinite(height)) {
+      CanvasRenderingContext::AdjustRectForCanvas(x, y, width, height);
+      clip = FloatClipRect(gfx::RectF(x, y, width, height));
+      clip_ptr = &clip;
+    }
+  }
+
   if (element_or_element_image->IsElement()) {
     UpdateDrawnElementGeometry(*element_or_element_image->GetAsElement(),
-                               transform_ptr, !options->preserveHitTestOrder());
+                               transform_ptr, clip_ptr,
+                               !options->preserveHitTestOrder());
   } else if (element_or_element_image->IsElementImage()) {
     UpdateDrawnElementGeometry(*element_or_element_image->GetAsElementImage(),
-                               transform_ptr, !options->preserveHitTestOrder());
+                               transform_ptr, clip_ptr,
+                               !options->preserveHitTestOrder());
   }
 }
 
@@ -958,16 +979,18 @@ void OffscreenCanvas::ClearRenderedText() {
 void OffscreenCanvas::UpdateDrawnElementGeometry(
     Element& element,
     const gfx::Transform* transform,
+    const FloatClipRect* clip,
     bool update_hit_test_order) {
-  QueueElementGeometryUpdate(element.GetDomNodeId(), transform,
+  QueueElementGeometryUpdate(element.GetDomNodeId(), transform, clip,
                              update_hit_test_order);
 }
 
 void OffscreenCanvas::UpdateDrawnElementGeometry(
     ElementImage& element_image,
     const gfx::Transform* transform,
+    const FloatClipRect* clip,
     bool update_hit_test_order) {
-  QueueElementGeometryUpdate(element_image.GetNodeId(), transform,
+  QueueElementGeometryUpdate(element_image.GetNodeId(), transform, clip,
                              update_hit_test_order);
 }
 
@@ -1000,10 +1023,12 @@ void OffscreenCanvas::QueueUpdate(ElementGeometryUpdate update) {
 void OffscreenCanvas::QueueElementGeometryUpdate(
     DOMNodeId element_id,
     const gfx::Transform* transform,
+    const FloatClipRect* clip,
     bool update_hit_test_order) {
   QueueUpdate(ElementGeometryUpdate{
       .element_id = element_id,
       .transform = base::OptionalFromPtr(transform),
+      .clip = base::OptionalFromPtr(clip),
       .update_hit_test_order = update_hit_test_order,
       .clear_element_geometry = false,
   });

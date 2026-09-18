@@ -150,6 +150,37 @@
         assert_equals(rect.left, 10);
         assert_equals(rect.top, 20);
       }, 'updateElementGeometry and clearElementGeometry accept ElementImage');
+
+      test(() => {
+        const canvas = document.getElementById('canvas');
+        const target = document.getElementById('target');
+
+        // Apply a canvas clip to target.
+        canvas.updateElementGeometry(target, {
+          clip: { x: 10, y: 10, width: 20, height: 20 }
+        });
+        let rect = target.getBoundingClientRect();
+        assert_equals(rect.left, 10);
+        assert_equals(rect.top, 20);
+        assert_equals(rect.width, 100);
+        assert_equals(rect.height, 50);
+
+        // Omitting clip preserves the clip, but still does not affect getBoundingClientRect.
+        canvas.updateElementGeometry(target, { preserveHitTestOrder: true });
+        rect = target.getBoundingClientRect();
+        assert_equals(rect.left, 10);
+        assert_equals(rect.top, 20);
+        assert_equals(rect.width, 100);
+        assert_equals(rect.height, 50);
+
+        // Calling clearElementGeometry clears clip and does not affect getBoundingClientRect.
+        canvas.clearElementGeometry(target);
+        rect = target.getBoundingClientRect();
+        assert_equals(rect.left, 10);
+        assert_equals(rect.top, 20);
+        assert_equals(rect.width, 100);
+        assert_equals(rect.height, 50);
+      }, 'updateElementGeometry() with clip does not affect getBoundingClientRect()');
     }
   </script>
 </body>

@@ -129,6 +129,7 @@ class ElementAnimations;
 class ElementInternals;
 class ElementIntersectionObserverData;
 class ExceptionState;
+class FloatClipRect;
 class FocusEvent;
 class FocusOptions;
 class GetAnimationsOptions;
@@ -1199,6 +1200,16 @@ class CORE_EXPORT Element : public ContainerNode {
   const gfx::Transform* GetCanvasTransform() const;
   void SetCanvasTransform(const gfx::Transform& transform);
   void ClearCanvasTransform();
+
+  // Returns the clip that should be used for hit-testing in the coordinate
+  // space of the element's canvas transform. When the element has a
+  // CanvasForDrawing, this affects hit-testing of the element and its
+  // descendants. Returns an infinite clip rect if the element does not have a
+  // CanvasForDrawing.
+  FloatClipRect GetUsedCanvasClip() const;
+  FloatClipRect GetCanvasClip() const;
+  void SetCanvasClip(const FloatClipRect& clip);
+  void ClearCanvasClip();
 
   bool IsDefined() const {
     // An element whose custom element state is "uncustomized" or "custom"
