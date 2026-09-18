@@ -105,9 +105,7 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
   void DoGetFile(const std::string& basename,
                  bool create,
                  storage::FileSystemURL child_url,
-                 GetFileCallback callback,
-                 FileSystemAccessPermissionContext::SensitiveEntryResult
-                     sensitive_entry_result);
+                 GetFileCallback callback);
 #if BUILDFLAG(IS_ANDROID)
   void DidGetFileQueryUri(const std::string& basename,
                           GetFileCallback callback,
