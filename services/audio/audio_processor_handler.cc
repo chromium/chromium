@@ -107,6 +107,7 @@ AudioProcessorHandler::AudioProcessorHandler(
 
 AudioProcessorHandler::~AudioProcessorHandler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  StopProcessing();
   if (aecdump_recording_manager_) {
     // If an aecdump is currently ongoing, this will trigger a StopAecdump()
     // call.
@@ -116,6 +117,11 @@ AudioProcessorHandler::~AudioProcessorHandler() {
 
 void AudioProcessorHandler::StartProcessing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  // `voice_isolation_handler_` must be started before `processing_fifo_` to
+  // prepare it before any calls to it are made.
+  if (voice_isolation_handler_) {
+    voice_isolation_handler_->StartProcessing();
+  }
   // This is safe because the caller is required to call StartProcessing()
   // before the capture stream is started, ensuring no concurrent calls to
   // ProcessCapturedAudio() can occur.
@@ -129,7 +135,15 @@ void AudioProcessorHandler::StopProcessing() {
   // This is safe because the caller is required to synchronously stop the
   // capture stream before calling StopProcessing(), guaranteeing that no
   // concurrent calls to ProcessCapturedAudio() can occur.
+  //
+  // `processing_fifo_` must be stopped and destroyed before stopping
+  // `voice_isolation_handler_` to ensure that any audio currently in the FIFO
+  // finishes processing and no further calls will be made to
+  // `voice_isolation_handler_`.
   processing_fifo_.reset();
+  if (voice_isolation_handler_) {
+    voice_isolation_handler_->StopProcessing();
+  }
 }
 
 void AudioProcessorHandler::ProcessCapturedAudio(

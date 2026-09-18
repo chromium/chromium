@@ -1159,6 +1159,13 @@ BASE_FEATURE(kChromeWideEchoCancellation, base::FEATURE_ENABLED_BY_DEFAULT);
 // voice isolation denoiser.
 BASE_FEATURE(kWebRtcVoiceIsolationDenoiser, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, VoiceIsolationHandler uses a dedicated ProcessingAudioFifo to
+// run voice isolation on its own real-time processing thread.
+BASE_FEATURE(kWebRtcVoiceIsolationProcessingFifo,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kWebRtcVoiceIsolationProcessingFifoSize{
+    &kWebRtcVoiceIsolationProcessingFifo, "fifo_size", 10};
+
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)

@@ -47,18 +47,21 @@ class VoiceIsolationHandler;
 //
 // Audio data flow through AudioProcessorHandler:
 //
-// * Without a dedicated processing thread (lightweight / no FIFO):
+// * Without an AudioProcessorHandler dedicated processing thread:
 //   Audio capture thread:
 //     AudioProcessorHandler::ProcessCapturedAudio()
 //     -> AudioProcessorHandler::ProcessCapturedAudioInternal()
 //     --> media::AudioProcessor (WebRTC processing)
 //     ---> AudioProcessorHandler::OnAudioProcessorOutput() (callback)
-//     ----> VoiceIsolationHandler::ProcessCapturedAudio() (if voice isolation
-//     enabled)
-//     -----> |deliver_processed_audio_callback_|
 //     ----> |deliver_processed_audio_callback_| (if voice isolation disabled)
+//     ----> VoiceIsolationHandler::ProcessCapturedAudio() (if voice isolation
+//           enabled)
+//           -> |processing_fifo_|::PushData() (if VI has dedicated thread)
+//              [Voice isolation thread]:
+//              -> VoiceIsolationHandler::ProcessCapturedAudioInternal()
+//              -> |deliver_processed_audio_callback_|
 //
-// * With a dedicated processing thread (heavy / using FIFO):
+// * With an AudioProcessorHandler dedicated processing thread (using FIFO):
 //   Audio capture thread:
 //     AudioProcessorHandler::ProcessCapturedAudio()
 //     -> |processing_fifo_|::PushData()
@@ -67,10 +70,16 @@ class VoiceIsolationHandler;
 //     callback)
 //     --> media::AudioProcessor (WebRTC processing)
 //     ---> AudioProcessorHandler::OnAudioProcessorOutput() (callback)
-//     ----> VoiceIsolationHandler::ProcessCapturedAudio() (if voice isolation
-//     enabled)
-//     -----> |deliver_processed_audio_callback_|
 //     ----> |deliver_processed_audio_callback_| (if voice isolation disabled)
+//     ----> VoiceIsolationHandler::ProcessCapturedAudio() (if voice isolation
+//           enabled)
+//           -----> |deliver_processed_audio_callback_| (if VI has no dedicated
+//                  thread)
+//           -----> |processing_fifo_|::PushData() (two-stage FIFO pipeline,
+//                  if VI has dedicated thread)
+//                  [Voice isolation thread]:
+//                  -> VoiceIsolationHandler::ProcessCapturedAudioInternal()
+//                  -> |deliver_processed_audio_callback_|
 class AudioProcessorHandler final : public ReferenceOutput::Listener,
                                     public media::mojom::AudioProcessorControls,
                                     public media::AecdumpRecordingSource {
@@ -237,6 +246,8 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
 
   media::AudioGlitchInfo::Accumulator glitch_info_accumulator_;
 
+  // If created, audio processing is offloaded to a dedicated real-time
+  // processing thread via this FIFO.
   std::unique_ptr<ProcessingAudioFifo> processing_fifo_;
 };
 

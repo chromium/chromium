@@ -7,8 +7,6 @@
 
 #include <atomic>
 #include <memory>
-#include <optional>
-#include <string>
 #include <string_view>
 
 #include "base/functional/callback.h"
@@ -31,6 +29,7 @@ class VoiceIsolationComponent;
 
 namespace audio {
 class MlModelManager;
+class ProcessingAudioFifo;
 
 // Encapsulates voice isolation in the audio service.
 //
@@ -71,6 +70,18 @@ class VoiceIsolationHandler {
   // Dynamic toggle for voice isolation. Called on the owning sequence.
   void SetVoiceIsolation(bool enabled);
 
+  // Starts the processing FIFO, if present. Must be called on
+  // `owning_sequence_`. The caller guarantees that no ProcessCapturedAudio()
+  // calls are made before or while StartProcessing() is called. Has no effect
+  // after StopProcessing().
+  void StartProcessing();
+
+  // Stops and destroys the processing FIFO, if present. Must be called on
+  // `owning_sequence_`. The caller guarantees that no ProcessCapturedAudio()
+  // calls are made during or after StopProcessing(). Once stopped,
+  // StartProcessing() will have no effect.
+  void StopProcessing();
+
   // Returns true if voice isolation has its own processing thread (via an
   // internal FIFO). If false, ProcessCapturedAudio() executes synchronously on
   // the caller's thread.
@@ -85,6 +96,8 @@ class VoiceIsolationHandler {
     return voice_isolation_ != nullptr;
   }
 
+  int GetFifoSizeForTesting() const;
+
  private:
   VoiceIsolationHandler(
       scoped_refptr<media::MlModelHandle> model_handle,
@@ -98,12 +111,20 @@ class VoiceIsolationHandler {
       DeliverProcessedAudioCallback deliver_processed_audio_callback,
       LogCallback log_callback);
 
+  std::unique_ptr<ProcessingAudioFifo> MaybeCreateProcessingFifo();
+
   void OnComponentCreated(
       std::unique_ptr<media::VoiceIsolationComponent> component);
 
   bool IsVoiceIsolationBypassed() const;
 
   void SendLogMessage(std::string_view message);
+
+  void ProcessCapturedAudioInternal(
+      const media::AudioBus& audio_source,
+      base::TimeTicks audio_capture_time,
+      double volume,
+      const media::AudioGlitchInfo& audio_glitch_info);
 
   SEQUENCE_CHECKER(owning_sequence_);
 
@@ -132,6 +153,10 @@ class VoiceIsolationHandler {
 
   // Emits metrics for async startup. Non-null only while startup is in flight.
   std::unique_ptr<StartupMetricsLogger> startup_metrics_logger_;
+
+  // If enabled, voice isolation processing is offloaded to a dedicated
+  // real-time processing thread via this FIFO.
+  std::unique_ptr<ProcessingAudioFifo> processing_fifo_;
 
   base::WeakPtrFactory<VoiceIsolationHandler> weak_factory_{this};
 };

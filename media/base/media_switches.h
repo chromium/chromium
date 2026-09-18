@@ -333,6 +333,11 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kChromeWideEchoCancellation);
 // When enabled, input audio processing in the audio process may use an ML-based
 // voice isolation denoiser.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebRtcVoiceIsolationDenoiser);
+// When enabled, VoiceIsolationHandler uses a dedicated ProcessingAudioFifo to
+// run voice isolation on its own real-time processing thread.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebRtcVoiceIsolationProcessingFifo);
+MEDIA_EXPORT extern const base::FeatureParam<int>
+    kWebRtcVoiceIsolationProcessingFifoSize;
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)

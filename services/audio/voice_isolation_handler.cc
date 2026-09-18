@@ -4,7 +4,7 @@
 
 #include "services/audio/voice_isolation_handler.h"
 
-#include <cinttypes>
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -21,10 +21,12 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
+#include "media/base/media_switches.h"
 #include "media/webrtc/ml_model_handle.h"
 #include "media/webrtc/voice_isolation/voice_isolation.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "services/audio/ml_model_manager.h"
+#include "services/audio/processing_audio_fifo.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace audio {
@@ -108,6 +110,8 @@ VoiceIsolationHandler::VoiceIsolationHandler(
       base::StringPrintf("%s({output_params_=[%s], async=true})", __func__,
                          output_params_.AsHumanReadableString().c_str()));
 
+  processing_fifo_ = MaybeCreateProcessingFifo();
+
   TRACE_EVENT_BEGIN(
       "audio", "VoiceIsolationHandler::Initialize",
       perfetto::NamedTrack::FromPointer("audio::VoiceIsolationHandler", this));
@@ -140,10 +144,34 @@ VoiceIsolationHandler::VoiceIsolationHandler(
   SendLogMessage(
       base::StringPrintf("%s({output_params_=[%s], async=false})", __func__,
                          output_params_.AsHumanReadableString().c_str()));
+
+  processing_fifo_ = MaybeCreateProcessingFifo();
+}
+
+std::unique_ptr<ProcessingAudioFifo>
+VoiceIsolationHandler::MaybeCreateProcessingFifo() {
+  if (!base::FeatureList::IsEnabled(
+          media::kWebRtcVoiceIsolationProcessingFifo)) {
+    return nullptr;
+  }
+  const int fifo_size =
+      std::clamp(media::kWebRtcVoiceIsolationProcessingFifoSize.Get(), 1, 100);
+  SendLogMessage(base::StringPrintf("%s({fifo_size=%d})", __func__, fifo_size));
+
+  // `base::Unretained(this)` is safe because VoiceIsolationHandler owns the
+  // FIFO.
+  return std::make_unique<ProcessingAudioFifo>(
+      output_params_, fifo_size,
+      base::BindRepeating(&VoiceIsolationHandler::ProcessCapturedAudioInternal,
+                          base::Unretained(this)),
+      base::BindRepeating(&VoiceIsolationHandler::SendLogMessage,
+                          base::Unretained(this)),
+      ProcessingAudioFifo::FifoType::kVoiceIsolation);
 }
 
 VoiceIsolationHandler::~VoiceIsolationHandler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  StopProcessing();
   SendLogMessage(
       base::StringPrintf("%s({initialized=%s})", __func__,
                          base::ToString(voice_isolation_ != nullptr)));
@@ -182,12 +210,44 @@ void VoiceIsolationHandler::OnComponentCreated(
       base::ToString(bypass_voice_isolation_.load(std::memory_order_relaxed))));
 }
 
+void VoiceIsolationHandler::StartProcessing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  if (processing_fifo_) {
+    processing_fifo_->Start();
+  }
+}
+
+void VoiceIsolationHandler::StopProcessing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  processing_fifo_.reset();
+}
+
 void VoiceIsolationHandler::ProcessCapturedAudio(
     const media::AudioBus& audio_source,
     base::TimeTicks audio_capture_time,
     const media::AudioGlitchInfo& audio_glitch_info) {
   TRACE_EVENT("audio", "VoiceIsolationHandler::ProcessCapturedAudio", "frames",
               audio_source.frames(), "channels", audio_source.channels());
+
+  // When processing is performed in the audio service, the consumer is not
+  // expected to use the input volume. Pass a placeholder of 1.0.
+  if (processing_fifo_) {
+    processing_fifo_->PushData(&audio_source, audio_capture_time,
+                               /*volume=*/1.0, audio_glitch_info);
+    return;
+  }
+  ProcessCapturedAudioInternal(audio_source, audio_capture_time, /*volume=*/1.0,
+                               audio_glitch_info);
+}
+
+void VoiceIsolationHandler::ProcessCapturedAudioInternal(
+    const media::AudioBus& audio_source,
+    base::TimeTicks audio_capture_time,
+    double /*volume*/,
+    const media::AudioGlitchInfo& audio_glitch_info) {
+  TRACE_EVENT("audio", "VoiceIsolationHandler::ProcessCapturedAudioInternal",
+              "frames", audio_source.frames(), "channels",
+              audio_source.channels());
   if (IsVoiceIsolationBypassed()) {
     deliver_processed_audio_callback_.Run(audio_source, audio_capture_time,
                                           audio_glitch_info);
@@ -231,7 +291,12 @@ bool VoiceIsolationHandler::IsVoiceIsolationBypassed() const {
 }
 
 bool VoiceIsolationHandler::HasProcessingThread() const {
-  return false;
+  return processing_fifo_ != nullptr;
+}
+
+int VoiceIsolationHandler::GetFifoSizeForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  return processing_fifo_ ? processing_fifo_->fifo_size() : 0;
 }
 
 void VoiceIsolationHandler::SendLogMessage(std::string_view message) {
