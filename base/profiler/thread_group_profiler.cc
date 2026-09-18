@@ -150,14 +150,15 @@ class ThreadGroupProfiler::ProfilerImpl : public ThreadGroupProfiler::Profiler {
                std::unique_ptr<ProfileBuilder> profile_builder,
                StackSamplingProfiler::UnwindersFactory unwinder_factory)
       : thread_group_type_(thread_group_type),
-        thread_token_(thread_token),
-        sampling_profiler_{thread_token, params, std::move(profile_builder),
+        thread_id_(thread_token.id),
+        sampling_profiler_{std::move(thread_token), params,
+                           std::move(profile_builder),
                            std::move(unwinder_factory)} {}
 
   // Profiler:
   void Start() override {
     AddProfileMetadataForThread(kProfilerMetadataThreadGroupType,
-                                thread_group_type_, thread_token_.id);
+                                thread_group_type_, thread_id_);
     sampling_profiler_.Start();
   }
 
@@ -166,7 +167,7 @@ class ThreadGroupProfiler::ProfilerImpl : public ThreadGroupProfiler::Profiler {
 
  private:
   const int64_t thread_group_type_;
-  const SamplingProfilerThreadToken thread_token_;
+  const PlatformThreadId thread_id_;
   StackSamplingProfiler sampling_profiler_;
 };
 
@@ -182,7 +183,7 @@ ThreadGroupProfiler::ActiveCollection::ActiveCollection(
 scoped_refptr<ThreadGroupProfiler::Profiler>
 ThreadGroupProfiler::ActiveCollection::MaybeAddWorkerThread(
     internal::WorkerThread* worker_thread,
-    SamplingProfilerThreadToken token) {
+    const SamplingProfilerThreadToken& token) {
   // Skip if the remaining time of current sampling session is less than the
   // threshold.
   if ((collection_end_time_ - TimeTicks::Now()) <
@@ -226,7 +227,7 @@ ThreadGroupProfiler::ActiveCollection::CreateSamplingProfilerForThread(
     const StackSamplingProfiler::SamplingParams& sampling_params) {
   ThreadGroupProfilerClient* client = GetClient();
   return stack_sampling_profiler_factory_.Run(
-      thread_group_type_, token, sampling_params,
+      thread_group_type_, token.Clone(), sampling_params,
       client->CreateProfileBuilder(DoNothing()), client->GetUnwindersFactory());
 }
 
@@ -254,9 +255,9 @@ ThreadGroupProfiler::GetDefaultProfilerFactory() {
          std::unique_ptr<ProfileBuilder> profile_builder,
          StackSamplingProfiler::UnwindersFactory unwinder_factory)
           -> scoped_refptr<Profiler> {
-        return MakeRefCounted<ProfilerImpl>(thread_group_type, thread_token,
-                                            params, std::move(profile_builder),
-                                            std::move(unwinder_factory));
+        return MakeRefCounted<ProfilerImpl>(
+            thread_group_type, std::move(thread_token), params,
+            std::move(profile_builder), std::move(unwinder_factory));
       });
 }
 

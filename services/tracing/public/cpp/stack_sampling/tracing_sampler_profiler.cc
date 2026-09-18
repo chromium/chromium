@@ -375,8 +375,8 @@ void TracingSamplerProfiler::DataSource::StartTracing(
     }
     profile_builder_ptr->SetUnwinderType(unwinder_type);
     sampling_profiler = std::make_unique<base::StackSamplingProfiler>(
-        profiler->sampled_thread_token_, params, std::move(profile_builder),
-        std::move(core_unwinders_factory));
+        profiler->sampled_thread_token_.Clone(), params,
+        std::move(profile_builder), std::move(core_unwinders_factory));
   }
 #else   // BUILDFLAG(IS_ANDROID)
   if (unwinder_type == UnwinderType::kUnknown) {
@@ -384,8 +384,8 @@ void TracingSamplerProfiler::DataSource::StartTracing(
   }
   profile_builder_ptr->SetUnwinderType(unwinder_type);
   sampling_profiler = std::make_unique<base::StackSamplingProfiler>(
-      profiler->sampled_thread_token_, params, std::move(profile_builder),
-      base::CreateCoreUnwindersFactory());
+      profiler->sampled_thread_token_.Clone(), params,
+      std::move(profile_builder), base::CreateCoreUnwindersFactory());
 #endif  // BUILDFLAG(IS_ANDROID)
 
   if (sampling_profiler != nullptr) {
@@ -790,7 +790,7 @@ TracingSamplerProfiler::TracingSamplerProfiler(
     base::SamplingProfilerThreadToken sampled_thread_token,
     CoreUnwindersCallback core_unwinders_factory_function,
     UnwinderType unwinder_type)
-    : sampled_thread_token_(sampled_thread_token),
+    : sampled_thread_token_(std::move(sampled_thread_token)),
       core_unwinders_factory_function_(
           std::move(core_unwinders_factory_function)),
       unwinder_type_(unwinder_type) {

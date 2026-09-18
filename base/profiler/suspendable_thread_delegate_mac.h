@@ -38,7 +38,8 @@ class BASE_EXPORT SuspendableThreadDelegateMac
     mach_port_t thread_port_;
   };
 
-  SuspendableThreadDelegateMac(SamplingProfilerThreadToken thread_token);
+  explicit SuspendableThreadDelegateMac(
+      const SamplingProfilerThreadToken& thread_token);
   ~SuspendableThreadDelegateMac() override;
 
   SuspendableThreadDelegateMac(const SuspendableThreadDelegateMac&) = delete;

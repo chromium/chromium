@@ -203,7 +203,7 @@ class BASE_EXPORT StackSamplingProfiler {
                                  std::optional<PlatformThreadId> thread_id);
 
   // The thread whose stack will be sampled.
-  SamplingProfilerThreadToken thread_token_;
+  const PlatformThreadId thread_id_;
 
   const SamplingParams params_;
 

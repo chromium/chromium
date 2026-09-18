@@ -20,7 +20,7 @@ namespace base {
 class BASE_EXPORT ThreadDelegatePosix : public ThreadDelegate {
  public:
   static std::unique_ptr<ThreadDelegatePosix> Create(
-      SamplingProfilerThreadToken thread_token);
+      const SamplingProfilerThreadToken& thread_token);
 
   ~ThreadDelegatePosix() override;
 

@@ -132,7 +132,7 @@ class BASE_EXPORT ThreadGroupProfiler {
     // the collection is to being complete. Returns the created profiler if any.
     scoped_refptr<Profiler> MaybeAddWorkerThread(
         internal::WorkerThread* worker_thread,
-        SamplingProfilerThreadToken token);
+        const SamplingProfilerThreadToken& token);
 
     // Removes and returns the profiler for worker_thread if it exists, so that
     // it can be destroyed outside locks.

@@ -23,7 +23,7 @@
 namespace base {
 // static
 std::unique_ptr<ThreadDelegatePosix> ThreadDelegatePosix::Create(
-    SamplingProfilerThreadToken thread_token) {
+    const SamplingProfilerThreadToken& thread_token) {
   std::optional<uintptr_t> base_address;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   base_address = thread_token.stack_base_address;

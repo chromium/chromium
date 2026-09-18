@@ -323,7 +323,7 @@ void WithTargetThread(UnwindScenario* scenario,
   target_thread.Start();
   events.ready_for_sample.Wait();
 
-  std::move(profile_callback).Run(target_thread.thread_token());
+  std::move(profile_callback).Run(target_thread.thread_token().Clone());
 
   events.sample_finished.Signal();
   target_thread.Join();
@@ -345,7 +345,7 @@ std::vector<Frame> SampleScenario(UnwindScenario* scenario,
                 WaitableEvent::ResetPolicy::MANUAL,
                 WaitableEvent::InitialState::NOT_SIGNALED);
             StackSamplingProfiler profiler(
-                target_thread_token, params,
+                std::move(target_thread_token), params,
                 std::make_unique<TestProfileBuilder>(
                     module_cache,
                     BindLambdaForTesting([&sample, &sampling_thread_completed](

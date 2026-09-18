@@ -886,10 +886,10 @@ StackSamplingProfiler::StackSamplingProfiler(
     UnwindersFactory core_unwinders_factory,
     RepeatingClosure record_sample_callback,
     StackSamplerTestDelegate* test_delegate)
-    : thread_token_(thread_token),
+    : thread_id_(thread_token.id),
       params_(params),
       sampler_(StackSampler::Create(
-          thread_token,
+          std::move(thread_token),
           base::MakeRefCounted<StackUnwindData>(std::move(profile_builder)),
           std::move(core_unwinders_factory),
           std::move(record_sample_callback),
@@ -951,8 +951,7 @@ void StackSamplingProfiler::Start() {
   DCHECK_EQ(kNullProfilerId, profiler_id_);
   profiler_id_ = SamplingThread::GetInstance()->Add(
       std::make_unique<SamplingThread::CollectionContext>(
-          thread_token_.id, params_, &profiling_inactive_,
-          std::move(sampler_)));
+          thread_id_, params_, &profiling_inactive_, std::move(sampler_)));
   DCHECK_NE(kNullProfilerId, profiler_id_);
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),

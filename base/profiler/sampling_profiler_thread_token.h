@@ -23,7 +23,11 @@ namespace base {
 // sampling profiler to operate on a thread. PlatformThreadId is needed for all
 // platforms, while Android and Mac also require a pthread_t to pass to pthread
 // functions used to obtain the stack base address.
-struct SamplingProfilerThreadToken {
+struct BASE_EXPORT SamplingProfilerThreadToken {
+  // Use Clone() to make an explicit copy of the aggregate as it is move-only
+  // on some platforms.
+  SamplingProfilerThreadToken Clone() const;
+
   PlatformThreadId id;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
   pthread_t pthread_id;

@@ -140,7 +140,7 @@ class ThreadGroupImpl::WorkerDelegate : public WorkerThread::Delegate,
   // Increments max [best effort] tasks.
   void IncrementMaxTasksLockRequired() EXCLUSIVE_LOCKS_REQUIRED(outer_->lock_);
 
-  SamplingProfilerThreadToken thread_token_lock_required() const
+  const SamplingProfilerThreadToken& thread_token_lock_required() const
       EXCLUSIVE_LOCKS_REQUIRED(outer_->lock_) {
     return read_any().thread_token;
   }
@@ -440,11 +440,10 @@ void ThreadGroupImpl::WorkerDelegate::OnMainEntry(WorkerThread* worker) {
   worker_only().worker_thread_ = static_cast<WorkerThread*>(worker);
   SetBlockingObserverForCurrentThread(this);
 
-  const SamplingProfilerThreadToken token =
-      GetSamplingProfilerCurrentThreadToken();
+  SamplingProfilerThreadToken token = GetSamplingProfilerCurrentThreadToken();
   {
     CheckedAutoLock auto_lock(outer_->lock_);
-    write_worker().thread_token = token;
+    write_worker().thread_token = std::move(token);
   }
 
   if (outer_->worker_started_for_testing_) {
@@ -1142,7 +1141,7 @@ void ThreadGroupImpl::OnStartProfilingSession(
       }
       auto* delegate = static_cast<WorkerDelegate*>(worker->delegate());
       AnnotateAcquiredLockAlias annotate(lock_, delegate->lock());
-      SamplingProfilerThreadToken token =
+      const SamplingProfilerThreadToken& token =
           delegate->thread_token_lock_required();
       // If the worker thread has not yet entered its main entry point to record
       // its thread token, it will be picked up later upon GetWork().

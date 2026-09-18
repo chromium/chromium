@@ -41,7 +41,9 @@ class TargetThread : public PlatformThread::Delegate {
   // PlatformThread::Delegate:
   void ThreadMain() override;
 
-  SamplingProfilerThreadToken thread_token() const { return thread_token_; }
+  const SamplingProfilerThreadToken& thread_token() const {
+    return thread_token_;
+  }
 
  private:
   SamplingProfilerThreadToken thread_token_ = {kInvalidThreadId};

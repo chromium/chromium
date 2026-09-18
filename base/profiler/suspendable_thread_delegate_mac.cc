@@ -72,7 +72,7 @@ bool SuspendableThreadDelegateMac::ScopedSuspendThread::WasSuccessful() const {
 // SuspendableThreadDelegateMac -----------------------------------------------
 
 SuspendableThreadDelegateMac::SuspendableThreadDelegateMac(
-    SamplingProfilerThreadToken thread_token)
+    const SamplingProfilerThreadToken& thread_token)
     : thread_id_(thread_token.id),
       thread_port_(pthread_mach_thread_np(thread_token.pthread_id)),
       thread_stack_base_address_(reinterpret_cast<uintptr_t>(

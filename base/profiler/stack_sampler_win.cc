@@ -21,7 +21,8 @@ std::unique_ptr<StackSampler> StackSampler::Create(
 #if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
   return base::WrapUnique(new StackSampler(
       std::make_unique<StackCopierSuspend>(
-          std::make_unique<SuspendableThreadDelegateWin>(thread_token)),
+          std::make_unique<SuspendableThreadDelegateWin>(
+              std::move(thread_token))),
       std::move(stack_unwind_data), std::move(core_unwinders_factory),
       std::move(record_sample_callback), test_delegate));
 #else
