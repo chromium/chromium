@@ -61,6 +61,18 @@ fn create_read_state(callbacks: Pin<&mut XmlCallbacks>) -> Box<XmlReadState<'_>>
 
 fn append_to_source(read_state: &mut XmlReadState, content: &[u8]) {
     let buffer = read_state.event_reader.source_mut().get_mut();
+    // When the encoding is set fixed on the xml Rust crate, it does not do its
+    // own BOM sniffing, hence removing a possible BOM here.
+    // The byte sequence [0xEF, 0xBB, 0xBF] is the UTF-8 representation of the
+    // Unicode Byte Order Mark (U+FEFF). Because Blink converts input strings
+    // (WTF::String) to UTF-8 before passing them to this FFI layer, any leading
+    // BOM is always encoded as UTF-8, and other BOM shapes (such as UTF-16
+    // or UTF-32) do not need to be handled here.
+    let content = if buffer.is_empty() {
+        content.strip_prefix(&[0xEF, 0xBB, 0xBF]).unwrap_or(content)
+    } else {
+        content
+    };
     buffer.extend_from_slice(content);
 }
 
