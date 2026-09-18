@@ -5,15 +5,16 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import android.app.Activity;
+import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Pair;
 
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
@@ -29,33 +30,28 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
+import org.chromium.chrome.browser.app.tabmodel.DefaultTabModelSelectorFactory;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
-import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
-import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.concurrent.TimeoutException;
@@ -101,20 +97,22 @@ public class ContextMenuLoadUrlParamsTest {
                 Context context,
                 ModalDialogManager modalDialogManager,
                 OneshotSupplier<ProfileProvider> profileProviderSupplier,
-                TabCreatorManager tabCreatorManager) {
+                TabCreatorManager tabCreatorManager,
+                NextTabPolicySupplier nextTabPolicySupplier,
+                @SupportedProfileType int supportedProfileType) {
             super(
                     context,
                     modalDialogManager,
                     profileProviderSupplier,
                     tabCreatorManager,
-                    () -> NextTabPolicy.HIERARCHICAL,
+                    nextTabPolicySupplier,
                     AsyncTabParamsManagerSingleton.getInstance(),
                     false,
                     ActivityType.TABBED,
                     /* customTabProfileType= */ null,
                     TabModelType.STANDARD,
                     false,
-                    SupportedProfileType.MIXED);
+                    supportedProfileType);
         }
     }
 
@@ -126,7 +124,7 @@ public class ContextMenuLoadUrlParamsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
-                            new TabModelSelectorFactory() {
+                            new DefaultTabModelSelectorFactory() {
                                 @Override
                                 public TabModelSelector buildTabbedSelector(
                                         Context context,
@@ -134,18 +132,14 @@ public class ContextMenuLoadUrlParamsTest {
                                         OneshotSupplier<ProfileProvider> profileProviderSupplier,
                                         TabCreatorManager tabCreatorManager,
                                         NextTabPolicySupplier nextTabPolicySupplier,
-                                        int supportedProfileType) {
+                                        @SupportedProfileType int supportedProfileType) {
                                     return new RecordingTabModelSelector(
                                             context,
                                             modalDialogManager,
                                             profileProviderSupplier,
-                                            tabCreatorManager);
-                                }
-
-                                @Override
-                                public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
-                                        @WindowId int windowId, Profile profile) {
-                                    return Pair.create(null, null);
+                                            tabCreatorManager,
+                                            nextTabPolicySupplier,
+                                            supportedProfileType);
                                 }
                             });
                 });
@@ -252,29 +246,36 @@ public class ContextMenuLoadUrlParamsTest {
     @Feature({"Browser"})
     public void testOpenInIncognitoTabNoReferrer() throws TimeoutException {
         Intents.init();
+        try {
+            boolean openAsWindow = IncognitoUtils.shouldOpenIncognitoAsWindow();
+            if (openAsWindow) {
+                intending(IntentMatchers.hasAction(Intent.ACTION_VIEW))
+                        .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+            }
 
-        int menuItemId =
-                IncognitoUtils.shouldOpenIncognitoAsWindow()
-                        ? R.id.contextmenu_open_in_incognito_window
-                        : R.id.contextmenu_open_in_incognito_tab;
-        triggerContextMenuLoad(
-                mActivityTestRule.getTestServer().getURL(HTML_PATH), "testLink", menuItemId);
+            int menuItemId =
+                    openAsWindow
+                            ? R.id.contextmenu_open_in_incognito_window
+                            : R.id.contextmenu_open_in_incognito_tab;
+            triggerContextMenuLoad(
+                    mActivityTestRule.getTestServer().getURL(HTML_PATH), "testLink", menuItemId);
 
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            intended(IntentMatchers.hasAction(Intent.ACTION_VIEW));
-        } else {
-            assertNotNull(sOpenNewTabLoadUrlParams);
-            assertNull(sOpenNewTabLoadUrlParams.getReferrer());
-            assertNull(sOpenNewTabLoadUrlParams.getAdditionalNavigationParams());
+            if (openAsWindow) {
+                intended(IntentMatchers.hasAction(Intent.ACTION_VIEW));
+            } else {
+                assertNotNull(sOpenNewTabLoadUrlParams);
+                assertNull(sOpenNewTabLoadUrlParams.getReferrer());
+                assertNull(sOpenNewTabLoadUrlParams.getAdditionalNavigationParams());
+            }
+        } finally {
+            Intents.release();
         }
-        Intents.release();
     }
 
     /** Verifies that the referrer is stripped from username and password fields. */
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562626098
     public void testOpenInNewTabSanitizeReferrer() throws TimeoutException {
         String testUrl = mActivityTestRule.getTestServer().getURL(HTML_PATH);
         String[] schemeAndUrl = SCHEME_SEPARATOR_RE.split(testUrl, 2);
@@ -296,6 +297,7 @@ public class ContextMenuLoadUrlParamsTest {
             activityToWaitFor = null;
         }
 
+        sOpenNewTabLoadUrlParams = null;
         ContextMenuUtils.selectContextMenuItem(
                 InstrumentationRegistry.getInstrumentation(),
                 activityToWaitFor,
