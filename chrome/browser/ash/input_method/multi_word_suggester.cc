@@ -50,7 +50,7 @@ std::optional<AssistiveSuggestion> GetMultiWordSuggestion(
   }
   if (suggestions[0].type == AssistiveSuggestionType::kMultiWord) {
     // There should only ever be one multi word suggestion given at a time.
-    DCHECK_EQ(suggestions.size(), 1u);
+    CHECK_EQ(suggestions.size(), 1u, base::NotFatalUntil::M160);
     return suggestions[0];
   }
   return std::nullopt;
@@ -171,7 +171,7 @@ void MultiWordSuggester::OnFocus(int context_id) {
   // Some parts of the code reserve negative/zero context_id for unfocused
   // context. As a result we should make sure it is not being erroneously set to
   // a negative number, and cause unexpected behaviour.
-  DCHECK(context_id > 0);
+  CHECK(context_id > 0, base::NotFatalUntil::M160);
   focused_context_id_ = context_id;
   state_.ResetSuggestion();
 }

@@ -83,7 +83,7 @@ void Adapter::OnAmbientLightUpdated(int lux) {
   if (adapter_status_ != Status::kSuccess)
     return;
 
-  DCHECK(log_als_values_);
+  CHECK(log_als_values_, base::NotFatalUntil::M160);
 
   // We may have no prior lid event received, if lux value is > 0, then it's
   // safe to assume the lid is open.
@@ -110,15 +110,15 @@ void Adapter::OnAmbientLightUpdated(int lux) {
   if (decision.no_brightness_change_cause)
     return;
 
-  DCHECK(decision.brightness_change_cause);
-  DCHECK(decision.log_als_avg_stddev);
+  CHECK(decision.brightness_change_cause, base::NotFatalUntil::M160);
+  CHECK(decision.log_als_avg_stddev, base::NotFatalUntil::M160);
 
   AdjustBrightness(*decision.brightness_change_cause,
                    decision.log_als_avg_stddev->avg);
 }
 
 void Adapter::OnAlsReaderInitialized(AlsReader::AlsInitStatus status) {
-  DCHECK(!als_init_status_);
+  CHECK(!als_init_status_, base::NotFatalUntil::M160);
 
   als_init_status_ = status;
   als_init_time_ = tick_clock_->NowTicks();
@@ -126,7 +126,7 @@ void Adapter::OnAlsReaderInitialized(AlsReader::AlsInitStatus status) {
 }
 
 void Adapter::OnBrightnessMonitorInitialized(bool success) {
-  DCHECK(!brightness_monitor_success_.has_value());
+  CHECK(!brightness_monitor_success_.has_value(), base::NotFatalUntil::M160);
 
   brightness_monitor_success_ = success;
   UpdateStatus();
@@ -157,7 +157,7 @@ void Adapter::OnUserBrightnessChanged(double old_brightness_percent,
       // This should not happen frequently.
       return;
     }
-    DCHECK(first_recent_user_brightness_request_time);
+    CHECK(first_recent_user_brightness_request_time, base::NotFatalUntil::M160);
 
     const std::optional<AlsAvgStdDev> log_als_avg_stddev =
         decision_at_first_recent_user_brightness_request->log_als_avg_stddev;
@@ -186,7 +186,7 @@ void Adapter::OnUserBrightnessChangeRequested() {
   }
 
   if (!first_recent_user_brightness_request_time_) {
-    DCHECK(log_als_values_);
+    CHECK(log_als_values_, base::NotFatalUntil::M160);
     // Check what model would say and also get latest AlsAvgStdDev.
     decision_at_first_recent_user_brightness_request_ =
         CanAdjustBrightness(now);
@@ -220,7 +220,7 @@ void Adapter::OnModelTrained(const MonotoneCubicSpline& brightness_curve) {
 }
 
 void Adapter::OnModelInitialized(const Model& model) {
-  DCHECK(!model_initialized_);
+  CHECK(!model_initialized_, base::NotFatalUntil::M160);
 
   model_initialized_ = true;
   model_ = model;
@@ -230,7 +230,7 @@ void Adapter::OnModelInitialized(const Model& model) {
 }
 
 void Adapter::OnModelConfigLoaded(std::optional<ModelConfig> model_config) {
-  DCHECK(!enabled_by_model_configs_.has_value());
+  CHECK(!enabled_by_model_configs_.has_value(), base::NotFatalUntil::M160);
 
   enabled_by_model_configs_ = model_config.has_value();
 
@@ -290,7 +290,7 @@ std::optional<MonotoneCubicSpline> Adapter::GetPersonalCurveForTesting() const {
 
 std::optional<AlsAvgStdDev> Adapter::GetAverageAmbientWithStdDevForTesting(
     base::TimeTicks now) {
-  DCHECK(log_als_values_);
+  CHECK(log_als_values_, base::NotFatalUntil::M160);
   return log_als_values_->AverageAmbientWithStdDev(now);
 }
 
@@ -326,11 +326,11 @@ Adapter::Adapter(Profile* profile,
                  const base::TickClock* tick_clock)
     : profile_(profile),
       tick_clock_(tick_clock) {
-  DCHECK(profile);
-  DCHECK(als_reader);
-  DCHECK(brightness_monitor);
-  DCHECK(modeller);
-  DCHECK(model_config_loader);
+  CHECK(profile, base::NotFatalUntil::M160);
+  CHECK(als_reader, base::NotFatalUntil::M160);
+  CHECK(brightness_monitor, base::NotFatalUntil::M160);
+  CHECK(modeller, base::NotFatalUntil::M160);
+  CHECK(model_config_loader, base::NotFatalUntil::M160);
 
   als_reader_observation_.Observe(als_reader);
   brightness_monitor_observation_.Observe(brightness_monitor);
@@ -433,9 +433,9 @@ void Adapter::UpdateStatus() {
 }
 
 Adapter::AdapterDecision Adapter::CanAdjustBrightness(base::TimeTicks now) {
-  DCHECK_EQ(adapter_status_, Status::kSuccess);
-  DCHECK(log_als_values_);
-  DCHECK(!als_init_time_.is_null());
+  CHECK_EQ(adapter_status_, Status::kSuccess, base::NotFatalUntil::M160);
+  CHECK(log_als_values_, base::NotFatalUntil::M160);
+  CHECK(!als_init_time_.is_null(), base::NotFatalUntil::M160);
 
   AdapterDecision decision;
   const std::optional<AlsAvgStdDev> log_als_avg_stddev =
@@ -520,8 +520,8 @@ Adapter::AdapterDecision Adapter::CanAdjustBrightness(base::TimeTicks now) {
 
   // The following thresholds should have been set last time when brightness was
   // changed.
-  DCHECK(brightening_threshold_);
-  DCHECK(darkening_threshold_);
+  CHECK(brightening_threshold_, base::NotFatalUntil::M160);
+  CHECK(darkening_threshold_, base::NotFatalUntil::M160);
 
   if (log_als_avg_stddev->avg > *brightening_threshold_) {
     if (log_als_avg_stddev->stddev <= params_.brightening_log_lux_threshold *
@@ -581,7 +581,7 @@ void Adapter::AdjustBrightness(BrightnessChangeCause cause,
 
 double Adapter::GetBrightnessBasedOnAmbientLogLux(
     double ambient_log_lux) const {
-  DCHECK_EQ(adapter_status_, Status::kSuccess);
+  CHECK_EQ(adapter_status_, Status::kSuccess, base::NotFatalUntil::M160);
   // We use the latest curve available.
   if (model_.personal_curve) {
     return model_.personal_curve->Interpolate(ambient_log_lux);
@@ -592,7 +592,7 @@ double Adapter::GetBrightnessBasedOnAmbientLogLux(
 void Adapter::OnBrightnessChanged(base::TimeTicks now,
                                   double new_brightness_percent,
                                   std::optional<double> new_log_als) {
-  DCHECK_NE(adapter_status_, Status::kInitializing);
+  CHECK_NE(adapter_status_, Status::kInitializing, base::NotFatalUntil::M160);
 
   current_brightness_ = new_brightness_percent;
   latest_brightness_change_time_ = now;
@@ -614,7 +614,7 @@ void Adapter::OnBrightnessChanged(base::TimeTicks now,
 void Adapter::WriteLogMessages(double new_log_als,
                                double new_brightness,
                                BrightnessChangeCause cause) const {
-  DCHECK_EQ(adapter_status_, Status::kSuccess);
+  CHECK_EQ(adapter_status_, Status::kSuccess, base::NotFatalUntil::M160);
   const std::string old_log_als =
       average_log_ambient_lux_
           ? base::StringPrintf("%.4f", average_log_ambient_lux_.value()) + "->"

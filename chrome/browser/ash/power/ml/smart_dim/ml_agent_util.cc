@@ -47,9 +47,10 @@ bool ParseMetaInfoFromJsonObject(const base::Value& root,
                                  size_t* expected_feature_size,
                                  base::flat_map<std::string, int>* inputs,
                                  base::flat_map<std::string, int>* outputs) {
-  DCHECK(metrics_model_name && dim_threshold && expected_feature_size &&
-         inputs && outputs);
-  DCHECK(root.is_dict());
+  CHECK(metrics_model_name && dim_threshold && expected_feature_size &&
+            inputs && outputs,
+        base::NotFatalUntil::M160);
+  CHECK(root.is_dict(), base::NotFatalUntil::M160);
 
   const base::DictValue& root_dict = root.GetDict();
   const std::string* metrics_model_name_value =

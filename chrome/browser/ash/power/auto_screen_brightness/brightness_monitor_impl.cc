@@ -42,7 +42,7 @@ void BrightnessMonitorImpl::Init() {
 
 void BrightnessMonitorImpl::AddObserver(
     BrightnessMonitor::Observer* const observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.AddObserver(observer);
   if (brightness_monitor_status_ != Status::kInitializing) {
     observer->OnBrightnessMonitorInitialized(brightness_monitor_status_ ==
@@ -52,7 +52,7 @@ void BrightnessMonitorImpl::AddObserver(
 
 void BrightnessMonitorImpl::RemoveObserver(
     BrightnessMonitor::Observer* const observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.RemoveObserver(observer);
 }
 
@@ -114,7 +114,8 @@ base::TimeDelta BrightnessMonitorImpl::GetBrightnessSampleDelayForTesting()
 
 void BrightnessMonitorImpl::OnReceiveInitialBrightnessPercent(
     const std::optional<double> brightness_percent) {
-  DCHECK_EQ(brightness_monitor_status_, Status::kInitializing);
+  CHECK_EQ(brightness_monitor_status_, Status::kInitializing,
+           base::NotFatalUntil::M160);
 
   if (brightness_percent && *brightness_percent >= 0.0 &&
       *brightness_percent <= 100.0) {
@@ -130,7 +131,8 @@ void BrightnessMonitorImpl::OnReceiveInitialBrightnessPercent(
 }
 
 void BrightnessMonitorImpl::OnInitializationComplete() {
-  DCHECK_NE(brightness_monitor_status_, Status::kInitializing);
+  CHECK_NE(brightness_monitor_status_, Status::kInitializing,
+           base::NotFatalUntil::M160);
 
   const bool success = brightness_monitor_status_ == Status::kSuccess;
   for (auto& observer : observers_)

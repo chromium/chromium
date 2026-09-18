@@ -21,7 +21,7 @@ namespace auto_screen_brightness {
 
 Controller::Controller() {
   auto* session_manager = session_manager::SessionManager::Get();
-  DCHECK(session_manager);
+  CHECK(session_manager, base::NotFatalUntil::M160);
 
   if (!session_manager->sessions().empty()) {
     // If a user session has been created, we can use the primary user profile
@@ -55,15 +55,15 @@ void Controller::OnUserSessionStarted(bool /* is_primary_user */) {
 }
 
 void Controller::InitializeComponents() {
-  DCHECK(!is_initialized_);
+  CHECK(!is_initialized_, base::NotFatalUntil::M160);
   is_initialized_ = true;
 
   Profile* const profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   chromeos::PowerManagerClient* power_manager_client =
       chromeos::PowerManagerClient::Get();
-  DCHECK(power_manager_client);
+  CHECK(power_manager_client, base::NotFatalUntil::M160);
 
   als_reader_ = std::make_unique<AlsReader>();
   als_reader_->Init();
@@ -75,7 +75,7 @@ void Controller::InitializeComponents() {
 
   ui::UserActivityDetector* user_activity_detector =
       ui::UserActivityDetector::Get();
-  DCHECK(user_activity_detector);
+  CHECK(user_activity_detector, base::NotFatalUntil::M160);
 
   modeller_ = std::make_unique<ModellerImpl>(
       profile, als_reader_.get(), brightness_monitor_.get(),

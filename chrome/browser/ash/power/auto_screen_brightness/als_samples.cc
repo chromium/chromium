@@ -14,7 +14,7 @@ namespace auto_screen_brightness {
 
 AmbientLightSampleBuffer::AmbientLightSampleBuffer(base::TimeDelta horizon)
     : horizon_(horizon) {
-  DCHECK(!horizon_.is_zero());
+  CHECK(!horizon_.is_zero(), base::NotFatalUntil::M160);
 }
 
 AmbientLightSampleBuffer::~AmbientLightSampleBuffer() = default;

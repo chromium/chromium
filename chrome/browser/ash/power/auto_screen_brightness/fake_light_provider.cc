@@ -14,12 +14,12 @@ FakeLightProvider::FakeLightProvider(AlsReader* als_reader)
 FakeLightProvider::~FakeLightProvider() = default;
 
 void FakeLightProvider::ReportAmbientLightUpdate(int lux) {
-  DCHECK(als_reader_);
+  CHECK(als_reader_, base::NotFatalUntil::M160);
   als_reader_->SetLux(lux);
 }
 
 void FakeLightProvider::ReportReaderInitialized() {
-  DCHECK(als_reader_);
+  CHECK(als_reader_, base::NotFatalUntil::M160);
   als_reader_->SetAlsInitStatus(status_);
 }
 

@@ -959,7 +959,8 @@ void AutocorrectManager::UndoAutocorrect() {
     // This will not quite work properly if there is text actually highlighted,
     // and cursor is at end of the highlight block, but no easy way around it.
     // First delete everything before cursor.
-    DCHECK(surrounding_text.selection_range.IsBoundedBy(autocorrect_range));
+    CHECK(surrounding_text.selection_range.IsBoundedBy(autocorrect_range),
+          base::NotFatalUntil::M160);
     const uint32_t before =
         surrounding_text.selection_range.start() - autocorrect_range.start();
     const uint32_t after =

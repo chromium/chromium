@@ -24,14 +24,14 @@ AlsReader::~AlsReader() = default;
 
 void AlsReader::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!blocking_task_runner_);
+  CHECK(!blocking_task_runner_, base::NotFatalUntil::M160);
 
   provider_ = std::make_unique<LightProviderMojo>(this);
 }
 
 void AlsReader::AddObserver(Observer* const observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.AddObserver(observer);
   if (status_ != AlsInitStatus::kInProgress)
     observer->OnAlsReaderInitialized(status_);
@@ -39,7 +39,7 @@ void AlsReader::AddObserver(Observer* const observer) {
 
 void AlsReader::RemoveObserver(Observer* const observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.RemoveObserver(observer);
 }
 
@@ -51,7 +51,7 @@ void AlsReader::SetLux(int lux) {
 
 void AlsReader::SetAlsInitStatus(AlsInitStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(status, AlsInitStatus::kInProgress);
+  CHECK_NE(status, AlsInitStatus::kInProgress, base::NotFatalUntil::M160);
   status_ = status;
   for (auto& observer : observers_)
     observer.OnAlsReaderInitialized(status_);

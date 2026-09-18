@@ -350,7 +350,8 @@ void GrammarManager::AcceptSuggestion() {
         surrounding_text.selection_range.end() + surrounding_text.offset);
 
     // Delete the incorrect grammar fragment.
-    DCHECK(current_fragment_.range.Contains(selection_range));
+    CHECK(current_fragment_.range.Contains(selection_range),
+          base::NotFatalUntil::M160);
     const uint32_t before =
         selection_range.start() - current_fragment_.range.start();
     const uint32_t after =

@@ -505,7 +505,7 @@ uint32_t Utf16ToCodepoint(std::u16string_view str) {
   base::ReadUnicodeCharacter(str, &index, &codepoint);
 
   // Should only contain a single codepoint.
-  DCHECK_EQ(index, str.length() - 1);
+  CHECK_EQ(index, str.length() - 1, base::NotFatalUntil::M160);
   return codepoint;
 }
 

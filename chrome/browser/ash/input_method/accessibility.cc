@@ -13,7 +13,7 @@ namespace ash {
 namespace input_method {
 
 Accessibility::Accessibility(InputMethodManager* imm) {
-  DCHECK(imm);
+  CHECK(imm, base::NotFatalUntil::M160);
   observed_input_method_manager_.Observe(imm);
 }
 

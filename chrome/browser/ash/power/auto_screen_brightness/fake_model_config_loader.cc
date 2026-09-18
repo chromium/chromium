@@ -13,14 +13,14 @@ FakeModelConfigLoader::FakeModelConfigLoader() = default;
 FakeModelConfigLoader::~FakeModelConfigLoader() = default;
 
 void FakeModelConfigLoader::ReportModelConfigLoaded() {
-  DCHECK(is_initialized_);
+  CHECK(is_initialized_, base::NotFatalUntil::M160);
   for (auto& observer : observers_) {
     NotifyObserver(&observer);
   }
 }
 
 void FakeModelConfigLoader::AddObserver(Observer* const observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.AddObserver(observer);
   if (is_initialized_) {
     NotifyObserver(observer);
@@ -28,12 +28,12 @@ void FakeModelConfigLoader::AddObserver(Observer* const observer) {
 }
 
 void FakeModelConfigLoader::RemoveObserver(Observer* const observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.RemoveObserver(observer);
 }
 
 void FakeModelConfigLoader::NotifyObserver(Observer* const observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observer->OnModelConfigLoaded(is_model_config_valid_
                                     ? std::optional<ModelConfig>(model_config_)
                                     : std::nullopt);

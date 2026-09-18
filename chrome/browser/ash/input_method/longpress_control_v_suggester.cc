@@ -61,7 +61,7 @@ bool LongpressControlVSuggester::AcceptSuggestion(size_t index) {
       input_context != nullptr && pasted_text_start_.has_value()) {
     size_t pasted_text_end =
         input_context->GetSurroundingTextInfo().selection_range.GetMin();
-    DCHECK_GE(pasted_text_end, *pasted_text_start_);
+    CHECK_GE(pasted_text_end, *pasted_text_start_, base::NotFatalUntil::M160);
 
     std::string error;
     suggestion_handler_->AcceptSuggestionCandidate(

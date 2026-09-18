@@ -57,7 +57,7 @@ struct MetricsSnapshot {
 };
 
 void OneMinuteAfterResume(std::vector<MetricsSnapshot> snapshots) {
-  DCHECK(snapshots.size() == std::size(kMetricNames));
+  CHECK(snapshots.size() == std::size(kMetricNames), base::NotFatalUntil::M160);
 
   for (auto& snapshot : snapshots) {
     base::HistogramBase* histogram_base =

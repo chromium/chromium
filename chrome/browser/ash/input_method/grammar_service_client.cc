@@ -185,7 +185,7 @@ void GrammarServiceClient::ParseGrammarCheckerResult(
 
 bool GrammarServiceClient::IsAvailable(Profile* profile) const {
   const PrefService* pref = profile->GetPrefs();
-  DCHECK(pref);
+  CHECK(pref, base::NotFatalUntil::M160);
   // If prefs don't allow spell checking, if the profile is off the record, the
   // grammar service should be unavailable.
   return pref->GetBoolean(spellcheck::prefs::kSpellCheckEnable) &&

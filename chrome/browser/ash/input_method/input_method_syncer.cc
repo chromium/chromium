@@ -159,7 +159,8 @@ void InputMethodSyncer::Initialize() {
 
 void InputMethodSyncer::MergeSyncedPrefs() {
   // This should only be done after the first ever sync.
-  DCHECK(prefs_->GetBoolean(ash::prefs::kLanguageShouldMergeInputMethods));
+  CHECK(prefs_->GetBoolean(ash::prefs::kLanguageShouldMergeInputMethods),
+        base::NotFatalUntil::M160);
   prefs_->SetBoolean(ash::prefs::kLanguageShouldMergeInputMethods, false);
   merging_ = true;
 
@@ -276,9 +277,10 @@ void InputMethodSyncer::FinishMerge(const std::string& languages) {
 }
 
 void InputMethodSyncer::OnPreferenceChanged(const std::string& pref_name) {
-  DCHECK(pref_name == language::prefs::kPreferredLanguages ||
-         pref_name == ash::prefs::kLanguagePreloadEngines ||
-         pref_name == ash::prefs::kLanguageEnabledImes);
+  CHECK(pref_name == language::prefs::kPreferredLanguages ||
+            pref_name == ash::prefs::kLanguagePreloadEngines ||
+            pref_name == ash::prefs::kLanguageEnabledImes,
+        base::NotFatalUntil::M160);
 
   if (merging_ ||
       prefs_->GetBoolean(ash::prefs::kLanguageShouldMergeInputMethods)) {

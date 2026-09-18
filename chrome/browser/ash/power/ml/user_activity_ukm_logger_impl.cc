@@ -27,7 +27,7 @@ void UserActivityUkmLoggerImpl::LogActivity(const UserActivityEvent& event) {
   std::map<std::string, int> buckets =
       UserActivityUkmLoggerBucketizer::BucketizeUserActivityEventData(event);
 
-  DCHECK(ukm_recorder_);
+  CHECK(ukm_recorder_, base::NotFatalUntil::M160);
   ukm::SourceId source_id = ukm::NoURLSourceId();
   ukm::builders::UserActivity user_activity(source_id);
 

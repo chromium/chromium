@@ -216,7 +216,7 @@ SmartDimModelResult PreprocessInput(
     const assist_ranker::ExamplePreprocessorConfig& preprocessor_config,
     const UserActivityEvent::Features& features,
     std::vector<float>* vectorized_features) {
-  DCHECK(vectorized_features);
+  CHECK(vectorized_features, base::NotFatalUntil::M160);
 
   assist_ranker::RankerExample ranker_example;
   if (!PopulateRankerExample(features, &ranker_example)) {
@@ -273,7 +273,7 @@ void SmartDimMlAgent::RequestDimDecision(
   UserActivityEvent::ModelPrediction prediction;
   prediction.set_response(UserActivityEvent::ModelPrediction::MODEL_ERROR);
 
-  DCHECK(worker->GetPreprocessorConfig());
+  CHECK(worker->GetPreprocessorConfig(), base::NotFatalUntil::M160);
   std::vector<float> vectorized_features;
   auto preprocess_result = PreprocessInput(*(worker->GetPreprocessorConfig()),
                                            features, &vectorized_features);
@@ -291,7 +291,7 @@ void SmartDimMlAgent::RequestDimDecision(
     return;
   }
 
-  DCHECK(worker->GetExecutor());
+  CHECK(worker->GetExecutor(), base::NotFatalUntil::M160);
   // Prepare the input tensor.
   base::flat_map<std::string, TensorPtr> inputs;
   auto tensor = Tensor::New();

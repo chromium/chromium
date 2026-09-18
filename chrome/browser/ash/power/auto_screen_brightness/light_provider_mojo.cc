@@ -46,7 +46,7 @@ void LightProviderMojo::SetUpChannel(
     return;
   }
 
-  DCHECK(!new_devices_observer_.is_bound());
+  CHECK(!new_devices_observer_.is_bound(), base::NotFatalUntil::M160);
 
   sensor_service_remote_.Bind(std::move(pending_remote));
   sensor_service_remote_.set_disconnect_handler(
@@ -57,8 +57,8 @@ void LightProviderMojo::SetUpChannel(
     SetupLightSamplesObserver();
 
     auto& light = lights_[light_device_id_.value()];
-    DCHECK(!light.ignored);
-    DCHECK(light.name.has_value());
+    CHECK(!light.ignored, base::NotFatalUntil::M160);
+    CHECK(light.name.has_value(), base::NotFatalUntil::M160);
 
     if (light.name.value().compare(kCrosECLightName) == 0 &&
         light.on_lid.value_or(false)) {
@@ -188,7 +188,7 @@ void LightProviderMojo::ResetStates() {
 
 void LightProviderMojo::QueryDevices() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sensor_service_remote_.is_bound());
+  CHECK(sensor_service_remote_.is_bound(), base::NotFatalUntil::M160);
 
   sensor_service_remote_->GetDeviceIds(
       chromeos::sensors::mojom::DeviceType::LIGHT,
@@ -206,7 +206,7 @@ void LightProviderMojo::GetLightIdsCallback(
 
 void LightProviderMojo::RegisterLightWithId(int32_t id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sensor_service_remote_.is_bound());
+  CHECK(sensor_service_remote_.is_bound(), base::NotFatalUntil::M160);
 
   auto& light = lights_[id];
 
@@ -216,7 +216,7 @@ void LightProviderMojo::RegisterLightWithId(int32_t id) {
     return;
   }
 
-  DCHECK(!light.remote.is_bound());
+  CHECK(!light.remote.is_bound(), base::NotFatalUntil::M160);
 
   light.remote = GetSensorDeviceRemote(id);
 
@@ -231,7 +231,7 @@ void LightProviderMojo::GetNameLocationCallback(
     int32_t id,
     const std::vector<std::optional<std::string>>& values) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(light_device_id_.value_or(-1), id);
+  CHECK_NE(light_device_id_.value_or(-1), id, base::NotFatalUntil::M160);
 
   if (light_device_id_.has_value()) {
     auto& orig_light = lights_[light_device_id_.value()];
@@ -257,7 +257,7 @@ void LightProviderMojo::GetNameLocationCallback(
   }
 
   auto& light = lights_[id];
-  DCHECK(light.remote.is_bound());
+  CHECK(light.remote.is_bound(), base::NotFatalUntil::M160);
 
   light.name = values[0];
   light.on_lid =
@@ -314,7 +314,7 @@ void LightProviderMojo::IgnoreLight(int32_t id) {
 mojo::Remote<chromeos::sensors::mojom::SensorDevice>
 LightProviderMojo::GetSensorDeviceRemote(int32_t id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sensor_service_remote_.is_bound());
+  CHECK(sensor_service_remote_.is_bound(), base::NotFatalUntil::M160);
 
   auto& light = lights_[id];
   if (light.remote.is_bound()) {
@@ -377,7 +377,7 @@ void LightProviderMojo::DetermineLightSensor(int32_t id) {
 
 void LightProviderMojo::SetupLightSamplesObserver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(light_device_id_.has_value());
+  CHECK(light_device_id_.has_value(), base::NotFatalUntil::M160);
 
   observer_ = std::make_unique<LightSamplesObserver>(
       als_reader_, GetSensorDeviceRemote(light_device_id_.value()));

@@ -44,7 +44,7 @@ void Initialize(PrefService* local_state,
       std::make_unique<ComponentExtensionIMEManagerDelegateImpl>(),
       !g_disable_extension_loading, std::move(ime_keyboard));
   InputMethodManager::Initialize(impl);
-  DCHECK(InputMethodManager::Get());
+  CHECK(InputMethodManager::Get(), base::NotFatalUntil::M160);
 
   delete g_accessibility;
   g_accessibility = new Accessibility(impl);

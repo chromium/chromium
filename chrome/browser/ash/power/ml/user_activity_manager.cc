@@ -136,10 +136,10 @@ UserActivityManager::UserActivityManager(
       power_manager_client_(power_manager_client) {
   CHECK(ukm_logger_, base::NotFatalUntil::M160);
 
-  DCHECK(detector);
+  CHECK(detector, base::NotFatalUntil::M160);
   user_activity_observation_.Observe(detector);
 
-  DCHECK(power_manager_client);
+  CHECK(power_manager_client, base::NotFatalUntil::M160);
   power_manager_client_observation_.Observe(power_manager_client);
   power_manager_client->RequestStatusUpdate();
   power_manager_client->GetSwitchStates(
@@ -149,7 +149,7 @@ UserActivityManager::UserActivityManager(
       base::BindOnce(&UserActivityManager::OnReceiveInactivityDelays,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  DCHECK(session_manager);
+  CHECK(session_manager, base::NotFatalUntil::M160);
   session_manager_observation_.Observe(session_manager);
 
   if (chromeos::GetDeviceType() == chromeos::DeviceType::kChromebook) {
@@ -343,7 +343,7 @@ void UserActivityManager::HandleSmartDimDecision(
 
 void UserActivityManager::OnSessionStateChanged() {
   TRACE_EVENT0("ui", "UserActivityManager::OnSessionStateChanged");
-  DCHECK(session_manager_);
+  CHECK(session_manager_, base::NotFatalUntil::M160);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const bool was_locked = screen_is_locked_;
   screen_is_locked_ = session_manager_->IsScreenLocked();

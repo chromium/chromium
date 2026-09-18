@@ -31,7 +31,7 @@ class FakeObserver : public AlsReader::Observer {
   }
   inline bool has_status() const { return status_.has_value(); }
   inline AlsReader::AlsInitStatus status() const {
-    DCHECK(status_);
+    CHECK(status_, base::NotFatalUntil::M160);
     return status_.value();
   }
 

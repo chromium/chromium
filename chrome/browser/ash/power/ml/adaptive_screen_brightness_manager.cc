@@ -97,11 +97,11 @@ AdaptiveScreenBrightnessManager::AdaptiveScreenBrightnessManager(
       touch_counter_(
           std::make_unique<RecentEventsCounter>(kUserInputEventsDuration,
                                                 kNumUserInputEventsBuckets)) {
-  DCHECK(ukm_logger_);
-  DCHECK(detector);
+  CHECK(ukm_logger_, base::NotFatalUntil::M160);
+  CHECK(detector, base::NotFatalUntil::M160);
   user_activity_observation_.Observe(detector);
 
-  DCHECK(power_manager_client);
+  CHECK(power_manager_client, base::NotFatalUntil::M160);
   power_manager_client_observation_.Observe(power_manager_client);
   power_manager_client->RequestStatusUpdate();
   power_manager_client->GetSwitchStates(
@@ -110,7 +110,7 @@ AdaptiveScreenBrightnessManager::AdaptiveScreenBrightnessManager(
   power_manager_client->GetScreenBrightnessPercent(base::BindOnce(
       &AdaptiveScreenBrightnessManager::OnReceiveScreenBrightnessPercent,
       weak_ptr_factory_.GetWeakPtr()));
-  DCHECK(periodic_timer_);
+  CHECK(periodic_timer_, base::NotFatalUntil::M160);
   periodic_timer_->Start(FROM_HERE, kLoggingInterval, this,
                          &AdaptiveScreenBrightnessManager::OnTimerFired);
 }
@@ -125,15 +125,15 @@ AdaptiveScreenBrightnessManager::CreateInstance() {
 
   chromeos::PowerManagerClient* const power_manager_client =
       chromeos::PowerManagerClient::Get();
-  DCHECK(power_manager_client);
+  CHECK(power_manager_client, base::NotFatalUntil::M160);
   ui::UserActivityDetector* const detector = ui::UserActivityDetector::Get();
-  DCHECK(detector);
+  CHECK(detector, base::NotFatalUntil::M160);
   AccessibilityManager* const accessibility_manager =
       AccessibilityManager::Get();
-  DCHECK(accessibility_manager);
+  CHECK(accessibility_manager, base::NotFatalUntil::M160);
   MagnificationManager* const magnification_manager =
       MagnificationManager::Get();
-  DCHECK(magnification_manager);
+  CHECK(magnification_manager, base::NotFatalUntil::M160);
   mojo::PendingRemote<viz::mojom::VideoDetectorObserver>
       video_observer_screen_brightness_logger;
 
@@ -358,7 +358,7 @@ void AdaptiveScreenBrightnessManager::LogEvent() {
 
   if (is_video_playing_.value_or(false)) {
     activity_data->set_last_activity_time_sec(0);
-    DCHECK(start_activity_time_since_boot_);
+    CHECK(start_activity_time_since_boot_, base::NotFatalUntil::M160);
     activity_data->set_recent_time_active_sec(
         (time_since_boot - *start_activity_time_since_boot_).InSeconds());
   } else if (last_activity_time_since_boot_.has_value()) {

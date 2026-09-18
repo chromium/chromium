@@ -147,13 +147,15 @@ void SampleCpuIdleData(
             kCpuDataPathBase +
             base::StringPrintf(kCpuIdleStateNamePathSuffixFormat, cpu,
                                state_count);
-        DCHECK(base::PathExists(base::FilePath(name_file_path)));
+        CHECK(base::PathExists(base::FilePath(name_file_path)),
+              base::NotFatalUntil::M160);
 
         const std::string time_file_path =
             kCpuDataPathBase +
             base::StringPrintf(kCpuIdleStateTimePathSuffixFormat, cpu,
                                state_count);
-        DCHECK(base::PathExists(base::FilePath(time_file_path)));
+        CHECK(base::PathExists(base::FilePath(time_file_path)),
+              base::NotFatalUntil::M160);
 
         std::string state_name, occupancy_time_string;
         int64_t occupancy_time_usec;
@@ -284,7 +286,8 @@ void SampleCpuStateAsync(
     std::vector<CpuDataCollector::StateOccupancySample>* idle_samples,
     std::vector<std::string>* cpu_freq_state_names,
     std::vector<CpuDataCollector::StateOccupancySample>* freq_samples) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M160);
 
   if (*cpu_count < 0) {
     // Set |cpu_count_| to 1. If it is something else, it will get corrected
@@ -473,7 +476,7 @@ void CpuDataCollector::SaveCpuStateSamplesOnUIThread(
     const std::vector<CpuDataCollector::StateOccupancySample>* idle_samples,
     const std::vector<std::string>* cpu_freq_state_names,
     const std::vector<CpuDataCollector::StateOccupancySample>* freq_samples) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   cpu_count_ = *cpu_count;
 
@@ -488,7 +491,8 @@ void CpuDataCollector::SaveCpuStateSamplesOnUIThread(
     if (cpu_idle_state_data_.empty()) {
       cpu_idle_state_data_.resize(idle_samples->size());
     } else {
-      DCHECK_EQ(idle_samples->size(), cpu_idle_state_data_.size());
+      CHECK_EQ(idle_samples->size(), cpu_idle_state_data_.size(),
+               base::NotFatalUntil::M160);
     }
     for (size_t i = 0; i < cpu_idle_state_data_.size(); ++i)
       AddSample(&cpu_idle_state_data_[i], (*idle_samples)[i]);
@@ -502,7 +506,8 @@ void CpuDataCollector::SaveCpuStateSamplesOnUIThread(
     if (cpu_freq_state_data_.empty()) {
       cpu_freq_state_data_.resize(freq_samples->size());
     } else {
-      DCHECK_EQ(freq_samples->size(), cpu_freq_state_data_.size());
+      CHECK_EQ(freq_samples->size(), cpu_freq_state_data_.size(),
+               base::NotFatalUntil::M160);
     }
     for (size_t i = 0; i < cpu_freq_state_data_.size(); ++i)
       AddSample(&cpu_freq_state_data_[i], (*freq_samples)[i]);

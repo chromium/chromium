@@ -986,7 +986,8 @@ void InputMethodEngine::Announce(const std::u16string& message) {
 void InputMethodEngine::OnProfileWillBeDestroyed(Profile* profile) {
   if (profile == profile_) {
     pref_change_registrar_.reset();
-    DCHECK(profile_observation_.IsObservingSource(profile_));
+    CHECK(profile_observation_.IsObservingSource(profile_),
+          base::NotFatalUntil::M160);
     profile_observation_.Reset();
     profile_ = nullptr;
   }

@@ -38,8 +38,9 @@ namespace {
 // log-domain already.
 Model LoadModelFromDisk(const ModellerImpl::ModelSavingSpec& spec,
                         bool is_testing) {
-  DCHECK(is_testing ||
-         !content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(is_testing ||
+            !content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M160);
   Model loaded_model;
   std::string content;
 
@@ -95,8 +96,9 @@ bool SaveDataAndLogError(const base::FilePath& path, const std::string& data) {
 TrainingResult TrainModel(Trainer* trainer,
                           const std::vector<TrainingDataPoint>& data,
                           bool is_testing) {
-  DCHECK(is_testing ||
-         !content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(is_testing ||
+            !content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M160);
   return trainer->Train(data);
 }
 
@@ -107,8 +109,9 @@ bool SetInitialCurves(Trainer* trainer,
                       const MonotoneCubicSpline& global_curve,
                       const MonotoneCubicSpline& current_curve,
                       bool is_testing) {
-  DCHECK(is_testing ||
-         !content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(is_testing ||
+            !content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M160);
   return trainer->SetInitialCurves(global_curve, current_curve);
 }
 
@@ -135,27 +138,28 @@ bool SaveModelToDisk(const ModellerImpl::ModelSavingSpec& model_saving_spec,
                      bool save_global_curve,
                      bool save_personal_curve,
                      bool is_testing) {
-  DCHECK(is_testing ||
-         !content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(is_testing ||
+            !content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M160);
 
   if (save_global_curve) {
-    DCHECK(model.global_curve);
+    CHECK(model.global_curve, base::NotFatalUntil::M160);
     const std::string data = model.global_curve->ToString();
-    DCHECK(!data.empty());
+    CHECK(!data.empty(), base::NotFatalUntil::M160);
     if (!SaveDataAndLogError(model_saving_spec.global_curve, data))
       return false;
   }
 
   if (save_personal_curve) {
-    DCHECK(model.personal_curve);
+    CHECK(model.personal_curve, base::NotFatalUntil::M160);
     const std::string data = model.personal_curve->ToString();
-    DCHECK(!data.empty());
+    CHECK(!data.empty(), base::NotFatalUntil::M160);
     if (!SaveDataAndLogError(model_saving_spec.personal_curve, data))
       return false;
   }
 
   const std::string data = base::NumberToString(model.iteration_count);
-  DCHECK(!data.empty());
+  CHECK(!data.empty(), base::NotFatalUntil::M160);
   return SaveDataAndLogError(model_saving_spec.iteration_count, data);
 }
 
@@ -182,7 +186,7 @@ ModellerImpl::~ModellerImpl() {
 
 void ModellerImpl::AddObserver(Modeller::Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.AddObserver(observer);
   if (is_modeller_enabled_.has_value()) {
     NotifyObserverInitStatus(*observer);
@@ -191,7 +195,7 @@ void ModellerImpl::AddObserver(Modeller::Observer* observer) {
 
 void ModellerImpl::RemoveObserver(Modeller::Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.RemoveObserver(observer);
 }
 
@@ -200,13 +204,13 @@ void ModellerImpl::OnAmbientLightUpdated(int lux) {
   if (!is_modeller_enabled_.has_value() || !*is_modeller_enabled_)
     return;
 
-  DCHECK(log_als_values_);
+  CHECK(log_als_values_, base::NotFatalUntil::M160);
   log_als_values_->SaveToBuffer({ConvertToLog(lux), tick_clock_->NowTicks()});
 }
 
 void ModellerImpl::OnAlsReaderInitialized(AlsReader::AlsInitStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!als_init_status_);
+  CHECK(!als_init_status_, base::NotFatalUntil::M160);
 
   als_init_status_ = status;
 
@@ -215,7 +219,7 @@ void ModellerImpl::OnAlsReaderInitialized(AlsReader::AlsInitStatus status) {
 
 void ModellerImpl::OnBrightnessMonitorInitialized(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!brightness_monitor_success_.has_value());
+  CHECK(!brightness_monitor_success_.has_value(), base::NotFatalUntil::M160);
 
   brightness_monitor_success_ = success;
   HandleStatusUpdate();
@@ -227,7 +231,7 @@ void ModellerImpl::OnUserBrightnessChanged(double old_brightness_percent,
   if (!is_modeller_enabled_.has_value() || !*is_modeller_enabled_)
     return;
 
-  DCHECK(log_als_values_);
+  CHECK(log_als_values_, base::NotFatalUntil::M160);
   const base::TimeTicks now = tick_clock_->NowTicks();
   // We don't add any training data if there is no ambient light sample.
   const std::optional<AlsAvgStdDev> log_als_avg_stddev =
@@ -246,7 +250,7 @@ void ModellerImpl::OnUserBrightnessChangeRequested() {}
 void ModellerImpl::OnModelConfigLoaded(
     std::optional<ModelConfig> model_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!model_config_exists_.has_value());
+  CHECK(!model_config_exists_.has_value(), base::NotFatalUntil::M160);
 
   model_config_exists_ = model_config.has_value();
   if (model_config_exists_.value()) {
@@ -281,7 +285,7 @@ std::unique_ptr<ModellerImpl> ModellerImpl::CreateForTesting(
 std::optional<double> ModellerImpl::AverageAmbientForTesting(
     base::TimeTicks now) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(log_als_values_);
+  CHECK(log_als_values_, base::NotFatalUntil::M160);
   const std::optional<AlsAvgStdDev> log_als_avg_stddev =
       log_als_values_->AverageAmbientWithStdDev(now);
   if (!log_als_avg_stddev)
@@ -345,11 +349,11 @@ ModellerImpl::ModellerImpl(
                base::OnTaskRunnerDeleter(blocking_task_runner_)),
       tick_clock_(tick_clock),
       model_timer_(tick_clock_) {
-  DCHECK(als_reader);
-  DCHECK(brightness_monitor);
-  DCHECK(model_config_loader);
+  CHECK(als_reader, base::NotFatalUntil::M160);
+  CHECK(brightness_monitor, base::NotFatalUntil::M160);
+  CHECK(model_config_loader, base::NotFatalUntil::M160);
 
-  DCHECK(trainer_);
+  CHECK(trainer_, base::NotFatalUntil::M160);
 
   if (!profile) {
     is_modeller_enabled_ = false;
@@ -381,7 +385,7 @@ ModellerImpl::ModellerImpl(
 void ModellerImpl::OnModelSavingSpecReadFromProfile(
     const ModelSavingSpec& spec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!model_saving_spec_.has_value());
+  CHECK(!model_saving_spec_.has_value(), base::NotFatalUntil::M160);
 
   model_saving_spec_ = spec;
   HandleStatusUpdate();
@@ -445,7 +449,7 @@ void ModellerImpl::HandleStatusUpdate() {
 
 bool ModellerImpl::ApplyCustomization() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(*model_config_exists_);
+  CHECK(*model_config_exists_, base::NotFatalUntil::M160);
 
   initial_global_curve_ = MonotoneCubicSpline::CreateMonotoneCubicSpline(
       model_config_.log_lux, model_config_.brightness);
@@ -479,8 +483,9 @@ bool ModellerImpl::ApplyCustomization() {
 
 void ModellerImpl::OnInitializationComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(is_modeller_enabled_.has_value());
-  DCHECK(*is_modeller_enabled_ == model_.global_curve.has_value());
+  CHECK(is_modeller_enabled_.has_value(), base::NotFatalUntil::M160);
+  CHECK(*is_modeller_enabled_ == model_.global_curve.has_value(),
+        base::NotFatalUntil::M160);
 
   for (auto& observer : observers_) {
     NotifyObserverInitStatus(observer);
@@ -489,13 +494,13 @@ void ModellerImpl::OnInitializationComplete() {
 
 void ModellerImpl::NotifyObserverInitStatus(Modeller::Observer& observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(is_modeller_enabled_.has_value());
+  CHECK(is_modeller_enabled_.has_value(), base::NotFatalUntil::M160);
   observer.OnModelInitialized(model_);
 }
 
 void ModellerImpl::OnModelLoadedFromDisk(const Model& model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(initial_global_curve_);
+  CHECK(initial_global_curve_, base::NotFatalUntil::M160);
 
   model_ = model;
   if (!model_.global_curve || *model_.global_curve != *initial_global_curve_) {
@@ -506,7 +511,7 @@ void ModellerImpl::OnModelLoadedFromDisk(const Model& model) {
     VLOG(1) << "ABModel global curve reset";
   }
 
-  DCHECK(model_.global_curve);
+  CHECK(model_.global_curve, base::NotFatalUntil::M160);
   // Run SetInitialCurves calculations on background thread to avoid blocking UI
   // thread.
   blocking_task_runner_->PostTaskAndReplyWithResult(
@@ -533,11 +538,13 @@ void ModellerImpl::OnSetInitialCurves(bool is_personal_curve_valid) {
 
   const bool has_loaded_and_valid_personal_curve =
       model_.personal_curve && is_personal_curve_valid;
-  DCHECK(model_.global_curve);
-  DCHECK(trainer_->GetGlobalCurve() == *model_.global_curve);
-  DCHECK(trainer_->GetCurrentCurve() == (has_loaded_and_valid_personal_curve
-                                             ? *model_.personal_curve
-                                             : *model_.global_curve));
+  CHECK(model_.global_curve, base::NotFatalUntil::M160);
+  CHECK(trainer_->GetGlobalCurve() == *model_.global_curve,
+        base::NotFatalUntil::M160);
+  CHECK(trainer_->GetCurrentCurve() == (has_loaded_and_valid_personal_curve
+                                            ? *model_.personal_curve
+                                            : *model_.global_curve),
+        base::NotFatalUntil::M160);
 
   if (!has_loaded_and_valid_personal_curve) {
     ErasePersonalCurve();

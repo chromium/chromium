@@ -27,8 +27,8 @@ constexpr double kTol = 1e-10;
 double BrightnessLowerBound(double reference_brightness,
                             double scale,
                             double offset) {
-  DCHECK_GT(scale, 0.0);
-  DCHECK_GE(offset, 0.0);
+  CHECK_GT(scale, 0.0, base::NotFatalUntil::M160);
+  CHECK_GE(offset, 0.0, base::NotFatalUntil::M160);
 
   return std::clamp(reference_brightness / scale, 0.0,
                      std::max(reference_brightness - offset, 0.0));
@@ -41,8 +41,8 @@ double BrightnessLowerBound(double reference_brightness,
 double BrightnessUpperBound(double reference_brightness,
                             double scale,
                             double offset) {
-  DCHECK_GT(scale, 0.0);
-  DCHECK_GE(offset, 0.0);
+  CHECK_GT(scale, 0.0, base::NotFatalUntil::M160);
+  CHECK_GE(offset, 0.0, base::NotFatalUntil::M160);
 
   return std::clamp(reference_brightness * scale,
                      std::min(reference_brightness + offset, 100.0), 100.0);
@@ -52,8 +52,8 @@ double BrightnessUpperBound(double reference_brightness,
 bool IsBrightnessOutlier(double brightness,
                          double reference_brightness,
                          const GaussianTrainer::Params& params) {
-  DCHECK_GE(reference_brightness, 0.0);
-  DCHECK_LE(reference_brightness, 100.0);
+  CHECK_GE(reference_brightness, 0.0, base::NotFatalUntil::M160);
+  CHECK_LE(reference_brightness, 100.0, base::NotFatalUntil::M160);
   return brightness < BrightnessLowerBound(reference_brightness,
                                            params.brightness_bound_scale,
                                            params.brightness_bound_offset) ||
@@ -82,22 +82,22 @@ double ModelPredictionAdjustment(double brightness_old,
                                  double brightness_new,
                                  double model_brightness,
                                  const GaussianTrainer::Params& params) {
-  DCHECK_GE(brightness_old, 0.0);
-  DCHECK_LE(brightness_old, 100.0);
-  DCHECK_GE(brightness_new, 0.0);
-  DCHECK_LE(brightness_new, 100.0);
-  DCHECK_GE(model_brightness, 0.0);
-  DCHECK_LE(model_brightness, 100.0);
+  CHECK_GE(brightness_old, 0.0, base::NotFatalUntil::M160);
+  CHECK_LE(brightness_old, 100.0, base::NotFatalUntil::M160);
+  CHECK_GE(brightness_new, 0.0, base::NotFatalUntil::M160);
+  CHECK_LE(brightness_new, 100.0, base::NotFatalUntil::M160);
+  CHECK_GE(model_brightness, 0.0, base::NotFatalUntil::M160);
+  CHECK_LE(model_brightness, 100.0, base::NotFatalUntil::M160);
 
   const double bounded_user_adjustment = BoundedBrightnessAdjustment(
       brightness_old, brightness_new, params.brightness_step_size);
 
-  DCHECK_GE(bounded_user_adjustment, -100.0);
-  DCHECK_LE(bounded_user_adjustment, 100.0);
+  CHECK_GE(bounded_user_adjustment, -100.0, base::NotFatalUntil::M160);
+  CHECK_LE(bounded_user_adjustment, 100.0, base::NotFatalUntil::M160);
 
   const double target_brightness = brightness_old + bounded_user_adjustment;
-  DCHECK_GE(target_brightness, 0.0);
-  DCHECK_LE(target_brightness, 100.0);
+  CHECK_GE(target_brightness, 0.0, base::NotFatalUntil::M160);
+  CHECK_LE(target_brightness, 100.0, base::NotFatalUntil::M160);
 
   // Check if model prediction and user adjustment are consistent.
   const bool is_consistent =
@@ -246,7 +246,7 @@ bool GaussianTrainer::HasValidConfiguration() const {
 bool GaussianTrainer::SetInitialCurves(
     const MonotoneCubicSpline& global_curve,
     const MonotoneCubicSpline& current_curve) {
-  DCHECK(valid_params_);
+  CHECK(valid_params_, base::NotFatalUntil::M160);
 
   // This function could be called again if the caller wants to reset the
   // curves.
@@ -259,10 +259,11 @@ bool GaussianTrainer::SetInitialCurves(
 
   // Global curve and personal curve should have the same ambient log lux.
   const std::vector<double> global_log_lux = global_curve_->GetControlPointsX();
-  DCHECK_EQ(global_log_lux.size(), num_points);
+  CHECK_EQ(global_log_lux.size(), num_points, base::NotFatalUntil::M160);
 
   for (size_t i = 0; i < num_points; ++i) {
-    DCHECK_LE(std::abs(global_log_lux[i] - ambient_log_lux_[i]), kTol);
+    CHECK_LE(std::abs(global_log_lux[i] - ambient_log_lux_[i]), kTol,
+             base::NotFatalUntil::M160);
   }
 
   // Calculate |min_ratios_| and |max_ratios_| from global curve.
@@ -272,7 +273,7 @@ bool GaussianTrainer::SetInitialCurves(
       global_curve_->GetControlPointsY();
 
   // TODO(jiameng): may revise to allow 0 as a control point.
-  DCHECK_GT(global_brightness[0], 0);
+  CHECK_GT(global_brightness[0], 0, base::NotFatalUntil::M160);
 
   for (size_t i = 0; i < num_points - 1; ++i) {
     double min_grad = params_.min_grad;
@@ -283,7 +284,7 @@ bool GaussianTrainer::SetInitialCurves(
     }
 
     const double ratio = global_brightness[i + 1] / global_brightness[i];
-    DCHECK_GE(ratio, 1);
+    CHECK_GE(ratio, 1, base::NotFatalUntil::M160);
     min_ratios_[i] = std::pow(ratio, min_grad);
     max_ratios_[i] = std::pow(ratio, params_.max_grad);
   }
@@ -299,22 +300,22 @@ bool GaussianTrainer::SetInitialCurves(
 }
 
 MonotoneCubicSpline GaussianTrainer::GetGlobalCurve() const {
-  DCHECK(valid_params_);
-  DCHECK(global_curve_);
+  CHECK(valid_params_, base::NotFatalUntil::M160);
+  CHECK(global_curve_, base::NotFatalUntil::M160);
   return *global_curve_;
 }
 
 MonotoneCubicSpline GaussianTrainer::GetCurrentCurve() const {
-  DCHECK(valid_params_);
-  DCHECK(current_curve_);
+  CHECK(valid_params_, base::NotFatalUntil::M160);
+  CHECK(current_curve_, base::NotFatalUntil::M160);
   return *current_curve_;
 }
 
 TrainingResult GaussianTrainer::Train(
     const std::vector<TrainingDataPoint>& data) {
-  DCHECK(global_curve_);
-  DCHECK(current_curve_);
-  DCHECK(!data.empty());
+  CHECK(global_curve_, base::NotFatalUntil::M160);
+  CHECK(current_curve_, base::NotFatalUntil::M160);
+  CHECK(!data.empty(), base::NotFatalUntil::M160);
 
   for (const auto& data_point : data) {
     AdjustCurveWithSingleDataPoint(data_point);
@@ -397,7 +398,7 @@ void GaussianTrainer::AdjustCurveWithSingleDataPoint(
 }
 
 void GaussianTrainer::EnforceMonotonicity(size_t center_index) {
-  DCHECK_LT(center_index, ambient_log_lux_.size());
+  CHECK_LT(center_index, ambient_log_lux_.size(), base::NotFatalUntil::M160);
   brightness_[center_index] =
       std::clamp(brightness_[center_index], params_.min_brightness, 100.0);
 
@@ -427,19 +428,19 @@ void GaussianTrainer::EnforceMonotonicity(size_t center_index) {
   // Check that final |brightness_| array is monotonic across whole range and
   // each value is in [0, 100].
   for (size_t i = 0; i < ambient_log_lux_.size() - 1; ++i) {
-    DCHECK_GE(brightness_[i], 0);
-    DCHECK_LE(brightness_[i], 100);
-    DCHECK_LE(brightness_[i], brightness_[i + 1]);
+    CHECK_GE(brightness_[i], 0, base::NotFatalUntil::M160);
+    CHECK_LE(brightness_[i], 100, base::NotFatalUntil::M160);
+    CHECK_LE(brightness_[i], brightness_[i + 1], base::NotFatalUntil::M160);
   }
 
-  DCHECK_GE(brightness_.back(), 0);
-  DCHECK_LE(brightness_.back(), 100);
+  CHECK_GE(brightness_.back(), 0, base::NotFatalUntil::M160);
+  CHECK_LE(brightness_.back(), 100, base::NotFatalUntil::M160);
 #endif
 }
 
 double GaussianTrainer::CalculateCurveError(
     const std::vector<TrainingDataPoint>& data) const {
-  DCHECK(current_curve_);
+  CHECK(current_curve_, base::NotFatalUntil::M160);
   double error = 0.0;
   for (const auto& data_point : data) {
     error += std::abs(data_point.brightness_new -

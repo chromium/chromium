@@ -20,7 +20,7 @@ constexpr double kTol = 1e-10;
 
 
 bool IsIncreasing(const std::vector<double>& data, bool is_strict) {
-  DCHECK_GT(data.size(), 1u);
+  CHECK_GT(data.size(), 1u, base::NotFatalUntil::M160);
   for (size_t i = 1; i < data.size(); ++i) {
     if (data[i] < data[i - 1] || (data[i] <= data[i - 1] && is_strict))
       return false;
@@ -59,7 +59,7 @@ std::vector<double> ComputeTangents(const std::vector<double>& xs,
   std::vector<double> ms;
   for (size_t i = 0; i < num_points - 1; ++i) {
     const double slope = (ys[i + 1] - ys[i]) / (xs[i + 1] - xs[i]);
-    DCHECK_GE(slope, 0);
+    CHECK_GE(slope, 0, base::NotFatalUntil::M160);
     ds.push_back(slope);
   }
 
@@ -80,8 +80,8 @@ std::vector<double> ComputeTangents(const std::vector<double>& xs,
     } else {
       const double a = ms[i] / ds[i];
       const double b = ms[i + 1] / ds[i];
-      DCHECK_GE(a, 0.0);
-      DCHECK_GE(b, 0.0);
+      CHECK_GE(a, 0.0, base::NotFatalUntil::M160);
+      CHECK_GE(b, 0.0, base::NotFatalUntil::M160);
 
       const double r = std::hypot(a, b);
       if (r > 3.0) {
@@ -167,7 +167,7 @@ bool MonotoneCubicSpline::operator==(const MonotoneCubicSpline& spline) const {
 }
 
 double MonotoneCubicSpline::Interpolate(double x) const {
-  DCHECK_GT(num_points_, 1u);
+  CHECK_GT(num_points_, 1u, base::NotFatalUntil::M160);
 
   if (x <= xs_[0])
     return ys_[0];
@@ -191,11 +191,11 @@ double MonotoneCubicSpline::Interpolate(double x) const {
     ++i;
   }
 
-  DCHECK_LT(i, num_points_);
+  CHECK_LT(i, num_points_, base::NotFatalUntil::M160);
   const double x_upper = xs_[i];
   const double x_lower = xs_[i - 1];
-  DCHECK_GE(x, x_lower);
-  DCHECK_LE(x, x_upper);
+  CHECK_GE(x, x_lower, base::NotFatalUntil::M160);
+  CHECK_LE(x, x_upper, base::NotFatalUntil::M160);
 
   const double h = x_upper - x_lower;
   const double t = (x - x_lower) / h;

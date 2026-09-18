@@ -142,8 +142,8 @@ void IdleActionWarningObserver::PowerChanged(
 }
 
 void IdleActionWarningObserver::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK(warning_dialog_);
-  DCHECK_EQ(widget, warning_dialog_->GetWidget());
+  CHECK(warning_dialog_, base::NotFatalUntil::M160);
+  CHECK_EQ(widget, warning_dialog_->GetWidget(), base::NotFatalUntil::M160);
   widged_observer_.reset();
   warning_dialog_ = nullptr;
 }

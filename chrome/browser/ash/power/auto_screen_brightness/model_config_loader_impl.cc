@@ -43,8 +43,9 @@ constexpr char kSystemPath[] =
 // |is_testing| is false).
 std::string LoadModelParamsFromDisk(const base::FilePath& model_params_path,
                                     bool is_testing) {
-  DCHECK(is_testing ||
-         !content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(is_testing ||
+            !content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M160);
 
   base::FilePath used_model_params_path = model_params_path;
   if (used_model_params_path.empty()) {
@@ -139,7 +140,7 @@ ModelConfigLoaderImpl::~ModelConfigLoaderImpl() {
 
 void ModelConfigLoaderImpl::AddObserver(ModelConfigLoader::Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.AddObserver(observer);
   if (is_initialized_) {
     observer->OnModelConfigLoaded(
@@ -151,7 +152,7 @@ void ModelConfigLoaderImpl::AddObserver(ModelConfigLoader::Observer* observer) {
 void ModelConfigLoaderImpl::RemoveObserver(
     ModelConfigLoader::Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.RemoveObserver(observer);
 }
 
@@ -267,14 +268,14 @@ void ModelConfigLoaderImpl::OnModelParamsLoadedFromDisk(
 
   std::vector<double> log_lux;
   for (const auto& log_lux_val : loaded_model_configs.global_curve.log_lux) {
-    DCHECK(log_lux_val);
+    CHECK(log_lux_val, base::NotFatalUntil::M160);
     model_config_.log_lux.push_back(*log_lux_val);
   }
 
   std::vector<double> brightness;
   for (const auto& brightness_val :
        loaded_model_configs.global_curve.brightness) {
-    DCHECK(brightness_val);
+    CHECK(brightness_val, base::NotFatalUntil::M160);
     model_config_.brightness.push_back(*brightness_val);
   }
 

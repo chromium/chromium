@@ -21,7 +21,7 @@ class FakeLightProvider : public LightProviderInterface {
   ~FakeLightProvider() override;
 
   void set_als_init_status(AlsReader::AlsInitStatus status) {
-    DCHECK(als_reader_);
+    CHECK(als_reader_, base::NotFatalUntil::M160);
     status_ = status;
     als_reader_->SetAlsInitStatusForTesting(status_);
   }

@@ -202,7 +202,7 @@ void KeystoreService::ChallengeAttestationOnlyKeystore(
     bool migrate,
     KeystoreAlgorithmName algorithm,
     ChallengeAttestationOnlyKeystoreCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   ::attestation::KeyType key_crypto_type;
   switch (algorithm) {
@@ -258,7 +258,7 @@ void KeystoreService::DidChallengeAttestationOnlyKeystore(
     ChallengeAttestationOnlyKeystoreCallback callback,
     void* challenge_key_ptr,
     const attestation::TpmChallengeKeyResult& result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   chromeos::ChallengeAttestationOnlyKeystoreResult result_to_return;
   if (result.IsSuccess()) {
     result_to_return = std::vector<uint8_t>(result.challenge_response.begin(),
@@ -278,13 +278,13 @@ void KeystoreService::DidChallengeAttestationOnlyKeystore(
       break;
     }
   }
-  DCHECK(found);
+  CHECK(found, base::NotFatalUntil::M160);
 }
 
 //------------------------------------------------------------------------------
 
 void KeystoreService::GetKeyStores(GetKeyStoresCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   platform_keys_service_->GetTokens(
       base::BindOnce(&KeystoreService::DidGetKeyStores, std::move(callback)));
 }
@@ -294,7 +294,7 @@ void KeystoreService::DidGetKeyStores(
     GetKeyStoresCallback callback,
     std::vector<TokenId> platform_keys_token_ids,
     chromeos::platform_keys::Status status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   chromeos::GetKeyStoresResult result;
 
@@ -324,7 +324,7 @@ void KeystoreService::DidGetKeyStores(
 void KeystoreService::SelectClientCertificates(
     const std::vector<std::vector<uint8_t>>& certificate_authorities,
     SelectClientCertificatesCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   std::vector<std::string> cert_authorities_str;
   cert_authorities_str.reserve(certificate_authorities.size());
@@ -343,7 +343,7 @@ void KeystoreService::DidSelectClientCertificates(
     SelectClientCertificatesCallback callback,
     std::unique_ptr<net::CertificateList> matches,
     chromeos::platform_keys::Status status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   chromeos::KeystoreSelectClientCertificatesResult result;
 
@@ -369,7 +369,7 @@ void KeystoreService::DidSelectClientCertificates(
 
 void KeystoreService::GetCertificates(KeystoreType keystore,
                                       GetCertificatesCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   platform_keys_service_->GetCertificates(
       KeystoreToToken(keystore),
       base::BindOnce(&KeystoreService::DidGetCertificates,
@@ -381,7 +381,7 @@ void KeystoreService::DidGetCertificates(
     GetCertificatesCallback callback,
     std::unique_ptr<net::CertificateList> certs,
     chromeos::platform_keys::Status status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   chromeos::GetCertificatesResult result;
 
@@ -408,7 +408,7 @@ void KeystoreService::DidGetCertificates(
 void KeystoreService::AddCertificate(KeystoreType keystore,
                                      const std::vector<uint8_t>& certificate,
                                      AddCertificateCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   scoped_refptr<net::X509Certificate> cert_x509 = ParseCertificate(certificate);
   if (!cert_x509.get()) {
     std::move(callback).Run(/*is_error=*/true,

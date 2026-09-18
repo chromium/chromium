@@ -194,8 +194,8 @@ SmartChargingManager::SmartChargingManager(
           kNumUserInputEventsBuckets)),
       ukm_logger_(std::make_unique<SmartChargingUkmLogger>()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(detector);
-  DCHECK(session_manager);
+  CHECK(detector, base::NotFatalUntil::M160);
+  CHECK(session_manager, base::NotFatalUntil::M160);
   user_activity_observation_.Observe(detector);
   power_manager_client_observation_.Observe(
       chromeos::PowerManagerClient::Get());
@@ -219,7 +219,7 @@ std::unique_ptr<SmartChargingManager> SmartChargingManager::CreateInstance() {
     return nullptr;
 
   ui::UserActivityDetector* const detector = ui::UserActivityDetector::Get();
-  DCHECK(detector);
+  CHECK(detector, base::NotFatalUntil::M160);
 
   mojo::PendingRemote<viz::mojom::VideoDetectorObserver> video_observer;
   std::unique_ptr<SmartChargingManager> smart_charging_manager =

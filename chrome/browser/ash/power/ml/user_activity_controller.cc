@@ -37,12 +37,12 @@ UserActivityController::UserActivityController() {
 
   chromeos::PowerManagerClient* power_manager_client =
       chromeos::PowerManagerClient::Get();
-  DCHECK(power_manager_client);
+  CHECK(power_manager_client, base::NotFatalUntil::M160);
   ui::UserActivityDetector* detector = ui::UserActivityDetector::Get();
-  DCHECK(detector);
+  CHECK(detector, base::NotFatalUntil::M160);
   session_manager::SessionManager* session_manager =
       session_manager::SessionManager::Get();
-  DCHECK(session_manager);
+  CHECK(session_manager, base::NotFatalUntil::M160);
 
   // TODO(jiameng): both IdleEventNotifier and UserActivityManager implement
   // viz::mojom::VideoDetectorObserver. We should refactor the code to create

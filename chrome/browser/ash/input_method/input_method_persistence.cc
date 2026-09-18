@@ -98,8 +98,9 @@ void InputMethodPersistence::PersistInputMethod(Profile* profile) {
       return;
     case InputMethodManager::UIStyle::kLock:
       // We are either in unit test, or screen should be locked.
-      DCHECK(!LoginScreenClientImpl::HasInstance() ||
-             ScreenLockerController::Get().screen_locker());
+      CHECK(!LoginScreenClientImpl::HasInstance() ||
+                ScreenLockerController::Get().screen_locker(),
+            base::NotFatalUntil::M160);
       return;
     case InputMethodManager::UIStyle::kSecondaryLogin:
       // We use a special set of input methods on the screen. Do not update.

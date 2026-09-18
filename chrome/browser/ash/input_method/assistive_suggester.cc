@@ -218,7 +218,7 @@ void AssistiveSuggester::OnFocus(int context_id,
   // context. As a result we should make sure it is not being errornously set to
   // a negative number, and cause unexpected behaviour.
   context_ = context;
-  DCHECK(context_id > 0);
+  CHECK(context_id > 0, base::NotFatalUntil::M160);
   focused_context_id_ = context_id;
   multi_word_suggester_.OnFocus(context_id);
   longpress_diacritics_suggester_.OnFocus(context_id);
@@ -352,7 +352,8 @@ void AssistiveSuggester::OnLongpressDetected() {
 }
 
 void AssistiveSuggester::OnClipboardHistoryMenuClosing(bool will_paste_item) {
-  DCHECK_EQ(current_suggester_, &longpress_control_v_suggester_);
+  CHECK_EQ(current_suggester_, &longpress_control_v_suggester_,
+           base::NotFatalUntil::M160);
   if (will_paste_item) {
     // Note: The suggestion index is irrelevant for long-pressed Ctrl+V.
     AcceptSuggestion(/*index=*/-1);
