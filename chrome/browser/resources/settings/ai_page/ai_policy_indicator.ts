@@ -8,12 +8,13 @@
  * feature is controlled by policy.
  */
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
-import '../settings_shared.css.js';
 
-import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './ai_policy_indicator.html.js';
+import {PrefKeyObserverMixinLit} from '../controls/pref_key_observer_mixin_lit.js';
+
+import {getCss} from './ai_policy_indicator.css.js';
+import {getHtml} from './ai_policy_indicator.html.js';
 import {AiEnterpriseFeaturePrefName, ChromeSuggestionsSettingsValue, ModelExecutionEnterprisePolicyValue} from './constants.js';
 
 export function isFeatureDisabledByPolicy(
@@ -27,26 +28,44 @@ export function isFeatureDisabledByPolicy(
   return enterprisePref.value === ModelExecutionEnterprisePolicyValue.DISABLE;
 }
 
-const SettingsAiPolicyIndicatorBase = PrefControlMixin(PolymerElement);
+const SettingsAiPolicyIndicatorElementBase =
+    PrefKeyObserverMixinLit(CrLitElement);
 
-export class SettingsAiPolicyIndicator extends SettingsAiPolicyIndicatorBase {
+export class SettingsAiPolicyIndicatorElement extends
+    SettingsAiPolicyIndicatorElementBase {
   static get is() {
     return 'settings-ai-policy-indicator';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  private isFeatureDisabledByPolicy_(): boolean {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
+    return {
+      pref: {type: Object},
+    };
+  }
+
+  protected accessor pref: chrome.settingsPrivate.PrefObject|undefined =
+      undefined;
+
+  protected isFeatureDisabledByPolicy_(): boolean {
     return isFeatureDisabledByPolicy(this.pref);
   }
 }
 
+export type AiPolicyIndicatorElement = SettingsAiPolicyIndicatorElement;
+
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-ai-policy-indicator': SettingsAiPolicyIndicator;
+    'settings-ai-policy-indicator': SettingsAiPolicyIndicatorElement;
   }
 }
 
-customElements.define(SettingsAiPolicyIndicator.is, SettingsAiPolicyIndicator);
+customElements.define(
+    SettingsAiPolicyIndicatorElement.is, SettingsAiPolicyIndicatorElement);

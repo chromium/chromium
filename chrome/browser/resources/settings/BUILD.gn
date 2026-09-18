@@ -525,6 +525,8 @@ build_webui("build") {
     # subfolder files
     "ai_page/ai_info_card.css",
     "ai_page/ai_logging_info_bullet.css",
+    "ai_page/ai_policy_indicator.css",
+    "ai_page/ai_site_add_dialog.css",
     "a11y_page/a11y_page_index.css",
     "a11y_page/captions_page.css",
     "a11y_page/live_caption.css",

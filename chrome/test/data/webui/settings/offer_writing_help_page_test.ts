@@ -207,7 +207,6 @@ suite('ComposePage', function() {
     const indicator =
         page.shadowRoot!.querySelector('settings-ai-policy-indicator');
     assertTrue(!!indicator);
-    assertTrue(!!indicator.pref);
-    assertEquals(AiEnterpriseFeaturePrefName.COMPOSE, indicator.pref.key);
+    assertEquals(AiEnterpriseFeaturePrefName.COMPOSE, indicator.prefKey);
   });
 });

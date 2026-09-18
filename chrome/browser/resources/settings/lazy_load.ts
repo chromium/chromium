@@ -158,7 +158,7 @@ export {SettingsLiveTranslateElement} from './a11y_page/live_translate.js';
 // </if>
 
 export {SettingsAiModeSearchPageElement} from './ai_page/ai_mode_search_page.js';
-export {isFeatureDisabledByPolicy, SettingsAiPolicyIndicator} from './ai_page/ai_policy_indicator.js';
+export {isFeatureDisabledByPolicy, SettingsAiPolicyIndicatorElement} from './ai_page/ai_policy_indicator.js';
 export {SettingsAiSuggestionsPageElement} from './ai_page/ai_suggestions_page.js';
 export {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState, SettingsAiPageFeaturePrefName} from './ai_page/constants.js';
 export type {DictationBrowserProxy} from './ai_page/dictation_browser_proxy.js';

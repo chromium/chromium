@@ -9,7 +9,7 @@ import {OpenWindowProxyImpl, PrefsBrowserProxy, PrefService} from 'chrome://sett
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
@@ -169,13 +169,13 @@ suite('AiModeSearchSubpage', function() {
     assertTrue(!!addDialog);
 
     // Type a site and submit
-    const siteInput = addDialog.shadowRoot!.querySelector('cr-input');
+    const siteInput = addDialog.shadowRoot.querySelector('cr-input');
     assertTrue(!!siteInput);
-    addDialog.set('site_', 'ZeBrA.cOm');
-    await flushTasks();
+    siteInput.value = 'ZeBrA.cOm';
+    await microtasksFinished();
 
     const dialogAddButton =
-        addDialog.shadowRoot!.querySelector<HTMLElement>('#add');
+        addDialog.shadowRoot.querySelector<HTMLElement>('#add');
     assertTrue(!!dialogAddButton);
     assertFalse(dialogAddButton.hasAttribute('disabled'));
     const closePromise1 = eventToPromise('close', addDialog);
@@ -201,13 +201,13 @@ suite('AiModeSearchSubpage', function() {
     assertTrue(!!addDialog2);
 
     // Type a second site that should sort before the first one
-    const siteInput2 = addDialog2.shadowRoot!.querySelector('cr-input');
+    const siteInput2 = addDialog2.shadowRoot.querySelector('cr-input');
     assertTrue(!!siteInput2);
-    addDialog2.set('site_', 'apple.com');
-    await flushTasks();
+    siteInput2.value = 'apple.com';
+    await microtasksFinished();
 
     const dialogAddButton2 =
-        addDialog2.shadowRoot!.querySelector<HTMLElement>('#add');
+        addDialog2.shadowRoot.querySelector<HTMLElement>('#add');
     assertTrue(!!dialogAddButton2);
     assertFalse(dialogAddButton2.hasAttribute('disabled'));
     dialogAddButton2.click();
@@ -237,15 +237,14 @@ suite('AiModeSearchSubpage', function() {
     // Verify it opens the dialog pre-populated
     const editDialog = subpage.shadowRoot!.querySelector('ai-site-add-dialog');
     assertTrue(!!editDialog);
-    const editInput = editDialog.shadowRoot!.querySelector('cr-input');
+    const editInput = editDialog.shadowRoot.querySelector('cr-input');
     assertTrue(!!editInput);
     assertEquals('apple.com', editInput.value);
 
     // Change value and save
-    editDialog.set('site_', 'banana.com');
-    await flushTasks();
-    const saveButton =
-        editDialog.shadowRoot!.querySelector<HTMLElement>('#add');
+    editInput.value = 'banana.com';
+    await microtasksFinished();
+    const saveButton = editDialog.shadowRoot.querySelector<HTMLElement>('#add');
     assertTrue(!!saveButton);
     const closePromise3 = eventToPromise('close', editDialog);
     saveButton.click();

@@ -5,25 +5,33 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import type {SettingsAiPolicyIndicator} from 'chrome://settings/lazy_load.js';
-import {ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import type {SettingsAiPolicyIndicatorElement} from 'chrome://settings/lazy_load.js';
+import {ModelExecutionEnterprisePolicyValue, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // clang-format on
 
 type PrefObject = chrome.settingsPrivate.PrefObject;
 
 suite('PolicyIndicator', function() {
-  let row: SettingsAiPolicyIndicator;
+  let row: SettingsAiPolicyIndicatorElement;
+  let prefService: PrefService;
 
-  function createRow(pref: PrefObject) {
+  async function createRow(pref: PrefObject) {
+    const prefsBrowserProxy = new TestPrefsBrowserProxy([pref]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     row = document.createElement('settings-ai-policy-indicator');
-    row.pref = pref;
+    row.prefKey = pref.key;
     document.body.appendChild(row);
-    return flushTasks();
+    return microtasksFinished();
   }
 
   test('indicatorVisible', async () => {
@@ -34,7 +42,7 @@ suite('PolicyIndicator', function() {
     };
     await createRow(pref);
 
-    const indicator = row.shadowRoot!.querySelector('#aiPolicyIndicator');
+    const indicator = row.shadowRoot.querySelector('#aiPolicyIndicator');
     assertTrue(!!indicator);
     assertTrue(isVisible(indicator));
     assertTrue(!!indicator.querySelector('cr-policy-pref-indicator'));
@@ -49,14 +57,14 @@ suite('PolicyIndicator', function() {
     };
     await createRow(pref);
 
-    let indicator = row.shadowRoot!.querySelector('#aiPolicyIndicator');
+    let indicator = row.shadowRoot.querySelector('#aiPolicyIndicator');
     assertFalse(!!indicator);
 
     // Case 2: Allowed without logging.
     pref.value = ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING;
     await createRow(pref);
 
-    indicator = row.shadowRoot!.querySelector('#aiPolicyIndicator');
+    indicator = row.shadowRoot.querySelector('#aiPolicyIndicator');
     assertFalse(!!indicator);
   });
 });
