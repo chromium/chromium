@@ -130,6 +130,16 @@ void OmniboxEverywhereService::MaybeShowLensPromo() {
   }
 }
 
+void OmniboxEverywhereService::OnLensSearchClicked() {
+  if (feature_promo_controller_) {
+    feature_promo_controller_->NotifyFeatureUsedIfValid(
+        feature_engagement::kIPHOmniboxEverywhereLensPromoFeature);
+    feature_promo_controller_->EndPromo(
+        feature_engagement::kIPHOmniboxEverywhereLensPromoFeature,
+        user_education::EndFeaturePromoReason::kFeatureEngaged);
+  }
+}
+
 void OmniboxEverywhereService::ShowProfilePicker() {
   if (controller()) {
     controller()->ShowProfilePicker();
@@ -149,13 +159,6 @@ void OmniboxEverywhereService::OnDrivePickerClosed() {
 }
 
 void OmniboxEverywhereService::OnScreensharePickerOpened() {
-  if (feature_promo_controller_) {
-    feature_promo_controller_->NotifyFeatureUsedIfValid(
-        feature_engagement::kIPHOmniboxEverywhereLensPromoFeature);
-    feature_promo_controller_->EndPromo(
-        feature_engagement::kIPHOmniboxEverywhereLensPromoFeature,
-        user_education::EndFeaturePromoReason::kFeatureEngaged);
-  }
   if (ui_manager()) {
     ui_manager()->OnScreensharePickerOpened();
   }

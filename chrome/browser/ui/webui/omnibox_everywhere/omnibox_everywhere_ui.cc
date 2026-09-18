@@ -735,6 +735,11 @@ void OmniboxEverywhereUI::ShowScreenshotMenu(
   // re-creating them, avoiding dangling pointers.
   ResetScreenshotMenu();
 
+  if (auto* service =
+          OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+    service->OnLensSearchClicked();
+  }
+
   active_screenshot_controller_ = std::move(controller);
 
   screenshot_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
