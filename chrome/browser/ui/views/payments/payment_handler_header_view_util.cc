@@ -284,11 +284,22 @@ std::unique_ptr<LocationIconView> CreatePaymentHandlerLocationIconView(
 std::unique_ptr<PermissionDashboardView>
 CreatePaymentHandlerPermissionDashboardView() {
   auto dashboard = std::make_unique<PermissionDashboardView>();
+  // PermissionDashboardView defaults to kDashboardElementId, but Payment
+  // Handler shares the browser window's ElementContext with the Omnibox.
+  // Clearing avoids duplicate element IDs in the same context.
+  dashboard->ClearProperty(views::kElementIdentifierKey);
   PermissionChipView* const indicator_chip = dashboard->GetIndicatorChip();
+  indicator_chip->SetProperty(
+      views::kElementIdentifierKey,
+      PaymentHandlerWebFlowViewController::kCameraIndicatorChipElementId);
   indicator_chip->SetCustomPadding(
       gfx::Insets(GetLayoutConstant(LayoutConstant::kLocationBarChipPadding)));
   indicator_chip->SetMinSize(gfx::Size(0, kPermissionsIndicatorChipHeight));
   indicator_chip->SetMaxSize(gfx::Size(0, kPermissionsIndicatorChipHeight));
+
+  dashboard->GetRequestChip()->SetProperty(
+      views::kElementIdentifierKey,
+      PaymentHandlerWebFlowViewController::kPermissionRequestChipElementId);
   return dashboard;
 }
 

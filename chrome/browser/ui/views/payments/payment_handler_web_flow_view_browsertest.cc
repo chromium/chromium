@@ -2703,6 +2703,96 @@ IN_PROC_BROWSER_TEST_F(
         test_api(web_flow_controller).location_icon_view()->GetVisible());
   }
 }
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+                       IndicatorChip_TogglesPageInfoClosedOnSecondClick) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* web_flow_controller = static_cast<PaymentHandlerWebFlowViewController*>(
+      test_api(dialog_view()).controller_map()->at(top_view).get());
+  ASSERT_NE(nullptr, web_flow_controller);
+
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+  ASSERT_NE(nullptr, payment_handler_contents);
+
+  GURL payment_app_url = payment_handler_contents->GetLastCommittedURL();
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingDefaultScope(payment_app_url, payment_app_url,
+                                      ContentSettingsType::MEDIASTREAM_CAMERA,
+                                      CONTENT_SETTING_ALLOW);
+
+  auto* dashboard = test_api(web_flow_controller).permission_dashboard_view();
+  ASSERT_NE(nullptr, dashboard);
+  auto* indicator_chip = dashboard->GetIndicatorChip();
+  ASSERT_NE(nullptr, indicator_chip);
+
+  ChipAnimationWaiter animation_waiter(indicator_chip);
+
+  VideoCaptureWaiter waiter(payment_handler_contents);
+  ASSERT_EQ("success", content::EvalJs(payment_handler_contents, R"(
+              navigator.mediaDevices.getUserMedia({video: true})
+                .then(stream => {
+                  window.activeStream = stream;
+                  return 'success';
+                })
+                .catch(err => err.name);
+            )"));
+  waiter.WaitForCaptureState(true);
+  animation_waiter.WaitForExpandAnimation();
+
+  // Fire collapse timer and wait for collapse animation so indicator is in
+  // kCompact state.
+  test_api(web_flow_controller).fire_indicator_chip_collapse_timer();
+  animation_waiter.WaitForCollapseAnimation();
+  EXPECT_EQ(
+      PaymentHandlerWebFlowViewController::IndicatorDisplayPhase::kCompact,
+      test_api(web_flow_controller).indicator_phase());
+
+  const ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
+                                   gfx::Point(), base::TimeTicks::Now(),
+                                   ui::EF_LEFT_MOUSE_BUTTON,
+                                   ui::EF_LEFT_MOUSE_BUTTON);
+
+  // First click: opens PageInfo bubble.
+  indicator_chip->OnMousePressed(mouse_event);
+  views::test::ButtonTestApi(indicator_chip).NotifyClick(mouse_event);
+
+  views::BubbleDialogDelegateView* bubble =
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  ASSERT_NE(nullptr, bubble);
+  EXPECT_EQ(PageInfoBubbleViewBase::BUBBLE_PAGE_INFO,
+            PageInfoBubbleViewBase::GetShownBubbleType());
+
+  // Second click while PageInfo is showing: toggles PageInfo closed.
+  views::Widget* bubble_widget = bubble->GetWidget();
+  ASSERT_NE(nullptr, bubble_widget);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+
+  indicator_chip->OnMousePressed(mouse_event);
+  views::test::ButtonTestApi(indicator_chip).NotifyClick(mouse_event);
+
+  destroyed_waiter.Wait();
+  EXPECT_EQ(nullptr, PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+
+  dialog_view()->CloseDialog();
+}
 INSTANTIATE_TEST_SUITE_P(
     All,
     PaymentHandlerWebFlowViewCameraTest,

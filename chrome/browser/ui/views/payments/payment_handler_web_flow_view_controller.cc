@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/bubble/webui_bubble_reopen_suppressor.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
@@ -90,6 +91,10 @@ namespace payments {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PaymentHandlerWebFlowViewController,
                                       kAppIconElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PaymentHandlerWebFlowViewController,
+                                      kCameraIndicatorChipElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PaymentHandlerWebFlowViewController,
+                                      kPermissionRequestChipElementId);
 
 namespace {
 
@@ -402,9 +407,8 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
         icon_view->AddChildView(CreatePaymentHandlerPermissionDashboardView());
     chip_observation_.Reset();
     chip_observation_.Observe(dashboard->GetIndicatorChip());
-    dashboard->GetIndicatorChip()->SetCallback(base::BindRepeating(
-        base::IgnoreResult(
-            &PaymentHandlerWebFlowViewController::ShowPageInfoDialog),
+    dashboard->GetIndicatorChip()->SetPressedCallback(base::BindRepeating(
+        &PaymentHandlerWebFlowViewController::OnIndicatorChipPressed,
         weak_ptr_factory_.GetWeakPtr()));
     permission_dashboard_view_tracker_.SetView(dashboard);
   }
@@ -447,6 +451,7 @@ void PaymentHandlerWebFlowViewController::Stop() {
   chip_observation_.Reset();
   indicator_phase_ = IndicatorDisplayPhase::kHidden;
   indicator_type_ = IndicatorType::kNone;
+  page_info_bubble_suppressor_.Close();
   PaymentRequestSheetController::Stop();
 }
 
@@ -903,6 +908,10 @@ void PaymentHandlerWebFlowViewController::OnCollapseAnimationEnded() {
   }
 }
 
+void PaymentHandlerWebFlowViewController::OnMousePressed() {
+  page_info_bubble_suppressor_.OnMousePressed();
+}
+
 void PaymentHandlerWebFlowViewController::OnPromptAdded() {
   auto* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents());
@@ -1084,6 +1093,22 @@ void PaymentHandlerWebFlowViewController::ShowBlockedCameraIndicator() {
   }
 }
 
+void PaymentHandlerWebFlowViewController::OnIndicatorChipPressed(
+    bool is_pointer_interaction) {
+  if (page_info_bubble_suppressor_.IsShowing()) {
+    page_info_bubble_suppressor_.Close(
+        views::Widget::ClosedReason::kUnspecified);
+    return;
+  }
+
+  if (page_info_bubble_suppressor_.ShouldSuppressBubbleShow(
+          is_pointer_interaction)) {
+    return;
+  }
+
+  ShowPageInfoDialog();
+}
+
 void PaymentHandlerWebFlowViewController::AnimateExpandRequestChip() {
   if (!permission_dashboard_view()) {
     return;
@@ -1132,6 +1157,7 @@ bool PaymentHandlerWebFlowViewController::ShowPageInfoDialog() {
   if (!contents) {
     return false;
   }
+
   views::View* const anchor_view = GetPageInfoIconView();
   CHECK(anchor_view);
 
@@ -1161,10 +1187,9 @@ bool PaymentHandlerWebFlowViewController::ShowPageInfoDialog() {
       PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
   page_info_view_tracker_.SetView(bubble);
   bubble->SetHighlightedElement(
-      anchor_view == location_icon_view()
-          ? kAppIconElementId
-          : PermissionChipView::kIndicatorChipElementId);
+      anchor_view->GetProperty(views::kElementIdentifierKey));
   bubble->GetWidget()->Show();
+  page_info_bubble_suppressor_.Observe(bubble->GetWidget());
   return true;
 }
 

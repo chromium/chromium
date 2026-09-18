@@ -16,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
+#include "chrome/browser/ui/views/bubble/webui_bubble_reopen_suppressor.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/payments/payment_handler_modal_dialog_manager_delegate.h"
@@ -74,6 +75,8 @@ class PaymentHandlerWebFlowViewController
       public permissions::PermissionRequestManager::Observer {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAppIconElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCameraIndicatorChipElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPermissionRequestChipElementId);
 
   // Semantic activity type represented by the permission indicator chip.
   enum class IndicatorType {
@@ -202,6 +205,7 @@ class PaymentHandlerWebFlowViewController
   // PermissionChipInterface::Observer:
   void OnExpandAnimationEnded() override;
   void OnCollapseAnimationEnded() override;
+  void OnMousePressed() override;
 
   // permissions::PermissionRequestManager::Observer:
   void OnPromptAdded() override;
@@ -216,6 +220,7 @@ class PaymentHandlerWebFlowViewController
   void ShowBlockedCameraIndicator();
   void ShowInUseCameraIndicator();
   void HideInUseCameraIndicator();
+  void OnIndicatorChipPressed(bool is_pointer_interaction);
   void AnimateExpandRequestChip();
   void ResetRequestChip();
   void OnRequestChipPressed();
@@ -232,6 +237,7 @@ class PaymentHandlerWebFlowViewController
   views::ViewTracker location_icon_view_tracker_;
   views::ViewTracker permission_dashboard_view_tracker_;
   views::ViewTracker page_info_view_tracker_;
+  WebUIBubbleReopenSuppressor page_info_bubble_suppressor_;
   base::ScopedObservation<MediaStreamCaptureIndicator,
                           MediaStreamCaptureIndicator::Observer>
       indicator_observation_{this};
