@@ -36,7 +36,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {loadTimeData} from '../../i18n_setup.js';
@@ -83,11 +83,16 @@ export interface SettingsContactInfoPageElement {
     addAddress: CrButtonElement,
     addressList: HTMLElement,
     addressSharedMenu: CrActionMenuElement,
+    autofillOtpFillingToggle: SettingsToggleButtonElement,
     autofillProfileToggle: SettingsToggleButtonElement,
     emailSharedMenu: CrActionMenuElement,
     menuEditAddress: HTMLElement,
     menuRemoveAddress: HTMLElement,
+    menuRemoveEmail: HTMLElement,
     noAddressesLabel: HTMLElement,
+    otpFillingLoadingRow: HTMLElement,
+    otpFillingLoadingSpinner: HTMLElement,
+    otpFillingLoadingSubLabelWithLink: HTMLElement,
   };
 }
 
@@ -674,8 +679,17 @@ export class SettingsContactInfoPageElement extends
     });
   }
 
+  private shouldShowOtpFillingLoadingRow_(): boolean {
+    return this.showGmailOtpFillingToggle_ && this.isOtpConsentLoading_;
+  }
+
+  private shouldShowOtpFillingToggle_(): boolean {
+    return this.showGmailOtpFillingToggle_ && !this.isOtpConsentLoading_;
+  }
+
   private setOtpFillingToggleChecked_(checked: boolean) {
     this.set('otpFillingTogglePref_.value', checked);
+    this.$.autofillOtpFillingToggle.checked = checked;
   }
 
   private resetOtpFillingState_() {
@@ -698,12 +712,7 @@ export class SettingsContactInfoPageElement extends
     if (!this.isConnected) {
       return;
     }
-    flush();
-    const toggle = this.shadowRoot?.querySelector<SettingsToggleButtonElement>(
-        '#autofillOtpFillingToggle');
-    if (toggle) {
-      focusWithoutInk(toggle);
-    }
+    focusWithoutInk(this.$.autofillOtpFillingToggle);
   }
 
   private onGmailOtpConsentBackendNetworkError_() {
@@ -843,7 +852,7 @@ export class SettingsContactInfoPageElement extends
       this.onGmailOtpConsentBackendNetworkError_();
     } finally {
       this.isOtpConsentLoading_ = false;
-      // Restore focus to the toggle once it is restamped if no disclaimer
+      // Restore focus to the toggle once it is unhidden if no disclaimer
       // dialog was displayed.
       if (this.isConnected && this.accountInfo_?.email === currentEmail &&
           !this.showGmailOtpDisclaimerDialog_) {

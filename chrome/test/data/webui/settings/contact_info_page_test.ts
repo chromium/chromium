@@ -6,7 +6,6 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {CrActionMenuElement} from 'chrome://settings/settings.js';
 import type {
   CrInputElement,
   CrTextareaElement,
@@ -207,8 +206,7 @@ suite('ContactInfoPageUiTest', function() {
     });
     flush();
 
-    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#autofillProfileToggle')!;
+    const toggle = page.$.autofillProfileToggle;
     assertTrue(toggle.controlDisabled());
     assertFalse(toggle.checked);
     assertTrue(page.$.addAddress.disabled);
@@ -242,8 +240,7 @@ suite('ContactInfoPageUiTest', function() {
     });
     flush();
 
-    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#autofillProfileToggle')!;
+    const toggle = page.$.autofillProfileToggle;
     assertTrue(toggle.controlDisabled());
     assertFalse(toggle.checked);
     assertTrue(page.$.addAddress.disabled);
@@ -261,8 +258,7 @@ suite('ContactInfoPageUiTest', function() {
     });
     flush();
 
-    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#autofillProfileToggle')!;
+    const toggle = page.$.autofillProfileToggle;
     assertFalse(toggle.controlDisabled());
     assertTrue(toggle.checked);
     assertFalse(page.$.addAddress.disabled);
@@ -280,8 +276,7 @@ suite('ContactInfoPageUiTest', function() {
     });
     flush();
 
-    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#autofillProfileToggle')!;
+    const toggle = page.$.autofillProfileToggle;
     assertFalse(toggle.controlDisabled());
     assertTrue(toggle.checked);
     assertFalse(page.$.addAddress.disabled);
@@ -293,8 +288,7 @@ suite('ContactInfoPageUiTest', function() {
     });
     flush();
 
-    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#autofillProfileToggle')!;
+    const toggle = page.$.autofillProfileToggle;
     assertFalse(page.$.addAddress.disabled);
 
     // User toggles off addresses.
@@ -370,15 +364,10 @@ suite('ContactInfoPageUiTest', function() {
     button0.click();
     await flushTasks();
 
-    const actionMenu = page.shadowRoot!.querySelector<CrActionMenuElement>(
-        '#emailSharedMenu')!;
-    assertTrue(actionMenu.open);
+    assertTrue(page.$.emailSharedMenu.open);
 
     // Click remove.
-    const removeButton =
-        actionMenu.querySelector<HTMLElement>('#menuRemoveEmail');
-    assertTrue(!!removeButton);
-    removeButton.click();
+    page.$.menuRemoveEmail.click();
     await flushTasks();
 
     const dialog = page.shadowRoot!
@@ -668,7 +657,7 @@ suite('ContactInfoPageUiTest', function() {
 
   interface ContactInfoPageElementWithToggle {
     page: SettingsContactInfoPageElement;
-    toggle: SettingsToggleButtonElement|null;
+    toggle: SettingsToggleButtonElement;
     autofillManager: TestAutofillManager;
   }
 
@@ -716,9 +705,7 @@ suite('ContactInfoPageUiTest', function() {
       await manager.whenCalled('fetchUserDataProcessingConsent');
     }
     await flushTasks();
-    const toggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#autofillOtpFillingToggle');
+    const toggle = page.$.autofillOtpFillingToggle;
     return {page, toggle, autofillManager: manager};
   }
 
@@ -726,7 +713,7 @@ suite('ContactInfoPageUiTest', function() {
     loadTimeData.overrideValues({autofillGmailOtpFillingEnabled: true});
     const {toggle} = await createContactInfoPageForGmailOtpFilling();
 
-    assertTrue(!!toggle);
+    assertTrue(isVisible(toggle));
     assertTrue(toggle.classList.contains('hr'));
   });
 
@@ -735,14 +722,14 @@ suite('ContactInfoPageUiTest', function() {
     const {toggle} =
         await createContactInfoPageForGmailOtpFilling({accountInfo: null});
 
-    assertFalse(!!toggle);
+    assertFalse(isVisible(toggle));
   });
 
   test('OtpFillingToggleHiddenWhenFlagDisabled', async function() {
     loadTimeData.overrideValues({autofillGmailOtpFillingEnabled: false});
     const {toggle} = await createContactInfoPageForGmailOtpFilling();
 
-    assertFalse(!!toggle);
+    assertFalse(isVisible(toggle));
   });
 
   test('OtpFillingToggleInitiallyOffWhenPrefIsOff', async function() {
@@ -752,12 +739,12 @@ suite('ContactInfoPageUiTest', function() {
           gmailOtpFilling: false,
         });
 
-    assertTrue(!!toggle);
+    assertTrue(isVisible(toggle));
     assertFalse(toggle.checked);
     assertFalse(
         page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF).value);
     assertFalse(
-        !!page.shadowRoot!.querySelector('#otpFillingLoadingSpinner'),
+        isVisible(page.$.otpFillingLoadingSpinner),
         'spinner should not be shown');
     assertEquals(
         0, autofillManager.getCallCount('fetchUserDataProcessingConsent'),
@@ -776,7 +763,6 @@ suite('ContactInfoPageUiTest', function() {
       autofillManager,
     });
 
-    assertTrue(!!toggle);
     assertFalse(toggle.checked);
     assertEquals(
         0, autofillManager.getCallCount('fetchUserDataProcessingConsent'),
@@ -787,11 +773,7 @@ suite('ContactInfoPageUiTest', function() {
     await autofillManager.whenCalled('fetchUserDataProcessingConsent');
     await flushTasks();
 
-    const updatedToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#autofillOtpFillingToggle');
-    assertTrue(!!updatedToggle);
-    assertTrue(updatedToggle.checked);
+    assertTrue(toggle.checked);
     assertEquals(
         1, autofillManager.getCallCount('fetchUserDataProcessingConsent'),
         'fetchUserDataProcessingConsent should be called once on external ' +
@@ -821,7 +803,6 @@ suite('ContactInfoPageUiTest', function() {
           autofillManager,
         });
 
-        assertTrue(!!toggle);
         assertFalse(toggle.checked);
         assertEquals(
             0, autofillManager.getCallCount('fetchUserDataProcessingConsent'));
@@ -831,11 +812,7 @@ suite('ContactInfoPageUiTest', function() {
         await autofillManager.whenCalled('fetchUserDataProcessingConsent');
         await flushTasks();
 
-        const updatedToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                '#autofillOtpFillingToggle');
-        assertTrue(!!updatedToggle);
-        assertFalse(updatedToggle.checked);
+        assertFalse(toggle.checked);
         assertEquals(
             1, autofillManager.getCallCount('fetchUserDataProcessingConsent'));
       });
@@ -855,7 +832,6 @@ suite('ContactInfoPageUiTest', function() {
           autofillManager,
         });
 
-        assertTrue(!!toggle);
         assertFalse(toggle.checked);
         assertEquals(
             0, autofillManager.getCallCount('fetchUserDataProcessingConsent'));
@@ -866,11 +842,7 @@ suite('ContactInfoPageUiTest', function() {
         await flushTasks();
 
         // On RPC error, fallback enables the toggle to match the pref value.
-        const updatedToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                '#autofillOtpFillingToggle');
-        assertTrue(!!updatedToggle);
-        assertTrue(updatedToggle.checked);
+        assertTrue(toggle.checked);
         assertEquals(
             1, autofillManager.getCallCount('fetchUserDataProcessingConsent'));
       });
@@ -889,7 +861,6 @@ suite('ContactInfoPageUiTest', function() {
           autofillManager,
         });
 
-        assertTrue(!!toggle);
         assertTrue(toggle.checked);
         assertEquals(
             1, autofillManager.getCallCount('fetchUserDataProcessingConsent'));
@@ -909,11 +880,7 @@ suite('ContactInfoPageUiTest', function() {
         await autofillManager.whenCalled('fetchUserDataProcessingConsent');
         await flushTasks();
 
-        const reEnabledToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                '#autofillOtpFillingToggle');
-        assertTrue(!!reEnabledToggle);
-        assertTrue(reEnabledToggle.checked);
+        assertTrue(toggle.checked);
         assertEquals(
             1, autofillManager.getCallCount('fetchUserDataProcessingConsent'));
       });
@@ -935,7 +902,6 @@ suite('ContactInfoPageUiTest', function() {
           autofillManager,
         });
 
-        assertTrue(!!toggle);
         assertFalse(toggle.checked);
         assertEquals(
             0, autofillManager.getCallCount('fetchUserDataProcessingConsent'));
@@ -960,14 +926,10 @@ suite('ContactInfoPageUiTest', function() {
         await flushTasks();
 
         // The stale response must NOT re-enable the toggle.
-        const currentToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                '#autofillOtpFillingToggle');
-        assertTrue(!!currentToggle);
-        assertFalse(currentToggle.checked);
+        assertFalse(toggle.checked);
         assertFalse(page.get('otpFillingTogglePref_.value'));
         assertFalse(
-            !!page.shadowRoot!.querySelector('#otpFillingLoadingRow'),
+            isVisible(page.$.otpFillingLoadingRow),
             'loading row should not be shown after state reset');
       });
 
@@ -987,7 +949,6 @@ suite('ContactInfoPageUiTest', function() {
           autofillManager,
         });
 
-        assertTrue(!!toggle);
         assertFalse(toggle.checked);
 
         // Externally enable pref: starts consent fetch.
@@ -1005,11 +966,7 @@ suite('ContactInfoPageUiTest', function() {
         await flushTasks();
 
         // The stale error must NOT re-enable the toggle.
-        const currentToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                '#autofillOtpFillingToggle');
-        assertTrue(!!currentToggle);
-        assertFalse(currentToggle.checked);
+        assertFalse(toggle.checked);
         assertFalse(page.get('otpFillingTogglePref_.value'));
       });
 
@@ -1021,7 +978,6 @@ suite('ContactInfoPageUiTest', function() {
           gmailOtpFilling: true,
         });
 
-    assertTrue(!!toggle);
     assertTrue(toggle.checked);
 
     toggle.click();
@@ -1052,7 +1008,6 @@ suite('ContactInfoPageUiTest', function() {
       autofillManager,
     });
 
-    assertTrue(!!toggle);
     assertFalse(toggle.checked);
     assertFalse(
         page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF).value);
@@ -1063,11 +1018,7 @@ suite('ContactInfoPageUiTest', function() {
     await autofillManager.whenCalled('fetchUserDataProcessingConsent');
     await flushTasks();
 
-    const updatedToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#autofillOtpFillingToggle');
-    assertTrue(!!updatedToggle);
-    assertTrue(updatedToggle.checked);
+    assertTrue(toggle.checked);
     assertTrue(
         page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF).value);
     assertEquals(
@@ -1086,14 +1037,14 @@ suite('ContactInfoPageUiTest', function() {
         1, autofillManager.getCallCount('fetchUserDataProcessingConsent'),
         'fetchUserDataProcessingConsent should be called once on enable');
     assertFalse(
-        !!page.shadowRoot!.querySelector('#otpFillingLoadingSpinner'),
+        isVisible(page.$.otpFillingLoadingSpinner),
         'spinner should not be visible after consent is fetched');
 
     // Turn OFF again
-    updatedToggle.click();
+    toggle.click();
     await flushTasks();
 
-    assertFalse(updatedToggle.checked);
+    assertFalse(toggle.checked);
     assertFalse(
         page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF).value);
     assertEquals(
@@ -1110,15 +1061,11 @@ suite('ContactInfoPageUiTest', function() {
 
     // Turn ON again
     autofillManager.resetResolver('fetchUserDataProcessingConsent');
-    updatedToggle.click();
+    toggle.click();
     await autofillManager.whenCalled('fetchUserDataProcessingConsent');
     await flushTasks();
 
-    const toggleAgain =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#autofillOtpFillingToggle');
-    assertTrue(!!toggleAgain);
-    assertTrue(toggleAgain.checked);
+    assertTrue(toggle.checked);
     assertTrue(
         page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF).value);
     assertEquals(
@@ -1143,7 +1090,6 @@ suite('ContactInfoPageUiTest', function() {
     OpenWindowProxyImpl.setInstance(openWindowProxy);
 
     const {toggle} = await createContactInfoPageForGmailOtpFilling();
-    assertTrue(!!toggle);
 
     toggle.dispatchEvent(new CustomEvent('sub-label-link-clicked'));
     const url = await openWindowProxy.whenCalled('openUrl');
@@ -1158,36 +1104,34 @@ suite('ContactInfoPageUiTest', function() {
       autofillManager,
       minSpinnerDurationMs: 200,
     });
-    assertTrue(!!toggle);
 
     toggle.click();
     await autofillManager.whenCalled('fetchUserDataProcessingConsent');
     // Immediately after fetch resolution, spinner and loading row are still
-    // displayed because of 200ms min duration, and toggle is replaced.
-    const spinner = page.shadowRoot!.querySelector('#otpFillingLoadingSpinner');
-    assertTrue(!!spinner, 'spinner should be visible during minimum duration');
+    // displayed because of 200ms min duration, and toggle is hidden.
+    const spinner = page.$.otpFillingLoadingSpinner;
     assertTrue(
-        !!page.shadowRoot!.querySelector('#otpFillingLoadingRow'),
+        isVisible(spinner),
+        'spinner should be visible during minimum duration');
+    assertTrue(
+        isVisible(page.$.otpFillingLoadingRow),
         'loading row should be visible during loading');
     assertFalse(
-        !!page.shadowRoot!.querySelector('#autofillOtpFillingToggle'),
-        'toggle should be replaced by loading row during loading');
+        isVisible(toggle),
+        'toggle should be hidden by loading row during loading');
 
     // After 250ms, spinner finishes and toggle reappears.
     await new Promise(resolve => setTimeout(resolve, 250));
     await flushTasks();
 
     assertFalse(
-        !!page.shadowRoot!.querySelector('#otpFillingLoadingSpinner'),
+        isVisible(page.$.otpFillingLoadingSpinner),
         'spinner should disappear after min duration');
     assertFalse(
-        !!page.shadowRoot!.querySelector('#otpFillingLoadingRow'),
+        isVisible(page.$.otpFillingLoadingRow),
         'loading row should disappear after min duration');
-    const updatedToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#autofillOtpFillingToggle');
-    assertTrue(!!updatedToggle);
-    assertTrue(updatedToggle.checked);
+    assertTrue(isVisible(toggle));
+    assertTrue(toggle.checked);
   });
 
 
@@ -1311,9 +1255,9 @@ suite('ContactInfoPageUiTest', function() {
     await new Promise(resolve => setTimeout(resolve, 250));
     await flushTasks();
 
-    // Verify toggle was not stamped while disconnected.
-    const toggle = page.shadowRoot!.querySelector('#autofillOtpFillingToggle');
-    assertFalse(!!toggle);
+    // Verify toggle remains hidden while disconnected.
+    const toggle = page.$.autofillOtpFillingToggle;
+    assertTrue(toggle.hidden);
   });
 
   test('OtpFillingToggleDisconnectedDuringUserToggle', async function() {
@@ -1329,7 +1273,6 @@ suite('ContactInfoPageUiTest', function() {
       autofillManager,
       minSpinnerDurationMs: 200,
     });
-    assertTrue(!!toggle);
     assertFalse(toggle.checked);
 
     toggle.click();
@@ -1359,20 +1302,15 @@ suite('ContactInfoPageUiTest', function() {
       gmailOtpFilling: false,
       autofillManager,
     });
-    assertTrue(!!toggle);
     assertFalse(toggle.checked);
 
     toggle.click();
     await autofillManager.whenCalled('fetchUserDataProcessingConsent');
     await flushTasks();
 
-    const updatedToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#autofillOtpFillingToggle');
-    assertTrue(!!updatedToggle);
-    assertTrue(updatedToggle.checked);
+    assertTrue(toggle.checked);
     assertTrue(
-        page.shadowRoot!.activeElement === updatedToggle,
+        page.shadowRoot!.activeElement === toggle,
         'focus should be restored to toggle after consent is granted');
   });
 
@@ -1390,20 +1328,15 @@ suite('ContactInfoPageUiTest', function() {
       gmailOtpFilling: false,
       autofillManager,
     });
-    assertTrue(!!toggle);
     assertFalse(toggle.checked);
 
     toggle.click();
     await autofillManager.whenCalled('fetchUserDataProcessingConsent');
     await flushTasks();
 
-    const updatedToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#autofillOtpFillingToggle');
-    assertTrue(!!updatedToggle);
-    assertTrue(updatedToggle.checked);
+    assertTrue(toggle.checked);
     assertTrue(
-        page.shadowRoot!.activeElement === updatedToggle,
+        page.shadowRoot!.activeElement === toggle,
         'focus should be restored to toggle after consent fetch fails');
   });
 
@@ -1422,7 +1355,7 @@ suite('ContactInfoPageUiTest', function() {
           autofillManager,
         });
 
-        assertTrue(!!toggle);
+        assertTrue(isVisible(toggle));
         assertTrue(toggle.checked);
         assertTrue(
             page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF)
@@ -1446,7 +1379,7 @@ suite('ContactInfoPageUiTest', function() {
           autofillManager,
         });
 
-        assertTrue(!!toggle);
+        assertTrue(isVisible(toggle));
         // Displayed as off in the UI because consent is missing.
         assertFalse(toggle.checked);
         // Preference remains on in the background.
@@ -1472,7 +1405,7 @@ suite('ContactInfoPageUiTest', function() {
           autofillManager,
         });
 
-        assertTrue(!!toggle);
+        assertTrue(isVisible(toggle));
         assertTrue(toggle.checked);
         assertTrue(
             page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF)
@@ -1496,7 +1429,7 @@ suite('ContactInfoPageUiTest', function() {
           autofillManager,
         });
 
-        assertTrue(!!toggle);
+        assertTrue(isVisible(toggle));
         assertFalse(toggle.checked);
         assertTrue(
             page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF)
@@ -1518,19 +1451,14 @@ suite('ContactInfoPageUiTest', function() {
       gmailOtpFilling: false,
       autofillManager,
     });
-    assertTrue(!!toggle);
     assertFalse(toggle.checked);
 
     toggle.click();
     await autofillManager.whenCalled('fetchUserDataProcessingConsent');
     await flushTasks();
 
-    const updatedToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#autofillOtpFillingToggle');
-    assertTrue(!!updatedToggle);
     // Toggle is switched on in UI, but pref is not saved.
-    assertTrue(updatedToggle.checked);
+    assertTrue(toggle.checked);
     assertFalse(
         page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF).value);
     assertEquals(
@@ -1574,7 +1502,6 @@ suite('ContactInfoPageUiTest', function() {
             gmailOtpFilling: false,
             autofillManager,
           });
-          assertTrue(!!toggle);
           assertFalse(toggle.checked);
           assertFalse(
               page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF)
@@ -1585,11 +1512,7 @@ suite('ContactInfoPageUiTest', function() {
           await flushTasks();
 
           // Toggle UI element is turned off after loading indicator.
-          const toggleAfterLoading =
-              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                  '#autofillOtpFillingToggle');
-          assertTrue(!!toggleAfterLoading);
-          assertFalse(toggleAfterLoading.checked);
+          assertFalse(toggle.checked);
 
           // Disclaimer dialog is shown.
           const dialog =
@@ -1607,11 +1530,7 @@ suite('ContactInfoPageUiTest', function() {
               !!page.shadowRoot!.querySelector(
                   'settings-gmail-otp-disclaimer-dialog'),
               'disclaimer dialog should be closed');
-          const updatedToggle =
-              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                  '#autofillOtpFillingToggle');
-          assertTrue(!!updatedToggle);
-          assertFalse(updatedToggle.checked);
+          assertFalse(toggle.checked);
           assertFalse(
               page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF)
                   .value);
@@ -1635,7 +1554,6 @@ suite('ContactInfoPageUiTest', function() {
       gmailOtpFilling: false,
       autofillManager,
     });
-    assertTrue(!!toggle);
     assertFalse(toggle.checked);
 
     toggle.click();
@@ -1656,11 +1574,7 @@ suite('ContactInfoPageUiTest', function() {
         !!page.shadowRoot!.querySelector(
             'settings-gmail-otp-disclaimer-dialog'),
         'disclaimer dialog should be closed');
-    const updatedToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#autofillOtpFillingToggle');
-    assertTrue(!!updatedToggle);
-    assertFalse(updatedToggle.checked);
+    assertFalse(toggle.checked);
     assertFalse(
         page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF).value);
     assertEquals(
@@ -1686,7 +1600,6 @@ suite('ContactInfoPageUiTest', function() {
       gmailOtpFilling: false,
       autofillManager,
     });
-    assertTrue(!!toggle);
     assertFalse(toggle.checked);
 
     // First attempt: dismiss/cancel dialog.
@@ -1702,11 +1615,7 @@ suite('ContactInfoPageUiTest', function() {
     await eventToPromise('close', dialog.$.dialog);
     await flushTasks();
 
-    let updatedToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#autofillOtpFillingToggle');
-    assertTrue(!!updatedToggle);
-    assertFalse(updatedToggle.checked);
+    assertFalse(toggle.checked);
     assertFalse(
         page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF).value);
     assertEquals(
@@ -1718,7 +1627,7 @@ suite('ContactInfoPageUiTest', function() {
     autofillManager.resetResolver('fetchUserDataProcessingConsent');
 
     // Second attempt: confirm dialog (still disabled).
-    updatedToggle.click();
+    toggle.click();
     await autofillManager.whenCalled('fetchUserDataProcessingConsent');
     await flushTasks();
 
@@ -1730,10 +1639,7 @@ suite('ContactInfoPageUiTest', function() {
     await eventToPromise('close', dialog.$.dialog);
     await flushTasks();
 
-    updatedToggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#autofillOtpFillingToggle');
-    assertTrue(!!updatedToggle);
-    assertFalse(updatedToggle.checked);
+    assertFalse(toggle.checked);
     assertFalse(
         page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF).value);
     assertEquals(
@@ -1748,16 +1654,13 @@ suite('ContactInfoPageUiTest', function() {
       googleApps: ConsentState.ENABLED,
     });
 
-    updatedToggle.click();
+    toggle.click();
     await autofillManager.whenCalled('fetchUserDataProcessingConsent');
     await flushTasks();
 
     assertFalse(!!page.shadowRoot!.querySelector(
         'settings-gmail-otp-disclaimer-dialog'));
-    updatedToggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#autofillOtpFillingToggle');
-    assertTrue(!!updatedToggle);
-    assertTrue(updatedToggle.checked);
+    assertTrue(toggle.checked);
     assertTrue(
         page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF).value);
     assertEquals(
@@ -1787,24 +1690,24 @@ suite('ContactInfoPageUiTest', function() {
       gmailOtpFilling: false,
       autofillManager,
     });
-    assertTrue(!!toggle);
 
     toggle.click();
     await autofillManager.whenCalled('fetchUserDataProcessingConsent');
     await flushTasks();
 
     assertTrue(
-        !!page.shadowRoot!.querySelector('#otpFillingLoadingRow'),
+        isVisible(page.$.otpFillingLoadingRow),
         'loading row should be visible during loading');
     assertFalse(
-        !!page.shadowRoot!.querySelector('#autofillOtpFillingToggle'),
-        'toggle should be replaced by loading row during loading');
+        isVisible(toggle),
+        'toggle should be hidden by loading row during loading');
     assertTrue(
-        !!page.shadowRoot!.querySelector('#otpFillingLoadingSpinner'),
+        isVisible(page.$.otpFillingLoadingSpinner),
         'spinner should be visible during loading');
 
-    const link = page.shadowRoot!.querySelector<HTMLElement>(
-        '#otpFillingLoadingSubLabelWithLink a');
+    const link =
+        page.$.otpFillingLoadingSubLabelWithLink.querySelector<HTMLElement>(
+            'a');
     assertTrue(!!link);
     link.click();
     const url = await openWindowProxy.whenCalled('openUrl');
@@ -1827,16 +1730,17 @@ suite('ContactInfoPageUiTest', function() {
     });
 
     // During the 200ms minimum duration, loading row and spinner are displayed
-    // while the toggle is not stamped.
-    const loadingRow =
-        page.shadowRoot!.querySelector<HTMLElement>('#otpFillingLoadingRow');
+    // while the toggle is hidden.
+    const loadingRow = page.$.otpFillingLoadingRow;
     assertTrue(
-        !!loadingRow, 'loading row should be visible during initial load');
+        isVisible(loadingRow),
+        'loading row should be visible during initial load');
     assertTrue(loadingRow.classList.contains('hr'));
-    const spinner = page.shadowRoot!.querySelector('#otpFillingLoadingSpinner');
-    assertTrue(!!spinner, 'spinner should be visible during initial load');
+    const spinner = page.$.otpFillingLoadingSpinner;
+    assertTrue(
+        isVisible(spinner), 'spinner should be visible during initial load');
     assertFalse(
-        !!page.shadowRoot!.querySelector('#autofillOtpFillingToggle'),
+        isVisible(page.$.autofillOtpFillingToggle),
         'toggle should not be visible during loading');
 
     // Wait for spinner duration to finish.
@@ -1844,14 +1748,13 @@ suite('ContactInfoPageUiTest', function() {
     await flushTasks();
 
     assertFalse(
-        !!page.shadowRoot!.querySelector('#otpFillingLoadingSpinner'),
+        isVisible(page.$.otpFillingLoadingSpinner),
         'spinner should disappear after min duration');
     assertFalse(
-        !!page.shadowRoot!.querySelector('#otpFillingLoadingRow'),
+        isVisible(page.$.otpFillingLoadingRow),
         'loading row should disappear after min duration');
-    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#autofillOtpFillingToggle');
-    assertTrue(!!toggle);
+    const toggle = page.$.autofillOtpFillingToggle;
+    assertTrue(isVisible(toggle));
     assertTrue(toggle.classList.contains('hr'));
     assertTrue(toggle.checked);
 
@@ -1871,7 +1774,6 @@ suite('ContactInfoPageUiTest', function() {
       gmailOtpFilling: false,
       autofillManager,
     });
-    assertTrue(!!toggle);
 
     toggle.click();
     await autofillManager.whenCalled('fetchUserDataProcessingConsent');
@@ -1887,12 +1789,8 @@ suite('ContactInfoPageUiTest', function() {
     await eventToPromise('close', dialog.$.dialog);
     await flushTasks();
 
-    const updatedToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#autofillOtpFillingToggle');
-    assertTrue(!!updatedToggle);
     assertEquals(
-        updatedToggle, page.shadowRoot!.activeElement,
+        toggle, page.shadowRoot!.activeElement,
         'focus should be restored to toggle after dialog close');
   });
 
@@ -1909,9 +1807,8 @@ suite('ContactInfoPageUiTest', function() {
       autofillManager,
     });
 
-    let toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#autofillOtpFillingToggle');
-    assertTrue(!!toggle);
+    const toggle = page.$.autofillOtpFillingToggle;
+    assertTrue(isVisible(toggle));
     // Initially displayed as off because consent is DISABLED.
     assertFalse(toggle.checked);
     assertEquals(
@@ -1922,9 +1819,7 @@ suite('ContactInfoPageUiTest', function() {
         autofillManager.lastCallback.setPersonalDataManagerListener!;
     changeListener([], [], [], [], undefined);
     flush();
-    toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#autofillOtpFillingToggle');
-    assertFalse(!!toggle);
+    assertFalse(isVisible(toggle));
 
     // Update consent state on manager.
     autofillManager.resetResolver('fetchUserDataProcessingConsent');
@@ -1938,9 +1833,7 @@ suite('ContactInfoPageUiTest', function() {
     await autofillManager.whenCalled('fetchUserDataProcessingConsent');
     await flushTasks();
 
-    toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#autofillOtpFillingToggle');
-    assertTrue(!!toggle);
+    assertTrue(isVisible(toggle));
     assertTrue(toggle.checked);
   });
 
@@ -1966,10 +1859,8 @@ suite('ContactInfoPageUiTest', function() {
           accountInfo: accountA,
         });
 
-        let toggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                '#autofillOtpFillingToggle');
-        assertTrue(!!toggle);
+        const toggle = page.$.autofillOtpFillingToggle;
+        assertTrue(isVisible(toggle));
         assertTrue(toggle.checked);
         assertEquals(
             1, autofillManager.getCallCount('fetchUserDataProcessingConsent'));
@@ -1993,9 +1884,7 @@ suite('ContactInfoPageUiTest', function() {
         await autofillManager.whenCalled('fetchUserDataProcessingConsent');
         await flushTasks();
 
-        toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#autofillOtpFillingToggle');
-        assertTrue(!!toggle);
+        assertTrue(isVisible(toggle));
         assertFalse(toggle.checked, 'toggle should be off for secondary user');
         assertTrue(
             page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF)
@@ -2015,9 +1904,7 @@ suite('ContactInfoPageUiTest', function() {
         await autofillManager.whenCalled('fetchUserDataProcessingConsent');
         await flushTasks();
 
-        toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#autofillOtpFillingToggle');
-        assertTrue(!!toggle);
+        assertTrue(isVisible(toggle));
         assertTrue(
             toggle.checked, 'toggle should be restored on for primary user');
         assertEquals(
@@ -2052,12 +1939,12 @@ suite('ContactInfoPageUiTest', function() {
           isSyncEnabledForAutofillProfiles: true,
           isEligibleForAddressAccountStorage: true,
         };
-        const {page, toggle} = await createContactInfoPageForGmailOtpFilling({
+        const {toggle} = await createContactInfoPageForGmailOtpFilling({
           gmailOtpFilling: false,
           autofillManager,
           accountInfo: accountA,
         });
-        assertTrue(!!toggle);
+        assertTrue(isVisible(toggle));
         assertFalse(toggle.checked);
         assertEquals(
             0, autofillManager.getCallCount('fetchUserDataProcessingConsent'),
@@ -2087,11 +1974,7 @@ suite('ContactInfoPageUiTest', function() {
         assertEquals(
             1, autofillManager.getCallCount('fetchUserDataProcessingConsent'),
             'should fetch consent when toggle is turned on for new account');
-        const updatedToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                '#autofillOtpFillingToggle');
-        assertTrue(!!updatedToggle);
-        assertTrue(updatedToggle.checked);
+        assertTrue(toggle.checked);
       });
 
   test(
@@ -2152,11 +2035,11 @@ suite('ContactInfoPageUiTest', function() {
         // Since Account B's fetch is still in flight, the loading row is still
         // shown and the backing toggle pref is false (not enabled by A).
         assertTrue(
-            !!page.shadowRoot!.querySelector('#otpFillingLoadingRow'),
+            isVisible(page.$.otpFillingLoadingRow),
             'loading row should be visible while Account B fetch is in flight');
         assertFalse(
-            !!page.shadowRoot!.querySelector('#autofillOtpFillingToggle'),
-            'toggle should be un-stamped while Account B fetch is in flight');
+            isVisible(page.$.autofillOtpFillingToggle),
+            'toggle should be hidden while Account B fetch is in flight');
         assertFalse(
             page.get('otpFillingTogglePref_.value'),
             'backing pref should not be enabled by stale Account A response');
@@ -2168,10 +2051,8 @@ suite('ContactInfoPageUiTest', function() {
         });
         await flushTasks();
 
-        const toggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                '#autofillOtpFillingToggle');
-        assertTrue(!!toggle);
+        const toggle = page.$.autofillOtpFillingToggle;
+        assertTrue(isVisible(toggle));
         assertFalse(toggle.checked);
       });
 
@@ -2230,11 +2111,11 @@ suite('ContactInfoPageUiTest', function() {
         // and loading state should remain active while Account B's fetch is in
         // flight.
         assertTrue(
-            !!page.shadowRoot!.querySelector('#otpFillingLoadingRow'),
+            isVisible(page.$.otpFillingLoadingRow),
             'loading row should be visible while Account B fetch is in flight');
         assertFalse(
-            !!page.shadowRoot!.querySelector('#autofillOtpFillingToggle'),
-            'toggle should be un-stamped while Account B fetch is in flight');
+            isVisible(page.$.autofillOtpFillingToggle),
+            'toggle should be hidden while Account B fetch is in flight');
         assertFalse(
             page.get('otpFillingTogglePref_.value'),
             'backing pref should not be enabled by stale Account A error');
@@ -2246,10 +2127,8 @@ suite('ContactInfoPageUiTest', function() {
         });
         await flushTasks();
 
-        const toggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                '#autofillOtpFillingToggle');
-        assertTrue(!!toggle);
+        const toggle = page.$.autofillOtpFillingToggle;
+        assertTrue(isVisible(toggle));
         assertFalse(toggle.checked);
       });
 });
