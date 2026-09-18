@@ -71,7 +71,6 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -894,11 +893,11 @@ public class PageInfoViewTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288676
     public void testShowPermissionsSubpage() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        onView(withId(R.id.page_info_permissions_row)).perform(click());
+        onViewWaiting(allOf(withId(R.id.page_info_permissions_row), isDisplayed()))
+                .perform(click());
         onViewWaiting(
                 allOf(withText("Control this site's access to your device"), isDisplayed()),
                 ViewElement.allowDisabledOption());
