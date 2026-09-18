@@ -1000,6 +1000,25 @@ TEST_F(EnterpriseProxyServiceAuthChallengeTest, DisguisedErrorRealm) {
       EnterpriseProxyService::ProxyAuthChallengeResult::kDisguisedError);
 }
 
+TEST_F(EnterpriseProxyServiceAuthChallengeTest, ForcedSignInRequired) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kEnterpriseProxyErrorHandling, {{kForceSignInRequiredParamName, "true"}});
+
+  base::HistogramTester histogram_tester;
+  AuthChallengeFuture future;
+  service_->HandleProxyAuthChallenge(
+      CreateProxyAuthChallengeInfo("proxy1.example.com"),
+      GURL("https://foo.example.com/test"), nullptr, future.GetCallback());
+
+  EXPECT_EQ(EnterpriseProxyService::ProxyAuthChallengeResult::kSignInRequired,
+            future.Get<0>());
+  EXPECT_FALSE(future.Get<1>().has_value());
+  ExpectChallengeResultHistogram(
+      histogram_tester,
+      EnterpriseProxyService::ProxyAuthChallengeResult::kSignInRequired);
+}
+
 TEST_F(EnterpriseProxyServiceAuthChallengeTest, CredentialFetchSuccess) {
   base::HistogramTester histogram_tester;
   pref_service_.registry()->RegisterStringPref(

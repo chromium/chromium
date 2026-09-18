@@ -20,6 +20,9 @@ const base::FeatureParam<int> kPvdConfigMaxSizeBytesParam{
 const base::FeatureParam<int> kForcedDisguisedErrorCodeParam{
     &kEnterpriseProxyErrorHandling, kForcedDisguisedErrorCodeParamName, 0};
 
+const base::FeatureParam<bool> kForceSignInRequiredParam{
+    &kEnterpriseProxyErrorHandling, kForceSignInRequiredParamName, false};
+
 bool IsDynamicRouteFetchingEnabled() {
   return base::FeatureList::IsEnabled(kEnableDynamicRouteFetching);
 }
@@ -37,6 +40,13 @@ std::optional<int> GetForcedDisguisedErrorCode() {
     return code;
   }
   return std::nullopt;
+}
+
+bool ShouldForceSignInRequired() {
+  if (!IsEnterpriseProxyErrorHandlingEnabled()) {
+    return false;
+  }
+  return kForceSignInRequiredParam.Get();
 }
 
 size_t GetPvdConfigMaxSizeBytes() {

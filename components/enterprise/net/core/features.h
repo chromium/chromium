@@ -33,6 +33,12 @@ inline constexpr char kForcedDisguisedErrorCodeParamName[] =
 // 502, 503, 504). Defaults to 0 (disabled).
 extern const base::FeatureParam<int> kForcedDisguisedErrorCodeParam;
 
+inline constexpr char kForceSignInRequiredParamName[] =
+    "force_sign_in_required";
+
+// Feature param to force a sign-in required error. Defaults to false.
+extern const base::FeatureParam<bool> kForceSignInRequiredParam;
+
 // Return true if dynamic route fetching is enabled.
 bool IsDynamicRouteFetchingEnabled();
 
@@ -42,6 +48,10 @@ bool IsEnterpriseProxyErrorHandlingEnabled();
 // Returns the forced disguised error code if configured (> 0) and error
 // handling is enabled, or std::nullopt.
 std::optional<int> GetForcedDisguisedErrorCode();
+
+// Returns true if enterprise proxy error handling is enabled and forcing
+// sign-in required is enabled.
+bool ShouldForceSignInRequired();
 
 // Returns the maximum allowed size in bytes for Provisioning Domain
 // configuration downloads.

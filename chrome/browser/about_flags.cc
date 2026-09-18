@@ -5036,6 +5036,9 @@ const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced504[] = {
 const FeatureEntry::FeatureParam kEnterpriseProxyErrorForcedUnsupported429[] = {
     {enterprise_net::kForcedDisguisedErrorCodeParamName, "429"}};
 
+const FeatureEntry::FeatureParam kEnterpriseProxyErrorForcedSignInRequired[] = {
+    {enterprise_net::kForceSignInRequiredParamName, "true"}};
+
 const FeatureEntry::FeatureVariation kEnterpriseProxyErrorHandlingVariations[] =
     {
         {"Force 403 (Authorization / Block)", kEnterpriseProxyErrorForced403,
@@ -5049,6 +5052,8 @@ const FeatureEntry::FeatureVariation kEnterpriseProxyErrorHandlingVariations[] =
          nullptr},
         {"Force Unsupported HTTP Code (429)",
          kEnterpriseProxyErrorForcedUnsupported429, nullptr},
+        {"Force Sign-in Required (Authentication)",
+         kEnterpriseProxyErrorForcedSignInRequired, nullptr},
 };
 #endif  // BUILDFLAG(ENTERPRISE_PROXY)
 

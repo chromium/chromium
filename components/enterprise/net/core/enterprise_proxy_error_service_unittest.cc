@@ -264,6 +264,25 @@ TEST_F(EnterpriseProxyErrorServiceTest,
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest,
+       ForceSignInRequiredParam_ForcesSignInRequired) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kEnterpriseProxyErrorHandling, {{kForceSignInRequiredParamName, "true"}});
+
+  SetupManagedDomainWithProxy("proxy.example.com");
+  std::optional<net::AuthCredentials> credentials =
+      InterceptChallenge("Enterprise Realm");
+  EXPECT_FALSE(credentials.has_value());
+
+  std::optional<EnterpriseProxyErrorData> error_data =
+      error_service_->TakeDisguisedError(kTestNavigationId);
+  ASSERT_TRUE(error_data.has_value());
+  EXPECT_EQ(error_data->error_code(), 0);
+  EXPECT_EQ(error_data->error_category(),
+            EnterpriseProxyErrorData::ErrorCategory::kAuthentication);
+}
+
+TEST_F(EnterpriseProxyErrorServiceTest,
        DisguisedError_ZeroNavigationId_DoesNotRecord) {
   SetupManagedDomainWithProxy("proxy.example.com");
   std::optional<net::AuthCredentials> credentials =

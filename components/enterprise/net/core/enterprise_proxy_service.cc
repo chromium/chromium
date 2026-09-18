@@ -288,6 +288,13 @@ void EnterpriseProxyService::HandleProxyAuthChallenge(
     return;
   }
 
+  if (ShouldForceSignInRequired()) {
+    RecordResultAndRunAuthCallback(
+        std::move(callback), ProxyAuthChallengeResult::kSignInRequired,
+        std::nullopt, challenge_net_log, "forced_sign_in_required");
+    return;
+  }
+
   if (GetForcedDisguisedErrorCode().has_value() ||
       IsDisguisedErrorRealm(auth_info.realm)) {
     RecordResultAndRunAuthCallback(std::move(callback),
