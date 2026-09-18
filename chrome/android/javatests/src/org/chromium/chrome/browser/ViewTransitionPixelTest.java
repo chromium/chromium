@@ -423,6 +423,7 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/562983036")
     public void testPageWiderThanICB() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_wider_than_icb.html";
         mActivityTestRule.startOnTestServerUrl(url);

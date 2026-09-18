@@ -28,6 +28,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -58,6 +59,7 @@ public class HistoryTabHelperTest {
             sdk_is_less_than = VERSION_CODES.UPSIDE_DOWN_CAKE,
             message = "This test is using an API introduced in Android U.")
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288253
+    @DisabledTest(message = "https://crbug.com/562983347")
     public void testAppHistory() throws Exception {
         Context context = ContextUtils.getApplicationContext();
         Intent viewIntent =

@@ -39,7 +39,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -64,7 +63,6 @@ import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.net.URL;
@@ -295,7 +293,7 @@ public class NotificationPlatformBridgeTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Notifications"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562625832
+    @DisabledTest(message = "https://crbug.com/562625832")
     public void testShowNotificationWithTextAction() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
@@ -1778,6 +1776,7 @@ public class NotificationPlatformBridgeTest {
         ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA,
         ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
     })
+    @DisabledTest(message = "https://crbug.com/562625832")
     public void
             testWarningShowsOneNotificationAfterMultipleWarnedSpamThenUnsubscribeThenResubscribe()
                     throws Exception {

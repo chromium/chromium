@@ -38,6 +38,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -195,6 +196,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Feature("RenderTest")
     @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @DisabledTest(message = "https://crbug.com/562983248")
     public void testCollapsedSheetWithAccountViewForWebSigninEntryPoint(boolean nightModeEnabled)
             throws IOException {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -235,6 +237,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Feature("RenderTest")
     @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @DisabledTest(message = "https://crbug.com/562983248")
     public void testCollapsedSheetWithAccountViewForBookmarksEntryPoint(boolean nightModeEnabled)
             throws IOException {
         mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
