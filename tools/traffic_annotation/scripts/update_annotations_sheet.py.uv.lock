@@ -201,9 +201,9 @@ rsa==3.4.2 \
     # via
     #   google-auth
     #   oauth2client
-setuptools==75.6.0 \
-    --hash=sha256:95e7b6c4ee1eb64afe479ba9f0c89ef4fb8e0da33319d829ecb2ad1dcd131dfd \
-    --hash=sha256:ce74b49e8f7110f9bf04883b730f4765b774ef3ef28f722cce7c273d253aaf7d
+setuptools==68.0.0 \
+    --hash=sha256:11e52c67415a381d10d6b462ced9cfb97066179f0e871399e006c4ab101fc85f \
+    --hash=sha256:25c8300cbd8c41a350e4890f8340ca0bbadff88967f7b26de4c8ccfe5d851a51
     # via
     #   google-api-core
     #   google-auth

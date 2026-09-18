@@ -23,6 +23,7 @@
 #   'pytz==2018.4',
 #   'requests==2.31.0',
 #   'rsa==3.4.2',
+#   'setuptools==68.0.0',
 #   'six==1.15.0',
 #   'uritemplate==3.0.0',
 #   'urllib3==1.24.3'
