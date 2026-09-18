@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceFragmentCompat;
@@ -15,6 +16,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 
 import java.util.function.BooleanSupplier;
 
@@ -52,9 +54,7 @@ public class WideDisplayPaddingApplier extends FragmentManager.FragmentLifecycle
                         .getDimensionPixelSize(R.dimen.settings_multi_column_pane_gap);
         int paddingPx = (fragment instanceof MainSettings) ? 0 : minGapPx;
 
-        // Only apply padding to PreferenceFragmentCompat subclasses or the main fragment.
-        if (!(fragment instanceof PreferenceFragmentCompat)
-                && (mMainFragmentTag == null || !mMainFragmentTag.equals(fragment.getTag()))) {
+        if (!shouldApplyPadding(fragment)) {
             return;
         }
 
@@ -62,5 +62,21 @@ public class WideDisplayPaddingApplier extends FragmentManager.FragmentLifecycle
         // frame renders with correct padding. Updates are handled by WideDisplayPadding, which
         // has an OnLayoutChangeListener.
         WideDisplayPadding.apply(fragment, mIsTwoColumnSettingsVisibleSupplier, paddingPx);
+    }
+
+    /** Returns whether the given fragment should have wide display padding applied to it. */
+    @VisibleForTesting
+    boolean shouldApplyPadding(Fragment fragment) {
+        // MultiColumnSettings is the container that hosts both columns. Its child fragments are
+        // padded individually, so padding the container too would inset the content twice.
+        if (fragment instanceof MultiColumnSettings) return false;
+
+        // Callbacks are registered recursively, so the FragmentManager also contains fragments
+        // that are not settings pages, most notably dialog fragments. PreferenceFragmentCompat
+        // and EmbeddableSettingsPage together identify the actual settings pages. The main
+        // fragment is included as well.
+        return fragment instanceof PreferenceFragmentCompat
+                || fragment instanceof EmbeddableSettingsPage
+                || (mMainFragmentTag != null && mMainFragmentTag.equals(fragment.getTag()));
     }
 }
