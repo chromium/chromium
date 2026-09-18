@@ -59,6 +59,7 @@ class StyleRuleKeyframes;
 class StyleTimeline;
 class WritingDirectionMode;
 class TimelineTrigger;
+class ScopedCSSName;
 
 class CORE_EXPORT CSSAnimations final {
   DISALLOW_NEW();
@@ -411,11 +412,12 @@ class CORE_EXPORT CSSAnimations final {
 
   static const TimelineData* GetTimelineData(const Element&);
 
-  static ScrollSnapshotTimeline* FindTimelineForNode(const AtomicString& name,
+  static ScrollSnapshotTimeline* FindTimelineForNode(const ScopedCSSName* name,
                                                      Node*,
                                                      const CSSAnimationUpdate*);
   template <typename TimelineType>
-  static TimelineType* FindTimelineForElement(const AtomicString& name,
+  static TimelineType* FindTimelineForElement(Document&,
+                                              const ScopedCSSName* name,
                                               const TimelineData*,
                                               const CSSAnimationUpdate*);
 
@@ -426,7 +428,7 @@ class CORE_EXPORT CSSAnimations final {
       const CSSAnimationUpdate*);
 
   static ScrollSnapshotTimeline* FindAncestorTimeline(
-      const AtomicString& name,
+      const ScopedCSSName* name,
       Node*,
       const CSSAnimationUpdate*);
 

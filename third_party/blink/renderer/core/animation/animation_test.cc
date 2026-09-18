@@ -2825,7 +2825,8 @@ TEST_P(AnimationAnimationTestCompositing,
   WeakPersistent<AnimationTimeline> timeline =
       MakeGarbageCollected<ViewTimeline>(&GetDocument(), target,
                                          ScrollSnapshotTimeline::ScrollAxis::kY,
-                                         TimelineInset());
+                                         TimelineInset(),
+                                         /*tree_scope=*/nullptr);
   const HeapHashSet<WeakMember<AnimationTimeline>>& timelines =
       GetDocument().GetDocumentAnimations().GetTimelinesForTesting();
   EXPECT_TRUE(timelines.Contains(timeline));

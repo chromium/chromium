@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 
+#include "base/containers/span.h"
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/css/counter_style.h"
@@ -2555,12 +2556,12 @@ CSSValue* ComputedStyleUtils::ValueForWillChange(
 
 namespace {
 
-template <typename T, wtf_size_t C, typename Func, typename... Args>
-CSSValue* CreateAnimationValueList(const Vector<T, C>& values,
+template <typename Container, typename Func, typename... Args>
+CSSValue* CreateAnimationValueList(const Container& values,
                                    Func item_func,
                                    Args&&... args) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (const T& value : values) {
+  for (const auto& value : values) {
     list->Append(*item_func(value, args...));
   }
   return list;
@@ -2886,11 +2887,13 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimeline(
 CSSValue* ComputedStyleUtils::ValueForAnimationTimelineList(
     const CSSAnimationData* animation_data,
     const ComputedStyle& style) {
-  return CreateAnimationValueList(
-      animation_data
-          ? animation_data->TimelineList()
-          : Vector<StyleTimeline>{CSSAnimationData::InitialTimeline()},
-      &ValueForAnimationTimeline, style);
+  if (animation_data) {
+    return CreateAnimationValueList(animation_data->TimelineList(),
+                                    &ValueForAnimationTimeline, style);
+  }
+  StyleTimeline initial_timeline = CSSAnimationData::InitialTimeline();
+  return CreateAnimationValueList(base::span_from_ref(initial_timeline),
+                                  &ValueForAnimationTimeline, style);
 }
 
 CSSValue* ComputedStyleUtils::ValueForTimelineInset(
@@ -2982,12 +2985,14 @@ CSSValue* ComputedStyleUtils::ValueForTimelineTriggerActiveRangeEndList(
 CSSValue* ComputedStyleUtils::ValueForTimelineTriggerTimelineList(
     const CSSAnimationData* animation_data,
     const ComputedStyle& style) {
-  return CreateAnimationValueList(
-      animation_data
-          ? animation_data->TimelineTriggerSourceList()
-          : Vector<StyleTimeline>{CSSAnimationData::
-                                      InitialTimelineTriggerSource()},
-      &ValueForAnimationTimeline, style);
+  if (animation_data) {
+    return CreateAnimationValueList(animation_data->TimelineTriggerSourceList(),
+                                    &ValueForAnimationTimeline, style);
+  }
+  StyleTimeline initial_timeline =
+      CSSAnimationData::InitialTimelineTriggerSource();
+  return CreateAnimationValueList(base::span_from_ref(initial_timeline),
+                                  &ValueForAnimationTimeline, style);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationName(const AtomicString& name) {

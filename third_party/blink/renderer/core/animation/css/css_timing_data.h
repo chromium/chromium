@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -58,6 +59,11 @@ class CSSTimingData : public GarbageCollected<CSSTimingData> {
 
   template <class T, wtf_size_t C>
   static const T& GetRepeated(const Vector<T, C>& v, size_t index) {
+    return v[index % v.size()];
+  }
+
+  template <class T, wtf_size_t C>
+  static const T& GetRepeated(const HeapVector<T, C>& v, size_t index) {
     return v[index % v.size()];
   }
 

@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_value.h"
 #include "third_party/blink/renderer/core/style/style_difference.h"
@@ -1960,10 +1961,17 @@ TEST_F(ComputedStyleTest, ScrollTimelineNameNoDiff) {
   ComputedStyleBuilder builder1(*InitialComputedStyle());
   ComputedStyleBuilder builder2(*InitialComputedStyle());
 
+  HeapVector<Member<const ScopedCSSName>> names1;
+  names1.push_back(
+      MakeGarbageCollected<ScopedCSSName>(AtomicString("test"), nullptr));
+  HeapVector<Member<const ScopedCSSName>> names2;
+  names2.push_back(
+      MakeGarbageCollected<ScopedCSSName>(AtomicString("test"), nullptr));
+
   builder1.SetScrollTimelineName(
-      Vector<AtomicString>(1u, AtomicString("test")));
+      MakeGarbageCollected<ScopedCSSNameList>(std::move(names1)));
   builder2.SetScrollTimelineName(
-      Vector<AtomicString>(1u, AtomicString("test")));
+      MakeGarbageCollected<ScopedCSSNameList>(std::move(names2)));
 
   const ComputedStyle* style1 = builder1.TakeStyle();
   const ComputedStyle* style2 = builder2.TakeStyle();
@@ -1990,10 +1998,17 @@ TEST_F(ComputedStyleTest, ViewTimelineNameNoDiff) {
   ComputedStyleBuilder builder1(*InitialComputedStyle());
   ComputedStyleBuilder builder2(*InitialComputedStyle());
 
-  builder1.SetScrollTimelineName(
-      Vector<AtomicString>(1u, AtomicString("test")));
-  builder2.SetScrollTimelineName(
-      Vector<AtomicString>(1u, AtomicString("test")));
+  HeapVector<Member<const ScopedCSSName>> names1;
+  names1.push_back(
+      MakeGarbageCollected<ScopedCSSName>(AtomicString("test"), nullptr));
+  HeapVector<Member<const ScopedCSSName>> names2;
+  names2.push_back(
+      MakeGarbageCollected<ScopedCSSName>(AtomicString("test"), nullptr));
+
+  builder1.SetViewTimelineName(
+      MakeGarbageCollected<ScopedCSSNameList>(std::move(names1)));
+  builder2.SetViewTimelineName(
+      MakeGarbageCollected<ScopedCSSNameList>(std::move(names2)));
 
   const ComputedStyle* style1 = builder1.TakeStyle();
   const ComputedStyle* style2 = builder2.TakeStyle();

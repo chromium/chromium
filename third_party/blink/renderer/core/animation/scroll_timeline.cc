@@ -12,12 +12,14 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
 namespace blink {
@@ -56,8 +58,12 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
 ScrollTimeline* ScrollTimeline::Create(Document* document,
                                        Element* source,
                                        ScrollAxis axis) {
+  // Implements the IDL constructor new ScrollTimeline.
+  // Imperative timelines are attached directly to the animation via the
+  // web animations API and do not participate in name lookup, and have no
+  // CSS defining tree scope.
   ScrollTimeline* scroll_timeline = MakeGarbageCollected<ScrollTimeline>(
-      document, ReferenceType::kSource, source, axis);
+      document, ReferenceType::kSource, source, axis, /*tree_scope=*/nullptr);
   scroll_timeline->UpdateSnapshot();
 
   return scroll_timeline;
@@ -66,11 +72,13 @@ ScrollTimeline* ScrollTimeline::Create(Document* document,
 ScrollTimeline::ScrollTimeline(Document* document,
                                ReferenceType reference_type,
                                Element* reference,
-                               ScrollAxis axis)
+                               ScrollAxis axis,
+                               const TreeScope* tree_scope)
     : ScrollSnapshotTimeline(document),
       reference_type_(reference_type),
       reference_element_(reference),
-      axis_(axis) {}
+      axis_(axis),
+      tree_scope_(tree_scope) {}
 
 Element* ScrollTimeline::RetainingElement() const {
   return reference_element_.Get();
@@ -314,12 +322,18 @@ Node* ScrollTimeline::ComputeResolvedSource() const {
 
 void ScrollTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(reference_element_);
+  visitor->Trace(tree_scope_);
   ScrollSnapshotTimeline::Trace(visitor);
 }
 
 bool ScrollTimeline::Matches(ReferenceType reference_type,
                              Element* reference_element,
-                             ScrollAxis axis) const {
+                             ScrollAxis axis,
+                             const TreeScope* tree_scope) const {
+  if (RuntimeEnabledFeatures::CSSTreeScopedScrollTimelineEnabled() &&
+      tree_scope_.Get() != tree_scope) {
+    return false;
+  }
   return (reference_type_ == reference_type) &&
          (reference_element_ == reference_element) && (axis_ == axis);
 }

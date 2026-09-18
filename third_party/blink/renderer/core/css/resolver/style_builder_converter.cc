@@ -200,6 +200,22 @@ Vector<AtomicString> ConvertNoneOrCustomIdentListUnscoped(
   return names;
 }
 
+ScopedCSSNameList* ConvertNoneOrCustomIdentList(StyleResolverState& state,
+                                                const CSSValue& value) {
+  DCHECK(value.IsScopedValue());
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
+    return nullptr;
+  }
+  DCHECK(value.IsBaseValueList());
+  HeapVector<Member<const ScopedCSSName>> names;
+  for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
+    names.push_back(
+        StyleBuilderConverter::ConvertNoneOrCustomIdent(state, *item));
+  }
+  return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
+}
+
 }  // namespace
 
 StyleReflection* StyleBuilderConverter::ConvertBoxReflect(
@@ -2871,17 +2887,7 @@ StyleViewTransitionName* StyleBuilderConverter::ConvertViewTransitionName(
 ScopedCSSNameList* StyleBuilderConverter::ConvertViewTransitionClass(
     StyleResolverState& state,
     const CSSValue& value) {
-  DCHECK(value.IsScopedValue());
-  if (IsA<CSSIdentifierValue>(value)) {
-    DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
-    return nullptr;
-  }
-  DCHECK(value.IsBaseValueList());
-  HeapVector<Member<const ScopedCSSName>> names;
-  for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
-    names.push_back(ConvertNoneOrCustomIdent(state, *item));
-  }
-  return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
+  return ConvertNoneOrCustomIdentList(state, value);
 }
 
 ScopedCSSNameList* StyleBuilderConverter::ConvertOverscrollArea(
@@ -3984,10 +3990,16 @@ Vector<TimelineInset> StyleBuilderConverter::ConvertViewTimelineInset(
   return insets;
 }
 
-Vector<AtomicString> StyleBuilderConverter::ConvertViewTimelineName(
+ScopedCSSNameList* StyleBuilderConverter::ConvertScrollTimelineName(
     StyleResolverState& state,
     const CSSValue& value) {
-  return ConvertNoneOrCustomIdentListUnscoped(state, value);
+  return ConvertNoneOrCustomIdentList(state, value);
+}
+
+ScopedCSSNameList* StyleBuilderConverter::ConvertViewTimelineName(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return ConvertNoneOrCustomIdentList(state, value);
 }
 
 StyleTimelineScope StyleBuilderConverter::ConvertTimelineScope(

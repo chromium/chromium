@@ -25,6 +25,7 @@ class Element;
 class LayoutObject;
 class PaintLayerScrollableArea;
 class ScrollTimelineOptions;
+class TreeScope;
 
 // Implements the ScrollTimeline concept from the Scroll-linked Animations spec.
 //
@@ -60,19 +61,27 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
 
   // Construct ScrollTimeline objects through one of the Create methods, which
   // perform initial snapshots, as it can't be done during the constructor due
-  // to possibly depending on overloaded functions.
+  // to possibly depending on overloaded functions. When constructed for a CSS
+  // rule, a tree scope is required for name resolution. Imperative
+  // declarations have no CSS defining tree scope.
   ScrollTimeline(Document*,
                  ReferenceType reference_type,
                  Element* reference,
-                 ScrollAxis axis);
+                 ScrollAxis axis,
+                 const TreeScope* tree_scope);
 
   bool IsScrollTimeline() const override { return true; }
+
+  const TreeScope* GetTreeScope() const { return tree_scope_.Get(); }
 
   // IDL API implementation.
   Element* source() const;
   const V8ScrollAxis axis() const { return V8ScrollAxis(GetAxis()); }
 
-  bool Matches(ReferenceType, Element* reference_element, ScrollAxis) const;
+  bool Matches(ReferenceType,
+               Element* reference_element,
+               ScrollAxis,
+               const TreeScope* tree_scope) const;
 
   ScrollAxis GetAxis() const override;
 
@@ -145,6 +154,7 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
   ReferenceType reference_type_;
   Member<Element> reference_element_;
   ScrollAxis axis_;
+  Member<const TreeScope> tree_scope_;
 };
 
 template <>

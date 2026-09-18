@@ -86,6 +86,7 @@ class OffsetPathOperation;
 class RotateTransformOperation;
 class ScaleTransformOperation;
 class ScopedCSSName;
+class ScopedCSSNameList;
 class StyleAutoColor;
 class StyleCaretColor;
 class StylePath;
@@ -461,8 +462,10 @@ class StyleBuilderConverter {
                                                       const CSSValue&);
   static Vector<TimelineInset> ConvertViewTimelineInset(StyleResolverState&,
                                                         const CSSValue&);
-  static Vector<AtomicString> ConvertViewTimelineName(StyleResolverState&,
+  static ScopedCSSNameList* ConvertScrollTimelineName(StyleResolverState&,
                                                       const CSSValue&);
+  static ScopedCSSNameList* ConvertViewTimelineName(StyleResolverState&,
+                                                    const CSSValue&);
   static StyleTimelineScope ConvertTimelineScope(StyleResolverState&,
                                                  const CSSValue&);
 

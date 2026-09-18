@@ -277,9 +277,13 @@ ViewTimeline* ViewTimeline::Create(Document& document,
   Length inset_end_side = InsetValueToLength(end_inset_value.value_or(nullptr),
                                              subject, inset_start_side);
 
+  // Implements the IDL constructor new ViewTimeline.
+  // Imperative timelines are attached directly to the animation via the
+  // web animations AIP and do not participate in name lookup, and have no
+  // CSS defining tree scope.
   ViewTimeline* view_timeline = MakeGarbageCollected<ViewTimeline>(
-      &document, subject, axis,
-      TimelineInset(inset_start_side, inset_end_side));
+      &document, subject, axis, TimelineInset(inset_start_side, inset_end_side),
+      /*tree_scope=*/nullptr);
 
   if (start_inset_value && IsStyleDependent(start_inset_value.value()))
     view_timeline->style_dependant_start_inset_ = start_inset_value.value();
@@ -293,11 +297,13 @@ ViewTimeline* ViewTimeline::Create(Document& document,
 ViewTimeline::ViewTimeline(Document* document,
                            Element* subject,
                            ScrollAxis axis,
-                           TimelineInset inset)
+                           TimelineInset inset,
+                           const TreeScope* tree_scope)
     : ScrollTimeline(document,
                      ReferenceType::kNearestAncestor,
                      /* reference_element */ subject,
-                     axis),
+                     axis,
+                     tree_scope),
       inset_(inset) {}
 
 void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
@@ -602,9 +608,11 @@ Element* ViewTimeline::SubjectInternal() const {
 
 bool ViewTimeline::Matches(Element* subject,
                            ScrollAxis axis,
-                           const TimelineInset& inset) const {
+                           const TimelineInset& inset,
+                           const TreeScope* tree_scope) const {
   if (!ScrollTimeline::Matches(ReferenceType::kNearestAncestor,
-                               /* reference_element */ subject, axis)) {
+                               /* reference_element */ subject, axis,
+                               tree_scope)) {
     return false;
   }
   return inset_ == inset;

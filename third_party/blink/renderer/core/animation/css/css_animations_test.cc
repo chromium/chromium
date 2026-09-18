@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -3220,6 +3221,87 @@ TEST_P(CSSAnimationsTest, CSSTimelineScopeAttachedMultiple_NoCount_One) {
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(IsUseCounted(WebFeature::kCSSTimelineScopeAttachedMultiple));
+}
+
+TEST_P(CSSAnimationsTest, CSSTimelineTreeScopeMismatch_Count) {
+  ScopedCSSTreeScopedScrollTimelineForTest scoped_feature(false);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes --anim { to { opacity: 1; } }
+      #target {
+        animation: --anim 1s;
+        animation-timeline: --t;
+      }
+    </style>
+    <div id="host">
+      <div id="target"></div>
+    </div>
+  )HTML");
+
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      :host { scroll-timeline: --t; }
+    </style>
+    <slot></slot>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSTimelineTreeScopeMismatch));
+}
+
+TEST_P(CSSAnimationsTest, CSSTimelineTreeScopeMismatch_CountWithFlag) {
+  ScopedCSSTreeScopedScrollTimelineForTest scoped_feature(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes --anim { to { opacity: 1; } }
+      #target {
+        animation: --anim 1s;
+        animation-timeline: --t;
+      }
+    </style>
+    <div id="host">
+      <div id="target"></div>
+    </div>
+  )HTML");
+
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      :host { scroll-timeline: --t; }
+    </style>
+    <slot></slot>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSTimelineTreeScopeMismatch));
+}
+
+TEST_P(CSSAnimationsTest, CSSTimelineTreeScopeMismatch_NoCount) {
+  ScopedCSSTreeScopedScrollTimelineForTest scoped_feature(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes --anim { to { opacity: 1; } }
+      #scroller { scroll-timeline: --t; }
+      #target {
+        animation: --anim 1s;
+        animation-timeline: --t;
+      }
+    </style>
+    <div id="scroller">
+      <div id="target"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSTimelineTreeScopeMismatch));
 }
 
 TEST_P(CSSAnimationsTest, SVGColorAnimationVisitedCurrentColor) {

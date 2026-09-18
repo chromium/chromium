@@ -114,7 +114,8 @@ class TestScrollTimeline : public ScrollTimeline {
       : ScrollTimeline(document,
                        ScrollTimeline::ReferenceType::kSource,
                        source,
-                       ScrollAxis::kY) {
+                       ScrollAxis::kY,
+                       /*tree_scope=*/nullptr) {
     if (snapshot) {
       UpdateSnapshot();
     }
@@ -141,7 +142,11 @@ class TestScrollTimeline : public ScrollTimeline {
 class TestViewTimeline : public ViewTimeline {
  public:
   TestViewTimeline(Document* document, Element* subject, bool snapshot = true)
-      : ViewTimeline(document, subject, ScrollAxis::kY, TimelineInset()) {
+      : ViewTimeline(document,
+                     subject,
+                     ScrollAxis::kY,
+                     TimelineInset(),
+                     /*tree_scope=*/nullptr) {
     if (snapshot) {
       UpdateSnapshot();
     }

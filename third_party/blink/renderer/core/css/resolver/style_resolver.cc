@@ -268,10 +268,12 @@ bool HasAnimationsOrTransitions(const StyleResolverState& state) {
 }
 
 bool HasTimelines(const StyleResolverState& state) {
-  if (!state.StyleBuilder().ScrollTimelineName().empty()) {
+  if (state.StyleBuilder().ScrollTimelineName() &&
+      !state.StyleBuilder().ScrollTimelineName()->GetNames().empty()) {
     return true;
   }
-  if (!state.StyleBuilder().ViewTimelineName().empty()) {
+  if (state.StyleBuilder().ViewTimelineName() &&
+      !state.StyleBuilder().ViewTimelineName()->GetNames().empty()) {
     return true;
   }
   if (!state.StyleBuilder().TimelineScope().IsNone()) {

@@ -30,7 +30,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(name_list_);
+    visitor->Trace(timeline_list_);
     visitor->Trace(timeline_trigger_name_list_);
+    visitor->Trace(timeline_trigger_source_list_);
     visitor->Trace(trigger_attachments_list_);
     CSSTimingData::Trace(visitor);
   }
@@ -49,7 +51,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   const HeapVector<Member<const ScopedCSSName>>& NameList() const {
     return name_list_;
   }
-  const Vector<StyleTimeline>& TimelineList() const { return timeline_list_; }
+  const HeapVector<StyleTimeline>& TimelineList() const {
+    return timeline_list_;
+  }
 
   const Vector<double>& IterationCountList() const {
     return iteration_count_list_;
@@ -93,7 +97,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
       const {
     return timeline_trigger_active_range_end_list_;
   }
-  const Vector<StyleTimeline>& TimelineTriggerSourceList() const {
+  const HeapVector<StyleTimeline>& TimelineTriggerSourceList() const {
     return timeline_trigger_source_list_;
   }
   const StyleTimeline& GetTimelineTriggerSource(size_t index) const;
@@ -113,7 +117,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   }
 
   HeapVector<Member<const ScopedCSSName>>& NameList() { return name_list_; }
-  Vector<StyleTimeline>& TimelineList() { return timeline_list_; }
+  HeapVector<StyleTimeline>& TimelineList() { return timeline_list_; }
   Vector<double>& IterationCountList() { return iteration_count_list_; }
   Vector<Timing::PlaybackDirection>& DirectionList() { return direction_list_; }
   Vector<Timing::FillMode>& FillModeList() { return fill_mode_list_; }
@@ -144,7 +148,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<TimelineOffsetOrAuto>& TimelineTriggerActiveRangeEndList() {
     return timeline_trigger_active_range_end_list_;
   }
-  Vector<StyleTimeline>& TimelineTriggerSourceList() {
+  HeapVector<StyleTimeline>& TimelineTriggerSourceList() {
     return timeline_trigger_source_list_;
   }
   TriggerAttachmentsListType& TriggerAttachmentsList() {
@@ -167,7 +171,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   static std::optional<double> InitialDuration();
   static const ScopedCSSName* InitialName() { return nullptr; }
   static const AtomicString& InitialNameString() { return g_null_atom; }
-  static const StyleTimeline& InitialTimeline();
+  static StyleTimeline InitialTimeline();
   static Timing::PlaybackDirection InitialDirection() {
     return Timing::PlaybackDirection::NORMAL;
   }
@@ -198,7 +202,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   static TimelineOffsetOrAuto InitialTimelineTriggerActiveRangeEnd() {
     return TimelineOffsetOrAuto();
   }
-  static const StyleTimeline& InitialTimelineTriggerSource();
+  static StyleTimeline InitialTimelineTriggerSource();
   static Member<StyleTriggerAttachmentVector> InitialTriggerAttachments() {
     return nullptr;
   }
@@ -208,7 +212,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
 
  private:
   HeapVector<Member<const ScopedCSSName>> name_list_;
-  Vector<StyleTimeline> timeline_list_;
+  HeapVector<StyleTimeline> timeline_list_;
   Vector<std::optional<TimelineOffset>> range_start_list_;
   Vector<std::optional<TimelineOffset>> range_end_list_;
   Vector<double> iteration_count_list_;
@@ -224,7 +228,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
       timeline_trigger_activation_range_end_list_;
   Vector<TimelineOffsetOrAuto> timeline_trigger_active_range_start_list_;
   Vector<TimelineOffsetOrAuto> timeline_trigger_active_range_end_list_;
-  Vector<StyleTimeline> timeline_trigger_source_list_;
+  HeapVector<StyleTimeline> timeline_trigger_source_list_;
 
   TriggerAttachmentsListType trigger_attachments_list_;
 };

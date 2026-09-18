@@ -5338,6 +5338,7 @@ enum WebFeature {
   kEventTimingCreationTimeInFuture = 6021,
   kAttributionReportingWindowOpen = 6022,
   kStickyVideoAdDetected = 6023,
+  kCSSTimelineTreeScopeMismatch = 6024,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
