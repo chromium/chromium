@@ -157,10 +157,15 @@ class NET_EXPORT CookieInclusionStatus {
     // included/excluded in both cases.
     WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION,
 
-    // The cookie exceeded the attribute size limit. RFC6265bis indicates that
-    // large attributes should be ignored instead of causing the whole cookie
-    // to be rejected. This is applied by the code that parses cookie lines and
-    // notifies the user that an attribute value was ignored.
+    // Separately record when a cookie would have been included prior to the
+    // spec change considering redirects in the SameSite context computation
+    // (see above reason) when the request or response had no initiator.
+    WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION_NO_INITIATOR,
+
+    // The cookie exceeded the attribute size limit. RFC6265bis indicates
+    // that large attributes should be ignored instead of causing the whole
+    // cookie to be rejected. This is applied by the code that parses cookie
+    // lines and notifies the user that an attribute value was ignored.
     WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE,
 
     // The cookie was set with a Domain attribute containing non ASCII

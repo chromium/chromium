@@ -1077,11 +1077,12 @@ MATCHER_P2(ContextTypeIsWithSchemefulMode, context_type, schemeful, "") {
 
 // Checks for the expected metadata related to context downgrades from
 // cross-site redirects.
-MATCHER_P5(CrossSiteRedirectMetadataCorrectWithSchemefulMode,
+MATCHER_P6(CrossSiteRedirectMetadataCorrectWithSchemefulMode,
            method,
            context_type_without_chain,
            context_type_with_chain,
            redirect_type_with_chain,
+           has_null_initiator,
            schemeful,
            "") {
   using ContextDowngradeType = CookieOptions::SameSiteCookieContext::
@@ -1089,8 +1090,13 @@ MATCHER_P5(CrossSiteRedirectMetadataCorrectWithSchemefulMode,
 
   const auto& metadata = schemeful ? arg.schemeful_metadata() : arg.metadata();
 
-  if (metadata.redirect_type_bug_1221316 != redirect_type_with_chain)
+  if (metadata.redirect_type_bug_1221316 != redirect_type_with_chain) {
     return false;
+  }
+
+  if (metadata.has_null_initiator != has_null_initiator) {
+    return false;
+  }
 
   switch (metadata.cross_site_redirect_downgrade) {
     case ContextDowngradeType::kNoDowngrade:
@@ -1153,10 +1159,11 @@ class CookieUtilComputeSameSiteContextTest
       HttpMethod method,
       ContextType context_type_without_chain,
       ContextType context_type_with_chain,
-      ContextRedirectTypeBug1221316 redirect_type_with_chain) const {
+      ContextRedirectTypeBug1221316 redirect_type_with_chain,
+      bool has_null_initiator) const {
     return CrossSiteRedirectMetadataCorrectWithSchemefulMode(
         method, context_type_without_chain, context_type_with_chain,
-        redirect_type_with_chain, IsSchemeful());
+        redirect_type_with_chain, has_null_initiator, IsSchemeful());
   }
 
   // The following methods return the sets of URLs/SiteForCookies/initiators/URL
@@ -1834,12 +1841,13 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_Redirect) {
                   false /* is_main_frame_navigation */,
                   false /* force_ignore_site_for_cookies */,
                   /*ignore_unsafe_method_for_same_site_lax=*/false),
-              AllOf(ContextTypeIs(expected_context_type),
-                    CrossSiteRedirectMetadataCorrect(
-                        cookie_util::HttpMethodStringToEnum(test_case.method),
-                        test_case.expected_context_type_without_chain,
-                        test_case.expected_context_type,
-                        test_case.expected_redirect_type_with_chain)))
+              AllOf(
+                  ContextTypeIs(expected_context_type),
+                  CrossSiteRedirectMetadataCorrect(
+                      cookie_util::HttpMethodStringToEnum(test_case.method),
+                      test_case.expected_context_type_without_chain,
+                      test_case.expected_context_type,
+                      test_case.expected_redirect_type_with_chain, !initiator)))
               << UrlChainToString(url_chain) << " "
               << site_for_cookies.ToDebugString() << " "
               << (initiator ? initiator->Serialize() : "nullopt");
@@ -1859,7 +1867,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_Redirect) {
                       test_case
                           .expected_context_type_for_main_frame_navigation_without_chain,
                       test_case.expected_context_type_for_main_frame_navigation,
-                      test_case.expected_redirect_type_with_chain)))
+                      test_case.expected_redirect_type_with_chain, !initiator)))
               << UrlChainToString(url_chain) << " "
               << site_for_cookies.ToDebugString() << " "
               << (initiator ? initiator->Serialize() : "nullopt");
@@ -2107,7 +2115,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_Redirect) {
                                 HttpMethod::kUnset,
                                 test_case.expected_context_type_without_chain,
                                 test_case.expected_context_type,
-                                test_case.expected_redirect_type_with_chain)))
+                                test_case.expected_redirect_type_with_chain,
+                                !initiator)))
               << UrlChainToString(url_chain) << " "
               << site_for_cookies.ToDebugString() << " "
               << (initiator ? initiator->Serialize() : "nullopt");
@@ -2126,7 +2135,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_Redirect) {
                       test_case
                           .expected_context_type_for_main_frame_navigation_without_chain,
                       test_case.expected_context_type_for_main_frame_navigation,
-                      test_case.expected_redirect_type_with_chain)))
+                      test_case.expected_redirect_type_with_chain, !initiator)))
               << UrlChainToString(url_chain) << " "
               << site_for_cookies.ToDebugString() << " "
               << (initiator ? initiator->Serialize() : "nullopt");

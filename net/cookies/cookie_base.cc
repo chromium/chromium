@@ -91,6 +91,11 @@ void ApplySameSiteCookieWarningToStatus(
     status->AddWarningReason(
         CookieInclusionStatus::WarningReason::
             WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION);
+    if (metadata.has_null_initiator) {
+      status->AddWarningReason(
+          CookieInclusionStatus::WarningReason::
+              WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION_NO_INITIATOR);
+    }
   }
 
   // If there are reasons to exclude the cookie other than SameSite, don't warn

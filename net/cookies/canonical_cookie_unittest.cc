@@ -2513,6 +2513,8 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_RedirectDowngradeWarning) {
       strict_cross_downgrade_metadata;
   strict_lax_downgrade_metadata.cross_site_redirect_downgrade =
       Context::ContextMetadata::ContextDowngradeType::kStrictToLax;
+  strict_lax_downgrade_metadata.has_null_initiator = true;
+
   strict_cross_downgrade_metadata.cross_site_redirect_downgrade =
       Context::ContextMetadata::ContextDowngradeType::kStrictToCross;
 
@@ -2628,6 +2630,23 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_RedirectDowngradeWarning) {
                 .status.HasWarningReason(
                     CookieInclusionStatus::WarningReason::
                         WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION));
+
+        // Should record when there is no initiator only when:
+        // 1. There is a downgrade due to cross-site redirects in the chain.
+        // 2. The ContextMetadata indicates that the request had a null
+        // initiator.
+        EXPECT_EQ(
+            cookie
+                ->IncludeForRequestURL(
+                    url, options,
+                    CookieAccessParams(
+                        semantics, CookieScopeSemantics::UNKNOWN,
+                        /*delegate_treats_url_as_trustworthy=*/false))
+                .status.HasWarningReason(
+                    CookieInclusionStatus::WarningReason::
+                        WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION_NO_INITIATOR),
+            test.expect_cross_site_redirect_warning &&
+                test.metadata.has_null_initiator);
       }
     }
   }
@@ -6202,6 +6221,7 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext_RedirectDowngradeWarning) {
     ContextType context_type;
     CookieSameSite samesite;
     bool expect_cross_site_redirect_warning;
+    bool has_null_initiator = false;
   } kTestCases[] = {
       {ContextType::SAME_SITE_LAX, CookieSameSite::STRICT_MODE, true},
       {ContextType::CROSS_SITE, CookieSameSite::STRICT_MODE, true},
@@ -6209,6 +6229,8 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext_RedirectDowngradeWarning) {
       {ContextType::CROSS_SITE, CookieSameSite::LAX_MODE, true},
       {ContextType::SAME_SITE_LAX, CookieSameSite::NO_RESTRICTION, false},
       {ContextType::CROSS_SITE, CookieSameSite::NO_RESTRICTION, false},
+      // Test that downgrade has additional warning when initiator is null.
+      {ContextType::SAME_SITE_LAX, CookieSameSite::STRICT_MODE, true, true},
   };
 
   for (bool consider_redirects : {true, false}) {
@@ -6260,6 +6282,8 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext_RedirectDowngradeWarning) {
         Context::ContextMetadata lax_cross_downgrade_metadata;
         lax_cross_downgrade_metadata.cross_site_redirect_downgrade =
             Context::ContextMetadata::ContextDowngradeType::kLaxToCross;
+        lax_cross_downgrade_metadata.has_null_initiator =
+            test.has_null_initiator;
         CookieOptions options;
         options.set_same_site_cookie_context(Context(
             test.context_type, test.context_type, lax_cross_downgrade_metadata,
@@ -6291,6 +6315,22 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext_RedirectDowngradeWarning) {
                 .status.HasWarningReason(
                     CookieInclusionStatus::WarningReason::
                         WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION));
+
+        // There should be a second, additional warning iff:
+        // 1. There should be a cross-site redirect downgrade warning.
+        // 2. The context has no initiator origin.
+        EXPECT_EQ(
+            cookie
+                ->IsSetPermittedInContext(
+                    url, options,
+                    CookieAccessParams(
+                        semantics, CookieScopeSemantics::UNKNOWN,
+                        /*delegate_treats_url_as_trustworthy=*/false),
+                    kCookieableSchemes)
+                .status.HasWarningReason(
+                    CookieInclusionStatus::WarningReason::
+                        WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION_NO_INITIATOR),
+            test.expect_cross_site_redirect_warning && test.has_null_initiator);
       }
     }
   }
