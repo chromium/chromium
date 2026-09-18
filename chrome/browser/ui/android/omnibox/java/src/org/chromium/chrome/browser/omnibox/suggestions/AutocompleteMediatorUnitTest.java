@@ -366,6 +366,17 @@ public class AutocompleteMediatorUnitTest {
                 .doReturn(mComposeboxQueryControllerBridge)
                 .when(session)
                 .getComposeboxQueryControllerBridge();
+        var textWrappingSupplier = ObservableSuppliers.createNonNull(false);
+        lenient().doReturn(textWrappingSupplier).when(session).getTextWrappingSupplier();
+        lenient().doAnswer(inv -> textWrappingSupplier.get()).when(session).isTextWrapping();
+        lenient()
+                .doAnswer(
+                        inv -> {
+                            textWrappingSupplier.set(inv.getArgument(0));
+                            return null;
+                        })
+                .when(session)
+                .setTextWrapping(anyBoolean());
         return session;
     }
 
@@ -3313,5 +3324,49 @@ public class AutocompleteMediatorUnitTest {
         verify(mAutocompleteController)
                 .start(any(), mAutocompleteInputCaptor.capture(), anyInt(), anyBoolean());
         assertEquals("incognito search query", mAutocompleteInputCaptor.getValue().getUserText());
+    }
+
+    @Test
+    public void beginInput_observesSessionTextWrappingSupplier() {
+        FuseboxSessionState session = createEmptySession();
+        session.setTextWrapping(true);
+        mMediator.beginInput(session);
+        assertTrue(mListModel.get(SuggestionListProperties.IS_MULTILINE_URL_BAR));
+
+        session.setTextWrapping(false);
+        assertFalse(mListModel.get(SuggestionListProperties.IS_MULTILINE_URL_BAR));
+
+        session.setTextWrapping(true);
+        assertTrue(mListModel.get(SuggestionListProperties.IS_MULTILINE_URL_BAR));
+
+        mMediator.endInput();
+        assertFalse(mListModel.get(SuggestionListProperties.IS_MULTILINE_URL_BAR));
+
+        // Changes after endInput are ignored as the observer is detached.
+        session.setTextWrapping(true);
+        assertFalse(mListModel.get(SuggestionListProperties.IS_MULTILINE_URL_BAR));
+    }
+
+    @Test
+    public void endInput_clearsMultilineUrlBarProperty() {
+        FuseboxSessionState session = createEmptySession();
+        mMediator.beginInput(session);
+        mMediator.onTextWrappingChanged(true);
+        assertTrue(mListModel.get(SuggestionListProperties.IS_MULTILINE_URL_BAR));
+
+        mMediator.endInput();
+        assertFalse(mListModel.get(SuggestionListProperties.IS_MULTILINE_URL_BAR));
+    }
+
+    @Test
+    public void updateModel_setsMultilineUrlBarPropertyFromSessionState() {
+        FuseboxSessionState session = createEmptySession();
+        session.setTextWrapping(true);
+        mMediator.beginInput(session);
+        assertTrue(mListModel.get(SuggestionListProperties.IS_MULTILINE_URL_BAR));
+
+        session.setTextWrapping(false);
+        mMediator.updateModel();
+        assertFalse(mListModel.get(SuggestionListProperties.IS_MULTILINE_URL_BAR));
     }
 }

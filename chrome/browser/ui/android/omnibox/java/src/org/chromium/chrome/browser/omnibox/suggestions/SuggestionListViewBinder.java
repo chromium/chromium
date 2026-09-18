@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -106,6 +107,8 @@ class SuggestionListViewBinder
             view.dropdown.setGestureObserver(model.get(SuggestionListProperties.GESTURE_OBSERVER));
         } else if (propertyKey == SuggestionListProperties.IS_LARGE_SCREEN) {
             updateRoundingAndClipping(model, view);
+        } else if (propertyKey == SuggestionListProperties.IS_MULTILINE_URL_BAR) {
+            updateContainerVisibility(model, view);
         } else if (propertyKey == SuggestionListProperties.LEFT_SIDE_BAR_MARGIN_PX) {
             updateContainerMargin(model, view);
         } else if (propertyKey == SuggestionListProperties.LIST_IS_FINAL) {
@@ -176,7 +179,8 @@ class SuggestionListViewBinder
         }
     }
 
-    private static void updateVerticalPadding(PropertyModel model, SuggestionListViewHolder holder) {
+    private static void updateVerticalPadding(
+            PropertyModel model, SuggestionListViewHolder holder) {
         boolean applyVerticalPadding = model.get(SuggestionListProperties.APPLY_VERTICAL_PADDING);
         @Px
         int topPadding =
@@ -200,6 +204,11 @@ class SuggestionListViewBinder
                                 || model.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE));
         int listVisibility = shouldListBeVisible ? View.VISIBLE : View.GONE;
         int containerVisibility = shouldContainerBeVisible ? View.VISIBLE : View.GONE;
+        if (model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE)
+                && model.get(SuggestionListProperties.IS_MULTILINE_URL_BAR)
+                && OmniboxCapabilities.hasDesktopExperience(holder.container.getContext())) {
+            containerVisibility = View.INVISIBLE;
+        }
         holder.container.setVisibility(containerVisibility);
         holder.dropdown.setVisibility(listVisibility);
         updateContainerMargin(model, holder);
