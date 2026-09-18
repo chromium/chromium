@@ -102,7 +102,7 @@ class GlicInstanceCoordinatorBrowserTest
              }},
             {enterprise_reporting::kGeminiInChromeUsageReporting, {}},
         },
-        /*disabled_features=*/{features::kGlicDefaultToLastActiveConversation});
+        /*disabled_features=*/{});
   }
   ~GlicInstanceCoordinatorBrowserTest() override = default;
 

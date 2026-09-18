@@ -1007,19 +1007,6 @@ GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
         base::Hours(24), 50);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kGlicDefaultToLastActiveConversation) &&
-      last_active_instance_ &&
-      last_active_instance_->GetTimeSinceLastActive() <
-          features::kGlicDefaultToLastActiveConversationMaxRecency.Get() &&
-      !last_active_instance_->IsActuating()) {
-    last_active_instance_->instance_metrics().OnDaisyChain(
-        DaisyChainSource::kLastActiveInstance,
-        /*success=*/true, tab,
-        /*source_tab=*/nullptr);
-    return last_active_instance_;
-  }
-
   // Create a new conversation and instance.
   return CreateGlicInstance();
 }

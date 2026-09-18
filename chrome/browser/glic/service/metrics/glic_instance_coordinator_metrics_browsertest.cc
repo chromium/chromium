@@ -28,7 +28,7 @@ class GlicInstanceCoordinatorMetricsBrowserTest : public GlicBrowserTest {
                                {{features::kGlicActorPolicyControlExemption
                                      .name,
                                  "true"}}}},
-        /*disabled_features=*/{features::kGlicDefaultToLastActiveConversation});
+        /*disabled_features=*/{});
   }
 
  private:
@@ -128,7 +128,7 @@ class GlicInstanceCoordinatorMetricsPeriodicTest : public GlicBrowserTest {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{features::kGlicRecordMemoryFootprintMetrics,
                                {{"period", "1s"}}}},
-        /*disabled_features=*/{features::kGlicDefaultToLastActiveConversation});
+        /*disabled_features=*/{});
   }
 
  private:
@@ -191,7 +191,7 @@ class GlicInstanceCoordinatorMetricsWarmingTest : public GlicBrowserTest {
         /*enabled_features=*/{{features::kGlicWebContentsWarming,
                                {{features::kGlicWebContentsWarmingDelay.name,
                                  "0ms"}}}},
-        /*disabled_features=*/{features::kGlicDefaultToLastActiveConversation});
+        /*disabled_features=*/{});
   }
 
  private:

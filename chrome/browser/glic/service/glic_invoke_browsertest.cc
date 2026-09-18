@@ -66,19 +66,13 @@ mojom::AdditionalContextPtr CreateMockAdditionalContext(
 
 class GlicInvokeBrowserTest : public GlicBrowserTestMixin<PlatformBrowserTest> {
  public:
-  GlicInvokeBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        features::kGlicDefaultToLastActiveConversation);
-  }
+  GlicInvokeBrowserTest() = default;
   ~GlicInvokeBrowserTest() override = default;
 
  protected:
   static InvokeWithAutoSubmitPasskey GetPassKey() {
     return InvokeWithAutoSubmitPasskeyProvider::GetPassKey();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithInvalidTab) {
@@ -2061,154 +2055,6 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeActuationBrowserTest,
                            mojom::ActorTaskStopReason::kTaskComplete);
     EXPECT_TRUE(success_future.Wait());
   }
-}
-
-class GlicInvokeDefaultToLastActiveBrowserTest : public GlicInvokeBrowserTest {
- public:
-  GlicInvokeDefaultToLastActiveBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kGlicDefaultToLastActiveConversation);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(GlicInvokeDefaultToLastActiveBrowserTest,
-                       NewTabDefaultsToLastActiveIfEnabled) {
-  base::UserActionTester user_action_tester;
-  GlicHistogramTester histogram_tester;
-
-  ASSERT_OK_AND_ASSIGN(auto instance1, OpenGlicForActiveTab());
-
-  PreventDeletionOnClose(instance1, "test_conversation_1");
-
-  // Close the side panel on tab 1 to prevent new tab daisy chaining.
-  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
-
-  // Switch to Tab 2
-  CreateAndActivateTab(GURL("about:blank"));
-
-  // Open Glic for Tab 2
-  ASSERT_OK_AND_ASSIGN(auto instance2, OpenGlicForActiveTab());
-
-  // With the feature enabled, the same instance should be reused since it was
-  // the last active and the recency limit was less than 20 minutes (default).
-  EXPECT_EQ(instance1, instance2);
-
-  // Verify the metric was logged.
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "Glic.Instance.DaisyChain.LastActiveInstance.Success"),
-            1);
-
-  histogram_tester.ExpectTotalCount(
-      "Glic.Instance.TimeSinceLastInstanceActiveOnOpen", 1);
-
-  // Simulate user input to trigger first action metric.
-  instance2->instance_metrics().OnUserInputSubmitted(
-      mojom::WebClientMode::kText, mojom::PromptType::kUnspecified);
-
-  histogram_tester.ExpectUniqueSample(
-      "Glic.Instance.AutoOpenedPanel.FirstAction.LastActiveInstance",
-      DaisyChainFirstAction::kInputSubmitted, 1);
-}
-
-class GlicInvokeDefaultToLastActiveActuatingBrowserTest
-    : public GlicInvokeDefaultToLastActiveBrowserTest {
- public:
-  GlicInvokeDefaultToLastActiveActuatingBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        ::features::kGlicActor,
-        {{::features::kGlicActorPolicyControlExemption.name, "true"}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// TODO(crbug.com/501124440): Failed on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_NewTabDoesNotDefaultToLastActiveIfActuating \
-  DISABLED_NewTabDoesNotDefaultToLastActiveIfActuating
-#else
-#define MAYBE_NewTabDoesNotDefaultToLastActiveIfActuating \
-  NewTabDoesNotDefaultToLastActiveIfActuating
-#endif
-IN_PROC_BROWSER_TEST_F(GlicInvokeDefaultToLastActiveActuatingBrowserTest,
-                       MAYBE_NewTabDoesNotDefaultToLastActiveIfActuating) {
-  GlicHistogramTester histogram_tester;
-  ASSERT_OK_AND_ASSIGN(auto instance1, OpenGlicForActiveTab());
-
-  PreventDeletionOnClose(instance1, "test_conversation_1");
-
-  // Wait for the instance to be ready so we can create a task.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return instance1->host().GetPrimaryWebUiState() ==
-               glic::mojom::WebUiState::kReady &&
-           instance1->host().GetPrimaryWebClient();
-  }));
-
-  // Create a task to make it "actuating".
-  ASSERT_OK(CreateActorTask(instance1));
-  EXPECT_TRUE(instance1->IsActuating());
-
-  // Close the side panel on tab 1 to prevent new tab daisy chaining.
-  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
-
-  // Switch to Tab 2
-  CreateAndActivateTab(GURL("about:blank"));
-
-  // Open Glic for Tab 2
-  ASSERT_OK_AND_ASSIGN(auto instance2, OpenGlicForActiveTab());
-
-  // Since instance1 was actuating, it should NOT be reused.
-  EXPECT_NE(instance1, instance2);
-
-  // Verify that no metric was logged since we did not default to last active.
-  histogram_tester.ExpectTotalCount(
-      "Glic.Instance.AutoOpenedPanel.FirstAction.LastActiveInstance", 0);
-}
-
-class GlicInvokeDefaultToLastActiveExpiredBrowserTest
-    : public GlicInvokeBrowserTest {
- public:
-  GlicInvokeDefaultToLastActiveExpiredBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicDefaultToLastActiveConversation,
-        {{features::kGlicDefaultToLastActiveConversationMaxRecency.name,
-          "0m"}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(GlicInvokeDefaultToLastActiveExpiredBrowserTest,
-                       NewTabDoesNotDefaultToLastActiveIfExpired) {
-  GlicHistogramTester histogram_tester;
-  ASSERT_OK_AND_ASSIGN(auto instance1, OpenGlicForActiveTab());
-
-  PreventDeletionOnClose(instance1, "test_conversation_2");
-
-  // Close the side panel on tab 1 to prevent new tab daisy chaining.
-  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
-
-  // Switch to Tab 2
-  CreateAndActivateTab(GURL("about:blank"));
-
-  // Open Glic for Tab 2
-  ASSERT_OK_AND_ASSIGN(auto instance2, OpenGlicForActiveTab());
-
-  // With the parameter set to 0m, the recency limit should be hit immediately,
-  // causing a new instance to be created instead of reusing the old one.
-  EXPECT_NE(instance1, instance2);
-
-  // Verify that no metric was logged since we did not default to last active.
-  histogram_tester.ExpectTotalCount(
-      "Glic.Instance.AutoOpenedPanel.FirstAction.LastActiveInstance", 0);
-
-  histogram_tester.ExpectTotalCount(
-      "Glic.Instance.TimeSinceLastInstanceActiveOnOpen", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,

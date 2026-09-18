@@ -201,7 +201,7 @@ class GlicInstanceMetricsTestWithDaisyChaining
  public:
   GlicInstanceMetricsTestWithDaisyChaining() {
     daisy_chain_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicDefaultToLastActiveConversation},
+        /*enabled_features=*/{},
         /*disabled_features=*/{features::kGlicDaisyChainNewTabs});
   }
 

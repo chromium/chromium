@@ -102,14 +102,6 @@ BASE_FEATURE(kGlicLiveMode,
 #endif
 );
 
-BASE_FEATURE(kGlicDefaultToLastActiveConversation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta>
-    kGlicDefaultToLastActiveConversationMaxRecency{
-        &kGlicDefaultToLastActiveConversation, "max_recency",
-        base::Minutes(20)};
-
 BASE_FEATURE(kGlicSummarizeVideoSuggestion, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicFixTimeToFirstQueryKillSwitch,

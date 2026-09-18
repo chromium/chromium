@@ -1879,11 +1879,6 @@ inline constexpr char kGlicBindPinnedUnboundTabName[] =
 inline constexpr char kGlicBindPinnedUnboundTabDescription[] =
     "When a tab is shared with conversation and not yet bound to any "
     "conversation, bind it to the current one";
-inline constexpr char kGlicDefaultToLastActiveConversationName[] =
-    "Glic Default To Last Active Conversation";
-inline constexpr char kGlicDefaultToLastActiveConversationDescription[] =
-    "Enables the last active conversation as the default conversation when "
-    "opening a new Glic side panel instance.";
 inline constexpr char kGlicButtonPressedStateName[] =
     "Glic Button Pressed State";
 inline constexpr char kGlicButtonPressedStateDescription[] =

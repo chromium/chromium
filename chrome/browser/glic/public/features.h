@@ -66,10 +66,6 @@ BASE_DECLARE_FEATURE(kGlicDynamicChromeTools);
 
 BASE_DECLARE_FEATURE(kGlicLiveMode);
 
-BASE_DECLARE_FEATURE(kGlicDefaultToLastActiveConversation);
-extern const base::FeatureParam<base::TimeDelta>
-    kGlicDefaultToLastActiveConversationMaxRecency;
-
 BASE_DECLARE_FEATURE(kGlicSummarizeVideoSuggestion);
 
 BASE_DECLARE_FEATURE(kGlicFixTimeToFirstQueryKillSwitch);
