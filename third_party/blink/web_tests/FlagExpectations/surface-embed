@@ -1997,7 +1997,6 @@ external/wpt/css/css-text/hanging-punctuation/hanging-scrollable-001.html [ Fail
 external/wpt/css/css-text/hyphens/hyphenate-character-002.html [ Failure Pass ]
 external/wpt/css/css-text/hyphens/hyphens-out-of-flow-002.html [ Failure Pass ]
 external/wpt/css/css-text/hyphens/hyphens-span-002.html [ Failure Pass ]
-external/wpt/css/css-text/hyphens/hyphens-vertical-003.html [ Failure Pass ]
 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-001.html [ Failure Pass ]
 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-002.html [ Failure Pass ]
 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-003.html [ Failure Pass ]

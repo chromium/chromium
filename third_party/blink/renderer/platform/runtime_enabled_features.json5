@@ -3651,6 +3651,13 @@
       status: "experimental",
     },
     {
+      // Use orientation segmentation for hyphenation strings in vertical mixed
+      // text, so characters such as "+=" render sideways instead of upright.
+      // https://crbug.com/562849567
+      name: "HyphenVerticalOrientationFix",
+      status: "stable",
+    },
+    {
       name: "ICUCapitalization",
       status: "experimental",
     },

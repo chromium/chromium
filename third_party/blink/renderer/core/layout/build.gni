@@ -778,6 +778,7 @@ blink_core_tests_layout = [
   "inline/fragment_item_test.cc",
   "inline/fragment_items_builder_test.cc",
   "inline/fragment_items_test.cc",
+  "inline/hyphen_result_test.cc",
   "inline/inline_caret_position_test.cc",
   "inline/inline_cursor_test.cc",
   "inline/inline_items_builder_test.cc",

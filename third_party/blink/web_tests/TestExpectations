@@ -4249,7 +4249,6 @@ crbug.com/1281208 external/wpt/css/css-text/hyphens/hyphenate-character-002.html
 crbug.com/1281208 [ Mac ] external/wpt/css/css-text/hyphens/hyphenate-character-005.html [ Failure ]
 crbug.com/1281208 external/wpt/css/css-text/hyphens/hyphens-vertical-001.html [ Failure ]
 crbug.com/1281208 external/wpt/css/css-text/hyphens/hyphens-vertical-002.html [ Failure ]
-crbug.com/1281208 external/wpt/css/css-text/hyphens/hyphens-vertical-003.html [ Failure ]
 
 crbug.com/1223979 external/wpt/css/css-text/line-breaking/segment-break-transformation-removable-1.html [ Failure ]
 crbug.com/1223979 external/wpt/css/css-text/line-breaking/segment-break-transformation-removable-2.html [ Failure ]
