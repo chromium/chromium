@@ -71,6 +71,7 @@ class MockContextualSearchContextController
               GetFileInfoList,
               (),
               (override));
+  MOCK_METHOD(void, SetAuthUserIndex, (size_t auth_user_index), (override));
   MOCK_METHOD(base::WeakPtr<ContextualSearchContextController>,
               AsWeakPtr,
               (),

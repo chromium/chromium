@@ -293,6 +293,11 @@ class ContextualSearchSessionHandle {
   // session.
   bool has_submitted_context() const { return has_submitted_context_; }
 
+  // The multi-login account index for this session, received from the
+  // AIM/Search handshake response.
+  size_t auth_user_index() const { return auth_user_index_; }
+  void set_auth_user_index(size_t auth_user_index);
+
   // Clears the list of submitted context tokens for this particular instance of
   // the session. This is intended to be invoked when the server has responded
   // that it has received the submitted context.
@@ -420,6 +425,9 @@ class ContextualSearchSessionHandle {
   // Sharing was toggled, to be sent to AIM via `removed_contexts` on the next
   // query submission turn.
   std::vector<lens::LensOverlayRequestId> sts_toggled_removed_contexts_;
+
+  // The multi-login account index for this session.
+  size_t auth_user_index_ = 0;
 
   // This needs to be the last member to ensure all outstanding WeakPtrs are
   // invalidated before the rest of the members.

@@ -35,6 +35,7 @@
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "third_party/lens_server_proto/search_communication.pb.h"
 #include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -138,6 +139,22 @@ void ContextualTasksExtensionHandler::OnWebviewMessage(
   if (message.size() > kMaxWebviewMessageBytes) {
     return;
   }
+
+  // Try parsing SearchToClientMessage first (Search in Chrome protocol).
+  lens::SearchToClientMessage search_to_client_message;
+  if (search_to_client_message.ParseFromArray(message.data(), message.size())) {
+    if (search_to_client_message.has_handshake_response()) {
+      size_t auth_user_index = static_cast<size_t>(std::max(
+          0, search_to_client_message.handshake_response().auth_user_index()));
+      if (auto* session_handle = GetOrCreateContextualSessionHandle()) {
+        session_handle->set_auth_user_index(auth_user_index);
+      }
+      contextual_tasks_page_->OnHandshakeComplete();
+      return;
+    }
+  }
+
+  // Fall back to legacy AimToClientMessage.
   lens::AimToClientMessage aim_to_client_message;
   if (!aim_to_client_message.ParseFromArray(message.data(), message.size())) {
     return;
