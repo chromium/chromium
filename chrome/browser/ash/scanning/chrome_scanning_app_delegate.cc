@@ -100,7 +100,7 @@ bool ChromeScanningAppDelegate::IsFilePathSupported(
 
 void ChromeScanningAppDelegate::OpenFilesInMediaApp(
     const std::vector<base::FilePath>& file_paths) {
-  DCHECK(!file_paths.empty());
+  CHECK(!file_paths.empty(), base::NotFatalUntil::M160);
 
   ash::SystemAppLaunchParams params;
   params.launch_paths = file_paths;

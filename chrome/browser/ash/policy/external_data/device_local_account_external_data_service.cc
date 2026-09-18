@@ -41,7 +41,7 @@ DeviceLocalAccountExternalDataService::
   for (ExternalDataManagerMap::const_iterator it =
            external_data_managers_.begin();
        it != external_data_managers_.end(); ++it) {
-    DCHECK(it->second->HasOneRef());
+    CHECK(it->second->HasOneRef(), base::NotFatalUntil::M160);
   }
 #endif  // !defined(NDEBUG)
   backend_task_runner_->DeleteSoon(FROM_HERE, std::move(resource_cache_));

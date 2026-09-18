@@ -121,7 +121,7 @@ void VideoConferencingRoutine::ProbeMediaHostnames() {
 
 network::mojom::NetworkContext* VideoConferencingRoutine::GetNetworkContext() {
   Profile* profile = util::GetUserProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   return profile->GetDefaultStoragePartition()->GetNetworkContext();
 }

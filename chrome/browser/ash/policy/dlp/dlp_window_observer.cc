@@ -10,7 +10,7 @@ namespace policy {
 
 DlpWindowObserver::DlpWindowObserver(aura::Window* window, Delegate* delegate)
     : window_(window), delegate_(delegate) {
-  DCHECK(window_);
+  CHECK(window_, base::NotFatalUntil::M160);
   window_->AddObserver(this);
 }
 
@@ -20,19 +20,19 @@ DlpWindowObserver::~DlpWindowObserver() {
 }
 
 void DlpWindowObserver::OnWindowDestroying(aura::Window* window) {
-  DCHECK_EQ(window_, window);
+  CHECK_EQ(window_, window, base::NotFatalUntil::M160);
   window_->RemoveObserver(this);
   window_ = nullptr;
   delegate_->OnWindowDestroying(window);
 }
 
 void DlpWindowObserver::OnWindowOcclusionChanged(aura::Window* window) {
-  DCHECK_EQ(window_, window);
+  CHECK_EQ(window_, window, base::NotFatalUntil::M160);
   delegate_->OnWindowOcclusionChanged(window_);
 }
 
 void DlpWindowObserver::OnWindowTitleChanged(aura::Window* window) {
-  DCHECK_EQ(window_, window);
+  CHECK_EQ(window_, window, base::NotFatalUntil::M160);
   delegate_->OnWindowTitleChanged(window_);
 }
 

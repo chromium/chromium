@@ -137,7 +137,8 @@ void PolicyOAuth2TokenFetcherImpl::StartWithAuthCode(
     const std::string& auth_code,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory,
     TokenCallback callback) {
-  DCHECK(!refresh_token_fetcher_ && !access_token_fetcher_);
+  CHECK(!refresh_token_fetcher_ && !access_token_fetcher_,
+        base::NotFatalUntil::M160);
 
   auth_code_ = auth_code;
   system_url_loader_factory_ = system_url_loader_factory;
@@ -149,7 +150,8 @@ void PolicyOAuth2TokenFetcherImpl::StartWithRefreshToken(
     const std::string& oauth2_refresh_token,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory,
     TokenCallback callback) {
-  DCHECK(!refresh_token_fetcher_ && !access_token_fetcher_);
+  CHECK(!refresh_token_fetcher_ && !access_token_fetcher_,
+        base::NotFatalUntil::M160);
 
   oauth2_refresh_token_ = oauth2_refresh_token;
   system_url_loader_factory_ = system_url_loader_factory;
@@ -168,7 +170,7 @@ void PolicyOAuth2TokenFetcherImpl::StartFetchingRefreshToken() {
     return;
   }
 
-  DCHECK(!auth_code_.empty());
+  CHECK(!auth_code_.empty(), base::NotFatalUntil::M160);
   refresh_token_fetcher_ = std::make_unique<GaiaAuthFetcher>(
       this, gaia::GaiaSource::kChrome, system_url_loader_factory_);
   refresh_token_fetcher_->StartAuthCodeForOAuth2TokenExchange(auth_code_);
@@ -224,7 +226,7 @@ void PolicyOAuth2TokenFetcherImpl::OnGetTokenFailure(
 void PolicyOAuth2TokenFetcherImpl::RetryOnError(
     const GoogleServiceAuthError& error,
     base::OnceClosure task) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (error.IsTransientError() && retry_count_ < kMaxRequestAttemptCount) {
     retry_count_++;
     content::GetUIThreadTaskRunner({})->PostDelayedTask(

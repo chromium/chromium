@@ -63,7 +63,7 @@ std::vector<std::string> GetRandomHosts(int num_hosts, int prefix_length) {
   std::vector<std::string> random_hosts;
   std::vector<std::string> random_prefixes =
       GetRandomPrefixes(num_hosts, prefix_length);
-  DCHECK(random_prefixes.size() == 1U * num_hosts);
+  CHECK(random_prefixes.size() == 1U * num_hosts, base::NotFatalUntil::M160);
   for (int i = 0; i < num_hosts; i++) {
     random_hosts.push_back(random_prefixes[i] + GetGstaticHostSuffix());
   }
@@ -135,7 +135,7 @@ std::vector<GURL> GetRandomHostsWithSchemeAndPortAndGenerate204Path(
   for (auto& host : hosts) {
     auto url = GURL(scheme + host + ":" + base::NumberToString(port_number) +
                     kGenerate204Path);
-    DCHECK(url.is_valid());
+    CHECK(url.is_valid(), base::NotFatalUntil::M160);
     urls.push_back(url);
   }
   return urls;
@@ -143,7 +143,7 @@ std::vector<GURL> GetRandomHostsWithSchemeAndPortAndGenerate204Path(
 
 Profile* GetUserProfile() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   return profile;
 }

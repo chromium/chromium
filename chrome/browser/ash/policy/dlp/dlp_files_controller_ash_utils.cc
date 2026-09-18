@@ -18,7 +18,7 @@ void ShowDlpBlockedFiles(Profile* profile,
                          std::optional<file_manager::io_task::IOTaskId> task_id,
                          std::vector<base::FilePath> blocked_files,
                          dlp::FileAction action) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   auto* fpnm =
       FilesPolicyNotificationManagerFactory::GetForBrowserContext(profile);

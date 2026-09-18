@@ -177,14 +177,14 @@ std::u16string GetTimeoutNotificationMessage(dlp::FileAction action) {
 void Dismiss(content::BrowserContext* context,
              const std::string& notification_id) {
   auto* profile = Profile::FromBrowserContext(context);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   NotificationDisplayServiceFactory::GetForProfile(profile)->Close(
       NotificationHandler::Type::TRANSIENT, notification_id);
 }
 
 file_manager::io_task::IOTaskController* GetIOTaskController(
     content::BrowserContext* context) {
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M160);
   file_manager::VolumeManager* const volume_manager =
       file_manager::VolumeManager::Get(Profile::FromBrowserContext(context));
   if (!volume_manager) {
@@ -257,7 +257,7 @@ FilesPolicyNotificationManager::FilesPolicyNotificationManager(
     content::BrowserContext* context)
     : context_(context),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M160);
 
   auto* io_task_controller = GetIOTaskController(context_);
   if (!io_task_controller) {
@@ -380,7 +380,7 @@ void FilesPolicyNotificationManager::ShowDialog(
     file_manager::io_task::IOTaskId task_id,
     FilesDialogType type) {
   auto* profile = Profile::FromBrowserContext(context_);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   // Get the last active Files app window.
   ash::BrowserDelegate* browser = FindSystemWebAppBrowser(
@@ -420,7 +420,7 @@ void FilesPolicyNotificationManager::ShowDlpWarningTimeoutNotification(
   notification->set_buttons(
       {message_center::ButtonInfo(GetCancelButton(NotificationType::kError))});
   auto* profile = Profile::FromBrowserContext(context_);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
@@ -553,7 +553,7 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
       // Nothing more to do.
       break;
     case NotificationButton::OK:
-      DCHECK(files.size() >= 1);
+      CHECK(files.size() >= 1, base::NotFatalUntil::M160);
 
       if (files.size() == 1 && !always_show_review) {
         // Learn more.
@@ -759,7 +759,7 @@ void FilesPolicyNotificationManager::ShowFilesPolicyNotification(
        message_center::ButtonInfo(
            GetOkButton(type, action, file_count, always_show_review))});
   auto* profile = Profile::FromBrowserContext(context_);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
@@ -1184,7 +1184,7 @@ void FilesPolicyNotificationManager::ShowDlpBlockNotification(
   }
 
   auto* profile = Profile::FromBrowserContext(context_);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
@@ -1230,7 +1230,7 @@ void FilesPolicyNotificationManager::ShowDlpWarningNotification(
     notification->set_buttons(std::move(buttons));
 
     auto* profile = Profile::FromBrowserContext(context_);
-    DCHECK(profile);
+    CHECK(profile, base::NotFatalUntil::M160);
     NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
         NotificationHandler::Type::TRANSIENT, *notification,
         /*metadata=*/nullptr);
@@ -1307,7 +1307,8 @@ void FilesPolicyNotificationManager::OnIOTaskAppLaunchTimedOut(
   if (pending_dialogs_.empty()) {
     return;
   }
-  DCHECK(pending_dialogs_.front()->task_id == task_id);
+  CHECK(pending_dialogs_.front()->task_id == task_id,
+        base::NotFatalUntil::M160);
   // Stop waiting for the Files App and fallback to system modal.
   data_controls::DlpBooleanHistogram(
       data_controls::dlp::kFilesAppOpenTimedOutUMA, /*value=*/true);
@@ -1321,7 +1322,8 @@ void FilesPolicyNotificationManager::OnNonIOTaskAppLaunchTimedOut(
   if (pending_dialogs_.empty()) {
     return;
   }
-  DCHECK(pending_dialogs_.front()->notification_id == notification_id);
+  CHECK(pending_dialogs_.front()->notification_id == notification_id,
+        base::NotFatalUntil::M160);
   // Stop waiting for the Files App and fallback to system modal.
   data_controls::DlpBooleanHistogram(
       data_controls::dlp::kFilesAppOpenTimedOutUMA, /*value=*/true);

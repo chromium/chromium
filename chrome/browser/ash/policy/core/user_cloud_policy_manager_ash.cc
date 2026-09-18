@@ -175,12 +175,13 @@ UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
       account_id_(account_id),
       fatal_error_callback_(std::move(fatal_error_callback)) {
   CHECK(shared_url_loader_factory_);
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
 
   // If a refresh timeout was specified, set a timer to call us back.
   if (!policy_refresh_timeout.is_zero()) {
     // Shouldn't pass a timeout unless we're refreshing existing policy.
-    DCHECK_EQ(enforcement_type_, PolicyEnforcement::kPolicyRequired);
+    CHECK_EQ(enforcement_type_, PolicyEnforcement::kPolicyRequired,
+             base::NotFatalUntil::M160);
     policy_refresh_timeout_.Start(
         FROM_HERE, policy_refresh_timeout,
         base::BindOnce(&UserCloudPolicyManagerAsh::OnPolicyRefreshTimeout,
@@ -196,7 +197,7 @@ UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
 }
 
 void UserCloudPolicyManagerAsh::ForceTimeoutForTest() {
-  DCHECK(policy_refresh_timeout_.IsRunning());
+  CHECK(policy_refresh_timeout_.IsRunning(), base::NotFatalUntil::M160);
   // Stop the timer to mimic what happens when a real timer fires, then invoke
   // the timer callback directly.
   policy_refresh_timeout_.Stop();
@@ -209,7 +210,7 @@ UserCloudPolicyManagerAsh::~UserCloudPolicyManagerAsh() = default;
 
 void UserCloudPolicyManagerAsh::ConnectManagementService(
     DeviceManagementService* device_management_service) {
-  DCHECK(device_management_service);
+  CHECK(device_management_service, base::NotFatalUntil::M160);
 
   CHECK(!core()->client());
 
@@ -329,7 +330,7 @@ void UserCloudPolicyManagerAsh::OnWildcardCheckCompleted(
 
 void UserCloudPolicyManagerAsh::EnableWildcardLoginCheck(
     const std::string& username) {
-  DCHECK(access_token_.empty());
+  CHECK(access_token_.empty(), base::NotFatalUntil::M160);
   wildcard_username_ = username;
 }
 
@@ -404,7 +405,7 @@ void UserCloudPolicyManagerAsh::OnPolicyFetched(CloudPolicyClient* client) {
 
 void UserCloudPolicyManagerAsh::OnRegistrationStateChanged(
     CloudPolicyClient* cloud_policy_client) {
-  DCHECK_EQ(client(), cloud_policy_client);
+  CHECK_EQ(client(), cloud_policy_client, base::NotFatalUntil::M160);
 
   // Trigger re-registration. This happens if the client ID used for policy
   // fetches is unknown/purged from the DMServer.
@@ -443,7 +444,7 @@ void UserCloudPolicyManagerAsh::OnRegistrationStateChanged(
 
 void UserCloudPolicyManagerAsh::OnClientError(
     CloudPolicyClient* cloud_policy_client) {
-  DCHECK_EQ(client(), cloud_policy_client);
+  CHECK_EQ(client(), cloud_policy_client, base::NotFatalUntil::M160);
   switch (client()->last_dm_status()) {
     case DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED:
       // If management is not supported for this user, then a registration
@@ -517,7 +518,7 @@ void UserCloudPolicyManagerAsh::OnStoreLoaded(
     // server fetch fails.
     enforcement_type_ = PolicyEnforcement::kPolicyOptional;
 
-    DCHECK(policy_data->has_username());
+    CHECK(policy_data->has_username(), base::NotFatalUntil::M160);
 
     is_affiliated = policy::IsUserAffiliated(
         base::flat_set<std::string>(policy_data->user_affiliation_ids().begin(),
@@ -549,7 +550,7 @@ void UserCloudPolicyManagerAsh::SetPolicyRequired(bool policy_required) {
                                    base::ToString(policy_required));
     base::CommandLine::StringVector flags;
     flags.assign(command_line.argv().begin() + 1, command_line.argv().end());
-    DCHECK_EQ(1u, flags.size());
+    CHECK_EQ(1u, flags.size(), base::NotFatalUntil::M160);
     ash::UserSessionManager::GetInstance()->SetSwitchesForUser(
         account_id_,
         ash::UserSessionManager::CommandLineSwitchesType::kSessionControl,
@@ -607,7 +608,7 @@ void UserCloudPolicyManagerAsh::FetchPolicyOAuthToken() {
 void UserCloudPolicyManagerAsh::OnOAuth2PolicyTokenFetched(
     const std::string& policy_token,
     const GoogleServiceAuthError& error) {
-  DCHECK(!client()->is_registered());
+  CHECK(!client()->is_registered(), base::NotFatalUntil::M160);
 
   if (error.state() == GoogleServiceAuthError::NONE) {
     if (RequiresOAuthTokenForChildUser()) {
@@ -650,7 +651,7 @@ void UserCloudPolicyManagerAsh::OnInitialPolicyFetchComplete(bool success) {
 }
 
 void UserCloudPolicyManagerAsh::OnPolicyRefreshTimeout() {
-  DCHECK(waiting_for_policy_fetch_);
+  CHECK(waiting_for_policy_fetch_, base::NotFatalUntil::M160);
   LOG(WARNING) << "Timed out while waiting for the policy refresh. "
                << "The session will start with the cached policy.";
   CancelWaitForPolicyFetch(false, "policy refresh timeout");
@@ -780,7 +781,8 @@ void UserCloudPolicyManagerAsh::StartReportSchedulerIfReady(
 
 void UserCloudPolicyManagerAsh::OnProfileInitializationComplete(
     Profile* profile) {
-  DCHECK(observed_profile_.IsObservingSource(profile));
+  CHECK(observed_profile_.IsObservingSource(profile),
+        base::NotFatalUntil::M160);
   observed_profile_.Reset();
 
   // Activate user remote commands only for unicorn accounts.
@@ -821,8 +823,8 @@ void UserCloudPolicyManagerAsh::ShutdownRemoteCommands() {
 
 void UserCloudPolicyManagerAsh::SetUserContextRefreshTokenForTests(
     const std::string& refresh_token) {
-  DCHECK(!refresh_token.empty());
-  DCHECK(!user_context_refresh_token_for_tests_);
+  CHECK(!refresh_token.empty(), base::NotFatalUntil::M160);
+  CHECK(!user_context_refresh_token_for_tests_, base::NotFatalUntil::M160);
   user_context_refresh_token_for_tests_ = std::make_optional(refresh_token);
 }
 

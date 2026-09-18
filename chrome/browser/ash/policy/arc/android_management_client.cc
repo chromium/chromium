@@ -40,8 +40,8 @@ AndroidManagementClientImpl::~AndroidManagementClientImpl() = default;
 
 void AndroidManagementClientImpl::StartCheckAndroidManagement(
     StatusCallback callback) {
-  DCHECK(device_management_service_);
-  DCHECK(callback_.is_null());
+  CHECK(device_management_service_, base::NotFatalUntil::M160);
+  CHECK(callback_.is_null(), base::NotFatalUntil::M160);
 
   callback_ = std::move(callback);
   RequestAccessToken();
@@ -54,7 +54,7 @@ void AndroidManagementClientImpl::OnAccessTokenFetchComplete(
 
   if (error.state() != GoogleServiceAuthError::NONE) {
     LOG(ERROR) << "Token request failed: " << error.ToString();
-    DCHECK(!callback_.is_null());
+    CHECK(!callback_.is_null(), base::NotFatalUntil::M160);
     std::move(callback_).Run(Result::ERROR);
     return;
   }
@@ -63,9 +63,10 @@ void AndroidManagementClientImpl::OnAccessTokenFetchComplete(
 }
 
 void AndroidManagementClientImpl::RequestAccessToken() {
-  DCHECK(!access_token_fetcher_);
+  CHECK(!access_token_fetcher_, base::NotFatalUntil::M160);
   // The user must be signed in already.
-  DCHECK(identity_manager_->HasAccountWithRefreshToken(account_id_));
+  CHECK(identity_manager_->HasAccountWithRefreshToken(account_id_),
+        base::NotFatalUntil::M160);
 
   access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
       account_id_, signin::OAuthConsumerId::kAndroidManagementClient,
@@ -92,7 +93,7 @@ void AndroidManagementClientImpl::CheckAndroidManagement(
 
 void AndroidManagementClientImpl::OnAndroidManagementChecked(
     DMServerJobResult result) {
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M160);
   if (result.dm_status == DM_STATUS_SUCCESS &&
       !result.response.has_check_android_management_response()) {
     LOG(WARNING) << "Invalid check android management response.";

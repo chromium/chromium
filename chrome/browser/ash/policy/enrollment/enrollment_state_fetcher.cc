@@ -264,7 +264,7 @@ class RlweOprf {
 
   void Request(DeterminationContext& context,
                CompletionCallback completion_callback) {
-    DCHECK(completion_callback);
+    CHECK(completion_callback, base::NotFatalUntil::M160);
 
     context.psm_rlwe_client = context.rlwe_client_factory.Run(
         private_membership::rlwe::CROS_DEVICE_STATE_UNIFIED,
@@ -363,8 +363,8 @@ class RlweQuery {
       const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
           oprf_response,
       CompletionCallback completion_callback) {
-    DCHECK(completion_callback);
-    DCHECK(context.psm_rlwe_client);
+    CHECK(completion_callback, base::NotFatalUntil::M160);
+    CHECK(context.psm_rlwe_client, base::NotFatalUntil::M160);
     const auto query_request =
         context.psm_rlwe_client->CreateQueryRequest(oprf_response);
 
@@ -1054,14 +1054,14 @@ EnrollmentStateFetcherImpl::EnrollmentStateFetcherImpl(
     ServerBackedStateKeysBroker* state_key_broker,
     ash::DeviceSettingsService* device_settings_service,
     ash::OobeConfiguration* oobe_configuration) {
-  DCHECK(report_result);
-  DCHECK(local_state);
-  DCHECK(rlwe_client_factory);
-  DCHECK(device_management_service);
-  DCHECK(url_loader_factory);
-  DCHECK(state_key_broker);
-  DCHECK(device_settings_service);
-  DCHECK(oobe_configuration);
+  CHECK(report_result, base::NotFatalUntil::M160);
+  CHECK(local_state, base::NotFatalUntil::M160);
+  CHECK(rlwe_client_factory, base::NotFatalUntil::M160);
+  CHECK(device_management_service, base::NotFatalUntil::M160);
+  CHECK(url_loader_factory, base::NotFatalUntil::M160);
+  CHECK(state_key_broker, base::NotFatalUntil::M160);
+  CHECK(device_settings_service, base::NotFatalUntil::M160);
+  CHECK(oobe_configuration, base::NotFatalUntil::M160);
 
   call_sequence_ = std::make_unique<Sequence>(
       std::move(report_result), local_state,

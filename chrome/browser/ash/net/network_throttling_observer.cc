@@ -37,7 +37,8 @@ void NetworkThrottlingObserver::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void NetworkThrottlingObserver::OnPreferenceChanged(
     const std::string& pref_name) {
-  DCHECK(pref_name == ash::prefs::kNetworkThrottlingEnabled);
+  CHECK(pref_name == ash::prefs::kNetworkThrottlingEnabled,
+        base::NotFatalUntil::M160);
 
   const base::DictValue& throttling_policy =
       local_state_->GetDict(ash::prefs::kNetworkThrottlingEnabled);

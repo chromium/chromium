@@ -60,13 +60,13 @@ TlsProber::TlsProber(network::NetworkContextGetter network_context_getter,
       host_port_pair_(std::move(host_port_pair)),
       negotiate_tls_(negotiate_tls),
       callback_(std::move(callback)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(callback_);
-  DCHECK(!host_port_pair_.IsEmpty());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(callback_, base::NotFatalUntil::M160);
+  CHECK(!host_port_pair_.IsEmpty(), base::NotFatalUntil::M160);
 
   network::mojom::NetworkContext* network_context =
       network_context_getter_.Run();
-  DCHECK(network_context);
+  CHECK(network_context, base::NotFatalUntil::M160);
 
   host_resolver_ = network::SimpleHostResolver::Create(network_context);
 
@@ -97,7 +97,7 @@ void TlsProber::OnHostResolutionComplete(
     const net::ResolveErrorInfo&,
     const net::AddressList& resolved_addresses,
     const net::HostResolverEndpointResults&) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   host_resolver_.reset();
   if (result != net::OK) {
@@ -134,8 +134,8 @@ void TlsProber::OnConnectComplete(
     const std::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(tcp_connected_socket_remote_.is_bound());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(tcp_connected_socket_remote_.is_bound(), base::NotFatalUntil::M160);
 
   if (result != net::OK) {
     OnDone(result, ProbeExitEnum::kTcpConnectionFailure);
@@ -146,7 +146,7 @@ void TlsProber::OnConnectComplete(
     return;
   }
 
-  DCHECK(peer_addr.has_value());
+  CHECK(peer_addr.has_value(), base::NotFatalUntil::M160);
 
   auto pending_receiver =
       tls_client_socket_remote_.BindNewPipeAndPassReceiver();
@@ -172,7 +172,7 @@ void TlsProber::OnTlsUpgrade(int result,
                              const std::optional<net::SSLInfo>& ssl_info) {
   // |send_stream| and |receive_stream|, created on the TLS connection, fall out
   // of scope when this method completes.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (result == net::OK) {
     OnDone(result, ProbeExitEnum::kSuccess);
     return;
@@ -181,13 +181,13 @@ void TlsProber::OnTlsUpgrade(int result,
 }
 
 void TlsProber::OnDisconnect() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   OnDone(net::ERR_FAILED, ProbeExitEnum::kMojoDisconnectFailure);
 }
 
 void TlsProber::OnDone(int result, ProbeExitEnum probe_exit_enum) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Invalidate pending callbacks.
   weak_factory_.InvalidateWeakPtrs();

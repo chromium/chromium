@@ -75,9 +75,9 @@ HttpsLatencyRoutine::HttpsLatencyRoutine(mojom::RoutineCallSource source)
               kHttpsScheme,
               kHttpsPort)),
       hostnames_to_query_https_(hostnames_to_query_dns_) {
-  DCHECK(network_context_getter_);
-  DCHECK(http_request_manager_getter_);
-  DCHECK(tick_clock_);
+  CHECK(network_context_getter_, base::NotFatalUntil::M160);
+  CHECK(http_request_manager_getter_, base::NotFatalUntil::M160);
+  CHECK(tick_clock_, base::NotFatalUntil::M160);
 }
 
 HttpsLatencyRoutine::~HttpsLatencyRoutine() = default;
@@ -124,7 +124,7 @@ void HttpsLatencyRoutine::AnalyzeResultsAndExecuteCallback() {
 void HttpsLatencyRoutine::AttemptNextResolution() {
   network::mojom::NetworkContext* network_context =
       network_context_getter_.Run();
-  DCHECK(network_context);
+  CHECK(network_context, base::NotFatalUntil::M160);
 
   host_resolver_ = network::SimpleHostResolver::Create(network_context);
 

@@ -156,7 +156,7 @@ StatusCollector::GetAutoLaunchedKioskSessionInfo() {
 std::string StatusCollector::GetDMTokenForProfile(Profile* profile) const {
   CloudPolicyManager* user_cloud_policy_manager =
       profile->GetUserCloudPolicyManagerAsh();
-  DCHECK(user_cloud_policy_manager != nullptr);
+  CHECK(user_cloud_policy_manager != nullptr, base::NotFatalUntil::M160);
   return user_cloud_policy_manager->core()->client()->dm_token();
 }
 

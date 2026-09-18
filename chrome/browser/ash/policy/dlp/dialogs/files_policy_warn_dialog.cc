@@ -49,8 +49,8 @@ constexpr int kMaxBypassJustificationLength = 280;
 // obtained, or the full value otherwise, converted to u16string. Fails if
 // |url| is empty.
 std::u16string GetDestinationURL(DlpFileDestination destination) {
-  DCHECK(destination.url().has_value());
-  DCHECK(destination.url()->is_valid());
+  CHECK(destination.url().has_value(), base::NotFatalUntil::M160);
+  CHECK(destination.url()->is_valid(), base::NotFatalUntil::M160);
   GURL gurl = *destination.url();
   if (gurl.has_host()) {
     return base::UTF8ToUTF16(gurl.GetHost());
@@ -61,7 +61,7 @@ std::u16string GetDestinationURL(DlpFileDestination destination) {
 // Returns the u16string formatted name for |destination|'s |component|. Fails
 // if |component| is empty.
 const std::u16string GetDestinationComponent(DlpFileDestination destination) {
-  DCHECK(destination.component().has_value());
+  CHECK(destination.component().has_value(), base::NotFatalUntil::M160);
   switch (destination.component().value()) {
     case data_controls::Component::kArc:
       return l10n_util::GetStringUTF16(

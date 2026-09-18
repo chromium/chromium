@@ -91,7 +91,7 @@ DnsLatencyRoutine::DnsLatencyRoutine(mojom::RoutineCallSource source)
   profile_ = GetUserProfile();
   network_context_ =
       profile_->GetDefaultStoragePartition()->GetNetworkContext();
-  DCHECK(network_context_);
+  CHECK(network_context_, base::NotFatalUntil::M160);
   set_verdict(mojom::RoutineVerdict::kNotRun);
 }
 

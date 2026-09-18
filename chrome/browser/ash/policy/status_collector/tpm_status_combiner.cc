@@ -13,7 +13,7 @@ namespace policy {
 TpmStatusCombiner::TpmStatusCombiner(
     DeviceStatusCollector::TpmStatusReceiver callback)
     : callback_(std::move(callback)) {
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M160);
 }
 
 TpmStatusCombiner::~TpmStatusCombiner() = default;

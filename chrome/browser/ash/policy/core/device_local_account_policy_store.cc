@@ -145,7 +145,7 @@ void DeviceLocalAccountPolicyStore::UpdatePolicy(
     return;
   }
 
-  DCHECK(!signature_validation_public_key.empty());
+  CHECK(!signature_validation_public_key.empty(), base::NotFatalUntil::M160);
   validation_result_ = validator->GetValidationResult();
 
   if (!validator->success()) {
@@ -227,8 +227,8 @@ void DeviceLocalAccountPolicyStore::Validate(
     ValidateCompletionCallback callback,
     bool validate_in_background,
     ash::DeviceSettingsService::OwnershipStatus ownership_status) {
-  DCHECK_NE(ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown,
-            ownership_status);
+  CHECK_NE(ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown,
+           ownership_status, base::NotFatalUntil::M160);
   const em::PolicyData* device_policy_data =
       device_settings_service_->policy_data();
   // Note that the key is obtained through the device settings service instead

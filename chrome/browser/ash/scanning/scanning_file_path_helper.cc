@@ -41,7 +41,7 @@ ScanningFilePathHelper::~ScanningFilePathHelper() = default;
 
 std::string ScanningFilePathHelper::GetBaseNameFromPath(
     const base::FilePath& path) const {
-  DCHECK(!my_files_path_.empty());
+  CHECK(!my_files_path_.empty(), base::NotFatalUntil::M160);
 
   // Returns string "Google Drive" from path "/media/fuse/drivefs-xxx/root".
   if (!google_drive_path_.empty() && google_drive_path_.Append(kRoot) == path)
@@ -61,7 +61,7 @@ base::FilePath ScanningFilePathHelper::GetMyFilesPath() const {
 
 bool ScanningFilePathHelper::IsFilePathSupported(
     const base::FilePath& path_to_file) const {
-  DCHECK(!my_files_path_.empty());
+  CHECK(!my_files_path_.empty(), base::NotFatalUntil::M160);
 
   return path_to_file == my_files_path_ ||
          (!path_to_file.ReferencesParent() &&

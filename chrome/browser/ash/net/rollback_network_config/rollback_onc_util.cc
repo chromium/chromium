@@ -23,7 +23,7 @@ static const char* const kAugmentationKeys[] = {
 
 const base::DictValue* OncGetWiFi(const base::DictValue& network) {
   const base::DictValue* wifi = network.FindDict(onc::network_config::kWiFi);
-  DCHECK(wifi);
+  CHECK(wifi, base::NotFatalUntil::M160);
   return wifi;
 }
 
@@ -34,7 +34,7 @@ base::DictValue* OncGetWiFi(base::DictValue* network) {
 const base::DictValue* OncGetEthernet(const base::DictValue& network) {
   const base::DictValue* ethernet =
       network.FindDict(onc::network_config::kEthernet);
-  DCHECK(ethernet);
+  CHECK(ethernet, base::NotFatalUntil::M160);
   return ethernet;
 }
 
@@ -42,13 +42,13 @@ const base::DictValue* OncGetEap(const base::DictValue& network) {
   if (OncIsWiFi(network)) {
     const base::DictValue* wifi = OncGetWiFi(network);
     const base::DictValue* eap = wifi->FindDict(onc::wifi::kEAP);
-    DCHECK(eap);
+    CHECK(eap, base::NotFatalUntil::M160);
     return eap;
   }
   if (OncIsEthernet(network)) {
     const base::DictValue* ethernet = OncGetEthernet(network);
     const base::DictValue* eap = ethernet->FindDict(onc::ethernet::kEAP);
-    DCHECK(eap);
+    CHECK(eap, base::NotFatalUntil::M160);
     return eap;
   }
   NOTREACHED();
@@ -76,18 +76,18 @@ base::DictValue ManagedOncCreatePasswordDict(const base::DictValue& network,
 std::string GetStringValue(const base::DictValue& network,
                            const std::string& key) {
   const std::string* value = network.FindString(key);
-  DCHECK(value);
+  CHECK(value, base::NotFatalUntil::M160);
   return *value;
 }
 
 bool GetBoolValue(const base::DictValue& network, const std::string& key) {
   std::optional<bool> value = network.FindBool(key);
-  DCHECK(value);
+  CHECK(value, base::NotFatalUntil::M160);
   return *value;
 }
 
 void ManagedOncCollapseToActive(base::Value* network) {
-  DCHECK(network);
+  CHECK(network, base::NotFatalUntil::M160);
   base::DictValue* network_dict = network->GetIfDict();
   if (!network_dict) {
     return;
@@ -118,7 +118,7 @@ void ManagedOncCollapseToActive(base::Value* network) {
 }
 
 void ManagedOncCollapseToUiData(base::Value* network) {
-  DCHECK(network);
+  CHECK(network, base::NotFatalUntil::M160);
   base::DictValue& network_dict = network->GetDict();
 
   // FYI: don't fail to notice the fact that this out value assigned to
@@ -274,14 +274,14 @@ void OncSetEapPassword(base::DictValue* network, const std::string& password) {
 std::string OncWiFiGetSecurity(const base::DictValue& network) {
   const base::DictValue* wifi = OncGetWiFi(network);
   const std::string* security_type = wifi->FindString(onc::wifi::kSecurity);
-  DCHECK(security_type);
+  CHECK(security_type, base::NotFatalUntil::M160);
   return *security_type;
 }
 
 std::string OncWiFiGetPassword(const base::DictValue& network) {
   const base::DictValue* wifi = OncGetWiFi(network);
   const std::string* password = wifi->FindString(onc::wifi::kPassphrase);
-  DCHECK(password);
+  CHECK(password, base::NotFatalUntil::M160);
   return *password;
 }
 
@@ -301,7 +301,7 @@ void OncWiFiSetPskPassword(base::DictValue* network,
 std::string OncEthernetGetAuthentication(const base::DictValue& network) {
   const std::string* type = network.FindDict(onc::network_config::kEthernet)
                                 ->FindString(onc::ethernet::kAuthentication);
-  DCHECK(type);
+  CHECK(type, base::NotFatalUntil::M160);
   return *type;
 }
 

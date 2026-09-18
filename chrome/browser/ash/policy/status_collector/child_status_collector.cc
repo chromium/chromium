@@ -126,7 +126,7 @@ ChildStatusCollector::ChildStatusCollector(
       pref_service_(pref_service),
       profile_(profile),
       android_status_fetcher_(android_status_fetcher) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
   // protected fields of `StatusCollector`.
   max_stored_past_activity_interval_ = kMaxStoredPastActivityInterval;
   max_stored_future_activity_interval_ = kMaxStoredFutureActivityInterval;
@@ -165,8 +165,9 @@ ChildStatusCollector::ChildStatusCollector(
       base::BindOnce(&ChildStatusCollector::OnOSVersion,
                      weak_factory_.GetWeakPtr()));
 
-  DCHECK(pref_service_->GetInitializationStatus() !=
-         PrefService::INITIALIZATION_STATUS_WAITING);
+  CHECK(pref_service_->GetInitializationStatus() !=
+            PrefService::INITIALIZATION_STATUS_WAITING,
+        base::NotFatalUntil::M160);
   activity_storage_ = std::make_unique<ChildActivityStorage>(
       pref_service_, ash::prefs::kUserActivityTimes, activity_day_start);
 }
@@ -211,11 +212,11 @@ void ChildStatusCollector::UpdateReportingSettings() {
 }
 
 void ChildStatusCollector::OnAppActivityReportSubmitted() {
-  DCHECK(last_report_params_);
+  CHECK(last_report_params_, base::NotFatalUntil::M160);
   if (last_report_params_->anything_reported) {
     ash::app_time::AppActivityReportInterface* app_activity_reporting =
         ash::ChildUserServiceFactory::GetForBrowserContext(profile_);
-    DCHECK(app_activity_reporting);
+    CHECK(app_activity_reporting, base::NotFatalUntil::M160);
     app_activity_reporting->AppActivityReportSubmitted(
         last_report_params_->generation_time);
   }
@@ -295,7 +296,7 @@ bool ChildStatusCollector::GetAppActivity(
     em::ChildStatusReportRequest* status) {
   ash::app_time::AppActivityReportInterface* app_activity_reporting =
       ash::ChildUserServiceFactory::GetForBrowserContext(profile_);
-  DCHECK(app_activity_reporting);
+  CHECK(app_activity_reporting, base::NotFatalUntil::M160);
 
   last_report_params_ =
       app_activity_reporting->GenerateAppActivityReport(status);
@@ -311,8 +312,8 @@ bool ChildStatusCollector::GetAppActivity(
       base::Time last_successful_report_time =
           base::Time::FromDeltaSinceWindowsEpoch(
               base::Microseconds(last_successful_report_time_int));
-      DCHECK_LT(last_successful_report_time,
-                last_report_params_->generation_time);
+      CHECK_LT(last_successful_report_time,
+               last_report_params_->generation_time, base::NotFatalUntil::M160);
       base::TimeDelta elapsed_time =
           last_report_params_->generation_time - last_successful_report_time;
       base::UmaHistogramCounts100000(kTimeSinceLastReportHistogramName,
@@ -331,7 +332,7 @@ bool ChildStatusCollector::GetVersionInfo(
 void ChildStatusCollector::GetStatusAsync(StatusCollectorCallback response) {
   // Must be on creation thread since some stats are written to in that thread
   // and accessing them from another thread would lead to race conditions.
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 
   // Some of the data we're collecting is gathered in background threads.
   // This object keeps track of the state of each async request.

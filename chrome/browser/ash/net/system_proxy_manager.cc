@@ -116,7 +116,7 @@ SystemProxyManager::SystemProxyManager(PrefService* local_state) {
       ash::prefs::kKerberosEnabled,
       base::BindRepeating(&SystemProxyManager::OnKerberosEnabledChanged,
                           weak_factory_.GetWeakPtr()));
-  DCHECK(NetworkHandler::IsInitialized());
+  CHECK(NetworkHandler::IsInitialized(), base::NotFatalUntil::M160);
   network_state_handler_observer_.Observe(
       NetworkHandler::Get()->network_state_handler());
 
@@ -127,7 +127,7 @@ SystemProxyManager::~SystemProxyManager() {
   if (IsEnabled()) {
     SendShutDownRequest(system_proxy::TrafficOrigin::ALL);
   }
-  DCHECK(NetworkHandler::IsInitialized());
+  CHECK(NetworkHandler::IsInitialized(), base::NotFatalUntil::M160);
 }
 
 // static
@@ -428,7 +428,7 @@ SystemProxyManager::GetActiveAuthDialogForTest() {
 }
 
 void SystemProxyManager::CloseAuthDialogForTest() {
-  DCHECK(auth_widget_);
+  CHECK(auth_widget_, base::NotFatalUntil::M160);
   auth_widget_->CloseNow();
 }
 
@@ -513,7 +513,7 @@ void SystemProxyManager::OnProxyConfigChanged() {
 }
 
 bool SystemProxyManager::IsManagedProxyConfigured() {
-  DCHECK(NetworkHandler::IsInitialized());
+  CHECK(NetworkHandler::IsInitialized(), base::NotFatalUntil::M160);
   NetworkHandler* network_handler = NetworkHandler::Get();
   base::DictValue proxy_settings;
 

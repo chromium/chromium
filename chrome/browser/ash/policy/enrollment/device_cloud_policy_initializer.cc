@@ -43,11 +43,11 @@ DeviceCloudPolicyInitializer::DeviceCloudPolicyInitializer(
 }
 
 DeviceCloudPolicyInitializer::~DeviceCloudPolicyInitializer() {
-  DCHECK(!is_initialized_);
+  CHECK(!is_initialized_, base::NotFatalUntil::M160);
 }
 
 void DeviceCloudPolicyInitializer::Init() {
-  DCHECK(!is_initialized_);
+  CHECK(!is_initialized_, base::NotFatalUntil::M160);
 
   is_initialized_ = true;
 
@@ -71,7 +71,7 @@ void DeviceCloudPolicyInitializer::Init() {
 }
 
 void DeviceCloudPolicyInitializer::Shutdown() {
-  DCHECK(is_initialized_);
+  CHECK(is_initialized_, base::NotFatalUntil::M160);
 
   policy_store_->RemoveObserver(this);
   state_keys_update_subscription_ = {};

@@ -60,7 +60,7 @@ void FakeTCPConnectedSocket::SetKeepAlive(bool enable,
 
 void FakeTCPConnectedSocket::BindReceiver(
     mojo::PendingReceiver<network::mojom::TCPConnectedSocket> socket) {
-  DCHECK(!receiver_.is_bound());
+  CHECK(!receiver_.is_bound(), base::NotFatalUntil::M160);
 
   receiver_.Bind(std::move(socket));
 }

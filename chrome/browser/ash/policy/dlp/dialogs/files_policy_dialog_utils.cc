@@ -28,11 +28,13 @@ FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
   // Blocked files without a tag may happen for several reasons including
   // files too large to be scanned or encrypted files.
   if (result.tag().empty() && result.final_result().has_value()) {
-    DCHECK(result.final_result().value() ==
-               enterprise_connectors::FinalContentAnalysisResult::
-                   ENCRYPTED_FILES ||
-           result.final_result().value() ==
-               enterprise_connectors::FinalContentAnalysisResult::LARGE_FILES);
+    CHECK(
+        result.final_result().value() ==
+                enterprise_connectors::FinalContentAnalysisResult::
+                    ENCRYPTED_FILES ||
+            result.final_result().value() ==
+                enterprise_connectors::FinalContentAnalysisResult::LARGE_FILES,
+        base::NotFatalUntil::M160);
 
     if (result.final_result().value() ==
         enterprise_connectors::FinalContentAnalysisResult::ENCRYPTED_FILES) {
@@ -55,8 +57,9 @@ FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
            "without a tag but with an unexpected final result value.";
   }
 
-  DCHECK(result.tag() == enterprise_connectors::kDlpTag ||
-         result.tag() == enterprise_connectors::kMalwareTag);
+  CHECK(result.tag() == enterprise_connectors::kDlpTag ||
+            result.tag() == enterprise_connectors::kMalwareTag,
+        base::NotFatalUntil::M160);
 
   if (result.tag() == enterprise_connectors::kDlpTag) {
     return policy::FilesPolicyDialog::BlockReason::

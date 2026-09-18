@@ -62,7 +62,7 @@ RlweDmserverClientImpl::~RlweDmserverClientImpl() {
 
 void RlweDmserverClientImpl::CheckMembership(CompletionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M160);
 
   // There should not be any pending PSM requests.
   CHECK(!psm_request_job_);
@@ -234,7 +234,8 @@ void RlweDmserverClientImpl::OnRlweQueryRequestCompletion(
         return;
       }
 
-      DCHECK_EQ(responses->membership_responses_size(), 1);
+      CHECK_EQ(responses->membership_responses_size(), 1,
+               base::NotFatalUntil::M160);
 
       const bool is_member =
           responses->membership_responses(0).membership_response().is_member();

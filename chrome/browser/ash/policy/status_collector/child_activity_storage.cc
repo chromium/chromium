@@ -19,7 +19,8 @@ ChildActivityStorage::ChildActivityStorage(PrefService* pref_service,
                                            const std::string& pref_name,
                                            base::TimeDelta day_start_offset)
     : ActivityStorage(pref_service, pref_name, day_start_offset) {
-  DCHECK(user_manager::UserManager::Get()->IsLoggedInAsChildUser());
+  CHECK(user_manager::UserManager::Get()->IsLoggedInAsChildUser(),
+        base::NotFatalUntil::M160);
 }
 
 ChildActivityStorage::~ChildActivityStorage() = default;
@@ -27,7 +28,7 @@ ChildActivityStorage::~ChildActivityStorage() = default;
 void ChildActivityStorage::AddActivityPeriod(base::Time start,
                                              base::Time end,
                                              base::Time now) {
-  DCHECK(start <= end);
+  CHECK(start <= end, base::NotFatalUntil::M160);
 
   ScopedDictPrefUpdate update(pref_service_, pref_name_);
   base::DictValue& activity_times = update.Get();
@@ -68,7 +69,7 @@ void ChildActivityStorage::StoreChildScreenTime(base::Time activity_day_start,
   // The activity windows always start and end on the reset time of two
   // consecutive days, so it is not possible to have a window starting after
   // the current day's reset time.
-  DCHECK(activity_day_start <= today_start);
+  CHECK(activity_day_start <= today_start, base::NotFatalUntil::M160);
 
   base::TimeDelta previous_activity = base::Milliseconds(
       pref_service_->GetInteger(ash::prefs::kChildScreenTimeMilliseconds));

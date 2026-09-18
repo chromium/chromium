@@ -248,7 +248,7 @@ void FilesPolicyErrorDialog::AddBlockedFilesSection(
     return;
   }
 
-  DCHECK(scroll_view_container_);
+  CHECK(scroll_view_container_, base::NotFatalUntil::M160);
   views::View* row =
       scroll_view_container_->AddChildView(std::make_unique<views::View>());
 

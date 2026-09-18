@@ -56,7 +56,7 @@ class GatewayCanBePingedRoutine : public NetworkDiagnosticsRoutine {
   void OnTestICMPCompleted(bool is_default_network_ping_result,
                            const std::optional<std::string> status);
   DebugDaemonClient* debug_daemon_client() const {
-    DCHECK(debug_daemon_client_);
+    CHECK(debug_daemon_client_, base::NotFatalUntil::M160);
     return debug_daemon_client_;
   }
 

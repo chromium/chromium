@@ -176,7 +176,7 @@ std::optional<int64_t> GetPsmDeterminationTimestamp(
 
   // The PSM determination timestamp should exist at this stage. Because
   // we already checked the existence of the pref with non-default value.
-  DCHECK(!psm_determination_timestamp.is_null());
+  CHECK(!psm_determination_timestamp.is_null(), base::NotFatalUntil::M160);
 
   return psm_determination_timestamp.InMillisecondsSinceUnixEpoch();
 }
@@ -304,7 +304,7 @@ std::unique_ptr<CloudPolicyClient> EnrollmentHandler::ReleaseClient() {
 }
 
 void EnrollmentHandler::OnPolicyFetched(CloudPolicyClient* client) {
-  DCHECK_EQ(client_.get(), client);
+  CHECK_EQ(client_.get(), client, base::NotFatalUntil::M160);
   CHECK_EQ(STEP_POLICY_FETCH, enrollment_step_);
   SetStep(STEP_VALIDATION);
 
@@ -338,7 +338,7 @@ void EnrollmentHandler::OnPolicyFetched(CloudPolicyClient* client) {
 }
 
 void EnrollmentHandler::OnRegistrationStateChanged(CloudPolicyClient* client) {
-  DCHECK_EQ(client_.get(), client);
+  CHECK_EQ(client_.get(), client, base::NotFatalUntil::M160);
 
   if (enrollment_step_ != STEP_REGISTRATION || !client_->is_registered()) {
     LOG(FATAL) << "Registration state changed to " << client_->is_registered()
@@ -365,7 +365,7 @@ void EnrollmentHandler::OnRegistrationStateChanged(CloudPolicyClient* client) {
 }
 
 void EnrollmentHandler::OnClientError(CloudPolicyClient* client) {
-  DCHECK_EQ(client_.get(), client);
+  CHECK_EQ(client_.get(), client, base::NotFatalUntil::M160);
 
   if (enrollment_step_ == STEP_ROBOT_AUTH_FETCH ||
       enrollment_step_ == STEP_STORE_ROBOT_AUTH) {
@@ -382,7 +382,7 @@ void EnrollmentHandler::OnClientError(CloudPolicyClient* client) {
 }
 
 void EnrollmentHandler::OnStoreLoaded(CloudPolicyStore* store) {
-  DCHECK_EQ(store_, store);
+  CHECK_EQ(store_, store, base::NotFatalUntil::M160);
 
   if (enrollment_step_ == STEP_LOADING_STORE) {
     // If the |store_| wasn't initialized when StartEnrollment() was called,
@@ -396,7 +396,7 @@ void EnrollmentHandler::OnStoreLoaded(CloudPolicyStore* store) {
 }
 
 void EnrollmentHandler::OnStoreError(CloudPolicyStore* store) {
-  DCHECK_EQ(store_, store);
+  CHECK_EQ(store_, store, base::NotFatalUntil::M160);
 
   if (enrollment_step_ < STEP_STORE_POLICY) {
     // At those steps it is not expected to have any error notifications from
@@ -417,7 +417,7 @@ void EnrollmentHandler::OnStoreError(CloudPolicyStore* store) {
 
 void EnrollmentHandler::HandleStateKeys(
     std::optional<std::vector<std::string>> opt_state_keys) {
-  DCHECK_EQ(STEP_STATE_KEYS, enrollment_step_);
+  CHECK_EQ(STEP_STATE_KEYS, enrollment_step_, base::NotFatalUntil::M160);
 
   if (opt_state_keys.has_value()) {
     auto state_keys = opt_state_keys.value();
@@ -444,7 +444,7 @@ void EnrollmentHandler::HandleStateKeys(
 }
 
 void EnrollmentHandler::StartRegistration() {
-  DCHECK_EQ(STEP_LOADING_STORE, enrollment_step_);
+  CHECK_EQ(STEP_LOADING_STORE, enrollment_step_, base::NotFatalUntil::M160);
   if (!store_->is_initialized()) {
     // Do nothing. StartRegistration() will be called again from OnStoreLoaded()
     // after the CloudPolicyStore has initialized.
@@ -552,7 +552,7 @@ std::unique_ptr<DeviceCloudPolicyValidator> EnrollmentHandler::CreateValidator(
 
 void EnrollmentHandler::HandlePolicyValidationResult(
     CloudPolicyValidatorBase* validator) {
-  DCHECK_EQ(STEP_VALIDATION, enrollment_step_);
+  CHECK_EQ(STEP_VALIDATION, enrollment_step_, base::NotFatalUntil::M160);
   if (!validator->success()) {
     ReportResult(EnrollmentStatus::ForValidationError(validator->status()));
     return;
@@ -614,7 +614,7 @@ std::set<std::string> EnrollmentHandler::GetRobotOAuthScopes() {
 }
 
 void EnrollmentHandler::SetFirmwareManagementParametersData() {
-  DCHECK_EQ(STEP_SET_FWMP_DATA, enrollment_step_);
+  CHECK_EQ(STEP_SET_FWMP_DATA, enrollment_step_, base::NotFatalUntil::M160);
 
   // In case of reenrollment, the device has the TPM locked and nothing has to
   // change in install attributes. No need to update firmware parameters in this
@@ -639,7 +639,7 @@ void EnrollmentHandler::SetFirmwareManagementParametersData() {
 void EnrollmentHandler::OnFirmwareManagementParametersDataSet(
     std::optional<device_management::SetFirmwareManagementParametersReply>
         reply) {
-  DCHECK_EQ(STEP_SET_FWMP_DATA, enrollment_step_);
+  CHECK_EQ(STEP_SET_FWMP_DATA, enrollment_step_, base::NotFatalUntil::M160);
   if (!reply.has_value()) {
     LOG(ERROR) << "Failed to update firmware management parameters in TPM due "
                   "to DBus error.";
@@ -655,7 +655,7 @@ void EnrollmentHandler::OnFirmwareManagementParametersDataSet(
 }
 
 void EnrollmentHandler::StartLockDevice() {
-  DCHECK_EQ(STEP_LOCK_DEVICE, enrollment_step_);
+  CHECK_EQ(STEP_LOCK_DEVICE, enrollment_step_, base::NotFatalUntil::M160);
   // Since this method is also called directly.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
@@ -667,7 +667,7 @@ void EnrollmentHandler::StartLockDevice() {
 
 void EnrollmentHandler::HandleLockDeviceResult(
     ash::InstallAttributes::LockResult lock_result) {
-  DCHECK_EQ(STEP_LOCK_DEVICE, enrollment_step_);
+  CHECK_EQ(STEP_LOCK_DEVICE, enrollment_step_, base::NotFatalUntil::M160);
   switch (lock_result) {
     case ash::InstallAttributes::LOCK_SUCCESS:
       StartStoreRobotAuth();
@@ -714,7 +714,7 @@ void EnrollmentHandler::StartStoreRobotAuth() {
 }
 
 void EnrollmentHandler::StoreVersion() {
-  DCHECK_EQ(STEP_STORE_VERSION, enrollment_step_);
+  CHECK_EQ(STEP_STORE_VERSION, enrollment_step_, base::NotFatalUntil::M160);
   local_state_->SetString(ash::prefs::kEnrollmentVersionOS,
                           base::SysInfo::OperatingSystemVersion());
   local_state_->SetString(ash::prefs::kEnrollmentVersionBrowser,
@@ -726,12 +726,12 @@ void EnrollmentHandler::StoreVersion() {
 }
 
 void EnrollmentHandler::StartStoreDevicePolicy() {
-  DCHECK_EQ(STEP_STORE_POLICY, enrollment_step_);
+  CHECK_EQ(STEP_STORE_POLICY, enrollment_step_, base::NotFatalUntil::M160);
   store_->InstallInitialPolicy(*policy_);
 }
 
 void EnrollmentHandler::OnDeviceAccountTokenStored() {
-  DCHECK_EQ(STEP_STORE_ROBOT_AUTH, enrollment_step_);
+  CHECK_EQ(STEP_STORE_ROBOT_AUTH, enrollment_step_, base::NotFatalUntil::M160);
   SetStep(STEP_STORE_VERSION);
   StoreVersion();
 }
@@ -765,7 +765,7 @@ void EnrollmentHandler::ReportResult(EnrollmentStatus status) {
 }
 
 void EnrollmentHandler::SetStep(EnrollmentStep step) {
-  DCHECK_LE(enrollment_step_, step);
+  CHECK_LE(enrollment_step_, step, base::NotFatalUntil::M160);
 
   // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.

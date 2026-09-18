@@ -41,7 +41,8 @@ void DeviceCloudExternalDataPolicyObserver::OnPolicyUpdated(
     const PolicyNamespace& ns,
     const PolicyMap& previous,
     const PolicyMap& current) {
-  DCHECK(ns == PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
+  CHECK(ns == PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()),
+        base::NotFatalUntil::M160);
 
   const PolicyMap::Entry* previous_entry = previous.Get(policy_);
   const PolicyMap::Entry* current_entry = current.Get(policy_);

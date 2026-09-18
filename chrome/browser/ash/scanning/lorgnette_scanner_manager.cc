@@ -929,7 +929,8 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
           const auto it = known_ip_addresses.find(ip_address);
           if (it != known_ip_addresses.end()) {
             const auto existing = deduped_scanners_.find(it->second);
-            DCHECK(existing != deduped_scanners_.end());
+            CHECK(existing != deduped_scanners_.end(),
+                  base::NotFatalUntil::M160);
             existing->second.device_names[protocol].emplace(
                 lorgnette_scanner.name());
             continue;

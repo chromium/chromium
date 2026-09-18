@@ -115,7 +115,7 @@ void UserCloudPolicyTokenForwarder::StartRequest() {
 void UserCloudPolicyTokenForwarder::OnAccessTokenFetchCompleted(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo token_info) {
-  DCHECK(access_token_fetcher_);
+  CHECK(access_token_fetcher_, base::NotFatalUntil::M160);
 
   if (error.state() == GoogleServiceAuthError::NONE) {
     oauth_token_ = std::move(token_info);

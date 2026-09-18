@@ -96,7 +96,7 @@ void ArcPingRoutine::AnalyzeResultsAndExecuteCallback() {
 }
 
 void ArcPingRoutine::FetchActiveNetworks() {
-  DCHECK(remote_cros_network_config_);
+  CHECK(remote_cros_network_config_, base::NotFatalUntil::M160);
   remote_cros_network_config_->GetNetworkStateList(
       NetworkFilter::New(FilterType::kActive, NetworkType::kAll,
                          chromeos::network_config::mojom::kNoLimit),
@@ -106,7 +106,7 @@ void ArcPingRoutine::FetchActiveNetworks() {
 
 void ArcPingRoutine::FetchManagedProperties(
     const std::vector<std::string>& guids) {
-  DCHECK(remote_cros_network_config_);
+  CHECK(remote_cros_network_config_, base::NotFatalUntil::M160);
   guids_remaining_ = guids.size();
 
   // Post delayed task to handle timeout error on GetManagedProperties.
@@ -162,7 +162,7 @@ void ArcPingRoutine::OnNetworkStateListReceived(
 
 void ArcPingRoutine::OnManagedPropertiesReceived(
     ManagedPropertiesPtr managed_properties) {
-  DCHECK(guids_remaining_ > 0);
+  CHECK(guids_remaining_ > 0, base::NotFatalUntil::M160);
   if (managed_properties && managed_properties->ip_configs.has_value() &&
       managed_properties->ip_configs->size() != 0) {
     for (const auto& ip_config : managed_properties->ip_configs.value()) {
@@ -197,7 +197,7 @@ void ArcPingRoutine::OnManagedPropertiesReceived(
 void ArcPingRoutine::OnRequestComplete(
     bool is_default_network_ping_result,
     arc::mojom::ArcPingTestResultPtr result) {
-  DCHECK(gateways_remaining_ > 0);
+  CHECK(gateways_remaining_ > 0, base::NotFatalUntil::M160);
   if (!result->is_successful) {
     if (!is_default_network_ping_result) {
       non_default_network_unsuccessful_ = true;

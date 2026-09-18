@@ -204,7 +204,7 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
   void RegisterScannersDetectedCallback(
       OnScannersDetectedCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-    DCHECK(!on_scanners_detected_callback_);
+    CHECK(!on_scanners_detected_callback_, base::NotFatalUntil::M160);
     on_scanners_detected_callback_ = std::move(callback);
   }
 
@@ -257,7 +257,7 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
 
     // Request a new round of discovery from the lister.
     auto lister_entry = device_listers_.find(service_type);
-    DCHECK(lister_entry != device_listers_.end());
+    CHECK(lister_entry != device_listers_.end(), base::NotFatalUntil::M160);
     lister_entry->second->DiscoverNewDevices();
   }
 
@@ -271,7 +271,7 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
         this, discovery_client_.get(), service_type);
     lister->Start();
     lister->DiscoverNewDevices();
-    DCHECK(!device_listers_.contains(service_type));
+    CHECK(!device_listers_.contains(service_type), base::NotFatalUntil::M160);
     device_listers_[service_type] = std::move(lister);
   }
 

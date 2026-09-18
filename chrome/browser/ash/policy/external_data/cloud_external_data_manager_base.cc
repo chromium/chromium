@@ -189,7 +189,7 @@ void CloudExternalDataManagerBase::Backend::SetExternalDataStore(
 void CloudExternalDataManagerBase::Backend::Connect(
     std::unique_ptr<ExternalPolicyDataFetcher> external_policy_data_fetcher) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!updater_);
+  CHECK(!updater_, base::NotFatalUntil::M160);
   updater_ = std::make_unique<ExternalPolicyDataUpdater>(
       task_runner_, std::move(external_policy_data_fetcher),
       kMaxParallelFetches);
@@ -245,8 +245,8 @@ bool CloudExternalDataManagerBase::Backend::OnDownloadSuccess(
     const std::string& hash,
     const std::string& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(metadata_.find(key) != metadata_.end());
-  DCHECK_EQ(hash, metadata_[key].hash);
+  CHECK(metadata_.find(key) != metadata_.end(), base::NotFatalUntil::M160);
+  CHECK_EQ(hash, metadata_[key].hash, base::NotFatalUntil::M160);
   base::FilePath file_path;
   if (external_data_store_)
     file_path = external_data_store_->Store(key.ToString(), hash, data);
@@ -355,7 +355,7 @@ void CloudExternalDataManagerBase::Backend::RunCallback(
 void CloudExternalDataManagerBase::Backend::StartDownload(
     const MetadataKey& key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(pending_downloads_.contains(key));
+  CHECK(pending_downloads_.contains(key), base::NotFatalUntil::M160);
   if (!updater_)
     return;
 

@@ -73,7 +73,7 @@ void ManagedOncConfigureActivePartAsDeviceWide(
     base::OnceCallback<void(bool)> callback) {
   base::Value network_value(std::move(network));
   rollback_network_config::ManagedOncCollapseToActive(&network_value);
-  DCHECK(network_value.is_dict());
+  CHECK(network_value.is_dict(), base::NotFatalUntil::M160);
   network = std::move(network_value).TakeDict();
 
   const std::string& guid = rollback_network_config::GetStringValue(

@@ -111,7 +111,7 @@ void DlpFilesEventStorage::UpdateFileAndDestinationPair(
     DestinationsMap::iterator dst_it,
     const base::TimeTicks timestamp) {
   dst_it->second.timestamp = timestamp;
-  DCHECK(dst_it->second.eviction_timer.IsRunning());
+  CHECK(dst_it->second.eviction_timer.IsRunning(), base::NotFatalUntil::M160);
   dst_it->second.eviction_timer.Reset();
   data_controls::DlpCountHistogram(data_controls::dlp::kActiveFileEventsCount,
                                    entries_num_, entries_num_limit_);
@@ -130,8 +130,8 @@ void DlpFilesEventStorage::StartEvictionTimer(FileId file_id,
 void DlpFilesEventStorage::OnEvictionTimerUp(FileId file_id,
                                              DlpFileDestination dst) {
   auto event_it = events_.find(file_id);
-  DCHECK(event_it != events_.end());
-  DCHECK(event_it->second.count(dst));
+  CHECK(event_it != events_.end(), base::NotFatalUntil::M160);
+  CHECK(event_it->second.count(dst), base::NotFatalUntil::M160);
   event_it->second.erase(std::move(dst));
   if (event_it->second.empty()) {
     events_.erase(event_it);

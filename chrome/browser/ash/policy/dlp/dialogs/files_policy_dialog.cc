@@ -297,7 +297,7 @@ views::Label* FilesPolicyDialog::AddMessage(const std::u16string& message) {
 
 void FilesPolicyDialog::AddConfidentialRow(const gfx::ImageSkia& icon,
                                            const std::u16string& title) {
-  DCHECK(scroll_view_container_);
+  CHECK(scroll_view_container_, base::NotFatalUntil::M160);
   views::View* row =
       scroll_view_container_->AddChildView(std::make_unique<views::View>());
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(

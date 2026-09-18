@@ -382,8 +382,8 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
     const ash::InstallAttributes& install_attributes,
     ash::system::StatisticsProvider* statistics_provider,
     const ash::OobeConfiguration* oobe_configuration) {
-  DCHECK(statistics_provider);
-  DCHECK(oobe_configuration);
+  CHECK(statistics_provider, base::NotFatalUntil::M160);
+  CHECK(oobe_configuration, base::NotFatalUntil::M160);
 
   // Return enrollment recovery config if required.
   if (std::optional<EnrollmentConfig> maybe_recovery_config =

@@ -194,8 +194,8 @@ ScanService::ScanService(LorgnetteScannerManager* lorgnette_scanner_manager,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       file_path_helper_(std::move(google_drive_path),
                         std::move(my_files_path)) {
-  DCHECK(lorgnette_scanner_manager_);
-  DCHECK(context_);
+  CHECK(lorgnette_scanner_manager_, base::NotFatalUntil::M160);
+  CHECK(context_, base::NotFatalUntil::M160);
 }
 
 ScanService::~ScanService() = default;
@@ -468,7 +468,7 @@ void ScanService::OnScannerCapabilitiesReceived(
 
 void ScanService::OnProgressPercentReceived(uint32_t progress_percent,
                                             uint32_t page_number) {
-  DCHECK_LE(progress_percent, kMaxProgressPercent);
+  CHECK_LE(progress_percent, kMaxProgressPercent, base::NotFatalUntil::M160);
   scan_job_observer_->OnPageProgress(page_number, progress_percent);
 }
 
@@ -493,7 +493,7 @@ void ScanService::OnPageReceived(
   } else {
     // Non-PDF scans do not save images in |scanned_images_| so the next index
     // is based off |page_number|.
-    DCHECK(!page_index_to_replace.has_value());
+    CHECK(!page_index_to_replace.has_value(), base::NotFatalUntil::M160);
     new_page_index = page_number - 1;
   }
   scan_job_observer_->OnPageComplete(
@@ -512,15 +512,16 @@ void ScanService::OnPageReceived(
     if (!page_index_to_replace.has_value()) {
       scanned_images_.push_back(std::move(scanned_image));
     } else {
-      DCHECK(page_index_to_replace.value() >= 0 &&
-             page_index_to_replace.value() < scanned_images_.size());
+      CHECK(page_index_to_replace.value() >= 0 &&
+                page_index_to_replace.value() < scanned_images_.size(),
+            base::NotFatalUntil::M160);
       scanned_images_[page_index_to_replace.value()] = std::move(scanned_image);
     }
 
     // The output of multi-page PDF scans is a single file so only create and
     // append a single file path.
     if (scanned_file_paths_.empty()) {
-      DCHECK_EQ(1u, page_number);
+      CHECK_EQ(1u, page_number, base::NotFatalUntil::M160);
       scanned_file_paths_.push_back(scan_to_path.Append(CreateFilename(
           start_time_, /*not used*/ 0, mojo_ipc::FileType::kPdf)));
     }
@@ -540,7 +541,7 @@ void ScanService::OnScanCompleted(bool is_multi_page_scan,
   // |scanned_images_| only has data for PDF scans.
   if (failure_mode == lorgnette::SCAN_FAILURE_MODE_NO_FAILURE &&
       !scanned_images_.empty()) {
-    DCHECK(!scanned_file_paths_.empty());
+    CHECK(!scanned_file_paths_.empty(), base::NotFatalUntil::M160);
     timeout_callback_.Cancel();
     task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
