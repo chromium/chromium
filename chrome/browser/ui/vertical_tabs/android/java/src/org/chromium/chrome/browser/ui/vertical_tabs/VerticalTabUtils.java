@@ -7,9 +7,6 @@ package org.chromium.chrome.browser.ui.vertical_tabs;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
-import android.text.style.SuperscriptSpan;
 import android.util.TypedValue;
 
 import androidx.annotation.IntDef;
@@ -26,11 +23,9 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.styles.NewLabelUtils;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -324,26 +319,19 @@ public class VerticalTabUtils {
     /**
      * Returns a formatted title string containing the "New" badge for Vertical Tabs entry points.
      *
-     * <p>This helper applies visual spans to the string resource and is designed to be reusable
-     * across various Vertical Tabs entry points.
+     * <p>Shared by the various Vertical Tabs entry points so they all badge their titles the same
+     * way.
      *
      * @param context The active {@link Context}.
      * @param layoutTitleRes The string resource ID for the layout toggle title (e.g., {@code
      *     R.string.show_tabs_vertically}).
-     * @return A {@link CharSequence} with styled "New" badge spans attached.
+     * @return A {@link CharSequence} with the "New" badge attached.
      */
     public static CharSequence getTitleWithNewBadge(
             Context context, @StringRes int layoutTitleRes) {
         String rawTitle = context.getString(layoutTitleRes);
-        return SpanApplier.applySpans(
-                context.getString(R.string.prefs_new_label, rawTitle),
-                new SpanInfo(
-                        "<new>",
-                        "</new>",
-                        new SuperscriptSpan(),
-                        new RelativeSizeSpan(0.75f),
-                        new ForegroundColorSpan(
-                                SemanticColorUtils.getDefaultTextColorAccent1(context))));
+        return NewLabelUtils.withBadge(
+                context, context.getString(R.string.prefs_new_label, rawTitle));
     }
 
     private static @LayoutToggleSourceAndDirection int getLayoutToggleSourceAndDirection(
