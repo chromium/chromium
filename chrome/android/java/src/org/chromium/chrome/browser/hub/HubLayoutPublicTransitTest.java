@@ -90,21 +90,17 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562154748
     public void testEnterHubAndLeaveViaAppMenuNewIncognitoTab() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
 
+        TabSwitcherAppMenuFacility appMenu = tabSwitcher.openAppMenu();
+        IncognitoNewTabPageStation newIncognitoTab = appMenu.openNewIncognitoTabOrWindow();
+
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            IncognitoNewTabPageStation newIncognitoWindow =
-                    tabSwitcher.openNewIncognitoTabOrWindowFast();
-            newIncognitoWindow.finishActivity();
-            tabSwitcher.bringWindowToFront();
-            // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
-            firstPage = tabSwitcher.selectTabAtIndex(/* index= */ 0, WebPageStation.newBuilder());
-            assertFinalDestination(firstPage);
+            assertFinalDestinations(tabSwitcher, newIncognitoTab);
         } else {
-            TabSwitcherAppMenuFacility appMenu = tabSwitcher.openAppMenu();
-            IncognitoNewTabPageStation newIncognitoTab = appMenu.openNewIncognitoTabOrWindow();
             assertFinalDestination(newIncognitoTab);
         }
     }
