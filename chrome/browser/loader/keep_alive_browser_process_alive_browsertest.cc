@@ -10,12 +10,14 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/loader/features.h"
 #include "chrome/browser/loader/keep_alive_request_browsertest_util.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -75,6 +77,36 @@ IN_PROC_BROWSER_TEST_F(FetchKeepAliveProcessAliveBrowserTest,
         KeepAliveOrigin::FETCH_KEEPALIVE_REQUEST);
   }));
 }
+
+#if !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(FetchKeepAliveProcessAliveBrowserTest,
+                       KeepsProcessAliveUntilRequestCompletes) {
+  auto* registry = KeepAliveRegistry::GetInstance();
+  const std::string target_url = kKeepAliveEndpoint;
+  auto request_handler = std::move(RegisterRequestHandlers({target_url})[0]);
+  ASSERT_TRUE(server()->Start());
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      GetKeepAlivePageURL(kPrimaryHost, target_url,
+                          net::HttpRequestHeaders::kGetMethod)));
+  request_handler->WaitForRequest();
+  ASSERT_TRUE(
+      registry->IsOriginRegistered(KeepAliveOrigin::FETCH_KEEPALIVE_REQUEST));
+
+  CloseBrowserSynchronously(browser());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
+  EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
+
+  request_handler->Send(k200TextResponse);
+  request_handler->Done();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return browser_shutdown::IsTryingToQuit(); }));
+  EXPECT_FALSE(
+      registry->IsOriginRegistered(KeepAliveOrigin::FETCH_KEEPALIVE_REQUEST));
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // Verifies that every profile with in-flight fetch keepalive loaders is held
