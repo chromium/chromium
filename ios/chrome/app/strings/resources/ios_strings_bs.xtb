@@ -15,6 +15,7 @@
 <translation id="1035980983510608210">Zatvaranjem svih kartica će se zatvoriti i zakačene kartice.</translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1036436692654972538">Pohranjuje se na uređaju</translation>
+<translation id="1038106730571050514">Prikažite prijedloge</translation>
 <translation id="1041322626941363065">Upozori ako su lozinke izložene prilikom narušavanja podataka</translation>
 <translation id="1046742265332833834">Plava tema</translation>
 <translation id="1049743911850919806">Anonimno</translation>
@@ -231,7 +232,6 @@
 <translation id="1671568970992212376">Pohranjujte fotografije na Google Fotografijama i pristupajte im bilo kada.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> na <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Na osnovu pravila vaše organizacije, ovaj fajl možda sadržava osjetljive informacije</translation>
-<translation id="1683276189281028863">Provjera lozinke</translation>
 <translation id="1689333818294560261">Nadimak</translation>
 <translation id="169048873465870056">Ukloniti karticu i izbrisati grupu?</translation>
 <translation id="1692115862433274081">Koristi drugi račun</translation>
@@ -241,7 +241,6 @@
 <translation id="1709916727352927457">Izbrišite pristupni ključ</translation>
 <translation id="1715515772563243997">Ako web lokaciju <ph name="SITE" /> smatrate pouzdanom, možete koristiti sačuvanu lozinku za prijavu.</translation>
 <translation id="1718835860248848330">Posljednji sat</translation>
-<translation id="1726013039921383235">Uvijek dozvoli</translation>
 <translation id="1728549374069268714">Zalijepi i idi</translation>
 <translation id="1732468323901456775">Uključi obavještenja za funkciju <ph name="MODULE_NAME" /></translation>
 <translation id="1739364174357629566">Ažurirajte broj poznatog putnika</translation>
@@ -258,7 +257,6 @@
 <translation id="1752547299766512813">Sačuvaj lozinke</translation>
 <translation id="1764070164487214210">Smjernice</translation>
 <translation id="1764511703783285459">Drugi upravitelj lozinki nije podijelio nijednu lozinku ni pristupni ključ</translation>
-<translation id="1765555082983153259">"Chrome" želi pristupiti mikrofonu</translation>
 <translation id="1767766085187034454">Google Prevodilac</translation>
 <translation id="1771016937398045251">Meni alata</translation>
 <translation id="1772468122139624049">Nije moguće ponovo učitati kartice</translation>
@@ -455,6 +453,7 @@
 <translation id="2381405137052800939">Osnove</translation>
 <translation id="2384692388811649784">Sakrivanje anonimnih kartica</translation>
 <translation id="2386793615875593361">Odabrana je 1 stavka</translation>
+<translation id="2388949452472546050">Web lokacije koje posjećujete, uključujući Google, odgovorne su za određivanje načina na koji odgovaraju na ovaj zahtjev. Ovisno o zakonima u vašoj regiji, web lokacije mogu odgovoriti ograničavanjem prodaje i dijeljenja vaših podataka ili njihovog korištenja za personalizirane oglase. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2390457533592708044">Sakrij modul "<ph name="MODULE_NAME" />"</translation>
 <translation id="2393230427496852974">Pročitajte šta drugi govore</translation>
 <translation id="2394659309569789395">Ipak otvori web lokaciju</translation>
@@ -610,6 +609,7 @@
 <translation id="2902312830803030883">Više radnji</translation>
 <translation id="2904788871580817212">Pad cijene na otvorenoj kartici sa <ph name="PREVIOUS_PRICE" /> na <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Imate ovoliko već korištenih lozinki koje mogu ugroziti sigurnost: <ph name="NUMBER_OF_PASSWORDS" />.</translation>
+<translation id="2916433579958049718">Omogućite Gemini Intelligence na svakom linku</translation>
 <translation id="291754862089661335">Postavite QR kôd ili barkod u ovaj okvir</translation>
 <translation id="2918688092312652908">Označi kao nepročitano</translation>
 <translation id="2922210239002704889">Idite na početnu stranicu ili tastaturu</translation>
@@ -795,7 +795,6 @@
 <translation id="3565012355885596568">Učitavanje slika nije uspjelo</translation>
 <translation id="3565930036634619844">Kartica. <ph name="TAB_INDEX" /> od <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Sačuvajte na drugi način</translation>
-<translation id="3567446754270467567">Završeno je poboljšano Sigurno pregledanje!</translation>
 <translation id="3572503683475187385">Trenutna kartica se dijeli s Geminijem kada pokrenete novi chat. Kada podijelite karticu s Geminijem, njeni sadržaji i URL se šalju Googleu. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na vašem Google računu</translation>
 <translation id="3575234738189584619">Pretraživanje pomoću Objektiva</translation>
@@ -934,7 +933,6 @@
 <translation id="4021447724486050609">Ažurirajte preglednik</translation>
 <translation id="4021931095789478915">Dodaj ${url} na listu za čitanje</translation>
 <translation id="4028871427853484857">Pohranjivanje na račun…</translation>
-<translation id="4034354558246368274">Dozvoli ovaj put</translation>
 <translation id="4038354071007134711">Nijedna aplikacija na ovom uređaju ne može otvoriti ovaj fajl.</translation>
 <translation id="4042870976416480368">Pronađi na ovoj stranici</translation>
 <translation id="4045441967987592849">Ponovo otvori</translation>
@@ -1014,7 +1012,6 @@
 <translation id="4304713468139749426">Upravitelj lozinki</translation>
 <translation id="4309403553630140242">Dodirnite dvaput za više informacija</translation>
 <translation id="4310738531374808763">Prilagodite početnu stranicu</translation>
-<translation id="4316794575239200608">Osobe koje vrše pregled neće pregledati ni vaše razgovore s Geminijem ni <ph name="BEGIN_LINK" />vaše podatke Google Workspacea<ph name="END_LINK" /> niti će se oni koristiti za poboljšavanje generativnih AI modela.</translation>
 <translation id="4320848494125124980">Nedavno</translation>
 <translation id="4322394346347055525">Zatvori ostale kartice</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1090,7 +1087,6 @@
 <translation id="4578835633387306383">Uključivanje…</translation>
 <translation id="4580621046861724270">Određene oznake nisu sačuvane</translation>
 <translation id="4580716718466706433">Idite na "Upravitelj lozinki"</translation>
-<translation id="4584778196791098089">Završen je prelazak u anonimni način rada!</translation>
 <translation id="4585751637295612750">Otvorite novu karticu da je dodate u pitanje</translation>
 <translation id="4587589328781138893">Web lokacije</translation>
 <translation id="4592672037257622855">{count,plural, =1{Stranica je dodana na listu za čitanje}one{{count} stranica je dodana na listu za čitanje}few{{count} stranice su dodane na listu za čitanje}other{{count} stranica je dodano na listu za čitanje}}</translation>
@@ -1108,7 +1104,6 @@
 <translation id="4631335160486397366">Već korištene lozinke: <ph name="COUNT" /></translation>
 <translation id="4632655012900268062">Prilagodi kartice</translation>
 <translation id="4634124774493850572">Koristi lozinku</translation>
-<translation id="4634633632339959267">Chatovi se pregledaju i koriste za poboljšavanje Google AI-ja. <ph name="BEGIN_LINK" />Saznajte više o svojim izborima.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Informacije o vašoj lokaciji<ph name="END_LINK" /> se također pohranjuju uz vašu aktivnost.</translation>
 <translation id="4636930964841734540">Informacije</translation>
 <translation id="4641425577292284174">Saznajte imate li najsigurnije postavke ili trebate li pregledati nešto</translation>
 <translation id="4642472735733036929">Praćenje cijene se zaustavilo</translation>
@@ -1164,7 +1159,6 @@
 <translation id="4796496140132859135">Grupa kartica. Suženo.</translation>
 <translation id="4800912004582762296">Klikanje</translation>
 <translation id="4802185666270672526">Sakrij zahtjev za web lokaciju za računar</translation>
-<translation id="4802678077012980341">Završena je provjera lozinke!</translation>
 <translation id="4803185665210547709">Upravlja vaša organizacija.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">Nacrtajte, istaknite ili dodirnite da odaberete ono što želite pretražiti i dobijte rezultate bez napuštanja kartice</translation>
@@ -1387,7 +1381,6 @@
 <translation id="5482922178977937393">Želite li primati obavještenja za vijesti, sportove i drugo na osnovu svojih interesovanja?</translation>
 <translation id="5483838506518938965">Spremni ste za rad</translation>
 <translation id="5487521232677179737">Obriši podatke</translation>
-<translation id="5491208689472430746">Završeno je brzo brisanje!</translation>
 <translation id="5494920125229734069">Odaberi sve</translation>
 <translation id="5499648645977734083">Upravljanje načinima plaćanja…</translation>
 <translation id="5501346139932663133">Googleove aplikacije</translation>
@@ -1463,7 +1456,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5718049162805123412">Trebate ih odmah promijeniti</translation>
 <translation id="5721040778297053709">Postavite kreditnu karticu u ovaj okvir</translation>
 <translation id="572328651809341494">Nedavne kartice</translation>
-<translation id="5724590854763964497">Prema zadanim postavkama, trenutna kartica se dijeli kada pokrenete novi chat. Kada se kartice dijele, njihovi sadržaji i URL-ovi se šalju Googleu, ali se neće koristiti za poboljšavanje generativnih AI modela. Možete promijeniti ovu postavku bilo kada.</translation>
 <translation id="5724941645893276623">Da privatno pregledate web, dodajte novu karticu</translation>
 <translation id="5728072125198221967">Povezane Googleove usluge</translation>
 <translation id="5728700505257787410">Žao nam je, došlo je do problema s prijavom na vaš račun.</translation>
@@ -1552,6 +1544,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6006672969046233841">Nova kartica</translation>
 <translation id="6011308810877101166">Poboljšanje prijedloga za pretraživanje</translation>
 <translation id="6012140227487808125">Šifriranje…</translation>
+<translation id="6014801569448771146">Provjerite svoje lozinke</translation>
 <translation id="6027619584715411062">Prijavite se da dobijete oznake, lozinke i još mnogo toga na svim uređajima.</translation>
 <translation id="6027945736510816438">Jeste li mislili <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nova funkcija</translation>
@@ -1945,6 +1938,7 @@ Da nastavite s računara, prebacite se na <ph name="OTHER_EMAIL" />. Dobijat će
 <translation id="721218676460477064">Sažmi ovaj članak</translation>
 <translation id="7215621211572884440">Skočni prozori su dozvoljeni</translation>
 <translation id="7218491361283758048">Poštanski broj</translation>
+<translation id="7220786058474068424">Obrada</translation>
 <translation id="7221173315674413369">Istražite nove funkcije i savjete u funkciji Šta je novo</translation>
 <translation id="7223102419539744003">Zatvori karticu</translation>
 <translation id="7223134495231529579">Sačuvaj u preuzimanja</translation>

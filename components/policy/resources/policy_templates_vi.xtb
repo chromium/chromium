@@ -2644,6 +2644,7 @@ Người dùng có thể yên tâm rằng không có thêm ứng dụng nào có
 
 Nếu bạn đặt chính sách này thành Tắt, thì thiết bị sẽ không sử dụng quy trình chứng thực từ xa để bảo vệ nội dung và thiết bị không thể phát nội dung được bảo vệ.</translation>
 <translation id="262740370354162807">Cho phép gửi tài liệu tới <ph name="CLOUD_PRINT_NAME" /></translation>
+<translation id="2631498379019108537">Hiện các lựa chọn nhập trong thanh ứng dụng</translation>
 <translation id="2633084400146331575">Bật tính năng phản hồi bằng giọng nói</translation>
 <translation id="2633907568797306353">Cho phép bật thông báo của Trung tâm điều khiển điện thoại</translation>
 <translation id="2634265675787412567"><ph name="PRODUCT_NAME" /> có thể trực tiếp chuyển các yêu cầu tạo khoá truy cập/WebAuthn đến Chuỗi khoá iCloud trên macOS 13.5 trở lên. Nếu tính năng đồng bộ hoá Chuỗi khoá iCloud chưa bật, thì chính sách này sẽ nhắc người dùng đăng nhập bằng iCloud hoặc có thể nhắc họ bật tính năng đồng bộ hoá Chuỗi khoá iCloud.
@@ -4358,6 +4359,7 @@ Chính sách này không còn được dùng kể từ <ph name="PRODUCT_NAME" /
 <translation id="376375951585423504">Tắt hạn mức cố định.</translation>
 <translation id="3765260570442823273">Thời lượng hiển thị thông điệp cảnh báo đăng xuất khi không hoạt động</translation>
 <translation id="3766695867369523703">Cho phép phân vùng bộ nhớ của bên thứ ba theo mặc định.</translation>
+<translation id="3769975508816807531">Tính năng đóng băng thẻ chạy ở chế độ nền sẽ bị tắt</translation>
 <translation id="377001726927041812">Bật tính năng Cô lập tiến trình.</translation>
 <translation id="3770044943398389276">Theo mặc định, SSO nổi chỉ di chuyển cookie cố định giữa các thiết bị. Chính sách này kiểm soát việc có nên bao gồm cả cookie của phiên hay không. Chính sách này chỉ có hiệu lực khi bạn đặt chính sách <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> thành Bật.
 
@@ -5840,6 +5842,19 @@ Cho đến Chrome 114, chính sách này yêu cầu đặt chính sách <ph name
 
       Khi bạn không đặt chính sách này hoặc đặt chính sách thành bật, các tùy chọn kiểm tra chặn DNS sẽ được áp dụng. Khi bạn tắt hoàn toàn chính sách này, các tùy chọn kiểm tra nói trên sẽ không được áp dụng.</translation>
 <translation id="4700190441681139987">Không cho phép bất kỳ trang web nào sử dụng cảm biến</translation>
+<translation id="4700450186549212780">Định cấu hình chế độ cài đặt kết nối cho <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> trong <ph name="PRODUCT_NAME" />.
+
+Để định cấu hình <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, quản trị viên phải cung cấp:
+* URL ứng dụng web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) HOẶC
+* Cả ba tham số cũ: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> và <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Nếu bạn chỉ chỉ định 1 hoặc 2 trong số 3 tham số này mà không có URL thì chính sách sẽ bị từ chối.
+
+Nếu bạn định cấu hình cả tham số <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> và các tham số cũ thì tham số <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> sẽ được ưu tiên.
+
+Nếu bạn đặt chính sách này, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ được định cấu hình cho những người dùng đăng nhập bằng tài khoản được quản lý hoặc qua trình duyệt được quản lý.
+
+Nếu bạn không đặt chính sách này, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ không được định cấu hình.
+
+Xin lưu ý rằng chính sách này không kiểm soát việc tích hợp <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> nói chung. Bạn có thể kiểm soát việc tích hợp này qua chính sách <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="4703402283970867140">Bật mô hình giảm độ sáng thông minh để kéo dài thời gian cho đến khi màn hình tối đi</translation>
 <translation id="4704958130749494760">Tự động cấp quyền cho các trang web để kết nối với thiết bị nối tiếp USB.</translation>
 <translation id="4705329890928008808">Nếu bạn đặt chính sách này thành CopyCaCerts, thì tất cả các chứng chỉ CA được cài đặt trên ONC có <ph name="WEB_TRUSTED_BIT" /> sẽ áp dụng cho ứng dụng dùng ARC.
@@ -6945,6 +6960,7 @@ Khi bạn đặt chính sách này thành Disabled (Tắt), người dùng sẽ 
 <translation id="5323200200131319468">Bật tính năng phản hồi bằng giọng nói trên màn hình đăng nhập</translation>
 <translation id="5323271643727095577">Không hiện hộp thoại huỷ khi có lệnh gọi event.preventDefault() cho sự kiện beforeunload. Hiện hộp thoại huỷ khi event.returnValue cho sự kiện beforeunload là chuỗi trống.</translation>
 <translation id="5324430722441910403">Cài đặt tìm kiếm trên trang web</translation>
+<translation id="5324926539444440406">Cho phép người dùng quyết định có đóng băng các thẻ chạy ở chế độ nền hay không</translation>
 <translation id="5326431956495937408">Nếu bạn Bật chính sách này, thì người dùng có thể gửi và nhận mật khẩu từ các thành viên gia đình (theo Dịch vụ dành cho gia đình).
 Khi bạn Bật hoặc không đặt chính sách này, Trình quản lý mật khẩu sẽ có một nút cho phép gửi mật khẩu.
 Mật khẩu đã nhận sẽ được lưu trữ vào tài khoản của người dùng và có trong Trình quản lý mật khẩu.
@@ -7039,6 +7055,21 @@ Từ <ph name="PRODUCT_NAME" /> phiên bản 92, chính sách này cũng đượ
 <translation id="5373552304217872025">Nếu bạn đặt chính sách này thành true (đúng) hoặc không định cấu hình thì <ph name="PRODUCT_NAME" /> và <ph name="LACROS_NAME" /> sẽ cho phép thêm người mới trong trình quản lý người dùng.
 
       Nếu bạn đặt chính sách này thành false (sai) thì <ph name="PRODUCT_NAME" /> và <ph name="LACROS_NAME" /> sẽ không cho phép thêm người mới trong trình quản lý người dùng.</translation>
+<translation id="5373983340859513416">Bạn có thể dùng chính sách này để cho phép <ph name="CHROME_DEVTOOLS_NAME" /> trên các URL cụ thể.
+
+Khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được đánh giá ở cấp mục tiêu. Các mẫu URL sẽ được so khớp với URL của từng mục tiêu đang được kiểm tra (chẳng hạn như khung chính của một trang, khung phụ được nhúng, tiện ích hoặc ứng dụng web). Hành vi kết quả phụ thuộc vào việc bạn có đặt cả chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> hay không.
+
+Nếu bạn đặt chính sách này nhưng không đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, URL của mục tiêu phải khớp với một mẫu trong danh sách cho phép thì <ph name="CHROME_DEVTOOLS_NAME" /> mới được cho phép đối với mục tiêu đó. Nếu URL của một mục tiêu không khớp với danh sách cho phép thì <ph name="CHROME_DEVTOOLS_NAME" /> sẽ bị chặn đối với mục tiêu đó (ví dụ: không thể kiểm tra một khung phụ có URL không nằm trong danh sách cho phép, nhưng vẫn có thể kiểm tra trang chính nếu URL của trang đó nằm trong danh sách cho phép). Để biết thông tin về định dạng URL, hãy truy cập vào https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Nếu bạn đặt cả chính sách này và chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> thì danh sách cho phép sẽ được ưu tiên áp dụng. Nếu URL của một mục tiêu khớp với một mẫu trong danh sách cho phép thì URL đó sẽ được cho phép, ngay cả khi URL đó cũng khớp với một mẫu trong danh sách chặn. Nếu URL của một mục tiêu khớp với một mẫu trong danh sách chặn này (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu URL của một mục tiêu không khớp với danh sách nào thì chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
+
+Nếu bạn không đặt chính sách này thì khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> và <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Không được sử dụng ký tự đại diện chung chung dùng để khớp với mọi máy chủ lưu trữ (ví dụ: "*" hoặc "[*]"); hãy dùng chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> để bật tính năng này trên phạm vi toàn cục.
+
+Chính sách này ảnh hưởng đến <ph name="CHROME_DEVTOOLS_NAME" />, quyền truy cập trực tiếp vào Giao thức Chrome DevTools (CDP) (ví dụ: khi khởi chạy bằng --remote-debugging-port hoặc --remote-debugging-pipe) và quyền truy cập vào Giao thức Chrome DevTools (CDP) thông qua các API chrome.debugger. Cả chính sách này và chính sách <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> đều được áp dụng: <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> kiểm soát việc có thể bắt đầu quy trình gỡ lỗi từ xa hay không, còn chính sách này hạn chế khả năng kiểm tra các mục tiêu riêng lẻ ngay cả khi quy trình gỡ lỗi từ xa đang diễn ra.
+
+Chính sách này chỉ áp dụng cho 1.000 mục.</translation>
 <translation id="5376712696238639532">Việc đặt chính sách này sẽ quy định liệu giáo viên có thể sử dụng tính năng phụ đề hay không.
 
 Nếu bạn đặt giá trị này thành true (đúng) hoặc không đặt, thì những giáo viên được chọn có thể ghi phụ đề cho giọng nói của họ và gửi bản chép lời cho học viên.
@@ -7594,6 +7625,7 @@ Chính sách này ảnh hưởng đến cả quy trình xác thực khi đăng n
 <translation id="5728154254076636808">Bật tạo bản sao chuyển vùng cho dữ liệu hồ sơ của <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Mật khẩu Kerberos. Phần giữ chỗ <ph name="PASSWORD_PLACEHOLDER" /> được thay bằng mật khẩu đăng nhập.</translation>
 <translation id="5730610899971390601">Từ chối yêu cầu ghép nối Bluetooth "Just Works"</translation>
+<translation id="5731883586899464960">URL ứng dụng web của phiên bản <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> cho tổ chức này.</translation>
 <translation id="5732972008943405952">Nhập dữ liệu tự động điền vào biểu mẫu trên trình duyệt mặc định trong lần chạy đầu tiên</translation>
 <translation id="5733040281451845496">Nếu bạn đặt chính sách này thành Bật, thì thời gian trì hoãn của chính sách quản lý điện và giới hạn thời lượng phiên hoạt động sẽ chỉ bắt đầu sau khi hoạt động đầu tiên của người dùng xảy ra trong một phiên hoạt động.
 
@@ -7708,6 +7740,7 @@ Có thể tăng cường chế độ hạn chế tài khoản bằng chính sác
 <translation id="5804702826910437814">Cho phép các tính năng AI tạo sinh trong <ph name="CHROME_DEVTOOLS_NAME" /> nhưng không tham gia cải tiến mô hình AI.</translation>
 <translation id="5804795151506109282">Không nhắc người dùng di chuyển.</translation>
 <translation id="5806128552675651249">Chỉ cho phép in không có đồ họa nền</translation>
+<translation id="5808888486171670350">Không cho phép sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> trên các ứng dụng và tiện ích được cài đặt theo chính sách doanh nghiệp hoặc (từ phiên bản 114 trở đi và nếu người dùng là người dùng được quản lý) tiện ích được tích hợp vào trình duyệt. Cho phép sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> trong các ngữ cảnh khác</translation>
 <translation id="5809210507920527553">Kiểm soát các tùy chọn cài đặt cho vùng chứa Linux (Crostini).</translation>
 <translation id="5809728392451418079">Đặt tên hiển thị cho tài khoản trong thiết bị</translation>
 <translation id="5810916450338110943">Danh sách các chế độ cài đặt dịch vụ Chrome Enterprise Connectors sẽ áp dụng cho <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise Connector (kích hoạt khi tệp được tải xuống trong Chrome).
@@ -8138,6 +8171,15 @@ phiên bản 114, sau đó, chế độ hỗ trợ cho API này đã bị loại
 
 LƯU Ý: Chỉ các quy trình kết xuất đồ hoạ mới bắt đầu mới thể hiện các thay đổi đối với
 chính sách này trong khi trình duyệt đang chạy.</translation>
+<translation id="6083071443488983075">Kiểm soát việc <ph name="PRODUCT_NAME" /> có đóng băng các thẻ chạy ở chế độ nền hiện không hoạt động để tiết kiệm CPU và bộ nhớ hay không.
+
+Khi tính năng đóng băng thẻ chạy ở chế độ nền đang hoạt động, các thẻ đã không hoạt động ở chế độ nền trong một khoảng thời gian sẽ bị đóng băng bằng cách tạm dừng thực thi JavaScript và các tác vụ hẹn giờ. Các thẻ bị đóng băng vẫn được tải trong bộ nhớ và sẽ tiếp tục hoạt động ngay khi người dùng chọn. Các thẻ có tác vụ nền đang hoạt động (chẳng hạn như các thẻ đang phát âm thanh hoặc video, chụp ảnh màn hình hoặc ghi lại luồng video của camera, duy trì kết nối WebRTC đang hoạt động hoặc giữ Web Locks) không đủ điều kiện để bị đóng băng và sẽ tiếp tục chạy. Các trang web được định cấu hình trong chính sách <ph name="TAB_DISCARDING_EXCEPTIONS_POLICY_NAME" /> hoặc trong các trường hợp ngoại lệ về việc loại bỏ thẻ của người dùng cũng được miễn áp dụng tính năng đóng băng.
+
+Nếu bạn đặt chính sách này thành Enabled (Bật) thì tính năng tự động đóng băng thẻ chạy ở chế độ nền sẽ được bật đối với các thẻ đủ điều kiện đang chạy ở chế độ nền. Người dùng không thể thay đổi chế độ cài đặt này.
+
+Nếu bạn đặt chính sách này thành Disabled (Tắt), các thẻ chạy ở chế độ nền sẽ không bị đóng băng. Người dùng không thể thay đổi chế độ cài đặt này.
+
+Nếu bạn không đặt chính sách này thì tính năng đóng băng thẻ chạy ở chế độ nền sẽ được bật theo mặc định, nhưng người dùng có thể bật hoặc tắt tính năng này trong phần cài đặt của <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6083281887050888160">Cho phép ghép nối Bluetooth "Just Works"</translation>
 <translation id="6083631234867522991">Windows (ứng dụng Windows):</translation>
 <translation id="6085580138417523410">Cho phép các yêu cầu về Quyền truy cập mạng cục bộ (LNA) trong khung phụ mà không cần uỷ quyền rõ ràng</translation>
@@ -8437,6 +8479,7 @@ Nếu chính sách này đang bật hoặc không được thiết lập, thì t
 Nếu chính sách này đang tắt thì thay đổi này sẽ đảo ngược lại và những tài liệu không có tiêu đề Origin-Agent-Cluster sẽ được gán vào các cụm tác nhân theo khoá trang web. Do đó, trình truy cập document.domain sẽ vẫn thiết lập được theo mặc định. Hành vi này giống với hành vi cũ.
 
 Xem thêm thông tin chi tiết tại https://developer.chrome.com/blog/immutable-document-domain/.</translation>
+<translation id="6268941767866119713">Kiểm soát những môi trường mà người dùng có thể sử dụng <ph name="CHROME_DEVTOOLS_NAME" /></translation>
 <translation id="626942726350419209">Cho phép các trang web tự động tải xuống nhiều tệp</translation>
 <translation id="6270615143812355589">Bật đầu vào âm thanh</translation>
 <translation id="6270791075656665237">Không cho phép QUIC</translation>
@@ -9294,6 +9337,11 @@ Khi bạn đặt chính sách này thành Bật, thì dữ liệu sẽ đư�
 
 Đối với <ph name="PRODUCT_NAME" />, chính sách này chỉ có hiệu lực khi máy đã đăng ký bằng <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Đối với <ph name="PRODUCT_OS_NAME" />, chính sách này luôn có hiệu lực.</translation>
+<translation id="6718248192281812888">Kiểm soát việc người dùng có thể sử dụng tính năng gỡ lỗi từ xa hay không.
+
+Nếu bạn không đặt chính sách này hoặc đặt thành Enabled (Bật) thì người dùng có thể sử dụng tính năng gỡ lỗi từ xa bằng cách chỉ định nút chuyển dòng lệnh --remote-debugging-port và --remote-debugging-pipe trên nền tảng dành cho máy tính hoặc bằng cách bật chế độ gỡ lỗi qua USB của hệ thống trên <ph name="ANDROID_NAME" />.
+
+Nếu bạn đặt chính sách này thành Disabled (Tắt), người dùng sẽ không được phép sử dụng tính năng gỡ lỗi từ xa.</translation>
 <translation id="6720330829631914048">Số giờ đã trôi qua kể từ thời điểm bắt đầu ngày (theo định dạng 24 giờ).</translation>
 <translation id="6720862827454058309">Ghi đè ánh xạ không gian địa chỉ IP</translation>
 <translation id="6721252203593581486">WebSQL trong bối cảnh của bên thứ ba (ví dụ: iframe trên nhiều trang web) bị tắt theo mặc định kể từ M97 và sẽ bị xóa hoàn toàn trong M101.
@@ -11539,6 +11587,19 @@ Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="8102854005031553638">Trình xem PDF sử dụng trình kết xuất đồ hoạ AGG.</translation>
 <translation id="8102913158860568230">Cài đặt luồng truyền thông mặc định</translation>
 <translation id="8104962233214241919">Tự động chọn chứng chỉ ứng dụng khách cho các trang web này</translation>
+<translation id="810897014119047728">Bạn có thể dùng chính sách này để chặn <ph name="CHROME_DEVTOOLS_NAME" /> trên các URL cụ thể. Để biết thông tin về định dạng URL, hãy truy cập vào https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được đánh giá ở cấp mục tiêu. Các mẫu URL sẽ được so khớp với URL của từng mục tiêu đang được kiểm tra (chẳng hạn như khung chính của một trang, khung phụ được nhúng, tiện ích hoặc ứng dụng web). Hành vi kết quả phụ thuộc vào việc bạn có đặt cả chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> hay không.
+
+Nếu bạn đặt chính sách này nhưng không đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> và URL của một mục tiêu khớp với một mẫu trong danh sách chặn này thì URL đó sẽ chặn <ph name="CHROME_DEVTOOLS_NAME" /> đối với mục tiêu đó (ví dụ: không thể kiểm tra khung phụ có URL khớp với danh sách chặn này, nhưng vẫn có thể kiểm tra trang chính nếu URL của trang đó không nằm trong danh sách chặn). Nếu URL của một mục tiêu không khớp với mẫu nào thì khả năng sử dụng sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Nếu bạn đặt cả chính sách này và chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> thì danh sách cho phép sẽ được ưu tiên áp dụng. Nếu URL của một mục tiêu khớp với một mẫu trong danh sách cho phép thì URL đó sẽ được cho phép, ngay cả khi URL đó cũng khớp với một mẫu trong danh sách chặn này. Nếu URL của một mục tiêu khớp với một mẫu trong danh sách chặn này (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu URL của một mục tiêu không khớp với danh sách nào thì chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
+
+Nếu bạn không đặt chính sách này thì khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> và <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Chính sách này ảnh hưởng đến <ph name="CHROME_DEVTOOLS_NAME" />, quyền truy cập trực tiếp vào Giao thức Chrome DevTools (CDP) (ví dụ: khi khởi chạy bằng --remote-debugging-port hoặc --remote-debugging-pipe) và quyền truy cập vào Giao thức Chrome DevTools (CDP) thông qua các API chrome.debugger. Cả chính sách này và chính sách <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> đều được áp dụng: <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> kiểm soát việc có thể bắt đầu quy trình gỡ lỗi từ xa hay không, còn chính sách này hạn chế khả năng kiểm tra các mục tiêu riêng lẻ ngay cả khi quy trình gỡ lỗi từ xa đang diễn ra.
+
+Chính sách này chỉ áp dụng cho 1.000 mục.</translation>
 <translation id="8109762054721090517">Mẫu dành cho <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /></translation>
 <translation id="811012672754800797">Không cho phép tải tệp lên Gemini trong Chrome.</translation>
 <translation id="8111331908123507719">Thiết lập thời gian tính bằng giây mà thiết bị sẽ chờ ở trạng thái rảnh trước khi hiển thị trình bảo vệ màn hình trên màn hình khoá.
@@ -11677,6 +11738,7 @@ Nếu bạn không đặt chính sách này thì hành vi của chính sách s�
 <translation id="8199823751103472868">Nếu bạn đặt chính sách này thì hệ thống sẽ bật bố cục Hindi Inscript trên <ph name="PRODUCT_OS_NAME" />. Nếu bạn đặt chính sách này thành sai hoặc không đặt thì bố cục này sẽ không được áp dụng.</translation>
 <translation id="8202566089100454374">Google Maps (được hỗ trợ kể từ phiên bản 135)</translation>
 <translation id="8202834945144737726">Bật quy trình chứng thực <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> cho một danh sách URL trên màn hình đăng nhập</translation>
+<translation id="8204634641358373241">Ẩn các lựa chọn nhập trong thanh ứng dụng</translation>
 <translation id="8213770777756919897">Lưu ý rằng chúng tôi không dùng chính sách này nữa và sẽ xóa khỏi <ph name="PRODUCT_OS_NAME" /> phiên bản 85. Thay vào đó, vui lòng sử dụng <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Khi bạn đặt, chính sách này sẽ chỉ định hành động mà <ph name="PRODUCT_OS_NAME" /> thực hiện khi người dùng tạm vắng trong khoảng thời gian cho trước theo thời gian chờ khi tạm vắng. Bạn có thể định cấu hình riêng biệt khoảng thời gian này.
@@ -11722,6 +11784,24 @@ Hãy xem mục 5.2 của RFC 8828 (https://tools.ietf.org/html/rfc8828.html#sect
 <translation id="8244525275280476362">Độ trễ tìm nạp tối đa sau khi hủy hiệu lực chính sách</translation>
 <translation id="8247143534027746614">Chặn hành vi truy cập vào một danh sách các mẫu URL trong quá trình xác thực</translation>
 <translation id="824818544897669723">Bật tính năng xóa nhật ký trình duyệt và nhật ký tải xuống</translation>
+<translation id="8249289413721808395">Nếu đặt chính sách này thành 0 (giá trị mặc định) thì bạn có thể truy cập vào <ph name="CHROME_DEVTOOLS_NAME" /> và Bảng điều khiển JavaScript, ngoại trừ trường hợp tiện ích được cài đặt theo chính sách doanh nghiệp hoặc (từ phiên bản 114 trở đi và nếu người dùng là người dùng được quản lý) tiện ích được tích hợp vào trình duyệt. Nếu đặt giá trị chính sách này thành 1 thì bạn có thể truy cập vào <ph name="CHROME_DEVTOOLS_NAME" /> và Bảng điều khiển JavaScript trong mọi trường hợp, kể cả trường hợp tiện ích được cài đặt theo chính sách doanh nghiệp. Nếu đặt giá trị chính sách này thành 2 thì bạn không thể truy cập vào <ph name="CHROME_DEVTOOLS_NAME" /> và không thể kiểm tra các thành phần của trang web.
+
+Chế độ cài đặt này cũng tắt các phím tắt và mục truy cập trên trình đơn hoặc trình đơn theo bối cảnh dùng để mở <ph name="CHROME_DEVTOOLS_NAME" /> hoặc Bảng điều khiển JavaScript.
+
+Kể từ phiên bản <ph name="PRODUCT_NAME" /> 99, chế độ cài đặt này cũng kiểm soát điểm truy cập cho tính năng "Xem nguồn trang". Nếu bạn đặt giá trị chính sách này thành "DeveloperToolsDisallowed" (giá trị 2) thì người dùng sẽ không thể truy cập tính năng xem nguồn thông qua phím tắt hay trình đơn theo bối cảnh. Để chặn hoàn toàn tính năng xem nguồn, bạn cũng phải thêm "view-source:*" vào chính sách <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Kể từ phiên bản <ph name="PRODUCT_NAME" /> 119, chế độ cài đặt này cũng kiểm soát việc có thể kích hoạt và sử dụng chế độ nhà phát triển dành cho các Ứng dụng web tách biệt hay không.
+
+Kể từ phiên bản <ph name="PRODUCT_NAME" /> 128, nếu bạn đặt chính sách <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> thì chế độ cài đặt này sẽ không kiểm soát chế độ nhà phát triển trên trang tiện ích.
+
+Chính sách này ảnh hưởng đến <ph name="CHROME_DEVTOOLS_NAME" />, quyền truy cập trực tiếp vào Giao thức Chrome DevTools (CDP) (ví dụ: khi khởi chạy bằng --remote-debugging-port hoặc --remote-debugging-pipe) và quyền truy cập vào Giao thức Chrome DevTools (CDP) thông qua các API chrome.debugger. Cả chính sách này và chính sách <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> đều được áp dụng: <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> kiểm soát việc có thể bắt đầu quy trình gỡ lỗi từ xa hay không, còn chính sách này hạn chế khả năng kiểm tra các mục tiêu riêng lẻ ngay cả khi quy trình gỡ lỗi từ xa đang diễn ra.
+
+Chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> và <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> được ưu tiên hơn chính sách này. Khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> được xác định theo thứ tự ưu tiên sau đây:
+
+1. Nếu một URL khớp với một mẫu trong chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> thì <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được cho phép.
+2. Nếu bạn đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> nhưng không đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> thì mọi URL không có trong danh sách cho phép sẽ bị chặn.
+3. Nếu một URL khớp với một mẫu trong chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> thì <ph name="CHROME_DEVTOOLS_NAME" /> sẽ bị chặn.
+4. Nếu bạn không đặt chính sách nào hoặc nếu một URL không khớp với danh sách nào thì chính sách này (<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />) sẽ được dùng làm cơ chế dự phòng.</translation>
 <translation id="8250048892729838843">Chính sách này không được dùng nữa. Nếu bạn đặt chính sách này thành bật hoặc không đặt, thì hệ thống sẽ cho phép thiết bị nhận các biện pháp kiểm soát báo cáo chi tiết.
       Nếu bạn đặt chính sách này thành Tắt thì các thiết bị đã đăng ký sẽ không nhận được các biện pháp kiểm soát báo cáo chi tiết.</translation>
 <translation id="82501412047133986">Chính sách này không còn dùng trong M88 và Chrome không hỗ trợ Flash nữa. Nếu đặt chính sách này, bạn có thể thiết lập danh sách các mẫu URL chỉ định những trang web không thể chạy trình bổ trợ <ph name="FLASH_PLUGIN_NAME" />.
@@ -13204,7 +13284,13 @@ Bạn có thể sử dụng chính sách <ph name="HTTP_ALLOWLIST_POLICY_NAME" /
 
       Nếu bạn đặt chính sách này thành false hoặc không đặt chính sách này, thì AppCache sẽ tuân theo các tùy chọn mặc định của Chrome.</translation>
 <translation id="931156018951676976">Không cho phép hiển thị nội dung quảng bá</translation>
+<translation id="935136412769712014">Cho phép sử dụng <ph name="CHROME_DEVTOOLS_NAME" /></translation>
 <translation id="935779984563655842">Báo cáo thông tin về Bluetooth</translation>
+<translation id="93578254536318656">Nếu bạn đặt chính sách này thành Enabled (Bật) thì bong bóng lựa chọn phương thức nhập sẽ xuất hiện trên thanh ứng dụng.
+
+Nếu bạn đặt chính sách này thành Disabled (Tắt) thì bong bóng lựa chọn phương thức nhập sẽ bị ẩn khỏi thanh ứng dụng.
+
+Nếu bạn không đặt chính sách này thì theo mặc định, bong bóng lựa chọn phương thức nhập sẽ bị ẩn khỏi thanh ứng dụng. Người dùng có thể chọn có hiển thị bong bóng này trên trang Cài đặt hay không.</translation>
 <translation id="936188865879911137">Nếu bạn đặt chính sách này thành Bật, thì <ph name="PRODUCT_NAME" /> sẽ cho phép cài đặt và cập nhật các tiện ích lưu trữ bên ngoài Cửa hàng Chrome trực tuyến. Bạn chỉ có thể bảo vệ nội dung của những tiện ích này ở mức tối thiểu.
 
       Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" /> sẽ không cho phép cài đặt (và cập nhật) các tiện ích đó. Chính sách này không ảnh hưởng đến <ph name="PRODUCT_NAME" /> 78 trở lên.

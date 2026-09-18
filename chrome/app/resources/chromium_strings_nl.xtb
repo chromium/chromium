@@ -648,7 +648,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="77283119132245232">Biedt systeemtraceringsservices voor <ph name="BROWSER_NAME" />. Als deze service is uitgezet, bevatten prestatietraceringen die door de browser worden gemaakt geen systeemgebeurtenissen zoals contextwissels en ready-thread-gebeurtenissen.</translation>
 <translation id="7745317241717453663">Hiermee worden je browsegegevens verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chromium als <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Het installatieprogramma kan geen tijdelijke directory maken. Controleer of je nog schijfruimte hebt en of je rechten hebt om software te installeren.</translation>
-<translation id="7747820849741499258">Zoeken in Chromium</translation>
 <translation id="7750130090210923118">Resetten naar standaard Chromium</translation>
 <translation id="7752521946322750699">Je organisatie kan bepaalde informatie bekijken of beheren als je bent ingelogd bij Chromium om je werk in Chromium te beveiligen.</translation>
 <translation id="7781047659465034537">Chromium instellen als standaardbrowser en vastzetten op de taakbalk</translation>
@@ -656,7 +655,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Maak het moeilijker voor mensen met toegang tot je internetverkeer om te zien welke sites je bezoekt. Chromium gebruikt een beveiligde verbinding om het IP-adres van een site op te zoeken in het DNS (Domain Name System).</translation>
 <translation id="7810005234485217901">Je kunt Zoeken met afbeelding vastzetten voor snelle toegang</translation>
-<translation id="7813626943009612327">Stel vragen over content buiten Chromium, zoals een andere app of een bestand dat je hebt geopend</translation>
 <translation id="7828527096541974699">Kiezen wat je wilt delen met Chromium</translation>
 <translation id="7828947555739565424">Er bestaat op dit apparaat al een Chromium-profiel met dit account</translation>
 <translation id="7845233973568007926">Bedankt voor het installeren. Je moet de computer opnieuw opstarten voordat je <ph name="BUNDLE_NAME" /> kunt gebruiken.</translation>

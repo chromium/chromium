@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Typ ověření</translation>
 <translation id="1776228893584526149">Tón tapety</translation>
 <translation id="1777913922912475695">most</translation>
-<translation id="1782199038061388045">překlad</translation>
 <translation id="1788485524395674731">Tuto aplikaci spravuje administrátor</translation>
 <translation id="1792647875738159689">Rušení skenování</translation>
 <translation id="1801418420130173017">Deaktivovat tmavý motiv</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2448857983905133469">Nástroje pro výuku</translation>
 <translation id="2468124392950503650">Vyberte prompt nebo si projděte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />průvodce prompty<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Pomocí funkce Pomozte mi s psaním založené na Google AI můžete vytvořit koncept nebo vylepšit stávající text</translation>
 <translation id="2475982808118771221">Došlo k chybě</translation>
 <translation id="2480572840229215612">krabi</translation>
 <translation id="248546197012830854">Zařízení je offline. Pokud chcete zobrazit obsah nápovědy, připojte se k síti Wi-Fi.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Pořídit další</translation>
 <translation id="3479552764303398839">Teď ne</translation>
 <translation id="3484914941826596830">Během aktualizace firmwaru neodpojujte externí zařízení ani nevypínejte počítač. Toto okno můžete minimalizovat. Aktualizace může trvat několik minut a externí zařízení po tuto dobu nemusí fungovat.</translation>
-<translation id="3486220673238053218">definice</translation>
 <translation id="3487866404496702283">Zpětná vazba k funkci mahi</translation>
 <translation id="3488065109653206955">Částečně aktivováno</translation>
 <translation id="3492882532495507361">Kancelář ve stylu <ph name="OFFICE_STYLE" /> s tóny v barvě <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Vybrat motiv</translation>
 <translation id="3644695927181369554">Špatný návrh</translation>
 <translation id="3651050199673793219">Vyberte jednotku teploty</translation>
-<translation id="3661106764436337772">Pište rychleji a s větší jistotou</translation>
 <translation id="3662461537616691585">vínová a kaštanová</translation>
 <translation id="3664755900672940272">Ukázky pokynů byly zamíchány</translation>
 <translation id="3668449597372804501">Tapeta s plynoucími oblaky</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Zastaveno</translation>
 <translation id="4777310452073659583">Pokud chcete získat přepis, restartujte zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">ametyst</translation>
-<translation id="4782311465517282004">Když podržíte text nebo na něj kliknete pravým tlačítkem, mohou se zobrazit definice, překlad nebo převod jednotek</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotka</translation>
 <translation id="4793710386569335688">Další informace naleznete v <ph name="BEGIN_LINK" />centru nápovědy<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Kompresní algoritmus</translation>
@@ -1459,7 +1454,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="7397270852490618635">Vypnout světlý motiv</translation>
 <translation id="7401543881546089382">Smazat zkratku</translation>
 <translation id="7405493795721832710">Zařízení <ph name="DEVICE_NAME" /> je připraveno k aktualizaci</translation>
-<translation id="741244894080940828">převod</translation>
 <translation id="7415801143053185905">Velmi vysoká latence požadavků HTTP</translation>
 <translation id="7418738250896500352">Příliš mnoho slov na zjednodušení</translation>
 <translation id="7425037327577270384">Pomozte mi s psaním</translation>
@@ -1769,7 +1763,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="885701979325669005">Úložiště</translation>
 <translation id="885704831271383379">klávesnice tmavší</translation>
 <translation id="8863170912498892583">Aktivovat tmavý motiv</translation>
-<translation id="8863888432376731307">Získejte <ph name="INTENT" /> na dotaz „<ph name="QUERY" />“ a mnohem víc</translation>
 <translation id="8864415976656252616">Žádný navrhovaný obsah. Podívejte se na nejnavštěvovanější obsah nápovědy.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Zařízení je tablet.</translation>

@@ -146,6 +146,7 @@
 <translation id="2575822587468774919">Wybierz, co chcesz wyszukać za pomocą wyszukiwania obrazów</translation>
 <translation id="2576118232315942160">Aby mieć dostęp do haseł oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chromium</translation>
 <translation id="2587622539943955767">Zeskanuj kod QR telefonem, aby pobrać Chromium i zalogować się na konto Google.</translation>
+<translation id="2587885422541096572">w celu wyszukania za pomocą Chromium.</translation>
 <translation id="2592940277904433508">Nadal korzystaj z Chromium</translation>
 <translation id="259935314519650377">Pobranego instalatora nie udało się załadować do pamięci podręcznej. Błąd: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">System</translation>
@@ -335,6 +336,7 @@
 <translation id="4621240073146040695">Już prawie gotowe. Uruchom ponownie Chromium, by zakończyć aktualizację.</translation>
 <translation id="4625064703209785397">Witryny będą działać szybciej dzięki mechanizmowi V8 w przeglądarce Chromium, ale będzie ona trochę mniej odporna na ataki</translation>
 <translation id="4626321472657185181">Otwórz wyszukiwanie w Chromium</translation>
+<translation id="4654639495249754755">Profil Chromium</translation>
 <translation id="4665829708273112819">Ostrzeżenie: Chromium nie może uniemożliwić rozszerzeniom zapisywania historii przeglądania. Aby wyłączyć to rozszerzenie w trybie incognito, odznacz tę opcję.</translation>
 <translation id="4673151026126227699">Jeśli udostępnisz też raporty o użytkowaniu Chromium, będą one zawierały odwiedzane przez Ciebie adresy URL.</translation>
 <translation id="4673710618874938871">Zalogowano jako <ph name="USER_NAME" />, subskrypcja. Otwórz menu konta</translation>
@@ -467,6 +469,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6174920971222007286">Ten plik może być niebezpieczny<ph name="LINE_BREAK" />Chromium może go sprawdzić, jeśli podasz hasło. Informacje o pliku są wysyłane do Bezpiecznego przeglądania Google, ale zawartość pliku i hasło pozostają na urządzeniu.</translation>
 <translation id="6182736845697986886">Instalacja się nie udała z powodu wewnętrznego błędu serwera aktualizacji.</translation>
 <translation id="6183079672144801177">Najpierw zaloguj się w Chromium na swoim urządzeniu <ph name="TARGET_DEVICE_NAME" />, a potem ponów próbę wysyłania.</translation>
+<translation id="6192070012454216182">Wyszukuj i zadawaj pytania z dowolnego miejsca, nawet gdy przeglądarka Chromium jest zminimalizowana. Zezwala na działanie Chromium w tle.</translation>
 <translation id="6212496753309875659">Na tym komputerze jest już zainstalowana nowsza wersja Chromium. Jeśli program nie działa, odinstaluj go i spróbuj ponownie.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium uruchomi się ponownie teraz}=1{Chromium uruchomi się ponownie za 1 sekundę}few{Chromium uruchomi się ponownie za # sekundy}many{Chromium uruchomi się ponownie za # sekund}other{Chromium uruchomi się ponownie za # sekundy}}</translation>
 <translation id="6241367896540709610">Aby pobierać pliki, Chromium musi mieć dostęp do pamięci</translation>
@@ -593,6 +596,7 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="7288567540154601580">Karty i rozszerzenia</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium zaleca jego usunięcie}few{Chromium zaleca ich usunięcie}many{Chromium zaleca ich usunięcie}other{Chromium zaleca ich usunięcie}}</translation>
 <translation id="7296334833518879294">Aby udostępnić dźwięk systemowy, otwórz ustawienia systemu i zezwól Chromium na „Nagrywanie tylko dźwięku systemowego”. Następnie musisz ponownie uruchomić Chromium.</translation>
+<translation id="7299899569525778554">Wyszukuj na komputerze</translation>
 <translation id="731795002583552498">Aktualizuję Chromium</translation>
 <translation id="7318036098707714271">Plik ustawień jest uszkodzony lub nieprawidłowy.
 
@@ -640,7 +644,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="77283119132245232">Zapewnia usługi śledzenia systemu dla <ph name="BROWSER_NAME" />. Jeśli ta usługa jest wyłączona, śledzenie wydajności tworzone przez przeglądarkę nie zawiera zdarzeń dotyczących całego systemu, takich jak przełączanie kontekstu i gotowe zdarzenia wątków.</translation>
 <translation id="7745317241717453663">Spowoduje to usunięcie danych przeglądania z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instalator nie mógł utworzyć katalogu tymczasowego. Sprawdź, czy na dysku jest dość wolnego miejsca oraz sprawdź, czy posiadasz uprawnienia do instalowania programów.</translation>
-<translation id="7747820849741499258">Wyszukaj w Chromium</translation>
 <translation id="7750130090210923118">Przywróć domyślny motyw Chromium</translation>
 <translation id="7752521946322750699">Aby zabezpieczyć Twoją pracę w Chromium, Twoja organizacja będzie mogła wyświetlać określone informacje lub nimi zarządzać, gdy zalogujesz się w Chromium.</translation>
 <translation id="7781047659465034537">Ustaw Chromium jako przeglądarkę domyślną i przypnij ją do paska zadań</translation>
@@ -738,6 +741,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8619360774459241877">Uruchamiam Chromium…</translation>
 <translation id="8624541899164515475">Ustawienia, otwierają się w nowej karcie.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nie można ustawić jako przeglądarki domyślnej.</translation>
+<translation id="8676101123715131330">Wyszukuj w Chromium z dowolnego miejsca</translation>
 <translation id="8697124171261953979">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chromium lub wyszukiwaniu w omniboksie.</translation>
 <translation id="8704119203788522458">Oto Twoja przeglądarka Chromium</translation>
 <translation id="8712637175834984815">OK</translation>
@@ -771,6 +775,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
 <translation id="8980139959902937527">Zabierz ze sobą funkcje bezpieczeństwa Google dzięki aplikacji Chromium na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Nie można uruchomić Chromium – coś poszło nie tak podczas otwierania Twojego profilu. Spróbuj jeszcze raz uruchomić Chromium.</translation>
+<translation id="8981886272598860786">w celu wyszukania za pomocą Chromium lub dostosowania w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Zarządzaj profilami Chromium</translation>
 <translation id="8993855408334954620">Używaj klawiatury, aby przechodzić między Gemini w Chromium a otwartą kartą.</translation>
 <translation id="9018218886431812662">Instalacja ukończona</translation>

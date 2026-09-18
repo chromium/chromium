@@ -837,6 +837,8 @@
 <translation id="2384307209577226199">ව්‍යවසාය පෙරනිමි</translation>
 <translation id="2385809941344967209">ඔබගේ Chrome සැකසීම් වෙතින් Chrome යාවත්කාලීන කරන්න</translation>
 <translation id="2386255080630008482">සර්වරයේ සහතිකය අවලංගු කර තිබේ.</translation>
+<translation id="2387424091060104123">Gemini විසින් යෝජනා කරන ලදි · <ph name="SRC_LINK" />මූලාශ්‍ර බලන්න<ph name="END_SRC_LINK" />
+ඔබට මෙම යෝජනාව Chrome වෙතින් ඉවත් කළ හැක. ඔබේ මුල් මූලාශ්‍රය මකා නොදමනු ඇත. <ph name="MANAGE_LINK" />වැඩිදියුණු කළ ස්වයංක්‍රීය පිරවීම කළමනාකරණය කරන්න<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">විස්තර කරන්න</translation>
 <translation id="2392959068659972793">අගයක් සකසා නොමැති ප්‍රතිපත්ති පෙන්වන්න</translation>
 <translation id="239429038616798445">මෙම නැව්ගත කිරීමේ ක්‍රමය ලබා ගත නොහැකිය. වෙනත් ක්‍රමයක් උත්සාහ කරන්න.</translation>
@@ -1517,6 +1519,8 @@
 <translation id="3577473026931028326">යම් දෙයක් වැරදිණි. නැවත උත්සාහ කරන්න.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">මෙම පිටුව සූදානම් වූ විට Chrome ඔබට දැනුම් දෙයි. &lt;a&gt;අවලංගු කරන්න&lt;/a&gt;</translation>
+<translation id="3581499772329034229">ස්වයංක්‍රීයව ටැබ් එක් කරන්න</translation>
+<translation id="3582670569275100909">නැව්ගත කිරීම්</translation>
 <translation id="3582930987043644930">නම එක් කරන්න</translation>
 <translation id="3583757800736429874">&amp;ගෙන යාම යළි කරන්න</translation>
 <translation id="3584299510153766161">පහළට දෙවරක් අනින්න</translation>
@@ -1592,6 +1596,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" />, <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">පූරණය වේ...</translation>
 <translation id="3709599264800900598">ඔබ පිටපත් කළ පාඨය</translation>
+<translation id="3711223220609269738">නව හුදකලා ටැබය</translation>
 <translation id="3711430313228789376">Chrome බ්‍රවුසරය මුරපද පෙන්වීමට උත්සාහ කරයි</translation>
 <translation id="3711895659073496551">අත්හිටුවන්න</translation>
 <translation id="3712004750972384495">තිර පටිගත කිරීම සුරකිමින්</translation>
@@ -1610,6 +1615,7 @@
 <translation id="3727309136762649052">නාම අවකාශය</translation>
 <translation id="3727850735097852673">macOS Keychain සමග Google මුරපද කළමනාකරු භාවිත කිරීමට, Chrome යළි දියත් කර Keychain ප්‍රවේශයට ඉඩ දෙන්න. ඔබේ පටිත්ත යළි දියත් කිරීමෙන් පසු නැවත විවෘත වෙයි.</translation>
 <translation id="3728173127485570463">Chrome බ්‍රවුසරයට තවදුරටත් මුරපද ස්වයංව පිරවීමට ඔබේ ඇඟිලි සලකුණ අවශ්‍ය නොවේ</translation>
+<translation id="3729811201279509483">පටිති හස්තීයව එක් කරන්න</translation>
 <translation id="3736564442532774454">Chrome බ්‍රවුසරය <ph name="APP_NAME" /> හි ඔබේ සංවේදී තතු පිරවීමට උත්සාහ කරයි.</translation>
 <translation id="3738166223076830879">ඔබේ බ්‍රවුසරය ඔබේ පරිපාලක විසින් කළමනාකරණය කරයි.</translation>
 <translation id="3739842843727261045">ලකුණක් ඉහළට ඔබ මෙම ප්‍රතිඵල වලට කැමති බවට ප්‍රතිපෝෂණය ඉදිරිපත් කරයි</translation>
@@ -2772,6 +2778,7 @@
 <translation id="5649053991847567735">ස්වයංක්‍රීය බාගැනීම්</translation>
 <translation id="5651323159439184939">ඝර්ෂණ පෝෂණය</translation>
 <translation id="5653681867130739344">Google Wallet හි ආරක්ෂිතව හැඳුනුම්පත යාවත්කාලීන කරන්න</translation>
+<translation id="5653744563415531641">ඔබේ තතු සුරකින්න සහ Google නිෂ්පාදන හරහා පෝරම පිරවීම වැනි දේවල් වේගයෙන් සිදු කරන්න. ඔබට <ph name="ACCOUNT" /> සඳහා <ph name="MANAGE_WALLET_SETTINGS_LINK" /> හැක.</translation>
 <translation id="5654927323611874862">උඩුගත කළ බිඳ වැටීම් වාර්තා හැඳුනුම:</translation>
 <translation id="5654965123204121933">URL හි අවශ්‍ය ප්‍රතිස්ථාපන තන්තුව <ph name="SEARCH_TERMS_REPLACEMENT" /> ඇතුළත් නොවේ: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ඊතැපෑල</translation>
@@ -3218,6 +3225,7 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> සඳහා කල් ඉකුත් වීමේ දිනය සහ CVC ඇතුළු කරන්න</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">දෙමාපිය අනුමැති සංවාදය</translation>
+<translation id="6413532517183895572">ඔබේ Wallet සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="6415778972515849510">Chromium ඔබට ඔබේ Google ගිණුම ආරක්‍ෂා කිරීමටත් ඔබේ මුරපදය වෙනස් කිරීමටත් ඔබට උදවු කළ හැක.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">ඕනෑම වැදගත් ව්‍යාපාරික හෝ පුද්ගලික දත්ත බාහිරව ගබඩා කර ඇති බවට වග බලා ගන්න.</translation>
@@ -4005,6 +4013,7 @@
 <translation id="7758069387465995638">සුරැකුම් පවුර හෝ ප්‍රතිවයිරස මෘදුකාංග සබැඳුම අවහිර කර තිබෙනවා විය හැකිය.</translation>
 <translation id="7759147511335618829">MIDI උපාංග පාලනය සහ නැවත වැඩසටහන්කරණය</translation>
 <translation id="7759809451544302770">වෛකල්පිත</translation>
+<translation id="7760566304700414795">නැව්ගත කිරීම</translation>
 <translation id="776110834126722255">අත් හැරියා</translation>
 <translation id="7761159795823346334">කැමරාව ඉඩ දෙන්නද?</translation>
 <translation id="7761701407923456692">සර්වරයේ සහතිකය URL ලිපිනය හා නොගැළපෙයි.</translation>
@@ -4350,6 +4359,7 @@
 <translation id="8371841335382565017">විකාශය කිරීම සඳහා උපාංග ලැයිස්තුව පෙන්වන්න</translation>
 <translation id="8371889962595521444">අභිරුචි මූල සහතික</translation>
 <translation id="8374636051559112948">වෙනස් වේ</translation>
+<translation id="8377507422902936905">ඇණවුම්</translation>
 <translation id="837840316697671463">ඔබට ඔබේ උපාංගයේ ගොනුවක් සොයාගත නොහැකි නම්, <ph name="CLOUD_PROVIDER" /> හි එය සොයන්න.</translation>
 <translation id="8378714024927312812">ඔබේ ආයතනය විසින් කළමනා කෙරේ</translation>
 <translation id="8380941800586852976">අන්තරායකර</translation>

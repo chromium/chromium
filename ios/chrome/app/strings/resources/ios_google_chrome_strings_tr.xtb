@@ -48,6 +48,7 @@ Dikkate alınması gereken noktalar:
 <translation id="1784567647421309104">Şifrelerinizi Chrome'a Kaydedin</translation>
 <translation id="1790080846677398234">Girilen URL'leri Chrome'daki yer işaretlerinize ekler.</translation>
 <translation id="1799920918471566157">Chrome ipuçları</translation>
+<translation id="1802420021606590788">Chrome, sayfa başlıklarını ve URL'leri buluttaki özel bir alanda işler</translation>
 <translation id="1830634592642484976">Bu adres şu anda Chrome'da kayıtlı. Adresi diğer Google ürünlerinde kullanmak için Google Hesabınıza (<ph name="USER_EMAIL" />) kaydedin.</translation>
 <translation id="1891812034154776216">Chrome'dan ayrıldığınızda açık olan gizli sekmeleri gizleyin</translation>
 <translation id="1894434821386148799">Chrome ayarlarını ve daha fazlasını burada bulabilirsiniz</translation>
@@ -140,6 +141,7 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="3984746313391923992">Kuruluşunuz, Chrome'da oturum kapatmış olarak kalmanızı zorunlu tutuyor.</translation>
 <translation id="3988789688219830639">Google Chrome, fotoğraflarınıza veya videolarınıza erişemiyor. iOS Ayarlar &gt; Gizlilik &gt; Fotoğraflar'dan erişimi etkinleştirin.</translation>
 <translation id="4064699917955374540">Chrome verilerini kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın.</translation>
+<translation id="4093789416346364876">Chrome'u varsayılan tarayıcınız yaparak gezindiğiniz her yerde Gemini analizlerinden yararlanın</translation>
 <translation id="411154422556990518">Fiyat takibi güncellemelerini ve Chrome ipuçlarını takip edin.</translation>
 <translation id="417201473131094001">Chrome Canary'de desteklenmiyor</translation>
 <translation id="424864128008805179">Chrome oturumu kapatılsın mı?</translation>
@@ -359,6 +361,7 @@ Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chrome verile
 <translation id="8610372330814566250">Safari şifrelerinizi, geçmişinizi, yer işaretlerinizi ve kredi kartlarınızı Chrome'da kullanın</translation>
 <translation id="8630122478628016441">"Chrome'u kapattığınızda Gizli sekmeler kilitlensin" seçeneğini etkinleştirin.</translation>
 <translation id="8673726683583791503">Google Lens ile Alışveriş Yapın</translation>
+<translation id="869525545193934083">Chrome'u varsayılan tarayıcı olarak ayarlama talimatlarının yer aldığı tam ekran video: iOS'te Chrome ayarlarını açın, "Varsayılan Tarayıcı Uygulaması"na dokunun ve Chrome'u seçin.</translation>
 <translation id="8765470054473112089">Adres çubuğuna veya arama kutusuna yazdığınızda Chrome, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
 <translation id="8772179140489533211">Chrome'da oturum açmak için istekleri gösterir.</translation>
 <translation id="8788269841521769222">Bu şifreyi hatırlamanız gerekmez. <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir</translation>

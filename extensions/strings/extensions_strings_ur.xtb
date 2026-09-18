@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">والدین کی اجازت کی درخواست ناکام ہو گئی۔</translation>
 <translation id="1803557475693955505">پس منظر کا صفحہ '<ph name="BACKGROUND_PAGE" />' لوڈ نہں کیا جا سکا۔</translation>
 <translation id="1875387611427697908">اس کو صرف <ph name="CHROME_WEB_STORE" /> سے شامل کیا جا سکتا ہے</translation>
+<translation id="1901182793187376715">‏‫<ph name="EXTENSION_NAME" /> (ایکسٹینشن ID "<ph name="EXTENSION_ID" />") کو کم بھروسہ مند ماحول میں پالیسی کے تحت انسٹال نہیں کیا جا سکتا۔</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" کو انسٹال کرنے سے قاصر کیونکہ "<ph name="IMPORT_NAME" />" کے ذریعہ اس کی اجازت نہیں ہے</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" شامل کریں؟</translation>
 <translation id="2159915644201199628">تصویر کو ڈیکوڈ نہیں کیا جا سکا: '<ph name="IMAGE_NAME" />'</translation>

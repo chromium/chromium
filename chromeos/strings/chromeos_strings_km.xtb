@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">ប្រភេទ​ផ្ទៀងផ្ទាត់</translation>
 <translation id="1776228893584526149">ពណ៌​ផ្ទាំងរូបភាព</translation>
 <translation id="1777913922912475695">ស្ពាន</translation>
-<translation id="1782199038061388045">ការបកប្រែ</translation>
 <translation id="1788485524395674731">កម្មវិធីនេះ​ត្រូវបាន​គ្រប់គ្រង​ដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
 <translation id="1792647875738159689">កំពុងបោះបង់ការស្កេន</translation>
 <translation id="1801418420130173017">បិទ​រចនាប័ទ្ម​ងងឹត</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">ប្រភេទ</translation>
 <translation id="2448857983905133469">ឧបករណ៍​ថ្នាក់</translation>
 <translation id="2468124392950503650">ជ្រើសរើស​សារតម្រុយ ដើម្បីបង្កើត ឬមើល<ph name="BEGIN_LINK_PROMPTING_GUIDE" />ការណែនាំ​អំពី​សារតម្រុយ<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">ប្រើ "ជួយខ្ញុំក្នុងការសរសេរ" ដើម្បីបង្កើតសេចក្ដីព្រាង ឬកែលម្អស្នាដៃដែលមានស្រាប់ ដែលដំណើរការដោយ Google AI</translation>
 <translation id="2475982808118771221">កំហុសឆ្គងមួយបានកើតឡើង</translation>
 <translation id="2480572840229215612">ក្ដាម</translation>
 <translation id="248546197012830854">ឧបករណ៍​គ្មាន​អ៊ីនធឺណិត​ទេ។ ភ្ជាប់ទៅ​បណ្ដាញ WiFi ដើម្បីមើល​ខ្លឹមសារជំនួយ។</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">ថតឡើងវិញ</translation>
 <translation id="3479552764303398839">មិនមែនឥឡូវនេះទេ</translation>
 <translation id="3484914941826596830">សូមកុំដកឧបករណ៍ខាងក្រៅនេះ ឬបិទកុំព្យូទ័ររបស់អ្នក ពេលកំពុងដំឡើងកំណែកម្មវិធី​បង្កប់។ អ្នកអាចបង្រួមវិនដូនេះបាន។ ការដំឡើងកំណែនេះអាចចំណាយពេលពីរបីនាទី ហើយឧបករណ៍ខាងក្រៅរបស់អ្នកអាចមិនដំណើរការនៅអំឡុងពេលនេះទេ។</translation>
-<translation id="3486220673238053218">និយមន័យ</translation>
 <translation id="3487866404496702283">មតិកែលម្អសម្រាប់មុខងារ mahi</translation>
 <translation id="3488065109653206955">បានធ្វើសកម្មភាពតាមផ្នែក</translation>
 <translation id="3492882532495507361">ការិយាល័យ<ph name="OFFICE_STYLE" />ដែល​មានពណ៌<ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">ជ្រើសរើសទម្រង់រចនា</translation>
 <translation id="3644695927181369554">ការណែនាំ​មិនល្អ</translation>
 <translation id="3651050199673793219">ជ្រើសរើស​ឯកតា​សីតុណ្ហភាព</translation>
-<translation id="3661106764436337772">សរសេរបានកាន់តែលឿន និងកាន់តែមានទំនុកចិត្ត</translation>
 <translation id="3662461537616691585">ក្រហមចាស់ និង​ឈាមជ្រូក</translation>
 <translation id="3664755900672940272">បានច្របល់​សារតម្រុយ​គំរូ</translation>
 <translation id="3668449597372804501">ផ្ទាំង​រូបភាពចលនាពពក</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">បានឈប់</translation>
 <translation id="4777310452073659583">ដើម្បី​ទទួលបាន​ប្រតិចារឹក សូម​ចាប់ផ្ដើម <ph name="DEVICE_TYPE" /> របស់អ្នក​ឡើងវិញ</translation>
 <translation id="4778082030331381943">កែវ​ណាំហ្វាន</translation>
-<translation id="4782311465517282004">ទទួលបាននិយមន័យ ការបកប្រែ ឬការបំប្លែងខ្នាត នៅពេលអ្នកចុចកណ្ដុរខាងស្ដាំ ឬចុចអត្ថបទឱ្យជាប់</translation>
 <translation id="4791000909649665275">រូបថត <ph name="NUMBER" /> សន្លឹក</translation>
 <translation id="4793710386569335688">សម្រាប់ជំនួយបន្ថែម សូមចូលទៅកាន់<ph name="BEGIN_LINK" />មជ្ឈមណ្ឌលជំនួយ<ph name="END_LINK" />។</translation>
 <translation id="4793756956024303490">ក្បួនបង្ហាប់</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">បិទ​រចនាប័ទ្ម​ភ្លឺ</translation>
 <translation id="7401543881546089382">លុបផ្លូវកាត់</translation>
 <translation id="7405493795721832710">អាចដំឡើងកំណែ <ph name="DEVICE_NAME" /> បានហើយ</translation>
-<translation id="741244894080940828">ការបំប្លែង</translation>
 <translation id="7415801143053185905">ការពន្យារ HTTP ខ្ពស់ខ្លាំង</translation>
 <translation id="7418738250896500352">មានពាក្យ​ច្រើនពេក មិនអាច​សម្រួល​បានទេ</translation>
 <translation id="7425037327577270384">ជួយខ្ញុំក្នុងការសរសេរ</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">ឧបករណ៍ផ្ទុកទិន្នន័យ</translation>
 <translation id="885704831271383379">ក្ដារចុចកាន់តែងងឹត</translation>
 <translation id="8863170912498892583">បើក​រចនាប័ទ្ម​ងងឹត</translation>
-<translation id="8863888432376731307">ទទួលបាន<ph name="INTENT" />នៃពាក្យ "<ph name="QUERY" />" និងច្រើនទៀត</translation>
 <translation id="8864415976656252616">គ្មាន​ខ្លឹមសារ​ដែលបានណែនាំ​ទេ។ សូម​មើល​ខ្លឹមសារ​ជំនួយ​ពេញនិយម។</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ឧបករណ៍គឺជាថេប្លេត។</translation>

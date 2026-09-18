@@ -142,6 +142,7 @@
 <translation id="1090541560108055381">ກ່ອນການຈັບຄູ່, ໃຫ້ກວດສອບວ່າລະຫັດນີ້ຄືກັນຢູ່ທັງສອງອຸປະກອນກ່ອນ</translation>
 <translation id="1093457606523402488">ເຄືອ​ຂ່າຍ​ສາ​ມາດ​ເຫັນ​ໄດ້:</translation>
 <translation id="1093645050124056515">Ctrl + Alt + ລູກສອນລົງ</translation>
+<translation id="1095398697303758108">ກົດ Ctrl 2 ເທື່ອເພື່ອໃຊ້ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ</translation>
 <translation id="1095879482467973146">ຕົວຈັດການລະຫັດຜ່ານ Google ຢູ່ເວັບ</translation>
 <translation id="1097016918605049747">ບໍ່ສາມາດແປພາສາໜ້ານີ້ໄດ້</translation>
 <translation id="1099962274138857708">ສຳເນົາຮູບຈາກ <ph name="DEVICE_NAME" /> ແລ້ວ</translation>
@@ -860,6 +861,7 @@
 <translation id="1656528038316521561">ຄວາມທຶບແສງຂອງພື້ນຫຼັງ</translation>
 <translation id="1657406563541664238">ຊ່ວຍ​ເຮັດ​ໃຫ້ <ph name="PRODUCT_NAME" /> ດີຂຶ້ນ​ໂດຍ​​ການ​ສົ່ງ​ສະ​ຖິ​ຕິ​ການ​ນໍາ​ໃຊ້​ ແລະ​ລາຍ​ງານການ​ຂັດຂ້ອງຫາ Google ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="1657937299377480641">ເພື່ອເຂົ້າສູ່ລະບົບອີກຄັ້ງສຳລັບສິດເຂົ້າເຖິງຊັບພະຍາກອນດ້ານການສຶກສາ, ກະລຸນາຂໍໃຫ້ພໍ່ແມ່ໃຫ້ການອະນຸຍາດແກ່ທ່ານ</translation>
+<translation id="1657952527687824398">ໂຟກັສກຸ່ມແຖບ</translation>
 <translation id="1658424621194652532">ໜ້ານີ້ກໍາລັງເຂົ້າຫາໄມໂຄຣໂຟນຂອງທ່ານ.</translation>
 <translation id="1660405268563702784">ມີອັບເດດສຳລັບ <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{ແກ້ໄຂແຖບທີ່ເຮັດໃຫ້ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານເຮັດວຽກຊ້າລົງ}other{ແກ້ໄຂແຖບທີ່ເຮັດໃຫ້ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານເຮັດວຽກຊ້າລົງ}}</translation>
@@ -2324,6 +2326,7 @@
 <translation id="2767077837043621282">ບໍ່ສາມາດອັບເດດ Chromebook ຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່ພາຍຫຼັງ.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> ຈະສາມາດແກ້ໄຂ <ph name="FILENAME" /> ໄດ້ຈົນກວ່າທ່ານປິດແຖບທັງໝົດສຳລັບເວັບໄຊນີ້</translation>
 <translation id="2769174155451290427">ຮູບທີ່ອັບໂຫຼດແລ້ວ</translation>
+<translation id="2769715732905083104">ໂຟກັສກຸ່ມແຖບ</translation>
 <translation id="2770082596325051055">ຢຸດ <ph name="FILE_NAME" /> ຊົ່ວຄາວ</translation>
 <translation id="2770465223704140727">ເອົາ​ອອກ​ຈາກລາຍການ</translation>
 <translation id="2770690685823456775">ສົ່ງລະຫັດຜ່ານຂອງທ່ານອອກໄປໃສ່ໂຟນເດີອື່ນ</translation>
@@ -2604,6 +2607,7 @@
 <translation id="2984727013951557074">ໄຟລ໌ຍັງກຳລັງຖືກຊິ້ງໃສ່ Drive ຢູ່.</translation>
 <translation id="2984923316661218534">ຮັບກະແຈຜ່ານຂອງທ່ານໃນອຸປະກອນນີ້ດ້ວຍຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> ຖອນການຕິດຕັ້ງໜຶ່ງແອັບແລ້ວ}other{<ph name="APP_NAME" /> ຖອນການຕິດຕັ້ງ # ແອັບແລ້ວ}}</translation>
+<translation id="2987777176328481585">{NUM_TABS,plural, =1{ໂຟກັສແຖບ}other{ໂຟກັສ # ແຖບ}}</translation>
 <translation id="2988018669686457659">ຕົວສະແດງພາບສຳຮອງ</translation>
 <translation id="2988328607561082373">ທ່ານບໍ່ໄດ້ໃຊ້ລະຫັດຜ່ານໃດໆຊ້ຳກັນ</translation>
 <translation id="2989123969927553766">ການເລັ່ງຄວາມໄວການເລື່ອນເມົ້າ</translation>
@@ -2718,7 +2722,6 @@
 <translation id="3048917188684939573">ບັນທຶກການສົ່ງສັນຍານ ແລະ ອຸປະກອນ</translation>
 <translation id="3049356453907822148">ເພີ່ມທັກສະໃໝ່</translation>
 <translation id="3051250416341590778">ຂະໜາດສະແດງຜົນ</translation>
-<translation id="3051676221004664500">&amp;ແປ “<ph name="SELECTION" />”</translation>
 <translation id="3053273573829329829">ເປີດນຳໃຊ້ PIN ຜູ້ໃຊ້</translation>
 <translation id="3053274730492362225">ບໍ່ກະພິບ</translation>
 <translation id="3057938290530993634">ແຕະຄ້າງໄວ້ເພື່ອປັກໝຸດເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງຫຼາຍທີ່ສຸດເພື່ອໃຫ້ເຂົ້າເຖິງໄດ້ງ່າຍໃນເທື່ອຕໍ່ໄປ</translation>
@@ -5159,7 +5162,6 @@
 <translation id="4913573660390710463">ສິດເຂົ້າເຖິງໂປຣແກຣມນຳໃຊ້ຜ່ານເວັບແບບແພັກເກດພ້ອມຄວາມສາມາດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">ບໍ່ພົບຂໍ້ມູນແອັບ</translation>
 <translation id="4915961947098019832">ໄດ້ຮັບອະນຸຍາດໃຫ້ສະແດງຮູບ</translation>
-<translation id="4916140032692201190">&amp;ແປລາຍການທີ່ເລືອກ</translation>
 <translation id="491779113051926205">ຕົວນັບທຣາບຟິກ ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ຕ້ອງ​ການ​ສື່​ສານ​ກັບ​ສ່ວນ​ຂ​ະ​ຫຍາຍ "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">ຍອມ​ຮັບ</translation>
@@ -5196,6 +5198,7 @@
 <translation id="4941963255146903244">ເບິ່ງຮູບພາບ, ມີເດຍ ແລະ ແອັບຂອງໂທລະສັບທ່ານ</translation>
 <translation id="494286511941020793">ຊ່ວຍເຫຼືອການ​ປັບ​ຕັ້ງ​ຄ່າພຣັອກຊີ</translation>
 <translation id="4943368462779413526">ບານເຕະ</translation>
+<translation id="4943872375798546930">ບໍ່​ມີ​ຜົນ​ໄດ້​ຮັບ</translation>
 <translation id="4943927218331934807">ຕ້ອງມີລະຫັດຜ່ານ</translation>
 <translation id="4946998421534856407">ຕົວເປີດໃຊ້ + ລູກສອນຂຶ້ນ</translation>
 <translation id="4947376546135294974">ຂໍ້ມູນຈາກເວັບໄຊທີ່ທ່ານກຳລັງເຂົ້າເບິ່ງ</translation>
@@ -5236,7 +5239,6 @@
 <translation id="4972129977812092092">ແກ້ໄຂເຄື່ອງພິມ</translation>
 <translation id="4972164225939028131">ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</translation>
 <translation id="4972737347717125191">ເວັບໄຊສາມາດຂໍໃຊ້ອຸປະກອນເວີຊົວ ຣິອາລິຕີ ແລະ ຂໍ້ມູນໄດ້</translation>
-<translation id="4973302523373219907">ຫາກບໍ່ໄດ້ຕັ້ງຄ່າທາງລັດທີ່ກຳນົດເອງ, ລະບົບຈະໃຊ້ @@ ໂດຍຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{ປິດສຽງເວັບໄຊ}other{ປິດສຽງເວັບໄຊ}}</translation>
 <translation id="497403230787583386">ການກວດສອບຄວາມປອດໄພສຳເລັດແລ້ວ. ເອກະສານຂອງທ່ານຈະຖືກພິມ.</translation>
 <translation id="4974442344472293753">ຜົນການອັບເດດ</translation>
@@ -5339,6 +5341,7 @@
 <translation id="5060419232449737386">ການຕັ້ງຄ່າຄຳບັນຍາຍ</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{ໂຟນເດີນີ້ປະກອບມີໜຶ່ງບຸກມາກ. ທ່ານແນ່ໃຈບໍວ່າທ່ານຕ້ອງການລຶບມັນ?}other{ໂຟນເດີນີ້ປະກອບມີ # ບຸກມາກ. ທ່ານແນ່ໃຈບໍວ່າທ່ານຕ້ອງການລຶບມັນ?}}</translation>
 <translation id="5061531353537614467">ທັນດຣາ</translation>
+<translation id="5061781067616989032">ຕັ້ງຄ່າຄີລັດຂອງທ່ານເອງ</translation>
 <translation id="5062863364865466276">ການເຄື່ອນໄຫວ</translation>
 <translation id="5063480226653192405">ການນໍາໃຊ້</translation>
 <translation id="5064921774605267982">ເປີດໂປຣໄຟລ໌ຂອງ <ph name="PROFILE_NAME" />. ຜູ້ປົກຄອງຂອງທ່ານເປັນຜູ້ຈັດການໂປຣໄຟລ໌ນີ້.</translation>
@@ -5670,6 +5673,7 @@
 <translation id="5311304534597152726">ກຳລັງເຂົ້າສູ່ລະບົບເປັນ</translation>
 <translation id="5312746996236433535">ສະທ້ອນໜ້າຈໍ</translation>
 <translation id="5313967007315987356">ເພີ່ມ​ເວັບ​ໄຊ​ທ໌</translation>
+<translation id="531500736198839473">{NUM_TABS,plural, =1{ໂຟກັສແຖບ}other{ໂຟກັສ # ແຖບ}}</translation>
 <translation id="5315738755890845852">ເຄື່ອງໝາຍວົງປີກກາທີ່ເກີນມາ: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5317781812114905957">ຄຳແນະນຳ</translation>
@@ -6549,6 +6553,7 @@
 <translation id="6022659036123304283">ເຮັດໃຫ້ Chrome ເປັນຂອງທ່ານ</translation>
 <translation id="6024317249717725918">ຊອກຫາເຟຣມວິດີໂອດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">ຮ່ອງຮອຍການກອງ</translation>
+<translation id="6026436621921471553">ຍົກເລີກການໂຟກັສກຸ່ມແຖບ</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - ເຊື່ອມຕໍ່ກັບອຸປະກອນ USB ແລ້ວ</translation>
 <translation id="6027143200498653403">ເມື່ອທ່ານຖາມຄໍາຖາມກ່ຽວກັບປະຫວັດຂອງທ່ານ, ທ່ານສາມາດໄດ້ຮັບຄໍາຕອບກ່ຽວກັບຂໍ້ມູນສະເພາະຈາກໜ້າທີ່ທ່ານໄດ້ເຂົ້າເບິ່ງ</translation>
 <translation id="6027945736510816438">ທ່ານໝາຍເຖິງ <ph name="WEBSITE" /> ບໍ?</translation>
@@ -6647,7 +6652,6 @@
 <translation id="610487644502954950">ຖອນໝຸດແຜງຄວບຄຸມດ້ານຂ້າງແລ້ວ</translation>
 <translation id="6104929924898022309">ໃຊ້ປຸ່ມຊອກຫາເພື່ອປ່ຽນລັກສະນະການເຮັດວຽກຂອງປຸ່ມຟັງຊັນ</translation>
 <translation id="6108952804512516814">ສ້າງດ້ວຍ AI</translation>
-<translation id="611041979451429698">&amp;ພິມ “<ph name="SELECTION" />”</translation>
 <translation id="6110794992500777605">ທາງລັດ ແລະ ເວັບໄຊຂອງຂ້ອຍ</translation>
 <translation id="6111718295497931251">ລຶບສິດເຂົ້າເຖິງ Google Drive ອອກ</translation>
 <translation id="6112197885362646874">ຖາມ Google ກ່ຽວກັບ “<ph name="SEARCH_TERMS" />”</translation>
@@ -7017,6 +7021,7 @@
 <translation id="6399675241776343019">ຖືກປະຕິເສດ</translation>
 <translation id="6399774419735315745">ສາຍລັບ</translation>
 <translation id="6400360390396538896">ເປີດຕະຫຼອດຢູ່ <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">ຍົກເລີກການໂຟກັສກຸ່ມແຖບ</translation>
 <translation id="6401118106417399952">EID ຂອງອຸປະກອນຂອງທ່ານແມ່ນ <ph name="EID_NUMBER" /> ແລະ ໝາຍເລກຊີຣຽວອຸປະກອນແມ່ນ <ph name="SERIAL_NUMBER" />. ໝາຍເລກເຫຼົ່ານີ້ສາມາດຖືກນຳໃຊ້ເພື່ອຊ່ວຍເປີດການນຳໃຊ້ບໍລິການໄດ້.</translation>
 <translation id="6401458660421980302">ເພື່ອສົ່ງແຖບນີ້ໄປຫາອຸປະກອນອື່ນ, ໃຫ້ເຂົ້າສູ່ລະບົບຫາ Chrome ຢູ່ບ່ອນນັ້ນ</translation>
 <translation id="6402042774506839496">ເພື່ອສຶກສາເຫດຜົນ, ກະລຸນາຕິດຕໍ່ນັກພັດທະນາແອັບໄດ້</translation>
@@ -7421,6 +7426,7 @@
 <translation id="6710213216561001401">ຜ່ານມາ</translation>
 <translation id="6710394144992407503">ກວດສອບເບິ່ງຂໍ້ຜິດພາດກ່ຽວກັບການສະກົດຄຳເມື່ອທ່ານພິມຂໍ້ຄວາມຢູ່ໜ້າເວັບ</translation>
 <translation id="6711236403841768371">ກ່ອນວັນທີ <ph name="END_DATE" /></translation>
+<translation id="6711569175139833669">ກົດ ⌘ 2 ເທື່ອເພື່ອໃຊ້ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ</translation>
 <translation id="6712943853047024245">ທ່ານເຄີຍບັນທຶກລະຫັດຜ່ານດ້ວຍຊື່ຜູ້ໃຊ້ນີ້ສຳລັບ <ph name="WEBSITE" /> ໄປກ່ອນແລ້ວ</translation>
 <translation id="6713233729292711163">ເພີ່ມໂປຣໄຟລ໌ບ່ອນເຮັດວຽກ</translation>
 <translation id="6713441551032149301">ກົດປຸ່ມຕົວເປີດໃຊ້ຄ້າງໄວ້ເພື່ອປ່ຽນລະຫວ່າງປຸ່ມຟັງຊັນ ແລະ ປຸ່ມແຖວເທິງສຸດຂອງລະບົບ</translation>
@@ -7653,7 +7659,6 @@
 <translation id="6870470066213933201">ຈັດການການປັບແຕ່ງ ແລະ ຄວາມປອດໄພ JavaScript</translation>
 <translation id="6870953451576517204">ການທົດສອບຕົນເອງສຳເລັດແລ້ວ</translation>
 <translation id="6871397658902960384">ເລີ່ມເລືອກເບິ່ງ</translation>
-<translation id="6871609459496868094">&amp;ສຳເນົາ “<ph name="SELECTION" />”</translation>
 <translation id="6871644448911473373">ເຄື່ອງຕອບຮັບ OCSP: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">ພາສາ...</translation>
 <translation id="6873156759937047811">PIN:</translation>
@@ -8576,6 +8581,7 @@
 <translation id="7602173054665172958">ການຈັດການການພິມ</translation>
 <translation id="7602805861133750578">ຕອນນີ້ທ່ານສາມາດຈັດການກຸ່ມແຖບ, ການສົນທະນາ Gemini ແລະ ຫົວຂໍ້ໃນໂໝດ AI ຂອງທ່ານໄດ້ໃນບ່ອນດຽວແລ້ວ. ຖອນໝຸດສິ່ງນີ້ໄດ້ທຸກເວລາ.</translation>
 <translation id="7602868996817972616">ຖາມ Google ກ່ຽວກັບໜ້ານີ້</translation>
+<translation id="7603583710244190070">ອົງກອນຂອງທ່ານບລັອກການແບ່ງປັນໜ້າຈໍຂອງແຖບນີ້</translation>
 <translation id="7603785829538808504">ເວັບໄຊທີ່ມີລາຍຊື່ທາງລຸ່ມແມ່ນເຮັດຕາມການຕັ້ງຄ່າແບບກຳນົດເອງ</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{ບໍ່ໄດ້ນຳເຂົ້າ 1 ລະຫັດຜ່ານ}other{ບໍ່ໄດ້ນຳເຂົ້າ {NUM_PASSWORDS} ລະຫັດຜ່ານ}}</translation>
 <translation id="7605163396341021431">ໃຫ້ແອັບ Android ຄວບຄຸມອຸປະກອນ USB ຢູ່ Chromebook ເຄື່ອງນີ້</translation>
@@ -8729,6 +8735,7 @@
 <translation id="7707108266051544351">ເວັບໄຊນີ້ໄດ້ຖືກບລັອກບໍ່ໃຫ້ໃຊ້ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວແລ້ວ.</translation>
 <translation id="7707922173985738739">ໃຊ້ຂໍ້ມູນມືຖື</translation>
 <translation id="7709152031285164251">ບໍ່ສໍາເລັດ - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7709839510451455295">ລຶບລ້າງທາງລັດທີ່ກຳນົດເອງສຳລັບການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ</translation>
 <translation id="7710568461918838723">&amp;ສົ່ງສັນຍານ...</translation>
 <translation id="7711968363685835633">ປິດການນຳໃຊ້ການປ່ຽນຄ່າ ແລະ ການແນະນຳແບບປັບແຕ່ງສ່ວນຕົວ ພ້ອມທັງວັດຈະນານຸກົມຜູ້ໃຊ້</translation>
 <translation id="7712739869553853093">ກ່ອງໂຕ້ຕອບສະແດງຕົວຢ່າງການພິມ</translation>
@@ -8768,6 +8775,7 @@
 <translation id="7742706086992565332">ທ່ານສາມາດຕັ້ງວ່າທ່ານຈະຊູມເຂົ້າ ຫຼື ຊູມອອກຫຼາຍປານໃດໃນເວັບໄຊສະເພາະໄດ້</translation>
 <translation id="7742879569460013116">ແບ່ງປັນລິ້ງຫາ</translation>
 <translation id="774377079771918250">ເລືອກບ່ອນທີ່ຈະບັນທຶກໄວ້</translation>
+<translation id="7743876437245989842">ອົງກອນຂອງທ່ານບລັອກການແບ່ງປັນໜ້າຈໍຂອງແຖບ</translation>
 <translation id="7744047395460924128">ເບິ່ງປະຫວັດການພິມຂອງທ່ານ</translation>
 <translation id="7744192722284567281">ພົບເຫັນໃນການລະເມີດຂໍ້ມູນ</translation>
 <translation id="7744649840067671761">ກົດສະວິດ ຫຼື ປຸ່ມແປ້ນພິມໃໝ່ເພື່ອເລີ່ມການມອບໝາຍ.
@@ -9391,6 +9399,7 @@
 <translation id="8215129063232901118">ເຂົ້າເຖິງຄວາມສາມາດຂອງໂທລະສັບຂອງທ່ານຈາກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="8217212468862726597">ຕົວຊີ້ໄຮໄລ້</translation>
 <translation id="8217399928341212914">ສືບຕໍ່ບລັອກການດາວໂຫຼດຫຼາຍໄຟລ໌ອັດຕະໂນມັດ</translation>
+<translation id="8218411859495801458">ແກ້ໄຂທາງລັດທີ່ກຳນົດເອງສຳລັບການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ</translation>
 <translation id="8221358554841691213">ຮູບແບບໂຟກັສຂະໜາດກາງ</translation>
 <translation id="8221942262855134126">ຈັດການລະຫັດຜ່ານ</translation>
 <translation id="8222112516148944758">ກຸ່ມແຖບຂອງທ່ານຈະບັນທຶກ ແລະ ອັບເດດໂດຍອັດຕະໂນມັດໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ</translation>
@@ -9732,7 +9741,6 @@
 <translation id="8477241577829954800">ປ່ຽນແທນແລ້ວ</translation>
 <translation id="8477384620836102176">ທົ່ວໄປ</translation>
 <translation id="8477446666255316832">ເຂົ້າສູ່ລະບົບເທື່ອຕໍ່ໄປໄດ້ໄວຂຶ້ນ</translation>
-<translation id="8477548388161793571">&amp;ແປລາຍການທີ່ເລືອກ</translation>
 <translation id="8478346767369317046">ບ່ອນເຮັດວຽກ</translation>
 <translation id="8479176401914456949">ລະຫັດບໍ່ຖືກຕ້ອງ. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="8480869669560681089">ອຸປະກອນທີ່ບໍ່ຮູ້ຈັກຈາກ <ph name="VENDOR_NAME" /></translation>
@@ -9774,6 +9782,7 @@
 <translation id="851263357009351303">​ອະ​ນຸ​ຍາດ​ໃຫ້ <ph name="HOST" /> ສະ​ແດງຮູບທຸກຄັ້ງ</translation>
 <translation id="8513108775083588393">ໝຸນອັດຕະໂນມັດ</translation>
 <translation id="8513357934662532537">ເພື່ອນຳເຂົ້າລະຫັດຜ່ານໄປໃສ່ <ph name="BRAND" /> ສຳລັບ <ph name="USER_EMAIL" />, ໃຫ້ເລືອກໄຟລ໌ CSV.</translation>
+<translation id="8514257511170433540">ໃຊ້ຄີລັດເລີ່ມຕົ້ນເມື່ອຕື່ມຂໍ້ມູນໃສ່ແບບຟອມ</translation>
 <translation id="8514746246728959655">ລອງກະແຈຄວາມປອດໄພອື່ນ</translation>
 <translation id="8514828975162859845">ເຄັກປັອບ</translation>
 <translation id="8514955299594277296">ຢ່າອະນຸຍາດໃຫ້ເວັບໄຊບັນທຶກຂໍ້ມູນຢູ່ອຸປະກອນຂອງທ່ານ (ບໍ່ແນະນຳ)</translation>
@@ -10765,6 +10774,7 @@
 <translation id="973558314812359997">ຂະໜາດເມົ້າ</translation>
 <translation id="973788791897303708">ກຸ່ມແຖບນີ້ເຕັມແລ້ວ</translation>
 <translation id="97381968209917373">ລຶບໃບຮັບຮອງ <ph name="CERT_NAME" /></translation>
+<translation id="97570902379088759">ອົງກອນຂອງທ່ານບລັອກການແບ່ງປັນໜ້າຈໍຂອງ <ph name="TAB_NAME" /></translation>
 <translation id="975893173032473675">ພາສາທີ່ຈະແປເປັນ</translation>
 <translation id="976572010712028687">ຢັ້ງຢືນວ່າທ່ານເປັນຜູ້ປົກຄອງ</translation>
 <translation id="977175416263153310">ເປີດໃນໜ້າຈໍແຍກ</translation>

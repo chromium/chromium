@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Todennustyyppi</translation>
 <translation id="1776228893584526149">Taustakuvan sävy</translation>
 <translation id="1777913922912475695">silta</translation>
-<translation id="1782199038061388045">käännös</translation>
 <translation id="1788485524395674731">Järjestelmänvalvojasi ylläpitää tätä sovellusta</translation>
 <translation id="1792647875738159689">Perutaan skannausta</translation>
 <translation id="1801418420130173017">Poista tumma teema käytöstä</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Tyyppi</translation>
 <translation id="2448857983905133469">Ryhmätyökalut</translation>
 <translation id="2468124392950503650">Valitse kehote luodaksesi tai tutustu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />kehoteoppaaseen<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Käytä Auta minua kirjoittamaan ‐ominaisuutta luonnoksen kirjoittamiseen tai aiemmin luodun tehtävän viimeistelyyn Googlen tekoälyn avulla</translation>
 <translation id="2475982808118771221">Tapahtui virhe</translation>
 <translation id="2480572840229215612">ravut</translation>
 <translation id="248546197012830854">Laite on offline-tilassa. Muodosta yhteys Wi-Fi-verkkoon, niin näet ohjesisältöä.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Uusi otos</translation>
 <translation id="3479552764303398839">Ei nyt</translation>
 <translation id="3484914941826596830">Älä irrota ulkoista laitetta äläkä sammuta tietokonetta sillä aikaa kun laiteohjelmisto päivittyy. Voit pienentää ikkunan. Päivityksessä voi mennä muutama minuutti, eikä ulkoinen laite välttämättä toimi sen aikana.</translation>
-<translation id="3486220673238053218">määritelmä</translation>
 <translation id="3487866404496702283">Palaute mahi-ominaisuudesta</translation>
 <translation id="3488065109653206955">Osittain aktivoitu</translation>
 <translation id="3492882532495507361">Toimisto (<ph name="OFFICE_STYLE" />), jonka sävy on <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Valitse teema</translation>
 <translation id="3644695927181369554">Huono ehdotus</translation>
 <translation id="3651050199673793219">Valitse lämpötilan yksikkö</translation>
-<translation id="3661106764436337772">Kirjoita nopeammin ja itsevarmemmin</translation>
 <translation id="3662461537616691585">viininpuna ja punaruskea</translation>
 <translation id="3664755900672940272">Esimerkkikehotteet sekoitettu</translation>
 <translation id="3668449597372804501">Pilvien kulku ‑taustakuva</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Keskeytetty</translation>
 <translation id="4777310452073659583">Jos haluat transkription, käynnistä <ph name="DEVICE_TYPE" /> uudelleen</translation>
 <translation id="4778082030331381943">ametisti</translation>
-<translation id="4782311465517282004">Voit nähdä määritelmiä, käännöksiä tai yksikkömuunnoksia klikkaamalla tekstiä kakkospainikkeella tai koskettamalla sitä pitkään</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> kuva</translation>
 <translation id="4793710386569335688">Saat lisää ohjeita <ph name="BEGIN_LINK" />ohjekeskuksesta<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Pakkausalgoritmi</translation>
@@ -1459,7 +1454,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7397270852490618635">Laita vaalea teema pois päältä</translation>
 <translation id="7401543881546089382">Poista pikakuvake</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> on valmis päivitettäväksi</translation>
-<translation id="741244894080940828">muunnos</translation>
 <translation id="7415801143053185905">Erittäin suuri HTTP-viive</translation>
 <translation id="7418738250896500352">Sanoja on liian paljon yksinkertaistamista varten</translation>
 <translation id="7425037327577270384">Auta minua kirjoittamaan</translation>
@@ -1769,7 +1763,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="885701979325669005">Tallennus</translation>
 <translation id="885704831271383379">tummempi näppäimistö</translation>
 <translation id="8863170912498892583">Ota tumma teema käyttöön</translation>
-<translation id="8863888432376731307">Hae <ph name="INTENT" />: "<ph name="QUERY" />" ja muita</translation>
 <translation id="8864415976656252616">Ei sisältöehdotuksia. Katso suosituin ohjesisältö.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Laite on tabletti.</translation>

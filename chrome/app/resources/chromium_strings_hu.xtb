@@ -147,6 +147,7 @@
 <translation id="2575822587468774919">Válasszon ki bármit a Képkeresővel való kereséshez</translation>
 <translation id="2576118232315942160">Ha az összes eszközén szeretne hozzáférni jelszavaihoz és egyebekhez, jelentkezzen be a Chromiumba</translation>
 <translation id="2587622539943955767">Olvassa be a QR-kódot telefonjával a Chromium letöltéséhez, majd jelentkezzen be Google-fiókjába.</translation>
+<translation id="2587885422541096572">a Chromiummal való kereséshez.</translation>
 <translation id="2592940277904433508">A Chromium használatának folytatása</translation>
 <translation id="259935314519650377">A letöltött telepítő gyorsítótárazása sikertelen. Hiba: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Rendszer</translation>
@@ -644,7 +645,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="77283119132245232">Rendszerkövetési szolgáltatásokat biztosít a(z) <ph name="BROWSER_NAME" /> böngészőhöz. Ha ez a szolgáltatás le van tiltva, a böngésző által létrehozott teljesítménynyomok nem tartalmazzák a rendszerszintű eseményeket, például a kontextusváltási és a ready thread-eseményeket.</translation>
 <translation id="7745317241717453663">Ezzel az eszközön lévő összes böngészési adat törlődik. Az adatok későbbi lekéréséhez jelentkezzen be a Chromiumba a következő e-mail-címmel: <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">A telepítőnek nem sikerült létrehoznia az ideiglenes könyvtárat. Kérjük ellenőrizze, hogy van-e elegendő hely a lemezen, és rendelkezik-e engedéllyel a szoftvertelepítésre.</translation>
-<translation id="7747820849741499258">Keresés a Chromiumban</translation>
 <translation id="7750130090210923118">Visszaállítás az alapértelmezett Chromiumra</translation>
 <translation id="7752521946322750699">A Chromiumban végzett munka biztonsága érdekében a szervezete képes lehet bizonyos információk megtekintésére vagy kezelésére, amikor Ön be van jelentkezve a Chromiumba.</translation>
 <translation id="7781047659465034537">Állítsa be a Chromiumot alapértelmezettként, és tűzze ki a tálcára</translation>
@@ -652,7 +652,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Megnehezítheti az internetes forgalmához hozzáférő személyek számára, hogy lássák, milyen webhelyeket keres fel. A Chromium biztonságos kapcsolatot használ a webhelyek IP-címének DNS-ben (domainnévrendszerben) való megkereséséhez.</translation>
 <translation id="7810005234485217901">Az egyszerű hozzáférés érdekében kitűzheti a Képkeresőt</translation>
-<translation id="7813626943009612327">Kérdezhet a Chromiumon kívüli tartalmakról, például egy másik megnyitott alkalmazásról vagy fájlról.</translation>
 <translation id="7828527096541974699">Válassza ki, hogy mit szeretne megosztani a Chromiummal</translation>
 <translation id="7828947555739565424">Már létezik Chromium-profil ezzel a fiókkal ezen az eszközön.</translation>
 <translation id="7845233973568007926">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt újra kell indítania a számítógépet.</translation>
@@ -777,6 +776,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="897581876605952338">A Chromium Enterprise logója</translation>
 <translation id="8980139959902937527">A Chromium alkalmazással a Google által nyújtott biztonságot is magával viheti <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="8981150672034878610">Nem indítható el a Chromium, mert hiba történt a profilja megnyitása során. Próbálkozzon a Chromium újraindításával.</translation>
+<translation id="8981886272598860786">a Chromiummal való kereséshez, vagy a <ph name="BEGIN_LINK" />Beállításokban<ph name="END_LINK" /> való személyre szabáshoz</translation>
 <translation id="8988036198400390003">Chromium-profilok kezelése</translation>
 <translation id="8993855408334954620">A billentyűzet segítségével válthat a Gemini a Chromiumban és a megnyitott lap között.</translation>
 <translation id="9018218886431812662">A telepítés befejeződött</translation>

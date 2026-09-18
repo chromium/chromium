@@ -837,6 +837,8 @@
 <translation id="2384307209577226199">நிறுவன இயல்புநிலை</translation>
 <translation id="2385809941344967209">Chrome அமைப்புகளில் Chromeமைப் புதுப்பித்தல்</translation>
 <translation id="2386255080630008482">சேவையகச் சான்றிதழ் திரும்பப் பெறப்பட்டது.</translation>
+<translation id="2387424091060104123">Gemini பரிந்துரைத்தது · <ph name="SRC_LINK" />ஆவணங்களைப் பாருங்கள்<ph name="END_SRC_LINK" />
+இந்தப் பரிந்துரையை Chromeமில் இருந்து அகற்றலாம். உங்கள் அசல் ஆவணம் நீக்கப்படாது. <ph name="MANAGE_LINK" />மேம்பட்ட தானியங்கு நிரப்பல் அம்சத்தை நிர்வகியுங்கள்<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">விவரி</translation>
 <translation id="2392959068659972793">மதிப்பும் எதுவும் அமைக்கப்படாத கொள்கைகளைக் காட்டு</translation>
 <translation id="239429038616798445">இந்த ஷிப்பிங் முறை இல்லை. வேறு முறையைப் பயன்படுத்திப் பார்க்கவும்.</translation>
@@ -1514,6 +1516,7 @@
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">இந்தப் பக்கம் தயாராக இருக்கும்போது Chrome உங்களுக்குத் தெரிவிக்கும். &lt;a&gt;ரத்துசெய்&lt;/a&gt;</translation>
 <translation id="3581499772329034229">பக்கங்களைத் தானாகச் சேர்த்தல்</translation>
+<translation id="3582670569275100909">ஷிப்மெண்ட்டுகள்</translation>
 <translation id="3582930987043644930">பெயரைச் சேர்</translation>
 <translation id="3583757800736429874">&amp;நகர்த்தலை மீண்டும் செய்</translation>
 <translation id="3584299510153766161">டூயல் பஞ்ச் பாட்டம்</translation>
@@ -4006,6 +4009,7 @@
 <translation id="7758069387465995638">ஃபயர்வால் அல்லது வைரஸ்தடுப்பு மென்பொருள் உங்கள் இணைப்பைத் தடுத்திருக்கலாம்.</translation>
 <translation id="7759147511335618829">MIDI சாதனக் கட்டுப்பாடு &amp; ரீ-புரோகிராம்</translation>
 <translation id="7759809451544302770">விரும்பினால்</translation>
+<translation id="7760566304700414795">ஷிப்மெண்ட்</translation>
 <translation id="776110834126722255">நிறுத்தப்பட்டது</translation>
 <translation id="7761159795823346334">கேமரா அணுகலை வழங்கவா?</translation>
 <translation id="7761701407923456692">சேவையகச் சான்றிதழ் URL உடன் பொருந்தவில்லை.</translation>
@@ -4351,6 +4355,7 @@
 <translation id="8371841335382565017">அலைபரப்புவதற்கான சாதனப் பட்டியலைக் காட்டு</translation>
 <translation id="8371889962595521444">பிரத்தியேகமான முதன்மை சான்றிதழ்கள்</translation>
 <translation id="8374636051559112948">மாறுபடும்</translation>
+<translation id="8377507422902936905">ஆர்டர்கள்</translation>
 <translation id="837840316697671463">உங்கள் சாதனத்தில் ஃபைல் இல்லை என்றால் அதை <ph name="CLOUD_PROVIDER" /> இல் பார்க்கவும்.</translation>
 <translation id="8378714024927312812">உங்கள் நிறுவனத்தால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="8380941800586852976">ஆபத்தானது</translation>

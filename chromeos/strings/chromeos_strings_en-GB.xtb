@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Authentication type</translation>
 <translation id="1776228893584526149">Wallpaper tone</translation>
 <translation id="1777913922912475695">bridge</translation>
-<translation id="1782199038061388045">translation</translation>
 <translation id="1788485524395674731">This app is managed by your administrator</translation>
 <translation id="1792647875738159689">Cancelling scanning</translation>
 <translation id="1801418420130173017">Disable Dark theme</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Type</translation>
 <translation id="2448857983905133469">Class tools</translation>
 <translation id="2468124392950503650">Select prompt to create or see the <ph name="BEGIN_LINK_PROMPTING_GUIDE" />prompt guide<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Use Help me write to create a draft or refine existing work, powered by Google AI</translation>
 <translation id="2475982808118771221">An error occurred</translation>
 <translation id="2480572840229215612">crabs</translation>
 <translation id="248546197012830854">Device is offline. Connect to Wi-Fi network to see help content.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Retake</translation>
 <translation id="3479552764303398839">Not now</translation>
 <translation id="3484914941826596830">While the firmware is updating, do not unplug this external device or shut down your computer. You can minimise this window. This update may take a few minutes and your external device may not work during this time.</translation>
-<translation id="3486220673238053218">definition</translation>
 <translation id="3487866404496702283">Feedback for mahi feature</translation>
 <translation id="3488065109653206955">Partially activated</translation>
 <translation id="3492882532495507361">A <ph name="OFFICE_STYLE" /> office with <ph name="OFFICE_COLOR" /> tones</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Choose a theme</translation>
 <translation id="3644695927181369554">Bad suggestion</translation>
 <translation id="3651050199673793219">Select a temperature unit</translation>
-<translation id="3661106764436337772">Write faster and with more confidence</translation>
 <translation id="3662461537616691585">burgundy and maroon</translation>
 <translation id="3664755900672940272">Sample prompts shuffled</translation>
 <translation id="3668449597372804501">Cloud flow wallpaper</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Stopped</translation>
 <translation id="4777310452073659583">To get transcript, restart your <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">amethyst</translation>
-<translation id="4782311465517282004">Get definitions, translations or unit conversions when you right-click or touch &amp; hold text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
 <translation id="4793710386569335688">For more help, go to the <ph name="BEGIN_LINK" />Help Centre<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Compression algorithm</translation>
@@ -1459,7 +1454,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7397270852490618635">Turn Light theme off</translation>
 <translation id="7401543881546089382">Delete shortcut</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> is ready to be updated</translation>
-<translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Very high HTTP latency</translation>
 <translation id="7418738250896500352">Too many words to simplify</translation>
 <translation id="7425037327577270384">Help me write</translation>
@@ -1769,7 +1763,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="885701979325669005">Storage</translation>
 <translation id="885704831271383379">keyboard darker</translation>
 <translation id="8863170912498892583">Enable Dark theme</translation>
-<translation id="8863888432376731307">Get the <ph name="INTENT" /> for '<ph name="QUERY" />' and more</translation>
 <translation id="8864415976656252616">No suggested content. See top help content.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Device is a tablet.</translation>

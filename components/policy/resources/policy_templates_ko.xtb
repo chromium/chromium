@@ -2659,6 +2659,7 @@ Chrome에서 퍼스트 파티 세트 관련 통합을 지원하는지 제어합�
 
 정책을 사용 중지하면 기기는 콘텐츠 보호에 원격 증명을 사용하지 않고 기기에서 보호된 콘텐츠를 재생할 수 없게 됩니다.</translation>
 <translation id="262740370354162807"><ph name="CLOUD_PRINT_NAME" />(으)로 문서 제출 사용</translation>
+<translation id="2631498379019108537">앱 표시줄에 입력 옵션 표시</translation>
 <translation id="2633084400146331575">음성 피드백 사용</translation>
 <translation id="2633907568797306353">휴대전화 허브 알림을 켤 수 있게 어횽</translation>
 <translation id="2634265675787412567"><ph name="PRODUCT_NAME" />에서 macOS 13.5 이상의 iCloud 키체인에 직접 패스키/WebAuthn 생성 요청을 전달할 수도 있습니다. iCloud 키체인 동기화가 아직 사용 설정되지 않은 경우 사용자에게 iCloud로 로그인하라는 메시지가 표시되거나 iCloud 키체인 동기화를 사용 설정하라는 프롬프트가 표시될 수 있습니다.
@@ -4373,6 +4374,7 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
 <translation id="376375951585423504">영구 할당량을 사용 중지합니다.</translation>
 <translation id="3765260570442823273">유휴 로그아웃 경고 메시지 표시 시간</translation>
 <translation id="3766695867369523703">기본적으로 서드 파티 저장용량 파티셔닝을 허용합니다.</translation>
+<translation id="3769975508816807531">백그라운드 탭 고정이 사용 중지됨</translation>
 <translation id="377001726927041812">프로세스 격리를 사용 설정합니다.</translation>
 <translation id="3770044943398389276">기본적으로 플로팅 SSO는 기기 간에 영구 쿠키만 이동합니다. 이 정책은 세션 쿠키 포함 여부를 제어합니다. <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> 정책이 사용 설정된 경우에만 적용됩니다.
 
@@ -5852,6 +5854,19 @@ Chrome 114까지 이 정책을 적용하려면 <ph name="SYNC_DISABLED_POLICY_NA
 
       정책이 설정되어 있지 않거나 사용 설정되어 있으면 DNS 가로채기 검사가 실행됩니다. 명시적으로 사용 중지되면 검사가 실행되지 않습니다.</translation>
 <translation id="4700190441681139987">모든 사이트에서 센서에 액세스하도록 허용 안함</translation>
+<translation id="4700450186549212780"><ph name="PRODUCT_NAME" />에서 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />의 연결 설정을 구성합니다.
+
+<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품을 구성하려면 관리자가 다음 중 하나를 제공해야 합니다.
+* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 웹 애플리케이션 URL(<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) 또는
+* 기존 매개변수 3개 모두(<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />) URL 없이 이 세 매개변수의 일부 하위 집합만 지정하면 정책이 거부됩니다.
+
+<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수와 기존 매개변수가 모두 구성된 경우 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수가 우선 적용됩니다.
+
+이 정책을 설정하면 관리 계정 또는 관리 브라우저로 로그인한 사용자에 대해 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성됩니다.
+
+정책을 설정하지 않으면 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성되지 않습니다.
+
+이 정책은 일반적인 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 통합을 제어하지 않습니다. 일반적인 통합은 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책으로 제어할 수 있습니다.</translation>
 <translation id="4703402283970867140">스마트 밝기 낮추기 모델을 사용하여 화면이 어두워질 때까지의 시간 연장</translation>
 <translation id="4704958130749494760">사이트에 USB 직렬 기기에 연결할 수 있는 권한을 자동으로 부여합니다.</translation>
 <translation id="4705329890928008808">정책을 CopyCaCerts로 설정하면 <ph name="WEB_TRUSTED_BIT" />를 포함하며 ONC가 설치된 모든 CA 인증서를 ARC 앱에 사용할 수 있습니다.
@@ -6946,6 +6961,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="5323200200131319468">로그인 화면에서 음성 피드백 사용 설정</translation>
 <translation id="5323271643727095577">beforeunload 이벤트에 대해 event.preventDefault()가 호출될 때 취소 대화상자를 표시하지 않습니다. beforeunload event.returnValue가 beforeunload 이벤트의 빈 문자열인 경우 취소 대화상자를 표시합니다.</translation>
 <translation id="5324430722441910403">사이트 검색 설정</translation>
+<translation id="5324926539444440406">사용자가 백그라운드 탭 중단 여부를 결정하도록 허용</translation>
 <translation id="5326431956495937408">정책을 사용 설정하면 사용자가 가족 서비스에 따라 가족 구성원과 비밀번호를 주고받을 수 있습니다.
 정책을 사용 설정하거나 설정하지 않으면 비밀번호 관리자에 비밀번호를 전송할 수 있는 버튼이 표시됩니다.
 받은 비밀번호는 사용자 계정에 저장되며 비밀번호 관리자에서 확인할 수 있습니다.
@@ -7039,6 +7055,21 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="5373552304217872025">정책을 true로 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" /> 및 <ph name="LACROS_NAME" />가 사용자 관리자에서 새로운 사용자를 추가하도록 허용합니다.
 
       정책을 false로 설정하면 <ph name="PRODUCT_NAME" /> 및 <ph name="LACROS_NAME" />가 사용자 관리자에서 새로운 사용자를 추가하도록 허용하지 않습니다.</translation>
+<translation id="5373983340859513416">이 정책을 사용하여 특정 URL에서 <ph name="CHROME_DEVTOOLS_NAME" />를 허용할 수 있습니다.
+
+<ph name="CHROME_DEVTOOLS_NAME" /> 사용 가능 여부는 타겟 수준에서 평가됩니다. URL 패턴이 검사 중인 각 타겟(예: 페이지의 기본 프레임, 삽입된 서브프레임, 확장 프로그램, 웹 애플리케이션)의 URL과 일치합니다. <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책도 설정되어 있는지에 따라 결과 동작이 달라집니다.
+
+이 정책이 설정되어 있고 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책은 설정되어 있지 않은 경우, 타겟에 대해 <ph name="CHROME_DEVTOOLS_NAME" />가 허용되려면 해당 타겟의 URL이 해당 허용 목록의 패턴과 일치해야 합니다. 타겟의 URL이 해당 허용 목록과 일치하지 않으면 해당 타겟에 대해 <ph name="CHROME_DEVTOOLS_NAME" />가 차단됩니다. 예를 들어 URL이 허용 목록에 없는 서브프레임은 검사할 수 없지만, URL이 허용 목록에 추가되어 있는 경우 기본 페이지는 계속 검사할 수 있습니다. URL 형식에 대한 정보는 https://support.google.com/chrome/a?p=url_blocklist_filter_format에서 확인하세요.
+
+이 정책과 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책이 모두 설정된 경우 이 허용 목록이 우선 적용됩니다. 타겟의 URL이 해당 허용 목록의 패턴과 일치하는 경우, 차단 목록의 패턴과도 일치하더라도 해당 URL은 허용됩니다. 타겟의 URL이 해당 차단 목록의 패턴과 일치하지만 허용 목록의 패턴과는 일치하지 않을 경우 차단됩니다. 타겟의 URL이 어느 쪽과도 일치하지 않으면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책이 대체 정책으로 사용됩니다.
+
+이 정책을 설정하지 않은 경우, <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 및 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책에 따라 <ph name="CHROME_DEVTOOLS_NAME" />의 사용 가능 여부가 결정됩니다.
+
+포괄적 호스트 와일드 카드(즉, '*' 또는 '[*]')는 허용되지 않습니다. 전체적으로 기능을 사용 설정하려면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책을 사용하세요.
+
+이 정책은 <ph name="CHROME_DEVTOOLS_NAME" />, 직접 Chrome DevTools 프로토콜(CDP) 액세스(예: --remote-debugging-port 또는 --remote-debugging-pipe로 실행된 경우), chrome.debugger API를 통한 Chrome DevTools 프로토콜(CDP) 액세스에 영향을 미칩니다. 이 정책과 <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> 정책이 모두 적용됩니다. <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> 정책은 원격 디버깅을 시작할 수 있는지 여부를 제어하는 반면, 이 정책은 원격 디버깅이 실행 중인 경우에도 개별 타겟을 검사할 수 있는지 여부를 제한합니다.
+
+정책의 항목은 1,000개로 제한됩니다.</translation>
 <translation id="5376712696238639532">정책을 설정하면 교사가 자막 기능을 사용할 수 있는지 지정할 수 있습니다.
 
 값을 설정하지 않거나 true로 설정하면 선택된 교사가 음성 자막을 만들고 스크립트를 학생에게 전송할 수 있습니다.
@@ -7598,6 +7629,7 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="5728154254076636808"><ph name="PRODUCT_NAME" /> 프로필 데이터 로밍 사본 생성을 사용 설정합니다.</translation>
 <translation id="5729308727912841256">Kerberos 비밀번호입니다. <ph name="PASSWORD_PLACEHOLDER" /> 자리표시자는 로그인 비밀번호로 교체됩니다.</translation>
 <translation id="5730610899971390601">'Just Works' 블루투스 페어링 요청 거부</translation>
+<translation id="5731883586899464960">이 조직의 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 인스턴스 웹 애플리케이션 URL입니다.</translation>
 <translation id="5732972008943405952">처음 실행할 때 기본 브라우저에서 양식 자동 완성 데이터 가져오기</translation>
 <translation id="5733040281451845496">정책을 사용 설정하면 세션에서 첫 사용자 활동이 발생하기 전까지는 전원 관리 지연 및 세션 길이 제한이 시작되지 않습니다.
 
@@ -7712,6 +7744,7 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="5804702826910437814">AI 모델을 개선하지 않고 <ph name="CHROME_DEVTOOLS_NAME" /> 생성형 AI 기능을 허용합니다.</translation>
 <translation id="5804795151506109282">사용자에게 마이그레이션하라는 메시지를 표시하지 않습니다.</translation>
 <translation id="5806128552675651249">배경 그래픽을 포함하지 않은 경우에만 인쇄 허용</translation>
+<translation id="5808888486171670350">기업 정책에 의해 설치된 앱 및 확장 프로그램에서 <ph name="CHROME_DEVTOOLS_NAME" /> 사용을 금지하며, 버전 114 이상을 사용 중이며 관리 사용자인 경우 브라우저에 내장된 확장 프로그램에서도 사용이 금지됩니다. 다른 컨텍스트에서 <ph name="CHROME_DEVTOOLS_NAME" /> 사용 허용</translation>
 <translation id="5809210507920527553">Linux 컨테이너(Crostini) 관련 설정을 제어합니다.</translation>
 <translation id="5809728392451418079">기기 로컬 계정용 표시 이름 설정</translation>
 <translation id="5810916450338110943"><ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise 커넥터에 적용할 Chrome Enterprise 커넥터 서비스 설정의 목록으로, 파일이 Chrome에서 다운로드될 때 실행됩니다.
@@ -8145,6 +8178,15 @@ false로 설정되면 기능에 액세스할 수 없습니다.</translation>
 이 정책은 Google에서 진행 중인 이 API에 대한 지원 중단으로 인해 문제가 발생할 경우 사용할 수 있습니다. 정책을 사용해야 하는 경우 참조에 {blundell, vasilyt}@chromium.org를 포함하여 crbug.com에서 사용 사례를 설명하는 버그를 제출하세요. 정책은 <ph name="PRODUCT_NAME" /> 버전 114까지 제공되며, 그 후에는 이 API에 대한 지원이 무조건 삭제됩니다.
 
 참고: 새로 시작된 렌더기 프로세스만 브라우저가 실행되는 동안 이 정책의 변경사항을 반영합니다.</translation>
+<translation id="6083071443488983075"><ph name="PRODUCT_NAME" />에서 CPU 및 메모리를 절약하기 위해 비활성 백그라운드 탭을 중단할지 여부를 제어합니다.
+
+백그라운드 탭 중단이 활성화되면 일정 시간 동안 백그라운드에서 비활성 상태였던 탭이 JavaScript 실행 및 타이머 작업을 일시중지하여 중단됩니다. 중단된 탭은 메모리에 로드된 상태로 유지되며 사용자가 선택하면 즉시 재개됩니다. 오디오 또는 동영상 재생, 화면 또는 카메라 스트림 캡처, 활성 WebRTC 연결 유지, 웹 잠금 유지 등 활성 백그라운드 작업이 있는 탭은 정지할 수 없으며 계속 실행됩니다. <ph name="TAB_DISCARDING_EXCEPTIONS_POLICY_NAME" /> 정책 또는 사용자의 탭 삭제 예외에 구성된 사이트도 중단에서 제외됩니다.
+
+이 정책을 사용 설정하면 요건을 충족하는 백그라운드 탭에 대해 자동 백그라운드 탭 중단이 사용 설정됩니다. 사용자는 이 설정을 변경할 수 없습니다.
+
+정책을 사용 중지하면 백그라운드 탭이 중단되지 않습니다. 사용자는 이 설정을 변경할 수 없습니다.
+
+정책을 설정하지 않으면 백그라운드 탭 중단이 기본적으로 사용 설정되지만 사용자가 <ph name="PRODUCT_NAME" /> 설정에서 사용 설정하거나 사용 중지할 수 있습니다.</translation>
 <translation id="6083281887050888160">'Just Works' 블루투스 페어링 사용 설정</translation>
 <translation id="6083631234867522991">Windows(Windows 클라이언트):</translation>
 <translation id="6085580138417523410">명시적 위임 없이 서브프레임에서 로컬 네트워크 액세스(LNA) 요청 허용</translation>
@@ -8443,6 +8485,7 @@ Origin-Agent-Cluster: 헤더가 설정되지 않았을 때 M111의 기본값은 
 정책을 사용 중지하면 변경사항이 취소되고 Origin-Agent-Cluster: 헤더가 없는 문서는 사이트 관련 에이전트 클러스터에 할당됩니다. 그 결과 document.domain 접근자는 기본적으로 설정 가능한 상태로 유지됩니다. 이는 레거시 동작과 일치합니다.
 
 추가 세부정보는 다음을 참고하세요. https://developer.chrome.com/blog/immutable-document-domain/</translation>
+<translation id="6268941767866119713"><ph name="CHROME_DEVTOOLS_NAME" />의 사용 가능 여부 제어</translation>
 <translation id="626942726350419209">모든 사이트에서 여러 파일을 자동으로 다운로드하도록 허용</translation>
 <translation id="6270615143812355589">오디오 입력 사용 설정</translation>
 <translation id="6270791075656665237">QUIC 허용 안함</translation>
@@ -9266,6 +9309,11 @@ false로 설정되면 Crostini 컨테이너로 포트 전달이 사용 중지됩
 
 <ph name="PRODUCT_NAME" />의 경우 정책은 기기가 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />으로 등록되어 있을 때만 적용됩니다.
 <ph name="PRODUCT_OS_NAME" />의 경우 정책이 항상 적용됩니다.</translation>
+<translation id="6718248192281812888">사용자의 원격 디버깅 사용 가능 여부를 제어합니다.
+
+정책을 사용 설정하거나 설정하지 않을 경우 사용자는 데스크톱 플랫폼에서 --remote-debugging-port 및 --remote-debugging-pipe 명령줄 스위치를 지정하거나 <ph name="ANDROID_NAME" />에서 USB 디버깅 시스템 설정을 사용 설정하여 원격 디버깅을 사용할 수 있습니다.
+
+이 정책을 사용 중지하면 사용자는 원격 디버깅을 사용할 수 없습니다.</translation>
 <translation id="6720330829631914048">하루가 시작된 이후 경과한 시간(24시간 형식)입니다.</translation>
 <translation id="6720862827454058309">IP 주소 공간 매핑 재정의</translation>
 <translation id="6721252203593581486">타사 컨텍스트에서 WebSQL(예: 크로스 사이트 iframe)은 M97부터 기본적으로 사용 중지되며 M101에서 완전히 삭제됩니다.
@@ -11535,6 +11583,19 @@ https://chromeenterprise.google/policies/url-patterns를 참고하세요.
 <translation id="8102854005031553638">PDF 뷰어는 AGG 렌더기를 사용합니다.</translation>
 <translation id="8102913158860568230">기본 mediastream 설정</translation>
 <translation id="8104962233214241919">이 사이트에 대해 클라이언트 인증서를 자동으로 선택합니다.</translation>
+<translation id="810897014119047728">이 정책을 사용하여 특정 URL에서 <ph name="CHROME_DEVTOOLS_NAME" />를 차단할 수 있습니다. URL 형식에 대한 정보는 https://support.google.com/chrome/a?p=url_blocklist_filter_format에서 확인하세요.
+
+<ph name="CHROME_DEVTOOLS_NAME" /> 사용 가능 여부는 타겟 수준에서 평가됩니다. URL 패턴이 검사 중인 각 타겟(예: 페이지의 기본 프레임, 삽입된 서브프레임, 확장 프로그램, 웹 애플리케이션)의 URL과 일치합니다. <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 정책도 설정되어 있는지에 따라 결과 동작이 달라집니다.
+
+이 정책이 설정되어 있고 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 정책은 설정되어 있지 않은 경우 이 차단 목록의 패턴과 일치하는 타겟의 URL은 해당 타겟에 대해 <ph name="CHROME_DEVTOOLS_NAME" />를 차단합니다. 예를 들어 URL이 해당 차단 목록과 일치하는 서브프레임은 검사할 수 없지만, URL이 차단 목록에 포함되지 않은 경우 기본 페이지는 계속 검사할 수 있습니다. 타겟의 URL이 어떤 패턴과도 일치하지 않으면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책에 따라 사용 가능 여부가 결정됩니다.
+
+이 정책과 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 정책이 모두 설정된 경우 해당 허용 목록이 우선 적용됩니다. 타겟의 URL이 허용 목록의 패턴과 일치하는 경우, 이 차단 목록의 패턴과도 일치하더라도 해당 URL은 허용됩니다. 타겟의 URL이 해당 차단 목록의 패턴과 일치하지만 허용 목록의 패턴과는 일치하지 않을 경우 차단됩니다. 타겟의 URL이 어느 쪽과도 일치하지 않으면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책이 대체 정책으로 사용됩니다.
+
+이 정책을 설정하지 않은 경우, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 및 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책에 따라 <ph name="CHROME_DEVTOOLS_NAME" />의 사용 가능 여부가 결정됩니다.
+
+이 정책은 <ph name="CHROME_DEVTOOLS_NAME" />, 직접 Chrome DevTools 프로토콜(CDP) 액세스(예: --remote-debugging-port 또는 --remote-debugging-pipe로 실행된 경우), chrome.debugger API를 통한 Chrome DevTools 프로토콜(CDP) 액세스에 영향을 미칩니다. 이 정책과 <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> 정책이 모두 적용됩니다. <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> 정책은 원격 디버깅을 시작할 수 있는지 여부를 제어하는 반면, 이 정책은 원격 디버깅이 실행 중인 경우에도 개별 타겟을 검사할 수 있는지 여부를 제한합니다.
+
+정책의 항목은 1,000개로 제한됩니다.</translation>
 <translation id="8109762054721090517"><ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /> 템플릿</translation>
 <translation id="811012672754800797">Chrome의 Gemini에 파일 업로드를 허용하지 않습니다.</translation>
 <translation id="8111331908123507719">잠금 화면의 화면 보호기가 표시되기까지 기기의 유휴 상태 제한 시간(초)을 구성합니다.
@@ -11673,6 +11734,7 @@ False로 설정하면 로그인 화면이 표시될 때 개인 정보 보호 화
 <translation id="8199823751103472868">정책을 설정하면 <ph name="PRODUCT_OS_NAME" />에서 힌디어 인스크립트 레이아웃이 사용 설정됩니다. False로 설정하거나 설정하지 않으면 레이아웃을 사용할 수 없습니다.</translation>
 <translation id="8202566089100454374">Google 지도(버전 135부터 지원됨)</translation>
 <translation id="8202834945144737726">로그인 화면의 URL 목록에 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> 증명 흐름 사용 설정</translation>
+<translation id="8204634641358373241">앱 표시줄에서 입력 옵션 숨기기</translation>
 <translation id="8213770777756919897">이 정책은 지원이 중단되었으며 <ph name="PRODUCT_OS_NAME" /> 버전 85에서 삭제될 예정입니다. 대신 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> 정책을 사용하세요.
 
           이 정책이 설정되어 있으면 사용자가 유휴 지연 시간으로 지정된 시간 동안 유휴 상태에 있을 때 <ph name="PRODUCT_OS_NAME" />에서 실행할 작업을 지정하며, 유휴 지연 시간은 별도로 설정할 수 있습니다.
@@ -11718,6 +11780,24 @@ False로 설정하면 로그인 화면이 표시될 때 개인 정보 보호 화
 <translation id="8244525275280476362">정책 무효화 후 최대 가져오기 지연</translation>
 <translation id="8247143534027746614">인증 도중 URL 패턴 목록 액세스 차단하기</translation>
 <translation id="824818544897669723">브라우저 및 다운로드 기록 삭제 사용 중지</translation>
+<translation id="8249289413721808395">정책을 0(기본값)으로 설정하면 <ph name="CHROME_DEVTOOLS_NAME" /> 및 JavaScript 콘솔에 액세스할 수 있지만 기업 정책으로 설치한 확장 프로그램의 컨텍스트나 버전 114 이상을 사용 중이며 관리 사용자인 경우 브라우저에 내장된 확장 프로그램의 컨텍스트에서는 액세스할 수 없습니다. 정책을 1로 설정하면 기업 정책으로 설치한 확장 프로그램을 비롯한 모든 컨텍스트에서 <ph name="CHROME_DEVTOOLS_NAME" /> 및 JavaScript 콘솔에 액세스할 수 있습니다. 정책을 2로 설정하면 <ph name="CHROME_DEVTOOLS_NAME" />에 액세스할 수 없으며 웹사이트 요소를 검사할 수 없습니다.
+
+또한 이 설정은 <ph name="CHROME_DEVTOOLS_NAME" /> 또는 JavaScript 콘솔을 여는 키보드 단축키, 메뉴 항목, 컨텍스트 메뉴 항목의 사용을 중지합니다.
+
+<ph name="PRODUCT_NAME" /> 버전 99부터는 '페이지 소스 보기' 기능의 진입점도 제어합니다. 이 정책을 'DeveloperToolsDisallowed'(값 2)로 설정하면 사용자가 단축키 또는 컨텍스트 메뉴를 통해 소스 보기에 액세스할 수 없습니다. 소스 보기를 완전히 차단하려면 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 정책에 'view-source:*'도 추가해야 합니다.
+
+<ph name="PRODUCT_NAME" /> 버전 119부터 이 설정으로 분리형 웹 앱의 개발자 모드 활성화 및 사용 여부도 제어할 수 있습니다.
+
+<ph name="PRODUCT_NAME" /> 버전 128부터는 <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 정책이 설정된 경우 이 설정으로 확장 프로그램 페이지의 개발자 모드를 제어할 수 없습니다.
+
+이 정책은 <ph name="CHROME_DEVTOOLS_NAME" />, 직접 Chrome DevTools 프로토콜(CDP) 액세스(예: --remote-debugging-port 또는 --remote-debugging-pipe로 실행된 경우), chrome.debugger API를 통한 Chrome DevTools 프로토콜(CDP) 액세스에 영향을 미칩니다. 이 정책과 <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> 정책이 모두 적용됩니다. <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME" /> 정책은 원격 디버깅을 시작할 수 있는지 여부를 제어하는 반면, 이 정책은 원격 디버깅이 실행 중인 경우에도 개별 타겟을 검사할 수 있는지 여부를 제한합니다.
+
+<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 및 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책이 이 정책보다 우선 적용됩니다. <ph name="CHROME_DEVTOOLS_NAME" />의 사용 가능 여부는 다음 우선순위로 결정됩니다.
+
+1. URL이 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 정책의 패턴과 일치하면 <ph name="CHROME_DEVTOOLS_NAME" />가 허용됩니다.
+2. <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />가 설정되고 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />가 설정되지 않은 경우 허용 목록에 없는 모든 URL이 차단됩니다.
+3. URL이 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책의 패턴과 일치하면 <ph name="CHROME_DEVTOOLS_NAME" />가 차단됩니다.
+4. 두 정책이 모두 설정되지 않았거나 URL이 어느 목록과도 일치하지 않으면 이 정책(<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />)이 대체 메커니즘으로 사용됩니다.</translation>
 <translation id="8250048892729838843">지원 중단된 정책입니다. 정책을 사용으로 설정하거나 설정하지 않은 채로 두면 기기가 상세 보고 제어 권한을 받을 수 있습니다.
       정책을 사용 안함으로 설정하면 등록된 기기가 상세 보고 제어 권한을 받을 수 없습니다.</translation>
 <translation id="82501412047133986">이 정책은 M88부터 지원 중단되며 Chrome에서는 플래시가 더 이상 지원되지 않습니다. 정책을 설정하면 <ph name="FLASH_PLUGIN_NAME" /> 플러그인 실행이 불가능한 사이트를 지정하는 URL 패턴 목록을 설정할 수 있습니다.
@@ -13215,7 +13295,13 @@ HTTPS 우선 모드는 처음에는 엄격 또는 균형 모드로 설정되지�
 
       정책이 설정되어 있지 않거나 false로 설정되면 AppCache가 Chrome의 기본값을 따릅니다.</translation>
 <translation id="931156018951676976">프로모션 콘텐츠 표시 사용 중지</translation>
+<translation id="935136412769712014"><ph name="CHROME_DEVTOOLS_NAME" /> 사용 허용</translation>
 <translation id="935779984563655842">블루투스 정보 보고</translation>
+<translation id="93578254536318656">정책을 사용 설정하면 앱 표시줄에 입력 방법 선택 풍선이 표시됩니다.
+
+정책을 사용 중지하면 입력 방법 선택 풍선이 앱 표시줄에서 숨겨집니다.
+
+설정하지 않으면 입력 방법 선택 풍선이 기본적으로 앱 표시줄에서 숨겨집니다. 사용자는 설정 페이지에서 풍선을 표시할지 선택할 수 있습니다.</translation>
 <translation id="936188865879911137">정책을 사용으로 설정하면 <ph name="PRODUCT_NAME" />이 Chrome 웹 스토어 외부에서 호스팅되는 확장 프로그램의 설치와 업데이트를 허용하며, 이러한 콘텐츠의 보호는 최소한으로만 이루어질 수 있습니다.
 
       정책을 사용 안함으로 설정하면 <ph name="PRODUCT_NAME" />은 그러한 확장 프로그램의 신규 설치 및 업데이트를 허용하지 않습니다. 이 정책은 <ph name="PRODUCT_NAME" /> 78 이후에는 영향을 미치지 않습니다.

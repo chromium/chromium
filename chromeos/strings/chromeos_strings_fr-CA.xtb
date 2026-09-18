@@ -213,7 +213,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="1768959921651994223">Type d'authentification</translation>
 <translation id="1776228893584526149">Ton de fond d'écran</translation>
 <translation id="1777913922912475695">pont</translation>
-<translation id="1782199038061388045">traduction</translation>
 <translation id="1788485524395674731">Cette application est gérée par votre administrateur</translation>
 <translation id="1792647875738159689">Annulation de la numérisation en cours…</translation>
 <translation id="1801418420130173017">Désactiver le thème sombre</translation>
@@ -366,7 +365,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="2448312741937722512">Type</translation>
 <translation id="2448857983905133469">Outils de cours</translation>
 <translation id="2468124392950503650">Sélectionnez la requête pour commencer votre création ou consultez le <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guide sur les requêtes<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Utilisez l'Aide à la rédaction pour créer un brouillon ou pour affiner un travail existant, propulsé par l'IA de Google</translation>
 <translation id="2475982808118771221">Une erreur s'est produite</translation>
 <translation id="2480572840229215612">crabes</translation>
 <translation id="248546197012830854">L'appareil est hors ligne. Connectez-vous au réseau Wi-Fi pour afficher le contenu d'aide.</translation>
@@ -558,7 +556,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="346539236881580388">Recommencer</translation>
 <translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3484914941826596830">Pendant la mise à jour du micrologiciel, ne débranchez pas cet appareil externe et n'éteignez pas votre ordinateur. Vous pouvez réduire cette fenêtre. Cette mise à jour peut prendre quelques minutes, et votre appareil externe peut ne pas fonctionner pendant ce temps.</translation>
-<translation id="3486220673238053218">définition</translation>
 <translation id="3487866404496702283">Commentaires sur la fonctionnalité mahi</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
 <translation id="3492882532495507361">Un bureau <ph name="OFFICE_STYLE" /> avec tons <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="3634941468757842845">Choisir un thème</translation>
 <translation id="3644695927181369554">Mauvaise suggestion</translation>
 <translation id="3651050199673793219">Sélectionnez une unité de température</translation>
-<translation id="3661106764436337772">Écrire plus vite et avec plus de confiance</translation>
 <translation id="3662461537616691585">bourgogne et marron</translation>
 <translation id="3664755900672940272">Exemples de requêtes au hasard</translation>
 <translation id="3668449597372804501">Fond d'écran Cloud Flow</translation>
@@ -858,7 +854,6 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="4773299976671772492">Arrêté</translation>
 <translation id="4777310452073659583">Pour obtenir la transcription, redémarrez votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">améthyste</translation>
-<translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
 <translation id="4793710386569335688">Pour obtenir de l'aide supplémentaire, accédez au <ph name="BEGIN_LINK" />centre d'aide<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algorithme de compression</translation>
@@ -1459,7 +1454,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7397270852490618635">Désactiver le thème clair</translation>
 <translation id="7401543881546089382">Supprimer le raccourci</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> est prêt à être mis à jour</translation>
-<translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
 <translation id="7418738250896500352">Trop de mots pour simplifier</translation>
 <translation id="7425037327577270384">Aide à la rédaction</translation>
@@ -1769,7 +1763,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="885701979325669005">Stockage</translation>
 <translation id="885704831271383379">clavier plus sombre</translation>
 <translation id="8863170912498892583">Activer le thème sombre</translation>
-<translation id="8863888432376731307">Obtenir la <ph name="INTENT" /> du terme « <ph name="QUERY" /> » et plus</translation>
 <translation id="8864415976656252616">Aucun contenu suggéré. Voir le contenu d'aide le plus populaire.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">L'appareil est une tablette.</translation>

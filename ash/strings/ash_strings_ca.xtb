@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">IGNORA</translation>
 <translation id="152629053603783244">Reinicia Linux</translation>
 <translation id="1526448108126799339">Obre una pestanya nova en una finestra nova</translation>
-<translation id="1528259147807435347">Editat durant la darrera setmana</translation>
 <translation id="1536604384701784949">Per utilitzar l'adreça <ph name="USER_EMAIL_ADDRESS" />, primer has de tancar la sessió de tots els comptes. Per tancar la sessió i tornar enrere, selecciona Cancel·la. Després selecciona l'hora per obrir l'àrea d'estat i, a continuació, l'opció Tanca la sessió. Torna a iniciar la sessió amb l'adreça <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Cursor del ratolí gran</translation>
 <translation id="1545331255323159851">Consulta les notificacions, els fitxers multimèdia i les fotos recents del telèfon</translation>
@@ -472,7 +471,6 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="240789602312469910">Envia dades d'ús i de diagnòstic. Ajuda a millorar l'experiència a Android del teu fill o filla enviant automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades no es faran servir per identificar el teu fill o filla i ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. El propietari ha aplicat aquesta <ph name="BEGIN_LINK1" />opció de configuració<ph name="END_LINK1" />. És possible que el propietari decideixi enviar a Google dades de diagnòstic i d'ús sobre aquest dispositiu. Si l'opció de configuració Activitat al web i en aplicacions addicional està activada per al teu fill o filla, és possible que aquestes dades es desin al seu Compte de Google. <ph name="BEGIN_LINK2" />Més informació sobre les mètriques<ph name="BEGIN_LINK2_END" />Més informació<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Introdueix el PIN</translation>
 <translation id="2412593942846481727">Hi ha una actualització disponible</translation>
-<translation id="2416438829169535743">Vols sortir de la visualització?</translation>
 <translation id="2417486498593892439">Inicia la sessió a la xarxa</translation>
 <translation id="2423619675829330672">S'ha intentat introduir el PIN massa vegades. Espera <ph name="TIME_LEFT" /> i torna-ho a provar.</translation>
 <translation id="2426051945783024481">L'enquadrament de la càmera s'ha centrat automàticament</translation>
@@ -480,7 +478,6 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2429753432712299108">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per vincular-se. Abans d'acceptar, comproveu que aquesta clau d'accés es mostri al dispositiu: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
 <translation id="2437771564543046790">Bateria baixa. La funció Estalvi de bateria està activada.</translation>
-<translation id="243878895369688216">Obert ahir</translation>
 <translation id="2440978926514840421">S'ha gravat el GIF</translation>
 <translation id="2441427462554639370">La gravació ha finalitzat perquè queda molt poc espai d'emmagatzematge.</translation>
 <translation id="2445449901874883781">Utilitza una densitat alta</translation>
@@ -873,7 +870,6 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3563432852173030730">L'aplicació Quiosc no s'ha pogut baixar.</translation>
 <translation id="3563558822383875692">S'està configurant el DLC.</translation>
 <translation id="3563775809269155755">Activa el punt d'accés Wi‑Fi</translation>
-<translation id="3566240529365775567">Obert fa un moment</translation>
 <translation id="3571734092741541777">Configura</translation>
 <translation id="3573179567135747900">Torna a canviar a "<ph name="FROM_LOCALE" />" (requereix reiniciar)</translation>
 <translation id="3576141592585647168">Canvia la zona horària</translation>
@@ -960,7 +956,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3756485814916578707">S'està emetent la pantalla</translation>
 <translation id="3765246971671567135">No s'ha pogut llegir la política del mode de demostració sense connexió.</translation>
 <translation id="3765841382945324995">La drecera <ph name="SIX_PACK_KEY_NAME" /> s'ha actualitzat de <ph name="OLD_SHORTCUT" /> a<ph name="NEW_SHORTCUT" /></translation>
-<translation id="3765841986579723851">Editat avui</translation>
 <translation id="3772109172035555611">Personalitza el TrackPoint</translation>
 <translation id="3773700760453577392">Un administrador ha desactivat l'inici de sessió múltiple per a <ph name="USER_EMAIL" />. Tots els usuaris han de tancar la sessió per continuar.</translation>
 <translation id="3779139509281456663">S'estan connectant els <ph name="NAME" /></translation>
@@ -1000,7 +995,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3873915545594852654">S'ha produït un problema amb ARC++.</translation>
 <translation id="3879748587602334249">Gestor de baixades</translation>
 <translation id="3884007280698606545">S'ha arribat al límit d'USB</translation>
-<translation id="3886872229787704059">Obert avui</translation>
 <translation id="3892148308691398805">Copia el text</translation>
 <translation id="3893630138897523026">ChromeVox (avisos de veu)</translation>
 <translation id="3898464793473355515">Gira la pantalla 90 graus en sentit horari</translation>
@@ -1791,7 +1785,6 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6095008505822982596">Velocitat de parla</translation>
 <translation id="6095425951508823973">Afegeix una connexió amb <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Se t'ha tancat la sessió.</translation>
-<translation id="6099678161144790572">Editat durant el darrer mes</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6108952804512516814">Crea amb IA</translation>
 <translation id="6114505516289286752">S'han baixat fitxers de veu en <ph name="LANGUAGE" /></translation>
@@ -1948,7 +1941,6 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6555373427270923730">Escriu una adreça web a la barra d'adreces i, a continuació, prem <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Instal·lació nova</translation>
-<translation id="6559158502366839560">Explora més aplicacions i jocs</translation>
 <translation id="6560151649238390891">El suggeriment s'ha inserit</translation>
 <translation id="6562447480759345110">Finalitza la sessió de Sense distraccions</translation>
 <translation id="6565007273808762236">La connexió eSIM no està disponible</translation>
@@ -2054,7 +2046,6 @@ Instal·lació nova</translation>
 <translation id="6848716236260083778">Per configurar una impremta digital, fes que el teu fill toqui el sensor d'empremtes digitals. Les dades de l'empremta digital del teu fill s'emmagatzemen de manera segura i no surten mai del dispositiu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6852052252232534364">Clic per activar</translation>
 <translation id="6852628153543175788">Afegeix 10 minuts</translation>
-<translation id="6855029042976311970">Editat fa un moment</translation>
 <translation id="6856708615407876657">Commuta les categories dels resultats de la cerca</translation>
 <translation id="6856756288284651804">Chromebook s'ha actualitzat</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -2149,7 +2140,6 @@ Instal·lació nova</translation>
 <translation id="7118597077555700347">Obre <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Selecciona la paraula o la lletra següent</translation>
 <translation id="7124556000457919678">Quan l'opció està activada, posa en pausa i reprèn les tecles del ratolí</translation>
-<translation id="7126996685418858413">Obert durant la darrera setmana</translation>
 <translation id="7131634465328662194">La sessió es tancarà automàticament.</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
@@ -2180,7 +2170,6 @@ Instal·lació nova</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Micròfon posterior</translation>
 <translation id="7258225044283673131">L'aplicació no respon. Selecciona "Força el tancament" per tancar l'aplicació.</translation>
-<translation id="7258828758145722155">Editat ahir</translation>
 <translation id="726276584504105859">Arrossega-la aquí per utilitzar la pantalla dividida</translation>
 <translation id="7264788308526527464">Redueix <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Continua aixecant el dit per afegir les diferents parts de l'empremta digital</translation>
@@ -2253,7 +2242,6 @@ Instal·lació nova</translation>
 <translation id="7491962110804786152">pestanya</translation>
 <translation id="7497767806359279797">Tria l'idioma i el teclat</translation>
 <translation id="7507162824403726948">Acaba de verificar la teva identitat</translation>
-<translation id="7508690557411636492">Obert durant el darrer mes</translation>
 <translation id="7509246181739783082">Verifica la teva identitat</translation>
 <translation id="7512509370370076552">La drecera per fer clic amb el botó dret s'ha actualitzat d'Alt+clic a la tecla <ph name="LAUNCHER_KEY_NAME" />+clic</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, no seleccionat</translation>
@@ -2707,7 +2695,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8753368202781196133">Aquest idioma no s'admet en aquest moment.</translation>
 <translation id="8755498163081687682">Verifica la teva identitat: <ph name="ORIGIN_NAME" /> vol confirmar que ets tu</translation>
 <translation id="875593634123171288">Mostra la configuració de la VPN</translation>
-<translation id="8756799553341497810">Pots començar a personalitzar el disseny de l'aplicació un cop surtis d'aquesta visualització.</translation>
 <translation id="8759408218731716181">No es pot configurar l'inici de sessió múltiple</translation>
 <translation id="8759753423332885148">Més informació</translation>
 <translation id="8760172428247796445">El teu dispositiu <ph name="DEVICE_TYPE" /> es bloquejarà ara.

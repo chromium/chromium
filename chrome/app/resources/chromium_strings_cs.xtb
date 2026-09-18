@@ -148,6 +148,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2575822587468774919">Vyberte cokoli, co chcete vyhledat pomocí vyhledávání obrázků</translation>
 <translation id="2576118232315942160">Pokud svá hesla a další položky chcete mít na všech svých zařízeních, přihlaste se do prohlížeče Chromium</translation>
 <translation id="2587622539943955767">Naskenováním QR kódu si do telefonu stáhněte Chromium a přihlaste se ke svému účtu Google.</translation>
+<translation id="2587885422541096572">– aktivuje vyhledávání v Chromiu.</translation>
 <translation id="2592940277904433508">Pokračovat v používání prohlížeče Chromium</translation>
 <translation id="259935314519650377">Stažený instalační program se nepodařilo uložit do mezipaměti. Chyba: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Systém</translation>
@@ -647,7 +648,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="77283119132245232">Poskytuje služby trasování systému pro <ph name="BROWSER_NAME" />. Pokud je tato služba zakázána, trasování výkonu vytvořené prohlížečem nebude zahrnovat celosystémové události, jako jsou přepnutí kontextu a přípravy vláken.</translation>
 <translation id="7745317241717453663">Ze zařízení budou smazány vaše údaje o prohlížení. Budete-li chtít své údaje později načíst, přihlaste se do prohlížeče Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instalační soubor nemohl vytvořit dočasný adresář. Zkontrolujte prosím volné místo na disku a povolení instalovat software.</translation>
-<translation id="7747820849741499258">Vyhledat v prohlížeči Chromium</translation>
 <translation id="7750130090210923118">Obnovit výchozí motiv Chromia</translation>
 <translation id="7752521946322750699">Když budete do Chromia přihlášeni, bude moct vaše organizace za účelem zajištění bezpečnosti vaší práce v Chromiu zobrazit nebo spravovat určité informace.</translation>
 <translation id="7781047659465034537">Nastavte si Chromium jako výchozí prohlížeč a připněte ho na hlavní panel</translation>
@@ -655,7 +655,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Zajistěte, aby pro lidi s přístupem k vašemu internetovému provozu bylo obtížnější zjistit, které weby navštěvujete. K vyhledání IP adresy webu v systému názvů domén (DNS) používá Chromium zabezpečené připojení.</translation>
 <translation id="7810005234485217901">Vyhledávání obrázků si můžete pro snadný přístup připnout</translation>
-<translation id="7813626943009612327">Ptejte se na obsah mimo Chromium, jako je jiná aplikace nebo otevřený soubor</translation>
 <translation id="7828527096541974699">Vyberte, co chcete s Chromiem sdílet</translation>
 <translation id="7828947555739565424">Profil Chromium s tímto účtem už v tomto zařízení existuje</translation>
 <translation id="7845233973568007926">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je třeba restartovat počítač.</translation>
@@ -780,6 +779,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
 <translation id="8980139959902937527">Mějte zabezpečení od Googlu vždy po ruce s aplikací Chromium na zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Chromium nelze spustit, protože při otevírání vašeho profilu došlo k chybě. Zkuste Chromium restartovat.</translation>
+<translation id="8981886272598860786">– aktivuje vyhledávání v Chromiu. Lze přizpůsobit v <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="8988036198400390003">Spravovat profily Chromium</translation>
 <translation id="8993855408334954620">Pomocí klávesnice můžete přecházet mezi Gemini v Chromiu a otevřenou kartou.</translation>
 <translation id="9018218886431812662">Instalace byla dokončena</translation>

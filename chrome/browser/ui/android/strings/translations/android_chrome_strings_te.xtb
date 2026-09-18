@@ -37,7 +37,6 @@
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, పిక్చర్-ఇన్-పిక్చర్ ట్యాబ్</translation>
 <translation id="1126696498560056882">ఈ పరికరంలోని ఖాతాలను మేనేజ్ చేయండి</translation>
 <translation id="1135018701024399762">మీ డివైజ్‌ను ఉపయోగించే ఇతరుల నుండి మీ బ్రౌజింగ్‌ను అజ్ఞాత మోడ్ ప్రైవేట్‌గా ఉంచుతుంది</translation>
-<translation id="113752097246673894">మీ డివైజ్‌లన్నింటిలో మీ బుక్‌మార్క్‌లను, మరిన్నింటిని పొందడానికి, <ph name="EMAIL" />‌గా Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="1138458427267715730">వెబ్‌లోని ఏదైనా సైట్‌లో ధర తగ్గినప్పుడు మీరు అలర్ట్‌లను పొందండి</translation>
 <translation id="1140317858355046628">మీరు దీన్ని తొలగించినట్లయితే, అందరూ వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్ కోల్పోతారు, ఇంకా ఇది అన్ని పరికరాల నుండి తొలగించబడుతుంది.</translation>
 <translation id="1142732900304639782">ఈ సైట్‌లను అనువాదం చేసే సదుపాయాన్ని అందించవద్దు</translation>
@@ -205,7 +204,6 @@
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, రికార్డింగ్ ట్యాబ్</translation>
 <translation id="1819443852740954262">అన్నింటినీ అజ్ఞాత విండోలో తెరవండి</translation>
 <translation id="1820408774134375111">సైన్ ఇన్ చేయదగిన దిగువున ఉన్న షీట్</translation>
-<translation id="1823492026305965829"><ph name="USER_FULL_NAME" />‌గా సైన్ ఇన్ చేయండి</translation>
 <translation id="1824902652744048041">'బ్రౌజింగ్ డేటాను తొలగించండి' ఆప్షన్‌ను ట్యాప్ చేయండి</translation>
 <translation id="1829244130665387512">పేజీలో కనుగొనండి</translation>
 <translation id="1832459821645506983">అవును, అంగీకరిస్తున్నాను</translation>
@@ -439,7 +437,6 @@
 <translation id="2723001399770238859">ఆడియో</translation>
 <translation id="2739887572830526131">ట్యాబ్‌లను తర్వాత జోడించడానికి ఈ గ్రూప్‌ను కొనసాగించండి, లేదా మీకు ఇది అవసరం లేకపోతే, దాన్ని తొలగించండి.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ప్రస్తుతం అందుబాటులో లేదు.</translation>
-<translation id="2751271371269891762">మీ డివైజ్‌లన్నింటిలో మీ బుక్‌మార్క్‌లను, మరిన్నింటిని పొందడానికి, <ph name="EMAIL" />‌గా సైన్ ఇన్ చేయండి</translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2761162135224472056">ఇమ్మర్సివ్ ప్లేబ్యాక్‌తో చూడాలనుకుంటున్నారా?</translation>
 <translation id="2762000892062317888">ఇప్పుడే</translation>
@@ -514,6 +511,7 @@
 <translation id="2996291259634659425">రహస్య పదబంధాన్ని క్రియేట్ చేయండి</translation>
 <translation id="2996682533106928201">విస్మరించడానికి ట్యాప్ చేయండి</translation>
 <translation id="2996809686854298943">URL అవసరం</translation>
+<translation id="3007318536447999974">Geminiతో మాట్లాడటానికి, మీ మైక్రోఫోన్‌ను ఉపయోగించేందుకు దానికి అనుమతి ఇవ్వండి. మీరు దీనిని <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా మేనేజ్ చేయవచ్చు</translation>
 <translation id="3024215143424744261">రీడింగ్ మోడ్ ప్రాధాన్యతలు మూసివేయబడ్డాయి</translation>
 <translation id="3024277805447899099">ఇమేజ్‌ను ప్రివ్యూ చేయండి</translation>
 <translation id="3026955690410463085">లింక్‌ను చేర్చండి</translation>
@@ -608,7 +606,6 @@
 <translation id="3435738964857648380">భద్రత</translation>
 <translation id="3435914367318771664">ట్యాబ్‌ను కొత్త గ్రూప్‌నకు జోడించండి</translation>
 <translation id="3436118221454753036">AI మోడ్‌ను అడగండి</translation>
-<translation id="3438681572027105609">మీ పరికరాలన్నిటిలో మీ పాస్‌వర్డ్‌లను, ఇంకా మరిన్నింటిని పొందడానికి Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="3439276997620616816">మీ ఇటీవలి ట్యాబ్‌లను ఇక్కడ చూడవచ్చు</translation>
 <translation id="3443221991560634068">ప్రస్తుత పేజీని మళ్లీ లోడ్ చేయండి</translation>
 <translation id="3444179773590444986">సైట్‌ల కోసం డార్క్ థీమ్‌ గురించిన ఫీడ్‌బ్యాక్‌ను షేర్ చేయాలా?</translation>
@@ -753,7 +750,6 @@
 <translation id="4000212216660919741">ఆఫ్‌లైన్ హోమ్</translation>
 <translation id="4000670338830950598">హైలైట్ చేసిన ఐటెమ్‌తో Google Chromeను అనుకూలంగా మార్చండి, కంట్రోల్ చేయండి</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{మీ Google ఖాతాలో 1 చోరీకి గురైన పాస్‌వర్డ్ కనుగొనబడింది}other{మీ Google ఖాతాలో # చోరీకి గురైన పాస్‌వర్డ్ కనుగొనబడ్డాయి}}</translation>
-<translation id="4023638601467301498">మీ డివైజ్‌లన్నింటిలో మీ బుక్‌మార్క్‌లను, మరిన్నింటిని పొందడానికి, Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="4024768890073681126">మీ బ్రౌజర్‌ను పేరెంట్ మేనేజ్ చేస్తోంది</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ఫోల్డర్</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# గం}other{# గం}}</translation>
@@ -934,7 +930,6 @@
 <translation id="4685741273709472646">డ్రాప్‌డౌన్ లిస్ట్ నుండి ఎంచుకోండి</translation>
 <translation id="468924408576231679"><ph name="PAGE_TITLE" /> వెబ్‌పేజీకి లింక్‌ను కాపీ చేయండి. సోర్స్: <ph name="PAGE_URL" /></translation>
 <translation id="4692623383562244444">సెర్చ్ ఇంజిన్‌లు</translation>
-<translation id="469286762610133730">మెరుగైన కంటెంట్ పొందండి</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698757800236023795">యాక్టివ్‌గా ఉంది (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">కాష్ చేసిన చిత్రాలు మరియు ఫైళ్లు</translation>
@@ -994,7 +989,6 @@
 <translation id="4910889077668685004">చెల్లింపు యాప్‌లు</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />‌కు తిరిగి స్వాగతం!</translation>
 <translation id="4913169188695071480">రీఫ్రెష్ చేయడం ఆపివేయి</translation>
-<translation id="4921224083091001889">మీ డివైజ్‌లన్నింటిలో మీ పాస్‌వర్డ్‌లను, ఇంకా మరిన్నింటిని పొందడానికి <ph name="EMAIL" />‌గా Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="4923173329789776645">మీ సంస్థ ద్వారా డౌన్‌లోడ్ సిఫార్సు చేయబడలేదు</translation>
 <translation id="4924398189611529766">మీరు అజ్ఞాత (ఇన్‌కాగ్నిటో) మోడ్‌లో బ్రౌజ్ చేస్తున్నప్పుడు, ఈ డివైజ్‌ను ఉపయోగించే ఇతరులకు మీ యాక్టివిటీ కనిపించదు. కాబట్టి మీరు మరింత ప్రైవేట్‌గా బ్రౌజ్ చేయవచ్చు. <ph name="BEGIN_LINK" />మరిన్ని వివరాలు తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">స్క్రీన్‌షాట్ <ph name="CURRENT_DATE_ISO" /></translation>
@@ -1155,7 +1149,6 @@
 <translation id="5601180634394228718">మీ Chrome ఎక్స్‌పీరియన్స్‌ను మెరుగుపరచడానికి డేటాను ఉపయోగించే మరిన్ని సెట్టింగ్‌ల కోసం <ph name="BEGIN_LINK" />Google సర్వీస్‌ల<ph name="END_LINK" />కు వెళ్లండి.</translation>
 <translation id="5601924940067278327">మీ డివైజ్‌లన్నింటిలో మీ ట్యాబ్‌లను, మరిన్నింటిని పొందండి</translation>
 <translation id="5611398002774823980">ఖాతాలో సేవ్ చేయండి</translation>
-<translation id="5613381935190035031">మీ డివైజ్‌లన్నింటిలో మీ ట్యాబ్‌లను, మరిన్నింటిని పొందడానికి, <ph name="EMAIL" />‌గా Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="5614625640221885312">మీ అన్ని పరికరాలలో మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, అలాగే మరిన్నింటిని పొందడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="5619633276517849615">మీ సంస్థ సురక్షిత బ్రౌజింగ్‌ని ఆన్ చేసింది</translation>
 <translation id="5620163320393916465">సేవ్ చేసిన పాస్‌వర్డ్‌లు ఏవీ లేవు</translation>
@@ -1242,7 +1235,6 @@
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{మీ చదవాల్సిన లిస్ట్‌లో 1 పేజీ ఉంది}other{మీ చదవాల్సిన లిస్ట్‌లో # పేజీలు ఉన్నాయి}}</translation>
 <translation id="5992182727984874868"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> మీరు ఇటీవల వెబ్‌సైట్‌ను చూసిన కారణంగా Chrome ఈ అనుమతులను తీసివేసింది</translation>
 <translation id="5995726099713306770">పేజీని మళ్లీ డౌన్‌లోడ్ చేయాలనుకుంటున్నారా?</translation>
-<translation id="5998675059699164418">మీరు Chromeను ఉపయోగించడానికి సైన్ ఇన్ చేయాల్సిందిగా మీ సంస్థ కోరుతోంది.</translation>
 <translation id="6000066717592683814">Googleని ఉంచు</translation>
 <translation id="6002122790816966947">మీ పరికరాలు</translation>
 <translation id="6011308810877101166">సెర్చ్ సూచనలను మెరుగుపరుస్తుంది</translation>
@@ -1451,12 +1443,10 @@
 <translation id="6738867403308150051">డౌన్‌లోడ్ చేస్తోంది...</translation>
 <translation id="6745063744988317486">మోనో</translation>
 <translation id="6746338529702829275">మీ ఖాతా డేటాను రివ్యూ చేయండి</translation>
-<translation id="6746834324024491643">మీ పరికరాలన్నింటిలో మీ పాస్‌వర్డ్‌లతో పాటు మరిన్ని పొందడానికి, <ph name="EMAIL" />‌గా సైన్ ఇన్ చేయండి</translation>
 <translation id="6751521182688001123">త్వరగా కొత్త ట్యాబ్‌ను తెరవండి. ఈ షార్ట్‌కట్‌ను ఎడిట్ చేయడానికి, నొక్కి, పట్టుకోండి.</translation>
 <translation id="6754359471209693699">కొత్త సెర్చ్‌ను ప్రారంభించండి</translation>
 <translation id="6756507620369789050">ఫీడ్‌బ్యాక్‌ను షేర్ చేయండి</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
-<translation id="676305334223455055">మీ ఆసక్తుల ఆధారంగా కంటెంట్‌ను పొందడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="6764137532716892442">కొత్త యాక్టివిటీతో, <ph name="GROUP_TITLE" /> ట్యాబ్ గ్రూప్‌ను షేర్ చేశారు</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> అజ్ఞాత ట్యాబ్, మరో<ph name="TAB_COUNT_ONE" /> ట్యాబ్ మూసివేయబడతాయి}other{<ph name="INCOGNITO_TAB_COUNT" /> అజ్ఞాత ట్యాబ్, మరో<ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లు మూసివేయబడతాయి}}</translation>
 <translation id="6785476624617658922">Chrome &amp; ChromeOS అదనపు సర్వీస్ నియమాలు</translation>
@@ -1756,7 +1746,6 @@
 <translation id="7822705602465980873">మీరు సైన్ ఇన్ చేసినప్పుడు, Google సర్వీస్‌లన్నింటిలో మిమ్మల్ని సురక్షితంగా ఉంచడం కోసం ఈ డేటా మీ Google ఖాతాకు లింక్ చేయబడుతుంది, ఉదాహరణకు సెక్యూరిటీకి సంబంధించిన ఒక సంఘటన జరిగిన తర్వాత Gmailలో రక్షణను పెంచడం జరుగుతుంది.</translation>
 <translation id="7824665136384946951">మీ సంస్థ సురక్షిత బ్రౌజింగ్‌ను ఆఫ్ చేసింది</translation>
 <translation id="7825973332242257878">ట్యాబ్ గ్రూప్‌లు</translation>
-<translation id="7826342993930002256">మీ Chrome, ప్రతిచోటా</translation>
 <translation id="7845155831233417403">గరిష్ఠంగా <ph name="MAX_INSTANCE_COUNT" /> విండోలను మాత్రమే ఉపయోగించగలరు. కొనసాగించడానికి విండోను మూసివేయండి.</translation>
 <translation id="7846161022626028328">ఎర్రర్ ఏర్పడింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7846296061357476882">Google సర్వీస్‌లు</translation>
@@ -1813,7 +1802,9 @@
 <translation id="8058746566562539958">కొత్త Chrome ట్యాబ్‌లో తెరువు</translation>
 <translation id="8062594758852531064">పొడిగించిన ప్రీ - లోడింగ్:</translation>
 <translation id="8063895661287329888">బుక్‌మార్క్‌ను జోడించడంలో విఫలమైంది.</translation>
+<translation id="8064081231614696741">మరొక ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="8066816452984416180">ఈ పేజీని క్విక్‌గా బుక్‌మార్క్ చేయండి. ఈ షార్ట్‌కట్‌ను ఎడిట్ చేయడానికి, నొక్కి, పట్టుకోండి.</translation>
+<translation id="8068041627541121907">Gemini మీ మైక్రోఫోన్‌ను ఉపయోగించడానికి అనుమతి కోరుతోంది</translation>
 <translation id="8072436850275034464">మీరు Chromeను ఉపయోగించే చోట నుండి మీరు ఇటీవల మూసివేసిన ట్యాబ్‌లను మళ్లీ తెరవవచ్చు</translation>
 <translation id="8073388330009372546">కొత్త ట్యాబ్‌లో చిత్రం తెరువు</translation>
 <translation id="8076492880354921740">ట్యాబ్‌లు</translation>
@@ -1830,7 +1821,6 @@
 <translation id="8110024788458304985">Chrome OS ఫీచర్‌లు, పనితీరును మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="8110087112193408731">డిజిటల్ సంక్షేమంలో మీ Chrome యాక్టివిటీని చూపించాలా?</translation>
 <translation id="8118117428362942925">మీకు సహాయం అవసరమైతే, మీ తల్లి/తండ్రి (<ph name="PARENT_NAME" />)ని అడగండి</translation>
-<translation id="8118151008374483324">మీ డివైజ్‌లన్నింటిలో మీ ట్యాబ్‌లను, మరిన్నింటిని పొందడానికి, Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="8120286190326371840">ఈ పరికరంలో ఎటువంటి పాస్‌వర్డ్‌లు చోరీకి గురి కాలేదు</translation>
 <translation id="8122623268651408616">కొత్త వాటి ఆధారంగా క్రమపద్ధతిలో అమర్చుతున్నారు</translation>
 <translation id="8127542551745560481">హోమ్ పేజీని ఎడిట్ చేయండి</translation>
@@ -2122,7 +2112,6 @@
 <translation id="9218430445555521422">ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేయండి</translation>
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="922152298093051471">Chromeను అనుకూలంగా మార్చండి</translation>
-<translation id="9222198206152536936">మీ డివైజ్‌లన్నింటిలో మీ ట్యాబ్‌లను, మరిన్నింటిని పొందడానికి, <ph name="EMAIL" />‌గా సైన్ ఇన్ చేయండి</translation>
 <translation id="924447568950697217">Chromeను మీ డిఫాల్ట్ బ్రౌజర్‌గా చేయండి</translation>
 <translation id="926205370408745186">డిజిటల్ సంక్షేమం నుండి మీ Chrome యాక్టివిటీని తీసివేస్తుంది</translation>
 <translation id="927968626442779827">Google Chromeలోని లైట్ మోడ్‌ను ఉపయోగించండి</translation>

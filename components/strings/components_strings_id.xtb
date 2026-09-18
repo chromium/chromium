@@ -838,6 +838,8 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2384307209577226199">Default perusahaan</translation>
 <translation id="2385809941344967209">Update Chrome dari setelan Chrome</translation>
 <translation id="2386255080630008482">Sertifikat server telah dicabut.</translation>
+<translation id="2387424091060104123">Disarankan oleh Gemini · <ph name="SRC_LINK" />Lihat sumber<ph name="END_SRC_LINK" />
+Anda dapat menghapus saran ini dari Chrome. Sumber asli Anda tidak akan dihapus. <ph name="MANAGE_LINK" />Kelola isi otomatis yang ditingkatkan<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Jelaskan</translation>
 <translation id="2392959068659972793">Tampilkan kebijakan yang nilainya tidak ditetapkan</translation>
 <translation id="239429038616798445">Metode pengiriman tidak tersedia. Coba metode lain.</translation>
@@ -1517,6 +1519,8 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3577473026931028326">Terjadi error. Coba lagi.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome akan memberi tahu Anda saat halaman ini sudah siap. &lt;a&gt;Batal&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Otomatis tambahkan tab</translation>
+<translation id="3582670569275100909">Pengiriman</translation>
 <translation id="3582930987043644930">Tambahkan nama</translation>
 <translation id="3583757800736429874">&amp;Ulangi Pemindahan</translation>
 <translation id="3584299510153766161">Dua lubang di bawah</translation>
@@ -1592,6 +1596,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Memuat...</translation>
 <translation id="3709599264800900598">Teks yang Anda Salin</translation>
+<translation id="3711223220609269738">Tab Terisolasi Baru</translation>
 <translation id="3711430313228789376">Browser Chrome mencoba menampilkan sandi</translation>
 <translation id="3711895659073496551">Tangguhkan</translation>
 <translation id="3712004750972384495">Menyimpan perekaman layar</translation>
@@ -1610,6 +1615,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">Untuk menggunakan Pengelola Sandi Google dengan Rantai Kunci macOS, luncurkan kembali Chrome dan izinkan akses Rantai Kunci. Tab Anda akan dibuka lagi setelah peluncuran kembali.</translation>
 <translation id="3728173127485570463">Browser Chrome tidak lagi memerlukan sidik jari Anda untuk mengisi otomatis sandi</translation>
+<translation id="3729811201279509483">Tambahkan tab secara manual</translation>
 <translation id="3736564442532774454">Browser Chrome mencoba mengisikan info sensitif Anda di <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Browser dikelola oleh administrator Anda.</translation>
 <translation id="3739842843727261045">Memberi tanda Suka akan mengirim masukan bahwa Anda menyukai hasil ini</translation>
@@ -2772,6 +2778,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5649053991847567735">Download otomatis</translation>
 <translation id="5651323159439184939">Tractor Feed</translation>
 <translation id="5653681867130739344">Perbarui kartu identitas dengan aman di Google Wallet</translation>
+<translation id="5653744563415531641">Simpan info Anda dan selesaikan berbagai hal lebih cepat, seperti mengisi formulir di seluruh produk Google. Anda dapat <ph name="MANAGE_WALLET_SETTINGS_LINK" /> untuk <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID Laporan Kerusakan yang Diupload:</translation>
 <translation id="5654965123204121933">URL tidak menyertakan string pengganti yang diperlukan <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Email</translation>
@@ -3218,6 +3225,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6410264514553301377">Masukkan tanggal kedaluwarsa dan CVC <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Dialog persetujuan orang tua</translation>
+<translation id="6413532517183895572">kelola setelan Wallet Anda</translation>
 <translation id="6415778972515849510">Chromium dapat membantu Anda melindungi Akun Google dan mengubah sandi Anda.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Pastikan data pribadi atau bisnis penting disimpan secara eksternal.</translation>
@@ -4004,6 +4012,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7758069387465995638">Software antivirus atau firewall mungkin memblokir sambungan.</translation>
 <translation id="7759147511335618829">Program ulang &amp; kontrol perangkat MIDI</translation>
 <translation id="7759809451544302770">Opsional</translation>
+<translation id="7760566304700414795">Pengiriman</translation>
 <translation id="776110834126722255">Tidak digunakan lagi</translation>
 <translation id="7761159795823346334">Izinkan kamera?</translation>
 <translation id="7761701407923456692">Sertifikat server tidak cocok dengan URL.</translation>
@@ -4349,6 +4358,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8371841335382565017">Tampilkan daftar perangkat untuk transmisi</translation>
 <translation id="8371889962595521444">Root certificate kustom</translation>
 <translation id="8374636051559112948">Bervariasi</translation>
+<translation id="8377507422902936905">Pesanan</translation>
 <translation id="837840316697671463">Jika Anda tidak dapat menemukan file di perangkat Anda, cari di <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Dikelola oleh organisasi</translation>
 <translation id="8380941800586852976">Berbahaya</translation>

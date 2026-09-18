@@ -149,6 +149,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2575822587468774919">Selecciona cualquier cosa para buscarla con la búsqueda por imágenes</translation>
 <translation id="2576118232315942160">Para acceder a tus contraseñas y más en todos tus dispositivos, inicia sesión en Chromium</translation>
 <translation id="2587622539943955767">Escanea el código QR con tu teléfono para descargar Chromium e iniciar sesión con tu cuenta de Google.</translation>
+<translation id="2587885422541096572">para buscar con Chromium.</translation>
 <translation id="2592940277904433508">Seguir usando Chromium</translation>
 <translation id="259935314519650377">No se ha podido guardar en caché el instalador descargado. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -340,6 +341,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4621240073146040695">Chromium casi ha terminado de actualizarse. Reinícialo para completar la actualización.</translation>
 <translation id="4625064703209785397">Acelera los sitios con el motor V8 de Chromium, pero hace que Chromium sea un poco menos resistente a los ataques</translation>
 <translation id="4626321472657185181">Abrir la búsqueda con Chromium</translation>
+<translation id="4654639495249754755">Perfil de Chromium</translation>
 <translation id="4665829708273112819">Advertencia: Chromium no puede evitar que las extensiones registren el historial de navegación. Para inhabilitar esta extensión en modo Incógnito, desmarca esta opción.</translation>
 <translation id="4673151026126227699">Si también compartes informes de uso de Chromium, esos informes incluyen las URLs que visitas</translation>
 <translation id="4673710618874938871">Has iniciado sesión como <ph name="USER_NAME" />, suscripción. Abre el menú de la cuenta.</translation>
@@ -472,6 +474,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="6174920971222007286">Este archivo podría ser peligroso<ph name="LINE_BREAK" />Chromium puede comprobar esta descarga si proporcionas la contraseña. La información sobre el archivo se envía a Navegación segura de Google, pero su contenido y la contraseña permanecen en tu dispositivo.</translation>
 <translation id="6182736845697986886">No se ha podido realizar la instalación debido a un error interno del servidor de actualizaciones.</translation>
 <translation id="6183079672144801177">Comprueba que hayas iniciado sesión en Chromium con tu <ph name="TARGET_DEVICE_NAME" /> y, después, prueba a enviarlo de nuevo.</translation>
+<translation id="6192070012454216182">Busca y haz preguntas desde cualquier lugar, incluso si Chromium está minimizado. Permite que Chromium se ejecute en segundo plano.</translation>
 <translation id="6212496753309875659">Este ordenador ya cuenta con una versión más reciente de Chromium. Si el software no funciona, desinstala Chromium y vuelve a intentarlo.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium se reiniciará ahora}=1{Chromium se reiniciará dentro de 1 segundo}other{Chromium se reiniciará dentro de # segundos}}</translation>
 <translation id="6241367896540709610">Chromium necesita el permiso de acceso al almacenamiento para descargar archivos</translation>
@@ -598,6 +601,7 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="7288567540154601580">Pestañas y extensiones</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium te recomienda que la elimines}other{Chromium te recomienda que las elimines}}</translation>
 <translation id="7296334833518879294">Para compartir el audio del sistema, abre Configuración del sistema y permite "Solo grabación de audio del sistema" para Chromium. Después, tendrás que reiniciar Chromium.</translation>
+<translation id="7299899569525778554">Buscar desde un ordenador</translation>
 <translation id="731795002583552498">Actualizando Chromium</translation>
 <translation id="7318036098707714271">Tu archivo de preferencias está dañado o no es válido.
 
@@ -645,7 +649,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="77283119132245232">Proporciona servicios de trazado del sistema para <ph name="BROWSER_NAME" />. Si se inhabilita este servicio, las trazas de rendimiento creadas por el navegador no incluirán eventos de todo el sistema, como los eventos de cambio de contexto y de hilo listo.</translation>
 <translation id="7745317241717453663">Se eliminarán tus datos de navegación de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">El programa de instalación no ha podido crear un directorio temporal. Comprueba si hay espacio libre en el disco y si tienes autorización para instalar el software.</translation>
-<translation id="7747820849741499258">Buscar en Chromium</translation>
 <translation id="7750130090210923118">Restablecer tema predeterminado de Chromium</translation>
 <translation id="7752521946322750699">Para proteger tu trabajo en Chromium, tu organización podrá ver o gestionar determinada información cuando tengas la sesión iniciada en Chromium.</translation>
 <translation id="7781047659465034537">Establece Chromium como predeterminado y fíjalo en la barra de tareas</translation>
@@ -743,6 +746,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8619360774459241877">Iniciando Chromium...</translation>
 <translation id="8624541899164515475">Configuración, se abre en una pestaña nueva.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing no se puede establecer como navegador predeterminado.</translation>
+<translation id="8676101123715131330">Busca con Chromium desde cualquier lugar</translation>
 <translation id="8697124171261953979">También controla qué página se muestra al iniciar Chromium o al hacer búsquedas desde el omnibox.</translation>
 <translation id="8704119203788522458">Aquí tienes tu navegador Chromium</translation>
 <translation id="8712637175834984815">Entendido</translation>
@@ -776,6 +780,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="897581876605952338">Logotipo de Chromium Enterprise</translation>
 <translation id="8980139959902937527">Llévate la seguridad de Google a cualquier lugar con la aplicación Chromium en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">No se puede iniciar Chromium porque se ha producido un error al abrir el perfil. Prueba a reiniciar Chromium.</translation>
+<translation id="8981886272598860786">para buscar con Chromium o personalizar en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Gestionar perfiles de Chromium</translation>
 <translation id="8993855408334954620">Usa el teclado para desplazarte entre Gemini en Chromium y tu pestaña abierta.</translation>
 <translation id="9018218886431812662">Instalación completada</translation>

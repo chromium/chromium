@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">प्रमाणीकरणको प्रकार</translation>
 <translation id="1776228893584526149">वालपेपरको टोन</translation>
 <translation id="1777913922912475695">पुल</translation>
-<translation id="1782199038061388045">अनुवाद</translation>
 <translation id="1788485524395674731">तपाईंका एड्मिन यो एप व्यवस्थापन गर्नुहुन्छ</translation>
 <translation id="1792647875738159689">स्क्यान गर्ने कार्य रद्द गरिँदै छ</translation>
 <translation id="1801418420130173017">अँध्यारो थिम अफ गर्नुहोस्</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2448857983905133469">कक्षाका टुलहरू</translation>
 <translation id="2468124392950503650">सिर्जना गर्न प्रम्प्ट चयन गर्नुहोस् वा <ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रम्प्टसम्बन्धी गाइड<ph name="END_LINK_PROMPTING_GUIDE" /> हेर्नुहोस्</translation>
-<translation id="2472215337771558851">Google AI को लेख्न मद्दत गर्ने सुविधा प्रयोग गरी ड्राफ्ट बनाउनुहोस् वा पहिले नै लेखिएको सामग्री परिष्कृत गर्नुहोस्</translation>
 <translation id="2475982808118771221">त्रुटि भयो</translation>
 <translation id="2480572840229215612">गँगटाहरू</translation>
 <translation id="248546197012830854">डिभाइस अफलाइन छ। मद्दतसम्बन्धी सामग्री हेर्न Wi-Fi नेटवर्कमा कनेक्ट गर्नुहोस्।</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">पुनः खिच्नुहोस्</translation>
 <translation id="3479552764303398839">अहिले होइन</translation>
 <translation id="3484914941826596830">फर्मवेयर अपडेट भइरहेका बेला यो बाह्य डिभाइस अनप्लग गर्ने वा कम्प्युटर सट डाउन गर्ने काम नगर्नुहोस्। तपाईं यो विन्डो मिनिमाइज गर्न सक्नुहुन्छ। फर्मवेयर अपडेट गर्न केही मिनेट लाग्न सक्छ र अपडेट भइरहेका बेला तपाईंको बाह्य डिभाइसले काम नगर्न सक्छ।</translation>
-<translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3487866404496702283">Mahi सुविधाका बारेमा प्रतिक्रिया दिनुहोस्</translation>
 <translation id="3488065109653206955">आंशिक रूपमा सक्रिय बनाइएको</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> टोन भएको <ph name="OFFICE_STYLE" /> अफिस</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">कुनै थिम छनौट गर्नुहोस्</translation>
 <translation id="3644695927181369554">खराब सुझाव</translation>
 <translation id="3651050199673793219">तापक्रमको एकाइ चयन गर्नुहोस्</translation>
-<translation id="3661106764436337772">अझ छिटो र अझ धेरै आत्मविश्वासका साथ लेख्नुहोस्</translation>
 <translation id="3662461537616691585">बर्गन्डी र मरुन</translation>
 <translation id="3664755900672940272">नमुना प्रम्प्टहरू सफल गरिएका छन्</translation>
 <translation id="3668449597372804501">क्लाउड फ्लो वालपेपर</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">रोकियो</translation>
 <translation id="4777310452073659583">ट्रान्स्क्रिप्ट प्राप्त गर्न आफ्नो <ph name="DEVICE_TYPE" /> रिस्टार्ट गर्नुहोस्</translation>
 <translation id="4778082030331381943">अमेथिस्ट</translation>
-<translation id="4782311465517282004">तपाईंले कुनै टेक्स्टमा दायाँ क्लिक गर्दा वा टच एन्ड होल्ड गर्दा परिभाषा, अनुवाद वा एकाइ रूपान्तरण जस्ता जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> फोटो</translation>
 <translation id="4793710386569335688">थप मद्दत चाहिएमा <ph name="BEGIN_LINK" />मद्दत केन्द्र<ph name="END_LINK" /> मा जानुहोस्।</translation>
 <translation id="4793756956024303490">कम्प्रेसनसम्बन्धी एल्गोरिदम</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">उज्यालो थिम अफ गर्नुहोस्</translation>
 <translation id="7401543881546089382">शर्टकट मेटाउनुहोस्</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> अब अपडेट गर्न मिल्छ</translation>
-<translation id="741244894080940828">रूपान्तरण</translation>
 <translation id="7415801143053185905">HTTP को विलम्बता अति धेरै छ</translation>
 <translation id="7418738250896500352">एकदमै धेरै शब्द भएकाले सरल बनाउन सकिँदैन</translation>
 <translation id="7425037327577270384">मलाई लेख्न मद्दत गर्नुहोस्</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">भण्डारण</translation>
 <translation id="885704831271383379">किबोर्डको ब्याकलाइट अझ अँध्यारो बनाउनुहोस्</translation>
 <translation id="8863170912498892583">अँध्यारो थिम अन गर्नुहोस्</translation>
-<translation id="8863888432376731307">"<ph name="QUERY" />" को <ph name="INTENT" /> र अन्य कुरा हेर्नुहोस्</translation>
 <translation id="8864415976656252616">सिफारिस गरिएको सामग्री छैन। मद्दतसम्बन्धी मुख्य सामग्री हेर्नुहोस्।</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">यो डिभाइस ट्याब्लेट हो।</translation>

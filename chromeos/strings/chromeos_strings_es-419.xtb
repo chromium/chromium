@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Tipo de autenticación</translation>
 <translation id="1776228893584526149">Tono del fondo de pantalla</translation>
 <translation id="1777913922912475695">puente</translation>
-<translation id="1782199038061388045">traducción</translation>
 <translation id="1788485524395674731">Tu administrador controla esta app</translation>
 <translation id="1792647875738159689">Cancelando el escaneo</translation>
 <translation id="1801418420130173017">Inhabilitar el tema oscuro</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2448857983905133469">Herramientas de clase</translation>
 <translation id="2468124392950503650">Selecciona una instrucción para crearla o consulta la <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guía de instrucciones<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Usa Ayúdame a escribir para crear un borrador o mejorar el trabajo existente con la tecnología de IA de Google</translation>
 <translation id="2475982808118771221">Se ha producido un error</translation>
 <translation id="2480572840229215612">cangrejos</translation>
 <translation id="248546197012830854">El dispositivo está sin conexión. Conéctate a una red Wi-Fi para ver el contenido de ayuda.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Repetir</translation>
 <translation id="3479552764303398839">Ahora no</translation>
 <translation id="3484914941826596830">No desconectes este dispositivo externo ni apagues la computadora mientras se actualiza el firmware. Puedes minimizar esta ventana. Es posible que esta actualización demore unos minutos y que el dispositivo externo no funcione hasta que termine.</translation>
-<translation id="3486220673238053218">definición</translation>
 <translation id="3487866404496702283">Comentarios sobre la función mahi</translation>
 <translation id="3488065109653206955">Parcialmente activado</translation>
 <translation id="3492882532495507361">Una oficina <ph name="OFFICE_STYLE" /> con tonos <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Elige un tema</translation>
 <translation id="3644695927181369554">Mala sugerencia</translation>
 <translation id="3651050199673793219">Selecciona una unidad de temperatura</translation>
-<translation id="3661106764436337772">Escribe más rápido y con más confianza</translation>
 <translation id="3662461537616691585">borgoña y granate</translation>
 <translation id="3664755900672940272">Instrucciones de ejemplo mezcladas</translation>
 <translation id="3668449597372804501">Fondo de pantalla Flujo de nubes</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Detenida</translation>
 <translation id="4777310452073659583">Para obtener la transcripción, reinicia tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">amatista</translation>
-<translation id="4782311465517282004">Obtén definiciones, traducciones o conversión de unidades cuando haces clic con el botón derecho en texto o lo mantienes presionado.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Si tienes otros inconvenientes, visita el <ph name="BEGIN_LINK" />Centro de ayuda<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritmo de compresión</translation>
@@ -1459,7 +1454,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="7397270852490618635">Desactivar el tema claro</translation>
 <translation id="7401543881546089382">Eliminar acceso directo</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> está listo para actualizarse</translation>
-<translation id="741244894080940828">conversión</translation>
 <translation id="7415801143053185905">Latencia de HTTP muy alta</translation>
 <translation id="7418738250896500352">Hay demasiadas palabras para simplificar</translation>
 <translation id="7425037327577270384">Ayúdame a escribir</translation>
@@ -1769,7 +1763,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="885701979325669005">Almacenamiento</translation>
 <translation id="885704831271383379">teclado más oscuro</translation>
 <translation id="8863170912498892583">Habilitar el tema oscuro</translation>
-<translation id="8863888432376731307">Obtén información sobre "<ph name="QUERY" />", como su <ph name="INTENT" /></translation>
 <translation id="8864415976656252616">No hay contenido sugerido. Consulta el contenido de ayuda principal.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">El dispositivo es una tablet.</translation>

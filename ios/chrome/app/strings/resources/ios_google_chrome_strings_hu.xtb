@@ -48,6 +48,7 @@ Megjegyzések:
 <translation id="1784567647421309104">Jelszavak mentése a Chrome-ban</translation>
 <translation id="1790080846677398234">A bevitt URL-eket felveszi a könyvjelzők közé a Chrome-ban.</translation>
 <translation id="1799920918471566157">Chrome-tippek</translation>
+<translation id="1802420021606590788">A Chrome a felhőben lévő privát területen dolgozza fel az oldalcímeket és az URL-eket</translation>
 <translation id="1830634592642484976">A címet jelenleg a Chrome-ba menti a rendszer. Ha szeretné más Google-termékekben is használni, mentse saját Google-fiókjába (<ph name="USER_EMAIL" />).</translation>
 <translation id="1891812034154776216">Nyitott inkognitó lapok elrejtése a Chrome elhagyásakor</translation>
 <translation id="1894434821386148799">Itt találja a Chrome beállításait stb.</translation>
@@ -140,6 +141,7 @@ Megjegyzések:
 <translation id="3984746313391923992">Szervezete nem engedélyezi, hogy bejelentkezzen a Chrome-ba.</translation>
 <translation id="3988789688219830639">A Google Chrome nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
 <translation id="4064699917955374540">Ha Chrome-adatokat szeretne használni és tárolni Google-fiókjában, igazolja személyazonosságát.</translation>
+<translation id="4093789416346364876">Állítsa be a Chrome-ot alapértelmezettként, hogy hozzáférhessen a Gemini statisztikáihoz, bárhol is böngésszen</translation>
 <translation id="411154422556990518">Kövesse az árfigyeléssel kapcsolatos friss információkat és a Chrome-tippeket.</translation>
 <translation id="417201473131094001">A Chrome Canary nem támogatja</translation>
 <translation id="424864128008805179">Kijelentkezés a Chrome-ból</translation>

@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">የማረጋገጫ ዓይነት</translation>
 <translation id="1776228893584526149">የልጣፍ ቀለም</translation>
 <translation id="1777913922912475695">ድልድይ</translation>
-<translation id="1782199038061388045">ትርጉም</translation>
 <translation id="1788485524395674731">ይህ መተግበሪያ የሚተዳደረው በአስተዳዳሪዎ ነው</translation>
 <translation id="1792647875738159689">መቃኘትን በመሰረዝ ላይ</translation>
 <translation id="1801418420130173017">ጠቆር ያለ ገጽታን አሰናክል</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">ዓይነት</translation>
 <translation id="2448857983905133469">የክፍል መሣሪያዎች</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />የጥያቄ መመሪያውን<ph name="END_LINK_PROMPTING_GUIDE" /> ለመፍጠር ወይም ለማየት ጥያቄ ይምረጡ</translation>
-<translation id="2472215337771558851">በGoogle ሰው ሰራሽ አስተውሎት የተጎላበተ፣ ረቂቅ ለመፍጠር ወይም የነበረን ስራ ለማጥራት እንድጽፍ እርዳኝን ይጠቀሙ</translation>
 <translation id="2475982808118771221">ስህተት ተከስቷል</translation>
 <translation id="2480572840229215612">ሸርጣኖች</translation>
 <translation id="248546197012830854">መሣሪያ ከመስመር ውጭ ነው። የእገዛ ይዘትን ለመመልከት ከWi-Fi አውታረ መረብ ጋር ይገናኙ።</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">ዳግም አንሳ</translation>
 <translation id="3479552764303398839">አሁን አይደለም</translation>
 <translation id="3484914941826596830">ፊርምዌር በማዘመን ላይ ሳለ ይህን ውጫዊ መሣሪያ አይንቀሉት ወይም ኮምፒውተርዎን አይዝጉት። ይህን መስኮት መቀነስ ይችላሉ። ይህ ዝማኔ ጥቂት ደቂቃዎች ሊወስድ ይችላል፣ እና በዚህ ጊዜ የእርስዎ ውጫዊ መሣሪያ ላይሰራ ይችላል።</translation>
-<translation id="3486220673238053218">ብየና</translation>
 <translation id="3487866404496702283">ለmahi ባህሪ ግብረመልስ</translation>
 <translation id="3488065109653206955">በከፊል ገብሯል</translation>
 <translation id="3492882532495507361">የ<ph name="OFFICE_COLOR" /> ቃና ያለው የ<ph name="OFFICE_STYLE" /> ቢሮ</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">ገጽታ ይምረጡ</translation>
 <translation id="3644695927181369554">መጥፎ የአስተያየት ጥቆማ</translation>
 <translation id="3651050199673793219">የሙቀት መጠን አሃድ ይምረጡ</translation>
-<translation id="3661106764436337772">በፍጥነት እና በበለጠ በራስ መተማመን ይጻፉ</translation>
 <translation id="3662461537616691585">በርገንዲ እና ማሩን</translation>
 <translation id="3664755900672940272">የናሙና ጥያቄዎች ተበውዘዋል</translation>
 <translation id="3668449597372804501">የደመና ፍሰት ልጣፍ</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">ቆሟል</translation>
 <translation id="4777310452073659583">ጽሑፍ ግልባጭ ለማግኘት የእርስዎን <ph name="DEVICE_TYPE" /> እንደገና ያስጀምሩ</translation>
 <translation id="4778082030331381943">አሜቲስት</translation>
-<translation id="4782311465517282004">ጽሑፍን በቀኝ ጠቅ ሲያደርጉ ወይም ነክተው ሲይዙ ፍቺዎችን፣ ትርጉሞችን ወይም የአሃድ ልወጣዎችን ያግኙ</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ፎቶ</translation>
 <translation id="4793710386569335688">ለበለጠ እገዛ ወደ <ph name="BEGIN_LINK" />የእገዛ ማዕከል<ph name="END_LINK" /> ይሂዱ።</translation>
 <translation id="4793756956024303490">የእመቃ ስልተ-ቀመር</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">ነጣ ያለ ገጽታን አጥፋ</translation>
 <translation id="7401543881546089382">አቋረጭ ይሰርዙ</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> ለመዘመን ዝግጁ ነው</translation>
-<translation id="741244894080940828">ልወጣ</translation>
 <translation id="7415801143053185905">በጣም ከፍተኛ የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="7418738250896500352">ለማቀለል በጣም ብዙ ቃላት</translation>
 <translation id="7425037327577270384">ለመጻፍ አግዘኝ</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">ማከማቻ</translation>
 <translation id="885704831271383379">የቁልፍ ሰሌዳን ጨለም የሚያደርግ</translation>
 <translation id="8863170912498892583">ጥቁር ገጽታ አንቃ</translation>
-<translation id="8863888432376731307"><ph name="INTENT" />ን ለ«<ph name="QUERY" />» እና ተጨማሪ ያግኙ</translation>
 <translation id="8864415976656252616">ምንም በአስተያየት የተጠቆመ ይዘት የለም። ከፍተኛውን የእገዛ ይዘት ይመልከቱ።</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">መሣሪያ ጡባዊ ነው።</translation>

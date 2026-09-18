@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">ပင်မ ခွင့်ပြုချက်တောင်းဆိုမှု မအောင်မြင်ပါ။</translation>
 <translation id="1803557475693955505">နောက်ခံစာမျက်နှာ '<ph name="BACKGROUND_PAGE" />' အားဖွင့်၍မရပါ။</translation>
 <translation id="1875387611427697908">၎င်းကို <ph name="CHROME_WEB_STORE" /> မှသာ ထည့်သွင်းနိုင်သည်</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (နောက်ဆက်တွဲ ID “<ph name="EXTENSION_ID" />”) ကို ယုံကြည်ရမှုနည်းသော ပတ်ဝန်းကျင်များတွင် မူဝါဒအရ ထည့်သွင်း၍မရပါ။</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" အား တပ်ဆင်မရခြင်းမှာ "<ph name="IMPORT_NAME" />" က ခွင့်မပြုသောကြောင့် ဖြစ်၏</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />"ကို ထည့်ရမလား?</translation>
 <translation id="2159915644201199628">'<ph name="IMAGE_NAME" />' ပုံအား ကုဒ်မဖြုတ်နိုင်ပါ။</translation>

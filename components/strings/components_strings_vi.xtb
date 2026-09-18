@@ -1430,6 +1430,7 @@ Bạn có thể xoá đề xuất này khỏi Chrome. Nguồn ban đầu của b
 <translation id="3432601291244612633">Đóng trang</translation>
 <translation id="3434025015623587566">Trình quản lý mật khẩu của Google cần thêm quyền truy cập</translation>
 <translation id="343474037147570563">Tệp bạn tải lên hoặc đính kèm được gửi đến Google Cloud hoặc bên thứ ba để phân tích. Ví dụ: Các tệp này có thể được quét để tìm xem có dữ liệu nhạy cảm hoặc phần mềm độc hại hay không và có thể được lưu trữ dựa trên chính sách của công ty. Quản trị viên cũng có thể thấy các tệp này.</translation>
+<translation id="3435267628744367511">Nhấn phím Ctrl hai lần trong biểu mẫu bất kỳ để tìm và điền thông tin mà không cần chuyển đổi thẻ</translation>
 <translation id="3435557549311968410">Liên tục (Ngắn)</translation>
 <translation id="3435738964857648380">Bảo mật</translation>
 <translation id="3436125638121079308">Tự động chia sẻ các thẻ có liên quan để nhận được câu trả lời phù hợp hơn trong chuỗi này?</translation>
@@ -1518,6 +1519,8 @@ Bạn có thể xoá đề xuất này khỏi Chrome. Nguồn ban đầu của b
 <translation id="3577473026931028326">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome sẽ cho bạn biết thời điểm trang này sẵn sàng. &lt;a&gt;Hủy&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Tự động thêm thẻ</translation>
+<translation id="3582670569275100909">Vận chuyển</translation>
 <translation id="3582930987043644930">Thêm tên</translation>
 <translation id="3583757800736429874">&amp;Làm lại di chuyển</translation>
 <translation id="3584299510153766161">Đục 2 lỗ dưới cùng</translation>
@@ -1593,6 +1596,7 @@ Bạn có thể xoá đề xuất này khỏi Chrome. Nguồn ban đầu của b
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Đang tải...</translation>
 <translation id="3709599264800900598">Văn bản bạn đã sao chép</translation>
+<translation id="3711223220609269738">Thẻ biệt lập mới</translation>
 <translation id="3711430313228789376">Trình duyệt Chrome đang cố gắng hiển thị mật khẩu</translation>
 <translation id="3711895659073496551">Tạm ngừng</translation>
 <translation id="3712004750972384495">Đang lưu bản ghi màn hình</translation>
@@ -1611,6 +1615,7 @@ Bạn có thể xoá đề xuất này khỏi Chrome. Nguồn ban đầu của b
 <translation id="3727309136762649052">Không gian tên</translation>
 <translation id="3727850735097852673">Để sử dụng Trình quản lý mật khẩu của Google cùng với macOS Keychain, hãy chạy lại Chrome và cho phép truy cập Keychain. Các thẻ sẽ mở lại sau khi bạn chạy lại Chrome.</translation>
 <translation id="3728173127485570463">Trình duyệt Chrome sẽ không còn yêu cầu vân tay của bạn để tự động điền mật khẩu nữa</translation>
+<translation id="3729811201279509483">Thêm thẻ theo cách thủ công</translation>
 <translation id="3736564442532774454">Trình duyệt Chrome đang cố gắng điền thông tin nhạy cảm của bạn vào <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Trình duyệt này do quản trị viên của bạn quản lý.</translation>
 <translation id="3739842843727261045">Nút Thích gửi phản hồi cho biết bạn thích các kết quả này</translation>
@@ -2665,7 +2670,7 @@ Bạn có thể xoá đề xuất này khỏi Chrome. Nguồn ban đầu của b
 <translation id="5485973315555778056">Thiết bị trên đám mây</translation>
 <translation id="5488367146069768854">Lượt cài đặt ứng dụng web</translation>
 <translation id="5488590678320979185">Nút Tạo ghi chú, hãy nhấn nút này để nhanh chóng tạo một ghi chú mới trong Google Keep</translation>
-<translation id="5490432419156082418">Địa chỉ và các lựa chọn khác</translation>
+<translation id="5490432419156082418">Địa chỉ và thông tin khác</translation>
 <translation id="5492298309214877701">Trang web trên mạng nội bộ của công ty, tổ chức hoặc trường học này có URL tương tự như trang web bên ngoài.
     <ph name="LINE_BREAK" />
     Hãy thử liên hệ với quản trị viên hệ thống của bạn.</translation>
@@ -2773,6 +2778,7 @@ Bạn có thể xoá đề xuất này khỏi Chrome. Nguồn ban đầu của b
 <translation id="5649053991847567735">Tự động tải xuống</translation>
 <translation id="5651323159439184939">Tiếp giấy kiểu Tractor Feed</translation>
 <translation id="5653681867130739344">Cập nhật thẻ căn cước một cách an toàn trong Google Wallet</translation>
+<translation id="5653744563415531641">Lưu thông tin của bạn để làm mọi việc nhanh hơn, chẳng hạn như điền vào biểu mẫu trên các sản phẩm của Google. Bạn có thể <ph name="MANAGE_WALLET_SETTINGS_LINK" /> cho <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Mã báo cáo sự cố đã tải lên:</translation>
 <translation id="5654965123204121933">URL không có chuỗi thay thế bắt buộc <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Email</translation>
@@ -2896,6 +2902,7 @@ Bạn có thể xoá đề xuất này khỏi Chrome. Nguồn ban đầu của b
 <translation id="5884465125445718607">Phong bì kiểu Trung số 6</translation>
 <translation id="5887400589839399685">Đã lưu thẻ</translation>
 <translation id="5887687176710214216">Lần truy cập gần đây nhất: hôm qua</translation>
+<translation id="5887791684215121787">Nhấn ⌘ ⌘ trong biểu mẫu bất kỳ để tìm và điền thông tin mà không cần chuyển đổi thẻ</translation>
 <translation id="5889251770650310375">Để truy cập vào nhật ký của bạn trên những thiết bị khác, hãy xác minh danh tính của bạn cũng như đồng bộ hoá thẻ và nhật ký. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="5895187275912066135">Cấp vào</translation>
@@ -3218,6 +3225,7 @@ Bạn có thể xoá đề xuất này khỏi Chrome. Nguồn ban đầu của b
 <translation id="6410264514553301377">Nhập ngày hết hạn và CVC cho <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Hộp thoại quyết định phê duyệt của cha mẹ</translation>
+<translation id="6413532517183895572">quản lý chế độ cài đặt Wallet</translation>
 <translation id="6415778972515849510">Chromium có thể giúp bạn bảo vệ Tài khoản Google của mình và đổi mật khẩu.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Đảm bảo rằng mọi dữ liệu quan trọng của doanh nghiệp hoặc cá nhân đều được lưu trữ bên ngoài.</translation>
@@ -4006,6 +4014,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7758069387465995638">Tường lửa hoặc phần mềm diệt vi-rút có thể đã chặn kết nối.</translation>
 <translation id="7759147511335618829">Lập trình lại và điều khiển thiết bị MIDI</translation>
 <translation id="7759809451544302770">Không bắt buộc</translation>
+<translation id="7760566304700414795">Vận chuyển</translation>
 <translation id="776110834126722255">Không dùng nữa</translation>
 <translation id="7761159795823346334">Cho phép dùng máy ảnh?</translation>
 <translation id="7761701407923456692">Chứng chỉ của máy chủ không phù hợp với URL.</translation>
@@ -4351,6 +4360,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8371841335382565017">Hiện danh sách thiết bị để truyền</translation>
 <translation id="8371889962595521444">Chứng chỉ gốc tùy chỉnh</translation>
 <translation id="8374636051559112948">Khác nhau</translation>
+<translation id="8377507422902936905">Đơn đặt hàng</translation>
 <translation id="837840316697671463">Nếu bạn không thấy tệp trên thiết bị, hãy tìm tệp đó trên <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Do tổ chức của bạn quản lý</translation>
 <translation id="8380941800586852976">Nguy hiểm</translation>
@@ -4410,7 +4420,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8467494337615822642">Chuyển đến trang kiểm tra an toàn trên Chrome trong phần cài đặt</translation>
 <translation id="8468358362970107653">Phong bì C3</translation>
 <translation id="8473626140772740486">300 x 450 mm</translation>
-<translation id="8473863474539038330">Địa chỉ và các lựa chọn khác</translation>
+<translation id="8473863474539038330">Địa chỉ và thông tin khác</translation>
 <translation id="8474910779563686872">Hiển thị thông tin chi tiết của nhà phát triển</translation>
 <translation id="84764251640219124">Các trang web bị chặn sử dụng cookie của bên thứ ba. Nếu một trang web phụ thuộc vào các cookie này không hoạt động, bạn có thể <ph name="BEGIN_LINK" />thử cấp cho trang web đó quyền truy cập tạm thời vào cookie của bên thứ ba<ph name="END_LINK" />.</translation>
 <translation id="8479754468255770962">Dập ghim dưới cùng bên trái</translation>

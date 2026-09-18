@@ -837,6 +837,8 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2384307209577226199">Standardinställning i företaget</translation>
 <translation id="2385809941344967209">Uppdatera Chrome via inställningarna för Chrome</translation>
 <translation id="2386255080630008482">Servercertifikatet har återkallats.</translation>
+<translation id="2387424091060104123">Förslag från Gemini · <ph name="SRC_LINK" />Visa källor<ph name="END_SRC_LINK" />
+Du kan ta bort det här förslaget från Chrome. Den ursprungliga källan raderas inte. <ph name="MANAGE_LINK" />Hantera förbättrad autofyll<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Utveckla</translation>
 <translation id="2392959068659972793">Visa policyer utan inställt värde</translation>
 <translation id="239429038616798445">Det här fraktalternativet är inte tillgängligt. Testa ett annat alternativ.</translation>
@@ -1518,6 +1520,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Ett meddelande visas när sidan är klar. &lt;a&gt;Avbryt&lt;/a&gt;</translation>
 <translation id="3581499772329034229">Lägg till flikar automatiskt</translation>
+<translation id="3582670569275100909">Leveranser</translation>
 <translation id="3582930987043644930">Lägg till namn</translation>
 <translation id="3583757800736429874">&amp;Gör om Flytta</translation>
 <translation id="3584299510153766161">Två hål längst ned</translation>
@@ -4011,6 +4014,7 @@ Mer information.
 <translation id="7758069387465995638">Anslutningen kan ha blockerats av en brandvägg eller antivirusprogram.</translation>
 <translation id="7759147511335618829">Styra/omprogrammera MIDI-enheter</translation>
 <translation id="7759809451544302770">Valfritt</translation>
+<translation id="7760566304700414795">Leverans</translation>
 <translation id="776110834126722255">Utfasad</translation>
 <translation id="7761159795823346334">Vill du tillåta kamera?</translation>
 <translation id="7761701407923456692">Servercertifikatet överensstämmer inte med webbadressen.</translation>
@@ -4356,6 +4360,7 @@ Mer information.
 <translation id="8371841335382565017">Visa enhetslistan för casting</translation>
 <translation id="8371889962595521444">Anpassade rotcertifikat</translation>
 <translation id="8374636051559112948">Varierar</translation>
+<translation id="8377507422902936905">Beställningar</translation>
 <translation id="837840316697671463">Om du inte hittar en fil på enheten tittar du efter den på <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Hanteras av organisationen</translation>
 <translation id="8380941800586852976">Farlig</translation>

@@ -37,7 +37,6 @@
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Picture-in-Picture na Tab</translation>
 <translation id="1126696498560056882">Pamahalaan ang mga account sa device na ito</translation>
 <translation id="1135018701024399762">Pinapanatiling pribado ng Incognito mode ang pag-browse mo sa ibang taong gumagamit ng iyong device</translation>
-<translation id="113752097246673894">Para makuha ang iyong mga password at higit pa sa lahat ng device mo, mag-sign in sa Chrome bilang <ph name="EMAIL" /></translation>
 <translation id="1138458427267715730">Makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site sa buong web</translation>
 <translation id="1140317858355046628">Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na "<ph name="GROUP_NAME" />," at made-delete ito sa lahat ng device.</translation>
 <translation id="1142732900304639782">Huwag mag-alok na isalin ang mga site na ito</translation>
@@ -205,7 +204,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, Nagre-record na Tab</translation>
 <translation id="1819443852740954262">Buksan lahat sa Incognito window</translation>
 <translation id="1820408774134375111">Bottom sheet sa pag-sign in</translation>
-<translation id="1823492026305965829">Mag-sign in bilang si <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">I-tap ang I-delete ang data mula sa pag-browse</translation>
 <translation id="1829244130665387512">Hanapin sa page</translation>
 <translation id="1832459821645506983">Oo, payag ako</translation>
@@ -439,7 +437,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2723001399770238859">audio</translation>
 <translation id="2739887572830526131">Panatilihin ang grupong ito para magdagdag ng mga tab dito sa ibang pagkakataon, o i-delete ito kung hindi mo na ito kailangan.</translation>
 <translation id="2742373789128106053">Hindi available ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sa ngayon.</translation>
-<translation id="2751271371269891762">Para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo, mag-sign in bilang <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2761162135224472056">Panoorin nang may immersive na pag-playback?</translation>
 <translation id="2762000892062317888">ngayon lang</translation>
@@ -514,6 +511,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2996291259634659425">Gumawa ng passphrase</translation>
 <translation id="2996682533106928201">I-tap para i-dismiss</translation>
 <translation id="2996809686854298943">Kinakailangan ang URL</translation>
+<translation id="3007318536447999974">Para makipag-usap sa Gemini, bigyan ito ng pahintulot na gamitin ang iyong mikropono. Puwede mo ring pamahalaan ito sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Nakasara ang mga preference sa Reading mode</translation>
 <translation id="3024277805447899099">I-preview ang larawan</translation>
 <translation id="3026955690410463085">Kasama ang link</translation>
@@ -608,7 +606,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3435914367318771664">Magdagdag ng tab sa bagong grupo</translation>
 <translation id="3436118221454753036">Ask AI Mode</translation>
-<translation id="3438681572027105609">Para makuha ang iyong mga password at higit pa sa lahat ng device mo, mag-sign in sa Chrome</translation>
 <translation id="3439276997620616816">Makikita mo rito ang iyong mga kamakailang tab</translation>
 <translation id="3443221991560634068">I-reload ang kasalukuyang page</translation>
 <translation id="3444179773590444986">Magbahagi ng feedback sa madilim na tema para sa mga site?</translation>
@@ -753,7 +750,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="4000212216660919741">Offline Home</translation>
 <translation id="4000670338830950598">I-customize at kontrolin ang Google Chrome gamit ang naka-highlight na item</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 nakompromisong password sa iyong Google Account}one{# nakompromisong password sa iyong Google Account}other{# na nakompromisong password sa iyong Google Account}}</translation>
-<translation id="4023638601467301498">Para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo, mag-sign in sa Chrome</translation>
 <translation id="4024768890073681126">Pinapamahalaan ng iyong magulang ang browser mo</translation>
 <translation id="4027569221211770437">Folder na <ph name="FOLDER_TITLE" /></translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# oras}one{# oras}other{# na oras}}</translation>
@@ -934,7 +930,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4685741273709472646">Pumili mula sa dropdown na listahan</translation>
 <translation id="468924408576231679">Kopyahin ang link sa webpage <ph name="PAGE_TITLE" />. Source: <ph name="PAGE_URL" /></translation>
 <translation id="4692623383562244444">Mga search engine</translation>
-<translation id="469286762610133730">Makakuha ng mas magandang content</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> iba pa}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> iba pa}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> na iba pa}}</translation>
 <translation id="4698757800236023795">Aktibo (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Mga naka-cache na larawan at file</translation>
@@ -994,7 +989,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4910889077668685004">Mga app sa pagbabayad</translation>
 <translation id="4911042367886397055">Maligayang pagbabalik, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Ihinto ang pag-refresh</translation>
-<translation id="4921224083091001889">Para makuha ang iyong mga password at higit pa sa lahat ng device mo, mag-sign in sa Chrome bilang <ph name="EMAIL" /></translation>
 <translation id="4923173329789776645">Hindi inirerekomenda ng iyong organisasyon ang pag-download</translation>
 <translation id="4924398189611529766">Kapag nagba-browse ka sa Incognito, hindi makikita ng iba pang gumagamit ng device na ito ang iyong aktibidad, kaya mas pribado kang makakapag-browse. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
@@ -1155,7 +1149,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5601180634394228718">Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experience sa Chrome, pumunta sa <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
 <translation id="5601924940067278327">Makuha ang iyong mga tab at higit pa sa lahat ng device mo</translation>
 <translation id="5611398002774823980">I-save sa account</translation>
-<translation id="5613381935190035031">Para makuha ang iyong mga tab at higit pa sa lahat ng device mo, mag-sign in sa Chrome bilang <ph name="EMAIL" /></translation>
 <translation id="5614625640221885312">Mag-sign in para makuha ang iyong mga bookmark, password, at higit pa sa lahat ng device mo</translation>
 <translation id="5619633276517849615">In-on ng iyong organisasyon ang Ligtas na Pag-browse</translation>
 <translation id="5620163320393916465">Walang naka-save na password</translation>
@@ -1242,7 +1235,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 page sa iyong listahan ng babasahin}one{# page sa iyong listahan ng babasahin}other{# na page sa iyong listahan ng babasahin}}</translation>
 <translation id="5992182727984874868"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> Inalis ng Chrome ang mga pahintulot na ito dahil hindi ka bumisita kamakailan</translation>
 <translation id="5995726099713306770">I-download ulit ang page?</translation>
-<translation id="5998675059699164418">Hinihiling sa iyo ng organisasyon mo na mag-sign in para magamit ang Chrome.</translation>
 <translation id="6000066717592683814">Panatilihin ang Google</translation>
 <translation id="6002122790816966947">Ang iyong mga device</translation>
 <translation id="6011308810877101166">Pahusayin ang mga suhestyon sa paghahanap</translation>
@@ -1453,12 +1445,10 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6738867403308150051">Nagda-download...</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Suriin ang data ng iyong account</translation>
-<translation id="6746834324024491643">Para makuha ang iyong mga password at higit pa sa lahat ng device mo, mag-sign in bilang <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Mabilis na magbukas ng bagong tab. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
 <translation id="6754359471209693699">Magsimula ng bagong paghahanap</translation>
 <translation id="6756507620369789050">Magbahagi ng feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
-<translation id="676305334223455055">Mag-sign in para makakuha ng content batay sa iyong mga interes</translation>
 <translation id="6764137532716892442">Naka-share na grupo ng tab na <ph name="GROUP_TITLE" /> na may bagong aktibidad</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{Isasara ang <ph name="INCOGNITO_TAB_COUNT" /> tab na incognito at <ph name="TAB_COUNT_ONE" /> pang tab}one{Isasara ang <ph name="INCOGNITO_TAB_COUNT" /> tab na incognito at <ph name="TAB_COUNT_MANY" /> pang tab}other{Isasara ang <ph name="INCOGNITO_TAB_COUNT" /> na tab na incognito at <ph name="TAB_COUNT_MANY" /> pang tab}}</translation>
 <translation id="6785476624617658922">Mga Karagdagang Tuntunin ng Serbisyo ng Chrome at ChromeOS</translation>
@@ -1758,7 +1748,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7822705602465980873">Kapag naka-sign in ka, naka-link ang data na ito sa iyong Google Account para protektahan ka sa lahat ng serbisyo ng Google, halimbawa, pagpapaigting ng proteksyon sa Gmail pagkatapos ng isang insidente sa seguridad.</translation>
 <translation id="7824665136384946951">In-off ng iyong organisasyon ang Ligtas na Pag-browse</translation>
 <translation id="7825973332242257878">Mga grupo ng tab</translation>
-<translation id="7826342993930002256">Ang Chrome mo, sa lahat ng lugar</translation>
 <translation id="7845155831233417403">Puwede kang magkaroon ng hanggang <ph name="MAX_INSTANCE_COUNT" /> (na) window. Magsara ng window para magpatuloy.</translation>
 <translation id="7846161022626028328">Nagka-error. Subukan ulit.</translation>
 <translation id="7846296061357476882">Mga serbisyo ng Google</translation>
@@ -1815,7 +1804,9 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8058746566562539958">Buksan sa bagong tab ng Chrome</translation>
 <translation id="8062594758852531064">Na-extend na pag-preload:</translation>
 <translation id="8063895661287329888">Hindi naidagdag ang bookmark.</translation>
+<translation id="8064081231614696741">Pumili ng ibang folder</translation>
 <translation id="8066816452984416180">Mabilis na i-bookmark ang page na ito. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
+<translation id="8068041627541121907">Gustong gamitin ng Gemini ang iyong mikropono</translation>
 <translation id="8072436850275034464">Puwede mong buksan ulit ang mga tab na isinara mo kamakailan kahit saan ka man gumagamit ng Chrome</translation>
 <translation id="8073388330009372546">Buksan ang larawan sa bagong tab</translation>
 <translation id="8076492880354921740">Mga Tab</translation>
@@ -1832,7 +1823,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8110024788458304985">Tumulong na pahusayin ang mga feature at performance ng Chrome</translation>
 <translation id="8110087112193408731">Ipakita sa Digital Wellness ang aktibidad mo sa Chrome?</translation>
 <translation id="8118117428362942925">Kung kailangan mo ng tulong, magpatulong sa iyong magulang (<ph name="PARENT_NAME" />)</translation>
-<translation id="8118151008374483324">Para makuha ang iyong mga tab at higit pa sa lahat ng device mo, mag-sign in sa Chrome</translation>
 <translation id="8120286190326371840">Walang nakompromisong password sa device na ito</translation>
 <translation id="8122623268651408616">Ibinubukod-bukod ayon sa pinakabago</translation>
 <translation id="8127542551745560481">I-edit ang homepage</translation>
@@ -2124,7 +2114,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="9218430445555521422">Itakda bilang default</translation>
 <translation id="9219103736887031265">Mga Larawan</translation>
 <translation id="922152298093051471">I-customize ang Chrome</translation>
-<translation id="9222198206152536936">Para makuha ang iyong mga tab at higit pa sa lahat ng device mo, mag-sign in bilang <ph name="EMAIL" /></translation>
 <translation id="924447568950697217">Gawing default mong browser ang Chrome</translation>
 <translation id="926205370408745186">Alisin sa Digital Wellness ang iyong aktibidad sa Chrome</translation>
 <translation id="927968626442779827">Gamitin ang Lite mode sa Google Chrome</translation>

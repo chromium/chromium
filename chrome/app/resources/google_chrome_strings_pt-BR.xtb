@@ -521,7 +521,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6166185671393271715">Importar senhas para o Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" />: Google Chrome Beta</translation>
-<translation id="6177442314419606057">Pesquisar no Chrome</translation>
 <translation id="6180522807229584611">Esta guia está usando recursos extras. Para melhorar o desempenho, permita que o Chrome a deixe inativa.</translation>
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
 <translation id="6192058120268468905">Sua conta no Chrome</translation>
@@ -553,6 +552,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6434035853014503219">Agradecemos por escolher o Chrome como seu navegador padrão.</translation>
 <translation id="6438015621983209660">Amplie a Navegação Segura com Maior Proteção com o Chrome no seu celular</translation>
 <translation id="6442774133615368941">Compre, traduza e identifique qualquer coisa com a câmera no Chrome para iOS</translation>
+<translation id="6446105560007692480">para pesquisar com o Chrome ou personalizar nas <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" /></translation>
 <translation id="6448835208126432197">Para selecionar parte da tela no Gemini no Chrome, use o atalho do teclado.</translation>
 <translation id="6473905796280459355">Acesse a página "Sobre o Chrome"</translation>
 <translation id="6481963882741794338">Vincular o Chrome e outros Serviços do Google para personalização e outras finalidades</translation>
@@ -574,6 +574,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6612152958212564387">Você não está enviando estatísticas de uso e relatórios de erros ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Mantenha senhas, favoritos e histórico sincronizados em todos os dispositivos definindo o Chrome como navegador padrão.</translation>
 <translation id="6631524303639368205">Continue de onde você parou: o Chrome restaurou as guias da sua última sessão. Para desativar essa opção, acesse as</translation>
+<translation id="6632012506031284914">para pesquisar com o Chrome.</translation>
 <translation id="6632473616050862500">A criação do ChromeOS Flex só foi possível graças a um outro <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">As mudanças nessa configuração serão aplicadas assim que o Chrome for reiniciado.</translation>
 <translation id="6660596345553328257">Fazer login no Chrome?</translation>
@@ -590,7 +591,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6750954913813541382">Para corrigir erros de ortografia, o Chrome envia o texto digitado no navegador para o Google</translation>
 <translation id="6760235774835597023">Deixa os sites mais rápidos com o mecanismo V8 do Chrome, mas o navegador fica um pouco menos resistente a ataques. Esta configuração está ativada.</translation>
 <translation id="677276454032249905">Sair do Chrome mesmo assim?</translation>
-<translation id="6777654166489463890">Pergunte sobre conteúdo fora do Chrome, como outro app ou arquivo aberto</translation>
 <translation id="6794858689789885890">Sempre excluir os dados do site do seu dispositivo ao fechar o Chrome</translation>
 <translation id="6800285125190089494">Faça login em sites com mais rapidez usando as senhas salvas no Chrome para iOS</translation>
 <translation id="6831043979455480757">Traduzir</translation>

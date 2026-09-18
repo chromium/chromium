@@ -837,6 +837,8 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2384307209577226199">Valeur par défaut définie par l'entreprise</translation>
 <translation id="2385809941344967209">Mettez à jour votre navigateur dans les paramètres Chrome</translation>
 <translation id="2386255080630008482">Le certificat du serveur a été révoqué.</translation>
+<translation id="2387424091060104123">Suggéré par Gemini · <ph name="SRC_LINK" />Voir les sources<ph name="END_SRC_LINK" />
+Vous pouvez supprimer cette suggestion de Chrome. Votre source d'origine ne sera pas supprimée. <ph name="MANAGE_LINK" />Gérer la saisie automatique améliorée<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Développer</translation>
 <translation id="2392959068659972793">Afficher les règles non paramétrées</translation>
 <translation id="239429038616798445">Mode d'expédition non disponible. Choisissez-en un autre.</translation>
@@ -1428,6 +1430,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3432601291244612633">Fermer la page</translation>
 <translation id="3434025015623587566">Le Gestionnaire de mots de passe de Google a besoin d'un accès plus étendu</translation>
 <translation id="343474037147570563">Les fichiers que vous importez ou joignez sont envoyés à Google Cloud ou à des tiers pour analyse. Ils peuvent par exemple être analysés pour rechercher des données sensibles ou des logiciels malveillants, être stockés conformément aux règles de l'entreprise et être visibles par votre administrateur.</translation>
+<translation id="3435267628744367511">Appuyez deux fois sur Ctrl dans n'importe quel formulaire pour trouver et renseigner des informations sans changer d'onglet</translation>
 <translation id="3435557549311968410">Continu (court)</translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3436125638121079308">Partager automatiquement les onglets pertinents pour obtenir de meilleures réponses dans ce fil de discussion ?</translation>
@@ -1516,6 +1519,8 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Vous serez averti lorsque cette page sera prête. &lt;a&gt;Annuler&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Ajouter automatiquement des onglets</translation>
+<translation id="3582670569275100909">Livraisons</translation>
 <translation id="3582930987043644930">Ajouter un nom</translation>
 <translation id="3583757800736429874">&amp;Rétablir le déplacement</translation>
 <translation id="3584299510153766161">Double perforation en bas</translation>
@@ -1591,6 +1596,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Chargement en cours...</translation>
 <translation id="3709599264800900598">Texte copié</translation>
+<translation id="3711223220609269738">Nouvel onglet isolé</translation>
 <translation id="3711430313228789376">Le navigateur Chrome tente d'afficher les mots de passe</translation>
 <translation id="3711895659073496551">Arrêter</translation>
 <translation id="3712004750972384495">Enregistrement de l'écran</translation>
@@ -1609,6 +1615,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3727309136762649052">Espace de noms</translation>
 <translation id="3727850735097852673">Pour utiliser le Gestionnaire de mots de passe de Google avec le trousseau macOS, relancez Chrome et autorisez l'accès au trousseau. Vos onglets s'ouvriront alors de nouveau.</translation>
 <translation id="3728173127485570463">Le navigateur Chrome n'exigera plus votre empreinte digitale pour saisir automatiquement les mots de passe</translation>
+<translation id="3729811201279509483">Ajouter des onglets manuellement</translation>
 <translation id="3736564442532774454">Le navigateur Chrome tente de saisir vos informations sensibles sur <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Votre navigateur est géré par votre administrateur.</translation>
 <translation id="3739842843727261045">"J'aime" indique que ces résultats vous conviennent</translation>
@@ -2771,6 +2778,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5649053991847567735">Téléchargements automatiques</translation>
 <translation id="5651323159439184939">Continu sans pli</translation>
 <translation id="5653681867130739344">Mettez à jour votre pièce d'identité de manière sécurisée dans Google Wallet</translation>
+<translation id="5653744563415531641">Enregistrez vos informations pour gagner du temps, par exemple en remplissant des formulaires dans les produits Google. Vous pouvez <ph name="MANAGE_WALLET_SETTINGS_LINK" /> pour <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID du rapport d'erreur importé :</translation>
 <translation id="5654965123204121933">L'URL n'inclut pas la chaîne de remplacement obligatoire <ph name="SEARCH_TERMS_REPLACEMENT" /> : <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -2894,6 +2902,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5884465125445718607">Enveloppe chinoise n°6</translation>
 <translation id="5887400589839399685">Carte enregistrée</translation>
 <translation id="5887687176710214216">Dernière visite : hier</translation>
+<translation id="5887791684215121787">Appuyez sur ⌘ ⌘ dans n'importe quel formulaire pour trouver et renseigner des informations sans changer d'onglet</translation>
 <translation id="5889251770650310375">Pour récupérer votre historique depuis vos autres appareils, confirmez votre identité et synchronisez votre historique et vos onglets. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5895187275912066135">Émis le</translation>
@@ -3216,6 +3225,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6410264514553301377">Saisissez la date d'expiration et le code CVC pour <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Boîte de dialogue d'approbation parentale</translation>
+<translation id="6413532517183895572">gérer les paramètres Wallet</translation>
 <translation id="6415778972515849510">Chromium peut vous aider à protéger votre compte Google et à modifier votre mot de passe.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Assurez-vous que toutes les données à caractère personnel ou professionnel critiques sont stockées en externe.</translation>
@@ -4005,6 +4015,7 @@ Informations supplémentaires :
 <translation id="7758069387465995638">Il est possible qu'un pare-feu ou un logiciel antivirus ait bloqué la connexion.</translation>
 <translation id="7759147511335618829">Contrôle/Reprog. appareils MIDI</translation>
 <translation id="7759809451544302770">Facultatif</translation>
+<translation id="7760566304700414795">Livraison</translation>
 <translation id="776110834126722255">Obsolète</translation>
 <translation id="7761159795823346334">Autoriser l'accès à la caméra ?</translation>
 <translation id="7761701407923456692">Le certificat du serveur ne correspond pas à l'URL.</translation>
@@ -4350,6 +4361,7 @@ Informations supplémentaires :
 <translation id="8371841335382565017">Afficher la liste des appareils pour la diffusion</translation>
 <translation id="8371889962595521444">Certificats racine personnalisés</translation>
 <translation id="8374636051559112948">Variable</translation>
+<translation id="8377507422902936905">Commandes</translation>
 <translation id="837840316697671463">Si vous ne trouvez pas un fichier sur votre appareil, recherchez-le dans <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Géré par votre organisation</translation>
 <translation id="8380941800586852976">Dangereux</translation>

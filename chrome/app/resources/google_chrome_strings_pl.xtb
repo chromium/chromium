@@ -227,6 +227,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="3112458742631356345">Pobieranie zostało zablokowane przez Chrome, ponieważ ten plik nie jest często pobierany i może być niebezpieczny</translation>
 <translation id="3119573284443908657">Pobieranie zostało zablokowane przez Chrome, ponieważ plik archiwum zawiera inne pliki, które mogą ukrywać złośliwe oprogramowanie</translation>
 <translation id="3124332159330678621">Spersonalizuj Chrome, aby zmienić wygląd przeglądarki</translation>
+<translation id="3125851611828811913">Wyszukuj i zadawaj pytania z dowolnego miejsca, nawet gdy przeglądarka Chrome jest zminimalizowana. Zezwala na działanie Chrome w tle.</translation>
 <translation id="3130333203120345554">Nowe wyszukiwanie</translation>
 <translation id="3135560418014806498">Dodaj profil Chrome</translation>
 <translation id="3137969841538672700">Przeciągnij, aby wyszukać</translation>
@@ -383,6 +384,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="4793679854893018356">Jak Chrome dba o Twoje bezpieczeństwo</translation>
 <translation id="4799870290441980300">Włącza dodatkowe funkcje, aby zapewnić najsilniejszą ochronę w Chrome</translation>
 <translation id="4828579605166583682">Google Chrome próbuje zastąpić istniejące hasła. Aby na to zezwolić, podaj hasło do systemu Windows.</translation>
+<translation id="4836321460899997044">Profil Chrome</translation>
 <translation id="4842397268809523050">W ChromeOS Flex nie udało się zsynchronizować danych, ponieważ synchronizacja jest niedostępna w Twojej domenie.</translation>
 <translation id="4851866215237571846">Jesteś już zalogowany(-a) na konto <ph name="EXISTING_USER" />.  Aby przeglądać osobno, zaloguj się w Chrome w swoim profilu jako <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Aby udostępnić ekran, pozwól Chrome na nagrywanie ekranu w ustawieniach systemu</translation>
@@ -496,6 +498,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6014316319780893079">Dzięki <ph name="BEGIN_LINK" />narzędziom Chrome<ph name="END_LINK" /> możesz bezpiecznie przeglądać internet i mieć nad wszystkim kontrolę</translation>
 <translation id="6018578474045062808">Wypróbuj Obiektyw Google w Chrome na telefonie</translation>
 <translation id="6022659036123304283">Dostosuj Chrome do swoich potrzeb</translation>
+<translation id="6024930613143833266">Wyszukuj w Chrome z dowolnego miejsca</translation>
 <translation id="6025087594896450715">Google Chrome uruchomi się ponownie za <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="604424701295382420">Przypięto. Teraz możesz otwierać Obiektyw Google za pomocą nowego przycisku na pasku narzędzi</translation>
@@ -517,7 +520,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6166185671393271715">Importowanie haseł do Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
-<translation id="6177442314419606057">Szukaj w Chrome</translation>
 <translation id="6180522807229584611">Ta karta wykorzystuje dodatkowe zasoby. Aby zwiększyć wydajność, pozwól Chrome ją dezaktywować.</translation>
 <translation id="6182736845697986886">Instalacja się nie udała z powodu wewnętrznego błędu serwera aktualizacji.</translation>
 <translation id="6192058120268468905">Twoje konto w Chrome</translation>
@@ -549,6 +551,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6434035853014503219">Dziękujemy za wybranie Chrome jako przeglądarki domyślnej.</translation>
 <translation id="6438015621983209660">Korzystaj z Ulepszonego bezpiecznego przeglądania także na telefonie dzięki Chrome</translation>
 <translation id="6442774133615368941">Kupuj, tłumacz i rozpoznawaj to, co widzisz, za pomocą aparatu w aplikacji Chrome na iOS</translation>
+<translation id="6446105560007692480">aby wyszukać za pomocą Chrome lub dostosować w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" /></translation>
 <translation id="6448835208126432197">Aby zaznaczyć część ekranu w Gemini w Chrome, użyj skrótu klawiszowego.</translation>
 <translation id="6473905796280459355">Otwórz stronę Chrome – informacje</translation>
 <translation id="6481963882741794338">Połącz Chrome i inne usługi Google na potrzeby personalizacji oraz w innych celach</translation>
@@ -570,6 +573,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6612152958212564387">Nie wysyłasz do Google statystyk użytkowania ani raportów o awariach. <ph name="BEGIN_LINK" />Zarządzaj<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Ustaw Chrome jako domyślną przeglądarkę, aby synchronizować hasła, zakładki i historię na wszystkich swoich urządzeniach.</translation>
 <translation id="6631524303639368205">Wznawianie przeglądania od tego samego miejsca: przeglądarka Chrome przywróciła karty z Twojej ostatniej sesji. Aby wyłączyć tę funkcję, otwórz</translation>
+<translation id="6632012506031284914">aby wyszukać za pomocą Chrome.</translation>
 <translation id="6632473616050862500">Opracowanie ChromeOS Flex było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Zmiany tego ustawienia zostaną zastosowane po ponownym uruchomieniu Chrome.</translation>
 <translation id="6660596345553328257">Chcesz zalogować się w Chrome?</translation>
@@ -638,6 +642,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="7285990705317078173">Pobierz Chrome na telefon, aby śledzić ceny i otrzymywać alerty, gdy w którejś z witryn cena spadnie</translation>
 <translation id="7288567540154601580">Karty i rozszerzenia</translation>
 <translation id="7296210096911315575">Ważne informacje dotyczące użytkowania i bezpieczeństwa</translation>
+<translation id="7299899569525778554">Wyszukuj na komputerze</translation>
 <translation id="7302361266603927550">Niektóre dane z Chrome nie zostały jeszcze zapisane na Twoim koncie Google. Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te dane zostaną usunięte.</translation>
 <translation id="7306401458628386911">Zacznij przeglądać od razu: Chrome może się teraz uruchamiać po uruchomieniu systemu Windows.</translation>
 <translation id="7308322188646931570">Chrome musi mieć dostęp do pamięci, by pobierać pliki</translation>

@@ -837,6 +837,8 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2384307209577226199">Numatytieji įmonės nustatymai</translation>
 <translation id="2385809941344967209">Atnaujinkite „Chrome“ šios naršyklės nustatymuose</translation>
 <translation id="2386255080630008482">Serverio sertifikatas panaikintas.</translation>
+<translation id="2387424091060104123">Siūlo „Gemini“ · <ph name="SRC_LINK" />Peržiūrėti šaltinius<ph name="END_SRC_LINK" />
+Galite pašalinti šį pasiūlymą iš „Chrome“. Pradinis šaltinis nebus ištrintas. <ph name="MANAGE_LINK" />Tvarkyti išmanųjį automatinį pildymą<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Detalizuoti</translation>
 <translation id="2392959068659972793">Rodyti politiką su nenustatyta verte</translation>
 <translation id="239429038616798445">Šis pristatymo metodas nepasiekiamas. Išbandykite kitą metodą.</translation>
@@ -1519,6 +1521,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">„Chrome“ informuos jus, kai šis puslapis bus paruoštas. &lt;a&gt;Atšaukti&lt;/a&gt;</translation>
 <translation id="3581499772329034229">Automatinis skirtukų pridėjimas</translation>
+<translation id="3582670569275100909">Siuntimas</translation>
 <translation id="3582930987043644930">Pridėti vardą</translation>
 <translation id="3583757800736429874">&amp;Perkelti dar kartą</translation>
 <translation id="3584299510153766161">Dvi skylės apačioje</translation>
@@ -4012,6 +4015,7 @@ Papildoma išsami informacija:
 <translation id="7758069387465995638">Gali būti, kad užkarda arba antivirusinė programinė įranga užblokavo ryšį.</translation>
 <translation id="7759147511335618829">MIDI įrenginio valdymas ir programavimas iš naujo</translation>
 <translation id="7759809451544302770">Pasirenkama</translation>
+<translation id="7760566304700414795">Siuntimas</translation>
 <translation id="776110834126722255">Nebenaudojama</translation>
 <translation id="7761159795823346334">Leisti pasiekti fotoaparatą?</translation>
 <translation id="7761701407923456692">Serverio sertifikatas neatitinka URL.</translation>
@@ -4357,6 +4361,7 @@ Papildoma išsami informacija:
 <translation id="8371841335382565017">Rodyti perdavimo įrenginių sąrašą</translation>
 <translation id="8371889962595521444">Tinkinti šakniniai sertifikatai</translation>
 <translation id="8374636051559112948">Kinta</translation>
+<translation id="8377507422902936905">Užsakymai</translation>
 <translation id="837840316697671463">Jei nerandate failo įrenginyje, ieškokite jo „<ph name="CLOUD_PROVIDER" />“.</translation>
 <translation id="8378714024927312812">Tvarko jūsų organizacija</translation>
 <translation id="8380941800586852976">Pavojingas</translation>

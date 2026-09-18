@@ -147,6 +147,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2575822587468774919">Sélectionnez un élément dans lequel effectuer une recherche avec la recherche dans des images</translation>
 <translation id="2576118232315942160">Pour accéder à vos mots de passe et plus encore sur tous vos appareils, connectez-vous à Chromium</translation>
 <translation id="2587622539943955767">Scannez le QR code avec votre téléphone pour télécharger Chromium et vous connecter à votre compte Google.</translation>
+<translation id="2587885422541096572">pour rechercher avec Chromium.</translation>
 <translation id="2592940277904433508">Continuer à utiliser Chromium</translation>
 <translation id="259935314519650377">Échec de la mise en cache du programme d'installation téléchargé. Erreur : <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Système</translation>
@@ -338,6 +339,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4621240073146040695">Mise à jour presque terminée. Relancez Chromium pour la finaliser.</translation>
 <translation id="4625064703209785397">Accélère les sites avec le moteur V8 de Chromium, mais rend Chromium légèrement moins résistant aux attaques</translation>
 <translation id="4626321472657185181">Ouvrir Rechercher avec Chromium</translation>
+<translation id="4654639495249754755">Profil Chromium</translation>
 <translation id="4665829708273112819">Avertissement : Chromium ne peut pas empêcher les extensions d'enregistrer l'historique de votre navigation. Pour désactiver cette extension en mode navigation privée, désélectionnez cette option.</translation>
 <translation id="4673151026126227699">Si vous partagez aussi les rapports d'utilisation Chromium, ceux-ci incluent les URL que vous consultez</translation>
 <translation id="4673710618874938871">Connexion en tant que <ph name="USER_NAME" />, abonnement. Ouvrir le menu du compte</translation>
@@ -470,6 +472,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="6174920971222007286">Ce fichier est peut-être dangereux<ph name="LINE_BREAK" />Si vous fournissez le mot de passe, Chromium peut vérifier ce téléchargement. Des infos sur le fichier sont envoyées à la navigation sécurisée Google, mais son contenu et le mot de passe restent sur votre appareil.</translation>
 <translation id="6182736845697986886">Échec de l'installation en raison d'une erreur interne du serveur de mise à jour.</translation>
 <translation id="6183079672144801177">Vérifiez si vous êtes bien connecté à Chromium sur votre <ph name="TARGET_DEVICE_NAME" />, puis procédez de nouveau à l'envoi.</translation>
+<translation id="6192070012454216182">Recherchez des informations et posez des questions depuis n'importe où, même si Chromium est réduit. Permet à Chromium de s'exécuter en arrière-plan.</translation>
 <translation id="6212496753309875659">Cet ordinateur dispose déjà d'une version plus récente de Chromium. Si le logiciel ne fonctionne pas, veuillez le désinstaller, puis réessayer.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium va être relancé maintenant}=1{Chromium va être relancé dans 1 seconde}one{Chromium va être relancé dans # seconde}other{Chromium va être relancé dans # secondes}}</translation>
 <translation id="6241367896540709610">Pour télécharger des fichiers, Chromium a besoin de l'autorisation d'accéder à l'espace de stockage</translation>
@@ -596,6 +599,7 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="7288567540154601580">Onglets et extensions</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium vous recommande de la supprimer}one{Chromium vous recommande de la supprimer}other{Chromium vous recommande de les supprimer}}</translation>
 <translation id="7296334833518879294">Pour partager l'audio du système, ouvrez Réglages Système et autorisez "Enregistrement des sons du système uniquement" pour Chromium. Vous devrez ensuite redémarrer Chromium.</translation>
+<translation id="7299899569525778554">Rechercher depuis un ordinateur</translation>
 <translation id="731795002583552498">Mise à jour de Chromium...</translation>
 <translation id="7318036098707714271">Le fichier des préférences est corrompu ou n'est pas valide. 
 
@@ -643,7 +647,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="77283119132245232">Fournit des services de traçage système pour <ph name="BROWSER_NAME" />. Si ce service est désactivé, les traces de performances créées par le navigateur n'incluent pas les événements système tels que les changements de contexte et les threads prêts.</translation>
 <translation id="7745317241717453663">Cette action aura pour effet de supprimer vos données de navigation de cet appareil. Pour récupérer vos données ultérieurement, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Le programme d'installation n'a pas pu créer de répertoire temporaire. Vérifiez que le disque a suffisamment d'espace libre et que vous disposez des autorisations nécessaires pour installer le logiciel.</translation>
-<translation id="7747820849741499258">Rechercher dans Chromium</translation>
 <translation id="7750130090210923118">Rétablir la version par défaut de Chromium</translation>
 <translation id="7752521946322750699">Pour sécuriser votre travail sur Chromium, votre organisation pourra afficher ou gérer certaines informations lorsque vous serez connecté à Chromium.</translation>
 <translation id="7781047659465034537">Définissez Chromium comme navigateur par défaut et épinglez-le à la barre des tâches</translation>
@@ -741,6 +744,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8619360774459241877">Lancement de Chromium…</translation>
 <translation id="8624541899164515475">Paramètres, s'ouvre dans un nouvel onglet.</translation>
 <translation id="8648201657708811153">Impossible de définir Google Chrome for Testing comme navigateur par défaut.</translation>
+<translation id="8676101123715131330">Effectuez des recherches dans Chromium depuis n'importe où</translation>
 <translation id="8697124171261953979">Elle contrôle également la page qui s'affiche au démarrage de Chromium ou lorsque vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="8704119203788522458">Voici votre Chromium</translation>
 <translation id="8712637175834984815">OK</translation>
@@ -774,6 +778,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
 <translation id="8980139959902937527">Profitez de la sécurité de Google où que vous soyez avec l'appli Chromium sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Impossible de démarrer Chromium, car un problème est survenu lors de l'ouverture de votre profil. Essayez de redémarrer Chromium.</translation>
+<translation id="8981886272598860786">pour rechercher avec Chromium ou personnaliser dans <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Gérer les profils Chromium</translation>
 <translation id="8993855408334954620">Utilisez votre clavier pour naviguer entre Gemini dans Chromium et votre onglet ouvert.</translation>
 <translation id="9018218886431812662">Installation terminée</translation>

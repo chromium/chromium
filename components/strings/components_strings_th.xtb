@@ -1519,6 +1519,7 @@
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome จะแจ้งให้คุณทราบเมื่อหน้านี้พร้อมใช้งาน &lt;a&gt;ยกเลิก&lt;/a&gt;</translation>
 <translation id="3581499772329034229">เพิ่มแท็บโดยอัตโนมัติ</translation>
+<translation id="3582670569275100909">การจัดส่ง</translation>
 <translation id="3582930987043644930">เพิ่มชื่อ</translation>
 <translation id="3583757800736429874">&amp;ทำซ้ำการย้าย</translation>
 <translation id="3584299510153766161">เจาะรูด้านล่าง 2 รู</translation>
@@ -4012,6 +4013,7 @@
 <translation id="7758069387465995638">ไฟร์วอลล์หรือซอฟต์แวร์ป้องกันไวรัสอาจบล็อกการเชื่อมต่อนี้</translation>
 <translation id="7759147511335618829">ระบบควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่</translation>
 <translation id="7759809451544302770">ไม่บังคับ</translation>
+<translation id="7760566304700414795">การจัดส่ง</translation>
 <translation id="776110834126722255">เลิกใช้งาน</translation>
 <translation id="7761159795823346334">อนุญาตให้เข้าถึงกล้องไหม</translation>
 <translation id="7761701407923456692">ใบรับรองของเซิร์ฟเวอร์ไม่ตรงกับ URL</translation>
@@ -4357,6 +4359,7 @@
 <translation id="8371841335382565017">แสดงรายการอุปกรณ์สําหรับการแคสต์</translation>
 <translation id="8371889962595521444">ใบรับรองรูทที่กำหนดเอง</translation>
 <translation id="8374636051559112948">หลากหลาย</translation>
+<translation id="8377507422902936905">คำสั่งซื้อ</translation>
 <translation id="837840316697671463">หากไม่พบไฟล์ในอุปกรณ์ของคุณ ให้ลองดูที่ <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8378714024927312812">จัดการโดยองค์กร</translation>
 <translation id="8380941800586852976">อันตราย</translation>

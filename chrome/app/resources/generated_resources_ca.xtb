@@ -142,6 +142,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1090541560108055381">Abans de fer la vinculació, comprova que aquest codi sigui el mateix en els dos dispositius</translation>
 <translation id="1093457606523402488">Xarxes visibles:</translation>
 <translation id="1093645050124056515">Ctrl+Alt+fletxa avall</translation>
+<translation id="1095398697303758108">Prem Ctrl dues vegades per utilitzar l'emplenament automàtic millorat</translation>
 <translation id="1095879482467973146">Gestor de contrasenyes de Google al web</translation>
 <translation id="1097016918605049747">Aquesta pàgina no s'ha pogut traduir</translation>
 <translation id="1099962274138857708">Imatge copiada des del dispositiu <ph name="DEVICE_NAME" /></translation>
@@ -859,6 +860,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1656528038316521561">Opacitat del fons</translation>
 <translation id="1657406563541664238">Ajuda'ns a millorar <ph name="PRODUCT_NAME" /> enviant estadístiques d'ús i informes d'error a Google automàticament.</translation>
 <translation id="1657937299377480641">Per tornar a iniciar la sessió per accedir als recursos educatius, has de demanar permís als teus pares</translation>
+<translation id="1657952527687824398">Posa el focus al grup de pestanyes</translation>
 <translation id="1658424621194652532">Aquesta pàgina té accés al micròfon.</translation>
 <translation id="1660405268563702784">Hi ha una actualització disponible per a <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Corregeix la pestanya que està alentint el navegador}other{Corregeix les pestanyes que estan alentint el navegador}}</translation>
@@ -2312,6 +2314,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2767077837043621282">El Chromebook no s'ha pogut actualitzar. Torna-ho a provar més tard.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> podrà editar <ph name="FILENAME" /> mentre no tanquis totes les pestanyes d'aquest lloc web.</translation>
 <translation id="2769174155451290427">Imatge penjada</translation>
+<translation id="2769715732905083104">Posa el focus al grup de pestanyes</translation>
 <translation id="2770082596325051055">Posa en pausa <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Suprimeix de la llista</translation>
 <translation id="2770690685823456775">Exporta les contrasenyes a una altra carpeta</translation>
@@ -2592,6 +2595,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2984727013951557074">El fitxer encara s'està sincronitzant amb Drive.</translation>
 <translation id="2984923316661218534">Obtén les teves claus d'accés en aquest dispositiu amb el gestor de contrasenyes de Google</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> ha desinstal·lat una aplicació}other{<ph name="APP_NAME" /> ha desinstal·lat # aplicacions}}</translation>
+<translation id="2987777176328481585">{NUM_TABS,plural, =1{Posa el focus a la pestanya}other{Posa el focus en # pestanyes}}</translation>
 <translation id="2988018669686457659">Renderitzador de reserva</translation>
 <translation id="2988328607561082373">No estàs reutilitzant cap contrasenya</translation>
 <translation id="2989123969927553766">Acceleració de desplaçament del ratolí</translation>
@@ -2706,7 +2710,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3048917188684939573">Registres d'emissions i dispositius</translation>
 <translation id="3049356453907822148">Afegeix una habilitat nova</translation>
 <translation id="3051250416341590778">Mida de visualització</translation>
-<translation id="3051676221004664500">&amp;Tradueix "<ph name="SELECTION" />"</translation>
 <translation id="3053273573829329829">Activa el PIN de l'usuari</translation>
 <translation id="3053274730492362225">No parpellegis</translation>
 <translation id="3057938290530993634">Mantén premuts els llocs web que més visites per fixar-los i accedir-hi fàcilment la propera vegada</translation>
@@ -5143,7 +5146,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4913573660390710463">Accedeix a aplicacions web empaquetades amb capacitats millorades. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">No es troben dades de l'aplicació</translation>
 <translation id="4915961947098019832">Amb permís per mostrar imatges</translation>
-<translation id="4916140032692201190">&amp;Tradueix la selecció</translation>
 <translation id="491779113051926205">Comptadors de trànsit de ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> es vol comunicar amb l'extensió "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Accepta</translation>
@@ -5180,6 +5182,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4941963255146903244">Mostra les fotos, els fitxers multimèdia i les aplicacions del telèfon</translation>
 <translation id="494286511941020793">Ajuda per configurar servidors intermediaris</translation>
 <translation id="4943368462779413526">Pilota de futbol americà</translation>
+<translation id="4943872375798546930">No hi ha cap resultat</translation>
 <translation id="4943927218331934807">Cal una contrasenya</translation>
 <translation id="4946998421534856407">menú d'aplicacions+fletxa amunt</translation>
 <translation id="4947376546135294974">Dades del lloc web que estàs visitant</translation>
@@ -5220,7 +5223,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4972129977812092092">Edita la impressora</translation>
 <translation id="4972164225939028131">La contrasenya no és correcta</translation>
 <translation id="4972737347717125191">Els llocs web poden demanar permís per utilitzar dispositius i dades de realitat virtual</translation>
-<translation id="4973302523373219907">Si no s'estableix la drecera personalitzada, s'utilitza @@ de manera predeterminada</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Silencia el lloc web}other{Silencia els llocs web}}</translation>
 <translation id="497403230787583386">Les comprovacions de seguretat han finalitzat. El teu document s'imprimirà.</translation>
 <translation id="4974442344472293753">Resultat de l'actualització</translation>
@@ -5323,6 +5325,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5060419232449737386">Configuració dels subtítols</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Aquesta carpeta conté una adreça d'interès. Confirmes que vols suprimir-la?}other{Aquesta carpeta conté # adreces d'interès. Confirmes que vols suprimir-la?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
+<translation id="5061781067616989032">Configura les teves pròpies tecles de drecera</translation>
 <translation id="5062863364865466276">Moviment</translation>
 <translation id="5063480226653192405">Ús</translation>
 <translation id="5064921774605267982">Obre el perfil de <ph name="PROFILE_NAME" />. El teu pare o mare gestiona aquest perfil.</translation>
@@ -5654,6 +5657,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5311304534597152726">Inicia la sessió com a</translation>
 <translation id="5312746996236433535">projecta la pantalla</translation>
 <translation id="5313967007315987356">Afegeix un lloc web</translation>
+<translation id="531500736198839473">{NUM_TABS,plural, =1{Posa el focus a la pestanya}other{Posa el focus en # pestanyes}}</translation>
 <translation id="5315738755890845852">Hi ha una clau addicional: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5317781812114905957">Instruccions</translation>
@@ -6532,6 +6536,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6022659036123304283">Personalitza Chrome</translation>
 <translation id="6024317249717725918">&amp;Cerca un fotograma amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Traça de la pila</translation>
+<translation id="6026436621921471553">Treu el focus del grup de pestanyes</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: hi ha un dispositiu USB connectat</translation>
 <translation id="6027143200498653403">Quan facis preguntes sobre el teu historial, podràs obtenir respostes sobre informació específica d'una pàgina que hagis visitat</translation>
 <translation id="6027945736510816438">Volies dir <ph name="WEBSITE" />?</translation>
@@ -6630,7 +6635,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="610487644502954950">S'ha deixat de fixar el tauler lateral</translation>
 <translation id="6104929924898022309">Utilitza la tecla de cerca per canviar el comportament de les tecles de funció</translation>
 <translation id="6108952804512516814">Crea amb IA</translation>
-<translation id="611041979451429698">&amp;Imprimeix "<ph name="SELECTION" />"</translation>
 <translation id="6110794992500777605">Els meus llocs web i dreceres</translation>
 <translation id="6111718295497931251">Suprimeix l'accés a Google Drive</translation>
 <translation id="6112197885362646874">Pregunta sobre "<ph name="SEARCH_TERMS" />" a Google</translation>
@@ -7000,6 +7004,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6399675241776343019">Denegat</translation>
 <translation id="6399774419735315745">Espia</translation>
 <translation id="6400360390396538896">Sempre a <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">Treu el focus del grup de pestanyes</translation>
 <translation id="6401118106417399952">L'EID del dispositiu és <ph name="EID_NUMBER" /> i el número de sèrie, <ph name="SERIAL_NUMBER" />. Aquests números es poden utilitzar per activar el servei.</translation>
 <translation id="6401458660421980302">Per enviar aquesta pestanya a un altre dispositiu, inicia la sessió a Chrome al dispositiu en qüestió</translation>
 <translation id="6402042774506839496">Per saber-ne el motiu, contacta amb el desenvolupador de l'aplicació</translation>
@@ -7404,6 +7409,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710394144992407503">Comprova si hi ha errors ortogràfics quan escriguis text en pàgines web</translation>
 <translation id="6711236403841768371">Abans del dia <ph name="END_DATE" /></translation>
+<translation id="6711569175139833669">Prem ⌘ dues vegades per utilitzar l'emplenament automàtic millorat</translation>
 <translation id="6712943853047024245">Ja has desat una contrasenya amb aquest nom d'usuari per a <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Afegeix un perfil de treball</translation>
 <translation id="6713441551032149301">Mantén premuda la tecla del menú d'aplicacions per canviar entre les tecles de funció i les tecles de la fila superior del sistema</translation>
@@ -7636,7 +7642,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6870470066213933201">Gestiona la seguretat i l'optimització de JavaScript</translation>
 <translation id="6870953451576517204">La prova automàtica s'ha superat</translation>
 <translation id="6871397658902960384">Comença a navegar</translation>
-<translation id="6871609459496868094">&amp;Copia "<ph name="SELECTION" />"</translation>
 <translation id="6871644448911473373">Resposta OCSP: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Idiomes...</translation>
 <translation id="6873156759937047811">PIN:</translation>
@@ -8561,6 +8566,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7602173054665172958">Gestió de la impressió</translation>
 <translation id="7602805861133750578">Ara pots gestionar els grups de pestanyes, els xats de Gemini i els fils de discussió del mode IA en un sol lloc. Deixa de fixar-ho en qualsevol moment.</translation>
 <translation id="7602868996817972616">Pregunta a Google sobre aquesta pàgina</translation>
+<translation id="7603583710244190070">La teva organització bloqueja la compartició de pantalla d'aquesta pestanya</translation>
 <translation id="7603785829538808504">Els llocs web que s'indiquen a continuació segueixen una opció de configuració personalitzada</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 contrasenya no s'ha importat}other{{NUM_PASSWORDS} contrasenyes no s'han importat}}</translation>
 <translation id="7605163396341021431">Dona a les aplicacions d'Android el control sobre els dispositius USB en aquest Chromebook</translation>
@@ -8714,6 +8720,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="7707108266051544351">No es permet que aquest lloc web utilitzi els sensors de moviment.</translation>
 <translation id="7707922173985738739">Utilitza dades mòbils</translation>
 <translation id="7709152031285164251">Error: <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7709839510451455295">Esborra la drecera personalitzada de l'emplenament automàtic millorat</translation>
 <translation id="7710568461918838723">&amp;Emet…</translation>
 <translation id="7711968363685835633">Desactiva les conversions i els suggeriments personalitzats, així com el diccionari de l'usuari</translation>
 <translation id="7712739869553853093">Quadre de diàleg de la previsualització d'impressió</translation>
@@ -8753,6 +8760,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="7742706086992565332">Pots definir quant amplies o redueixes determinats llocs web</translation>
 <translation id="7742879569460013116">Comparteix l'enllaç a</translation>
 <translation id="774377079771918250">Tria on el vols desar</translation>
+<translation id="7743876437245989842">La teva organització bloqueja la compartició de pantalla d'una pestanya</translation>
 <translation id="7744047395460924128">Veure l'historial d'impressions</translation>
 <translation id="7744192722284567281">S'ha trobat en una violació de les dades</translation>
 <translation id="7744649840067671761">Prem un interruptor o una tecla del teclat nous per iniciar una assignació.
@@ -9376,6 +9384,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8215129063232901118">Accedeix a les capacitats del teu telèfon des del teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Destaca el punter</translation>
 <translation id="8217399928341212914">Continua bloquejant les baixades automàtiques de diversos fitxers</translation>
+<translation id="8218411859495801458">Edita la drecera personalitzada de l'emplenament automàtic millorat</translation>
 <translation id="8221358554841691213">Estil de focus mitjà</translation>
 <translation id="8221942262855134126">Gestiona la contrasenya</translation>
 <translation id="8222112516148944758">Els grups de pestanyes es desen i s'actualitzen automàticament en tots els teus dispositius</translation>
@@ -9717,7 +9726,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8477241577829954800">Reemplaçat</translation>
 <translation id="8477384620836102176">&amp;General</translation>
 <translation id="8477446666255316832">Inicia la sessió més ràpidament la propera vegada</translation>
-<translation id="8477548388161793571">&amp;Tradueix la selecció</translation>
 <translation id="8478346767369317046">Feina</translation>
 <translation id="8479176401914456949">Codi no vàlid. Torna-ho a provar.</translation>
 <translation id="8480869669560681089">Dispositiu desconegut de <ph name="VENDOR_NAME" /></translation>
@@ -9759,6 +9767,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="851263357009351303">Permet sempre que <ph name="HOST" /> mostri imatges</translation>
 <translation id="8513108775083588393">Rotació autom.</translation>
 <translation id="8513357934662532537">Per importar contrasenyes a <ph name="BRAND" /> per a <ph name="USER_EMAIL" />, selecciona un fitxer CSV.</translation>
+<translation id="8514257511170433540">Utilitza les tecles de drecera predeterminades en emplenar formularis</translation>
 <translation id="8514746246728959655">Prova una altra clau de seguretat</translation>
 <translation id="8514828975162859845">Piruleta de pa de pessic</translation>
 <translation id="8514955299594277296">No permetis que els llocs web desin dades al teu dispositiu (opció no recomanada)</translation>
@@ -10750,6 +10759,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="973558314812359997">Mida del ratolí</translation>
 <translation id="973788791897303708">Aquest grup de pestanyes és ple</translation>
 <translation id="97381968209917373">Suprimeix el certificat <ph name="CERT_NAME" /></translation>
+<translation id="97570902379088759">La teva organització bloqueja la compartició de pantalla de <ph name="TAB_NAME" /></translation>
 <translation id="975893173032473675">Idioma d'arribada de la traducció</translation>
 <translation id="976572010712028687">Verifica que ets el pare o la mare</translation>
 <translation id="977175416263153310">Obre en una finestra aïllada</translation>

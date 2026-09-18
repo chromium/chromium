@@ -274,7 +274,7 @@ Stvari za razmatranje:
 <translation id="6680609900732453726">Zadržite privatnost pregledanja pomoću autentifikacije uređaja prilikom zatvaranja Chromiuma</translation>
 <translation id="6696512128741076907">Postavite Chromium kao zadani preglednik da u trenu otvarate linkove iz drugih aplikacija.</translation>
 <translation id="6752854822223394465">Vaša organizacija postavlja Chromium...</translation>
-<translation id="6777348401413221846">Videozapis na cijelom zaslonu s uputama za postavljanje Chromiuma kao zadanog preglednika: otvorite postavke Chromiuma na iOS-u, dodirnite opciju Zadana aplikacija preglednika i odaberite Chromium.</translation>
+<translation id="6777348401413221846">Videozapis preko cijelog ekrana koji prikazuje postavljanje Chromiuma kao zadanog preglednika: otvaranje postavki Chromiuma u iOS-u, dodir na "Zadana aplikacija preglednika" i odabir Chromiuma.</translation>
 <translation id="6794054469102824109">Otvara igru Dinosaur u Chromiumu.</translation>
 <translation id="6820823224820483452">Chromium nije mogao provjeriti sve lozinke. Pokušajte ponovo sutra.</translation>
 <translation id="6830782797004194206">Brže se prijavite putem automatskog popunjavanja u Chromiumu</translation>
@@ -351,6 +351,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="865600487977764604">Štiti vas na Chromiumu i može se koristiti da poboljša vašu sigurnost u drugim Googleovim aplikacijama kada ste prijavljeni.</translation>
 <translation id="8663480472502753423">Redovno ažurirajte Chromium</translation>
 <translation id="8685813584220679697">Prijavite se na ovu web lokaciju i u Chromium.</translation>
+<translation id="869832267508702259">Postavite Chromium kao zadani preglednik da dobijate Geminijeve uvide gdje god pregledate</translation>
 <translation id="8698780336333802489">Uvezi u Chromium</translation>
 <translation id="8730503818204408000">Otvara Chromiumovu postavku za namještanje Chromiuma kao zadanog preglednika.</translation>
 <translation id="8754966941001340678">Chromium preporučuje poboljšanu zaštitu</translation>

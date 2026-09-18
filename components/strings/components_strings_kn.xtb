@@ -836,6 +836,8 @@
 <translation id="2384307209577226199">ಎಂಟರ್‌ಪ್ರೈಸ್ ಡಿಫಾಲ್ಟ್</translation>
 <translation id="2385809941344967209">ನಿಮ್ಮ Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಂದ Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="2386255080630008482">ಸರ್ವರ್‌ನ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಹಿಂಪಡೆಯಲಾಗಿದೆ.</translation>
+<translation id="2387424091060104123">Gemini ಮೂಲಕ ಸೂಚಿಸಲಾಗಿದೆ · <ph name="SRC_LINK" />ಮೂಲಗಳನ್ನು ವೀಕ್ಷಿಸಿ<ph name="END_SRC_LINK" />
+ನೀವು ಈ ಸಲಹೆಯನ್ನು Chrome ನಿಂದ ತೆಗೆದುಹಾಕಬಹುದು. ನಿಮ್ಮ ಮೂಲ ಸೋರ್ಸ್ ಅನ್ನು ಅಳಿಸಲಾಗುವುದಿಲ್ಲ. <ph name="MANAGE_LINK" />ವರ್ಧಿಸಿದ ಆಟೋಫಿಲ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">ವಿವರವಾಗಿ ಹೇಳಿ</translation>
 <translation id="2392959068659972793">ಯಾವುದೇ ಮೌಲ್ಯ ಹೊಂದಿಸಿಲ್ಲದ ನೀತಿಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="239429038616798445">ಈ ಶಿಪ್ಪಿಂಗ್ ವಿಧಾನ ಲಭ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ವಿಧಾನವನ್ನು ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -1515,6 +1517,7 @@
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">ಈ ಪುಟವು ಸಿದ್ಧವಾದಾಗ Chrome ನಿಮಗೆ ತಿಳಿಸುತ್ತದೆ. &lt;a&gt;ರದ್ದು ಮಾಡಿ&lt;/a&gt;</translation>
 <translation id="3581499772329034229">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೇರಿಸಿ</translation>
+<translation id="3582670569275100909">ಶಿಪ್‌ಮೆಂಟ್‌ಗಳು</translation>
 <translation id="3582930987043644930">ಹೆಸರು ಸೇರಿಸಿ</translation>
 <translation id="3583757800736429874">&amp;ಸರಿಸುವುದನ್ನು ಮತ್ತೆಮಾಡು</translation>
 <translation id="3584299510153766161">ಕೆಳಭಾಗದಲ್ಲಿ ಎರಡು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
@@ -4006,6 +4009,7 @@
 <translation id="7758069387465995638">ಸಂಪರ್ಕವನ್ನು ಫೈರ್‌ವಾಲ್ ಅಥವಾ ಆಂಟಿವೈರಸ್ ಸಾಫ್ಟ್‌ವೇರ್ ನಿರ್ಬಂಧಿಸಿರಬಹುದು.</translation>
 <translation id="7759147511335618829">MIDI ಸಾಧನ ನಿಯಂತ್ರಣ &amp; ರಿಪ್ರೋಗ್ರಾಂ</translation>
 <translation id="7759809451544302770">ಐಚ್ಛಿಕ</translation>
+<translation id="7760566304700414795">ಶಿಪ್‌ಮೆಂಟ್</translation>
 <translation id="776110834126722255">ತಡೆಹಿಡಿಯಲಾಗಿದೆ</translation>
 <translation id="7761159795823346334">ಕ್ಯಾಮರಾ ಅನುಮತಿಸಬೇಕೆ?</translation>
 <translation id="7761701407923456692">ಸರ್ವರ್‌ನ ಪ್ರಮಾಣಪತ್ರವು URL ಗೆ ಸರಿ ಹೊಂದುವುದಿಲ್ಲ.</translation>
@@ -4351,6 +4355,7 @@
 <translation id="8371841335382565017">ಕ್ಯಾಸ್ಟ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಸಾಧನದ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8371889962595521444">ಕಸ್ಟಮ್ ರೂಟ್ ಪ್ರಮಾಣಪತ್ರಗಳು</translation>
 <translation id="8374636051559112948">ಬದಲಾಗುತ್ತದೆ</translation>
+<translation id="8377507422902936905">ಆರ್ಡರ್‌ಗಳು</translation>
 <translation id="837840316697671463">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಫೈಲ್ ಅನ್ನು ಹುಡುಕಲಾಗದಿದ್ದರೆ, <ph name="CLOUD_PROVIDER" /> ನಲ್ಲಿ ಹುಡುಕಿ.</translation>
 <translation id="8378714024927312812">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="8380941800586852976">ಅಪಾಯಕಾರಿ</translation>

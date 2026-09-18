@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">አሰናብት</translation>
 <translation id="152629053603783244">Linuxን ዳግም አስነሳ</translation>
 <translation id="1526448108126799339">አዱስ ትርን በአዲስ መስኮት ውስጥ ይክፈቱ</translation>
-<translation id="1528259147807435347">ባለፈው ሳምንት ውስጥ አርትዖት ተደርጓል</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" />ን ለመጠቀም በመጀመሪያ ከሁሉም መለያዎች ዘግተው መውጣት ይኖርብዎታል። ዘግቶ ለመውጣት ወደ ኋላ ለመመለስ ይቅር የሚለውን ይምረጡ። ከዚያ የሁኔታውን አከባቢ ለመክፈት ጊዜውን ይምረጡ እና ዘግተህ ውጣ የሚለውን ይምረጡ። ከዚያ እንደገና ወደ <ph name="USER_EMAIL_ADDRESS_2" /> በመለያ ይግቡ።</translation>
 <translation id="15373452373711364">ትልቅ የመዳፊት ጠቋሚ</translation>
 <translation id="1545331255323159851">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና ማሳወቂያዎች ይመልከቱ</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ በራስ-ሰር ወደ Google በመላክ የልጅዎን የAndroid ተሞክሮ እንዲሻሻል ያግዙ። ይህ ልጅዎን ለመለየት ሥራ ላይ አይውልም እና የሥርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። ይህ <ph name="BEGIN_LINK1" />ቅንብር<ph name="END_LINK1" /> በባለቤቱ ተፈጻሚ ይደረጋል። ባለቤቱ የዚህ መሣሪያ የምርመራ እና የአጠቃቀም ውሂብ ለGoogle ለመላክ ሊመርጥ ይችላል። የተጨማሪ የድር እና መተግበሪያ እንቅስቃሴ ቅንብር ለልጅዎ በርቶ ከሆነ፣ ይህ ውሂብ ወደ የGoogle መለያቸው ሊቀመጥ ይችላል። <ph name="BEGIN_LINK2" />ስለ መለኪያዎች የበለጠ ይረዱ<ph name="BEGIN_LINK2_END" />የበለጠ ለመረዳት<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">የእርስዎን ፒን ያስገቡ</translation>
 <translation id="2412593942846481727">ዝማኔ ይገኛል</translation>
-<translation id="2416438829169535743">ከዕይታ ይውጣ?</translation>
 <translation id="2417486498593892439">ወደ አውታረ መረብ በመለያ ይግቡ</translation>
 <translation id="2423619675829330672">በጣም ብዙ የፒን ሙከራዎች። <ph name="TIME_LEFT" /> ይጠብቁ እና እንደገና ይሞክሩ።</translation>
 <translation id="2426051945783024481">የካሜራ ክፈፍ በራስ-ሰር መሃል ላይ ሆኗል</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">የብሉቱዝ መሣሪያ «<ph name="DEVICE_NAME" />» ለመጣመር ፍቃድ ይፈልጋል። ከመቀበልዎ በፊት እባክዎ ይህ የይለፍ ቃል በዚያ መሣሪያ ላይ የሚታይ መሆኑን ያረጋግጡ፦ <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">የይለፍ ቃል አሳይ</translation>
 <translation id="2437771564543046790">ዝቅተኛ ባትሪ። ባትሪ ቆጣቢ በርቷል</translation>
-<translation id="243878895369688216">ትናንት የተከፈተ</translation>
 <translation id="2440978926514840421">የGIF ቅጂ ተወስዷል</translation>
 <translation id="2441427462554639370">እጅግ አነስተኛ በሆነ የማከማቻ ቦታ ምክንያት ቀረጻ ጨርሷል</translation>
 <translation id="2445449901874883781">ከፍተኛ ትፍገትን ተጠቀም</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">የኪዮስክ መተግበሪያ ሊወርድ አልቻለም።</translation>
 <translation id="3563558822383875692">DLCን በማዋቀር ላይ።</translation>
 <translation id="3563775809269155755">መገናኛ ነጥብን ያንቁ</translation>
-<translation id="3566240529365775567">አሁን ተከፍቷል</translation>
 <translation id="3571734092741541777">አዋቅር</translation>
 <translation id="3573179567135747900">ወደ «<ph name="FROM_LOCALE" />» መልሰህ ቀይር (ዳግም ማስጀመር ይፈልጋል)</translation>
 <translation id="3576141592585647168">የጊዜ ሰቅ ይለውጡ</translation>
@@ -960,7 +956,6 @@
 <translation id="3756485814916578707">ማያ ገጽን Cast በማድረግ ላይ</translation>
 <translation id="3765246971671567135">የቅንጭብ ማሳያ ሁነታ መመሪያን ከመስመር ውጭ ማንበብ አልተቻለም።</translation>
 <translation id="3765841382945324995">የ<ph name="SIX_PACK_KEY_NAME" /> አቋራጭ ከ<ph name="OLD_SHORTCUT" /> ወደ <ph name="NEW_SHORTCUT" /> ዘምኗል</translation>
-<translation id="3765841986579723851">ዛሬ አርትዖት ተደርጎበታል</translation>
 <translation id="3772109172035555611">የእርስዎን TrackPoint ያብጁ</translation>
 <translation id="3773700760453577392">አንድ አስተዳዳሪ ለ<ph name="USER_EMAIL" /> በበርካታ መለያ መግባቶችን ከልክሏል። ለመቀጠል ሁሉም ተጠቃሚዎች ዘግተው መውጣት አለባቸው።</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> በማገናኘት ላይ</translation>
@@ -1000,7 +995,6 @@
 <translation id="3873915545594852654">በARC++ ላይ ችግር አጋጥሟል።</translation>
 <translation id="3879748587602334249">የማውረድ አቀናባሪ</translation>
 <translation id="3884007280698606545">USB ገደብ ላይ ተደርሷል</translation>
-<translation id="3886872229787704059">ዛሬ የተከፈተ</translation>
 <translation id="3892148308691398805">ጽሁፍ ቅዳ</translation>
 <translation id="3893630138897523026">ChromeVox (የሚነገር ግብረመልስ)</translation>
 <translation id="3898464793473355515">ማያገ ጽን 90 ዲግሪ በሰዓት አቅጣጫ አሽከርክር</translation>
@@ -1793,7 +1787,6 @@
 <translation id="6095008505822982596">የንግግር ፍጥነት</translation>
 <translation id="6095425951508823973">ከ<ph name="PROVIDER" /> ጋር ግንኙነት ያክሉ</translation>
 <translation id="6095541101974653012">ዘግተው ወጥተው ነበር።</translation>
-<translation id="6099678161144790572">ባለፈው ወር ውስጥ አርትዖት ተደርጓል</translation>
 <translation id="6103838137565245112">ሥርዓት</translation>
 <translation id="6108952804512516814">በሰው ሠራሽ አስተውሎት ፍጠር</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> የንግግር ፋይሎች ወርደዋል</translation>
@@ -1950,7 +1943,6 @@
 <translation id="6555373427270923730">በአድራሻ አሞሌው ውስጥ የድር አድራሻ ይተይቡ፣ በመቀጠል <ph name="MODIFIER" /><ph name="KEY" /> ይጫኑ</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 አዲስ ጭነት</translation>
-<translation id="6559158502366839560">ተጨማሪ መተግበሪያዎች እና ጨዋታዎችን አስስ</translation>
 <translation id="6560151649238390891">የአስተያየት ጥቆማ ገብቷል</translation>
 <translation id="6562447480759345110">ትኩረት ጨርስ</translation>
 <translation id="6565007273808762236">ኢሲም ግንኙነት አይገኝም</translation>
@@ -2056,7 +2048,6 @@
 <translation id="6848716236260083778">የጣት አሻራን ለማዋቀር ልጅዎ የጣት አሻራ ዳሳሹን እንዲነካ ያድርጉት። የልጅዎ ጣት አሻራ ውሂብ ደህንነቱ በተጠበቀ ሁኔታ ይከማቻል እና በጭራሽ ከዚህ <ph name="DEVICE_TYPE" /> አይወጣም።</translation>
 <translation id="6852052252232534364">ለማግበር ጠቅ ያድርጉ</translation>
 <translation id="6852628153543175788">10 ደቂቃዎችን አክል</translation>
-<translation id="6855029042976311970">አሁን አርትዖት ተደርጓል</translation>
 <translation id="6856708615407876657">የፍለጋ ውጤት ምደቦችን ቀያይር</translation>
 <translation id="6856756288284651804">Chromebook ተዘምኗል</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ሰከንድ</translation>
@@ -2151,7 +2142,6 @@
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> ክፈት</translation>
 <translation id="7119327711295338600">ቀጣዩን ቃል ወይም ፊደል ይምረጡ</translation>
 <translation id="7124556000457919678">ሲበራ የመዳፊት ቁልፎችን ባለበት አቁም እና ከቆመበት ቀጥል</translation>
-<translation id="7126996685418858413">ባለፈው ሳምንት ውስጥ ተከፍቷል</translation>
 <translation id="7131634465328662194">በራስሰር ዘግተው እንዲወጡ ይደረጋሉ።</translation>
 <translation id="7143207342074048698">በመያያዝ ላይ</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
@@ -2183,7 +2173,6 @@
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">የኋላ ማይክሮፎን</translation>
 <translation id="7258225044283673131">መተግበሪያው ምላሽ እየሰጠ አይደለም። መተግበሪያውን ለመዝጋት «በግዳጅ ዝጋ»ን ይምረጡ።</translation>
-<translation id="7258828758145722155">ትላንትና አርትዖት ተደርጎበታል</translation>
 <translation id="726276584504105859">የተከፈለ ማያ ገጽን ለመጠቀም ወደዚህ ይጎትቱ</translation>
 <translation id="7264788308526527464">ቀንስ <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">የተለያዩ የጣት አሻራዎን ክፍሎች ለማከል ጣትዎን ማንሳትቱና ማስቀመጥዎን ይቀጥሉ</translation>
@@ -2256,7 +2245,6 @@
 <translation id="7491962110804786152">TAB</translation>
 <translation id="7497767806359279797">ቋንቋ እና ቁልፍ ሰሌዳን ይምረጡ</translation>
 <translation id="7507162824403726948">ማንነትዎን ማረጋገጥ ይጨርሱ</translation>
-<translation id="7508690557411636492">ባለፈው ወር ተከፍቷል</translation>
 <translation id="7509246181739783082">ማንነትዎን ያረጋግጡ</translation>
 <translation id="7512509370370076552">የቀኝ ጠቅታ አቋራጭ ከ<ph name="LAUNCHER_KEY_NAME" /> alt + ጠቅታ ወደ ቁልፍ + ጠቅታ ዘምኗል</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />፣ አልተመረጠም</translation>
@@ -2710,7 +2698,6 @@
 <translation id="8753368202781196133">ይህ ቋንቋ አሁን ላይ አይደገፍም።</translation>
 <translation id="8755498163081687682">የእርስዎን ማንነት ያረጋግጡ፦ <ph name="ORIGIN_NAME" /> እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
 <translation id="875593634123171288">የቪፒኤን ቅንብሮችን አሳይ</translation>
-<translation id="8756799553341497810">አንዴ ከዚህ ዕይታ ከወጡ በኋላ የመተግበሪያዎን አቀማመጥ ማበጀት መጀመር ይችላሉ።</translation>
 <translation id="8759408218731716181">ባለብዙ መለያ መግቢያን ማዋቀር አልተቻለም</translation>
 <translation id="8759753423332885148">ተጨማሪ ለመረዳት።</translation>
 <translation id="8760172428247796445">የእርስዎ <ph name="DEVICE_TYPE" /> አሁን ይቆለፋል።

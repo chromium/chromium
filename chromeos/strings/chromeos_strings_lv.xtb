@@ -207,7 +207,6 @@
 <translation id="1768959921651994223">Autentifikācijas veids</translation>
 <translation id="1776228893584526149">Fona tapetes tonis</translation>
 <translation id="1777913922912475695">tilts</translation>
-<translation id="1782199038061388045">tulkojumu</translation>
 <translation id="1788485524395674731">Šo lietotni pārvalda jūsu administrators</translation>
 <translation id="1792647875738159689">Skenēšana tiek atcelta</translation>
 <translation id="1801418420130173017">Atspējot tumšo motīvu</translation>
@@ -360,7 +359,6 @@
 <translation id="2448312741937722512">Tips</translation>
 <translation id="2448857983905133469">Klases rīki</translation>
 <translation id="2468124392950503650">Atlasiet uzvedni, lai izveidotu vai skatītu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />norādījumus par uzvednēm<ph name="END_LINK_PROMPTING_GUIDE" />.</translation>
-<translation id="2472215337771558851">Lai izveidotu melnrakstu vai uzlabotu esošo darbu, izmantojiet funkciju “Palīdzība rakstīšanā”, ko nodrošina Google MI.</translation>
 <translation id="2475982808118771221">Radās kļūda</translation>
 <translation id="2480572840229215612">krabji</translation>
 <translation id="248546197012830854">Ierīce ir bezsaistē. Izveidojiet savienojumu ar Wi-Fi tīklu, lai skatītu palīdzības saturu.</translation>
@@ -552,7 +550,6 @@
 <translation id="346539236881580388">Uzņemt vēlreiz</translation>
 <translation id="3479552764303398839">Vēlāk</translation>
 <translation id="3484914941826596830">Kamēr notiek aparātprogrammatūras atjaunināšana, neatvienojiet šo ārējo ierīci un neizslēdziet datoru. Varat minimizēt šo logu. Atjaunināšana var ilgt dažas minūtes, un jūsu ārējā ierīce šajā laikā var nedarboties.</translation>
-<translation id="3486220673238053218">definīcija</translation>
 <translation id="3487866404496702283">Atsauksmes par funkciju “mahi”</translation>
 <translation id="3488065109653206955">Daļēji aktivizēts</translation>
 <translation id="3492882532495507361">Birojs (<ph name="OFFICE_STYLE" />) šādos toņos: <ph name="OFFICE_COLOR" /></translation>
@@ -592,7 +589,6 @@
 <translation id="3634941468757842845">Izvēlieties motīvu</translation>
 <translation id="3644695927181369554">Nederīgs ieteikums</translation>
 <translation id="3651050199673793219">Atlasīt temperatūras mērvienību</translation>
-<translation id="3661106764436337772">Rakstiet ātrāk un ar lielāku pārliecību</translation>
 <translation id="3662461537616691585">bordo un sarkanbrūna</translation>
 <translation id="3664755900672940272">Uzvedņu paraugi tiek rādīti jauktā secībā</translation>
 <translation id="3668449597372804501">Fona tapete Peldošie mākoņi</translation>
@@ -846,7 +842,6 @@
 <translation id="4773299976671772492">Pārtraukts</translation>
 <translation id="4777310452073659583">Restartējiet savu <ph name="DEVICE_TYPE" /> ierīci, lai iegūtu transkripciju.</translation>
 <translation id="4778082030331381943">ametists</translation>
-<translation id="4782311465517282004">Iegūstiet definīcijas vai tulkojumus vai izsakiet vērtības citās mērvienībās, noklikšķinot uz teksta ar peles labo pogu vai pieskaroties tekstam un to turot</translation>
 <translation id="4791000909649665275">Fotoattēlu skaits: <ph name="NUMBER" /></translation>
 <translation id="4793710386569335688">Lai iegūtu papildu palīdzību, pārejiet uz <ph name="BEGIN_LINK" />palīdzības centru<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Saspiešanas algoritms</translation>
@@ -1447,7 +1442,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7397270852490618635">Izslēgt gaišo motīvu</translation>
 <translation id="7401543881546089382">Dzēst saīsni</translation>
 <translation id="7405493795721832710">Ierīce <ph name="DEVICE_NAME" /> ir gatava atjaunināšanai</translation>
-<translation id="741244894080940828">izteikšana citās mērvienībās</translation>
 <translation id="7415801143053185905">Ļoti liels HTTP latentums</translation>
 <translation id="7418738250896500352">Pārāk daudz vārdu, lai vienkāršotu.</translation>
 <translation id="7425037327577270384">Palīdzība rakstīšanā</translation>
@@ -1757,7 +1751,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="885701979325669005">Krātuve</translation>
 <translation id="885704831271383379">tumšāka tastatūra</translation>
 <translation id="8863170912498892583">Iespējot tumšo motīvu</translation>
-<translation id="8863888432376731307">Pieejama informācija par vaicājumu “<ph name="QUERY" />”: <ph name="INTENT" /> un daudz kas cits</translation>
 <translation id="8864415976656252616">Nav ieteikta satura. Skatiet populārāko palīdzības saturu.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Ierīce ir planšetdators.</translation>

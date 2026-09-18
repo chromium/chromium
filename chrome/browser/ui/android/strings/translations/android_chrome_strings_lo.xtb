@@ -37,7 +37,6 @@
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, ແຖບການສະແດງຜົນຊ້ອນກັນ</translation>
 <translation id="1126696498560056882">ຈັດການບັນຊີໃນອຸປະກອນນີ້</translation>
 <translation id="1135018701024399762">ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນຈະຮັກສາການທ່ອງເວັບຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວຈາກຄົນອື່ນທີ່ໃຊ້ອຸປະກອນຂອງທ່ານ</translation>
-<translation id="113752097246673894">ເພື່ອເຂົ້າເຖິງບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome ດ້ວຍ <ph name="EMAIL" /></translation>
 <translation id="1138458427267715730">ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຫຼຸດລົງໃນທຸກເວັບໄຊທົ່ວເວັບ</translation>
 <translation id="1140317858355046628">ຫາກທ່ານລຶບກຸ່ມນີ້, ທຸກຄົນຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ "<ph name="GROUP_NAME" />" ທັນທີ ແລະ ລະບົບຈະລຶບກຸ່ມດັ່ງກ່າວອອກຈາກອຸປະກອນທັງໝົດ.</translation>
 <translation id="1142732900304639782">ບໍ່ສະເໜີແປເວັບໄຊເຫຼົ່ານີ້</translation>
@@ -205,7 +204,6 @@
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, ແຖບການບັນທຶກສຽງ</translation>
 <translation id="1819443852740954262">ເປີດທັງໝົດໃນໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="1820408774134375111">ຊີດລຸ່ມສຸດຂອງການເຂົ້າສູ່ລະບົບ</translation>
-<translation id="1823492026305965829">ເຂົ້າສູ່ລະບົບດ້ວຍ <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">ແຕະລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="1829244130665387512">ຊອກ​ຫາ​ຢູ່​ໃນ​ຫນ້າ</translation>
 <translation id="1832459821645506983">ແມ່ນແລ້ວ, ຂ້ອຍເຂົ້າຮ່ວມ</translation>
@@ -439,7 +437,6 @@
 <translation id="2723001399770238859">ສຽງ</translation>
 <translation id="2739887572830526131">ເກັບກຸ່ມນີ້ໄວ້ເພື່ອເພີ່ມແຖບໃນພາຍຫຼັງ ຫຼື ລຶບອອກຫາກທ່ານບໍ່ຕ້ອງການອີກຕໍ່ໄປ.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ບໍ່ພ້ອມໃຫ້ນຳໃຊ້ໃນຕອນນີ້.</translation>
-<translation id="2751271371269891762">ເພື່ອເຂົ້າເຖິງບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບດ້ວຍ <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2761162135224472056">ຮັບຊົມດ້ວຍໂໝດໃຫຍ່ພິເສດບໍ?</translation>
 <translation id="2762000892062317888">ຕອນນີ້</translation>
@@ -514,6 +511,7 @@
 <translation id="2996291259634659425">ສ້າງວະ​ລີ​ຜ່ານ</translation>
 <translation id="2996682533106928201">ແຕະເພື່ອປິດ</translation>
 <translation id="2996809686854298943">ຕ້ອງມີ URL.</translation>
+<translation id="3007318536447999974">ເພື່ອລົມກັບ Gemini, ກະລຸນາອະນຸຍາດໃຫ້ Gemini ເຂົ້າເຖິງໄມໂຄຣໂຟນຂອງທ່ານ. ທ່ານຍັງສາມາດຈັດການສິ່ງນີ້ໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">ປິດຄ່າກຳນົດໂໝດການອ່ານແລ້ວ</translation>
 <translation id="3024277805447899099">ຮູບຕົວຢ່າງ</translation>
 <translation id="3026955690410463085">ຮວມລິ້ງ</translation>
@@ -608,7 +606,6 @@
 <translation id="3435738964857648380">ຄວາມ​ປອດ​ໄພ</translation>
 <translation id="3435914367318771664">ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່</translation>
 <translation id="3436118221454753036">ໂໝດຖາມ AI</translation>
-<translation id="3438681572027105609">ເພື່ອຮັບລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="3439276997620616816">ທ່ານຈະເຫັນແຖບຫຼ້າສຸດຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
 <translation id="3443221991560634068">ໂຫຼດໜ້າປັດຈຸບັນຄືນໃໝ່</translation>
 <translation id="3444179773590444986">ແບ່ງປັນຄຳຕິຊົມກ່ຽວກັບຮູບແບບສີສັນມືດສຳລັບເວັບໄຊບໍ?</translation>
@@ -753,7 +750,6 @@
 <translation id="4000212216660919741">ໜ້າຫຼັກອອບລາຍຢູ່</translation>
 <translation id="4000670338830950598">ປັບແຕ່ງ ແລະ ຄວບຄຸມ Google Chrome ດ້ວຍລາຍການທີ່ໄຮໄລ້</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 ລະຫັດຜ່ານທີ່ຖືກລະເມີດໃນບັນຊີ Google}other{# ລະຫັດຜ່ານທີ່ຖືກລະເມີດໃນບັນຊີ Google}}</translation>
-<translation id="4023638601467301498">ເພື່ອເຂົ້າເຖິງບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="4024768890073681126">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານໄດ້ຮັບການຈັດການໂດຍຜູ້ປົກຄອງຂອງທ່ານ</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ໂຟນເດີ</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ຊົ່ວໂມງ}other{# ຊົ່ວໂມງ}}</translation>
@@ -934,7 +930,6 @@
 <translation id="4685741273709472646">ເລືອກຈາກລາຍຊື່ແບບເລື່ອນລົງ</translation>
 <translation id="468924408576231679">ສຳເນົາລິ້ງໄປຫາໜ້າເວັບ <ph name="PAGE_TITLE" />. ແຫຼ່ງທີ່ມາ: <ph name="PAGE_URL" /></translation>
 <translation id="4692623383562244444">ເຄື່ອງ​ຈັກ​ຄົ້ນ​ຫາ</translation>
-<translation id="469286762610133730">ຮັບເນື້ອຫາທີ່ດີຂຶ້ນ</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ທາງເລືອກການຈັດສົ່ງ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ທາງເລືອກການຈັດສົ່ງ}}</translation>
 <translation id="4698757800236023795">ທີ່ນຳໃຊ້ຢູ່ (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">ຮູບ ແລະໄຟລ໌ທີ່ແຄຊ໌ແລ້ວ</translation>
@@ -994,7 +989,6 @@
 <translation id="4910889077668685004">ແອັບຈ່າຍເງິນ</translation>
 <translation id="4911042367886397055">ຍິນດີຕ້ອນຮັບກັບມາ, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">ຢຸດການໂຫຼດຄືນໃໝ່</translation>
-<translation id="4921224083091001889">ເພື່ອຮັບລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome ດ້ວຍ <ph name="EMAIL" /></translation>
 <translation id="4923173329789776645">ອົງກອນຂອງທ່ານບໍ່ແນະນຳໃຫ້ດາວໂຫຼດ</translation>
 <translation id="4924398189611529766">ເມື່ອທ່ານກຳລັງທ່ອງເວັບໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ຄົນອື່ນໆທີ່ໃຊ້ອຸປະກອນນີ້ຈະບໍ່ເຫັນການເຄື່ອນໄຫວຂອງທ່ານ, ດັ່ງນັ້ນທ່ານຈຶ່ງສາມາດທ່ອງເວັບໄດ້ແບບສ່ວນຕົວຫຼາຍຂຶ້ນ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">ຮູບຖ່າຍໜ້າຈໍ <ph name="CURRENT_DATE_ISO" /></translation>
@@ -1155,7 +1149,6 @@
 <translation id="5601180634394228718">ສຳລັບການຕັ້ງຄ່າເພີ່ມເຕີມທີ່ໃຊ້ຂໍ້ມູນເພື່ອປັບປຸງປະສົບການ Chrome ຂອງທ່ານ, ໃຫ້ເຂົ້າໄປ <ph name="BEGIN_LINK" />ບໍລິການ Google<ph name="END_LINK" />.</translation>
 <translation id="5601924940067278327">ຮັບແຖບ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ</translation>
 <translation id="5611398002774823980">ບັນທຶກໃນບັນຊີ</translation>
-<translation id="5613381935190035031">ເພື່ອເຂົ້າເຖິງແຖບ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome ດ້ວຍ <ph name="EMAIL" /></translation>
 <translation id="5614625640221885312">ເຂົ້າສູ່ລະບົບເພື່ອຮັບບຸກມາກ, ລະຫັດຜ່ານ ແລະ ອື່ນໆໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ</translation>
 <translation id="5619633276517849615">ອົງກອນຂອງທ່ານເປີດໃຊ້ Safe Browsing</translation>
 <translation id="5620163320393916465">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້</translation>
@@ -1242,7 +1235,6 @@
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 ໜ້າໃນລາຍຊື່ການອ່ານຂອງທ່ານ}other{# ໜ້າໃນລາຍຊື່ການອ່ານຂອງທ່ານ}}</translation>
 <translation id="5992182727984874868"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> Chrome ໄດ້ລຶບການອະນຸຍາດເຫຼົ່ານີ້ອອກເນື່ອງຈາກທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເວັບໄຊເມື່ອບໍ່ດົນມານີ້</translation>
 <translation id="5995726099713306770">ດາວໂຫຼດໜ້າອີກເທື່ອໜຶ່ງບໍ່?</translation>
-<translation id="5998675059699164418">ອົງການຂອງທ່ານຕ້ອງການໃຫ້ທ່ານເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ Chrome.</translation>
 <translation id="6000066717592683814">ດຳເນີນການໃຊ້ Google</translation>
 <translation id="6002122790816966947">ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="6011308810877101166">ປັບປຸງການແນະນຳການຊອກຫາ</translation>
@@ -1453,12 +1445,10 @@
 <translation id="6738867403308150051">ກໍາລັງດາວ​ໂຫຼດ...</translation>
 <translation id="6745063744988317486">ໂມໂນ</translation>
 <translation id="6746338529702829275">ກວດສອບຂໍ້ມູນບັນຊີຂອງທ່ານ</translation>
-<translation id="6746834324024491643">ເພື່ອເຂົ້າເຖິງລະຫັດຜ່ານຂອງທ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນທຸກອຸປະກອນຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບດ້ວຍ <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">ເປີດແຖບໃໝ່ແບບໄວໆ. ເພື່ອແກ້ໄຂທາງລັດນີ້, ໃຫ້ແຕະຄ້າງໄວ້.</translation>
 <translation id="6754359471209693699">ເລີ່ມການຊອກຫາໃໝ່</translation>
 <translation id="6756507620369789050">ແບ່ງປັນຄຳຕິຊົມ</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
-<translation id="676305334223455055">ເຂົ້າສູ່ລະບົບເພື່ອເບິ່ງເນື້ອຫາໂດຍອີງຕາມຄວາມສົນໃຈຂອງທ່ານ</translation>
 <translation id="6764137532716892442">ກຸ່ມແຖບ <ph name="GROUP_TITLE" /> ທີ່ແບ່ງປັນພ້ອມການເຄື່ອນໄຫວໃໝ່</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ ແລະ <ph name="TAB_COUNT_ONE" /> ແຖບອື່ນຈະຖືກປິດ}other{<ph name="INCOGNITO_TAB_COUNT" /> ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ ແລະ <ph name="TAB_COUNT_MANY" /> ແຖບອື່ນຈະຖືກປິດ}}</translation>
 <translation id="6785476624617658922">ຂໍ້ກຳນົດບໍລິການເພີ່ມເຕີມ Chrome ແລະ ChromeOS</translation>
@@ -1758,7 +1748,6 @@
 <translation id="7822705602465980873">ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ, ຂໍ້ມູນນີ້ຈະລິ້ງກັບບັນຊີ Google ຂອງທ່ານເພື່ອປົກປ້ອງທ່ານໃນທົ່ວບໍລິການ Google ຕົວຢ່າງ: ການເພີ່ມການປົກປ້ອງໃນ Gmail ຫຼັງຈາກເຫດການຄວາມປອດໄພ.</translation>
 <translation id="7824665136384946951">ອົງກອນຂອງທ່ານໄດ້ປິດ Safe Browsing</translation>
 <translation id="7825973332242257878">ກຸ່ມແຖບ</translation>
-<translation id="7826342993930002256">Chrome ຂອງທ່ານໃນທຸກໆບ່ອນ</translation>
 <translation id="7845155831233417403">ທ່ານສາມາດເປີດໄດ້ສູງສຸດ <ph name="MAX_INSTANCE_COUNT" /> ໜ້າຈໍ. ປິດໜ້າຈໍເພື່ອສືບຕໍ່.</translation>
 <translation id="7846161022626028328">ມີຂໍ້ຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="7846296061357476882">ບໍລິການ Google</translation>
@@ -1815,7 +1804,9 @@
 <translation id="8058746566562539958">ເປີດໃນແຖບໃໝ່ຂອງ Chrome</translation>
 <translation id="8062594758852531064">ການໂຫຼດກ່ອນລ່ວງໜ້າແບບຂະຫຍາຍ:</translation>
 <translation id="8063895661287329888">ເພີ່ມບຸກມາກບໍ່ສຳເລັດ</translation>
+<translation id="8064081231614696741">ກະລຸນາເລືອກໂຟນເດີອື່ນ</translation>
 <translation id="8066816452984416180">ບຸກມາກໜ້ານີ້ຢ່າງວ່ອງໄວ. ເພື່ອແກ້ໄຂທາງລັດນີ້, ໃຫ້ແຕະຄ້າງໄວ້.</translation>
+<translation id="8068041627541121907">Gemini ຕ້ອງການໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="8072436850275034464">ທ່ານສາມາດເປີດແຖບທີ່ທ່ານຫາກໍປິດຄືນໃໝ່ໄດ້ຈາກອຸປະກອນໃດກໍຕາມທີ່ທ່ານໃຊ້ Chrome</translation>
 <translation id="8073388330009372546">ເປີດຮູບຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="8076492880354921740">ແຖບ</translation>
@@ -1832,7 +1823,6 @@
 <translation id="8110024788458304985">ຊ່ວຍປັບປຸງຄຸນສົມບັດ ແລະ ປະສິດທິພາບຂອງ Chrome</translation>
 <translation id="8110087112193408731">ສະແດງການເຄື່ອນໄຫວໃນ Chrome ຂອງທ່ານຢູ່ໃນ Digital Wellbeing ບໍ?</translation>
 <translation id="8118117428362942925">ກະລຸນາຂໍຄວາມຊ່ວຍເຫຼືອຈາກຜູ້ປົກຄອງ (<ph name="PARENT_NAME" />) ຂອງທ່ານ, ຫາກທ່ານຕ້ອງການ</translation>
-<translation id="8118151008374483324">ເພື່ອເຂົ້າເຖິງແຖບ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="8120286190326371840">ບໍ່ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດຢູ່ອຸປະກອນນີ້</translation>
 <translation id="8122623268651408616">ການຈັດຮຽງຕາມໃໝ່ທີ່ສຸດ</translation>
 <translation id="8127542551745560481">ແກ້ໄຂໜ້າຫຼັກ</translation>
@@ -2124,7 +2114,6 @@
 <translation id="9218430445555521422">ຕັ້ງເປັນຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="9219103736887031265">ຮູບ</translation>
 <translation id="922152298093051471">ປັບແຕ່ງ Chrome</translation>
-<translation id="9222198206152536936">ເພື່ອເຂົ້າເຖິງແຖບຂອງທ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນທຸກອຸປະກອນຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບດ້ວຍ <ph name="EMAIL" /></translation>
 <translation id="924447568950697217">ເຮັດໃຫ້ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="926205370408745186">ລຶບການເຄື່ອນໄຫວໃນ Chrome ຂອງທ່ານອອກຈາກ Digital Wellbeing</translation>
 <translation id="927968626442779827">ໃຊ້ໂໝດ Lite ໃນ Google Chrome</translation>

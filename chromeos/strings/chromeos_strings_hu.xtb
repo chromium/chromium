@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Hitelesítés típusa</translation>
 <translation id="1776228893584526149">Háttérkép tónusa</translation>
 <translation id="1777913922912475695">híd</translation>
-<translation id="1782199038061388045">Fordítás</translation>
 <translation id="1788485524395674731">Ezt az alkalmazást a rendszergazdája kezeli</translation>
 <translation id="1792647875738159689">Beolvasás megszakítása…</translation>
 <translation id="1801418420130173017">Sötét téma kikapcsolása</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Típus</translation>
 <translation id="2448857983905133469">Kurzuseszközök</translation>
 <translation id="2468124392950503650">Válassza ki a létrehozáshoz a kívánt utasítást, vagy tekintse meg az <ph name="BEGIN_LINK_PROMPTING_GUIDE" />utasításírási útmutatót<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">A (Google AI által működtetett) Segítség az íráshoz funkció használatával vázlatokat hozhat létre, és finomhangolhatja a meglévő munkákat.</translation>
 <translation id="2475982808118771221">Hiba történt</translation>
 <translation id="2480572840229215612">rákok</translation>
 <translation id="248546197012830854">Az eszköz offline állapotú. A súgótartalom megtekintéséhez csatlakozzon Wi-Fi-hálózathoz.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Új kép készítése</translation>
 <translation id="3479552764303398839">Ne most</translation>
 <translation id="3484914941826596830">A firmware frissítése közben ne húzza ki a külső eszközt, és ne kapcsolja ki számítógépét. Ezt az ablakot kis méretre állíthatja. A frissítés eltarthat néhány percig, és előfordulhat, hogy közben nem működik a külső eszköz.</translation>
-<translation id="3486220673238053218">definíció</translation>
 <translation id="3487866404496702283">Visszajelzés a mahi funkcióról</translation>
 <translation id="3488065109653206955">Részben aktiválva</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> iroda <ph name="OFFICE_COLOR" /> tónusokkal</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Téma választása</translation>
 <translation id="3644695927181369554">Rossz javaslat</translation>
 <translation id="3651050199673793219">Hőmérséklet mértékegységének kiválasztása</translation>
-<translation id="3661106764436337772">Gyorsabb és magabiztosabb írás</translation>
 <translation id="3662461537616691585">burgundi és gesztenyevörös</translation>
 <translation id="3664755900672940272">Mintautasítások megkeverve</translation>
 <translation id="3668449597372804501">Szálló felhők háttérkép</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Leállítva</translation>
 <translation id="4777310452073659583">Átirat megjelenítéséhez indítsa újra <ph name="DEVICE_TYPE" /> eszközét</translation>
 <translation id="4778082030331381943">ametiszt</translation>
-<translation id="4782311465517282004">A szövegre jobb egérgombbal kattintva, illetve a szöveget lenyomva tartva hozzáférhet a definíciókhoz, a fordításokhoz és az átváltott mértékegységekhez.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotó</translation>
 <translation id="4793710386569335688">Ha további segítségére van szüksége, látogasson el a <ph name="BEGIN_LINK" />Súgó oldalára<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Tömörítési algoritmus</translation>
@@ -1459,7 +1454,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7397270852490618635">Világos téma kikapcsolása</translation>
 <translation id="7401543881546089382">Billentyűkód törlése</translation>
 <translation id="7405493795721832710">A(z) <ph name="DEVICE_NAME" /> készen áll a frissítésre</translation>
-<translation id="741244894080940828">Átváltás</translation>
 <translation id="7415801143053185905">Nagyon hosszú HTTP várakozási idő</translation>
 <translation id="7418738250896500352">Túl sok szó van kijelölve az egyszerűsítéshez</translation>
 <translation id="7425037327577270384">Segítség az íráshoz</translation>
@@ -1769,7 +1763,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="885701979325669005">Tárolás</translation>
 <translation id="885704831271383379">billentyűzet sötétebb</translation>
 <translation id="8863170912498892583">Sötét téma bekapcsolása</translation>
-<translation id="8863888432376731307"><ph name="INTENT" /> kérése „<ph name="QUERY" />” és egyebek esetében</translation>
 <translation id="8864415976656252616">Nincsenek javasolt tartalmak. Megtekintheti a legnépszerűbb súgótartalmakat.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Az eszköz egy táblagép.</translation>

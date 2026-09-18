@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Math o ddilysu</translation>
 <translation id="1776228893584526149">Tôn papur wal</translation>
 <translation id="1777913922912475695">pont</translation>
-<translation id="1782199038061388045">cyfieithiad</translation>
 <translation id="1788485524395674731">Mae'r ap hwn yn cael ei reoli gan eich gweinyddwr</translation>
 <translation id="1792647875738159689">Wrthi'n canslo sganio</translation>
 <translation id="1801418420130173017">Analluogi'r thema dywyll</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Math</translation>
 <translation id="2448857983905133469">Offer Dosbarth</translation>
 <translation id="2468124392950503650">Dewiswch anogwr i greu neu weld y <ph name="BEGIN_LINK_PROMPTING_GUIDE" />canllaw anogwr<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Defnyddiwch Helpu fi i ysgrifennu i greu drafft neu fireinio gwaith sy'n bodoli eisoes, wedi'i bweru gan AI Google</translation>
 <translation id="2475982808118771221">Bu gwall</translation>
 <translation id="2480572840229215612">crancod</translation>
 <translation id="248546197012830854">Mae'r ddyfais all-lein. Cysylltwch â rhwydwaith Wi-Fi i weld cynnwys cymorth.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Tynnu'r llun eto</translation>
 <translation id="3479552764303398839">Nid nawr</translation>
 <translation id="3484914941826596830">Tra bod y gadarnwedd yn diweddaru, peidiwch â dadblygio'r ddyfais allanol hon na diffodd eich cyfrifiadur. Gallwch leihau'r ffenestr hon. Gall y diweddariad hwn gymryd ychydig funudau ac mae'n bosib na fydd eich dyfais allanol yn gweithio yn ystod y cyfnod hwn.</translation>
-<translation id="3486220673238053218">diffiniad</translation>
 <translation id="3487866404496702283">Adborth ar gyfer nodwedd mahi</translation>
 <translation id="3488065109653206955">Wedi'i weithredu'n rhannol</translation>
 <translation id="3492882532495507361">Swyddfa <ph name="OFFICE_STYLE" /> gyda thonau <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Dewis thema</translation>
 <translation id="3644695927181369554">Awgrym gwael</translation>
 <translation id="3651050199673793219">Dewiswch uned tymheredd</translation>
-<translation id="3661106764436337772">Ysgrifennu yn gyflymach ac yn fwy hyderus</translation>
 <translation id="3662461537616691585">Lliw gwin a browngoch</translation>
 <translation id="3664755900672940272">Anogwyr sampl wedi'u cymysgu</translation>
 <translation id="3668449597372804501">Papur wal llif cwmwl</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Wedi stopio</translation>
 <translation id="4777310452073659583">I gael trawsgrifiad, ailgychwynwch eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">amethyst</translation>
-<translation id="4782311465517282004">Cael diffiniadau, cyfieithiadau, neu drosiadau uned pan fyddwch yn de-glicio neu'n cyffwrdd a dal testun</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> llun</translation>
 <translation id="4793710386569335688">Am ragor o help, ewch i'r <ph name="BEGIN_LINK" />Ganolfan Gymorth<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algorithm cywasgu</translation>
@@ -1459,7 +1454,6 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="7397270852490618635">Diffodd y thema olau</translation>
 <translation id="7401543881546089382">Dileu llwybr byr</translation>
 <translation id="7405493795721832710">Mae <ph name="DEVICE_NAME" /> yn barod i gael ei ddiweddaru</translation>
-<translation id="741244894080940828">trosi</translation>
 <translation id="7415801143053185905">Cuddni HTTP uchel iawn</translation>
 <translation id="7418738250896500352">Gormod o eiriau i'w symleiddio</translation>
 <translation id="7425037327577270384">Helpu fi i ysgrifennu</translation>
@@ -1769,7 +1763,6 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="885701979325669005">Storfa</translation>
 <translation id="885704831271383379">bysellfwrdd tywyllach</translation>
 <translation id="8863170912498892583">Galluogi'r thema dywyll</translation>
-<translation id="8863888432376731307">Cael y <ph name="INTENT" /> ar gyfer "<ph name="QUERY" />" a rhagor</translation>
 <translation id="8864415976656252616">Dim cynnwys a awgrymir. Gweld y cynnwys cymorth gorau.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Mae'r ddyfais yn llechen.</translation>

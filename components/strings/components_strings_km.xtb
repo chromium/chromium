@@ -552,6 +552,7 @@
 <translation id="1924727005275031552">ថ្មី</translation>
 <translation id="1927930548546198515">Chrome កត់ត្រាអំពីរបៀបដែលអ្នកប្រើមុខងារនេះ ដូចជាសំណើ និងសកម្មភាពរបស់អ្នក នៅពេលអ្នកទទួលយក ឬមិនអើពើការណែនាំ</translation>
 <translation id="1932098463447129402">មិនមែនមុនពេល</translation>
+<translation id="1932629105611536854">លេខកូដ​តំបន់​ដឹកជញ្ជូន</translation>
 <translation id="1935353813610900265">ផ្ញើមតិកែលម្អសម្រាប់ការស្វែងរកក្នុងប្រវត្តិ ដែលដំណើរការដោយ AI</translation>
 <translation id="1935995810530254458">មិនអីទេ ចម្លងចុះ</translation>
 <translation id="1938580037092872316">បញ្ចូល​ព័ត៌មានថ្មី​ទៅអាសយដ្ឋាន​ដែលបាន​រក្សាទុក</translation>
@@ -617,6 +618,7 @@
 <translation id="2045871135676061132">ស្រោមសំបុត្រផ្ទាល់ខ្លួន</translation>
 <translation id="2048261947532620704">កំពុងបកប្រែទំព័រ</translation>
 <translation id="2055016614992422886">ការសន្ទនា</translation>
+<translation id="2057654338925604102">ដូមែន​ក្រុមហ៊ុន​ដឹកជញ្ជូន</translation>
 <translation id="2058468041496756763">អ្នកអាច​ប្ដូរ​ម៉ាស៊ីន​ស្វែងរក​របស់អ្នក​នៅពេលណាក៏បាន​នៅក្នុង​ការកំណត់​របស់ Chrome។ ប្រសិនបើអ្នកមិនឃើញម៉ាស៊ីន​ស្វែងរកដែលអ្នកចង់ប្រើទេ អ្នកអាចធ្វើការស្វែងរកពីគេហទំព័ររបស់ម៉ាស៊ីន​ស្វែងរកនោះ។ អ្នកនឹងឃើញវាបង្ហាញជាម៉ាស៊ីនស្វែងរកដែលបានចូលមើលថ្មីៗនៅក្នុងការកំណត់ Chrome ហើយអ្នកអាចកំណត់វាជាលំនាំដើមរបស់អ្នក។</translation>
 <translation id="2059166748188874810">ក្រុង</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
@@ -1613,6 +1615,7 @@
 <translation id="3715597595485130451">ភ្ជាប់ទៅ Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />ពិនិត្យការកំណត់រចនាសម្ព័ន្ធប្រូកស៊ី firewall និង DNS<ph name="END_LINK" /></translation>
 <translation id="3723316892512143176">Iban</translation>
+<translation id="3724078054554953078">កាលបរិច្ឆេទ​ដឹកជញ្ជូន</translation>
 <translation id="372429172604983730">កម្មវិធីដែលអាចបណ្តាលឱ្យមានបញ្ហានេះ រួមមានកម្មវិធីកម្ចាត់មេរោគ ជញ្ជាំងភ្លើង និងកម្មវិធីត្រងបណ្តាញ ឬប្រូកស៊ី។</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួចចុច Enter ដើម្បីបង្កើត​បទបង្ហាញ Google ថ្មី​នៅក្នុង​កម្មវិធីបទបង្ហាញ​បានរហ័ស</translation>
 <translation id="3727309136762649052">លំហឈ្មោះ</translation>
@@ -2541,8 +2544,10 @@
 <translation id="5258473597674772367">លែងមាន​ក្រុមផ្ទាំង "<ph name="GROUP_NAME" />" ទៀតហើយ</translation>
 <translation id="5260842098960755113">បានបិទ​កម្រងសារ</translation>
 <translation id="5262342527470539728">ព័ត៌មាន​របស់អ្នក​ត្រូវបាន​រក្សាទុក​នៅក្នុង <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> សម្រាប់ <ph name="ACCOUNT" /></translation>
+<translation id="5263202631354741256">លេខកូដសម្គាល់</translation>
 <translation id="5263867360296733198">តម្រូវឱ្យ​ពិនិត្យមើល មុនពេល​បង្ហោះ</translation>
 <translation id="5266128565379329178">ភ្ជាប់​ខាងលើ</translation>
+<translation id="5268746892698450173">ឈ្មោះ​ក្រុមហ៊ុន​ដឹក​ជញ្ជូន</translation>
 <translation id="5269225904387178860">ចោះ​បួនរន្ធ​ខាងក្រោម</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" មិនមែនជា​លក្ខខណ្ឌ​ដែលអាច​ប្រើបាន​សម្រាប់ "<ph name="DATA_CONTROLS_RESTRICTION" />" ទេ</translation>
 <translation id="527191520368130807">ដុសខាត់</translation>
@@ -2860,6 +2865,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">វិធីបង់ប្រាក់នេះនឹងត្រូវបានលុបចេញពីឧបករណ៍នេះ</translation>
 <translation id="5794065675298686371">បើក​ការជូនដំណឹង​អំពី​ការតាមដាន​តម្លៃ</translation>
+<translation id="5794093550048860249">លេខ​តាមដាន</translation>
 <translation id="5796050750059455142">បើក “<ph name="BEGIN_LINK" />មុខងារឆ្លាតវៃនៅក្នុងផលិតផល Google ផ្សេងទៀត<ph name="LINK_END" />”</translation>
 <translation id="5797984091151707075">បានទប់ស្កាត់​ដោយ​គោលការណ៍​អ្នកគ្រប់គ្រង</translation>
 <translation id="5804241973901381774">ការអនុញ្ញាត</translation>
@@ -4026,6 +4032,7 @@
 <translation id="7765158879357617694">ផ្លាស់ទី</translation>
 <translation id="7766518757692125295">ស្រទាប់ខាងក្រៅ</translation>
 <translation id="776749070095465053">ក្រណាត់</translation>
+<translation id="7772659560036894129">ឈ្មោះ​ផលិតផល</translation>
 <translation id="7773005668374414287">ផ្ងារឡើង​តាមលំដាប់​លំដោយដូចគ្នា</translation>
 <translation id="7779418012194492374">ដកសិទ្ធិ​ចូលប្រើ <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">ម្សិលមិញ</translation>
@@ -4218,6 +4225,7 @@
 <translation id="8118506371121007279">ផ្ដល់មតិកែលម្អ</translation>
 <translation id="812020627659652807">លុប​ឯកសារ​ឥឡូវនេះ</translation>
 <translation id="8120720167840853945">គោលការណ៍នេះមិនកំពុងគ្រប់គ្រងឥរិយាបថលំនាំដើមនៃគោលការណ៍ផ្សេងទៀតទេ។</translation>
+<translation id="8120827570827570666">ដូមែន​ឈ្មួញ</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" មិនបានដំឡើងត្រឹមត្រូវនៅលើកុំព្យូទ័រ ឬបណ្តាញរបស់អ្នកទេ។ សូមស្នើឱ្យអ្នកគ្រប់គ្រងផ្នែកព័ត៌មានវិទ្យារបស់អ្នកដោះស្រោយបញ្ហានេះ។</translation>
 <translation id="8130113808541743942">ផ្លាស់​ទីទៅ...</translation>
 <translation id="813024282736408069">បើក​កាតនិម្មិត​សម្រាប់​ការបំពេញស្វ័យប្រវត្តិ</translation>
@@ -4329,6 +4337,7 @@
 <translation id="830868413617744215">បែតា</translation>
 <translation id="8310477433309274098">គ្មានថ្លៃសេវា អត្រា​ការប្រាក់​ប្រចាំឆ្នាំ​ចាប់ពី 0%</translation>
 <translation id="8312841338723044391">ផ្សាយ​បន្តផ្ទាល់</translation>
+<translation id="8314036873065514376">ឈ្មោះ​ឈ្មួញ</translation>
 <translation id="8316555157357957253">កំពុងប្រើ​ឥឡូវនេះ</translation>
 <translation id="8319414634934645341">ការប្រើប្រាស់សោបន្ថែម</translation>
 <translation id="831997045666694187">ល្ងាច</translation>

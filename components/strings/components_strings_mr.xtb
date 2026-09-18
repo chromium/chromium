@@ -550,6 +550,7 @@
 <translation id="1924727005275031552">नवीन</translation>
 <translation id="1927930548546198515">तुम्ही सूचना स्वीकारता किंवा त्यांकडे दुर्लक्ष करता तेव्हा तुमच्या विनंत्या आणि वर्तन यांसारख्या गोष्टींसह, तुम्ही हे वैशिष्ट्य कसे वापरता याचा Chrome लॉग ठेवते</translation>
 <translation id="1932098463447129402">पूर्वी नाही</translation>
+<translation id="1932629105611536854">डिलिव्हरी पिनकोड</translation>
 <translation id="1935353813610900265">AI द्वारे सक्षम केलेल्या इतिहास शोधासाठी फीडबॅक पाठवा</translation>
 <translation id="1935995810530254458">तरीही कॉपी करा</translation>
 <translation id="1938580037092872316">सेव्ह केलेल्या पत्त्यामध्ये नवीन माहिती जोडा</translation>
@@ -615,6 +616,7 @@
 <translation id="2045871135676061132">एन्व्हलप पर्सनल</translation>
 <translation id="2048261947532620704">पेजचे भाषांतर करत आहे</translation>
 <translation id="2055016614992422886">संभाषण</translation>
+<translation id="2057654338925604102">वाहक डोमेन</translation>
 <translation id="2058468041496756763">तुम्ही Chrome च्या सेटिंग्जमध्ये तुमचे सर्च इंजीन कधीही बदलू शकता. तुम्हाला तुमचे प्राधान्य दिलेले सर्च इंजीन दिसत नसल्यास, तुम्ही त्यांच्या साइटवरून शोधू शकता. तुम्हाला ते Chrome सेटिंग्जमध्ये अलीकडे भेट दिलेले सर्च इंजीन म्हणून सूचीबद्ध केलेले दिसेल आणि तुम्ही ते तुमचे डीफॉल्ट बनवू शकता.</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
@@ -1519,6 +1521,7 @@
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">हे पेज केव्हा तयार होईल हे Chrome तुम्हाला कळवेल. &lt;a&gt;रद्द करा&lt;/a&gt;</translation>
 <translation id="3581499772329034229">टॅब आपोआप जोडा</translation>
+<translation id="3582670569275100909">शिपमेंट</translation>
 <translation id="3582930987043644930">नाव जोडा</translation>
 <translation id="3583757800736429874">&amp;हलवा पुन्हा करा</translation>
 <translation id="3584299510153766161">ड्युअल पंच बॉटम</translation>
@@ -1608,6 +1611,7 @@
 <translation id="3715597595485130451">वाय-फाय वर कनेक्ट करा</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रॉक्सी, फायरवॉल आणि DNS कॉन्फिगरेशन तपासणे<ph name="END_LINK" /></translation>
 <translation id="3723316892512143176">IBAN</translation>
+<translation id="3724078054554953078">पाठवल्याची तारीख</translation>
 <translation id="372429172604983730">या एररला कारणीभूत असू शकणार्‍या ॲप्लिकेशनमध्ये अँटिव्हायरस, फायरवॉल आणि वेब फिल्टरिंग किंवा प्रॉक्सी सॉफ्टवेअरचा समावेश होतो.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides मध्ये नवीन Google प्रेझेंटेशन झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="3727309136762649052">नेमस्पेस</translation>
@@ -2535,8 +2539,10 @@
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" हा टॅब गट आता उपलब्ध नाही</translation>
 <translation id="5260842098960755113">थ्रेड बंद केला आहे</translation>
 <translation id="5262342527470539728">तुमची माहिती <ph name="ACCOUNT" /> साठी<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> मध्ये सेव्ह केली आहे</translation>
+<translation id="5263202631354741256">आयडी</translation>
 <translation id="5263867360296733198">अपलोड करण्यापूर्वी पुनरावलोकन करणे आवश्यक आहे</translation>
 <translation id="5266128565379329178">बाइंड टॉप</translation>
+<translation id="5268746892698450173">वाहकाचे नाव</translation>
 <translation id="5269225904387178860">क्वाड पंच बॉटम</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" हा "<ph name="DATA_CONTROLS_RESTRICTION" />" साठीचा सपोर्ट असलेला नियम नाही</translation>
 <translation id="527191520368130807">पोलिश</translation>
@@ -2854,6 +2860,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">या डिव्हाइसवरून ही पेमेंट पद्धत हटवली जाईल</translation>
 <translation id="5794065675298686371">किमतीचा माग ठेवण्यासंबंधी नोटिफिकेशन सुरू करा</translation>
+<translation id="5794093550048860249">ट्रॅकिंग क्रमांक</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />इतर Google उत्पादनांमधील स्मार्ट वैशिष्ट्ये<ph name="LINK_END" />” सुरू करा</translation>
 <translation id="5797984091151707075">ॲडमिन धोरणाद्वारे ब्लॉक केला आहे</translation>
 <translation id="5804241973901381774">परवानग्या</translation>
@@ -4013,6 +4020,7 @@
 <translation id="7758069387465995638">फायरवॉल किंवा अँटीव्हायरस सॉफ्टवेअरने कदाचित कनेक्शन ब्लॉक केले असावे.</translation>
 <translation id="7759147511335618829">MIDI डिव्हाइस नियंत्रण व रीप्रोग्राम</translation>
 <translation id="7759809451544302770">पर्यायी</translation>
+<translation id="7760566304700414795">शिपमेंट</translation>
 <translation id="776110834126722255">कालबाह्य झाले</translation>
 <translation id="7761159795823346334">कॅमेराला अनुमती द्यायची का?</translation>
 <translation id="7761701407923456692">सर्व्हरचे सर्टिफिकेट URL शी जुळत नाही.</translation>
@@ -4020,6 +4028,7 @@
 <translation id="7765158879357617694">हलवा</translation>
 <translation id="7766518757692125295">स्कर्ट</translation>
 <translation id="776749070095465053">फॅब्रिक</translation>
+<translation id="7772659560036894129">उत्पादनाची नावे</translation>
 <translation id="7773005668374414287">तोच क्रम ठेवून फेस अप</translation>
 <translation id="7779418012194492374"><ph name="DEVICE_NAME" /> साठी अ‍ॅक्सेस मागे घ्या</translation>
 <translation id="7781829728241885113">काल</translation>
@@ -4211,6 +4220,7 @@
 <translation id="8118506371121007279">फीडबॅक द्या</translation>
 <translation id="812020627659652807">आता फाइल हटवा</translation>
 <translation id="8120720167840853945">हे धोरण इतर कोणत्याही धोरणांचे डीफॉल्ट वर्तन नियंत्रित करत नाही.</translation>
+<translation id="8120827570827570666">व्यापाऱ्याचे डोमेन</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" तुमच्या काँप्युटरवर किंवा नेटवर्कवर योग्य रीतीने इंस्टॉल केले नव्हते. तुमच्या अ‍ॅडमिनिस्ट्रेटरला ही समस्या सोडवण्यास सांगा.</translation>
 <translation id="8130113808541743942">यावर हलवा...</translation>
 <translation id="813024282736408069">ऑटोफिलसाठी व्हर्चुअल कार्ड सुरू करा</translation>
@@ -4322,6 +4332,7 @@
 <translation id="830868413617744215">बीटा</translation>
 <translation id="8310477433309274098">कोणतीही शुल्के नाहीत, किमान ०% APR</translation>
 <translation id="8312841338723044391">लाइव्ह</translation>
+<translation id="8314036873065514376">व्यापाऱ्याचे नाव</translation>
 <translation id="8316555157357957253">आता वापरत आहे</translation>
 <translation id="8319414634934645341">विस्तारित की वापर</translation>
 <translation id="831997045666694187">संध्याकाळी</translation>
@@ -4358,6 +4369,7 @@
 <translation id="8371841335382565017">कास्ट करण्यासाठीची डिव्हाइस सूची दाखवा</translation>
 <translation id="8371889962595521444">कस्टम रूट सर्टिफिकेट</translation>
 <translation id="8374636051559112948">बदलते</translation>
+<translation id="8377507422902936905">ऑर्डर</translation>
 <translation id="837840316697671463">तुम्हाला तुमच्या डिव्हाइसवर फाइल सापडत नसल्यास, ती <ph name="CLOUD_PROVIDER" /> वर शोधा.</translation>
 <translation id="8378714024927312812">तुमच्या संस्थेकडून व्यवस्थापित केलेले</translation>
 <translation id="8380941800586852976">धोकादायक</translation>

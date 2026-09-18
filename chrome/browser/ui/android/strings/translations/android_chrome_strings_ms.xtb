@@ -37,7 +37,6 @@
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Tab Gambar dalam Gambar</translation>
 <translation id="1126696498560056882">Urus akaun pada peranti ini</translation>
 <translation id="1135018701024399762">Mod Inkognito memastikan penyemakan imbas anda peribadi daripada pengguna lain yang menggunakan peranti anda</translation>
-<translation id="113752097246673894">Untuk mendapatkan penanda halaman anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chrome sebagai <ph name="EMAIL" /></translation>
 <translation id="1138458427267715730">Terima makluman jika harga produk tersebut turun pada mana-mana laman merentas web</translation>
 <translation id="1140317858355046628">Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan tab "<ph name="GROUP_NAME" />" dengan serta-merta dan kumpulan akan dipadamkan daripada semua peranti.</translation>
 <translation id="1142732900304639782">Jangan tawarkan untuk menterjemahkan tapak ini</translation>
@@ -205,7 +204,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, Tab Rakaman</translation>
 <translation id="1819443852740954262">Buka semua dalam tetingkap Inkognito</translation>
 <translation id="1820408774134375111">Helaian bawah log masuk</translation>
-<translation id="1823492026305965829">Log masuk sebagai <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">Ketik Padamkan data semakan imbas</translation>
 <translation id="1829244130665387512">Cari dalam halaman</translation>
 <translation id="1832459821645506983">Ya, saya setuju</translation>
@@ -439,7 +437,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2723001399770238859">audio</translation>
 <translation id="2739887572830526131">Simpan kumpulan ini untuk menambahkan tab kemudian atau padamkan jika anda tidak memerlukan kumpulan ini lagi.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> tidak tersedia sekarang.</translation>
-<translation id="2751271371269891762">Untuk mendapatkan penanda halaman anda serta pelbagai lagi pada semua peranti anda, log masuk sebagai <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">BB / TT</translation>
 <translation id="2761162135224472056">Tonton dengan main balik benaman?</translation>
 <translation id="2762000892062317888">sebentar tadi</translation>
@@ -609,7 +606,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3435738964857648380">Keselamatan</translation>
 <translation id="3435914367318771664">Tambahkan tab pada kumpulan baharu</translation>
 <translation id="3436118221454753036">Tanya Mod AI</translation>
-<translation id="3438681572027105609">Untuk mendapatkan kata laluan anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chrome</translation>
 <translation id="3439276997620616816">Anda boleh menemukan tab terbaharu anda di sini</translation>
 <translation id="3443221991560634068">Muat semula halaman semasa</translation>
 <translation id="3444179773590444986">Kongsikan maklum balas tentang tema gelap untuk laman?</translation>
@@ -754,7 +750,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="4000212216660919741">Rumah Luar Talian</translation>
 <translation id="4000670338830950598">Sesuaikan dan kawal Google Chrome dengan item yang diserlahkan</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 kata laluan yang terjejas dalam Google Account anda}other{# kata laluan yang terjejas dalam Google Account anda}}</translation>
-<translation id="4023638601467301498">Untuk mendapatkan penanda halaman anda serta pelbagai lagi pada semua peranti anda, log masuk ke Chrome</translation>
 <translation id="4024768890073681126">Penyemak imbas anda diurus oleh ibu/bapa anda</translation>
 <translation id="4027569221211770437">Folder <ph name="FOLDER_TITLE" /></translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# jam}other{# jam}}</translation>
@@ -935,7 +930,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4685741273709472646">Pilih daripada senarai lungsur</translation>
 <translation id="468924408576231679">Salin pautan kepada halaman web <ph name="PAGE_TITLE" />. Sumber: <ph name="PAGE_URL" /></translation>
 <translation id="4692623383562244444">Enjin carian</translation>
-<translation id="469286762610133730">Dapatkan kandungan yang lebih baik</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lagi}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lagi}}</translation>
 <translation id="4698757800236023795">Aktif (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Imej dan fail dicache</translation>
@@ -995,7 +989,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4910889077668685004">Apl pembayaran</translation>
 <translation id="4911042367886397055">Selamat kembali, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Berhenti memuat semula</translation>
-<translation id="4921224083091001889">Untuk mendapatkan kata laluan anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chrome sebagai <ph name="EMAIL" /></translation>
 <translation id="4923173329789776645">Muat turun tidak disyorkan oleh organisasi anda</translation>
 <translation id="4924398189611529766">Apabila anda menyemak imbas dalam Inkognito, orang lain yang menggunakan peranti ini tidak akan melihat aktiviti anda, maka anda boleh menyemak imbas secara lebih sulit. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">Tangkapan skrin <ph name="CURRENT_DATE_ISO" /></translation>
@@ -1156,7 +1149,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5601180634394228718">Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan pengalaman Chrome anda, akses <ph name="BEGIN_LINK" />Perkhidmatan Google<ph name="END_LINK" />.</translation>
 <translation id="5601924940067278327">Dapatkan tab anda dan pelbagai lagi pada semua peranti anda</translation>
 <translation id="5611398002774823980">Simpan dalam akaun</translation>
-<translation id="5613381935190035031">Untuk mendapatkan tab anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chrome sebagai <ph name="EMAIL" /></translation>
 <translation id="5614625640221885312">Log masuk untuk mendapatkan penanda halaman, kata laluan dan pelbagai lagi pada semua peranti anda</translation>
 <translation id="5619633276517849615">Organisasi anda menghidupkan Penyemakan Imbas Selamat</translation>
 <translation id="5620163320393916465">Tiada kata laluan yang disimpan</translation>
@@ -1243,7 +1235,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 halaman pada senarai bacaan anda}other{# halaman pada senarai bacaan anda}}</translation>
 <translation id="5992182727984874868"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> Chrome telah mengalih keluar kebenaran ini kerana anda belum melawati laman web ini baru-baru ini</translation>
 <translation id="5995726099713306770">Muat turun halaman sekali lagi?</translation>
-<translation id="5998675059699164418">Organisasi anda menghendaki anda log masuk untuk menggunakan Chrome.</translation>
 <translation id="6000066717592683814">Kekalkan Google</translation>
 <translation id="6002122790816966947">Peranti anda</translation>
 <translation id="6011308810877101166">Tingkatkan cadangan carian</translation>
@@ -1454,12 +1445,10 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6738867403308150051">Memuat turun…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Semak data akaun anda</translation>
-<translation id="6746834324024491643">Untuk mendapatkan kata laluan dan pelbagai lagi pada semua peranti anda, log masuk sebagai <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Buka tab baharu dengan pantas. Untuk mengedit pintasan ini, sentuh dan tahan.</translation>
 <translation id="6754359471209693699">Mulakan carian baharu</translation>
 <translation id="6756507620369789050">Kongsi maklum balas</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
-<translation id="676305334223455055">Log masuk untuk mendapatkan kandungan berdasarkan minat anda</translation>
 <translation id="6764137532716892442">Kumpulan tab <ph name="GROUP_TITLE" /> dikongsi dengan aktiviti baharu</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognito dan <ph name="TAB_COUNT_ONE" /> tab lain akan ditutup}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognito dan <ph name="TAB_COUNT_MANY" /> tab lain akan ditutup}}</translation>
 <translation id="6785476624617658922">Syarat Perkhidmatan Tambahan Chrome &amp; Chrome OS</translation>
@@ -1759,7 +1748,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7822705602465980873">Apabila anda log masuk, data ini akan dipautkan kepada Google Account anda untuk melindungi anda merentas perkhidmatan Google, contohnya meningkatkan perlindungan dalam Gmail selepas insiden keselamatan.</translation>
 <translation id="7824665136384946951">Organisasi anda mematikan Penyemakan Imbas Selamat</translation>
 <translation id="7825973332242257878">Kumpulan tab</translation>
-<translation id="7826342993930002256">Chrome anda, di mana-mana</translation>
 <translation id="7845155831233417403">Anda boleh membuka hingga <ph name="MAX_INSTANCE_COUNT" /> tetingkap. Tutup tetingkap untuk teruskan.</translation>
 <translation id="7846161022626028328">Terdapat ralat. Cuba lagi.</translation>
 <translation id="7846296061357476882">Perkhidmatan Google</translation>
@@ -1835,7 +1823,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8110024788458304985">Bantu kami memperbaik ciri dan prestasi Chrome</translation>
 <translation id="8110087112193408731">Tunjukkan aktiviti Chrome anda dalam Kesejahteraan Digital?</translation>
 <translation id="8118117428362942925">Jika anda memerlukan bantuan, minta daripada ibu/bapa anda (<ph name="PARENT_NAME" />)</translation>
-<translation id="8118151008374483324">Untuk mendapatkan tab anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chrome</translation>
 <translation id="8120286190326371840">Tiada kata laluan yang terjejas pada peranti ini</translation>
 <translation id="8122623268651408616">Mengisih mengikut tertib paling baharu</translation>
 <translation id="8127542551745560481">Edit halaman utama</translation>
@@ -2127,7 +2114,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="9218430445555521422">Tetapkan sebagai lalai</translation>
 <translation id="9219103736887031265">Imej</translation>
 <translation id="922152298093051471">Sesuaikan Chrome</translation>
-<translation id="9222198206152536936">Untuk mendapatkan tab anda dan pelbagai lagi pada semua peranti anda, log masuk sebagai <ph name="EMAIL" /></translation>
 <translation id="924447568950697217">Jadikan Chrome penyemak imbas lalai anda</translation>
 <translation id="926205370408745186">Alih keluar aktiviti Chrome anda daripada Kesejahteraan Digital</translation>
 <translation id="927968626442779827">Gunakan mod Ringkas pada Google Chrome</translation>

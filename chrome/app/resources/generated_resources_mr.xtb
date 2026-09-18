@@ -861,6 +861,7 @@
 <translation id="1656528038316521561">बॅकग्राउंडची अपारदर्शकता</translation>
 <translation id="1657406563541664238">वापरविषयक आकडेवारी आणि क्रॅश अहवाल आपोआप Google कडे पाठवून <ph name="PRODUCT_NAME" /> ला अधिक चांगले करण्यास मदत करा</translation>
 <translation id="1657937299377480641">शैक्षणिक स्रोतांच्या अ‍ॅक्सेससाठी पुन्हा साइन इन करण्याकरिता, तुम्हाला परवानगी देण्याबाबत पालकाला सांगा</translation>
+<translation id="1657952527687824398">टॅब गट यावर फोकस करा</translation>
 <translation id="1658424621194652532">हे पेज तुमचा मायक्रोफोन अ‍ॅक्सेस करत आहे.</translation>
 <translation id="1660405268563702784"><ph name="APP_NAME" /> साठी अपडेट उपलब्ध आहे</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{तुमच्या ब्राउझरचा वेग कमी करणाऱ्या टॅबचे निराकरण करा}other{तुमच्या ब्राउझरचा वेग कमी करणाऱ्या टॅबचे निराकरण करा}}</translation>
@@ -2326,6 +2327,7 @@
 <translation id="2767077837043621282">तुमचे Chromebook अपडेट करता आले नाही. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="2767127727915954024">तुम्ही या साइटसाठी सर्व टॅब बंद करेपर्यंत <ph name="ORIGIN" /> ला <ph name="FILENAME" /> संपादित करता येईल</translation>
 <translation id="2769174155451290427">अपलोड केलेली इमेज</translation>
+<translation id="2769715732905083104">टॅब गट यावर फोकस करा</translation>
 <translation id="2770082596325051055"><ph name="FILE_NAME" /> चे डाउनलोड थांबवा</translation>
 <translation id="2770465223704140727">सूचीमधून काढून टाका</translation>
 <translation id="2770690685823456775">तुमचे पासवर्ड दुसर्‍या फोल्डरमध्ये एक्सपोर्ट करा</translation>
@@ -2606,6 +2608,7 @@
 <translation id="2984727013951557074">फाइल ही अद्याप Drive मध्ये सिंक केली जात आहे.</translation>
 <translation id="2984923316661218534">Google Password Manager सह या डिव्हाइसवर तुमच्या पासकी मिळवा</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> ने अ‍ॅप अनइंस्टॉल केले}other{<ph name="APP_NAME" /> ने # अ‍ॅप्स अनइंस्टॉल केली}}</translation>
+<translation id="2987777176328481585">{NUM_TABS,plural, =1{टॅबवर फोकस करा}other{# टॅबवर फोकस करा}}</translation>
 <translation id="2988018669686457659">स्पेअर रेंडरर</translation>
 <translation id="2988328607561082373">तुम्ही कोणतेही पासवर्ड पुन्हा वापरत नाही आहात</translation>
 <translation id="2989123969927553766">माउस स्क्रोल अ‍ॅक्सिलरेशन</translation>
@@ -2720,7 +2723,6 @@
 <translation id="3048917188684939573">Cast आणि डिव्हाइसचे लॉग</translation>
 <translation id="3049356453907822148">नवीन कौशल्य जोडा</translation>
 <translation id="3051250416341590778">डिस्प्ले आकार</translation>
-<translation id="3051676221004664500">&amp;“<ph name="SELECTION" />” चे भाषांतर करा</translation>
 <translation id="3053273573829329829">वापरकर्ता पिन सुरू करा</translation>
 <translation id="3053274730492362225">ब्लिंक करू नका</translation>
 <translation id="3057938290530993634">पुढील वेळी सहज अ‍ॅक्सेससाठी तुमच्या सर्वाधिक भेट दिलेल्या वेबसाइट पिन करण्याकरिता टॅप करून धरून ठेवा</translation>
@@ -5159,7 +5161,6 @@
 <translation id="4913573660390710463">वर्धित क्षमता असलेली पॅकेज स्वरूपातील वेब अ‍ॅप्लिकेशन अ‍ॅक्सेस करा. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">अ‍ॅप डेटा शोधता आला नाही</translation>
 <translation id="4915961947098019832">इमेज दाखवण्याची अनुमती आहे</translation>
-<translation id="4916140032692201190">&amp;निवडलेल्या मजकुराचे भाषांतर करा</translation>
 <translation id="491779113051926205">ChromeOS ट्रॅफिक काउंटर</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> एक्स्टेंशनशी कम्युनिकेट करू इच्छित आहे "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">स्वीकारा</translation>
@@ -5196,6 +5197,7 @@
 <translation id="4941963255146903244">तुमच्या फोनमधील फोटो, मीडिया आणि अ‍ॅप्स पहा</translation>
 <translation id="494286511941020793">प्रॉक्सी कॉन्फिगरेशन मदत</translation>
 <translation id="4943368462779413526">फूटबॉल</translation>
+<translation id="4943872375798546930">परिणाम नाहीत</translation>
 <translation id="4943927218331934807">पासवर्ड आवश्यक आहे</translation>
 <translation id="4946998421534856407">launcher + अप अ‍ॅरो</translation>
 <translation id="4947376546135294974">तुम्ही भेट देत असलेल्या साइटवरील डेटा</translation>
@@ -5236,7 +5238,6 @@
 <translation id="4972129977812092092">प्रिंटर संपादित करा</translation>
 <translation id="4972164225939028131">चुकीचा पासवर्ड</translation>
 <translation id="4972737347717125191">साइट आभासी वास्तविकता डिव्हाइस आणि डेटा वापरण्यासाठी विचारू शकतात</translation>
-<translation id="4973302523373219907">कस्टम शॉर्टकट सेट केलेला नसल्यास, बाय डीफॉल्ट @@ वापरले जाते</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{साइट म्यूट करा}other{साइट म्यूट करा}}</translation>
 <translation id="497403230787583386">सुरक्षा तपासण्या पूर्ण झाल्या. तुमचा दस्तऐवज प्रिंट केला जाईल.</translation>
 <translation id="4974442344472293753">अपडेटचा परिणाम</translation>
@@ -5671,6 +5672,7 @@
 <translation id="5311304534597152726">हे म्हणून साइन करा</translation>
 <translation id="5312746996236433535">स्क्रीन मिरर करा</translation>
 <translation id="5313967007315987356">साइट जोडा</translation>
+<translation id="531500736198839473">{NUM_TABS,plural, =1{टॅबवर फोकस करा}other{# टॅबवर फोकस करा}}</translation>
 <translation id="5315738755890845852">अतिरिक्त महिरपी कंस: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5317781812114905957">सूचना</translation>
@@ -6553,6 +6555,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6022659036123304283">Chrome ला तुमच्या आवडीनुसार बनवा</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून व्हिडिओ फ्रेम शोधा</translation>
 <translation id="6025215716629925253">स्टॅक ट्रेस</translation>
+<translation id="6026436621921471553">टॅब गट यावरील फोकस काढून टाका</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB डिव्हाइस कनेक्ट केले</translation>
 <translation id="6027143200498653403">तुम्ही तुमच्या इतिहासाबद्दल प्रश्न विचारता, तेव्हा तुम्हाला तुम्ही भेट दिलेल्या पेजवरून विशिष्ट माहितीबद्दल उत्तरे मिळवू शकता</translation>
 <translation id="6027945736510816438">तुम्हाला <ph name="WEBSITE" /> म्हणायचे आहे का?</translation>
@@ -6651,7 +6654,6 @@ I feel - विटांची इमारत</translation>
 <translation id="610487644502954950">साइड पॅनल अनपिन केले आहे</translation>
 <translation id="6104929924898022309">फंक्शन कीचे वर्तन बदलण्यासाठी शोध की वापरा</translation>
 <translation id="6108952804512516814">AI वापरून तयार करा</translation>
-<translation id="611041979451429698">&amp; “<ph name="SELECTION" />” प्रिंट करा</translation>
 <translation id="6110794992500777605">माझे शॉर्टकट आणि साइट</translation>
 <translation id="6111718295497931251">Google Drive अ‍ॅक्सेस काढून टाका</translation>
 <translation id="6112197885362646874">Google ला "<ph name="SEARCH_TERMS" />" विषयी विचारा</translation>
@@ -7021,6 +7023,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6399675241776343019">नाकारला</translation>
 <translation id="6399774419735315745">गुप्तचर</translation>
 <translation id="6400360390396538896">नेहमी सुरू <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">टॅब गट यावरील फोकस काढून टाका</translation>
 <translation id="6401118106417399952">तुमच्या डिव्हाइसचे EID <ph name="EID_NUMBER" /> आहे आणि डिव्हाइसचा सिरीअल नंबर <ph name="SERIAL_NUMBER" /> आहे. हे नंबर सेवा ॲक्टिव्हेट करण्यात मदत करण्यासाठी वापरले जाऊ शकतात.</translation>
 <translation id="6401458660421980302">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, तेथे Chrome मध्ये साइन इन करा</translation>
 <translation id="6402042774506839496">कारण जाणून घेण्यासाठी, अ‍ॅप डेव्हलपरशी संपर्क साधा</translation>
@@ -7658,7 +7661,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6870470066213933201">JavaScript ऑप्टिमायझेशन आणि सुरक्षा व्यवस्थापित करा</translation>
 <translation id="6870953451576517204">स्वयं-चाचणी यशस्वी झाली</translation>
 <translation id="6871397658902960384">ब्राउझिंग सुरू करा</translation>
-<translation id="6871609459496868094">&amp; “<ph name="SELECTION" />” कॉपी करा</translation>
 <translation id="6871644448911473373">OCSP प्रतिसादकर्ता: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">भाषा...</translation>
 <translation id="6873156759937047811">पिन:</translation>
@@ -9743,7 +9745,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8477241577829954800">अधिग्रहित</translation>
 <translation id="8477384620836102176">&amp;सामान्य</translation>
 <translation id="8477446666255316832">पुढील वेळेस आणखी जलद साइन इन करा</translation>
-<translation id="8477548388161793571">&amp;निवडलेल्या मजकुराचे भाषांतर करा</translation>
 <translation id="8478346767369317046">ऑफिस</translation>
 <translation id="8479176401914456949">कोड चुकीचा आहे. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> कडील अज्ञात डिव्हाइस</translation>

@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">खारेज गर्नुहोस्</translation>
 <translation id="152629053603783244">Linux पुनः सुरु गर्नुहोस्</translation>
 <translation id="1526448108126799339">नयाँ ट्याब नयाँ विन्डोमा खोल्नुहोस्</translation>
-<translation id="1528259147807435347">गत हप्ता सम्पादन गरिएको</translation>
 <translation id="1536604384701784949">तपाईं सबै खाताबाट साइन आउट भइसकेपछि मात्र <ph name="USER_EMAIL_ADDRESS" /> चलाउन सक्नुहुन्छ। तपाईं साइन आउट गर्न चाहनुहुन्छ भने 'रद्द गर्नुहोस्' चयन गरेर पछाडि जानुहोस्। त्यसपछि 'वस्तुस्थिति क्षेत्र' खोल्न 'समय' चयन गर्नुहोस् र 'साइन आउट गर्नुहोस्' चयन गर्नुहोस्। त्यसपछि फेरि <ph name="USER_EMAIL_ADDRESS_2" /> मा साइन इन गर्नुहोस्।</translation>
 <translation id="15373452373711364">ठुलो माउस कर्सर</translation>
 <translation id="1545331255323159851">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया तथा नोटिफिकेसनहरू हेर्नुहोस्</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। निदान, डिभाइस र एपको प्रयोगसम्बन्धी डेटा स्वतः Google मा पठाएर आफ्ना बच्चाको Android को सुविधाको गुणस्तर सुधार गर्न मद्दत गर्नुहोस्। यस्तो डेटा तपाईंका बच्चाको पहिचान गर्ने प्रयोजनका लागि प्रयोग गरिने छैन र यसले सिस्टम तथा एपको स्थिरता र थप कुराहरू सुधार गर्न मद्दत गर्ने छ। केही समग्र डेटाले Google का एप तथा Android विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छ। मालिकले यो <ph name="BEGIN_LINK1" />सेटिङ<ph name="END_LINK1" /> लागू गर्नुभएको हो। मालिक यस डिभाइसको निदान तथा प्रयोगसम्बन्धी डेटा Google मा पठाउने विकल्प छनौट गर्न सक्नुहुन्छ। तपाईंका बच्चाको खातामा "वेब तथा एपसम्बन्धी अतिरिक्त गतिविधि" सेटिङ अन गरिएको छ भने यो डेटा उनको Google खातामा सेभ गरिन सक्छ। <ph name="BEGIN_LINK2" />मेट्रिकका बारेमा थप जान्नुहोस्<ph name="BEGIN_LINK2_END" />थप जान्नुहोस्<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">आफ्नो PIN हाल्नुहोस्</translation>
 <translation id="2412593942846481727">अपडेट उपलब्ध</translation>
-<translation id="2416438829169535743">भ्यूबाट बाहिरिने हो?</translation>
 <translation id="2417486498593892439">नेटवर्कमा साइन इन गर्नुहोस्</translation>
 <translation id="2423619675829330672">धेरै पटक PIN हाल्ने प्रयास गरियो। <ph name="TIME_LEFT" /> पर्खेर फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2426051945783024481">क्यामेराको फ्रेम स्वतः बिच भागमा पारियो</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">ब्लुतुथ यन्त्र "<ph name="DEVICE_NAME" />" ले मेल गर्न अनुमति चाहन्छ। स्वीकार गर्नुअघि, कृपया पक्का गर्नुहोस् की यो पासकुञ्जी त्यो यन्त्रमा देखाइएको छ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
 <translation id="2437771564543046790">ब्याट्री कम छ। ब्याट्री सेभर अन छ</translation>
-<translation id="243878895369688216">हिजो खोलिएको</translation>
 <translation id="2440978926514840421">GIF रेकर्ड गरिएको छ</translation>
 <translation id="2441427462554639370">भण्डारणमा अत्यन्तै कम खाली ठाउँ भएकाले रेकर्डिङ बन्द भयो</translation>
 <translation id="2445449901874883781">उच्च घनत्व भएको डिस्प्ले प्रयोग गर्नुहोस्</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">Kiosk एप्लिकेसनलाई डाउनलोड गर्न सकिएन।</translation>
 <translation id="3563558822383875692">DLC कन्फिगर गरिँदै छ।</translation>
 <translation id="3563775809269155755">हटस्पट अन गर्नुहोस्</translation>
-<translation id="3566240529365775567">भर्खरै खोलिएको</translation>
 <translation id="3571734092741541777">सेटअप गर्नुहोस्</translation>
 <translation id="3573179567135747900">पुन: "<ph name="FROM_LOCALE" />" मा परिवर्तन गर्नुहोस् (फेरि सुरु गर्न आवश्यक छ)</translation>
 <translation id="3576141592585647168">प्रामाणिक समय परिवर्तन गर्नुहोस्</translation>
@@ -960,7 +956,6 @@
 <translation id="3756485814916578707">स्क्रिन कास्ट गरिँदै छ</translation>
 <translation id="3765246971671567135">अफलाइन डेमो मोड नीति पढ्न सकिएन।</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> को सर्टकट <ph name="OLD_SHORTCUT" /> बाट बदलेर <ph name="NEW_SHORTCUT" /> बनाइएको छ</translation>
-<translation id="3765841986579723851">आज सम्पादन गरिएको</translation>
 <translation id="3772109172035555611">आफ्नो TrackPoint कस्टमाइज गर्नुहोस्</translation>
 <translation id="3773700760453577392">कुनै प्रशासकले <ph name="USER_EMAIL" /> बाट एकभन्दा बढी साइन इन गर्ने अनुमति दिनुभएको छैन। जारी राख्न सबै प्रयोगकर्ताहरूले अनिवार्य रूपमा साइन आउट गर्नु पर्छ।</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> कनेक्ट गरिँदै छ</translation>
@@ -1000,7 +995,6 @@
 <translation id="3873915545594852654">ARC++ सम्बन्धी कुनै समस्या भयो।</translation>
 <translation id="3879748587602334249">डाउनलोड म्यानेजर</translation>
 <translation id="3884007280698606545">योभन्दा धेरै USB डिभाइस कनेक्ट गर्न मिल्दैन</translation>
-<translation id="3886872229787704059">आज खोलिएको</translation>
 <translation id="3892148308691398805">पाठ कपी गर्नुहोस्</translation>
 <translation id="3893630138897523026">ChromeVox (बोली पृष्ठपोषण)</translation>
 <translation id="3898464793473355515">स्क्रिन घडी घुम्ने दिशामा ९० डिग्री घुमाउनुहोस्</translation>
@@ -1791,7 +1785,6 @@
 <translation id="6095008505822982596">स्पिचको गति</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> को VPN कनेक्सन हाल्नुहोस्</translation>
 <translation id="6095541101974653012">तपाईं लग आउट हुनुभयो।</translation>
-<translation id="6099678161144790572">गत महिना सम्पादन गरिएको</translation>
 <translation id="6103838137565245112">सिस्टम</translation>
 <translation id="6108952804512516814">AI प्रयोग गरी सिर्जना गर्नुहोस्</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> भाषाका वाक् पहिचानसम्बन्धी फाइलहरू डाउनलोड गरिएका छन्</translation>
@@ -1948,7 +1941,6 @@
 <translation id="6555373427270923730">एड्रेस बारमा वेब ठेगाना टाइप गर्नुहोस् अनि <ph name="MODIFIER" /><ph name="KEY" /> थिच्नुहोस्</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 भर्खरै इन्स्टल गरिएको छ</translation>
-<translation id="6559158502366839560">अझ धेरै एप तथा गेम हेर्नुहोस्</translation>
 <translation id="6560151649238390891">सुझाव गरिएको इमोजी प्रयोग गरियो</translation>
 <translation id="6562447480759345110">फोकस मोड बन्द गर्नुहोस्</translation>
 <translation id="6565007273808762236">eSIM कनेक्सन उपलब्ध छैन</translation>
@@ -2054,7 +2046,6 @@
 <translation id="6848716236260083778">तपाईं आफ्ना बच्चाको फिंगरप्रिन्ट सेटअप गर्न चाहनुहुन्छ भने उनलाई फिंगरप्रिन्ट सेन्सरमा छुन लगाउनुहोस्। तपाईंका बच्चाको फिंगरप्रिन्ट डेटा सुरक्षित रूपमा भण्डारण गरिन्छ र यो डेटा कहिल्यै पनि यस <ph name="DEVICE_TYPE" /> बाट अन्यत्र पठाइँदैन।</translation>
 <translation id="6852052252232534364">सक्रिय गर्न क्लिक गर्नुहोस्</translation>
 <translation id="6852628153543175788">१० मिनेट थप्नुहोस्</translation>
-<translation id="6855029042976311970">भर्खरै सम्पादन गरिएको</translation>
 <translation id="6856708615407876657">खोज परिणामका कोटीहरू टगल गर्नुहोस्</translation>
 <translation id="6856756288284651804">Chromebook अपडेट गरिएको छ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकेन्ड</translation>
@@ -2149,7 +2140,6 @@
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> खोल्नुहोस्</translation>
 <translation id="7119327711295338600">अर्को शब्द वा अक्षर चयन गर्नुहोस्</translation>
 <translation id="7124556000457919678">अन गरिएका बेला माउस की सुविधा पज गर्नुहोस् र सुचारु गर्नुहोस्</translation>
-<translation id="7126996685418858413">गत हप्ता खोलिएको</translation>
 <translation id="7131634465328662194">तपाईं स्वतः साइन आउट हुनु हुने छ।</translation>
 <translation id="7143207342074048698">जडान गर्दै...</translation>
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
@@ -2180,7 +2170,6 @@
 <translation id="7256057185598509352">ExpressKey २</translation>
 <translation id="7256634071279256947">पछाडिको माइक्रोफोन</translation>
 <translation id="7258225044283673131">यो एपले प्रतिक्रिया जनाइरहेको छैन। एप बन्द गर्न "बलपूर्वक बन्द गर्नुहोस्" चयन गर्नुहोस्।</translation>
-<translation id="7258828758145722155">हिजो सम्पादन गरिएको</translation>
 <translation id="726276584504105859">विभाजित स्क्रिनको प्रयोग गर्न यहाँ ड्र्याग गर्नुहोस्</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> घटाउनुहोस्</translation>
 <translation id="7267875682732693301">आफ्नो फिंगरप्रिन्टका विभिन्न भागहरू समावेश गर्न आफ्नो औँला उठाउँदै राख्दै गर्नुहोस्</translation>
@@ -2253,7 +2242,6 @@
 <translation id="7491962110804786152">ट्याब</translation>
 <translation id="7497767806359279797">भाषा तथा किबोर्ड छनौट गर्नुहोस्</translation>
 <translation id="7507162824403726948">आफ्नो पहिचान पुष्टि गर्ने प्रक्रिया पूरा गर्नुहोस्</translation>
-<translation id="7508690557411636492">गत महिना खोलिएको</translation>
 <translation id="7509246181739783082">आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="7512509370370076552">राइट क्लिक सर्टकट "alt + क्लिक" बाट बदलेर "<ph name="LAUNCHER_KEY_NAME" /> की + क्लिक" बनाइएको छ</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, चयन गरिएको छैन</translation>
@@ -2707,7 +2695,6 @@
 <translation id="8753368202781196133">यो भाषा अहिले प्रयोग गर्न मिल्दैन।</translation>
 <translation id="8755498163081687682">आफ्नो पहिचान पुष्टि गर्नुहोस्: <ph name="ORIGIN_NAME" /> तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
 <translation id="875593634123171288">VPN सेटिङहरू देखाउनुहोस्</translation>
-<translation id="8756799553341497810">तपाईं यो भ्यूबाट बाहिरिएपछि एपको लेआउट कस्टमाइज गर्न सुरु गर्न सक्नुहुन्छ।</translation>
 <translation id="8759408218731716181">बहुविध साइन-इन सेटअप गर्न सक्दैन</translation>
 <translation id="8759753423332885148">बढी जान्नुहोस्।</translation>
 <translation id="8760172428247796445">तपाईंको <ph name="DEVICE_TYPE" /> अब लक गरिने छ।

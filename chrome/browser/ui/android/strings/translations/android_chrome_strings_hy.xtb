@@ -37,7 +37,6 @@
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, «Նկար նկարի մեջ» ներդիր</translation>
 <translation id="1126696498560056882">Հաշիվների կառավարում այս սարքում</translation>
 <translation id="1135018701024399762">Ինկոգնիտո ռեժիմը թույլ է տալիս գաղտնի պահել ձեր դիտարկումները այս սարքի մյուս օգտագործողներից</translation>
-<translation id="113752097246673894">Էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար մուտք գործեք Chrome որպես <ph name="EMAIL" /></translation>
 <translation id="1138458427267715730">Ստացեք ծանուցում, երբ որևէ կայքում գնիջեցում լինի</translation>
 <translation id="1140317858355046628">Եթե ջնջեք, բոլորին անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի բոլոր սարքերից։</translation>
 <translation id="1142732900304639782">Չառաջարկել թարգմանել այս կայքերը</translation>
@@ -205,7 +204,6 @@
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, ներդիր, որում տեսագրում է արվում</translation>
 <translation id="1819443852740954262">Բացել բոլորն ինկոգնիտո պատուհանում</translation>
 <translation id="1820408774134375111">Հաշիվ մտնելու ներքևի էկրան</translation>
-<translation id="1823492026305965829">Մուտք գործել որպես <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">Հպեք «Ջնջել այցելությունների պատմությունը»</translation>
 <translation id="1829244130665387512">Գտնել էջում</translation>
 <translation id="1832459821645506983">Այո, թույլատրել</translation>
@@ -439,7 +437,6 @@
 <translation id="2723001399770238859">audio</translation>
 <translation id="2739887572830526131">Պահպանեք այս խումբը՝ հետագայում ներդիրներ ավելացնելու համար, կամ ջնջեք խումբը, եթե այն այլևս պետք չէ ձեզ։</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ն այս պահին հասանելի չէ։</translation>
-<translation id="2751271371269891762">Էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար մուտք գործեք <ph name="EMAIL" /> հաշիվ</translation>
 <translation id="2760805590727089264">ԱԱ/ՏՏ</translation>
 <translation id="2761162135224472056">Միացնե՞լ վիրտուալ իրականության ռեժիմը</translation>
 <translation id="2762000892062317888">հենց նոր</translation>
@@ -514,6 +511,7 @@
 <translation id="2996291259634659425">Անցաբառի ստեղծում</translation>
 <translation id="2996682533106928201">Փակելու համար հպեք</translation>
 <translation id="2996809686854298943">Պահանջվում է URL-ը</translation>
+<translation id="3007318536447999974">Gemini-ի հետ խոսելու համար տրամադրեք ձեր խոսափողի օգտագործման թույլտվություն։ Սա կարող եք կառավարել նաև <ph name="BEGIN_LINK" />Կարգավորումներում<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Ընթերցման ռեժիմի կարգավորումները փակված են</translation>
 <translation id="3024277805447899099">Նախադիտել պատկերը</translation>
 <translation id="3026955690410463085">Ներառել հղումը</translation>
@@ -608,7 +606,6 @@
 <translation id="3435738964857648380">Անվտանգություն</translation>
 <translation id="3435914367318771664">Ավելացնել ներդիր նոր խմբում</translation>
 <translation id="3436118221454753036">Հարցրեք ԱԲ-ին ռեժիմում</translation>
-<translation id="3438681572027105609">Գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար մուտք գործեք Chrome</translation>
 <translation id="3439276997620616816">Այստեղ կցուցադրվեն ձեր վերջին ներդիրները</translation>
 <translation id="3443221991560634068">Վերաբեռնել ընթացիկ էջը</translation>
 <translation id="3444179773590444986">Կարծիք հայտնե՞լ կայքերի մուգ թեմայի մասին</translation>
@@ -753,7 +750,6 @@
 <translation id="4000212216660919741">Home անցանց ռեժիմում</translation>
 <translation id="4000670338830950598">Կարգավորեք Google Chrome-ը և կառավարեք այն՝ ընդգծելով տարրերն էկրանին</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 կոտրված գաղտնաբառ ձեր Google հաշվում}one{# կոտրված գաղտնաբառ ձեր Google հաշվում}other{# կոտրված գաղտնաբառ ձեր Google հաշվում}}</translation>
-<translation id="4023638601467301498">Էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար մուտք գործեք Chrome</translation>
 <translation id="4024768890073681126">Ձեր դիտարկիչը կառավարում է ձեր ծնողը</translation>
 <translation id="4027569221211770437">«<ph name="FOLDER_TITLE" />» պանակ</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ժամ}one{# ժամ}other{# ժամ}}</translation>
@@ -934,7 +930,6 @@
 <translation id="4685741273709472646">Ընտրել իջնող ցանկից</translation>
 <translation id="468924408576231679">Պատճենել «<ph name="PAGE_TITLE" />» վեբէջի հղումը։ Աղբյուրը՝ <ph name="PAGE_URL" /></translation>
 <translation id="4692623383562244444">Որոնիչներ</translation>
-<translation id="469286762610133730">Ստացեք ավելի հետաքրքիր բովանդակություն</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}}</translation>
 <translation id="4698757800236023795">Ակտիվ (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Քեշավորված պատկերներ և ֆայլեր</translation>
@@ -994,7 +989,6 @@
 <translation id="4910889077668685004">Հավելվածներ վճարումների համար</translation>
 <translation id="4911042367886397055">Բարի վերադարձ, <ph name="USER_NAME" /></translation>
 <translation id="4913169188695071480">Դադարեցնել թարմացումը</translation>
-<translation id="4921224083091001889">Գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար մուտք գործեք Chrome որպես <ph name="EMAIL" /></translation>
 <translation id="4923173329789776645">Ձեր կազմակերպությունը չի խորհուրդ տալիս ներբեռնել այս հավելվածը</translation>
 <translation id="4924398189611529766">Ինկոգնիտո ռեժիմում ձեր գործողությունները տեսանելի չեն լինի այս սարքի մյուս օգտատերերին, այնպես որ կարող եք ավելի ապահով դիտարկել։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">Սքրինշոթ՝ <ph name="CURRENT_DATE_ISO" /></translation>
@@ -1155,7 +1149,6 @@
 <translation id="5601180634394228718">Որպեսզի իմանաք ավելին կարգավորումների մասին, որոնք Chrome-ի բարելավման նպատակով օգտագործում են տվյալներ, անցեք <ph name="BEGIN_LINK" />Google-ի ծառայություններ<ph name="END_LINK" />։</translation>
 <translation id="5601924940067278327">Օգտագործեք ներդիրներն ու մյուս տվյալները ձեր բոլոր սարքերում</translation>
 <translation id="5611398002774823980">Պահել հաշվում</translation>
-<translation id="5613381935190035031">Ներդիրները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար մուտք գործեք Chrome որպես <ph name="EMAIL" /></translation>
 <translation id="5614625640221885312">Մուտք գործեք՝ ձեր էջանիշները, գաղտնաբառերը և այլ տվյալներ ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="5619633276517849615">Ձեր կազմակերպությունը միացրել է Անվտանգ դիտարկումը</translation>
 <translation id="5620163320393916465">Պահված գաղտնաբառեր չկան</translation>
@@ -1242,7 +1235,6 @@
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 էջ ձեր ընթերցանության ցանկում}one{# էջ ձեր ընթերցանության ցանկում}other{# էջ ձեր ընթերցանության ցանկում}}</translation>
 <translation id="5992182727984874868"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> Chrome-ը հեռացրել է այս թույլտվությունները, քանի որ դուք վերջին ժամանակահատվածում չեք այցելել այս կայք</translation>
 <translation id="5995726099713306770">Նորից ներբեռնե՞լ էջը</translation>
-<translation id="5998675059699164418">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է մուտք գործեք հաշիվ, որպեսզի կարողանաք օգտագործել Chrome-ը։</translation>
 <translation id="6000066717592683814">Օգտագործել Google-ը</translation>
 <translation id="6002122790816966947">Ձեր սարքերը</translation>
 <translation id="6011308810877101166">Բարելավել որոնման առաջարկները</translation>
@@ -1258,6 +1250,7 @@
 <translation id="604996488070107836"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ անհայտ սխալի պատճառով:</translation>
 <translation id="605721222689873409">տարի</translation>
 <translation id="606985262342505139">Ներդիրի ներքևի էկրանը բացված է ամբողջությամբ</translation>
+<translation id="6070608977567243308">Գնել Google Տեսապակու միջոցով</translation>
 <translation id="6071995715087444295">Կոտրված գաղտնաբառերը հայտնաբերելու համար մուտք գործեք ձեր Google հաշիվ</translation>
 <translation id="6078323886959318429">Ավելացնել դյուրանցում</translation>
 <translation id="6085886413119427067">Սահմանում է, թե ինչպես միանալ կայքերին ապահով կապի միջոցով</translation>
@@ -1305,6 +1298,7 @@
 <translation id="6232535412751077445">Եթե միացնեք «Չհետևել» գործառույթը, ձեր դիտարկման հոսքում կներառվի նաև հարցում: Արդյունքները կախված են նրանից, թե կպատասխանի արդյոք վեբկայքը հարցմանը և թե ինչպես այն կմեկնաբանվի:
 
 Օրինակ, որոշ վեբկայքեր կարող են այս հարցմանը պատասխանել՝ ներկայացնելով գովազդ, որը հիմնված չէ ձեր այցելությունների վրա: Շատ վեբկայքեր կշարունակեն հավաքել և օգտագործել ձեր այցելությունների պատմությունը: Այն կարող է օգտագործվել, օրինակ, անվտանգությունը բարելավելու, բովանդակություն, գովազդ և խորհուրդներ տրամադրելու և վիճակագրական տվյալներ հավաքելու նպատակով:</translation>
+<translation id="6235349850462976369">Թարգմանել Տեսապակու միջոցով</translation>
 <translation id="623755660902014047">Ընթերցման ռեժիմ</translation>
 <translation id="6246073558347462570">Համատեքստային ելնող պատուհան</translation>
 <translation id="6247557882553405851">Google գաղտնաբառերի կառավարիչ</translation>
@@ -1451,12 +1445,10 @@
 <translation id="6738867403308150051">Ներբեռնում…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Ստուգեք ձեր հաշվի տվյալները</translation>
-<translation id="6746834324024491643">Ձեր գաղտնաբառերն ու մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար մտեք <ph name="EMAIL" /> հաշիվ</translation>
 <translation id="6751521182688001123">Արագ բացեք նոր ներդիր։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
 <translation id="6754359471209693699">Սկսել նոր որոնում</translation>
 <translation id="6756507620369789050">Կարծիք հայտնել</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />։</translation>
-<translation id="676305334223455055">Մուտք գործեք՝ ձեր հետաքրքրությունների հիման վրա բովանդակություն ստանալու համար</translation>
 <translation id="6764137532716892442">Կիսված <ph name="GROUP_TITLE" /> ներդիրների խումբ նոր ակտիվությամբ</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_ONE" /> այլ ներդիր կփակվեն}one{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիր կփակվեն}other{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիրներ կփակվեն}}</translation>
 <translation id="6785476624617658922">Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմաններ</translation>
@@ -1756,7 +1748,6 @@
 <translation id="7822705602465980873">Երբ մուտք գործեք, այս տվյալները կկապվեն ձեր Google հաշվի հետ՝ ձեզ Google-ի ծառայություններում պաշտպանելու համար, օրինակ՝ անվտանգության հետ կապված միջադեպից հետո բարձրացնելու անվտանգության մակարդակը Gmail-ում։</translation>
 <translation id="7824665136384946951">Ձեր կազմակերպությունն անջատել է Անվտանգ դիտարկումը</translation>
 <translation id="7825973332242257878">Ներդիրների խմբեր</translation>
-<translation id="7826342993930002256">Chrome-ի համաժամացում բոլոր սարքերում</translation>
 <translation id="7845155831233417403">Դուք կարող եք բացել մինչև <ph name="MAX_INSTANCE_COUNT" /> պատուհան։ Շարունակելու համար փակեք պատուհանը։</translation>
 <translation id="7846161022626028328">Սխալ առաջացավ։ Նորից փորձեք։</translation>
 <translation id="7846296061357476882">Google-ի ծառայություններ</translation>
@@ -1813,7 +1804,9 @@
 <translation id="8058746566562539958">Բացել Chrome-ի նոր ներդիրում</translation>
 <translation id="8062594758852531064">Ընդլայնված նախաբեռնում՝</translation>
 <translation id="8063895661287329888">Չհաջողվեց ավելացնել էջանիշը:</translation>
+<translation id="8064081231614696741">Ընտրեք մեկ այլ պանակ</translation>
 <translation id="8066816452984416180">Արագ ավելացնել էջանիշներում։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
+<translation id="8068041627541121907">Gemini-ն ուզում է օգտագործել ձեր խոսափողը</translation>
 <translation id="8072436850275034464">Դուք կարող եք նորից բացել վերջերս փակած ներդիրները՝ Chrome-ն օգտագործելիս</translation>
 <translation id="8073388330009372546">Բացել պատկերը նոր ներդիրով</translation>
 <translation id="8076492880354921740">Ներդիրներ</translation>
@@ -1830,7 +1823,6 @@
 <translation id="8110024788458304985">Օգնել բարելավել Chrome-ի գործառույթներն ու աշխատանքը</translation>
 <translation id="8110087112193408731">Ցուցադրե՞լ Chrome-ի պատմությունը Թվային բարեկեցության մեջ</translation>
 <translation id="8118117428362942925">Եթե օգնության կարիք ունենաս, դիմիր ծնողիդ (<ph name="PARENT_NAME" />)</translation>
-<translation id="8118151008374483324">Ներդիրները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար մուտք գործեք Chrome</translation>
 <translation id="8120286190326371840">Այս սարքում կոտրված գաղտնաբառեր չկան</translation>
 <translation id="8122623268651408616">Սկզբում նորերը</translation>
 <translation id="8127542551745560481">Փոփոխել գլխավոր էջը</translation>
@@ -2122,7 +2114,6 @@
 <translation id="9218430445555521422">Սահմանել որպես կանխադրված</translation>
 <translation id="9219103736887031265">Պատկերներ</translation>
 <translation id="922152298093051471">Անհատականացնել Chrome-ը</translation>
-<translation id="9222198206152536936">Ներդիրները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար մուտք գործեք <ph name="EMAIL" /> հաշիվ</translation>
 <translation id="924447568950697217">Դարձրեք Chrome-ը ձեր կանխադրված դիտարկիչը</translation>
 <translation id="926205370408745186">Հեռացրեք Chrome-ի պատմությունը Թվային բարեկեցությունից</translation>
 <translation id="927968626442779827">Փորձեք Lite ռեժիմը Google Chrome-ում</translation>

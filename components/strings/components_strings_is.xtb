@@ -837,6 +837,8 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2384307209577226199">Sjálfgildi fyrirtækis</translation>
 <translation id="2385809941344967209">Uppfærðu Chrome í stillingum Chrome</translation>
 <translation id="2386255080630008482">Vottorð þjónsins hefur verið afturkallað.</translation>
+<translation id="2387424091060104123">Tillaga frá Gemini · <ph name="SRC_LINK" />Skoða heimildir<ph name="END_SRC_LINK" />
+Þú getur fjarlægt þessa tillögu úr Chrome. Upprunalegu heimildinni verður ekki eytt. <ph name="MANAGE_LINK" />Stjórna ítarlegri sjálfvirkri útfyllingu<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Bæta meiru við</translation>
 <translation id="2392959068659972793">Sýna reglur með engin gildi valin</translation>
 <translation id="239429038616798445">Þessi sendingarmáti er ekki í boði. Prófaðu annan sendingarmáta.</translation>
@@ -1428,6 +1430,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3432601291244612633">Loka síðu</translation>
 <translation id="3434025015623587566">Google-aðgangsorðastjórnun þarfnast fleiri aðgangsheimilda</translation>
 <translation id="343474037147570563">Skrár sem þú hleður upp eða hengir við eru sendar til Google Cloud eða þriðju aðila til greiningar. Þær gætu til dæmis verið skannaðar í leit að viðkvæmum upplýsingum eða spilliforritum og kunna að vera geymdar í samræmi við stefnu fyrirtækisins og vera sýnilegar fyrir kerfisstjóra.</translation>
+<translation id="3435267628744367511">Ýttu tvisvar á Ctrl á hvaða eyðublaði sem er til að finna og fylla út upplýsingar án þess að skipta á milli flipa</translation>
 <translation id="3435557549311968410">Samfelld prentun (stutt)</translation>
 <translation id="3435738964857648380">Öryggi</translation>
 <translation id="3436125638121079308">Viltu deila viðeigandi flipum sjálfkrafa til að fá betri svör í þessum þræði?</translation>
@@ -1517,6 +1520,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome lætur þig vita þegar þessi síða er tilbúin. &lt;a&gt;Hætta við&lt;/a&gt;</translation>
 <translation id="3581499772329034229">Bæta flipum sjálfkrafa við</translation>
+<translation id="3582670569275100909">Sendingar</translation>
 <translation id="3582930987043644930">Bæta við nafni</translation>
 <translation id="3583757800736429874">Endu&amp;rtaka flutning</translation>
 <translation id="3584299510153766161">Tvö göt neðst</translation>
@@ -2898,6 +2902,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5884465125445718607">Umslag: kínverskt #6</translation>
 <translation id="5887400589839399685">Kort vistað</translation>
 <translation id="5887687176710214216">Síðast opnað í gær</translation>
+<translation id="5887791684215121787">Ýttu á ⌘ ⌘ á hvaða eyðublaði sem er til að finna og fylla út upplýsingar án þess að skipta á milli flipa</translation>
 <translation id="5889251770650310375">Staðfestu að þetta sért þú og samstilltu ferilinn þinn og flipa til að sækja ferilinn þinn úr hinum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur út frá ferlinum þínum.</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
 <translation id="5895187275912066135">Gefið út</translation>
@@ -4008,6 +4013,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7758069387465995638">Hugsanlega lokaði eldveggur eða vírusvörn fyrir þessa tengingu.</translation>
 <translation id="7759147511335618829">Stjórn og endurforritun MIDI-tækja</translation>
 <translation id="7759809451544302770">Valfrjálst</translation>
+<translation id="7760566304700414795">Sending</translation>
 <translation id="776110834126722255">Úrelt</translation>
 <translation id="7761159795823346334">Leyfa myndavél?</translation>
 <translation id="7761701407923456692">Vottorð þjónsins passar ekki við vefslóðina.</translation>
@@ -4353,6 +4359,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8371841335382565017">Sýna tækjalista fyrir vörpun</translation>
 <translation id="8371889962595521444">Sérsniðin rótarvottorð</translation>
 <translation id="8374636051559112948">Breytileg</translation>
+<translation id="8377507422902936905">Pantanir</translation>
 <translation id="837840316697671463">Ef þú finnur ekki skrá í tækinu þínu geturðu leitað að henni á <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Stjórnað af fyrirtækinu þínu</translation>
 <translation id="8380941800586852976">Hættulegt</translation>

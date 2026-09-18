@@ -837,6 +837,8 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2384307209577226199">Bedriftsstandard</translation>
 <translation id="2385809941344967209">Oppdater Chrome fra Chrome-innstillingene</translation>
 <translation id="2386255080630008482">Tjenerens sertifikat er tilbakekalt.</translation>
+<translation id="2387424091060104123">Foreslått av Gemini · <ph name="SRC_LINK" />Se kilder<ph name="END_SRC_LINK" />
+Du kan fjerne dette forslaget fra Chrome. Den opprinnelige kilden blir ikke slettet. <ph name="MANAGE_LINK" />Administrer forbedret autofyll<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Utdyp</translation>
 <translation id="2392959068659972793">Vis innstillinger uten verdi</translation>
 <translation id="239429038616798445">Denne leveringsmetoden er ikke tilgjengelig. Prøv en annen metode.</translation>
@@ -1518,6 +1520,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome gir deg beskjed når denne siden er klar. &lt;a&gt;Avbryt&lt;/a&gt;</translation>
 <translation id="3581499772329034229">Legg til faner automatisk</translation>
+<translation id="3582670569275100909">Forsendelser</translation>
 <translation id="3582930987043644930">Legg til navn</translation>
 <translation id="3583757800736429874">&amp;Flytt likevel</translation>
 <translation id="3584299510153766161">To hull bunn</translation>
@@ -4010,6 +4013,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7758069387465995638">Brannmur- eller antivirusprogramvare kan ha blokkert tilkoblingen.</translation>
 <translation id="7759147511335618829">Kontroller og omprogrammer MIDI-enheter</translation>
 <translation id="7759809451544302770">Valgfritt</translation>
+<translation id="7760566304700414795">Forsendelse</translation>
 <translation id="776110834126722255">Avviklet</translation>
 <translation id="7761159795823346334">Vil du gi kameratillatelse?</translation>
 <translation id="7761701407923456692">Tjenerens sertifikat samsvarer ikke med nettadressen.</translation>
@@ -4355,6 +4359,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="8371841335382565017">Vis enhetslisten for casting</translation>
 <translation id="8371889962595521444">Tilpassede rotsertifikater</translation>
 <translation id="8374636051559112948">Varierer</translation>
+<translation id="8377507422902936905">Bestillinger</translation>
 <translation id="837840316697671463">Hvis du ikke finner en fil på enheten din, kan du se etter den i <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Administreres av organisasjonen din</translation>
 <translation id="8380941800586852976">Farlig</translation>

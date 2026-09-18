@@ -1520,6 +1520,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome annab teile teada, kui leht on valmis. &lt;a&gt;Tühista&lt;/a&gt;</translation>
 <translation id="3581499772329034229">Vahelehtede automaatne lisamine</translation>
+<translation id="3582670569275100909">Saadetised</translation>
 <translation id="3582930987043644930">Lisage nimi</translation>
 <translation id="3583757800736429874">&amp;Teisalda uuesti</translation>
 <translation id="3584299510153766161">Kaks auku all</translation>
@@ -4013,6 +4014,7 @@ Lisateave:
 <translation id="7758069387465995638">Tulemüür või viirusetõrjetarkvara võis ühenduse blokeerida.</translation>
 <translation id="7759147511335618829">MIDI-seadme juhtimine ja ümberprogrammeerimine</translation>
 <translation id="7759809451544302770">Valikuline</translation>
+<translation id="7760566304700414795">Saadetis</translation>
 <translation id="776110834126722255">Tugi on katkestatud</translation>
 <translation id="7761159795823346334">Kas lubada kaamera?</translation>
 <translation id="7761701407923456692">Serveri sertifikaat ei vasta URL-ile.</translation>
@@ -4358,6 +4360,7 @@ Lisateave:
 <translation id="8371841335382565017">Kuva ülekandmiseks seadmete loend</translation>
 <translation id="8371889962595521444">Kohandatud juursertifikaadid</translation>
 <translation id="8374636051559112948">Varieerub</translation>
+<translation id="8377507422902936905">Tellimused</translation>
 <translation id="837840316697671463">Kui te ei leia oma seadmest faili, otsige seda kohast <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Haldab teie organisatsioon</translation>
 <translation id="8380941800586852976">Ohtlik</translation>

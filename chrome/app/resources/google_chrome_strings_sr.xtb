@@ -529,7 +529,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6166185671393271715">Увезите лозинке у Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета</translation>
-<translation id="6177442314419606057">Претражите у Chrome-у</translation>
 <translation id="6180522807229584611">Ова картица користи додатне ресурсе. Да бисте побољшали перформансе, дозволите Chrome-у да је учини неактивном.</translation>
 <translation id="6182736845697986886">Инсталација није успела због интерне грешке сервера за ажурирање.</translation>
 <translation id="6192058120268468905">Ваш налог у Chrome-у</translation>
@@ -561,6 +560,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6434035853014503219">Хвала вам што сте одабрали Chrome као подразумевани прегледач.</translation>
 <translation id="6438015621983209660">Продужите побољшано безбедно прегледање уз Chrome на телефону</translation>
 <translation id="6442774133615368941">Купујте, преводите и идентификујте оно што видите помоћу камере у iOS апликацији Chrome</translation>
+<translation id="6446105560007692480">за претраживање помоћу Chrome-а или прилагођавање у <ph name="BEGIN_LINK" />Подешавањима<ph name="END_LINK" /></translation>
 <translation id="6448835208126432197">Да бисте изабрали део екрана у Gemini-ју у Chrome-у, користите тастерску пречицу.</translation>
 <translation id="6473905796280459355">Идите на страницу О Chrome-у</translation>
 <translation id="6481963882741794338">Повежите Chrome и друге Google услуге ради персонализације и других сврха</translation>
@@ -582,6 +582,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6612152958212564387">Не шаљете Google-у статистику коришћења и извештаје о отказивању. <ph name="BEGIN_LINK" />Управљај<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Синхронизујте лозинке, обележиваче и историју на свим уређајима тако што ћете подесити Chrome као подразумевани прегледач.</translation>
 <translation id="6631524303639368205">Наставите тамо где сте стали: Chrome је вратио картице из последње сесије. То можете да искључите у</translation>
+<translation id="6632012506031284914">за претраживање помоћу Chrome-а.</translation>
 <translation id="6632473616050862500">Chrome OS Flex је омогућен захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Промене овог подешавања ће се применити када се Chrome рестартује.</translation>
 <translation id="6660596345553328257">Желите да се пријавите у Chrome?</translation>
@@ -598,7 +599,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6750954913813541382">Да би исправио правописне грешке, Chrome Google-у шаље текст који уносите у прегледач</translation>
 <translation id="6760235774835597023">Убрзава сајтове уз Chrome механизам V8, али чини Chrome мало мање отпорним на нападе. Ово подешавање је укључено.</translation>
 <translation id="677276454032249905">Желите ли ипак да затворите Chrome?</translation>
-<translation id="6777654166489463890">Постављајте питања о садржају изван Chrome-а, попут друге апликације или фајла који сте отворили</translation>
 <translation id="6794858689789885890">Увек избришите податке о сајтовима са уређаја када затворите Chrome</translation>
 <translation id="6800285125190089494">Брже се пријављујте на сајтове помоћу сачуваних лозинки за Chrome на iOS-у</translation>
 <translation id="6831043979455480757">Преведи</translation>

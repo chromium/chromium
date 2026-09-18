@@ -528,7 +528,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6166185671393271715">Importo fjalëkalimet në Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
-<translation id="6177442314419606057">Kërko në Chrome</translation>
 <translation id="6180522807229584611">Kjo skedë po përdor burime shtesë. Për të përmirësuar performancën tënde, lejo që Chrome ta bëjë atë joaktive.</translation>
 <translation id="6182736845697986886">Instalimi dështoi për shkak të një gabimi të brendshëm të serverit të përditësimit.</translation>
 <translation id="6192058120268468905">Llogaria jote në Chrome</translation>
@@ -560,6 +559,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6434035853014503219">Faleminderit që zgjodhe Chrome si shfletuesin tënd të parazgjedhur!</translation>
 <translation id="6438015621983209660">Zgjero "Shfletimin e sigurt të përmirësuar" me Chrome në telefonin tënd</translation>
 <translation id="6442774133615368941">Bli, përkthe dhe identifiko ato që shikon me kamerën tënde në aplikacionin e Chrome për iOS</translation>
+<translation id="6446105560007692480">për të kërkuar me Chrome ose për të personalizuar te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" /></translation>
 <translation id="6448835208126432197">Për të zgjedhur një pjesë të ekranit në Gemini në Chrome, përdor shkurtoren e tastierës.</translation>
 <translation id="6473905796280459355">Shko te faqja "Rreth Chrome"</translation>
 <translation id="6481963882741794338">Lidh Chrome dhe shërbimet e tjera të Google për personalizimin dhe qëllime të tjera</translation>
@@ -581,6 +581,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6612152958212564387">Nuk po dërgon statistika të përdorimit dhe raporte të ndërprerjeve aksidentale te Google. <ph name="BEGIN_LINK" />Menaxho<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Mbaji fjalëkalimet, faqeshënuesit dhe historikun të sinkronizuar në mënyrë të përsosur në pajisje duke caktuar Chrome si shfletuesin tënd të parazgjedhur.</translation>
 <translation id="6631524303639368205">Vazhdo aty ku e ke lënë: Chrome i restauroi skedat e tua nga sesioni yt i fundit. Mund ta çaktivizosh këtë te</translation>
+<translation id="6632012506031284914">për të kërkuar me Chrome.</translation>
 <translation id="6632473616050862500">Chrome OS Flex mundësohet nga<ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Ndryshimet në këtë cilësim do të zbatohen pasi Chrome të riniset.</translation>
 <translation id="6660596345553328257">Do të identifikohesh në Chrome?</translation>
@@ -597,7 +598,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6750954913813541382">Për të rregulluar gabimet drejtshkrimore, Chrome e dërgon tekstin që shkruan në shfletues te Google</translation>
 <translation id="6760235774835597023">Shpejton sajtet me motorin V8 të Chrome, por e bën Chrome disi më pak rezistent ndaj sulmeve. Ky cilësim është aktiv.</translation>
 <translation id="677276454032249905">Dëshiron të dalësh nga Chrome gjithsesi?</translation>
-<translation id="6777654166489463890">Pyet për përmbajtjet jashtë Chrome, si p.sh. një aplikacion ose skedar tjetër që ke hapur</translation>
 <translation id="6794858689789885890">Fshi gjithmonë të dhënat e sajteve nga pajisja jote kur të mbyllësh Chrome</translation>
 <translation id="6800285125190089494">Identifikohu më shpejt në sajte duke përdorur fjalëkalimet e ruajtura për Chrome në iOS</translation>
 <translation id="6831043979455480757">Përkthe</translation>

@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">인증 유형</translation>
 <translation id="1776228893584526149">배경화면 색조</translation>
 <translation id="1777913922912475695">다리</translation>
-<translation id="1782199038061388045">번역</translation>
 <translation id="1788485524395674731">관리자가 관리하는 앱입니다</translation>
 <translation id="1792647875738159689">스캔 취소 중</translation>
 <translation id="1801418420130173017">어두운 테마 사용 안함</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">유형</translation>
 <translation id="2448857983905133469">수업 도구</translation>
 <translation id="2468124392950503650">프롬프트를 선택하여 만들거나 <ph name="BEGIN_LINK_PROMPTING_GUIDE" />프롬프트 가이드<ph name="END_LINK_PROMPTING_GUIDE" />를 확인하세요.</translation>
-<translation id="2472215337771558851">작성 지원 기능을 사용하여 Google AI를 기반으로 초안을 작성하거나 기존 과제물을 다듬어 보세요.</translation>
 <translation id="2475982808118771221">오류가 발생했습니다.</translation>
 <translation id="2480572840229215612">게</translation>
 <translation id="248546197012830854">기기가 오프라인 상태입니다. 도움말 콘텐츠를 보려면 Wi-Fi 네트워크에 연결하세요.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">다시 촬영</translation>
 <translation id="3479552764303398839">나중에</translation>
 <translation id="3484914941826596830">펌웨어 업데이트 도중에 외부 기기를 분리하거나 컴퓨터를 종료하지 마세요. 이 창을 최소화할 수 있습니다. 업데이트되는 데 몇 분 정도 걸릴 수 있으며 이 시간 동안 외부 기기가 작동하지 않을 수도 있습니다.</translation>
-<translation id="3486220673238053218">정의</translation>
 <translation id="3487866404496702283">mahi 기능에 관한 의견</translation>
 <translation id="3488065109653206955">부분적으로 활성화됨</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> 톤으로 된 <ph name="OFFICE_STYLE" /> 느낌의 사무실</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">테마 선택</translation>
 <translation id="3644695927181369554">좋지 않은 제안</translation>
 <translation id="3651050199673793219">온도 단위 선택</translation>
-<translation id="3661106764436337772">더 빠르고 자신 있게 작성하기</translation>
 <translation id="3662461537616691585">버건디색 및 적갈색</translation>
 <translation id="3664755900672940272">셔플된 샘플 프롬프트</translation>
 <translation id="3668449597372804501">구름 흐름 배경화면</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">중지됨</translation>
 <translation id="4777310452073659583">스크립트를 확인하려면 <ph name="DEVICE_TYPE" /> 기기를 다시 시작하세요.</translation>
 <translation id="4778082030331381943">자수정</translation>
-<translation id="4782311465517282004">텍스트를 마우스 오른쪽 버튼으로 클릭하거나 길게 터치하여 정의 또는 번역을 확인하거나 단위를 변환합니다</translation>
 <translation id="4791000909649665275">사진 <ph name="NUMBER" />장</translation>
 <translation id="4793710386569335688">도움이 더 필요하면 <ph name="BEGIN_LINK" />고객센터<ph name="END_LINK" />로 이동하세요.</translation>
 <translation id="4793756956024303490">압축 알고리즘</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">밝은 테마 사용 중지</translation>
 <translation id="7401543881546089382">바로가기 삭제</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> 업데이트 준비 완료</translation>
-<translation id="741244894080940828">변환</translation>
 <translation id="7415801143053185905">HTTPS 지연 시간 매우 높음</translation>
 <translation id="7418738250896500352">단어가 너무 많아 간결하게 바꿀 수 없습니다.</translation>
 <translation id="7425037327577270384">글쓰기 도우미</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">저장소</translation>
 <translation id="885704831271383379">키보드 더 어둡게</translation>
 <translation id="8863170912498892583">어두운 테마 사용</translation>
-<translation id="8863888432376731307">"<ph name="QUERY" />"의 <ph name="INTENT" /> 확인 등</translation>
 <translation id="8864415976656252616">추천 콘텐츠가 없습니다. 상위 도움말 콘텐츠를 참고하세요.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">태블릿 기기입니다.</translation>

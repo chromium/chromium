@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Typ overenia</translation>
 <translation id="1776228893584526149">Odtieň tapety</translation>
 <translation id="1777913922912475695">most</translation>
-<translation id="1782199038061388045">preklad</translation>
 <translation id="1788485524395674731">Túto aplikáciu ovláda váš správca</translation>
 <translation id="1792647875738159689">Ruší sa skenovanie</translation>
 <translation id="1801418420130173017">Vypnúť tmavý motív</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2448857983905133469">Učebné nástroje</translation>
 <translation id="2468124392950503650">Vyberte pokyn na vytvorenie alebo si pozrite <ph name="BEGIN_LINK_PROMPTING_GUIDE" />sprievodcu pokynmi<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Pomocou asistenta pri písaní používajúceho umelú inteligenciu od Googlu môžete vytvoriť koncept alebo spresniť existujúcu prácu</translation>
 <translation id="2475982808118771221">Vyskytla sa chyba</translation>
 <translation id="2480572840229215612">kraby</translation>
 <translation id="248546197012830854">Zariadenie je offline. Ak chcete zobraziť pomocný obsah, pripojte ho k sieti Wi‐Fi.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Odfotiť znova</translation>
 <translation id="3479552764303398839">Teraz nie</translation>
 <translation id="3484914941826596830">Počas aktualizovania firmvéru neodpájajte toto zariadenie ani nevypínajte počítač. Toto okno môžete minimalizovať. Táto aktualizácia môže trvať niekoľko minút a vaše externé zariadenie nemusí počas nej fungovať.</translation>
-<translation id="3486220673238053218">definícia</translation>
 <translation id="3487866404496702283">Spätná väzba k funkcii mahi</translation>
 <translation id="3488065109653206955">Čiastočne aktivované</translation>
 <translation id="3492882532495507361">Kancelária v štýle <ph name="OFFICE_STYLE" /> v odtieňoch <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Výber motívu</translation>
 <translation id="3644695927181369554">Nevhodný návrh</translation>
 <translation id="3651050199673793219">Výber jednotky teploty</translation>
-<translation id="3661106764436337772">Píšte rýchlejšie a s väčšou istotou</translation>
 <translation id="3662461537616691585">purpurovočervená a gaštanovohnedá</translation>
 <translation id="3664755900672940272">Vzorové pokyny boli zoradené náhodne</translation>
 <translation id="3668449597372804501">Tapeta s plynúcimi oblakmi</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Zastavené</translation>
 <translation id="4777310452073659583">Ak chcete získať prepis, reštartujte zariadenie <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">ametyst</translation>
-<translation id="4782311465517282004">Získavajte definície, preklady alebo prevody jednotiek kliknutím pravým tlačidlom alebo pridržaním textu</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotka</translation>
 <translation id="4793710386569335688">Ďalšiu pomoc získate v <ph name="BEGIN_LINK" />centre pomoci<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritmus kompresie</translation>
@@ -1459,7 +1454,6 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="7397270852490618635">Vypnúť svetlý motív</translation>
 <translation id="7401543881546089382">Odstrániť odkaz</translation>
 <translation id="7405493795721832710">Zariadenie <ph name="DEVICE_NAME" /> je pripravené na aktualizáciu</translation>
-<translation id="741244894080940828">prevod</translation>
 <translation id="7415801143053185905">Veľmi vysoká latencia protokolu HTTPS</translation>
 <translation id="7418738250896500352">Príliš veľa slov na zjednodušenie</translation>
 <translation id="7425037327577270384">Asistent pri písaní</translation>
@@ -1769,7 +1763,6 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="885701979325669005">Úložisko</translation>
 <translation id="885704831271383379">tmavšia klávesnica</translation>
 <translation id="8863170912498892583">Zapnúť tmavý motív</translation>
-<translation id="8863888432376731307">Získajte <ph name="INTENT" /> pre dopyt <ph name="QUERY" /> a ešte viac</translation>
 <translation id="8864415976656252616">Žiadny navrhovaný obsah. Pozrite si najlepší pomocný obsah.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Zariadenie je tablet.</translation>

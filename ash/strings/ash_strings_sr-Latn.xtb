@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">ODBACI</translation>
 <translation id="152629053603783244">Restartuj Linux</translation>
 <translation id="1526448108126799339">Otvori novu karticu u novom prozoru</translation>
-<translation id="1528259147807435347">Izmenjeno protekle nedelje</translation>
 <translation id="1536604384701784949">Da biste koristili <ph name="USER_EMAIL_ADDRESS" />, prvo morate da se odjavite sa svih naloga. Da biste se odjavili, vratite se nazad biranjem opcije Otkaži. Zatim izaberite vreme da biste otvorili oblast statusa i izaberite Odjavi me. Ponovo se prijavite na <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Veliki kursor</translation>
 <translation id="1545331255323159851">Pregledajte nedavne slike, medije i obaveštenja na telefonu</translation>
@@ -472,7 +471,6 @@ Broj povezanih uređaja je <ph name="DEVICECOUNT" />.</translation>
 <translation id="240789602312469910">Šaljite podatke o korišćenju i dijagnostičke podatke. Pomozite nam da poboljšamo Android doživljaj za dete tako što ćete automatski slati Google-u podatke o dijagnostici i korišćenju uređaja i aplikacija. Te informacije se neće koristiti za identifikaciju deteta i pomoći će u održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. To <ph name="BEGIN_LINK1" />podešavanje<ph name="END_LINK1" /> primenjuje vlasnik. Vlasnik može da izabere da se podaci o dijagnostici i korišćenju za ovaj uređaj šalju Google-u. Ako za dete uključite podešavanje dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu deteta. <ph name="BEGIN_LINK2" />Saznajte više o pokazateljima<ph name="BEGIN_LINK2_END" />Saznajte više<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Unesite PIN</translation>
 <translation id="2412593942846481727">Dostupno je ažuriranje</translation>
-<translation id="2416438829169535743">Želite da izađete iz prikaza?</translation>
 <translation id="2417486498593892439">Prijavite se na mrežu</translation>
 <translation id="2423619675829330672">Previše pokušaja unosa PIN-a. Sačekajte <ph name="TIME_LEFT" />, pa probajte ponovo.</translation>
 <translation id="2426051945783024481">Okvir kamere je automatski centriran</translation>
@@ -480,7 +478,6 @@ Broj povezanih uređaja je <ph name="DEVICECOUNT" />.</translation>
 <translation id="2429753432712299108">Bluetooth uređaj „<ph name="DEVICE_NAME" />“ želi dozvolu za uparivanje. Pre nego što mu je date, uverite se da je ova šifra prikazana na tom uređaju: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
 <translation id="2437771564543046790">Slaba baterija. Ušteda baterije je uključena</translation>
-<translation id="243878895369688216">Otvarano juče</translation>
 <translation id="2440978926514840421">GIF je snimljen</translation>
 <translation id="2441427462554639370">Snimanje je prekinuto zbog izuzetno malo prostora</translation>
 <translation id="2445449901874883781">Koristi visoku gustinu</translation>
@@ -873,7 +870,6 @@ U suprotnom će ugrađeni tačped biti ponovo omogućen za <ph name="TIMEOUT_S
 <translation id="3563432852173030730">Nije moguće preuzeti kiosk aplikaciju.</translation>
 <translation id="3563558822383875692">Konfiguriše se sadržaj za preuzimanje.</translation>
 <translation id="3563775809269155755">Omogući hotspot</translation>
-<translation id="3566240529365775567">Otvarano malopre</translation>
 <translation id="3571734092741541777">Podesi</translation>
 <translation id="3573179567135747900">Vrati na „<ph name="FROM_LOCALE" />“ (potrebno je ponovno pokretanje)</translation>
 <translation id="3576141592585647168">Promenite vremensku zonu</translation>
@@ -960,7 +956,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3756485814916578707">Prebacuje se ekran</translation>
 <translation id="3765246971671567135">Čitanje oflajn smernica za režim demonstracije nije uspelo.</translation>
 <translation id="3765841382945324995">Prečica za <ph name="SIX_PACK_KEY_NAME" /> je sada <ph name="NEW_SHORTCUT" />, a ne više<ph name="OLD_SHORTCUT" /></translation>
-<translation id="3765841986579723851">Izmenjeno danas</translation>
 <translation id="3772109172035555611">Prilagodite TrackPoint</translation>
 <translation id="3773700760453577392">Administrator je zabranio višestruko prijavljivanje za <ph name="USER_EMAIL" />. Svi korisnici moraju da se odjave da bismo nastavili sa sesijom.</translation>
 <translation id="3779139509281456663">Povezuje se <ph name="NAME" /></translation>
@@ -1000,7 +995,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3873915545594852654">Došlo je do problema koji se odnosi na ARC++.</translation>
 <translation id="3879748587602334249">Menadžer preuzimanja</translation>
 <translation id="3884007280698606545">Ograničenje za USB je dostignuto</translation>
-<translation id="3886872229787704059">Otvarano danas</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
 <translation id="3893630138897523026">ChromeVox (govorne povratne informacije)</translation>
 <translation id="3898464793473355515">Rotiraj ekran za 90 stepeni u smeru kazaljke na satu</translation>
@@ -1796,7 +1790,6 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="6095008505822982596">Brzina govora</translation>
 <translation id="6095425951508823973">Dodajte vezu sa dobavljačem <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Odjavljeni ste.</translation>
-<translation id="6099678161144790572">Izmenjeno proteklog meseca</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6108952804512516814">Pravite pomoću veštačke inteligencije</translation>
 <translation id="6114505516289286752">Preuzeti su fajlovi sa govorom na jeziku <ph name="LANGUAGE" /></translation>
@@ -1953,7 +1946,6 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="6555373427270923730">Unesite veb-adresu u traku za adresu, pa pritisnite <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Novo instaliranje</translation>
-<translation id="6559158502366839560">Istražite još aplikacija i igara</translation>
 <translation id="6560151649238390891">Predlog je umetnut</translation>
 <translation id="6562447480759345110">Završite fokus</translation>
 <translation id="6565007273808762236">eSIM veza nije dostupna</translation>
@@ -2059,7 +2051,6 @@ Novo instaliranje</translation>
 <translation id="6848716236260083778">Da biste podesili otisak prsta, neka dete dodirne senzor za otisak prsta. Podaci o otisku prsta deteta se bezbedno čuvaju isključivo na ovom <ph name="DEVICE_TYPE" /> uređaju.</translation>
 <translation id="6852052252232534364">Aktivirajte</translation>
 <translation id="6852628153543175788">Dodajte 10 minuta</translation>
-<translation id="6855029042976311970">Izmenjeno malopre</translation>
 <translation id="6856708615407876657">Uključite/isključite kategorije rezultata pretrage</translation>
 <translation id="6856756288284651804">Chromebook je ažuriran</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
@@ -2154,7 +2145,6 @@ Novo instaliranje</translation>
 <translation id="7118597077555700347">Otvorite rezultat <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Izaberi sledeću reč ili slovo</translation>
 <translation id="7124556000457919678">Kada je uključeno, pauzirajte i nastavite korišćenje tastera miša</translation>
-<translation id="7126996685418858413">Otvarano protekle nedelje</translation>
 <translation id="7131634465328662194">Odjavićemo vas automatski.</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Probaj ponovo</translation>
@@ -2186,7 +2176,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Zadnji mikrofon</translation>
 <translation id="7258225044283673131">Aplikacija ne reaguje. Izaberite „Prinudno zatvori“ da biste zatvorili aplikaciju.</translation>
-<translation id="7258828758145722155">Izmenjeno juče</translation>
 <translation id="726276584504105859">Prevucite ovde da biste koristili podeljeni ekran</translation>
 <translation id="7264788308526527464">Smanjite za <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Nastavite da podižete prst da biste dodali različite delove otiska prsta</translation>
@@ -2259,7 +2248,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7497767806359279797">Odaberite jezik i tastaturu</translation>
 <translation id="7507162824403726948">Dovršite verifikaciju identiteta</translation>
-<translation id="7508690557411636492">Otvarano proteklog meseca</translation>
 <translation id="7509246181739783082">Verifikujte identitet</translation>
 <translation id="7512509370370076552">Prečica za desni klik je sada taster <ph name="LAUNCHER_KEY_NAME" /> + klik, a ne više alt + klik</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, nije izabrano</translation>
@@ -2713,7 +2701,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8753368202781196133">Ovaj jezik trenutno nije podržan.</translation>
 <translation id="8755498163081687682">Verifikujte identitet: <ph name="ORIGIN_NAME" /> želi da potvrdi da ste to vi</translation>
 <translation id="875593634123171288">Pregledajte podešavanja VPN-a</translation>
-<translation id="8756799553341497810">Možete da počnete sa prilagođavanjem rasporeda aplikacija kada izađete iz ovog prikaza.</translation>
 <translation id="8759408218731716181">Nije moguće podesiti višestruko prijavljivanje</translation>
 <translation id="8759753423332885148">Saznajte više.</translation>
 <translation id="8760172428247796445"><ph name="DEVICE_TYPE" /> će se sada zaključati.

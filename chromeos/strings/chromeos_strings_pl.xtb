@@ -212,7 +212,6 @@
 <translation id="1768959921651994223">Typ uwierzytelniania</translation>
 <translation id="1776228893584526149">Odcień tapety</translation>
 <translation id="1777913922912475695">mostu</translation>
-<translation id="1782199038061388045">tłumaczenie</translation>
 <translation id="1788485524395674731">Tą aplikacją zarządza administrator</translation>
 <translation id="1792647875738159689">Anuluję skanowanie</translation>
 <translation id="1801418420130173017">Wyłącz ciemny motyw</translation>
@@ -365,7 +364,6 @@
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2448857983905133469">Narzędzia lekcyjne</translation>
 <translation id="2468124392950503650">Wybierz prompt, aby utworzyć obraz, lub zapoznaj się z <ph name="BEGIN_LINK_PROMPTING_GUIDE" />przewodnikiem po promptach<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Użyj funkcji Pomóż mi w pisaniu, aby utworzyć wersję lub dopracować już istniejącą pracę z wykorzystaniem AI od Google</translation>
 <translation id="2475982808118771221">Wystąpił błąd</translation>
 <translation id="2480572840229215612">kraby</translation>
 <translation id="248546197012830854">Urządzenie jest offline. Aby wyświetlić materiały pomocy, połącz się z siecią Wi-Fi.</translation>
@@ -557,7 +555,6 @@
 <translation id="346539236881580388">Zrób ponownie</translation>
 <translation id="3479552764303398839">Nie teraz</translation>
 <translation id="3484914941826596830">Podczas aktualizowania oprogramowania układowego nie odłączaj tego urządzenia zewnętrznego ani nie wyłączaj komputera. To okno możesz zminimalizować. Aktualizowanie może potrwać kilka minut i w tym czasie urządzenie zewnętrzne może nie działać.</translation>
-<translation id="3486220673238053218">definicja</translation>
 <translation id="3487866404496702283">Opinia na temat funkcji mahi</translation>
 <translation id="3488065109653206955">Częściowo aktywowane</translation>
 <translation id="3492882532495507361">Biuro w stylu <ph name="OFFICE_STYLE" /> w odcieniach <ph name="OFFICE_COLOR" /></translation>
@@ -597,7 +594,6 @@
 <translation id="3634941468757842845">Wybierz motyw</translation>
 <translation id="3644695927181369554">Nietrafna sugestia</translation>
 <translation id="3651050199673793219">Wybierz jednostkę temperatury</translation>
-<translation id="3661106764436337772">Pisz szybciej i z większą pewnością</translation>
 <translation id="3662461537616691585">bordowym i kasztanowym</translation>
 <translation id="3664755900672940272">Przykładowe prompty zostały pomieszane</translation>
 <translation id="3668449597372804501">Tapeta Chmury</translation>
@@ -856,7 +852,6 @@
 <translation id="4773299976671772492">Zatrzymano</translation>
 <translation id="4777310452073659583">Aby uzyskać transkrypcję, uruchom ponownie urządzenie <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">ametystu</translation>
-<translation id="4782311465517282004">Kliknij tekst prawym przyciskiem lub naciśnij go i przytrzymaj, aby zobaczyć definicję, tłumaczenie lub konwersję jednostek</translation>
 <translation id="4791000909649665275">Liczba zdjęć: <ph name="NUMBER" /></translation>
 <translation id="4793710386569335688">Więcej pomocy uzyskasz w <ph name="BEGIN_LINK" />Centrum pomocy<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algorytm kompresji</translation>
@@ -1457,7 +1452,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7397270852490618635">Wyłącz jasny motyw</translation>
 <translation id="7401543881546089382">Usuń skrót</translation>
 <translation id="7405493795721832710">Oprogramowanie <ph name="DEVICE_NAME" /> jest gotowe do zaktualizowania</translation>
-<translation id="741244894080940828">przeliczanie</translation>
 <translation id="7415801143053185905">Bardzo duże opóźnienie HTTP</translation>
 <translation id="7418738250896500352">Zbyt wiele słów do uproszczenia</translation>
 <translation id="7425037327577270384">Pomóż mi pisać</translation>
@@ -1767,7 +1761,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="885701979325669005">Pamięć</translation>
 <translation id="885704831271383379">klawiatura ciemniejsza</translation>
 <translation id="8863170912498892583">Włącz ciemny motyw</translation>
-<translation id="8863888432376731307">Pobierz <ph name="INTENT" />, aby znajdować odpowiedzi na pytania takie jak „<ph name="QUERY" />” i inne</translation>
 <translation id="8864415976656252616">Brak sugerowanych treści. Zapoznaj się z najpopularniejszymi materiałami pomocy.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Urządzenie to tablet.</translation>

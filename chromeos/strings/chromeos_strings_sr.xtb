@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Тип потврде идентитета</translation>
 <translation id="1776228893584526149">Тон позадине</translation>
 <translation id="1777913922912475695">Мост</translation>
-<translation id="1782199038061388045">превод</translation>
 <translation id="1788485524395674731">Овом апликацијом управља администратор</translation>
 <translation id="1792647875738159689">Отказује се скенирање</translation>
 <translation id="1801418420130173017">Онемогућите тамну тему</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2448857983905133469">Алатке у разреду</translation>
 <translation id="2468124392950503650">Изаберите упит за прављење или погледајте <ph name="BEGIN_LINK_PROMPTING_GUIDE" />водич за упите<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Користите Помоћ при писању да бисте направили радну верзију или побољшали постојећи рад који омогућава Google вештачка интелигенција</translation>
 <translation id="2475982808118771221">Дошло је до грешке</translation>
 <translation id="2480572840229215612">крабе</translation>
 <translation id="248546197012830854">Уређај је офлајн. Повежите се на WiFi мрежу да бисте видели садржај помоћи.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Поново сними</translation>
 <translation id="3479552764303398839">Не сада</translation>
 <translation id="3484914941826596830">Не искључујте спољни уређај ни рачунар док се фирмвер ажурира. Можете да умањите овај прозор. Ово ажурирање може да потраје неколико минута, а спољни уређај можда неће радити током тог периода.</translation>
-<translation id="3486220673238053218">дефиниција</translation>
 <translation id="3487866404496702283">Повратне информације о функцији махи</translation>
 <translation id="3488065109653206955">Делимично активирано</translation>
 <translation id="3492882532495507361">Канцеларија <ph name="OFFICE_STYLE" /> са <ph name="OFFICE_COLOR" /> нијансама</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Одаберите тему</translation>
 <translation id="3644695927181369554">Лош предлог</translation>
 <translation id="3651050199673793219">Изаберите јединицу температуре</translation>
-<translation id="3661106764436337772">Пишите брже и сигурније</translation>
 <translation id="3662461537616691585">бордо и црвенкастобраон боје</translation>
 <translation id="3664755900672940272">Примери упита су насумично измешани</translation>
 <translation id="3668449597372804501">Позадина са облацима</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Заустављено је</translation>
 <translation id="4777310452073659583">Да бисте добили транскрипт, рестартујте <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">аметиста</translation>
-<translation id="4782311465517282004">Добијајте дефиниције, преводе или конверзије јединица када кликнете десним тастером на текст или га додирнете и задржите</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> слика</translation>
 <translation id="4793710386569335688">Додатну помоћ потражите у <ph name="BEGIN_LINK" />центру за помоћ<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Алгоритам компримовања</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">Искључите светлу тему</translation>
 <translation id="7401543881546089382">Избришите пречицу</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> је спреман за ажурирање</translation>
-<translation id="741244894080940828">конверзију</translation>
 <translation id="7415801143053185905">Веома велико HTTP кашњење</translation>
 <translation id="7418738250896500352">Превише речи за поједностављивање</translation>
 <translation id="7425037327577270384">Помоћ при писању</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">Меморијски простор</translation>
 <translation id="885704831271383379">тамнија тастатура</translation>
 <translation id="8863170912498892583">Омогућите тамну тему</translation>
-<translation id="8863888432376731307">Пронађите <ph name="INTENT" /> за „<ph name="QUERY" />“ и друго</translation>
 <translation id="8864415976656252616">Нема предложеног садржаја. Погледајте најпопуларнији садржај помоћи.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Уређај је таблет.</translation>

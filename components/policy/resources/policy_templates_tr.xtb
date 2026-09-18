@@ -2781,6 +2781,19 @@ Politika, 2 - "Devre Dışı" değerine ayarlanırsa Google Developer Program'ı
 <translation id="2702023190395322609">Medya Önerilerini Etkinleştir</translation>
 <translation id="2702682139813393777">Windows yerel mesajlaşma ana makinelerini, cmd.exe aracılığıyla başlatmaya zorla</translation>
 <translation id="270582584528242502">Çıkmaya çalışan kullanıcılara uyarı iletişimi gösterme</translation>
+<translation id="2706209533052022524">Try on You, kullanıcıların web'de buldukları kıyafet resimlerini sanal olarak denemelerine olanak tanıyan yapay zeka destekli bir özelliktir. Chrome'da Gemini etkinse Chrome'da Gemini'da faydalı alışveriş analizleri sağlar.
+
+0 = Özelliğin kullanılmasına izin verirken Google'ın yapay zeka modellerini iyileştirmek için ilgili verileri kullanmasına izin verir. İlgili veriler arasında özelliğe bağlı olarak resimler, girişler, çıkışlar, kaynak materyaller ve geri bildirimler yer alabilir. Bu bilgiler, gerçek kişiler tarafından da yapay zeka modellerini iyileştirmek için incelenebilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
+
+1 = Özelliğin kullanılmasına izin verir ancak Google'ın kullanıcıların içeriklerini (resimler, girişler, çıkışlar, kaynak materyaller ve geri bildirimler dahil) kullanarak modelleri iyileştirmesine izin vermez. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
+
+2 = Özelliğe izin vermez.
+
+Not: Model iyileştirmeleriyle ilgili kısıtlama (değer 1) yalnızca Try on You özelliği <ph name="CHROME" /> tarayıcı akışı üzerinden etkinleştirildiğinde geçerlidir. Özellik diğer akışlar üzerinden kullanıldığında geçerli değildir.
+
+Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikasına göre belirlenir. Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.
+
+Try on You özelliği tüm ülkelerde veya dillerde kullanılamaz. Bu politikanın ayarlanması, özelliğin etkinleştirileceğini garanti etmez. Özellik, kullanılabilirliğe bağlı olarak etkinleştirilir. Özelliğin kullanılabilirliğiyle ilgili daha fazla bilgi için Enterprise sürüm notlarını inceleyin: https://support.google.com/chrome/a/answer/7679408?hl=tr</translation>
 <translation id="2706708761587205154">Yalnızca PIN ile yazdırmaya izin ver</translation>
 <translation id="2707733461906745082">Profil Ayırma</translation>
 <translation id="2707873794476722903">Güvenli Tarama standart modda etkin.</translation>
@@ -3715,6 +3728,7 @@ Microsoft Outlook kartının kullanılabilmesi için ek yönetici yapılandırma
       Not: <ph name="MS_AD_NAME" /> tarafından yönetilen cihazlarda bu politika, <ph name="MACHINE_NAME_VARIABLE" /> değişkeninin <ph name="MS_AD_NAME" /> makine adına veya bunun bir alt dizesine genişletilmesini destekler. Örneğin, makine adı <ph name="MACHINE_NAME_EXAMPLE" /> ise <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />, 6. konumdan sonra başlayan 4 karakterle değiştirilir (<ph name="MACHINE_NAME_PART_EXAMPLE" /> gibi). Konum sıfır tabanlıdır.
 
       Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="PRINTERS_POLICY_NAME" /> politikasını kullanın.</translation>
+<translation id="3296337890215573972">Try on You özelliğini devre dışı bırak.</translation>
 <translation id="3296560797994110772">Arama tuşu içeren kısayollar, işletim sistemi tarafından kullanılmadan önce uygulamaya gönderilir.</translation>
 <translation id="3300441638895109781">ChromeOS'te kimlik doğrulama akışını otomatik olarak yeniden yükle</translation>
 <translation id="3300784749135986828"><ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> özelliğini etkinleştir veya devre dışı bırak.</translation>
@@ -5623,6 +5637,7 @@ Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterp
 <translation id="4554651132977135445">Kullanıcı politikası geri döngü işleme modu</translation>
 <translation id="4554991346503872538">Asla çeviri önerme</translation>
 <translation id="4555850956567117258">Kullanıcı için uzaktan doğrulamayı etkinleştir</translation>
+<translation id="455594321531952386">Try on You ayarları.</translation>
 <translation id="4557134566541205630">Varsayılan arama sağlayıcısı yeni sekme sayfası URL'si</translation>
 <translation id="4557484263538581790">Adres çubuğundaki ve Yeni Sekme sayfası arama kutusundaki üçüncü taraf AI Modu entegrasyonlarıyla ilgili ayarlar.</translation>
 <translation id="4558166110367609724">Otomatik olarak Hizmet Şartları'nı atlayıp tarayıcıyı yükler.</translation>
@@ -8209,6 +8224,7 @@ Güvenli Tarama hakkında daha fazla bilgiyi https://developers.google.com/safe-
 
 <ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
 <translation id="6106258663605167373">Yeni sekme sayfası altbilgisinde yönetim bildirimini devre dışı bırak</translation>
+<translation id="6108531405177298087">Try on You özelliğini model iyileştirme ile birlikte etkinleştir.</translation>
 <translation id="610892566190435199">Cihazın güç durumu raporlamasını etkinleştir</translation>
 <translation id="6111936128861357925">Dinozor Paskalya Yumurtası Oyununa İzin Verme</translation>
 <translation id="6118226055960302400">Daha az kısıtlayıcı davranışı geri yükle.</translation>
@@ -10074,6 +10090,7 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
       Yapılandırma indirilerek önbelleğe alınır. URL veya karma her değiştiğinde bu tekrar indirilir.
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Bu politika ayarlanmadığında, politikalar Crostini'ye izin veriyorsa kullanıcılar varsayılan Crostini kapsayıcısını mevcut yapılandırmasında kullanmaya devam edebilir.</translation>
+<translation id="7130092870893836308">Try on You özelliğini model iyileştirme olmadan etkinleştir.</translation>
 <translation id="7132877481099023201">Soru sorulmadan video yakalama cihazlarına erişim verilecek URL'ler</translation>
 <translation id="7134420220355750019">Birincil fare düğmesini sağ düğme yap.
 

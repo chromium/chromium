@@ -146,6 +146,7 @@
 <translation id="2575822587468774919">Atlasiet jebko, lai to meklētu, izmantojot funkciju Attēlu meklēšana</translation>
 <translation id="2576118232315942160">Pierakstieties pārlūkā Chromium, lai varētu piekļūt parolēm un citiem datiem visās savās ierīcēs.</translation>
 <translation id="2587622539943955767">Skenējiet kvadrātkodu, izmantojot tālruni, lai lejupielādētu pārlūku Chromium un pierakstītos savā Google kontā.</translation>
+<translation id="2587885422541096572">meklēšanai pārlūkā Chromium.</translation>
 <translation id="2592940277904433508">Turpināt lietot Chromium</translation>
 <translation id="259935314519650377">Lejupielādēto instalēšanas programmu neizdevās saglabāt kešatmiņā. Kļūda: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistēma</translation>
@@ -643,7 +644,6 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="77283119132245232">Nodrošina sistēmas izsekošanas pakalpojumus pārlūkā <ph name="BROWSER_NAME" />. Ja šis pakalpojums ir atspējots, pārlūka izveidotajos veiktspējas izsekošanas datos netiek ietverti sistēmas līmeņa notikumi, piemēram, konteksta maiņas un pavedienu gatavības notikumi.</translation>
 <translation id="7745317241717453663">Veicot šo darbību, no šīs ierīces tiks dzēsti pārlūkošanas dati. Lai vēlāk izgūtu datus, pierakstieties pārlūkā Chromium kā <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instalētājam neizdevās izveidot pagaidu katalogu. Lūdzu, pārbaudiet, vai diskā pietiek vietas un vai ir atļauja instalēt programmatūru.</translation>
-<translation id="7747820849741499258">Meklēt pārlūkā Chromium</translation>
 <translation id="7750130090210923118">Atiestatīt Chromium noklusējuma motīvu</translation>
 <translation id="7752521946322750699">Lai aizsargātu jūsu darbu pārlūkā Chromium, jūsu organizācija varēs skatīt vai pārvaldīt noteiktu informāciju, kad būsiet pierakstījies pārlūkā Chromium.</translation>
 <translation id="7781047659465034537">Iestatiet Chromium kā noklusējuma pārlūku un piespraudiet to uzdevumu joslai</translation>
@@ -651,7 +651,6 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> — Chromium Canary</translation>
 <translation id="7803986347287457849">Neļaujiet personām, kurām ir piekļuve jūsu interneta datplūsmai, viegli skatīt jūsu apmeklētās vietnes. Chromium izmanto drošu savienojumu, lai meklētu vietnes IP adresi sistēmā DNS (domēnu nosaukumu sistēmā).</translation>
 <translation id="7810005234485217901">Varat piespraust funkciju Attēlu meklēšana, lai ērti tai varētu piekļūt.</translation>
-<translation id="7813626943009612327">Jautājiet par saturu ārpus pārlūka Chromium, piemēram, par citu atvērtu lietotni vai failu.</translation>
 <translation id="7828527096541974699">Izvēlieties, kādu saturu kopīgot ar Chromium</translation>
 <translation id="7828947555739565424">Šajā ierīcē jau pastāv Chromium profils ar šādu kontu.</translation>
 <translation id="7845233973568007926">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē dators.</translation>
@@ -776,6 +775,7 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="897581876605952338">Chromium Enterprise logotips</translation>
 <translation id="8980139959902937527">Izmantojiet lietotni Chromium savā ierīcē (<ph name="DEVICE_TYPE" />), lai piekļūstu Google drošības iespējām, atrodoties ceļā</translation>
 <translation id="8981150672034878610">Nevar palaist pārlūku Chromium, jo radās problēma, atverot jūsu profilu. Mēģiniet restartēt pārlūku Chromium.</translation>
+<translation id="8981886272598860786">meklēšanai pārlūkā Chromium vai pielāgošanai sadaļā <ph name="BEGIN_LINK" />Iestatījumi<ph name="END_LINK" />.</translation>
 <translation id="8988036198400390003">Pārvaldīt Chromium profilus</translation>
 <translation id="8993855408334954620">Izmantojiet tastatūru, lai pārvietotos starp Gemini pārlūkā Chromium un atvērto cilni.</translation>
 <translation id="9018218886431812662">Instalēšana pabeigta</translation>

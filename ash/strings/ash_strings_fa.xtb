@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">بستن</translation>
 <translation id="152629053603783244">‏بازراه‌اندازی Linux</translation>
 <translation id="1526448108126799339">باز کردن زبانه جدید در پنجره جدید</translation>
-<translation id="1528259147807435347">هفته گذشته ویرایش شده است</translation>
 <translation id="1536604384701784949">برای استفاده از <ph name="USER_EMAIL_ADDRESS" />، باید ابتدا از سیستم همه حساب‌ها خارج شوید. برای خروج از سیستم، «لغو» را انتخاب کنید تا به عقب برگردید. سپس زمان را انتخاب کنید تا ناحیه نشانگر وضعیت باز شود و سپس «خروج از سیستم»را انتخاب کنید. سپس دوباره به سیستم <ph name="USER_EMAIL_ADDRESS_2" /> وارد شوید.</translation>
 <translation id="15373452373711364">نشانگر موشواره بزرگ</translation>
 <translation id="1545331255323159851">مشاهده عکس‌ها، رسانه‌ها، و اعلان‌های جدید تلفن</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">‏داده‌های استفاده و تشخیص خرابی را ارسال کنید. با ارسال خودکار داده‌های تشخیص خرابی و داده‌های استفاده از دستگاه و برنامه به Google به بهبود تجربه Android فرزندتان کمک کنید. این داده‌ها برای شناسایی فرزندتان استفاده نخواهند شد و به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی‌از داده‌های تجمیعی نیز به برنامه‌ها و شرکای Google (مانند توسعه‌دهندگان Android) کمک می‌کند. این <ph name="BEGIN_LINK1" />تنظیم<ph name="END_LINK1" /> توسط مالک اعمال می‌شود. ممکن است مالک انتخاب کند داده‌های استفاده و تشخیص خرابی این دستگاه به Google ارسال شود. اگر تنظیم «دیگر فعالیت‌ها در وب و برنامه» برای فرزندتان روشن باشد، ممکن است این داده‌ها در «حساب Google» او ذخیره شود. <ph name="BEGIN_LINK2" />درباره سنجه‌ها بیشتر بدانید<ph name="BEGIN_LINK2_END" />بیشتر بدانید<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">پین را وارد کنید</translation>
 <translation id="2412593942846481727">به‌روزرسانی دردسترس است</translation>
-<translation id="2416438829169535743">از نما خارج می‌شوید؟</translation>
 <translation id="2417486498593892439">ورود به سیستم شبکه</translation>
 <translation id="2423619675829330672">تلاش‌های زیاد برای وارد کردن پین. ‫<ph name="TIME_LEFT" /> صبر کنید و دوباره امتحان کنید.</translation>
 <translation id="2426051945783024481">قاب دوربین به‌طور خودکار در مرکز قرار گرفت</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد. قبل از پذیرش، لطفاً تأیید کنید که این گذرکلید در آن دستگاه نشان داده می‌شود: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">نشان دادن گذرواژه</translation>
 <translation id="2437771564543046790">باتری ضعیف است. «بهینه‌سازی باتری» روشن است</translation>
-<translation id="243878895369688216">دیروز باز شده است</translation>
 <translation id="2440978926514840421">‏ضبط GIF انجام شد</translation>
 <translation id="2441427462554639370">به‌دلیل فضای ذخیره‌سازی بسیار کم، ضبط به‌پایان رسید</translation>
 <translation id="2445449901874883781">استفاده از تراکم بالا</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">برنامه کیوسک بارگیری نشد.</translation>
 <translation id="3563558822383875692">درحال پیکربندی محتوای قابل‌بارگیری.</translation>
 <translation id="3563775809269155755">فعال کردن نقطه اتصال</translation>
-<translation id="3566240529365775567">لحظاتی پیش باز شده است</translation>
 <translation id="3571734092741541777">تنظیم</translation>
 <translation id="3573179567135747900">به "<ph name="FROM_LOCALE" />" تغییر دهید (به راه‌اندازی دوباره نیاز دارد)</translation>
 <translation id="3576141592585647168">تغییر منطقه زمانی</translation>
@@ -960,7 +956,6 @@
 <translation id="3756485814916578707">درحال پخش محتوای صفحه‌نمایش</translation>
 <translation id="3765246971671567135">خط‌مشی آفلاین حالت نمایشی خوانده نشد.</translation>
 <translation id="3765841382945324995">میان‌بر <ph name="SIX_PACK_KEY_NAME" /> از <ph name="OLD_SHORTCUT" /> به <ph name="NEW_SHORTCUT" /> تغییر کرده است</translation>
-<translation id="3765841986579723851">امروز ویرایش شده است</translation>
 <translation id="3772109172035555611">‏سفارشی‌سازی TrackPoint</translation>
 <translation id="3773700760453577392">یکی از سرپرستان ورود چندگانه به سیستم را برای <ph name="USER_EMAIL" /> غیرمجاز کرده است. برای ادامه دادن، همه کاربران باید از سیستم خارج شوند.</translation>
 <translation id="3779139509281456663">درحال اتصال <ph name="NAME" /></translation>
@@ -1000,7 +995,6 @@
 <translation id="3873915545594852654">‏در رابطه با ++ARC مشکلی پیش آمد.</translation>
 <translation id="3879748587602334249">مدیریت بارگیری</translation>
 <translation id="3884007280698606545">‏به حد تعداد USB رسیدید</translation>
-<translation id="3886872229787704059">امروز باز شده است</translation>
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
 <translation id="3893630138897523026">‏ChromeVox (بازخورد گفتاری)</translation>
 <translation id="3898464793473355515">چرخش ۹۰ درجه صفحه درجهت ساعت‌گرد</translation>
@@ -1793,7 +1787,6 @@
 <translation id="6095008505822982596">سرعت گفتار</translation>
 <translation id="6095425951508823973">افزودن اتصال با <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">از سیستم خارج شده‌اید.</translation>
-<translation id="6099678161144790572">ماه گذشته ویرایش شده است</translation>
 <translation id="6103838137565245112">سیستم</translation>
 <translation id="6108952804512516814">ساخت با هوش مصنوعی</translation>
 <translation id="6114505516289286752">فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری شد</translation>
@@ -1950,7 +1943,6 @@
 <translation id="6555373427270923730">نشانی وبی را در نوار نشانی تایپ کنید و سپس <ph name="MODIFIER" /><ph name="KEY" /> را فشار دهید</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 نصب جدید</translation>
-<translation id="6559158502366839560">کاوش برنامه‌ها و بازی‌های بیشتر</translation>
 <translation id="6560151649238390891">پیشنهاد درج شد</translation>
 <translation id="6562447480759345110">پایان «تمرکز»</translation>
 <translation id="6565007273808762236">اتصال سیم‌کارت داخلی دردسترس نیست</translation>
@@ -2056,7 +2048,6 @@
 <translation id="6848716236260083778">برای راه‌اندازی اثر انگشت، از فرزندتان بخواهید حسگر اثر انگشت را لمس کند. داده‌های اثر انگشت فرزندتان به‌صورت ایمن ذخیره می‌شود و هرگز از این <ph name="DEVICE_TYPE" /> خارج نمی‌شود.</translation>
 <translation id="6852052252232534364">کلیک برای فعال‌سازی</translation>
 <translation id="6852628153543175788">افزودن ۱۰ دقیقه</translation>
-<translation id="6855029042976311970">لحظاتی پیش ویرایش شده است</translation>
 <translation id="6856708615407876657">روشن/ خاموش کردن دسته‌های نتیجه جستجو</translation>
 <translation id="6856756288284651804">‏‫Chromebook به‌روز شد</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانیه</translation>
@@ -2151,7 +2142,6 @@
 <translation id="7118597077555700347">باز کردن <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">انتخاب واژه یا حرف بعدی</translation>
 <translation id="7124556000457919678">وقتی روشن باشد، کلیدهای موشواره موقتاً متوقف و ازسرگیری می‌شوند</translation>
-<translation id="7126996685418858413">هفته گذشته باز شده است</translation>
 <translation id="7131634465328662194">به‌طور خودکار از سیستم خارج خواهید شد.</translation>
 <translation id="7143207342074048698">در حال اتصال</translation>
 <translation id="7144878232160441200">امتحان مجدد</translation>
@@ -2182,7 +2172,6 @@
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">میکروفون پشت</translation>
 <translation id="7258225044283673131">برنامه پاسخ نمی‌دهد. برای بستن برنامه، «بستن اجباری» را انتخاب کنید.</translation>
-<translation id="7258828758145722155">دیروز ویرایش شده است</translation>
 <translation id="726276584504105859">برای استفاده از تقسیم صفحه، به اینجا بکشید</translation>
 <translation id="7264788308526527464">کاهش <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">مدام انگشتتان را جابه‌جا کنید تا بخش‌های مختلف اثر انگشتتان را اضافه کنید</translation>
@@ -2255,7 +2244,6 @@
 <translation id="7491962110804786152">برگه</translation>
 <translation id="7497767806359279797">انتخاب زبان و صفحه‌کلید</translation>
 <translation id="7507162824403726948">تأیید هویت خود را تکمیل کنید</translation>
-<translation id="7508690557411636492">ماه گذشته باز شده است</translation>
 <translation id="7509246181739783082">هویتتان را درستی‌سنجی کنید</translation>
 <translation id="7512509370370076552">میان‌بر کلیک راست از دگرساز + کلیک به کلید <ph name="LAUNCHER_KEY_NAME" /> + کلیک تغییر کرده است</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />، انتخاب نشده</translation>
@@ -2708,7 +2696,6 @@
 <translation id="8753368202781196133">درحال‌حاضر این زبان پشتیبانی نمی‌شود.</translation>
 <translation id="8755498163081687682">هویتتان را درستی‌سنجی کنید: <ph name="ORIGIN_NAME" /> می‌خواهید تأیید کند این فرد شما هستید</translation>
 <translation id="875593634123171288">‏نمایش تنظیمات VPN</translation>
-<translation id="8756799553341497810">پس‌از خروج از این نما می‌توانید سفارشی‌سازی چیدمان برنامه‌تان را شروع کنید.</translation>
 <translation id="8759408218731716181">تنظیم ورود چندگانه به سیستم ممکن نیست</translation>
 <translation id="8759753423332885148">بیشتر بدانید.</translation>
 <translation id="8760172428247796445">دستگاه <ph name="DEVICE_TYPE" /> شما اکنون قفل می‌شود.

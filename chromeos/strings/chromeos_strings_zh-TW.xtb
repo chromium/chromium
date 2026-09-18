@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">驗證類型</translation>
 <translation id="1776228893584526149">桌布色調</translation>
 <translation id="1777913922912475695">橋</translation>
-<translation id="1782199038061388045">翻譯</translation>
 <translation id="1788485524395674731">這個應用程式是由系統管理員管理</translation>
 <translation id="1792647875738159689">正在取消掃描</translation>
 <translation id="1801418420130173017">停用深色主題</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">類型</translation>
 <translation id="2448857983905133469">課程工具組</translation>
 <translation id="2468124392950503650">選取要建立的提示詞或查看<ph name="BEGIN_LINK_PROMPTING_GUIDE" />提示詞指南<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">「幫我寫」功能採用 Google AI 技術，歡迎用來建立草稿或修正現有作品</translation>
 <translation id="2475982808118771221">發生錯誤</translation>
 <translation id="2480572840229215612">螃蟹</translation>
 <translation id="248546197012830854">裝置處於離線狀態。連線至 Wi-Fi 網路即可查看說明內容。</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">重拍</translation>
 <translation id="3479552764303398839">現在不要</translation>
 <translation id="3484914941826596830">在韌體更新期間，請勿拔除這台外部裝置的插頭或關閉電腦。你可以將這個視窗縮到最小。更新作業可能需要幾分鐘才會完成，這段期間外部裝置可能無法正常運作。</translation>
-<translation id="3486220673238053218">定義</translation>
 <translation id="3487866404496702283">對 Mahi 功能提供意見</translation>
 <translation id="3488065109653206955">部分已啟用</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" />色調的<ph name="OFFICE_STYLE" />辦公室</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">選擇主題</translation>
 <translation id="3644695927181369554">不喜歡的建議</translation>
 <translation id="3651050199673793219">選取溫度單位</translation>
-<translation id="3661106764436337772">自信地快速編寫</translation>
 <translation id="3662461537616691585">勃艮第酒紅和暗紅色</translation>
 <translation id="3664755900672940272">已隨機顯示提示詞範例</translation>
 <translation id="3668449597372804501">雲朵動態桌布</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4777310452073659583">如要取得轉錄稿，請重新啟動「<ph name="DEVICE_TYPE" />」</translation>
 <translation id="4778082030331381943">紫水晶</translation>
-<translation id="4782311465517282004">按住文字或在文字上按一下滑鼠右鍵後，就能取得定義、翻譯或單位轉換結果</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> 張相片</translation>
 <translation id="4793710386569335688">如需其他協助，請前往<ph name="BEGIN_LINK" />說明中心<ph name="END_LINK" />。</translation>
 <translation id="4793756956024303490">壓縮演算法</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">關閉淺色主題</translation>
 <translation id="7401543881546089382">刪除捷徑</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" />已可更新</translation>
-<translation id="741244894080940828">轉換</translation>
 <translation id="7415801143053185905">HTTP 延遲時間非常長</translation>
 <translation id="7418738250896500352">字數太多，無法精簡</translation>
 <translation id="7425037327577270384">幫我寫</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">儲存空間</translation>
 <translation id="885704831271383379">調暗鍵盤</translation>
 <translation id="8863170912498892583">啟用深色主題</translation>
-<translation id="8863888432376731307">取得「<ph name="QUERY" />」和其他查詢內容的<ph name="INTENT" /></translation>
 <translation id="8864415976656252616">沒有任何建議內容，請查看熱門說明內容。</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">裝置類型為平板電腦。</translation>

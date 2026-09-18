@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Loại xác thực</translation>
 <translation id="1776228893584526149">Tông màu nền</translation>
 <translation id="1777913922912475695">cây cầu</translation>
-<translation id="1782199038061388045">dịch</translation>
 <translation id="1788485524395674731">Quản trị viên của bạn quản lý ứng dụng này</translation>
 <translation id="1792647875738159689">Đang hủy quá trình quét</translation>
 <translation id="1801418420130173017">Tắt giao diện tối</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Loại</translation>
 <translation id="2448857983905133469">Class Tools</translation>
 <translation id="2468124392950503650">Chọn câu lệnh để sáng tạo hoặc xem <ph name="BEGIN_LINK_PROMPTING_GUIDE" />hướng dẫn viết câu lệnh<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Sử dụng tính năng Giúp tôi viết để soạn bản nháp hoặc trau chuốt văn bản hiện có, dựa trên công nghệ AI của Google</translation>
 <translation id="2475982808118771221">Đã xảy ra lôi</translation>
 <translation id="2480572840229215612">cua</translation>
 <translation id="248546197012830854">Thiết bị hiện không có kết nối mạng. Hãy kết nối với mạng Wi-Fi để xem nội dung trợ giúp.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Chụp lại</translation>
 <translation id="3479552764303398839">Để sau</translation>
 <translation id="3484914941826596830">Khi chương trình cơ sở đang cập nhật, đừng rút thiết bị bên ngoài này ra hay tắt máy tính. Bạn có thể thu nhỏ cửa sổ này. Quá trình cập nhật có thể mất vài phút và thiết bị bên ngoài của bạn có thể không hoạt động được trong thời gian này.</translation>
-<translation id="3486220673238053218">định nghĩa</translation>
 <translation id="3487866404496702283">Phản hồi về tính năng mahi</translation>
 <translation id="3488065109653206955">Được kích hoạt một phần</translation>
 <translation id="3492882532495507361">Văn phòng <ph name="OFFICE_STYLE" /> màu <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Chọn chủ đề</translation>
 <translation id="3644695927181369554">Đề xuất không tốt</translation>
 <translation id="3651050199673793219">Chọn đơn vị nhiệt độ</translation>
-<translation id="3661106764436337772">Viết nhanh hơn và tự tin hơn</translation>
 <translation id="3662461537616691585">đỏ tía và nâu sẫm</translation>
 <translation id="3664755900672940272">Các câu lệnh mẫu bị xáo trộn</translation>
 <translation id="3668449597372804501">Hình nền Luồng đám mây</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Đã dừng</translation>
 <translation id="4777310452073659583">Để nhận bản chép lời, hãy khởi động lại <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">đá thạch anh tím</translation>
-<translation id="4782311465517282004">Xem định nghĩa, bản dịch hoặc kết quả chuyển đổi đơn vị bằng cách nhấp chuột phải hoặc chạm và giữ văn bản</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ảnh</translation>
 <translation id="4793710386569335688">Để được trợ giúp thêm, hãy truy cập <ph name="BEGIN_LINK" />Trung tâm trợ giúp<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Thuật toán nén</translation>
@@ -1459,7 +1454,6 @@ Hãy tải mô hình chép lời xuống (tối đa 100 MB) để nhận các b�
 <translation id="7397270852490618635">Tắt giao diện sáng</translation>
 <translation id="7401543881546089382">Xóa phím tắt</translation>
 <translation id="7405493795721832710">Bạn đã có thể cập nhật <ph name="DEVICE_NAME" /></translation>
-<translation id="741244894080940828">chuyển đổi</translation>
 <translation id="7415801143053185905">Yêu cầu HTTP có độ trễ rất cao</translation>
 <translation id="7418738250896500352">Không thể rút gọn vì có quá nhiều từ</translation>
 <translation id="7425037327577270384">Giúp tôi viết</translation>
@@ -1769,7 +1763,6 @@ Hãy tải mô hình chép lời xuống (tối đa 100 MB) để nhận các b�
 <translation id="885701979325669005">Bộ nhớ</translation>
 <translation id="885704831271383379">bàn phím tối hơn</translation>
 <translation id="8863170912498892583">Bật giao diện tối</translation>
-<translation id="8863888432376731307">Nhận <ph name="INTENT" /> cho "<ph name="QUERY" />" và nhiều thông tin khác</translation>
 <translation id="8864415976656252616">Không có nội dung đề xuất. Xem nội dung trợ giúp hàng đầu.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Thiết bị là máy tính bảng.</translation>

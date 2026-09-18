@@ -475,7 +475,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="6241367896540709610">Dosya indirmek için Chromium'un depolama alanına erişmesi gerekiyor</translation>
 <translation id="6245734527075554892">URL'leri, Chromium'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder.</translation>
 <translation id="6248213926982192922">Chromium varsayılan tarayıcı olsun</translation>
-<translation id="6248988683584659830">Ayarlarda ara</translation>
+<translation id="6248988683584659830">Ayarlarda arayın</translation>
 <translation id="6261803579884938625">Telefonunuzaki Chromium uygulamasıyla Google'ın en iyi güvenlik özelliklerine her yerden erişin</translation>
 <translation id="6268381023930128611">Chromium oturumunu kapatıyor musunuz?</translation>
 <translation id="6270547683008298381">Bu sekmeler ekstra kaynak kullanıyor. Performansınızı artırmak için Chromium'un bu sekmeleri devre dışı bırakmasına izin verin.</translation>
@@ -644,7 +644,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="77283119132245232"><ph name="BROWSER_NAME" /> için sistem izleme hizmetleri sağlar. Bu hizmet devre dışı bırakılırsa tarayıcı tarafından oluşturulan performans izleri, bağlam geçişi ve hazır iş parçacığı etkinlikleri gibi sistem genelindeki etkinlikleri içermez.</translation>
 <translation id="7745317241717453663">Bu işlem tarama verilerinizi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chromium'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
 <translation id="7747138024166251722">Yükleyici geçici bir dizin oluşturamadı. Lütfen, kullanılabilir disk alanını ve yazılım yükleme iznini kontrol edin.</translation>
-<translation id="7747820849741499258">Chromium'da ara</translation>
 <translation id="7750130090210923118">Chromium Varsayılanına Sıfırla</translation>
 <translation id="7752521946322750699">Kuruluşunuz, Chromium'da oturum açtığınızda Chromium'daki çalışmalarınızın güvenliğini sağlamak için belirli bilgileri görüntüleyebilir veya yönetebilir.</translation>
 <translation id="7781047659465034537">Chromium'u varsayılan olarak ayarlayın ve görev çubuğuna sabitleyin</translation>
@@ -652,7 +651,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">İnternet trafiğinize erişimi olan kişilerin, ziyaret ettiğiniz siteleri görmesini zorlaştırın. Chromium, DNS'de (Alan Adı Sistemi) bir sitenin IP adresini aramak için güvenli bağlantı kullanır.</translation>
 <translation id="7810005234485217901">Daha kolay erişmek için Görsel Arama'yı sabitleyebilirsiniz</translation>
-<translation id="7813626943009612327">Chromium dışındaki içerikler (ör. açık olan başka bir uygulama veya dosya) hakkında soru sorun</translation>
 <translation id="7828527096541974699">Chromium ile paylaşılacak öğeleri seçin</translation>
 <translation id="7828947555739565424">Cihazda bu hesaba sahip bir Chromium profili zaten var</translation>
 <translation id="7845233973568007926">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce bilgisayarınızı yeniden başlatmanız gerekir.</translation>

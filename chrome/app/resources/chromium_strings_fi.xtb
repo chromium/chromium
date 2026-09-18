@@ -339,6 +339,7 @@
 <translation id="4621240073146040695">Melkein valmista. Viimeistele päivitys käynnistämällä Chromium uudelleen.</translation>
 <translation id="4625064703209785397">Nopeuttaa sivustoja Chromiumin V8-moottorilla, mutta heikentää Chromiumin suojaa hyökkäyksiä vastaan</translation>
 <translation id="4626321472657185181">Avaa haku Chromiumilla</translation>
+<translation id="4654639495249754755">Chromium-profiili</translation>
 <translation id="4665829708273112819">Varoitus: Chromium ei voi estää laajennuksia tallentamasta selaushistoriaasi. Voit estää tämän laajennuksen käytön incognito-tilassa poistamalla tämän valinnan.</translation>
 <translation id="4673151026126227699">Jos jaat myös Chromiumin käyttöraportteja, avaamasi URL-osoitteet näkyvät niissä</translation>
 <translation id="4673710618874938871">Kirjautuneena tilillä <ph name="USER_NAME" />, jäsenyys. Avaa tilivalikko</translation>
@@ -471,6 +472,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6174920971222007286">Tämä tiedosto voi olla vaarallinen<ph name="LINE_BREAK" />Chromium voi tarkistaa latauksen puolestasi, jos annat salasanan. Tiedoston tiedot lähetetään Googlen selaussuojalle, mutta tiedoston sisältö ja salasana pysyvät laitteellasi.</translation>
 <translation id="6182736845697986886">Asennus epäonnistui päivityspalvelimen sisäisen virheen takia.</translation>
 <translation id="6183079672144801177">Varmista, että olet kirjautunut Chromiumiin laitteellasi (<ph name="TARGET_DEVICE_NAME" />) ja yritä sitten lähettämistä uudelleen.</translation>
+<translation id="6192070012454216182">Hae ja kysy kysymyksiä mistä tahansa, vaikka Chromium olisi pienennettynä. Sallii Chromiumin toimia taustalla.</translation>
 <translation id="6212496753309875659">Tälle tietokoneelle on jo asennettu Chromiumin uudempi versio. Jos Chromium ei toimi, poista sen asennus ja yritä uudelleen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium käynnistetään uudelleen nyt}=1{Chromium käynnistetään uudelleen 1 sekunnin kuluttua}other{Chromium käynnistetään uudelleen # sekunnin kuluttua}}</translation>
 <translation id="6241367896540709610">Chromium tarvitsee tallennustilan pääsyoikeudet tiedostojen lataamiseen</translation>
@@ -597,6 +599,7 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="7288567540154601580">Välilehdet ja laajennukset</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium suosittelee sen poistamista}other{Chromium suosittelee niiden poistamista}}</translation>
 <translation id="7296334833518879294">Jos haluat jakaa järjestelmän audion, avaa Järjestelmäasetukset ja salli Chromiumille "Vain järjestelmän audion tallennus". Käynnistä Chromium uudelleen.</translation>
+<translation id="7299899569525778554">Hae tietokoneelta</translation>
 <translation id="731795002583552498">Päivitetään Chromiumia.</translation>
 <translation id="7318036098707714271">Asetustiedostosi on virheellinen.
 
@@ -644,7 +647,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="77283119132245232">Tarjoaa järjestelmän seurantapalveluja (<ph name="BROWSER_NAME" />). Jos tämä palvelu on poissa käytöstä, selaimen luomat tulosten jäljet eivät sisällä järjestelmänlaajuisia tapahtumia, kuten kontekstin vaihtoa ja valmiita säietapahtumia.</translation>
 <translation id="7745317241717453663">Tämä poistaa selaustiedot pysyvästi laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromiumiin käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Asennusohjelma ei pystynyt luomaan väliaikaista hakemistoa. Tarkista, että käytettävissä on riittävästi levytilaa ja että sinulla on oikeus asentaa ohjelmia.</translation>
-<translation id="7747820849741499258">Hae Chromiumista</translation>
 <translation id="7750130090210923118">Palauta Chromiumin oletusversio</translation>
 <translation id="7752521946322750699">Organisaatiosi voi nähdä tai ylläpitää tiettyjä tietoja, jotta voit käyttää Chromiumia turvallisesti, kun olet kirjautuneena Chromiumiin.</translation>
 <translation id="7781047659465034537">Valitse Chromium oletukseksi ja kiinnitä se tehtäväpalkkiin</translation>
@@ -742,6 +744,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8619360774459241877">Käynnistetään Chromiumia…</translation>
 <translation id="8624541899164515475">Asetukset, avautuu uudelle välilehdelle.</translation>
 <translation id="8648201657708811153">Google Chrome for Testingistä ei voi tehdä oletusselainta.</translation>
+<translation id="8676101123715131330">Hae Chromiumilla mistä tahansa</translation>
 <translation id="8697124171261953979">Määrittää myös Chromiumin ja omnibox-hakujen aloitussivun.</translation>
 <translation id="8704119203788522458">Tämä on oma Chromiumisi</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>

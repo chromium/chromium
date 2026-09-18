@@ -528,7 +528,6 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="6166185671393271715">‏Chrome پر پاس ورڈز درآمد کریں</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878">‏<ph name="PAGE_TITLE" /> - Google Chrome بی ٹا</translation>
-<translation id="6177442314419606057">‏Chrome میں تلاش کریں</translation>
 <translation id="6180522807229584611">‏یہ ٹیب اضافی وسائل کا استعمال کر رہا ہے۔ اپنی کارکردگی کو بہتر بنانے کیلئے، Chrome کو اسے غیر فعال کرنے کی اجازت دیں۔</translation>
 <translation id="6182736845697986886">اپ ڈیٹ سرور کی اندرونی خرابی کی وجہ سے انسٹالیشن ناکام ہو گئی۔</translation>
 <translation id="6192058120268468905">‏‫Chrome میں آپ کا اکاؤنٹ</translation>
@@ -560,6 +559,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="6434035853014503219">‏‫Chrome کو اپنے ڈیفالٹ براؤزر کے طور پر منتخب کرنے کا شکریہ!</translation>
 <translation id="6438015621983209660">‏اپنے فون پر Chrome کے ساتھ بہتر کردہ محفوظ براؤزنگ کو بڑھائیں</translation>
 <translation id="6442774133615368941">‏‫Chrome iOS ایپ پر دکھائی دینے والی چیزوں کی خریداری کرنے، ترجمہ کرنے اور شناخت کرنے کیلئے اپنے کیمرے کا استعمال کریں</translation>
+<translation id="6446105560007692480">‏‫Chrome کے ساتھ تلاش کرنے یا <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں حسب ضرورت بنانے کے لیے</translation>
 <translation id="6448835208126432197">‏‫Chrome میں Gemini میں اسکرین کے حصے کو منتخب کرنے کے لیے، کی بورڈ شارٹ کٹ استعمال کریں۔</translation>
 <translation id="6473905796280459355">‏Chrome کے بارے میں صفحہ پر جائیں</translation>
 <translation id="6481963882741794338">‏ذاتی نوعیت سازی اور دیگر مقاصد کے لیے Chrome اور دیگر Google سروسز کو لنک کریں</translation>
@@ -581,6 +581,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="6612152958212564387">‏آپ Google کو استعمال کے اعداد و شمار اور کریش رپورٹس نہیں بھیج رہے ہیں۔ <ph name="BEGIN_LINK" />نظم کریں<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">‏‫Chrome کو اپنے ڈیفالٹ براؤزر کے طور پر سیٹ کر کے اپنے پاس ورڈز، بُک مارکس اور سرگزشت کو آلات پر مکمل طور پر مطابقت پذیر رکھیں۔</translation>
 <translation id="6631524303639368205">‏جہاں آپ نے چھوڑا تھا وہیں سے جاری رکھیں: Chrome نے آپ کے آخری سیشن سے آپ کے ٹیبز کو بحال کیا۔ آپ اسے درج ذیل میں آف کر سکتے ہیں</translation>
+<translation id="6632012506031284914">‏‫Chrome کے ساتھ تلاش کرنے کے لیے۔</translation>
 <translation id="6632473616050862500">‏ChromeOS Flex کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے۔</translation>
 <translation id="6634299872736643004">‏اس ترتیب پر تبدیلیوں کا اطلاق Chrome ری سٹارٹ ہونے کے بعد ہوگا۔</translation>
 <translation id="6660596345553328257">‏Chrome میں سائن ان کریں؟</translation>
@@ -597,7 +598,6 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="6750954913813541382">‏املا کی غلطیوں کو درست کرنے کے لیے، آپ براؤزر میں جو متن ٹائپ کرتے ہیں، Chrome اسے Google کو بھیج دیتا ہے</translation>
 <translation id="6760235774835597023">‏‫Chrome کے V8 انجن کے ساتھ سائٹس کو تیز رفتار بناتا ہے لیکن Chrome کو حملوں کے خلاف قدرے کم مزاحم بناتا ہے۔ یہ ترتیب آن ہے۔</translation>
 <translation id="677276454032249905">‏بہر حال Chrome کو بند کریں؟</translation>
-<translation id="6777654166489463890">‏‫Chrome سے باہر کے مواد کے بارے میں پوچھیں، جیسے کوئی دوسری ایپ یا فائل جو آپ نے کھولی ہے</translation>
 <translation id="6794858689789885890">‏جب آپ Chrome کو بند کرتے ہیں تو ہمیشہ اپنے آلے سے سائٹ کا ڈیٹا حذف کریں</translation>
 <translation id="6800285125190089494">‏‫iOS پر Chrome کے لیے محفوظ کردہ پاس ورڈز استعمال کر کے سائٹس میں تیزی سے سائن ان کریں</translation>
 <translation id="6831043979455480757">ترجمہ کریں</translation>

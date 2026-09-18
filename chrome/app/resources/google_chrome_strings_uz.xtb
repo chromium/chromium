@@ -70,6 +70,7 @@
             Bukmarklar, tarix va saqlangan parollar joyida qoladi.</translation>
 <translation id="1619887657840448962">Chrome brauzerini xavfsiz holda saqlash uchun <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ro‘yxatida keltirilmagan va sizga bildirmasdan qo‘shilgan bo‘lishi mumkin bo‘lgan quyidagi kengaytma o‘chirib qo‘yiladi.</translation>
 <translation id="1628000112320670027">Chrome yordam markazi</translation>
+<translation id="1632241302126471515">Chrome Canary orqali qidirish</translation>
 <translation id="1640672724030957280">Yuklab olinmoqda...</translation>
 <translation id="1651617469580841801">Google Lens ishlatilganda sahifa sarlavhasi, URL manzili, kontenti, jumladan, PDF fayllar Google serverlariga yuboriladi. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex haqida</translation>
@@ -273,6 +274,7 @@ Bu sahifa kutilganidek ishlamasa, optimallashga ruxsat bering.</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni talab qilmoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni talab qilmoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni talab qilmoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="3597003331831379823">Kengaytirilgan ruxsatlar bilan sozlash ishga tushmadi. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">Gemini belgisini tizim panelida Chrome ichida chiqarish</translation>
+<translation id="3616622400661108683">Boshqa ilova yoki fayllar kabi Chromedan tashqaridagi kontent haqida soʻrang</translation>
 <translation id="3622716124581627104">Obyekt yoki joylarni aniqlash, nusxalash yoki matn tarjima qilish. Google Lens ishlatilganda sahifa skrinshoti Google serverlariga yuboriladi. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Endi Google hisobida Chrome bilan ishlash yanada qulay bo‘ladi, jumladan umumiy kompyuterlarda ham.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan. Internetni alohida kezish uchun Chromega shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring. Shuningdek, saqlangan maʼlumotlar va boshqa maʼlumotlardan barcha qurilmalarda foydalana olasiz.</translation>
@@ -525,7 +527,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6166185671393271715">Parollarni Chrome’ga import qilish</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
-<translation id="6177442314419606057">Chromedan qidirish</translation>
 <translation id="6180522807229584611">Bu varaq ortiqcha resurs sarflayapti. Unumdorlikni kuchaytirish uchun Chrome varaqni nofaol qilishiga ruxsat bering.</translation>
 <translation id="6182736845697986886">Yangilanish serveridagi ichki xato sababli oʻrnatilmadi.</translation>
 <translation id="6192058120268468905">Chromedagi hisobingiz</translation>
@@ -596,7 +597,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6750954913813541382">Imlo xatolarini tuzatish uchun Chrome brauzerida kiritiladigan matn Google serverlariga yuboriladi.</translation>
 <translation id="6760235774835597023">Chrome V8 tizimi bilan saytlar ishlashini tezlashtiradi, ammo Chrome brauzerining hujumlardan himoyasini biroz pasaytiradi. Bu sozlama yoniq.</translation>
 <translation id="677276454032249905">Chrome baribir yopilsinmi?</translation>
-<translation id="6777654166489463890">Boshqa ilova yoki ochilgan fayl kabi Chromedan tashqaridagi kontent haqida savol bering</translation>
 <translation id="6794858689789885890">Chrome yopilganda har doim qurilmadan sayt maʼlumotlarini oʻchirib tashlash</translation>
 <translation id="6800285125190089494">iOS uchun Chromeda saqlangan parollar bilan saytlarga tezroq kiring</translation>
 <translation id="6831043979455480757">Tarjima</translation>
@@ -756,7 +756,9 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8162006532256575008">Chrome brauzeridan hisobsiz foydalanish</translation>
 <translation id="8172231188687329735">Parollarni istalgan joyda saqlash uchun Chrome ilovasini yuklab oling</translation>
 <translation id="8177472873527554730">Sahifada kontent topilmadi</translation>
+<translation id="8196526165798579689">Chrome Dev orqali qidirish</translation>
 <translation id="8221491193165283816">Odatda bildirishnomalarni bloklaysiz. Bu saytga ruxsat berish uchun bu yerga bosing.</translation>
+<translation id="8227493674161801700">Chrome Beta orqali qidirish</translation>
 <translation id="8253851811470049684">Istalgan ilovadagi havolalarni Chromeda oching va brauzerni vazifalar panelida saqlang</translation>
 <translation id="8255190535488645436">Google Chrome kamera va mikrofoningizdan foydalanmoqda.</translation>
 <translation id="8260086374035800939">Chrome ichida Gemini ochiq boʻlsa, yangi varaq yaratishda yon panel ochiq qoladi</translation>

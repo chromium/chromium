@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Τύπος ελέγχου ταυτότητας</translation>
 <translation id="1776228893584526149">Τόνος ταπετσαρίας</translation>
 <translation id="1777913922912475695">γέφυρα</translation>
-<translation id="1782199038061388045">μετάφραση</translation>
 <translation id="1788485524395674731">Ο διαχειριστής σας διαχειρίζεται αυτή την εφαρμογή</translation>
 <translation id="1792647875738159689">Ακύρωση σάρωσης</translation>
 <translation id="1801418420130173017">Απενεργοποίηση σκούρου θέματος</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Τύπος</translation>
 <translation id="2448857983905133469">Εργαλεία για την τάξη</translation>
 <translation id="2468124392950503650">Επιλέξτε μια προτροπή για δημιουργία ή δείτε την <ph name="BEGIN_LINK_PROMPTING_GUIDE" />εκπαίδευση για προτροπές<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Χρησιμοποιήστε τη λειτουργία Βοήθησέ με να γράψω, για να δημιουργήσετε ένα πρόχειρο ή να τελειοποιήσετε μια υπάρχουσα εργασία, με την υποστήριξη του Google AI</translation>
 <translation id="2475982808118771221">Παρουσιάστηκε σφάλμα</translation>
 <translation id="2480572840229215612">καβούρια</translation>
 <translation id="248546197012830854">Η συσκευή είναι εκτός σύνδεσης. Συνδεθείτε στο δίκτυο Wi-Fi για να δείτε περιεχόμενο βοήθειας.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Νέα λήψη</translation>
 <translation id="3479552764303398839">Όχι τώρα</translation>
 <translation id="3484914941826596830">Κατά την ενημέρωση του υλικολογισμικού, μην αποσυνδέσετε αυτή την εξωτερική συσκευή και μην τερματίσετε τη λειτουργία του υπολογιστή. Μπορείτε να ελαχιστοποιήσετε αυτό το παράθυρο. Μπορεί να χρειαστούν λίγα λεπτά για αυτή την ενημέρωση και η εξωτερική συσκευή σας μπορεί να μην λειτουργεί αυτό το διάστημα.</translation>
-<translation id="3486220673238053218">ορισμός</translation>
 <translation id="3487866404496702283">Σχόλια για τη λειτουργία mahi</translation>
 <translation id="3488065109653206955">Μερικώς ενεργοποιημένο</translation>
 <translation id="3492882532495507361">Ένα <ph name="OFFICE_STYLE" /> γραφείο σε <ph name="OFFICE_COLOR" /> τόνους</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Επιλέξτε ένα θέμα</translation>
 <translation id="3644695927181369554">Κακή πρόταση</translation>
 <translation id="3651050199673793219">Επιλέξτε μια μονάδα θερμοκρασίας</translation>
-<translation id="3661106764436337772">Γράψτε πιο γρήγορα και με περισσότερη αυτοπεποίθηση</translation>
 <translation id="3662461537616691585">μπορντό και καστανοκόκκινο</translation>
 <translation id="3664755900672940272">Τυχαία αναπαραγωγή δειγμάτων οδηγιών</translation>
 <translation id="3668449597372804501">Ταπετσαρία Κίνηση των σύννεφων</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Διακόπηκε</translation>
 <translation id="4777310452073659583">Για να λάβετε τη μεταγραφή, επανεκκινήστε τη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">αμέθυστος</translation>
-<translation id="4782311465517282004">Λάβετε ορισμούς, μεταφράσεις ή μετατροπές μονάδων κάνοντας δεξί κλικ ή αγγίζοντας παρατεταμένα κείμενο.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> φωτογραφία</translation>
 <translation id="4793710386569335688">Για περισσότερη βοήθεια, μεταβείτε στο <ph name="BEGIN_LINK" />Κέντρο βοήθειας<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Αλγόριθμος συμπίεσης</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">Απενεργοποίηση φωτεινού θέματος</translation>
 <translation id="7401543881546089382">Διαγραφή συντόμευσης</translation>
 <translation id="7405493795721832710">Η συσκευή <ph name="DEVICE_NAME" /> είναι έτοιμη για ενημέρωση</translation>
-<translation id="741244894080940828">μετατροπή</translation>
 <translation id="7415801143053185905">Πολύ υψηλός λανθάνων χρόνος HTTP</translation>
 <translation id="7418738250896500352">Πάρα πολλές λέξεις για απλοποίηση</translation>
 <translation id="7425037327577270384">Βοήθησέ με να γράψω</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">Αποθήκευση</translation>
 <translation id="885704831271383379">λιγότερο φωτεινό πληκτρολόγιο</translation>
 <translation id="8863170912498892583">Ενεργοποίηση σκούρου θέματος</translation>
-<translation id="8863888432376731307">Αποκτήστε το <ph name="INTENT" /> για "<ph name="QUERY" />" και περισσότερα</translation>
 <translation id="8864415976656252616">Δεν υπάρχει προτεινόμενο περιεχόμενο. Ανατρέξτε στο κορυφαίο περιεχόμενο βοήθειας.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Η συσκευή είναι tablet.</translation>

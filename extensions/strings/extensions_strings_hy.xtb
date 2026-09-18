@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Չհաջողվեց ուղարկել ծնողի թույլտվության հայտը։</translation>
 <translation id="1803557475693955505">Չհաջողվեց բեռնել հետնաշերտի էջը` «<ph name="BACKGROUND_PAGE" />»:</translation>
 <translation id="1875387611427697908">Սա կարող է ավելացվել միայն <ph name="CHROME_WEB_STORE" />-ից</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> ընդլայնումը (ID՝ «<ph name="EXTENSION_ID" />») ցածր վստահության միջավայրերում չի կարող տեղադրվել կանոնների համաձայն։</translation>
 <translation id="2131077480075264">Անհնար է տեղադրել «<ph name="APP_NAME" />» հավելվածը, քանի որ այն արգելված է «<ph name="IMPORT_NAME" />»-ի կողմից</translation>
 <translation id="2150661552845026580">Ավելացնե՞լ «<ph name="EXTENSION_NAME" />»-ը:</translation>
 <translation id="2159915644201199628">Չհաջողվեց ապակոդավորել պատկերը` «<ph name="IMAGE_NAME" />»</translation>

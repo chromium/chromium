@@ -37,7 +37,6 @@
 <translation id="1123537484474186311"><ph name="TAB_TITLE" /> แท็บในโหมดการแสดงภาพซ้อนภาพ</translation>
 <translation id="1126696498560056882">จัดการบัญชีในอุปกรณ์เครื่องนี้</translation>
 <translation id="1135018701024399762">โหมดไม่ระบุตัวตนทำให้การท่องเว็บของคุณมีความเป็นส่วนตัวเมื่อมีผู้อื่นใช้อุปกรณ์ของคุณ</translation>
-<translation id="113752097246673894">ลงชื่อเข้าใช้ Chrome ด้วย <ph name="EMAIL" /> เพื่อเข้าถึงบุ๊กมาร์กและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="1138458427267715730">รับการแจ้งเตือนเมื่อราคาต่ำลงในเว็บไซต์ใดก็ตามทั่วทั้งอินเทอร์เน็ต</translation>
 <translation id="1140317858355046628">หากลบกลุ่มนี้ ทุกคนจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และระบบจะลบกลุ่มนี้ออกจากอุปกรณ์ทุกเครื่อง</translation>
 <translation id="1142732900304639782">ไม่ต้องเสนอการแปลเว็บไซต์เหล่านี้</translation>
@@ -205,7 +204,6 @@
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, แท็บการบันทึกเสียง</translation>
 <translation id="1819443852740954262">เปิดทั้งหมดในหน้าต่างที่ไม่ระบุตัวตน</translation>
 <translation id="1820408774134375111">Bottom Sheet การลงชื่อเข้าใช้</translation>
-<translation id="1823492026305965829">ลงชื่อเข้าใช้ด้วย <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">แตะลบข้อมูลการท่องเว็บ</translation>
 <translation id="1829244130665387512">ค้นหาในหน้าเว็บ</translation>
 <translation id="1832459821645506983">ได้สิ ตกลง</translation>
@@ -439,7 +437,6 @@
 <translation id="2723001399770238859">เสียง</translation>
 <translation id="2739887572830526131">เก็บกลุ่มนี้ไว้เพื่อเพิ่มแท็บในภายหลัง หรือลบออกหากคุณไม่ต้องการแล้ว</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ไม่พร้อมใช้งานในขณะนี้</translation>
-<translation id="2751271371269891762">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /> เพื่อเข้าถึงบุ๊กมาร์กและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="2760805590727089264">ดด/ปป</translation>
 <translation id="2761162135224472056">รับชมด้วยโหมดใหญ่พิเศษไหม</translation>
 <translation id="2762000892062317888">เมื่อสักครู่</translation>
@@ -514,6 +511,7 @@
 <translation id="2996291259634659425">สร้างพาสเฟรส</translation>
 <translation id="2996682533106928201">แตะเพื่อปิด</translation>
 <translation id="2996809686854298943">ต้องระบุ URL</translation>
+<translation id="3007318536447999974">ให้สิทธิ์ Gemini เข้าถึงไมโครโฟน หากต้องการพูดคุยกับ Gemini คุณจัดการสิทธิ์นี้ใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" />ได้เช่นกัน</translation>
 <translation id="3024215143424744261">ปิดค่ากำหนดโหมดการอ่านแล้ว</translation>
 <translation id="3024277805447899099">แสดงตัวอย่างรูปภาพ</translation>
 <translation id="3026955690410463085">รวมลิงก์</translation>
@@ -608,7 +606,6 @@
 <translation id="3435738964857648380">ความปลอดภัย</translation>
 <translation id="3435914367318771664">เพิ่มแท็บไปยังกลุ่มใหม่</translation>
 <translation id="3436118221454753036">ถามโหมด AI</translation>
-<translation id="3438681572027105609">ลงชื่อเข้าใช้ Chrome เพื่อรับรหัสผ่านและข้อมูลอื่นๆ ในทุกอุปกรณ์</translation>
 <translation id="3439276997620616816">คุณจะเห็นแท็บล่าสุดที่นี่</translation>
 <translation id="3443221991560634068">โหลดหน้าปัจจุบันอีกครั้ง</translation>
 <translation id="3444179773590444986">ต้องการแชร์ความคิดเห็นเกี่ยวกับธีมมืดสำหรับเว็บไซต์ไหม</translation>
@@ -753,7 +750,6 @@
 <translation id="4000212216660919741">หน้าแรกออฟไลน์</translation>
 <translation id="4000670338830950598">ปรับแต่งและควบคุม Google Chrome ด้วยรายการที่ไฮไลต์</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{มีรหัสผ่านที่ถูกละเมิด 1 รายการในบัญชี Google}other{มีรหัสผ่านที่ถูกละเมิด # รายการในบัญชี Google}}</translation>
-<translation id="4023638601467301498">ลงชื่อเข้าใช้ Chrome เพื่อเข้าถึงบุ๊กมาร์กและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="4024768890073681126">ผู้ปกครองของคุณเป็นผู้จัดการเบราว์เซอร์</translation>
 <translation id="4027569221211770437">โฟลเดอร์ <ph name="FOLDER_TITLE" /></translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ชม.}other{# ชม.}}</translation>
@@ -934,7 +930,6 @@
 <translation id="4685741273709472646">เลือกจากรายการแบบเลื่อนลง</translation>
 <translation id="468924408576231679">คัดลอกลิงก์ไปยังหน้าเว็บ <ph name="PAGE_TITLE" /> แหล่งที่มา: <ph name="PAGE_URL" /></translation>
 <translation id="4692623383562244444">เครื่องมือค้นหา</translation>
-<translation id="469286762610133730">รับเนื้อหาที่ดีขึ้น</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ตัวเลือก}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ตัวเลือก}}</translation>
 <translation id="4698757800236023795">ใช้งานอยู่ (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">รูปภาพและไฟล์ที่แคชไว้</translation>
@@ -994,7 +989,6 @@
 <translation id="4910889077668685004">แอปชำระเงิน</translation>
 <translation id="4911042367886397055">ยินดีต้อนรับกลับมา คุณ <ph name="USER_NAME" /></translation>
 <translation id="4913169188695071480">หยุดรีเฟรช</translation>
-<translation id="4921224083091001889">ลงชื่อเข้าใช้ Chrome เพื่อรับรหัสผ่านและข้อมูลอื่นๆ ในทุกอุปกรณ์ด้วย <ph name="EMAIL" /></translation>
 <translation id="4923173329789776645">องค์กรของคุณไม่แนะนำให้ดาวน์โหลด</translation>
 <translation id="4924398189611529766">เมื่อท่องเว็บในโหมดไม่ระบุตัวตน ผู้อื่นที่ใช้อุปกรณ์นี้จะไม่เห็นกิจกรรมของคุณ คุณจึงท่องเว็บได้แบบส่วนตัวมากขึ้น <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">ภาพหน้าจอ <ph name="CURRENT_DATE_ISO" /></translation>
@@ -1155,7 +1149,6 @@
 <translation id="5601180634394228718">หากต้องการการตั้งค่าเพิ่มเติมที่ใช้ข้อมูลเพื่อปรับปรุงประสบการณ์การใช้งาน Chrome ให้ไปที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
 <translation id="5601924940067278327">รับแท็บและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="5611398002774823980">บันทึกในบัญชี</translation>
-<translation id="5613381935190035031">ลงชื่อเข้าใช้ Chrome ด้วย <ph name="EMAIL" /> เพื่อเข้าถึงแท็บและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="5614625640221885312">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์ก รหัสผ่าน และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="5619633276517849615">องค์กรเปิด Google Safe Browsing ไว้</translation>
 <translation id="5620163320393916465">ไม่มีรหัสผ่านที่บันทึกไว้</translation>
@@ -1242,7 +1235,6 @@
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 หน้าในเรื่องรออ่านของคุณ}other{# หน้าในเรื่องรออ่านของคุณ}}</translation>
 <translation id="5992182727984874868"><ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> Chrome นำสิทธิ์เหล่านี้ออกเนื่องจากคุณไม่ได้เข้าชมเมื่อเร็วๆ นี้</translation>
 <translation id="5995726099713306770">ดาวน์โหลดหน้าเว็บอีกครั้งใช่ไหม</translation>
-<translation id="5998675059699164418">องค์กรกำหนดให้คุณต้องลงชื่อเพื่อเข้าใช้ Chrome</translation>
 <translation id="6000066717592683814">ใช้ Google ต่อ</translation>
 <translation id="6002122790816966947">อุปกรณ์ของคุณ</translation>
 <translation id="6011308810877101166">ปรับปรุงการแนะนำการค้นหา</translation>
@@ -1453,12 +1445,10 @@
 <translation id="6738867403308150051">กำลังดาวน์โหลด…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">ตรวจสอบข้อมูลบัญชีของคุณ</translation>
-<translation id="6746834324024491643">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /> เพื่อเข้าถึงรหัสผ่านและข้อมูลอื่นๆ ในทุกอุปกรณ์</translation>
 <translation id="6751521182688001123">เปิดแท็บใหม่อย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
 <translation id="6754359471209693699">เริ่มค้นหาใหม่</translation>
 <translation id="6756507620369789050">แชร์ความคิดเห็น</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" /></translation>
-<translation id="676305334223455055">ลงชื่อเข้าใช้เพื่อดูเนื้อหาตามความสนใจของคุณ</translation>
 <translation id="6764137532716892442">กลุ่มแท็บ <ph name="GROUP_TITLE" /> ที่แชร์พร้อมกิจกรรมใหม่</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{ระบบจะปิดแท็บที่ไม่ระบุตัวตน <ph name="INCOGNITO_TAB_COUNT" /> แท็บและแท็บอื่นอีก <ph name="TAB_COUNT_ONE" /> แท็บ}other{ระบบจะปิดแท็บที่ไม่ระบุตัวตน <ph name="INCOGNITO_TAB_COUNT" /> แท็บและแท็บอื่นอีก <ph name="TAB_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="6785476624617658922">ข้อกำหนดในการให้บริการเพิ่มเติมของ Chrome และ Chrome OS</translation>
@@ -1758,7 +1748,6 @@
 <translation id="7822705602465980873">เมื่อลงชื่อเข้าใช้ ข้อมูลนี้จะลิงก์กับบัญชี Google ของคุณเพื่อปกป้องคุณในบริการต่างๆ ของ Google เช่น เพิ่มการปกป้องใน Gmail หลังจากเกิดเหตุการณ์ด้านความปลอดภัย</translation>
 <translation id="7824665136384946951">องค์กรปิด Google Safe Browsing ไว้</translation>
 <translation id="7825973332242257878">กลุ่มแท็บ</translation>
-<translation id="7826342993930002256">Chrome ของคุณในทุกๆ ที่</translation>
 <translation id="7845155831233417403">คุณมีหน้าต่างได้ไม่เกิน <ph name="MAX_INSTANCE_COUNT" /> รายการ ปิดหน้าต่างเพื่อดำเนินการต่อ</translation>
 <translation id="7846161022626028328">เกิดข้อผิดพลาด โปรดลองอีกครั้ง</translation>
 <translation id="7846296061357476882">บริการของ Google</translation>
@@ -1815,7 +1804,9 @@
 <translation id="8058746566562539958">เปิดในแท็บใหม่ของ Chrome</translation>
 <translation id="8062594758852531064">การโหลดล่วงหน้าที่เพิ่มขึ้น:</translation>
 <translation id="8063895661287329888">เพิ่มบุ๊กมาร์กไม่สำเร็จ</translation>
+<translation id="8064081231614696741">เลือกโฟลเดอร์อื่น</translation>
 <translation id="8066816452984416180">บุ๊กมาร์กหน้านี้อย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
+<translation id="8068041627541121907">Gemini ต้องการใช้ไมโครโฟนของคุณ</translation>
 <translation id="8072436850275034464">คุณสามารถเปิดแท็บที่เพิ่งปิดไปอีกครั้งได้จากทุกที่ที่คุณใช้ Chrome</translation>
 <translation id="8073388330009372546">เปิดภาพในแท็บใหม่</translation>
 <translation id="8076492880354921740">แท็บ</translation>
@@ -1832,7 +1823,6 @@
 <translation id="8110024788458304985">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chrome</translation>
 <translation id="8110087112193408731">ต้องการแสดงกิจกรรม Chrome ในไลฟ์สไตล์ดิจิทัลไหม</translation>
 <translation id="8118117428362942925">โปรดขอความช่วยเหลือจากผู้ปกครอง (<ph name="PARENT_NAME" />) หากต้องการ</translation>
-<translation id="8118151008374483324">ลงชื่อเข้าใช้ Chrome เพื่อเข้าถึงแท็บและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="8120286190326371840">ไม่มีรหัสผ่านที่ถูกละเมิดในอุปกรณ์นี้</translation>
 <translation id="8122623268651408616">จัดเรียงตามรายการที่ใหม่ที่สุด</translation>
 <translation id="8127542551745560481">แก้ไขหน้าแรก</translation>
@@ -1992,7 +1982,7 @@
 <translation id="8715300232952757586">ระบบจะปิด <ph name="TAB_TITLE" /></translation>
 <translation id="8723453889042591629">แปลหน้านี้อย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
-<translation id="8727043961453758442">ใช้ประโยชน์สูงสุดจาก Chrome</translation>
+<translation id="8727043961453758442">ใช้ประโยชน์จาก Chrome ให้คุ้มค่าที่สุด</translation>
 <translation id="8731268612289859741">รหัสความปลอดภัย</translation>
 <translation id="8738163682604285902">ดูโหมดการอ่านไหม</translation>
 <translation id="8746155870861185046">แชร์ไฮไลต์</translation>
@@ -2124,7 +2114,6 @@
 <translation id="9218430445555521422">ตั้งเป็นค่าเริ่มต้น</translation>
 <translation id="9219103736887031265">ภาพ</translation>
 <translation id="922152298093051471">ปรับแต่ง Chrome</translation>
-<translation id="9222198206152536936">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /> เพื่อเข้าถึงแท็บและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="924447568950697217">กำหนดให้ Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="926205370408745186">นำกิจกรรม Chrome ออกจากไลฟ์สไตล์ดิจิทัล</translation>
 <translation id="927968626442779827">ใช้โหมด Lite ใน Google Chrome</translation>

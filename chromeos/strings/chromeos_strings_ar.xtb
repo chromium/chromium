@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">نوع المصادقة</translation>
 <translation id="1776228893584526149">الدرجة اللونية للخلفية</translation>
 <translation id="1777913922912475695">جسر</translation>
-<translation id="1782199038061388045">الترجمة</translation>
 <translation id="1788485524395674731">يتولّى المشرف إدارة هذا التطبيق</translation>
 <translation id="1792647875738159689">جارٍ إلغاء المسح الضوئي</translation>
 <translation id="1801418420130173017">إيقاف المظهر الداكن</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">النوع</translation>
 <translation id="2448857983905133469">أدوات الدراسة</translation>
 <translation id="2468124392950503650">اختَر طلبًا لإنشاء الصور أو اطّلِع على <ph name="BEGIN_LINK_PROMPTING_GUIDE" />دليل الطلبات<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">‏حسِّن نصًا سبقت كتابته أو أنشئ مسوّدة باستخدام ميزة "مساعدة في الكتابة" التي تستند إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="2475982808118771221">حدث خطأ</translation>
 <translation id="2480572840229215612">حيوانات سلطعون</translation>
 <translation id="248546197012830854">‏الجهاز غير متصل بالإنترنت. عليك الاتصال بشبكة Wi-Fi للاطّلاع على محتوى المساعدة.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">إعادة التقاط</translation>
 <translation id="3479552764303398839">ليس الآن</translation>
 <translation id="3484914941826596830">لا تفصل هذا الجهاز الخارجي أو توقف تشغيل الكمبيوتر أثناء تحديث البرامج الثابتة. يمكنك تصغير هذه النافذة. قد يستغرق هذا التحديث بضع دقائق وقد يتوقف الجهاز الخارجي عن العمل أثناء التحديث.</translation>
-<translation id="3486220673238053218">تعريف</translation>
 <translation id="3487866404496702283">‏ملاحظات حول ميزة Mahi</translation>
 <translation id="3488065109653206955">نشطة جزئيًا</translation>
 <translation id="3492882532495507361">مكتب <ph name="OFFICE_STYLE" /> بألوان <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">اختيار مظهر</translation>
 <translation id="3644695927181369554">اقتراح غير مناسب</translation>
 <translation id="3651050199673793219">اختيار وحدة قياس درجة الحرارة</translation>
-<translation id="3661106764436337772">الكتابة بشكلٍ أسرع وبأسلوب أكثر ثقة</translation>
 <translation id="3662461537616691585">الخمريّ والكستنائي</translation>
 <translation id="3664755900672940272">تم ترتيب نماذج الطلبات عشوائيًا</translation>
 <translation id="3668449597372804501">خلفية تعرض منظرًا انسيابيًا للسُحب</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">متوقفة</translation>
 <translation id="4777310452073659583">للحصول على النص، عليك إعادة تشغيل <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">الجمشت</translation>
-<translation id="4782311465517282004">يمكنك الحصول على تعريفات أو ترجمات للنصوص أو تحويل الوحدات من خلال النقر بزر الماوس الأيمن على النص أو النقر عليه مع الاستمرار.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> صورة</translation>
 <translation id="4793710386569335688">للحصول على مزيد من المساعدة، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />مركز المساعدة<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">خوارزمية الضغط</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">إيقاف تشغيل المظهر الفاتح</translation>
 <translation id="7401543881546089382">حذف الاختصار</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> جاهز للتحديث</translation>
-<translation id="741244894080940828">التحويل</translation>
 <translation id="7415801143053185905">‏وقت استجابة بروتوكول HTTP طويل جدًا.</translation>
 <translation id="7418738250896500352">عدد الكلمات كبير جدًا ولا يمكن تبسيط النص</translation>
 <translation id="7425037327577270384">مساعدة في الكتابة</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">التخزين</translation>
 <translation id="885704831271383379">إضاءة داكنة للوحة المفاتيح</translation>
 <translation id="8863170912498892583">تفعيل المظهر الداكن</translation>
-<translation id="8863888432376731307">الحصول على <ph name="INTENT" /> للطلب المتعلّق بـ "<ph name="QUERY" />" وغير ذلك</translation>
 <translation id="8864415976656252616">ما مِن محتوًى مقترَح. يمكنك الاطّلاع على أهم مقالات المحتوى المساعِد ذات الصلة.</translation>
 <translation id="8868741746785112895">‏المعرّف الفريد العمومي (GUID)</translation>
 <translation id="8876270629542503161">الجهاز هو جهاز لوحي.</translation>

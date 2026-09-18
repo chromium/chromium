@@ -521,7 +521,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6166185671393271715">Importă parolele în Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
-<translation id="6177442314419606057">Caută în Chrome</translation>
 <translation id="6180522807229584611">Această filă folosește resurse suplimentare. Pentru a-ți îmbunătăți performanța, permite-i browserului Chrome să le dezactiveze.</translation>
 <translation id="6182736845697986886">Nu s-a instalat, din cauza unei erori interne a serverului de actualizare.</translation>
 <translation id="6192058120268468905">Contul tău în Chrome</translation>
@@ -553,6 +552,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6434035853014503219">Mulțumim că ai ales Chrome ca browser prestabilit!</translation>
 <translation id="6438015621983209660">Extinde Navigarea sigură îmbunătățită cu Chrome pe telefon.</translation>
 <translation id="6442774133615368941">Cumpără, tradu și identifică ceea ce vezi cu camera foto în Chrome pentru iOS</translation>
+<translation id="6446105560007692480">pentru a căuta cu Chrome sau a personaliza în <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" /></translation>
 <translation id="6448835208126432197">Pentru a selecta o parte a ecranului în Gemini în Chrome, folosește comanda rapidă de la tastatură.</translation>
 <translation id="6473905796280459355">Accesează pagina Despre Chrome</translation>
 <translation id="6481963882741794338">Conectează Chrome și alte servicii Google pentru personalizare și alte scopuri</translation>
@@ -574,6 +574,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6612152958212564387">Nu trimiți statistici de utilizare și rapoarte de blocare la Google. <ph name="BEGIN_LINK" />Gestionează<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Păstrează parolele, marcajele și istoricul perfect sincronizate pe toate dispozitivele setând Chrome ca browser prestabilit.</translation>
 <translation id="6631524303639368205">Continuă de unde ai rămas: Chrome a restabilit filele din ultima sesiune. Poți dezactiva această opțiune în</translation>
+<translation id="6632012506031284914">pentru a căuta cu Chrome.</translation>
 <translation id="6632473616050862500">ChromeOS Flex este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar.</translation>
 <translation id="6634299872736643004">Modificările acestei setări se vor aplica după ce Chrome repornește.</translation>
 <translation id="6660596345553328257">Te conectezi la Chrome?</translation>
@@ -590,7 +591,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6750954913813541382">Pentru a corecta erorile de scriere, Chrome trimite la Google textul pe care îl introduci în browser</translation>
 <translation id="6760235774835597023">Accelerează site-urile cu motorul V8 din Chrome, dar reduce ușor rezistența Chrome la atacuri. Setarea este activată.</translation>
 <translation id="677276454032249905">Ieși din Chrome oricum?</translation>
-<translation id="6777654166489463890">Întreabă despre conținut din afara browserului Chrome, cum ar fi o altă aplicație sau un alt fișier pe care l-ai deschis</translation>
 <translation id="6794858689789885890">Șterge întotdeauna datele privind site-urile de pe dispozitiv când închizi Chrome</translation>
 <translation id="6800285125190089494">Conectează-te mai rapid la site-uri folosind parolele salvate pentru Chrome pe iOS</translation>
 <translation id="6831043979455480757">Tradu</translation>

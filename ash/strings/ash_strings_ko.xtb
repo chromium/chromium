@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">닫기</translation>
 <translation id="152629053603783244">Linux 다시 시작</translation>
 <translation id="1526448108126799339">새 창에서 새 탭 열기</translation>
-<translation id="1528259147807435347">지난주에 수정됨</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> 계정을 사용하려면 모든 계정에서 로그아웃해야 합니다. 로그아웃하려면 취소를 선택하여 뒤로 돌아가세요. 그런 다음 시간을 선택하여 상태 영역을 열고 로그아웃을 선택합니다. 그리고 <ph name="USER_EMAIL_ADDRESS_2" /> 계정으로 로그인하면 됩니다.</translation>
 <translation id="15373452373711364">큰 마우스 커서</translation>
 <translation id="1545331255323159851">휴대전화의 최근 사진, 미디어, 알림 보기</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 소유자가 이 기기의 진단 및 사용 데이터를 Google에 전송할지 선택할 수 있습니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />측정항목에 관해 자세히 알아보기<ph name="BEGIN_LINK2_END" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">PIN 입력</translation>
 <translation id="2412593942846481727">업데이트 가능</translation>
-<translation id="2416438829169535743">뷰를 종료하시겠습니까?</translation>
 <translation id="2417486498593892439">네트워크에 로그인</translation>
 <translation id="2423619675829330672">PIN 입력 횟수 한도를 초과했습니다. <ph name="TIME_LEFT" /> 후에 다시 시도해 주세요.</translation>
 <translation id="2426051945783024481">카메라 프레임이 자동으로 중앙에 위치함</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다. 허가하기 전에 다음 패스키가 기기에 표시되는지 확인하세요. <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
 <translation id="2437771564543046790">배터리가 부족합니다. 절전 모드가 사용 설정되었습니다</translation>
-<translation id="243878895369688216">어제 열림</translation>
 <translation id="2440978926514840421">GIF 녹화 완료됨</translation>
 <translation id="2441427462554639370">저장공간이 매우 부족하여 녹화가 종료되었습니다.</translation>
 <translation id="2445449901874883781">고밀도 사용</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">키오스크 애플리케이션을 다운로드할 수 없습니다.</translation>
 <translation id="3563558822383875692">DLC를 구성합니다.</translation>
 <translation id="3563775809269155755">핫스팟 사용</translation>
-<translation id="3566240529365775567">방금 열림</translation>
 <translation id="3571734092741541777">설정</translation>
 <translation id="3573179567135747900">'<ph name="FROM_LOCALE" />'(으)로 다시 변경(다시 시작해야 함)</translation>
 <translation id="3576141592585647168">시간대 변경</translation>
@@ -960,7 +956,6 @@
 <translation id="3756485814916578707">화면 전송 중</translation>
 <translation id="3765246971671567135">오프라인 데모 모드 정책을 읽을 수 없습니다.</translation>
 <translation id="3765841382945324995"><ph name="OLD_SHORTCUT" />에서 <ph name="SIX_PACK_KEY_NAME" /> 단축키가 <ph name="NEW_SHORTCUT" /> 단축키로 업데이트됩니다.</translation>
-<translation id="3765841986579723851">오늘 수정됨</translation>
 <translation id="3772109172035555611">TrackPoint 맞춤설정</translation>
 <translation id="3773700760453577392">관리자가 <ph name="USER_EMAIL" />의 멀티 로그인을 허용하지 않습니다. 계속하려면 모든 사용자가 로그아웃해야 합니다.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> 연결 중</translation>
@@ -1000,7 +995,6 @@
 <translation id="3873915545594852654">ARC++에 문제가 발생했습니다.</translation>
 <translation id="3879748587602334249">다운로드 관리자</translation>
 <translation id="3884007280698606545">USB 한도 도달</translation>
-<translation id="3886872229787704059">오늘 열림</translation>
 <translation id="3892148308691398805">텍스트 복사</translation>
 <translation id="3893630138897523026">ChromeVox(음성 피드백)</translation>
 <translation id="3898464793473355515">화면을 시계 방향으로 90도 회전</translation>
@@ -1791,7 +1785,6 @@
 <translation id="6095008505822982596">말하기 속도</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> 제공업체를 통해 연결 추가</translation>
 <translation id="6095541101974653012">로그아웃됨</translation>
-<translation id="6099678161144790572">지난달에 수정됨</translation>
 <translation id="6103838137565245112">시스템</translation>
 <translation id="6108952804512516814">AI로 만들기</translation>
 <translation id="6114505516289286752">음성 파일 <ph name="LANGUAGE" />개 다운로드됨</translation>
@@ -1948,7 +1941,6 @@
 <translation id="6555373427270923730">주소 표시줄에 웹 주소를 입력한 후 <ph name="MODIFIER" /><ph name="KEY" /> 키 누르기</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 새로 설치됨</translation>
-<translation id="6559158502366839560">더 많은 앱과 게임 둘러보기</translation>
 <translation id="6560151649238390891">추천 그림 이모티콘 삽입됨</translation>
 <translation id="6562447480759345110">집중 모드 종료</translation>
 <translation id="6565007273808762236">eSIM 연결을 사용할 수 없음</translation>
@@ -2054,7 +2046,6 @@
 <translation id="6848716236260083778">지문을 설정하려면 자녀가 지문 센서를 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다</translation>
 <translation id="6852052252232534364">클릭하여 활성화</translation>
 <translation id="6852628153543175788">10분 추가</translation>
-<translation id="6855029042976311970">방금 수정됨</translation>
 <translation id="6856708615407876657">검색 결과 카테고리 전환</translation>
 <translation id="6856756288284651804">Chromebook 업데이트됨</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" />초</translation>
@@ -2149,7 +2140,6 @@
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> 열기</translation>
 <translation id="7119327711295338600">다음 단어 또는 글자 선택</translation>
 <translation id="7124556000457919678">사용 설정 시 마우스 키 일시중지 및 재개</translation>
-<translation id="7126996685418858413">지난주에 열림</translation>
 <translation id="7131634465328662194">자동으로 로그아웃됩니다.</translation>
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144878232160441200">다시 시도</translation>
@@ -2180,7 +2170,6 @@
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">후면 마이크</translation>
 <translation id="7258225044283673131">애플리케이션이 응답하지 않습니다. '강제 종료'를 선택하여 앱을 닫으세요.</translation>
-<translation id="7258828758145722155">어제 수정됨</translation>
 <translation id="726276584504105859">화면 분할을 사용하려면 여기를 드래그하세요.</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> 줄이기</translation>
 <translation id="7267875682732693301">손가락을 뗀 후 다시 터치하여 지문의 다른 부분을 추가하세요.</translation>
@@ -2253,7 +2242,6 @@
 <translation id="7491962110804786152">tab</translation>
 <translation id="7497767806359279797">언어 및 키보드 선택</translation>
 <translation id="7507162824403726948">본인 인증을 완료하세요</translation>
-<translation id="7508690557411636492">지난달에 열림</translation>
 <translation id="7509246181739783082">본인 확인</translation>
 <translation id="7512509370370076552">마우스 오른쪽 버튼 클릭 단축키가 Alt + 클릭에서 <ph name="LAUNCHER_KEY_NAME" /> 키 + 클릭으로 업데이트되었습니다.</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, 선택되지 않음</translation>
@@ -2707,7 +2695,6 @@
 <translation id="8753368202781196133">현재 지원되지 않는 언어입니다.</translation>
 <translation id="8755498163081687682">본인 확인: <ph name="ORIGIN_NAME" />에서 본인 확인을 요청합니다</translation>
 <translation id="875593634123171288">VPN 설정 표시</translation>
-<translation id="8756799553341497810">이 뷰를 종료한 후 앱 레이아웃 맞춤설정을 시작할 수 있습니다.</translation>
 <translation id="8759408218731716181">멀티 로그인을 설정할 수 없음</translation>
 <translation id="8759753423332885148">자세히 알아보기</translation>
 <translation id="8760172428247796445">지금 <ph name="DEVICE_TYPE" /> 기기가 잠깁니다.

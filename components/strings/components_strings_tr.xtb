@@ -837,6 +837,8 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2384307209577226199">Kuruluşun varsayılan ayarı</translation>
 <translation id="2385809941344967209">Chrome ayarlarınızdan Chrome'u güncelleyin</translation>
 <translation id="2386255080630008482">Sunucunun sertifikası iptal edildi.</translation>
+<translation id="2387424091060104123">Gemini tarafından önerildi · <ph name="SRC_LINK" />Kaynakları göster<ph name="END_SRC_LINK" />
+Bu öneriyi Chrome'dan kaldırabilirsiniz. Orijinal kaynağınız silinmez. <ph name="MANAGE_LINK" />Gelişmiş otomatik doldurmayı yönetme<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Detaylandır</translation>
 <translation id="2392959068659972793">Hiçbir değer ayarlanmamış politikaları göster</translation>
 <translation id="239429038616798445">Bu gönderim yöntemi kullanılamıyor. Farklı bir yöntem deneyin.</translation>
@@ -1518,6 +1520,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Bu sayfa hazır olduğunda Chrome tarafından bilgilendirileceksiniz. &lt;a&gt;İptal&lt;/a&gt;</translation>
 <translation id="3581499772329034229">Sekmeleri otomatik olarak ekleme</translation>
+<translation id="3582670569275100909">Gönderimler</translation>
 <translation id="3582930987043644930">Ad ekleyin</translation>
 <translation id="3583757800736429874">Taşımayı &amp;Yeniden Yap</translation>
 <translation id="3584299510153766161">Altta ikili delik</translation>
@@ -3115,7 +3118,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6246382863801034910">Araç</translation>
 <translation id="6246868321321344665">Kuruluşunuz hem iş profilindeki hem de kişisel profildeki şifreler ve geçmiş gibi tarama verilerini görebilir</translation>
 <translation id="6248479108671123143"><ph name="MEMBER_FIRST_NAME" /> bu sekmeyi değiştirdi, <ph name="TAB_TITLE" /></translation>
-<translation id="6248988683584659830">Ayarlarda ara</translation>
+<translation id="6248988683584659830">Ayarlarda arayın</translation>
 <translation id="6251906504834538140">{0,plural, =1{Dosyanın taşınması engellendi}other{<ph name="FILE_COUNT" /> dosyanın taşınması engellendi}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'da indirdiğiniz dosyaları yönetmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="6253380015872250643">Kartı Google Cüzdan'a kaydedin</translation>
@@ -4011,6 +4014,7 @@ Ek ayrıntılar:
 <translation id="7758069387465995638">Bağlantıyı güvenlik duvarı veya virüsten korunma yazılımı engellemiş olabilir.</translation>
 <translation id="7759147511335618829">MIDI cihaz kontrolü ve yeniden programlama</translation>
 <translation id="7759809451544302770">İsteğe bağlı</translation>
+<translation id="7760566304700414795">Gönderim</translation>
 <translation id="776110834126722255">Kullanımdan kaldırıldı</translation>
 <translation id="7761159795823346334">Kameraya izin verilsin mi?</translation>
 <translation id="7761701407923456692">Sunucu sertifikası URL ile eşleşmiyor.</translation>
@@ -4356,6 +4360,7 @@ Ek ayrıntılar:
 <translation id="8371841335382565017">Yayın için cihaz listesini göster</translation>
 <translation id="8371889962595521444">Özel kök sertifikalar</translation>
 <translation id="8374636051559112948">Değişkenlik gösterir</translation>
+<translation id="8377507422902936905">Siparişler</translation>
 <translation id="837840316697671463">Cihazınızda bulamadığınız dosyaları <ph name="CLOUD_PROVIDER" /> sağlayıcısında arayın.</translation>
 <translation id="8378714024927312812">Kuruluşunuz tarafından yönetiliyor</translation>
 <translation id="8380941800586852976">Tehlikeli</translation>

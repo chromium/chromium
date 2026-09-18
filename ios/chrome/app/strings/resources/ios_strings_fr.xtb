@@ -15,6 +15,7 @@
 <translation id="1035980983510608210">En fermant tous les onglets, vous fermez aussi les onglets épinglés.</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1036436692654972538">Enregistre sur votre appareil</translation>
+<translation id="1038106730571050514">Afficher les suggestions</translation>
 <translation id="1041322626941363065">Recevoir une alerte si des mots de passe sont compromis lors d'une violation des données</translation>
 <translation id="1046742265332833834">Thème bleu</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
@@ -231,7 +232,6 @@
 <translation id="1671568970992212376">Enregistrez des photos dans Google Photos et accédez-y à tout moment.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> vers <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Conformément aux règles de votre organisation, ce fichier peut contenir des informations sensibles</translation>
-<translation id="1683276189281028863">Check-up Mots de passe</translation>
 <translation id="1689333818294560261">Nom de la carte</translation>
 <translation id="169048873465870056">Supprimer l'onglet et le groupe ?</translation>
 <translation id="1692115862433274081">Utiliser un autre compte</translation>
@@ -241,7 +241,6 @@
 <translation id="1709916727352927457">Supprimer la clé d'accès</translation>
 <translation id="1715515772563243997">Si vous faites confiance à <ph name="SITE" />, vous pouvez utiliser un mot de passe enregistré pour vous connecter.</translation>
 <translation id="1718835860248848330">Dernière heure</translation>
-<translation id="1726013039921383235">Toujours autoriser</translation>
 <translation id="1728549374069268714">Coller et rechercher</translation>
 <translation id="1732468323901456775">Activer les notifications "<ph name="MODULE_NAME" />"</translation>
 <translation id="1739364174357629566">Mettre à jour le Known Traveler Number</translation>
@@ -258,7 +257,6 @@
 <translation id="1752547299766512813">Enreg. mots de passe</translation>
 <translation id="1764070164487214210">Itinéraire</translation>
 <translation id="1764511703783285459">L'autre gestionnaire de mots de passe n'a partagé aucuns mots de passe ni clés d'accès</translation>
-<translation id="1765555082983153259">Chrome souhaite accéder à votre micro</translation>
 <translation id="1767766085187034454">Google Traduction</translation>
 <translation id="1771016937398045251">Menu "Outils"</translation>
 <translation id="1772468122139624049">Impossible d'actualiser les onglets</translation>
@@ -268,6 +266,7 @@
 <translation id="17906873777101817">Proposer d'enregistrer les mots de passe et les clés d'accès</translation>
 <translation id="1794893174442046596">Groupe d'onglets</translation>
 <translation id="1807893857950749072">Autoriser les notifications de suivi des prix…</translation>
+<translation id="1808142805674973090">Changer de mode</translation>
 <translation id="1809929083618343438">Cela supprime les informations sélectionnées de Chrome, mais pas de votre compte Google.</translation>
 <translation id="1810976980198522421">Annuler</translation>
 <translation id="1815941218935345331">Code secret</translation>
@@ -454,6 +453,7 @@
 <translation id="2381405137052800939">Paramètres de base</translation>
 <translation id="2384692388811649784">Masquer les onglets de navigation privée</translation>
 <translation id="2386793615875593361">1 photo sélectionnée</translation>
+<translation id="2388949452472546050">Les sites que vous consultez, y compris Google, sont responsables de la façon dont ils répondent à cette demande. Selon les lois de votre région, les sites peuvent répondre en limitant la vente et le partage de vos données ou leur utilisation pour des annonces personnalisées. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2390457533592708044">Masquer "<ph name="MODULE_NAME" />"</translation>
 <translation id="2393230427496852974">Lire l'avis des internautes</translation>
 <translation id="2394659309569789395">Ouvrir le site quand même</translation>
@@ -609,6 +609,7 @@
 <translation id="2902312830803030883">Autres actions</translation>
 <translation id="2904788871580817212">Baisse de prix dans votre onglet ouvert, de <ph name="PREVIOUS_PRICE" /> à <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Vous avez <ph name="NUMBER_OF_PASSWORDS" /> mots de passe réutilisés qui peuvent compromettre votre sécurité.</translation>
+<translation id="2916433579958049718">Profitez de Gemini Intelligence sur chaque lien</translation>
 <translation id="291754862089661335">Positionnez le QR code ou le code-barres dans ce cadre</translation>
 <translation id="2918688092312652908">Marquer comme non lu</translation>
 <translation id="2922210239002704889">Accédez à la page d'accueil ou au clavier</translation>
@@ -794,7 +795,6 @@
 <translation id="3565012355885596568">Impossible de charger les images</translation>
 <translation id="3565930036634619844">Onglet. <ph name="TAB_INDEX" /> sur <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Enregistrer autrement</translation>
-<translation id="3567446754270467567">Tâche de navigation sécurisée avec protection renforcée terminée.</translation>
 <translation id="3572503683475187385">L'onglet actuel est partagé avec Gemini lorsque vous démarrez une nouvelle discussion. Lorsque vous partagez un onglet avec Gemini, son contenu et son URL sont envoyés à Google. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Dans votre compte Google</translation>
 <translation id="3575234738189584619">Recherchez avec Lens</translation>
@@ -849,6 +849,7 @@
 <translation id="3779810277399252432">Aucune connexion Internet.</translation>
 <translation id="3782614601387961027">Fermer l'avertissement</translation>
 <translation id="3789841737615482174">Installer</translation>
+<translation id="3793603310364129123">Moins d'étapes, des liens plus rapides</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803696231112616155">Proposer de traduire ce site</translation>
 <translation id="3810973564298564668">Gérer</translation>
@@ -932,7 +933,6 @@
 <translation id="4021447724486050609">Mettre à jour votre navigateur</translation>
 <translation id="4021931095789478915">Ajouter ${url} à la liste de lecture</translation>
 <translation id="4028871427853484857">Enregistrer dans le compte…</translation>
-<translation id="4034354558246368274">Autoriser cette fois-ci</translation>
 <translation id="4038354071007134711">Aucune appli sur appareil ne peut ouvrir fichier.</translation>
 <translation id="4042870976416480368">Rechercher sur la page</translation>
 <translation id="4045441967987592849">Rouvrir</translation>
@@ -1012,7 +1012,6 @@
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="4309403553630140242">Appuyez deux fois pour obtenir plus d'informations</translation>
 <translation id="4310738531374808763">Personnalisez votre page d'accueil</translation>
-<translation id="4316794575239200608">Ni vos conversations avec Gemini, ni vos <ph name="BEGIN_LINK" />données Google Workspace<ph name="END_LINK" /> ne seront examinées par des réviseurs humains ou utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="4320848494125124980">Récents</translation>
 <translation id="4322394346347055525">Fermer les autres onglets</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1088,7 +1087,6 @@
 <translation id="4578835633387306383">Activer…</translation>
 <translation id="4580621046861724270">Certains favoris ne sont pas enregistrés</translation>
 <translation id="4580716718466706433">Accédez au Gestionnaire de mots de passe</translation>
-<translation id="4584778196791098089">Tâche de navigation privée terminée.</translation>
 <translation id="4585751637295612750">Ouvrez un nouvel onglet pour l'ajouter à votre question</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Page ajoutée à votre liste de lecture}one{{count} page ajoutée à votre liste de lecture}other{{count} pages ajoutées à votre liste de lecture}}</translation>
@@ -1106,7 +1104,6 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> mots de passe réutilisés</translation>
 <translation id="4632655012900268062">Personnaliser les cartes</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>
-<translation id="4634633632339959267">Les discussions sont examinées et utilisées pour améliorer l'IA de Google. <ph name="BEGIN_LINK" />Découvrez les options qui s'offrent à vous.<ph name="END_LINK" /> Des <ph name="BEGIN_LINK" />informations sur votre position<ph name="END_LINK" /> sont aussi stockées avec votre activité.</translation>
 <translation id="4636930964841734540">Infos</translation>
 <translation id="4641425577292284174">Vérifiez si vos paramètres sont les plus sûrs ou s'il faut vérifier quelque chose</translation>
 <translation id="4642472735733036929">Suivi des prix interrompu</translation>
@@ -1162,7 +1159,6 @@
 <translation id="4796496140132859135">Groupe d'onglets. Réduit.</translation>
 <translation id="4800912004582762296">Clic sur la page…</translation>
 <translation id="4802185666270672526">Masquer "Demander la version pour ordinateur"</translation>
-<translation id="4802678077012980341">Tâche Check-up Mots de passe terminée.</translation>
 <translation id="4803185665210547709">Géré par votre organisation.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">Dessinez, mettez en surbrillance ou appuyez pour sélectionner ce que vous voulez rechercher et obtenir des résultats sans quitter votre onglet</translation>
@@ -1380,11 +1376,11 @@
 <translation id="5467163657366219870">Désactiver Maps Preview</translation>
 <translation id="5474397204728336997">Mots de passe de la famille, nouvelles personnalisations et plus encore. Appuyez pour en savoir plus.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Aucun mot de passe importé}=1{{count} mot de passe importé}one{{count} mot de passe importé}other{{count} mots de passe importés}}</translation>
+<translation id="5477188385487393357">Ne perdez plus de temps à copier-coller</translation>
 <translation id="5478327362747197944">Créez des événements d'agenda directement en cliquant sur une date depuis une page Web.</translation>
 <translation id="5482922178977937393">Voulez-vous recevoir des notifications sur l'actualité, le sport et plus, en fonction de vos centres d'intérêt ?</translation>
 <translation id="5483838506518938965">Tout est prêt</translation>
 <translation id="5487521232677179737">Effacer les données</translation>
-<translation id="5491208689472430746">Suppression rapide terminée.</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="5499648645977734083">Gérer les modes de paiement…</translation>
 <translation id="5501346139932663133">Applis Google</translation>
@@ -1460,7 +1456,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5718049162805123412">Vous devriez les modifier immédiatement</translation>
 <translation id="5721040778297053709">Positionnez la carte de crédit dans ce cadre</translation>
 <translation id="572328651809341494">Onglets récents</translation>
-<translation id="5724590854763964497">Par défaut, l'onglet actuel est partagé lorsque vous démarrez une nouvelle discussion. Lorsqu'un onglet est partagé, son contenu et son URL sont envoyés à Google mais ne sont pas utilisés pour améliorer les modèles d'IA générative. Vous pouvez modifier ce paramètre à tout moment.</translation>
 <translation id="5724941645893276623">Pour naviguer sur le Web en mode privé, ajoutez un onglet</translation>
 <translation id="5728072125198221967">Services Google associés</translation>
 <translation id="5728700505257787410">Désolé, problème lors de la connexion à votre compte.</translation>
@@ -1549,6 +1544,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6006672969046233841">Nouvel onglet</translation>
 <translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6012140227487808125">Chiffrement…</translation>
+<translation id="6014801569448771146">Vérifier vos mots de passe</translation>
 <translation id="6027619584715411062">Connectez-vous pour accéder à vos favoris, mots de passe et bien plus sur tous vos appareils.</translation>
 <translation id="6027945736510816438">Vous vouliez dire <ph name="WEBSITE" /> ?</translation>
 <translation id="6032845897905314562">nouvelle fonctionnalité</translation>
@@ -1746,6 +1742,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6585618849026997638">Ajoutez les pages qui vous intéressent à vos favoris pour pouvoir y revenir facilement</translation>
 <translation id="6589001036857939353">Fusionner les doublons</translation>
 <translation id="659407965921887085">Cette carte présente les baisses de prix sur le Web pour les produits que vous suivez actuellement</translation>
+<translation id="6596324345367949437">Gemini n'est pas disponible en mode navigation privée</translation>
 <translation id="6596481460663245319">Rechercher l'image avec Google</translation>
 <translation id="6601302169302852717">Image enregistrée dans Google Photos pour <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Saisie automatique et mots de passe</translation>
@@ -1941,6 +1938,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="721218676460477064">Résumer cet article</translation>
 <translation id="7215621211572884440">Pop-ups autorisés</translation>
 <translation id="7218491361283758048">Code postal</translation>
+<translation id="7220786058474068424">Traitement en cours</translation>
 <translation id="7221173315674413369">Découvrez de nouvelles fonctionnalités et des astuces dans "Nouveautés"</translation>
 <translation id="7223102419539744003">Fermer l'onglet</translation>
 <translation id="7223134495231529579">Enregistrer dans Téléchargements</translation>

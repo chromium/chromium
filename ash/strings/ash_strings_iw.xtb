@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">סגירה</translation>
 <translation id="152629053603783244">‏הפעלת Linux מחדש</translation>
 <translation id="1526448108126799339">פתיחת כרטיסייה חדשה בחלון חדש</translation>
-<translation id="1528259147807435347">נערך בשבוע האחרון</translation>
 <translation id="1536604384701784949">כדי להשתמש ב-<ph name="USER_EMAIL_ADDRESS" />, עליך לצאת תחילה מכל החשבונות. כדי לצאת, בוחרים ב'ביטול' וחוזרים חזרה. לוחצים על השעון כדי לפתוח את אזור הסטטוס ובוחרים באפשרות 'יציאה'. אחר כך נכנסים שוב אל <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">סמן עכבר גדול</translation>
 <translation id="1545331255323159851">הצגת התמונות, המדיה וההתראות שבטלפון מהזמן האחרון</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">‏שליחת מידע לגבי אופן השימוש בנתונים וניתוח הביצועים. כדי לתרום לשיפור חוויית המשתמש של הילד או הילדה ב-Android, אפשר לשלוח אל Google נתוני אבחון, נתוני מכשיר ונתוני שימוש באפליקציות באופן אוטומטי. הנתונים האלה לא ישמשו כדי לזהות את הילד או הילדה שלך, והם יעזרו לנו לשמור על היציבות של המערכת ושל האפליקציות ולבצע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לשפר את האפליקציות של Google ויעזרו לשותפים של Google, כמו מפתחים של Android. <ph name="BEGIN_LINK1" />ההגדרה<ph name="END_LINK1" /> הזו נאכפת על ידי הבעלים. יכול להיות שהבעלים יבחרו לשלוח אל Google נתוני אבחון ונתוני שימוש במכשיר. אם ההגדרה 'פעילות באפליקציות ובאתרי אינטרנט נוספים' הופעלה לילד או לילדה שלך, יכול להיות שהנתונים האלה יישמרו בחשבון שלהם ב-Google. <ph name="BEGIN_LINK2" />מידע נוסף על מדדים<ph name="BEGIN_LINK2_END" />מידע נוסף<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">יש להזין את קוד האימות</translation>
 <translation id="2412593942846481727">יש עדכון זמין</translation>
-<translation id="2416438829169535743">לצאת מהתצוגה?</translation>
 <translation id="2417486498593892439">כניסה לרשת</translation>
 <translation id="2423619675829330672">היו יותר מדי ניסיונות להזנת קוד האימות. צריך להמתין <ph name="TIME_LEFT" /> ולנסות שוב.</translation>
 <translation id="2426051945783024481">פריים המצלמה מורכז באופן אוטומטי</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה. לפני מתן אישור, יש לוודא שמפתח הסיסמה הבא מוצג במכשיר הזה: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
 <translation id="2437771564543046790">הסוללה חלשה. התכונה 'חיסכון בסוללה' מופעלת</translation>
-<translation id="243878895369688216">נפתח אתמול</translation>
 <translation id="2440978926514840421">‏התבצעה הקלטת GIF</translation>
 <translation id="2441427462554639370">ההקלטה הסתיימה כי נפח האחסון כמעט נגמר</translation>
 <translation id="2445449901874883781">שימוש בדחיסות גבוהה</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">לא ניתן היה להוריד את יישום הקיוסק.</translation>
 <translation id="3563558822383875692">‏DLC בתהליך הגדרה.</translation>
 <translation id="3563775809269155755">הפעלת נקודה לשיתוף אינטרנט</translation>
-<translation id="3566240529365775567">נפתח ממש עכשיו</translation>
 <translation id="3571734092741541777">הגדרה</translation>
 <translation id="3573179567135747900">לשינוי בחזרה ל"<ph name="FROM_LOCALE" />" (נדרשת הפעלה מחדש)</translation>
 <translation id="3576141592585647168">שינוי אזור הזמן</translation>
@@ -960,7 +956,6 @@
 <translation id="3756485814916578707">העברת המסך מתבצעת</translation>
 <translation id="3765246971671567135">לא ניתן לקרוא מדיניות של מצב הדגמה לא מקוון.</translation>
 <translation id="3765841382945324995">מקשי הקיצור של <ph name="SIX_PACK_KEY_NAME" /> היו <ph name="OLD_SHORTCUT" /> ועכשיו הם <ph name="NEW_SHORTCUT" /></translation>
-<translation id="3765841986579723851">נערך היום</translation>
 <translation id="3772109172035555611">‏התאמה אישית של TrackPoint</translation>
 <translation id="3773700760453577392">מנהל מערכת ביטל הרשאה של כניסה עם מספר חשבונות עבור <ph name="USER_EMAIL" />. כדי להמשיך, כל המשתמשים חייבים לבצע יציאה.</translation>
 <translation id="3779139509281456663">מתבצע חיבור של <ph name="NAME" /></translation>
@@ -1000,7 +995,6 @@
 <translation id="3873915545594852654">‏התרחשה בעיה הקשורה ל-ARC++‎.</translation>
 <translation id="3879748587602334249">מנהל ההורדות</translation>
 <translation id="3884007280698606545">‏חיברת את המספר המקסימלי של התקני USB</translation>
-<translation id="3886872229787704059">נפתח היום</translation>
 <translation id="3892148308691398805">העתקת הטקסט</translation>
 <translation id="3893630138897523026">‏ChromeVox (משוב קולי)</translation>
 <translation id="3898464793473355515">סיבוב המסך ב-90 מעלות בכיוון השעון</translation>
@@ -1795,7 +1789,6 @@
 <translation id="6095008505822982596">קצב דיבור</translation>
 <translation id="6095425951508823973">הוספת חיבור באמצעות <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">נותקת מהחשבון.</translation>
-<translation id="6099678161144790572">נערך בחודש האחרון</translation>
 <translation id="6103838137565245112">מערכת</translation>
 <translation id="6108952804512516814">‏יצירה בעזרת AI</translation>
 <translation id="6114505516289286752">הורדת קובצי הדיבור של <ph name="LANGUAGE" /> הסתיימה</translation>
@@ -1952,7 +1945,6 @@
 <translation id="6555373427270923730">הקלדת כתובת אינטרנט בסרגל הכתובות והקשה על <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 התקנה חדשה</translation>
-<translation id="6559158502366839560">עוד אפליקציות ומשחקים מעניינים</translation>
 <translation id="6560151649238390891">ההצעה יושמה</translation>
 <translation id="6562447480759345110">הפסקת מצב הריכוז</translation>
 <translation id="6565007273808762236">‏החיבור ל-eSIM לא זמין</translation>
@@ -2058,7 +2050,6 @@
 <translation id="6848716236260083778">כדי להגדיר טביעת אצבע, על הילד או הילדה לגעת בחיישן טביעות האצבע. נתוני טביעות האצבע של הילד או הילדה מאוחסנים באופן מאובטח ואף פעם לא נשלחים מה-<ph name="DEVICE_TYPE" /> הזה.</translation>
 <translation id="6852052252232534364">תופעל בלחיצה</translation>
 <translation id="6852628153543175788">הוספה של 10 דקות</translation>
-<translation id="6855029042976311970">נערך ממש עכשיו</translation>
 <translation id="6856708615407876657">הפעלה או השבתה של סינון תוצאות החיפוש לפי קטגוריות</translation>
 <translation id="6856756288284651804">‏‫Chromebook עודכן</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> שניות</translation>
@@ -2153,7 +2144,6 @@
 <translation id="7118597077555700347">פתיחה של <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">בחירת המילה או האות הבאה</translation>
 <translation id="7124556000457919678">כשההגדרה מופעלת, אפשר להשהות או להמשיך את השליטה בעכבר מהמקלדת</translation>
-<translation id="7126996685418858413">נפתח בשבוע האחרון</translation>
 <translation id="7131634465328662194">המערכת תוציא אותך מהחשבון באופן אוטומטי.</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
@@ -2184,7 +2174,6 @@
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">מיקרופון אחורי</translation>
 <translation id="7258225044283673131">האפליקציה לא מגיבה. כדי לסגור את האפליקציה, יש לבחור באפשרות "אילוץ סגירה".</translation>
-<translation id="7258828758145722155">נערך אתמול</translation>
 <translation id="726276584504105859">לשימוש במסך מפוצל יש לגרור לכאן</translation>
 <translation id="7264788308526527464">הפחתה ב-<ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">יש להרים את האצבע ולגעת בחיישן עם חלקים שונים של האצבע כדי להוסיף טביעת אצבע מלאה</translation>
@@ -2257,7 +2246,6 @@
 <translation id="7491962110804786152">tab</translation>
 <translation id="7497767806359279797">בחירת שפה ומקלדת</translation>
 <translation id="7507162824403726948">צריך לסיים את אימות הזהות</translation>
-<translation id="7508690557411636492">נפתח בחודש האחרון</translation>
 <translation id="7509246181739783082">אימות זהות</translation>
 <translation id="7512509370370076552">‏מקשי הקיצור של לחיצה ימנית היו Alt + לחיצה ועכשיו הם מקש <ph name="LAUNCHER_KEY_NAME" /> + לחיצה</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, לא נבחר</translation>
@@ -2713,7 +2701,6 @@
 <translation id="8753368202781196133">השפה הזו לא נתמכת כרגע.</translation>
 <translation id="8755498163081687682">אימות הזהות שלך: על מנת להתחבר אל <ph name="ORIGIN_NAME" /> יש לאמת את זהותך</translation>
 <translation id="875593634123171288">‏צפייה בהגדרות VPN</translation>
-<translation id="8756799553341497810">אחרי היציאה מהתצוגה הזו אפשר להתחיל להתאים אישית את הפריסה של האפליקציה.</translation>
 <translation id="8759408218731716181">לא ניתן להגדיר כניסה עם מספר חשבונות</translation>
 <translation id="8759753423332885148">למידע נוסף</translation>
 <translation id="8760172428247796445">מכשיר ה-<ph name="DEVICE_TYPE" /> יינעל עכשיו.

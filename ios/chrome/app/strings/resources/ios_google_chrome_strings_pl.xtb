@@ -40,6 +40,7 @@ Pamiętaj, że:
 <translation id="1580570086594302477">Otwiera nową kartę incognito w Chrome.</translation>
 <translation id="1605168141396675642">Nie musisz już kopiować. Otwieraj linki bezpośrednio w Chrome.</translation>
 <translation id="1646463005043273333">Otwiera opcję Chrome pozwalającą ustawić Chrome jako przeglądarkę domyślną.</translation>
+<translation id="1665695109862533986">Ustaw Chrome jako przeglądarkę domyślną, aby otwierać linki jednym kliknięciem</translation>
 <translation id="1668930590094369898">Używaj Chrome jako przeglądarki domyślnej</translation>
 <translation id="1670609221633730681">Wskazówka dotycząca Chrome: wybierz położenie paska adresu</translation>
 <translation id="1683863426423719967">Aby otrzymywać przypomnienia o kartach z Chrome, włącz powiadomienia w ustawieniach iOS.</translation>
@@ -47,6 +48,7 @@ Pamiętaj, że:
 <translation id="1784567647421309104">Zapisuj hasła w Chrome</translation>
 <translation id="1790080846677398234">Dodaje wpisane adresy URL do zakładek w Chrome.</translation>
 <translation id="1799920918471566157">Chrome – wskazówki</translation>
+<translation id="1802420021606590788">Chrome przetwarza tytuły stron i adresy URL w przestrzeni prywatnej w chmurze</translation>
 <translation id="1830634592642484976">Ten adres jest obecnie zapisany w Chrome. Aby używać go w różnych usługach Google, zapisz go na swoim koncie Google <ph name="USER_EMAIL" />.</translation>
 <translation id="1891812034154776216">Po zamknięciu Chrome ukrywaj otwarte karty incognito</translation>
 <translation id="1894434821386148799">Tutaj znajdziesz ustawienia Chrome i inne opcje</translation>
@@ -139,6 +141,7 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="3984746313391923992">Twoja organizacja nie pozwala Ci zalogować się w Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nie ma dostępu do Twoich zdjęć ani filmów. Aby włączyć dostęp w iOS, wybierz Ustawienia &gt; Prywatność &gt; Zdjęcia.</translation>
 <translation id="4064699917955374540">Aby móc zapisywać dane z Chrome na koncie Google i ich używać, potwierdź swoją tożsamość.</translation>
+<translation id="4093789416346364876">Ustaw Chrome jako przeglądarkę domyślną, aby otrzymywać statystyki Gemini podczas przeglądania internetu</translation>
 <translation id="411154422556990518">Otrzymuj powiadomienia ze śledzenia cen i wskazówki dotyczące Chrome.</translation>
 <translation id="417201473131094001">Nieobsługiwane w Chrome Canary</translation>
 <translation id="424864128008805179">Wylogować z Chrome?</translation>
@@ -149,6 +152,7 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="4523886039239821078">Niektóre dodatki mogą powodować awarie Chrome. Odinstaluj je.</translation>
 <translation id="4568024439284012497">Uruchamiaj Chrome szybciej na ekranie głównym iPhone'a.</translation>
 <translation id="4574806550936185355">Włącz opcję „Po zamknięciu Chrome blokuj karty incognito”</translation>
+<translation id="457825396414281646">Ustaw Chrome jako domyślną przeglądarkę, aby otwierać linki jednym kliknięciem</translation>
 <translation id="4633328489441962921">Chrome nie może sprawdzić dostępności aktualizacji</translation>
 <translation id="4636900170638246267">Zaloguj się w na tej stronie i w Chrome.</translation>
 <translation id="4647910807533196601">Otwórz moją ostatnio używaną kartę w Chrome.</translation>

@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Lloji i vërtetimit</translation>
 <translation id="1776228893584526149">Toni i imazhit të sfondit</translation>
 <translation id="1777913922912475695">urë</translation>
-<translation id="1782199038061388045">përkthimi</translation>
 <translation id="1788485524395674731">Ky aplikacion menaxhohet nga administratori yt</translation>
 <translation id="1792647875738159689">Skanimi po anulohet</translation>
 <translation id="1801418420130173017">Çaktivizo temën e errët</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Shkruaj</translation>
 <translation id="2448857983905133469">Veglat e orës së mësimit</translation>
 <translation id="2468124392950503650">Zgjidh kërkesën për të krijuar ose shiko <ph name="BEGIN_LINK_PROMPTING_GUIDE" />udhëzuesin e kërkesave<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Përdor "Më ndihmo të shkruaj" për të krijuar një draft ose për të rafinuar një punë ekzistuese, mundësuar nga inteligjenca artificiale e Google</translation>
 <translation id="2475982808118771221">Ndodhi një gabim</translation>
 <translation id="2480572840229215612">gaforre</translation>
 <translation id="248546197012830854">Pajisja është offline. Lidhu me rrjetin Wi-Fi për të parë përmbajtjen ndihmëse.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Nxirr përsëri</translation>
 <translation id="3479552764303398839">Jo tani</translation>
 <translation id="3484914941826596830">Mos e shkëput këtë pajisje të jashtme dhe mos e fik kompjuterin gjatë përditësimit të firmuerit. Mund ta minimizosh këtë dritare. Ky përditësim mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
-<translation id="3486220673238053218">përkufizimi</translation>
 <translation id="3487866404496702283">Komentet për veçorinë mahi</translation>
 <translation id="3488065109653206955">I aktivizuar pjesërisht</translation>
 <translation id="3492882532495507361">Një zyrë (<ph name="OFFICE_STYLE" />) me tone: <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Zgjidh një temë</translation>
 <translation id="3644695927181369554">Sugjerim i keq</translation>
 <translation id="3651050199673793219">Zgjidh një njësi temperature</translation>
-<translation id="3661106764436337772">Shkruaj më shpejt dhe me më shumë vetëbesim</translation>
 <translation id="3662461537616691585">burgundi dhe gështenjë</translation>
 <translation id="3664755900672940272">Shembujt e kërkesave u përzien</translation>
 <translation id="3668449597372804501">Imazhi i sfondit për rrjedhën e reve</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Ndaloi</translation>
 <translation id="4777310452073659583">Për të marrë transkriptin, rinis pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">ametist</translation>
-<translation id="4782311465517282004">Merr përkufizime, përkthime ose konvertime të njësive kur klikon me të djathtin ose prek e mban shtypur tekstin</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografi</translation>
 <translation id="4793710386569335688">Për më shumë ndihmë, shko te <ph name="BEGIN_LINK" />Qendra e ndihmës<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritmi i ngjeshjes</translation>
@@ -1459,7 +1454,6 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7397270852490618635">Çaktivizo temën e ndriçuar</translation>
 <translation id="7401543881546089382">Fshi shkurtoren</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> është gati për t'u përditësuar</translation>
-<translation id="741244894080940828">konvertimi</translation>
 <translation id="7415801143053185905">Vonesë shumë e lartë e HTTP-së</translation>
 <translation id="7418738250896500352">Shumë fjalë për t'i thjeshtuar</translation>
 <translation id="7425037327577270384">Më ndihmo të shkruaj</translation>
@@ -1769,7 +1763,6 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="885701979325669005">Hapësira ruajtëse</translation>
 <translation id="885704831271383379">tastiera më e errët</translation>
 <translation id="8863170912498892583">Aktivizo temën e errët</translation>
-<translation id="8863888432376731307">Merr <ph name="INTENT" /> për "<ph name="QUERY" />" dhe më shumë</translation>
 <translation id="8864415976656252616">Nuk ka përmbajtje të sugjeruara. Shiko përmbajtjet kryesore të ndihmës.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Pajisja është një tablet.</translation>

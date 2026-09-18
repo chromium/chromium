@@ -649,7 +649,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="77283119132245232">Nagbibigay ng mga serbisyo ng pag-trace ng system para sa <ph name="BROWSER_NAME" />. Kung naka-disable ang serbisyong ito, hindi isasama sa mga trace ng performance na ginawa ng browser ang mga system-wide na event gaya ng mga event na context switch at ready thread.</translation>
 <translation id="7745317241717453663">Ide-delete nito ang iyong data sa pag-browse sa device na ito. Upang makuha ang iyong data sa ibang pagkakataon, mag-sign in sa Chromium bilang <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Hindi makalikha ng pansamantalang direktoryo ang installer. Paki-suri para sa puwang sa disk na walang laman at pahintulot upang i-install ang software.</translation>
-<translation id="7747820849741499258">Maghanap sa Chromium</translation>
 <translation id="7750130090210923118">I-reset sa Default na Chromium</translation>
 <translation id="7752521946322750699">Para ma-secure ang iyong gawa sa Chromium, matitingnan o mapapamahalaan ng organisasyon mo ang ilang partikular na impormasyon kapag naka-sign in ka sa Chromium.</translation>
 <translation id="7781047659465034537">Itakda ang Chromium bilang default at i-pin ito sa taskbar</translation>
@@ -657,7 +656,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Gawing mas mahirap para sa mga taong may access sa iyong internet traffic na makita kung aling mga site ang binibisita mo. Gumagamit ang Chromium ng secure na koneksyon para hanapin ang IP address ng isang site sa DNS (Domain Name System).</translation>
 <translation id="7810005234485217901">Puwede mong i-pin ang Paghahanap ng Larawan para madali itong ma-access</translation>
-<translation id="7813626943009612327">Magtanong tungkol sa content sa labas ng Chromium, tulad ng isa pang app o file na binuksan mo</translation>
 <translation id="7828527096541974699">Piliin kung ano ang ise-share sa Chromium</translation>
 <translation id="7828947555739565424">Mayroon nang profile sa Chromium na gumagamit ng account na ito sa device na ito</translation>
 <translation id="7845233973568007926">Salamat sa pag-install. Dapat mong i-restart ang iyong computer bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>

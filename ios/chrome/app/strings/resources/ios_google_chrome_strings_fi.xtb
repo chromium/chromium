@@ -40,6 +40,7 @@ Huomioitavaa:
 <translation id="1580570086594302477">Avaa uuden incognito-välilehden Chromessa.</translation>
 <translation id="1605168141396675642">Vältä kopioinnin vaiva. Avaa linkit suoraan Chromessa.</translation>
 <translation id="1646463005043273333">Avaa asetuksen, jolla voi valita Chromen oletusselaimeksi.</translation>
+<translation id="1665695109862533986">Valitse Chrome oletusselaimeksi, niin voit avata linkit yhdellä napautuksella</translation>
 <translation id="1668930590094369898">Käytä Chromea oletuksena</translation>
 <translation id="1670609221633730681">Chrome-vinkki: Valitse osoitepalkin sijainti</translation>
 <translation id="1683863426423719967">Jos haluat saada Chromen välilehtimuistutuksia, laita ilmoitukset päälle iOS-asetuksista.</translation>
@@ -47,6 +48,7 @@ Huomioitavaa:
 <translation id="1784567647421309104">Salasanojen tallentaminen Chromeen</translation>
 <translation id="1790080846677398234">Lisää URL-osoitteet Chromen kirjanmerkkeihin.</translation>
 <translation id="1799920918471566157">Vinkkejä Chromen käyttöön</translation>
+<translation id="1802420021606590788">Chrome käsittelee sivujen otsikoita ja URL-osoitteita yksityisessä tilassa pilvessä</translation>
 <translation id="1830634592642484976">Tämä osoite on tällä hetkellä tallennettu Chromeen. Jos haluat käyttää sitä Googlen tuotteissa, tallenna se Google-tilillesi (<ph name="USER_EMAIL" />).</translation>
 <translation id="1891812034154776216">Piilota avoimet incognito-välilehdet, kun poistut Chromesta</translation>
 <translation id="1894434821386148799">Löydät täältä Chromen asetukset ja muuta</translation>
@@ -139,6 +141,7 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="3984746313391923992">Organisaatiosi edellyttää, että et kirjaudu sisään Chromeen.</translation>
 <translation id="3988789688219830639">Google Chrome ei voi käyttää kuviasi tai videoitasi. Anna käyttöoikeus kohdassa iOS-asetukset &gt; Tietosuoja &gt; Kuvat.</translation>
 <translation id="4064699917955374540">Chrome-datan käyttö ja tallennus Google-tilillä edellyttää, että vahvistat henkilöllisyytesi.</translation>
+<translation id="4093789416346364876">Tee Chromesta oletusselain, niin saat Gemini-vinkkejä mitä tahansa selaatkin</translation>
 <translation id="411154422556990518">Pysy ajan tasalla hintaseurannan päivityksistä ja Chrome-vinkeistä.</translation>
 <translation id="417201473131094001">Ei tueta Chrome Canaryssa</translation>
 <translation id="424864128008805179">Kirjaudutaanko ulos Chromesta?</translation>
@@ -149,6 +152,7 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="4523886039239821078">Jokin laajennus kaataa Chromen. Kokeile poistaa seuraavat:</translation>
 <translation id="4568024439284012497">Avaa Chrome nopeammin iPhonen aloitusnäytöltä.</translation>
 <translation id="4574806550936185355">Laita "Lukitse incognito-välilehdet, kun suljet Chromen" päälle</translation>
+<translation id="457825396414281646">Valitse Chrome oletusselaimeksi, niin voit avata linkit yhdellä napautuksella</translation>
 <translation id="4633328489441962921">Chrome ei voi tarkistaa päivityksiä</translation>
 <translation id="4636900170638246267">Kirjaudu tälle sivustolle ja Chromeen.</translation>
 <translation id="4647910807533196601">Avaa edellinen välilehti Chromessa.</translation>

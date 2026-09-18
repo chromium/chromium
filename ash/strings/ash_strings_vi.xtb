@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">LOẠI BỎ</translation>
 <translation id="152629053603783244">Khởi động lại Linux</translation>
 <translation id="1526448108126799339">Mở thẻ mới trong cửa sổ mới</translation>
-<translation id="1528259147807435347">Chỉnh sửa tuần trước</translation>
 <translation id="1536604384701784949">Để sử dụng <ph name="USER_EMAIL_ADDRESS" />, trước tiên bạn cần đăng xuất khỏi tất cả tài khoản. Để đăng xuất, hãy chọn Huỷ để quay lại. Tiếp theo, hãy chọn thời gian để mở khu vực trạng thái rồi chọn Đăng xuất. Sau đó, hãy đăng nhập lại vào <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Con trỏ chuột lớn</translation>
 <translation id="1545331255323159851">Xem thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Gửi dữ liệu sử dụng và dữ liệu chẩn đoán. Giúp cải thiện trải nghiệm của con bạn trên Android bằng cách tự động gửi dữ liệu chẩn đoán, dữ liệu về thiết bị và dữ liệu về mức sử dụng ứng dụng cho Google. Google sẽ không dùng dữ liệu này để nhận dạng con bạn mà chỉ dùng cho mục đích tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ giúp ích cho các ứng dụng và đối tác của Google, chẳng hạn như nhà phát triển Android. <ph name="BEGIN_LINK1" />Chế độ cài đặt<ph name="END_LINK1" /> này do chủ sở hữu thực thi. Chủ sở hữu có thể chọn gửi dữ liệu chẩn đoán và dữ liệu sử dụng của thiết bị này cho Google. Nếu bạn bật chế độ cài đặt Hoạt động bổ sung trên web và ứng dụng cho con mình thì dữ liệu này có thể được lưu vào Tài khoản Google của trẻ. <ph name="BEGIN_LINK2" />Tìm hiểu thêm về các chỉ số<ph name="BEGIN_LINK2_END" />Tìm hiểu thêm<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Nhập mã PIN của bạn</translation>
 <translation id="2412593942846481727">Đã có bản cập nhật</translation>
-<translation id="2416438829169535743">Thoát khỏi chế độ xem này?</translation>
 <translation id="2417486498593892439">Đăng nhập vào mạng</translation>
 <translation id="2423619675829330672">Quá nhiều lần nhập mã PIN. Hãy đợi <ph name="TIME_LEFT" /> và thử lại.</translation>
 <translation id="2426051945783024481">Khung hình của máy ảnh tự động căn giữa</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">Thiết bị Bluetooth "<ph name="DEVICE_NAME" />" muốn được phép ghép nối. Trước khi chấp nhận, vui lòng xác nhận rằng mã xác nhận này đã hiển thị trên thiết bị đó: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Hiện mật khẩu</translation>
 <translation id="2437771564543046790">Pin yếu. Trình tiết kiệm pin đang bật</translation>
-<translation id="243878895369688216">Mở hôm qua</translation>
 <translation id="2440978926514840421">Đã ghi ảnh GIF</translation>
 <translation id="2441427462554639370">Quá trình ghi đã kết thúc do dung lượng lưu trữ còn quá thấp</translation>
 <translation id="2445449901874883781">Sử dụng mật độ cao</translation>
@@ -873,7 +870,6 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="3563432852173030730">Không thể tải xuống ứng dụng Kiosk.</translation>
 <translation id="3563558822383875692">Đang định cấu hình nội dung tải xuống được (DLC).</translation>
 <translation id="3563775809269155755">Bật điểm phát sóng</translation>
-<translation id="3566240529365775567">Vừa mới mở</translation>
 <translation id="3571734092741541777">Thiết lập</translation>
 <translation id="3573179567135747900">Thay đổi lại thành "<ph name="FROM_LOCALE" />" (yêu cầu khởi động lại)</translation>
 <translation id="3576141592585647168">Thay đổi múi giờ</translation>
@@ -960,7 +956,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="3756485814916578707">Đang truyền màn hình</translation>
 <translation id="3765246971671567135">Không thể đọc chính sách về chế độ minh họa ngoại tuyến.</translation>
 <translation id="3765841382945324995">Phím tắt cho thao tác <ph name="SIX_PACK_KEY_NAME" /> đã chuyển từ <ph name="OLD_SHORTCUT" /> thành <ph name="NEW_SHORTCUT" /></translation>
-<translation id="3765841986579723851">Chỉnh sửa hôm nay</translation>
 <translation id="3772109172035555611">Tuỳ chỉnh TrackPoint của bạn</translation>
 <translation id="3773700760453577392">Quản trị viên không cho phép <ph name="USER_EMAIL" /> thực hiện đăng nhập nhiều tài khoản. Tất cả người dùng phải đăng xuất để tiếp tục.</translation>
 <translation id="3779139509281456663">Đang kết nối với <ph name="NAME" /></translation>
@@ -1000,7 +995,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="3873915545594852654">Đã xảy ra lỗi với ARC++.</translation>
 <translation id="3879748587602334249">Trình quản lý tải xuống</translation>
 <translation id="3884007280698606545">Đã đạt đến giới hạn về thiết bị USB</translation>
-<translation id="3886872229787704059">Mở hôm nay</translation>
 <translation id="3892148308691398805">Sao chép văn bản</translation>
 <translation id="3893630138897523026">ChromeVox (phản hồi bằng giọng nói)</translation>
 <translation id="3898464793473355515">Xoay màn hình 90 độ theo chiều kim đồng hồ</translation>
@@ -1791,7 +1785,6 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6095008505822982596">Tốc độ đọc</translation>
 <translation id="6095425951508823973">Thêm đường kết nối bằng <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Bạn đã đăng xuất.</translation>
-<translation id="6099678161144790572">Chỉnh sửa tháng trước</translation>
 <translation id="6103838137565245112">hệ thống</translation>
 <translation id="6108952804512516814">Tạo bằng AI</translation>
 <translation id="6114505516289286752">Đã tải tệp mã chuyển lời nói thành văn bản <ph name="LANGUAGE" /> xuống</translation>
@@ -1948,7 +1941,6 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6555373427270923730">Nhập địa chỉ web vào thanh địa chỉ, sau đó nhấn phím <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Mới cài đặt</translation>
-<translation id="6559158502366839560">Khám phá các ứng dụng và trò chơi khác</translation>
 <translation id="6560151649238390891">Đã chèn nội dung đề xuất</translation>
 <translation id="6562447480759345110">Kết thúc phiên Tập trung</translation>
 <translation id="6565007273808762236">Kết nối eSIM không có sẵn</translation>
@@ -2054,7 +2046,6 @@ Mới cài đặt</translation>
 <translation id="6848716236260083778">Để thiết lập vân tay, con bạn cần chạm vào cảm biến vân tay. Dữ liệu vân tay của con bạn được lưu trữ an toàn và chỉ có trên chiếc <ph name="DEVICE_TYPE" /> này.</translation>
 <translation id="6852052252232534364">Nhấp để kích hoạt</translation>
 <translation id="6852628153543175788">Thêm 10 phút</translation>
-<translation id="6855029042976311970">Vừa mới chỉnh sửa</translation>
 <translation id="6856708615407876657">Bật/tắt danh mục kết quả tìm kiếm</translation>
 <translation id="6856756288284651804">Chromebook đã cập nhật</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> giây</translation>
@@ -2149,7 +2140,6 @@ Mới cài đặt</translation>
 <translation id="7118597077555700347">Mở <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Chọn từ hoặc chữ cái tiếp theo</translation>
 <translation id="7124556000457919678">Khi được bật, tạm dừng và tiếp tục sử dụng phím điều khiển chuột</translation>
-<translation id="7126996685418858413">Mở tuần trước</translation>
 <translation id="7131634465328662194">Bạn sẽ tự động bị đăng xuất.</translation>
 <translation id="7143207342074048698">Đang kết nối</translation>
 <translation id="7144878232160441200">Thử lại</translation>
@@ -2180,7 +2170,6 @@ Mới cài đặt</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Micrô mặt sau</translation>
 <translation id="7258225044283673131">Ứng dụng không phản hồi. Hãy chọn "Buộc đóng" để đóng ứng dụng.</translation>
-<translation id="7258828758145722155">Chỉnh sửa hôm qua</translation>
 <translation id="726276584504105859">Kéo vào đây để sử dụng chế độ chia đôi màn hình</translation>
 <translation id="7264788308526527464">Giảm <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Tiếp tục nhấc ngón tay để thêm các phần khác của vân tay</translation>
@@ -2253,7 +2242,6 @@ Mới cài đặt</translation>
 <translation id="7491962110804786152">thẻ</translation>
 <translation id="7497767806359279797">Chọn ngôn ngữ và bàn phím</translation>
 <translation id="7507162824403726948">Hoàn tất quy trình xác minh danh tính</translation>
-<translation id="7508690557411636492">Mở tháng trước</translation>
 <translation id="7509246181739783082">Xác minh danh tính của bạn</translation>
 <translation id="7512509370370076552">Phím tắt cho thao tác nhấp chuột phải đã chuyển từ alt + nhấp thành phím <ph name="LAUNCHER_KEY_NAME" /> + nhấp</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, chưa chọn</translation>
@@ -2707,7 +2695,6 @@ Mới cài đặt</translation>
 <translation id="8753368202781196133">Ngôn ngữ này hiện chưa được hỗ trợ.</translation>
 <translation id="8755498163081687682">Xác minh danh tính của bạn: <ph name="ORIGIN_NAME" /> muốn xác nhận đó là bạn</translation>
 <translation id="875593634123171288">Hiển thị các tùy chọn cài đặt VPN</translation>
-<translation id="8756799553341497810">Bạn có thể bắt đầu tuỳ chỉnh bố cục ứng dụng sau khi thoát khỏi chế độ xem này.</translation>
 <translation id="8759408218731716181">Không thể thiết lập đăng nhập nhiều tài khoản</translation>
 <translation id="8759753423332885148">Tìm hiểu thêm.</translation>
 <translation id="8760172428247796445">Thiết bị <ph name="DEVICE_TYPE" /> của bạn sẽ bị khoá ngay bây giờ.

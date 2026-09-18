@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Tapatybės nustatymo tipas</translation>
 <translation id="1776228893584526149">Ekrano fono tonas</translation>
 <translation id="1777913922912475695">tiltas</translation>
-<translation id="1782199038061388045">vertimas</translation>
 <translation id="1788485524395674731">Šią programą tvarko jūsų administratorius</translation>
 <translation id="1792647875738159689">Atšaukiamas nuskaitymas</translation>
 <translation id="1801418420130173017">Išjungti tamsiąją temą</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Tipas</translation>
 <translation id="2448857983905133469">Mokymosi įrankiai</translation>
 <translation id="2468124392950503650">Pasirinkite užklausą, kad būtų sukurtas vaizdas, arba peržiūrėkite <ph name="BEGIN_LINK_PROMPTING_GUIDE" />užklausų vadovą<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Naudodami „Google“ DI pagrįstą funkciją „Padėkite man rašyti“ sukurkite juodraštį ar patobulinkite esamą darbą</translation>
 <translation id="2475982808118771221">Įvyko klaida</translation>
 <translation id="2480572840229215612">krabai</translation>
 <translation id="248546197012830854">Įrenginys neprijungtas prie interneto. Prisijunkite prie „Wi-Fi“ tinklo, kad galėtumėte peržiūrėti pagalbos turinį.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Perfotografuoti</translation>
 <translation id="3479552764303398839">Ne dabar</translation>
 <translation id="3484914941826596830">Kol programinė aparatinė įranga atnaujinama, neatjunkite išorinio įrenginio ir neišjunkite kompiuterio. Galite sumažinti šį langą. Šis atnaujinimo procesas gali užtrukti kelias minutes ir tuo metu jūsų išorinis įrenginys gali neveikti.</translation>
-<translation id="3486220673238053218">apibrėžimas</translation>
 <translation id="3487866404496702283">Atsiliepimas apie „mahi“ funkciją</translation>
 <translation id="3488065109653206955">Iš dalies suaktyvinta</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> biuras su <ph name="OFFICE_COLOR" /> tonais</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Temos pasirinkimas</translation>
 <translation id="3644695927181369554">Blogas pasiūlymas</translation>
 <translation id="3651050199673793219">Pasirinkti temperatūros matavimo vienetą</translation>
-<translation id="3661106764436337772">Rašykite greičiau ir užtikrinčiau</translation>
 <translation id="3662461537616691585">vyšninės ir kaštoninės spalvų</translation>
 <translation id="3664755900672940272">Užklausų pavyzdžiai sumaišyti</translation>
 <translation id="3668449597372804501">Debesies srauto ekrano fonas</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Sustabdyta</translation>
 <translation id="4777310452073659583">Jei norite gauti transkribuotą tekstą, paleiskite „<ph name="DEVICE_TYPE" />“ iš naujo</translation>
 <translation id="4778082030331381943">ametisto</translation>
-<translation id="4782311465517282004">Spustelėkite dešiniuoju klavišu arba palieskite ir palaikykite tekstą, kad būtų pateiktos apibrėžtys, vertimai ar vienetų konvertavimas.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> nuotrauk.</translation>
 <translation id="4793710386569335688">Daugiau pagalbos galite gauti <ph name="BEGIN_LINK" />pagalbos centre<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Glaudinimo algoritmas</translation>
@@ -1459,7 +1454,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7397270852490618635">Išjungti šviesiąją temą</translation>
 <translation id="7401543881546089382">Ištrinti spartųjį klavišą</translation>
 <translation id="7405493795721832710">„<ph name="DEVICE_NAME" />“ paruoštas atnaujinti</translation>
-<translation id="741244894080940828">konversija</translation>
 <translation id="7415801143053185905">Itin didelė HTTP delsa</translation>
 <translation id="7418738250896500352">Per daug žodžių, kad būtų galima supaprastinti</translation>
 <translation id="7425037327577270384">Padėkite man rašyti</translation>
@@ -1769,7 +1763,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="885701979325669005">Saugykla</translation>
 <translation id="885704831271383379">klaviatūra tamsesnė</translation>
 <translation id="8863170912498892583">Įgalinti tamsiąją temą</translation>
-<translation id="8863888432376731307">Jums bus pateiktas „<ph name="QUERY" />“ <ph name="INTENT" /> ir dar daugiau</translation>
 <translation id="8864415976656252616">Siūlomo turinio nėra. Peržiūrėkite svarbiausią pagalbos centro turinį.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Įrenginys yra planšetinis kompiuteris.</translation>

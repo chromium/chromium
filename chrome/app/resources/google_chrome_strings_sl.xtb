@@ -529,7 +529,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6166185671393271715">Uvoz gesel v Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> različica beta Google Chroma</translation>
-<translation id="6177442314419606057">Iskanje v Chromu</translation>
 <translation id="6180522807229584611">Ta zavihek uporablja dodatna sredstva. Če želite izboljšati učinkovitost delovanja, pustite Chromu, da ga spremeni v neaktivnega.</translation>
 <translation id="6182736845697986886">Namestitev ni uspela zaradi notranje napake strežnika za posodobitve.</translation>
 <translation id="6192058120268468905">Vaš račun v Chromu</translation>
@@ -561,6 +560,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6434035853014503219">Hvala, ker ste izbrali Chrome kot privzeti brskalnik.</translation>
 <translation id="6438015621983209660">Razširite izboljšano varno brskanje s Chromom v telefonu</translation>
 <translation id="6442774133615368941">Uporabite fotoaparat v aplikaciji Chrome za iOS, da boste lahko nakupovali, prevajali in prepoznavali, kaj je prikazano</translation>
+<translation id="6446105560007692480">za iskanje s Chromom ali prilagajanje v <ph name="BEGIN_LINK" />Nastavitvah<ph name="END_LINK" /></translation>
 <translation id="6448835208126432197">Če želite v Geminiju v Chromu izbrati del zaslona, uporabite bližnjične tipke.</translation>
 <translation id="6473905796280459355">Odprite stran »O Chromu«</translation>
 <translation id="6481963882741794338">Povežite Chrome in druge Googlove storitve za osebno prilagajanje in druge namene</translation>
@@ -582,6 +582,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6612152958212564387">Googlu ne pošiljate statističnih podatkov o uporabi in poročil o zrušitvah. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Poskrbite, da so gesla, zaznamki in zgodovina popolnoma sinhronizirani v vseh napravah tako, da Chrome nastavite kot privzeti brskalnik.</translation>
 <translation id="6631524303639368205">Nadaljujte, kjer ste končali: Chrome je obnovil zavihke iz zadnje seje. To lahko izklopite v</translation>
+<translation id="6632012506031284914">za iskanje s Chromom.</translation>
 <translation id="6632473616050862500">ChromeOS Flex omogoča dodatna <ph name="BEGIN_LINK_CROS_OSS" />odprtokodna programska oprema<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Spremembe te nastavitve bodo uveljavljene, ko se bo Chrome znova zagnal.</translation>
 <translation id="6660596345553328257">Ali se želite prijaviti v Chrome?</translation>
@@ -598,7 +599,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6750954913813541382">Chrome zaradi odpravljanja napak pri črkovanju Googlu pošlje besedilo, ki ga vnesete v brskalnik</translation>
 <translation id="6760235774835597023">S Chromovim mehanizmom V8 pospešite delovanje spletnih mest, vendar je Chrome zato nekoliko manj odporen proti napadom. Ta nastavitev je vklopljena.</translation>
 <translation id="677276454032249905">Želite vseeno zapreti Chrome?</translation>
-<translation id="6777654166489463890">Vprašajte o vsebini zunaj Chroma, na primer o drugi aplikaciji ali datoteki, ki jo imate odprto</translation>
 <translation id="6794858689789885890">Podatki spletnih mest se vedno izbrišejo iz naprave, ko zaprete Chrome</translation>
 <translation id="6800285125190089494">Hitrejša prijava na spletnih mestih z uporabo shranjenih gesel za Chrome v sistemu iOS</translation>
 <translation id="6831043979455480757">Prevedi</translation>

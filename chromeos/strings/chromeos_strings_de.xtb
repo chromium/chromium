@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Authentifizierungstyp</translation>
 <translation id="1776228893584526149">Farbton für Hintergrund</translation>
 <translation id="1777913922912475695">Brücke</translation>
-<translation id="1782199038061388045">Übersetzung</translation>
 <translation id="1788485524395674731">Diese App wird von deinem Administrator verwaltet</translation>
 <translation id="1792647875738159689">Scannen wird abgebrochen</translation>
 <translation id="1801418420130173017">Dunkles Design deaktivieren</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Art</translation>
 <translation id="2448857983905133469">Unterrichtstools</translation>
 <translation id="2468124392950503650">Prompt zum Erstellen auswählen oder <ph name="BEGIN_LINK_PROMPTING_GUIDE" />Anleitung für Prompts<ph name="END_LINK_PROMPTING_GUIDE" /> aufrufen</translation>
-<translation id="2472215337771558851">Mit der Funktion „Formuliere für mich“, die auf Google AI basiert, kannst du Entwürfe erstellen oder vorhandene Texte optimieren</translation>
 <translation id="2475982808118771221">Ein Fehler ist aufgetreten.</translation>
 <translation id="2480572840229215612">Krebse</translation>
 <translation id="248546197012830854">Das Gerät ist offline. Stelle eine WLAN-Verbindung her, um Hilfeinhalte zu sehen.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Neu aufnehmen</translation>
 <translation id="3479552764303398839">Jetzt nicht</translation>
 <translation id="3484914941826596830">Während die Firmware aktualisiert wird, darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst dieses Fenster minimieren. Die Aktualisierung dauert einige Minuten und dein externes Gerät funktioniert während dieser Zeit eventuell nicht.</translation>
-<translation id="3486220673238053218">Definition</translation>
 <translation id="3487866404496702283">Feedback zur Mahi-Funktion</translation>
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
 <translation id="3492882532495507361">Büro (<ph name="OFFICE_STYLE" />) mit <ph name="OFFICE_COLOR" />en Farbtönen</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Design wählen</translation>
 <translation id="3644695927181369554">Unpassender Vorschlag</translation>
 <translation id="3651050199673793219">Temperatureinheit auswählen</translation>
-<translation id="3661106764436337772">Schneller und mit mehr Sicherheit schreiben</translation>
 <translation id="3662461537616691585">burgunderrot und rotbraun</translation>
 <translation id="3664755900672940272">Beispiel-Prompts wurden gemischt</translation>
 <translation id="3668449597372804501">Cloud Flow-Hintergrund</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Angehalten</translation>
 <translation id="4777310452073659583">Wenn du ein Transkript erhalten möchtest, starte dein Gerät (<ph name="DEVICE_TYPE" />) neu</translation>
 <translation id="4778082030331381943">Amethyst</translation>
-<translation id="4782311465517282004">Du kannst Definitionen oder Übersetzungen anzeigen oder Einheiten umrechnen lassen, indem du Text gedrückt hältst oder mit der rechten Maustaste darauf klickst</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> Foto(s)</translation>
 <translation id="4793710386569335688"><ph name="BEGIN_LINK" />Weitere Informationen findest du in der Hilfe.<ph name="END_LINK" /></translation>
 <translation id="4793756956024303490">Komprimierungsalgorithmus</translation>
@@ -1459,7 +1454,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7397270852490618635">Helles Design ausschalten</translation>
 <translation id="7401543881546089382">Verknüpfung löschen</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> kann aktualisiert werden</translation>
-<translation id="741244894080940828">Umrechnung</translation>
 <translation id="7415801143053185905">Sehr hohe HTTP-Latenz</translation>
 <translation id="7418738250896500352">Zu viele Wörter zum Vereinfachen</translation>
 <translation id="7425037327577270384">Formuliere für mich</translation>
@@ -1769,7 +1763,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="885701979325669005">Speicher</translation>
 <translation id="885704831271383379">Tastatur dunkler</translation>
 <translation id="8863170912498892583">Dunkles Design aktivieren</translation>
-<translation id="8863888432376731307"><ph name="INTENT" /> für „<ph name="QUERY" />“ bekommen und mehr</translation>
 <translation id="8864415976656252616">Keine vorgeschlagenen Artikel. Du kannst dir häufig gelesene Hilfeartikel ansehen.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Das Gerät ist ein Tablet.</translation>

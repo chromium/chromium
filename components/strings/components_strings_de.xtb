@@ -837,6 +837,8 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2384307209577226199">Unternehmensstandard</translation>
 <translation id="2385809941344967209">Chrome über die Chrome-Einstellungen aktualisieren</translation>
 <translation id="2386255080630008482">Das Serverzertifikat wurde aufgehoben.</translation>
+<translation id="2387424091060104123">Von Gemini vorgeschlagen · <ph name="SRC_LINK" />Quellen ansehen<ph name="END_SRC_LINK" />
+Du kannst diesen Vorschlag aus Chrome entfernen. Die ursprüngliche Quelle wird nicht gelöscht. <ph name="MANAGE_LINK" />Funktion „Erweitertes Autofill“ verwalten<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Genauer ausführen</translation>
 <translation id="2392959068659972793">Richtlinien ohne Wert zeigen</translation>
 <translation id="239429038616798445">Diese Versandart ist nicht verfügbar. Bitte wähle eine andere aus.</translation>
@@ -1517,6 +1519,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome informiert dich, wenn diese Seite bereit ist. &lt;a&gt;Abbrechen&lt;/a&gt;</translation>
 <translation id="3581499772329034229">Tabs automatisch hinzufügen</translation>
+<translation id="3582670569275100909">Lieferungen</translation>
 <translation id="3582930987043644930">Namen hinzufügen</translation>
 <translation id="3583757800736429874">&amp;Verschieben wiederholen</translation>
 <translation id="3584299510153766161">Doppelte Lochung unten</translation>
@@ -4009,6 +4012,7 @@ Weitere Details:
 <translation id="7758069387465995638">Möglicherweise wurde die Verbindung von einer Firewall oder Antivirensoftware blockiert.</translation>
 <translation id="7759147511335618829">MIDI-Gerätesteuerung &amp; -Neuprogrammierung</translation>
 <translation id="7759809451544302770">Optional</translation>
+<translation id="7760566304700414795">Lieferung</translation>
 <translation id="776110834126722255">Veraltet</translation>
 <translation id="7761159795823346334">Kamera zulassen?</translation>
 <translation id="7761701407923456692">Das Serverzertifikat stimmt nicht mit der URL überein.</translation>
@@ -4354,6 +4358,7 @@ Weitere Details:
 <translation id="8371841335382565017">Geräteliste für das Streamen anzeigen</translation>
 <translation id="8371889962595521444">Benutzerdefinierte Root-Zertifikate</translation>
 <translation id="8374636051559112948">Variiert</translation>
+<translation id="8377507422902936905">Bestellungen</translation>
 <translation id="837840316697671463">Wenn du eine Datei auf deinem Gerät nicht findest, suche in <ph name="CLOUD_PROVIDER" /> danach.</translation>
 <translation id="8378714024927312812">Von deiner Organisation verwaltet</translation>
 <translation id="8380941800586852976">Schädlich</translation>

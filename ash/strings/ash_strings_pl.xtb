@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">ZAMKNIJ</translation>
 <translation id="152629053603783244">Uruchom ponownie Linuksa</translation>
 <translation id="1526448108126799339">Otwórz nową kartę w nowym oknie</translation>
-<translation id="1528259147807435347">Edytowane w zeszłym tygodniu</translation>
 <translation id="1536604384701784949">Jeśli chcesz użyć adresu <ph name="USER_EMAIL_ADDRESS" />, musisz najpierw wylogować się ze wszystkich kont. Aby to zrobić, kliknij Anuluj i wróć na poprzednią stronę. Kliknij na niej godzinę, aby otworzyć pasek stanu, i kliknij Wyloguj się. Następnie zaloguj się ponownie na konto <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Duży kursor myszy</translation>
 <translation id="1545331255323159851">Wyświetlaj najnowsze zdjęcia, pliki multimedialne i powiadomienia z telefonu</translation>
@@ -472,7 +471,6 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="240789602312469910">Wysyłaj dane o użytkowaniu i diagnostyce. Pomóż ulepszyć działanie Androida na urządzeniu dziecka, automatycznie wysyłając do Google dane o diagnostyce i korzystaniu z urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, aby poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To <ph name="BEGIN_LINK1" />ustawienie<ph name="END_LINK1" /> jest wymuszone przez właściciela. Właściciel może zezwolić na wysyłanie do Google danych o diagnostyce i korzystaniu z tego urządzenia. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być na nim zapisywane. <ph name="BEGIN_LINK2" />Więcej informacji o danych<ph name="BEGIN_LINK2_END" />Więcej informacji<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Wpisz kod PIN</translation>
 <translation id="2412593942846481727">Dostępna aktualizacja</translation>
-<translation id="2416438829169535743">Zamknąć widok?</translation>
 <translation id="2417486498593892439">Zaloguj się do sieci</translation>
 <translation id="2423619675829330672">Zbyt wiele prób podania kodu PIN. Poczekaj <ph name="TIME_LEFT" /> i spróbuj ponownie.</translation>
 <translation id="2426051945783024481">Kadr kamery jest automatycznie wyśrodkowany</translation>
@@ -480,7 +478,6 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2429753432712299108">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Zanim to zaakceptujesz, sprawdź, czy na tym urządzeniu wyświetla się klucz dostępu: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
 <translation id="2437771564543046790">Słaba bateria. Oszczędzanie baterii jest włączone</translation>
-<translation id="243878895369688216">Otwierane wczoraj</translation>
 <translation id="2440978926514840421">GIF został nagrany</translation>
 <translation id="2441427462554639370">Nagrywanie zostało zakończone z powodu krytycznie małej ilości dostępnego miejsca</translation>
 <translation id="2445449901874883781">Użyj dużej gęstości</translation>
@@ -873,7 +870,6 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="3563432852173030730">Nie można pobrać aplikacji kiosku.</translation>
 <translation id="3563558822383875692">Konfiguruję DLC.</translation>
 <translation id="3563775809269155755">Włącz hotspot</translation>
-<translation id="3566240529365775567">Otwierane przed chwilą</translation>
 <translation id="3571734092741541777">Konfiguruj</translation>
 <translation id="3573179567135747900">Zmień z powrotem na „<ph name="FROM_LOCALE" />” (wymaga ponownego uruchomienia)</translation>
 <translation id="3576141592585647168">Zmień strefę czasową</translation>
@@ -960,7 +956,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3756485814916578707">Przesyłam ekran</translation>
 <translation id="3765246971671567135">Nie udało się odczytać zasad trybu demonstracyjnego offline.</translation>
 <translation id="3765841382945324995">Skrót symulujący działanie klawisza <ph name="SIX_PACK_KEY_NAME" /> został zmieniony z <ph name="OLD_SHORTCUT" /> na <ph name="NEW_SHORTCUT" /></translation>
-<translation id="3765841986579723851">Edytowane dzisiaj</translation>
 <translation id="3772109172035555611">Dostosuj TrackPoint</translation>
 <translation id="3773700760453577392">Administrator nie zezwolił na wielokrotne logowanie użytkownika <ph name="USER_EMAIL" />. Aby kontynuować, wszyscy użytkownicy muszą się wylogować.</translation>
 <translation id="3779139509281456663">Łączę z urządzeniem <ph name="NAME" /></translation>
@@ -1000,7 +995,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3873915545594852654">Wystąpił problem z ARC++.</translation>
 <translation id="3879748587602334249">Menedżer pobierania</translation>
 <translation id="3884007280698606545">Osiągnięto limit USB</translation>
-<translation id="3886872229787704059">Otwierane dzisiaj</translation>
 <translation id="3892148308691398805">Kopiuj tekst</translation>
 <translation id="3893630138897523026">ChromeVox (komunikaty głosowe)</translation>
 <translation id="3898464793473355515">Obróć ekran o 90 stopni w prawo</translation>
@@ -1795,7 +1789,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="6095008505822982596">Prędkość mowy</translation>
 <translation id="6095425951508823973">Dodaj połączenie, korzystając z programu <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Nastąpiło wylogowanie.</translation>
-<translation id="6099678161144790572">Edytowane w zeszłym miesiącu</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6108952804512516814">Utwórz przy pomocy AI</translation>
 <translation id="6114505516289286752">Pliki z mową w języku: <ph name="LANGUAGE" /> zostały pobrane</translation>
@@ -1951,7 +1944,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="6546062506073634094">Wyszukiwanie obrazów według zawartości i podglądy obrazów</translation>
 <translation id="6555373427270923730">Wpisz adres internetowy w pasku adresu i naciśnij <ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" /> – nowa instalacja</translation>
-<translation id="6559158502366839560">Zobacz więcej aplikacji i gier</translation>
 <translation id="6560151649238390891">Sugestia została wstawiona</translation>
 <translation id="6562447480759345110">Zakończ tryb skupienia</translation>
 <translation id="6565007273808762236">Połączenie eSIM jest niedostępne</translation>
@@ -2057,7 +2049,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="6848716236260083778">Aby skonfigurować odcisk palca, Twoje dziecko musi dotknąć czytnika linii papilarnych. Odciski palców Twojego dziecka są przechowywane w bezpieczny sposób i wyłącznie na tym urządzeniu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6852052252232534364">Kliknij, by włączyć</translation>
 <translation id="6852628153543175788">Dodaj 10 minut</translation>
-<translation id="6855029042976311970">Edytowane przed chwilą</translation>
 <translation id="6856708615407876657">Przełącz kategorie wyników wyszukiwania</translation>
 <translation id="6856756288284651804">Chromebook został zaktualizowany</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -2152,7 +2143,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="7118597077555700347">Otwórz: <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Zaznacz następne słowo lub znak</translation>
 <translation id="7124556000457919678">Po włączeniu wstrzymaj i wznów klawisze myszy</translation>
-<translation id="7126996685418858413">Otwierane w zeszłym tygodniu</translation>
 <translation id="7131634465328662194">Nastąpi automatyczne wylogowanie.</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
@@ -2183,7 +2173,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Tylny mikrofon</translation>
 <translation id="7258225044283673131">Aplikacja nie odpowiada. Aby ją zamknąć, wybierz „Wymuś zamknięcie”.</translation>
-<translation id="7258828758145722155">Edytowane wczoraj</translation>
 <translation id="726276584504105859">Przeciągnij tutaj, by podzielić ekran</translation>
 <translation id="7264788308526527464">Skróć <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Unoś palec, by odcisk był dokładniejszy</translation>
@@ -2256,7 +2245,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7497767806359279797">Wybierz język i klawiaturę</translation>
 <translation id="7507162824403726948">Dokończ proces weryfikacji tożsamości</translation>
-<translation id="7508690557411636492">Otwierane w zeszłym miesiącu</translation>
 <translation id="7509246181739783082">Weryfikacja tożsamości</translation>
 <translation id="7512509370370076552">Skrót symulujący kliknięcie prawym przyciskiem myszy to teraz klawisz <ph name="LAUNCHER_KEY_NAME" /> + kliknięcie (poprzednio Alt + kliknięcie)</translation>
 <translation id="7512726380443357693">Nie wybrano: <ph name="BUTTON_LABEL" /></translation>
@@ -2710,7 +2698,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8753368202781196133">Ten język nie jest obecnie obsługiwany.</translation>
 <translation id="8755498163081687682">Weryfikacja tożsamości: strona <ph name="ORIGIN_NAME" /> wymaga potwierdzenia, że to Ty</translation>
 <translation id="875593634123171288">Pokaż ustawienia VPN</translation>
-<translation id="8756799553341497810">Po zamknięciu tego widoku możesz zacząć dostosowywać układ aplikacji.</translation>
 <translation id="8759408218731716181">Nie można skonfigurować wielokrotnego logowania</translation>
 <translation id="8759753423332885148">Więcej informacji.</translation>
 <translation id="8760172428247796445">Twoje urządzenie <ph name="DEVICE_TYPE" /> zostanie teraz zablokowane.

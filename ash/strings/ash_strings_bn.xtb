@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">খারিজ করুন</translation>
 <translation id="152629053603783244">Linux রিস্টার্ট করুন</translation>
 <translation id="1526448108126799339">নতুন উইন্ডোতে নতুন ট্যাব খুলুন</translation>
-<translation id="1528259147807435347">গত সপ্তাহে এডিট করা হয়েছে</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> থেকে সাইন করতে প্রথমে আপনাকে সব অ্যাকাউন্ট থেকে সাইন-আউট করতে হবে। সাইন আউট করতে, 'বাতিল করুন' বিকল্পটি বেছে নিয়ে ফিরে যান। তারপর 'স্ট্যাটাস এরিয়া' খুলতে টাইম বেছে নিয়ে সাইন আউট বেছে নিন। তারপর <ph name="USER_EMAIL_ADDRESS_2" />-এ আবার সাইন-ইন করুন।</translation>
 <translation id="15373452373711364">বড় মাউস কার্সার</translation>
 <translation id="1545331255323159851">আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া এবং বিজ্ঞপ্তি দেখুন</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">ব্যবহার এবং ডায়াগনস্টিক সম্পর্কিত ডেটা পাঠান। Google-এ ডায়াগনস্টিক, ডিভাইস এবং অ্যাপ ব্যবহারের ডেটা অটোমেটিক পাঠিয়ে, আপনার সন্তানের Android অভিজ্ঞতাকে উন্নত করতে সাহায্য করুন। এটি আপনার সন্তানকে শনাক্ত করতে ব্যবহার করা হবে না এবং সিস্টেম ও অ্যাপের স্থায়িত্ব বাড়াতে ও অন্যান্য উন্নতিতে সাহায্য করবে। কিছু পরিমাণ মোট ডেটা Android ডেভেলপারের মতো Google অ্যাপ এবং পার্টনারদেরও সাহায্য করবে। এই <ph name="BEGIN_LINK1" />সেটিং<ph name="END_LINK1" /> মালিকের নিয়ন্ত্রণে রয়েছে। এই ডিভাইসের জন্য ডায়াগনস্টিক এবং ব্যবহারের ডেটা Google-কে পাঠানোর বিষয়টি মালিক বেছে নিতে পারেন। অতিরিক্ত ওয়েব ও অ্যাপ অ্যাক্টিভিটি সেটিং আপনার সন্তানের ডিভাইসের জন্য চালু করা থাকলে, এই ডেটা তার Google অ্যাকাউন্টে সেভ করা হতে পারে। <ph name="BEGIN_LINK2" />মেট্রিক সম্পর্কে আরও জানুন<ph name="BEGIN_LINK2_END" />আরও জানুন<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">আপনার পিন লিখুন</translation>
 <translation id="2412593942846481727">আপডেট উপলভ্য</translation>
-<translation id="2416438829169535743">ভিউ ছেড়ে বেরিয়ে আসবেন?</translation>
 <translation id="2417486498593892439">নেটওয়ার্কে সাইন-ইন করুন</translation>
 <translation id="2423619675829330672">অনেকবার ভুল পিন লিখেছেন। <ph name="TIME_LEFT" /> অপেক্ষা করে আবার চেষ্টা করুন।</translation>
 <translation id="2426051945783024481">ক্যামেরা ফ্রেম অটোমেটিক কেন্দ্রে আছে</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে। স্বীকার করার আগে, এই পাস কীটি ডিভাইসে প্রদর্শিত হয়েছে কিনা নিশ্চিত করুন: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
 <translation id="2437771564543046790">ব্যাটারির চার্জ কম আছে। 'ব্যাটারি সেভার' চালু করা হয়েছে</translation>
-<translation id="243878895369688216">গতকাল খোলা হয়েছে</translation>
 <translation id="2440978926514840421">GIF রেকর্ডিং নেওয়া হয়েছে</translation>
 <translation id="2441427462554639370">ডিস্কে স্টোরেজের জায়গা খুবই কম থাকায় রেকর্ডিং বন্ধ হয়ে গেছে</translation>
 <translation id="2445449901874883781">উচ্চ রেজোলিউশন ব্যবহার করুন</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">কিয়স্ক অ্যাপ্লিকেশানটি ডাউনলোড করা যাবে না।</translation>
 <translation id="3563558822383875692">DLC কনফিগার করা হচ্ছে।</translation>
 <translation id="3563775809269155755">হটস্পট চালু করুন</translation>
-<translation id="3566240529365775567">এইমাত্র খোলা হয়েছে</translation>
 <translation id="3571734092741541777">সেট-আপ করুন</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" তে ফেরান (পুনর্সূচনা প্রয়োজন)</translation>
 <translation id="3576141592585647168">টাইমজোন পরিবর্তন করা</translation>
@@ -960,7 +956,6 @@
 <translation id="3756485814916578707">স্ক্রিন কাস্ট করা হচ্ছে</translation>
 <translation id="3765246971671567135">অফলাইন ডেমো মোড নীতি পড়া যায়নি।</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> শর্টকার্ট <ph name="OLD_SHORTCUT" /> থেকে <ph name="NEW_SHORTCUT" />-এ আপডেট করা হয়েছে</translation>
-<translation id="3765841986579723851">আজ এডিট করা হয়েছে</translation>
 <translation id="3772109172035555611">আপনার TrackPoint কাস্টমাইজ করুন</translation>
 <translation id="3773700760453577392">একজন অ্যাডমিনিস্ট্রেটর <ph name="USER_EMAIL" />-র জন্য একাধিক সাইন-ইন বাতিল করেছেন। চালিয়ে যাওয়ার জন্য, সব ব্যবহারকারীকে অবশ্যই সাইন-আউট করতে হবে।</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> কানেক্ট করা হচ্ছে</translation>
@@ -1000,7 +995,6 @@
 <translation id="3873915545594852654">ARC++ নিয়ে একটি সমস্যা হয়েছে।</translation>
 <translation id="3879748587602334249">ডাউনলোড ম্যানেজার</translation>
 <translation id="3884007280698606545">সর্বাধিক সংখ্যক USB ডিভাইস কানেক্ট করা হয়েছে</translation>
-<translation id="3886872229787704059">আজ খোলা হয়েছে</translation>
 <translation id="3892148308691398805">টেক্সট কপি করুন</translation>
 <translation id="3893630138897523026">ChromeVox (কথ্য প্রতিবার্তা)</translation>
 <translation id="3898464793473355515">ঘড়ির কাঁটার অভিমুখে ৯০ ডিগ্রি ঘোরান</translation>
@@ -1793,7 +1787,6 @@
 <translation id="6095008505822982596">স্পিচ রেট</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" />-এর মাধ্যমে কানেকশন যোগ করুন</translation>
 <translation id="6095541101974653012">আপনি লগ-আউট হয়ে গেছেন।</translation>
-<translation id="6099678161144790572">গত মাসে এডিট করা হয়েছে</translation>
 <translation id="6103838137565245112">সিস্টেম</translation>
 <translation id="6108952804512516814">AI-এর মাধ্যমে তৈরি করুন</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> স্পিচ ফাইল ডাউনলোড করা হয়েছে</translation>
@@ -1950,7 +1943,6 @@
 <translation id="6555373427270923730">অ্যাড্রেস বারে ওয়েব অ্যাড্রেস টাইপ করুন, তারপর <ph name="MODIFIER" /><ph name="KEY" /> প্রেস করুন</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 নতুন ইনস্টল</translation>
-<translation id="6559158502366839560">আরও অ্যাপ ও গেম এক্সপ্লোর করুন</translation>
 <translation id="6560151649238390891">সাজেশন যোগ করা হয়েছে</translation>
 <translation id="6562447480759345110">ফোকাস মোড বন্ধ করুন</translation>
 <translation id="6565007273808762236">ই-সিম কানেকশন উপলভ্য নেই</translation>
@@ -2056,7 +2048,6 @@
 <translation id="6848716236260083778">আঙ্গুলের ছাপ সেট আপ করতে, আপনার সন্তানকে আঙ্গুলের ছাপের সেন্সর টাচ করতে বলুন। আপনার সন্তানের আঙ্গুলের ছাপ সম্পর্কিত ডেটা নিরাপদে সেভ করা হয় এবং সবসময় <ph name="DEVICE_TYPE" />-এ থাকে।</translation>
 <translation id="6852052252232534364">চালু করতে ক্লিক করুন</translation>
 <translation id="6852628153543175788">১০ মিনিট যোগ করুন</translation>
-<translation id="6855029042976311970">এইমাত্র এডিট করা হয়েছে</translation>
 <translation id="6856708615407876657">সার্চ ফলাফলের বিভাগ টগল করুন</translation>
 <translation id="6856756288284651804">Chromebook আপডেট করা হয়েছে</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> সে</translation>
@@ -2151,7 +2142,6 @@
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> খুলুন</translation>
 <translation id="7119327711295338600">পরবর্তী শব্দ অথবা অক্ষর বেছে নিন</translation>
 <translation id="7124556000457919678">এটি চালু করলে মাউস কী পজ করুন এবং আবার চালু করুন</translation>
-<translation id="7126996685418858413">গত সপ্তাহে খোলা হয়েছে</translation>
 <translation id="7131634465328662194">আপনি নিজে থেকেই সাইন-আউট হয়ে যাবেন।</translation>
 <translation id="7143207342074048698">সংযুক্ত হচ্ছে</translation>
 <translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
@@ -2183,7 +2173,6 @@
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">পেছনের মাইক্রোফোন</translation>
 <translation id="7258225044283673131">অ্যাপ্লিকেশনটি কাজ করছে না। অ্যাপটি বন্ধ করতে "জোর করে বন্ধ করুন" বিকল্পটি বেছে নিন।</translation>
-<translation id="7258828758145722155">গতকাল এডিট করা হয়েছে</translation>
 <translation id="726276584504105859">বিভক্ত স্ক্রিন ব্যবহার করতে এখানে টেনে আনুন</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> কমান</translation>
 <translation id="7267875682732693301">আপনার আঙুলের ছাপের বিভিন্ন অংশ যোগ করার জন্য বারবার আঙুল তুলে আবার টাচ করতে থাকুন</translation>
@@ -2256,7 +2245,6 @@
 <translation id="7491962110804786152">ট্যাব</translation>
 <translation id="7497767806359279797">ভাষা এবং কীবোর্ড বেছে নিন</translation>
 <translation id="7507162824403726948">আপনার পরিচয় যাচাই করার প্রক্রিয়া শেষ করুন</translation>
-<translation id="7508690557411636492">গত মাসে খোলা হয়েছে</translation>
 <translation id="7509246181739783082">আপনার পরিচয় যাচাই করুন</translation>
 <translation id="7512509370370076552">'ডানদিকের বোতামে ক্লিক করুন' শর্টকার্ট alt + click থেকে <ph name="LAUNCHER_KEY_NAME" /> কী + click-এ আপডেট করা হয়েছে</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, বেছে নেওয়া হয়নি</translation>
@@ -2710,7 +2698,6 @@
 <translation id="8753368202781196133">এই মুহূর্তে এই ভাষাটি কাজ করবে না।</translation>
 <translation id="8755498163081687682">আপনার পরিচয় যাচাই করুন: <ph name="ORIGIN_NAME" /> আপনার পরিচয় যাচাই করতে চায়</translation>
 <translation id="875593634123171288">VPN সেটিংস দেখান</translation>
-<translation id="8756799553341497810">আপনি একবার এই ভিউ ছেড়ে বেরিয়ে এলে, নিজের অ্যাপের লেআউট কাস্টমাইজ করতে পারবেন।</translation>
 <translation id="8759408218731716181">একাধিক সাইন-ইন সেট-আপ করা যাবে না</translation>
 <translation id="8759753423332885148">আরও জানুন৷</translation>
 <translation id="8760172428247796445">আপনার <ph name="DEVICE_TYPE" /> এখনই লক হয়ে যাবে।

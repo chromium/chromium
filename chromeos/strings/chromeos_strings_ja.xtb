@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">認証タイプ</translation>
 <translation id="1776228893584526149">壁紙のトーン</translation>
 <translation id="1777913922912475695">橋</translation>
-<translation id="1782199038061388045">翻訳</translation>
 <translation id="1788485524395674731">このアプリは管理者によって管理されています</translation>
 <translation id="1792647875738159689">スキャンをキャンセルしています</translation>
 <translation id="1801418420130173017">ダークモードを無効にする</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">種類</translation>
 <translation id="2448857983905133469">授業用ツール</translation>
 <translation id="2468124392950503650">プロンプトを選択して作成するか、<ph name="BEGIN_LINK_PROMPTING_GUIDE" />プロンプト ガイド<ph name="END_LINK_PROMPTING_GUIDE" />をご覧ください</translation>
-<translation id="2472215337771558851">文書作成サポートを使用すると、Google AI の活用により文章の下書きを作成したり既存の文章を改良したりできます</translation>
 <translation id="2475982808118771221">エラーが発生しました</translation>
 <translation id="2480572840229215612">カニ</translation>
 <translation id="248546197012830854">デバイスはオフラインです。ヘルプ コンテンツを表示するには、Wi-Fi ネットワークに接続してください。</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">撮り直し</translation>
 <translation id="3479552764303398839">後で</translation>
 <translation id="3484914941826596830">ファームウェアのアップデート中、この外部デバイスを電源から外したり、パソコンをシャットダウンしたりしないでください。このウィンドウは最小化できます。アップデートには数分かかることがあります。その間、外部デバイスは動作しない可能性があります。</translation>
-<translation id="3486220673238053218">定義</translation>
 <translation id="3487866404496702283">mahi 機能に関するフィードバック</translation>
 <translation id="3488065109653206955">一部有効</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" />色調の<ph name="OFFICE_STYLE" />オフィス</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">テーマを選択</translation>
 <translation id="3644695927181369554">不適切な提案</translation>
 <translation id="3651050199673793219">温度の単位を選択してください</translation>
-<translation id="3661106764436337772">より確実な文章をすばやく作成</translation>
 <translation id="3662461537616691585">バーガンディとマルーン</translation>
 <translation id="3664755900672940272">サンプルのプロンプトをシャッフルしました</translation>
 <translation id="3668449597372804501">「雲の流れ」の壁紙</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">停止しました</translation>
 <translation id="4777310452073659583">文字起こしを取得するには、<ph name="DEVICE_TYPE" /> を再起動してください</translation>
 <translation id="4778082030331381943">アメジスト</translation>
-<translation id="4782311465517282004">テキストを右クリックまたは長押しすると、定義、翻訳、単位変換を確認できます</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> 枚の写真</translation>
 <translation id="4793710386569335688">その他ご不明な点がある場合は、<ph name="BEGIN_LINK" />ヘルプセンター<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="4793756956024303490">圧縮アルゴリズム</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">ライトモードをオフにする</translation>
 <translation id="7401543881546089382">ショートカットを削除</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> を更新する準備ができました</translation>
-<translation id="741244894080940828">単位変換</translation>
 <translation id="7415801143053185905">HTTP レイテンシが非常に高くなっています</translation>
 <translation id="7418738250896500352">単語が多すぎるため簡略化できません</translation>
 <translation id="7425037327577270384">文書作成サポート</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">ストレージ</translation>
 <translation id="885704831271383379">キーボードを暗くする</translation>
 <translation id="8863170912498892583">ダークモードを有効にする</translation>
-<translation id="8863888432376731307">「<ph name="QUERY" />」の <ph name="INTENT" /> の取得など</translation>
 <translation id="8864415976656252616">コンテンツの候補はありません。関連するヘルプ コンテンツをご覧ください。</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">デバイスの種類はタブレットです。</translation>

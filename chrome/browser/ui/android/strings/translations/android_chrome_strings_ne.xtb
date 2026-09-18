@@ -37,7 +37,6 @@
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Picture-in-Picture ट्याब</translation>
 <translation id="1126696498560056882">यो डिभाइसका खाताहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1135018701024399762">तपाईंले इन्कोग्निटो मोड प्रयोग गर्नुभयो भने तपाईंको डिभाइस प्रयोग गर्ने अन्य मान्छेहरू तपाईंको ब्राउजिङ डेटा हेर्न पाउँदैनन्</translation>
-<translation id="113752097246673894">आफ्ना सबै डिभाइसमा आफ्ना डिभाइसलगायतका थप कुराहरू प्राप्त गर्न <ph name="EMAIL" /> मार्फत Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="1138458427267715730">इन्टरनेटमा भएको कुनै पनि साइटमा उत्पादनको मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्</translation>
 <translation id="1140317858355046628">तपाईंले यो ट्याब समूह हटाउनुभयो भने सबै जना तत्कालै "<ph name="GROUP_NAME" />" ट्याब समूहको एक्सेस गुमाउने छन् र यसलाई सबै डिभाइसहरूबाट मेटाइने छ।</translation>
 <translation id="1142732900304639782">यी साइटहरू अनुवाद गर्ने प्रस्ताव नगर्नुहोस्</translation>
@@ -205,7 +204,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, रेकर्डिङ ट्याब</translation>
 <translation id="1819443852740954262">सबै URL इन्कोग्निटो विन्डोमा खोलियोस्</translation>
 <translation id="1820408774134375111">साइन इन गर्ने पुछारको पाना</translation>
-<translation id="1823492026305965829"><ph name="USER_FULL_NAME" /> का रूपमा साइन इन गर्नुहोस्</translation>
 <translation id="1824902652744048041">"ब्राउजिङ डेटा मेटाउनुहोस्" मा ट्याप गर्नुहोस्</translation>
 <translation id="1829244130665387512">पृष्ठमा फेला पार्नुहोस्</translation>
 <translation id="1832459821645506983">अँ, म सहमत छु</translation>
@@ -439,7 +437,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2723001399770238859">अडियो</translation>
 <translation id="2739887572830526131">ट्याबहरू पछि हाल्न यो समूह राखिराख्नुहोस् वा अबदेखि चाहिँदैन भने यसलाई मेटाउनुहोस्।</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> अहिले उपलब्ध छैन।</translation>
-<translation id="2751271371269891762">आफ्ना सबै डिभाइसमा आफ्ना बुकमार्कलगायतका थप कुराहरू प्राप्त गर्न <ph name="EMAIL" /> मार्फत साइन इन गर्नुहोस्</translation>
 <translation id="2760805590727089264">महिना / साल</translation>
 <translation id="2761162135224472056">इमर्सिभ प्लेब्याकमार्फत हेर्ने हो?</translation>
 <translation id="2762000892062317888">भर्खरै</translation>
@@ -514,6 +511,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2996291259634659425">पासफ्रेज सिर्जना गर्नुहोस्</translation>
 <translation id="2996682533106928201">हटाउन ट्याप गर्नुहोस्।</translation>
 <translation id="2996809686854298943">URL आवश्यक छ</translation>
+<translation id="3007318536447999974">Gemini सँग कुरा गर्न यसलाई आफ्नो माइक्रोफोन प्रयोग गर्ने अनुमति दिनुहोस्। तपाईं <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा गई यसलाई व्यवस्थापन गर्न पनि सक्नुहुन्छ</translation>
 <translation id="3024215143424744261">रिडिङ मोडसम्बन्धी प्राथमिकताहरू बन्द गरिएका छन्</translation>
 <translation id="3024277805447899099">फोटोको प्रिभ्यू हेर्नुहोस्</translation>
 <translation id="3026955690410463085">लिंक समावेश गर्नुहोस्</translation>
@@ -608,7 +606,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3435914367318771664">यो ट्याब समूहमा हाल्नुहोस्</translation>
 <translation id="3436118221454753036">AI मोडलाई सोध्नुहोस्</translation>
-<translation id="3438681572027105609">आफ्ना सबै डिभाइसमा आफ्ना पासवर्डलगायतका थप कुराहरू प्राप्त गर्न Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="3439276997620616816">तपाईंले हालसालै बन्द गरेका ट्याबहरू यहाँ देखिने छन्</translation>
 <translation id="3443221991560634068">हालको पृष्ठलाई पुनःलोड गर्नुहोस्</translation>
 <translation id="3444179773590444986">साइटहरूमा लागू हुने अँध्यारो थिमका बारेमा प्रतिक्रिया दिने हो?</translation>
@@ -753,7 +750,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4000212216660919741">अफलाइन गृहपृष्ठ</translation>
 <translation id="4000670338830950598">हाइलाइट गरिएको सामग्री प्रयोग गरी Google Chrome कस्टमाइज तथा नियन्त्रण गर्नुहोस्</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{तपाईंको Google खातामा सेभ गरिएको एउटा पासवर्ड ह्याक वा चोरी भएको छ}other{तपाईंको Google खातामा सेभ गरिएका # वटा पासवर्ड ह्याक वा चोरी भएका छन्}}</translation>
-<translation id="4023638601467301498">आफ्ना सबै डिभाइसमा आफ्ना बुकमार्कलगायतका थप कुराहरू प्राप्त गर्न Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="4024768890073681126">तपाईंका अभिभावक तपाईंको ब्राउजर व्यवस्थापन गर्नुहुन्छ</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> फोल्डर</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# घन्टा}other{# घन्टा}}</translation>
@@ -933,7 +929,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4685741273709472646">ड्रपडाउन सूचीबाट चयन गर्नुहोस्</translation>
 <translation id="468924408576231679">बेवपेज <ph name="PAGE_TITLE" /> को लिंक सेयर गर्नुहोस्। स्रोत: <ph name="PAGE_URL" /></translation>
 <translation id="4692623383562244444">खोज इन्धनहरू</translation>
-<translation id="469286762610133730">अझ उत्कृष्ट सामग्री प्राप्त गर्नुहोस्</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}}</translation>
 <translation id="4698757800236023795"><ph name="ITEM_COUNT" /> वटा ट्याब सक्रिय अवस्थामा छन्</translation>
 <translation id="4699172675775169585">क्यास गरिएका फोटो र फाइलहरू</translation>
@@ -993,7 +988,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4910889077668685004">भुक्तानी सम्बन्धी एपहरू</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />, तपाईंलाई फेरि स्वागत छ!</translation>
 <translation id="4913169188695071480">पुन: ताजा गर्ने काम रोक्नुहोस्</translation>
-<translation id="4921224083091001889">आफ्ना सबै डिभाइसमा आफ्ना पासवर्डलगायतका थप कुराहरू प्राप्त गर्न Chrome मा <ph name="EMAIL" /> मार्फत साइन इन गर्नुहोस्</translation>
 <translation id="4923173329789776645">तपाईंको सङ्गठनले डाउनलोड गर्न सिफारिस गरेको छैन</translation>
 <translation id="4924398189611529766">तपाईं इन्कोग्निटो मोडमा ब्राउज गर्दै हुनुहुन्छ भने यो डिभाइस प्रयोग गर्ने अन्य मान्छेहरू तपाईंको गतिविधि देख्ने छैनन्। त्यसैले तपाईं अझ बढी गोप्य तरिकाले ब्राउज गर्न सक्नुहुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">स्क्रिनसट <ph name="CURRENT_DATE_ISO" /></translation>
@@ -1154,7 +1148,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5601180634394228718">Chrome मा तपाईंको ब्राउजिङ अनुभवको गुणस्तर सुधार्न डेटा प्रयोग गर्ने थप सेटिङका लागि <ph name="BEGIN_LINK" />Google का सेवा<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="5601924940067278327">आफ्ना सबै डिभाइसमा आफ्ना ट्याबलगायतका थप कुराहरू प्राप्त गर्नुहोस्</translation>
 <translation id="5611398002774823980">खातामा सेभ गर्नुहोस्</translation>
-<translation id="5613381935190035031">आफ्ना सबै डिभाइसमा आफ्ना ट्याबलगायतका थप कुराहरू प्राप्त गर्न <ph name="EMAIL" /> मार्फत Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="5614625640221885312">आफ्ना सबै डिभाइसमा आफ्ना बुकमार्क र पासवर्डलगायतका कुरा प्राप्त गर्न साइन इन गर्नुहोस्</translation>
 <translation id="5619633276517849615">तपाईंको सङ्गठनले "सुरक्षित ब्राउजिङ" अन गरेको छ</translation>
 <translation id="5620163320393916465">कुनै पनि पासवर्ड सुरक्षित गरिएको छैन</translation>
@@ -1241,7 +1234,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{तपाईंको रिडिङ लिस्टमा एउटा पेज छ}other{तपाईंको रिडिङ लिस्टमा # वटा पेज छन्}}</translation>
 <translation id="5992182727984874868"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> तपाईंले हालसालै यो साइट नखोल्नुभएकाले Chrome ले यसलाई दिइएका यी अनुमति रद्द गरेको छ</translation>
 <translation id="5995726099713306770">यो पेज फेरि डाउनलोड गर्ने हो?</translation>
-<translation id="5998675059699164418">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले Chrome चलाउन साइन इन गर्नु पर्ने हुन्छ।</translation>
 <translation id="6000066717592683814">Google लाई डिफल्ट खोज इञ्जिनका रूपमा कायम राख्नुहोस्</translation>
 <translation id="6002122790816966947">तपाईंका डिभाइसहरू</translation>
 <translation id="6011308810877101166">खोजसम्बन्धी सुझावहरूको गुणस्तर सुधार गर्नुहोस्</translation>
@@ -1452,12 +1444,10 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6738867403308150051">डाउनलोड गर्दैछ…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">आफ्नो खातामा भएको जानकारीको समीक्षा गर्नुहोस्</translation>
-<translation id="6746834324024491643">आफ्ना सबै डिभाइसमा आफ्ना पासवर्डलगायतका थप कुराहरू प्राप्त गर्न <ph name="EMAIL" /> मार्फत साइन इन गर्नुहोस्</translation>
 <translation id="6751521182688001123">छिटोछरितो रूपमा नयाँ ट्याब खोल्नुहोस्। यो सर्टकट सम्पादन गर्न टच एण्ड होल्ड गर्नुहोस्।</translation>
 <translation id="6754359471209693699">नयाँ कुरा खोज्न थाल्नुहोस्</translation>
 <translation id="6756507620369789050">प्रतिक्रिया दिनुहोस्</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />।</translation>
-<translation id="676305334223455055">आफ्ना रुचिहरूका आधारमा सामग्री प्राप्त गर्न साइन इन गर्नुहोस्</translation>
 <translation id="6764137532716892442">नयाँ गतिविधि भएको <ph name="GROUP_TITLE" /> नामक साझा ट्याब समूह</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याब र अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याब र अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>
 <translation id="6785476624617658922">Chrome र ChromeOS का सेवाका अतिरिक्त सर्तहरू</translation>
@@ -1757,7 +1747,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7822705602465980873">तपाईं साइन इन अवस्थामा भएका बेला यो जानकारी तपाईंलाई Google का सेवाहरूमा सुरक्षित राख्ने (जस्तै, सुरक्षासम्बन्धी कुनै घटना घटेपछि Gmail मा सुरक्षा बढाउने) प्रयोजनका लागि तपाईंको Google खातामा लिंक गरिन्छ।</translation>
 <translation id="7824665136384946951">तपाईंको सङ्गठनले Safe Browsing अफ गरेको छ</translation>
 <translation id="7825973332242257878">ट्याब समूहहरू</translation>
-<translation id="7826342993930002256">जुनसुकै ठाउँबाट Chrome एक्सेस गर्नुहोस्</translation>
 <translation id="7845155831233417403">तपाईं बढीमा <ph name="MAX_INSTANCE_COUNT" /> वटा विन्डो खुला राख्न सक्नुहुन्छ। जारी राख्न कुनै विन्डो बन्द गर्नुहोस्।</translation>
 <translation id="7846161022626028328">कुनै त्रुटि भयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7846296061357476882">Google का सेवाहरू</translation>
@@ -1814,7 +1803,9 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8058746566562539958">Chrome को नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="8062594758852531064">अझ धेरै पेजहरू प्रिलोड गर्ने मोड:</translation>
 <translation id="8063895661287329888">पुस्तक चिन्ह थप्न सकिएन।</translation>
+<translation id="8064081231614696741">अर्को फोल्डर छनौट गर्नुहोस्</translation>
 <translation id="8066816452984416180">यो पेज झट्टै बुकमार्क गर्नुहोस्। यो सर्टकट परिवर्तन गर्न टच एण्ड होल्ड गर्नुहोस्।</translation>
+<translation id="8068041627541121907">Gemini ले तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति माग्दै छ</translation>
 <translation id="8072436850275034464">तपाईं आफूले Chrome प्रयोग गर्ने जुनसुकै डिभाइसमा हालसालै बन्द गरिएका ट्याबहरू पुनः खोल्न सक्नुहुन्छ</translation>
 <translation id="8073388330009372546">छविलाई नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="8076492880354921740">ट्याबहरू</translation>
@@ -1831,7 +1822,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8110024788458304985">Chrome का सुविधाको गुणस्तर र यसको पर्फर्मेन्स सुधार्न मद्दत गर्नुहोस्</translation>
 <translation id="8110087112193408731">तपाईंले Chrome मा गर्नुभएका क्रियाकलाप डिजिटल वेलबिइङमा देखाउने हो?</translation>
 <translation id="8118117428362942925">मद्दत चाहिएका खण्डमा आफ्ना अभिभावक (<ph name="PARENT_NAME" />) लाई अनुरोध गर्नुहोस्</translation>
-<translation id="8118151008374483324">आफ्ना सबै डिभाइसमा आफ्ना ट्याबलगायतका थप कुराहरू प्राप्त गर्न Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="8120286190326371840">यो डिभाइसमा सेभ गरिएको कुनै पनि पासवर्ड ह्याक वा चोरी भएको छैन</translation>
 <translation id="8122623268651408616">सबैभन्दा नयाँ सुरुमा आउने गरी क्रमबद्ध गर्नुहोस्</translation>
 <translation id="8127542551745560481">गृहपृष्ठ सम्पदान गर्नुहोस्</translation>
@@ -2123,7 +2113,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="9218430445555521422">डिफल्टका रूपमा सेट गर्नुहोस्</translation>
 <translation id="9219103736887031265">फोटो</translation>
 <translation id="922152298093051471">Chrome आफूले चाहे जस्तो बनाउनुहोस्</translation>
-<translation id="9222198206152536936">आफ्ना सबै डिभाइसमा आफ्ना ट्याबलगायतका थप कुराहरू प्राप्त गर्न <ph name="EMAIL" /> मार्फत साइन इन गर्नुहोस्</translation>
 <translation id="924447568950697217">Chrome लाई आफ्नो डिफल्ट ब्राउजर बनाउनुहोस्</translation>
 <translation id="926205370408745186">आफूले Chrome मा गरेका क्रियाकलाप डिजिटल वेलबिइङबाट हटाउनुहोस्</translation>
 <translation id="927968626442779827">Google Chrome को लाइट मोड प्रयोग गर्नुहोस्</translation>

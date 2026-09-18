@@ -837,6 +837,8 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2384307209577226199">Parazgjedhja e ndërmarrjes</translation>
 <translation id="2385809941344967209">Përditësoje Chrome nga cilësimet e tua të Chrome</translation>
 <translation id="2386255080630008482">Certifikata e serverit është revokuar.</translation>
+<translation id="2387424091060104123">Sugjeruar nga Gemini · <ph name="SRC_LINK" />Shiko burimet<ph name="END_SRC_LINK" />
+Mund ta heqësh këtë sugjerim nga Chrome. Burimi yt origjinal nuk do të fshihet. <ph name="MANAGE_LINK" />Menaxho plotësimin automatik të përmirësuar<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Shtjello</translation>
 <translation id="2392959068659972793">Shfaq politikat pa asnjë vlerë të caktuar</translation>
 <translation id="239429038616798445">Kjo mënyrë dërgimi nuk ofrohet. Provo një mënyrë tjetër.</translation>
@@ -1517,6 +1519,8 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3577473026931028326">Ndodhi një gabim. Provo përsëri.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome do të të njoftojë kur kjo faqe të jetë gati. &lt;a&gt;Anuloje&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Shto skedat automatikisht</translation>
+<translation id="3582670569275100909">Dërgesat</translation>
 <translation id="3582930987043644930">Shto emrin</translation>
 <translation id="3583757800736429874">&amp;Bëje përsëri zhvendosjen</translation>
 <translation id="3584299510153766161">Dy shpime poshtë</translation>
@@ -1592,6 +1596,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Po ngarkon...</translation>
 <translation id="3709599264800900598">Teksti që kopjove</translation>
+<translation id="3711223220609269738">Skedë e re e izoluar</translation>
 <translation id="3711430313228789376">Shfletuesi Chrome po përpiqet të shfaqë fjalëkalimet</translation>
 <translation id="3711895659073496551">Pezullo</translation>
 <translation id="3712004750972384495">Regjistrimi i ekranit po ruhet</translation>
@@ -1610,6 +1615,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3727309136762649052">Hapësira e emrit</translation>
 <translation id="3727850735097852673">Për të përdorur "Menaxherin e fjalëkalimeve të Google" me macOS Keychain, rihap Chrome dhe lejo qasjen për Keychain. Skedat e tua do të hapen përsëri pas rihapjes.</translation>
 <translation id="3728173127485570463">Shfletuesi Chrome nuk do të kërkojë më gjurmën tënde të gishtit për të plotësuar fjalëkalimet</translation>
+<translation id="3729811201279509483">Shto skedat manualisht</translation>
 <translation id="3736564442532774454">Shfletuesi Chrome po përpiqet të plotësojë informacionet e tua delikate në <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Shfletuesi yt menaxhohet nga administratori yt.</translation>
 <translation id="3739842843727261045">Opsioni i gishtave tregon se të pëlqejnë këto rezultate</translation>
@@ -2772,6 +2778,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5649053991847567735">Shkarkimet automatike</translation>
 <translation id="5651323159439184939">Furnizimi me dhëmbëza</translation>
 <translation id="5653681867130739344">Përditëso kartën e identitetit në mënyrë të sigurt te "Portofoli i Google"</translation>
+<translation id="5653744563415531641">Ruaj informacionet e tua dhe bëji gjërat më shpejt, si p.sh. plotësimin e formularëve nëpër produktet e Google. Mund të <ph name="MANAGE_WALLET_SETTINGS_LINK" /> për <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">U ngarkua ID-ja e raporteve të ndërprerjeve aksidentale:</translation>
 <translation id="5654965123204121933">URL-ja nuk përfshin vargun e kërkuar të zëvendësimit <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Mail-i</translation>
@@ -3217,6 +3224,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6410264514553301377">Fut datën e skadimit dhe kodin CVC për <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Dialogu i miratimit të prindit</translation>
+<translation id="6413532517183895572">menaxhosh cilësimet e "Portofolit"</translation>
 <translation id="6415778972515849510">Chromium mund të të ndihmojë ta mbrosh "Llogarinë tënde të Google" dhe të ndryshosh fjalëkalimin tënd.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Sigurohu që të dhënat kritike të biznesit ose të dhënat personale të ruhen në nivel të jashtëm.</translation>
@@ -4004,6 +4012,7 @@ Detaje shtesë:
 <translation id="7758069387465995638">Muri mbrojtës ose softueri i antivirusit mund ta ketë bllokuar lidhjen.</translation>
 <translation id="7759147511335618829">Kontrolli dhe riprogramimi i pajisjes MIDI</translation>
 <translation id="7759809451544302770">Opsionale</translation>
+<translation id="7760566304700414795">Dërgesë</translation>
 <translation id="776110834126722255">E vjetruar</translation>
 <translation id="7761159795823346334">Të lejohet kamera?</translation>
 <translation id="7761701407923456692">Certifikata e serverit nuk përputhet me URL-në.</translation>
@@ -4349,6 +4358,7 @@ Detaje shtesë:
 <translation id="8371841335382565017">Shfaq listën e pajisjeve për transmetim</translation>
 <translation id="8371889962595521444">Certifikatat rrënjë të personalizuara</translation>
 <translation id="8374636051559112948">Ndryshon</translation>
+<translation id="8377507422902936905">Porosi</translation>
 <translation id="837840316697671463">Nëse nuk mund ta gjesh një skedar në pajisjen tënde, kërko për të te "<ph name="CLOUD_PROVIDER" />".</translation>
 <translation id="8378714024927312812">Menaxhohet nga organizata jote</translation>
 <translation id="8380941800586852976">I rrezikshëm</translation>

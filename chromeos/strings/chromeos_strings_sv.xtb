@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Autentiseringstyp</translation>
 <translation id="1776228893584526149">Bakgrundston</translation>
 <translation id="1777913922912475695">bro</translation>
-<translation id="1782199038061388045">Översätt</translation>
 <translation id="1788485524395674731">Den här appen hanteras av administratören</translation>
 <translation id="1792647875738159689">Skanningen avbryts</translation>
 <translation id="1801418420130173017">Inaktivera mörkt tema</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2448857983905133469">Lektionsverktyg</translation>
 <translation id="2468124392950503650">Välj en prompt för att skapa eller läs <ph name="BEGIN_LINK_PROMPTING_GUIDE" />promptguiden<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Använd Hjälp mig skriva för att skapa ett utkast eller finjustera befintligt arbete (med hjälp av Google AI)</translation>
 <translation id="2475982808118771221">Det uppstod ett fel</translation>
 <translation id="2480572840229215612">krabbor</translation>
 <translation id="248546197012830854">Enheten är offline. Anslut till ett wifi-nätverk för att se hjälpinnehåll.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Ta om</translation>
 <translation id="3479552764303398839">Inte nu</translation>
 <translation id="3484914941826596830">Koppla inte från den externa enheten eller stäng av datorn medan firmware uppdateras. Du kan minimera fönstret. Uppdateringen kan ta en stund och din externa enhet kanske inte fungerar under tiden.</translation>
-<translation id="3486220673238053218">definition</translation>
 <translation id="3487866404496702283">Feedback om mahi-funktionen</translation>
 <translation id="3488065109653206955">Delvis aktiverat</translation>
 <translation id="3492882532495507361">Ett <ph name="OFFICE_STYLE" />-kontor med <ph name="OFFICE_COLOR" /> toner</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Välj ett tema</translation>
 <translation id="3644695927181369554">Dåligt förslag</translation>
 <translation id="3651050199673793219">Välj en temperaturenhet</translation>
-<translation id="3661106764436337772">Skriv snabbare och med mer självsäkerhet</translation>
 <translation id="3662461537616691585">vinrött och rödbrunt</translation>
 <translation id="3664755900672940272">Exempelpromptarna har blandats</translation>
 <translation id="3668449597372804501">Bakgrund med moln</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Har stoppats</translation>
 <translation id="4777310452073659583">Starta om <ph name="DEVICE_TYPE" /> om du vill få en transkription</translation>
 <translation id="4778082030331381943">ametist</translation>
-<translation id="4782311465517282004">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Besök <ph name="BEGIN_LINK" />hjälpcentret<ph name="END_LINK" /> om du vill ha mer hjälp.</translation>
 <translation id="4793756956024303490">Komprimeringsalgoritm</translation>
@@ -1459,7 +1454,6 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7397270852490618635">Inaktivera ljust tema</translation>
 <translation id="7401543881546089382">Ta bort genväg</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> är redo att uppdateras</translation>
-<translation id="741244894080940828">Räkna om</translation>
 <translation id="7415801143053185905">Mycket hög HTTS-latens</translation>
 <translation id="7418738250896500352">Det går inte att förenkla med så många ord</translation>
 <translation id="7425037327577270384">Hjälp mig skriva</translation>
@@ -1769,7 +1763,6 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="885701979325669005">Lagring</translation>
 <translation id="885704831271383379">mörkare tangentbord</translation>
 <translation id="8863170912498892583">Aktivera mörkt tema</translation>
-<translation id="8863888432376731307">Be om en <ph name="INTENT" /> av <ph name="QUERY" /> och annat</translation>
 <translation id="8864415976656252616">Inga innehållsförslag. Visa populärt hjälpinnehåll.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Enheten är en surfplatta.</translation>

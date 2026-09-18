@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">ЗАКРЫТЬ</translation>
 <translation id="152629053603783244">Перезагрузить Linux</translation>
 <translation id="1526448108126799339">Открыть вкладку в новом окне</translation>
-<translation id="1528259147807435347">Изменено за последнюю неделю</translation>
 <translation id="1536604384701784949">Чтобы использовать адрес электронной почты <ph name="USER_EMAIL_ADDRESS" />, вам сначала нужно выйти из всех аккаунтов. Для этого нажмите "Отмена" и вернитесь на шаг назад. Затем нажмите на часы и на открывшейся панели состояния выберите "Выйти". Войдите в аккаунт <ph name="USER_EMAIL_ADDRESS_2" /> ещё раз.</translation>
 <translation id="15373452373711364">Большой курсор мыши</translation>
 <translation id="1545331255323159851">Просматривайте недавние фотографии, медиафайлы и уведомления с телефона.</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Передача данных об использовании и диагностике. Помогите сделать Android ещё лучше – разрешите автоматически отправлять в Google диагностическую информацию, данные об использовании приложений и самого устройства. Мы не будем пытаться установить личность вашего ребенка на основе этих данных. Они позволят повысить стабильность приложений и системы, а также внедрить другие улучшения. Некоторые агрегированные данные используются для улучшения приложений Google или передаются нашим партнерам, например разработчикам Android. Этот <ph name="BEGIN_LINK1" />параметр<ph name="END_LINK1" /> принудительно применяется владельцем. Он вправе разрешить автоматически отправлять в Google данные об использовании и диагностике устройства. Если у ребенка включена дополнительная история приложений и веб-поиска, эта информация может сохраняться в аккаунте Google ребенка. <ph name="BEGIN_LINK2" />Узнать больше о сборе данных<ph name="BEGIN_LINK2_END" />Подробнее…<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Введите PIN-код</translation>
 <translation id="2412593942846481727">Доступно обновление</translation>
-<translation id="2416438829169535743">Выйти из обучения?</translation>
 <translation id="2417486498593892439">Регистрация в сети</translation>
 <translation id="2423619675829330672">Слишком много попыток ввода PIN-кода. Попробуйте снова, когда пройдет время: <ph name="TIME_LEFT" />.</translation>
 <translation id="2426051945783024481">Центрировано автоматически.</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth. Проверьте, отображается ли на нем код: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Показать пароль</translation>
 <translation id="2437771564543046790">Низкий заряд батареи. Включен режим энергосбережения</translation>
-<translation id="243878895369688216">Открыто вчера</translation>
 <translation id="2440978926514840421">Выполнена запись в формате GIF</translation>
 <translation id="2441427462554639370">Запись приостановлена, потому что в хранилище почти нет свободного места.</translation>
 <translation id="2445449901874883781">Показывать больше окон</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">Не удалось скачать киоск-приложение</translation>
 <translation id="3563558822383875692">Настройка DLC…</translation>
 <translation id="3563775809269155755">Включить точку доступа</translation>
-<translation id="3566240529365775567">Открыто только что</translation>
 <translation id="3571734092741541777">Настроить</translation>
 <translation id="3573179567135747900">Вернуться к языку: "<ph name="FROM_LOCALE" />" (потребуется перезагрузка)</translation>
 <translation id="3576141592585647168">Изменение часового пояса</translation>
@@ -960,7 +956,6 @@
 <translation id="3756485814916578707">Трансляция экрана…</translation>
 <translation id="3765246971671567135">Не удалось прочитать политику работы офлайн в демонстрационном режиме.</translation>
 <translation id="3765841382945324995">Сочетание клавиш для действия "<ph name="SIX_PACK_KEY_NAME" />" изменено с <ph name="OLD_SHORTCUT" /> на <ph name="NEW_SHORTCUT" /></translation>
-<translation id="3765841986579723851">Изменено сегодня</translation>
 <translation id="3772109172035555611">Настройте TrackPoint</translation>
 <translation id="3773700760453577392">Администратор отключил множественный вход для аккаунта <ph name="USER_EMAIL" />. Чтобы продолжить, все пользователи должны выйти из аккаунтов.</translation>
 <translation id="3779139509281456663">Подключение к устройству "<ph name="NAME" />"</translation>
@@ -1000,7 +995,6 @@
 <translation id="3873915545594852654">Не удалось запустить ARC++.</translation>
 <translation id="3879748587602334249">Менеджер скачивания</translation>
 <translation id="3884007280698606545">Подключено максимальное количество USB-устройств</translation>
-<translation id="3886872229787704059">Открыто сегодня</translation>
 <translation id="3892148308691398805">Скопировать текст</translation>
 <translation id="3893630138897523026">ChromeVox (голосовое сопровождение)</translation>
 <translation id="3898464793473355515">Повернуть экран на 90 градусов по часовой стрелке</translation>
@@ -1797,7 +1791,6 @@
 <translation id="6095008505822982596">Скорость речи</translation>
 <translation id="6095425951508823973">Добавить подключение от поставщика "<ph name="PROVIDER" />"</translation>
 <translation id="6095541101974653012">Вы вышли из аккаунта</translation>
-<translation id="6099678161144790572">Изменено за последний месяц</translation>
 <translation id="6103838137565245112">система</translation>
 <translation id="6108952804512516814">Создать с помощью ИИ</translation>
 <translation id="6114505516289286752">Скачаны файлы распознавания речи для языка: <ph name="LANGUAGE" /></translation>
@@ -1954,7 +1947,6 @@
 <translation id="6555373427270923730">Введите веб-адрес в адресной строке и нажмите <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835">"<ph name="APP_NAME" />"
 Новое приложение</translation>
-<translation id="6559158502366839560">Другие приложения и игры</translation>
 <translation id="6560151649238390891">Вставлено предложенное</translation>
 <translation id="6562447480759345110">Выйти из режима концентрации внимания</translation>
 <translation id="6565007273808762236">Подключение eSIM недоступно</translation>
@@ -2060,7 +2052,6 @@
 <translation id="6848716236260083778">Чтобы настроить разблокировку по отпечатку, ребенок должен приложить палец к сканеру. Данные отпечатков пальцев хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6852052252232534364">Активировать</translation>
 <translation id="6852628153543175788">Добавить 10 минут</translation>
-<translation id="6855029042976311970">Изменено только что</translation>
 <translation id="6856708615407876657">Фильтровать результаты поиска по категориям</translation>
 <translation id="6856756288284651804">Обновления для Chromebook</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек.</translation>
@@ -2155,7 +2146,6 @@
 <translation id="7118597077555700347">Открыть результат "<ph name="SEARCH_RESULT_TEXT" />"</translation>
 <translation id="7119327711295338600">Выбрать следующее слово или букву</translation>
 <translation id="7124556000457919678">Временно отключить или снова включить клавиши управления указателем</translation>
-<translation id="7126996685418858413">Открыто на прошлой неделе</translation>
 <translation id="7131634465328662194">После этого вы выйдете из системы.</translation>
 <translation id="7143207342074048698">Подключение</translation>
 <translation id="7144878232160441200">Повторить</translation>
@@ -2186,7 +2176,6 @@
 <translation id="7256057185598509352">Клавиша ExpressKey 2</translation>
 <translation id="7256634071279256947">Основной микрофон</translation>
 <translation id="7258225044283673131">Приложение не отвечает. Чтобы выйти из него, нажмите "Закрыть принудительно".</translation>
-<translation id="7258828758145722155">Изменено вчера</translation>
 <translation id="726276584504105859">Перетащите сюда, чтобы разделить экран</translation>
 <translation id="7264788308526527464">Минус <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Немного перемещайте палец, чтобы отсканировать его полностью.</translation>
@@ -2259,7 +2248,6 @@
 <translation id="7491962110804786152">tab</translation>
 <translation id="7497767806359279797">Выберите язык и клавиатуру</translation>
 <translation id="7507162824403726948">Завершите проверку личности</translation>
-<translation id="7508690557411636492">Открыто в прошлом месяце</translation>
 <translation id="7509246181739783082">Подтвердите личность</translation>
 <translation id="7512509370370076552">Сочетание клавиш для нажатия правой кнопкой мыши изменено с Alt + нажатие на <ph name="LAUNCHER_KEY_NAME" /> + нажатие.</translation>
 <translation id="7512726380443357693">"<ph name="BUTTON_LABEL" />", не выбрано</translation>
@@ -2713,7 +2701,6 @@
 <translation id="8753368202781196133">Пока этот язык не поддерживается.</translation>
 <translation id="8755498163081687682"><ph name="ORIGIN_NAME" /> запрашивает подтверждение вашей личности</translation>
 <translation id="875593634123171288">Показать настройки VPN</translation>
-<translation id="8756799553341497810">Вы сможете упорядочить приложения, после того как выйдете из режима обучения.</translation>
 <translation id="8759408218731716181">Не удалось настроить множественный вход</translation>
 <translation id="8759753423332885148">Подробнее…</translation>
 <translation id="8760172428247796445">Система сейчас заблокирует <ph name="DEVICE_TYPE" />.

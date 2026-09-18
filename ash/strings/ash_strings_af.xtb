@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">MAAK TOE</translation>
 <translation id="152629053603783244">Herbegin Linux</translation>
 <translation id="1526448108126799339">Maak nuwe oortjie in nuwe venster oop</translation>
-<translation id="1528259147807435347">In die afgelope week gewysig</translation>
 <translation id="1536604384701784949">Om <ph name="USER_EMAIL_ADDRESS" /> te gebruik, moet jy eers uit alle rekeninge afmeld. Om af te meld, moet jy Kanselleer kies om terug te gaan. Kies dan die tyd om die statusarea oop te maak en kies Meld af. Meld dan weer by <ph name="USER_EMAIL_ADDRESS_2" /> aan.</translation>
 <translation id="15373452373711364">Groot muismerker</translation>
 <translation id="1545331255323159851">Bekyk jou foon se onlangse foto’s, media en kennisgewings</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Stuur gebruik- en diagnostiese data. Help om jou kind se Android-ervaring beter te maak deur diagnostiese, toestel- en appgebruikdata outomaties na Google toe te stuur. Dit sal nie gebruik word om jou kind te identifiseer nie en sal met stelsel- en appstabiliteit en ander verbeteringe help. Sekere aggregaatdata sal ook Google-apps en -vennote, soos Android-ontwikkelaars, help. Hierdie <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> word deur die eienaar afgedwing. Die eienaar kan kies om diagnostiese en gebruikdata vir hierdie toestel na Google toe te stuur. As die bykomende Web- en Appaktiwiteit-instelling vir jou kind aangeskakel is, kan hierdie data in hul Google-rekening gestoor word. <ph name="BEGIN_LINK2" />Meer inligting oor maatstawwe<ph name="BEGIN_LINK2_END" />Meer inligting<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Voer jou PIN in</translation>
 <translation id="2412593942846481727">Opdatering is beskikbaar</translation>
-<translation id="2416438829169535743">Gaan uit aansig?</translation>
 <translation id="2417486498593892439">Meld aan by netwerk</translation>
 <translation id="2423619675829330672">Te veel PIN-pogings. Wag <ph name="TIME_LEFT" /> en probeer weer.</translation>
 <translation id="2426051945783024481">Kamera se raam is outomaties gesentreer</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">Bluetooth-toestel "<ph name="DEVICE_NAME" />" soek toestemming om saam te bind. Voor jy aanvaar, bevestig asseblief dat hierdie toegangsleutel op daardie toestel gewys word: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
 <translation id="2437771564543046790">Min batterykrag. Batterybespaarder is aan</translation>
-<translation id="243878895369688216">Gister oopgemaak</translation>
 <translation id="2440978926514840421">GIF-opname is geneem</translation>
 <translation id="2441427462554639370">Opname het geëindig omdat skyfspasie gevaarlik min was</translation>
 <translation id="2445449901874883781">Gebruik hoë digtheid</translation>
@@ -873,7 +870,6 @@ Anders sal die ingeboude raakpaneel binne <ph name="TIMEOUT_SECONDS" /> geherakt
 <translation id="3563432852173030730">Kioskprogram kon nie afgelaai word nie.</translation>
 <translation id="3563558822383875692">Stel tans DLC op.</translation>
 <translation id="3563775809269155755">Aktiveer warmkol</translation>
-<translation id="3566240529365775567">Sopas oopgemaak</translation>
 <translation id="3571734092741541777">Stel op</translation>
 <translation id="3573179567135747900">Verander terug na "<ph name="FROM_LOCALE" />" (vereis herbegin)</translation>
 <translation id="3576141592585647168">Verander tydsone</translation>
@@ -960,7 +956,6 @@ Koppel jou toestel aan krag.</translation>
 <translation id="3756485814916578707">Skerm word tans uitgesaai</translation>
 <translation id="3765246971671567135">Kon nie vanlyn demonstrasiemodus-beleid lees nie.</translation>
 <translation id="3765841382945324995">Die <ph name="SIX_PACK_KEY_NAME" />-kortpad word opgedateer na <ph name="NEW_SHORTCUT" /> vanaf <ph name="OLD_SHORTCUT" /></translation>
-<translation id="3765841986579723851">Vandag gewysig</translation>
 <translation id="3772109172035555611">Pasmaak jou TrackPoint</translation>
 <translation id="3773700760453577392">'n Administrateur laat nie veelvuldige aanmeldings deur <ph name="USER_EMAIL" /> toe nie.
 Alle gebruikers moet afmeld om voort te gaan.</translation>
@@ -1001,7 +996,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="3873915545594852654">Iets was fout met ARC++.</translation>
 <translation id="3879748587602334249">Aflaaibestuurder</translation>
 <translation id="3884007280698606545">USB-limiet is bereik</translation>
-<translation id="3886872229787704059">Vandag oopgemaak</translation>
 <translation id="3892148308691398805">Kopieer teks</translation>
 <translation id="3893630138897523026">ChromeVox (gesproke terugvoer)</translation>
 <translation id="3898464793473355515">Draai skerm 90 grade kloksgewys</translation>
@@ -1792,7 +1786,6 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="6095008505822982596">Spraaktempo</translation>
 <translation id="6095425951508823973">Voeg verbinding met <ph name="PROVIDER" /> by</translation>
 <translation id="6095541101974653012">Jy is afgemeld.</translation>
-<translation id="6099678161144790572">In die afgelope maand gewysig</translation>
 <translation id="6103838137565245112">stelsel</translation>
 <translation id="6108952804512516814">Skep met KI</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />-spraaklêers is afgelaai</translation>
@@ -1949,7 +1942,6 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="6555373427270923730">Tik ’n webadres in die adresbalk en druk dan <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nuwe installasie</translation>
-<translation id="6559158502366839560">Verken meer apps en speletjies</translation>
 <translation id="6560151649238390891">Voorstel ingevoeg</translation>
 <translation id="6562447480759345110">Maak Fokus klaar</translation>
 <translation id="6565007273808762236">e-SIM-verbinding is nie beskikbaar nie</translation>
@@ -2055,7 +2047,6 @@ Nuwe installasie</translation>
 <translation id="6848716236260083778">Laat jou kind aan die vingerafdruksensor raak om die vingerafdruk op te stel. Jou kind se vingerafdrukdata word veilig geberg en verlaat nooit hierdie <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="6852052252232534364">Klik om te aktiveer</translation>
 <translation id="6852628153543175788">Voeg 10 minute by</translation>
-<translation id="6855029042976311970">Sopas gewysig</translation>
 <translation id="6856708615407876657">Wissel soekresultaatkategorieë</translation>
 <translation id="6856756288284651804">Chromebook is opgedateer</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
@@ -2150,7 +2141,6 @@ Nuwe installasie</translation>
 <translation id="7118597077555700347">Maak <ph name="SEARCH_RESULT_TEXT" /> oop</translation>
 <translation id="7119327711295338600">Kies volgende woord of letter</translation>
 <translation id="7124556000457919678">Onderbreek en hervat muissleutels wanneer dit aangeskakel is</translation>
-<translation id="7126996685418858413">In die afgelope week oopgemaak</translation>
 <translation id="7131634465328662194">Jy sal outomaties afgemeld word.</translation>
 <translation id="7143207342074048698">Koppel tans</translation>
 <translation id="7144878232160441200">Probeer weer</translation>
@@ -2181,7 +2171,6 @@ Nuwe installasie</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Agterste mikrofoon</translation>
 <translation id="7258225044283673131">Die progam reageer nie. Kies "Forseer toemaak" om die app toe te maak.</translation>
-<translation id="7258828758145722155">Gister gewysig</translation>
 <translation id="726276584504105859">Sleep hierheen om verdeelde skerm te gebruik</translation>
 <translation id="7264788308526527464">Verminder <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Hou aan om jou vinger op te lig om die verskillende dele van jou vingerafdruk by te voeg</translation>
@@ -2254,7 +2243,6 @@ Nuwe installasie</translation>
 <translation id="7491962110804786152">oortjie</translation>
 <translation id="7497767806359279797">Kies taal en sleutelbord</translation>
 <translation id="7507162824403726948">Voltooi die verifikasie van jou identiteit</translation>
-<translation id="7508690557411636492">In die afgelope maand oopgemaak</translation>
 <translation id="7509246181739783082">Verifieer jou identiteit</translation>
 <translation id="7512509370370076552">Die regsklikkortpad is opgedateer na <ph name="LAUNCHER_KEY_NAME" />-sleutel + klik vanaf alt + klik</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, nie gekies nie</translation>
@@ -2708,7 +2696,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8753368202781196133">Hierdie taal word nie tans gesteun nie.</translation>
 <translation id="8755498163081687682">Verifieer jou identiteit: <ph name="ORIGIN_NAME" /> wil bevestig dat dit jy is</translation>
 <translation id="875593634123171288">Wys VPN-instellings</translation>
-<translation id="8756799553341497810">Jy kan begin om jou appuitleg te pasmaak sodra jy uit hierdie aansig gaan.</translation>
 <translation id="8759408218731716181">Kan nie veelvuldige aanmelding opstel nie</translation>
 <translation id="8759753423332885148">Meer inligting.</translation>
 <translation id="8760172428247796445">Jou <ph name="DEVICE_TYPE" /> sal nou gesluit word.

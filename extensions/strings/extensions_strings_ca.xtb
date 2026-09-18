@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">No s'ha pogut sol·licitar el permís parental.</translation>
 <translation id="1803557475693955505">No s'ha pogut carregar la pàgina en segon pla "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="1875387611427697908">Només pot afegir-se des de <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (identificador d'extensió "<ph name="EXTENSION_ID" />") no es pot instal·lar per polítiques en entorns de confiança baixa.</translation>
 <translation id="2131077480075264">No s'ha pogut instal·lar <ph name="APP_NAME" /> perquè <ph name="IMPORT_NAME" /> no ho permet.</translation>
 <translation id="2150661552845026580">Vols afegir "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">No s'ha pogut descodificar la imatge: "<ph name="IMAGE_NAME" />"</translation>

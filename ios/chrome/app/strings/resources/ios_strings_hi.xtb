@@ -15,6 +15,7 @@
 <translation id="1035980983510608210">सभी टैब बंद करने से, पिन करके छोटे किए गए टैब भी बंद हो जाएंगे.</translation>
 <translation id="1036348656032585052">बंद करें</translation>
 <translation id="1036436692654972538">यह जानकारी आपके डिवाइस में सेव हो जाती है</translation>
+<translation id="1038106730571050514">सुझाव दिखाएं</translation>
 <translation id="1041322626941363065">अगर डेटा के गलत इस्तेमाल की वजह से आपके पासवर्ड सार्वजनिक हो जाते हैं, तो आपको इसकी सूचना दी जाए</translation>
 <translation id="1046742265332833834">नीले रंग वाली थीम</translation>
 <translation id="1049743911850919806">गुप्त</translation>
@@ -231,7 +232,6 @@
 <translation id="1671568970992212376">अपनी फ़ोटो Google Photos में सेव करें और किसी भी समय ऐक्सेस करें.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> से <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">आपके संगठन की नीतियों के आधार पर, इस फ़ाइल में संवेदनशील जानकारी हो सकती है</translation>
-<translation id="1683276189281028863">पासवर्ड जांचने करने की सुविधा</translation>
 <translation id="1689333818294560261">प्रचलित नाम</translation>
 <translation id="169048873465870056">क्या टैब को हटाकर ग्रुप मिटाना है?</translation>
 <translation id="1692115862433274081">किसी दूसरे खाते का इस्तेमाल करें</translation>
@@ -241,7 +241,6 @@
 <translation id="1709916727352927457">पासकी मिटाएं</translation>
 <translation id="1715515772563243997">अगर आपको <ph name="SITE" /> पर भरोसा है, तो साइन इन करने के लिए सेव किए गए पासवर्ड का इस्तेमाल करें.</translation>
 <translation id="1718835860248848330">पिछला घंटा</translation>
-<translation id="1726013039921383235">हमेशा अनुमति दें</translation>
 <translation id="1728549374069268714">चिपकाएं और जाएं</translation>
 <translation id="1732468323901456775"><ph name="MODULE_NAME" /> की सूचनाएं पाने की सुविधा चालू करें</translation>
 <translation id="1739364174357629566">नोन ट्रैवलर नंबर अपडेट करें</translation>
@@ -258,7 +257,6 @@
 <translation id="1752547299766512813">पासवर्ड सेव करें</translation>
 <translation id="1764070164487214210">रास्ते</translation>
 <translation id="1764511703783285459">दूसरे पासवर्ड मैनेजर ने कोई पासवर्ड या पासकी शेयर नहीं की</translation>
-<translation id="1765555082983153259">“Chrome” को आपके माइक्रोफ़ोन का ऐक्सेस चाहिए</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">टूल मेन्यू</translation>
 <translation id="1772468122139624049">टैब फिर से लोड नहीं किए जा सके</translation>
@@ -797,7 +795,6 @@
 <translation id="3565012355885596568">इमेज लोड नहीं की जा सकीं</translation>
 <translation id="3565930036634619844">टैब. <ph name="NUMBER_OF_TABS" /> में से <ph name="TAB_INDEX" />.</translation>
 <translation id="3567168891086460374">दूसरे तरीके से सेव करें</translation>
-<translation id="3567446754270467567">बेहतर सुरक्षित ब्राउज़िंग की सुविधा इस्तेमाल करने की प्रोसेस पूरी हुई!</translation>
 <translation id="3572503683475187385">नई चैट शुरू करने पर, मौजूदा टैब का कॉन्टेंट Gemini के साथ शेयर किया जाता है. Gemini के साथ कोई टैब शेयर करने पर, उसका कॉन्टेंट और यूआरएल Google को भेजा जाता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">आपके Google खाते में</translation>
 <translation id="3575234738189584619">Lens की मदद से खोजें</translation>
@@ -936,7 +933,6 @@
 <translation id="4021447724486050609">अपना ब्राउज़र अपडेट करें</translation>
 <translation id="4021931095789478915">रीडिंग लिस्ट में ${url} जोड़ें</translation>
 <translation id="4028871427853484857">खाते में सेव करें…</translation>
-<translation id="4034354558246368274">अभी के लिए अनुमति दें</translation>
 <translation id="4038354071007134711">इस डिवाइस पर कोई भी ऐप्लिकेशन, फ़ाइल नहीं खोल सकता.</translation>
 <translation id="4042870976416480368">'पेज में ढूंढें'</translation>
 <translation id="4045441967987592849">फिर से खोलें</translation>
@@ -1016,7 +1012,6 @@
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4309403553630140242">ज़्यादा जानकारी के लिए दो बार टैप करें</translation>
 <translation id="4310738531374808763">होमपेज को पसंद के मुताबिक बनाएं</translation>
-<translation id="4316794575239200608">समीक्षा करने वाले लोग, आपके निजी डेटा की समीक्षा नहीं करेंगे, फिर चाहे वह Gemini के साथ की गई आपकी बातचीत का डेटा हो या <ph name="BEGIN_LINK" />Google Workspace में मौजूद आपका डेटा<ph name="END_LINK" />. इस डेटा का इस्तेमाल, जनरेटिव एआई मॉडल को बेहतर बनाने के लिए भी नहीं किया जाएगा.</translation>
 <translation id="4320848494125124980">हाल ही में देखी गई फ़ाइलें</translation>
 <translation id="4322394346347055525">अन्य टैब बंद करें</translation>
 <translation id="4323122584592971322">ओआईडी.</translation>
@@ -1092,7 +1087,6 @@
 <translation id="4578835633387306383">चालू करें…</translation>
 <translation id="4580621046861724270">कुछ बुकमार्क सेव नहीं किए जा सके</translation>
 <translation id="4580716718466706433">"Password Manager" पर जाएं</translation>
-<translation id="4584778196791098089">गुप्त मोड इस्तेमाल करने की प्रोसेस पूरी हुई!</translation>
 <translation id="4585751637295612750">सवाल में जोड़ने के लिए, नया टैब खोलें</translation>
 <translation id="4587589328781138893">साइटें</translation>
 <translation id="4592672037257622855">{count,plural, =1{आपकी रीडिंग लिस्ट में पेज जोड़ा गया}one{आपकी रीडिंग लिस्ट में {count} पेज जोड़ा गया}other{आपकी रीडिंग लिस्ट में {count} पेज जोड़े गए}}</translation>
@@ -1110,7 +1104,6 @@
 <translation id="4631335160486397366">ऐसे <ph name="COUNT" /> पासवर्ड हैं जिन्हें एक से ज़्यादा खातों में इस्तेमाल किया गया है</translation>
 <translation id="4632655012900268062">कार्ड को पसंद के मुताबिक बनाएं</translation>
 <translation id="4634124774493850572">पासवर्ड का इस्तेमाल करें</translation>
-<translation id="4634633632339959267">Google के एआई को बेहतर बनाने के लिए, चैट की समीक्षा की जाती है और उनका इस्तेमाल किया जाता है. <ph name="BEGIN_LINK" />आपके लिए मौजूद विकल्पों के बारे में जानें.<ph name="END_LINK" /> आपकी गतिविधि के डेटा में, <ph name="BEGIN_LINK" />आपकी जगह की जानकारी<ph name="END_LINK" /> भी सेव की जाती है.</translation>
 <translation id="4636930964841734540">जानकारी</translation>
 <translation id="4641425577292284174">जानें कि आपके ब्राउज़र की सेटिंग सबसे सुरक्षित हैं या नहीं या आपको किसी चीज़ की समीक्षा तो नहीं करनी</translation>
 <translation id="4642472735733036929">कीमत ट्रैक करने की सुविधा बंद हो गई है</translation>
@@ -1166,7 +1159,6 @@
 <translation id="4796496140132859135">टैब ग्रुप. छोटा किया गया.</translation>
 <translation id="4800912004582762296">क्लिक किया जा रहा है</translation>
 <translation id="4802185666270672526">'डेस्कटॉप साइट का अनुरोध करें' विकल्प को छिपाएं</translation>
-<translation id="4802678077012980341">पासवर्ड जांचने की सुविधा इस्तेमाल करने की प्रोसेस पूरी हुई!</translation>
 <translation id="4803185665210547709">आपका संगठन मैनेज करता है.
 <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">स्क्रीन पर दिख रहे कॉन्टेंट के बारे में जानकारी खोजने के लिए, उस पर सर्कल बनाएं, उसे हाइलाइट करें या उस पर टैप करें. इससे आपको अपना टैब बंद किए बिना नतीजे मिल पाएंगे</translation>
@@ -1389,7 +1381,6 @@
 <translation id="5482922178977937393">क्या आपको अपनी दिलचस्पी के मुताबिक खबरों, खेल-कूद वगैरह के लिए सूचनाएं चाहिए?</translation>
 <translation id="5483838506518938965">आप बिलकुल तैयार हैं</translation>
 <translation id="5487521232677179737">डेटा मिटाएं</translation>
-<translation id="5491208689472430746">डेटा को तुरंत मिटाने की प्रोसेस पूरी हुई!</translation>
 <translation id="5494920125229734069">सभी को चुनें</translation>
 <translation id="5499648645977734083">पेमेंट का तरीका मैनेज करें…</translation>
 <translation id="5501346139932663133">Google ऐप्लिकेशन</translation>
@@ -1465,7 +1456,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="5718049162805123412">आपको इन पासवर्ड को अभी बदलना चाहिए</translation>
 <translation id="5721040778297053709">क्रेडिट कार्ड को इस फ़्रेम में रखें</translation>
 <translation id="572328651809341494">हाल ही के टैब</translation>
-<translation id="5724590854763964497">नई चैट शुरू करने पर, आपका मौजूदा टैब डिफ़ॉल्ट रूप से शेयर हो जाता है. टैब शेयर करने पर, उनमें मौजूद कॉन्टेंट और यूआरएल Google को भेजे जाते हैं. हालांकि, उनका इस्तेमाल जनरेटिव एआई मॉडल को बेहतर बनाने के लिए नहीं किया जाता. इस सेटिंग को कभी भी बदला जा सकता है.</translation>
 <translation id="5724941645893276623">वेब को निजी रूप से ब्राउज़ करने के लिए, एक नया टैब जोड़ें</translation>
 <translation id="5728072125198221967">लिंक की गई Google की सेवाएं</translation>
 <translation id="5728700505257787410">माफ़ करें, आपके खाते में साइन इन करने में समस्या हुई.</translation>
@@ -1554,6 +1544,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6006672969046233841">नया टैब</translation>
 <translation id="6011308810877101166">खोज से जुड़े सुझावों को बेहतर बनाएं</translation>
 <translation id="6012140227487808125">एन्क्रिप्ट हो रहा है...</translation>
+<translation id="6014801569448771146">अपना पासवर्ड जांचें</translation>
 <translation id="6027619584715411062">अपने सभी डिवाइसों पर बुकमार्क, पासवर्ड वगैरह का ऐक्सेस पाने के लिए साइन इन करें.</translation>
 <translation id="6027945736510816438">क्या आपका मतलब <ph name="WEBSITE" /> से है?</translation>
 <translation id="6032845897905314562">नई सुविधा</translation>
@@ -1947,6 +1938,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="721218676460477064">इस लेख की खास जानकारी दो</translation>
 <translation id="7215621211572884440">पॉप-अप की अनुमति है</translation>
 <translation id="7218491361283758048">ज़िप/पिन कोड</translation>
+<translation id="7220786058474068424">संसाधित हो रहा है</translation>
 <translation id="7221173315674413369">'नया क्या है' में नई सुविधाओं के बारे में जानें और सलाह पाएं</translation>
 <translation id="7223102419539744003">टैब को बंद करें</translation>
 <translation id="7223134495231529579">'डाउनलोड' में सेव करें</translation>

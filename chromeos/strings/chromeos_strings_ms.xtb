@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Jenis pengesahan</translation>
 <translation id="1776228893584526149">Ton hiasan latar</translation>
 <translation id="1777913922912475695">jambatan</translation>
-<translation id="1782199038061388045">terjemahan</translation>
 <translation id="1788485524395674731">Apl ini diurus oleh pentadbir anda</translation>
 <translation id="1792647875738159689">Membatalkan pengimbasan</translation>
 <translation id="1801418420130173017">Lumpuhkan tema gelap</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Jenis</translation>
 <translation id="2448857983905133469">Alatan Pembelajaran</translation>
 <translation id="2468124392950503650">Pilih gesaan untuk membuat atau melihat <ph name="BEGIN_LINK_PROMPTING_GUIDE" />panduan gesaan<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Gunakan Bantu saya tulis untuk membuat draf atau memperhalus kerja sedia ada, dikuasakan oleh Google AI</translation>
 <translation id="2475982808118771221">Ralat berlaku</translation>
 <translation id="2480572840229215612">ketam</translation>
 <translation id="248546197012830854">Peranti di luar talian. Sambung kepada rangkaian Wi-Fi untuk melihat kandungan bantuan.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Ambil semula</translation>
 <translation id="3479552764303398839">Bukan sekarang</translation>
 <translation id="3484914941826596830">Semasa perisian tegar sedang dikemas kini, jangan cabut palam peranti luaran ini atau matikan komputer anda. Anda boleh meminimumkan tetingkap ini. Kemaskinian ini mungkin mengambil masa beberapa minit dan peranti luaran anda mungkin tidak berfungsi pada masa ini.</translation>
-<translation id="3486220673238053218">takrif</translation>
 <translation id="3487866404496702283">Maklum balas untuk ciri mahi</translation>
 <translation id="3488065109653206955">Diaktifkan sebahagian</translation>
 <translation id="3492882532495507361">Pejabat <ph name="OFFICE_STYLE" /> dengan rona <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Pilih tema</translation>
 <translation id="3644695927181369554">Cadangan tidak bagus</translation>
 <translation id="3651050199673793219">Pilih unit suhu</translation>
-<translation id="3661106764436337772">Menulis dengan lebih cepat dan yakin</translation>
 <translation id="3662461537616691585">merah tua dan merah manggis</translation>
 <translation id="3664755900672940272">Gesaan sampel dirombak</translation>
 <translation id="3668449597372804501">Hiasan latar aliran awan</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Dihentikan</translation>
 <translation id="4777310452073659583">Untuk mendapatkan transkrip, mulakan semula <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="4778082030331381943">batu kecubung</translation>
-<translation id="4782311465517282004">Dapatkan takrif, terjemahan atau penukaran unit apabila anda mengklik kanan atau menyentuh &amp; menahan teks</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Untuk mendapatkan bantuan lanjut, pergi ke <ph name="BEGIN_LINK" />Pusat bantuan<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritma pemampatan</translation>
@@ -1459,7 +1454,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7397270852490618635">Matikan tema cerah</translation>
 <translation id="7401543881546089382">Padamkan pintasan</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> bersedia untuk dikemaskinikan</translation>
-<translation id="741244894080940828">penukaran</translation>
 <translation id="7415801143053185905">Kependaman HTTP sangat tinggi</translation>
 <translation id="7418738250896500352">Terlalu banyak perkataan untuk diringkaskan</translation>
 <translation id="7425037327577270384">Bantu saya tulis</translation>
@@ -1769,7 +1763,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="885701979325669005">Storan</translation>
 <translation id="885704831271383379">semakin gelap papan kekunci</translation>
 <translation id="8863170912498892583">Dayakan tema gelap</translation>
-<translation id="8863888432376731307">Dapatkan <ph name="INTENT" /> untuk "<ph name="QUERY" />" dan pelbagai lagi</translation>
 <translation id="8864415976656252616">Tiada kandungan yang dicadangkan. Lihat kandungan bantuan paling popular.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Peranti ialah tablet.</translation>

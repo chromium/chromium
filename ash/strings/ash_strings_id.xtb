@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">TUTUP</translation>
 <translation id="152629053603783244">Mulai ulang Linux</translation>
 <translation id="1526448108126799339">Buka tab baru di jendela baru</translation>
-<translation id="1528259147807435347">Diedit dalam seminggu terakhir</translation>
 <translation id="1536604384701784949">Untuk menggunakan <ph name="USER_EMAIL_ADDRESS" />, Anda perlu logout dari semua akun terlebih dahulu. Untuk logout, pilih Batal untuk kembali. Lalu, pilih waktu untuk membuka area status dan pilih Logout. Lalu login ke <ph name="USER_EMAIL_ADDRESS_2" /> lagi.</translation>
 <translation id="15373452373711364">Kursor mouse besar</translation>
 <translation id="1545331255323159851">Lihat foto, media, dan notifikasi terbaru ponsel Anda</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Kirim data penggunaan dan diagnostik. Bantu tingkatkan pengalaman penggunaan Android anak Anda dengan otomatis mengirim data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini tidak akan digunakan untuk mengidentifikasi anak Anda serta akan membantu sistem dan stabilitas aplikasi serta peningkatan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. <ph name="BEGIN_LINK1" />Setelan<ph name="END_LINK1" /> ini diterapkan oleh pemilik. Pemilik dapat memilih untuk mengirim data diagnostik dan penggunaan untuk perangkat ini ke Google. Jika setelan Aktivitas Web &amp; Aplikasi tambahan diaktifkan untuk anak Anda, data ini mungkin akan disimpan ke Akun Google miliknya. <ph name="BEGIN_LINK2" />Pelajari lebih lanjut metrik<ph name="BEGIN_LINK2_END" />Pelajari Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Masukkan PIN</translation>
 <translation id="2412593942846481727">Update tersedia</translation>
-<translation id="2416438829169535743">Keluar dari tampilan?</translation>
 <translation id="2417486498593892439">Login ke jaringan</translation>
 <translation id="2423619675829330672">Terlalu banyak percobaan memasukkan PIN. Tunggu <ph name="TIME_LEFT" />, lalu coba lagi.</translation>
 <translation id="2426051945783024481">Bingkai kamera dipusatkan secara otomatis</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">Perangkat Bluetooth "<ph name="DEVICE_NAME" />" meminta izin untuk bersanding. Sebelum menerima, konfirmasikan bahwa kunci sandi ini ditampilkan pada perangkat tersebut: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Tampilkan sandi</translation>
 <translation id="2437771564543046790">Baterai lemah. Penghemat Baterai aktif</translation>
-<translation id="243878895369688216">Dibuka kemarin</translation>
 <translation id="2440978926514840421">Rekaman GIF diambil</translation>
 <translation id="2441427462554639370">Rekaman berakhir karena ruang penyimpanan hampir habis</translation>
 <translation id="2445449901874883781">Gunakan kepadatan tinggi</translation>
@@ -873,7 +870,6 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="3563432852173030730">Aplikasi Kios tidak dapat didownload.</translation>
 <translation id="3563558822383875692">Mengonfigurasi DLC.</translation>
 <translation id="3563775809269155755">Aktifkan hotspot</translation>
-<translation id="3566240529365775567">Baru saja dibuka</translation>
 <translation id="3571734092741541777">Siapkan</translation>
 <translation id="3573179567135747900">Ubah kembali ke "<ph name="FROM_LOCALE" />" (harus dinyalakan ulang)</translation>
 <translation id="3576141592585647168">Ubah zona waktu</translation>
@@ -960,7 +956,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3756485814916578707">Mentransmisikan layar</translation>
 <translation id="3765246971671567135">Tidak dapat membaca kebijakan mode demo offline.</translation>
 <translation id="3765841382945324995">Pintasan <ph name="SIX_PACK_KEY_NAME" /> diperbarui dari <ph name="OLD_SHORTCUT" /> menjadi <ph name="NEW_SHORTCUT" /></translation>
-<translation id="3765841986579723851">Diedit hari ini</translation>
 <translation id="3772109172035555611">Sesuaikan TrackPoint Anda</translation>
 <translation id="3773700760453577392">Administrator telah melarang fitur multi-login untuk <ph name="USER_EMAIL" />. Semua pengguna harus logout untuk melanjutkan.</translation>
 <translation id="3779139509281456663">Menghubungkan <ph name="NAME" /></translation>
@@ -1000,7 +995,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3873915545594852654">Terjadi masalah dengan ARC++.</translation>
 <translation id="3879748587602334249">Pengelola download</translation>
 <translation id="3884007280698606545">Batas USB tercapai</translation>
-<translation id="3886872229787704059">Dibuka hari ini</translation>
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="3893630138897523026">ChromeVox (respons lisan)</translation>
 <translation id="3898464793473355515">Putar layar 90 derajat searah jarum jam</translation>
@@ -1791,7 +1785,6 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6095008505822982596">Kecepatan bicara</translation>
 <translation id="6095425951508823973">Tambahkan koneksi dengan <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Anda telah logout.</translation>
-<translation id="6099678161144790572">Diedit dalam sebulan terakhir</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6108952804512516814">Buat dengan AI</translation>
 <translation id="6114505516289286752">File ucapan bahasa <ph name="LANGUAGE" /> didownload</translation>
@@ -1948,7 +1941,6 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6555373427270923730">Ketik alamat web di kolom URL, lalu tekan <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Baru diinstal</translation>
-<translation id="6559158502366839560">Jelajahi aplikasi dan game lainnya</translation>
 <translation id="6560151649238390891">Saran disisipkan</translation>
 <translation id="6562447480759345110">Akhiri Fokus</translation>
 <translation id="6565007273808762236">Koneksi eSIM tidak tersedia</translation>
@@ -2054,7 +2046,6 @@ Baru diinstal</translation>
 <translation id="6848716236260083778">Untuk menyiapkan sidik jari, minta anak Anda menyentuh sensor sidik jari. Data sidik jari anak Anda disimpan dengan aman dan hanya ada di <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="6852052252232534364">Klik untuk mengaktifkan</translation>
 <translation id="6852628153543175788">Tambahkan 10 menit</translation>
-<translation id="6855029042976311970">Baru saja diedit</translation>
 <translation id="6856708615407876657">Aktifkan/nonaktifkan kategori hasil penelusuran</translation>
 <translation id="6856756288284651804">Chromebook Diupdate</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> detik</translation>
@@ -2149,7 +2140,6 @@ Baru diinstal</translation>
 <translation id="7118597077555700347">Buka <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Pilih kata atau huruf berikutnya</translation>
 <translation id="7124556000457919678">Saat diaktifkan, jeda dan lanjutkan tombol mouse</translation>
-<translation id="7126996685418858413">Dibuka dalam seminggu terakhir</translation>
 <translation id="7131634465328662194">Anda akan logout otomatis.</translation>
 <translation id="7143207342074048698">Menghubungkan</translation>
 <translation id="7144878232160441200">Coba lagi</translation>
@@ -2180,7 +2170,6 @@ Baru diinstal</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Mikrofon belakang</translation>
 <translation id="7258225044283673131">Aplikasi tidak merespons. Pilih "Tutup paksa" untuk menutup aplikasi.</translation>
-<translation id="7258828758145722155">Diedit kemarin</translation>
 <translation id="726276584504105859">Tarik ke sini untuk menggunakan layar terpisah</translation>
 <translation id="7264788308526527464">Kurangi <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Angkat dan sentuhkan jari secara berulang untuk menambahkan bagian lain dari sidik jari Anda</translation>
@@ -2253,7 +2242,6 @@ Baru diinstal</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7497767806359279797">Pilih bahasa dan keyboard</translation>
 <translation id="7507162824403726948">Selesaikan verifikasi identitas Anda</translation>
-<translation id="7508690557411636492">Dibuka dalam sebulan terakhir</translation>
 <translation id="7509246181739783082">Verifikasi identitas Anda</translation>
 <translation id="7512509370370076552">Pintasan klik kanan diperbarui dari alt + klik menjadi tombol <ph name="LAUNCHER_KEY_NAME" /> + klik</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, tidak dipilih</translation>
@@ -2707,7 +2695,6 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8753368202781196133">Bahasa ini tidak didukung untuk saat ini.</translation>
 <translation id="8755498163081687682">Verifikasi identitas Anda: <ph name="ORIGIN_NAME" /> ingin mengonfirmasi bahwa ini benar-benar Anda</translation>
 <translation id="875593634123171288">Tampilkan setelan VPN</translation>
-<translation id="8756799553341497810">Anda dapat mulai menyesuaikan tata letak aplikasi setelah keluar dari tampilan ini.</translation>
 <translation id="8759408218731716181">Tidak dapat menyiapkan fitur masuk banyak akun</translation>
 <translation id="8759753423332885148">Pelajari lebih lanjut.</translation>
 <translation id="8760172428247796445"><ph name="DEVICE_TYPE" /> akan dikunci sekarang.

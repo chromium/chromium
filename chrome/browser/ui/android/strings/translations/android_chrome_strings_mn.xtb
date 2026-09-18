@@ -37,7 +37,6 @@
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Дэлгэц доторх дэлгэц таб</translation>
 <translation id="1126696498560056882">Энэ төхөөрөмж дээрх бүртгэлүүдийг удирдах</translation>
 <translation id="1135018701024399762">Нууцлалын горим таны төхөөрөмжийг ашигладаг бусад хүнээс таны үзэлтийг нууцалдаг</translation>
-<translation id="113752097246673894">Хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="1138458427267715730">Веб дээрх аливаа сайт дээр үнэ буурах үед дохио аваарай</translation>
 <translation id="1140317858355046628">Хэрэв та бүлгийг устгавал хүн бүр "<ph name="GROUP_NAME" />" табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд тус бүлгийг бүх төхөөрөмжөөс устгана.</translation>
 <translation id="1142732900304639782">Эдгээр сайтыг орчуулахыг бүү санал болго</translation>
@@ -205,7 +204,6 @@
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, Бичлэг хийж буй таб</translation>
 <translation id="1819443852740954262">Бүгдийг Нууцлалтай цонхонд нээх</translation>
 <translation id="1820408774134375111">Нэвтрэх доод хүснэгт</translation>
-<translation id="1823492026305965829"><ph name="USER_FULL_NAME" />-р нэвтрэх</translation>
 <translation id="1824902652744048041">Интернэтээр үзсэн өгөгдлийг устгах дээр товшино уу</translation>
 <translation id="1829244130665387512">Хуудаснаас хайх</translation>
 <translation id="1832459821645506983">Тийм, би зөвшөөрч байна</translation>
@@ -439,7 +437,6 @@
 <translation id="2723001399770238859">Дуу</translation>
 <translation id="2739887572830526131">Дараа таб нэмэхийн тулд энэ бүлгийг үлдээх эсвэл уг бүлэг танд цаашид хэрэггүй болсон бол устгана уу.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> одоогоор боломжгүй байна.</translation>
-<translation id="2751271371269891762">Хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="2760805590727089264">СС / ЖЖ</translation>
 <translation id="2761162135224472056">Бодит мэт горимд үзэх үү?</translation>
 <translation id="2762000892062317888">дөнгөж сая</translation>
@@ -514,6 +511,7 @@
 <translation id="2996291259634659425">Нэвтрэх үг үүсгэх</translation>
 <translation id="2996682533106928201">Хаахын тулд товшино уу</translation>
 <translation id="2996809686854298943">URL шаардлагатай</translation>
+<translation id="3007318536447999974">Gemini-тай ярихын тулд таны микрофоныг ашиглах зөвшөөрөл өгнө үү. Та үүнийг мөн <ph name="BEGIN_LINK" />Тохиргооноос<ph name="END_LINK" /> удирдах боломжтой</translation>
 <translation id="3024215143424744261">Унших горимын сонголтуудыг хаасан</translation>
 <translation id="3024277805447899099">Зураг урьдчилан үзэх</translation>
 <translation id="3026955690410463085">Холбоос оруулна уу</translation>
@@ -608,7 +606,6 @@
 <translation id="3435738964857648380">Нууцлал</translation>
 <translation id="3435914367318771664">Табыг шинэ бүлэгт нэмэх</translation>
 <translation id="3436118221454753036">ХОУ-аас асуух горим</translation>
-<translation id="3438681572027105609">Нууц үг болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="3439276997620616816">Та саяхны табуудаа эндээс олно</translation>
 <translation id="3443221991560634068">Одоогийн хуудсыг дахин ачаалах</translation>
 <translation id="3444179773590444986">Сайтуудад зориулсан бараан загварын талаар cанал хүсэлт хуваалцах уу?</translation>
@@ -753,7 +750,6 @@
 <translation id="4000212216660919741">Офлайн нүүр</translation>
 <translation id="4000670338830950598">Тодруулсан зүйлээр Google Chrome-г тусгайлан өөрчилж, хянана уу</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{Таны Google Бүртгэлээс 1 нууц үг алдагдсан байна}other{Таны Google Бүртгэлээс # нууц үг алдагдсан байна}}</translation>
-<translation id="4023638601467301498">Хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="4024768890073681126">Таны хөтчийг танай эцэг эх удирддаг</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> фолдер</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# цаг}other{# цаг}}</translation>
@@ -934,7 +930,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4685741273709472646">Унадаг цэсийн жагсаалтаас сонгох</translation>
 <translation id="468924408576231679"><ph name="PAGE_TITLE" /> веб хуудасны холбоосыг хуулна уу. Эх сурвалж: <ph name="PAGE_URL" /></translation>
 <translation id="4692623383562244444">Хайлтын систем</translation>
-<translation id="469286762610133730">Илүү сайн контент аваарай</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698757800236023795">Идэвхтэй (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Кэшлсэн дүрс ба файл</translation>
@@ -994,7 +989,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4910889077668685004">Төлбөрийн апп</translation>
 <translation id="4911042367886397055">Эргээд тавтай морилно уу <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Дахин боловсруулахыг зогсоох</translation>
-<translation id="4921224083091001889">Нууц үг болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="4923173329789776645">Танай байгууллага татахыг санал болгодоггүй</translation>
 <translation id="4924398189611529766">Таныг Нууцлалын горимд үзэж байхад энэ төхөөрөмжийг ашигладаг бусад хүн таны үйл ажиллагааг харахгүй тул та илүү нууцлалтайгаар үзэх боломжтой. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">Дэлгэцийн агшин <ph name="CURRENT_DATE_ISO" /></translation>
@@ -1155,7 +1149,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5601180634394228718">Таны Chrome-н хэрэглээг сайжруулахын тулд өгөгдөл ашигладаг бусад тохиргоог авах бол <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүд<ph name="END_LINK" /> рүү очно уу.</translation>
 <translation id="5601924940067278327">Таб болон бусад зүйлээ бүх төхөөрөмж дээрээ авна уу</translation>
 <translation id="5611398002774823980">Бүртгэлд хадгалах</translation>
-<translation id="5613381935190035031">Таб болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="5614625640221885312">Хавчуурга, нууц үг, бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="5619633276517849615">Танай байгууллага Аюулгүй хөтчийг асаасан байна</translation>
 <translation id="5620163320393916465">Хадгалсан ямар ч нууц үг байхгүй байна</translation>
@@ -1242,7 +1235,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{Таны унших жагсаалт дээрх 1 хуудас}other{Таны унших жагсаалт дээрх # хуудас}}</translation>
 <translation id="5992182727984874868"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> Та сүүлийн үед зочлоогүй тул Chrome эдгээр зөвшөөрлийг хассан</translation>
 <translation id="5995726099713306770">Хуудсыг дахин татах уу?</translation>
-<translation id="5998675059699164418">Танай байгууллага танаас Chrome-г ашиглахын тулд нэвтрэхийг шаардаж байна.</translation>
 <translation id="6000066717592683814">Google хэвээр байлгах</translation>
 <translation id="6002122790816966947">Таны төхөөрөмжүүд</translation>
 <translation id="6011308810877101166">Хайлтын зөвлөмжийг сайжруулах</translation>
@@ -1453,12 +1445,10 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6738867403308150051">Татаж байна…</translation>
 <translation id="6745063744988317486">Моно</translation>
 <translation id="6746338529702829275">Бүртгэлийн өгөгдлөө шалгах</translation>
-<translation id="6746834324024491643">Нууц үг болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="6751521182688001123">Шинэ табыг шуурхай нээнэ үү. Энэ товчлолыг засахын тулд хүрээд удаан дарна уу.</translation>
 <translation id="6754359471209693699">Шинээр хайж эхлэх</translation>
 <translation id="6756507620369789050">Санал хүсэлт хуваалцах</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
-<translation id="676305334223455055">Сонирхолдоо үндэслэн контент авахын тулд нэвтэрнэ үү</translation>
 <translation id="6764137532716892442">Шинэ үйл ажиллагаатай хуваалцсан <ph name="GROUP_TITLE" /> табын бүлэг</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{Нууцлалтай <ph name="INCOGNITO_TAB_COUNT" /> таб болон өөр <ph name="TAB_COUNT_ONE" /> табыг хаана}other{Нууцлалтай <ph name="INCOGNITO_TAB_COUNT" /> таб болон өөр <ph name="TAB_COUNT_MANY" /> табыг хаана}}</translation>
 <translation id="6785476624617658922">Chrome болон ChromeOS-н үйлчилгээний нэмэлт нөхцөл</translation>
@@ -1758,7 +1748,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7822705602465980873">Таныг нэвтэрсэн үед аюулгүй байдалтай холбоотой тохиолдлын дараа Gmail-д хамгаалалтыг нэмэх зэргээр таныг Google-н үйлчилгээнүүдэд хамгаалахын тулд энэ өгөгдлийг Google Бүртгэлтэй тань холбодог.</translation>
 <translation id="7824665136384946951">Танай байгууллага Safe Browsing-г унтраасан</translation>
 <translation id="7825973332242257878">Табын бүлгүүд</translation>
-<translation id="7826342993930002256">Таны Chrome, дурын газраас нэвтрээрэй</translation>
 <translation id="7845155831233417403">Та <ph name="MAX_INSTANCE_COUNT" /> хүртэлх цонхтой байж болно. Үргэлжлүүлэхийн тулд цонх хаана уу.</translation>
 <translation id="7846161022626028328">Алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="7846296061357476882">Google-н үйлчилгээнүүд</translation>
@@ -1815,7 +1804,9 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8058746566562539958">Chrome-н шинэ табад нээх</translation>
 <translation id="8062594758852531064">Уртасгасан урьдчилан ачаалал:</translation>
 <translation id="8063895661287329888">Хавчуургыг нэмж чадсангүй.</translation>
+<translation id="8064081231614696741">Өөр фолдер сонгох</translation>
 <translation id="8066816452984416180">Энэ хуудсыг шуурхай тэмдэглэнэ үү. Энэ товчлолыг засахын тулд хүрээд удаан дарна уу.</translation>
+<translation id="8068041627541121907">Gemini таны микрофоныг ашиглахыг хүсэж байна</translation>
 <translation id="8072436850275034464">Та Chrome-г хаанаас ч ашигласан бай саяхан хаасан табуудаа дахин нээх боломжтой</translation>
 <translation id="8073388330009372546">Зургийг шинэ цонхонд нээ</translation>
 <translation id="8076492880354921740">Таб</translation>
@@ -1832,7 +1823,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8110024788458304985">Chrome-н онцлогууд болон гүйцэтгэлийг сайжруулахад туслах</translation>
 <translation id="8110087112193408731">Chrome-н үйл ажиллагаагаа Дижитал хэрэглээнд харуулах уу?</translation>
 <translation id="8118117428362942925">Хэрэв танд тусламж хэрэгтэй бол эцэг эхээсээ (<ph name="PARENT_NAME" />) хүснэ үү</translation>
-<translation id="8118151008374483324">Таб болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="8120286190326371840">Энэ төхөөрөмж дээр алдагдсан ямар ч нууц үг байхгүй</translation>
 <translation id="8122623268651408616">Хамгийн шинээр нь эрэмбэлж байна</translation>
 <translation id="8127542551745560481">Нүүр хуудсыг засах</translation>
@@ -2124,7 +2114,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="9218430445555521422">Өгөгдмөлөөр тохируулах</translation>
 <translation id="9219103736887031265">Зураг</translation>
 <translation id="922152298093051471">Chrome-г өөрчлөх</translation>
-<translation id="9222198206152536936">Таб болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="924447568950697217">Chrome-г өгөгдмөл хөтчөө болгох</translation>
 <translation id="926205370408745186">Chrome-н үйл ажиллагаагаа Дижитал хэрэглээнээс устгах</translation>
 <translation id="927968626442779827">Google Chrome дээр Lite горимыг ашиглаарай</translation>

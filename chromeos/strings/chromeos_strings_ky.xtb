@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Аутентификациянын түрү</translation>
 <translation id="1776228893584526149">Тушкагаздын түсү</translation>
 <translation id="1777913922912475695">көпүрө</translation>
-<translation id="1782199038061388045">котормосу</translation>
 <translation id="1788485524395674731">Бул колдонмону администраторуңуз башкарат</translation>
 <translation id="1792647875738159689">Скандоо токтотулууда</translation>
 <translation id="1801418420130173017">Караңгы теманы өчүрүү</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Түрү</translation>
 <translation id="2448857983905133469">Окуу куралдары</translation>
 <translation id="2468124392950503650">Түзүү үчүн сурамды тандап же <ph name="BEGIN_LINK_PROMPTING_GUIDE" />сурам боюнча жетектемени<ph name="END_LINK_PROMPTING_GUIDE" /> караңыз</translation>
-<translation id="2472215337771558851">"Жазууга жардам бер" функциясы Google сунуштаган ЖИ технологиялары аркылуу жумушчу вариант түзүп же учурдагы текстти өркүндөтүүгө жардам берет</translation>
 <translation id="2475982808118771221">Ката кетти</translation>
 <translation id="2480572840229215612">крабдар</translation>
 <translation id="248546197012830854">Түзмөк офлайн режиминде. Жардам берүү бөлүмүнө өтүү үчүн Wi-Fi тармагына туташыңыз.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Кайра тартуу</translation>
 <translation id="3479552764303398839">Азыр эмес</translation>
 <translation id="3484914941826596830">Орнотулган программа жаңыртылып жатканда, тышкы түзмөктү ажыратпаңыз же компьютерди өчүрбөңүз. Бул терезени кичирейтип койсоңуз болот. Жаңыртуу бир нече мүнөткө созулуп, ал эми тышкы түзмөгүңүз бул убакытта иштебеши мүмкүн.</translation>
-<translation id="3486220673238053218">аныктама</translation>
 <translation id="3487866404496702283">Mahi функциясы тууралуу пикир</translation>
 <translation id="3488065109653206955">Жарым-жартылай жандырылган</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> түстөгү <ph name="OFFICE_STYLE" /> кеңсе</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Тема тандоо</translation>
 <translation id="3644695927181369554">Начар сунуш</translation>
 <translation id="3651050199673793219">Температураны өлчөө бирдигин тандоо</translation>
-<translation id="3661106764436337772">Тезирээк жана тагыраак жазыңыз</translation>
 <translation id="3662461537616691585">кызыл шарап жана кочкул кызыл</translation>
 <translation id="3664755900672940272">Сурамдардын үлгүлөрү аралаштырылды</translation>
 <translation id="3668449597372804501">Булут тушкагазы</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Токтотулду</translation>
 <translation id="4777310452073659583">Транскрипцияны түзүү үчүн <ph name="DEVICE_TYPE" /> түзмөгүңүздү өчүрүп күйгүзүңүз</translation>
 <translation id="4778082030331381943">аметист</translation>
-<translation id="4782311465517282004">Текстти коё бербей басып же оң баскычты чыкылдатканыңызда бирдиктер которулуп же аныктамаларды жана котормолорду аласыз</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> сүрөт</translation>
 <translation id="4793710386569335688">Кеңири маалымат алуу үчүн <ph name="BEGIN_LINK" />Жардам борборуна<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="4793756956024303490">Кысуунун алгоритми</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">Жарык теманы өчүрүү</translation>
 <translation id="7401543881546089382">Кыска жолду жок кылуу</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> жаңыртууга даяр</translation>
-<translation id="741244894080940828">которуу</translation>
 <translation id="7415801143053185905">HTTP күтүү убакыты өтө жогору</translation>
 <translation id="7418738250896500352">Өтө көп сөз тандалды</translation>
 <translation id="7425037327577270384">Жазууга жардам бер</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">Сактагыч</translation>
 <translation id="885704831271383379">баскычтоптун жарыктыгын азайтуу</translation>
 <translation id="8863170912498892583">Түнкү режимди иштетүү</translation>
-<translation id="8863888432376731307">"<ph name="QUERY" />" үчүн <ph name="INTENT" /> жана башка нерселерди аласыз</translation>
 <translation id="8864415976656252616">Эч нерсе табылган жок. Пайдалуу материалдарды караңыз.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Түзмөк — планшет.</translation>

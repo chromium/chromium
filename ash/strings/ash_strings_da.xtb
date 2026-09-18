@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">LUK</translation>
 <translation id="152629053603783244">Genstart Linux</translation>
 <translation id="1526448108126799339">Åbn ny fane i et nyt vindue</translation>
-<translation id="1528259147807435347">Redigeret inden for den seneste uge</translation>
 <translation id="1536604384701784949">Hvis du vil bruge <ph name="USER_EMAIL_ADDRESS" />, skal du først logge ud af alle dine konti først. Klik på Annuller for at gå tilbage og logge ud. Vælg derefter klokkeslættet for at åbne statusområdet, og vælg så Log ud. Log derefter ind på <ph name="USER_EMAIL_ADDRESS_2" /> igen.</translation>
 <translation id="15373452373711364">Stor musemarkør</translation>
 <translation id="1545331255323159851">Se din telefons seneste billeder, medier og notifikationer</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre dit barns Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Noget dataaggregering hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne <ph name="BEGIN_LINK1" />indstilling<ph name="END_LINK1" /> håndhæves af ejeren. Ejeren kan vælge at sende diagnosticerings- og brugsdata for denne enhed til Google. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto. <ph name="BEGIN_LINK2" />Få flere oplysninger om metrics<ph name="BEGIN_LINK2_END" />Få flere oplysninger<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Angiv din pinkode</translation>
 <translation id="2412593942846481727">Der er en tilgængelig opdatering</translation>
-<translation id="2416438829169535743">Vil du lukke visningen?</translation>
 <translation id="2417486498593892439">Log ind på netværk</translation>
 <translation id="2423619675829330672">For mange pinkodeforsøg. Vent <ph name="TIME_LEFT" />, og prøv igen.</translation>
 <translation id="2426051945783024481">Kameraets fokus centreres automatisk</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">Bluetooth-enheden "<ph name="DEVICE_NAME" />" vil gerne have parringstilladelse. Inden du accepterer, skal du bekræfte, at denne adgangsnøgle er vist på den pågældende enhed: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
 <translation id="2437771564543046790">Lavt batteriniveau. Batterisparefunktion er aktiveret</translation>
-<translation id="243878895369688216">Åbnet i går</translation>
 <translation id="2440978926514840421">Optagelsen af gif er udført</translation>
 <translation id="2441427462554639370">Optagelsen blev afsluttet på grund af kritisk mangel på ledig lagerplads</translation>
 <translation id="2445449901874883781">Brug høj tæthed</translation>
@@ -873,7 +870,6 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3563432852173030730">Terminalapplikationen kunne ikke downloades.</translation>
 <translation id="3563558822383875692">Konfigurerer DLC.</translation>
 <translation id="3563775809269155755">Aktivér hotspot</translation>
-<translation id="3566240529365775567">Åbnet lige nu</translation>
 <translation id="3571734092741541777">Konfigurer</translation>
 <translation id="3573179567135747900">Skift tilbage til "<ph name="FROM_LOCALE" />" (kræver genstart)</translation>
 <translation id="3576141592585647168">Skift tidszone</translation>
@@ -960,7 +956,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3756485814916578707">Skærmen castes</translation>
 <translation id="3765246971671567135">Politikken for offlinedemotilstand kunne ikke læses.</translation>
 <translation id="3765841382945324995">Genvejen for <ph name="SIX_PACK_KEY_NAME" /> er opdateret til <ph name="NEW_SHORTCUT" /> fra <ph name="OLD_SHORTCUT" /></translation>
-<translation id="3765841986579723851">Redigeret i dag</translation>
 <translation id="3772109172035555611">Tilpas TrackPoint</translation>
 <translation id="3773700760453577392">En administrator har afvist samlet login fra flere konti for <ph name="USER_EMAIL" />. Alle brugere skal logge ud for at fortsætte.</translation>
 <translation id="3779139509281456663">Opretter forbindelse til <ph name="NAME" /></translation>
@@ -1000,7 +995,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3873915545594852654">Der opstod et problem med ARC++.</translation>
 <translation id="3879748587602334249">Downloadadministrator</translation>
 <translation id="3884007280698606545">Grænsen for USB-enheder er nået</translation>
-<translation id="3886872229787704059">Åbnet i dag</translation>
 <translation id="3892148308691398805">Kopiér tekst</translation>
 <translation id="3893630138897523026">ChromeVox (talefeedback)</translation>
 <translation id="3898464793473355515">Roter skærmen 90 grader med uret</translation>
@@ -1793,7 +1787,6 @@ Ingen enheder er forbundet.</translation>
 <translation id="6095008505822982596">Talehastighed</translation>
 <translation id="6095425951508823973">Tilføj forbindelse via <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Du er blevet logget ud.</translation>
-<translation id="6099678161144790572">Redigeret inden for den seneste måned</translation>
 <translation id="6103838137565245112">systemet</translation>
 <translation id="6108952804512516814">Opret ved hjælp af AI</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> talefiler blev downloadet</translation>
@@ -1950,7 +1943,6 @@ Ingen enheder er forbundet.</translation>
 <translation id="6555373427270923730">Skriv en webadresse i adresselinjen, og tryk derefter på <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Installeret for nylig</translation>
-<translation id="6559158502366839560">Find flere apps og spil</translation>
 <translation id="6560151649238390891">Forslaget blev indsat</translation>
 <translation id="6562447480759345110">Afslut fokus</translation>
 <translation id="6565007273808762236">eSIM-kortforbindelse er ikke tilgængelig</translation>
@@ -2056,7 +2048,6 @@ Installeret for nylig</translation>
 <translation id="6848716236260083778">Du kan konfigurere et fingeraftryk ved at få dit barn til at røre fingeraftrykslæseren. Dit barns fingeraftryksdata gemmes sikkert og forlader aldrig denne <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6852052252232534364">Aktivér</translation>
 <translation id="6852628153543175788">Tilføj 10 minutter</translation>
-<translation id="6855029042976311970">Redigeret lige nu</translation>
 <translation id="6856708615407876657">Slå søgeresultatkategorier til/fra</translation>
 <translation id="6856756288284651804">Chromebook blev opdateret</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
@@ -2151,7 +2142,6 @@ Installeret for nylig</translation>
 <translation id="7118597077555700347">Åbn <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Vælg næste ord eller bogstav</translation>
 <translation id="7124556000457919678">Når funktionen er aktiveret, kan du sætte brugen af musetasterne på pause og genoptage den</translation>
-<translation id="7126996685418858413">Åbnet inden for den seneste uge</translation>
 <translation id="7131634465328662194">Du logges automatisk ud.</translation>
 <translation id="7143207342074048698">Tilslutter</translation>
 <translation id="7144878232160441200">Prøv igen</translation>
@@ -2182,7 +2172,6 @@ Installeret for nylig</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Mikrofon på bagsiden</translation>
 <translation id="7258225044283673131">Appen svarer ikke. Vælg "Tving til at lukke" for at lukke appen.</translation>
-<translation id="7258828758145722155">Redigeret i går</translation>
 <translation id="726276584504105859">Træk hertil for at bruge opdelt skærm</translation>
 <translation id="7264788308526527464">Reducer med <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Bliv ved med at løfte fingeren for at få hele fingeraftrykket med</translation>
@@ -2255,7 +2244,6 @@ Installeret for nylig</translation>
 <translation id="7491962110804786152">fane</translation>
 <translation id="7497767806359279797">Vælg sprog og tastatur</translation>
 <translation id="7507162824403726948">Fuldfør verificeringen af din identitet</translation>
-<translation id="7508690557411636492">Åbnet inden for den seneste måned</translation>
 <translation id="7509246181739783082">Verificer din identitet</translation>
 <translation id="7512509370370076552">Genvejen for højreklik er opdateret til tasten <ph name="LAUNCHER_KEY_NAME" /> + klik fra Alt + klik</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, ikke valgt</translation>
@@ -2709,7 +2697,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8753368202781196133">Dette sprog understøttes ikke i øjeblikket.</translation>
 <translation id="8755498163081687682">Verificer din identitet: <ph name="ORIGIN_NAME" /> ønsker, at du bekræfter din identitet</translation>
 <translation id="875593634123171288">Vis VPN-indstillinger</translation>
-<translation id="8756799553341497810">Du kan begynde at tilpasse dit applayout, når du har lukket denne visning.</translation>
 <translation id="8759408218731716181">Samlet login fra flere konti kan ikke konfigureres</translation>
 <translation id="8759753423332885148">Få flere oplysninger.</translation>
 <translation id="8760172428247796445">Din <ph name="DEVICE_TYPE" /> låses nu.

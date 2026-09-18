@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">បដិសេធ</translation>
 <translation id="152629053603783244">ចាប់ផ្ដើម Linux ឡើងវិញ</translation>
 <translation id="1526448108126799339">បើក​ផ្ទាំង​ថ្មី​នៅ​ក្នុងវិនដូ​ថ្មី</translation>
-<translation id="1528259147807435347">បានកែកាល​ពីសប្ដាហ៍មុន</translation>
 <translation id="1536604384701784949">ដើម្បី​ប្រើ <ph name="USER_EMAIL_ADDRESS" /> អ្នកត្រូវ​ចេញពីគណនី​ទាំងអស់​ជាមុនសិន។ ដើម្បី​ចេញពី​គណនី សូមជ្រើសរើស "បោះបង់" ដើម្បី​ថយក្រោយ​។ ក្រោយមក​ជ្រើសរើស​ពេលដែលត្រូវ​បើកតំបន់​ស្ថានភាព រួចជ្រើសរើស "ចេញពី​គណនី"។ បន្ទាប់មក​ចូលគណនី <ph name="USER_EMAIL_ADDRESS_2" /> ម្ដងទៀត។</translation>
 <translation id="15373452373711364">ទស្សន៍ទ្រនិច​កណ្តុរធំ</translation>
 <translation id="1545331255323159851">មើលរូបថត មេឌៀ និងការជូនដំណឹងថ្មីៗ​លើទូរសព្ទ​របស់​អ្នក</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">បញ្ជូន​ទិន្នន័យ​ប្រើប្រាស់ និង​វិភាគ។ ជួយធ្វើឱ្យ​បទពិសោធប្រើប្រាស់ Android របស់កូនអ្នក​ប្រសើរឡើង ដោយ​បញ្ជូន​ទិន្នន័យ​នៃការ​វិភាគ ឧបករណ៍ និង​ការប្រើប្រាស់កម្មវិធី​ទៅ Google ដោយ​ស្វ័យប្រវត្តិ។ ទិន្នន័យនេះ​នឹងមិនត្រូវ​បានប្រើ ដើម្បី​កំណត់​អត្តសញ្ញាណ​កូន​របស់អ្នក​នោះទេ ហើយ​នឹងជួយដល់ស្ថិរភាពកម្មវិធី និងប្រព័ន្ធ ព្រមទាំង​ការកែលម្អ​ផ្សេងទៀត។ ទិន្នន័យរួម​មួយចំនួន​ក៏នឹង​ជួយដល់​កម្មវិធី និង​ដៃគូ Google ដូចជា​អ្នកអភិវឌ្ឍន៍ Android ផងដែរ។ <ph name="BEGIN_LINK1" />ការកំណត់<ph name="END_LINK1" />នេះត្រូវបាន​អនុវត្ត​ដោយម្ចាស់។ ម្ចាស់អាច​ជ្រើសរើសបញ្ជូនទិន្នន័យប្រើប្រាស់ និងវិភាគសម្រាប់​ឧបករណ៍នេះ​ទៅ Google។ ប្រសិនបើ​ការកំណត់​សកម្មភាព​កម្មវិធី និង​គេហទំព័រ​បន្ថែម​ត្រូវបាន​បើកសម្រាប់​កូនរបស់អ្នក នោះ​ទិន្នន័យនេះ​អាចត្រូវ​បានរក្សាទុក​ទៅក្នុង​គណនី Google របស់គាត់។ <ph name="BEGIN_LINK2" />ស្វែងយល់​បន្ថែម​អំពី​មេទ្រិក<ph name="BEGIN_LINK2_END" />ស្វែងយល់​បន្ថែម<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">បញ្ចូល​កូដ PIN របស់​អ្នក</translation>
 <translation id="2412593942846481727">មាន​កំណែថ្មី</translation>
-<translation id="2416438829169535743">ចាកចេញពី​ទិដ្ឋភាពឬ?</translation>
 <translation id="2417486498593892439">ចូលបណ្តាញ</translation>
 <translation id="2423619675829330672">បានព្យាយាម​បញ្ចូល​កូដ PIN ច្រើន​ដងពេក។ សូម​រង់ចាំ <ph name="TIME_LEFT" /> រួចព្យាយាម​ម្ដងទៀត។</translation>
 <translation id="2426051945783024481">បានដាក់ឱ្យនៅចំកណ្ដាលកាមេរ៉ាដោយស្វ័យប្រវត្តិ</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">ឧបករណ៍ប្តូធូស "<ph name="DEVICE_NAME" />" ស្នើការអនុញ្ញាតដើម្បីភ្ជាប់។ មុនពេលទទួល សូមអះអាងថាពាក្យសម្ងាត់នេះត្រូវបានបង្ហាញនៅលើឧបករណ៍នោះ៖ <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">បង្ហាញពាក្យសម្ងាត់</translation>
 <translation id="2437771564543046790">ថ្មសល់តិច។ មុខងារ​សន្សំ​ថ្មត្រូវបានបើក</translation>
-<translation id="243878895369688216">បានបើក​កាលពីម្សិលមិញ</translation>
 <translation id="2440978926514840421">បាន​ថត GIF</translation>
 <translation id="2441427462554639370">ការថត​បានបញ្ចប់ ដោយសារ​ទំហំផ្ទុក​​នៅសល់តិចណាស់</translation>
 <translation id="2445449901874883781">ប្រើ​កម្រិតច្បាស់ខ្ពស់</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">កម្មវិធីបញ្ជរមិនអាចត្រូវបានទាញយកទេ។</translation>
 <translation id="3563558822383875692">កំពុង​កំណត់​រចនាសម្ព័ន្ធ DLC។</translation>
 <translation id="3563775809269155755">បើក​ហតស្ប៉ត</translation>
-<translation id="3566240529365775567">បានបើក​អម្បាញ់មិញ</translation>
 <translation id="3571734092741541777">តំឡើង</translation>
 <translation id="3573179567135747900">ប្តូរទៅ "<ph name="FROM_LOCALE" />" (តម្រូវឲ្យចាប់ផ្តើមឡើងវិញ)</translation>
 <translation id="3576141592585647168">ប្ដូរល្វែងម៉ោង</translation>
@@ -960,7 +956,6 @@
 <translation id="3756485814916578707">កំពុងភ្ជាប់អេក្រង់</translation>
 <translation id="3765246971671567135">មិន​អាច​អានគោលការណ៍មុខងារ​សាកល្បងពេលគ្មានអ៊ីនធឺណិតបានទេ។</translation>
 <translation id="3765841382945324995">ផ្លូវ​កាត់ <ph name="SIX_PACK_KEY_NAME" /> ត្រូវបានប្ដូរពី <ph name="OLD_SHORTCUT" /> ទៅ <ph name="NEW_SHORTCUT" /></translation>
-<translation id="3765841986579723851">បានកែ​នៅថ្ងៃនេះ</translation>
 <translation id="3772109172035555611">ប្ដូរ TrackPoint របស់អ្នកតាមបំណង</translation>
 <translation id="3773700760453577392">អ្នកគ្រប់គ្រង​បានដក​ការអនុញ្ញាត​មិនឱ្យមាន​ការចូលគណនី​ច្រើនសម្រាប់ <ph name="USER_EMAIL" /> ទេ។ អ្នកប្រើ​ប្រាស់ទាំងអស់​ត្រូវចាកចេញ​ដើម្បីបន្ត។</translation>
 <translation id="3779139509281456663">កំពុងភ្ជាប់ <ph name="NAME" /></translation>
@@ -1000,7 +995,6 @@
 <translation id="3873915545594852654">ARC++ មាន​បញ្ហា។</translation>
 <translation id="3879748587602334249">កម្មវិធីគ្រប់គ្រងការ​ទាញ​យក</translation>
 <translation id="3884007280698606545">បាន​ឈានដល់​ចំនួន​កំណត់ USB ហើយ</translation>
-<translation id="3886872229787704059">បានបើក​នៅថ្ងៃនេះ</translation>
 <translation id="3892148308691398805">ចម្លង​អត្ថបទ</translation>
 <translation id="3893630138897523026">ChromeVox (មតិនិយាយ)</translation>
 <translation id="3898464793473355515">បង្វិល​អេក្រង់ 90 ដឺក្រេ​ស្របទ្រនិចនាឡិកា</translation>
@@ -1791,7 +1785,6 @@
 <translation id="6095008505822982596">ល្បឿននៃការនិយាយ</translation>
 <translation id="6095425951508823973">បញ្ចូលការតភ្ជាប់ជាមួយ <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">អ្នកបានចេញហើយ។</translation>
-<translation id="6099678161144790572">បានកែ​កាលពីខែមុន</translation>
 <translation id="6103838137565245112">ប្រព័ន្ធ</translation>
 <translation id="6108952804512516814">បង្កើតដោយប្រើ AI</translation>
 <translation id="6114505516289286752">បានទាញយក​ឯកសារនៃការនិយាយ​ជាភាសា<ph name="LANGUAGE" /></translation>
@@ -1948,7 +1941,6 @@
 <translation id="6555373427270923730">វាយ​បញ្ចូល​អាសយដ្ឋាន​ទំព័រ​ក្នុង​របារ​អាសយដ្ឋាន រួច​ចុច <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 ការដំឡើងថ្មី</translation>
-<translation id="6559158502366839560">រុករក​កម្មវិធី និង​ហ្គេម​ច្រើនទៀត</translation>
 <translation id="6560151649238390891">បាន​បញ្ចូល​ការណែនាំ</translation>
 <translation id="6562447480759345110">បញ្ចប់មុខងារផ្ដោតអារម្មណ៍</translation>
 <translation id="6565007273808762236">មិនអាចភ្ជាប់ eSIM បានទេ</translation>
@@ -2054,7 +2046,6 @@
 <translation id="6848716236260083778">ដើម្បីរៀបចំស្នាម​ម្រាមដៃ សូមប្រាប់ឱ្យកូនរបស់អ្នកប៉ះឧបករណ៍ចាប់ស្នាមម្រាមដៃ។ ទិន្នន័យ​ស្នាម​ម្រាមដៃរបស់កូនអ្នកត្រូវបាន​រក្សាទុកយ៉ាង​មានសុវត្ថិភាព និងមិនចេញពី <ph name="DEVICE_TYPE" /> នេះឡើយ។</translation>
 <translation id="6852052252232534364">ចុចដើម្បីបើកដំណើរការ</translation>
 <translation id="6852628153543175788">បន្ថែម 10 នាទី</translation>
-<translation id="6855029042976311970">បានកែ​អម្បាញ់មិញ</translation>
 <translation id="6856708615407876657">បិទ/បើក​ប្រភេទ​លទ្ធផល​ស្វែងរក</translation>
 <translation id="6856756288284651804">បានដំឡើង​កំណែ Chromebook</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> វិនាទី</translation>
@@ -2149,7 +2140,6 @@
 <translation id="7118597077555700347">បើក <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">ជ្រើសរើស​ពាក្យ ឬ​អក្សរ​បន្ទាប់</translation>
 <translation id="7124556000457919678">នៅពេលបើក សូមផ្អាក និងបន្តគ្រាប់ចុចម៉ៅស៍ឡើងវិញ</translation>
-<translation id="7126996685418858413">បានបើកកាល​ពីសប្ដាហ៍មុន</translation>
 <translation id="7131634465328662194">អ្នក​នឹង​ចាកចេញ​ពី​គណនី​ដោយ​ស្វ័យ​ប្រវត្តិ។</translation>
 <translation id="7143207342074048698">កំពុងភ្ជាប់...</translation>
 <translation id="7144878232160441200">ព្យាយាមម្តងទៀត</translation>
@@ -2179,7 +2169,6 @@
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">មីក្រូហ្វូន​ខាងក្រោយ</translation>
 <translation id="7258225044283673131">កម្មវិធី​មិនដំណើរ​ការទេ។ សូមជ្រើសរើស "បង្ខំឱ្យបិទ" ដើម្បីបិទ​កម្មវិធី។</translation>
-<translation id="7258828758145722155">បានកែ​កាលពីម្សិលមិញ</translation>
 <translation id="726276584504105859">អូសនៅទីនេះដើម្បីប្រើអេក្រង់បំបែក</translation>
 <translation id="7264788308526527464">បន្ថយ <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">បន្តលើកម្រាមដៃឡើង ដើម្បីបញ្ចូលផ្នែកផ្សេងទៀតនៃស្នាមម្រាមដៃរបស់អ្នក</translation>
@@ -2252,7 +2241,6 @@
 <translation id="7491962110804786152">ផ្ទាំង</translation>
 <translation id="7497767806359279797">ជ្រើសរើស​ភាសា និងក្ដារចុច</translation>
 <translation id="7507162824403726948">បញ្ចប់ការផ្ទៀងផ្ទាត់អត្តសញ្ញាណរបស់អ្នក</translation>
-<translation id="7508690557411636492">បានបើក​កាលពីខែមុន</translation>
 <translation id="7509246181739783082">ផ្ទៀងផ្ទាត់អត្តសញ្ញាណរបស់អ្នក</translation>
 <translation id="7512509370370076552">ផ្លូវកាត់​សម្រាប់ចុចកណ្ដុរ​ខាងស្ដាំត្រូវបាន​ប្ដូរពី alt + ចុចទៅគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + ចុច</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" /> មិនត្រូវបាន​ជ្រើសរើស</translation>
@@ -2706,7 +2694,6 @@
 <translation id="8753368202781196133">មិនអាចប្រើ​ភាសានេះ​នៅពេលនេះ​បានទេ។</translation>
 <translation id="8755498163081687682">ផ្ទៀងផ្ទាត់អត្តសញ្ញាណ​របស់អ្នក៖ <ph name="ORIGIN_NAME" /> ចង់បញ្ជាក់​ថាជាអ្នក</translation>
 <translation id="875593634123171288">បង្ហាញ​ការកំណត់​ VPN</translation>
-<translation id="8756799553341497810">អ្នកអាចចាប់ផ្តើមប្ដូរប្លង់​កម្មវិធីរបស់អ្នកតាមបំណង នៅពេលអ្នកចាកចេញពីទិដ្ឋភាពនេះ។</translation>
 <translation id="8759408218731716181">មិនអាចតំឡើងការចូលពីគណនីច្រើនទេ</translation>
 <translation id="8759753423332885148">ស្វែងយល់បន្ថែម។</translation>
 <translation id="8760172428247796445"><ph name="DEVICE_TYPE" /> របស់អ្នក​នឹងត្រូវបាន​ចាក់សោ​ឥឡូវនេះ។

@@ -15,6 +15,7 @@
 <translation id="1035980983510608210">Zavretím všetkých kariet zavriete aj pripnuté karty.</translation>
 <translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1036436692654972538">Informácie si môžete uložiť do zariadenia</translation>
+<translation id="1038106730571050514">Zobraziť návrhy</translation>
 <translation id="1041322626941363065">Upozorňovať pri prezradení hesiel v rámci porušenia ochrany údajov</translation>
 <translation id="1046742265332833834">Modrý motív</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -231,7 +232,6 @@
 <translation id="1671568970992212376">Ukladajte si fotky do Fotiek Google, aby ste k nim mali prístup kedykoľvek.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Na základe pravidiel vašej organizácie môže tento súbor obsahovať citlivé údaje</translation>
-<translation id="1683276189281028863">Kontrola hesiel</translation>
 <translation id="1689333818294560261">Prezývka</translation>
 <translation id="169048873465870056">Chcete odstrániť kartu aj skupinu?</translation>
 <translation id="1692115862433274081">Použiť iný účet</translation>
@@ -241,7 +241,6 @@
 <translation id="1709916727352927457">Odstránenie prístupového kľúča</translation>
 <translation id="1715515772563243997">Ak doméne <ph name="SITE" /> dôverujete, môžete sa prihlásiť uloženým heslom.</translation>
 <translation id="1718835860248848330">Posledná hodina</translation>
-<translation id="1726013039921383235">Vždy povoliť</translation>
 <translation id="1728549374069268714">Prilepiť a prejsť</translation>
 <translation id="1732468323901456775">Zapnúť upozornenia na <ph name="MODULE_NAME" /></translation>
 <translation id="1739364174357629566">Aktualizujte číslo Known Traveler Number</translation>
@@ -258,7 +257,6 @@
 <translation id="1752547299766512813">Ukladať heslá</translation>
 <translation id="1764070164487214210">Trasa</translation>
 <translation id="1764511703783285459">Druhý správca hesiel nezdieľal žiadne heslá ani prístupové kľúče</translation>
-<translation id="1765555082983153259">Chrome chce mať prístup k vášmu mikrofónu</translation>
 <translation id="1767766085187034454">Prekladač Google</translation>
 <translation id="1771016937398045251">Ponuka Nástroje</translation>
 <translation id="1772468122139624049">Karty sa nedajú znova načítať</translation>
@@ -455,6 +453,7 @@
 <translation id="2381405137052800939">Základy</translation>
 <translation id="2384692388811649784">Skrývať karty inkognito</translation>
 <translation id="2386793615875593361">Počet vybratých fotografií: 1</translation>
+<translation id="2388949452472546050">Weby, ktoré navštívite, vrátane Googlu, sú zodpovedné za určenie spôsobu, akým na túto žiadosť odpovedia. V závislosti od právnych predpisov vo vašom regióne môžu weby reagovať obmedzením predaja a zdieľania vašich údajov alebo ich používania na účely prispôsobených reklám. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="2390457533592708044">Skryť <ph name="MODULE_NAME" /></translation>
 <translation id="2393230427496852974">Prečítajte si, čo hovoria ľudia</translation>
 <translation id="2394659309569789395">Otvoriť web aj tak</translation>
@@ -610,6 +609,7 @@
 <translation id="2902312830803030883">Ďalšie akcie</translation>
 <translation id="2904788871580817212">Pokles ceny na vašej otvorenej karte z <ph name="PREVIOUS_PRICE" /> na <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Máte niekoľko (<ph name="NUMBER_OF_PASSWORDS" />) recyklovaných hesiel, ktoré môžu ohroziť vaše zabezpečenie.</translation>
+<translation id="2916433579958049718">Využívajte inteligenciu Gemini v každom odkaze</translation>
 <translation id="291754862089661335">Umiestnite QR kód alebo čiarový kód do tohto rámčeka</translation>
 <translation id="2918688092312652908">Označiť ako neprečítané</translation>
 <translation id="2922210239002704889">Prejdite na domovskú stránku alebo klávesnicu</translation>
@@ -795,7 +795,6 @@
 <translation id="3565012355885596568">Obrázky sa nepodarilo načítať</translation>
 <translation id="3565930036634619844">Karta. <ph name="TAB_INDEX" /> z <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Uložiť inak</translation>
-<translation id="3567446754270467567">Zlepšené bezpečné prehliadanie je dokončené.</translation>
 <translation id="3572503683475187385">Aktuálna karta sa bude zdieľať s Gemini, keď začnete nový čet. Keď zdieľate kartu s Gemini, jej obsah a webová adresa sa odošlú Googlu. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Vo vašom účte Google</translation>
 <translation id="3575234738189584619">Vyhľadávať pomocou funkcie Lens</translation>
@@ -934,7 +933,6 @@
 <translation id="4021447724486050609">Aktualizujte si prehliadač</translation>
 <translation id="4021931095789478915">Pridanie ${url} do čitateľského zoznamu</translation>
 <translation id="4028871427853484857">Uložiť do účtu…</translation>
-<translation id="4034354558246368274">Tentokrát povoliť</translation>
 <translation id="4038354071007134711">Tento súbor nedokáže otvoriť žiadna aplikácia na tomto zariadení.</translation>
 <translation id="4042870976416480368">Nájsť na stránke</translation>
 <translation id="4045441967987592849">Znova otvoriť</translation>
@@ -1014,7 +1012,6 @@
 <translation id="4304713468139749426">Správca hesiel</translation>
 <translation id="4309403553630140242">Ďalšie informácie získate dvojitým klepnutím</translation>
 <translation id="4310738531374808763">Prispôsobenie domovskej stránky</translation>
-<translation id="4316794575239200608">Vaše konverzácie s Gemini a <ph name="BEGIN_LINK" />údaje v službe Google Workspace<ph name="END_LINK" /> nebudú preverovať kontrolóri ani sa pomocou nich nebudú zlepšovať modely generatívnej umelej inteligencie.</translation>
 <translation id="4320848494125124980">Nedávne</translation>
 <translation id="4322394346347055525">Zatvoriť ostatné karty</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1090,7 +1087,6 @@
 <translation id="4578835633387306383">Zapnúť…</translation>
 <translation id="4580621046861724270">Niektoré záložky nie sú uložené</translation>
 <translation id="4580716718466706433">Prejdite do Správcu hesiel</translation>
-<translation id="4584778196791098089">Prechod do režimu inkognito je dokončený.</translation>
 <translation id="4585751637295612750">Otvorte novú kartu a pridajte tak dopyt do otázky</translation>
 <translation id="4587589328781138893">Weby</translation>
 <translation id="4592672037257622855">{count,plural, =1{Stránka bola pridaná do vášho čitateľského zoznamu}few{Do vášho čitateľského zoznamu boli pridané {count} stránky}many{{count} pages added to your reading list}other{Do vášho čitateľského zoznamu bolo pridaných {count} stránok}}</translation>
@@ -1108,7 +1104,6 @@
 <translation id="4631335160486397366">Recyklované heslá: <ph name="COUNT" /></translation>
 <translation id="4632655012900268062">Prispôsobiť karty</translation>
 <translation id="4634124774493850572">Použiť heslo</translation>
-<translation id="4634633632339959267">Čety sa kontrolujú a slúžia na zlepšovanie umelej inteligencie od Googlu. <ph name="BEGIN_LINK" />Aké máte možnosti<ph name="END_LINK" /> V aktivite sa ukladajú aj <ph name="BEGIN_LINK" />informácie o vašej polohe<ph name="END_LINK" />.</translation>
 <translation id="4636930964841734540">Informácie</translation>
 <translation id="4641425577292284174">Zistite, či máte najbezpečnejšie nastavenia alebo či je potrebné niečo skontrolovať</translation>
 <translation id="4642472735733036929">Sledovanie ceny bolo zastavené</translation>
@@ -1164,7 +1159,6 @@
 <translation id="4796496140132859135">Skupina kariet. Zbalená.</translation>
 <translation id="4800912004582762296">Kliká</translation>
 <translation id="4802185666270672526">Skryť položku Vyžiadať web pre počítače</translation>
-<translation id="4802678077012980341">Kontrola hesiel je dokončená.</translation>
 <translation id="4803185665210547709">Spravované vašou organizáciou.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">Obkreslite, zvýraznite alebo klepnutím vyberte, čo chcete nájsť, a získate výsledky bez opustenia karty</translation>
@@ -1387,7 +1381,6 @@
 <translation id="5482922178977937393">Chcete dostávať upozornenia na správy, šport a ďalší obsah na základe svojich záujmov?</translation>
 <translation id="5483838506518938965">Všetko je nastavené</translation>
 <translation id="5487521232677179737">Vymazať dáta</translation>
-<translation id="5491208689472430746">Rýchle odstránenie je dokončené.</translation>
 <translation id="5494920125229734069">Vybrať všetko</translation>
 <translation id="5499648645977734083">Spravovať spôsoby platby…</translation>
 <translation id="5501346139932663133">Aplikácie Googlu</translation>
@@ -1463,7 +1456,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5718049162805123412">Mali by ste ich okamžite zmeniť</translation>
 <translation id="5721040778297053709">Umiestnite kreditnú kartu do tohto rámčeka</translation>
 <translation id="572328651809341494">Nedávne karty</translation>
-<translation id="5724590854763964497">Aktuálna karta sa predvolene zdieľa, keď začnete nový čet. Pri zdieľaní kariet sa ich obsah a webové adresy odosielajú Googlu, ale nepoužívajú sa na zlepšovanie modelov generatívnej umelej inteligencie. Toto nastavenie môžete kedykoľvek zmeniť</translation>
 <translation id="5724941645893276623">Ak chcete internet prehliadať v súkromí, pridajte novú kartu</translation>
 <translation id="5728072125198221967">Prepojené služby Googlu</translation>
 <translation id="5728700505257787410">Je nám ľúto, pri prihlasovaní do účtu sa vyskytol problém.</translation>
@@ -1552,6 +1544,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6006672969046233841">Nová karta</translation>
 <translation id="6011308810877101166">Zlepšovať návrhy vyhľadávania</translation>
 <translation id="6012140227487808125">Prebieha šifrovanie…</translation>
+<translation id="6014801569448771146">Kontrola hesiel</translation>
 <translation id="6027619584715411062">Prihláste sa a používajte záložky, heslá a ďalší obsah vo všetkých svojich zariadeniach.</translation>
 <translation id="6027945736510816438">Mysleli ste <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nová funkcia</translation>
@@ -1945,6 +1938,7 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="721218676460477064">Zhrň tento článok</translation>
 <translation id="7215621211572884440">Vyskakovacie okná sú povolené</translation>
 <translation id="7218491361283758048">PSČ</translation>
+<translation id="7220786058474068424">Spracováva sa</translation>
 <translation id="7221173315674413369">Preskúmajte nové funkcie a tipy v sekcii Novinky</translation>
 <translation id="7223102419539744003">Zavretie karty</translation>
 <translation id="7223134495231529579">Uložiť medzi stiahnuté</translation>

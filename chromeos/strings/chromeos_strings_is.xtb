@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Tegund auðkenningar</translation>
 <translation id="1776228893584526149">Litatónn veggfóðurs</translation>
 <translation id="1777913922912475695">brú</translation>
-<translation id="1782199038061388045">þýðing</translation>
 <translation id="1788485524395674731">Kerfisstjórinn þinn stjórnar þessu forriti</translation>
 <translation id="1792647875738159689">Hættir við að skanna</translation>
 <translation id="1801418420130173017">Slökkva á dökku þema</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Gerð</translation>
 <translation id="2448857983905133469">Hjálpargögn bekkjar</translation>
 <translation id="2468124392950503650">Veldu skipun til að búa til mynd eða skoðaðu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />leiðbeiningar um skipanir<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Notaðu rithjálp til að búa til drög eða fínpússa fyrirliggjandi skrif með aðstoð gervigreindar Google</translation>
 <translation id="2475982808118771221">Villa kom upp</translation>
 <translation id="2480572840229215612">krabbar</translation>
 <translation id="248546197012830854">Tækið er ekki nettengt. Tengstu Wi-Fi neti til að sjá hjálparefni.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Taka aftur</translation>
 <translation id="3479552764303398839">Ekki núna</translation>
 <translation id="3484914941826596830">Ekki taka þetta ytra tæki úr sambandi eða slökkva á tölvunni þinni á meðan fastbúnaðurinn uppfærist. Þú getur minnkað þennan glugga. Uppfærslan gæti tekið nokkrar mínútur og óvíst er að ytra tækið virki á meðan.</translation>
-<translation id="3486220673238053218">skilgreining</translation>
 <translation id="3487866404496702283">Ábendingar um mahi-eiginleika</translation>
 <translation id="3488065109653206955">Virkjað að hluta</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> skrifstofa í <ph name="OFFICE_COLOR" /> litatónum</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Velja þema</translation>
 <translation id="3644695927181369554">Slæm tillaga</translation>
 <translation id="3651050199673793219">Velja mælieiningu hitastigs</translation>
-<translation id="3661106764436337772">Vertu fljótari og öruggari að skrifa</translation>
 <translation id="3662461537616691585">vínrauðum og rauðbrúnum lit</translation>
 <translation id="3664755900672940272">Dæmi um skipanir stokkaðar</translation>
 <translation id="3668449597372804501">Veggfóður, skýjaflæði</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Stöðvað</translation>
 <translation id="4777310452073659583">Endurræstu <ph name="DEVICE_TYPE" /> til að fá textauppskrift</translation>
 <translation id="4778082030331381943">ametýst</translation>
-<translation id="4782311465517282004">Fáðu skilgreiningar, þýðingar eða umreikninga mæligilda þegar þú hægrismellir eða heldur texta inni</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> mynd</translation>
 <translation id="4793710386569335688">Opnaðu <ph name="BEGIN_LINK" />hjálparmiðstöðina<ph name="END_LINK" /> til að fá frekari aðstoð.</translation>
 <translation id="4793756956024303490">Þjöppunarreiknirit</translation>
@@ -1459,7 +1454,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7397270852490618635">Slökkva á ljósu þema</translation>
 <translation id="7401543881546089382">Eyða flýtileið</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> er tilbúið í uppfærslu</translation>
-<translation id="741244894080940828">umreikningur</translation>
 <translation id="7415801143053185905">Mjög langur HTTP-biðtími</translation>
 <translation id="7418738250896500352">Of mörg orð til að einfalda</translation>
 <translation id="7425037327577270384">Rithjálp</translation>
@@ -1769,7 +1763,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="885701979325669005">Geymslurými</translation>
 <translation id="885704831271383379">dekkra lyklaborð</translation>
 <translation id="8863170912498892583">Virkja dökkt þema</translation>
-<translation id="8863888432376731307">Fáðu <ph name="INTENT" /> fyrir „<ph name="QUERY" />“ og fleira</translation>
 <translation id="8864415976656252616">Engar efnistillögur. Skoðaðu helsta hjálparefnið.</translation>
 <translation id="8868741746785112895">GUID-kenni</translation>
 <translation id="8876270629542503161">Tækið er spjaldtölva.</translation>

@@ -1517,6 +1517,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome bu səhifə hazır olduqda bildiriş göndərəcək. &lt;a&gt;Ləğv edin&lt;/a&gt;</translation>
 <translation id="3581499772329034229">Tabları avtomatik əlavə edin</translation>
+<translation id="3582670569275100909">Göndərilmələr</translation>
 <translation id="3582930987043644930">Ad əlavə edin</translation>
 <translation id="3583757800736429874">Hərəkəti təkrarlayın</translation>
 <translation id="3584299510153766161">Altdan qoşa deşik açın</translation>
@@ -4008,6 +4009,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7758069387465995638">Qoruyucu divar və ya antivirus proqramı bağlantını blok etmiş ola bilər.</translation>
 <translation id="7759147511335618829">MIDI cihaz idarəetməsi/təkrar proqramlaşdırma</translation>
 <translation id="7759809451544302770">İstəyə görə</translation>
+<translation id="7760566304700414795">Göndərilmə</translation>
 <translation id="776110834126722255">Müddəti keçib</translation>
 <translation id="7761159795823346334">Kamera icazəsi verilsin?</translation>
 <translation id="7761701407923456692">Serverin sertifikatı URL ilə uyğun gəlmir.</translation>
@@ -4353,6 +4355,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8371841335382565017">Yayım üçün cihaz siyahısını göstərin</translation>
 <translation id="8371889962595521444">Əsas fərdi sertifikatlar</translation>
 <translation id="8374636051559112948">Fərqlənir</translation>
+<translation id="8377507422902936905">Sifarişlər</translation>
 <translation id="837840316697671463">Cihazda faylı tapa bilmirsinizsə, burada axtarın: <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Təşkilatınız tərəfindən idarə olunur</translation>
 <translation id="8380941800586852976">Təhlükəli</translation>

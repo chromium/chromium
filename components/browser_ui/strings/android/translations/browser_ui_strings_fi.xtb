@@ -47,6 +47,7 @@
 <translation id="1464044141348608623">Älä salli sivustojen tietää, milloin käytät laitetta aktiivisesti</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sivusto}other{<ph name="SITE_COUNT" /> sivustoa}}</translation>
 <translation id="1476700086976862423">Teeman väri: seepia</translation>
+<translation id="1497214680865404175">Käyttäjän lataama kuva</translation>
 <translation id="1500473259453106018">Piilota "Hinnanalennukset avoimilla välilehdillä" ‑kortti</translation>
 <translation id="1508931164824684991">Sivustot voivat käyttää JavaScriptiä</translation>
 <translation id="1510341833810331442">Sivustot eivät saa tallentaa dataa laitteellesi</translation>

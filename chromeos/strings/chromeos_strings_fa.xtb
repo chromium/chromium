@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">نوع اصالت‌سنجی</translation>
 <translation id="1776228893584526149">رنگ‌مایه کاغذدیواری</translation>
 <translation id="1777913922912475695">پل</translation>
-<translation id="1782199038061388045">ترجمه</translation>
 <translation id="1788485524395674731">این برنامه را سرپرست شما مدیریت می‌کند</translation>
 <translation id="1792647875738159689">درحال لغو اسکن کردن</translation>
 <translation id="1801418420130173017">غیرفعال کردن زمینه تاریک</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">نوع</translation>
 <translation id="2448857983905133469">ابزارهای کلاسی</translation>
 <translation id="2468124392950503650">پیام‌واره موردنظر را برای ایجاد کردن انتخاب کنید یا <ph name="BEGIN_LINK_PROMPTING_GUIDE" />راهنمای پیام‌واره‌ها<ph name="END_LINK_PROMPTING_GUIDE" /> را مشاهده کنید</translation>
-<translation id="2472215337771558851">‏بااستفاده از «کمک به نوشتن»، پیش‌نویس تهیه کنید یا کار موجود را پالایش کنید؛ از «هوشواره Google» بهره می‌گیرد</translation>
 <translation id="2475982808118771221">یک خطا روی داد</translation>
 <translation id="2480572840229215612">خرچنگ</translation>
 <translation id="248546197012830854">‏دستگاه آفلاین است. برای دیدن محتوای راهنما، به شبکه Wi-Fi متصل شوید.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">عکس گرفتن مجدد</translation>
 <translation id="3479552764303398839">حالا نه</translation>
 <translation id="3484914941826596830">وقتی سفت‌افزار درحال به‌روزرسانی است، این دستگاه خارجی را جدا نکنید و رایانه را خاموش نکنید. می‌توانید این پنجره را کمینه کنید. این به‌روزرسانی ممکن است چند دقیقه طول بکشد و در این مدت ممکن است دستگاه خارجی‌تان کار نکند.</translation>
-<translation id="3486220673238053218">معنی</translation>
 <translation id="3487866404496702283">‏بازخورد درباره ویژگی mahi</translation>
 <translation id="3488065109653206955">به‌طور نسبی فعال شده است</translation>
 <translation id="3492882532495507361">دفتر کار <ph name="OFFICE_STYLE" /> با رنگ‌های <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">زمینه‌ای انتخاب کنید</translation>
 <translation id="3644695927181369554">پیشنهاد بد</translation>
 <translation id="3651050199673793219">انتخاب واحد دما</translation>
-<translation id="3661106764436337772">سریع‌تر و با اطمینان بیشتر بنویسید</translation>
 <translation id="3662461537616691585">شرابی و زرشکی</translation>
 <translation id="3664755900672940272">پیام‌واره‌های نمونه درهم شد</translation>
 <translation id="3668449597372804501">کاغذدیواری جریان ابر</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">متوقف شد</translation>
 <translation id="4777310452073659583">برای دریافت ترانویسی، <ph name="DEVICE_TYPE" /> را بازراه‌اندازی کنید</translation>
 <translation id="4778082030331381943">یاقوت</translation>
-<translation id="4782311465517282004">وقتی روی نوشتار کلیک راست می‌کنید یا آن را لمس می‌کنید و نگه می‌دارید، تعاریف، ترجمه‌ها، یا تبدیل واحدها را دریافت می‌کنید</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> عکس</translation>
 <translation id="4793710386569335688">برای دریافت راهنمایی بیشتر، به <ph name="BEGIN_LINK" />مرکز راهنمایی<ph name="END_LINK" /> بروید.</translation>
 <translation id="4793756956024303490">الگوریتم فشرده‌سازی</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">خاموش کردن زمینه روشن</translation>
 <translation id="7401543881546089382">حذف میان‌بر</translation>
 <translation id="7405493795721832710">‫<ph name="DEVICE_NAME" /> آماده به‌روزرسانی است</translation>
-<translation id="741244894080940828">تبدیل</translation>
 <translation id="7415801143053185905">‏تأخیر خیلی زیاد HTTP</translation>
 <translation id="7418738250896500352">تعداد کلمه‌ها برای ساده کردن خیلی زیاد است</translation>
 <translation id="7425037327577270384">کمک به نوشتن</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">فضای ذخیره‌سازی</translation>
 <translation id="885704831271383379">تاریک‌تر کردن صفحه‌کلید</translation>
 <translation id="8863170912498892583">فعال کردن زمینه تاریک</translation>
-<translation id="8863888432376731307">دریافت <ph name="INTENT" /> برای «<ph name="QUERY" />» و موارد دیگر</translation>
 <translation id="8864415976656252616">محتوای پیشنهادی وجود ندارد. محتوای راهنمای برتر را ببینید.</translation>
 <translation id="8868741746785112895">شناسه منحصربه‌فرد جهانی</translation>
 <translation id="8876270629542503161">دستگاه رایانه لوحی است.</translation>

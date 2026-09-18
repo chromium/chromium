@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">ХЭРЭГСЭХГҮЙ БОЛГОХ</translation>
 <translation id="152629053603783244">Linux-г дахин эхлүүлэх</translation>
 <translation id="1526448108126799339">Шинэ табыг шинэ цонхонд нээх</translation>
-<translation id="1528259147807435347">Өнгөрсөн долоо хоногт зассан</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" />-г ашиглахын тулд та эхлээд бүх бүртгэлээс гарах шаардлагатай. Гарахын тулд Цуцлахыг сонгож, буцна уу. Дараа нь төлөв байдал илэрхийлэгчийг нээх цагийг сонгож, Гарахыг сонгоно уу. Дараа нь <ph name="USER_EMAIL_ADDRESS_2" />-д дахин нэвтэрнэ үү.</translation>
 <translation id="15373452373711364">Том хулганын курсор</translation>
 <translation id="1545331255323159851">Утасныхаа саяхны зураг, медиа болон мэдэгдлүүдийг харах</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Ашиглалт болон оношилгооны өгөгдлийг илгээнэ үү. Оношилгоо, төхөөрөмж, аппын ашиглалтын өгөгдлийг Google-д автоматаар илгээснээр хүүхдийнхээ Android-н хэрэглээг сайжруулахад тусална уу. Энэ өгөгдлийг таны хүүхдийг танихад ашиглахгүй бөгөөд энэ нь систем, аппын тогтвортой байдал, бусад зүйлийг сайжруулахад тусална. Зарим хуримтлуулсан өгөгдөл нь мөн Google аппуудад туслахаас гадна Android-г хөгжүүлэгч зэрэг түншүүдэд тусална. Энэ <ph name="BEGIN_LINK1" />тохиргоог<ph name="END_LINK1" /> өмчлөгч хэрэгжүүлдэг. Өмчлөгч энэ төхөөрөмжийн оношилгоо болон ашиглалтын өгөгдлийг Google-д илгээхээр сонгож магадгүй. Хэрэв таны хүүхдийн Веб, аппын нэмэлт үйл ажиллагааны тохиргоо асаалттай байвал энэ өгөгдлийг Google бүртгэлд нь хадгалж магадгүй. <ph name="BEGIN_LINK2" />Хэмжигдэхүүний талаар нэмэлт мэдээлэл авах<ph name="BEGIN_LINK2_END" />Нэмэлт мэдээлэл авах<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">ПИН-ээ оруулна уу</translation>
 <translation id="2412593942846481727">Шинэчлэх боломжтой</translation>
-<translation id="2416438829169535743">Харагдах байдлаас гарах уу?</translation>
 <translation id="2417486498593892439">Сүлжээнд нэвтэрнэ үү</translation>
 <translation id="2423619675829330672">ПИН-г оруулахаар хэт олон удаа оролдсон. <ph name="TIME_LEFT" /> хүлээгээд, дахин оролдоно уу.</translation>
 <translation id="2426051945783024481">Камерын хүрээг автоматаар голлуулсан</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth төхөөрөмж нь холбогдох зөвшөөрөл хүсч байна. Хүлээж авахаасаа өмнө <ph name="PASSKEY" /> дамжуулах түлхүүр үг нь энэ төхөөрөмж дээр гарч ирсэн байгаа эсэхийг шалгана уу.</translation>
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
 <translation id="2437771564543046790">Батарей бага байна. Батарей хэмнэгч асаалттай байна</translation>
-<translation id="243878895369688216">Өчигдөр нээсэн</translation>
 <translation id="2440978926514840421">GIF бичлэгийг хийсэн</translation>
 <translation id="2441427462554639370">Хадгалах сангийн зай хэт бага байгаа тул бичлэгийг дуусгасан</translation>
 <translation id="2445449901874883781">Өндөр нягтралыг ашиглах</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">Киоск программыг татаж авч чадсангүй.</translation>
 <translation id="3563558822383875692">Татах боломжтой контент (DLC)-ыг тохируулж байна.</translation>
 <translation id="3563775809269155755">Сүлжээний цэгийг идэвхжүүлэх</translation>
-<translation id="3566240529365775567">Дөнгөж сая нээсэн</translation>
 <translation id="3571734092741541777">Тохиргоо хийх.</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />"-руу буцааж өөрчил (системийг дахин эхлүүлэх хэрэгтэй)</translation>
 <translation id="3576141592585647168">Цагийн бүсийг өөрчлөх</translation>
@@ -960,7 +956,6 @@
 <translation id="3756485814916578707">Дэлгэцийг дамжуулж байна</translation>
 <translation id="3765246971671567135">Офлайн демо горимын удирдамжийг уншиж чадсангүй.</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> товчлолыг <ph name="OLD_SHORTCUT" />-с <ph name="NEW_SHORTCUT" /> болгож шинэчилсэн</translation>
-<translation id="3765841986579723851">Өнөөдөр зассан</translation>
 <translation id="3772109172035555611">Өөрийн TrackPoint-г өөрчлөх</translation>
 <translation id="3773700760453577392">Админ <ph name="USER_EMAIL" />-д олон зэрэг нэвтрэхийг зөвшөөрөөгүй байна. 
 Үргэлжлүүлэхийн тулд бүх хэрэглэгч гарах шаардлагатай.</translation>
@@ -1001,7 +996,6 @@
 <translation id="3873915545594852654">ARC++-д асуудал гарлаа.</translation>
 <translation id="3879748587602334249">Таталтын менежер</translation>
 <translation id="3884007280698606545">USB-н хязгаарт хүрсэн</translation>
-<translation id="3886872229787704059">Өнөөдөр нээсэн</translation>
 <translation id="3892148308691398805">Текстийг хуулах</translation>
 <translation id="3893630138897523026">ChromeVox (ярьдаг санал хүсэлт)</translation>
 <translation id="3898464793473355515">Дэлгэцийг цагийн зүүний дагуу 90 хэм эргүүлэх</translation>
@@ -1792,7 +1786,6 @@
 <translation id="6095008505822982596">Ярианы хурд</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" />-тай холболт нэмэх</translation>
 <translation id="6095541101974653012">Та гарсан байна.</translation>
-<translation id="6099678161144790572">Өнгөрсөн сард зассан</translation>
 <translation id="6103838137565245112">систем</translation>
 <translation id="6108952804512516814">ХОУ-аар үүсгэх</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг татсан</translation>
@@ -1949,7 +1942,6 @@
 <translation id="6555373427270923730">Хаяг оруулах хэсэгт веб хаягийг бичээд дараа нь <ph name="MODIFIER" /><ph name="KEY" />-г дарна уу</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Шинээр суулгасан</translation>
-<translation id="6559158502366839560">Бусад апп, тоглоомыг судлах</translation>
 <translation id="6560151649238390891">Зөвлөмжийг оруулсан</translation>
 <translation id="6562447480759345110">Төвлөрөх горимыг дуусгах</translation>
 <translation id="6565007273808762236">eSIM холболт боломжгүй</translation>
@@ -2055,7 +2047,6 @@
 <translation id="6848716236260083778">Хурууны хээ тохируулахын тулд хүүхдээ хурууны хээ мэдрэгчид хүргэнэ үү. Таны хүүхдийн хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ <ph name="DEVICE_TYPE" />-с хэзээ ч гардаггүй.</translation>
 <translation id="6852052252232534364">Идэвхжүүлэхээр товш</translation>
 <translation id="6852628153543175788">10 минут нэмэх</translation>
-<translation id="6855029042976311970">Дөнгөж сая зассан</translation>
 <translation id="6856708615407876657">Хайлтын илэрцийн ангиллуудыг асаах/унтраах</translation>
 <translation id="6856756288284651804">Chromebook-г шинэчилсэн</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
@@ -2150,7 +2141,6 @@
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" />-г нээх</translation>
 <translation id="7119327711295338600">Дараагийн үг эсвэл үсгийг сонгох</translation>
 <translation id="7124556000457919678">Асаасан үед хулганын товчийг түр зогсоож, үргэлжлүүлэх</translation>
-<translation id="7126996685418858413">Өнгөрсөн долоо хоногт нээсэн</translation>
 <translation id="7131634465328662194">Таныг автоматаар гаргана.</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
@@ -2181,7 +2171,6 @@
 <translation id="7256057185598509352">Шуурхай түлхүүр 2</translation>
 <translation id="7256634071279256947">Арын микрофон</translation>
 <translation id="7258225044283673131">Хэрэглээний программ хариу өгөхгүй байна. Аппыг хаахын тулд "Хүчээр хаах"-г сонгоно уу.</translation>
-<translation id="7258828758145722155">Өчигдөр зассан</translation>
 <translation id="726276584504105859">Хуваасан дэлгэцийг ашиглахын тулд энд чирэх</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" />-г багасгах</translation>
 <translation id="7267875682732693301">Хурууныхаа хээг бүрэн гаргахын тулд хуруугаа хөндийрүүлсэн хэвээр байлгана уу</translation>
@@ -2254,7 +2243,6 @@
 <translation id="7491962110804786152">цонх</translation>
 <translation id="7497767806359279797">Хэл болон гарыг сонгох</translation>
 <translation id="7507162824403726948">Таниулбараа баталгаажуулж дуусгах</translation>
-<translation id="7508690557411636492">Өнгөрсөн сард зассан</translation>
 <translation id="7509246181739783082">Өөрийгөө баталгаажуулах</translation>
 <translation id="7512509370370076552">Баруун талыг товших товчлолыг alt + товшилтоос <ph name="LAUNCHER_KEY_NAME" /> товчлуур болгож шинэчилсэн</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, сонгоогүй</translation>
@@ -2708,7 +2696,6 @@
 <translation id="8753368202781196133">Энэ хэлийг одоогоор дэмждэггүй.</translation>
 <translation id="8755498163081687682">Өөрийгөө баталгаажуулах: <ph name="ORIGIN_NAME" /> таныг мөн болохыг баталгаажуулахыг хүсэж байна</translation>
 <translation id="875593634123171288">VPN тохиргоог харуулах</translation>
-<translation id="8756799553341497810">Та энэ харагдах байдлаас гарсны дараа аппын бүдүүвчээ өөрчилж эхлэх боломжтой.</translation>
 <translation id="8759408218731716181">Олон хэрэглэгчтэй нэвтрэх эрхийг суулгаж чадахгүй байна</translation>
 <translation id="8759753423332885148">Дэлгэрэнгүй үзэх.</translation>
 <translation id="8760172428247796445">Таны <ph name="DEVICE_TYPE" />-г одоо түгжинэ.

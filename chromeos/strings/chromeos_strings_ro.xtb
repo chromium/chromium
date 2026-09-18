@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Tip de autentificare</translation>
 <translation id="1776228893584526149">Tonul imaginii de fundal</translation>
 <translation id="1777913922912475695">pod</translation>
-<translation id="1782199038061388045">traducere</translation>
 <translation id="1788485524395674731">Această setare este gestionată de administrator</translation>
 <translation id="1792647875738159689">Se anulează scanarea</translation>
 <translation id="1801418420130173017">Dezactivează tema întunecată</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Tipul</translation>
 <translation id="2448857983905133469">Class Tools</translation>
 <translation id="2468124392950503650">Selectează solicitarea pentru a crea sau a vedea <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ghidul pentru solicitări<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Folosește funcția Ajută-mă să scriu pentru a crea o schiță sau a rafina lucrările existente, pe bază de Google AI</translation>
 <translation id="2475982808118771221">A apărut o eroare</translation>
 <translation id="2480572840229215612">crabi</translation>
 <translation id="248546197012830854">Dispozitivul este offline. Conectează-te la rețeaua Wi-Fi pentru a vedea conținutul de ajutor.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Refă</translation>
 <translation id="3479552764303398839">Nu acum</translation>
 <translation id="3484914941826596830">Nu deconecta dispozitivul extern și nu închide computerul în timpul actualizării firmware-ului. Poți să minimizezi fereastra. Actualizarea poate să dureze câteva minute și este posibil ca dispozitivul extern să nu funcționeze în această perioadă.</translation>
-<translation id="3486220673238053218">definiție</translation>
 <translation id="3487866404496702283">Feedback pentru funcția mahi</translation>
 <translation id="3488065109653206955">Activat parțial</translation>
 <translation id="3492882532495507361">Un birou <ph name="OFFICE_STYLE" /> în tonuri de <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Alege o temă</translation>
 <translation id="3644695927181369554">Sugestie greșită</translation>
 <translation id="3651050199673793219">Selectează o unitate de temperatură</translation>
-<translation id="3661106764436337772">Scrie mai rapid și cu mai multă încredere</translation>
 <translation id="3662461537616691585">vișiniu și grena</translation>
 <translation id="3664755900672940272">Exemplele de solicitări au fost sortate aleatoriu</translation>
 <translation id="3668449597372804501">Imagine de fundal Cloud Flow</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Oprit</translation>
 <translation id="4777310452073659583">Pentru a obține transcrierea, repornește <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">ametist</translation>
-<translation id="4782311465517282004">Obții definiții, traduceri sau conversii ale unităților când dai clic dreapta sau apeși lung pe text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografie</translation>
 <translation id="4793710386569335688">Pentru mai mult ajutor, accesează <ph name="BEGIN_LINK" />Centrul de ajutor<ph name="END_LINK" /></translation>
 <translation id="4793756956024303490">Algoritm de comprimare</translation>
@@ -1459,7 +1454,6 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="7397270852490618635">Dezactivează tema luminoasă</translation>
 <translation id="7401543881546089382">Ștergeți comanda rapidă</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> este gata să fie actualizat</translation>
-<translation id="741244894080940828">conversie</translation>
 <translation id="7415801143053185905">Latență foarte mare a solicitărilor HTTP</translation>
 <translation id="7418738250896500352">Prea multe cuvinte pentru a simplifica</translation>
 <translation id="7425037327577270384">Ajută-mă să scriu</translation>
@@ -1769,7 +1763,6 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="885701979325669005">Stocare</translation>
 <translation id="885704831271383379">tastatură mai întunecată</translation>
 <translation id="8863170912498892583">Activează tema întunecată</translation>
-<translation id="8863888432376731307">Vezi <ph name="INTENT" /> pentru <ph name="QUERY" /> și altele</translation>
 <translation id="8864415976656252616">Nu există conținut sugerat. Vezi cel mai popular conținut de ajutor.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Dispozitivul este o tabletă.</translation>

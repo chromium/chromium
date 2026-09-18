@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">ЖАБУ</translation>
 <translation id="152629053603783244">Linux жүйесін қайта қосу</translation>
 <translation id="1526448108126799339">Жаңа қойындыны жаңа терезеде ашу</translation>
-<translation id="1528259147807435347">Өткен аптада өзгертілді.</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> аккаунтын пайдалану үшін алдымен барлық аккаунттан шығуыңыз керек. Шығу үшін "Бас тарту" түймесін басып, артқа қайтыңыз. Бұдан кейін күй аумағын ашу уақытын таңдап, "Шығу" түймесін басыңыз. Сосын <ph name="USER_EMAIL_ADDRESS_2" /> аккаунтына қайта кіріңіз.</translation>
 <translation id="15373452373711364">Үлкен тінтуір курсоры</translation>
 <translation id="1545331255323159851">Телефондағы соңғы фотосуреттерді, медиафайлдарды және хабарландыруларды көру</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Пайдалану және диагностика деректерін жіберу. Диагностика, құрылғы мен қолданбаларды пайдалану туралы деректі Google қызметіне автоматты түрде жіберу арқылы Android жүйесін пайдалану тәжірибесін жақсартуға көмектесіңіз. Бұл деректер баланың жеке басын анықтауға пайдаланылмайды. Олар жүйе мен қолданбалардың тұрақты жұмыс істеуіне және басқа да мүмкіндіктерді жақсартуға көмектеседі. Кейбір жиынтық дерек Google қолданбаларын жетілдіруге және Android әзірлеушілері сияқты серіктестердің жұмысына да көмектеседі. Бұл <ph name="BEGIN_LINK1" />параметрді<ph name="END_LINK1" /> иесі орнатқан. Иесі бұл құрылғының диагностика және пайдалану туралы дерегін Google қызметіне жіберуге рұқсат бере алады. Интернет пен қолданбаларды пайдаланудың қосымша тарихы параметрі қосулы болса, бұл деректер балаңыздың Google аккаунтына сақталуы мүмкін. <ph name="BEGIN_LINK2" />Көрсеткіштер туралы толық ақпарат<ph name="BEGIN_LINK2_END" />Толық ақпарат<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">PIN кодын енгізіңіз</translation>
 <translation id="2412593942846481727">Жаңартылған нұсқа қолжетімді</translation>
-<translation id="2416438829169535743">Көріністен шығу қажет пе?</translation>
 <translation id="2417486498593892439">Желіге кіру</translation>
 <translation id="2423619675829330672">PIN коды тым көп рет қате терілді. <ph name="TIME_LEFT" /> күтіп, қайталап көріңіз.</translation>
 <translation id="2426051945783024481">Камерамен кадрлау автоматты түрде ортасына тураланды.</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth құрылғысы жұптау рұқсатын сұрайды. Қабылдаудан бұрын бұл кіру кілті аталмыш құрылғыда көрсетілетінін растаңыз: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Құпия сөзді көрсету</translation>
 <translation id="2437771564543046790">Батарея заряды аз. Батареяны үнемдеу режимі қосылды</translation>
-<translation id="243878895369688216">Кеше ашылды.</translation>
 <translation id="2440978926514840421">GIF жазбасы алынды</translation>
 <translation id="2441427462554639370">Жад көлемінің аз болуына байланысты жазу тоқтатылды.</translation>
 <translation id="2445449901874883781">Жоғары тығыздықты пайдалану</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">Киоск қолданбасын жүктеу мүмкін емес.</translation>
 <translation id="3563558822383875692">DLC конфигурациялануда.</translation>
 <translation id="3563775809269155755">Хотспотты қосу</translation>
-<translation id="3566240529365775567">Жаңа ғана ашылды.</translation>
 <translation id="3571734092741541777">Орнату</translation>
 <translation id="3573179567135747900">Қайта "<ph name="FROM_LOCALE" />" етіп өзгерту (қайта іске қосуды қажет етеді)</translation>
 <translation id="3576141592585647168">Уақыт белдеуін өзгерту</translation>
@@ -960,7 +956,6 @@
 <translation id="3756485814916578707">Экран трансляциялануда</translation>
 <translation id="3765246971671567135">Офлайн демо режиміндегі саясат оқылмады.</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> жылдам пәрмені <ph name="NEW_SHORTCUT" /> пәрменінен <ph name="OLD_SHORTCUT" /> пәрменіне жаңартылды</translation>
-<translation id="3765841986579723851">Бүгін өзгертілді.</translation>
 <translation id="3772109172035555611">TrackPoint-ты бейімдеңіз</translation>
 <translation id="3773700760453577392">Әкімшінің шешімі бойынша енді <ph name="USER_EMAIL" /> электрондық поштасына бір уақытта бірнеше пайдаланушы кіре алмайды. Жалғастыру үшін пайдаланушылардың барлығы аккаунттан шығуы керек.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> құрылғысы қосылуда</translation>
@@ -1000,7 +995,6 @@
 <translation id="3873915545594852654">ARC++ ақауы орын алды.</translation>
 <translation id="3879748587602334249">Жүктеп алу менеджері</translation>
 <translation id="3884007280698606545">USB шегіне жетті</translation>
-<translation id="3886872229787704059">Бүгін ашылды.</translation>
 <translation id="3892148308691398805">Мәтінді көшіру</translation>
 <translation id="3893630138897523026">ChromeVox (дауыстық көмек)</translation>
 <translation id="3898464793473355515">Экранды сағат тілімен 90 градусқа бұру</translation>
@@ -1791,7 +1785,6 @@
 <translation id="6095008505822982596">Сөйлеу жылдамдығы</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> көмегімен байланыс қосу</translation>
 <translation id="6095541101974653012">Жүйеден шығып кеттіңіз.</translation>
-<translation id="6099678161144790572">Өткен айда өзгертілді.</translation>
 <translation id="6103838137565245112">жүйе</translation>
 <translation id="6108952804512516814">AI көмегімен жасау</translation>
 <translation id="6114505516289286752">Тіл файлдары (<ph name="LANGUAGE" />) жүктеп алынды</translation>
@@ -1948,7 +1941,6 @@
 <translation id="6555373427270923730">Мекенжай жолағына веб-мекенжайды енгізіп, <ph name="MODIFIER" /><ph name="KEY" /> пернесін басыңыз</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Жаңадан орнатылды</translation>
-<translation id="6559158502366839560">Басқа қолданбалар мен ойындарды қарау</translation>
 <translation id="6560151649238390891">Ұсыныс енгізілді.</translation>
 <translation id="6562447480759345110">Зейін қоюды аяқтау</translation>
 <translation id="6565007273808762236">eSIM байланысы жоқ</translation>
@@ -2054,7 +2046,6 @@
 <translation id="6848716236260083778">Саусақ ізін реттеу үшін балаңыз саусақ ізі сканерін түртуі керек. Балаңыздың саусағының ізі туралы дерек қауіпсіз сақталған және <ph name="DEVICE_TYPE" /> құрылғысынан басқа ешқайда жіберілмейді.</translation>
 <translation id="6852052252232534364">Іске қосу үшін басыңыз.</translation>
 <translation id="6852628153543175788">10 минут қосу</translation>
-<translation id="6855029042976311970">Жаңа ғана өзгертілді.</translation>
 <translation id="6856708615407876657">Іздеу нәтижесі санаттарын ауыстыру</translation>
 <translation id="6856756288284651804">Chromebook жаңартылды</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
@@ -2149,7 +2140,6 @@
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> мәтінін ашу</translation>
 <translation id="7119327711295338600">Келесі сөзді немесе әріпті таңдау</translation>
 <translation id="7124556000457919678">Қосылса, тінтуір пернелерінің жұмысын кідіртеді және жалғастырады.</translation>
-<translation id="7126996685418858413">Өткен аптада ашылды.</translation>
 <translation id="7131634465328662194">Аккаунттан автоматты түрде шығасыз.</translation>
 <translation id="7143207342074048698">Қосылып жатыр</translation>
 <translation id="7144878232160441200">Қайталау</translation>
@@ -2180,7 +2170,6 @@
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Артқы микрофон</translation>
 <translation id="7258225044283673131">Қолданба жауап бермейді. Оны жабу үшін "Қолмен жабу" опциясын таңдаңыз.</translation>
-<translation id="7258828758145722155">Кеше өзгертілді.</translation>
 <translation id="726276584504105859">Бөлінген экранды пайдалану үшін осында сүйреңіз</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> азайту</translation>
 <translation id="7267875682732693301">Саусақ ізінің басқа бөліктерін енгізу үшін саусағыңызды көтеріп тұрыңыз.</translation>
@@ -2253,7 +2242,6 @@
 <translation id="7491962110804786152">қойынды</translation>
 <translation id="7497767806359279797">Тілді және пернетақтаны таңдау</translation>
 <translation id="7507162824403726948">Жеке басыңызды растауды аяқтаңыз</translation>
-<translation id="7508690557411636492">Өткен айда ашылды.</translation>
 <translation id="7509246181739783082">Жеке басыңызды растаңыз</translation>
 <translation id="7512509370370076552">Тінтуірдің оң жақ түймесін басу жылдам пәрмені alt + басу орнына "<ph name="LAUNCHER_KEY_NAME" /> пернесі + басу" пәрменіне жаңартылды.</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, таңдалмаған</translation>
@@ -2707,7 +2695,6 @@
 <translation id="8753368202781196133">Қазіргі уақытта бұл тілге қолдау көрсетілмейді.</translation>
 <translation id="8755498163081687682">Жеке басыңызды растаңыз: <ph name="ORIGIN_NAME" /> жеке басыңызды растағысы келеді.</translation>
 <translation id="875593634123171288">VPN параметрлерін көрсету</translation>
-<translation id="8756799553341497810">Бұл көріністен шыққаннан кейін, қолданба форматын бейімдеуді бастай аласыз.</translation>
 <translation id="8759408218731716181">Бірнеше аккаунттың кіру мүмкіндігін орнату мүмкін емес</translation>
 <translation id="8759753423332885148">Толық ақпарат.</translation>
 <translation id="8760172428247796445"><ph name="DEVICE_TYPE" /> құрылғыңыз қазір құлыпталады.

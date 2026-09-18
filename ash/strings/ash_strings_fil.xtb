@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">I-DISMISS</translation>
 <translation id="152629053603783244">I-restart ang Linux</translation>
 <translation id="1526448108126799339">Buksan ang bagong tab sa bagong window</translation>
-<translation id="1528259147807435347">Na-edit sa nakalipas na linggo</translation>
 <translation id="1536604384701784949">Para gamitin ang <ph name="USER_EMAIL_ADDRESS" /> kailangan mong mag-sign out muna sa lahat ng account. Para mag-sign out, piliin ang Kanselahin para bumalik. Pagkatapos ay piliin ang oras para buksan ang lugar ng status at piliin ang Mag-sign out. Pagkatapos ay mag-sign in ulit sa <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Malaking mouse cursor</translation>
 <translation id="1545331255323159851">Tingnan ang mga kamakailang larawan, media, at notification ng iyong telepono</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Magpadala ng data ng paggamit at diagnostic. Tumulong na pagandahin ang experience sa Android ng iyong anak sa pamamagitan ng awtomatikong pagpapadala ng data ng diagnostic, device, at paggamit ng app sa Google. Hindi ito gagamitin para tukuyin ang iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Ipinapatupad ng may-ari ang <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> na ito. Puwedeng piliin ng may-ari na magpadala ng data ng diagnostic at paggamit para sa device na ito sa Google. Kung naka-on ang setting na karagdagang Aktibidad sa Web at App para sa iyong anak, posibleng ma-save ang data na ito sa kanyang Google account. <ph name="BEGIN_LINK2" />Matuto pa tungkol sa mga sukatan<ph name="BEGIN_LINK2_END" />Matuto Pa<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Ilagay ang iyong PIN</translation>
 <translation id="2412593942846481727">May available na update</translation>
-<translation id="2416438829169535743">Lumabas sa view?</translation>
 <translation id="2417486498593892439">Mag-sign in sa network</translation>
 <translation id="2423619675829330672">Masyado nang maraming pagsubok sa PIN. Maghintay nang <ph name="TIME_LEFT" /> at subukan ulit.</translation>
 <translation id="2426051945783024481">Awtomatikong napupunta sa gitna ang camera frame</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">Gusto ng bluetooth device na "<ph name="DEVICE_NAME" />" ng pahintulot na magpares . Bago tanggapin, pakikumpirma na ipinapakita ang passkey na ito sa device na iyon: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Ipakita ang password</translation>
 <translation id="2437771564543046790">Paubos na ang baterya. Naka-on ang Pantipid ng Baterya</translation>
-<translation id="243878895369688216">Binuksan kahapon</translation>
 <translation id="2440978926514840421">Nag-record ng GIF</translation>
 <translation id="2441427462554639370">Natapos ang pag-record dahil sa sobrang kaunting storage space</translation>
 <translation id="2445449901874883781">Gumamit ng mataas na density</translation>
@@ -873,7 +870,6 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="3563432852173030730">Hindi ma-download ang Kiosk application.</translation>
 <translation id="3563558822383875692">Kino-configure ang DLC.</translation>
 <translation id="3563775809269155755">I-enable ang hotspot</translation>
-<translation id="3566240529365775567">Kakabukas lang</translation>
 <translation id="3571734092741541777">I-set up</translation>
 <translation id="3573179567135747900">Palitan pabalik sa "<ph name="FROM_LOCALE" />" (kailangang i-restart)</translation>
 <translation id="3576141592585647168">Baguhin ang timezone</translation>
@@ -960,7 +956,6 @@ Isaksak ang iyong device.</translation>
 <translation id="3756485814916578707">Kina-cast ang screen</translation>
 <translation id="3765246971671567135">Hindi ma-read ang patakaran ng offline na demo mode.</translation>
 <translation id="3765841382945324995">Na-update ang shortcut para sa <ph name="SIX_PACK_KEY_NAME" /> sa <ph name="NEW_SHORTCUT" /> mula sa dating <ph name="OLD_SHORTCUT" /></translation>
-<translation id="3765841986579723851">Na-edit ngayon</translation>
 <translation id="3772109172035555611">I-customize ang iyong TrackPoint</translation>
 <translation id="3773700760453577392">Hindi pinayagan ng isang administrator ang maraming pag-sign in para sa <ph name="USER_EMAIL" />. Dapat mag-sign out ang lahat ng user para makapagpatuloy.</translation>
 <translation id="3779139509281456663">Ikinokonekta ang <ph name="NAME" /></translation>
@@ -1000,7 +995,6 @@ Isaksak ang iyong device.</translation>
 <translation id="3873915545594852654">Nagkaproblema sa ARC++.</translation>
 <translation id="3879748587602334249">Download manager</translation>
 <translation id="3884007280698606545">Naabot na ang limitasyon ng USB</translation>
-<translation id="3886872229787704059">Binuksan ngayon</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
 <translation id="3893630138897523026">ChromeVox (pasalitang feedback)</translation>
 <translation id="3898464793473355515">I-rotate ang screen nang 90 degrees clockwise</translation>
@@ -1793,7 +1787,6 @@ Walang nakakonektang device.</translation>
 <translation id="6095008505822982596">Bilis ng pagsasalita</translation>
 <translation id="6095425951508823973">Magdagdag ng koneksyon sa <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Na-log out ka.</translation>
-<translation id="6099678161144790572">Na-edit sa nakalipas na buwan</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6108952804512516814">Gumawa gamit ang AI</translation>
 <translation id="6114505516289286752">Na-download na ang mga <ph name="LANGUAGE" /> na speech file</translation>
@@ -1950,7 +1943,6 @@ Walang nakakonektang device.</translation>
 <translation id="6555373427270923730">Mag-type ng address sa web sa address bar, at pagkatapos ay pindutin ang <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Kaka-install lang</translation>
-<translation id="6559158502366839560">Mag-explore ng higit pang app at laro</translation>
 <translation id="6560151649238390891">Inilagay ang suhestyon</translation>
 <translation id="6562447480759345110">Tapusin ang Pag-focus</translation>
 <translation id="6565007273808762236">Hindi available ang koneksyon sa eSIM</translation>
@@ -2056,7 +2048,6 @@ Kaka-install lang</translation>
 <translation id="6848716236260083778">Para mag-set up ng fingerprint, ipapindot sa iyong anak ang sensor para sa fingerprint. Secure na sino-store ang data ng fingerprint ng iyong anak at hindi ito kailanman lalabas sa <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="6852052252232534364">I-activate</translation>
 <translation id="6852628153543175788">Magdagdag ng 10 minuto</translation>
-<translation id="6855029042976311970">Kaka-edit lang</translation>
 <translation id="6856708615407876657">I-toggle ang mga kategorya ng resulta ng paghahanap</translation>
 <translation id="6856756288284651804">In-update ang Chromebook</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> seg</translation>
@@ -2151,7 +2142,6 @@ Kaka-install lang</translation>
 <translation id="7118597077555700347">Buksan ang <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Piliin ang susunod na salita o titik</translation>
 <translation id="7124556000457919678">Kapag naka-on, i-pause at ituloy ang mga mouse key</translation>
-<translation id="7126996685418858413">Binuksan sa nakalipas na linggo</translation>
 <translation id="7131634465328662194">Awtomatiko kang masa-sign out.</translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
@@ -2181,7 +2171,6 @@ Kaka-install lang</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Mikropono sa likod</translation>
 <translation id="7258225044283673131">Hindi tumutugon ang application. Piliin ang "Puwersahang isara" para isara ang app.</translation>
-<translation id="7258828758145722155">Na-edit kahapon</translation>
 <translation id="726276584504105859">I-drag dito upang magamit ang split screen</translation>
 <translation id="7264788308526527464">Bawasan ng <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Iangat nang iangat ang iyong daliri para idagdag ang iba't ibang bahagi ng fingerprint mo</translation>
@@ -2254,7 +2243,6 @@ Kaka-install lang</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7497767806359279797">Pumili ng wika at keyboard</translation>
 <translation id="7507162824403726948">Tapusin ang pag-verify ng iyong pagkakakilanlan</translation>
-<translation id="7508690557411636492">Binuksan sa nakalipas na buwan</translation>
 <translation id="7509246181739783082">I-verify ang iyong pagkakakilanlan</translation>
 <translation id="7512509370370076552">Na-update ang shortcut sa pag-right click sa <ph name="LAUNCHER_KEY_NAME" /> key + click mula sa dating alt + click</translation>
 <translation id="7512726380443357693">Hindi pinili ang <ph name="BUTTON_LABEL" /></translation>
@@ -2707,7 +2695,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8753368202781196133">Hindi pa sinusuportahan ang wikang ito sa ngayon.</translation>
 <translation id="8755498163081687682">I-verify ang pagkakakilanlan mo: Gustong kumpirmahin ng <ph name="ORIGIN_NAME" /> na ikaw ito</translation>
 <translation id="875593634123171288">Ipakita ang mga setting ng VPN</translation>
-<translation id="8756799553341497810">Puwede mo nang simulang i-customize ang layout ng iyong app kapag lumabas ka na sa view na ito.</translation>
 <translation id="8759408218731716181">Hindi maaaring mag-set up ng multiple na pag-sign in</translation>
 <translation id="8759753423332885148">Matuto pa.</translation>
 <translation id="8760172428247796445">Ila-lock na ngayon ang iyong <ph name="DEVICE_TYPE" />.

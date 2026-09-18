@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">დახურვა</translation>
 <translation id="152629053603783244">Linux-ის გადატვირთვა</translation>
 <translation id="1526448108126799339">ახალი ჩანართის გახსნა ახალ ფანჯარაში</translation>
-<translation id="1528259147807435347">კვირის განმავლობაში რედაქტირებული</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> რომ გამოიყენოთ, პირველ რიგში, დანარჩენი ანგარიშებიდან უნდა გამოხვიდეთ. გამოსასვლელად აირჩიეთ „გაუქმება“, უკან რომ დაბრუნდეთ. ამის შემდეგ აირჩიეთ დრო (სტატუსის არე რომ გაიხსნას) და „გასვლა“. შემდეგ ხელახლა შედით <ph name="USER_EMAIL_ADDRESS_2" />-ში.</translation>
 <translation id="15373452373711364">დიდი მაუსის ისარი</translation>
 <translation id="1545331255323159851">თქვენი ტელეფონის ბოლოდროინდელი ფოტოების, მედიაფაილებისა და შეტყობინებების ნახვა</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">გამოყენებისა და დიაგნოსტიკის მონაცემების გაგზავნა. ხელი შეუწყვეთ Android-ის გაუმჯობესებას თქვენი ბავშვისთვის, დიაგნოსტიკის, მოწყობილობისა და აპების გამოყენების მონაცემების ავტომატურად გაგზავნით Google-ში. ეს არ იქნება გამოყენებული თქვენი შვილის ვინაობის დასადგენად და დაგვეხმარება სისტემისა და აპების სტაბილურობისა და სხვა ფუნქციების გაუმჯობესებაში. ამას გარდა, შეჯამებული მონაცემები დაეხმარება Google აპებსა და პარტნიორებს, მაგალითად, Android-ის დეველოპერებს. ეს <ph name="BEGIN_LINK1" />პარამეტრი<ph name="END_LINK1" /> არის იძულებით გააქტიურებული მფლობელის მიერ. მფლობელს შეუძლია ამ მოწყობილობის დიაგნოსტიკისა და გამოყენების მონაცემების Google-ისთვის გაგზავნის არჩევა. თუ თქვენი შვილისთვის ჩართულია ვებსა და აპებში დამატებითი აქტივობის პარამეტრი, აღნიშნული მონაცემები შესაძლოა შეინახოს მის Google ანგარიშში. <ph name="BEGIN_LINK2" />შეიტყვეთ მეტი მეტრიკის შესახებ<ph name="BEGIN_LINK2_END" />შეიტყვეთ მეტი<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">შეიყვანეთ თქვენი PIN-კოდი</translation>
 <translation id="2412593942846481727">ხელმისაწვდომია განახლება</translation>
-<translation id="2416438829169535743">გსურთ ხედიდან გასვლა?</translation>
 <translation id="2417486498593892439">ქსელში შესვლა</translation>
 <translation id="2423619675829330672">PIN-კოდის შეყვანის ზედმეტად ბევრი მცდელობა დაფიქსირდა. მოითმინეთ <ph name="TIME_LEFT" /> და ხელახლა სცადეთ.</translation>
 <translation id="2426051945783024481">კამერის კადრი ავტომატურად ექცევა ცენტრში</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">Bluetooth მოწყობილობა „<ph name="DEVICE_NAME" />“ მოითხოვს ნებართვას დაწყვილებისთვის. დათანხმებამდე, დაადასტურეთ, რომ ეს კოდი მითითებულია მოწყობილობაში: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">პაროლის ჩვენება</translation>
 <translation id="2437771564543046790">ბატარეა იცლება. ბატარეის დამზოგი ჩართულია</translation>
-<translation id="243878895369688216">გუშინ გახსნილი</translation>
 <translation id="2440978926514840421">GIF ჩაწერა შესრულდა</translation>
 <translation id="2441427462554639370">ჩაწერა დასრულდა მეხსიერებაში კრიტიკულად არასაკმარისი სივრცის გამო</translation>
 <translation id="2445449901874883781">მაღალი სიმკვრივის გამოყენება</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">კიოსკის პროგრამა ვერ ჩამოიტვირთა.</translation>
 <translation id="3563558822383875692">მიმდინარეობს DLC-ს კონფიგურაცია.</translation>
 <translation id="3563775809269155755">ჩართეთ უსადენო ქსელი</translation>
-<translation id="3566240529365775567">ამ წამს გახსნილი</translation>
 <translation id="3571734092741541777">დაყენება</translation>
 <translation id="3573179567135747900">„<ph name="FROM_LOCALE" />“-ში დაბრუნება (საჭიროებს გადატვირთვას)</translation>
 <translation id="3576141592585647168">სასაათო სარტყლის შეცვლა</translation>
@@ -960,7 +956,6 @@
 <translation id="3756485814916578707">მიმდინარეობს ეკრანის ტრანსლირება</translation>
 <translation id="3765246971671567135">დემო-რეჟიმის ხაზგარეშე წესების წაკითხვა ვერ მოხერხდა.</translation>
 <translation id="3765841382945324995">მალსახმობი <ph name="SIX_PACK_KEY_NAME" /> განახლდა (იყო <ph name="OLD_SHORTCUT" />, გახდა <ph name="NEW_SHORTCUT" />)</translation>
-<translation id="3765841986579723851">დღეს რედაქტირებული</translation>
 <translation id="3772109172035555611">თქვენი TrackPoint-ის მორგება</translation>
 <translation id="3773700760453577392">ადმინისტრატორმა აკრძალა მრავალჯერადი შესვლა <ph name="USER_EMAIL" />-ისთვის. გასაგრძელებლად საჭიროა ყველა მომხმარებლის გამოსვლა სისტემიდან.</translation>
 <translation id="3779139509281456663">მიმდინარეობს <ph name="NAME" />-ის დაკავშირება</translation>
@@ -1000,7 +995,6 @@
 <translation id="3873915545594852654">წარმოიქმნა ARC++-თან დაკავშირებული პრობლემა.</translation>
 <translation id="3879748587602334249">ჩამოტვირთვის მენეჯერი</translation>
 <translation id="3884007280698606545">USB-ს ლიმიტი მიღწეულია</translation>
-<translation id="3886872229787704059">დღეს გახსნილი</translation>
 <translation id="3892148308691398805">ტექსტის კოპირება</translation>
 <translation id="3893630138897523026">ChromeVox (ხმოვანი შეფასება)</translation>
 <translation id="3898464793473355515">ეკრანის შეტრიალება 90 გრადუსით საათის მიმართულებით</translation>
@@ -1791,7 +1785,6 @@
 <translation id="6095008505822982596">მეტყველების ტემპი</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" />-თან კავშირის დამატება</translation>
 <translation id="6095541101974653012">თქვენ გახვედით სისტემიდან.</translation>
-<translation id="6099678161144790572">თვის განმავლობაში რედაქტირებული</translation>
 <translation id="6103838137565245112">სისტემა</translation>
 <translation id="6108952804512516814">შექმენით ხელოვნური ინტელექტის მეშვეობით</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> მეტყველების ფაილები ჩამოიტვირთა</translation>
@@ -1948,7 +1941,6 @@
 <translation id="6555373427270923730">მისამართთა ზოლში აკრიფეთ ვებმისამართი, ხოლო შემდეგ დაჭერით აირჩიეთ <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 ახალდაინსტალირებული</translation>
-<translation id="6559158502366839560">მეტი აპისა და თამაშის დათვალიერება</translation>
 <translation id="6560151649238390891">შემოთავაზება ჩასმულია</translation>
 <translation id="6562447480759345110">ფოკუსირების რეჟიმის დასრულება</translation>
 <translation id="6565007273808762236">eSIM კავშირი მიუწვდომელია</translation>
@@ -2054,7 +2046,6 @@
 <translation id="6848716236260083778">თითის ანაბეჭდი რომ დააყენოთ, სთხოვეთ თქვენს ბავშვს, შეეხოს თითის ანაბეჭდის სენსორს. თქვენი ბავშვის თითის ანაბეჭდის მონაცემები უსაფრთხოდ შეინახება მხოლოდ და მხოლოდ ამ <ph name="DEVICE_TYPE" />-ზე.</translation>
 <translation id="6852052252232534364">დააწკაპუნეთ გასააქტიურებლად</translation>
 <translation id="6852628153543175788">10 წუთის დამატება</translation>
-<translation id="6855029042976311970">ამ წამს რედაქტირებული</translation>
 <translation id="6856708615407876657">ძიების შედეგების კატეგორიების გადართვა</translation>
 <translation id="6856756288284651804">Chromebook განახლდა</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> წმ</translation>
@@ -2149,7 +2140,6 @@
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" />-ის გახსნა</translation>
 <translation id="7119327711295338600">მომდევნო სიტყვის ან ასოს არჩევა</translation>
 <translation id="7124556000457919678">როცა ჩართულია, დააპაუზეთ და განაახლეთ მაუსის კლავიშების მუშაობა</translation>
-<translation id="7126996685418858413">კვირის განმავლობაში გახსნილი</translation>
 <translation id="7131634465328662194">თქვენ ავტომატურად გამოხვალთ სისტემიდან.</translation>
 <translation id="7143207342074048698">დაკავშირება</translation>
 <translation id="7144878232160441200">გაიმეორეთ</translation>
@@ -2180,7 +2170,6 @@
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">უკანა მიკროფონი</translation>
 <translation id="7258225044283673131">აპლიკაცია არ რეაგირებს. მის დასახურად აირჩიეთ „იძულებით დახურვა“.</translation>
-<translation id="7258828758145722155">გუშინ რედაქტირებული</translation>
 <translation id="726276584504105859">ეკრანის გასაყოფად ჩავლებით გადმოიტანეთ ფანჯარა აქ</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" />-ით შემცირება</translation>
 <translation id="7267875682732693301">რამდენჯერმე აიღეთ თითი სენსორიდან და ისევ შეახეთ, რომ თქვენი თითის ანაბეჭდის ყველა ნაწილი დაემატოს</translation>
@@ -2253,7 +2242,6 @@
 <translation id="7491962110804786152">ჩანართი</translation>
 <translation id="7497767806359279797">აირჩიეთ ენა და კლავიატურა</translation>
 <translation id="7507162824403726948">დაასრულეთ ვინაობის დადასტურება</translation>
-<translation id="7508690557411636492">თვის განმავლობაში გახსნილი</translation>
 <translation id="7509246181739783082">დაადასტურეთ ვინაობა</translation>
 <translation id="7512509370370076552">მარჯვენა დაწკაპუნების მალსახმობი განახლდა (იყო alt + დაწკაპუნება, გახდა <ph name="LAUNCHER_KEY_NAME" /> კლავიში + დაწკაპუნება)</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, არ არის არჩეული</translation>
@@ -2707,7 +2695,6 @@
 <translation id="8753368202781196133">ეს ენა ამჟამად არ არის მხარდაჭერილი.</translation>
 <translation id="8755498163081687682">დაადასტურეთ ვინაობა: <ph name="ORIGIN_NAME" /> ითხოვს თქვენი ვინაობის დადასტურებას</translation>
 <translation id="875593634123171288">VPN-ის პარამეტრების ჩვენება</translation>
-<translation id="8756799553341497810">ამ ხედიდან გასვლის შემდეგ შეგიძლიათ აპების განლაგების მორგების დაწყება.</translation>
 <translation id="8759408218731716181">მრავლობითი შესვლის დაყენება შეუძლებელია</translation>
 <translation id="8759753423332885148">დეტალური ინფორმაცია.</translation>
 <translation id="8760172428247796445">თქვენი <ph name="DEVICE_TYPE" /> ახლა ჩაიკეტება.

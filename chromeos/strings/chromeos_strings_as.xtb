@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ প্ৰকাৰ</translation>
 <translation id="1776228893584526149">ৱালপেপাৰ ৰং</translation>
 <translation id="1777913922912475695">দলং</translation>
-<translation id="1782199038061388045">অনুবাদ</translation>
 <translation id="1788485524395674731">এই এপ্‌টো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="1792647875738159689">স্কেন বাতিল কৰি থকা হৈছে</translation>
 <translation id="1801418420130173017">গাঢ় ৰঙৰ থীম অক্ষম কৰক</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">প্রকাৰ</translation>
 <translation id="2448857983905133469">Class Tools</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />প্ৰম্পট্‌ গাইড<ph name="END_LINK_PROMPTING_GUIDE" /> সৃষ্টি কৰিবলৈ বা চাবলৈ প্ৰম্পট্‌ বাছনি কৰক</translation>
-<translation id="2472215337771558851">এটা খচৰা সৃষ্টি কৰিবলৈ বা ইতিমধ্যে থকা কাম মসৃণ কৰিবলৈ হেল্প মী ৰাইট ব্যৱহাৰ কৰক, যিটো Google AIৰ দ্বাৰ সঞ্চালিত</translation>
 <translation id="2475982808118771221">কোনো আসোঁৱাহ হৈছে</translation>
 <translation id="2480572840229215612">কেঁকোৰা</translation>
 <translation id="248546197012830854">ডিভাইচটো অফলাইন হৈ আছে। সহায় বিষয়ক সমল চাবলৈ ৱাই-ফাই নেটৱৰ্কৰ সৈতে সংযুক্ত হওক।</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">অন্য এখন ফট' লওক</translation>
 <translation id="3479552764303398839">এতিয়া নহয়</translation>
 <translation id="3484914941826596830">ফাৰ্মৱেৰটো আপডে’ট হৈ থকাৰ সময়ত, এই বাহ্যিক ডিভাইচটো আনপ্লাগ অথবা আপোনাৰ কম্পিউটাৰটো শ্বাট ডাউন নকৰিব। আপুনি এই ৱিণ্ড’খন মিনিমাইজ কৰিব পাৰে। এই আপডে’টটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে আৰু এই সময়খিনিত আপোনাৰ বাহ্যিক ডিভাইচটোৱে কাম নকৰিব পাৰে।</translation>
-<translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3487866404496702283">mahi সুবিধাৰ বাবে মতামত</translation>
 <translation id="3488065109653206955">আংশিকভাৱে সক্ৰিয় কৰা হৈছে</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ট’নৰ সৈতে <ph name="OFFICE_STYLE" /> অফিচ</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">এটা থীম বাছনি কৰক</translation>
 <translation id="3644695927181369554">বেয়া পৰামৰ্শ</translation>
 <translation id="3651050199673793219">তাপমানৰ এটা একক বাছনি কৰক</translation>
-<translation id="3661106764436337772">দ্ৰুতভাৱে আৰু অধিক আত্মবিশ্বাসেৰে লিখক</translation>
 <translation id="3662461537616691585">বাৰ্গাণ্ডী আৰু মেৰুন</translation>
 <translation id="3664755900672940272">প্ৰম্প্‌টৰ নমুনাৰ ক্ৰম সান-মিহলি কৰা হৈছে</translation>
 <translation id="3668449597372804501">ডাৱৰৰ প্ৰবাহৰ ৱালপেপাৰ</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">বন্ধ হৈছে</translation>
 <translation id="4777310452073659583">ট্ৰেন্সক্ৰিপ্ট পাবলৈ, আপোনাৰ <ph name="DEVICE_TYPE" /> ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="4778082030331381943">এমেথিষ্ট</translation>
-<translation id="4782311465517282004">আপুনি ৰাইট ক্লিক কৰিলে অথবা পাঠ দীঘলীয়াকৈ টিপি ধৰি থাকিলে সংজ্ঞা, অনুবাদ অথবা একক ৰূপান্তৰণ পাওক</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> খন ফট’</translation>
 <translation id="4793710386569335688">অধিক সহায়ৰ বাবে <ph name="BEGIN_LINK" />সহায় কেন্দ্ৰ<ph name="END_LINK" />লৈ যাওক।</translation>
 <translation id="4793756956024303490">সংকোচনৰ এলগ’ৰিডম</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">পাতল ৰঙৰ থীম অফ কৰক</translation>
 <translation id="7401543881546089382">শ্বৰ্টকাট মচক</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> আপডে’ট কৰিবৰ বাবে সাজু</translation>
-<translation id="741244894080940828">ৰূপান্তৰণ</translation>
 <translation id="7415801143053185905">HTTPৰ অতি উচ্চ বিলম্বতা</translation>
 <translation id="7418738250896500352">সৰলীকৰণ কৰিবলৈ অতি বেছিসংখ্যক শব্দ আছে</translation>
 <translation id="7425037327577270384">মোক লিখাত সহায় কৰক</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">ষ্ট’ৰেজ</translation>
 <translation id="885704831271383379">কীব’ৰ্ড অধিক গাঢ় কৰা</translation>
 <translation id="8863170912498892583">গাঢ় ৰঙৰ থীম সক্ষম কৰক</translation>
-<translation id="8863888432376731307">"<ph name="QUERY" />"ৰ বাবে <ph name="INTENT" /> আৰু বহুতো পাওক</translation>
 <translation id="8864415976656252616">পৰামৰ্শ হিচাপে আগবঢ়োৱা কোনো সমল নাই। সহায় বিষয়ক সৰ্বোত্তম সমল চাওক।</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ডিভাইচটো এটা টেবলেট।</translation>

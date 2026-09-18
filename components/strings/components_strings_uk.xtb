@@ -837,6 +837,8 @@
 <translation id="2384307209577226199">Стандартне корпоративне правило</translation>
 <translation id="2385809941344967209">Оновити веб-переглядач Chrome у його налаштуваннях</translation>
 <translation id="2386255080630008482">Сертифікат сервера відкликано.</translation>
+<translation id="2387424091060104123">Запропоновано Gemini · <ph name="SRC_LINK" />Переглянути джерела<ph name="END_SRC_LINK" />
+Ви можете вилучити цю пропозицію з Chrome. Джерело не буде видалено. <ph name="MANAGE_LINK" />Керувати покращеним автозаповненням<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Докладний</translation>
 <translation id="2392959068659972793">Показувати правила, для яких не встановлено значення</translation>
 <translation id="239429038616798445">Цей спосіб відправлення недоступний. Виберіть інший спосіб.</translation>
@@ -1518,6 +1520,7 @@
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome повідомить вас, коли сторінка буде готова. &lt;a&gt;Скасувати&lt;/a&gt;</translation>
 <translation id="3581499772329034229">Автоматичне додавання вкладок</translation>
+<translation id="3582670569275100909">Доставки</translation>
 <translation id="3582930987043644930">Додати ім’я</translation>
 <translation id="3583757800736429874">&amp;Повторити переміщення</translation>
 <translation id="3584299510153766161">Пробити два отвори внизу</translation>
@@ -4011,6 +4014,7 @@
 <translation id="7758069387465995638">Можливо, брандмауер або антивірусна програма заблокували з’єднання.</translation>
 <translation id="7759147511335618829">Керування пристроями MIDI</translation>
 <translation id="7759809451544302770">Необов’язково</translation>
+<translation id="7760566304700414795">Доставка</translation>
 <translation id="776110834126722255">Не підтримується</translation>
 <translation id="7761159795823346334">Дозволити доступ до камери?</translation>
 <translation id="7761701407923456692">Сертифікат сервера не відповідає URL-адресі.</translation>
@@ -4356,6 +4360,7 @@
 <translation id="8371841335382565017">Показати список пристроїв для трансляції</translation>
 <translation id="8371889962595521444">Власні кореневі сертифікати</translation>
 <translation id="8374636051559112948">Різні</translation>
+<translation id="8377507422902936905">Замовлення</translation>
 <translation id="837840316697671463">Якщо вам не вдається знайти файл на пристрої, пошукайте його в сервісі <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Профілем керує ваша організація</translation>
 <translation id="8380941800586852976">Небезпечна</translation>

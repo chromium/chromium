@@ -40,6 +40,7 @@
 <translation id="1580570086594302477">አዲስ የChrome ማንነት የማያሳውቅ ትርን ይከፍታል።</translation>
 <translation id="1605168141396675642">የመቅዳት ችግሩን ያስወግዱ። አገናኞችን በቀጥታ ወደ Chrome ያስጀምሩ።</translation>
 <translation id="1646463005043273333">እንደ ነባሪ አሳሸ Chrome አድርጎ ለማቀናበር የChrome ቅንብርን ይከፍታል።</translation>
+<translation id="1665695109862533986">አገናኞችን በአንድ መታ ማድረግ ለመክፈት Chromeን እንደ ነባሪ አሳሽዎ ያቀናብሩ</translation>
 <translation id="1668930590094369898">Chrome እንደ ነባሪ ተጠቀም</translation>
 <translation id="1670609221633730681">Chrome ጠቃሚ ምክር፦ የእርስዎን አድራሻ አሞሌ ቦታ ይምረጡ</translation>
 <translation id="1683863426423719967">ከChrome የትር አስታዋሾችን ለመቀበል በiOS ቅንብሮችዎ ውስጥ ማሳወቂያዎችን ያብሩ።</translation>
@@ -47,6 +48,7 @@
 <translation id="1784567647421309104">የይለፍ ቃሎችዎን Chrome ውስጥ ያስቀምጡ</translation>
 <translation id="1790080846677398234">በChrome ውስጥ የገቡትን ዩአርኤሎች ወደ ዕልባቶችዎ ያክላል።</translation>
 <translation id="1799920918471566157">የChrome ጠቃሚ ምክሮች</translation>
+<translation id="1802420021606590788">Chrome የገጽ ርዕሶችን እና ዩአርኤሎችን በደመና ውስጥ ባለ የግል ቦታ ውስጥ ያሰናዳል</translation>
 <translation id="1830634592642484976">ይህ አድራሻ በአሁኑ ጊዜ Chrome ላይ ተቀምጧል። በሁሉም የGoogle ምርቶች ላይ እሱን ለመጠቀም በGoogle መለያዎ <ph name="USER_EMAIL" /> ውስጥ ያስቀምጡት።</translation>
 <translation id="1891812034154776216">Chromeን ለቀው ሲወጡ የተከፈቱ ማንነት የማያሳውቁ ትሮችን ይደብቁ</translation>
 <translation id="1894434821386148799">Chrome ቅንብሮችን እና ሌሎችን እዚህ ማግኘት ይችላሉ</translation>
@@ -139,6 +141,7 @@
 <translation id="3984746313391923992">ድርጅትዎ ከChrome ዘግተው እንደወጡ እንዲቆዩ ይፈልጋል።</translation>
 <translation id="3988789688219830639">Google Chrome የእርስዎ ፎቶዎች ወይም ቪዲዮዎች መዳረሻ የለውም። መዳረሻ በiOS ቅንብሮች &gt; ግላዊነት &gt; ፎቶዎች ውስጥ ያንቁ።</translation>
 <translation id="4064699917955374540">በGoogle መለያዎ ውስጥ የChrome ውሂብን ለመጠቀም እና ለማስቀመጥ እርስዎ መሆንዎን ያረጋግጡ።</translation>
+<translation id="4093789416346364876">በሚያስሱበት ማንኛውም ቦታ የGemini ግንዛቤዎችን ለማግኘት Chromeን ነባሪዎ ያድርጉት</translation>
 <translation id="411154422556990518">የዋጋ ክትትል ዝማኔዎችን እና የChromium ጠቃሚ ምክሮችን ይከታተሉ።</translation>
 <translation id="417201473131094001">በChrome Canary ላይ አይደገፍም</translation>
 <translation id="424864128008805179">ከChrome ተዘግቶ ይወጣ?</translation>
@@ -149,6 +152,7 @@
 <translation id="4523886039239821078">አንዳንድ ተጨማሪዎች Chrome እንዲበላሽ ያደርጋሉ። እባክዎ የሚከተለውን ያራግፉ፦</translation>
 <translation id="4568024439284012497">ከእርስዎ iPhone መነሻ ማያ ገጽ ላይ Chromeን ይበልጥ በፍጥነት ይድረሱ።</translation>
 <translation id="4574806550936185355">«Chrome ሲዘጉ ማንነት የማያሳውቁ ትሮችን ይቆልፉ» የሚለውን ያብሩ</translation>
+<translation id="457825396414281646">አገናኞችን በአንድ መታ ማድረግ ለመክፈት Chromeን ነባሪ አሳሽዎ ያድርጉ</translation>
 <translation id="4633328489441962921">Chrome ዝማኔዎች ካሉ መፈተሽ አይችልም</translation>
 <translation id="4636900170638246267">ወደዚህ ጣቢያ እና Chrome ይግቡ።</translation>
 <translation id="4647910807533196601">Chrome ውስጥ የእኔ የቅርብ ጊዜ ትርን ክፈት።</translation>
@@ -357,6 +361,7 @@
 <translation id="8610372330814566250">የእርስዎን Safari የይለፍ ቃላት፣ ዕልባቶች እና ክሬዲት ካርዶች Chrome ውስጥ ይጠቀሙ</translation>
 <translation id="8630122478628016441">«Chrome በሚዘጉበት ጊዜ ማንነት የማያሳውቁ ትሮችን ይቆልፉ» የሚለውን ያብሩ።</translation>
 <translation id="8673726683583791503">በGoogle ሌንስ ይሸምቱ</translation>
+<translation id="869525545193934083">Chromeን እንዴት እንደ ነባሪ ማቀናበር እንደሚቻል የሚያሳይ የሙሉ ገጽ ዕይታ ቪድዮ፦ በiOS ውስጥ የChrome ቅንብሮችን ይክፈቱ፣ «ነባሪ አሳሽ መተግበሪያ» ላይ መታ ያድርጉ እና Chromeን ይምረጡ።</translation>
 <translation id="8765470054473112089">የአድራሻ አሞሌ ወይም የፍለጋ ሳጥን ውስጥ ሲተይቡ የተሻሉ ጥቆማዎችን ለማግኘት Chrome የሚተይቡትን ለእርስዎ ነባሪ የፍለጋ ፕሮግራም ይልካል። ይህ ማንነት የማያሳውቅ ውስጥ ጠፍቷል።</translation>
 <translation id="8772179140489533211">ወደ Chrome ለመግባት ጥያቄዎችን ያሳያል።</translation>
 <translation id="8788269841521769222">ይህን የይለፍ ቃል ማስታወስ አያስፈልገዎትም። ለ<ph name="EMAIL" /> በGoogle የይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣል</translation>

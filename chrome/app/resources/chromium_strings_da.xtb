@@ -647,7 +647,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="77283119132245232">Leverer systemsporingstjenester til <ph name="BROWSER_NAME" />. Hvis denne tjeneste er deaktiveret, omfatter registreringer, der er oprettet af browseren, ikke systemhændelser som f.eks. kontekstskift og hændelser med klargjorte tråde.</translation>
 <translation id="7745317241717453663">Denne handling sletter dine browserdata på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chromium som <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Installationsprogrammet kunne ikke oprette en midlertidig mappe. Tjek, om der er tilstrækkelig diskplads, og om der er tilladelse til at installere software.</translation>
-<translation id="7747820849741499258">Søg i Chromium</translation>
 <translation id="7750130090210923118">Nulstil til standardversionen af Chromium</translation>
 <translation id="7752521946322750699">For at beskytte dit arbejde i Chromium kan din organisation se eller administrere visse oplysninger, når du er logget ind i Chromium.</translation>
 <translation id="7781047659465034537">Angiv Chromium som standard, og fastgør den til proceslinjen</translation>
@@ -655,7 +654,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Gør det sværere for brugere med adgang til din internettrafik at se, hvilke websites du besøger. Chromium anvender en sikker forbindelse til at slå et websites IP-adresse op i domænenavnesystemet (DNS, Domain Name System).</translation>
 <translation id="7810005234485217901">Du kan fastgøre billedsøgning for at få nem adgang</translation>
-<translation id="7813626943009612327">Stil spørgsmål om indhold uden for Chromium, f.eks. en anden app eller fil, du har åbnet</translation>
 <translation id="7828527096541974699">Vælg, hvad du vil dele med Chromium</translation>
 <translation id="7828947555739565424">Der findes allerede en Chromium-profil med denne konto på enheden</translation>
 <translation id="7845233973568007926">Tak for installationen. Du skal genstarte computeren, før du bruger <ph name="BUNDLE_NAME" />.</translation>

@@ -837,6 +837,8 @@
 <translation id="2384307209577226199">ຄ່າເລີ່ມຕົ້ນ​ວິ​ສາ​ຫະ​ກິດ</translation>
 <translation id="2385809941344967209">ອັບເດດ Chrome ຈາກການຕັ້ງຄ່າ Chrome ຂອງທ່ານ</translation>
 <translation id="2386255080630008482">ໃບຢັ້ງຢືນຂອງເຊີບເວີຖືກຖອນຄືນແລ້ວ.</translation>
+<translation id="2387424091060104123">ແນະນຳໂດຍ Gemini · <ph name="SRC_LINK" />ເບິ່ງແຫຼ່ງຂໍ້ມູນ<ph name="END_SRC_LINK" />
+ທ່ານສາມາດລຶບຄຳແນະນຳນີ້ອອກຈາກ Chrome ໄດ້. ລະບົບຈະບໍ່ລຶບແຫຼ່ງຂໍ້ມູນຕົ້ນສະບັບຂອງທ່ານ. <ph name="MANAGE_LINK" />ຈັດການການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">ຂະຫຍາຍຄວາມ</translation>
 <translation id="2392959068659972793">ສະແດງນະ​ໂຍ​ບາຍໂດຍບໍ່ມີຄ່າຕັ້ງໄວ້​</translation>
 <translation id="239429038616798445">ວິທີການຈັດສົ່ງນີ້ບໍ່ສາມາດໃຊ້ໄດ້. ລອງວິທີອື່ນ.</translation>
@@ -1518,6 +1520,7 @@
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome ຈະແຈ້ງໃຫ້ທ່ານຮູ້ເມື່ອໜ້ານີ້ພ້ອມແລ້ວ. &lt;a&gt;ຍົກເລີກ&lt;/a&gt;</translation>
 <translation id="3581499772329034229">ເພີ່ມແຖບໂດຍອັດຕະໂນມັດ</translation>
+<translation id="3582670569275100909">ການຈັດສົ່ງ</translation>
 <translation id="3582930987043644930">ເພີ່ມ​ຊື່</translation>
 <translation id="3583757800736429874">ເຮັດຄືນຄໍາສັ່ງຍ້າຍ</translation>
 <translation id="3584299510153766161">ເຈາະຮູຢູ່ລຸ່ມສຸດສອງຮູ</translation>
@@ -4010,6 +4013,7 @@
 <translation id="7758069387465995638">ໄຟຣ໌ວໍ ຫຼື ຊອບແວປ້ອງກັນໄວຣັສອາດຈະບລັອກການເຊື່ອມຕໍ່ໄວ້ແລ້ວ.</translation>
 <translation id="7759147511335618829">ການຄວບຄຸມອຸປະກອນ MIDI ແລະ ການຕັ້ງໂປຣແກຣມໃໝ່</translation>
 <translation id="7759809451544302770">ທາງ​ເລືອກ</translation>
+<translation id="7760566304700414795">ການຈັດສົ່ງ</translation>
 <translation id="776110834126722255">ເຊົາຮອງຮັບແລ້ວ</translation>
 <translation id="7761159795823346334">ອະນຸຍາດກ້ອງຖ່າຍຮູບບໍ?</translation>
 <translation id="7761701407923456692">ໃບຢັ້ງຢືນຂອງເຊີບເວີບໍ່ເຂົ້າກັບ URL.</translation>
@@ -4355,6 +4359,7 @@
 <translation id="8371841335382565017">ສະແດງລາຍຊື່ອຸປະກອນສຳລັບການສົ່ງສັນຍານ</translation>
 <translation id="8371889962595521444">ໃບຮັບຮອງຮາກຖານທີ່ກຳນົດເອງ</translation>
 <translation id="8374636051559112948">ຫຼາກຫຼາຍ</translation>
+<translation id="8377507422902936905">ຄຳສັ່ງຊື້</translation>
 <translation id="837840316697671463">ຫາກທ່ານບໍ່ພົບໄຟລ໌ໃນອຸປະກອນຂອງທ່ານ, ໃຫ້ຊອກຫາຢູ່ <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">ຈັດການໂດຍອົງການຂອງທ່ານ</translation>
 <translation id="8380941800586852976">ອັນຕະລາຍ</translation>

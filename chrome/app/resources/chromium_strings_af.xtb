@@ -149,6 +149,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2575822587468774919">Kies enigiets om met Prentsoektog te soek</translation>
 <translation id="2576118232315942160">Meld aan by Chromium om jou wagwoorde en meer op al jou toestelle te kry</translation>
 <translation id="2587622539943955767">Skandeer die QR-kode met jou foon om Chromium af te laai en by jou Google-rekening aan te meld.</translation>
+<translation id="2587885422541096572">om met Chromium te soek.</translation>
 <translation id="2592940277904433508">Hou aan om Chromium te gebruik</translation>
 <translation id="259935314519650377">Kon nie die afgelaaide installeerder kas nie. Fout: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Stelsel</translation>
@@ -340,6 +341,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4621240073146040695">Amper op datum! Herbegin Chromium om opdatering te voltooi.</translation>
 <translation id="4625064703209785397">Maak werwe met Chromium se V8-enjin vinniger, maar maak Chromium effens minder bestand teen aanvalle</translation>
 <translation id="4626321472657185181">Maak Search met Chromium oop</translation>
+<translation id="4654639495249754755">Chromium-profiel</translation>
 <translation id="4665829708273112819">Waarskuwing: Chromium kan nie keer dat uitbreidings rekord hou van jou blaaigeskiedenis nie. Ontkies hierdie opsie om hierdie uitbreiding in Incognito-modus te deaktiveer.</translation>
 <translation id="4673151026126227699">As jy ook Chromium-gebruiksverslae deel, sluit daardie verslae die URL'e in wat jy besoek</translation>
 <translation id="4673710618874938871">Aangemeld as <ph name="USER_NAME" />, lidmaatskap. Maak die rekeningkieslys oop</translation>
@@ -472,6 +474,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="6174920971222007286">Hierdie lêer kan gevaarlik wees<ph name="LINE_BREAK" />Chromium kan hierdie aflaai vir jou nagaan as jy die wagwoord verskaf. Inligting oor die lêer word na Google Veiligblaai gestuur, maar die lêerinhoud en wagwoord bly op jou toestel.</translation>
 <translation id="6182736845697986886">Installering het misluk as gevolg van ’n interne opdateringbedienerfout.</translation>
 <translation id="6183079672144801177">Maak seker dat jy by Chromium aangemeld is op jou <ph name="TARGET_DEVICE_NAME" /> en probeer dan weer stuur.</translation>
+<translation id="6192070012454216182">Soek en vra vrae van enige plek af, selfs al is Chromium geminimeer. Laat Chromium toe om op die agtergrond te loop.</translation>
 <translation id="6212496753309875659">Hierdie rekenaar het reeds 'n meer onlangse weergawe van Chromium. As die sagteware nie werk nie, deïnstalleer Chromium en probeer weer.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium sal nou herbegin}=1{Chromium sal oor 1 sekonde herbegin}other{Chromium sal oor # sekondes herbegin}}</translation>
 <translation id="6241367896540709610">Chromium het bergingtoegangtoestemming nodig om lêers af te laai</translation>
@@ -598,6 +601,7 @@ Nuwe boekmerke kan nie in jou rekening gestoor word totdat jy sommige uitvee nie
 <translation id="7288567540154601580">Oortjies en uitbreidings</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium beveel aan dat jy dit verwyder}other{Chromium beveel aan dat jy hulle verwyder}}</translation>
 <translation id="7296334833518879294">Maak Stelselinstellings oop en laat “Slegs stelseloudio-opname” vir Chromium toe om stelseloudio te deel. Jy sal dan Chromium moet herbegin.</translation>
+<translation id="7299899569525778554">Soek vanaf rekenaar</translation>
 <translation id="731795002583552498">Dateer tans Chromium op</translation>
 <translation id="7318036098707714271">Jou voorkeurelêer is korrup of ongeldig.
 
@@ -645,7 +649,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="77283119132245232">Verskaf stelselnasporingdienste vir <ph name="BROWSER_NAME" />. As hierdie diens gedeaktiveer is, sal prestasiespore wat deur die blaaier geskep word, nie stelselwye gevalle soos kontekswisseling en gespreksdraadgevalle wat gereed is, insluit nie.</translation>
 <translation id="7745317241717453663">Dit sal jou blaaierdata op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chromium aan om jou data later op te haal.</translation>
 <translation id="7747138024166251722">Die installeerder kon nie 'n tydelike gids skep nie. Gaan asseblief na vir beskikbare skyfspasie en toestemming om sagteware te installeer.</translation>
-<translation id="7747820849741499258">Soek in Chromium</translation>
 <translation id="7750130090210923118">Stel terug na verstek-Chromium</translation>
 <translation id="7752521946322750699">Jou organisasie sal sekere inligting kan bekyk of bestuur om jou werk op Chromium te beveilig wanneer jy by Chromium aangemeld is.</translation>
 <translation id="7781047659465034537">Stel Chromium as verstek en speld dit aan taakbalk vas</translation>
@@ -743,6 +746,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8619360774459241877">Begin tans Chromium …</translation>
 <translation id="8624541899164515475">Instellings; maak in nuwe oortjie oop.</translation>
 <translation id="8648201657708811153">Google Chrome-toetsweergawe kan nie jou verstekblaaier gemaak word nie.</translation>
+<translation id="8676101123715131330">Soek met Chromium van enige plek af</translation>
 <translation id="8697124171261953979">Dit beheer ook watter bladsy gewys word wanneer jy Chromium begin of vanuit die omnikassie soek.</translation>
 <translation id="8704119203788522458">Dit is jou Chromium</translation>
 <translation id="8712637175834984815">Het dit</translation>
@@ -776,6 +780,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="897581876605952338">Chromium Enterprise-logo</translation>
 <translation id="8980139959902937527">Gebruik die Chromium-app op jou <ph name="DEVICE_TYPE" /> om die veiligheid van Google saam te neem terwyl jy aan die beweeg is</translation>
 <translation id="8981150672034878610">Kan nie Chromium begin nie omdat iets skeefgeloop het toe jou profiel oopgemaak is. Probeer om Chromium te herbegin.</translation>
+<translation id="8981886272598860786">om met Chromium te soek of in <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> te pasmaak</translation>
 <translation id="8988036198400390003">Bestuur Chromium-profiele</translation>
 <translation id="8993855408334954620">Gebruik jou sleutelbord om tussen Gemini in Chromium en jou oop oortjie te navigeer.</translation>
 <translation id="9018218886431812662">Installering is voltooi</translation>

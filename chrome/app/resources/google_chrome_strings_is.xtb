@@ -231,6 +231,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="3112458742631356345">Chrome lokaði á þetta niðurhal vegna þess að skráin er ekki sótt oft og gæti verið hættuleg</translation>
 <translation id="3119573284443908657">Chrome lokaði á þetta niðurhal vegna þess að safnskráin getur innihaldið aðrar skrár sem geta falið spilliforrit</translation>
 <translation id="3124332159330678621">Sérsníddu Chrome til að gefa vafranum nýtt útlit</translation>
+<translation id="3125851611828811913">Leitaðu og spyrðu spurninga hvar sem er, jafnvel þó Chrome sé minnkað. Leyfir Chrome að keyra í bakgrunni.</translation>
 <translation id="3130333203120345554">Ný leit</translation>
 <translation id="3135560418014806498">Bæta við Chrome-prófíl</translation>
 <translation id="3137969841538672700">Dragðu til að leita</translation>
@@ -388,6 +389,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="4793679854893018356">Kynntu þér hvernig Chrome gætir að öryggi þínu</translation>
 <translation id="4799870290441980300">Kveikir á viðbótareiginleikum til að veita öflugustu vörn Chrome</translation>
 <translation id="4828579605166583682">Google Chrome er að reyna að skipta út núverandi aðgangsorðum. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
+<translation id="4836321460899997044">Chrome-prófíll</translation>
 <translation id="4842397268809523050">ChromeOS Flex gat ekki samstillt gögnin þín vegna þess að samstilling er ekki í boði fyrir lénið þitt.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> er þegar innskráð(ur).  Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chrome með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Leyfðu skjáupptöku í Chrome í kerfisstillingunum til að deila skjánum þínum</translation>
@@ -505,6 +507,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Verkfæri Chrome<ph name="END_LINK" /> gera þér kleift að vafra á öruggan hátt og vera við stjórnvölinn</translation>
 <translation id="6018578474045062808">Prófaðu Google-linsu með Chrome í símanum þínum</translation>
 <translation id="6022659036123304283">Gerðu Chrome að þínu</translation>
+<translation id="6024930613143833266">Leitaðu með Chrome hvar sem er</translation>
 <translation id="6025087594896450715">Google Chrome endurræsist eftir <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="604424701295382420">Fest! Nú geturðu opnað Google-linsu með því að ýta á nýja hnappinn á tækjastikunni</translation>
@@ -526,7 +529,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6166185671393271715">Flytja inn aðgangsorð í Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - tilraunaútgáfa Google Chrome</translation>
-<translation id="6177442314419606057">Leita í Chrome</translation>
 <translation id="6180522807229584611">Þessi flipi notar aukagögn. Leyfðu Chrome að óvirkja hann til að bæta afköstin.</translation>
 <translation id="6182736845697986886">Uppsetning mistókst vegna innri villu uppfærsluþjóns.</translation>
 <translation id="6192058120268468905">Reikningurinn þinn í Chrome</translation>
@@ -649,6 +651,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7285990705317078173">Sæktu Chrome í símanum þínum til að rekja verð og fá tilkynningar þegar verðið lækkar á einhverri síðu</translation>
 <translation id="7288567540154601580">Flipar og viðbætur</translation>
 <translation id="7296210096911315575">Mikilvægar notkunar- og öryggisupplýsingar</translation>
+<translation id="7299899569525778554">Leita úr tölvu</translation>
 <translation id="7302361266603927550">Einhver Chrome-gögn hafa ekki enn verið vistuð á Google-reikningnum þínum. Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
 <translation id="7306401458628386911">Byrjaðu að vafra samstundis: Chrome getur nú ræst þegar Windows ræsist.</translation>
 <translation id="7308322188646931570">Chrome þarf aðgang að geymslu til að geta sótt skrár</translation>

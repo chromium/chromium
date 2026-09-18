@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Vrsta autentifikacije</translation>
 <translation id="1776228893584526149">Ton pozadinske slike</translation>
 <translation id="1777913922912475695">most</translation>
-<translation id="1782199038061388045">prijevod</translation>
 <translation id="1788485524395674731">Ovom aplikacijom upravlja vaš administrator</translation>
 <translation id="1792647875738159689">Otkazivanje skeniranja</translation>
 <translation id="1801418420130173017">Onemogući tamnu temu</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2448857983905133469">Alati za predmet</translation>
 <translation id="2468124392950503650">Odaberite upit da kreirate ili pogledajte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />vodič za upite<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Koristite Pomoć za pisanje koju omogućava Google AI da kreirate nedovršenu verziju ili poboljšajte postojeći rad.</translation>
 <translation id="2475982808118771221">Došlo je do greške</translation>
 <translation id="2480572840229215612">Rakovi</translation>
 <translation id="248546197012830854">Uređaj je offline. Povežite se s WiFi mrežom da vidite sadržaj za pomoć.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Ponovo snimi</translation>
 <translation id="3479552764303398839">Ne sada</translation>
 <translation id="3484914941826596830">Nemojte iskopčati ovaj vanjski uređaj ili isključiti računar dok traje ažuriranje firmvera. Ovaj prozor možete minimizirati. Ovo ažuriranje može potrajati nekoliko minuta. Moguće je da za to vrijeme vanjski uređaj neće funkcionirati.</translation>
-<translation id="3486220673238053218">definicija</translation>
 <translation id="3487866404496702283">Povratne informacije o funkciji Mahi</translation>
 <translation id="3488065109653206955">Djelimično aktivirano</translation>
 <translation id="3492882532495507361">Kancelarija u stilu "<ph name="OFFICE_STYLE" />" u nijansama boje "<ph name="OFFICE_COLOR" />"</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Odaberite temu</translation>
 <translation id="3644695927181369554">Loš prijedlog</translation>
 <translation id="3651050199673793219">Odaberite jedinicu temperature</translation>
-<translation id="3661106764436337772">Pišite brže i samopouzdanije</translation>
 <translation id="3662461537616691585">tamnocrveno-kestenjastoj</translation>
 <translation id="3664755900672940272">Primjeri upita su nasumično odabrani</translation>
 <translation id="3668449597372804501">Pozadinska slika s oblacima</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Zaustavljeno</translation>
 <translation id="4777310452073659583">Da dobijete transkript, ponovo pokrenite uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">ametista</translation>
-<translation id="4782311465517282004">Dobijte definicije, prijevode ili pretvaranje jedinica kada kliknete desnim klikom na tekst ili ga dodirnete i zadržite</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografija</translation>
 <translation id="4793710386569335688">Za dodatnu pomoć posjetite <ph name="BEGIN_LINK" />Centar za pomoć<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritam kompresije</translation>
@@ -1459,7 +1454,6 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="7397270852490618635">Isključi svijetlu temu</translation>
 <translation id="7401543881546089382">Izbriši prečac</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> je spreman za ažuriranje</translation>
-<translation id="741244894080940828">pretvaranje</translation>
 <translation id="7415801143053185905">Veoma visoka HTTP latentnost</translation>
 <translation id="7418738250896500352">Previše je riječi za pojednostavljenje</translation>
 <translation id="7425037327577270384">Pomozi mi da napišem</translation>
@@ -1769,7 +1763,6 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="885701979325669005">Pohrana</translation>
 <translation id="885704831271383379">tamnija tastatura</translation>
 <translation id="8863170912498892583">Omogući tamnu temu</translation>
-<translation id="8863888432376731307"><ph name="INTENT" /> za upit "<ph name="QUERY" />" i drugo</translation>
 <translation id="8864415976656252616">Nema predloženih sadržaja. Pogledajte najpopularniji sadržaj za pomoć.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Uređaj je tablet.</translation>

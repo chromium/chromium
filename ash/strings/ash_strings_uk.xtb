@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">ЗАКРИТИ</translation>
 <translation id="152629053603783244">Перезапустити Linux</translation>
 <translation id="1526448108126799339">Відкрити нову вкладку в новому вікні</translation>
-<translation id="1528259147807435347">Змінено минулого тижня</translation>
 <translation id="1536604384701784949">Щоб використовувати електронну адресу <ph name="USER_EMAIL_ADDRESS" />, спершу потрібно вийти з усіх облікових записів. Для цього спершу поверніться, натиснувши кнопку "Скасувати". Потім натисніть час, щоб відкрити панель стану, і натисніть "Вийти". Тоді ввійдіть в обліковий запис <ph name="USER_EMAIL_ADDRESS_2" /> ще раз.</translation>
 <translation id="15373452373711364">Великий курсор миші</translation>
 <translation id="1545331255323159851">Переглядайте нещодавні фотографії, медіафайли й сповіщення на телефоні</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Надсилати дані про використання й діагностику. Допоможіть покращити роботу Android для вашої дитини, автоматично надсилаючи в Google дані про діагностику й використання пристрою і додатків. Ця інформація не використовуватиметься для встановлення особи вашої дитини. Натомість вона допоможе підвищити стабільність системи, додатків тощо. Деякі зведені дані також корисні для додатків і партнерів Google, наприклад розробників Android. Це <ph name="BEGIN_LINK1" />налаштування<ph name="END_LINK1" /> застосовує власник. Він може ввімкнути надсилання в Google даних про діагностику й використання цього пристрою. Якщо ввімкнено додаткову історію додатків і вебпошуку, ці дані зберігаються в обліковому записі Google дитини. <ph name="BEGIN_LINK2" />Докладніше про показники<ph name="BEGIN_LINK2_END" />Докладніше<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Введіть PIN-код</translation>
 <translation id="2412593942846481727">Доступне оновлення</translation>
-<translation id="2416438829169535743">Вийти?</translation>
 <translation id="2417486498593892439">Вхід у мережу</translation>
 <translation id="2423619675829330672">Забагато спроб ввести PIN-код. Зачекайте <ph name="TIME_LEFT" /> і повторіть спробу.</translation>
 <translation id="2426051945783024481">Камера центрується автоматично</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення. Перш ніж надати його, підтвердьте, що на пристрої відображається цей ключ доступу: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Показати пароль</translation>
 <translation id="2437771564543046790">Низький заряд акумулятора. Режим енергозбереження ввімкнено.</translation>
-<translation id="243878895369688216">Відкрито вчора</translation>
 <translation id="2440978926514840421">Запис у форматі GIF зроблено</translation>
 <translation id="2441427462554639370">Запис завершився через критично малий обсяг пам’яті</translation>
 <translation id="2445449901874883781">Використовувати високу щільність</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">Не вдалося завантажити додаток для терміналів.</translation>
 <translation id="3563558822383875692">Налаштування контенту для завантаження.</translation>
 <translation id="3563775809269155755">Увімкнути точку доступу</translation>
-<translation id="3566240529365775567">Відкрито щойно</translation>
 <translation id="3571734092741541777">Налаштувати</translation>
 <translation id="3573179567135747900">Повернутися до мови "<ph name="FROM_LOCALE" />" (потрібно перезавантажитися)</translation>
 <translation id="3576141592585647168">Змінення часового поясу</translation>
@@ -960,7 +956,6 @@
 <translation id="3756485814916578707">Трансляція екрана</translation>
 <translation id="3765246971671567135">Не вдалося прочитати політику демо-режиму офлайн.</translation>
 <translation id="3765841382945324995">Комбінацію клавіш для дії "<ph name="SIX_PACK_KEY_NAME" />" змінено з "<ph name="OLD_SHORTCUT" />" на "<ph name="NEW_SHORTCUT" />"</translation>
-<translation id="3765841986579723851">Змінено сьогодні</translation>
 <translation id="3772109172035555611">Налаштуйте TrackPoint</translation>
 <translation id="3773700760453577392">Адміністратор заборонив паралельний вхід користувачеві <ph name="USER_EMAIL" />. Щоб продовжити, усі користувачі повинні вийти.</translation>
 <translation id="3779139509281456663">Підключення пристрою <ph name="NAME" /></translation>
@@ -1000,7 +995,6 @@
 <translation id="3873915545594852654">Виникла проблема з ARC++.</translation>
 <translation id="3879748587602334249">Менеджер завантажень</translation>
 <translation id="3884007280698606545">Ви підключили максимальну кількість USB-пристроїв</translation>
-<translation id="3886872229787704059">Відкрито сьогодні</translation>
 <translation id="3892148308691398805">Копіювати текст</translation>
 <translation id="3893630138897523026">ChromeVox (голосові підказки)</translation>
 <translation id="3898464793473355515">Повернути екран на 90 градусів за годинниковою стрілкою</translation>
@@ -1797,7 +1791,6 @@
 <translation id="6095008505822982596">Темп мовлення</translation>
 <translation id="6095425951508823973">Додати з’єднання за допомогою ПЗ постачальника VPN "<ph name="PROVIDER" />"</translation>
 <translation id="6095541101974653012">Ви вийшли з облікового запису.</translation>
-<translation id="6099678161144790572">Змінено минулого місяця</translation>
 <translation id="6103838137565245112">система</translation>
 <translation id="6108952804512516814">Створити за допомогою ШІ</translation>
 <translation id="6114505516289286752">Файли живих субтитрів завантажено (<ph name="LANGUAGE" />)</translation>
@@ -1954,7 +1947,6 @@
 <translation id="6555373427270923730">Введіть веб-адресу в адресному рядку й натисніть <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Нове встановлення</translation>
-<translation id="6559158502366839560">Переглянути інші додатки й ігри</translation>
 <translation id="6560151649238390891">Пропозицію вставлено</translation>
 <translation id="6562447480759345110">Вийти з режиму концентрації уваги</translation>
 <translation id="6565007273808762236">З’єднання з eSIM-картою недоступне</translation>
@@ -2060,7 +2052,6 @@
 <translation id="6848716236260083778">Щоб налаштувати відбиток пальця, дитина має торкнутися сканера відбитків. Пристрій <ph name="DEVICE_TYPE" /> надійно зберігає дані вашої дитини й нікуди не надсилає їх.</translation>
 <translation id="6852052252232534364">Активувати</translation>
 <translation id="6852628153543175788">Додати 10 хвилин</translation>
-<translation id="6855029042976311970">Змінено щойно</translation>
 <translation id="6856708615407876657">Перемикач результатів пошуку за категоріями</translation>
 <translation id="6856756288284651804">Chromebook оновлено</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> с</translation>
@@ -2155,7 +2146,6 @@
 <translation id="7118597077555700347">Відкрити: <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Виділити наступне слово або літеру</translation>
 <translation id="7124556000457919678">Коли цей перемикач увімкнено, можна призупиняти й відновлювати використання клавіш керування мишею</translation>
-<translation id="7126996685418858413">Відкрито минулого тижня</translation>
 <translation id="7131634465328662194">Ви вийдете автоматично.</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
@@ -2186,7 +2176,6 @@
 <translation id="7256057185598509352">Клавіша ExpressKey 2</translation>
 <translation id="7256634071279256947">Мікрофон на задній панелі</translation>
 <translation id="7258225044283673131">Додаток не відповідає. Щоб закрити його, виберіть опцію "Примусово закрити".</translation>
-<translation id="7258828758145722155">Змінено вчора</translation>
 <translation id="726276584504105859">Перетягніть сюди, щоб розділити екран</translation>
 <translation id="7264788308526527464">Зменшити <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Піднімайте й знов опускайте палець, щоб повністю відсканувати відбиток</translation>
@@ -2259,7 +2248,6 @@
 <translation id="7491962110804786152">вкладка</translation>
 <translation id="7497767806359279797">Вибрати мову та клавіатуру</translation>
 <translation id="7507162824403726948">Завершити підтвердження особи</translation>
-<translation id="7508690557411636492">Відкрито минулого місяця</translation>
 <translation id="7509246181739783082">Підтвердьте свою особу</translation>
 <translation id="7512509370370076552">Комбінація клавіш для імітації кліку правою кнопкою миші змінилася з "Alt + клік" на "<ph name="LAUNCHER_KEY_NAME" /> + клік"</translation>
 <translation id="7512726380443357693">Кнопку "<ph name="BUTTON_LABEL" />" не вибрано</translation>
@@ -2713,7 +2701,6 @@
 <translation id="8753368202781196133">Ця мова зараз не підтримується.</translation>
 <translation id="8755498163081687682">Потрібне підтвердження: сайт <ph name="ORIGIN_NAME" /> хоче підтвердити вашу особу</translation>
 <translation id="875593634123171288">Показати налаштування VPN</translation>
-<translation id="8756799553341497810">Коли ви вийдете із цього режиму, то зможете налаштовувати макет додатка.</translation>
 <translation id="8759408218731716181">Не вдається налаштувати паралельний вхід</translation>
 <translation id="8759753423332885148">Докладніше.</translation>
 <translation id="8760172428247796445">Пристрій <ph name="DEVICE_TYPE" /> зараз буде заблоковано.

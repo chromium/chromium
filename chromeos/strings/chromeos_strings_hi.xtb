@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">पुष्टि करने का तरीका</translation>
 <translation id="1776228893584526149">वॉलपेपर का रंग</translation>
 <translation id="1777913922912475695">पुल</translation>
-<translation id="1782199038061388045">अनुवाद</translation>
 <translation id="1788485524395674731">इस ऐप्लिकेशन को आपका एडमिन मैनेज करता है</translation>
 <translation id="1792647875738159689">स्कैन करने की प्रोसेस रद्द की जा रही है</translation>
 <translation id="1801418420130173017">गहरे रंग वाली थीम बंद करें</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2448857983905133469">क्लास टूल</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रॉम्प्ट से जुड़ी गाइड<ph name="END_LINK_PROMPTING_GUIDE" /> बनाने या देखने के लिए, प्रॉम्प्ट चुनें</translation>
-<translation id="2472215337771558851">ड्राफ़्ट लिखने या मौजूदा काम को बेहतर बनाने के लिए, Google के एआई की 'लिखने में मेरी मदद करो' सुविधा इस्तेमाल करें</translation>
 <translation id="2475982808118771221">कोई गड़बड़ी आई</translation>
 <translation id="2480572840229215612">केकड़े</translation>
 <translation id="248546197012830854">डिवाइस ऑफ़लाइन है. सहायता कॉन्टेंट देखने के लिए, वाई-फ़ाई नेटवर्क से कनेक्ट करें.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">फिर से लें</translation>
 <translation id="3479552764303398839">अभी नहीं</translation>
 <translation id="3484914941826596830">फ़र्मवेयर के अपडेट होने तक, इस बाहरी डिवाइस को डिसकनेक्ट न करें या अपने कंप्यूटर को शट डाउन न करें. इस विंडो को छोटा किया जा सकता है. अपडेट पूरा होने में कुछ मिनट लग सकते हैं. हो सकता है कि इस दौरान आपका बाहरी डिवाइस काम न करे.</translation>
-<translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3487866404496702283">माही सुविधा के बारे में सुझाव/राय दें या शिकायत करें</translation>
 <translation id="3488065109653206955">आंशिक रूप से सक्रिय किया गया</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> टोन के साथ <ph name="OFFICE_STYLE" /> ऑफ़िस</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">कोई थीम चुनें</translation>
 <translation id="3644695927181369554">खराब सुझाव</translation>
 <translation id="3651050199673793219">तापमान की इकाई चुनें</translation>
-<translation id="3661106764436337772">तेज़ी और आत्मविश्वास के साथ लिखें</translation>
 <translation id="3662461537616691585">बर्गंडी और मरून</translation>
 <translation id="3664755900672940272">प्रॉम्प्ट के सैंपल शफ़ल किए गए</translation>
 <translation id="3668449597372804501">क्लाउड फ़्लो वॉलपेपर</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">रोक दिया गया</translation>
 <translation id="4777310452073659583">ट्रांसक्रिप्ट जनरेट करने के लिए, अपने <ph name="DEVICE_TYPE" /> को रीस्टार्ट करें</translation>
 <translation id="4778082030331381943">ऐमेथिस्ट</translation>
-<translation id="4782311465517282004">परिभाषाएं, अनुवाद या यूनिट कन्वर्ज़न जानने के लिए, टेक्स्ट को दबाकर रखें या उस पर राइट क्लिक करें</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> फ़ोटो</translation>
 <translation id="4793710386569335688">ज़्यादा मदद के लिए, <ph name="BEGIN_LINK" />सहायता केंद्र<ph name="END_LINK" /> पर जाएं.</translation>
 <translation id="4793756956024303490">कंप्रेस करने का एल्गोरिदम</translation>
@@ -1458,7 +1453,6 @@
 <translation id="7397270852490618635">हल्के रंग वाली थीम बंद करें</translation>
 <translation id="7401543881546089382">शॉर्टकट मिटाएं</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> को अपडेट किया जा सकता है</translation>
-<translation id="741244894080940828">एक यूनिट से दूसरी यूनिट में बदलना</translation>
 <translation id="7415801143053185905">एचटीटीपी अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>
 <translation id="7418738250896500352">आसान शब्दों में समझने के लिए चुने गए शब्द बहुत ज़्यादा हैं</translation>
 <translation id="7425037327577270384">लिखने में मेरी मदद करें</translation>
@@ -1768,7 +1762,6 @@
 <translation id="885701979325669005">मेमोरी</translation>
 <translation id="885704831271383379">कीबोर्ड की रोशनी का रंग गहरा करें</translation>
 <translation id="8863170912498892583">गहरे रंग वाली थीम चालू करें</translation>
-<translation id="8863888432376731307">"<ph name="QUERY" />" और बाकी चीज़ों के लिए <ph name="INTENT" /> पाएं</translation>
 <translation id="8864415976656252616">कोई कॉन्टेंट नहीं सुझाया गया. सबसे ज़्यादा उपयोगी सहायता कॉन्टेंट देखें.</translation>
 <translation id="8868741746785112895">GUID (ग्लोबली यूनीक आइडेंटिफ़ायर)</translation>
 <translation id="8876270629542503161">डिवाइस एक टैबलेट है.</translation>

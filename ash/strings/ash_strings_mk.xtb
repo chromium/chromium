@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">ОТФРЛИ</translation>
 <translation id="152629053603783244">Рестартирај го Linux</translation>
 <translation id="1526448108126799339">Отвора нова картичка во нов прозорец</translation>
-<translation id="1528259147807435347">Изменето во изминатата седмица</translation>
 <translation id="1536604384701784949">За да ја користите <ph name="USER_EMAIL_ADDRESS" />, прво треба да се одјавите од сите сметки. За да се одјавите, изберете „Откажи“ за да се вратите назад. Потоа, изберете го времето за да се отвори статусната област и изберете „Одјави се“. Потоа, повторно најавете се на <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Голем покажувач на глувчето</translation>
 <translation id="1545331255323159851">Прегледајте ги неодамнешните фотографии, аудиовизуелни содржини и известувања на телефонот</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Испраќање податоци за користење и дијагностика. Помогнете ни да го подобриме доживувањето на вашето дете на Android со автоматско испраќање дијагностички и податоци за користењето на уредот и апликациите до Google. Податоциве нема да се користат за идентификација на вашето дете, а ќе ни помогнат да ја подобриме стабилноста на системот и апликациите, како и за други подобрувања. И некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android. Оваа <ph name="BEGIN_LINK1" />поставка<ph name="END_LINK1" /> е наметната од сопственикот. Сопственикот може да избере да испраќа дијагностички и податоци за користењето на уредов до Google. Ако сте ја вклучиле дополнителната „Активност на интернет и апликации“ за вашето дете, овие податоци може да се зачувуваат во неговата сметка на Google. <ph name="BEGIN_LINK2" />Дознајте повеќе за метриката<ph name="BEGIN_LINK2_END" />Дознајте повеќе<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Внесете го вашиот PIN</translation>
 <translation id="2412593942846481727">Достапно е ажурирање</translation>
-<translation id="2416438829169535743">Да се излезе од приказот?</translation>
 <translation id="2417486498593892439">Најавете се на мрежа</translation>
 <translation id="2423619675829330672">Премногу обиди за автентикација со погрешен PIN. Почекајте <ph name="TIME_LEFT" />, па обидете се повторно.</translation>
 <translation id="2426051945783024481">Кадарот на камерата автоматски се центрира</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">Уредот со Bluetooth „<ph name="DEVICE_NAME" />“ бара дозвола за спарување. Пред да прифатите, потврдете дека оваа шифра се покажува на уредот: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
 <translation id="2437771564543046790">Слаба батерија. „Штедачот на батерија“ е вклучен</translation>
-<translation id="243878895369688216">Отворено вчера</translation>
 <translation id="2440978926514840421">GIF-датотеката е снимена</translation>
 <translation id="2441427462554639370">Снимањето заврши бидејќи речиси нема простор за складирање на дискот</translation>
 <translation id="2445449901874883781">Користи висока густина</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">Киоск-апликацијата не може да се преземе.</translation>
 <translation id="3563558822383875692">Се конфигурира DLC.</translation>
 <translation id="3563775809269155755">Овозможи точка на пристап</translation>
-<translation id="3566240529365775567">Отворено пред малку</translation>
 <translation id="3571734092741541777">Поставете</translation>
 <translation id="3573179567135747900">Врати назад на „<ph name="FROM_LOCALE" />“ (потребно е рестартирање)</translation>
 <translation id="3576141592585647168">Сменете ја временската зона</translation>
@@ -960,7 +956,6 @@
 <translation id="3756485814916578707">Се емитува екранот</translation>
 <translation id="3765246971671567135">Не може да се вчита правилото за офлајн демо-режим.</translation>
 <translation id="3765841382945324995">Кратенката <ph name="SIX_PACK_KEY_NAME" /> е ажурирана во <ph name="NEW_SHORTCUT" /> од <ph name="OLD_SHORTCUT" /></translation>
-<translation id="3765841986579723851">Изменето денес</translation>
 <translation id="3772109172035555611">Приспособете го вашиот TrackPoint</translation>
 <translation id="3773700760453577392">Администраторот оневозможил повеќекратно најавување за <ph name="USER_EMAIL" />.
 За продолжување, сите корисници треба да се одјават.</translation>
@@ -1001,7 +996,6 @@
 <translation id="3873915545594852654">Настана проблем со ARC++.</translation>
 <translation id="3879748587602334249">Управник со преземања</translation>
 <translation id="3884007280698606545">Ограничувањето за USB е достигнато</translation>
-<translation id="3886872229787704059">Отворено денес</translation>
 <translation id="3892148308691398805">Копирај текст</translation>
 <translation id="3893630138897523026">ChromeVox (говорни повратни информации)</translation>
 <translation id="3898464793473355515">Ротирање на екранот 90 степени во насока на стрелките на часовникот</translation>
@@ -1794,7 +1788,6 @@
 <translation id="6095008505822982596">Брзина на говорот</translation>
 <translation id="6095425951508823973">Додајте врска со <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Одјавени сте.</translation>
-<translation id="6099678161144790572">Изменето во изминатиот месец</translation>
 <translation id="6103838137565245112">систем</translation>
 <translation id="6108952804512516814">Создај со AI</translation>
 <translation id="6114505516289286752">Датотеките за говор на <ph name="LANGUAGE" /> се преземени</translation>
@@ -1951,7 +1944,6 @@
 <translation id="6555373427270923730">Напишете веб-адреса во лентата за адреси, а потоа притиснете <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Нова инсталација</translation>
-<translation id="6559158502366839560">Истражете повеќе апликации и игри</translation>
 <translation id="6560151649238390891">Предлогот е внесен</translation>
 <translation id="6562447480759345110">Исклучи го „Режимот за концентрација“</translation>
 <translation id="6565007273808762236">Поврзувањето со eSIM е недостапно</translation>
@@ -2057,7 +2049,6 @@
 <translation id="6848716236260083778">За да поставите отпечаток, детето треба да го допре сензорот за отпечатоци. Податоците за отпечатокот на детето безбедно се складираат и никогаш не го напуштаат <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6852052252232534364">Кликнете за активирање</translation>
 <translation id="6852628153543175788">Додај 10 минути</translation>
-<translation id="6855029042976311970">Изменето пред малку</translation>
 <translation id="6856708615407876657">Менување на категориите резултати од пребарување</translation>
 <translation id="6856756288284651804">Chromebook е ажуриран</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек.</translation>
@@ -2152,7 +2143,6 @@
 <translation id="7118597077555700347">Отворете го резултатот <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Го избира следниот збор или буква</translation>
 <translation id="7124556000457919678">Кога е вклучена, паузирај или продолжи ја „Копчиња за глувче“</translation>
-<translation id="7126996685418858413">Отворено во изминатата седмица</translation>
 <translation id="7131634465328662194">Автоматски ќе ве одјавиме.</translation>
 <translation id="7143207342074048698">Се поврзува</translation>
 <translation id="7144878232160441200">Обиди се повторно</translation>
@@ -2183,7 +2173,6 @@
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Заден микрофон</translation>
 <translation id="7258225044283673131">Апликацијата не одговара. Изберете „Затвори присилно“ за да ја затворите.</translation>
-<translation id="7258828758145722155">Изменето вчера</translation>
 <translation id="726276584504105859">Повлечете тука за да користите поделен екран</translation>
 <translation id="7264788308526527464">Намали <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Подигнувајте го прстот за да ги додадете различните делови од отпечатокот</translation>
@@ -2256,7 +2245,6 @@
 <translation id="7491962110804786152">картичка</translation>
 <translation id="7497767806359279797">Изберете јазик и тастатура</translation>
 <translation id="7507162824403726948">Довршете го потврдувањето на вашиот идентитет</translation>
-<translation id="7508690557411636492">Отворено во изминатиот месец</translation>
 <translation id="7509246181739783082">Потврдете го вашиот идентитет</translation>
 <translation id="7512509370370076552">Кратенката со кликнување со десно копче е променето во копчето <ph name="LAUNCHER_KEY_NAME" /> + клик од Alt + клик</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, не е избрано</translation>
@@ -2710,7 +2698,6 @@
 <translation id="8753368202781196133">Јазиков не е поддржан во моментов.</translation>
 <translation id="8755498163081687682">Потврдете го вашиот идентитет: <ph name="ORIGIN_NAME" /> сака да потврдите дека сте вие</translation>
 <translation id="875593634123171288">Прикажи ги поставките за VPN</translation>
-<translation id="8756799553341497810">Може да започнете со приспособување на распоредот на апликациите штом ќе излезете од овој приказ.</translation>
 <translation id="8759408218731716181">Не може да се постават повеќе најави</translation>
 <translation id="8759753423332885148">Дознајте повеќе.</translation>
 <translation id="8760172428247796445">Вашиот уред <ph name="DEVICE_TYPE" /> ќе се заклучи сега.

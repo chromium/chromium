@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">IGNORER</translation>
 <translation id="152629053603783244">Redémarrer Linux</translation>
 <translation id="1526448108126799339">Ouvrir un nouvel onglet dans une nouvelle fenêtre</translation>
-<translation id="1528259147807435347">Modifié au cours de la semaine dernière</translation>
 <translation id="1536604384701784949">Pour utiliser <ph name="USER_EMAIL_ADDRESS" />, vous devez d'abord vous déconnecter de tous les comptes. Pour vous déconnecter, sélectionnez Annuler afin de revenir en arrière. Sélectionnez ensuite l'heure pour ouvrir la zone de notifications, puis sélectionnez Se déconnecter. Puis connectez-vous de nouveau à <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Grand curseur</translation>
 <translation id="1545331255323159851">Affichez les notifications, les photos et le contenu multimédia récents de votre téléphone</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Envoyez les données d'utilisation et de diagnostic. Aidez-nous à améliorer l'expérience Android de votre enfant en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applis. L'envoi de ces données ne sera pas utilisé pour identifier votre enfant, mais pour assurer la stabilité du système et des applis, et pour apporter d'autres améliorations. Certaines données agrégées contribueront également à améliorer les applis Google et elles aideront nos partenaires, comme les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire du compte. C'est à lui de choisir d'envoyer ou non à Google les données de diagnostic et d'utilisation de cet appareil. Si le paramètre relatif aux autres activités sur le Web et dans les applis est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google. <ph name="BEGIN_LINK2" />En savoir plus sur les mesures<ph name="BEGIN_LINK2_END" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Entrez votre NIP</translation>
 <translation id="2412593942846481727">Mise à jour disponible</translation>
-<translation id="2416438829169535743">Quitter l'affichage?</translation>
 <translation id="2417486498593892439">Connectez-vous au réseau</translation>
 <translation id="2423619675829330672">Trop de tentatives de saisie du NIP. Attendez <ph name="TIME_LEFT" />, puis réessayez.</translation>
 <translation id="2426051945783024481">Cadre de l'appareil photo centré automatiquement</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">L'appareil Bluetooth « <ph name="DEVICE_NAME" /> » demande l'autorisation de s'associer avec votre appareil. Avant d'accepter, veuillez confirmer que le code d'authentification suivant s'affiche sur l'appareil : <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Affich. mot de passe</translation>
 <translation id="2437771564543046790">Pile faible. La fonctionnalité Économiseur de pile est activée</translation>
-<translation id="243878895369688216">Ouvert hier</translation>
 <translation id="2440978926514840421">Enregistrement GIF pris</translation>
 <translation id="2441427462554639370">L'enregistrement a pris fin parce que l'espace de stockage est presque plein</translation>
 <translation id="2445449901874883781">Utiliser haute densité</translation>
@@ -873,7 +870,6 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3563432852173030730">Impossible de télécharger l'application Kiosque.</translation>
 <translation id="3563558822383875692">Configuration du CT.</translation>
 <translation id="3563775809269155755">Activer le point d'accès sans fil</translation>
-<translation id="3566240529365775567">Ouvert au cours des dernières minutes</translation>
 <translation id="3571734092741541777">Configurer</translation>
 <translation id="3573179567135747900">Revenir à « <ph name="FROM_LOCALE" /> » (redémarrage requis)</translation>
 <translation id="3576141592585647168">Changer le fuseau horaire</translation>
@@ -960,7 +956,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3756485814916578707">Diffusion de l'écran en cours…</translation>
 <translation id="3765246971671567135">Impossible de lire la politique du mode démo hors ligne.</translation>
 <translation id="3765841382945324995">L'ancien raccourci <ph name="SIX_PACK_KEY_NAME" /> (<ph name="OLD_SHORTCUT" />) a été mis à jour par <ph name="NEW_SHORTCUT" /></translation>
-<translation id="3765841986579723851">Modifié aujourd'hui</translation>
 <translation id="3772109172035555611">Personnaliser votre TrackPoint</translation>
 <translation id="3773700760453577392">Un administrateur a désactivé la connexion multicompte pour <ph name="USER_EMAIL" />. Tous les utilisateurs doivent se déconnecter pour continuer.</translation>
 <translation id="3779139509281456663">Connexion à <ph name="NAME" /> en cours…</translation>
@@ -1000,7 +995,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3873915545594852654">Un problème avec ARC++ s'est produit.</translation>
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
 <translation id="3884007280698606545">Limite USB atteinte</translation>
-<translation id="3886872229787704059">Ouvert aujourd'hui</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
 <translation id="3893630138897523026">ChromeVox (commentaires audio)</translation>
 <translation id="3898464793473355515">Faire pivoter l'écran de 90 degrés dans le sens des aiguilles d'une montre</translation>
@@ -1792,7 +1786,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6095008505822982596">Débit</translation>
 <translation id="6095425951508823973">Ajouter une connexion avec <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Vous avez été déconnecté.</translation>
-<translation id="6099678161144790572">Modifié au cours du dernier mois</translation>
 <translation id="6103838137565245112">système</translation>
 <translation id="6108952804512516814">Créer avec l'IA</translation>
 <translation id="6114505516289286752">Fichiers vocaux en <ph name="LANGUAGE" /> téléchargés</translation>
@@ -1949,7 +1942,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6555373427270923730">Entrez une adresse Web dans la barre d'adresse, puis appuyez sur <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nouvelle installation</translation>
-<translation id="6559158502366839560">Explorer plus d'applis et de jeux</translation>
 <translation id="6560151649238390891">Suggestion insérée</translation>
 <translation id="6562447480759345110">Désactiver le mode Sans distractions</translation>
 <translation id="6565007273808762236">Connexion eSIM non proposée</translation>
@@ -2055,7 +2047,6 @@ Nouvelle installation</translation>
 <translation id="6848716236260083778">Pour configurer une empreinte digitale, demandez à votre enfant de toucher le capteur d'empreintes digitales. Les données liées à l'empreinte digitale de votre enfant sont stockées de façon sécurisée et ne quittent jamais cet appareil : <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6852052252232534364">Cliquer pour activer</translation>
 <translation id="6852628153543175788">Ajouter 10 minutes</translation>
-<translation id="6855029042976311970">Modifié au cours des dernières minutes</translation>
 <translation id="6856708615407876657">Basculer entre les catégories de résultats de recherche</translation>
 <translation id="6856756288284651804">Chromebook mis à jour</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -2150,7 +2141,6 @@ Nouvelle installation</translation>
 <translation id="7118597077555700347">Ouvrir <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Sélectionner le mot ou la lettre suivante</translation>
 <translation id="7124556000457919678">Lorsqu'elle est activée, mettre en pause et reprendre les touches de souris</translation>
-<translation id="7126996685418858413">Ouvert au cours de la semaine dernière</translation>
 <translation id="7131634465328662194">Vous serez automatiquement déconnecté.</translation>
 <translation id="7143207342074048698">Connexion…</translation>
 <translation id="7144878232160441200">Réessayer</translation>
@@ -2181,7 +2171,6 @@ Nouvelle installation</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Microphone arrière</translation>
 <translation id="7258225044283673131">L'application ne répond pas. Sélectionnez « Forcer la fermeture » pour fermer l'application.</translation>
-<translation id="7258828758145722155">Modifié hier</translation>
 <translation id="726276584504105859">Glissez l'élément ici pour utiliser l'écran partagé</translation>
 <translation id="7264788308526527464">Réduire de <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Déplacez légèrement votre doigt lorsque vous le relevez pour ajouter toutes les parties de votre empreinte digitale</translation>
@@ -2254,7 +2243,6 @@ Nouvelle installation</translation>
 <translation id="7491962110804786152">Tabulation</translation>
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
 <translation id="7507162824403726948">Terminer la vérification de votre identité</translation>
-<translation id="7508690557411636492">Ouvert au cours du dernier mois</translation>
 <translation id="7509246181739783082">Vérifier votre identité</translation>
 <translation id="7512509370370076552">L'ancien raccourci pour le clic droit (alt+clic) a été mis à jour par touche <ph name="LAUNCHER_KEY_NAME" />+clic</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, non sélectionné(s)</translation>
@@ -2707,7 +2695,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8753368202781196133">Cette langue n'est pas prise en charge pour le moment.</translation>
 <translation id="8755498163081687682">Vérifiez votre identité : <ph name="ORIGIN_NAME" /> souhaite confirmer qu'il s'agit bien de vous</translation>
 <translation id="875593634123171288">Afficher les paramètres RPV</translation>
-<translation id="8756799553341497810">Vous pouvez commencer à personnaliser la mise en page de votre application dès que vous quittez cet affichage.</translation>
 <translation id="8759408218731716181">Impossible de configurer la connexion multicompte.</translation>
 <translation id="8759753423332885148">En savoir plus.</translation>
 <translation id="8760172428247796445">Votre <ph name="DEVICE_TYPE" /> sera maintenant verrouillé.

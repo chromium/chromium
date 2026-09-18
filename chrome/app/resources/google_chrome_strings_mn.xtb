@@ -529,7 +529,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6166185671393271715">Нууц үгийг Chrome-д импортлох</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Бета</translation>
-<translation id="6177442314419606057">Chrome-с хайх</translation>
 <translation id="6180522807229584611">Энэ таб нэмэлт нөөц ашиглаж байна. Гүйцэтгэлээ сайжруулахын тулд Chrome-д энэ табыг идэвхгүй болгохыг зөвшөөрнө үү.</translation>
 <translation id="6182736845697986886">Шинэчлэлтийн серверийн дотоод алдааны улмаас суулгалт амжилтгүй болсон.</translation>
 <translation id="6192058120268468905">Таны Chrome дахь бүртгэл</translation>
@@ -600,7 +599,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6750954913813541382">Зөв бичгийн алдааг засахын тулд Chrome таны хөтөч дээр бичсэн текстийг Google-д илгээдэг</translation>
 <translation id="6760235774835597023">Chrome-н V8 системээр сайтыг хурдасгах ч Chrome-г халдлагад арай тэсвэр багатай болгоно. Энэ тохиргоо асаалттай байна.</translation>
 <translation id="677276454032249905">Chrome-с ямар ч үед гарах уу?</translation>
-<translation id="6777654166489463890">Өөр апп, нээлттэй байгаа файл зэрэг Chrome-с гадуурх контентын талаар асуугаарай</translation>
 <translation id="6794858689789885890">Таныг Chrome-г хаах үед төхөөрөмжөөс тань сайтын өгөгдлийг үргэлж устгана</translation>
 <translation id="6800285125190089494">iOS-т зориулсан Chrome-д хадгалсан нууц үгээ ашиглан сайтад илүү хурдан нэвтрээрэй</translation>
 <translation id="6831043979455480757">Хөрвүүлэх</translation>

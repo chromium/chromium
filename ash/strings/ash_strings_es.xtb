@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">CERRAR</translation>
 <translation id="152629053603783244">Reiniciar Linux</translation>
 <translation id="1526448108126799339">Abrir nueva pestaña en una ventana nueva</translation>
-<translation id="1528259147807435347">Editado hace menos de una semana</translation>
 <translation id="1536604384701784949">Para usar <ph name="USER_EMAIL_ADDRESS" />, primero tienes que cerrar sesión en todas las cuentas. Para hacerlo, selecciona Cancelar para ir atrás. Luego, selecciona la hora para abrir el área de estado y escoge Cerrar sesión. Después, vuelve a iniciar sesión con <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Cursor del ratón grande</translation>
 <translation id="1545331255323159851">Consulta las fotos, el contenido multimedia y las notificaciones recientes de tu teléfono</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Envía datos de uso y diagnóstico. Contribuye a mejorar la experiencia de Android de tu hijo/a enviando automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos no se usarán para identificar a tu hijo/a, sino para aumentar la estabilidad de las aplicaciones y del sistema, y realizar otras mejoras. Algunos datos agregados también ayudarán a las aplicaciones y los partners de Google, como los desarrolladores de Android. El propietario ha aplicado este <ph name="BEGIN_LINK1" />ajuste<ph name="END_LINK1" />. El propietario puede elegir si se envían a Google datos de uso y diagnóstico de este dispositivo. Si la opción Actividad en la Web y en Aplicaciones Adicional está activada, es posible que estos datos se guarden en la cuenta de Google de tu hijo/a. <ph name="BEGIN_LINK2" />Más información sobre las métricas<ph name="BEGIN_LINK2_END" />Más información<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Introduce tu PIN</translation>
 <translation id="2412593942846481727">Actualización disponible</translation>
-<translation id="2416438829169535743">¿Salir de la vista?</translation>
 <translation id="2417486498593892439">Iniciar sesión en la red</translation>
 <translation id="2423619675829330672">Demasiados intentos de introducción de PIN. Espera <ph name="TIME_LEFT" /> e inténtalo de nuevo.</translation>
 <translation id="2426051945783024481">Encuadre de cámara centrado automáticamente</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para emparejarse. Antes de aceptar, comprueba que la llave de acceso <ph name="PASSKEY" /> aparezca en el dispositivo</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="2437771564543046790">Batería baja. Ahorro de batería activado.</translation>
-<translation id="243878895369688216">Abierto ayer</translation>
 <translation id="2440978926514840421">Grabación en GIF hecha</translation>
 <translation id="2441427462554639370">Se ha dejado de grabar porque queda muy poco espacio de almacenamiento</translation>
 <translation id="2445449901874883781">Usar alta densidad</translation>
@@ -873,7 +870,6 @@ De lo contrario, el panel táctil integrado se volverá a habilitar en <ph name=
 <translation id="3563432852173030730">La aplicación de kiosco no se ha podido descargar.</translation>
 <translation id="3563558822383875692">Configurando DLC.</translation>
 <translation id="3563775809269155755">Compartir Internet</translation>
-<translation id="3566240529365775567">Abierto hace un momento</translation>
 <translation id="3571734092741541777">Configurar</translation>
 <translation id="3573179567135747900">Cambiar de nuevo por "<ph name="FROM_LOCALE" />" (requiere reiniciar)</translation>
 <translation id="3576141592585647168">Cambiar zona horaria</translation>
@@ -960,7 +956,6 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="3756485814916578707">Enviando pantalla</translation>
 <translation id="3765246971671567135">No se ha podido leer la política del modo Demo sin conexión.</translation>
 <translation id="3765841382945324995">La combinación de teclas <ph name="SIX_PACK_KEY_NAME" /> ha pasado de ser <ph name="OLD_SHORTCUT" /> a <ph name="NEW_SHORTCUT" /></translation>
-<translation id="3765841986579723851">Editado hoy</translation>
 <translation id="3772109172035555611">Personaliza tu TrackPoint</translation>
 <translation id="3773700760453577392">Un administrador ha inhabilitado el inicio de sesión múltiple para <ph name="USER_EMAIL" />.
 Todos los usuarios deben cerrar sesión para continuar.</translation>
@@ -1001,7 +996,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="3873915545594852654">Ha habido un problema con ARC++.</translation>
 <translation id="3879748587602334249">Administrador de descargas</translation>
 <translation id="3884007280698606545">Límite de USB alcanzado</translation>
-<translation id="3886872229787704059">Abierto hoy</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3893630138897523026">ChromeVox (mensajes de voz)</translation>
 <translation id="3898464793473355515">Girar la pantalla 90 grados en el sentido de las agujas del reloj</translation>
@@ -1792,7 +1786,6 @@ No hay dispositivos conectados.</translation>
 <translation id="6095008505822982596">Velocidad de voz</translation>
 <translation id="6095425951508823973">Añadir conexión con <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Se ha cerrado tu sesión.</translation>
-<translation id="6099678161144790572">Editado hace menos de un mes</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6108952804512516814">Crear con IA</translation>
 <translation id="6114505516289286752">Archivos de voz en <ph name="LANGUAGE" /> descargados</translation>
@@ -1949,7 +1942,6 @@ No hay dispositivos conectados.</translation>
 <translation id="6555373427270923730">Escribe una dirección web en la barra de direcciones y, a continuación, pulsa <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nueva instalación</translation>
-<translation id="6559158502366839560">Descubre más aplicaciones y juegos</translation>
 <translation id="6560151649238390891">Sugerencia insertada</translation>
 <translation id="6562447480759345110">Salir del modo Sin distracciones</translation>
 <translation id="6565007273808762236">Conexión eSIM no disponible</translation>
@@ -2055,7 +2047,6 @@ Nueva instalación</translation>
 <translation id="6848716236260083778">Para configurar la huella digital, pídele a tu hijo/a que toque el sensor de huellas digitales. Los datos de la huella digital de tu hijo/a se almacenarán de forma segura y nunca saldrán de este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6852052252232534364">Clic para activar</translation>
 <translation id="6852628153543175788">Añadir 10 minutos</translation>
-<translation id="6855029042976311970">Editado hace un momento</translation>
 <translation id="6856708615407876657">Activar o desactivar categorías de resultados de búsqueda</translation>
 <translation id="6856756288284651804">Chromebook actualizado</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -2150,7 +2141,6 @@ Nueva instalación</translation>
 <translation id="7118597077555700347">Abrir <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Seleccionar la palabra o la letra siguiente</translation>
 <translation id="7124556000457919678">Si se activa, pausa y reanuda las teclas del ratón</translation>
-<translation id="7126996685418858413">Abierto hace menos de una semana</translation>
 <translation id="7131634465328662194">Tu sesión se cerrará automáticamente.</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Reintentar</translation>
@@ -2181,7 +2171,6 @@ Nueva instalación</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Micrófono trasero</translation>
 <translation id="7258225044283673131">La aplicación no responde. Selecciona "Forzar cierre" para cerrar la aplicación.</translation>
-<translation id="7258828758145722155">Editado ayer</translation>
 <translation id="726276584504105859">Arrastra hasta aquí para utilizar la pantalla dividida</translation>
 <translation id="7264788308526527464">Reducir <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Sigue levantando el dedo para añadir diferentes partes de tu huella digital</translation>
@@ -2254,7 +2243,6 @@ Nueva instalación</translation>
 <translation id="7491962110804786152">tabulador</translation>
 <translation id="7497767806359279797">Seleccionar idioma y teclado</translation>
 <translation id="7507162824403726948">Termina de verificar tu identidad</translation>
-<translation id="7508690557411636492">Abierto hace menos de un mes</translation>
 <translation id="7509246181739783082">Verifica tu identidad</translation>
 <translation id="7512509370370076552">La combinación de teclas para hacer clic con el botón derecho ha pasado de ser Alt + hacer clic a pulsar la tecla <ph name="LAUNCHER_KEY_NAME" /> + hacer clic.</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, no seleccionado</translation>
@@ -2708,7 +2696,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8753368202781196133">Este idioma no está disponible en este momento.</translation>
 <translation id="8755498163081687682">Verifica tu identidad: <ph name="ORIGIN_NAME" /> quiere confirmar que eres tú</translation>
 <translation id="875593634123171288">Muestra la configuración de VPN</translation>
-<translation id="8756799553341497810">Puedes empezar a personalizar la distribución de tus aplicaciones una vez que salgas de esta vista.</translation>
 <translation id="8759408218731716181">No se puede configurar el inicio de sesión múltiple</translation>
 <translation id="8759753423332885148">Más información</translation>
 <translation id="8760172428247796445">Tu <ph name="DEVICE_TYPE" /> se va a bloquear ahora.
@@ -2878,7 +2865,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="954052413789300507">No hay suficiente espacio para <ph name="FILENAME" />. Libera espacio.</translation>
 <translation id="954520015070501466">30 min</translation>
 <translation id="956452277966142925">Configuración del Panel de juego</translation>
-<translation id="961856697154696964">Borrar datos navegación</translation>
+<translation id="961856697154696964">Borrar datos de navegación</translation>
 <translation id="974545358917229949">Se muestran <ph name="RESULT_COUNT" /> resultados de <ph name="QUERY" /></translation>
 <translation id="976499800099896273">Se muestra el cuadro de diálogo para deshacer la autocorrección de <ph name="TYPED_WORD" /> a <ph name="CORRECTED_WORD" />.  Pulsa la flecha hacia arriba para acceder a la palabra y Escape para ignorar.</translation>
 <translation id="97905529126098460">Esta ventana se cerrará cuando la cancelación se haya completado.</translation>

@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">OPUSTI</translation>
 <translation id="152629053603783244">Znova zaženi Linux</translation>
 <translation id="1526448108126799339">Odpiranje novega zavihka v novem oknu</translation>
-<translation id="1528259147807435347">Urejeno v preteklem tednu</translation>
 <translation id="1536604384701784949">Če želite uporabljati <ph name="USER_EMAIL_ADDRESS" />, se morate najprej odjaviti iz vseh računov. Če se želite odjaviti, izberite »Prekliči«, da se vrnete. Nato izberite čas, če želite odpreti območje stanja, in izberite »Odjava«. Nato se znova prijavite v <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Velik miškin kazalec</translation>
 <translation id="1545331255323159851">Ogled nedavnih fotografij, predstavnosti in obvestil telefona</translation>
@@ -472,7 +471,6 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="240789602312469910">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Pomagajte izboljšati otrokovo izkušnjo z Androidom s samodejnim pošiljanjem diagnostičnih podatkov ter podatkov o uporabi naprave in aplikacij Googlu. Teh podatkov ne bomo uporabljali, da bi prepoznali vašega otroka, temveč za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. To <ph name="BEGIN_LINK1" />nastavitev<ph name="END_LINK1" /> je uveljavil lastnik naprave. Lastnik bo morda izbral, da se za to napravo pošiljajo diagnostični podatki in podatki o uporabi Googlu. Če ste za otroka vklopili nastavitev dodatne dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v otrokovem računu Google. <ph name="BEGIN_LINK2" />Preberite več o meritvah<ph name="BEGIN_LINK2_END" />Več o tem<ph name="END_LINK2" />.</translation>
 <translation id="2408955596600435184">Vnos kode PIN</translation>
 <translation id="2412593942846481727">Na voljo je posodobitev</translation>
-<translation id="2416438829169535743">Želite zapreti pogled?</translation>
 <translation id="2417486498593892439">Prijava v omrežje</translation>
 <translation id="2423619675829330672">Preveč poskusov vnosa kode PIN. Počakajte <ph name="TIME_LEFT" /> in poskusite znova.</translation>
 <translation id="2426051945783024481">Okvir fotoaparata je samodejno na sredini.</translation>
@@ -480,7 +478,6 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2429753432712299108">Naprava Bluetooth »<ph name="DEVICE_NAME" />« želi dovoljenje za seznanjanje. Preden sprejmete, se prepričajte, da je na napravi prikazano to geslo: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Pokaži geslo</translation>
 <translation id="2437771564543046790">Baterija je skoraj izpraznjena. Varčevanje z energijo baterije je vklopljeno.</translation>
-<translation id="243878895369688216">Odprto včeraj</translation>
 <translation id="2440978926514840421">Posnetek GIF je posnet</translation>
 <translation id="2441427462554639370">Snemanje se je končalo, ker kritično primanjkuje prostora za shranjevanje.</translation>
 <translation id="2445449901874883781">Uporabi veliko gostoto</translation>
@@ -873,7 +870,6 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="3563432852173030730">Aplikacije Kiosk ni bilo mogoče prenesti.</translation>
 <translation id="3563558822383875692">Konfiguriranje prenosljive vsebine.</translation>
 <translation id="3563775809269155755">Omogočanje dostopne točke</translation>
-<translation id="3566240529365775567">Pravkar odprto</translation>
 <translation id="3571734092741541777">Nastavi</translation>
 <translation id="3573179567135747900">Spremeni nazaj v jezik »<ph name="FROM_LOCALE" />« (potreben vnovični zagon)</translation>
 <translation id="3576141592585647168">Spreminjanje časovnega pasu</translation>
@@ -960,7 +956,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3756485814916578707">Predvajanje vsebine zaslona</translation>
 <translation id="3765246971671567135">Pravilnika za predstavitveni način brez povezave ni bilo mogoče prebrati.</translation>
 <translation id="3765841382945324995">Bližnjica <ph name="SIX_PACK_KEY_NAME" /> je posodobljena z bližnjice <ph name="OLD_SHORTCUT" /> na bližnjico <ph name="NEW_SHORTCUT" /></translation>
-<translation id="3765841986579723851">Urejeno danes</translation>
 <translation id="3772109172035555611">Prilagajanje naprave TrackPoint</translation>
 <translation id="3773700760453577392">Skrbnik je prepovedal prijavo z več računi za <ph name="USER_EMAIL" />. Če želite nadaljevati, morajo biti odjavljeni vsi uporabniki.</translation>
 <translation id="3779139509281456663">Povezovanje z napravo <ph name="NAME" /></translation>
@@ -1000,7 +995,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3873915545594852654">Prišlo je do težave s tehnologijo ARC++.</translation>
 <translation id="3879748587602334249">Upravitelj prenosov</translation>
 <translation id="3884007280698606545">Omejitev USB je dosežena</translation>
-<translation id="3886872229787704059">Odprto danes</translation>
 <translation id="3892148308691398805">Kopiraj besedilo</translation>
 <translation id="3893630138897523026">ChromeVox (izgovorjava povratnih informacij)</translation>
 <translation id="3898464793473355515">Vrtenje zaslona za 90 stopinj v desno</translation>
@@ -1797,7 +1791,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="6095008505822982596">Hitrost govora</translation>
 <translation id="6095425951508823973">Dodajanje povezavo s ponudnikom <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Bili ste odjavljeni.</translation>
-<translation id="6099678161144790572">Urejeno v preteklem mesecu</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6108952804512516814">Ustvarjanje z umetno inteligenco</translation>
 <translation id="6114505516289286752">Datoteke za govor v jeziku <ph name="LANGUAGE" /> so bile prenesene</translation>
@@ -1954,7 +1947,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="6555373427270923730">Vnesite spletni naslov v naslovno vrstico, nato pritisnite <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nova namestitev</translation>
-<translation id="6559158502366839560">Raziščite več aplikacij in iger</translation>
 <translation id="6560151649238390891">Predlog je vstavljen</translation>
 <translation id="6562447480759345110">Zapusti Osredotočenost</translation>
 <translation id="6565007273808762236">Povezava prek kartice eSIM ni na voljo</translation>
@@ -2060,7 +2052,6 @@ Nova namestitev</translation>
 <translation id="6848716236260083778">Če želite nastaviti prstni odtis, naj se otrok dotakne tipala prstnih odtisov. Podatki o prstnih odtisih otroka so varno shranjeni in nikoli ne zapustijo naprave <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6852052252232534364">Klik. za akt.</translation>
 <translation id="6852628153543175788">Dodajanje 10 minut</translation>
-<translation id="6855029042976311970">Pravkar urejeno</translation>
 <translation id="6856708615407876657">Preklop kategorij rezultatov iskanja</translation>
 <translation id="6856756288284651804">Chromebook je posodobljen</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -2155,7 +2146,6 @@ Nova namestitev</translation>
 <translation id="7118597077555700347">Odpri <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Izbira naslednje besede ali črke</translation>
 <translation id="7124556000457919678">Ko je vklopljeno, začasno zaustavi in nadaljuje tipke za miško</translation>
-<translation id="7126996685418858413">Odprto v zadnjem tednu</translation>
 <translation id="7131634465328662194">Samodejno boste odjavljeni.</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
@@ -2186,7 +2176,6 @@ Nova namestitev</translation>
 <translation id="7256057185598509352">Hitra tipka 2</translation>
 <translation id="7256634071279256947">Zadnji mikrofon</translation>
 <translation id="7258225044283673131">Aplikacija se ne odziva. Če želite zapreti aplikacijo, izberite »Vsili zapiranje«.</translation>
-<translation id="7258828758145722155">Urejeno včeraj</translation>
 <translation id="726276584504105859">Povlecite sem za razdeljeni zaslon</translation>
 <translation id="7264788308526527464">Zmanjšanje: <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Še naprej privzdigujte prst, da dodate različne dele prstnega odtisa.</translation>
@@ -2259,7 +2248,6 @@ Nova namestitev</translation>
 <translation id="7491962110804786152">tabulatorka</translation>
 <translation id="7497767806359279797">Izbira jezika in tipkovnice</translation>
 <translation id="7507162824403726948">Dokončajte preverjanje identitete</translation>
-<translation id="7508690557411636492">Odprto v preteklem mesecu</translation>
 <translation id="7509246181739783082">Preverjanje identitete</translation>
 <translation id="7512509370370076552">Bližnjica, ki jo kliknete z desnim gumbom, je posodobljena na tipko <ph name="LAUNCHER_KEY_NAME" /> + klik s kombinacijo tipke alt + klik</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, ni izbrano</translation>
@@ -2713,7 +2701,6 @@ Nova namestitev</translation>
 <translation id="8753368202781196133">Ta jezik trenutno ni podprt.</translation>
 <translation id="8755498163081687682">Preverjanje identitete: Spletno mesto <ph name="ORIGIN_NAME" /> želi potrditi, ali ste to res vi.</translation>
 <translation id="875593634123171288">Prikaz nastavitev omrežja VPN</translation>
-<translation id="8756799553341497810">Postavitev aplikacije lahko začnete prilagajati, ko zaprete ta pogled.</translation>
 <translation id="8759408218731716181">Prijave z več računi ni mogoče nastaviti</translation>
 <translation id="8759753423332885148">Več o tem</translation>
 <translation id="8760172428247796445">Naprava <ph name="DEVICE_TYPE" /> se bo zdaj zaklenila.

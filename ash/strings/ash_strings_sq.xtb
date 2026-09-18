@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">ANULO</translation>
 <translation id="152629053603783244">Rinis Linux</translation>
 <translation id="1526448108126799339">Hape skedën e re në një dritare të re</translation>
-<translation id="1528259147807435347">Modifikuar javën e kaluar</translation>
 <translation id="1536604384701784949">Për të përdorur <ph name="USER_EMAIL_ADDRESS" /> duhet të dalësh nga të gjitha llogaritë përpara. Për të dalë, zgjidh "Anulo" për t'u kthyer mbrapa. Pastaj zgjidh kohën për të hapur zonën e statusit dhe zgjidh "Dil". Pastaj identifikohu përsëri në <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Kursor i madh</translation>
 <translation id="1545331255323159851">Shiko njoftimet, median dhe fotografitë më të fundit të telefonit tënd</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo në përmirësimin e përvojës së fëmijës tënd me Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe aplikacioneve. Këto nuk do të përdoren për të identifikuar fëmijën tënd dhe do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Ky <ph name="BEGIN_LINK1" />cilësim<ph name="END_LINK1" /> zbatohet nga zotëruesi. Zotëruesi mund të zgjedhë të dërgojë te Google të dhënat e diagnostikimit dhe të përdorimit për këtë pajisje. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të fëmijës. <ph name="BEGIN_LINK2" />Mëso më shumë rreth metrikës<ph name="BEGIN_LINK2_END" />Mëso më shumë<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Fut kodin PIN</translation>
 <translation id="2412593942846481727">Ka përditësim</translation>
-<translation id="2416438829169535743">Dëshiron të dalësh nga pamja?</translation>
 <translation id="2417486498593892439">Identifikohu në rrjet</translation>
 <translation id="2423619675829330672">Shumë përpjekje me kodin PIN. Prit <ph name="TIME_LEFT" /> dhe provo përsëri.</translation>
 <translation id="2426051945783024481">Kuadri i kamerës u vendos automatikisht në qendër</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">Pajisja me Bluetooth, "<ph name="DEVICE_NAME" />" kërkon leje për çiftim. Përpara se të pranosh, konfirmo që ky çelës kalimi shfaqet në atë pajisje: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
 <translation id="2437771564543046790">Bateria në nivel të ulët. "Kursyesi i baterisë" është aktiv</translation>
-<translation id="243878895369688216">Hapur dje</translation>
 <translation id="2440978926514840421">Regjistrimi i imazhit GIF u krye</translation>
 <translation id="2441427462554639370">Regjistrimi u mbyll për shkak të nivelit jashtëzakonisht të ulët të hapësirës ruajtëse</translation>
 <translation id="2445449901874883781">Përdor dendësi të lartë</translation>
@@ -873,7 +870,6 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="3563432852173030730">Aplikacioni kioskë nuk mund të shkarkohej.</translation>
 <translation id="3563558822383875692">DLC po konfigurohet.</translation>
 <translation id="3563775809269155755">Aktivizo zonën e qasjes për internet</translation>
-<translation id="3566240529365775567">Hapur tani</translation>
 <translation id="3571734092741541777">Konfigurimi</translation>
 <translation id="3573179567135747900">Ndryshoje përsëri te "<ph name="FROM_LOCALE" />" (kërkohet rinisja)</translation>
 <translation id="3576141592585647168">Ndrysho brezin orar</translation>
@@ -960,7 +956,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3756485814916578707">Ekrani po transmetohet</translation>
 <translation id="3765246971671567135">Politika offline e modalitetit të demonstrimit nuk mund të lexohej.</translation>
 <translation id="3765841382945324995">Shkurtorja <ph name="SIX_PACK_KEY_NAME" /> përditësohet në <ph name="NEW_SHORTCUT" /> nga <ph name="OLD_SHORTCUT" /></translation>
-<translation id="3765841986579723851">Modifikuar sot</translation>
 <translation id="3772109172035555611">Personalizo TrackPoint</translation>
 <translation id="3773700760453577392">Një administrator ka ndaluar identifikimin e shumëfishtë për <ph name="USER_EMAIL" />. Të gjithë përdoruesit duhet të dalin për të vazhduar.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> po lidhet</translation>
@@ -1000,7 +995,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3873915545594852654">Ndodhi një problem me ARC++.</translation>
 <translation id="3879748587602334249">Menaxheri i shkarkimeve</translation>
 <translation id="3884007280698606545">U arrit kufiri për USB-në</translation>
-<translation id="3886872229787704059">Hapur sot</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>
 <translation id="3893630138897523026">ChromeVox (komente të thëna me gojë)</translation>
 <translation id="3898464793473355515">Rrotulloje ekranin 90 gradë në drejtim të akrepave të orës</translation>
@@ -1791,7 +1785,6 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6095008505822982596">Shpejtësia e të folurit</translation>
 <translation id="6095425951508823973">Shto lidhjen me <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Ke dalë.</translation>
-<translation id="6099678161144790572">Modifikuar muajin e kaluar</translation>
 <translation id="6103838137565245112">sistemi</translation>
 <translation id="6108952804512516814">Krijo me IA</translation>
 <translation id="6114505516289286752">Skedarët e ligjërimit në <ph name="LANGUAGE" /> u shkarkuan</translation>
@@ -1948,7 +1941,6 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6555373427270923730">Shkruaj një adresë uebi në shiritin e adresës dhe më pas shtyp <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Instalim i ri</translation>
-<translation id="6559158502366839560">Eksploro më shumë aplikacione dhe lojëra</translation>
 <translation id="6560151649238390891">Sugjerimi u fut</translation>
 <translation id="6562447480759345110">Përfundo "Fokusin"</translation>
 <translation id="6565007273808762236">Lidhja e kartës eSIM nuk ofrohet</translation>
@@ -2054,7 +2046,6 @@ Instalim i ri</translation>
 <translation id="6848716236260083778">Për të konfiguruar gjurmë gishti, vëre fëmijën tënd të prekë sensorin e gjurmës së gishtit. Të dhënat e gjurmës së gishtit të fëmijës tënd ruhen në mënyrë të sigurt dhe nuk largohen kurrë nga ky <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6852052252232534364">Kliko për ta aktivizuar</translation>
 <translation id="6852628153543175788">Shto 10 minuta</translation>
-<translation id="6855029042976311970">Modifikuar tani</translation>
 <translation id="6856708615407876657">Aktivizo/çaktivizo kategoritë e rezultateve të kërkimit</translation>
 <translation id="6856756288284651804">Chromebook u përditësua</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
@@ -2149,7 +2140,6 @@ Instalim i ri</translation>
 <translation id="7118597077555700347">Hap "<ph name="SEARCH_RESULT_TEXT" />"</translation>
 <translation id="7119327711295338600">Zgjidh fjalën ose shkronjën tjetër</translation>
 <translation id="7124556000457919678">Kur është i aktivizuar, vendos në pauzë dhe vazhdo përdorimin e tasteve të miut</translation>
-<translation id="7126996685418858413">Hapur javën e kaluar</translation>
 <translation id="7131634465328662194">Do të dalësh automatikisht</translation>
 <translation id="7143207342074048698">Po lidhet</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
@@ -2180,7 +2170,6 @@ Instalim i ri</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Mikrofoni i pasmë</translation>
 <translation id="7258225044283673131">Aplikacioni nuk përgjigjet. Zgjidh "Ndalo me forcë" për ta mbyllur aplikacionin.</translation>
-<translation id="7258828758145722155">Modifikuar dje</translation>
 <translation id="726276584504105859">Zvarrit këtu për të përdorur ekranin e ndarë</translation>
 <translation id="7264788308526527464">Redukto <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Vazhdo ta ngresh gishtin për të shtuar pjesë të ndryshme të gjurmës së gishtit</translation>
@@ -2253,7 +2242,6 @@ Instalim i ri</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7497767806359279797">Zgjidh gjuhën dhe tastierën</translation>
 <translation id="7507162824403726948">Përfundo verifikimin e identitetit tënd</translation>
-<translation id="7508690557411636492">Hapur muajin e kaluar</translation>
 <translation id="7509246181739783082">Verifiko identitetin</translation>
 <translation id="7512509370370076552">Shkurtorja e klikimit me butonin djathtas përditësohet në tastin <ph name="LAUNCHER_KEY_NAME" /> + klikim nga Alt + klikim</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, nuk është zgjedhur</translation>
@@ -2707,7 +2695,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8753368202781196133">Kjo gjuhë nuk mbështetet në këtë moment.</translation>
 <translation id="8755498163081687682">Verifiko identitetin tënd: <ph name="ORIGIN_NAME" /> dëshiron të konfirmojë që je ti</translation>
 <translation id="875593634123171288">Shfaq cilësimet e VPN</translation>
-<translation id="8756799553341497810">Mund të fillosh ta personalizosh strukturën e aplikacioneve pasi të dalësh nga kjo pamje.</translation>
 <translation id="8759408218731716181">Identifikimi i shumëfishtë nuk mund të konfigurohet</translation>
 <translation id="8759753423332885148">Mëso më shumë.</translation>
 <translation id="8760172428247796445">Pajisja jote <ph name="DEVICE_TYPE" /> do të kyçet tani.

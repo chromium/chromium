@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Žádost o povolení od rodičů se nezdařila.</translation>
 <translation id="1803557475693955505">Nelze načíst stránku pozadí „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="1875387611427697908">Lze přidat pouze ze stránek <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715">Rozšíření <ph name="EXTENSION_NAME" /> (ID rozšíření: <ph name="EXTENSION_ID" />) nelze v prostředích s nízkou důvěryhodností nainstalovat pomocí zásad.</translation>
 <translation id="2131077480075264">Aplikaci <ph name="APP_NAME" /> nelze nainstalovat, protože není povolena rozhraním <ph name="IMPORT_NAME" /></translation>
 <translation id="2150661552845026580">Přidat rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2159915644201199628">Nepodařilo se dekódovat obrázek: <ph name="IMAGE_NAME" /></translation>

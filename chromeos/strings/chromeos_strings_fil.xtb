@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Uri ng pag-authenticate</translation>
 <translation id="1776228893584526149">Wallpaper tone</translation>
 <translation id="1777913922912475695">tulay</translation>
-<translation id="1782199038061388045">pagsasalin</translation>
 <translation id="1788485524395674731">Pinapamahalaan ng iyong administrator ang app na ito</translation>
 <translation id="1792647875738159689">Kinakansela ang pag-scan</translation>
 <translation id="1801418420130173017">I-disable ang madilim na tema</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Uri</translation>
 <translation id="2448857983905133469">Tools sa Klase</translation>
 <translation id="2468124392950503650">Pumili ng prompt para gumawa o makita ang<ph name="BEGIN_LINK_PROMPTING_GUIDE" />gabay sa prompt<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Gamitin ang Tulungan akong magsulat para gumawa ng draft o magpino ng dati nang gawa, na pinapagana ng Google AI</translation>
 <translation id="2475982808118771221">May isang naganap na error</translation>
 <translation id="2480572840229215612">mga alimango</translation>
 <translation id="248546197012830854">Offline ang device. Kumonekta sa Wi-Fi network para makita ang content ng tulong.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Kunan ulit</translation>
 <translation id="3479552764303398839">Hindi ngayon</translation>
 <translation id="3484914941826596830">Habang nag-a-update ang firmware, huwag alisin sa pagkakasaksak ang external device na ito o i-shut down ang iyong computer. Puwede mong i-minimize ang window na ito. Posibleng tumagal nang ilang minuto ang update na ito at posibleng hindi gumana ang iyong external device sa panahong ito.</translation>
-<translation id="3486220673238053218">kahulugan</translation>
 <translation id="3487866404496702283">Feedback para sa mahi na feature</translation>
 <translation id="3488065109653206955">Bahagyang na-activate</translation>
 <translation id="3492882532495507361">Isang <ph name="OFFICE_STYLE" /> na opisina na may mga <ph name="OFFICE_COLOR" /> na tone</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Pumili ng tema</translation>
 <translation id="3644695927181369554">Hindi magandang suhestyon</translation>
 <translation id="3651050199673793219">Pumili ng unit ng temperatura</translation>
-<translation id="3661106764436337772">Magsulat nang mas mabilis at mas may kumpiyansa</translation>
 <translation id="3662461537616691585">burgundy at maroon</translation>
 <translation id="3664755900672940272">Na-shuffle ang mga sample na prompt</translation>
 <translation id="3668449597372804501">Wallpaper na paggalaw ng ulap</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Inihinto</translation>
 <translation id="4777310452073659583">Para makakuha ng transcript, i-restart ang iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">amethyst</translation>
-<translation id="4782311465517282004">Makakuha ng mga kahulugan, pagsasalin, o conversion ng unit kapag nag-right click ka sa o pinindot mo nang matagal ang text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> larawan</translation>
 <translation id="4793710386569335688">Para sa higit pang tulong, pumunta sa <ph name="BEGIN_LINK" />Help Center<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algorithm ng pag-compress</translation>
@@ -1459,7 +1454,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7397270852490618635">I-off ang maliwanag na tema</translation>
 <translation id="7401543881546089382">Tanggalin ang shortcut</translation>
 <translation id="7405493795721832710">Handa nang i-update ang <ph name="DEVICE_NAME" /></translation>
-<translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Napakataas na latency ng HTTP</translation>
 <translation id="7418738250896500352">Masyadong marami ang mga salita para pasimplehin</translation>
 <translation id="7425037327577270384">Tulungan akong magsulat</translation>
@@ -1769,7 +1763,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="885701979325669005">Storage</translation>
 <translation id="885704831271383379">mas madilim na keyboard</translation>
 <translation id="8863170912498892583">I-enable ng madilim na tema</translation>
-<translation id="8863888432376731307">Kunin ang <ph name="INTENT" /> para sa "<ph name="QUERY" />" at higit pa</translation>
 <translation id="8864415976656252616">Walang iminumungkahing content. Tingnan ang nangungunang content ng tulong.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Tablet ang device.</translation>

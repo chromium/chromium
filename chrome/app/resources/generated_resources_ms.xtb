@@ -1395,6 +1395,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2062354623176996748">Gunakan web tanpa menyimpan sejarah penyemakan imbas anda menggunakan tetingkap Inkognito</translation>
 <translation id="206308717637808771">Padamkan data apabila anda menutup semua tetingkap. Data dikendalikan sama seperti laman yang sedang anda lihat</translation>
 <translation id="2066700471214517561">Mikrofon pembentukan pancaran memastikan suara pengguna Chromebook kedengaran jelas.</translation>
+<translation id="2067778293100584091">Lawati Google Wallet untuk mengawal <ph name="BEGIN_LINK1" />pilihan data dan privasi<ph name="END_LINK1" /> atau mengurus <ph name="BEGIN_LINK2" />kaedah pembayaran<ph name="END_LINK2" /> dan <ph name="BEGIN_LINK3" />pas<ph name="END_LINK3" /> seperti kad kesetiaan, ID dan tawaran</translation>
 <translation id="2068581968816126410">Gunakan penanda halaman merentas peranti</translation>
 <translation id="2069020119963193894">&amp;Saiz</translation>
 <translation id="2071393345806050157">Tiada fail log setempat.</translation>
@@ -2391,6 +2392,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2813094189969465044">Kawalan ibu bapa</translation>
 <translation id="2814489978934728345">Berhenti memuatkan halaman ini</translation>
 <translation id="2816319641769218778">Untuk menyimpan kata laluan pada Google Account anda, hidupkan penyegerakan.</translation>
+<translation id="281678554528702272">Nota: Tetapan akses laman ini mungkin digantikan oleh dasar perusahaan atau API yang berkuasa.</translation>
 <translation id="2817435998497102771">Tetapkan hiasan latar &amp; gaya anda</translation>
 <translation id="2817861546829549432">Mendayakan ‘Jangan Kesan’ bermaksud permintaan akan dimasukkan dengan trafik penyemakan imbas anda. Sebarang kesan bergantung pada sama ada laman web menyambut permintaan tersebut dan cara permintaan itu ditafsirkan. Contohnya, sesetengah laman web mungkin menyambut permintaan ini dengan memaparkan kepada anda iklan yang tidak berasaskan laman web lain yang anda lawati. Banyak laman web masih akan mengumpulkan dan menggunakan data penyemakan imbas anda - contohnya, untuk meningkatkan keselamatan, untuk menyediakan kandungan, perkhidmatan, iklan dan cadangan di laman web mereka dan untuk menghasilkan perangkaan pelaporan.</translation>
 <translation id="2818476747334107629">Butiran pencetak</translation>
@@ -2723,7 +2725,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3048917188684939573">Log Hantar dan Peranti</translation>
 <translation id="3049356453907822148">Tambahkan kemahiran baharu</translation>
 <translation id="3051250416341590778">Saiz paparan</translation>
-<translation id="3051676221004664500">&amp;Terjemahkan “<ph name="SELECTION" />”</translation>
 <translation id="3053273573829329829">Dayakan PIN pengguna</translation>
 <translation id="3053274730492362225">Jangan berkelip</translation>
 <translation id="3057938290530993634">Ketik dan tahan untuk menyematkan laman web yang paling kerap anda lawati untuk akses mudah pada masa hadapan</translation>
@@ -5164,7 +5165,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4913573660390710463">Akses aplikasi web berpakej dengan keupayaan yang dipertingkatkan. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Tidak dapat menemukan data apl</translation>
 <translation id="4915961947098019832">Dibenarkan untuk memaparkan imej</translation>
-<translation id="4916140032692201190">&amp;Terjemahkan pilihan</translation>
 <translation id="491779113051926205">Pembilang Trafik ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ingin berkomunikasi dengan sambungan "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Terima</translation>
@@ -5201,6 +5201,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4941963255146903244">Lihat foto, media dan apl telefon anda</translation>
 <translation id="494286511941020793">Bantuan Konfigurasi Proksi</translation>
 <translation id="4943368462779413526">Bola Sepak</translation>
+<translation id="4943872375798546930">Tiada hasil carian</translation>
 <translation id="4943927218331934807">Kata laluan diperlukan</translation>
 <translation id="4946998421534856407">pelancar + anak panah ke atas</translation>
 <translation id="4947376546135294974">Data daripada laman yang anda lawati</translation>
@@ -5241,7 +5242,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4972129977812092092">Edit pencetak</translation>
 <translation id="4972164225939028131">Kata laluan salah</translation>
 <translation id="4972737347717125191">Tapak boleh meminta untuk menggunakan peranti dan data realiti maya</translation>
-<translation id="4973302523373219907">Jika pintasan tersuai tidak ditetapkan, @@ digunakan secara lalai</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Redam laman}other{Redam laman}}</translation>
 <translation id="497403230787583386">Semakan keselamatan sudah selesai. Dokumen anda akan dicetak.</translation>
 <translation id="4974442344472293753">Hasil Kemaskinian</translation>
@@ -6656,7 +6656,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="610487644502954950">Panel sisi dinyahsematkan</translation>
 <translation id="6104929924898022309">Gunakan kekunci carian untuk mengubah gelagat kekunci fungsi</translation>
 <translation id="6108952804512516814">Buat dengan AI</translation>
-<translation id="611041979451429698">&amp;Cetak “<ph name="SELECTION" />”</translation>
 <translation id="6110794992500777605">Pintasan dan laman saya</translation>
 <translation id="6111718295497931251">Alih keluar akses Google Drive</translation>
 <translation id="6112197885362646874">Tanya Google perihal “<ph name="SEARCH_TERMS" />”</translation>
@@ -7664,7 +7663,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6870470066213933201">Urus pengoptimuman &amp; keselamatan JavaScript</translation>
 <translation id="6870953451576517204">Swauji berjaya</translation>
 <translation id="6871397658902960384">Mula menyemak imbas</translation>
-<translation id="6871609459496868094">&amp;Salin “<ph name="SELECTION" />”</translation>
 <translation id="6871644448911473373">Pengulas OCSP: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Bahasa...</translation>
 <translation id="6873156759937047811">PIN:</translation>
@@ -9750,7 +9748,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8477241577829954800">Menggantikan</translation>
 <translation id="8477384620836102176">&amp;Umum</translation>
 <translation id="8477446666255316832">Log masuk dengan lebih pantas selepas ini</translation>
-<translation id="8477548388161793571">&amp;Terjemahkan Pilihan</translation>
 <translation id="8478346767369317046">Kerja</translation>
 <translation id="8479176401914456949">Kod tidak sah. Sila cuba lagi.</translation>
 <translation id="8480869669560681089">Peranti tidak diketahui daripada <ph name="VENDOR_NAME" /></translation>
@@ -10774,6 +10771,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="96756691973639907">Lagi tindakan untuk <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Data disimpan</translation>
 <translation id="96774243435178359">Pencetak terurus</translation>
+<translation id="967745417352972504">Lawati Google Wallet untuk menambahkan atau mengurus <ph name="BEGIN_LINK_PAYMENT_METHODS" />kaedah pembayaran<ph name="END_LINK_PAYMENT_METHODS" /> dan <ph name="BEGIN_LINK_PASSES" />pas<ph name="END_LINK_PASSES" /> seperti kad kesetiaan, ID dan tawaran</translation>
 <translation id="968000525894980488">Hidupkan perkhidmatan Google Play.</translation>
 <translation id="968037381421390582">Ta&amp;mpal dan Cari “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969096075394517431">Tukar bahasa</translation>

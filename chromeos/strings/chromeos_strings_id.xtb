@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Jenis autentikasi</translation>
 <translation id="1776228893584526149">Warna wallpaper</translation>
 <translation id="1777913922912475695">jembatan</translation>
-<translation id="1782199038061388045">terjemahan</translation>
 <translation id="1788485524395674731">Aplikasi ini dikelola oleh administrator Anda</translation>
 <translation id="1792647875738159689">Membatalkan pemindaian</translation>
 <translation id="1801418420130173017">Nonaktifkan tema gelap</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Jenis</translation>
 <translation id="2448857983905133469">Alat Kelas</translation>
 <translation id="2468124392950503650">Pilih perintah untuk membuat atau melihat <ph name="BEGIN_LINK_PROMPTING_GUIDE" />panduan menulis perintah<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Menggunakan fitur Bantu tulis untuk membuat draf atau meningkatkan kualitas pekerjaan yang ada, didukung teknologi AI Google</translation>
 <translation id="2475982808118771221">Terjadi error</translation>
 <translation id="2480572840229215612">kepiting</translation>
 <translation id="248546197012830854">Perangkat sedang offline. Hubungkan ke jaringan Wi-Fi untuk melihat konten bantuan.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Ambil ulang</translation>
 <translation id="3479552764303398839">Jangan sekarang</translation>
 <translation id="3484914941826596830">Saat firmware sedang diupdate, jangan mencabut perangkat eksternal ini atau mematikan komputer. Anda dapat meminimalkan jendela ini. Update ini mungkin perlu waktu beberapa menit dan perangkat eksternal mungkin tidak berfungsi selama update.</translation>
-<translation id="3486220673238053218">definisi</translation>
 <translation id="3487866404496702283">Masukan untuk fitur mahi</translation>
 <translation id="3488065109653206955">Diaktifkan sebagian</translation>
 <translation id="3492882532495507361">Kantor <ph name="OFFICE_STYLE" /> dengan warna <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Pilih tema</translation>
 <translation id="3644695927181369554">Saran buruk</translation>
 <translation id="3651050199673793219">Pilih satuan suhu</translation>
-<translation id="3661106764436337772">Tulis lebih cepat dan lebih percaya diri</translation>
 <translation id="3662461537616691585">burgundi dan marun</translation>
 <translation id="3664755900672940272">Contoh perintah diacak</translation>
 <translation id="3668449597372804501">Wallpaper Aliran awan</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Dihentikan</translation>
 <translation id="4777310452073659583">Untuk mendapatkan transkrip, mulai ulang <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">ametis</translation>
-<translation id="4782311465517282004">Dapatkan definisi, terjemahan, atau konversi unit saat Anda mengklik kanan atau menyentuh lama teks</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Untuk mendapatkan bantuan lebih lanjut, buka <ph name="BEGIN_LINK" />Pusat Bantuan<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritme kompresi</translation>
@@ -1459,7 +1454,6 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="7397270852490618635">Nonaktifkan tema terang</translation>
 <translation id="7401543881546089382">Hapus pintasan</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> siap diupdate</translation>
-<translation id="741244894080940828">konversi</translation>
 <translation id="7415801143053185905">Latensi HTTP sangat tinggi</translation>
 <translation id="7418738250896500352">Terlalu banyak kata untuk disederhanakan</translation>
 <translation id="7425037327577270384">Bantu tulis</translation>
@@ -1769,7 +1763,6 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="885701979325669005">Penyimpanan</translation>
 <translation id="885704831271383379">keyboard lebih gelap</translation>
 <translation id="8863170912498892583">Aktifkan tema gelap</translation>
-<translation id="8863888432376731307">Dapatkan <ph name="INTENT" /> untuk "<ph name="QUERY" />" dan lainnya</translation>
 <translation id="8864415976656252616">Tidak ada konten yang disarankan. Lihat konten bantuan teratas.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Perangkat adalah tablet.</translation>

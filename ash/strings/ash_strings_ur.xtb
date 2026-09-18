@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">برخاست کریں</translation>
 <translation id="152629053603783244">‏Linux ری اسٹارٹ کریں</translation>
 <translation id="1526448108126799339">نئی ونڈو میں نیا ٹیب کھولیں</translation>
-<translation id="1528259147807435347">گزشتہ ہفتے ترمیم کی گئی</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> کو استعمال کرنے کے لیے آپ کو پہلے سبھی اکاؤنٹس سے سائن آؤٹ کرنے کی ضرورت ہے۔ سائن آؤٹ کرنے کے لیے، واپس جانے کے لئے منسوخ کریں کو منتخب کریں۔ پھر اسٹیٹس ایریا کھولنے کے لئے ٹائم کا انتخاب کریں اور سائن آؤٹ کو منتخب کریں۔ پھر <ph name="USER_EMAIL_ADDRESS_2" /> پر دوبارہ سائن ان کریں۔</translation>
 <translation id="15373452373711364">بڑا ماؤس کرسر</translation>
 <translation id="1545331255323159851">اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھیں</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ ‫Google کو خودکار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا بھیج کر اپنے بچے کا Android تجربہ بہتر بنانے میں مدد کریں۔ اس کا استعمال آپ کے بچے کی شناخت کیلئے نہیں کیا جائے گا اور اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اس <ph name="BEGIN_LINK1" />ترتیب<ph name="END_LINK1" /> کو مالک نافذ کرتا ہے۔ مالک Google کو اس آلہ کیلئے ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجنے کا انتخاب کر سکتا ہے۔ اگر آپ کے بچے کیلئے ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو اس کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ <ph name="BEGIN_LINK2" />میٹرکس کے بارے میں مزید جانیں<ph name="BEGIN_LINK2_END" />مزید جانیں<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">‏اپنا PIN درج کریں</translation>
 <translation id="2412593942846481727">اپ ڈیٹ دستیاب ہے</translation>
-<translation id="2416438829169535743">منظر سے باہر نکلیں؟</translation>
 <translation id="2417486498593892439">نیٹ ورک میں سائن ان کریں</translation>
 <translation id="2423619675829330672">‏‫PIN کی بہت زیادہ کوششیں۔ <ph name="TIME_LEFT" /> انتظار کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="2426051945783024481">کیمرے کا فریم خودکار طور پر بیچ میں کر دیا گیا ہے</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">بلوٹوتھ آلہ "<ph name="DEVICE_NAME" />" کو جوڑا بنانے کی اجازت درکار ہوگی۔ قبول کرنے سے پہلے، براہ کرم توثیق کریں کہ یہ پاس کلید اس آلہ پر دکھائی دے رہی ہے: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
 <translation id="2437771564543046790">بیٹری کم ہے۔ بیٹری سیور آن ہے</translation>
-<translation id="243878895369688216">گزشتہ کل کھولا گیا</translation>
 <translation id="2440978926514840421">‏GIF ریکارڈنگ کی گئی</translation>
 <translation id="2441427462554639370">اسٹوریج کی جگہ انتہائی کم ہونے کی وجہ ریکارڈنگ ختم ہو گئی</translation>
 <translation id="2445449901874883781">زیادہ کثافت کا استعمال کریں</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">کیوسک ایپلیکیشن کو ڈاؤن لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="3563558822383875692">‏DLC کو کنفیگر کیا جا رہا ہے۔</translation>
 <translation id="3563775809269155755">ہاٹ اسپاٹ فعال کریں</translation>
-<translation id="3566240529365775567">ابھی کھولا گیا</translation>
 <translation id="3571734092741541777">ترتیب دیں</translation>
 <translation id="3573179567135747900">واپس "<ph name="FROM_LOCALE" />" میں تبدیل کریں (ری اسٹارٹ مطلوب ہے)</translation>
 <translation id="3576141592585647168">ٹائم زون تبدیل کریں</translation>
@@ -960,7 +956,6 @@
 <translation id="3756485814916578707">اسکرین کاسٹ ہو رہی ہے</translation>
 <translation id="3765246971671567135">آف لائن ڈیمو موڈ کی پالیسی کو پڑھا نہیں جا سکا۔</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> شارٹ کٹ کو <ph name="OLD_SHORTCUT" /> سے <ph name="NEW_SHORTCUT" /> میں اپ ڈیٹ کیا گیا ہے</translation>
-<translation id="3765841986579723851">آج ترمیم کیا گیا</translation>
 <translation id="3772109172035555611">‏اپنے TrackPoint کو حسب ضرورت بنائیں</translation>
 <translation id="3773700760453577392">منتظم نے <ph name="USER_EMAIL" /> کیلئے متعدد سائن ان کی اجازت نہیں دی ہے۔ جاری رکھنے کیلئے تمام صارفین کا سائن آؤٹ کرنا لازمی ہے۔</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> کو منسلک کیا جا رہا ہے</translation>
@@ -1000,7 +995,6 @@
 <translation id="3873915545594852654">‏++ARC کے ساتھ ایک مسئلہ پیش آگیا۔</translation>
 <translation id="3879748587602334249">ڈاؤن لوڈ مینیجر</translation>
 <translation id="3884007280698606545">‏‫USB کی حد تک پہنچ گئے ہیں</translation>
-<translation id="3886872229787704059">آج کھولا گیا</translation>
 <translation id="3892148308691398805">ٹیکسٹ کاپی کریں</translation>
 <translation id="3893630138897523026">‏ChromeVox (صوتی تاثرات)</translation>
 <translation id="3898464793473355515">اسکرین کو گھڑی وار 90 ڈگری گھمائیں</translation>
@@ -1791,7 +1785,6 @@
 <translation id="6095008505822982596">اسپیچ کی شرح</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> کے ساتھ کنکشن شامل کریں</translation>
 <translation id="6095541101974653012">آپ لاگ آؤٹ ہو گئے تھے۔</translation>
-<translation id="6099678161144790572">گزشتہ مہینے میں ترمیم کی</translation>
 <translation id="6103838137565245112">سسٹم</translation>
 <translation id="6108952804512516814">‏AI کے ذریعے تخلیق کریں</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> کی اسپیچ فائلز ڈاؤن لوڈ ہو گئی</translation>
@@ -1947,7 +1940,6 @@
 <translation id="6546062506073634094">مواد اور تصویر کے پیش منظر کے لحاظ سے 'تصاویر کا استعمال کر کے تلاش'</translation>
 <translation id="6555373427270923730">ایڈریس بار میں ایک ویب پتہ ٹائپ کریں، پھر <ph name="MODIFIER" /><ph name="KEY" /> دبائیں</translation>
 <translation id="655633303491376835">نئی انسٹال کردہ <ph name="APP_NAME" /></translation>
-<translation id="6559158502366839560">مزید ایپس اور گیمز دریافت کریں</translation>
 <translation id="6560151649238390891">تجویز داخل کر دی گئی</translation>
 <translation id="6562447480759345110">فوکس ختم کریں</translation>
 <translation id="6565007273808762236">‏eSIM کنکشن دستیاب نہیں ہے</translation>
@@ -2053,7 +2045,6 @@
 <translation id="6848716236260083778">فنگر پرنٹ کو سیٹ اپ کرنے کے لیے، اپنے بچے کو فنگر پرنٹ سینسر کو ٹچ کرنے دیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="6852052252232534364">کلک برائے فعال</translation>
 <translation id="6852628153543175788">10 منٹ شامل کریں</translation>
-<translation id="6855029042976311970">ابھی ابھی ترمیم کی گئی ہے</translation>
 <translation id="6856708615407876657">تلاش کے نتیجے کے زمرے کو ٹوگل کریں</translation>
 <translation id="6856756288284651804">‏‫Chromebook اپ ڈیٹ ہو گیا</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> سیکنڈ</translation>
@@ -2148,7 +2139,6 @@
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> کھولیں</translation>
 <translation id="7119327711295338600">اگلا لفظ یا حرف منتخب کریں</translation>
 <translation id="7124556000457919678">آن ہونے پر، ماؤس کنٹرول کرنے کی کلیدیں موقوف اور دوبارہ شروع کریں</translation>
-<translation id="7126996685418858413">پچھلے ہفتے میں کھولا گیا</translation>
 <translation id="7131634465328662194">آپ خود بخود سائن آؤٹ ہو جائیں گے۔</translation>
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
 <translation id="7144878232160441200">دوبارہ کوشش کریں</translation>
@@ -2179,7 +2169,6 @@
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">پیچھے کا مائیکروفون</translation>
 <translation id="7258225044283673131">ایپلیکیشن جواب نہیں دے رہی ہے۔ ایپ بند کرنے کیلئے، "زبردستی بند کریں" منتخب کریں۔</translation>
-<translation id="7258828758145722155">کل ترمیم کیا گیا</translation>
 <translation id="726276584504105859">اسپلٹ اسکرین استعمال کرنے کیلئے یہاں گھسیٹیں</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> کم کریں</translation>
 <translation id="7267875682732693301">اپنے فنگر پرنٹ کے مختلف حصوں کو شامل کرنے کیلئے اپنی انگلی کو اٹھاتے رہیں</translation>
@@ -2252,7 +2241,6 @@
 <translation id="7491962110804786152">ٹیب</translation>
 <translation id="7497767806359279797">زبان اور کی بورڈ منتخب کریں</translation>
 <translation id="7507162824403726948">اپنی شناخت کی تصدیق مکمل کریں</translation>
-<translation id="7508690557411636492">پچھلے مہینے میں کھولا گیا</translation>
 <translation id="7509246181739783082">اپنی شناخت کی توثیق کریں</translation>
 <translation id="7512509370370076552">‏دائیں کلک کے شارٹ کٹ کو <ph name="LAUNCHER_KEY_NAME" /> کلید + کلک سے alt + کلک پر اپ ڈیٹ کیا جاتا ہے</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />، منتخب نہیں کیا گیا</translation>
@@ -2706,7 +2694,6 @@
 <translation id="8753368202781196133">اس وقت یہ زبان تعاون یافتہ نہیں ہے۔</translation>
 <translation id="8755498163081687682">اپنی شناخت کی توثیق کریں: <ph name="ORIGIN_NAME" /> اس بات کی تصدیق کرنا چاہتی ہے کہ یہ آپ ہی ہیں</translation>
 <translation id="875593634123171288">‏VPN کی ترتیبات دکھائیں</translation>
-<translation id="8756799553341497810">اس منظر سے باہر نکلنے کے بعد آپ اپنے ایپ لے آؤٹ کو حسب ضرورت بنانا شروع کر سکتے ہیں۔</translation>
 <translation id="8759408218731716181">متعدد سائن ان ترتیب نہیں دے سکتے</translation>
 <translation id="8759753423332885148">مزید جانیں۔</translation>
 <translation id="8760172428247796445">آپ کے <ph name="DEVICE_TYPE" /> کو ابھی مقفل کر دیا جائے گا۔

@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">NERĀDĪT</translation>
 <translation id="152629053603783244">Restartēt operētājsistēmu Linux</translation>
 <translation id="1526448108126799339">Atvērt jaunu cilni jaunā logā</translation>
-<translation id="1528259147807435347">Rediģēts pagājušajā nedēļā</translation>
 <translation id="1536604384701784949">Lai izmantotu kontu <ph name="USER_EMAIL_ADDRESS" />, jums vispirms ir jāizrakstās no visiem kontiem. Lai pārietu atpakaļ un izrakstītos, atlasiet “Atcelt”. Pēc tam atlasiet laiku, lai atvērtu statusa apgabalu, un atlasiet “Izrakstīties”. Vēlreiz pierakstieties kontā <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Liels peles kursors</translation>
 <translation id="1545331255323159851">Skatīt tālruņa jaunākos fotoattēlus, multivides saturu un paziņojumus</translation>
@@ -472,7 +471,6 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="240789602312469910">Lietojuma un diagnostikas datu sūtīšana. Palīdziet uzlabot bērna Android lietošanas pieredzi, automātiski nosūtot diagnostikas, ierīces un lietotņu lietojuma datus uzņēmumam Google. Šī informācija netiks izmantota jūsu bērna identificēšanai, un tā palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotos datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Šo <ph name="BEGIN_LINK1" />iestatījumu<ph name="END_LINK1" /> ir noteicis īpašnieks. Īpašnieks var izvēlēties nosūtīt šīs ierīces diagnostikas un lietojuma datus Google serveriem. Ja jūsu bērnam ir ieslēgts papildu iestatījums “Darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti bērna Google kontā. <ph name="BEGIN_LINK2" />Uzzināt vairāk par rādītājiem<ph name="BEGIN_LINK2_END" />Uzzināt vairāk<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Ievadiet PIN kodu</translation>
 <translation id="2412593942846481727">Ir pieejams atjauninājums</translation>
-<translation id="2416438829169535743">Vai iziet no skata?</translation>
 <translation id="2417486498593892439">Pierakstīties tīklā</translation>
 <translation id="2423619675829330672">Pārāk daudz PIN ievadīšanas mēģinājumu. Kādu laiku nogaidiet (<ph name="TIME_LEFT" />) un mēģiniet vēlreiz.</translation>
 <translation id="2426051945783024481">Kameras kadrs tiek automātiski centrēts</translation>
@@ -480,7 +478,6 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2429753432712299108">Bluetooth ierīce “<ph name="DEVICE_NAME" />” vēlas saņemt atļauju, lai izveidotu savienojumu pārī. Pirms piekrītat, lūdzu, pārliecinieties, vai ierīcē tiek parādīta šī ieejas atslēga: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
 <translation id="2437771564543046790">Zems akumulatora uzlādes līmenis; akumulatora enerģijas taupīšanas režīms ir ieslēgts</translation>
-<translation id="243878895369688216">Atvērts vakar</translation>
 <translation id="2440978926514840421">Tika ierakstīts GIF attēls</translation>
 <translation id="2441427462554639370">Ierakstīšana tika pārtraukta, jo krātuvē ir ļoti maz brīvas vietas.</translation>
 <translation id="2445449901874883781">Izmantot lielu blīvumu</translation>
@@ -873,7 +870,6 @@ Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots, 
 <translation id="3563432852173030730">Kioska lietojumprogrammu nevarēja lejupielādēt.</translation>
 <translation id="3563558822383875692">Notiek DLC konfigurēšana…</translation>
 <translation id="3563775809269155755">Iespējot tīklāju</translation>
-<translation id="3566240529365775567">Tikko atvērts</translation>
 <translation id="3571734092741541777">Iestatīt</translation>
 <translation id="3573179567135747900">Mainīt atpakaļ uz <ph name="FROM_LOCALE" /> (nepieciešama restartēšana)</translation>
 <translation id="3576141592585647168">Mainīt laika joslu</translation>
@@ -960,7 +956,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3756485814916578707">Notiek ekrāna apraide</translation>
 <translation id="3765246971671567135">Neizdevās nolasīt bezsaistes demonstrācijas režīma politiku.</translation>
 <translation id="3765841382945324995">Īsinājumtaustiņi “<ph name="SIX_PACK_KEY_NAME" />” turpmāk būs <ph name="NEW_SHORTCUT" />, nevis <ph name="OLD_SHORTCUT" />.</translation>
-<translation id="3765841986579723851">Rediģēts šodien</translation>
 <translation id="3772109172035555611">Kursorsviras pielāgošana</translation>
 <translation id="3773700760453577392">Administrators ir aizliedzis lietotājam <ph name="USER_EMAIL" /> vairākkārtēju pierakstīšanos. Lai turpinātu, visiem lietotājiem ir jāizrakstās.</translation>
 <translation id="3779139509281456663">Tiek veidots savienojums ar ierīci <ph name="NAME" /></translation>
@@ -1000,7 +995,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3873915545594852654">Radās problēma ar ARC++.</translation>
 <translation id="3879748587602334249">Lejupielāžu pārvaldnieks</translation>
 <translation id="3884007280698606545">Sasniegts USB skaita ierobežojums</translation>
-<translation id="3886872229787704059">Atvērts šodien</translation>
 <translation id="3892148308691398805">Kopēt tekstu</translation>
 <translation id="3893630138897523026">ChromeVox (balss komentāri)</translation>
 <translation id="3898464793473355515">Pagriezt ekrānu par 90 grādiem pulksteņrādītāja kustības virzienā</translation>
@@ -1795,7 +1789,6 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6095008505822982596">Runas ātrums</translation>
 <translation id="6095425951508823973">Pievienot savienojumu ar <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Jūs tikāt izrakstīts</translation>
-<translation id="6099678161144790572">Rediģēts pagājušajā mēnesī</translation>
 <translation id="6103838137565245112">sistēma</translation>
 <translation id="6108952804512516814">Izveidot, izmantojot MI</translation>
 <translation id="6114505516289286752">Lejupielādēti runas faili šādā valodā: <ph name="LANGUAGE" /></translation>
@@ -1952,7 +1945,6 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6555373427270923730">Ierakstiet tīmekļa adresi adreses joslā un pēc tam nospiediet <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Jauna instalācija</translation>
-<translation id="6559158502366839560">Izpētīt citas lietotnes un spēles</translation>
 <translation id="6560151649238390891">Ieteikums ievietots</translation>
 <translation id="6562447480759345110">Izslēgt fokusa režīmu</translation>
 <translation id="6565007273808762236">eSIM savienojums nav pieejams</translation>
@@ -2058,7 +2050,6 @@ Jauna instalācija</translation>
 <translation id="6848716236260083778">Lai varētu iestatīt pirksta nospiedumu, bērnam ir jāpieskaras pirksta nospieduma sensoram. Bērna pirksta nospieduma dati tiek glabāti drošībā un vienmēr atrodas tikai šajā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="6852052252232534364">Noklikšķiniet</translation>
 <translation id="6852628153543175788">Pievienot 10 minūtes</translation>
-<translation id="6855029042976311970">Tikko rediģēts</translation>
 <translation id="6856708615407876657">Pārslēgt meklēšanas rezultātu kategorijas</translation>
 <translation id="6856756288284651804">Chromebook dators ir atjaunināts</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -2153,7 +2144,6 @@ Jauna instalācija</translation>
 <translation id="7118597077555700347">Atvērt rezultātu <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Atlasīt nākamo vārdu vai burtu</translation>
 <translation id="7124556000457919678">Ja funkcija ir ieslēgta, apturēt un atsākt peles taustiņu darbību</translation>
-<translation id="7126996685418858413">Atvērts pagājušajā nedēļā</translation>
 <translation id="7131634465328662194">Jūs tiksiet automātiski izrakstīts.</translation>
 <translation id="7143207342074048698">Notiek savienojuma izveide</translation>
 <translation id="7144878232160441200">Mēģināt vēlreiz</translation>
@@ -2184,7 +2174,6 @@ Jauna instalācija</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Aizmugurējais mikrofons</translation>
 <translation id="7258225044283673131">Šī lietojumprogramma nereaģē. Lai aizvērtu lietotni, atlasiet vienumu “Aizvērt piespiedu kārtā”.</translation>
-<translation id="7258828758145722155">Rediģēts vakar</translation>
 <translation id="726276584504105859">Velciet šeit, lai izmantotu ekrāna sadalīšanu.</translation>
 <translation id="7264788308526527464">Samazināt par šādu laiku: <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Atkārtoti uzlieciet pirkstu, lai pievienotu dažādas pirksta nospieduma daļas.</translation>
@@ -2257,7 +2246,6 @@ Jauna instalācija</translation>
 <translation id="7491962110804786152">cilne</translation>
 <translation id="7497767806359279797">Izvēlēties valodu un tastatūru</translation>
 <translation id="7507162824403726948">Pabeidziet identitātes verifikāciju</translation>
-<translation id="7508690557411636492">Atvērts pagājušajā mēnesī</translation>
 <translation id="7509246181739783082">Identitātes apstiprināšana</translation>
 <translation id="7512509370370076552">Īsinājumtaustiņi noklikšķināšanai ar peles labo pogu turpmāk būs taustiņš <ph name="LAUNCHER_KEY_NAME" /> + klikšķis, nevis Alt + klikšķis.</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" /> (nav atlasīta)</translation>
@@ -2711,7 +2699,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8753368202781196133">Šī valoda pašlaik netiek atbalstīta.</translation>
 <translation id="8755498163081687682">Identitātes apstiprināšana: <ph name="ORIGIN_NAME" /> vēlas apstiprināt jūsu identitāti</translation>
 <translation id="875593634123171288">Rādīt VPN iestatījumus</translation>
-<translation id="8756799553341497810">Kad iziesiet no šī skata, varēsiet sākt pielāgot lietotnes izkārtojumu.</translation>
 <translation id="8759408218731716181">Nevar iestatīt vairākkārtēju pierakstīšanos.</translation>
 <translation id="8759753423332885148">Uzziniet vairāk.</translation>
 <translation id="8760172428247796445">Jūsu <ph name="DEVICE_TYPE" /> ierīce tūlīt tiks bloķēta.

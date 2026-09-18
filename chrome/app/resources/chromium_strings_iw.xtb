@@ -147,6 +147,7 @@
 <translation id="2575822587468774919">אפשר לבחור משהו לחיפוש באמצעות התכונה 'חיפוש תמונות'</translation>
 <translation id="2576118232315942160">‏כדי לקבל גישה לסיסמאות ולנתונים נוספים בכל המכשירים שלך, כדאי להיכנס ל-Chromium</translation>
 <translation id="2587622539943955767">‏זה קוד ה-QR שצריך לסרוק בטלפון כדי להוריד את Chromium ולהיכנס לחשבון ב-Google.</translation>
+<translation id="2587885422541096572">‏כדי לחפש באמצעות Chromium.</translation>
 <translation id="2592940277904433508">‏המשך השימוש ב-Chromium</translation>
 <translation id="259935314519650377">שמירת מנהל ההתקנה שהורד במטמון נכשלה. השגיאה: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">מערכת</translation>
@@ -336,6 +337,7 @@
 <translation id="4621240073146040695">‏העדכון כמעט הושלם! הפעל מחדש את Chromium‏ כדי לסיים את העדכון.</translation>
 <translation id="4625064703209785397">‏אפשר להאיץ ביצועים של אתרים באמצעות מנוע V8 של Chromium, אבל Chromium יהיה קצת פחות עמיד בפני מתקפות.</translation>
 <translation id="4626321472657185181">‏פתיחת החיפוש באמצעות Chromium</translation>
+<translation id="4654639495249754755">‏פרופיל Chromium</translation>
 <translation id="4665829708273112819">‏אזהרה: Chromium לא יכול למנוע מתוספים לתעד את היסטוריית הגלישה שלך. כדי להשבית את התוסף הזה במצב אנונימי, צריך לבטל את הבחירה של האפשרות הזו.</translation>
 <translation id="4673151026126227699">‏אם בנוסף ישותפו דוחות שימוש ב-Chromium, הדוחות האלה יכללו את כתובות ה-URL שבהן ביקרת</translation>
 <translation id="4673710618874938871">נכנסת בתור <ph name="USER_NAME" />, עם מינוי. פתיחת תפריט החשבון</translation>
@@ -468,6 +470,7 @@
 <translation id="6174920971222007286">‏הקובץ הזה עלול להיות מסוכן<ph name="LINE_BREAK" />דפדפן Chromium יכול לבדוק את ההורדה הזו אם מזינים את הסיסמה. מידע על הקובץ נשלח אל התכונה 'גלישה בטוחה של Google', אבל הסיסמה והתוכן של הקובץ נשארים במכשיר.</translation>
 <translation id="6182736845697986886">ההתקנה נכשלה עקב שגיאה פנימית בשרת העדכון.</translation>
 <translation id="6183079672144801177">‏יש לוודא שנכנסת ל-Chromium ב-<ph name="TARGET_DEVICE_NAME" /> שלך ולשלוח שוב.</translation>
+<translation id="6192070012454216182">‏הקלדת חיפושים ושאלות מכל מקום במכשיר, גם אם Chromium ממוזער ההגדרה מאפשרת ל-Chromium לפעול ברקע.</translation>
 <translation id="6212496753309875659">‏במחשב זה קיימת כבר גרסה מתקדמת יותר של Chromium. אם התוכנה אינה פועלת, יש להסיר את ההתקנה של Chromium ולנסות שוב.</translation>
 <translation id="6219195342503754812">{0,plural, =0{‏Chromium יופעל מחדש עכשיו}=1{‏Chromium יופעל מחדש בעוד שנייה אחת}one{‏Chromium יופעל מחדש בעוד # שניות}two{‏Chromium יופעל מחדש בעוד # שניות}other{‏Chromium יופעל מחדש בעוד # שניות}}</translation>
 <translation id="6241367896540709610">‏נדרשת הרשאת גישה לאחסון ב-Chromium כדי להוריד קבצים</translation>
@@ -594,6 +597,7 @@
 <translation id="7288567540154601580">כרטיסיות ותוספים</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{‏ההמלצה של Chromium היא להסיר אותו}one{‏ההמלצה של Chromium היא להסיר אותם}two{‏ההמלצה של Chromium היא להסיר אותם}other{‏ההמלצה של Chromium היא להסיר אותם}}</translation>
 <translation id="7296334833518879294">‏כדי לשתף אודיו מהמערכת, צריך לפתוח את הגדרות המערכת ולבחור באפשרות "הקלטת אודיו של המערכת בלבד" ל-Chromium. לאחר מכן צריך להפעיל מחדש את Chromium.</translation>
+<translation id="7299899569525778554">חיפוש מהמחשב</translation>
 <translation id="731795002583552498">‏העדכון של Chromium‏ מתבצע</translation>
 <translation id="7318036098707714271">‏קובץ ההעדפות שלך פגום או לא חוקי. 
 
@@ -641,7 +645,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="77283119132245232">השירות הזה מספק תיעוד של עקבות המערכת ל-<ph name="BROWSER_NAME" />. אם השירות הזה מושבת, נתוני המעקב אחר הביצועים שנוצרים על ידי הדפדפן לא יכללו אירועים כלל-מערכתיים, כמו אירועי החלפת הקשר ואירועי שרשור מוכנים.</translation>
 <translation id="7745317241717453663">‏פעולה זו תמחק את נתוני הגלישה מהמכשיר. כדי לשחזר את הנתונים מאוחר יותר, יש להיכנס אל Chromium עם <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">המתקין לא הצליח ליצור ספרייה זמנית. יש לבדוק את המקום הפנוי בדיסק ואת האישור להתקנת תוכנה.</translation>
-<translation id="7747820849741499258">‏חיפוש ב-Chromium</translation>
 <translation id="7750130090210923118">‏איפוס לברירת המחדל של Chromium</translation>
 <translation id="7752521946322750699">‏כדי להגן על העבודה שלך ב-Chromium, הארגון יוכל לראות מידע מסוים או לנהל אותו אם התחברת לחשבון בדפדפן.</translation>
 <translation id="7781047659465034537">‏הגדרת Chromium כדפדפן ברירת המחדל והצמדה שלו לסרגל האפליקציות</translation>
@@ -739,6 +742,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8619360774459241877">‏הפעלת Chromium מתבצעת...</translation>
 <translation id="8624541899164515475">הגדרות, ייפתחו בכרטיסייה חדשה.</translation>
 <translation id="8648201657708811153">‏לא ניתן להגדיר את Google Chrome for Testing כדפדפן ברירת המחדל.</translation>
+<translation id="8676101123715131330">‏חיפוש באמצעות Chromium מכל מקום</translation>
 <translation id="8697124171261953979">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chromium או מבצעים חיפוש מסרגל הכתובות.</translation>
 <translation id="8704119203788522458">‏זהו ה-Chromium שלך</translation>
 <translation id="8712637175834984815">הבנתי</translation>
@@ -772,6 +776,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="897581876605952338">‏הלוגו של Chromium Enterprise</translation>
 <translation id="8980139959902937527">‏עם אפליקציית Chromium במכשיר <ph name="DEVICE_TYPE" />, תכונות הבטיחות של Google הולכות איתך לכל מקום</translation>
 <translation id="8981150672034878610">‏אי אפשר להפעיל את Chromium בגלל שמשהו השתבש בפתיחת הפרופיל. כדאי לנסות להפעיל מחדש את Chromium.</translation>
+<translation id="8981886272598860786">‏כדי לחפש באמצעות Chromium או להתאים אישית ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">‏ניהול הפרופילים ב-Chromium</translation>
 <translation id="8993855408334954620">‏כדי לעבור בין Gemini ב-Chromium לבין הכרטיסייה הפתוחה, אפשר להשתמש במקלדת.</translation>
 <translation id="9018218886431812662">ההתקנה הושלמה</translation>

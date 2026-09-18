@@ -142,6 +142,7 @@ Essayez d'attendre quelques minutes avant de changer de compte. Si vous changez 
 <translation id="3855938650519180865">Quoi de neuf dans Chromium</translation>
 <translation id="3886689467633467988">Connectez-vous à ce site et à Chromium pour obtenir vos favoris et plus encore sur tous vos appareils.</translation>
 <translation id="3949514465204582407">Astuce Chromium : Obtenez vos mots de passe dans n'importe quelle appli</translation>
+<translation id="3983298990898629929">Définissez Chromium comme navigateur par défaut pour ouvrir des liens en un toucher</translation>
 <translation id="4005283307739974863">Ouvre et exécute la Vérification de sécurité dans Chromium.</translation>
 <translation id="4043291146360695975">Les mots de passe sont enregistrés dans le gestionnaire de mots de passe sur cet appareil uniquement.</translation>
 <translation id="4046625794029820944">Arrêtez d'avoir à copier des URL. Définissez Chromium comme navigateur par défaut pour charger les pages directement.</translation>
@@ -273,6 +274,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="6680609900732453726">Gardez votre navigation privée avec l'authentification de l'appareil lorsque vous fermez Chromium</translation>
 <translation id="6696512128741076907">Définissez Chromium comme navigateur par défaut pour ouvrir instantanément des liens à partir d'autres applis.</translation>
 <translation id="6752854822223394465">Votre organisation est en train de configurer Chromium…</translation>
+<translation id="6777348401413221846">Vidéo en plein écran sur la façon de définir Chromium comme navigateur par défaut : ouvrez les paramètres de Chromium dans iOS, touchez « Appli de navigation par défaut », puis sélectionnez Chromium.</translation>
 <translation id="6794054469102824109">Ouvre le jeu du dinosaure de Chromium.</translation>
 <translation id="6820823224820483452">Chromium n'a pas pu vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="6830782797004194206">Connectez-vous plus rapidement avec le remplissage automatique de Chromium</translation>
@@ -302,6 +304,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Votre mot de passe sera enregistré dans le gestionnaire de mots de passe du compte <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Cette clé d'accès sera enregistrée dans le gestionnaire de mots de passe du compte <ph name="USER_EMAIL" /></translation>
+<translation id="7453822113116681031">Définissez Chromium comme navigateur par défaut pour ouvrir des liens en un toucher</translation>
 <translation id="7504829997542308412">Ouvrez Chromium</translation>
 <translation id="7531461704633548377">De Chromium</translation>
 <translation id="7554983317097061001">Astuce Chromium : Déplacez Chromium vers le Dock</translation>
@@ -348,6 +351,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="865600487977764604">Il vous protège dans Chromium, et peut être utilisé pour renforcer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte.</translation>
 <translation id="8663480472502753423">Pour garder Chromium à jour</translation>
 <translation id="8685813584220679697">Connectez-vous à ce site et à Chromium.</translation>
+<translation id="869832267508702259">Définissez Chromium comme navigateur par défaut pour obtenir des statistiques de Gemini partout où vous naviguez</translation>
 <translation id="8698780336333802489">Importer dans Chromium</translation>
 <translation id="8730503818204408000">Ouvre le paramètre de Chromium pour définir Chromium comme navigateur par défaut.</translation>
 <translation id="8754966941001340678">Chromium recommande une protection renforcée</translation>

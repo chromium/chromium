@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">SCHLIEẞEN</translation>
 <translation id="152629053603783244">Linux neu starten</translation>
 <translation id="1526448108126799339">Neuen Tab in neuem Fenster öffnen</translation>
-<translation id="1528259147807435347">In der letzten Woche bearbeitet</translation>
 <translation id="1536604384701784949">Wenn du <ph name="USER_EMAIL_ADDRESS" /> verwenden möchtest, musst du dich zuerst von allen Konten abmelden. Wähle „Abbrechen“ aus, um zurückzugehen und dich abzumelden. Wähle dann die Zeitanzeige aus, um den Statusbereich zu öffnen, und dann „Abmelden“. Melde dich dann noch einmal im Konto <ph name="USER_EMAIL_ADDRESS_2" /> an.</translation>
 <translation id="15373452373711364">Großer Cursor</translation>
 <translation id="1545331255323159851">Letzte Fotos, Medien und Benachrichtigungen auf deinem Smartphone anzeigen</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Nutzungs- und Diagnosedaten senden. Du kannst uns helfen, Android für dein Kind zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google hilfreich, beispielsweise für Android-Entwickler. Diese <ph name="BEGIN_LINK1" />Einstellung<ph name="END_LINK1" /> wird vom Inhaber erzwungen. Der Inhaber kann festlegen, ob Diagnose- und Nutzungsdaten von diesem Gerät an Google gesendet werden. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ für dein Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen zu Messwerten<ph name="BEGIN_LINK2_END" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">PIN eingeben</translation>
 <translation id="2412593942846481727">Update verfügbar</translation>
-<translation id="2416438829169535743">Ansicht schließen?</translation>
 <translation id="2417486498593892439">Im Netzwerk anmelden</translation>
 <translation id="2423619675829330672">Zu viele PIN‑Eingabeversuche. Warte <ph name="TIME_LEFT" /> und versuche es dann noch einmal.</translation>
 <translation id="2426051945783024481">Bildausschnitt automatisch zentriert</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">Das Bluetooth-Gerät „<ph name="DEVICE_NAME" />“ bittet um Erlaubnis für Kopplung. Bevor du akzeptierst, überprüfe, ob folgender Zugangscode auf dem Gerät angezeigt wird: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2437771564543046790">Niedriger Akkustand. Energiesparmodus ist aktiviert.</translation>
-<translation id="243878895369688216">Gestern geöffnet</translation>
 <translation id="2440978926514840421">GIF aufgezeichnet</translation>
 <translation id="2441427462554639370">Die Aufnahme wurde aufgrund des sehr geringen Speicherplatzes beendet</translation>
 <translation id="2445449901874883781">Hohe Anzeigedichte verwenden</translation>
@@ -873,7 +870,6 @@ Ansonsten wird das integrierte Touchpad in <ph name="TIMEOUT_SECONDS" /> wieder 
 <translation id="3563432852173030730">Die Kioskanwendung konnte nicht heruntergeladen werden.</translation>
 <translation id="3563558822383875692">DLC wird konfiguriert.</translation>
 <translation id="3563775809269155755">Hotspot aktivieren</translation>
-<translation id="3566240529365775567">Soeben geöffnet</translation>
 <translation id="3571734092741541777">Einrichten</translation>
 <translation id="3573179567135747900">Zurücksetzen auf "<ph name="FROM_LOCALE" />" (Neustart erforderlich)</translation>
 <translation id="3576141592585647168">Zeitzone ändern</translation>
@@ -960,7 +956,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3756485814916578707">Bildschirm wird gestreamt</translation>
 <translation id="3765246971671567135">Richtlinie für den Offlinedemomodus konnte nicht verarbeitet werden.</translation>
 <translation id="3765841382945324995">Das Tastenkombination für <ph name="SIX_PACK_KEY_NAME" /> wurde von <ph name="OLD_SHORTCUT" /> in <ph name="NEW_SHORTCUT" /> geändert</translation>
-<translation id="3765841986579723851">Heute bearbeitet</translation>
 <translation id="3772109172035555611">TrackPoint anpassen</translation>
 <translation id="3773700760453577392">Ein Administrator hat die Mehrfachanmeldung für <ph name="USER_EMAIL" /> deaktiviert. Alle Nutzer müssen sich abmelden, um fortfahren zu können.</translation>
 <translation id="3779139509281456663">Verbindung mit <ph name="NAME" /> wird hergestellt</translation>
@@ -1000,7 +995,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3873915545594852654">Ein Problem mit ARC++ ist aufgetreten.</translation>
 <translation id="3879748587602334249">Download-Manager</translation>
 <translation id="3884007280698606545">Limit für USB-Geräte erreicht</translation>
-<translation id="3886872229787704059">Heute geöffnet</translation>
 <translation id="3892148308691398805">Text kopieren</translation>
 <translation id="3893630138897523026">ChromeVox (gesprochenes Feedback)</translation>
 <translation id="3898464793473355515">Bildschirm um 90 Grad im Uhrzeigersinn drehen</translation>
@@ -1791,7 +1785,6 @@ Keine Geräte verbunden.</translation>
 <translation id="6095008505822982596">Sprech­geschwindigkeit</translation>
 <translation id="6095425951508823973">Verbindung mit <ph name="PROVIDER" /> hinzufügen</translation>
 <translation id="6095541101974653012">Du wurdest abgemeldet.</translation>
-<translation id="6099678161144790572">Im letzten Monat bearbeitet</translation>
 <translation id="6103838137565245112">System</translation>
 <translation id="6108952804512516814">Mit KI erstellen</translation>
 <translation id="6114505516289286752">Sprachdateien auf <ph name="LANGUAGE" /> heruntergeladen</translation>
@@ -1948,7 +1941,6 @@ Keine Geräte verbunden.</translation>
 <translation id="6555373427270923730">Webadresse in Adressleiste eingeben und <ph name="MODIFIER" /> + <ph name="KEY" /> drücken</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Neuinstallation</translation>
-<translation id="6559158502366839560">Weitere Apps und Spiele entdecken</translation>
 <translation id="6560151649238390891">Vorschlag eingefügt</translation>
 <translation id="6562447480759345110">Konzentrationsmodus beenden</translation>
 <translation id="6565007273808762236">eSIM-Verbindung nicht verfügbar</translation>
@@ -2054,7 +2046,6 @@ Neuinstallation</translation>
 <translation id="6848716236260083778">Bitte dein Kind, den Fingerabdrucksensor zu berühren, um den Fingerabdruck einzurichten. Der Fingerabdruck deines Kindes wird möglichst sicher und niemals außerhalb dieses Geräts (<ph name="DEVICE_TYPE" />) gespeichert.</translation>
 <translation id="6852052252232534364">Zum Aktivieren klicken</translation>
 <translation id="6852628153543175788">10 Minuten hinzufügen</translation>
-<translation id="6855029042976311970">Soeben bearbeitet</translation>
 <translation id="6856708615407876657">Zwischen Suchergebniskategorien wechseln</translation>
 <translation id="6856756288284651804">Chromebook aktualisiert</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> Sek.</translation>
@@ -2149,7 +2140,6 @@ Neuinstallation</translation>
 <translation id="7118597077555700347">„<ph name="SEARCH_RESULT_TEXT" />“ öffnen</translation>
 <translation id="7119327711295338600">Nächstes Wort oder nächsten Buchstaben auswählen</translation>
 <translation id="7124556000457919678">Wenn du diese Option auswählst, kannst du die Tastaturmaus aktivieren und deaktivieren</translation>
-<translation id="7126996685418858413">In der letzten Woche geöffnet</translation>
 <translation id="7131634465328662194">Du wirst automatisch abgemeldet.</translation>
 <translation id="7143207342074048698">Verbinden...</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
@@ -2180,7 +2170,6 @@ Neuinstallation</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Mikrofon auf der Rückseite</translation>
 <translation id="7258225044283673131">Die Anwendung reagiert nicht. Wähle "Schließen erzwingen" aus, um die App zu beenden.</translation>
-<translation id="7258828758145722155">Gestern bearbeitet</translation>
 <translation id="726276584504105859">Für Splitscreen hierher ziehen</translation>
 <translation id="7264788308526527464">Um <ph name="FOCUS_DURATION_DELTA" /> reduzieren</translation>
 <translation id="7267875682732693301">Lege den Finger immer wieder in leicht geänderter Position auf, bis der Abdruck vollständig erfasst ist</translation>
@@ -2253,7 +2242,6 @@ Neuinstallation</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7497767806359279797">Sprache und Tastatur auswählen</translation>
 <translation id="7507162824403726948">Überprüfung deiner Identität abschließen</translation>
-<translation id="7508690557411636492">Im letzten Monat geöffnet</translation>
 <translation id="7509246181739783082">Identität bestätigen</translation>
 <translation id="7512509370370076552">Die Tastenkombination für den Rechtsklick wird von Alt + Klick in <ph name="LAUNCHER_KEY_NAME" />-Taste + Klick geändert</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, nicht ausgewählt</translation>
@@ -2707,7 +2695,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8753368202781196133">Diese Sprache wird derzeit nicht unterstützt.</translation>
 <translation id="8755498163081687682">Identität bestätigen: <ph name="ORIGIN_NAME" /> möchte sichergehen, dass du das bist</translation>
 <translation id="875593634123171288">VPN-Einstellungen anzeigen</translation>
-<translation id="8756799553341497810">Du kannst dein App-Layout anpassen, sobald du diese Ansicht geschlossen hast.</translation>
 <translation id="8759408218731716181">Mehrfachanmeldung kann nicht eingerichtet werden</translation>
 <translation id="8759753423332885148">Weitere Informationen</translation>
 <translation id="8760172428247796445">Dein Gerät (<ph name="DEVICE_TYPE" />) wird jetzt gesperrt.

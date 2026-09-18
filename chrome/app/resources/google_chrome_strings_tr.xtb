@@ -522,7 +522,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6166185671393271715">Şifreleri Chrome'a Aktar</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
-<translation id="6177442314419606057">Chrome'da ara</translation>
 <translation id="6180522807229584611">Bu sekme ekstra kaynak kullanıyor. Performansınızı artırmak için Chrome'un bu sekmeleri devre dışı bırakmasına izin verin.</translation>
 <translation id="6182736845697986886">Güncelleme sunucusundaki dahili hata nedeniyle yükleme işlemi başarısız oldu.</translation>
 <translation id="6192058120268468905">Chrome'daki Hesabınız</translation>
@@ -530,7 +529,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6235018212288296708">Google Chrome'un mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
 <translation id="624230925347970731">Chrome yakında kapanacak</translation>
 <translation id="6247557882553405851">Google Şifre Yöneticisi</translation>
-<translation id="6248988683584659830">Ayarlarda ara</translation>
+<translation id="6248988683584659830">Ayarlarda arayın</translation>
 <translation id="6251759518630934363">Standart korumaya ek olarak sitelerden alınmış daha fazla veriyi analiz ederek Google'ın daha önce bilmedikleri de dahil olmak üzere tehlikeli siteler hakkında sizi uyarır. Chrome uyarılarını atlamayı seçebilirsiniz.</translation>
 <translation id="6277547788421725101">Anne veya babanız, Chrome'a yönelik "Siteler, uygulamalar ve uzantılar için izinler"i kapattı.</translation>
 <translation id="627882678981830918">Chrome'u özelleştirin ve kontrol edin. Chrome'u varsayılan tarayıcınız olarak ayarlayın.</translation>
@@ -593,7 +592,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6750954913813541382">Yazım hatalarını düzeltmek için Chrome, tarayıcıda yazdığınız metni Google'a gönderir</translation>
 <translation id="6760235774835597023">Chrome'un V8 motoruyla siteleri hızlandırır ancak bu durumda Chrome, saldırılara karşı biraz daha dirençsiz hale gelir. Bu ayar açık.</translation>
 <translation id="677276454032249905">Yine de Chrome'dan çıkılsın mı?</translation>
-<translation id="6777654166489463890">Chrome dışındaki içerikler (ör. açık olan başka bir uygulama veya dosya) hakkında soru sorun</translation>
 <translation id="6794858689789885890">Chrome'u kapattığımda site verileri her zaman cihazımdan silinsin</translation>
 <translation id="6800285125190089494">iOS'te Chrome için kayıtlı şifreleri kullanarak sitelerde daha hızlı oturum açın</translation>
 <translation id="6831043979455480757">Çevir</translation>

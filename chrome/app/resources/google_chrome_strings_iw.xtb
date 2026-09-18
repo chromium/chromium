@@ -227,6 +227,7 @@
 <translation id="3112458742631356345">‏Chrome חסם את ההורדה הזאת כי לרוב לא מתבצעת הורדה של קבצים כאלה ויכול להיות שהקובץ מסוכן</translation>
 <translation id="3119573284443908657">‏‫Chrome חסם את ההורדה הזו כי קובץ הארכיון כולל קבצים אחרים שעלולים להסתיר תוכנות זדוניות</translation>
 <translation id="3124332159330678621">‏מתאימים אישית את Chrome כדי לשנות את מראה הדפדפן</translation>
+<translation id="3125851611828811913">‏הקלדת חיפושים ושאלות מכל מקום במכשיר, גם אם Chrome ממוזער ההגדרה מאפשרת ל-Chrome לפעול ברקע.</translation>
 <translation id="3130333203120345554">חיפוש חדש</translation>
 <translation id="3135560418014806498">‏הוספת פרופיל Chrome</translation>
 <translation id="3137969841538672700">צריך לגרור כדי לחפש</translation>
@@ -384,6 +385,7 @@
 <translation id="4793679854893018356">‏איך מערכת Chromium שומרת על האבטחה שלך</translation>
 <translation id="4799870290441980300">‏מפעילה תכונות נוספות שמספקות את ההגנות החזקות ביותר של Chrome</translation>
 <translation id="4828579605166583682">‏Google Chrome מנסה להחליף סיסמאות קיימות. כדי לאפשר זאת, יש להזין את הסיסמה שלך ל-Windows.</translation>
+<translation id="4836321460899997044">‏פרופיל Chrome</translation>
 <translation id="4842397268809523050">‏לא ניתן היה לסנכרן את הנתונים שלך ב-ChromeOS Flex כי הסנכרון לא זמין בדומיין שלך.</translation>
 <translation id="4851866215237571846">‏כבר בוצעה כניסה לחשבון על ידי <ph name="EXISTING_USER" />.  כדי להפריד בין פעילויות הגלישה, עליך להיכנס ל-Chrome בפרופיל שלך עם האימייל <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">‏כדי לשתף את המסך, צריך לאפשר הקלטת מסך ב-Chrome בקטע "הגדרות המערכת"</translation>
@@ -497,6 +499,7 @@
 <translation id="6014316319780893079">‏בעזרת <ph name="BEGIN_LINK" />הכלים של Chrome<ph name="END_LINK" /> אפשר לגלוש בבטחה ובשליטה</translation>
 <translation id="6018578474045062808">‏רוצה לנסות את Google Lens ב-Chrome בטלפון?</translation>
 <translation id="6022659036123304283">‏אפשר להתאים אישית את Chrome בדרך שנוחה לך</translation>
+<translation id="6024930613143833266">‏חיפוש באמצעות Chrome מכל מקום</translation>
 <translation id="6025087594896450715">‏Google Chrome יופעל מחדש בעוד <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="604424701295382420">‏התכונה הוצמדה. מעכשיו אפשר לגשת אל Google Lens דרך הכפתור החדש בסרגל הכלים</translation>
@@ -518,7 +521,6 @@
 <translation id="6166185671393271715">‏ייבוא סיסמאות אל Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878">‏<ph name="PAGE_TITLE" /> - Google Chrome בגרסת ביטא</translation>
-<translation id="6177442314419606057">‏חיפוש ב-Chrome</translation>
 <translation id="6180522807229584611">‏בכרטיסייה הזו נעשה שימוש במשאבים נוספים. כדי לשפר את הביצועים, כדאי לאפשר ל-Chrome להשבית אותה.</translation>
 <translation id="6182736845697986886">ההתקנה נכשלה עקב שגיאה פנימית בשרת העדכון.</translation>
 <translation id="6192058120268468905">‏החשבון שלך ב-Chrome</translation>
@@ -550,6 +552,7 @@
 <translation id="6434035853014503219">‏תודה שבחרת ב-Chrome כדפדפן ברירת המחדל שלך!</translation>
 <translation id="6438015621983209660">‏רוצה להרחיב את הגרסה המשופרת של גלישה בטוחה ב-Chrome בטלפון?</translation>
 <translation id="6442774133615368941">‏אפשר לקנות, לתרגם ולזהות דברים שרואים במצלמה באפליקציית Chrome ל-iOS</translation>
+<translation id="6446105560007692480">‏כדי לחפש באמצעות Chrome או להתאים אישית ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" /></translation>
 <translation id="6448835208126432197">‏שימוש במקש קיצור כדי לבחור חלק מהמסך ב-Gemini ב-Chrome.</translation>
 <translation id="6473905796280459355">‏מעבר לדף 'מידע על Chrome'</translation>
 <translation id="6481963882741794338">‏אפשר לקשר את Chrome לשירותי Google אחרים לצורך התאמה אישית ולמטרות אחרות</translation>
@@ -571,6 +574,7 @@
 <translation id="6612152958212564387">‏נתוני השימוש ודוחות הקריסה שלך לא נשלחים ל-Google. <ph name="BEGIN_LINK" />ניהול<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">‏רוצה סנכרון מושלם של הסיסמאות, הסימניות וההיסטוריה שלך בין מכשירים? כדאי להגדיר את Chrome כדפדפן ברירת המחדל.</translation>
 <translation id="6631524303639368205">‏אפשר להמשיך מהמקום שבו הפסקת: Chrome שחזר את הכרטיסיות מהסשן האחרון שלך. כדי להשבית את האפשרות הזאת, צריך לעבור אל</translation>
+<translation id="6632012506031284914">‏כדי לחפש באמצעות Chrome.</translation>
 <translation id="6632473616050862500">‏השימוש ב-ChromeOS Flex מתאפשר בזכות <ph name="BEGIN_LINK_CROS_OSS" />תוכנת קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספת.</translation>
 <translation id="6634299872736643004">‏השינויים בהגדרה הזו ייכנסו לתוקף לאחר הפעלה מחדש של Chrome.</translation>
 <translation id="6660596345553328257">‏להיכנס אל Chrome?</translation>
@@ -639,6 +643,7 @@
 <translation id="7285990705317078173">‏כדי לעקוב אחרי מחירים ולקבל התראות על ירידות במחיר באתר מסוים, כדאי להוריד את Chrome לטלפון שלך</translation>
 <translation id="7288567540154601580">כרטיסיות ותוספים</translation>
 <translation id="7296210096911315575">מידע חשוב על בטיחות ועל אופן השימוש</translation>
+<translation id="7299899569525778554">חיפוש מהמחשב</translation>
 <translation id="7302361266603927550">‏חלק מהנתונים ב-Chrome עדיין לא נשמרו בחשבון Google. כדאי לחכות כמה דקות לפני היציאה מהחשבון. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו.</translation>
 <translation id="7306401458628386911">‏רוצה לגלוש מיד? עכשיו אפשר להגדיר את Chrome להתחיל לפעול יחד עם Windows.</translation>
 <translation id="7308322188646931570">‏Chrome זקוק לגישה לאחסון כדי להוריד קבצים</translation>

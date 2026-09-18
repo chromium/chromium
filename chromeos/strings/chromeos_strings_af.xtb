@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Stawingstipe</translation>
 <translation id="1776228893584526149">Muurpapierkleur</translation>
 <translation id="1777913922912475695">brug</translation>
-<translation id="1782199038061388045">vertaling</translation>
 <translation id="1788485524395674731">Jou administrateur bestuur hierdie app</translation>
 <translation id="1792647875738159689">Kanselleer skandering</translation>
 <translation id="1801418420130173017">Deaktiveer donkertema</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Soort</translation>
 <translation id="2448857983905133469">Klasnutsgoed</translation>
 <translation id="2468124392950503650">Kies porboodskap om te skep of sien die <ph name="BEGIN_LINK_PROMPTING_GUIDE" />porboodskapgids<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Gebruik Help my skryf om ’n konsep te skep of om bestaande werk af te rond, aangedryf deur Google KI</translation>
 <translation id="2475982808118771221">'n Fout het voorgekom</translation>
 <translation id="2480572840229215612">krappe</translation>
 <translation id="248546197012830854">Toestel is vanlyn. Koppel aan wi-fi-netwerk om hulpinhoud te sien.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Neem weer</translation>
 <translation id="3479552764303398839">Nie nou nie</translation>
 <translation id="3484914941826596830">Moenie hierdie eksterne toestel uitprop of jou rekenaar afskakel terwyl die fermware opdateer nie. Jy kan hierdie venster klein maak. Hierdie opdatering kan 'n paar minute neem, en jou eksterne toestel sal dalk nie in hierdie tyd werk nie.</translation>
-<translation id="3486220673238053218">definisie</translation>
 <translation id="3487866404496702283">Terugvoer vir mahi-kenmerk</translation>
 <translation id="3488065109653206955">Deels geaktiveer</translation>
 <translation id="3492882532495507361">’n <ph name="OFFICE_STYLE" /> kantoor met <ph name="OFFICE_COLOR" /> skakerings</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Kies ’n tema</translation>
 <translation id="3644695927181369554">Swak voorstel</translation>
 <translation id="3651050199673793219">Kies ’n temperatuureenheid</translation>
-<translation id="3661106764436337772">Skryf vinniger en met meer selfvertroue</translation>
 <translation id="3662461537616691585">wynrooi en maroen</translation>
 <translation id="3664755900672940272">Voorbeeldportekste is geskommel</translation>
 <translation id="3668449597372804501">Wolkvloeimuurpapier</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Gestop</translation>
 <translation id="4777310452073659583">Herbegin jou <ph name="DEVICE_TYPE" /> om transkripsie te kry</translation>
 <translation id="4778082030331381943">ametis</translation>
-<translation id="4782311465517282004">Kry definisies, vertalings of eenheidomskakelings wanneer jy regsklik of teks raak en hou</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Gaan na die <ph name="BEGIN_LINK" />Hulpsentrum<ph name="END_LINK" /> vir meer hulp.</translation>
 <translation id="4793756956024303490">Saampersingalgoritme</translation>
@@ -1459,7 +1454,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="7397270852490618635">Skakel ligtema af</translation>
 <translation id="7401543881546089382">Vee kortpad uit</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> is gereed vir opdatering</translation>
-<translation id="741244894080940828">omskakeling</translation>
 <translation id="7415801143053185905">Baie hoë HTTP-traagheid</translation>
 <translation id="7418738250896500352">Te veel woorde om te vereenvoudig</translation>
 <translation id="7425037327577270384">Help my skryf</translation>
@@ -1769,7 +1763,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="885701979325669005">Berging</translation>
 <translation id="885704831271383379">sleutelbord donkerder</translation>
 <translation id="8863170912498892583">Aktiveer donkertema</translation>
-<translation id="8863888432376731307">Kry die <ph name="INTENT" /> vir "<ph name="QUERY" />" en meer</translation>
 <translation id="8864415976656252616">Geen voorgestelde inhoud nie. Sien beste hulpinhoud.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Toestel is 'n tablet.</translation>

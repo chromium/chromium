@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">ऑथेंटिकेशन प्रकार</translation>
 <translation id="1776228893584526149">वॉलपेपरचा टोन</translation>
 <translation id="1777913922912475695">पूल</translation>
-<translation id="1782199038061388045">भाषांतर</translation>
 <translation id="1788485524395674731">हे अ‍ॅप तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केलेले आहे</translation>
 <translation id="1792647875738159689">स्कॅनिंग रद्द करत आहे</translation>
 <translation id="1801418420130173017">गडद थीम बंद करा</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2448857983905133469">क्लास टूल</translation>
 <translation id="2468124392950503650">तयार करण्यासाठी प्रॉम्प्ट निवडा किंवा <ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रॉम्प्ट मार्गदर्शक<ph name="END_LINK_PROMPTING_GUIDE" /> पहा</translation>
-<translation id="2472215337771558851">मसुदा तयार करण्यासाठी किंवा सध्याच्या कामामध्ये सुधारणा करण्यासाठी Google AI द्वारे सक्षम केलेले मला लिहिण्यात मदत करा वापरा</translation>
 <translation id="2475982808118771221">एक एरर आली आहे</translation>
 <translation id="2480572840229215612">खेकडे</translation>
 <translation id="248546197012830854">डिव्हाइस ऑफलाइन आहे. मदत आशय पाहण्यासाठी वाय-फायशी कनेक्ट करा.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">पुन्हा काढा</translation>
 <translation id="3479552764303398839">सध्या नाही</translation>
 <translation id="3484914941826596830">फर्मवेअर अपडेट होत असताना, हे बाह्य डिव्हाइस अनप्लग करू नका किंवा तुमचा कॉंप्युटर बंद करू नका. तुम्ही ही विंडो लहान करू शकता. या अपडेटला काही मिनिटे लागू शकतात आणि या कालावधीदरम्यान तुमचे बाह्य डिव्हाइस कदाचित काम करणार नाही.</translation>
-<translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3487866404496702283">माहि वैशिष्ट्य यासंबंधित फीडबॅक द्या</translation>
 <translation id="3488065109653206955">आंशिक रूपात सक्रिय </translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> टोन असलेले <ph name="OFFICE_STYLE" /> कार्यालय</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">थीम निवडा</translation>
 <translation id="3644695927181369554">वाईट सूचना</translation>
 <translation id="3651050199673793219">तापमान युनिट निवडा</translation>
-<translation id="3661106764436337772">जलद आणि अधिक आत्मविश्वासाने लिहा</translation>
 <translation id="3662461537616691585">बर्गंडी आणि मरून</translation>
 <translation id="3664755900672940272">नमुना प्रॉम्प्ट शफल केले</translation>
 <translation id="3668449597372804501">क्लाउड फ्लो वॉलपेपर</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">थांबविले</translation>
 <translation id="4777310452073659583">ट्रान्स्क्रिप्ट मिळवण्यासाठी, तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट करा</translation>
 <translation id="4778082030331381943">ॲमेथिस्ट</translation>
-<translation id="4782311465517282004">तुम्ही मजकुरावर राइट-क्लिक करता तेव्हा किंवा त्याला स्पर्श करून तो धरून ठेवता तेव्हा व्याख्या, भाषांतरे किंवा युनिट रूपांतरे मिळवा</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> फोटो</translation>
 <translation id="4793710386569335688">अधिक मदत मिळवण्यासाठी, <ph name="BEGIN_LINK" />मदत केंद्र<ph name="END_LINK" /> वर जा.</translation>
 <translation id="4793756956024303490">काँप्रेशन अल्गोरिदम</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">फिकट थीम बंद करा</translation>
 <translation id="7401543881546089382">शॉर्टकट हटवा</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> हे अपडेट केले जाण्यासाठी तयार आहे</translation>
-<translation id="741244894080940828">रूपांतर</translation>
 <translation id="7415801143053185905">अत्युच्च HTTP लेटन्सी</translation>
 <translation id="7418738250896500352">सोपे करण्यासाठी खूप जास्त शब्द आहेत</translation>
 <translation id="7425037327577270384">मला लिहिण्यात मदत करा</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">स्टोरेज</translation>
 <translation id="885704831271383379">कीबोर्ड आणखी गडद</translation>
 <translation id="8863170912498892583">गडद थीम सुरू करा</translation>
-<translation id="8863888432376731307">"<ph name="QUERY" />" आणि आणखी बऱ्याच गोष्टींसाठी <ph name="INTENT" /> मिळवा</translation>
 <translation id="8864415976656252616">कोणताही सुचवलेला आशय नाही. सर्वोत्तम मदत आशय पहा.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">डिव्हाइस हे टॅबलेट आहे.</translation>

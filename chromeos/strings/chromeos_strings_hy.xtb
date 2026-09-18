@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Իսկորոշման տեսակը</translation>
 <translation id="1776228893584526149">Պաստառի երանգ</translation>
 <translation id="1777913922912475695">կամուրջ</translation>
-<translation id="1782199038061388045">թարգմանություն</translation>
 <translation id="1788485524395674731">Այս հավելվածը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="1792647875738159689">Սկանավորումը չեղարկվում է</translation>
 <translation id="1801418420130173017">Անջատել մուգ թեման</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Տեսակ</translation>
 <translation id="2448857983905133469">Դասարանային գործիքներ</translation>
 <translation id="2468124392950503650">Ընտրեք հարցումը, որպեսզի տեսնեք կամ ստեղծեք <ph name="BEGIN_LINK_PROMPTING_GUIDE" />հարցումների ուղեցույցը<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Google AI տեխնոլոգիաների վրա հիմնված «Օգնիր ինձ գրել» գործառույթի միջոցով ստեղծեք սևագիր կամ հղկեք առկա տեքստը</translation>
 <translation id="2475982808118771221">Սխալ առաջացավ</translation>
 <translation id="2480572840229215612">խաչափառներ</translation>
 <translation id="248546197012830854">Սարքը միացած չէ ինտերնետին։ Միացեք Wi-Fi ցանցին՝ տեղեկատվական բովանդակություն տեսնելու համար։</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Նորից լուսանկարել</translation>
 <translation id="3479552764303398839">Հիմա չէ</translation>
 <translation id="3484914941826596830">Քանի դեռ ներկառուցված ծրագիրը թարմացվում է, մի՛ անջատեք ձեր համակարգիչը կամ այս արտաքին սարքը համակարգչից։ Դուք կարող եք փոքրացնել այս պատուհանը։ Այս թարմացումը կարող է մի քանի րոպե տևել, և այդ ընթացքում արտաքին սարքը հնարավոր է, որ չաշխատի։</translation>
-<translation id="3486220673238053218">սահմանում</translation>
 <translation id="3487866404496702283">Կարծիք mahi գործառույթի մասին</translation>
 <translation id="3488065109653206955">Մասամբ ակտիվացված</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> գրասենյակ <ph name="OFFICE_COLOR" /> գուներանգներով</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Ընտրեք թեմա</translation>
 <translation id="3644695927181369554">Վատ հուշում</translation>
 <translation id="3651050199673793219">Ընտրել ջերմաստիճանի միավոր</translation>
-<translation id="3661106764436337772">Գրեք ավելի արագ և ավելի վստահ</translation>
 <translation id="3662461537616691585">բորդո և շագանակագույն</translation>
 <translation id="3664755900672940272">Սեմփլի հուշումները խառնվել են</translation>
 <translation id="3668449597372804501">«Ամպերի հոսք» պաստառ</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Դադարեցված է</translation>
 <translation id="4777310452073659583">Գրադարձումը ստանալու համար վերագործարկեք ձեր <ph name="DEVICE_TYPE" /> սարքը</translation>
 <translation id="4778082030331381943">ամետիստ</translation>
-<translation id="4782311465517282004">Ստացեք սահմանումներ, թարգմանություններ կամ չափման միավորների փոխարկումներ՝ տեքստի վրա մկնիկի աջ կոճակը սեղմելով կամ տեքստին հպել և պահելով։</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> լուսանկար</translation>
 <translation id="4793710386569335688">Եթե օգնություն է անհրաժեշտ, անցեք <ph name="BEGIN_LINK" />Օգնության կենտրոն<ph name="END_LINK" />։</translation>
 <translation id="4793756956024303490">Սեղմման ալգորիթմ</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">Անջատել բաց թեման</translation>
 <translation id="7401543881546089382">Ջնջել դյուրանցումը</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> սարքը պատրաստ է թարմացման</translation>
-<translation id="741244894080940828">փոխարկում</translation>
 <translation id="7415801143053185905">HTTP-ի շատ բարձր հապաղում</translation>
 <translation id="7418738250896500352">Բառերը չափից շատ են պարզեցնելու համար</translation>
 <translation id="7425037327577270384">Օգնիր ինձ գրել</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">Պահոց</translation>
 <translation id="885704831271383379">ստեղնաշարի լուսավորության նվազեցում</translation>
 <translation id="8863170912498892583">Միացնել մուգ թեման</translation>
-<translation id="8863888432376731307">Ստացեք «<ph name="QUERY" />» բառի <ph name="INTENT" />ը և ավելին</translation>
 <translation id="8864415976656252616">Առաջարկվող բովանդակություն չկա։ Դիտեք հիմնական տեղեկատվական բովանդակությունը։</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Սարքը պլանշետ է։</translation>

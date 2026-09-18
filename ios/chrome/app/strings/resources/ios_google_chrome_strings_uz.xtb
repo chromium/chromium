@@ -49,6 +49,7 @@ Bularni hisobga olish kerak:
 <translation id="1784567647421309104">Parollarni Chromeda saqlang</translation>
 <translation id="1790080846677398234">Kiritilgan URL manzillarni Chrome bukmarklariga kiritadi.</translation>
 <translation id="1799920918471566157">Chrome maslahatlari</translation>
+<translation id="1802420021606590788">Chrome sahifa nomlari va URL manzillarni bulutdagi maxfiy xotirada qayta ishlaydi</translation>
 <translation id="1830634592642484976">Hozir bu manzil Chromega saqlangan. Boshqa Google xizmatlarida ishlatish uchun manzilni Google hisobiga (<ph name="USER_EMAIL" />) saqlang.</translation>
 <translation id="1891812034154776216">Chrome tark etilganda ochiq inkognito varaqlarni berkitish</translation>
 <translation id="1894434821386148799">Bu yerda Chrome sozlamalari va boshqa axborotlar chiqadi</translation>
@@ -284,6 +285,7 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="7272930098487145294">Rasmlarni saqlash uchun Sozlamalar ustiga bosib, Chromega rasmlarni ochishga ruxsat bering.</translation>
 <translation id="7275945473750112644">Hisobingiz <ph name="HOSTED_DOMAIN" /> domenida boshqariladi, shuning uchun bu qurilmadagi Chrome maʼlumotlari tozalanadi</translation>
 <translation id="7284245284340063465">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Takliflarni tanlashingiz yoki rad etishingiz asosida Chrome kelgusida yanada mos va foydali maʼlumotlarni chiqarish uchun moslashib boradi.</translation>
 <translation id="7296102444587051536">iOS uchun Chrome</translation>
 <translation id="7299681342915173313">Siz endi Chrome brauzerini har doim xatlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="7334364820047587268">Mazkur hisoblar uchun parollar Google Parollar menejerida allaqachon mavjud. Quyidagi parollardan biri import qilinsa, mavjud parol yangilanadi.</translation>
@@ -357,6 +359,7 @@ Maʼlumotlaringiz <ph name="TIME" /> sanasida kodli ibora bilan shifrlangan. Chr
 <translation id="8544583291890527417">Maxfiylik va xavfsizlikka oid muammolar haqidagi Chrome bildirishnomalari</translation>
 <translation id="855027533751209304">Chrome maslahati: Koʻrgan narsangizni qidiring</translation>
 <translation id="8558480467877843976">Siz endi Chrome brauzerini har doim internetni kezish vaqtida yoki xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
+<translation id="8589791109349384456">Takliflarni faolsizlantirish Chrome brauzerining boshqa funksiyalar uchun sahifa sarlavhalari va URL manzillarini qayta ishlashini nazorat qilmaydi. Bu maʼlumotlarga ruxsatni <ph name="BEGIN_LINK" />sinxronizatsiya sozlamalari<ph name="END_LINK" /> orqali boshqarish mumkin.</translation>
 <translation id="8603022514504485810">Google Parollar menejeri barcha parollarni tekshira olmadi. Ertaga qaytadan urining yoki <ph name="BEGIN_LINK" />Google hisobingizdagi parollarni tekshiring.<ph name="END_LINK" /></translation>
 <translation id="8610372330814566250">Safarida saqlangan parollar, tarix, bukmarklar va kredit kartalarni Chromeda ishlating</translation>
 <translation id="8630122478628016441">“Chrome yopilganda Inkognito varaqlar qulflansin” parametrini yoqing.</translation>

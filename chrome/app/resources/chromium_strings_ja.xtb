@@ -644,7 +644,6 @@
 <translation id="77283119132245232"><ph name="BROWSER_NAME" /> のシステム トレース サービスを提供します。このサービスを無効にした場合、ブラウザによって作成されるパフォーマンス トレースに、コンテキスト切り替えやスレッドの準備完了などのシステム全体のイベントは含められません。</translation>
 <translation id="7745317241717453663">このデバイスから閲覧データを削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chromium にログインしてください。</translation>
 <translation id="7747138024166251722">インストーラーの一時ディレクトリを作成できませんでした。ディスクの空き領域とソフトウェアのインストール許可があることを確認してください。</translation>
-<translation id="7747820849741499258">Chromium で検索</translation>
 <translation id="7750130090210923118">デフォルトの Chromium にリセット</translation>
 <translation id="7752521946322750699">Chromium での作業を保護するため、Chromium へのログイン中、組織は特定の情報を表示または管理できます。</translation>
 <translation id="7781047659465034537">Chromium を既定に設定してタスクバーに固定する</translation>
@@ -652,7 +651,6 @@
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">あなたのインターネット トラフィックにアクセスできるユーザーに、あなたがアクセスしたサイトを知られないようにします。Chromium では、安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。</translation>
 <translation id="7810005234485217901">画像検索を固定して簡単にアクセスできます</translation>
-<translation id="7813626943009612327">Chromium 以外のコンテンツ（開いている別のアプリやファイルなど）について質問できます</translation>
 <translation id="7828527096541974699">Chromium と共有する内容を選択</translation>
 <translation id="7828947555739565424">このアカウントの Chromium プロファイルは、このデバイスにすでに存在します</translation>
 <translation id="7845233973568007926">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはコンピュータを再起動してください。</translation>

@@ -48,6 +48,7 @@
 <translation id="1784567647421309104">パスワードを Chrome に保存</translation>
 <translation id="1790080846677398234">入力した URL を Chrome のブックマークに追加します。</translation>
 <translation id="1799920918471566157">Chrome のおすすめの使い方</translation>
+<translation id="1802420021606590788">Chrome は、クラウドのプライベート スペースでページのタイトルと URL を処理します</translation>
 <translation id="1830634592642484976">この住所は現在、Chrome に保存されています。Google サービス全体で使用するには、Google アカウント（<ph name="USER_EMAIL" />）に保存してください。</translation>
 <translation id="1891812034154776216">Chrome から離れるときに開いていたシークレット タブを非表示にする</translation>
 <translation id="1894434821386148799">Chrome の設定などをここで確認できます</translation>
@@ -140,6 +141,7 @@
 <translation id="3984746313391923992">組織が Chrome にログインしないように求めています。</translation>
 <translation id="3988789688219830639">Google Chrome で写真または動画にアクセスできません。iOS の [設定] &gt; [プライバシー] &gt; [写真] でアクセスを有効にしてください。</translation>
 <translation id="4064699917955374540">Google アカウントで Chrome のデータを使用して保存するには、本人確認を行ってください。</translation>
+<translation id="4093789416346364876">Chrome を既定のブラウザに設定すると、どこでブラウジングしていても Gemini の分析情報を利用できます</translation>
 <translation id="411154422556990518">価格トラッキングの更新や Chrome のヒントをチェックできます。</translation>
 <translation id="417201473131094001">Chrome Canary では対象外です。</translation>
 <translation id="424864128008805179">Chrome からログアウトしますか？</translation>

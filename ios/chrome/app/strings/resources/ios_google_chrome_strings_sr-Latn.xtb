@@ -48,6 +48,7 @@
 <translation id="1784567647421309104">Sačuvajte lozinke u Chrome-u</translation>
 <translation id="1790080846677398234">Dodaje unete URL-ove u obeleživače u Chrome-u.</translation>
 <translation id="1799920918471566157">Saveti za Chrome</translation>
+<translation id="1802420021606590788">Chrome obrađuje naslove stranica i URL-ove u privatnom prostoru u klaudu</translation>
 <translation id="1830634592642484976">Ova adresa je trenutno sačuvana u Chrome-u. Da biste je koristili u svim Google proizvodima, sačuvajte je na Google nalogu, <ph name="USER_EMAIL" />.</translation>
 <translation id="1891812034154776216">Sakrij otvorene kartice bez arhiviranja kada napustite Chrome</translation>
 <translation id="1894434821386148799">Ovde možete da pronađete Chrome podešavanja i drugo</translation>
@@ -140,6 +141,7 @@ Ne možete da sačuvate nove obeleživače na nalogu dok neke ne izbrišete. Ako
 <translation id="3984746313391923992">Organizacija zahteva da ostanete odjavljeni sa Chrome-a.</translation>
 <translation id="3988789688219830639">Google Chrome ne može da pristupa slikama ili videima. Omogućite pristup u iOS Settings (Podešavanja iOS-a) &gt; Privacy (Privatnost) &gt; Photos (Slike).</translation>
 <translation id="4064699917955374540">Da biste koristili i čuvali Chrome podatke na Google nalogu, potvrdite svoj identitet.</translation>
+<translation id="4093789416346364876">Podesite Chrome kao podrazumevani pregledač da biste dobijali Gemini uvide gde god da pregledate</translation>
 <translation id="411154422556990518">Budite u toku sa novostima o praćenju cena i savetima za Chrome.</translation>
 <translation id="417201473131094001">Nije podržano u verziji Chrome Canary</translation>
 <translation id="424864128008805179">Želite li da se odjavite iz Chrome-a?</translation>
@@ -359,6 +361,7 @@ Podaci su šifrovani pomoću pristupne fraze <ph name="TIME" />. Unesite je da 
 <translation id="8610372330814566250">Koristite Safari lozinke, istoriju, obeleživače i kreditne kartice u Chrome-u</translation>
 <translation id="8630122478628016441">Uključite Zaključaj kartice bez arhiviranja posle zatvaranja Chrome-a.</translation>
 <translation id="8673726683583791503">Kupujte pomoću Google objektiva</translation>
+<translation id="869525545193934083">Video preko celog ekrana o tome kako da podesite Chrome kao podrazumevani pregledač: Otvorite podešavanja Chrome-a u iOS-u, dodirnite Podrazumevana aplikacija za pregledač i izaberite Chrome.</translation>
 <translation id="8765470054473112089">Kada kucate u traci za adresu ili u okviru za pretragu, Chrome šalje tekst koji unosite podrazumevanom pretraživaču da biste dobijali bolje predloge. Ovo je isključeno u režimu bez arhiviranja.</translation>
 <translation id="8772179140489533211">Prikazuje upite za prijavljivanje u Chrome.</translation>
 <translation id="8788269841521769222">Ne morate da zapamtite ovu lozinku. Čuva se u Google menadžeru lozinki za <ph name="EMAIL" /></translation>

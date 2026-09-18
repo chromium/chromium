@@ -649,7 +649,6 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="77283119132245232">Naršyklei „<ph name="BROWSER_NAME" />“ teikiamos sistemos stebėjimo paslaugos. Jei ši paslauga išjungta, sistemos lygio įvykiai, pvz., konteksto perjungimai ir grupių parengties įvykiai, neįtraukiami naršyklės sugeneruotus našumo stebėjimo duomenis.</translation>
 <translation id="7745317241717453663">Atlikus šį veiksmą iš šio įrenginio bus ištrinti naršymo duomenys. Jei vėliau norėsite gauti duomenis, prisijunkite prie „Chromium“ kaip <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Diegimo programai nepavyko sukurti laikino katalogo. Patikrinkite, ar yra laisvos vietos diske ir, ar leidžiama įdiegti programinę įrangą.</translation>
-<translation id="7747820849741499258">Paieška naršyklėje „Chromium“</translation>
 <translation id="7750130090210923118">Iš naujo nustatyti numatytąją „Chromium“ temą</translation>
 <translation id="7752521946322750699">Kad apsaugotų jūsų darbą sistemoje „Chromium“, jūsų organizacija galės peržiūrėti arba tvarkyti tam tikrą informaciją, kai būsite prisijungę prie „Chromium“.</translation>
 <translation id="7781047659465034537">Nustatykite „Chromium“ kaip numatytąją naršyklę ir prisekite ją prie užduočių juostos</translation>
@@ -657,7 +656,6 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="7790626492778995050">„<ph name="PAGE_TITLE" />“ – „Chromium Canary“</translation>
 <translation id="7803986347287457849">Neleiskite srautą internete galintiems pasiekti žmonėms matyti svetainių, kuriose lankotės. „Chromium“ naudoja saugų ryšį ieškodama svetainės IP adreso DNS (domenų pavadinimų sistemoje).</translation>
 <translation id="7810005234485217901">Galite prisegti vaizdų paiešką, kad lengvai ją pasiektumėte</translation>
-<translation id="7813626943009612327">Klauskite apie turinį ne „Chromium“, pvz., kitoje programoje ar faile, kurį atidarėte</translation>
 <translation id="7828527096541974699">Pasirinkite, ką norite bendrinti su „Chromium“</translation>
 <translation id="7828947555739565424">Šios paskyros „Chromium“ profilis jau yra šiame įrenginyje</translation>
 <translation id="7845233973568007926">Dėkojame už diegimą. Turite iš naujo paleisti kompiuterį, prieš naudodami „<ph name="BUNDLE_NAME" />“.</translation>

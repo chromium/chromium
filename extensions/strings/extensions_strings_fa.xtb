@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">درخواست اجازه ولی ناموفق بود.</translation>
 <translation id="1803557475693955505">بارگیری صفحه پس‌زمینه "<ph name="BACKGROUND_PAGE" />" ممکن نیست.</translation>
 <translation id="1875387611427697908">این مورد را فقط می‌توان از <ph name="CHROME_WEB_STORE" /> اضافه کرد</translation>
+<translation id="1901182793187376715">‫<ph name="EXTENSION_NAME" /> (شناسه افزونه «<ph name="EXTENSION_ID" />») را نمی‌توان در محیط‌های با سطح اعتماد پایین ازطریق خط‌مشی نصب کرد.</translation>
 <translation id="2131077480075264">نصب «<ph name="APP_NAME" />» انجام نشد، زیرا «<ph name="IMPORT_NAME" />» آن را مجاز نکرده است</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" اضافه شود؟</translation>
 <translation id="2159915644201199628">رمزگشایی تصویر امکان‌پذیر نیست: «<ph name="IMAGE_NAME" />»</translation>

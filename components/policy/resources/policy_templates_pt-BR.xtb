@@ -1147,6 +1147,13 @@ política foi a 121. O suporte foi removido na versão 122.</translation>
       Observação: esta configuração substituirá a <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, se ela estiver presente.</translation>
 <translation id="1723571018091915166">Não permitir o compartilhamento inteligente de guias com integrações do <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="172374442286684480">Permitir que todos os sites definam dados locais</translation>
+<translation id="1726467454355516626">Se a política for definida como verdadeira, os apps do Chrome instalados pelo admin vão continuar em execução e poderão ser instalados, não importando a ativação padrão deles.
+
+Se ela for deixada sem definição ou for definida como falsa, será usado o comportamento padrão especificado no dispositivo.
+
+Se o usuário tentar abrir um app do Chrome desativado, vai receber uma mensagem explicando por que isso não foi possível e sugerindo que ele entre em contato com o departamento de TI.
+
+O ChromeOS M184 será o último marco do ChromeOS compatível com Apps do Chrome.</translation>
 <translation id="1729169799290004131">Se a política for definida, a porcentagem de brilho da tela será especificada, desativando os recursos do brilho automático. O brilho inicial da tela será ajustado para o valor da política, mas os usuários poderão mudá-lo.
 
       Se a política não for definida, os controles da tela pelo usuário ou os recursos de brilho automático não serão afetados.
@@ -4775,6 +4782,7 @@ Em plataformas para computador, também é possível desativar o download desse 
 <translation id="3965339130942650562">Tempo limite até que a saída do usuário ocioso seja executada</translation>
 <translation id="396536755218079668">Usuários supervisionados</translation>
 <translation id="3968218878014278212">Permitir que o Eche seja ativado.</translation>
+<translation id="396848310647682467">Forçar a permissão de Apps do Chrome instalados pelo admin</translation>
 <translation id="3971673686578912106">Se a política for definida como "Ativada", <ph name="PLUGIN_VM_NAME" /> será ativado para o dispositivo enquanto for permitido por outras configurações. É necessário definir <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> e <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> como "Verdadeiro", e <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> ou <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> precisam ser definidas para que <ph name="PLUGIN_VM_NAME" /> seja executado.
 
       Se a política for definida como "Desativada" ou não for definida, o <ph name="PLUGIN_VM_NAME" /> não será ativado para o dispositivo.</translation>
@@ -5246,6 +5254,7 @@ Esta política foi usada para desativar o upgrade automático de conteúdo misto
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="4275048399551500192">Não mostrar controles de mídia para sessões do <ph name="PRODUCT_NAME" /> iniciadas por outros dispositivos</translation>
+<translation id="4278195158478376952">Usar o comportamento padrão.</translation>
 <translation id="4278656834593750050">Ativar sons de carregamento</translation>
 <translation id="4281322231545828290">Ativar mudança automática de senha</translation>
 <translation id="4282243913059705499">Sempre mostrar o ícone do <ph name="PRODUCT_NAME" /> na barra de ferramentas</translation>
@@ -12622,6 +12631,7 @@ A partir do <ph name="PRODUCT_NAME" /> 147, esta política será descontinuada. 
 <translation id="859579553230883285">Desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> de anúncios sugeridos pelo site para os usuários.</translation>
 <translation id="8596784129804979039">Usar a configuração padrão para o sandbox do serviço de rede</translation>
 <translation id="8597758693275075382">Strings OEM da SMBIOS a serem transmitidas para a VM durante a instalação. O padrão é a lista vazia.</translation>
+<translation id="8598252733604444967">Permitir a execução de apps do Chrome instalados pelo admin.</translation>
 <translation id="8598786284856179541">Ativar relatórios sobre informações de versão</translation>
 <translation id="859937827887158048">Não permitir downloads ponto a ponto de atualizações automáticas</translation>
 <translation id="8600280933078435582">Apps Linux</translation>

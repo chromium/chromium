@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Тып аўтэнтыфікацыі</translation>
 <translation id="1776228893584526149">Колер шпалер</translation>
 <translation id="1777913922912475695">мост</translation>
-<translation id="1782199038061388045">пераклад</translation>
 <translation id="1788485524395674731">Гэта праграма знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="1792647875738159689">Сканіраванне скасоўваецца</translation>
 <translation id="1801418420130173017">Адключыць цёмную тэму</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Тып</translation>
 <translation id="2448857983905133469">Інструменты для ўрокаў</translation>
 <translation id="2468124392950503650">Выберыце запыт для стварэння ці паглядзіце <ph name="BEGIN_LINK_PROMPTING_GUIDE" />дапаможнік па запытах<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Выкарыстоўвайце дапамогу з напісаннем на аснове штучнага інтэлекту ад Google, каб ствараць чарнавікі або дапрацоўваць існуючыя тэксты</translation>
 <translation id="2475982808118771221">Адбылася памылка</translation>
 <translation id="2480572840229215612">крабы</translation>
 <translation id="248546197012830854">Прылада па-за сеткай. Каб праглядзець даведачнае змесціва, падключыцеся да сеткі Wi-Fi.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Перазняць</translation>
 <translation id="3479552764303398839">Не зараз</translation>
 <translation id="3484914941826596830">Падчас абнаўлення ўбудаванага ПЗ не адключайце знешнюю прыладу і не выключайце камп’ютар. Гэта акно можна згарнуць. Абнаўленне зойме некалькі хвілін, і падчас яго знешняя прылада можа не працаваць.</translation>
-<translation id="3486220673238053218">азначэнне</translation>
 <translation id="3487866404496702283">Водгук пра функцыю</translation>
 <translation id="3488065109653206955">Часткова актывавана</translation>
 <translation id="3492882532495507361">Офіс, стыль – <ph name="OFFICE_STYLE" />, тон – <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Выбраць тэму</translation>
 <translation id="3644695927181369554">Няўдалая прапанова</translation>
 <translation id="3651050199673793219">Выберыце адзінку вымярэння тэмпературы</translation>
-<translation id="3661106764436337772">Пішыце хутчэй і з большай упэўненасцю</translation>
 <translation id="3662461537616691585">бардовы і цёмна-бардовы</translation>
 <translation id="3664755900672940272">Прыклады запытаў перамешаны</translation>
 <translation id="3668449597372804501">Шпалеры "Рух аблокаў"</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Спынена</translation>
 <translation id="4777310452073659583">Каб стварыць расшыфроўку, трэба перазапусціць прыладу "<ph name="DEVICE_TYPE" />"</translation>
 <translation id="4778082030331381943">аметыст</translation>
-<translation id="4782311465517282004">Атрымлівайце азначэнні, пераклады або пераводзьце адзінкі вымярэння: для гэтага вам трэба дакрануцца да тэксту і ўтрымліваць палец або націснуць на тэкст правай кнопкай мышы.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> фота</translation>
 <translation id="4793710386569335688">Каб атрымаць дадатковую інфармацыю, наведайце <ph name="BEGIN_LINK" />Даведачны цэнтр<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Алгарытм сціскання</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">Выключыць светлую тэму</translation>
 <translation id="7401543881546089382">Выдаліць спалучэнне клавіш</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" />: гатова да абнаўлення</translation>
-<translation id="741244894080940828">перавод адзінак вымярэння</translation>
 <translation id="7415801143053185905">Вельмі вялікая затрымка HTTP-запытаў</translation>
 <translation id="7418738250896500352">Занадта многа слоў для спрашчэння</translation>
 <translation id="7425037327577270384">Дапамога з напісаннем</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">Сховішча</translation>
 <translation id="885704831271383379">меншая яркасць клавіятуры</translation>
 <translation id="8863170912498892583">Уключыць цёмную тэму</translation>
-<translation id="8863888432376731307">Атрымайце <ph name="INTENT" /> і дадатковую інфармацыю ў адказ на запыт "<ph name="QUERY" />"</translation>
 <translation id="8864415976656252616">Няма прапанавага змесціва. Азнаёмцеся з папулярным даведачным змесцівам.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Гэта планшэт.</translation>

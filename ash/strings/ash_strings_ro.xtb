@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">ÎNCHIDE</translation>
 <translation id="152629053603783244">Repornește Linux</translation>
 <translation id="1526448108126799339">Deschide o filă nouă într-o fereastră nouă</translation>
-<translation id="1528259147807435347">Editat în ultima săptămână</translation>
 <translation id="1536604384701784949">Pentru a folosi <ph name="USER_EMAIL_ADDRESS" />, mai întâi trebuie să te deconectezi de la toate conturile. Ca să te deconectezi, selectează Anulează pentru a reveni. Apoi selectează ora pentru a deschide zona de stare și selectează Deconectează-te. Apoi conectează-te din nou la <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Cursor de mouse mare</translation>
 <translation id="1545331255323159851">Afișează fotografiile, elementele media și notificările recente ale telefonului</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android a copilului trimițând automat la Google date de diagnosticare și utilizare a dispozitivului și a aplicațiilor. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această <ph name="BEGIN_LINK1" />setare<ph name="END_LINK1" /> este impusă de proprietar. Proprietarul poate alege să trimită date de diagnosticare și utilizare a dispozitivului la Google. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google. <ph name="BEGIN_LINK2" />Află mai multe despre valori<ph name="BEGIN_LINK2_END" />Află mai multe<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Introdu codul PIN</translation>
 <translation id="2412593942846481727">Actualizare disponibilă</translation>
-<translation id="2416438829169535743">Ieși din vizualizare?</translation>
 <translation id="2417486498593892439">Conectează-te la rețea</translation>
 <translation id="2423619675829330672">Prea multe încercări de introducere a codului PIN. Așteaptă <ph name="TIME_LEFT" /> și încearcă din nou.</translation>
 <translation id="2426051945783024481">Cadrul camerei foto este centrat automat</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta. Înainte de a continua, verificați dacă această parolă apare pe dispozitivul respectiv: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Afișați parola</translation>
 <translation id="2437771564543046790">Nivel scăzut al bateriei. Economisirea bateriei este activată</translation>
-<translation id="243878895369688216">Deschis ieri</translation>
 <translation id="2440978926514840421">S-a înregistrat GIF-ul</translation>
 <translation id="2441427462554639370">Înregistrarea s-a oprit din cauza epuizării spațiului de stocare</translation>
 <translation id="2445449901874883781">Folosește densitatea ridicată</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">Aplicația de tip chioșc nu a putut fi descărcată.</translation>
 <translation id="3563558822383875692">Se configurează DLC.</translation>
 <translation id="3563775809269155755">Activează hotspotul</translation>
-<translation id="3566240529365775567">Deschis adineauri</translation>
 <translation id="3571734092741541777">Configurează</translation>
 <translation id="3573179567135747900">Modifică înapoi la „<ph name="FROM_LOCALE" />” (este necesară repornirea)</translation>
 <translation id="3576141592585647168">Modifică fusul orar</translation>
@@ -960,7 +956,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3756485814916578707">Se proiectează ecranul</translation>
 <translation id="3765246971671567135">Nu s-a putut citi politica offline privind modul demo.</translation>
 <translation id="3765841382945324995">Comanda rapidă <ph name="SIX_PACK_KEY_NAME" /> este actualizată la <ph name="NEW_SHORTCUT" /> de la <ph name="OLD_SHORTCUT" /></translation>
-<translation id="3765841986579723851">Editat astăzi</translation>
 <translation id="3772109172035555611">Personalizează TrackPoint</translation>
 <translation id="3773700760453577392">Un administrator a interzis conectarea multiplă pentru <ph name="USER_EMAIL" />. Toți utilizatorii trebuie să se deconecteze pentru a continua.</translation>
 <translation id="3779139509281456663">Se conectează <ph name="NAME" /></translation>
@@ -1000,7 +995,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3873915545594852654">A apărut o eroare la ARC++.</translation>
 <translation id="3879748587602334249">Manager de descărcări</translation>
 <translation id="3884007280698606545">Ai atins limita pentru dispozitivele USB</translation>
-<translation id="3886872229787704059">Deschis astăzi</translation>
 <translation id="3892148308691398805">Copiază textul</translation>
 <translation id="3893630138897523026">ChromeVox (feedback rostit)</translation>
 <translation id="3898464793473355515">Rotește ecranul la 90 de grade spre dreapta</translation>
@@ -1793,7 +1787,6 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6095008505822982596">Ritmul vorbirii</translation>
 <translation id="6095425951508823973">Adaugă o conexiune de la <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Ai fost deconectat(ă).</translation>
-<translation id="6099678161144790572">Editat în ultima lună</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6108952804512516814">Creează cu AI</translation>
 <translation id="6114505516289286752">Fișierele de redare în scris a vorbirii în <ph name="LANGUAGE" /> s-au descărcat</translation>
@@ -1950,7 +1943,6 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6555373427270923730">Introdu o adresă web în bara de adrese, apoi apasă pe <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Instalare nouă</translation>
-<translation id="6559158502366839560">Explorează mai multe aplicații și jocuri</translation>
 <translation id="6560151649238390891">Sugestie inserată</translation>
 <translation id="6562447480759345110">Închide modul Focus</translation>
 <translation id="6565007273808762236">Nu este disponibilă o conexiune eSIM</translation>
@@ -2056,7 +2048,6 @@ Instalare nouă</translation>
 <translation id="6848716236260083778">Pentru a configura amprenta, solicită-i copilului tău să atingă senzorul de amprentă. Datele privind amprentele copilului sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6852052252232534364">Dă clic pentru activare</translation>
 <translation id="6852628153543175788">Adaugă 10 minute</translation>
-<translation id="6855029042976311970">Editat adineauri</translation>
 <translation id="6856708615407876657">Afișează / ascunde categoriile de rezultate ale căutării</translation>
 <translation id="6856756288284651804">Chromebook actualizat</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec.</translation>
@@ -2151,7 +2142,6 @@ Instalare nouă</translation>
 <translation id="7118597077555700347">Deschide <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Selectează cuvântul următor sau litera următoare</translation>
 <translation id="7124556000457919678">Când este activată, întrerupe și reia tastele pentru mouse</translation>
-<translation id="7126996685418858413">Deschis în ultima săptămână</translation>
 <translation id="7131634465328662194">Vei fi deconectat(ă) automat.</translation>
 <translation id="7143207342074048698">Se conectează</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
@@ -2182,7 +2172,6 @@ Instalare nouă</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Microfonul din spate</translation>
 <translation id="7258225044283673131">Aplicația nu răspunde. Selectează „Închide forțat” pentru a închide aplicația.</translation>
-<translation id="7258828758145722155">Editat ieri</translation>
 <translation id="726276584504105859">Trage aici pentru a folosi ecranul împărțit</translation>
 <translation id="7264788308526527464">Redu durata la <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Ridică degetul și atinge din nou pentru a adăuga toate părțile amprentei</translation>
@@ -2255,7 +2244,6 @@ Instalare nouă</translation>
 <translation id="7491962110804786152">filă</translation>
 <translation id="7497767806359279797">Alege limba și tastatura</translation>
 <translation id="7507162824403726948">Finalizează confirmarea identității</translation>
-<translation id="7508690557411636492">Deschis în ultima lună</translation>
 <translation id="7509246181739783082">Confirmă-ți identitatea</translation>
 <translation id="7512509370370076552">Comanda rapidă pentru clic dreapta se actualizează la tasta <ph name="LAUNCHER_KEY_NAME" /> + clic din alt + clic</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, neselectat</translation>
@@ -2709,7 +2697,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8753368202781196133">Această limbă nu este acceptată momentan.</translation>
 <translation id="8755498163081687682">Confirmă-ți identitatea: <ph name="ORIGIN_NAME" /> solicită să îți confirmi identitatea</translation>
 <translation id="875593634123171288">Afișează setările VPN</translation>
-<translation id="8756799553341497810">Poți începe să personalizezi aspectul aplicației după ce ieși din această vizualizare.</translation>
 <translation id="8759408218731716181">Nu se poate configura conectarea multiplă</translation>
 <translation id="8759753423332885148">Află mai multe.</translation>
 <translation id="8760172428247796445">Dispozitivul <ph name="DEVICE_TYPE" /> va fi blocat.

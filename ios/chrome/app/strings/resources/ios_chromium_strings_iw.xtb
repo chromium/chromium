@@ -142,6 +142,7 @@
 <translation id="3855938650519180865">‏מה חדש ב-Chromium</translation>
 <translation id="3886689467633467988">‏יש לך אפשרות להיכנס לאתר הזה ול-Chromium כדי שהסימניות, הסיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך.</translation>
 <translation id="3949514465204582407">‏טיפ ל-Chromium: גישה לסיסמאות מכל אפליקציה</translation>
+<translation id="3983298990898629929">‏כדי לפתוח קישורים בלחיצה אחת, צריך להגדיר את Chromium כדפדפן ברירת המחדל</translation>
 <translation id="4005283307739974863">‏פתיחה והפעלה של 'טיימר לדיווח על מצב מסוכן' ב-Chromium.</translation>
 <translation id="4043291146360695975">סיסמאות נשמרות במנהל הסיסמאות במכשיר הזה בלבד.</translation>
 <translation id="4046625794029820944">‏כדי לפתוח דפים ישירות בלי להעתיק ולהדביק כתובות, אפשר להגדיר את Chromium כדפדפן ברירת המחדל.</translation>
@@ -273,6 +274,7 @@
 <translation id="6680609900732453726">‏אפשר לשמור על פרטיות הגלישה באמצעות אימות המכשיר כשסוגרים את Chromium</translation>
 <translation id="6696512128741076907">‏כדי לפתוח ברגע קישורים מאפליקציות אחרות ישירות ב-Chromium, כדאי להגדיר אותו כדפדפן ברירת המחדל.</translation>
 <translation id="6752854822223394465">‏הארגון שלך מגדיר את Chromium…</translation>
+<translation id="6777348401413221846">‏סרטון במסך מלא שמסביר איך להגדיר את Chromium כדפדפן ברירת המחדל: פותחים את הגדרות Chromium ב-iOS, לוחצים על Default Browser App ואז על Chromium</translation>
 <translation id="6794054469102824109">‏פתיחת המשחק Chromium Dino.</translation>
 <translation id="6820823224820483452">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר.</translation>
 <translation id="6830782797004194206">‏כניסה מהירה יותר עם המילוי האוטומטי של Chromium</translation>
@@ -302,6 +304,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">הסיסמה תישמר במנהל הסיסמאות עבור <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">מפתח הגישה יישמר במנהל הסיסמאות בחשבון <ph name="USER_EMAIL" /></translation>
+<translation id="7453822113116681031">‏כדי לפתוח קישורים בלחיצה אחת, צריך להפוך את Chromium לדפדפן ברירת המחדל</translation>
 <translation id="7504829997542308412">‏פתיחת Chromium</translation>
 <translation id="7531461704633548377">‏מ-Chromium</translation>
 <translation id="7554983317097061001">‏טיפ ל-Chromium: כדאי להעביר את Chromium ל-Dock</translation>
@@ -348,6 +351,7 @@
 <translation id="865600487977764604">‏מגן עליך ב‑Chromium ועשוי לשפר את רמת האבטחה באפליקציות אחרות של Google. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="8663480472502753423">‏Chromium יתעדכן באופן קבוע</translation>
 <translation id="8685813584220679697">‏יש להיכנס לאתר הזה ול-Chromium.</translation>
+<translation id="869832267508702259">‏רוצה לקבל תובנות של Gemini בכל מקום ברשת? כדאי להגדיר את Chromium כדפדפן ברירת המחדל</translation>
 <translation id="8698780336333802489">‏ייבוא אל Chromium</translation>
 <translation id="8730503818204408000">‏פתיחה של הגדרות Chromium כדי להגדיר את Chromium כדפדפן ברירת המחדל.</translation>
 <translation id="8754966941001340678">‏ההמלצה של Chromium היא הגנה משופרת</translation>

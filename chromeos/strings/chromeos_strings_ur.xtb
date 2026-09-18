@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">تصدیق کی قسم</translation>
 <translation id="1776228893584526149">وال پیپر ٹون</translation>
 <translation id="1777913922912475695">پُل</translation>
-<translation id="1782199038061388045">ترجمہ</translation>
 <translation id="1788485524395674731">یہ ایپ آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="1792647875738159689">اسکین کا عمل منسوخ کیا جا رہا ہے</translation>
 <translation id="1801418420130173017">گہری تھیم غیر فعال کریں</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">قسم</translation>
 <translation id="2448857983905133469">کلاس ٹولز</translation>
 <translation id="2468124392950503650">تخلیق کرنے کیلئے پرامپٹ منتخب کریں یا <ph name="BEGIN_LINK_PROMPTING_GUIDE" />پرامپٹ گائیڈ<ph name="END_LINK_PROMPTING_GUIDE" /> دیکھیں</translation>
-<translation id="2472215337771558851">‏اGoogle AI سے تقویت یافتہ کے ساتھ ایک مسودہ تخلیق کرنے یا موجودہ کام کو بہتر بنانے کے لیے لکھنے میں میری مدد کریں کا استعمال کریں</translation>
 <translation id="2475982808118771221">ایک خرابی پیش آگئی</translation>
 <translation id="2480572840229215612">کیکڑے</translation>
 <translation id="248546197012830854">‏آلہ آف لائن ہے۔ مدد کا مواد دیکھنے کے لیے Wi-Fi نیٹ ورک سے منسلک ہوں۔</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">دوبارہ لیں</translation>
 <translation id="3479552764303398839">ابھی نہیں</translation>
 <translation id="3484914941826596830">فرم ویئر اپ ڈیٹ کرنے کے دوران اس خارجی آلے کو ان پلگ یا اپنے کمپیوٹر کو شٹ ڈاؤن نہ کریں۔ آپ اس ونڈو کو چھوٹا کر سکتے ہیں۔ اس اپ ڈیٹ میں کچھ منٹ لگ سکتے ہیں اور ہو سکتا ہے کہ آپ کا خارجی آلہ اس دوران کام نہ کرے۔</translation>
-<translation id="3486220673238053218">وضاحت</translation>
 <translation id="3487866404496702283">ماہی خصوصیت کے لیے تاثرات</translation>
 <translation id="3488065109653206955">جزوی طور پر فعال کردہ</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ٹونز والا ایک <ph name="OFFICE_STYLE" /> آفس</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">ایک تھیم منتخب کریں</translation>
 <translation id="3644695927181369554">بری تجویز</translation>
 <translation id="3651050199673793219">درجۂ حرارت کی یونٹ منتخب کریں</translation>
-<translation id="3661106764436337772">تیزی سے اور زیادہ اعتماد کے ساتھ لکھیں</translation>
 <translation id="3662461537616691585">برگنڈی اور میرون</translation>
 <translation id="3664755900672940272">نمونے کے پرامپٹس شفل کیے گئے</translation>
 <translation id="3668449597372804501">کلاؤڈ فلو وال پیپر</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">روک دیا گیا</translation>
 <translation id="4777310452073659583">ٹرانسکرپٹ حاصل کرنے کے لیے، اپنا <ph name="DEVICE_TYPE" /> ری سٹارٹ کریں</translation>
 <translation id="4778082030331381943">یاقوت ارغوانی</translation>
-<translation id="4782311465517282004">جب آپ دائیں طرف کلک کرنے یا ٹیکسٹ کو ٹچ کریں اور دبائے رکھیں تو تعریفیں، ترجمے یونٹ کی تبدیلیاں حاصل کریں</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> تصویر</translation>
 <translation id="4793710386569335688">مزید مدد کے لیے، <ph name="BEGIN_LINK" />ہیلپ سینٹر<ph name="END_LINK" /> پر جائیں۔</translation>
 <translation id="4793756956024303490">کمپریشن الگورتھم</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">ہلکی تھیم آف کریں</translation>
 <translation id="7401543881546089382">شارٹ کٹ حذف کریں</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> اپ ڈیٹ ہونے کے لیے تیار ہے</translation>
-<translation id="741244894080940828">تبدیلی</translation>
 <translation id="7415801143053185905">‏بہت زیادہ HTTPS تاخیر</translation>
 <translation id="7418738250896500352">آسان بنانے کے لیے بہت سارے الفاظ</translation>
 <translation id="7425037327577270384">لکھنے میں میری مدد کریں</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">اسٹوریج</translation>
 <translation id="885704831271383379">زیادہ گہرا کی بورڈ</translation>
 <translation id="8863170912498892583">گہری تھیم فعال کریں</translation>
-<translation id="8863888432376731307">"<ph name="QUERY" />" اور مزید کے لیے <ph name="INTENT" /> حاصل کریں</translation>
 <translation id="8864415976656252616">کوئی تجویز کردہ مواد نہیں ہے۔ سرفہرست مددگار مواد دیکھیں۔</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">آلہ ایک ٹیبلیٹ ہے۔</translation>

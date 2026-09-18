@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">YOPISH</translation>
 <translation id="152629053603783244">Linuxni qaytadan ishga tushirish</translation>
 <translation id="1526448108126799339">Yangi oynada yangi varaq ochish</translation>
-<translation id="1528259147807435347">Oxirgi haftada tahrirlangan</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> hisobidan foydalanish uchun avval barcha hisoblardan chiqing. Hisobdan chiqish uchun Bekor qilish ustiga bosib, ortga qayting. Keyin soatni tanlab, holat panelini oching va Chiqish bandini tanlang. Keyin <ph name="USER_EMAIL_ADDRESS_2" /> hisobiga qaytadan kiring.</translation>
 <translation id="15373452373711364">Sichqonchaning katta kursori</translation>
 <translation id="1545331255323159851">Telefoningizdagi oxirgi suratlar va bildirishnomalarni oching</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Foydalanish statistikasi va diagnostika axborotini yuborish. Diagnostika hamda qurilma va ilovadan foydalanish statistikasini Google kompaniyasiga avtomatik yuborish orqali Androidni yaxshilashga yordam bering. Ushbu axborotdan farzandingiz shaxsini aniqlash uchun foydalanilmaydi. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim jamlangan axborotlar Google ilovalari va Android dasturchilar kabi hamkorlarga ham yordam beradi. Bu <ph name="BEGIN_LINK1" />parametr<ph name="END_LINK1" /> qurilma egasi tomonidan oʻrnatilgan. Qurilma egasi undagi foydalanish haqidagi va diagnostika axborotini Google serverlariga avtomatik yuborilishini tayinlashi mumkin. Agar farzandingiz uchun Veb va ilovalardagi kengaytirilgan faoliyat tarixi yoqilgan boʻlsa, bu maʼlumotlar uning Google hisobiga saqlanadi. <ph name="BEGIN_LINK2" />Koʻrsatkichlar haqida <ph name="BEGIN_LINK2_END" />batafsil<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">PIN kodni kiriting</translation>
 <translation id="2412593942846481727">Yangilanish chiqdi</translation>
-<translation id="2416438829169535743">Darslik yopilsinmi?</translation>
 <translation id="2417486498593892439">Tarmoqqa kirish</translation>
 <translation id="2423619675829330672">PIN kod juda koʻp marta kiritildi. <ph name="TIME_LEFT" /> kuting, keyin qaytadan urining</translation>
 <translation id="2426051945783024481">Kamera freymi avtomatik markazga olinadi</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">“<ph name="DEVICE_NAME" />” qurilmasi Bluetooth orqali ulanishga ruxsat so‘ramoqda. Uning ekranida quyidagi kod ko‘rinaytganligini tekshiring: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Parolni ko‘rsatish</translation>
 <translation id="2437771564543046790">Batareya quvvati kam. Quvvat tejash rejimi yoniq</translation>
-<translation id="243878895369688216">Kecha ochilgan</translation>
 <translation id="2440978926514840421">GIF yozib olindi</translation>
 <translation id="2441427462554639370">Xotirada juda kam joy qolgani uchun yozib olish tugatildi</translation>
 <translation id="2445449901874883781">Koʻproq oynalar</translation>
@@ -873,7 +870,6 @@ Bekor qilinsa, <ph name="TIMEOUT_SECONDS" />dan keyin sensorli panel qayta yoqil
 <translation id="3563432852173030730">Kiosk ilovasini yuklab olishda xatolik yuz berdi.</translation>
 <translation id="3563558822383875692">DLC sozlanmoqda.</translation>
 <translation id="3563775809269155755">Hotspotni yoqish</translation>
-<translation id="3566240529365775567">Hozirgina ochildi</translation>
 <translation id="3571734092741541777">Sozlash</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" tiliga qaytarish (qayta yuklash kerak bo‘ladi)</translation>
 <translation id="3576141592585647168">Vaqt mintaqasini almashtirish</translation>
@@ -960,7 +956,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="3756485814916578707">Ekran namoyish qilinmoqda</translation>
 <translation id="3765246971671567135">Demo rejim parametrini oflayn rejimda oʻqib boʻlmadi.</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> tugmasi <ph name="OLD_SHORTCUT" />dan <ph name="NEW_SHORTCUT" />ga yangilandi</translation>
-<translation id="3765841986579723851">Bugun tahrirlangan</translation>
 <translation id="3772109172035555611">TrackPointni moslang</translation>
 <translation id="3773700760453577392">Administrator <ph name="USER_EMAIL" /> hisobi uchun bir multi-kirish imkoniyatini o‘chirib qo‘ydi. Hisobga kirishingizdan avval barcha foydalanuvchilar hisobdan chiqishi kerak.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> ulanmoqda</translation>
@@ -1000,7 +995,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="3873915545594852654">ARC++ ishga tushmadi.</translation>
 <translation id="3879748587602334249">Yuklanmalar menejeri</translation>
 <translation id="3884007280698606545">USB qurilmalar soni limitiga yetdi</translation>
-<translation id="3886872229787704059">Bugun ochilgan</translation>
 <translation id="3892148308691398805">Matnni nusxalash</translation>
 <translation id="3893630138897523026">ChromeVox (ovozli ta’rif)</translation>
 <translation id="3898464793473355515">Ekranni 90 daraja oʻngga burish</translation>
@@ -1791,7 +1785,6 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="6095008505822982596">Nutq tezligi</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> bilan aloqa oʻrnatish</translation>
 <translation id="6095541101974653012">Hisobingizdan chiqqansiz.</translation>
-<translation id="6099678161144790572">Oxirgi oyda tahrirlangan</translation>
 <translation id="6103838137565245112">tizim</translation>
 <translation id="6108952804512516814">AI bilan yaratish</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> nutq fayllari yuklab olindi</translation>
@@ -1948,7 +1941,6 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="6555373427270923730">Manzillar qatoriga veb-manzilni kiritib <ph name="MODIFIER" /><ph name="KEY" /> birikmasini bosing</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 yangi oʻrnatilgan</translation>
-<translation id="6559158502366839560">Koʻplab ilova va oʻyinlar bilan tanishing</translation>
 <translation id="6560151649238390891">Taklif joylandi</translation>
 <translation id="6562447480759345110">Fokusni tugatish</translation>
 <translation id="6565007273808762236">eSIM aloqasi mavjud emas</translation>
@@ -2054,7 +2046,6 @@ yangi oʻrnatilgan</translation>
 <translation id="6848716236260083778">Barmoq izini sozlash uchun farzandingiz barmoq izi sensoriga teginsin. Farzandingiz barmoq izlari yaxshi himoya ostida va faqat <ph name="DEVICE_TYPE" /> qurilmasida saqlanadi.</translation>
 <translation id="6852052252232534364">Faollashtirish</translation>
 <translation id="6852628153543175788">10 daqiqa qoʻshish</translation>
-<translation id="6855029042976311970">Hozirgina tahrirlandi</translation>
 <translation id="6856708615407876657">Qidiruv natijalari toifalarini almashtirish</translation>
 <translation id="6856756288284651804">Chromebook yangilandi</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> soniya</translation>
@@ -2149,7 +2140,6 @@ yangi oʻrnatilgan</translation>
 <translation id="7118597077555700347">Ochish: <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Keyingi soʻz yoki harfni tanlash</translation>
 <translation id="7124556000457919678">Yoqilganda sichqoncha tugmalarini pauza qiling va tiklang</translation>
-<translation id="7126996685418858413">Oxirgi haftada ochilgan</translation>
 <translation id="7131634465328662194">Seansingiz avtomatik yakunlanadi.</translation>
 <translation id="7143207342074048698">Ulanmoqda</translation>
 <translation id="7144878232160441200">Qayta urinish</translation>
@@ -2180,7 +2170,6 @@ yangi oʻrnatilgan</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Orqa mikrofon</translation>
 <translation id="7258225044283673131">Ilova javob bermayapti. Ilovani “Majburiy toʻxtatish” orqali yoping.</translation>
-<translation id="7258828758145722155">Kecha tahrirlangan</translation>
 <translation id="726276584504105859">Ekranni bo‘lish xususiyatidan foydalanish uchun bu yerga torting</translation>
 <translation id="7264788308526527464">Kamaytirish: <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Barmoq izingizni butunlay skanerlash uchun uni biroz suring</translation>
@@ -2253,7 +2242,6 @@ yangi oʻrnatilgan</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7497767806359279797">Til va klaviaturani tanlang</translation>
 <translation id="7507162824403726948">Shaxsingizni tasdiqlash jarayonini yakunlang</translation>
-<translation id="7508690557411636492">Oxirgi oyda ochilgan</translation>
 <translation id="7509246181739783082">Shaxsni tasdiqlash</translation>
 <translation id="7512509370370076552">Oʻng klik tugmasi Alt + klikdan <ph name="LAUNCHER_KEY_NAME" /> + klikka yangilandi</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, tanlanmagan</translation>
@@ -2707,7 +2695,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8753368202781196133">Bu til hozirda dastaklanmaydi.</translation>
 <translation id="8755498163081687682">Shaxsingizni tasdiqlang: <ph name="ORIGIN_NAME" /> bu siz ekanligingizni tasdiqlamoqchi</translation>
 <translation id="875593634123171288">VPN sozlamalarini ochish</translation>
-<translation id="8756799553341497810">Darslik yopilganda ilova dizaynini moslashni boshlash mumkin.</translation>
 <translation id="8759408218731716181">Bir nechta hisobdan kirish sozlanmadi</translation>
 <translation id="8759753423332885148">Batafsil.</translation>
 <translation id="8760172428247796445"><ph name="DEVICE_TYPE" /> hozir qulflanadi.

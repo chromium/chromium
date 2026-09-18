@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">Тип аутентификации</translation>
 <translation id="1776228893584526149">Тон обоев</translation>
 <translation id="1777913922912475695">мост</translation>
-<translation id="1782199038061388045">перевести</translation>
 <translation id="1788485524395674731">Этим приложением управляет администратор.</translation>
 <translation id="1792647875738159689">Отмена сканирования</translation>
 <translation id="1801418420130173017">Отключить тёмную тему</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2448857983905133469">Инструменты для уроков</translation>
 <translation id="2468124392950503650">Выберите запрос или посмотрите <ph name="BEGIN_LINK_PROMPTING_GUIDE" />руководство по его составлению<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Генератор текстов создаст черновик или поможет улучшить существующий текст, используя технологии ИИ от Google.</translation>
 <translation id="2475982808118771221">Произошел сбой.</translation>
 <translation id="2480572840229215612">крабы</translation>
 <translation id="248546197012830854">Устройство не подключено к интернету. Подключитесь к сети Wi-Fi, чтобы посмотреть справочный контент.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">Переснять</translation>
 <translation id="3479552764303398839">Не сейчас</translation>
 <translation id="3484914941826596830">Пока выполняется обновление встроенного ПО, не отключайте внешнее устройство и не выключайте компьютер. Это окно можно свернуть. Обновление займет несколько минут, в течение которых внешнее устройство может не работать.</translation>
-<translation id="3486220673238053218">узнать определение</translation>
 <translation id="3487866404496702283">Отзыв о функции mahi</translation>
 <translation id="3488065109653206955">Частично активировано</translation>
 <translation id="3492882532495507361">Офис: стиль – <ph name="OFFICE_STYLE" />, цвет – <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">Выберите тему</translation>
 <translation id="3644695927181369554">Не нравится</translation>
 <translation id="3651050199673793219">Выбрать единицу измерения температуры</translation>
-<translation id="3661106764436337772">Упростите себе работу</translation>
 <translation id="3662461537616691585">бордовый и коричнево-малиновый</translation>
 <translation id="3664755900672940272">Примеры запросов перемешаны</translation>
 <translation id="3668449597372804501">Динамические обои с облаками</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">Остановлено</translation>
 <translation id="4777310452073659583">Чтобы получить расшифровку, перезапустите <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">аметист</translation>
-<translation id="4782311465517282004">Получайте определения слов, перевод или значение в других единицах измерения: достаточно нажать на текст правой кнопкой мыши или коснуться его и удерживать.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> фото</translation>
 <translation id="4793710386569335688">Дополнительную информацию можно найти в <ph name="BEGIN_LINK" />Справочном центре<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Алгоритм сжатия</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">Выключить светлую тему</translation>
 <translation id="7401543881546089382">Удалить ярлык</translation>
 <translation id="7405493795721832710">Устройство <ph name="DEVICE_NAME" /> готово к обновлению</translation>
-<translation id="741244894080940828">перевести в другие ед. измерения</translation>
 <translation id="7415801143053185905">очень большое время ожидания HTTP</translation>
 <translation id="7418738250896500352">Выделено слишком много слов</translation>
 <translation id="7425037327577270384">Генератор текстов</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">Хранилище</translation>
 <translation id="885704831271383379">уменьшить яркость клавиатуры</translation>
 <translation id="8863170912498892583">Использовать тёмную тему</translation>
-<translation id="8863888432376731307">Как <ph name="INTENT" /> "<ph name="QUERY" />" и не только</translation>
 <translation id="8864415976656252616">Нет рекомендованных материалов. Посмотрите самый популярный справочный контент.</translation>
 <translation id="8868741746785112895">Глобальный уникальный идентификатор</translation>
 <translation id="8876270629542503161">Это планшет.</translation>

@@ -40,6 +40,7 @@ Points à prendre en compte :
 <translation id="1580570086594302477">Ouvre un nouvel onglet de navigation privée Chrome.</translation>
 <translation id="1605168141396675642">Ne copiez plus les liens un par un. Ouvrez les liens directement dans Chrome.</translation>
 <translation id="1646463005043273333">Ouvre le réglage Chrome permettant de définir Chrome comme navigateur par défaut.</translation>
+<translation id="1665695109862533986">Définissez Chrome comme navigateur par défaut pour ouvrir les liens d'un simple geste</translation>
 <translation id="1668930590094369898">Utiliser Chrome par défaut</translation>
 <translation id="1670609221633730681">Astuce Chrome : choisissez la position de la barre d'adresse</translation>
 <translation id="1683863426423719967">Pour recevoir des rappels d'onglet de Chrome, activez les notifications dans les réglages iOS.</translation>
@@ -47,6 +48,7 @@ Points à prendre en compte :
 <translation id="1784567647421309104">Enregistrez vos mots de passe dans Chrome</translation>
 <translation id="1790080846677398234">Ajoute les URL saisies à vos favoris dans Chrome.</translation>
 <translation id="1799920918471566157">Astuces Chrome</translation>
+<translation id="1802420021606590788">Chrome traite les titres des pages et les URL dans un espace privé dans le cloud</translation>
 <translation id="1830634592642484976">Cette adresse est actuellement enregistrée dans Chrome. Pour l'utiliser avec d'autres produits Google, enregistrez-la dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="1891812034154776216">Masquer les onglets de navigation privée ouverts quand vous quittez Chrome</translation>
 <translation id="1894434821386148799">Vous trouverez les paramètres Chrome et plus ici</translation>
@@ -139,6 +141,7 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="3984746313391923992">Votre organisation vous demande de rester déconnecté de Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome n'a pas accès à vos photos ni à vos vidéos. Activez l'accès dans iOS via Réglages &gt; Confidentialité &gt; Photos.</translation>
 <translation id="4064699917955374540">Pour utiliser et enregistrer des données Chrome dans votre compte Google, confirmez votre identité.</translation>
+<translation id="4093789416346364876">Définissez Chrome comme navigateur par défaut pour obtenir des informations Gemini partout où vous naviguez</translation>
 <translation id="411154422556990518">Suivez les changements de prix et découvrez des conseils sur Chrome.</translation>
 <translation id="417201473131094001">Non disponible dans Chrome Canary</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome ?</translation>
@@ -149,6 +152,7 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="4523886039239821078">Certains modules complémentaires entraînent le plantage de Chrome. Veuillez les désinstaller.</translation>
 <translation id="4568024439284012497">Accédez plus vite à Chrome depuis l'écran d'accueil de votre iPhone.</translation>
 <translation id="4574806550936185355">Activez "Verrouiller les onglets de navigation privée lorsque vous fermez Chrome"</translation>
+<translation id="457825396414281646">Définissez Chrome comme navigateur par défaut pour ouvrir les liens d'un simple geste</translation>
 <translation id="4633328489441962921">Chrome ne parvient pas à rechercher les mises à jour</translation>
 <translation id="4636900170638246267">Connectez-vous à ce site et à Chrome.</translation>
 <translation id="4647910807533196601">Ouvrez votre dernier onglet dans Chrome.</translation>
@@ -352,11 +356,12 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544583291890527417">Alertes concernant les problèmes de confidentialité ou de sécurité que Chrome détecte pour vous.</translation>
 <translation id="855027533751209304">Astuce Chrome : recherchez ce que vous voyez</translation>
-<translation id="8558480467877843976">Vous pouvez désormais utiliser Chrome chaque fois que vous parcourez ou appuyez sur des liens dans des messages, des documents et d'autres applis.</translation>
+<translation id="8558480467877843976">Vous pouvez désormais utiliser Chrome chaque fois que vous naviguez sur Internet ou appuyez sur des liens dans des messages, des documents et d'autres applis.</translation>
 <translation id="8603022514504485810">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Utilisez vos mots de passe, votre historique, vos favoris et vos cartes de crédit Safari dans Chrome</translation>
 <translation id="8630122478628016441">Activez l'option "Verrouiller les onglets de navigation privée lorsque vous fermez Chrome".</translation>
 <translation id="8673726683583791503">Acheter avec Google Lens</translation>
+<translation id="869525545193934083">Vidéo plein écran indiquant comment définir Chrome comme navigateur par défaut : ouvrir les réglages Chromium sous iOS, appuyer sur "App du navigateur par défaut", puis sélectionner Chrome.</translation>
 <translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome envoie le contenu saisi à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en navigation privée.</translation>
 <translation id="8772179140489533211">Permet d'afficher des invites de connexion à Chrome.</translation>
 <translation id="8788269841521769222">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" /></translation>

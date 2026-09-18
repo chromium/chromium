@@ -148,6 +148,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2575822587468774919">Zgjidh çdo gjë për të kërkuar me "Kërkimin nëpërmjet imazheve"</translation>
 <translation id="2576118232315942160">Për të marrë fjalëkalimet etj. në të gjitha pajisjet e tua, identifikohu në Chromium</translation>
 <translation id="2587622539943955767">Skano kodin QR me telefonin tënd për të shkarkuar Chromium dhe identifikohu në "Llogarinë tënde të Google".</translation>
+<translation id="2587885422541096572">për të kërkuar me Chromium.</translation>
 <translation id="2592940277904433508">Vazhdo të përdorësh Chromium</translation>
 <translation id="259935314519650377">Instaluesi i shkarkuar nuk u ruajt te memoria specifike. Gabim: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistemi</translation>
@@ -645,7 +646,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="77283119132245232">Ofron shërbime të gjurmimit të sistemit për <ph name="BROWSER_NAME" />. Nëse ky shërbim është i çaktivizuar, gjurmët e performancës të krijuara nga shfletuesi nuk do të përfshijnë ngjarjet e të gjithë sistemit, si p.sh. ngjarjet e ndryshimit të kontekstit dhe të nënprocesit të gatshëm.</translation>
 <translation id="7745317241717453663">Kjo do të fshijë të dhënat e shfletimit nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chromium si <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instaluesi nuk mund të krijonte një direktori të përkohshme. Kontrollo për hapësirë të lirë në disk dhe për lejen për të instaluar softuerin.</translation>
-<translation id="7747820849741499258">Kërko në Chromium</translation>
 <translation id="7750130090210923118">Rivendos shfletuesin e parazgjedhur të Chromium</translation>
 <translation id="7752521946322750699">Për të siguruar punën tënde në Chromium, organizata jote do të mund të shikojë ose të menaxhojë informacione të caktuara kur të jesh identifikuar në Chromium.</translation>
 <translation id="7781047659465034537">Cakto Chromium si parazgjedhje dhe gozhdoje te shiriti i detyrave</translation>
@@ -653,7 +653,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Bëj që personat që kanë qasje në trafikun tënd të internetit ta kenë më të vështirë të shikojnë sajtet që viziton ti. Chromium përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajt në sistemin e emrave të domeneve (DNS).</translation>
 <translation id="7810005234485217901">Mund të gozhdosh "Kërkimin nëpërmjet imazheve" për qasje të lehtë</translation>
-<translation id="7813626943009612327">Pyet për përmbajtjet jashtë Chromium, si p.sh. një aplikacion ose skedar tjetër që ke hapur</translation>
 <translation id="7828527096541974699">Zgjidh se çfarë do të ndash me Chromium</translation>
 <translation id="7828947555739565424">Një profil i Chromium me këtë llogari ekziston tashmë në këtë pajisje</translation>
 <translation id="7845233973568007926">Faleminderit që e instalove. Duhet të rinisësh kompjuterin përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
@@ -778,6 +777,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="897581876605952338">Logoja e Chromium Enterprise</translation>
 <translation id="8980139959902937527">Merr sigurinë e Google kur je në lëvizje me aplikacionin e Chromium në <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Chromium nuk mund të niset sepse ka ndodhur një gabim gjatë hapjes së profilit tënd. Provo të rinisësh Chromium.</translation>
+<translation id="8981886272598860786">për të kërkuar me Chromium ose për të personalizuar te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Menaxho profilet e Chromium</translation>
 <translation id="8993855408334954620">Përdor tastierën për të naviguar mes Gemini në Chromium dhe skedës sate të hapur.</translation>
 <translation id="9018218886431812662">Instalimi përfundoi</translation>

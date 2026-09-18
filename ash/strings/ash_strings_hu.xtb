@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">ELVETÉS</translation>
 <translation id="152629053603783244">Linux újraindítása</translation>
 <translation id="1526448108126799339">Új lap megnyitása új ablakban</translation>
-<translation id="1528259147807435347">Az elmúlt egy héten szerkesztette</translation>
 <translation id="1536604384701784949">A(z) <ph name="USER_EMAIL_ADDRESS" /> használatához előbb ki kell jelentkeznie az összes fiókból. A kijelentkezéshez válassza a Mégse gombot. Ezzel visszalép az előző képernyőre. Ezután válassza az órát az állapotsor megnyitásához, majd válassza a Kijelentkezés lehetőséget. Végül jelentkezzen be újra a(z) <ph name="USER_EMAIL_ADDRESS_2" /> e-mail-címmel.</translation>
 <translation id="15373452373711364">Nagy egérmutató</translation>
 <translation id="1545331255323159851">A telefonján lévő fotók, médiatartalmak és értesítések megtekintése</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">Használati és diagnosztikai adatok küldése. Segítsen gyermeke Android-élményének továbbfejlesztésében azzal, hogy automatikusan diagnosztikai, valamint eszköz- és alkalmazáshasználati adatokat küld a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek, és nem használjuk fel őket az Ön gyermekének azonosítására. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ezt a <ph name="BEGIN_LINK1" />beállítást<ph name="END_LINK1" /> kötelezővé tette az eszköz tulajdonosa. A tulajdonos dönthet úgy, hogy elküldi az eszközzel kapcsolatos diagnosztikai és használati adatokat a Google-nak. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva a gyermekénél, akkor a rendszer ezeket az adatokat mentheti az ő Google-fiókjába. <ph name="BEGIN_LINK2" />További információ a mutatókról<ph name="BEGIN_LINK2_END" />További információ<ph name="END_LINK2" />.</translation>
 <translation id="2408955596600435184">PIN-kód megadása</translation>
 <translation id="2412593942846481727">Rendelkezésre áll frissítés</translation>
-<translation id="2416438829169535743">Kilép a nézetből?</translation>
 <translation id="2417486498593892439">Bejelentkezés a hálózatba</translation>
 <translation id="2423619675829330672">Túl sokszor próbálkozott a PIN-kód megadásával. <ph name="TIME_LEFT" /> várakozást követően próbálja meg újra.</translation>
 <translation id="2426051945783024481">Keret automatikusan középre igazítva</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">A(z) „<ph name="DEVICE_NAME" />” Bluetooth-eszköz engedélyt kér a párosításra. Mielőtt elfogadná, ellenőrizze, hogy ez a biztonsági kód látható-e azon az eszközön is: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Jelszó megjelenítése</translation>
 <translation id="2437771564543046790">Alacsony töltöttség. Akkumulátorkímélő mód bekapcsolva</translation>
-<translation id="243878895369688216">Tegnap nyitotta meg</translation>
 <translation id="2440978926514840421">GIF-felvétel rögzítve</translation>
 <translation id="2441427462554639370">Felvétel megszakítva a kritikusan kevés tárhely miatt</translation>
 <translation id="2445449901874883781">Magas sűrűség használata</translation>
@@ -873,7 +870,6 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="3563432852173030730">A kioszkalkalmazást nem sikerült letölteni.</translation>
 <translation id="3563558822383875692">DLC konfigurálása…</translation>
 <translation id="3563775809269155755">Hotspot engedélyezése</translation>
-<translation id="3566240529365775567">Éppen most nyitotta meg</translation>
 <translation id="3571734092741541777">Beállítás</translation>
 <translation id="3573179567135747900">Visszatérés ehhez: "<ph name="FROM_LOCALE" />" (újraindítás szükséges)</translation>
 <translation id="3576141592585647168">Időzóna módosítása</translation>
@@ -960,7 +956,6 @@ Csatlakoztassa az eszközt áramforráshoz.</translation>
 <translation id="3756485814916578707">Képernyőtartalom átküldése</translation>
 <translation id="3765246971671567135">Nem sikerült a demó mód offline házirendjének olvasása.</translation>
 <translation id="3765841382945324995">A(z) <ph name="SIX_PACK_KEY_NAME" /> billentyűparancsa a(z) <ph name="NEW_SHORTCUT" /> billentyűparancsra módosult a következőről: <ph name="OLD_SHORTCUT" />.</translation>
-<translation id="3765841986579723851">Ma szerkesztette</translation>
 <translation id="3772109172035555611">TrackPoint személyre szabása</translation>
 <translation id="3773700760453577392">Egy rendszergazda letiltotta a többfiókos bejelentkezést <ph name="USER_EMAIL" /> számára.
 Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
@@ -1001,7 +996,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="3873915545594852654">ARC++-hiba történt.</translation>
 <translation id="3879748587602334249">Letöltéskezelő</translation>
 <translation id="3884007280698606545">Elérte az USB-re vonatkozó korlátot</translation>
-<translation id="3886872229787704059">Ma nyitotta meg</translation>
 <translation id="3892148308691398805">Szöveg másolása</translation>
 <translation id="3893630138897523026">ChromeVox (beszélt visszajelzés)</translation>
 <translation id="3898464793473355515">A képernyő elforgatása 90 fokkal az óramutató járásával megegyezően</translation>
@@ -1792,7 +1786,6 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6095008505822982596">Beszéd sebessége</translation>
 <translation id="6095425951508823973">Kapcsolat hozzáadása a következővel: <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Ön kijelentkezett.</translation>
-<translation id="6099678161144790572">Az elmúlt egy hónapban szerkesztette</translation>
 <translation id="6103838137565245112">rendszer</translation>
 <translation id="6108952804512516814">Létrehozás AI használatával</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> nyelvű beszédfájlok letöltve</translation>
@@ -1949,7 +1942,6 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6555373427270923730">Gépelje be a címsávba az internetcímet, majd nyomja le a(z) <ph name="MODIFIER" /><ph name="KEY" /> billentyűkombinációt</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Frissen telepítve</translation>
-<translation id="6559158502366839560">Még több alkalmazás és játék felfedezése</translation>
 <translation id="6560151649238390891">Javaslat beszúrva</translation>
 <translation id="6562447480759345110">Összpontosítási üzemmód befejezése</translation>
 <translation id="6565007273808762236">eSIM-kapcsolat nem áll rendelkezésre</translation>
@@ -2055,7 +2047,6 @@ Frissen telepítve</translation>
 <translation id="6848716236260083778">Az ujjlenyomat beállításához a gyermekének hozzá kell érintenie az ujját az ujjlenyomat-érzékelőhöz. Gyermeke ujjlenyomatadatait a rendszer biztonságosan tárolja, és ezek az adatok soha nem kerülnek ki az eszközről (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="6852052252232534364">Aktiválás</translation>
 <translation id="6852628153543175788">10 perc hozzáadása</translation>
-<translation id="6855029042976311970">Éppen most szerkesztette</translation>
 <translation id="6856708615407876657">Keresési találatok kategóriáinak be- és kikapcsolása</translation>
 <translation id="6856756288284651804">Chromebook frissítve</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> mp</translation>
@@ -2150,7 +2141,6 @@ Frissen telepítve</translation>
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> megnyitása</translation>
 <translation id="7119327711295338600">A következő szó vagy betű kijelölése</translation>
 <translation id="7124556000457919678">Ha be van kapcsolva, szünetelteti és folytatja az egérgombok használatát</translation>
-<translation id="7126996685418858413">Az elmúlt héten nyitotta meg</translation>
 <translation id="7131634465328662194">A rendszer automatikusan kijelentkezteti.</translation>
 <translation id="7143207342074048698">Csatlakozás</translation>
 <translation id="7144878232160441200">Újra</translation>
@@ -2181,7 +2171,6 @@ Frissen telepítve</translation>
 <translation id="7256057185598509352">2. ExpressKey</translation>
 <translation id="7256634071279256947">Hátulsó mikrofon</translation>
 <translation id="7258225044283673131">Az alkalmazás nem válaszol. A bezárásához válassza a „Bezárás most” gombot.</translation>
-<translation id="7258828758145722155">Tegnap szerkesztette</translation>
 <translation id="726276584504105859">Húzza ide az osztott képernyő használatához</translation>
 <translation id="7264788308526527464">Csökkentés ennyivel: <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Emelgesse az ujját az ujjlenyomat különböző részeinek hozzáadásához</translation>
@@ -2254,7 +2243,6 @@ Frissen telepítve</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7497767806359279797">Nyelv és billentyűzet kiválasztása</translation>
 <translation id="7507162824403726948">Személyazonosság igazolásának befejezése</translation>
-<translation id="7508690557411636492">A múlt hónapban nyitotta meg</translation>
 <translation id="7509246181739783082">Személyazonosság igazolása</translation>
 <translation id="7512509370370076552">A jobb egérgombos kattintás billentyűparancsa a(z) <ph name="LAUNCHER_KEY_NAME" /> billentyű + kattintás billentyűparancsra módosult a következőről: alt + kattintás.</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, nincs kiválasztva</translation>
@@ -2708,7 +2696,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8753368202781196133">Ez a nyelv jelenleg nem támogatott.</translation>
 <translation id="8755498163081687682">Igazolja személyazonosságát, a következő szeretne meggyőződni a személyazonosságáról: <ph name="ORIGIN_NAME" /></translation>
 <translation id="875593634123171288">VPN-beállítások megjelenítése</translation>
-<translation id="8756799553341497810">Az alkalmazás elrendezésének személyre szabását a nézetből való kilépés után kezdheti el.</translation>
 <translation id="8759408218731716181">Nem lehet beállítani a többfiókos bejelentkezést</translation>
 <translation id="8759753423332885148">További információ.</translation>
 <translation id="8760172428247796445">A rendszer most zárolja a(z) <ph name="DEVICE_TYPE" /> eszközt.

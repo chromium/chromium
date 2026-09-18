@@ -649,7 +649,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="77283119132245232">Yn darparu gwasanaethau olrhain system ar gyfer <ph name="BROWSER_NAME" />. Os yw'r gwasanaeth hwn wedi'i analluogi, ni fydd olion perfformiad a grëir gan y porwr yn cynnwys digwyddiadau system gyfan megis switsh cyd-destun a digwyddiadau trywydd parod.</translation>
 <translation id="7745317241717453663">Bydd hyn yn dileu eich data pori o'r ddyfais hon. I adfer eich data yn nes ymlaen, mewngofnodwch i Chromium fel <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Ni allai'r gosodwr greu cyfeiriadur dros dro. Gwnewch yn siŵr bod gennych ddigon o le storio ar gael a bod gennych y caniatâd i osod meddalwedd.</translation>
-<translation id="7747820849741499258">Chwilio yn Chromium</translation>
 <translation id="7750130090210923118">Ailosod i Chromium Diofyn</translation>
 <translation id="7752521946322750699">Er mwyn diogelu eich gwaith ar Chromium, bydd eich sefydliad yn gallu gweld neu reoli gwybodaeth benodol pan fyddwch wedi mewngofnodi i Chromium.</translation>
 <translation id="7781047659465034537">Gosod Chromium fel y porwr diofyn a'i binio i'r bar tasgau</translation>
@@ -657,7 +656,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Gwnewch hi'n anoddach i bobl sydd â mynediad at eich traffig rhyngrwyd weld pa wefannau rydych yn ymweld â nhw. Mae Chromium yn defnyddio cysylltiad diogel i chwilio am gyfeiriad IP safle yn y DNS (System Enw Parth).</translation>
 <translation id="7810005234485217901">Gallwch binio Chwilio Lluniau i gael mynediad hawdd</translation>
-<translation id="7813626943009612327">Gofyn am gynnwys y tu allan i Chromium, fel ap neu ffeil arall sydd gennych ar agor</translation>
 <translation id="7828527096541974699">Dewiswch beth i'w rannu â Chromium</translation>
 <translation id="7828947555739565424">Mae proffil Chromium gyda'r cyfrif hwn eisoes yn bodoli ar y ddyfais hon</translation>
 <translation id="7845233973568007926">Diolch am osod. Rhaid i chi ailgychwyn eich cyfrifiadur cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>

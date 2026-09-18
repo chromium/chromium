@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">যাচাইকরণের প্রকার</translation>
 <translation id="1776228893584526149">ওয়ালপেপারের কালার টোন</translation>
 <translation id="1777913922912475695">ব্রিজ</translation>
-<translation id="1782199038061388045">অনুবাদ</translation>
 <translation id="1788485524395674731">এই অ্যাপ আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করেন।</translation>
 <translation id="1792647875738159689">স্ক্যানিং বাতিল করা হচ্ছে</translation>
 <translation id="1801418420130173017">ডার্ক থিম বন্ধ করুন</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">প্রকার</translation>
 <translation id="2448857983905133469">ক্লাস টুল</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />প্রম্পট গাইড<ph name="END_LINK_PROMPTING_GUIDE" /> তৈরি করতে বা দেখতে প্রম্পট বেছে নিন।</translation>
-<translation id="2472215337771558851">Google AI দ্বারা পরিচালিত, 'আমাকে লিখতে সাহায্য করুন' ফিচার কোনও ড্রাফ্ট তৈরি করতে বা আগে থাকা কাজ রিফাইন করতে ব্যবহার করুন</translation>
 <translation id="2475982808118771221">একটি ত্রুটি ঘটেছে</translation>
 <translation id="2480572840229215612">কাঁকড়া</translation>
 <translation id="248546197012830854">ডিভাইস অফলাইন আছে। সহায়তা কন্টেন্ট দেখতে ওয়াই-ফাই নেটওয়ার্কের সাথে কানেক্ট করুন।</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">আবার তুলুন</translation>
 <translation id="3479552764303398839">এখনই নয়</translation>
 <translation id="3484914941826596830">ফার্মওয়্যার আপডেট করার সময়, এই এক্সটার্নাল ডিভাইসটি আনপ্লাগ করবেন না বা আপনার কম্পিউটার বন্ধ করবেন না। আপনি এই উইন্ডোটি মিনিমাইজ করতে পারবেন। এই আপডেটে কয়েক মিনিট সময় লাগতে পারে এবং এই সময়ে আপনার এক্সটার্নাল ডিভাইস কাজ নাও করতে পারে।</translation>
-<translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3487866404496702283">মাহি ফিচার সম্পর্কিত মতামত</translation>
 <translation id="3488065109653206955">আংশিকভাবে সক্রিয়</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> টোন সহ <ph name="OFFICE_STYLE" /> অফিস</translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">একটি থিম বেছে নিন</translation>
 <translation id="3644695927181369554">খারাপ সাজেশন</translation>
 <translation id="3651050199673793219">তাপমাত্রার ইউনিট বেছে নিন</translation>
-<translation id="3661106764436337772">আরও দ্রুত ও বেশি আত্মবিশ্বাসের সাথে লিখুন</translation>
 <translation id="3662461537616691585">বার্গান্ডি ও মেরুন</translation>
 <translation id="3664755900672940272">স্যাম্পেল প্রম্পট শাফেল করা হয়েছে</translation>
 <translation id="3668449597372804501">ক্লাউড ফ্লো ওয়ালপেপার</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">থামানো হয়েছে</translation>
 <translation id="4777310452073659583">ট্রানস্ক্রিপ্ট পেতে, আপনার <ph name="DEVICE_TYPE" /> রিস্টার্ট করুন</translation>
 <translation id="4778082030331381943">অ্যামেথিস্ট</translation>
-<translation id="4782311465517282004">আপনি ডানদিকের বোতামে ক্লিক করলে বা টেক্সট প্রেস করে ধরে থাকলে, সংজ্ঞা, অনুবাদ বা ইউনিট কনভার্সন পাবেন</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" />টি ফটো</translation>
 <translation id="4793710386569335688">আরও সাহায্যের জন্য, <ph name="BEGIN_LINK" />সহায়তা কেন্দ্রে<ph name="END_LINK" /> যান।</translation>
 <translation id="4793756956024303490">কম্প্রেশন অ্যালগরিদম</translation>
@@ -1459,7 +1454,6 @@
 <translation id="7397270852490618635">হালকা থিম বন্ধ করুন</translation>
 <translation id="7401543881546089382">শর্টকাট মুছুন</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> আপডেট করার জন্য রেডি</translation>
-<translation id="741244894080940828">রূপান্তর</translation>
 <translation id="7415801143053185905">HTTP লেটেন্সি অনেক বেশি</translation>
 <translation id="7418738250896500352">সহজে বোঝার জন্য বেছে নেওয়া শব্দ খুব বেশি</translation>
 <translation id="7425037327577270384">আমাকে লিখতে সাহায্য করো</translation>
@@ -1769,7 +1763,6 @@
 <translation id="885701979325669005">স্টোরেজ</translation>
 <translation id="885704831271383379">কীবোর্ড কম উজ্জ্বল</translation>
 <translation id="8863170912498892583">ডার্ক থিম চালু করুন</translation>
-<translation id="8863888432376731307">"<ph name="QUERY" />" এবং অনেক কিছুর জন্য <ph name="INTENT" /> পান</translation>
 <translation id="8864415976656252616">সাজেস্ট করা কোনও কন্টেন্ট নেই। সেরা সহায়তা কন্টেন্ট দেখুন।</translation>
 <translation id="8868741746785112895">গ্লোবালি ইউনিক আইডেন্টিফায়ার (GUID)</translation>
 <translation id="8876270629542503161">ডিভাইস একটি ট্যাবলেট।</translation>

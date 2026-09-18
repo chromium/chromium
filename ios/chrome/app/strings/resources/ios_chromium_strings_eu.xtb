@@ -142,6 +142,7 @@ Kontua aldatu aurretik, itxaron minutu batzuk. Kontua orain aldatzen baduzu, dat
 <translation id="3855938650519180865">Chromium-en berritasunak</translation>
 <translation id="3886689467633467988">Hasi saioa webgune honetan eta Chromium-en, zure laster-markak eta bestelako elementuak gailu guztietan eduki ditzazun.</translation>
 <translation id="3949514465204582407">Chromium-i buruzko aholkua: lortu gordetako pasahitzak edozein aplikaziotan</translation>
+<translation id="3983298990898629929">Ezarri Chromium arakatzaile lehenetsi gisa estekak sakatze hutsarekin irekitzeko</translation>
 <translation id="4005283307739974863">Chromium-en segurtasun-egiaztapena irekitzen eta exekutatzen du.</translation>
 <translation id="4043291146360695975">Pasahitzak gailu honetan soilik gordetzen dira Pasahitz-kudeatzailea zerbitzuan.</translation>
 <translation id="4046625794029820944">Utzi URLak kopiatzeari. Ezarri Chromium arakatzaile lehenetsi gisa orriak zuzenean kargatzeko.</translation>
@@ -273,6 +274,7 @@ Kontuan hartu beharrekoak:
 <translation id="6680609900732453726">Mantendu arakatzea pribatu gailuaren autentifikazioaren bidez Chromium ixten duzunean</translation>
 <translation id="6696512128741076907">Ezarri Chromium arakatzaile lehenetsi gisa beste aplikazioetako estekak berehala irekitzeko.</translation>
 <translation id="6752854822223394465">Zure erakundea Chromium konfiguratzen ari da…</translation>
+<translation id="6777348401413221846">Pantaila osoko bideoa Chromium arakatzaile lehenetsi gisa ezartzeko argibideekin: ireki Chromium-en ezarpenak iOS-en, sakatu "Default Browser App" (arakatzaile lehenetsia) eta hautatu Chromium.</translation>
 <translation id="6794054469102824109">Chromium-eko Dino jokoa irekitzen du.</translation>
 <translation id="6820823224820483452">Chromium-ek ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar.</translation>
 <translation id="6830782797004194206">Hasi saioa bizkorrago Chromium-en betetze automatikoarekin</translation>
@@ -302,6 +304,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028"><ph name="EMAIL" /> kontuko pasahitza Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
 <translation id="7434848749522628428">Sarbide-gakoa <ph name="USER_EMAIL" /> kontuari dagokion Pasahitz-kudeatzailea zerbitzuan gordeko da</translation>
+<translation id="7453822113116681031">Ezarri Chromium arakatzaile lehenetsi gisa estekak sakatze hutsarekin irekitzeko</translation>
 <translation id="7504829997542308412">Ireki Chromium.</translation>
 <translation id="7531461704633548377">Chromium-etik</translation>
 <translation id="7554983317097061001">Chromium-i buruzko aholkua: eraman Chromium zintara</translation>
@@ -348,6 +351,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="865600487977764604">Babestuta mantentzen zaitu Chromium-en, eta segurtasuna areagotzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean.</translation>
 <translation id="8663480472502753423">Mantendu Chromium eguneratuta</translation>
 <translation id="8685813584220679697">Hasi saioa webgune honetan eta Chromium-en.</translation>
+<translation id="869832267508702259">Edonon arakatzen duzula ere Gemini-ren estatistikak lortzeko, ezarri Chromium arakatzaile lehenetsi gisa</translation>
 <translation id="8698780336333802489">Inportatu Chromium-era</translation>
 <translation id="8730503818204408000">Chromium arakatzaile lehenetsi gisa ezartzeko Chromium-en ezarpena irekitzen du.</translation>
 <translation id="8754966941001340678">Chromium-ek babes hobetua gomendatzen du</translation>

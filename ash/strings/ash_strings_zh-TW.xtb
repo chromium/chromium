@@ -198,7 +198,6 @@
 <translation id="1525508553941733066">關閉</translation>
 <translation id="152629053603783244">重新啟動 Linux</translation>
 <translation id="1526448108126799339">在新視窗中開啟新分頁</translation>
-<translation id="1528259147807435347">過去一週編輯過</translation>
 <translation id="1536604384701784949">如要使用 <ph name="USER_EMAIL_ADDRESS" />，你必須先登出所有帳戶，做法是選擇 [取消] 返回上個頁面，然後選取時間來開啟狀態區，並且點選 [登出]。接著就能重新登入 <ph name="USER_EMAIL_ADDRESS_2" />。</translation>
 <translation id="15373452373711364">大型滑鼠游標</translation>
 <translation id="1545331255323159851">查看手機上最近的相片、媒體和通知</translation>
@@ -472,7 +471,6 @@
 <translation id="240789602312469910">傳送使用狀況與診斷資料。如要協助改善貴子女的 Android 使用體驗，可以選擇讓系統自動將診斷情形、裝置狀態和應用程式使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能，並不會用於識別貴子女的身分。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提升產品和服務品質。這項<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />是由裝置擁有者執行。擁有者可選擇將這部裝置的診斷資料與使用資料傳送給 Google。如果將貴子女的「其他網路和應用程式活動」設定為開啟，這類資料可能會儲存在他們的 Google 帳戶中。<ph name="BEGIN_LINK2" />進一步瞭解指標<ph name="BEGIN_LINK2_END" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">請輸入你的 PIN 碼</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
-<translation id="2416438829169535743">要離開檢視畫面嗎？</translation>
 <translation id="2417486498593892439">登入網路</translation>
 <translation id="2423619675829330672">PIN 碼輸入錯誤次數過多，請等 <ph name="TIME_LEFT" />後再試一次。</translation>
 <translation id="2426051945783024481">相機鏡頭會自動置中</translation>
@@ -480,7 +478,6 @@
 <translation id="2429753432712299108">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限。接受要求前，請確認裝置顯示以下密碼金鑰：<ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2437771564543046790">電力不足，省電模式已開啟</translation>
-<translation id="243878895369688216">昨天開啟過</translation>
 <translation id="2440978926514840421">已錄製 GIF</translation>
 <translation id="2441427462554639370">儲存空間嚴重不足，因此已停止錄製</translation>
 <translation id="2445449901874883781">使用高密度模式</translation>
@@ -873,7 +870,6 @@
 <translation id="3563432852173030730">無法下載 Kiosk 應用程式。</translation>
 <translation id="3563558822383875692">正在設定 DLC。</translation>
 <translation id="3563775809269155755">啟用無線基地台</translation>
-<translation id="3566240529365775567">剛才開啟過</translation>
 <translation id="3571734092741541777">設定</translation>
 <translation id="3573179567135747900">改回「<ph name="FROM_LOCALE" />」(需要重新啟動)</translation>
 <translation id="3576141592585647168">變更時區</translation>
@@ -958,7 +954,6 @@
 <translation id="3756485814916578707">正在投放螢幕畫面</translation>
 <translation id="3765246971671567135">無法讀取離線展示模式的政策。</translation>
 <translation id="3765841382945324995">「<ph name="SIX_PACK_KEY_NAME" />」快速鍵已從 <ph name="OLD_SHORTCUT" />更新為 <ph name="NEW_SHORTCUT" /></translation>
-<translation id="3765841986579723851">今天編輯過</translation>
 <translation id="3772109172035555611">自訂 TrackPoint</translation>
 <translation id="3773700760453577392">管理員已禁止 <ph name="USER_EMAIL" /> 的多重登入功能。所有使用者都必須登出，才能繼續操作。</translation>
 <translation id="3779139509281456663">正在連結 <ph name="NAME" /></translation>
@@ -998,7 +993,6 @@
 <translation id="3873915545594852654">ARC++ 發生問題。</translation>
 <translation id="3879748587602334249">下載管理員</translation>
 <translation id="3884007280698606545">USB 裝置數量已達上限</translation>
-<translation id="3886872229787704059">今天開啟過</translation>
 <translation id="3892148308691398805">複製文字</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
 <translation id="3898464793473355515">將畫面順時針旋轉 90 度</translation>
@@ -1788,7 +1782,6 @@
 <translation id="6095008505822982596">語音速率</translation>
 <translation id="6095425951508823973">新增「<ph name="PROVIDER" />」連線</translation>
 <translation id="6095541101974653012">系統已將你登出帳戶。</translation>
-<translation id="6099678161144790572">過去一個月內編輯過</translation>
 <translation id="6103838137565245112">系統</translation>
 <translation id="6108952804512516814">使用 AI 製作</translation>
 <translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
@@ -1944,7 +1937,6 @@
 <translation id="6546062506073634094">依內容和圖片預覽搜尋圖片</translation>
 <translation id="6555373427270923730">在網址列輸入網址，然後按下 <ph name="MODIFIER" /><ph name="KEY" /> 鍵</translation>
 <translation id="655633303491376835">新安裝的「<ph name="APP_NAME" />」</translation>
-<translation id="6559158502366839560">瀏覽更多應用程式和遊戲</translation>
 <translation id="6560151649238390891">已插入建議項目</translation>
 <translation id="6562447480759345110">結束專注模式</translation>
 <translation id="6565007273808762236">無法建立 eSIM 連線</translation>
@@ -2050,7 +2042,6 @@
 <translation id="6848716236260083778">如要設定指紋，請讓孩子輕觸指紋感應器。孩子的指紋資料會安全儲存在這部 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="6852052252232534364">按一下即可啟動</translation>
 <translation id="6852628153543175788">延長 10 分鐘</translation>
-<translation id="6855029042976311970">剛剛編輯過</translation>
 <translation id="6856708615407876657">切換搜尋結果類別</translation>
 <translation id="6856756288284651804">Chromebook 已更新</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
@@ -2145,7 +2136,6 @@
 <translation id="7118597077555700347">開啟「<ph name="SEARCH_RESULT_TEXT" />」</translation>
 <translation id="7119327711295338600">選取下一個字詞或字母</translation>
 <translation id="7124556000457919678">開啟時，你可以暫停及重新啟用滑鼠按鍵</translation>
-<translation id="7126996685418858413">過去一週開啟過</translation>
 <translation id="7131634465328662194">系統會自動將你登出。</translation>
 <translation id="7143207342074048698">連線中</translation>
 <translation id="7144878232160441200">重試</translation>
@@ -2176,7 +2166,6 @@
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">後置麥克風</translation>
 <translation id="7258225044283673131">應用程式沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
-<translation id="7258828758145722155">昨天編輯過</translation>
 <translation id="726276584504105859">拖曳到這裡即可使用分割畫面</translation>
 <translation id="7264788308526527464">減少 <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">重複按壓指紋感應器，建立完整的指紋檔案</translation>
@@ -2249,7 +2238,6 @@
 <translation id="7491962110804786152">分頁</translation>
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
 <translation id="7507162824403726948">完成身分驗證</translation>
-<translation id="7508690557411636492">過去一個月開啟過</translation>
 <translation id="7509246181739783082">驗證身分</translation>
 <translation id="7512509370370076552">右鍵快速鍵已從 alt + 點按更新為<ph name="LAUNCHER_KEY_NAME" />鍵 + 點按</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />，未選取</translation>
@@ -2702,7 +2690,6 @@
 <translation id="8753368202781196133">目前不支援這個語言。</translation>
 <translation id="8755498163081687682">驗證身分：<ph name="ORIGIN_NAME" /> 要求確認你的身分</translation>
 <translation id="875593634123171288">顯示 VPN 設定</translation>
-<translation id="8756799553341497810">離開這個檢視畫面後，即可開始自訂應用程式版面配置。</translation>
 <translation id="8759408218731716181">無法設定多重登入</translation>
 <translation id="8759753423332885148">瞭解詳情</translation>
 <translation id="8760172428247796445">系統會立即鎖定「<ph name="DEVICE_TYPE" />」。

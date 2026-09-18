@@ -48,6 +48,7 @@ Stvari za razmatranje:
 <translation id="1784567647421309104">Sačuvajte lozinke u Chromeu</translation>
 <translation id="1790080846677398234">Dodaje unesene URL-ove u vaše oznake u Chromeu.</translation>
 <translation id="1799920918471566157">Savjeti za Chrome</translation>
+<translation id="1802420021606590788">Chrome obrađuje naslove stranica i URL-ove u privatnom prostoru u oblaku</translation>
 <translation id="1830634592642484976">Adresa je trenutno sačuvana u Chromeu. Da je koristite na Googleovim proizvodima, sačuvajte je na Google računu <ph name="USER_EMAIL" />.</translation>
 <translation id="1891812034154776216">Sakrijte otvorene anonimne kartice prilikom napuštanja Chromea</translation>
 <translation id="1894434821386148799">Ovdje možete pronaći postavke Chromea i druge stavke</translation>
@@ -140,6 +141,7 @@ Nove oznake se ne mogu sačuvati na računu dok ne izbrišete neke. Ako se sada 
 <translation id="3984746313391923992">Vaša organizacija zahtijeva da ostanete odjavljeni s Chromea.</translation>
 <translation id="3988789688219830639">Google Chrome nema pristup vašim fotografijama ili videozapisima. Omogućite pristup u meniju iOS postavke &gt; Privatnost &gt; Fotografije.</translation>
 <translation id="4064699917955374540">Da koristite i sačuvate podatke Chromea na Google računu, potvrdite identitet.</translation>
+<translation id="4093789416346364876">Postavite Chrome kao zadani preglednik da dobijate Geminijeve uvide gdje god pregledate</translation>
 <translation id="411154422556990518">Pratite novosti o praćenju cijena i savjete za Chrome.</translation>
 <translation id="417201473131094001">Nije podržano na Chrome Canaryju</translation>
 <translation id="424864128008805179">Odjaviti se iz Chromea?</translation>
@@ -359,7 +361,7 @@ Vaši podaci su šifrirani vašim pristupnim izrazom <ph name="TIME" />. Unesite
 <translation id="8610372330814566250">U Chromeu koristite lozinke, historiju, oznake i kreditne kartice iz Safarija</translation>
 <translation id="8630122478628016441">Uključite "Zaključaj anonimne kartice prilikom zatvaranja Chromea".</translation>
 <translation id="8673726683583791503">Kupujte putem Google Objektiva</translation>
-<translation id="869525545193934083">Videozapis na cijelom zaslonu s uputama za postavljanje Chromea kao zadanog preglednika: otvorite postavke Chromea na iOS-u, dodirnite opciju Zadana aplikacija preglednika i odaberite Chrome.</translation>
+<translation id="869525545193934083">Videozapis preko cijelog ekrana koji prikazuje postavljanje Chromea kao zadanog preglednika: otvaranje postavki Chromea u iOS-u, dodir na "Zadana aplikacija preglednika" i odabir Chromea.</translation>
 <translation id="8765470054473112089">Kad pišete u traci za adresu ili u okviru za pretraživanje, Chrome šalje ono što upišete zadanom pretraživaču radi dobijanja boljih prijedloga. Ovo je isključeno u anonimnom načinu rada.</translation>
 <translation id="8772179140489533211">Prikazuje upite za prijavu pomoću Chromea.</translation>
 <translation id="8788269841521769222">Nećete morati zapamtiti ovu lozinku. Sačuvat će se u Googleovom Upravitelju lozinki za račun <ph name="EMAIL" /></translation>

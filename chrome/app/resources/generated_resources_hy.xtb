@@ -860,6 +860,7 @@
 <translation id="1656528038316521561">Ֆոնի թափանցիկությունը</translation>
 <translation id="1657406563541664238">Օգնեք բարելավել <ph name="PRODUCT_NAME" />-ը՝ ավտոմատ Google-in ուղարկելով օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները</translation>
 <translation id="1657937299377480641">Ուսումնական ռեսուրսներից օգտվելու համար խնդրեք ծնողին, որ թույլատրի ձեզ նորից հաշիվ մտնել</translation>
+<translation id="1657952527687824398">Ընտրել ներդիրների խումբը</translation>
 <translation id="1658424621194652532">Այս էջն օգտագործում է ձեր խոսափողը:</translation>
 <translation id="1660405268563702784">Հասանելի է թարմացում <ph name="APP_NAME" /> հավելվածի համար</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Ուղղեք ներդիրը, որը դանդաղեցնում է ձեր դիտարկիչը}one{Ուղղեք ներդիրները, որոնք դանդաղեցնում են ձեր դիտարկիչը}other{Ուղղեք ներդիրները, որոնք դանդաղեցնում են ձեր դիտարկիչը}}</translation>
@@ -2311,6 +2312,7 @@
 <translation id="2767077837043621282">Չհաջողվեց թարմացնել ձեր Chromebook-ը։ Փորձեք ավելի ուշ։</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> կայքը կկարողանա փոփոխել <ph name="FILENAME" /> ֆայլը, մինչև չփակեք այս կայքի բոլոր ներդիրները</translation>
 <translation id="2769174155451290427">Վերբեռնված պատկեր</translation>
+<translation id="2769715732905083104">Ընտրել ներդիրների խումբը</translation>
 <translation id="2770082596325051055">Դադարեցնել <ph name="FILE_NAME" /> ֆայլի ներբեռնումը</translation>
 <translation id="2770465223704140727">Հեռացնել ցանկից</translation>
 <translation id="2770690685823456775">Արտահանեք ձեր գաղտնաբառերը այլ պանակ</translation>
@@ -2591,6 +2593,7 @@
 <translation id="2984727013951557074">Ֆայլը դեռ համաժամացվում է Drive-ում։</translation>
 <translation id="2984923316661218534">Օգտագործեք մուտքի բանալիներն այս սարքում Google գաղտնաբառերի կառավարչի միջոցով</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" />-ն ապատեղադրել է մեկ հավելված}one{<ph name="APP_NAME" />-ն ապատեղադրել է # հավելված}other{<ph name="APP_NAME" />-ն ապատեղադրել է # հավելված}}</translation>
+<translation id="2987777176328481585">{NUM_TABS,plural, =1{Ընտրել ներդիրը}one{Ընտրել # ներդիր}other{Ընտրել # ներդիր}}</translation>
 <translation id="2988018669686457659">Պահեստային արտապատկերում</translation>
 <translation id="2988328607561082373">Դուք կրկնվող գաղտնաբառեր չունեք</translation>
 <translation id="2989123969927553766">Մկնիկով ոլորման արագացում</translation>
@@ -2705,7 +2708,6 @@
 <translation id="3048917188684939573">Հեռարձակման և սարքի մատյանները</translation>
 <translation id="3049356453907822148">Ավելացնել նոր հմտություն</translation>
 <translation id="3051250416341590778">Ցուցադրման չափս</translation>
-<translation id="3051676221004664500">&amp;Թարգմանել «<ph name="SELECTION" />» հատվածը</translation>
 <translation id="3053273573829329829">Միացնել օգտատիրոջ PIN կոդը</translation>
 <translation id="3053274730492362225">Չթարթել</translation>
 <translation id="3057938290530993634">Հպեք և պահեք՝ ձեր ամենաշատ այցելած կայքերն ամրացնելու համար, որպեսզի հաջորդ անգամ հեշտությամբ բացեք դրանք</translation>
@@ -5144,7 +5146,6 @@
 <translation id="4913573660390710463">Օգտագործեք փաթեթավորված վեբ ծրագրեր՝ ընդլայնված հնարավորություններով։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Չհաջողվեց գտնել հավելվածի տվյալներ</translation>
 <translation id="4915961947098019832">Թույլատրվում է ցուցադրել պատկերներ</translation>
-<translation id="4916140032692201190">&amp;Թարգմանել ընտրված հատվածը</translation>
 <translation id="491779113051926205">ChromeOS-ի թրաֆիկի հաշվիչներ</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" />-ը ցանկանում է կապ հաստատել «<ph name="EXTENSION_NAME" />» ընդլայնման հետ</translation>
 <translation id="4918086044614829423">Ընդունել</translation>
@@ -5181,6 +5182,7 @@
 <translation id="4941963255146903244">Դիտել հեռախոսի լուսանկարները, մեդիաֆայլերը և հավելվածները</translation>
 <translation id="494286511941020793">Պրոքսի-սերվերի կազմաձևման օգնություն</translation>
 <translation id="4943368462779413526">Ֆուտբոլ</translation>
+<translation id="4943872375798546930">Արդյունքներ չկան</translation>
 <translation id="4943927218331934807">Անհրաժեշտ է մուտքագրել գաղտնաբառ</translation>
 <translation id="4946998421534856407">գործարկիչ + վերև սլաք</translation>
 <translation id="4947376546135294974">Տվյալներ կայքից, որն այցելում եք</translation>
@@ -5221,7 +5223,6 @@
 <translation id="4972129977812092092">Փոփոխել տպիչի տվյալները</translation>
 <translation id="4972164225939028131">Գաղտնաբառը սխալ է</translation>
 <translation id="4972737347717125191">Կայքերը կարող են վիրտուալ իրականության ձեր սարքերն ու տվյալները օգտագործելու թույլտվություն հայցել</translation>
-<translation id="4973302523373219907">Եթե հատուկ դյուրանցումը սահմանված չէ, ըստ կանխադրման կօգտագործվի @@ դյուրանցումը</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Անջատել կայքի ձայնը}one{Անջատել կայքի ձայնը}other{Անջատել կայքերի ձայնը}}</translation>
 <translation id="497403230787583386">Անվտանգության ստուգումներն ավարտված են։ Ձեր փաստաթուղթը կտպվի։</translation>
 <translation id="4974442344472293753">Թարմացման արդյունքը</translation>
@@ -5655,6 +5656,7 @@
 <translation id="5311304534597152726">Մուտք հաշիվ</translation>
 <translation id="5312746996236433535">էկրանի հայելապատճենում</translation>
 <translation id="5313967007315987356">Ավելացնել կայք</translation>
+<translation id="531500736198839473">{NUM_TABS,plural, =1{Ընտրել ներդիրը}one{Ընտրել # ներդիր}other{Ընտրել # ներդիր}}</translation>
 <translation id="5315738755890845852">Ավելորդ ձևավոր փակագիծ՝ <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5317781812114905957">Ցուցումներ</translation>
@@ -6532,6 +6534,7 @@
 <translation id="6022659036123304283">Անհատականացրեք Chrome դիտարկիչը</translation>
 <translation id="6024317249717725918">Որոնել տեսանյութի կադր <ph name="VISUAL_SEARCH_PROVIDER" />-ի միջոցով</translation>
 <translation id="6025215716629925253">Սթեքի ժամանակագրություն</translation>
+<translation id="6026436621921471553">Չեղարկել ներդիրների խմբի ընտրությունը</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB սարքը միացված է</translation>
 <translation id="6027143200498653403">Երբ դուք հարցեր եք տալիս պատմության մասին, դուք կարող եք պատասխաններ ստանալ ձեր այցելած էջի որոշակի տեղեկությունների մասին</translation>
 <translation id="6027945736510816438">Արդյո՞ք նկատի ունեիք <ph name="WEBSITE" /></translation>
@@ -6630,7 +6633,6 @@
 <translation id="610487644502954950">Կողային վահանակն ապամրացվեց</translation>
 <translation id="6104929924898022309">Օգտագործել որոնման ստեղնը՝ գործառական ստեղների գործողությունները փոխելու համար</translation>
 <translation id="6108952804512516814">Ստեղծեք արհեստական բանականության օգնությամբ</translation>
-<translation id="611041979451429698">&amp;Տպել «<ph name="SELECTION" />» տեքստը</translation>
 <translation id="6110794992500777605">Իմ դյուրանցումներն ու կայքերը</translation>
 <translation id="6111718295497931251">Հեռացնել Google Drive-ի օգտագործման թույլտվությունը</translation>
 <translation id="6112197885362646874">Հարցնել Google-ին «<ph name="SEARCH_TERMS" />» թեմայի մասին</translation>
@@ -7000,6 +7002,7 @@
 <translation id="6399675241776343019">Մերժված է</translation>
 <translation id="6399774419735315745">Լրտես</translation>
 <translation id="6400360390396538896">Միշտ <ph name="ORIGIN" /> կայքում</translation>
+<translation id="6400714103322134861">Չեղարկել ներդիրների խմբի ընտրությունը</translation>
 <translation id="6401118106417399952">Ձեր սարքի EID համարն է <ph name="EID_NUMBER" />, և սերիական համարն է <ph name="SERIAL_NUMBER" />։ Դրանց միջոցով կարող եք ակտիվացնել ծառայությունը։</translation>
 <translation id="6401458660421980302">Այս ներդիրը մեկ այլ սարք ուղարկելու համար մուտք գործեք Chrome այդ սարքում</translation>
 <translation id="6402042774506839496">Պատճառն իմանալու համար դիմեք հավելվածի մշակողին</translation>
@@ -7639,7 +7642,6 @@
 <translation id="6870470066213933201">JavaScript-ի օպտիմալացում և անվտանգություն</translation>
 <translation id="6870953451576517204">Ինքնաստուգումն ավարտվել է</translation>
 <translation id="6871397658902960384">Սկսել դիտարկումը</translation>
-<translation id="6871609459496868094">&amp;Պատճենել «<ph name="SELECTION" />» տեքստը</translation>
 <translation id="6871644448911473373">OCSP պատասխանիչ՝ <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Լեզուներ…</translation>
 <translation id="6873156759937047811">PIN կոդ՝</translation>
@@ -9723,7 +9725,6 @@
 <translation id="8477241577829954800">Փոխարինված է</translation>
 <translation id="8477384620836102176">&amp;Ընդհանուր</translation>
 <translation id="8477446666255316832">Հաջորդ անգամ մուտք գործեք ավելի արագ</translation>
-<translation id="8477548388161793571">&amp;Թարգմանել ընտրված հատվածը</translation>
 <translation id="8478346767369317046">Աշխատանքային</translation>
 <translation id="8479176401914456949">Կոդն անվավեր է։ Նորից փորձեք։</translation>
 <translation id="8480869669560681089">Անհայտ սարք <ph name="VENDOR_NAME" />-ից</translation>

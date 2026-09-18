@@ -213,7 +213,6 @@
 <translation id="1768959921651994223">ປະເພດການພິສູດຢືນຢັນ</translation>
 <translation id="1776228893584526149">ໂທນສີຮູບພື້ນຫຼັງ</translation>
 <translation id="1777913922912475695">ຂົວ</translation>
-<translation id="1782199038061388045">ການແປພາສາ</translation>
 <translation id="1788485524395674731">ແອັບນີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="1792647875738159689">ກຳລັງຍົກເລີກການສະແກນ</translation>
 <translation id="1801418420130173017">ປິດການນຳໃຊ້ຮູບແບບສີສັນມືດ</translation>
@@ -366,7 +365,6 @@
 <translation id="2448312741937722512">ປະ​ເພດ</translation>
 <translation id="2448857983905133469">ເຄື່ອງມືສຳລັບຫ້ອງຮຽນ</translation>
 <translation id="2468124392950503650">ເລືອກ prompt ເພື່ອສ້າງ ຫຼື ເບິ່ງ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ຄຳແນະນຳການໃຊ້ prompt<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">ໃຊ້ຊ່ວຍຂ້ອຍຂຽນເພື່ອສ້າງສະບັບຮ່າງ ຫຼື ປັບປ່ຽນວຽກທີ່ມີຢູ່ແລ້ວ, ຂັບເຄື່ອນໂດຍ Google AI</translation>
 <translation id="2475982808118771221">ເກີດຄວາມຜິດພາດຂຶ້ນ.</translation>
 <translation id="2480572840229215612">ປູ</translation>
 <translation id="248546197012830854">ອຸປະກອນອອບລາຍຢູ່. ເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍ Wi-Fi ເພື່ອເບິ່ງເນື້ອຫາຊ່ວຍເຫຼືອ.</translation>
@@ -558,7 +556,6 @@
 <translation id="346539236881580388">ຖ່າຍໃໝ່</translation>
 <translation id="3479552764303398839">ບໍ່ແມ່ນດຽວນີ້</translation>
 <translation id="3484914941826596830">ໃນຂະນະທີ່ກຳລັງອັບເດດເຟີມແວຢູ່, ກະລຸນາຢ່າຖອດອຸປະກອນພາຍນອກນີ້ອອກ ຫຼື ຢ່າປິດເຄື່ອງຄອມພິວເຕີຂອງທ່ານ. ທ່ານສາມາດຫຍໍ້ໜ້າຈໍນີ້ລົງໄດ້. ອັບເດດນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ ແລະ ອຸປະກອນພາຍນອກຂອງທ່ານອາດບໍ່ເຮັດວຽກໃນລະຫວ່າງນີ້.</translation>
-<translation id="3486220673238053218">ຄໍາ​ນິ​ຍາມ</translation>
 <translation id="3487866404496702283">ຄຳຕິຊົມສຳລັບຄຸນສົມບັດວຽກ</translation>
 <translation id="3488065109653206955">ເປີດ​​ໃຊ້ງານ​ບາງ​ສ່ວນເທົ່ານັ້ນ</translation>
 <translation id="3492882532495507361">ຫ້ອງການ <ph name="OFFICE_STYLE" /> ທີ່ມີໂທນສີ <ph name="OFFICE_COLOR" /></translation>
@@ -598,7 +595,6 @@
 <translation id="3634941468757842845">ເລືອກຮູບແບບສີສັນ</translation>
 <translation id="3644695927181369554">ການແນະນຳທີ່ບໍ່ດີ</translation>
 <translation id="3651050199673793219">ເລືອກຫົວໜ່ວຍອຸນຫະພູມ</translation>
-<translation id="3661106764436337772">ຂຽນໄດ້ໄວຂຶ້ນ ແລະ ມີຄວາມໝັ້ນໃຈຫຼາຍຂຶ້ນ</translation>
 <translation id="3662461537616691585">ສີເບີກັນດີ ແລະ ສີນ້ຳຕານແດງ</translation>
 <translation id="3664755900672940272">ສັບພຣອມຕົວຢ່າງແລ້ວ</translation>
 <translation id="3668449597372804501">ຮູບພື້ນຫຼັງການເຄື່ອນທີ່ຂອງເມກ</translation>
@@ -858,7 +854,6 @@
 <translation id="4773299976671772492">ຢຸດ​ແລ້ວ</translation>
 <translation id="4777310452073659583">ເພື່ອຮັບການຖອດຂໍ້ຄວາມຈາກສຽງ, ໃຫ້ຣີສະຕາດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="4778082030331381943">ອະເມທິສ</translation>
-<translation id="4782311465517282004">ຮັບຄຳນິຍາມ, ການແປພາສາ ຫຼື ການປ່ຽນແປງຫົວໜ່ວຍເມື່ອທ່ານຄລິກຂວາ ຫຼື ແຕະໃສ່ຂໍ້ຄວາມຄ້າງໄວ້</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ຮູບ</translation>
 <translation id="4793710386569335688">ສຳລັບການຊ່ວຍເຫຼືອເພີ່ມເຕີມ, ກະລຸນາເຂົ້າໄປ <ph name="BEGIN_LINK" />ສູນຊ່ວຍເຫຼືອ<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">ອະກໍຣິທຶມ​ການ​ບີບ​ອັດ​ຂໍ້​ມູນ</translation>
@@ -1460,7 +1455,6 @@
 <translation id="7397270852490618635">ປິດຮູບແບບສີສັນແຈ້ງ</translation>
 <translation id="7401543881546089382">ລຶບ​ທາງລັດ</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> ພ້ອມອັບເດດແລ້ວ</translation>
-<translation id="741244894080940828">ການປ່ຽນ</translation>
 <translation id="7415801143053185905">ການຕອບສະໜອງ HTTP ສູງຫຼາຍ</translation>
 <translation id="7418738250896500352">ຄຳສັບຫຼາຍເກີນໄປເພື່ອເຮັດໃຫ້ງ່າຍ</translation>
 <translation id="7425037327577270384">ຊ່ວຍຂ້ອຍຂຽນ</translation>
@@ -1770,7 +1764,6 @@
 <translation id="885701979325669005">ການເກັບຂໍ້ມູນ</translation>
 <translation id="885704831271383379">ແປ້ນພິມເຂັ້ມຂຶ້ນ</translation>
 <translation id="8863170912498892583">ເປີດການນຳໃຊ້ຮູບແບບສີສັນມືດ</translation>
-<translation id="8863888432376731307">ຮັບ <ph name="INTENT" /> ສຳລັບ "<ph name="QUERY" />" ແລະ ອື່ນໆ</translation>
 <translation id="8864415976656252616">ບໍ່ມີເນື້ອຫາທີ່ແນະນຳ. ເບິ່ງເນື້ອຫາຊ່ວຍເຫຼືອຍອດນິຍົມ.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ອຸປະກອນແມ່ນແທັບເລັດ.</translation>

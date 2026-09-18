@@ -837,6 +837,8 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2384307209577226199">Empresa (con valores predeterminados)</translation>
 <translation id="2385809941344967209">Actualiza Chrome desde la configuración</translation>
 <translation id="2386255080630008482">Se ha revocado el certificado de servidor.</translation>
+<translation id="2387424091060104123">Sugerido por Gemini · <ph name="SRC_LINK" />Ver fuentes<ph name="END_SRC_LINK" />
+Puedes eliminar esta sugerencia de Chrome. Tu fuente original no se eliminará. <ph name="MANAGE_LINK" />Gestionar Autocompletar mejorado<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Desarrollar</translation>
 <translation id="2392959068659972793">Mostrar políticas sin valores establecidos</translation>
 <translation id="239429038616798445">Este método de envío no está disponible. Selecciona otro.</translation>
@@ -1428,6 +1430,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3432601291244612633">Cerrar página</translation>
 <translation id="3434025015623587566">El Gestor de contraseñas de Google necesita más acceso</translation>
 <translation id="343474037147570563">Los archivos que subas o adjuntes se enviarán a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o software malicioso, que se almacenen de acuerdo con las políticas de la empresa y que tu administrador pueda verlos.</translation>
+<translation id="3435267628744367511">Pulsa Ctrl dos veces en cualquier formulario para encontrar y rellenar información sin cambiar de pestaña</translation>
 <translation id="3435557549311968410">Impresión continua (corta)</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3436125638121079308">¿Compartir automáticamente las pestañas relevantes para obtener mejores respuestas en esta conversación?</translation>
@@ -1516,6 +1519,8 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3577473026931028326">Se ha producido un error. Inténtalo de nuevo.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome te avisará cuando la página esté lista. &lt;a&gt;Cancelar&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Añadir pestañas automáticamente</translation>
+<translation id="3582670569275100909">Envíos</translation>
 <translation id="3582930987043644930">Añade un nombre</translation>
 <translation id="3583757800736429874">&amp;Rehacer movimiento</translation>
 <translation id="3584299510153766161">Perforado doble en la parte inferior</translation>
@@ -1591,6 +1596,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Cargando...</translation>
 <translation id="3709599264800900598">Texto copiado</translation>
+<translation id="3711223220609269738">Nueva pestaña aislada</translation>
 <translation id="3711430313228789376">El navegador Chrome está intentando mostrar contraseñas</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3712004750972384495">Guardando grabación de pantalla</translation>
@@ -1609,6 +1615,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3727309136762649052">Espacio de nombres</translation>
 <translation id="3727850735097852673">Para usar el Gestor de contraseñas de Google con el llavero de macOS, reinicia Chrome y permite el acceso al llavero. Las pestañas que tuvieras abiertas se reabrirán después de reiniciar.</translation>
 <translation id="3728173127485570463">El navegador Chrome ya no necesitará tu huella digital para autocompletar contraseñas</translation>
+<translation id="3729811201279509483">Añadir pestañas manualmente</translation>
 <translation id="3736564442532774454">El navegador Chrome está intentando rellenar tu información sensible en <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Tu administrador gestiona el navegador.</translation>
 <translation id="3739842843727261045">Me gusta permite indicar que te han gustado estos resultados</translation>
@@ -2771,6 +2778,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5649053991847567735">Descargas automáticas</translation>
 <translation id="5651323159439184939">Alimentación por tracción</translation>
 <translation id="5653681867130739344">Actualiza el documento de identidad de forma segura en Google Wallet</translation>
+<translation id="5653744563415531641">Guarda tu información y realiza tareas más rápido, como rellenar formularios en los productos de Google. Puedes <ph name="MANAGE_WALLET_SETTINGS_LINK" /> de <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID del informe sobre fallos subido:</translation>
 <translation id="5654965123204121933">La URL no incluye la cadena de sustitución necesaria <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Correo electrónico</translation>
@@ -2894,6 +2902,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5884465125445718607">Sobre chino n.º 6</translation>
 <translation id="5887400589839399685">Tarjeta guardada</translation>
 <translation id="5887687176710214216">Última visita: ayer</translation>
+<translation id="5887791684215121787">Pulsa ⌘ ⌘ en cualquier formulario para encontrar y rellenar información sin cambiar de pestaña</translation>
 <translation id="5889251770650310375">Para ver el historial de tus otros dispositivos, verifica que eres tú y sincroniza tu historial y tus pestañas. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido el</translation>
@@ -3216,6 +3225,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6410264514553301377">Introduce la fecha de vencimiento y el código CVC de la tarjeta <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Cuadro de diálogo de aprobación parental</translation>
+<translation id="6413532517183895572">gestionar la configuración de Wallet</translation>
 <translation id="6415778972515849510">Chromium puede ayudarte a proteger tu cuenta de Google y a cambiar tu contraseña.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Asegúrate de que los datos empresariales o personales importantes se almacenan externamente.</translation>
@@ -4004,6 +4014,7 @@ Más información:
 <translation id="7758069387465995638">Puede que el cortafuegos o el software antivirus hayan bloqueado la conexión.</translation>
 <translation id="7759147511335618829">Controlar y reprogramar MIDI</translation>
 <translation id="7759809451544302770">Opcional</translation>
+<translation id="7760566304700414795">Envío</translation>
 <translation id="776110834126722255">Obsoleta</translation>
 <translation id="7761159795823346334">¿Permitir cámara?</translation>
 <translation id="7761701407923456692">El certificado del servidor no coincide con la URL.</translation>
@@ -4349,6 +4360,7 @@ Más información:
 <translation id="8371841335382565017">Mostrar lista de dispositivos para enviar contenido</translation>
 <translation id="8371889962595521444">Certificados raíz personalizados</translation>
 <translation id="8374636051559112948">Varía</translation>
+<translation id="8377507422902936905">Pedidos</translation>
 <translation id="837840316697671463">Si no encuentras un archivo en tu dispositivo, búscalo en <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="8380941800586852976">Peligroso</translation>
@@ -4848,7 +4860,7 @@ Más información:
 <translation id="958952958906914932">Más pestañas de otros dispositivos</translation>
 <translation id="961372935451193190">Pestañas y archivos</translation>
 <translation id="961663415146723894">Encuadernar por la parte inferior</translation>
-<translation id="961856697154696964">Borrar datos navegación</translation>
+<translation id="961856697154696964">Borrar datos de navegación</translation>
 <translation id="961930410699694996">Ubicación permitida esta vez</translation>
 <translation id="962484866189421427">Este contenido podría intentar instalar aplicaciones engañosas que se hagan pasar por otra persona o recojan datos que podrían usarse para realizar un seguimiento de tu actividad. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">De acuerdo con una ley de tu zona, Chromium te pide que elijas tu buscador predeterminado. Los buscadores que aparecen en la lista son populares en tu zona y se muestran en orden aleatorio.</translation>

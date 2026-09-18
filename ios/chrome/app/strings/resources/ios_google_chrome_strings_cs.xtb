@@ -48,6 +48,7 @@ Co je třeba zvážit:
 <translation id="1784567647421309104">Ukládejte si v Chromu hesla</translation>
 <translation id="1790080846677398234">Přidá zadané adresy URL do záložek v Chromu.</translation>
 <translation id="1799920918471566157">Tipy k Chromu</translation>
+<translation id="1802420021606590788">Chrome zpracovává názvy stránek a adresy URL v soukromém prostoru v cloudu</translation>
 <translation id="1830634592642484976">Tato adresa je aktuálně uložena v Chromu. Pokud ji chcete používat ve službách Google, uložte ji do svého účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="1891812034154776216">Při opuštění Chromu skrýt otevřené anonymní karty</translation>
 <translation id="1894434821386148799">Tady teď najdete nastavení Chromu a další položky</translation>
@@ -140,6 +141,7 @@ Nové záložky nebude možné do účtu uložit, dokud některé nesmažete. Po
 <translation id="3984746313391923992">Organizace vyžaduje, abyste zůstali odhlášeni z Chromu.</translation>
 <translation id="3988789688219830639">Google Chrome nemá přístup k vašim fotkám nebo videím. Povolte přístup v systému iOS v Nastavení &gt; Soukromí &gt; Fotky.</translation>
 <translation id="4064699917955374540">Pokud chcete používat a ukládat data prohlížeče Chrome ve svém účtu Google, ověřte svoji totožnost.</translation>
+<translation id="4093789416346364876">Nastavte si Chrome jako výchozí prohlížeč a využívejte postřehy od Gemini, ať už procházíte cokoli</translation>
 <translation id="411154422556990518">Sledujte aktuální informace o sledování cen a tipy pro Chrome.</translation>
 <translation id="417201473131094001">V Chrome Canary není podporováno</translation>
 <translation id="424864128008805179">Odhlásit se z Chromu?</translation>
@@ -359,6 +361,7 @@ Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud 
 <translation id="8610372330814566250">Používejte hesla, historii, záložky a kreditní karty z prohlížeče Safari v Chromu</translation>
 <translation id="8630122478628016441">Zapněte možnost Při zavření Chromu zamknout anonymní karty.</translation>
 <translation id="8673726683583791503">Nakupujte pomocí Google Lens</translation>
+<translation id="869525545193934083">Celoobrazovkový videonávod, jak nastavit Chrome jako výchozí prohlížeč: V systému iOS otevřete Nastavení Chromu, klepněte na Výchozí prohlížeč a vyberte Chrome.</translation>
 <translation id="8765470054473112089">Při psaní do adresního řádku nebo vyhledávacího pole odesílá Chrome zadaný text do výchozího vyhledávače, aby vám mohl nabízet lepší návrhy. V anonymním režimu je tato funkce vypnutá.</translation>
 <translation id="8772179140489533211">Zobrazuje výzvy k přihlášení do Chromu.</translation>
 <translation id="8788269841521769222">Toto heslo si nebudete muset pamatovat. Uloží se do Správce hesel Google pro účet <ph name="EMAIL" />.</translation>

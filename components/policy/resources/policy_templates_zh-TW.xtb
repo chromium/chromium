@@ -5293,6 +5293,7 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 <translation id="4515404363392014383">針對信任的來源啟用「安全瀏覽」</translation>
 <translation id="4517327050150780380">「幫我閱讀」功能的設定</translation>
 <translation id="4518251772179446575">詢問網站何時要追蹤使用者的實際位置</translation>
+<translation id="4521106598519506386">背景分頁凍結功能已啟用</translation>
 <translation id="4521193243799782295">在登入時，<ph name="PRODUCT_OS_NAME" />可以透過伺服器進行線上驗證，或使用快取密碼進行離線驗證。
 
       如果將這項政策的值設為 -1，該政策就不會強制要求使用者進行線上驗證，而是會允許使用者進行離線驗證，直到有其他強制執行線上登入的機制為止。如果將這項政策的值設為 0，使用者就一律必須線上登入。如果將這項政策設為任何其他值，就是指定使用者從上次線上驗證到下次登入必須再次進行線上驗證的間隔時間。
@@ -8484,6 +8485,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="6424486395812679373">對所有下載檔案執行安全瀏覽檢查</translation>
 <translation id="6426899507714989471">停用圖形加速功能</translation>
 <translation id="6431446111529802555">歐洲。</translation>
+<translation id="6431778298276599807">啟用背景分頁凍結功能</translation>
 <translation id="6433697627431665375">不允許將 <ph name="PRODUCT_NAME" /> 資料納入備份內容</translation>
 <translation id="6436052172226685535">LBS 的預設行為。</translation>
 <translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> 會盡可能將部分導覽作業從 HTTP 升級為 HTTPS。這項政策可用於停用這個行為。如果設為「true」或不設定，系統預設會啟用這項功能。獨立的 <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> 政策可用於排除特定主機名稱或主機名稱模式，避免這項功能將其升級為 HTTPS。另請參閱 <ph name="HTTPS_ONLY_MODE_POLICY_NAME" /> 政策。</translation>
@@ -10485,6 +10487,7 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
 <translation id="7696412993033202071">外部驗證應用程式啟動網址</translation>
 <translation id="7696534428021833264">啟用 NTP SharePoint 和 OneDrive 檔案資訊卡</translation>
 <translation id="7699644797467448158">如果進行頂層跨網站瀏覽並替換 BrowsingContextGroup，就會清除 window.name。</translation>
+<translation id="7700606318567398251">禁止使用 <ph name="CHROME_DEVTOOLS_NAME" /></translation>
 <translation id="7701341006446125684">設定應用程式和擴充功能快取大小 (以位元組為單位)</translation>
 <translation id="7701825382808690457">使用 WebRTC 的後量子金鑰協議預設值</translation>
 <translation id="7703041979684393741">不允許從 Google 服務收集 WebRTC 事件記錄</translation>

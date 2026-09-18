@@ -37,7 +37,6 @@
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />，子母畫面分頁</translation>
 <translation id="1126696498560056882">管理這部裝置上的帳戶</translation>
 <translation id="1135018701024399762">如果你與人共用裝置，但不想讓其他人查看你的瀏覽記錄，可以使用無痕模式</translation>
-<translation id="113752097246673894">如要在所有裝置上存取書籤和其他資料，請以「<ph name="EMAIL" />」身分登入 Chrome</translation>
 <translation id="1138458427267715730">如果產品在任何網站上降價，透過快訊取得通知</translation>
 <translation id="1140317858355046628">如果刪除，所有人將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，而且該群組將從所有裝置中刪除。</translation>
 <translation id="1142732900304639782">不要詢問是否要翻譯這些網站</translation>
@@ -205,7 +204,6 @@
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />，正在錄製媒體的分頁</translation>
 <translation id="1819443852740954262">在無痕視窗中開啟所有網址</translation>
 <translation id="1820408774134375111">登入底部功能表</translation>
-<translation id="1823492026305965829">以「<ph name="USER_FULL_NAME" />」身分登入</translation>
 <translation id="1824902652744048041">輕觸「刪除瀏覽資料」</translation>
 <translation id="1829244130665387512">在網頁中尋找</translation>
 <translation id="1832459821645506983">啟用同步功能</translation>
@@ -439,7 +437,6 @@
 <translation id="2723001399770238859">音訊</translation>
 <translation id="2739887572830526131">如果保留，之後可以新增分頁；如果不會再使用，可以刪除群組。</translation>
 <translation id="2742373789128106053">目前無法使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」。</translation>
-<translation id="2751271371269891762">如要在所有裝置上存取書籤和其他資料，請以「<ph name="EMAIL" />」身分登入</translation>
 <translation id="2760805590727089264">MM/YY</translation>
 <translation id="2761162135224472056">要以沉浸模式觀看嗎？</translation>
 <translation id="2762000892062317888">剛剛</translation>
@@ -514,6 +511,7 @@
 <translation id="2996291259634659425">建立通關密語</translation>
 <translation id="2996682533106928201">輕觸即可關閉</translation>
 <translation id="2996809686854298943">必須要有網址</translation>
+<translation id="3007318536447999974">如要與 Gemini 交談，請授予麥克風的使用權限。你也可以前往「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」管理這項權限</translation>
 <translation id="3024215143424744261">閱讀模式偏好設定已關閉</translation>
 <translation id="3024277805447899099">預覽圖片</translation>
 <translation id="3026955690410463085">加入連結</translation>
@@ -608,7 +606,6 @@
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3435914367318771664">將分頁加入新群組</translation>
 <translation id="3436118221454753036">問問 AI 模式</translation>
-<translation id="3438681572027105609">如要在所有裝置上使用你的密碼和其他資料，請登入 Chrome</translation>
 <translation id="3439276997620616816">這裡會顯示最近關閉的分頁</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
 <translation id="3444179773590444986">要針對網站的深色主題提供意見嗎？</translation>
@@ -753,7 +750,6 @@
 <translation id="4000212216660919741">離線首頁</translation>
 <translation id="4000670338830950598">自訂及管理 Google Chrome 選單中有醒目顯示項目</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{你的 Google 帳戶有 1 組密碼外洩}other{你的 Google 帳戶有 # 組密碼外洩}}</translation>
-<translation id="4023638601467301498">如要在所有裝置上存取書籤和其他資料，請登入 Chrome</translation>
 <translation id="4024768890073681126">瀏覽器由家長管理</translation>
 <translation id="4027569221211770437">「<ph name="FOLDER_TITLE" />」資料夾</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 小時}other{# 小時}}</translation>
@@ -934,7 +930,6 @@
 <translation id="4685741273709472646">開啟下拉式選單</translation>
 <translation id="468924408576231679">複製「<ph name="PAGE_TITLE" />」的網頁連結，來源：<ph name="PAGE_URL" /></translation>
 <translation id="4692623383562244444">搜尋引擎</translation>
-<translation id="469286762610133730">取得優質內容</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}}</translation>
 <translation id="4698757800236023795">啟用 (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
@@ -994,7 +989,6 @@
 <translation id="4910889077668685004">付款應用程式</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />，歡迎回來！</translation>
 <translation id="4913169188695071480">停止重新整理</translation>
-<translation id="4921224083091001889">如要在所有裝置上存取密碼和其他資料，請以「<ph name="EMAIL" />」身分登入 Chrome</translation>
 <translation id="4923173329789776645">貴機構不建議下載</translation>
 <translation id="4924398189611529766">如果使用無痕模式上網，這部裝置的其他使用者就看不到你的活動，隱私更有保障。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">螢幕截圖 <ph name="CURRENT_DATE_ISO" /></translation>
@@ -1155,7 +1149,6 @@
 <translation id="5601180634394228718">如需其他會運用資料提升 Chrome 使用體驗的設定，請前往 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="5601924940067278327">在所有裝置上存取分頁和其他資料</translation>
 <translation id="5611398002774823980">儲存到帳戶</translation>
-<translation id="5613381935190035031">以「<ph name="EMAIL" />」身分登入 Chrome，就能在所有裝置上存取分頁和其他資料</translation>
 <translation id="5614625640221885312">登入帳戶後，就能在所有裝置上存取你的書籤、密碼等資訊</translation>
 <translation id="5619633276517849615">貴機構已開啟安全瀏覽功能</translation>
 <translation id="5620163320393916465">未儲存任何密碼</translation>
@@ -1242,7 +1235,6 @@
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{閱讀清單上的 1 個頁面}other{閱讀清單上的 # 個頁面}}</translation>
 <translation id="5992182727984874868"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> 你最近未造訪這個網站，因此 Chrome 已移除這些權限</translation>
 <translation id="5995726099713306770">要再次下載網頁嗎？</translation>
-<translation id="5998675059699164418">貴機構要求你先登入才能使用 Chrome。</translation>
 <translation id="6000066717592683814">繼續使用 Google</translation>
 <translation id="6002122790816966947">你的裝置</translation>
 <translation id="6011308810877101166">改善搜尋建議</translation>
@@ -1453,12 +1445,10 @@
 <translation id="6738867403308150051">下載中…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">查看帳戶資料</translation>
-<translation id="6746834324024491643">如要在所有裝置上使用你的密碼和其他資料，請登入 <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">快速開啟新分頁。按住這裡即可編輯這個捷徑。</translation>
 <translation id="6754359471209693699">開始新的搜尋</translation>
 <translation id="6756507620369789050">提供意見</translation>
 <translation id="6762511428368667596"><ph name="NAME" />，<ph name="EMAIL" />。</translation>
-<translation id="676305334223455055">登入即可接收符合個人興趣的內容</translation>
 <translation id="6764137532716892442">共用的「<ph name="GROUP_TITLE" />」分頁群組，群組中有新活動</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="6785476624617658922">Chrome 和 Chrome OS 的《附加服務條款》</translation>
@@ -1758,7 +1748,6 @@
 <translation id="7822705602465980873">當你登入後，這類資料會連結到 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後強化 Gmail 的防護機制。</translation>
 <translation id="7824665136384946951">貴機構已關閉安全瀏覽功能</translation>
 <translation id="7825973332242257878">分頁群組</translation>
-<translation id="7826342993930002256">Chrome 是你的隨身幫手</translation>
 <translation id="7845155831233417403">最多只能開啟 <ph name="MAX_INSTANCE_COUNT" /> 個視窗。請關閉一個視窗再繼續操作。</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
 <translation id="7846296061357476882">Google 服務</translation>
@@ -1815,7 +1804,9 @@
 <translation id="8058746566562539958">在新的 Chrome 分頁中開啟</translation>
 <translation id="8062594758852531064">延伸預先載入模式：</translation>
 <translation id="8063895661287329888">無法加入書籤。</translation>
+<translation id="8064081231614696741">選擇其他資料夾</translation>
 <translation id="8066816452984416180">快速將這個頁面加入書籤，按住即可編輯這個捷徑。</translation>
+<translation id="8068041627541121907">Gemini 想使用麥克風</translation>
 <translation id="8072436850275034464">無論在何處使用 Chrome，都能重新開啟最近關閉的分頁</translation>
 <translation id="8073388330009372546">在新分頁中開啟圖片</translation>
 <translation id="8076492880354921740">分頁</translation>
@@ -1832,7 +1823,6 @@
 <translation id="8110024788458304985">協助改善 Chrome 的功能與效能</translation>
 <translation id="8110087112193408731">要在數位健康中顯示你的 Chrome 活動記錄嗎？</translation>
 <translation id="8118117428362942925">如需協助，請找家長 (<ph name="PARENT_NAME" />) 幫忙</translation>
-<translation id="8118151008374483324">登入 Chrome，就能在所有裝置上存取分頁和其他資料</translation>
 <translation id="8120286190326371840">這部裝置上沒有任何密碼外洩</translation>
 <translation id="8122623268651408616">由新到舊排序</translation>
 <translation id="8127542551745560481">編輯首頁</translation>
@@ -2124,7 +2114,6 @@
 <translation id="9218430445555521422">設為預設</translation>
 <translation id="9219103736887031265">圖片</translation>
 <translation id="922152298093051471">自訂 Chrome</translation>
-<translation id="9222198206152536936">以「<ph name="EMAIL" />」身分登入，就能在所有裝置上存取分頁和其他資料</translation>
 <translation id="924447568950697217">將 Chrome 設為預設瀏覽器</translation>
 <translation id="926205370408745186">將你的 Chrome 活動記錄從數位健康中移除</translation>
 <translation id="927968626442779827">使用 Google Chrome 精簡模式</translation>

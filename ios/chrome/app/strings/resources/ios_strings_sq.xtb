@@ -15,6 +15,7 @@
 <translation id="1035980983510608210">Mbyllja e të gjitha skedave do të mbyllë edhe skedat e gozhduara.</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1036436692654972538">Ruajtur në pajisjen tënde</translation>
+<translation id="1038106730571050514">Shfaq sugjerimet</translation>
 <translation id="1041322626941363065">Të të paralajmërojë nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave</translation>
 <translation id="1046742265332833834">Tema blu</translation>
 <translation id="1049743911850919806">I fshehtë</translation>
@@ -231,7 +232,6 @@
 <translation id="1671568970992212376">Ruaj fotografitë te "Fotografitë e Google" dhe qasu tek ato në çdo kohë.</translation>
 <translation id="1674504678466460478">Nga <ph name="SOURCE_LANGUAGE" /> në <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Bazuar në politikat e organizatës sate, ky skedar mund të përmbajë informacione delikate</translation>
-<translation id="1683276189281028863">Kontrolli i fjalëkalimit</translation>
 <translation id="1689333818294560261">Pseudonimi</translation>
 <translation id="169048873465870056">Të hiqet skeda dhe të fshihet grupi?</translation>
 <translation id="1692115862433274081">Përdor një llogari tjetër</translation>
@@ -241,7 +241,6 @@
 <translation id="1709916727352927457">Fshi çelësin e kalimit</translation>
 <translation id="1715515772563243997">Nëse ke besim te <ph name="SITE" />, mund të përdorësh një fjalëkalim të ruajtur për t'u identifikuar.</translation>
 <translation id="1718835860248848330">Ora e fundit</translation>
-<translation id="1726013039921383235">Lejo gjithmonë</translation>
 <translation id="1728549374069268714">Ngjit dhe vazhdo</translation>
 <translation id="1732468323901456775">Aktivizo njoftimet për "<ph name="MODULE_NAME" />"</translation>
 <translation id="1739364174357629566">Përditëso numrin e udhëtarit të njohur</translation>
@@ -258,7 +257,6 @@
 <translation id="1752547299766512813">Ruaj fjalëkalimet</translation>
 <translation id="1764070164487214210">Udhëzimet</translation>
 <translation id="1764511703783285459">Menaxheri tjetër i fjalëkalimeve nuk ndau asnjë fjalëkalim apo çelës kalimi</translation>
-<translation id="1765555082983153259">"Chrome" dëshiron të ketë qasje te mikrofoni yt</translation>
 <translation id="1767766085187034454">Përkthe me Google</translation>
 <translation id="1771016937398045251">Menyja e veglave</translation>
 <translation id="1772468122139624049">Skedat nuk mund të ringarkohen</translation>
@@ -455,6 +453,7 @@
 <translation id="2381405137052800939">Bazat</translation>
 <translation id="2384692388811649784">Fshih skedat "e fshehta"</translation>
 <translation id="2386793615875593361">1 e përzgjedhur</translation>
+<translation id="2388949452472546050">Sajtet që viziton, duke përfshirë Google, janë përgjegjëse për të përcaktuar se si i përgjigjen kësaj kërkese. Në varësi të ligjeve në rajonin tënd, sajtet mund të përgjigjen duke kufizuar shitjen dhe ndarjen e të dhënave të tua ose përdorimin e tyre për reklama të personalizuara. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="2390457533592708044">Fshih "<ph name="MODULE_NAME" />"</translation>
 <translation id="2393230427496852974">Lexo se çfarë po thonë të tjerët</translation>
 <translation id="2394659309569789395">Hape sajtin gjithsesi</translation>
@@ -610,6 +609,7 @@
 <translation id="2902312830803030883">Më shumë veprime</translation>
 <translation id="2904788871580817212">Ulje çmimi në skedën tënde të hapur, nga <ph name="PREVIOUS_PRICE" /> në <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Ke <ph name="NUMBER_OF_PASSWORDS" /> fjalëkalime të ripërdorura që mund ta rrezikojnë sigurinë tënde.</translation>
+<translation id="2916433579958049718">Shto inteligjencën e Gemini në çdo lidhje</translation>
 <translation id="291754862089661335">Pozicionoje kodin QR ose barkodin në këtë kornizë</translation>
 <translation id="2918688092312652908">Shëno si të palexuar</translation>
 <translation id="2922210239002704889">Shko te faqja kryesore ose tastiera</translation>
@@ -795,7 +795,6 @@
 <translation id="3565012355885596568">Imazhet nuk mund të ngarkoheshin</translation>
 <translation id="3565930036634619844">Skeda. <ph name="TAB_INDEX" /> nga <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Ruaje në një mënyrë tjetër</translation>
-<translation id="3567446754270467567">"Shfletimi i sigurt i përmirësuar" përfundoi!</translation>
 <translation id="3572503683475187385">Skeda aktuale ndahet me Gemini kur ti fillon një bisedë të re. Kur ndan një skedë me Gemini, përmbajtjet dhe URL-ja e saj dërgohen te Google. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Në "Llogarinë tënde të Google"</translation>
 <translation id="3575234738189584619">Kërko me "Lenten"</translation>
@@ -934,7 +933,6 @@
 <translation id="4021447724486050609">Përditëso shfletuesin</translation>
 <translation id="4021931095789478915">Shto ${url} te lista e leximit</translation>
 <translation id="4028871427853484857">Ruaje te llogaria…</translation>
-<translation id="4034354558246368274">Lejo këtë herë</translation>
 <translation id="4038354071007134711">Asnjë aplikim në këtë pajisje nuk mund ta hapë skedarin.</translation>
 <translation id="4042870976416480368">Gjej brenda faqes</translation>
 <translation id="4045441967987592849">Rihap</translation>
@@ -1014,7 +1012,6 @@
 <translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
 <translation id="4309403553630140242">Trokit dy herë për më shumë informacion</translation>
 <translation id="4310738531374808763">Personalizo faqen tënde kryesore</translation>
-<translation id="4316794575239200608">Bashkëbisedimet e tua me Gemini dhe <ph name="BEGIN_LINK" />të dhënat e tua të Google Workspace<ph name="END_LINK" /> nuk do të shqyrtohen nga shqyrtues njerëzorë dhe nuk do të përdoren për të përmirësuar modelet e IA-së gjeneruese.</translation>
 <translation id="4320848494125124980">Të fundit</translation>
 <translation id="4322394346347055525">Mbyll skedat e tjera</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1090,7 +1087,6 @@
 <translation id="4578835633387306383">Aktivizo…</translation>
 <translation id="4580621046861724270">Disa faqeshënues nuk janë ruajtur</translation>
 <translation id="4580716718466706433">Shko te "Menaxheri i fjalëkalimeve"</translation>
-<translation id="4584778196791098089">"Shko në modalitetin 'I fshehtë'" përfundoi!</translation>
 <translation id="4585751637295612750">Hap një skedë të re për ta shtuar te pyetja jote</translation>
 <translation id="4587589328781138893">Sajtet</translation>
 <translation id="4592672037257622855">{count,plural, =1{Faqja u shtua në listën tënde të leximit}other{{count} faqe u shtuan në listën tënde të leximit}}</translation>
@@ -1108,7 +1104,6 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> fjalëkalime të ripërdorura</translation>
 <translation id="4632655012900268062">Personalizo kartat</translation>
 <translation id="4634124774493850572">Përdor fjalëkalimin</translation>
-<translation id="4634633632339959267">Bisedat shqyrtohen dhe përdoren për të përmirësuar IA-në e Google. <ph name="BEGIN_LINK" />Mëso për zgjedhjet e tua.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Informacionet për vendndodhjen tënde<ph name="END_LINK" /> ruhen gjithashtu me aktivitetin tënd.</translation>
 <translation id="4636930964841734540">Informacion</translation>
 <translation id="4641425577292284174">Mëso nëse ke cilësimet më të sigurta ose duhet të rishikosh ndonjë gjë</translation>
 <translation id="4642472735733036929">Monitorimi i çmimeve ndaloi</translation>
@@ -1164,7 +1159,6 @@
 <translation id="4796496140132859135">Grupi i skedave. Palosur.</translation>
 <translation id="4800912004582762296">Po klikon</translation>
 <translation id="4802185666270672526">Fshih "Kërko sajtin për desktop"</translation>
-<translation id="4802678077012980341">Kontrolli i fjalëkalimit përfundoi!</translation>
 <translation id="4803185665210547709">Menaxhohet nga organizata jote.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">Vizato, thekso ose trokit për të zgjedhur çdo gjë për të cilën dëshiron të kërkosh dhe merr rezultate pa u larguar nga skeda</translation>
@@ -1387,7 +1381,6 @@
 <translation id="5482922178977937393">Dëshiron të marrësh njoftime për lajmet, sportet etj. bazuar në interesat e tu?</translation>
 <translation id="5483838506518938965">Je plotësisht gati</translation>
 <translation id="5487521232677179737">Pastro të dhënat</translation>
-<translation id="5491208689472430746">Fshirja e shpejtë përfundoi!</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="5499648645977734083">Menaxho mënyrat e pagesës…</translation>
 <translation id="5501346139932663133">Aplikacionet e Google</translation>
@@ -1463,7 +1456,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5718049162805123412">Duhet t'i ndryshosh këto tani</translation>
 <translation id="5721040778297053709">Poziciono kartën e kreditit në këtë kuadër</translation>
 <translation id="572328651809341494">Skedat e fundit</translation>
-<translation id="5724590854763964497">Si parazgjedhje, skeda jote aktuale ndahet kur fillon një bisedë të re. Kur ndahen skedat, përmbajtjet dhe URL-të e tyre dërgohen te Google, por nuk do të përdoren për të përmirësuar modelet e IA-së gjeneruese. Mund ta ndryshosh këtë cilësim në çdo kohë.</translation>
 <translation id="5724941645893276623">Për të shfletuar uebin në mënyrë private, shto një skedë të re</translation>
 <translation id="5728072125198221967">Shërbimet e lidhura të Google</translation>
 <translation id="5728700505257787410">Na vjen keq, ka pasur një problem identifikimi në llogarinë tënde.</translation>
@@ -1552,6 +1544,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6006672969046233841">Skedë e re</translation>
 <translation id="6011308810877101166">Përmirëso sugjerimet për kërkimin</translation>
 <translation id="6012140227487808125">Po shifron…</translation>
+<translation id="6014801569448771146">Kontrollo fjalëkalimet e tua</translation>
 <translation id="6027619584715411062">Identifikohu për të marrë faqeshënuesit, fjalëkalimet etj. në të gjitha pajisjet e tua.</translation>
 <translation id="6027945736510816438">Mos dëshiron të thuash <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">veçori e re</translation>
@@ -1945,6 +1938,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="721218676460477064">Përmblidh këtë artikull</translation>
 <translation id="7215621211572884440">Lejohen dritaret kërcyese</translation>
 <translation id="7218491361283758048">Kodi ZIP</translation>
+<translation id="7220786058474068424">Po përpunohet</translation>
 <translation id="7221173315674413369">Eksploro këshillat dhe veçoritë e reja te "Ç'të reja ka"</translation>
 <translation id="7223102419539744003">Mbylle skedën</translation>
 <translation id="7223134495231529579">Ruaj te shkarkimet</translation>

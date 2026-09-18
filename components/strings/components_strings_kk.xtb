@@ -837,6 +837,8 @@
 <translation id="2384307209577226199">Кәсіпорын (әдепкі)</translation>
 <translation id="2385809941344967209">Chrome браузерін Chrome параметрлерінен жаңартыңыз.</translation>
 <translation id="2386255080630008482">Сервер сертификаты қайтарып алынды.</translation>
+<translation id="2387424091060104123">Gemini ұсынған · <ph name="SRC_LINK" />Дереккөздерді көру<ph name="END_SRC_LINK" />
+Бұл ұсынысты Chrome-нан өшіруге болады. Бастапқы дереккөз жойылмайды. <ph name="MANAGE_LINK" />Дұрысталған автотолтыру функциясын басқару<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Нақтылау</translation>
 <translation id="2392959068659972793">Мәні орнатылмаған саясаттарды көрсету</translation>
 <translation id="239429038616798445">Бұл жөнелту әдісі қолжетімді емес. Басқа әдісті қолданып көріңіз.</translation>
@@ -1427,6 +1429,7 @@
 <translation id="3432601291244612633">Бетті жабу</translation>
 <translation id="3434025015623587566">Google Password Manager қызметіне көбірек рұқсат қажет</translation>
 <translation id="343474037147570563">Сіз жүктеп салатын немесе тіркейтін файлдар Google Cloud қызметіне немесе үшінші тараптарға талдау үшін жіберіледі. Мысалы, олар құпия деректерді немесе зиянды бағдарламаны анықтау үшін сканерленуі, компания саясаттарына сәйкес сақталуы және әкімшіге көрінуі мүмкін.</translation>
+<translation id="3435267628744367511">Кез келген үлгіде Ctrl пернесін екі рет басып, қойындыларды ауыстырмай-ақ ақпаратты тауып, толтырыңыз</translation>
 <translation id="3435557549311968410">Үздіксіз (қысқа)</translation>
 <translation id="3435738964857648380">Қауіпсіздік</translation>
 <translation id="3436125638121079308">Осы тізбекте жақсырақ жауаптар алу үшін сәйкес қойындыларды автоматты түрде бөлісу керек пе?</translation>
@@ -1515,6 +1518,8 @@
 <translation id="3577473026931028326">Бірдеңе дұрыс болмады. Қайталап көріңіз.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Бұл бет дайын болған кезде, Chrome сізге хабарлайды. &lt;a&gt;Бас тарту&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Қойындыларды автоматты түрде қосу</translation>
+<translation id="3582670569275100909">Жөнелтімдер</translation>
 <translation id="3582930987043644930">Ат қосу</translation>
 <translation id="3583757800736429874">Тасымалдауды &amp;қайта орындау</translation>
 <translation id="3584299510153766161">Төменгі жағынан екі рет тесу</translation>
@@ -1590,6 +1595,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Жүктеліп жатыр…</translation>
 <translation id="3709599264800900598">Көшірілген мәтін</translation>
+<translation id="3711223220609269738">Жаңа оқшау қойынды</translation>
 <translation id="3711430313228789376">Chrome құпия сөздерді көрсеткелі жатыр.</translation>
 <translation id="3711895659073496551">Уақытша тоқтату</translation>
 <translation id="3712004750972384495">Экран жазбасы сақталып жатыр</translation>
@@ -1608,6 +1614,7 @@
 <translation id="3727309136762649052">Атау кеңістігі</translation>
 <translation id="3727850735097852673">Google Password Manager қызметін macOS кілттер тізбегімен бірге пайдалану үшін Chrome-ды қайта іске қосып, кілттер тізбегін пайдалануға рұқсат беріңіз. Қайта іске қосқаннан кейін, қойындылар қайта ашылады.</translation>
 <translation id="3728173127485570463">Chrome браузері құпия сөздерді автоматты түрде толтыру үшін енді саусақ ізін сұрамайды.</translation>
+<translation id="3729811201279509483">Қойындыларды қолмен қосу</translation>
 <translation id="3736564442532774454">Chrome браузері <ph name="APP_NAME" /> сайтында құпия ақпаратыңызды толтырғалы жатыр.</translation>
 <translation id="3738166223076830879">Браузеріңізді әкімші басқарады.</translation>
 <translation id="3739842843727261045">"Ұнайды" белгішесін бассаңыз, бұл нәтижелер сізге ұнағанын білдіресіз</translation>
@@ -2770,6 +2777,7 @@
 <translation id="5649053991847567735">Автоматты жүктеулер</translation>
 <translation id="5651323159439184939">Үздіксіз беру</translation>
 <translation id="5653681867130739344">Жеке куәлікті Google Wallet-те қауіпсіз жаңартыңыз</translation>
+<translation id="5653744563415531641">Ақпаратыңызды сақтау арқылы үлгілерді толтыру секілді Google өнімдеріндегі әрекеттерді жылдам орындай аласыз. <ph name="ACCOUNT" /> аккаунтына арналған <ph name="MANAGE_WALLET_SETTINGS_LINK" /> аласыз.</translation>
 <translation id="5654927323611874862">Жүктеп салынған жаңылыс туралы есеп идентификаторы:</translation>
 <translation id="5654965123204121933">URL мекенжайында қажетті <ph name="SEARCH_TERMS_REPLACEMENT" /> ауыстыру жолы жоқ: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Электрондық пошта</translation>
@@ -2893,6 +2901,7 @@
 <translation id="5884465125445718607">Chinese #6 хатқалтасы</translation>
 <translation id="5887400589839399685">Карта сақталды</translation>
 <translation id="5887687176710214216">Соңғы кіру: кеше</translation>
+<translation id="5887791684215121787">Кез келген үлгіде ⌘ ⌘ пернесін басып, қойындыларды ауыстырмай-ақ ақпаратты тауып, толтырыңыз</translation>
 <translation id="5889251770650310375">Басқа құрылғылардағы тарихты алу үшін жеке басыңызды растаңыз және тарих пен қойындыларды синхрондаңыз. Синхрондауды кез келген уақытта параметрлерде тоқтатуға болады. Google жүйесі Search пен басқа қызметтерді тарихыңызға негіздеп жекелендіре алады.</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
 <translation id="5895187275912066135">Шығарылған күні</translation>
@@ -3215,6 +3224,7 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> картасының жарамдылық мерзімін және CVC кодын енгізіңіз</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Ата-ана мақұлдауының диалогтік терезесі</translation>
+<translation id="6413532517183895572">Wallet параметрлерін басқара</translation>
 <translation id="6415778972515849510">Chromium браузері Google аккаунтыңызды қорғауға және құпия сөзіңізді өзгертуге көмектеседі.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Маңызды жеке немесе жұмыс деректерін басқа жерге сақтап алыңыз.</translation>
@@ -4002,6 +4012,7 @@
 <translation id="7758069387465995638">Брандмауэр немесе вирусқа қарсы бағдарламалық құрал байланысты бөгеп қойған болуы мүмкін.</translation>
 <translation id="7759147511335618829">MIDI басқару/қайта бағдарламалау</translation>
 <translation id="7759809451544302770">Қосымша</translation>
+<translation id="7760566304700414795">Жөнелтім</translation>
 <translation id="776110834126722255">Ескірген</translation>
 <translation id="7761159795823346334">Камераны пайдалануға рұқсат берілсін бе?</translation>
 <translation id="7761701407923456692">Сервер сертификаты URL мекенжайына сәйкес келмейді.</translation>
@@ -4347,6 +4358,7 @@
 <translation id="8371841335382565017">Трансляциялауға арналған құрылғылар тізімін көрсету</translation>
 <translation id="8371889962595521444">Арнаулы түбірлік сертификаттар</translation>
 <translation id="8374636051559112948">Әртүрлі</translation>
+<translation id="8377507422902936905">Тапсырыстар</translation>
 <translation id="837840316697671463">Файлды құрылғыдан таба алмасаңыз, оны <ph name="CLOUD_PROVIDER" /> қызметінен іздеңіз.</translation>
 <translation id="8378714024927312812">Ұйым басқарады</translation>
 <translation id="8380941800586852976">Қауіпті</translation>

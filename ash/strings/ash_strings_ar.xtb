@@ -199,7 +199,6 @@
 <translation id="1525508553941733066">إغلاق</translation>
 <translation id="152629053603783244">‏إعادة تشغيل نظام التشغيل Linux</translation>
 <translation id="1526448108126799339">فتح علامة تبويب جديدة في نافذة جديدة</translation>
-<translation id="1528259147807435347">تم تعديله في الأسبوع الماضي.</translation>
 <translation id="1536604384701784949">لاستخدام <ph name="USER_EMAIL_ADDRESS" />، عليك تسجيل الخروج من جميع الحسابات أولاً. لتسجيل الخروج، انقر على "إلغاء" للرجوع. بعد ذلك، اختَر الوقت لفتح منطقة الحالة ثم اختَر تسجيل الخروج. ثم سجِّل الدخول إلى <ph name="USER_EMAIL_ADDRESS_2" /> مرة أخرى.</translation>
 <translation id="15373452373711364">مؤشر الماوس الكبير</translation>
 <translation id="1545331255323159851">عرض الصور والوسائط والإشعارات الحديثة في هاتفك</translation>
@@ -473,7 +472,6 @@
 <translation id="240789602312469910">‏إرسال بيانات الاستخدام والتشخيص: يمكنك المساهمة في تحسين تجربة طفلك على Android من خلال إرسال بيانات التشخيص وبيانات استخدام التطبيقات والجهاز تلقائيًا إلى Google. ولن يتم استخدام هذه البيانات لتحديد هوية طفلك، بل ستُستخدَم لتعزيز استقرار النظام والتطبيقات وإجراء المزيد من التحسينات. ستساعد أيضًا بعض البيانات المجمّعة تطبيقات Google وشركاءها، مثل مطوّري تطبيقات Android. ويفرض المالك هذا <ph name="BEGIN_LINK1" />الإعداد<ph name="END_LINK1" />. قد يختار المالك إرسال بيانات الاستخدام والتشخيص لهذا الجهاز إلى Google. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات" لطفلك، قد يتم حفظ هذه البيانات في حسابه على Google. <ph name="BEGIN_LINK2" />مزيد من المعلومات حول المقاييس<ph name="BEGIN_LINK2_END" />مزيد من المعلومات<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">إدخال رقم التعريف الشخصي</translation>
 <translation id="2412593942846481727">هناك تحديث جديد</translation>
-<translation id="2416438829169535743">هل تريد الخروج من العرض؟</translation>
 <translation id="2417486498593892439">تسجيل الدخول إلى الشبكة</translation>
 <translation id="2423619675829330672">تم إدخال رقم التعريف الشخصي مرات كثيرة جدًا. يُرجى الانتظار لمدة <ph name="TIME_LEFT" /> وإعادة المحاولة.</translation>
 <translation id="2426051945783024481">تم توسيط إطار الكاميرا تلقائيًا.</translation>
@@ -481,7 +479,6 @@
 <translation id="2429753432712299108">يريد جهاز بلوتوث "<ph name="DEVICE_NAME" />" الحصول على إذن للإقران. قبل القبول، يُرجى التأكد أن مفتاح المرور هذا يظهر في هذا الجهاز: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
 <translation id="2437771564543046790">مستوى شحن البطارية منخفض. تم تفعيل وضع "توفير شحن البطارية".</translation>
-<translation id="243878895369688216">تم فتحه أمس.</translation>
 <translation id="2440978926514840421">‏تم تسجيل محتوى الشاشة بتنسيق GIF</translation>
 <translation id="2441427462554639370">تم إنهاء التسجيل نتيجة للانخفاض الكبير في مساحة التخزين.</translation>
 <translation id="2445449901874883781">استخدام كثافة عالية</translation>
@@ -870,7 +867,6 @@
 <translation id="3563432852173030730">‏تعذر تنزيل تطبيق Kiosk.</translation>
 <translation id="3563558822383875692">‏جارٍ تثبيت المحتوى القابل للتنزيل (DLC).</translation>
 <translation id="3563775809269155755">تفعيل نقطة الاتصال</translation>
-<translation id="3566240529365775567">تم فتحه للتو.</translation>
 <translation id="3571734092741541777">إعداد</translation>
 <translation id="3573179567135747900">التغيير مرة أخرى إلى "<ph name="FROM_LOCALE" />" (يتطلب إعادة التشغيل)</translation>
 <translation id="3576141592585647168">تغيير المنطقة الزمنية</translation>
@@ -958,7 +954,6 @@
 <translation id="3756485814916578707">جارٍ بثّ الشاشة</translation>
 <translation id="3765246971671567135">تعذَّرت قراءة سياسة الوضع التجريبي بلا إنترنت.</translation>
 <translation id="3765841382945324995">تم تعديل اختصار <ph name="SIX_PACK_KEY_NAME" /> من "<ph name="OLD_SHORTCUT" />" إلى "<ph name="NEW_SHORTCUT" />".</translation>
-<translation id="3765841986579723851">تم تعديله اليوم.</translation>
 <translation id="3772109172035555611">‏تخصيص TrackPoint</translation>
 <translation id="3773700760453577392">منع أحد المشرفين الدخول المتعدد لـ <ph name="USER_EMAIL" />. لذا على جميع المستخدمين تسجيل الخروج للمتابعة.</translation>
 <translation id="3779139509281456663">جارٍ ربط <ph name="NAME" /></translation>
@@ -998,7 +993,6 @@
 <translation id="3873915545594852654">‏حدثت مشكلة في "وقت تشغيل التطبيقات في Chrome (ARC++)".</translation>
 <translation id="3879748587602334249">تطبيق إدارة التنزيل</translation>
 <translation id="3884007280698606545">‏تم بلوغ الحد الأقصى لعدد أجهزة USB التي يمكن توصيلها</translation>
-<translation id="3886872229787704059">تم فتحه اليوم.</translation>
 <translation id="3892148308691398805">نسخ النص</translation>
 <translation id="3893630138897523026">‏ChromeVox (التعليق المنطوق)</translation>
 <translation id="3898464793473355515">تدوير الشاشة بزاوية 90 درجة في اتجاه عقارب الساعة</translation>
@@ -1797,7 +1791,6 @@
 <translation id="6095008505822982596">معدّل سرعة الكلام</translation>
 <translation id="6095425951508823973">إضافة اتصال باستخدام "<ph name="PROVIDER" />"</translation>
 <translation id="6095541101974653012">تمّ الخروج من الحساب</translation>
-<translation id="6099678161144790572">تم تعديله الشهر الماضي.</translation>
 <translation id="6103838137565245112">النظام</translation>
 <translation id="6108952804512516814">الإنشاء باستخدام الذكاء الاصطناعي</translation>
 <translation id="6114505516289286752">تم تنزيل ملفات اللغة <ph name="LANGUAGE" /> في ميزة "التعرّف على الكلام"</translation>
@@ -1954,7 +1947,6 @@
 <translation id="6555373427270923730">‏اكتب عنوان الويب في شريط العناوين، ثم اضغط على ‎<ph name="MODIFIER" /><ph name="KEY" />.</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 مثبَّت حديثًا</translation>
-<translation id="6559158502366839560">المزيد من التطبيقات والألعاب</translation>
 <translation id="6560151649238390891">تم إدراج الاقتراح.</translation>
 <translation id="6562447480759345110">إنهاء "وضع التركيز"</translation>
 <translation id="6565007273808762236">‏تعذُّر الاتصال من خلال شريحة eSIM</translation>
@@ -2060,7 +2052,6 @@
 <translation id="6848716236260083778">لإعداد بصمة الإصبع، اطلب من طفلك لمس مستشعر بصمات الإصبع. ويتم تخزين بيانات بصمة إصبع طفلك بشكل آمن وتظلّ محفوظة على جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
 <translation id="6852052252232534364">انقر للتفعيل.</translation>
 <translation id="6852628153543175788">إضافة 10 دقائق</translation>
-<translation id="6855029042976311970">تم تعديله في غضون الدقائق الأخيرة.</translation>
 <translation id="6856708615407876657">تفعيل فلتر فئات نتائج البحث أو إيقافه</translation>
 <translation id="6856756288284651804">‏تم تحديث جهاز Chromebook</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانية</translation>
@@ -2155,7 +2146,6 @@
 <translation id="7118597077555700347">فتح "<ph name="SEARCH_RESULT_TEXT" />"</translation>
 <translation id="7119327711295338600">اختيار الكلمة أو الحرف التاليَين</translation>
 <translation id="7124556000457919678">عند تفعيل هذا الخيار، يمكن إيقاف مفاتيح الماوس مؤقتًا أو استئناف استخدامها</translation>
-<translation id="7126996685418858413">تم فتحه في الأسبوع الماضي.</translation>
 <translation id="7131634465328662194">سيتم تسجيل خروجك تلقائيًا.</translation>
 <translation id="7143207342074048698">اتصال</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>
@@ -2187,7 +2177,6 @@
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">الميكروفون الخلفي</translation>
 <translation id="7258225044283673131">التطبيق لا يستجيب. اختَر "فرض الإغلاق" لإغلاق التطبيق.</translation>
-<translation id="7258828758145722155">تم تعديله أمس.</translation>
 <translation id="726276584504105859">السحب هنا لاستخدام وضع تقسيم الشاشة</translation>
 <translation id="7264788308526527464">تقليل <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">يُرجى تكرار اللمس بالإصبع لإضافة الأجزاء المختلفة من بصمته.</translation>
@@ -2260,7 +2249,6 @@
 <translation id="7491962110804786152">علامة تبويب</translation>
 <translation id="7497767806359279797">اختيار اللغة ولوحة المفاتيح</translation>
 <translation id="7507162824403726948">إكمال عملية إثبات هويتك</translation>
-<translation id="7508690557411636492">تم فتحه الشهر الماضي.</translation>
 <translation id="7509246181739783082">إثبات هويتك</translation>
 <translation id="7512509370370076552">‏تم تعديل اختصار النقر بزر الماوس الأيمن من "alt + النقر" إلى "مفتاح <ph name="LAUNCHER_KEY_NAME" /> + النقر".</translation>
 <translation id="7512726380443357693">لم يتم اختيار <ph name="BUTTON_LABEL" /></translation>
@@ -2714,7 +2702,6 @@
 <translation id="8753368202781196133">هذه اللغة غير متاحة في الوقت الحالي.</translation>
 <translation id="8755498163081687682">إثبات هويتك: يريد النطاق <ph name="ORIGIN_NAME" /> تأكيد هويتك.</translation>
 <translation id="875593634123171288">‏عرض إعدادات شبكة VPN</translation>
-<translation id="8756799553341497810">يمكنك بدء تخصيص تنسيق التطبيق بعد الخروج من هذا العرض.</translation>
 <translation id="8759408218731716181">يتعذر إعداد الدخول المتعدد</translation>
 <translation id="8759753423332885148">معرفة المزيد.</translation>
 <translation id="8760172428247796445">سيتم قفل جهاز <ph name="DEVICE_TYPE" /> الآن.
