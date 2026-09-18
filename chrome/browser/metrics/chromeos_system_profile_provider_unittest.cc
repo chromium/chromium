@@ -32,6 +32,8 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -86,9 +88,12 @@ class TestChromeOSSystemProfileProvider : public ChromeOSSystemProfileProvider {
   }
 };
 
-const AccountId account_id1(AccountId::FromUserEmail("user1@example.com"));
-const AccountId account_id2(AccountId::FromUserEmail("user2@example.com"));
-const AccountId account_id3(AccountId::FromUserEmail("user3@example.com"));
+constexpr AccountId::Literal account_id1 =
+    AccountId::Literal::FromUserEmail("user1@example.com");
+constexpr AccountId::Literal account_id2 =
+    AccountId::Literal::FromUserEmail("user2@example.com");
+constexpr AccountId::Literal account_id3 =
+    AccountId::Literal::FromUserEmail("user3@example.com");
 
 }  // namespace
 
