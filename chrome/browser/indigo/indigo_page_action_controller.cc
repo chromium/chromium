@@ -65,14 +65,12 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
-#include "url/origin.h"
 
 namespace indigo {
 
@@ -110,7 +108,12 @@ IndigoPageActionController::IndigoPageActionController(
       indigo_service_(
           IndigoServiceFactory::GetForProfile(Profile::FromBrowserContext(
               tab_interface.GetContents()->GetBrowserContext()))),
-      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
+      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this),
+      metadata_classifier_(
+          indigo_service_,
+          base::BindRepeating(
+              &IndigoPageActionController::UpdateEntryPointsState,
+              base::Unretained(this))) {
   CHECK(base::FeatureList::IsEnabled(features::kIndigo));
 
   RegisterAsPageActionObserver(page_action_controller);
@@ -522,17 +525,13 @@ void IndigoPageActionController::DidFinishNavigation(
   invoke_weak_ptr_factory_.InvalidateWeakPtrs();
 
   last_evaluated_url_ = navigation_handle->GetURL();
-  ResetTriggeringState();
-
-  if (navigation_handle->IsSameDocument()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &IndigoPageActionController::TriggerMetadataClassification,
-            invoke_weak_ptr_factory_.GetWeakPtr()),
-        features::kIndigoMetadataKeywordHeuristicSameDocumentNavigationDelay
-            .Get());
-  }
+  optimization_guide_decision_ =
+      optimization_guide::OptimizationGuideDecision::kUnknown;
+  metadata_classifier_.OnNavigationCommitted(
+      tab().GetContents(), navigation_handle->IsSameDocument());
+  last_anchored_message_priority_ = std::nullopt;
+  last_trigger_source_ = std::nullopt;
+  UpdateEntryPointsState();
 
   if (optimization_guide_) {
     const GURL& url = navigation_handle->GetURL();
@@ -654,7 +653,7 @@ IndigoPageActionController::EvaluateTriggerState() const {
     return {.is_pending = false,
             .source = IndigoTriggerSource::kOptimizationGuide};
   }
-  if (heuristic_result_.has_value() && *heuristic_result_) {
+  if (metadata_classifier_.matches()) {
     return {.is_pending = false,
             .source = IndigoTriggerSource::kLocalProductKeywordHeuristic};
   }
@@ -668,42 +667,19 @@ IndigoPageActionController::EvaluateTriggerState() const {
            optimization_guide::OptimizationGuideDecision::kFalse);
 
   if (base::FeatureList::IsEnabled(features::kIndigoMetadataKeywordHeuristic) &&
-      !heuristic_result_.has_value()) {
+      metadata_classifier_.is_pending()) {
     return {.is_pending = true, .source = std::nullopt};
   }
 
   return {.is_pending = false, .source = std::nullopt};
 }
 
-content::RenderFrameHost*
-IndigoPageActionController::GetLiveMainFrameIfEligible() {
-  content::WebContents* web_contents = tab().GetContents();
-  if (!web_contents) {
-    return nullptr;
-  }
-
-  const GURL& url = web_contents->GetLastCommittedURL();
-
-  if (!indigo_service_ || !indigo_service_->IsConfigLoaded() ||
-      !indigo_service_->IsOriginAllowed(url::Origin::Create(url))) {
-    return nullptr;
-  }
-
-  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
-  if (!rfh || !rfh->IsRenderFrameLive()) {
-    return nullptr;
-  }
-
-  return rfh;
-}
-
 void IndigoPageActionController::ResetTriggeringState() {
   optimization_guide_decision_ =
       optimization_guide::OptimizationGuideDecision::kUnknown;
-  heuristic_result_ = std::nullopt;
+  metadata_classifier_.Reset();
   last_anchored_message_priority_ = std::nullopt;
   last_trigger_source_ = std::nullopt;
-  metadata_remote_.reset();
   UpdateEntryPointsState();
 }
 
@@ -857,6 +833,10 @@ void IndigoPageActionController::OnOptimizationGuideDecision(
     return;
   }
   optimization_guide_decision_ = decision;
+  if (optimization_guide_decision_ ==
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    metadata_classifier_.CancelPendingClassification();
+  }
   base::UmaHistogramEnumeration("Indigo.Discovery.OptimizationGuideDecision",
                                 optimization_guide_decision_);
   UpdateEntryPointsState();
@@ -1055,52 +1035,13 @@ void IndigoPageActionController::ClearTrackedBoundsAndHideToolbar() {
   }
 }
 
+void IndigoPageActionController::DOMContentLoaded(
+    content::RenderFrameHost* render_frame_host) {
+  metadata_classifier_.OnDOMContentLoaded(render_frame_host);
+}
+
 void IndigoPageActionController::DocumentOnLoadCompletedInPrimaryMainFrame() {
-  TriggerMetadataClassification();
-}
-
-void IndigoPageActionController::TriggerMetadataClassification() {
-  if (!base::FeatureList::IsEnabled(
-          features::kIndigoMetadataKeywordHeuristic)) {
-    return;
-  }
-  // If OptGuide already said YES, we don't need heuristic.
-  if (optimization_guide_decision_ ==
-      optimization_guide::OptimizationGuideDecision::kTrue) {
-    return;
-  }
-
-  content::RenderFrameHost* rfh = GetLiveMainFrameIfEligible();
-  if (!rfh) {
-    heuristic_result_ = false;
-    UpdateEntryPointsState();
-    return;
-  }
-
-  metadata_remote_.reset();
-  rfh->GetRemoteInterfaces()->GetInterface(
-      metadata_remote_.BindNewPipeAndPassReceiver());
-
-  metadata_remote_->ClassifyProductDetails(
-      indigo_service_->GetAllowedKeywords(),
-      indigo_service_->GetBlockedKeywords(),
-      base::BindOnce(&IndigoPageActionController::OnProductClassified,
-                     invoke_weak_ptr_factory_.GetWeakPtr()));
-}
-
-void IndigoPageActionController::OnProductClassified(
-    blink::mojom::ProductClassificationResultPtr result) {
-  if (!result) {
-    // Product not found.
-    heuristic_result_ = false;
-  } else {
-    // Product found.
-    heuristic_result_ =
-        result->allowed_keyword_found && !result->blocked_keyword_found;
-  }
-  base::UmaHistogramBoolean("Indigo.Discovery.MetadataKeywordHeuristic",
-                            *heuristic_result_);
-  UpdateEntryPointsState();
+  metadata_classifier_.OnDocumentOnLoadCompletedInPrimaryMainFrame();
 }
 
 void IndigoPageActionController::CheckEligibilityForCueing(
@@ -1128,8 +1069,10 @@ void IndigoPageActionController::CheckEligibilityForCueing(
     pending_eligibility_callback_ = std::move(callback);
     eligibility_timeout_timer_.Stop();
     eligibility_timeout_timer_.Start(
-        FROM_HERE, base::Seconds(3), this,
-        &IndigoPageActionController::OnEligibilityTimeout);
+        FROM_HERE,
+        features::kIndigoMetadataKeywordHeuristicMaxWaitTime.Get() +
+            base::Milliseconds(500),
+        this, &IndigoPageActionController::OnEligibilityTimeout);
     return;
   }
 

@@ -574,4 +574,9 @@ void IndigoService::SetConfigForTesting(ConfigData config) {
   config_loaded_ = true;
 }
 
+void IndigoService::ResetConfigForTesting() {
+  config_ = ConfigData();
+  config_loaded_ = false;
+}
+
 }  // namespace indigo

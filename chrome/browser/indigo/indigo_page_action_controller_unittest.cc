@@ -2369,7 +2369,9 @@ TEST_F(IndigoPageActionControllerTest, CheckEligibilityForCueingPendingTimeout) 
 
   EXPECT_FALSE(future.IsReady());
 
-  task_environment_.FastForwardBy(base::Seconds(3));
+  task_environment_.FastForwardBy(
+      features::kIndigoMetadataKeywordHeuristicMaxWaitTime.Get() +
+      base::Milliseconds(500));
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(future.Get());

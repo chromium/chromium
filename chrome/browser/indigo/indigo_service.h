@@ -146,6 +146,7 @@ class IndigoService : public KeyedService,
   };
 
   void SetConfigForTesting(ConfigData config);
+  void ResetConfigForTesting();
 
   // Returns the map of all loaded prompts.
   const base::flat_map<std::string, std::string>& GetLoadedPrompts() const {

@@ -1331,7 +1331,15 @@ BASE_FEATURE(kIndigoMetadataKeywordHeuristic,
 const base::FeatureParam<base::TimeDelta>
     kIndigoMetadataKeywordHeuristicSameDocumentNavigationDelay{
         &kIndigoMetadataKeywordHeuristic,
-        "same_document_navigation_metadata_delay", base::Seconds(4)};
+        "same_document_navigation_metadata_delay", base::Milliseconds(800)};
+const base::FeatureParam<base::TimeDelta>
+    kIndigoMetadataKeywordHeuristicPostDclDelay{
+        &kIndigoMetadataKeywordHeuristic, "post_dcl_metadata_delay",
+        base::Milliseconds(1000)};
+const base::FeatureParam<base::TimeDelta>
+    kIndigoMetadataKeywordHeuristicMaxWaitTime{&kIndigoMetadataKeywordHeuristic,
+                                               "max_wait_time",
+                                               base::Milliseconds(2500)};
 
 // Experimental image replacement feature opens glic.
 BASE_FEATURE(kIndigoOpenGlic, base::FEATURE_DISABLED_BY_DEFAULT);

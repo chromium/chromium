@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/indigo/api_client.h"
+#include "chrome/browser/indigo/indigo_metadata_classifier.h"
 #include "chrome/browser/indigo/indigo_metrics.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
@@ -21,8 +22,6 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "content/public/browser/tracked_element_observer.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/document_metadata/document_metadata.mojom.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/geometry/rect.h"
@@ -134,6 +133,7 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void RenderViewHostChanged(content::RenderViewHost* old_host,
                              content::RenderViewHost* new_host) override;
@@ -189,13 +189,12 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
       controller_->last_anchored_message_priority_ = priority;
     }
 
-    void SetHeuristicResultForTesting(std::optional<bool> result) {
-      controller_->heuristic_result_ = result;
-    }
-
     void SetOptimizationGuideDecisionForTesting(
         optimization_guide::OptimizationGuideDecision decision) {
       controller_->optimization_guide_decision_ = decision;
+      if (decision == optimization_guide::OptimizationGuideDecision::kTrue) {
+        controller_->metadata_classifier_.CancelPendingClassification();
+      }
     }
 
    private:
@@ -203,10 +202,6 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   };
 
  private:
-  // Returns the primary main frame if it is live and eligible for
-  // classification.
-  content::RenderFrameHost* GetLiveMainFrameIfEligible();
-
   // Resets the page triggering and classification state.
   void ResetTriggeringState();
 
@@ -332,26 +327,17 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   void RegisterObserverWithHost(content::RenderWidgetHost* host);
   void UnregisterObserverFromHost(content::RenderWidgetHost* host);
   void ClearTrackedBoundsAndHideToolbar();
-  void TriggerMetadataClassification();
-  void OnProductClassified(blink::mojom::ProductClassificationResultPtr result);
   void ResolvePendingEligibilityCallbacks(bool eligible);
   void OnEligibilityTimeout();
 
   raw_ptr<content::RenderWidgetHost> current_host_ = nullptr;
 
-  // Result of the metadata classification heuristic.
-  // std::nullopt if classification is pending or not started.
-  // true/false if classification completed with/without finding allowed
-  // keywords.
-  std::optional<bool> heuristic_result_;
+  IndigoMetadataClassifier metadata_classifier_;
 
   // Pending callback for CheckEligibilityForCueing.
   EligibilityCallback pending_eligibility_callback_;
   base::OneShotTimer eligibility_timeout_timer_;
   GURL last_evaluated_url_;
-
-  // Remote to the Blink-side metadata extraction service.
-  mojo::Remote<blink::mojom::DocumentMetadata> metadata_remote_;
 
   // True if a delete original photo request is currently in flight.
   bool delete_photo_in_flight_ = false;
