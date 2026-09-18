@@ -592,6 +592,7 @@ public class NavigationHandle {
                         mIsForward,
                         mHasCommitted,
                         mIsErrorPage,
+                        mNavigationStartMs,
                         mHttpStatusCode,
                         mErrorCode,
                         mErrorDescription,
