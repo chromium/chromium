@@ -341,17 +341,18 @@ bool IsFieldValueSaveable(const FormFieldData& field,
     return false;
   }
 
-  if (autofill_field &&
-      autofill_field->all_modifiers().contains(FieldModifier::kAutofill) &&
-      (autofill_field->last_modifier() != FieldModifier::kUser ||
-       autofill_field->filling_product() != FillingProduct::kAutocomplete)) {
-    // If a field has been autofilled by a structured product (e.g. Address,
-    // Payments, Autofill AI), we avoid saving the submitted value to
-    // Autocomplete, even if the user edited it.
-    //
-    // However, if the field was filled by Autocomplete and then edited by
-    // the user, we should save the edited value as it represents a new
-    // user-edited autocomplete value.
+  const bool was_autofilled =
+      autofill_field &&
+      autofill_field->all_modifiers().contains(FieldModifier::kAutofill);
+  const bool was_autocompleted_and_later_modified =
+      autofill_field &&
+      autofill_field->filling_product() == FillingProduct::kAutocomplete &&
+      autofill_field->last_modifier() == FieldModifier::kUser;
+
+  // Reject a field if it was autofilled by a structured product (e.g. Address,
+  // Payments, Autofill AI). The exception is when the user used Autocomplete
+  // and modified the value afterwards.
+  if (was_autofilled && !was_autocompleted_and_later_modified) {
     return false;
   }
 
