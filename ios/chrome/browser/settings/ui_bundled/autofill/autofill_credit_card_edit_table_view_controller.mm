@@ -168,7 +168,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
             autofill::AutofillType(AutofillTypeFromAutofillUITypeForCard(
                 item.autofillCreditCardUIType)),
             base::SysNSStringToUTF16(item.textFieldValue),
-            GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+            GetApplicationContext()
+                ->GetApplicationLocaleStorage()
+                ->GetTag()
+                .tag_string());
       }
     }
     std::u16string newCVC = _creditCard.cvc();
@@ -385,8 +388,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   cardholderNameItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_CARDHOLDER);
   cardholderNameItem.textFieldValue = autofill::GetCreditCardName(
-      _creditCard,
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+      _creditCard, std::string(GetApplicationContext()
+                                   ->GetApplicationLocaleStorage()
+                                   ->GetTag()
+                                   .tag_string()));
   cardholderNameItem.textFieldEnabled = isEditing;
   cardholderNameItem.autofillCreditCardUIType =
       AutofillCreditCardUIType::kFullName;
@@ -499,9 +504,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
          expirationYear:expirationYear
            cardNickname:nickname
                 cardCvc:cvc
-               appLocal:GetApplicationContext()
-                            ->GetApplicationLocaleStorage()
-                            ->Get()];
+               appLocal:std::string(GetApplicationContext()
+                                        ->GetApplicationLocaleStorage()
+                                        ->GetTag()
+                                        .tag_string())];
 }
 
 // Returns the value in the field corresponding to the `itemType`.
@@ -531,9 +537,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeCardNumber:
       isValid = [AutofillCreditCardUtil
           isValidCreditCardNumber:item.textFieldValue
-                         appLocal:GetApplicationContext()
-                                      ->GetApplicationLocaleStorage()
-                                      ->Get()];
+                         appLocal:std::string(
+                                      GetApplicationContext()
+                                          ->GetApplicationLocaleStorage()
+                                          ->GetTag()
+                                          .tag_string())];
       break;
     case ItemTypeExpirationMonth:
       isValid = [AutofillCreditCardUtil
@@ -542,9 +550,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeExpirationYear:
       isValid = [AutofillCreditCardUtil
           isValidCreditCardExpirationYear:item.textFieldValue
-                                 appLocal:GetApplicationContext()
-                                              ->GetApplicationLocaleStorage()
-                                              ->Get()];
+                                 appLocal:
+                                     std::string(
+                                         GetApplicationContext()
+                                             ->GetApplicationLocaleStorage()
+                                             ->GetTag()
+                                             .tag_string())];
       break;
     case ItemTypeNickname:
       isValid = [AutofillCreditCardUtil

@@ -156,9 +156,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                 syncer::kSyncEnableNewSyncDashboardUrl)
                                 ? kNewSyncGoogleDashboardURL
                                 : kLegacySyncGoogleDashboardURL),
-                       GetApplicationContext()
-                           ->GetApplicationLocaleStorage()
-                           ->Get())] ];
+                       std::string(GetApplicationContext()
+                                       ->GetApplicationLocaleStorage()
+                                       ->GetTag()
+                                       .tag_string()))] ];
   return footerItem;
 }
 

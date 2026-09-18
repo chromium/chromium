@@ -416,7 +416,10 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
           google_util::AppendGoogleLocaleParam(
               GURL(password_manager::
                        kPasswordManagerHelpCenterChangeUnsafePasswordsURL),
-              GetApplicationContext()->GetApplicationLocaleStorage()->Get())];
+              std::string(GetApplicationContext()
+                              ->GetApplicationLocaleStorage()
+                              ->GetTag()
+                              .tag_string()))];
   footerItem.urls = @[ footerURL ];
   return footerItem;
 }

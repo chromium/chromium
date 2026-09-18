@@ -122,7 +122,10 @@
   // Create a map of supported language codes to supported languages.
   std::vector<translate::TranslateLanguageInfo> supportedLanguages;
   translate::TranslatePrefs::GetLanguageInfoList(
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+      std::string(GetApplicationContext()
+                      ->GetApplicationLocaleStorage()
+                      ->GetTag()
+                      .tag_string()),
       _translatePrefs->IsTranslateAllowedByPolicy(), &supportedLanguages);
   std::map<std::string, translate::TranslateLanguageInfo> supportedLanguagesMap;
   for (const auto& supportedLanguage : supportedLanguages) {
@@ -196,7 +199,10 @@
   // Get the supported languages.
   std::vector<translate::TranslateLanguageInfo> languages;
   translate::TranslatePrefs::GetLanguageInfoList(
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+      std::string(GetApplicationContext()
+                      ->GetApplicationLocaleStorage()
+                      ->GetTag()
+                      .tag_string()),
       _translatePrefs->IsTranslateAllowedByPolicy(), &languages);
 
   NSMutableArray<LanguageItem*>* supportedLanguages =

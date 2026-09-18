@@ -124,7 +124,10 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
     _walletPassManager = walletPassManager;
     _consentAuditor = consentAuditor;
     _identityManager = identityManager;
-    _locale = GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+    _locale = GetApplicationContext()
+                  ->GetApplicationLocaleStorage()
+                  ->GetTag()
+                  .tag_string();
     _dateFormatter = CreateDateFormatterForLocale(_locale);
     _itemFactory =
         [[AutofillAIEntityEditItemFactory alloc] initWithLocale:_locale

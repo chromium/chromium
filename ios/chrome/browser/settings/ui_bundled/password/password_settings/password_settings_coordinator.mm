@@ -449,7 +449,10 @@ constexpr const char* kDeleteAllSavedDataButtonClicked =
 - (void)showOnDeviceEncryptionSetUp {
   GURL URL = google_util::AppendGoogleLocaleParam(
       GURL(kOnDeviceEncryptionOptInURL),
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+      std::string(GetApplicationContext()
+                      ->GetApplicationLocaleStorage()
+                      ->GetTag()
+                      .tag_string()));
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
   [_dispatcher closePresentedViewsAndOpenURL:command];
 }

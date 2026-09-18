@@ -646,8 +646,10 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
     (const autofill::AutofillProfile&)autofillProfile {
   AutofillProfileItem* item =
       [[AutofillProfileItem alloc] initWithType:ItemTypeAddress];
-  const auto& locale =
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  std::string locale(GetApplicationContext()
+                         ->GetApplicationLocaleStorage()
+                         ->GetTag()
+                         .tag_string());
   autofill::AutofillProfile::RecordType recordType =
       autofillProfile.record_type();
 
@@ -1862,8 +1864,10 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   header.text = HeaderTextForEntitySection(sectionIdentifier);
   [model setHeader:header forSectionWithIdentifier:sectionIdentifier];
 
-  const std::string& locale =
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  std::string_view locale = GetApplicationContext()
+                                ->GetApplicationLocaleStorage()
+                                ->GetTag()
+                                .tag_string();
 
   std::vector<autofill::EntityLabel> labels = autofill::GetLabelsForEntities(
       instances, /*attribute_types_to_ignore=*/{},

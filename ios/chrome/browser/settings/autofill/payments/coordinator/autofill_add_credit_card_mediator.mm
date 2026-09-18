@@ -49,8 +49,10 @@
                      expirationYear:(NSString*)expirationYear
                        cardNickname:(NSString*)cardNickname
                             cardCvc:(NSString*)cardCvc {
-  const std::string& appLocal =
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  std::string appLocal(GetApplicationContext()
+                           ->GetApplicationLocaleStorage()
+                           ->GetTag()
+                           .tag_string());
   autofill::CreditCard creditCard =
       [AutofillCreditCardUtil creditCardWithHolderName:cardHolderName
                                             cardNumber:cardNumber
@@ -137,9 +139,10 @@
             isValidCreditCardNumber:(NSString*)cardNumber {
   return [AutofillCreditCardUtil
       isValidCreditCardNumber:cardNumber
-                     appLocal:GetApplicationContext()
-                                  ->GetApplicationLocaleStorage()
-                                  ->Get()];
+                     appLocal:std::string(GetApplicationContext()
+                                              ->GetApplicationLocaleStorage()
+                                              ->GetTag()
+                                              .tag_string())];
 }
 
 - (bool)addCreditCardViewController:
@@ -154,9 +157,11 @@
     isValidCreditCardExpirationYear:(NSString*)expirationYear {
   return [AutofillCreditCardUtil
       isValidCreditCardExpirationYear:expirationYear
-                             appLocal:GetApplicationContext()
-                                          ->GetApplicationLocaleStorage()
-                                          ->Get()];
+                             appLocal:std::string(
+                                          GetApplicationContext()
+                                              ->GetApplicationLocaleStorage()
+                                              ->GetTag()
+                                              .tag_string())];
 }
 
 - (bool)addCreditCardViewController:
@@ -178,8 +183,10 @@
                      expirationYear:(NSString*)expirationYear
                        cardNickname:(NSString*)cardNickname
                             cardCvc:(NSString*)cardCvc {
-  const std::string& appLocal =
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  std::string appLocal(GetApplicationContext()
+                           ->GetApplicationLocaleStorage()
+                           ->GetTag()
+                           .tag_string());
   return ([AutofillCreditCardUtil isValidCreditCardNumber:cardNumber
                                                  appLocal:appLocal] &&
           [AutofillCreditCardUtil

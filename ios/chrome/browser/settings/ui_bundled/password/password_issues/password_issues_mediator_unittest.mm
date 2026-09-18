@@ -77,7 +77,10 @@ NSString* GetUsername2() {
 // Returns a URL with localized according to the Application Locale.
 GURL GetLocalizedURL(const GURL& original) {
   return google_util::AppendGoogleLocaleParam(
-      original, GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+      original, std::string(GetApplicationContext()
+                                ->GetApplicationLocaleStorage()
+                                ->GetTag()
+                                .tag_string()));
 }
 
 }  // namespace

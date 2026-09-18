@@ -124,10 +124,10 @@ class AutofillSettingsProfileEditTableViewControllerTest
     std::vector<std::pair<autofill::FieldType, std::u16string>> expected_values;
     for (const auto& type : fieldTypes) {
       expected_values.push_back(
-          {type,
-           profile_->GetInfo(
-               type,
-               GetApplicationContext()->GetApplicationLocaleStorage()->Get())});
+          {type, profile_->GetInfo(type, GetApplicationContext()
+                                             ->GetApplicationLocaleStorage()
+                                             ->GetTag()
+                                             .tag_string())});
     }
 
     size_t totalItems = (size_t)[model numberOfItemsInSection:0] +

@@ -272,9 +272,10 @@ const CGFloat kSpinnerButtonPadding = 18;
                                 syncer::kSyncEnableNewSyncDashboardUrl)
                                 ? kNewSyncGoogleDashboardURL
                                 : kLegacySyncGoogleDashboardURL),
-                       GetApplicationContext()
-                           ->GetApplicationLocaleStorage()
-                           ->Get())] ];
+                       std::string(GetApplicationContext()
+                                       ->GetApplicationLocaleStorage()
+                                       ->GetTag()
+                                       .tag_string()))] ];
   return footerItem;
 }
 

@@ -443,7 +443,10 @@ enum class ActionAfterReauth {
       GURL(base::FeatureList::IsEnabled(syncer::kSyncEnableNewSyncDashboardUrl)
                ? kNewSyncGoogleDashboardURL
                : kLegacySyncGoogleDashboardURL),
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+      std::string(GetApplicationContext()
+                      ->GetApplicationLocaleStorage()
+                      ->GetTag()
+                      .tag_string()));
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:url];
   id<SceneCommands> handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);

@@ -335,11 +335,13 @@ NSInteger GetDismissedWarningsCount(
   NSString* headerText = l10n_util::GetNSString(headerTextID);
   CrURL* localizedHeaderURL =
       headerURL.has_value()
-          ? [[CrURL alloc] initWithGURL:google_util::AppendGoogleLocaleParam(
-                                            headerURL.value(),
-                                            GetApplicationContext()
-                                                ->GetApplicationLocaleStorage()
-                                                ->Get())]
+          ? [[CrURL alloc]
+                initWithGURL:google_util::AppendGoogleLocaleParam(
+                                 headerURL.value(),
+                                 std::string(GetApplicationContext()
+                                                 ->GetApplicationLocaleStorage()
+                                                 ->GetTag()
+                                                 .tag_string()))]
           : nil;
 
   [self.consumer setHeader:headerText URL:localizedHeaderURL];

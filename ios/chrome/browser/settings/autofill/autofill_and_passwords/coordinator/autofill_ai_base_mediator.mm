@@ -195,8 +195,10 @@
   NSMutableArray<TableViewItem*>* items =
       [[NSMutableArray alloc] initWithCapacity:filteredEntities.size()];
 
-  const std::string& locale =
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  std::string_view locale = GetApplicationContext()
+                                ->GetApplicationLocaleStorage()
+                                ->GetTag()
+                                .tag_string();
 
   std::vector<autofill::EntityLabel> labels = autofill::GetLabelsForEntities(
       filteredEntities, /*attribute_types_to_ignore=*/{},
