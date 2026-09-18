@@ -7,8 +7,10 @@
 #import "base/functional/bind.h"
 #import "base/no_destructor.h"
 #import "components/enterprise/net/core/features.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/proxy/model/proxy_service_controller.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/web/public/proxy/proxy_configuration_provider.h"
 
 namespace {
 
@@ -16,7 +18,9 @@ std::unique_ptr<KeyedService> BuildProxyServiceController(ProfileIOS* profile) {
   if (!enterprise_net::IsDynamicRouteFetchingEnabled()) {
     return nullptr;
   }
-  return std::make_unique<ProxyServiceController>();
+  return std::make_unique<ProxyServiceController>(
+      EnterpriseProxyServiceFactoryIOS::GetForProfile(profile),
+      &web::ProxyConfigurationProvider::FromBrowserState(profile));
 }
 
 }  // namespace
@@ -42,7 +46,11 @@ ProxyServiceControllerFactory::GetDefaultFactory() {
 
 ProxyServiceControllerFactory::ProxyServiceControllerFactory()
     : ProfileKeyedServiceFactoryIOS("ProxyServiceController",
-                                    ProfileSelection::kNoInstanceInIncognito) {}
+                                    ProfileSelection::kNoInstanceInIncognito,
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {
+  DependsOn(EnterpriseProxyServiceFactoryIOS::GetInstance());
+}
 
 ProxyServiceControllerFactory::~ProxyServiceControllerFactory() = default;
 

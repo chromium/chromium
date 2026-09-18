@@ -24,6 +24,24 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/web/public",
+    "//ios/web/public/proxy",
     "//services/network/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "proxy_service_controller_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/enterprise/net/core",
+    "//components/enterprise/net/core:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/proxy",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }
