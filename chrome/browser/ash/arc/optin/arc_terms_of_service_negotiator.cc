@@ -14,13 +14,13 @@ ArcTermsOfServiceNegotiator::~ArcTermsOfServiceNegotiator() = default;
 
 void ArcTermsOfServiceNegotiator::StartNegotiation(
     NegotiationCallback callback) {
-  DCHECK(pending_callback_.is_null());
+  CHECK(pending_callback_.is_null(), base::NotFatalUntil::M160);
   pending_callback_ = std::move(callback);
   StartNegotiationImpl();
 }
 
 void ArcTermsOfServiceNegotiator::ReportResult(bool accepted) {
-  DCHECK(!pending_callback_.is_null());
+  CHECK(!pending_callback_.is_null(), base::NotFatalUntil::M160);
   std::move(pending_callback_).Run(accepted);
 }
 

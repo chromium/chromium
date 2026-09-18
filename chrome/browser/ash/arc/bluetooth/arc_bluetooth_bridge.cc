@@ -376,7 +376,7 @@ ArcBluetoothBridge::~ArcBluetoothBridge() {
 
 void ArcBluetoothBridge::OnAdapterInitialized(
     scoped_refptr<BluetoothAdapter> adapter) {
-  DCHECK(adapter);
+  CHECK(adapter, base::NotFatalUntil::M160);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   bluetooth_adapter_ = adapter;
@@ -518,8 +518,8 @@ void ArcBluetoothBridge::DevicePairedChanged(BluetoothAdapter* adapter,
   if (!arc_bridge_service_->bluetooth()->IsConnected())
     return;
 
-  DCHECK(adapter);
-  DCHECK(device);
+  CHECK(adapter, base::NotFatalUntil::M160);
+  CHECK(device, base::NotFatalUntil::M160);
 
   mojom::BluetoothAddressPtr addr =
       mojom::BluetoothAddress::From(device->GetAddress());
@@ -602,8 +602,8 @@ void ArcBluetoothBridge::DeviceRemoved(BluetoothAdapter* adapter,
   if (!arc_bridge_service_->bluetooth()->IsConnected())
     return;
 
-  DCHECK(adapter);
-  DCHECK(device);
+  CHECK(adapter, base::NotFatalUntil::M160);
+  CHECK(device, base::NotFatalUntil::M160);
 
   std::string address = device->GetAddress();
   if (gatt_connections_.find(address) != gatt_connections_.end())
@@ -857,7 +857,8 @@ void ArcBluetoothBridge::OnGattAttributeReadRequest(
     return;
   }
 
-  DCHECK(gatt_handle_.find(attribute->GetIdentifier()) != gatt_handle_.end());
+  CHECK(gatt_handle_.find(attribute->GetIdentifier()) != gatt_handle_.end(),
+        base::NotFatalUntil::M160);
 
   bluetooth_instance->RequestGattRead(
       mojom::BluetoothAddress::From(device->GetAddress()),
@@ -928,7 +929,8 @@ void ArcBluetoothBridge::OnGattAttributeWriteRequest(
                            std::move(error_callback))
           : base::BindOnce(&OnGattServerWrite, std::move(success_callback),
                            std::move(error_callback));
-  DCHECK(gatt_handle_.find(attribute->GetIdentifier()) != gatt_handle_.end());
+  CHECK(gatt_handle_.find(attribute->GetIdentifier()) != gatt_handle_.end(),
+        base::NotFatalUntil::M160);
   bluetooth_instance->RequestGattWrite(
       mojom::BluetoothAddress::From(device->GetAddress()),
       gatt_handle_[attribute->GetIdentifier()], offset, value, attribute_type,
@@ -1062,7 +1064,7 @@ void ArcBluetoothBridge::OnSessionInvalidated(
 }
 
 void ArcBluetoothBridge::EnableAdapter(EnableAdapterCallback callback) {
-  DCHECK(bluetooth_adapter_);
+  CHECK(bluetooth_adapter_, base::NotFatalUntil::M160);
   if (IsPowerChangeInitiatedByLocal(AdapterPowerState::TURN_ON)) {
     BLUETOOTH_LOG(EVENT) << "Received a request to enable adapter (local)";
     DequeueLocalPowerChange(AdapterPowerState::TURN_ON);
@@ -1078,7 +1080,7 @@ void ArcBluetoothBridge::EnableAdapter(EnableAdapterCallback callback) {
 }
 
 void ArcBluetoothBridge::DisableAdapter(DisableAdapterCallback callback) {
-  DCHECK(bluetooth_adapter_);
+  CHECK(bluetooth_adapter_, base::NotFatalUntil::M160);
   if (IsPowerChangeInitiatedByLocal(AdapterPowerState::TURN_OFF)) {
     BLUETOOTH_LOG(EVENT) << "Received a request to disable adapter (local)";
     DequeueLocalPowerChange(AdapterPowerState::TURN_OFF);
@@ -1093,7 +1095,7 @@ void ArcBluetoothBridge::DisableAdapter(DisableAdapterCallback callback) {
 }
 
 void ArcBluetoothBridge::GetAdapterProperty(mojom::BluetoothPropertyType type) {
-  DCHECK(bluetooth_adapter_);
+  CHECK(bluetooth_adapter_, base::NotFatalUntil::M160);
   auto* bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->bluetooth(), OnAdapterProperties);
   if (!bluetooth_instance)
@@ -1127,7 +1129,7 @@ void ArcBluetoothBridge::OnSetDiscoverable(bool discoverable,
 // In case of turning on, start timer to turn it back off in |timeout| seconds.
 void ArcBluetoothBridge::SetDiscoverable(bool discoverable, uint32_t timeout) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(bluetooth_adapter_);
+  CHECK(bluetooth_adapter_, base::NotFatalUntil::M160);
 
   bool currently_discoverable = bluetooth_adapter_->IsDiscoverable();
 
@@ -1170,7 +1172,7 @@ void ArcBluetoothBridge::OnSetAdapterProperty(
 
 void ArcBluetoothBridge::SetAdapterProperty(
     mojom::BluetoothPropertyPtr property) {
-  DCHECK(bluetooth_adapter_);
+  CHECK(bluetooth_adapter_, base::NotFatalUntil::M160);
 
   if (property->is_discovery_timeout()) {
     uint32_t discovery_timeout = property->get_discovery_timeout();
@@ -1471,7 +1473,7 @@ void ArcBluetoothBridge::OnGattConnectStateChanged(
   if (!btle_instance)
     return;
 
-  DCHECK(addr);
+  CHECK(addr, base::NotFatalUntil::M160);
 
   btle_instance->OnLEConnectionStateChange(std::move(addr), connected);
 }
@@ -1676,9 +1678,9 @@ BluetoothRemoteGattCharacteristic* ArcBluetoothBridge::FindGattCharacteristic(
     mojom::BluetoothAddressPtr remote_addr,
     mojom::BluetoothGattServiceIDPtr service_id,
     mojom::BluetoothGattIDPtr char_id) const {
-  DCHECK(remote_addr);
-  DCHECK(service_id);
-  DCHECK(char_id);
+  CHECK(remote_addr, base::NotFatalUntil::M160);
+  CHECK(service_id, base::NotFatalUntil::M160);
+  CHECK(char_id, base::NotFatalUntil::M160);
 
   BluetoothDevice* device =
       bluetooth_adapter_->GetDevice(remote_addr->To<std::string>());
@@ -1718,7 +1720,7 @@ void ArcBluetoothBridge::SendBluetoothPoweredStateBroadcast(
   extras.Set("enable", powered == AdapterPowerState::TURN_ON);
   std::string extras_json;
   bool write_success = base::JSONWriter::Write(extras, &extras_json);
-  DCHECK(write_success);
+  CHECK(write_success, base::NotFatalUntil::M160);
 
   BLUETOOTH_LOG(EVENT) << "Sending Android intent to set power: "
                        << (powered == AdapterPowerState::TURN_ON);
@@ -2044,7 +2046,7 @@ void ArcBluetoothBridge::AddCharacteristic(int32_t service_handle,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto gatt_id = gatt_identifier_.find(service_handle);
-  DCHECK(gatt_id != gatt_identifier_.end());
+  CHECK(gatt_id != gatt_identifier_.end(), base::NotFatalUntil::M160);
 
   if (!IsGattServerAttributeHandleAvailable(1)) {
     std::move(callback).Run(kInvalidGattAttributeHandle);
@@ -2078,24 +2080,26 @@ void ArcBluetoothBridge::AddDescriptor(int32_t service_handle,
     return;
   }
 
-  DCHECK(gatt_identifier_.find(service_handle) != gatt_identifier_.end());
+  CHECK(gatt_identifier_.find(service_handle) != gatt_identifier_.end(),
+        base::NotFatalUntil::M160);
   BluetoothLocalGattService* service =
       bluetooth_adapter_->GetGattService(gatt_identifier_[service_handle]);
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M160);
   // Since the Android API does not give information about which characteristic
   // is the parent of the new descriptor, we assume that it would be the last
   // characteristic that was added to the given service. This matches the
   // Android framework code at android/bluetooth/BluetoothGattServer.java#594.
   // https://android.googlesource.com/platform/frameworks/base/+/android-6.0.1_r55/core/java/android/bluetooth/BluetoothGattServer.java#586
-  DCHECK(last_characteristic_.find(service_handle) !=
-         last_characteristic_.end());
+  CHECK(last_characteristic_.find(service_handle) != last_characteristic_.end(),
+        base::NotFatalUntil::M160);
   int32_t last_characteristic_handle = last_characteristic_[service_handle];
 
-  DCHECK(gatt_identifier_.find(last_characteristic_handle) !=
-         gatt_identifier_.end());
+  CHECK(gatt_identifier_.find(last_characteristic_handle) !=
+            gatt_identifier_.end(),
+        base::NotFatalUntil::M160);
   BluetoothLocalGattCharacteristic* characteristic =
       service->GetCharacteristic(gatt_identifier_[last_characteristic_handle]);
-  DCHECK(characteristic);
+  CHECK(characteristic, base::NotFatalUntil::M160);
 
   const auto& [unused, bluez_permissions] =
       floss::BluetoothGattCharacteristicFloss::ConvertPropsAndPermsFromFloss(
@@ -2110,10 +2114,11 @@ void ArcBluetoothBridge::AddDescriptor(int32_t service_handle,
 void ArcBluetoothBridge::StartService(int32_t service_handle,
                                       StartServiceCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(gatt_identifier_.find(service_handle) != gatt_identifier_.end());
+  CHECK(gatt_identifier_.find(service_handle) != gatt_identifier_.end(),
+        base::NotFatalUntil::M160);
   BluetoothLocalGattService* service =
       bluetooth_adapter_->GetGattService(gatt_identifier_[service_handle]);
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M160);
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   service->Register(
@@ -2124,10 +2129,11 @@ void ArcBluetoothBridge::StartService(int32_t service_handle,
 void ArcBluetoothBridge::StopService(int32_t service_handle,
                                      StopServiceCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(gatt_identifier_.find(service_handle) != gatt_identifier_.end());
+  CHECK(gatt_identifier_.find(service_handle) != gatt_identifier_.end(),
+        base::NotFatalUntil::M160);
   BluetoothLocalGattService* service =
       bluetooth_adapter_->GetGattService(gatt_identifier_[service_handle]);
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M160);
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   service->Unregister(
@@ -2146,7 +2152,7 @@ void ArcBluetoothBridge::DeleteService(int32_t service_handle,
 
   BluetoothLocalGattService* service =
       bluetooth_adapter_->GetGattService(itr->second);
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M160);
   gatt_identifier_.erase(itr);
   gatt_handle_.erase(service->GetIdentifier());
   service->Delete();
@@ -2807,7 +2813,7 @@ ArcBluetoothBridge::GetAdvertisingData(const BluetoothDevice* device) const {
     service_data->uuid_16bit = *uuid16;
 
     const std::vector<uint8_t>* data = device->GetServiceDataForUUID(uuid);
-    DCHECK(data != nullptr);
+    CHECK(data != nullptr, base::NotFatalUntil::M160);
 
     service_data->data = *data;
 
@@ -2838,11 +2844,11 @@ void ArcBluetoothBridge::SetPrimaryUserBluetoothPowerSetting(
     bool enabled) const {
   const auto* primary_session =
       session_manager::SessionManager::Get()->GetPrimarySession();
-  DCHECK(primary_session);
+  CHECK(primary_session, base::NotFatalUntil::M160);
   Profile* profile = Profile::FromBrowserContext(
       ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
           primary_session->account_id()));
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   profile->GetPrefs()->SetBoolean(ash::prefs::kUserBluetoothAdapterEnabled,
                                   enabled);
 }

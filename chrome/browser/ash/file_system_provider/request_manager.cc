@@ -36,7 +36,7 @@ RequestManager::~RequestManager() {
                           OperationCompletion::kAbortedInternally);
   }
 
-  DCHECK_EQ(0u, requests_.size());
+  CHECK_EQ(0u, requests_.size(), base::NotFatalUntil::M160);
 }
 
 int RequestManager::CreateRequest(RequestType type,
@@ -134,12 +134,12 @@ void RequestManager::DetachNotificationManager() {
 }
 
 void RequestManager::AddObserver(Observer* observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.AddObserver(observer);
 }
 
 void RequestManager::RemoveObserver(Observer* observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.RemoveObserver(observer);
 }
 

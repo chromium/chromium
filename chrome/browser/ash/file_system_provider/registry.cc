@@ -83,7 +83,7 @@ void Registry::RememberFileSystem(
   file_system.Set(kPrefKeyWatchers, std::move(watchers_dict));
 
   PrefService* const pref_service = profile_->GetPrefs();
-  DCHECK(pref_service);
+  CHECK(pref_service, base::NotFatalUntil::M160);
 
   ScopedDictPrefUpdate dict_update(pref_service,
                                    ash::prefs::kFileSystemProviderMounted);
@@ -97,7 +97,7 @@ void Registry::RememberFileSystem(
 void Registry::ForgetFileSystem(const ProviderId& provider_id,
                                 const std::string& file_system_id) {
   PrefService* const pref_service = profile_->GetPrefs();
-  DCHECK(pref_service);
+  CHECK(pref_service, base::NotFatalUntil::M160);
 
   ScopedDictPrefUpdate dict_update(pref_service,
                                    ash::prefs::kFileSystemProviderMounted);
@@ -115,7 +115,7 @@ void Registry::ForgetFileSystem(const ProviderId& provider_id,
 std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
     const ProviderId& provider_id) {
   PrefService* const pref_service = profile_->GetPrefs();
-  DCHECK(pref_service);
+  CHECK(pref_service, base::NotFatalUntil::M160);
 
   const base::DictValue& file_systems =
       pref_service->GetDict(ash::prefs::kFileSystemProviderMounted);
@@ -227,7 +227,7 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
 void Registry::UpdateWatcherTag(const ProvidedFileSystemInfo& file_system_info,
                                 const Watcher& watcher) {
   PrefService* const pref_service = profile_->GetPrefs();
-  DCHECK(pref_service);
+  CHECK(pref_service, base::NotFatalUntil::M160);
 
   // TODO(mtomasz): Consider optimizing it by moving information about watchers
   // or even file systems to leveldb.

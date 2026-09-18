@@ -250,7 +250,7 @@ void ThrottledFileSystem::OnCloseFileCompleted(
   // closed on the C++ side. Release the task from the queue, so other files
   // which are enqueued can be opened.
   const auto it = opened_files_.find(file_handle);
-  DCHECK(it != opened_files_.end());
+  CHECK(it != opened_files_.end(), base::NotFatalUntil::M160);
 
   const int queue_token = it->second;
   open_queue_->Complete(queue_token);

@@ -33,7 +33,8 @@ NotificationManager::NotificationManager(
       file_system_info_(file_system_info),
       icon_loader_(
           new extensions::ChromeAppIconLoader(profile, kIconSize, this)) {
-  DCHECK_EQ(ProviderId::EXTENSION, file_system_info.provider_id().GetType());
+  CHECK_EQ(ProviderId::EXTENSION, file_system_info.provider_id().GetType(),
+           base::NotFatalUntil::M160);
 }
 
 NotificationManager::~NotificationManager() = default;

@@ -65,7 +65,7 @@ bool OperationRequestManager::IsInteractingWithUser() const {
   // and tabs.
   const extensions::AppWindowRegistry* const registry =
       extensions::AppWindowRegistry::Get(profile_);
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M160);
   if (registry->GetCurrentAppWindowForApp(provider_id_))
     return true;
 

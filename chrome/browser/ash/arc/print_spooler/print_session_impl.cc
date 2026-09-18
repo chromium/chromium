@@ -242,7 +242,7 @@ mojo::PendingRemote<mojom::PrintSessionHost> PrintSessionImpl::Create(
     aura::Window* arc_window,
     mojo::PendingRemote<mojom::PrintSessionInstance> instance,
     base::FilePath document_path) {
-  DCHECK(arc_window);
+  CHECK(arc_window, base::NotFatalUntil::M160);
   if (!instance)
     return mojo::NullRemote();
 
@@ -359,7 +359,7 @@ void PrintSessionImpl::OnPreviewDocumentRead(
   }
 
   bool inserted = callbacks_.emplace(request_id, std::move(callback)).second;
-  DCHECK(inserted);
+  CHECK(inserted, base::NotFatalUntil::M160);
 
   pdf_flattener_->FlattenPdf(
       std::move(preview_document_region),

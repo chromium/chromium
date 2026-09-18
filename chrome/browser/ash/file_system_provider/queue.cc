@@ -49,7 +49,7 @@ void Queue::Enqueue(size_t token, AbortableCallback callback) {
 
 void Queue::Complete(size_t token) {
   const auto it = executed_.find(token);
-  DCHECK(it != executed_.end());
+  CHECK(it != executed_.end(), base::NotFatalUntil::M160);
   executed_.erase(it);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -81,7 +81,7 @@ void Queue::Abort(size_t token) {
   if (const auto it = executed_.find(token); it != executed_.end()) {
     Task& task = it->second;
     AbortCallback abort_callback = std::move(task.abort_callback);
-    DCHECK(!abort_callback.is_null());
+    CHECK(!abort_callback.is_null(), base::NotFatalUntil::M160);
     std::move(abort_callback).Run();
     return;
   }

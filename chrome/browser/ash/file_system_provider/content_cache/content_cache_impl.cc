@@ -257,7 +257,7 @@ void ContentCacheImpl::OnItemRemovedFromDisk(const base::FilePath& fsp_path,
   VLOG(1) << "Removed item with id " << it->second.id() << " from disk";
   const int64_t bytes_on_disk = it->second.bytes_on_disk();
   lru_cache_.Erase(it);
-  DCHECK_GT(evicted_cache_items_, 0u);
+  CHECK_GT(evicted_cache_items_, 0u, base::NotFatalUntil::M160);
   evicted_cache_items_--;
 
   // Notify all observers.
@@ -404,7 +404,7 @@ void ContentCacheImpl::OnBytesRead(
   }
 
   ContentLRUCache::iterator it = lru_cache_.Get(file_path);
-  DCHECK(it != lru_cache_.end());
+  CHECK(it != lru_cache_.end(), base::NotFatalUntil::M160);
 
   // Update the accessed time to now, but don't wait for the database to return,
   // just fire and forget.
@@ -537,9 +537,9 @@ void ContentCacheImpl::OnFileIdGenerated(const OpenedCloudFile& file,
   ContentLRUCache::iterator it = lru_cache_.Peek(file.file_path);
   // TODO(b/339114587): Handle the case where the context gets removed during
   // the file ID generation.
-  DCHECK(it != lru_cache_.end());
-  DCHECK(inserted_id);
-  DCHECK_GT(*inserted_id, 0);
+  CHECK(it != lru_cache_.end(), base::NotFatalUntil::M160);
+  CHECK(inserted_id, base::NotFatalUntil::M160);
+  CHECK_GT(*inserted_id, 0, base::NotFatalUntil::M160);
   CacheFileContext& ctx = it->second;
   ctx.set_id(*inserted_id);
   ctx.set_path_on_disk(GetPathOnDiskFromId((*inserted_id)));
@@ -555,7 +555,7 @@ void ContentCacheImpl::OnBytesWritten(const base::FilePath& file_path,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ContentLRUCache::iterator it = lru_cache_.Get(file_path);
-  DCHECK(it != lru_cache_.end());
+  CHECK(it != lru_cache_.end(), base::NotFatalUntil::M160);
 
   CacheFileContext& ctx = it->second;
   if (result == base::File::FILE_OK) {
@@ -664,7 +664,7 @@ void ContentCacheImpl::GotItemsFromContextDatabase(
 
 void ContentCacheImpl::OnStaleItemsPruned(base::OnceClosure callback,
                                           std::vector<bool> prune_success) {
-  DCHECK_EQ(prune_success.size(), 2u);
+  CHECK_EQ(prune_success.size(), 2u, base::NotFatalUntil::M160);
   bool db_success = prune_success.at(0);
   bool fs_success = prune_success.at(1);
 
@@ -688,12 +688,12 @@ std::vector<base::FilePath> ContentCacheImpl::GetCachedFilePaths() {
 }
 
 void ContentCacheImpl::AddObserver(ContentCache::Observer* observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.AddObserver(observer);
 }
 
 void ContentCacheImpl::RemoveObserver(ContentCache::Observer* observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.RemoveObserver(observer);
 }
 

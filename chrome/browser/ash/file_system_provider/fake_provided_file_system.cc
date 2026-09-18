@@ -134,12 +134,15 @@ base::File::Error FakeProvidedFileSystem::CopyOrMoveEntry(
       return err;
   }
   // Copy source entry.
-  DCHECK_NE(source_entry->metadata, nullptr);
-  DCHECK_NE(source_entry->metadata->is_directory, nullptr);
-  DCHECK_NE(source_entry->metadata->name, nullptr);
-  DCHECK_NE(source_entry->metadata->size, nullptr);
-  DCHECK_NE(source_entry->metadata->modification_time, nullptr);
-  DCHECK_NE(source_entry->metadata->mime_type, nullptr);
+  CHECK_NE(source_entry->metadata, nullptr, base::NotFatalUntil::M160);
+  CHECK_NE(source_entry->metadata->is_directory, nullptr,
+           base::NotFatalUntil::M160);
+  CHECK_NE(source_entry->metadata->name, nullptr, base::NotFatalUntil::M160);
+  CHECK_NE(source_entry->metadata->size, nullptr, base::NotFatalUntil::M160);
+  CHECK_NE(source_entry->metadata->modification_time, nullptr,
+           base::NotFatalUntil::M160);
+  CHECK_NE(source_entry->metadata->mime_type, nullptr,
+           base::NotFatalUntil::M160);
 
   auto cloud_file_info =
       (source_entry->metadata->cloud_file_info)
@@ -266,7 +269,7 @@ AbortCallback FakeProvidedFileSystem::OpenFile(const base::FilePath& entry_path,
 
   FakeEntry& entry = *entry_it->second;
   if (mode == OPEN_FILE_MODE_WRITE && flush_required_) {
-    DCHECK(!entry.write_buffer);
+    CHECK(!entry.write_buffer, base::NotFatalUntil::M160);
     entry.write_buffer = entry.contents;
   }
 
@@ -628,13 +631,13 @@ const OpenedFiles& FakeProvidedFileSystem::GetOpenedFiles() const {
 }
 
 void FakeProvidedFileSystem::AddObserver(ProvidedFileSystemObserver* observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.AddObserver(observer);
 }
 
 void FakeProvidedFileSystem::RemoveObserver(
     ProvidedFileSystemObserver* observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.RemoveObserver(observer);
 }
 

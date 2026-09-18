@@ -28,7 +28,7 @@ bool RequestDispatcherImpl::DispatchRequest(
     int request_id,
     std::optional<std::string> file_system_id,
     std::unique_ptr<extensions::Event> event) {
-  DCHECK(!event->did_dispatch_callback);
+  CHECK(!event->did_dispatch_callback, base::NotFatalUntil::M160);
   RequestKey request_key{extension_id_, file_system_id.value_or(""),
                          request_id};
   event->did_dispatch_callback =

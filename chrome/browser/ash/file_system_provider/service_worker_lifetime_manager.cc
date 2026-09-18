@@ -35,7 +35,7 @@ ServiceWorkerLifetimeManager* ServiceWorkerLifetimeManager::Get(
 }
 
 void ServiceWorkerLifetimeManager::StartRequest(const RequestKey& key) {
-  DCHECK(!requests_.contains(key));
+  CHECK(!requests_.contains(key), base::NotFatalUntil::M160);
   requests_[key] = {};
 }
 

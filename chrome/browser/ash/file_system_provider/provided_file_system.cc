@@ -98,7 +98,7 @@ base::OnceClosure AutoUpdater::CreateCallback() {
 }
 
 void AutoUpdater::OnPendingCallback() {
-  DCHECK_LT(0, pending_callbacks_);
+  CHECK_LT(0, pending_callbacks_, base::NotFatalUntil::M160);
   if (--pending_callbacks_ == 0)
     std::move(update_callback_).Run();
 }
@@ -180,7 +180,8 @@ ProvidedFileSystem::ProvidedFileSystem(
       notification_manager_(
           new NotificationManager(profile_, file_system_info_)),
       watcher_queue_(1) {
-  DCHECK_EQ(ProviderId::EXTENSION, file_system_info.provider_id().GetType());
+  CHECK_EQ(ProviderId::EXTENSION, file_system_info.provider_id().GetType(),
+           base::NotFatalUntil::M160);
   request_dispatcher_ = std::make_unique<RequestDispatcherImpl>(
       file_system_info_.provider_id().GetExtensionId(), event_router_,
       GetServiceWorkerLifetimeManager(profile_));
@@ -596,12 +597,12 @@ const OpenedFiles& ProvidedFileSystem::GetOpenedFiles() const {
 }
 
 void ProvidedFileSystem::AddObserver(ProvidedFileSystemObserver* observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.AddObserver(observer);
 }
 
 void ProvidedFileSystem::RemoveObserver(ProvidedFileSystemObserver* observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.RemoveObserver(observer);
 }
 
@@ -855,8 +856,9 @@ void ProvidedFileSystem::OnRemoveWatcherInQueueCompleted(
   // Even if the extension returns an error, the callback is called with base::
   // File::FILE_OK.
   const auto it = watchers_.find(key);
-  DCHECK(it != watchers_.end());
-  DCHECK(it->second.subscribers.find(origin) != it->second.subscribers.end());
+  CHECK(it != watchers_.end(), base::NotFatalUntil::M160);
+  CHECK(it->second.subscribers.find(origin) != it->second.subscribers.end(),
+        base::NotFatalUntil::M160);
 
   it->second.subscribers.erase(origin);
 

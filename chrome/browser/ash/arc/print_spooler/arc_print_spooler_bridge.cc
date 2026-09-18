@@ -51,7 +51,7 @@ class ArcPrintSpoolerBridgeFactory
 // static
 ArcPrintSpoolerBridge* ArcPrintSpoolerBridge::GetForBrowserContext(
     content::BrowserContext* context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   return ArcPrintSpoolerBridgeFactory::GetForBrowserContext(context);
 }
 
@@ -59,12 +59,12 @@ ArcPrintSpoolerBridge::ArcPrintSpoolerBridge(content::BrowserContext* context,
                                              ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service),
       profile_(Profile::FromBrowserContext(context)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   arc_bridge_service_->print_spooler()->SetHost(this);
 }
 
 ArcPrintSpoolerBridge::~ArcPrintSpoolerBridge() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   arc_bridge_service_->print_spooler()->SetHost(nullptr);
 }
 
@@ -73,7 +73,7 @@ void ArcPrintSpoolerBridge::StartPrintInCustomTab(
     int32_t task_id,
     mojo::PendingRemote<mojom::PrintSessionInstance> instance,
     StartPrintInCustomTabCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&SavePrintDocument, std::move(scoped_handle)),
@@ -87,7 +87,7 @@ void ArcPrintSpoolerBridge::OnPrintDocumentSaved(
     mojo::PendingRemote<mojom::PrintSessionInstance> instance,
     StartPrintInCustomTabCallback callback,
     base::FilePath file_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (file_path.empty()) {
     std::move(callback).Run(mojo::NullRemote());
     return;

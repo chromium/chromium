@@ -88,7 +88,7 @@ FileSystemURLParser::FileSystemURLParser(const storage::FileSystemURL& url)
 FileSystemURLParser::~FileSystemURLParser() = default;
 
 bool FileSystemURLParser::Parse() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   switch (url_.type()) {
     case storage::kFileSystemTypeFuseBox:
@@ -161,7 +161,7 @@ LocalPathParser::LocalPathParser(Profile* profile,
 LocalPathParser::~LocalPathParser() = default;
 
 bool LocalPathParser::Parse() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!IsFileSystemProviderLocalPath(local_path_))
     return false;

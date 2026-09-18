@@ -51,7 +51,7 @@ class ScopedFileOpener::Runner
 
     // Otherwise nothing to abort nor to close - the opening process has
     // completed, but the file failed to open, so there is no need to close it.
-    DCHECK(open_completed_ && file_handle_ == 0);
+    CHECK(open_completed_ && file_handle_ == 0, base::NotFatalUntil::M160);
   }
 
  private:
@@ -90,7 +90,7 @@ class ScopedFileOpener::Runner
       return;
     }
 
-    DCHECK_EQ(base::File::FILE_OK, result);
+    CHECK_EQ(base::File::FILE_OK, result, base::NotFatalUntil::M160);
     CallOpenCallbackOnce(file_handle, base::File::FILE_OK);
   }
 

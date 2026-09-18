@@ -35,10 +35,10 @@ ContainerAppKiller::~ContainerAppKiller() {
 void ContainerAppKiller::OnMemoryPressure(
     ash::ResourcedClient::PressureLevelArcContainer level,
     uint64_t reclaim_target_kb) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // ContainerAppKiller shall not be created when ARCVM is enabled.
-  DCHECK(!arc::IsArcVmEnabled());
+  CHECK(!arc::IsArcVmEnabled(), base::NotFatalUntil::M160);
 
   arc::ArcProcessService* arc_process_service = arc::ArcProcessService::Get();
   if (!arc_process_service) {

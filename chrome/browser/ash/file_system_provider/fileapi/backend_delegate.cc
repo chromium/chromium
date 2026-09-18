@@ -48,8 +48,8 @@ std::unique_ptr<FileSystemBackendDelegate> BackendDelegate::MakeUnique() {
 
 storage::AsyncFileUtil* BackendDelegate::GetAsyncFileUtil(
     storage::FileSystemType type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeProvided, type);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeProvided, type, base::NotFatalUntil::M160);
   return async_file_util_.get();
 }
 
@@ -60,8 +60,9 @@ BackendDelegate::CreateFileStreamReader(
     int64_t max_bytes_to_read,
     const base::Time& expected_modification_time,
     storage::FileSystemContext* context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeProvided, url.type());
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeProvided, url.type(),
+           base::NotFatalUntil::M160);
 
   return std::unique_ptr<storage::FileStreamReader>(
       new BufferingFileStreamReader(
@@ -74,8 +75,9 @@ std::unique_ptr<storage::FileStreamWriter>
 BackendDelegate::CreateFileStreamWriter(const storage::FileSystemURL& url,
                                         int64_t offset,
                                         storage::FileSystemContext* context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeProvided, url.type());
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeProvided, url.type(),
+           base::NotFatalUntil::M160);
 
   return std::unique_ptr<storage::FileStreamWriter>(
       new BufferingFileStreamWriter(std::unique_ptr<storage::FileStreamWriter>(
@@ -85,8 +87,8 @@ BackendDelegate::CreateFileStreamWriter(const storage::FileSystemURL& url,
 
 storage::WatcherManager* BackendDelegate::GetWatcherManager(
     storage::FileSystemType type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeProvided, type);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeProvided, type, base::NotFatalUntil::M160);
   return watcher_manager_.get();
 }
 

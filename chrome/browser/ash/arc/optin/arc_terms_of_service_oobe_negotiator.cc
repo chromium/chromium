@@ -17,8 +17,8 @@ namespace {
 
 ash::ConsolidatedConsentScreen* GetConsolidatedConsentScreen() {
   auto* host = ash::LoginDisplayHost::default_host();
-  DCHECK(host);
-  DCHECK(host->GetWizardController());
+  CHECK(host, base::NotFatalUntil::M160);
+  CHECK(host->GetWizardController(), base::NotFatalUntil::M160);
   return host->GetWizardController()
       ->GetScreen<ash::ConsolidatedConsentScreen>();
 }

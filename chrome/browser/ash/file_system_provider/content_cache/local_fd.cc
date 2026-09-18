@@ -156,7 +156,7 @@ void LocalFD::CloseOrCacheFile(std::unique_ptr<base::File> file) {
 }
 
 void LocalFD::Close(base::OnceClosure close_closure) {
-  DCHECK(close_closure_.is_null());
+  CHECK(close_closure_.is_null(), base::NotFatalUntil::M160);
   close_closure_ = std::move(close_closure);
   if (in_progress_operation_) {
     VLOG(2) << "FD is currently open, scheduling close";

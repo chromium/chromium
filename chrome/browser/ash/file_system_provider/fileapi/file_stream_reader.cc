@@ -57,8 +57,8 @@ class FileStreamReader::OperationRunner
   // on UI thread.
   void OpenFileOnUIThread(const storage::FileSystemURL& url,
                           storage::AsyncFileUtil::StatusCallback callback) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(abort_callback_.is_null());
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+    CHECK(abort_callback_.is_null(), base::NotFatalUntil::M160);
 
     util::FileSystemURLParser parser(url);
     if (!parser.Parse()) {
@@ -85,8 +85,8 @@ class FileStreamReader::OperationRunner
       int64_t offset,
       int length,
       ProvidedFileSystemInterface::ReadChunkReceivedCallback callback) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(abort_callback_.is_null());
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+    CHECK(abort_callback_.is_null(), base::NotFatalUntil::M160);
 
     // If the file system got unmounted, then abort the reading operation.
     if (!file_system_.get()) {
@@ -106,8 +106,8 @@ class FileStreamReader::OperationRunner
   // Must be called on UI thread.
   void GetMetadataOnUIThread(
       ProvidedFileSystemInterface::GetMetadataCallback callback) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(abort_callback_.is_null());
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+    CHECK(abort_callback_.is_null(), base::NotFatalUntil::M160);
 
     // If the file system got unmounted, then abort the get length operation.
     if (!file_system_.get()) {
@@ -129,7 +129,7 @@ class FileStreamReader::OperationRunner
   // Aborts the most recent operation (if exists) and closes a file if opened.
   // The runner must not be used anymore after calling this method.
   void CloseRunnerOnUIThread() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     if (!abort_callback_.is_null())
       std::move(abort_callback_).Run();
@@ -152,7 +152,7 @@ class FileStreamReader::OperationRunner
       int file_handle,
       base::File::Error result,
       std::unique_ptr<EntryMetadata> metadata) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     abort_callback_.Reset();
 
     if (result == base::File::FILE_OK)
@@ -167,7 +167,7 @@ class FileStreamReader::OperationRunner
       ProvidedFileSystemInterface::GetMetadataCallback callback,
       std::unique_ptr<EntryMetadata> metadata,
       base::File::Error result) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     abort_callback_.Reset();
 
     content::GetIOThreadTaskRunner({})->PostTask(
@@ -182,7 +182,7 @@ class FileStreamReader::OperationRunner
       int chunk_length,
       bool has_more,
       base::File::Error result) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     if (!has_more)
       abort_callback_.Reset();
 
@@ -223,7 +223,7 @@ FileStreamReader::~FileStreamReader() {
 
 void FileStreamReader::Initialize(base::OnceClosure pending_closure,
                                   GetLengthCallback error_callback) {
-  DCHECK_EQ(NOT_INITIALIZED, state_);
+  CHECK_EQ(NOT_INITIALIZED, state_, base::NotFatalUntil::M160);
   state_ = INITIALIZING;
 
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -238,8 +238,8 @@ void FileStreamReader::Initialize(base::OnceClosure pending_closure,
 void FileStreamReader::OnOpenFileCompleted(base::OnceClosure pending_closure,
                                            GetLengthCallback error_callback,
                                            base::File::Error result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(INITIALIZING, state_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(INITIALIZING, state_, base::NotFatalUntil::M160);
 
   // In case of an error, return immediately using the |error_callback| of the
   // Read() or GetLength() pending request.
@@ -250,7 +250,7 @@ void FileStreamReader::OnOpenFileCompleted(base::OnceClosure pending_closure,
     return;
   }
 
-  DCHECK_EQ(base::File::FILE_OK, result);
+  CHECK_EQ(base::File::FILE_OK, result, base::NotFatalUntil::M160);
 
   // Verify the last modification time.
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -267,8 +267,8 @@ void FileStreamReader::OnInitializeCompleted(
     GetLengthCallback error_callback,
     std::unique_ptr<EntryMetadata> metadata,
     base::File::Error result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(INITIALIZING, state_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(INITIALIZING, state_, base::NotFatalUntil::M160);
 
   // In case of an error, abort.
   if (result != base::File::FILE_OK) {
@@ -280,7 +280,7 @@ void FileStreamReader::OnInitializeCompleted(
 
   // If the file modification time has changed, then abort. Note, that the file
   // may be changed without affecting the modification time.
-  DCHECK(metadata.get());
+  CHECK(metadata.get(), base::NotFatalUntil::M160);
   if (!expected_modification_time_.is_null() &&
       *metadata->modification_time != expected_modification_time_) {
     state_ = FAILED;
@@ -289,7 +289,7 @@ void FileStreamReader::OnInitializeCompleted(
     return;
   }
 
-  DCHECK_EQ(base::File::FILE_OK, result);
+  CHECK_EQ(base::File::FILE_OK, result, base::NotFatalUntil::M160);
   state_ = INITIALIZED;
 
   // Run the task waiting for the initialization to be completed.
@@ -299,7 +299,7 @@ void FileStreamReader::OnInitializeCompleted(
 int FileStreamReader::Read(net::IOBuffer* buffer,
                            int buffer_length,
                            net::CompletionOnceCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   TRACE_EVENT_BEGIN("file_system_provider", "FileStreamReader::Read",
                     GetTracingTrack(this), "buffer_length", buffer_length);
 
@@ -336,13 +336,13 @@ int FileStreamReader::Read(net::IOBuffer* buffer,
 }
 
 void FileStreamReader::OnReadCompleted(int result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   std::move(read_callback_).Run(static_cast<int>(result));
   TRACE_EVENT_END("file_system_provider", GetTracingTrack(this));
 }
 
 int64_t FileStreamReader::GetLength(GetLengthCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   get_length_callback_ = std::move(callback);
   switch (state_) {
@@ -377,8 +377,8 @@ void FileStreamReader::ReadAfterInitialized(
     scoped_refptr<net::IOBuffer> buffer,
     int buffer_length,
     const net::CompletionRepeatingCallback& callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(INITIALIZED, state_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(INITIALIZED, state_, base::NotFatalUntil::M160);
 
   current_length_ = 0;
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -390,8 +390,8 @@ void FileStreamReader::ReadAfterInitialized(
 }
 
 void FileStreamReader::GetLengthAfterInitialized() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(INITIALIZED, state_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(INITIALIZED, state_, base::NotFatalUntil::M160);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -406,8 +406,8 @@ void FileStreamReader::OnReadChunkReceived(
     int chunk_length,
     bool has_more,
     base::File::Error result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(INITIALIZED, state_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(INITIALIZED, state_, base::NotFatalUntil::M160);
 
   current_length_ += chunk_length;
 
@@ -420,21 +420,21 @@ void FileStreamReader::OnReadChunkReceived(
 
   // In case of an error, abort.
   if (result != base::File::FILE_OK) {
-    DCHECK(!has_more);
+    CHECK(!has_more, base::NotFatalUntil::M160);
     state_ = FAILED;
     callback.Run(net::FileErrorToNetError(result));
     return;
   }
 
   // More data is about to come, so do not call the callback yet.
-  DCHECK(has_more);
+  CHECK(has_more, base::NotFatalUntil::M160);
 }
 
 void FileStreamReader::OnGetMetadataForGetLengthReceived(
     std::unique_ptr<EntryMetadata> metadata,
     base::File::Error result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(INITIALIZED, state_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(INITIALIZED, state_, base::NotFatalUntil::M160);
 
   // In case of an error, abort.
   if (result != base::File::FILE_OK) {
@@ -446,7 +446,7 @@ void FileStreamReader::OnGetMetadataForGetLengthReceived(
 
   // If the file modification time has changed, then abort. Note, that the file
   // may be changed without affecting the modification time.
-  DCHECK(metadata.get());
+  CHECK(metadata.get(), base::NotFatalUntil::M160);
   if (!expected_modification_time_.is_null() &&
       *metadata->modification_time != expected_modification_time_) {
     std::move(get_length_callback_)
@@ -454,7 +454,7 @@ void FileStreamReader::OnGetMetadataForGetLengthReceived(
     return;
   }
 
-  DCHECK_EQ(base::File::FILE_OK, result);
+  CHECK_EQ(base::File::FILE_OK, result, base::NotFatalUntil::M160);
   std::move(get_length_callback_).Run(*metadata->size);
 }
 

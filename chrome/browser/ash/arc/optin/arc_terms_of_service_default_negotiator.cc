@@ -18,9 +18,9 @@ ArcTermsOfServiceDefaultNegotiator::ArcTermsOfServiceDefaultNegotiator(
     : pref_service_(pref_service),
       support_host_(support_host),
       metrics_service_(metrics_service) {
-  DCHECK(pref_service_);
-  DCHECK(support_host_);
-  DCHECK(metrics_service_);
+  CHECK(pref_service_, base::NotFatalUntil::M160);
+  CHECK(support_host_, base::NotFatalUntil::M160);
+  CHECK(metrics_service_, base::NotFatalUntil::M160);
 }
 
 ArcTermsOfServiceDefaultNegotiator::~ArcTermsOfServiceDefaultNegotiator() {
@@ -28,7 +28,7 @@ ArcTermsOfServiceDefaultNegotiator::~ArcTermsOfServiceDefaultNegotiator() {
 }
 
 void ArcTermsOfServiceDefaultNegotiator::StartNegotiationImpl() {
-  DCHECK(!preference_handler_);
+  CHECK(!preference_handler_, base::NotFatalUntil::M160);
   preference_handler_ = std::make_unique<ArcOptInPreferenceHandler>(
       this, pref_service_, metrics_service_);
   // This automatically updates all preferences.
@@ -41,7 +41,7 @@ void ArcTermsOfServiceDefaultNegotiator::StartNegotiationImpl() {
 void ArcTermsOfServiceDefaultNegotiator::OnTermsRejected() {
   // User cancels terms-of-service agreement UI by clicking "Cancel" button
   // or closing the window directly.
-  DCHECK(preference_handler_);
+  CHECK(preference_handler_, base::NotFatalUntil::M160);
   support_host_->SetTermsOfServiceDelegate(nullptr);
   preference_handler_.reset();
 
@@ -52,7 +52,7 @@ void ArcTermsOfServiceDefaultNegotiator::OnTermsAgreed(
     bool is_metrics_enabled,
     bool is_backup_and_restore_enabled,
     bool is_location_service_enabled) {
-  DCHECK(preference_handler_);
+  CHECK(preference_handler_, base::NotFatalUntil::M160);
   support_host_->SetTermsOfServiceDelegate(nullptr);
 
   // Update the preferences with the value passed from UI.

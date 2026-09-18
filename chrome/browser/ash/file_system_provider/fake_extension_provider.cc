@@ -32,7 +32,7 @@ FakeExtensionProvider::CreateProvidedFileSystem(
     Profile* profile,
     const ProvidedFileSystemInfo& file_system_info,
     CacheManager* cache_manager) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   return std::make_unique<FakeProvidedFileSystem>(file_system_info);
 }
 

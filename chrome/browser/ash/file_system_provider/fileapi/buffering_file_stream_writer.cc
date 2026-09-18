@@ -98,8 +98,10 @@ void BufferingFileStreamWriter::CopyToIntermediateBuffer(
     int buffer_length) {
   const size_t buffer_offset_size = base::checked_cast<size_t>(buffer_offset);
   const size_t buffer_length_size = base::checked_cast<size_t>(buffer_length);
-  DCHECK_LE(buffer_length_size, buffer->span().size());
-  DCHECK_GE(intermediate_buffer_length_, buffer_length + buffered_bytes_);
+  CHECK_LE(buffer_length_size, buffer->span().size(),
+           base::NotFatalUntil::M160);
+  CHECK_GE(intermediate_buffer_length_, buffer_length + buffered_bytes_,
+           base::NotFatalUntil::M160);
   intermediate_buffer_->span()
       .subspan(base::checked_cast<size_t>(buffered_bytes_))
       .first(buffer_length_size)
@@ -116,7 +118,7 @@ void BufferingFileStreamWriter::FlushIntermediateBuffer(
           &BufferingFileStreamWriter::OnFlushIntermediateBufferCompleted,
           weak_ptr_factory_.GetWeakPtr(), buffered_bytes_,
           std::move(callback)));
-  DCHECK_EQ(net::ERR_IO_PENDING, result);
+  CHECK_EQ(net::ERR_IO_PENDING, result, base::NotFatalUntil::M160);
 }
 
 void BufferingFileStreamWriter::OnFlushIntermediateBufferCompleted(
@@ -146,11 +148,11 @@ void BufferingFileStreamWriter::
   }
 
   // The following logic is only valid if the intermediate buffer is empty.
-  DCHECK_EQ(0, buffered_bytes_);
+  CHECK_EQ(0, buffered_bytes_, base::NotFatalUntil::M160);
 
   const int write_result =
       file_stream_writer_->Write(buffer.get(), length, std::move(callback));
-  DCHECK_EQ(net::ERR_IO_PENDING, write_result);
+  CHECK_EQ(net::ERR_IO_PENDING, write_result, base::NotFatalUntil::M160);
 }
 
 void BufferingFileStreamWriter::
@@ -166,9 +168,9 @@ void BufferingFileStreamWriter::
   }
 
   // Copy the rest of bytes to the buffer.
-  DCHECK_EQ(net::OK, result);
-  DCHECK_EQ(0, buffered_bytes_);
-  DCHECK_GE(intermediate_buffer_length_, bytes_left);
+  CHECK_EQ(net::OK, result, base::NotFatalUntil::M160);
+  CHECK_EQ(0, buffered_bytes_, base::NotFatalUntil::M160);
+  CHECK_GE(intermediate_buffer_length_, bytes_left, base::NotFatalUntil::M160);
   CopyToIntermediateBuffer(buffer, buffered_bytes, bytes_left);
 
   std::move(callback).Run(buffered_bytes + bytes_left);
@@ -185,7 +187,7 @@ void BufferingFileStreamWriter::OnFlushIntermediateBufferForFlushCompleted(
 
   const int flush_result =
       file_stream_writer_->Flush(flush_mode, std::move(callback));
-  DCHECK_EQ(net::ERR_IO_PENDING, flush_result);
+  CHECK_EQ(net::ERR_IO_PENDING, flush_result, base::NotFatalUntil::M160);
 }
 
 }  // namespace ash::file_system_provider

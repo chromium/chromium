@@ -76,7 +76,7 @@ std::unique_ptr<ProviderInterface> ExtensionProvider::Create(
 
   const extensions::FileSystemProviderCapabilities* const capabilities =
       extensions::FileSystemProviderCapabilities::Get(extension);
-  DCHECK(capabilities);
+  CHECK(capabilities, base::NotFatalUntil::M160);
 
   return std::make_unique<ExtensionProvider>(
       Profile::FromBrowserContext(registry->browser_context()),
@@ -94,7 +94,7 @@ ExtensionProvider::CreateProvidedFileSystem(
     Profile* profile,
     const ProvidedFileSystemInfo& file_system_info,
     CacheManager* cache_manager) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   if (!chromeos::features::IsFileSystemProviderCloudFileSystemEnabled()) {
     return std::make_unique<ThrottledFileSystem>(
         std::make_unique<ProvidedFileSystem>(profile, file_system_info));

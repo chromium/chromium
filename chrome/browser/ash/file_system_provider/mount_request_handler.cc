@@ -38,14 +38,14 @@ void MountRequestHandler::OnSuccess(/*request_id=*/int,
                                     /*result=*/const RequestValue&,
                                     bool has_more) {
   // File handle is the same as request id of the OpenFile operation.
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
   std::move(callback_).Run(base::File::FILE_OK);
 }
 
 void MountRequestHandler::OnError(/*request_id=*/int,
                                   /*result=*/const RequestValue&,
                                   base::File::Error error) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
   std::move(callback_).Run(error);
 }
 

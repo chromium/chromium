@@ -23,7 +23,7 @@ namespace arc {
 ArcAppShortcutsRequest::ArcAppShortcutsRequest(
     GetAppShortcutItemsCallback callback)
     : callback_(std::move(callback)) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
 }
 
 ArcAppShortcutsRequest::~ArcAppShortcutsRequest() = default;
@@ -31,8 +31,8 @@ ArcAppShortcutsRequest::~ArcAppShortcutsRequest() = default;
 void ArcAppShortcutsRequest::StartForPackage(const std::string& package_name) {
   // DCHECK because it shouldn't be called more than one time for the life cycle
   // of |this|.
-  DCHECK(!items_);
-  DCHECK(icon_decode_requests_.empty());
+  CHECK(!items_, base::NotFatalUntil::M160);
+  CHECK(icon_decode_requests_.empty(), base::NotFatalUntil::M160);
 
   mojom::AppInstance* app_instance =
       ArcServiceManager::Get()
@@ -98,15 +98,15 @@ void ArcAppShortcutsRequest::OnGetAppShortcutItems(
 
 void ArcAppShortcutsRequest::OnAllIconDecodeRequestsDone() {
   icon_decode_requests_.clear();
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M160);
   std::move(callback_).Run(std::move(items_));
 }
 
 void ArcAppShortcutsRequest::OnSingleIconDecodeRequestDone(
     size_t index,
     const gfx::ImageSkia& icon) {
-  DCHECK(items_);
-  DCHECK_LT(index, items_->size());
+  CHECK(items_, base::NotFatalUntil::M160);
+  CHECK_LT(index, items_->size(), base::NotFatalUntil::M160);
   items_->at(index).icon = icon;
   barrier_closure_.Run();
 }

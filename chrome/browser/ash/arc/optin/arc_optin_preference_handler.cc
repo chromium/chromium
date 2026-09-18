@@ -31,9 +31,9 @@ ArcOptInPreferenceHandler::ArcOptInPreferenceHandler(
     : observer_(observer),
       pref_service_(pref_service),
       metrics_service_(metrics_service) {
-  DCHECK(observer_);
-  DCHECK(pref_service_);
-  DCHECK(metrics_service_);
+  CHECK(observer_, base::NotFatalUntil::M160);
+  CHECK(pref_service_, base::NotFatalUntil::M160);
+  CHECK(metrics_service_, base::NotFatalUntil::M160);
 }
 
 void ArcOptInPreferenceHandler::Start() {
@@ -80,7 +80,7 @@ ArcOptInPreferenceHandler::~ArcOptInPreferenceHandler() = default;
 
 void ArcOptInPreferenceHandler::OnMetricsPreferenceChanged() {
   auto* const device_settings_service = ash::DeviceSettingsService::Get();
-  DCHECK(device_settings_service);
+  CHECK(device_settings_service, base::NotFatalUntil::M160);
 
   // Async callback guarantees device ownership status is known.
   device_settings_service->GetOwnershipStatusAsync(
@@ -108,7 +108,7 @@ void ArcOptInPreferenceHandler::EnableMetricsOnOwnershipKnown(
         ProfileManager::GetActiveUserProfile(), metrics_enabled);
   }
 
-  DCHECK(enable_metrics_callback_);
+  CHECK(enable_metrics_callback_, base::NotFatalUntil::M160);
   std::move(enable_metrics_callback_).Run();
 }
 
@@ -167,7 +167,7 @@ void ArcOptInPreferenceHandler::SendLocationServicesMode() {
 void ArcOptInPreferenceHandler::EnableMetrics(bool is_enabled,
                                               base::OnceClosure callback) {
   auto* device_settings_service = ash::DeviceSettingsService::Get();
-  DCHECK(device_settings_service);
+  CHECK(device_settings_service, base::NotFatalUntil::M160);
 
   device_settings_service->GetOwnershipStatusAsync(
       base::BindOnce(&ArcOptInPreferenceHandler::EnableMetricsOnOwnershipKnown,
@@ -259,7 +259,7 @@ bool ArcOptInPreferenceHandler::GetUserMetrics() {
 
   // No value means user is not eligible for per-user choice. This should be
   // caught by IsAllowedToUpdateUserChoice().
-  DCHECK(metrics_enabled.has_value());
+  CHECK(metrics_enabled.has_value(), base::NotFatalUntil::M160);
 
   return *metrics_enabled;
 }

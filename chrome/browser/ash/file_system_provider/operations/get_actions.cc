@@ -20,7 +20,7 @@ Actions ConvertRequestValueToActions(const RequestValue& value) {
       GetActionsRequestedSuccess::Params;
 
   const Params* params = value.get_actions_success_params();
-  DCHECK(params);
+  CHECK(params, base::NotFatalUntil::M160);
 
   Actions result;
   for (const auto& idl_action : params->actions) {

@@ -115,7 +115,7 @@ ProvidedFileSystemInfo::ProvidedFileSystemInfo(
       source_(source),
       icon_set_(icon_set),
       cache_type_(cache_type) {
-  DCHECK_LE(0, mount_options.opened_files_limit);
+  CHECK_LE(0, mount_options.opened_files_limit, base::NotFatalUntil::M160);
 }
 
 ProvidedFileSystemInfo::ProvidedFileSystemInfo(
