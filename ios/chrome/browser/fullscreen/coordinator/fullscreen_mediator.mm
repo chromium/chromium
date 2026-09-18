@@ -162,6 +162,10 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (BOOL)isScrolledToBottomForTesting {
+  return [self isScrolledToBottom];
+}
+
 #pragma mark - Properties
 
 - (void)setWebState:(web::WebState*)webState {

@@ -82,8 +82,10 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
 
   // Whether the view is scrolled all the way to the bottom.
   bool is_scrolled_to_bottom() const {
+    static constexpr CGFloat kScrollToBottomTolerance = 1.0;
     if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
-      return y_content_offset_ + scroll_view_height_ >= content_height_;
+      return y_content_offset_ + scroll_view_height_ >=
+             content_height_ - kScrollToBottomTolerance;
     } else {
       return y_content_offset_ -
                  (GetCollapsedTopToolbarHeight() +
@@ -91,7 +93,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
                   safe_area_insets_.top) +
                  (scroll_view_height_ + GetExpandedTopToolbarHeight() +
                   GetExpandedBottomToolbarHeight()) >=
-             content_height_;
+             content_height_ - kScrollToBottomTolerance;
     }
   }
 

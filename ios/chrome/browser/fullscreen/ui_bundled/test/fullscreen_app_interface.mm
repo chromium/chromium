@@ -5,13 +5,13 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_app_interface.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/fullscreen/coordinator/fullscreen_mediator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -24,28 +24,17 @@
   if (!webState) {
     return UIEdgeInsetsZero;
   }
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(webState->GetBrowserState());
-  // TODO: (crbug.com/1063516): Retrieve Browser-scoped FullscreenController
-  // in a better way.
-  std::set<Browser*> browsers =
-      BrowserListFactory::GetForProfile(profile)->BrowsersOfType(
-          BrowserList::BrowserType::kRegularAndInactive);
-  // There is regular browser and inactive browser. More means multi-window.
-  // NOTE: The inactive browser is always created even if the feature is
-  // disabled, in order to ensure to restore all saved tabs.
-  DCHECK(browsers.size() == 2);
-  std::set<Browser*>::iterator iterator = std::ranges::find_if(
-      browsers, [](Browser* browser) { return !browser->IsInactive(); });
-  DCHECK(iterator != browsers.end());
 
   if (IsFullscreenRefactoringEnabled()) {
     return webState->GetWebViewProxy().obscuredInsets;
   }
 
+  Browser* browser = chrome_test_util::GetCurrentBrowser();
+  if (!browser) {
+    return UIEdgeInsetsZero;
+  }
   FullscreenController* fullscreenController =
-      FullscreenController::FromBrowser(*iterator);
-
+      FullscreenController::FromBrowser(browser);
   if (!fullscreenController) {
     return UIEdgeInsetsZero;
   }
@@ -59,6 +48,28 @@
 
 + (BOOL)isFullscreenRefactoringEnabled {
   return IsFullscreenRefactoringEnabled();
+}
+
++ (BOOL)isScrolledToBottom {
+  Browser* browser = chrome_test_util::GetCurrentBrowser();
+  if (!browser) {
+    return NO;
+  }
+
+  if (IsFullscreenRefactoringEnabled()) {
+    id target = [browser->GetCommandDispatcher()
+        forwardingTargetForSelector:@selector(exitForceFullscreen)];
+    FullscreenMediator* mediator =
+        base::apple::ObjCCast<FullscreenMediator>(target);
+    return [mediator isScrolledToBottomForTesting];
+  }
+
+  FullscreenController* fullscreenController =
+      FullscreenController::FromBrowser(browser);
+  if (!fullscreenController) {
+    return NO;
+  }
+  return fullscreenController->IsScrolledToBottomForTesting();
 }
 
 @end

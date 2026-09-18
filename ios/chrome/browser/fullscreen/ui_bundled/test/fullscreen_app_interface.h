@@ -21,6 +21,9 @@
 // Returns whether FullscreenRefactoring is enabled.
 + (BOOL)isFullscreenRefactoringEnabled;
 
+// Returns whether the active web view is scrolled to the bottom.
++ (BOOL)isScrolledToBottom;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_TEST_FULLSCREEN_APP_INTERFACE_H_

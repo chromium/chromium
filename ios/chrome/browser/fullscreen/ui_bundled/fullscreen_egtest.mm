@@ -47,11 +47,6 @@ const int kPageHeightEM = 400;
 // Tolerance for width increase check.
 const CGFloat kViewportFitCoverTolerance = 5.0;
 
-// Upper bound on swipes used to reach the bottom of a test page. The number of
-// swipes actually required depends on the viewport size, so callers stop as
-// soon as the bottom is reached rather than swiping a fixed number of times.
-const int kMaxScrollToBottomSwipes = 12;
-
 // Hides the toolbar by scrolling down.
 void HideToolbarUsingUI() {
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
@@ -386,19 +381,23 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   GREYAssertNil(inFullscreenError, @"Histogram error: %@", inFullscreenError);
 
   // 3. Scroll to the bottom of the page. The number of swipes needed depends on
-  // the viewport size, so keep swiping until the metric is recorded.
-  NSError* scrollToBottomError = nil;
-  for (int i = 0; i < kMaxScrollToBottomSwipes; ++i) {
-    [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
-        performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
-    // Verify IOS.Fullscreen.TimeSpentScrollingToTheBottom is recorded.
-    scrollToBottomError = [MetricsAppInterface
-        expectTotalCount:1
-            forHistogram:@(kFullscreenScrollToTheBottomTime)];
-    if (!scrollToBottomError) {
-      break;
-    }
-  }
+  // the viewport size, so keep swiping until the bottom is reached.
+  bool scrolledToBottom = WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool {
+        if ([FullscreenAppInterface isScrolledToBottom]) {
+          return true;
+        }
+        [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+            performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+        return false;
+      });
+  GREYAssertTrue(scrolledToBottom,
+                 @"Failed to scroll to the bottom of the page.");
+
+  // Verify IOS.Fullscreen.TimeSpentScrollingToTheBottom is recorded.
+  NSError* scrollToBottomError = [MetricsAppInterface
+      expectTotalCount:1
+          forHistogram:@(kFullscreenScrollToTheBottomTime)];
   GREYAssertNil(scrollToBottomError, @"Histogram error: %@",
                 scrollToBottomError);
 

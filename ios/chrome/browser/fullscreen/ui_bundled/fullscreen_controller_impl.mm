@@ -157,6 +157,10 @@ UIEdgeInsets FullscreenControllerImpl::GetCurrentViewportInsets() const {
   return model_->current_toolbar_insets();
 }
 
+bool FullscreenControllerImpl::IsScrolledToBottomForTesting() const {
+  return model_->is_scrolled_to_bottom();
+}
+
 void FullscreenControllerImpl::EnterFullscreen() {
   mediator_.EnterFullscreen();
 }

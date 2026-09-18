@@ -68,6 +68,9 @@ class FullscreenController : public BrowserUserData<FullscreenController> {
   // Returns the current insets for the visible content area's viewport.
   virtual UIEdgeInsets GetCurrentViewportInsets() const = 0;
 
+  // Returns whether the web view is scrolled all the way to the bottom.
+  virtual bool IsScrolledToBottomForTesting() const = 0;
+
   // Enters fullscreen mode, animating away toolbars and resetting the progress
   // to 0.0.  Calling this function while fullscreen is disabled has no effect.
   virtual void EnterFullscreen() = 0;

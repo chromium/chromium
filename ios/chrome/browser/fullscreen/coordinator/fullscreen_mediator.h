@@ -27,6 +27,9 @@ class WebStateList;
 // Disconnects the mediator.
 - (void)disconnect;
 
+// Returns whether the active web view is scrolled all the way to the bottom.
+- (BOOL)isScrolledToBottomForTesting;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_FULLSCREEN_COORDINATOR_FULLSCREEN_MEDIATOR_H_

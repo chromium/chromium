@@ -42,6 +42,7 @@ class FullscreenControllerImpl : public FullscreenController {
   UIEdgeInsets GetMinViewportInsets() const override;
   UIEdgeInsets GetMaxViewportInsets() const override;
   UIEdgeInsets GetCurrentViewportInsets() const override;
+  bool IsScrolledToBottomForTesting() const override;
   void EnterFullscreen() override;
   // Needs to be cleanup.
   void ExitFullscreen() override;

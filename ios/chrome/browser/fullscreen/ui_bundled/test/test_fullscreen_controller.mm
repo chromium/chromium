@@ -106,6 +106,10 @@ UIEdgeInsets TestFullscreenController::GetCurrentViewportInsets() const {
   return model_ ? model_->current_toolbar_insets() : UIEdgeInsetsZero;
 }
 
+bool TestFullscreenController::IsScrolledToBottomForTesting() const {
+  return model_ ? model_->is_scrolled_to_bottom() : false;
+}
+
 void TestFullscreenController::EnterFullscreen() {
   if (model_) {
     model_->AnimationEndedWithProgress(0.0);
