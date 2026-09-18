@@ -15,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "crypto/hash.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
@@ -127,7 +128,7 @@ cbor::Value COMPONENT_EXPORT(DEVICE_FIDO)
 void COMPONENT_EXPORT(DEVICE_FIDO) BuildCommandRequestBody(
     cbor::Value command,
     SigningCallback signing_callback,
-    base::span<const uint8_t, crypto::kSHA256Length> handshake_hash,
+    base::span<const uint8_t, crypto::hash::kSha256Size> handshake_hash,
     base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
         complete_callback);
 

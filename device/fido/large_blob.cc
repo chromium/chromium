@@ -15,7 +15,7 @@
 #include "components/cbor/writer.h"
 #include "crypto/aead.h"
 #include "crypto/random.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "device/fido/pin.h"
 
 namespace device {
@@ -65,8 +65,8 @@ bool VerifyLargeBlobArrayIntegrity(base::span<const uint8_t> large_blob_array) {
     return false;
   }
   const size_t trail_offset = large_blob_array.size() - kTruncatedHashBytes;
-  std::array<uint8_t, crypto::kSHA256Length> large_blob_hash =
-      crypto::SHA256Hash(large_blob_array.first(trail_offset));
+  std::array<uint8_t, crypto::hash::kSha256Size> large_blob_hash =
+      crypto::hash::Sha256(large_blob_array.first(trail_offset));
 
   base::span<const uint8_t> large_blob_trail =
       large_blob_array.subspan(trail_offset);
@@ -109,8 +109,8 @@ void LargeBlobsRequest::SetPinParam(
                   kLargeBlobPinPrefix.end());
   const auto offset_bytes = base::U32ToLittleEndian(offset_);
   pin_auth.insert(pin_auth.end(), offset_bytes.begin(), offset_bytes.end());
-  std::array<uint8_t, crypto::kSHA256Length> set_hash =
-      crypto::SHA256Hash(*set_);
+  std::array<uint8_t, crypto::hash::kSha256Size> set_hash =
+      crypto::hash::Sha256(*set_);
   pin_auth.insert(pin_auth.end(), set_hash.begin(), set_hash.end());
   std::tie(pin_uv_auth_protocol_, pin_uv_auth_param_) =
       pin_uv_auth_token.PinAuth(pin_auth);
@@ -287,8 +287,8 @@ std::optional<cbor::Value::ArrayValue> LargeBlobArrayReader::Materialize() {
 LargeBlobArrayWriter::LargeBlobArrayWriter(
     cbor::Value::ArrayValue large_blob_array) {
   bytes_ = *cbor::Writer::Write(cbor::Value(std::move(large_blob_array)));
-  std::array<uint8_t, crypto::kSHA256Length> large_blob_hash =
-      crypto::SHA256Hash(bytes_);
+  std::array<uint8_t, crypto::hash::kSha256Size> large_blob_hash =
+      crypto::hash::Sha256(bytes_);
   bytes_.insert(bytes_.end(), large_blob_hash.begin(),
                 large_blob_hash.begin() + kTruncatedHashBytes);
   DCHECK(VerifyLargeBlobArrayIntegrity(bytes_));

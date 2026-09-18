@@ -14,7 +14,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "device/fido/ctap_request_common.h"
 #include "device/fido/json_request.h"
 #include "device/fido/large_blob.h"
@@ -113,7 +113,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   std::optional<std::vector<uint8_t>> pin_auth;
   std::optional<PINUVAuthProtocol> pin_protocol;
   std::optional<std::string> app_id;
-  std::optional<std::array<uint8_t, crypto::kSHA256Length>>
+  std::optional<std::array<uint8_t, crypto::hash::kSha256Size>>
       alternative_application_parameter;
   std::optional<HMACSecret> hmac_secret;
   bool large_blob_key = false;

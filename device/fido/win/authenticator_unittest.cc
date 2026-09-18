@@ -15,7 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
@@ -890,7 +890,7 @@ TEST_F(WinAuthenticatorTest, PrfRoundtripOneValue) {
   const AuthenticatorMakeCredentialResponse& response =
       *std::get<1>(mc_future.Get());
   EXPECT_TRUE(response.prf_enabled);
-  EXPECT_EQ(response.prf_results->size(), crypto::kSHA256Length);
+  EXPECT_EQ(response.prf_results->size(), crypto::hash::kSha256Size);
   {
     // Get an assertion with the credential and the same evaluation point.
     CtapGetAssertionRequest ga_request(kRpId, test_data::kClientDataJson);
@@ -904,7 +904,7 @@ TEST_F(WinAuthenticatorTest, PrfRoundtripOneValue) {
     ASSERT_EQ(std::get<0>(ga_future.Get()), GetAssertionStatus::kSuccess);
     const AuthenticatorGetAssertionResponse& ga_response =
         std::get<1>(ga_future.Get()).at(0);
-    EXPECT_EQ(ga_response.hmac_secret->size(), crypto::kSHA256Length);
+    EXPECT_EQ(ga_response.hmac_secret->size(), crypto::hash::kSha256Size);
 
     // Since the function was evaluated over the same value, it should have the
     // same result.
@@ -923,7 +923,7 @@ TEST_F(WinAuthenticatorTest, PrfRoundtripOneValue) {
     ASSERT_EQ(std::get<0>(ga_future.Get()), GetAssertionStatus::kSuccess);
     const AuthenticatorGetAssertionResponse& ga_response =
         std::get<1>(ga_future.Get()).at(0);
-    EXPECT_EQ(ga_response.hmac_secret->size(), crypto::kSHA256Length);
+    EXPECT_EQ(ga_response.hmac_secret->size(), crypto::hash::kSha256Size);
 
     // Since the function was evaluated over the same value, it should have the
     // same result.
@@ -956,7 +956,7 @@ TEST_F(WinAuthenticatorTest, PrfRoundtripTwoValues) {
   const AuthenticatorMakeCredentialResponse& response =
       *std::get<1>(mc_future.Get());
   EXPECT_TRUE(response.prf_enabled);
-  EXPECT_EQ(response.prf_results->size(), crypto::kSHA256Length * 2);
+  EXPECT_EQ(response.prf_results->size(), crypto::hash::kSha256Size * 2);
   {
     // Get an assertion with the credential and the same evaluation points.
     CtapGetAssertionRequest ga_request(kRpId, test_data::kClientDataJson);
@@ -971,7 +971,7 @@ TEST_F(WinAuthenticatorTest, PrfRoundtripTwoValues) {
     ASSERT_EQ(std::get<0>(ga_future.Get()), GetAssertionStatus::kSuccess);
     const AuthenticatorGetAssertionResponse& ga_response =
         std::get<1>(ga_future.Get()).at(0);
-    EXPECT_EQ(ga_response.hmac_secret->size(), crypto::kSHA256Length * 2);
+    EXPECT_EQ(ga_response.hmac_secret->size(), crypto::hash::kSha256Size * 2);
 
     // Since the function was evaluated over the same values, it should have the
     // same result.
@@ -991,7 +991,7 @@ TEST_F(WinAuthenticatorTest, PrfRoundtripTwoValues) {
     ASSERT_EQ(std::get<0>(ga_future.Get()), GetAssertionStatus::kSuccess);
     const AuthenticatorGetAssertionResponse& ga_response =
         std::get<1>(ga_future.Get()).at(0);
-    EXPECT_EQ(ga_response.hmac_secret->size(), crypto::kSHA256Length * 2);
+    EXPECT_EQ(ga_response.hmac_secret->size(), crypto::hash::kSha256Size * 2);
 
     // Since the function was evaluated over the same value, it should have the
     // same result.

@@ -8,7 +8,9 @@
 #include <string_view>
 #include <variant>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span_writer.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
@@ -711,7 +713,7 @@ cbor::Value BuildAddUVKeyCommand(base::span<const uint8_t> uv_public_key) {
 void BuildCommandRequestBody(
     cbor::Value command,
     SigningCallback signing_callback,
-    base::span<const uint8_t, crypto::kSHA256Length> handshake_hash,
+    base::span<const uint8_t, crypto::hash::kSha256Size> handshake_hash,
     base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
         complete_callback) {
   if (!command.is_array()) {
@@ -722,9 +724,9 @@ void BuildCommandRequestBody(
 
   std::optional<std::vector<uint8_t>> serialized_requests =
       cbor::Writer::Write(command);
-  std::array<uint8_t, crypto::kSHA256Length> serialized_requests_hash;
+  std::array<uint8_t, crypto::hash::kSha256Size> serialized_requests_hash;
   if (!signing_callback.is_null()) {
-    serialized_requests_hash = crypto::SHA256Hash(*serialized_requests);
+    serialized_requests_hash = crypto::hash::Sha256(*serialized_requests);
   }
 
   cbor::Value::MapValue request_body_map;
@@ -738,10 +740,9 @@ void BuildCommandRequestBody(
   }
 
   SignedMessage signed_message;
-  UNSAFE_TODO(memcpy(signed_message.data(), handshake_hash.data(),
-                     crypto::kSHA256Length));
-  UNSAFE_TODO(memcpy(signed_message.data() + crypto::kSHA256Length,
-                     serialized_requests_hash.data(), crypto::kSHA256Length));
+  base::SpanWriter<uint8_t> writer(signed_message);
+  CHECK(writer.Write(handshake_hash));
+  CHECK(writer.Write(serialized_requests_hash));
 
   auto append_signature_and_finish =
       [](cbor::Value::MapValue request_body_map,

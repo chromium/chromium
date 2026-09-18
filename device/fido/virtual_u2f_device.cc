@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/apdu/apdu_command.h"
 #include "components/apdu/apdu_response.h"
+#include "crypto/hash.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
 #include "device/fido/public/fido_constants.h"
@@ -149,7 +150,7 @@ std::optional<std::vector<uint8_t>> VirtualU2fDevice::DoRegister(
   }
 
   // Our key handles are simple hashes of the public key.
-  const auto key_handle = crypto::SHA256Hash(x962);
+  const auto key_handle = crypto::hash::Sha256(x962);
 
   // Data to be signed.
   std::vector<uint8_t> sign_buffer;
