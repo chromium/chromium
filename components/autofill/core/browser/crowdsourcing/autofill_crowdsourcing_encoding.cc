@@ -969,7 +969,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   AutofillUploadContents upload;
   upload.set_submission(options.observed_submission);
   upload.set_client_version(
-      std::string(version_info::GetProductNameAndVersionForUserAgent()));
+      version_info::GetProductNameAndVersionForUserAgent());
   upload.set_form_signature(form.form_signature().value());
   if (base::FeatureList::IsEnabled(
           features::kAutofillUseStructuralSignatureInsteadOfSecondary)) {
@@ -1049,7 +1049,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
        subform_begin != upload_fields.end();) {
     AutofillUploadContents& upload_content = uploads.emplace_back();
     upload_content.set_client_version(
-        std::string(version_info::GetProductNameAndVersionForUserAgent()));
+        version_info::GetProductNameAndVersionForUserAgent());
     upload_content.set_form_signature(
         (*subform_begin)->host_form_signature().value());
     upload_content.set_autofill_used(false);
@@ -1081,7 +1081,7 @@ EncodeAutofillPageQueryRequest(const std::vector<FormData>& forms) {
   std::vector<FormSignature> queried_form_signatures;
   queried_form_signatures.reserve(forms.size());
   query.set_client_version(
-      std::string(version_info::GetProductNameAndVersionForUserAgent()));
+      version_info::GetProductNameAndVersionForUserAgent());
 
   // If a page contains repeated forms, detect that and encode only one form as
   // the returned data would be the same for all the repeated forms.

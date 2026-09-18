@@ -68,7 +68,7 @@ std::string IOSContentBrowserClient::GetAcceptLangs(
 }
 
 std::string IOSContentBrowserClient::GetProduct() {
-  return std::string(version_info::GetProductNameAndVersionForUserAgent());
+  return version_info::GetProductNameAndVersionForUserAgent();
 }
 
 std::string IOSContentBrowserClient::GetUserAgent() {

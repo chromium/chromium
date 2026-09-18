@@ -215,8 +215,7 @@ std::string GetProduct() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kWebViewReduceUserAgentMinorVersion)
              ? version_info::GetProductNameAndVersionForReducedUserAgent()
-             : std::string(
-                   version_info::GetProductNameAndVersionForUserAgent());
+             : version_info::GetProductNameAndVersionForUserAgent();
 }
 
 std::string GetUserAgent() {
@@ -1349,7 +1348,7 @@ std::string AwContentBrowserClient::GetProduct() {
   // policy. The call sites do not require user agent reduction and having the
   // unreduced version is necessary for performance tracing.
   if (base::FeatureList::IsEnabled(features::kWebViewUnreducedProductVersion)) {
-    return std::string(version_info::GetProductNameAndVersionForUserAgent());
+    return version_info::GetProductNameAndVersionForUserAgent();
   }
   return android_webview::GetProduct();
 }

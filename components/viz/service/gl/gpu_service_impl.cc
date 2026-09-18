@@ -813,8 +813,7 @@ std::string GpuServiceImpl::GetShaderPrefixKey() {
   base::AutoLock lock(shader_prefix_key_lock_);
   if (shader_prefix_key_.empty()) {
     const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info_.active_gpu();
-    std::string product =
-        std::string(version_info::GetProductNameAndVersionForUserAgent());
+    std::string product = version_info::GetProductNameAndVersionForUserAgent();
 
     shader_prefix_key_ =
         product + "-" + gpu_info_.gl_vendor + "-" + gpu_info_.gl_renderer +

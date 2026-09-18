@@ -57,10 +57,9 @@ ChromeUserPopulation GetUserPopulation(
   population.set_profile_management_status(
       GetProfileManagementStatus(browser_policy_connector));
 
-  std::string user_agent =
+  population.set_user_agent(
       base::StrCat({version_info::GetProductNameAndVersionForUserAgent(), "/",
-                    version_info::GetOSType()});
-  population.set_user_agent(user_agent);
+                    version_info::GetOSType()}));
 
   if (num_profiles)
     population.set_number_of_profiles(*num_profiles);
