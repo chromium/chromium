@@ -214,6 +214,10 @@ class SidePanelService : public BrowserContextKeyedAPI,
   ExtensionPanelOptions panels_;
 };
 
+template <>
+bool BrowserContextKeyedAPIFactory<
+    SidePanelService>::ServiceIsCreatedWithBrowserContext() const;
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_SIDE_PANEL_SIDE_PANEL_SERVICE_H_

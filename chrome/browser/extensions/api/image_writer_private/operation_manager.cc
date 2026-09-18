@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/event_router_forwarder.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -35,6 +36,17 @@
 namespace image_writer_api = extensions::api::image_writer_private;
 
 namespace extensions {
+
+template <>
+bool BrowserContextKeyedAPIFactory<image_writer::OperationManager>::
+    ServiceIsCreatedWithBrowserContext() const {
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationExtensionsApi.Get()) {
+    return false;
+  }
+  return true;
+}
+
 namespace image_writer {
 
 using content::BrowserThread;

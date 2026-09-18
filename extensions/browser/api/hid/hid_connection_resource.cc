@@ -12,6 +12,17 @@
 
 namespace extensions {
 
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<HidConnectionResource>>::
+    ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazyKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
+}
+
 static base::LazyInstance<BrowserContextKeyedAPIFactory<
     ApiResourceManager<HidConnectionResource>>>::DestructorAtExit g_factory =
     LAZY_INSTANCE_INITIALIZER;

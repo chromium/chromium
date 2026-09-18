@@ -9,6 +9,7 @@
 
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource.h"
+#include "extensions/browser/api/api_resource_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -38,6 +39,10 @@ class HidConnectionResource : public ApiResource {
  private:
   mojo::Remote<device::mojom::HidConnection> connection_;
 };
+
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<HidConnectionResource>>::
+    ServiceIsCreatedWithBrowserContext() const;
 
 }  // namespace extensions
 

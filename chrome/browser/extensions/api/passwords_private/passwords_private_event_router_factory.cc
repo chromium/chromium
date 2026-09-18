@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_impl.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -52,6 +53,10 @@ PasswordsPrivateEventRouterFactory::BuildServiceInstanceForBrowserContext(
 
 bool PasswordsPrivateEventRouterFactory::
     ServiceIsCreatedWithBrowserContext() const {
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationExtensionsApi.Get()) {
+    return false;
+  }
   return true;
 }
 

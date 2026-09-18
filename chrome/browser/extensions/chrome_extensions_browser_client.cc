@@ -96,6 +96,7 @@
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -1337,6 +1338,13 @@ ChromeExtensionsBrowserClient::CreateInstallPromptForNativeWindow(
 gfx::NativeWindow ChromeExtensionsBrowserClient::GetNativeWindowForFunction(
     ExtensionFunction& function) {
   return ChromeExtensionFunctionDetails(&function).GetNativeWindowForUI();
+}
+
+bool ChromeExtensionsBrowserClient::IsLazyKeyedServiceInstantiationEnabled()
+    const {
+  return base::FeatureList::IsEnabled(
+             features::kLazyKeyedServiceInstantiation) &&
+         features::kLazyKeyedServiceInstantiationExtensionsApi.Get();
 }
 
 void ChromeExtensionsBrowserClient::SetAPIClientForTest(

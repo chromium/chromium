@@ -416,4 +416,8 @@ gfx::NativeWindow ExtensionsBrowserClient::GetNativeWindowForFunction(
   return gfx::NativeWindow();
 }
 
+bool ExtensionsBrowserClient::IsLazyKeyedServiceInstantiationEnabled() const {
+  return false;
+}
+
 }  // namespace extensions

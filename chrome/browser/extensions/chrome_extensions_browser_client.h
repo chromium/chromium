@@ -343,6 +343,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       std::unique_ptr<InstallPromptData> prompt) override;
   gfx::NativeWindow GetNativeWindowForFunction(
       ExtensionFunction& function) override;
+  bool IsLazyKeyedServiceInstantiationEnabled() const override;
 
   void SetAPIClientForTest(std::unique_ptr<ExtensionsAPIClient> client);
 

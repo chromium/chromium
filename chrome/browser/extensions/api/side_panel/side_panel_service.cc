@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 #include "chrome/common/pref_names.h"
@@ -28,6 +29,16 @@
 #include "extensions/common/error_utils.h"
 
 namespace extensions {
+
+template <>
+bool BrowserContextKeyedAPIFactory<
+    SidePanelService>::ServiceIsCreatedWithBrowserContext() const {
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationExtensionsApi.Get()) {
+    return false;
+  }
+  return true;
+}
 
 namespace {
 

@@ -133,6 +133,11 @@ class OperationManager : public BrowserContextKeyedAPI,
 };
 
 }  // namespace image_writer
+
+template <>
+bool BrowserContextKeyedAPIFactory<
+    image_writer::OperationManager>::ServiceIsCreatedWithBrowserContext() const;
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_OPERATION_MANAGER_H_

@@ -724,6 +724,10 @@ class ExtensionsBrowserClient {
   virtual gfx::NativeWindow GetNativeWindowForFunction(
       ExtensionFunction& function);
 
+  // Returns true if lazy keyed service instantiation is enabled for extension
+  // services.
+  virtual bool IsLazyKeyedServiceInstantiationEnabled() const;
+
  protected:
   std::unique_ptr<ExtensionAssetsManager> assets_manager_;
 
