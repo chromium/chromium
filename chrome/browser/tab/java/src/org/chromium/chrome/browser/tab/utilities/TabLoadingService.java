@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.tab.utilities;
 
+import android.os.SystemClock;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
+import android.util.SparseLongArray;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -13,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -160,6 +163,13 @@ public class TabLoadingService {
      */
     private final SparseIntArray mTabLoadGenerations = new SparseIntArray();
 
+    /**
+     * Maps pending tab IDs to the timestamps (in {@link SystemClock#elapsedRealtime()}) when they
+     * were enqueued in {@link #mPendingTabs}. Used to record queue wait duration once an active
+     * concurrency slot becomes available.
+     */
+    private final SparseLongArray mTabQueueStartTimes = new SparseLongArray();
+
     /** Monotonic generation counter incremented with each new load request. */
     private int mNextGeneration;
 
@@ -208,10 +218,15 @@ public class TabLoadingService {
         mQueuedTabs.put(tab.getId(), new ObserverList<>());
 
         if (mPendingTabs.isEmpty() && mLoadingTabs.size() < mLimit) {
+            RecordHistogram.recordCount100Histogram(
+                    "Android.TabLoadingService.PendingQueueDepth", 0);
             return startTabLoad(tab, /* notifyOnFailure= */ false);
         } else {
             tab.addObserver(sObserver);
             mPendingTabs.add(tab);
+            mTabQueueStartTimes.put(tab.getId(), SystemClock.elapsedRealtime());
+            RecordHistogram.recordCount100Histogram(
+                    "Android.TabLoadingService.PendingQueueDepth", mPendingTabs.size());
             return true;
         }
     }
@@ -282,6 +297,7 @@ public class TabLoadingService {
         ThreadUtils.assertOnUiThread();
         boolean removedPending = mPendingTabs.remove(tab);
         mTabLoadGenerations.delete(tab.getId());
+        mTabQueueStartTimes.delete(tab.getId());
         boolean wasQueued = mQueuedTabs.get(tab.getId()) != null;
         boolean wasLoading = mLoadingTabs.remove(tab);
 
@@ -362,6 +378,7 @@ public class TabLoadingService {
         mLoadingTabs.remove(tab);
         mPendingTabs.remove(tab);
         mTabLoadGenerations.delete(tab.getId());
+        mTabQueueStartTimes.delete(tab.getId());
         tab.removeObserver(sObserver);
 
         removeCallbacksAndNotify(tab, result);
@@ -386,6 +403,13 @@ public class TabLoadingService {
 
         while (mLoadingTabs.size() < mLimit && !mPendingTabs.isEmpty()) {
             Tab nextTab = mPendingTabs.removeFirst();
+            long queueStartTime = mTabQueueStartTimes.get(nextTab.getId(), 0);
+            if (queueStartTime > 0) {
+                mTabQueueStartTimes.delete(nextTab.getId());
+                long duration = SystemClock.elapsedRealtime() - queueStartTime;
+                RecordHistogram.recordMediumTimesHistogram(
+                        "Android.TabLoadingService.QueueWaitDuration", duration);
+            }
             startTabLoad(nextTab, /* notifyOnFailure= */ true);
         }
     }
@@ -394,6 +418,7 @@ public class TabLoadingService {
     public void clearForTesting() {
         mQueuedTabs.clear();
         mTabLoadGenerations.clear();
+        mTabQueueStartTimes.clear();
         mNextGeneration = 0;
         mLoadingTabs.clear();
         mPendingTabs.clear();

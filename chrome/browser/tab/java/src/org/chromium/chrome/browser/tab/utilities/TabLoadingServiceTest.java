@@ -30,6 +30,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -546,6 +547,76 @@ public class TabLoadingServiceTest {
         verify(mNavigationController, never()).setNeedsReload();
         verify(mTab2).loadIfNeeded(true);
         assertFalse(mService.isTabQueuedForLoad(TAB_ID));
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
+    public void testConcurrentLoadLimit_RecordsQueueDepth() {
+        configureConcurrentServiceWithMemoryGb(2);
+        setupTabForLoad(mTab, TAB_ID);
+        setupTabForLoad(mTab2, TAB_ID_2);
+        setupTabForLoad(mTab3, TAB_ID_3);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.TabLoadingService.PendingQueueDepth", 0)
+                        .expectIntRecord("Android.TabLoadingService.PendingQueueDepth", 0)
+                        .expectIntRecord("Android.TabLoadingService.PendingQueueDepth", 1)
+                        .build();
+
+        mService.queueLoadIfNeeded(mTab);
+        mService.queueLoadIfNeeded(mTab2);
+        mService.queueLoadIfNeeded(mTab3);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
+    public void testConcurrentLoadLimit_RecordsQueueWaitDurationOnDrain() {
+        configureConcurrentServiceWithMemoryGb(2);
+        setupTabForLoad(mTab, TAB_ID);
+        setupTabForLoad(mTab2, TAB_ID_2);
+        setupTabForLoad(mTab3, TAB_ID_3);
+
+        mService.queueLoadIfNeeded(mTab);
+        mService.queueLoadIfNeeded(mTab2);
+        mService.queueLoadIfNeeded(mTab3);
+
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        TabObserver observer = mTabObserverCaptor.getValue();
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.TabLoadingService.QueueWaitDuration")
+                        .build();
+
+        observer.onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
+    public void testCancelLoadIfNeeded_PendingTab_DoesNotRecordQueueWaitDuration() {
+        configureConcurrentServiceWithMemoryGb(2);
+        setupTabForLoad(mTab, TAB_ID);
+        setupTabForLoad(mTab2, TAB_ID_2);
+        when(mTab3.getId()).thenReturn(TAB_ID_3);
+        when(mTab3.isFrozen()).thenReturn(true);
+
+        mService.queueLoadIfNeeded(mTab);
+        mService.queueLoadIfNeeded(mTab2);
+        mService.queueLoadIfNeeded(mTab3);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.TabLoadingService.QueueWaitDuration")
+                        .build();
+
+        mService.cancelLoadIfNeeded(mTab3);
+
+        watcher.assertExpected();
     }
 
     private void setupTabForLoad(Tab tab, int id) {

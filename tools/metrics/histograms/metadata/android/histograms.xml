@@ -6350,6 +6350,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabLoadingService.PendingQueueDepth" units="tabs"
+    expires_after="2027-07-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
+  <summary>
+    Records the depth of TabLoadingService's pending queue when a tab load is
+    requested. 0 is recorded if the tab is immediately dispatched to an active
+    concurrency slot without waiting. Recorded when queueLoadIfNeeded is called
+    with concurrency limiting enabled.
+  </summary>
+</histogram>
+
+<histogram name="Android.TabLoadingService.QueueWaitDuration" units="ms"
+    expires_after="2027-07-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
+  <summary>
+    Records the wall-clock time in milliseconds that a background tab spent
+    waiting in TabLoadingService's pending queue before receiving an active
+    concurrency slot. Recorded when the queued tab is popped from the pending
+    queue to start loading.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabMultiSelectV2.BookmarkTabsCount" units="count"
     expires_after="2027-01-05">
   <owner>ckitagawa@chromium.org</owner>
