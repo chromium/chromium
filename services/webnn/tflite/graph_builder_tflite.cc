@@ -17,6 +17,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/containers/extend.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -1326,6 +1327,11 @@ auto GraphBuilderTflite::SerializeInputTensorInfo(
       ASSIGN_OR_RETURN(OperatorOffset operator_offset,
                        SerializeDequantizeLinear(dequantize_op));
       operators_.emplace_back(operator_offset);
+      // `SerializeDequantizeLinear` may have queued a cast for a float16 graph
+      // output, and the operation being serialized right now is a consumer of
+      // that output, so the cast cannot wait for the flush at the end of
+      // `SerializeOperation`.
+      FlushGraphOutputCastOperators();
       serialized = true;
     }
     if (fuse_dequantize) {
@@ -1466,6 +1472,10 @@ auto GraphBuilderTflite::SerializeOutputTensorInfo(
   }
 
   return output_tensor_info;
+}
+
+void GraphBuilderTflite::FlushGraphOutputCastOperators() {
+  base::Extend(operators_, std::move(graph_output_cast_operators_));
 }
 
 base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
@@ -1710,6 +1720,8 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
   if (!operator_offset.IsNull()) {
     operators_.emplace_back(operator_offset);
   }
+
+  FlushGraphOutputCastOperators();
 
   return base::ok();
 }
@@ -3286,11 +3298,13 @@ auto GraphBuilderTflite::FinishAndTakeResult(
                          std::back_inserter(output_name_to_descriptor),
                          get_name_and_index);
 
-  // Insert the cast operator for the graph output operand after the unsupported
-  // float16 inference operation.
-  for (auto cast_operator_offset : graph_output_cast_operators_) {
-    operators_.emplace_back(cast_operator_offset);
-  }
+  // `SerializeOperation` flushes these casts as it goes, so anything left here
+  // was queued by a caller that bypasses it, such as the trailing
+  // `dequantizeLinear` serialization in `CreateAndBuild`. Those operands are
+  // graph outputs with no further consumers (any operation that consumed one
+  // would have marked it serialized in `SerializeInputTensorInfo`), so the end
+  // of the graph is a correct position for their casts.
+  FlushGraphOutputCastOperators();
 
   // Create `tflite::SubGraph`, which typically represents an entire model.
   // The inputs of subgraph are the list of non-static tensors that feed into

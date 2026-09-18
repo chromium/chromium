@@ -235,6 +235,17 @@ class GraphBuilderTflite final {
       bool operation_supports_float16 = false,
       std::optional<::tflite::TensorType> override_tensor_type = std::nullopt);
 
+  // Must be called right after the operator that produced the float32
+  // temporary those casts read is appended to `operators_`. A graph output
+  // operand may also be consumed by a later operation, and that consumer reads
+  // the float16 tensor these casts write, because
+  // `operand_to_tensor_info_map_` holds the float16 graph output tensor rather
+  // than the float32 temporary. Deferring the casts any further would place
+  // them after their consumers, and TFLite both executes operators in list
+  // order and rejects a model whose operator reads a tensor that no earlier
+  // operator produced.
+  void FlushGraphOutputCastOperators();
+
   // The following steps implement the `SerializeOperation` function:
   // 1. Create `tflite::OperatorCode` with the kind of operator.
   // 2. Create `tflite::Operator` with the tensor index of inputs and outputs
