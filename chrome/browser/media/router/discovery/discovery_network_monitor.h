@@ -24,11 +24,12 @@ namespace media_router {
 // DiscoveryNetworkMonitor::Observer is called with the instance of the monitor.
 // Only one instance of this will be created per browser process.
 //
-// This class is not thread-safe, except for adding and removing observers.
-// Most of the work done by the monitor is done on the IO thread, which includes
-// updating the current network ID.  Therefore |GetNetworkId| should only be
-// called from the IO thread.  All observers will be notified of network changes
-// on the thread from which they registered.
+// Network interface enumeration runs on a private ThreadPool sequence, not on
+// any BrowserThread.  GetNetworkId() and Refresh() may be called from any
+// sequence: each posts to that sequence and replies on the caller's sequence.
+// Adding and removing observers is likewise safe from any sequence, and all
+// observers are notified of network changes on the sequence from which they
+// registered.
 class DiscoveryNetworkMonitor
     : public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:

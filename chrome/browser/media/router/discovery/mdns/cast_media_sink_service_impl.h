@@ -34,7 +34,15 @@ namespace media_router {
 // also observes DialMediaSinkServiceImpl for sinks to connect to (also known
 // as dual discovery). It is indirectly owned by a singleton that is never
 // freed. It may be created on any thread. All methods, unless otherwise
-// noted, must be invoked on the SequencedTaskRunner given by |task_runner_|.
+// noted, must be invoked on the SequencedTaskRunner given by `task_runner_`.
+//
+// Note that `task_runner_` is not chosen by this class: it is inherited from
+// CastSocketService, because this class opens Cast channels through it and
+// observes them as a CastSocket::Observer. Changing the sequence that
+// CastSocketService runs on therefore moves this class too.
+//
+// Dual discovery calls into DialMediaSinkServiceImpl directly rather than by
+// posting tasks, so DialMediaSinkServiceImpl must run on this same sequence.
 class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
                                  public cast_channel::CastSocket::Observer,
                                  public DiscoveryNetworkMonitor::Observer,
