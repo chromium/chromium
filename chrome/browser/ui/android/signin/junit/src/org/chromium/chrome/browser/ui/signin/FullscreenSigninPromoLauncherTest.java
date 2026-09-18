@@ -254,19 +254,33 @@ public class FullscreenSigninPromoLauncherTest {
     }
 
     @Test
-    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
-    public void promoShownWhenSigninForcedByPolicy() {
+    public void promoShownWhenLaunchingForcedSigninFlow() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(true);
         when(mFullscreenSigninLauncherMock.createFullscreenSigninIntent(
                         eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.FORCED_SIGNIN)))
                 .thenReturn(mSigninIntent);
 
         Assert.assertTrue(
-                FullscreenSigninPromoLauncher.launchPromoIfForced(
+                FullscreenSigninPromoLauncher.launchForcedSigninFlow(
                         mContext, mProfile, mFullscreenSigninLauncherMock));
 
         verify(mContext).startActivity(mSigninIntent);
+    }
+
+    /** The policy driven prompt is launched by {@code launchForcedSigninFlow()} only. */
+    @Test
+    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+    public void promoNotForcedByFlagWhenSigninForcedByPolicy() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(true);
+
+        Assert.assertFalse(
+                FullscreenSigninPromoLauncher.launchPromoIfForced(
+                        mContext, mProfile, mFullscreenSigninLauncherMock));
+
+        verify(mFullscreenSigninLauncherMock, never())
+                .createFullscreenSigninIntent(any(), any(), any(), anyInt());
+        verify(mContext, never()).startActivity(any());
     }
 
     @Test

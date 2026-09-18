@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -39,7 +41,6 @@ import org.chromium.components.signin.test.util.TestAccounts;
 
 /** Unit tests for {@link ForcedSigninController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures(SigninFeatures.FORCE_STARTUP_SIGNIN_PROMO)
 public class ForcedSigninControllerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -154,6 +155,44 @@ public class ForcedSigninControllerTest {
 
         mController.onPrimaryAccountChanged(
                 new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.SET));
+
+        verify(mLauncher, never()).createFullscreenSigninIntent(any(), any(), any(), anyInt());
+        verify(mContext, never()).startActivity(any());
+    }
+
+    @Test
+    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+    public void testShowFullscreenSigninPromptIfRequired() {
+        when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(true);
+
+        assertTrue(mController.showFullscreenSigninPromptIfRequired());
+
+        verify(mLauncher)
+                .createFullscreenSigninIntent(
+                        eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.FORCED_SIGNIN));
+        verify(mContext).startActivity(mSigninIntent);
+    }
+
+    @Test
+    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+    public void testShowFullscreenSigninPromptIfRequired_doesNotTriggerWhenPrefDisabled() {
+        when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(false);
+
+        assertFalse(mController.showFullscreenSigninPromptIfRequired());
+
+        verify(mLauncher, never()).createFullscreenSigninIntent(any(), any(), any(), anyInt());
+        verify(mContext, never()).startActivity(any());
+    }
+
+    /**
+     * The controller prompt is driven by the forced sign-in policy only: the startup promo flag is
+     * handled separately by {@link FullscreenSigninPromoLauncher#launchPromoIfForced}.
+     */
+    @Test
+    @EnableFeatures(SigninFeatures.FORCE_STARTUP_SIGNIN_PROMO)
+    @DisableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+    public void testShowFullscreenSigninPromptIfRequired_ignoresStartupPromoFeature() {
+        assertFalse(mController.showFullscreenSigninPromptIfRequired());
 
         verify(mLauncher, never()).createFullscreenSigninIntent(any(), any(), any(), anyInt());
         verify(mContext, never()).startActivity(any());

@@ -73,7 +73,7 @@ public final class FullscreenSigninPromoLauncher {
     }
 
     /**
-     * Launches the {@link SigninAndHistorySyncActivity} when forcing the display.
+     * Launches the {@link SigninAndHistorySyncActivity} when forcing the display with a flag.
      *
      * @param context The {@link Context} to launch the {@link SigninAndHistorySyncActivity}.
      * @param profile The active user profile.
@@ -85,19 +85,36 @@ public final class FullscreenSigninPromoLauncher {
             Context context,
             Profile profile,
             SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher) {
-        boolean shouldDisplayForForcedSigninPolicy =
-                ForcedSigninController.shouldDisplayForcedSignin(profile);
-        if (!SigninFeatureMap.isEnabled(SigninFeatures.FORCE_STARTUP_SIGNIN_PROMO)
-                && !shouldDisplayForForcedSigninPolicy) {
+        if (!SigninFeatureMap.isEnabled(SigninFeatures.FORCE_STARTUP_SIGNIN_PROMO)) {
             return false;
         }
         return createAndLaunchActivity(
                 context,
                 profile,
                 signinAndHistorySyncActivityLauncher,
-                shouldDisplayForForcedSigninPolicy
-                        ? SigninAccessPoint.FORCED_SIGNIN
-                        : SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
+                SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
+    }
+
+    /**
+     * Launches the {@link SigninAndHistorySyncActivity} for the forced sign-in flow. Callers are
+     * responsible for checking whether the forced sign-in flow should be displayed, see {@link
+     * ForcedSigninController#showFullscreenSigninPromptIfRequired()}.
+     *
+     * @param context The {@link Context} to launch the {@link SigninAndHistorySyncActivity}.
+     * @param profile The active user profile.
+     * @param signinAndHistorySyncActivityLauncher launcher used to launch the {@link
+     *     SigninAndHistorySyncActivity}.
+     * @return Whether the signin promo is shown.
+     */
+    public static boolean launchForcedSigninFlow(
+            Context context,
+            Profile profile,
+            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher) {
+        return createAndLaunchActivity(
+                context,
+                profile,
+                signinAndHistorySyncActivityLauncher,
+                SigninAccessPoint.FORCED_SIGNIN);
     }
 
     private static boolean createAndLaunchActivity(

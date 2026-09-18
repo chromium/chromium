@@ -211,6 +211,30 @@ public class TabbedRootUiCoordinatorTest {
         ViewUtils.waitForVisibleView(withText(R.string.signin_fre_title_signin_forced_by_policy));
     }
 
+    /**
+     * Regression test for crbug.com/561505435: the forced sign-in prompt must be displayed on
+     * sign-out even when the startup promo path is skipped.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+    @Add({@Policies.Item(key = "BrowserSignin", string = "2")})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_STARTUP_PROMOS})
+    public void testForcedSigninWhenStartupPromosDisabled() {
+        mSigninTestRule.addAccountThenSigninAndEnableHistorySync(TestAccounts.ACCOUNT1);
+
+        // The user is already signed in at first, so the fullscreen signin prompt is not displayed.
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+        ViewFinder.waitForNoView(withText(R.string.signin_fre_title_signin_forced_by_policy));
+
+        // The fullscreen prompt should be displayed upon signout, without waiting for the activity
+        // to be resumed again.
+        mSigninTestRule.signOut();
+        ViewUtils.waitForVisibleView(withText(R.string.signin_fre_title_signin_forced_by_policy));
+    }
+
     @Test
     @LargeTest
     @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)

@@ -292,6 +292,8 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -2885,6 +2887,21 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         }
 
+        // The controller is created whenever the policy is supported, even if no prompt is
+        // displayed now, since it observes sign-out events for the lifetime of the activity.
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)) {
+            assert mForcedSigninController == null;
+            mForcedSigninController =
+                    new ForcedSigninController(
+                            mActivity,
+                            mProfileSupplier.asNonNull().get().getOriginalProfile(),
+                            SigninAndHistorySyncActivityLauncherImpl.get(),
+                            mActivityLifecycleDispatcher);
+            if (mForcedSigninController.showFullscreenSigninPromptIfRequired()) {
+                return true;
+            }
+        }
+
         final Supplier<RationaleDelegate> rationaleUIDelegateSupplier =
                 () ->
                         new NotificationPermissionRationaleDialogController(
@@ -2925,7 +2942,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             // single PromoDialogCoordinator.
             boolean isShowingPromo =
                     LocaleManager.getInstance().hasShownSearchEnginePromoThisSession();
-            isShowingPromo |= maybeForceShowPromoAtStartup();
+            isShowingPromo |= maybeForceShowPromoAtStartup(profile);
 
             if (!isShowingPromo
                     && !intentWithEffect
@@ -2943,18 +2960,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     /** Runs any promos set by feature flag to force show at every startup. */
-    private boolean maybeForceShowPromoAtStartup() {
+    private boolean maybeForceShowPromoAtStartup(Profile profile) {
         // Any promo that has a force-show feature flag should be added to this list (and of course
         // any promo that you want to trigger at every startup (temporarily for debugging and/or
         // development).
-
-        mForcedSigninController =
-                new ForcedSigninController(
-                        mActivity,
-                        mProfileSupplier.asNonNull().get().getOriginalProfile(),
-                        SigninAndHistorySyncActivityLauncherImpl.get(),
-                        mActivityLifecycleDispatcher);
-        if (mForcedSigninController.showFullscreenSigninPromptIfForced()) {
+        if (FullscreenSigninPromoLauncher.launchPromoIfForced(
+                mActivity, profile, SigninAndHistorySyncActivityLauncherImpl.get())) {
             return true;
         }
 

@@ -51,19 +51,20 @@ public class ForcedSigninController
     }
 
     /**
-     * Displays the forced sign-in UI. Returns {@code true} if the prompt was successfully
-     * displayed.
+     * Displays the forced sign-in UI if it is required by the forced sign-in policy. Returns {@code
+     * true} if the prompt was successfully displayed.
      */
-    public boolean showFullscreenSigninPromptIfForced() {
-        return FullscreenSigninPromoLauncher.launchPromoIfForced(mContext, mProfile, mLauncher);
+    public boolean showFullscreenSigninPromptIfRequired() {
+        if (!shouldDisplayForcedSignin(mProfile)) {
+            return false;
+        }
+        return FullscreenSigninPromoLauncher.launchForcedSigninFlow(mContext, mProfile, mLauncher);
     }
 
     /** Implements {@link PauseResumeWithNativeObserver}. */
     @Override
     public void onResumeWithNative() {
-        if (shouldDisplayForcedSignin(mProfile)) {
-            showFullscreenSigninPromptIfForced();
-        }
+        showFullscreenSigninPromptIfRequired();
     }
 
     /** Implements {@link PauseResumeWithNativeObserver}. */
@@ -90,7 +91,7 @@ public class ForcedSigninController
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
         if (eventDetails.getEventTypeFor() == PrimaryAccountChangeEvent.Type.CLEARED) {
-            showFullscreenSigninPromptIfForced();
+            showFullscreenSigninPromptIfRequired();
         }
     }
 }
