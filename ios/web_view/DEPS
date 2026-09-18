@@ -4,7 +4,7 @@ include_rules = [
   "-ios/web_view",
 
   # includes from application layer are not allowed.
-  "-ios/chrome"
+  "-ios/chrome",
 
   "+ios/web/public",
   "-ios/web/public/test/fakes/test_browser_state.h",
