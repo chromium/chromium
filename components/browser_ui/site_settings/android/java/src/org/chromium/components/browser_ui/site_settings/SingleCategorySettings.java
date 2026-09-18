@@ -508,10 +508,24 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         String title = getArguments().getString(EXTRA_TITLE);
+        // The title is only a display string, so a Url that omits it still names a real page.
+        // Recover it from the category rather than leaving the toolbar empty.
+        if (title == null) title = defaultTitle();
         if (title != null) mPageTitle.set(title);
 
         // Handled in onActivityCreated. Moving the addPreferencesFromResource call up to here
         // causes animation jank (crbug.com/985734).
+    }
+
+    /** Returns the category's own name, or null if the arguments do not name a known category. */
+    private @Nullable String defaultTitle() {
+        SiteSettingsCategory category =
+                SiteSettingsCategory.createFromPreferenceKey(
+                        getSiteSettingsDelegate().getBrowserContextHandle(),
+                        getArguments().getString(EXTRA_CATEGORY, ""));
+        if (category == null) return null;
+        int titleRes = ContentSettingsResources.getTitleForCategory(category.getType());
+        return titleRes == 0 ? null : getString(titleRes);
     }
 
     @Override

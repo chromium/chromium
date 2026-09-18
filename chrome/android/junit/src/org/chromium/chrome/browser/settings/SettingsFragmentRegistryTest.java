@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -39,11 +40,14 @@ import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFr
 import org.chromium.chrome.browser.safe_browsing.settings.StandardProtectionSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
+import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.ChosenObjectSettings;
 import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
 import org.chromium.components.browser_ui.site_settings.LocationPermissionSubpageSettings;
+import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.StorageAccessSubpageSettings;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
@@ -456,18 +460,164 @@ public class SettingsFragmentRegistryTest {
     }
 
     @Test
-    public void testResolveReturnsThePageAndItsArguments() {
+    public void testResolveRedirectsWhenRequiredArgumentIsMissing() {
+        // Each of these pages is identified entirely by an argument, so without it there is no
+        // page to show. They fall back to the closest page that lists what they were showing.
+        assertRedirects("chrome://settings/siteDetails", "chrome://settings/allSites");
+        assertRedirects("chrome://settings/allSites/group", "chrome://settings/allSites");
+        assertRedirects("chrome://settings/locationPermission", "chrome://settings/allSites");
+        assertRedirects("chrome://settings/storageAccess", "chrome://settings/allSites");
+        assertRedirects(
+                "chrome://settings/siteSettings/category", "chrome://settings/siteSettings");
+    }
+
+    @Test
+    public void testResolveShowsPageWhenRequiredArgumentIsPresent() {
         SettingsFragmentRegistry.Resolution resolution =
                 SettingsFragmentRegistry.resolve(
                         "chrome://settings/siteDetails?site=https://example.com");
+        assertNull(resolution.redirectUrl);
         assertEquals(SingleWebsiteSettings.class, resolution.fragmentClass);
         assertTrue(resolution.args.containsKey(SingleWebsiteSettings.EXTRA_SITE_ADDRESS));
+
+        resolution =
+                SettingsFragmentRegistry.resolve(
+                        "chrome://settings/allSites/group?group=example.com");
+        assertNull(resolution.redirectUrl);
+        assertEquals(GroupedWebsitesSettings.class, resolution.fragmentClass);
+    }
+
+    @Test
+    public void testResolveRedirectsCategoriesToThePageThatRendersThem() {
+        // "All sites", "Storage" and "Zoom" are rendered by AllSiteSettings, every other category
+        // by SingleCategorySettings. Each page throws when handed the other's categories, so a URL
+        // naming the wrong one is sent to its counterpart rather than being shown.
+        assertRedirects(
+                "chrome://settings/siteSettings/category?category="
+                        + SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.ALL_SITES),
+                "chrome://settings/allSites?category=all_sites");
+        assertRedirects(
+                "chrome://settings/allSites?category="
+                        + SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.CAMERA),
+                "chrome://settings/siteSettings/category?category=camera");
+
+        // The categories each page does render are shown, not redirected.
+        SettingsFragmentRegistry.Resolution resolution =
+                SettingsFragmentRegistry.resolve("chrome://settings/allSites?category=all_sites");
+        assertNull(resolution.redirectUrl);
+        assertEquals(AllSiteSettings.class, resolution.fragmentClass);
+
+        resolution =
+                SettingsFragmentRegistry.resolve(
+                        "chrome://settings/siteSettings/category?category=camera");
+        assertNull(resolution.redirectUrl);
+        assertEquals(SingleCategorySettings.class, resolution.fragmentClass);
+    }
+
+    @Test
+    public void testEveryRouteReachesAPageWithoutLooping() {
+        // A fallback that itself redirects would leave the tab navigating in a circle, so walk
+        // every registered route, with no arguments supplied, to a page that can be shown.
+        for (String path : SettingsFragmentRegistry.sPathToRouteSpecMap.keySet()) {
+            String url = "chrome://settings" + path;
+            for (int hops = 0; ; hops++) {
+                assertTrue(
+                        "Redirect loop reached from chrome://settings" + path + " at " + url,
+                        hops < 5);
+                SettingsFragmentRegistry.Resolution resolution =
+                        SettingsFragmentRegistry.resolve(url);
+                if (resolution.redirectUrl == null) {
+                    assertNotNull(url, resolution.fragmentClass);
+                    break;
+                }
+                url = resolution.redirectUrl;
+            }
+        }
+    }
+
+    @Test
+    public void testResolveShowsMainSettingsForUnroutedUrls() {
+        // ChosenObjectSettings has no URL: it is identified by a serialized device descriptor.
+        SettingsFragmentRegistry.Resolution resolution =
+                SettingsFragmentRegistry.resolve("chrome://settings/chosenObject");
+        assertNull(resolution.redirectUrl);
+        assertEquals(MainSettings.class, resolution.fragmentClass);
+        assertNull(
+                SettingsFragmentRegistry.getFragmentClassForUrl("chrome://settings/chosenObject"));
+
+        resolution = SettingsFragmentRegistry.resolve("chrome://settings/notAPage");
+        assertNull(resolution.redirectUrl);
+        assertEquals(MainSettings.class, resolution.fragmentClass);
+    }
+
+    @Test
+    public void testResolveWalksUpToTheClosestPageForUnknownPaths() {
+        // A Url is user editable, so a mistyped or truncated path should land as close to what was
+        // asked for as possible. Here the query separator was typed as "&", making the whole thing
+        // one unknown path segment.
+        assertRedirects(
+                "chrome://settings/siteSettings/category&title=Location",
+                "chrome://settings/siteSettings");
+
+        // The redirect keeps the registered casing rather than the lowercased matching form.
+        assertRedirects("chrome://settings/allsites/nonsense", "chrome://settings/allSites");
+
+        // Several unknown segments still walk all the way back to a real page.
+        assertRedirects("chrome://settings/siteSettings/a/b/c", "chrome://settings/siteSettings");
+    }
+
+    @Test
+    public void testResolveRedirectsCategoryUrlMissingOnlyItsCategory() {
+        // The title is decoration; the category is what names the page. Dropping the category
+        // leaves nothing to show, so this falls back rather than landing on the settings root.
+        assertRedirects(
+                "chrome://settings/siteSettings/category?title=Location",
+                "chrome://settings/siteSettings");
+    }
+
+    @Test
+    public void testResolveRedirectsWhenRequiredArgumentIsEmpty() {
+        // A Url is user editable, and trimming the value off a parameter is easier than trimming
+        // the whole parameter. An empty value names nothing, so it is the same as being absent.
+        assertRedirects("chrome://settings/siteDetails?site=", "chrome://settings/allSites");
+        assertRedirects("chrome://settings/siteDetails?site", "chrome://settings/allSites");
+        assertRedirects("chrome://settings/allSites/group?group=", "chrome://settings/allSites");
+        assertRedirects(
+                "chrome://settings/siteSettings/category?category=",
+                "chrome://settings/siteSettings");
+    }
+
+    @Test
+    public void testParseUrlArgumentsSkipsEmptyValues() {
+        // The same rule applies to arguments that merely decorate a page: an empty title would
+        // otherwise blank the toolbar instead of letting the page name itself.
+        Bundle args =
+                SettingsFragmentRegistry.parseUrlArguments(
+                        "chrome://settings/siteSettings/category?category=camera&title=");
+        assertFalse(args.containsKey(SingleCategorySettings.EXTRA_TITLE));
+        assertEquals("camera", args.getString(SingleCategorySettings.EXTRA_CATEGORY));
+    }
+
+    @Test
+    public void testResolveRedirectsUnknownCategories() {
+        // A category this build does not have is not a page, and must not be mistaken for one
+        // belonging to the other of the two category pages, which asserts on it.
+        assertRedirects(
+                "chrome://settings/siteSettings/category?category=unknown_nonsense",
+                "chrome://settings/siteSettings");
+
+        // On All sites the same string is only decoration: the page falls back to "All sites" for
+        // any category it does not render, so it is shown rather than redirected. Redirecting
+        // would hand the category to a page that cannot show it either, and it would come back.
+        SettingsFragmentRegistry.Resolution resolution =
+                SettingsFragmentRegistry.resolve(
+                        "chrome://settings/allSites?category=unknown_nonsense");
+        assertNull(resolution.redirectUrl);
+        assertEquals(AllSiteSettings.class, resolution.fragmentClass);
     }
 
     @Test
     public void testResolveAppliesRouteDefaults() {
-        // The page asserts on this extra, and a URL that does not name it must still produce a
-        // page that works.
         SettingsFragmentRegistry.Resolution resolution =
                 SettingsFragmentRegistry.resolve("chrome://settings/theme");
         assertEquals(ThemeSettingsFragment.class, resolution.fragmentClass);
@@ -476,14 +626,10 @@ public class SettingsFragmentRegistryTest {
                 resolution.args.getInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY));
     }
 
-    @Test
-    public void testResolveShowsMainSettingsForUnroutedUrls() {
-        assertEquals(
-                MainSettings.class,
-                SettingsFragmentRegistry.resolve("chrome://settings/notAPage").fragmentClass);
-        assertEquals(
-                MainSettings.class,
-                SettingsFragmentRegistry.resolve("chrome://settings").fragmentClass);
+    private static void assertRedirects(String url, String expectedRedirectUrl) {
+        SettingsFragmentRegistry.Resolution resolution = SettingsFragmentRegistry.resolve(url);
+        assertEquals(url, expectedRedirectUrl, resolution.redirectUrl);
+        assertNull(url, resolution.fragmentClass);
     }
 
     /** The page a settings path resolves to, or null if the path is not registered. */

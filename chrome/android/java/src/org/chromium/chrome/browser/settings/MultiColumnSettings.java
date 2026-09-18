@@ -223,11 +223,23 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         if (ChromeFeatureList.sSettingsInTabUrlNav.isEnabled() && mInitialUrl != null) {
             String initialUrl = mInitialUrl;
             mInitialUrl = null;
+
+            // Same treatment as the warm path in SettingsPageFragmentDelegateImpl.updateForUrl():
+            // a restored tab can point at a page whose arguments are gone. Redirect instead of
+            // instantiating a page that cannot work.
             SettingsFragmentRegistry.Resolution resolution =
                     SettingsFragmentRegistry.resolve(initialUrl);
-            var fragmentClass = resolution.fragmentClass;
+            if (resolution.redirectUrl != null) {
+                SettingsNavigation navigation =
+                        SettingsNavigationFactory.createSettingsNavigation(requireContext());
+                if (navigation instanceof SettingsInTabNavigationDelegate delegate) {
+                    delegate.redirectFromNavigation(resolution.redirectUrl);
+                    return null;
+                }
+            }
 
-            if (!MainSettings.class.equals(fragmentClass)) {
+            var fragmentClass = resolution.fragmentClass;
+            if (fragmentClass != null && !MainSettings.class.equals(fragmentClass)) {
                 Fragment initialDetailFragment =
                         Fragment.instantiate(
                                 requireContext(), fragmentClass.getName(), resolution.args);

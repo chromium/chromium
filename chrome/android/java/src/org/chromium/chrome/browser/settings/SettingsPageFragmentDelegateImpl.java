@@ -93,6 +93,7 @@ public class SettingsPageFragmentDelegateImpl
     private final Tab mTab;
 
     private @Nullable SettingsHostFragment mSettingsHostFragment;
+    private @Nullable SettingsInTabNavigationDelegate mSettingsNavigationDelegate;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mTitleUpdaterLifecycleCallbacks;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mSettingsMetricsReporter;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mOptionsMenuLifecycleCallbacks;
@@ -315,7 +316,8 @@ public class SettingsPageFragmentDelegateImpl
         }
 
         if (ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
-            mSettingsHostFragment.setSettingsNavigation(new SettingsInTabNavigationDelegate(mTab));
+            mSettingsNavigationDelegate = new SettingsInTabNavigationDelegate(mTab);
+            mSettingsHostFragment.setSettingsNavigation(mSettingsNavigationDelegate);
             if (mTab.getUrl() != null && !mTab.getUrl().isEmpty()) {
                 String restoredUrl = mTab.getUrl().getSpec();
                 if (restoredUrl != null && !restoredUrl.isEmpty()) {
@@ -399,8 +401,17 @@ public class SettingsPageFragmentDelegateImpl
 
         mPendingUrl = null;
 
+        // A settings URL is user editable and is replayed from history, so it may be missing
+        // arguments its page cannot do without, or name data that has since been deleted. Let the
+        // registry decide, and send the user to the fallback page rather than crashing.
         SettingsFragmentRegistry.Resolution resolution = SettingsFragmentRegistry.resolve(url);
-        var fragmentClass = resolution.fragmentClass;
+        if (resolution.redirectUrl != null && mSettingsNavigationDelegate != null) {
+            // Replace rather than push: the entry being left is not a page the user can return to.
+            mSettingsNavigationDelegate.redirectFromNavigation(resolution.redirectUrl);
+            return;
+        }
+        var fragmentClass =
+                resolution.fragmentClass != null ? resolution.fragmentClass : MainSettings.class;
 
         // If navigating to root chrome://settings URL (e.g. via Omnibox),
         // clear any stored initial subpage URL on attached host fragment

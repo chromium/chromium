@@ -11,6 +11,8 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -94,13 +96,29 @@ public class SettingsInTabNavigationDelegate implements SettingsNavigation {
             // Executing loadUrl updates the Omnibox, creates a WebContents navigation history
             // entry, and triggers SettingsPage.updateForUrl() on the current tab.
             mTab.loadUrl(new LoadUrlParams(targetUrl));
-        } else {
-            // Unmapped fragments fall back to launching an Intent so un-migrated subpages continue
-            // to function.
-            Intent intent =
-                    createSettingsIntent(context, fragment, fragmentArgs, addToBackStack, tag);
-            context.startActivity(intent);
+            return;
         }
+
+        // Some pages have no URL, either because they have not been migrated yet or because they
+        // cannot have one: ChosenObjectSettings, for instance, is identified by a serialized device
+        // descriptor. Show them in the current host on the fragment back stack. Launching an Intent
+        // here would open a second settings tab at the root URL, which is never what the user
+        // asked for from inside settings.
+        SettingsHostFragment hostFragment = findHostFragment(/* fragment= */ null);
+        if (hostFragment != null) {
+            hostFragment.showFragment(
+                    Fragment.instantiate(context, fragment.getName(), fragmentArgs),
+                    // Always added to the back stack, whatever the caller asked for. This page has
+                    // no navigation entry of its own, so the fragment back stack is the only thing
+                    // a back press has to pop; passing the caller's addToBackStack through would
+                    // strand the user on a page with no way back.
+                    /* addToBackStack= */ true,
+                    tag);
+            return;
+        }
+
+        Intent intent = createSettingsIntent(context, fragment, fragmentArgs, addToBackStack, tag);
+        context.startActivity(intent);
     }
 
     @Override
@@ -198,6 +216,23 @@ public class SettingsInTabNavigationDelegate implements SettingsNavigation {
     }
 
     /**
+     * Replaces the entry currently being navigated to with {@code url}.
+     *
+     * <p>For a URL that turned out not to name a page that can be shown, discovered while the tab
+     * is resolving a navigation to it. The replacement is deferred to the next message rather than
+     * run inline, because the navigation that led here is still being committed and starting
+     * another one underneath it is not something the navigation controller expects.
+     */
+    void redirectFromNavigation(String url) {
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    if (!mTab.isInitialized()) return;
+                    navigateReplacingCurrentEntry(url);
+                });
+    }
+
+    /**
      * Navigates to {@code url}, replacing the current navigation entry instead of pushing a new
      * one.
      *
@@ -250,13 +285,15 @@ public class SettingsInTabNavigationDelegate implements SettingsNavigation {
     }
 
     /**
-     * Resolves the host fragment, preferring the fragment's own parent hierarchy. When Chrome is in
-     * the background or during lifecycle transitions the host fragment's view may not report
+     * Resolves the host fragment, preferring the given fragment's own parent hierarchy. When Chrome
+     * is in the background or during lifecycle transitions the host fragment's view may not report
      * isShown(), which makes the activity-level lookup return null.
      */
-    private @Nullable SettingsHostFragment findHostFragment(Fragment fragment) {
-        SettingsHostFragment hostFragment = SettingsHostFragment.get(fragment);
-        if (hostFragment != null) return hostFragment;
+    private @Nullable SettingsHostFragment findHostFragment(@Nullable Fragment fragment) {
+        if (fragment != null) {
+            SettingsHostFragment hostFragment = SettingsHostFragment.get(fragment);
+            if (hostFragment != null) return hostFragment;
+        }
 
         WindowAndroid windowAndroid = mTab.getWindowAndroid();
         Activity activity = windowAndroid != null ? windowAndroid.getActivity().get() : null;
