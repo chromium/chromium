@@ -32,6 +32,7 @@
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -54,13 +55,13 @@
 namespace {
 constexpr base::TimeDelta kCreateBondTimeout = base::Seconds(15);
 
-const std::vector<uint8_t> kResponseBytes = {0x01, 0x5E, 0x3F, 0x45, 0x61, 0xC3,
-                                             0x32, 0x1D, 0xA0, 0xBA, 0xF0, 0xBB,
-                                             0x95, 0x1F, 0xF7, 0xB6};
-std::array<uint8_t, 12> kPasskeySaltBytes = {
+constexpr uint8_t kResponseBytes[] = {0x01, 0x5E, 0x3F, 0x45, 0x61, 0xC3,
+                                      0x32, 0x1D, 0xA0, 0xBA, 0xF0, 0xBB,
+                                      0x95, 0x1F, 0xF7, 0xB6};
+constexpr std::array<uint8_t, 12> kPasskeySaltBytes = {
     0xF0, 0xBB, 0x95, 0x1F, 0xF7, 0xB6, 0xBA, 0xF0, 0xBB, 0xB6, 0xBA, 0xF0};
 
-const std::array<uint8_t, 64> kPublicKey = {
+constexpr std::array<uint8_t, 64> kPublicKey = {
     0x01, 0x5E, 0x3F, 0x45, 0x61, 0xC3, 0x32, 0x1D, 0x01, 0x5E, 0x3F,
     0x45, 0x61, 0xC3, 0x32, 0x1D, 0x01, 0x5E, 0x3F, 0x45, 0x61, 0xC3,
     0x32, 0x1D, 0x01, 0x5E, 0x3F, 0x45, 0x61, 0xC3, 0x32, 0x1D, 0x01,
@@ -68,35 +69,35 @@ const std::array<uint8_t, 64> kPublicKey = {
     0x61, 0xC3, 0x32, 0x1D, 0x01, 0x5E, 0x3F, 0x45, 0x61, 0xC3, 0x32,
     0x1D, 0x01, 0x5E, 0x3F, 0x45, 0x61, 0xC3, 0x32, 0x1D};
 
-const uint8_t kValidPasskey = 13;
-const uint8_t kInvalidPasskey = 9;
+constexpr uint8_t kValidPasskey = 13;
+constexpr uint8_t kInvalidPasskey = 9;
 
 constexpr char kMetadataId[] = "test_metadata_id";
 constexpr char kDeviceName[] = "test_device_name";
 constexpr char kBluetoothCanonicalizedAddress[] = "0C:0E:4C:C8:05:08";
-const std::string kUserEmail = "test@test.test";
+constexpr char kUserEmail[] = "test@test.test";
 
-const char kWritePasskeyCharacteristicResultMetric[] =
+constexpr char kWritePasskeyCharacteristicResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.Passkey.Write.Result";
-const char kWritePasskeyCharacteristicPairFailureMetric[] =
+constexpr char kWritePasskeyCharacteristicPairFailureMetric[] =
     "Bluetooth.ChromeOS.FastPair.Passkey.Write.PairFailure";
-const char kPasskeyCharacteristicDecryptResult[] =
+constexpr char kPasskeyCharacteristicDecryptResult[] =
     "Bluetooth.ChromeOS.FastPair.Passkey.Decrypt.Result";
-const char kWriteAccountKeyCharacteristicResultMetric[] =
+constexpr char kWriteAccountKeyCharacteristicResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result";
-const char kConnectDeviceResult[] =
+constexpr char kConnectDeviceResult[] =
     "Bluetooth.ChromeOS.FastPair.ConnectDevice.Result";
-const char kPairDeviceResult[] =
+constexpr char kPairDeviceResult[] =
     "Bluetooth.ChromeOS.FastPair.PairDevice.Result";
-const char kPairDeviceErrorReason[] =
+constexpr char kPairDeviceErrorReason[] =
     "Bluetooth.ChromeOS.FastPair.PairDevice.ErrorReason";
-const char kSavedDeviceUpdateOptInStatusInitialResult[] =
+constexpr char kSavedDeviceUpdateOptInStatusInitialResult[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.UpdateOptInStatus.Result."
     "InitialPairingProtocol";
-const char kSavedDeviceUpdateOptInStatusRetroactiveResult[] =
+constexpr char kSavedDeviceUpdateOptInStatusRetroactiveResult[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.UpdateOptInStatus.Result."
     "RetroactivePairingProtocol";
-const char kSavedDeviceUpdateOptInStatusSubsequentResult[] =
+constexpr char kSavedDeviceUpdateOptInStatusSubsequentResult[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.UpdateOptInStatus.Result."
     "SubsequentPairingProtocol";
 constexpr char kInitialSuccessFunnelMetric[] = "FastPair.InitialPairing";
@@ -106,8 +107,8 @@ constexpr char kProtocolPairingStepSubsequent[] =
     "FastPair.SubsequentPairing.Pairing";
 constexpr char kInitializePairingProcessInitial[] =
     "FastPair.InitialPairing.Initialization";
-const char kCreateBondTime[] = "FastPair.CreateBond.Latency";
-const char kEngagementFlowInitialMetric[] =
+constexpr char kCreateBondTime[] = "FastPair.CreateBond.Latency";
+constexpr char kEngagementFlowInitialMetric[] =
     "Bluetooth.ChromeOS.FastPair.EngagementFunnel.Steps.InitialPairingProtocol";
 
 class FakeBluetoothDevice
@@ -347,10 +348,11 @@ class FastPairPairerImplTest : public AshTestBase {
   }
 
   void RunWritePasskeyCallback(
-      std::vector<uint8_t> data,
+      base::span<const uint8_t> data,
       std::optional<PairFailure> failure = std::nullopt) {
     fast_pair_gatt_service_factory_.fake_fast_pair_gatt_service_client()
-        ->RunWritePasskeyCallback(data, failure);
+        ->RunWritePasskeyCallback(
+            std::vector<uint8_t>(data.begin(), data.end()), failure);
   }
 
   void RunWriteAccountKeyCallback(

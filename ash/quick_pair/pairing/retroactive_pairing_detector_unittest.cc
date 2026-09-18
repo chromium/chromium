@@ -28,6 +28,7 @@
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -53,17 +54,16 @@ constexpr char kTestDeviceAddress2[] = "11:12:13:14:15:17";
 constexpr char kTestDeviceAddress3[] = "11:12:13:14:15:27";
 constexpr char kTestBleDeviceName[] = "Test Device Name";
 constexpr char kValidModelId[] = "718c17";
-const std::string kUserEmail = "test@test.test";
+constexpr char kUserEmail[] = "test@test.test";
 
-const std::vector<uint8_t> kModelIdBytes = {
+constexpr uint8_t kModelIdBytes[] = {
     /*message_group=*/0x03,
     /*message_code=*/0x01,
     /*additional_data_length=*/0x00, 0x03,
     /*additional_data=*/0xAA,        0xBB, 0xCC};
-const std::vector<uint8_t> kModelIdBytesNoMetadata = {0xAA, 0xBB, 0xCC};
-const std::string kModelId = "AABBCC";
+constexpr char kModelId[] = "AABBCC";
 
-const std::vector<uint8_t> kBleAddressBytes = {
+constexpr uint8_t kBleAddressBytes[] = {
     /*message_group=*/0x03,
     /*message_code=*/0x02,
     /*additional_data_length=*/0x00,
@@ -74,9 +74,9 @@ const std::vector<uint8_t> kBleAddressBytes = {
     0xDD,
     0xEE,
     0xFF};
-const std::string kBleAddress = "AA:BB:CC:DD:EE:FF";
+constexpr char kBleAddress[] = "AA:BB:CC:DD:EE:FF";
 
-const std::vector<uint8_t> kModelIdBleAddressBytes = {
+constexpr uint8_t kModelIdBleAddressBytes[] = {
     /*mesage_group=*/0x03,
     /*mesage_code=*/0x01,
     /*additional_data_length=*/0x00,
@@ -227,14 +227,19 @@ class RetroactivePairingDetectorTest
     adapter_->NotifyDevicePairedChanged(bt_device_ptr, new_paired_status);
   }
 
-  void SetMessageStream(const std::vector<uint8_t>& message_bytes) {
-    fake_socket_->SetIOBufferFromBytes(message_bytes);
+  void SetIOBufferFromBytes(base::span<const uint8_t> bytes) {
+    fake_socket_->SetIOBufferFromBytes(
+        std::vector<uint8_t>(bytes.begin(), bytes.end()));
+  }
+
+  void SetMessageStream(base::span<const uint8_t> message_bytes) {
+    SetIOBufferFromBytes(message_bytes);
     message_stream_ =
         std::make_unique<MessageStream>(kTestDeviceAddress, fake_socket_.get());
   }
 
-  void AddMessageStream(const std::vector<uint8_t>& message_bytes) {
-    fake_socket_->SetIOBufferFromBytes(message_bytes);
+  void AddMessageStream(base::span<const uint8_t> message_bytes) {
+    SetIOBufferFromBytes(message_bytes);
     message_stream_ =
         std::make_unique<MessageStream>(kTestDeviceAddress, fake_socket_.get());
     fake_message_stream_lookup_->AddMessageStream(kTestDeviceAddress,
@@ -828,7 +833,7 @@ TEST_F(RetroactivePairingDetectorTest,
 
   EXPECT_FALSE(retroactive_pair_found_);
 
-  fake_socket_->SetIOBufferFromBytes(kModelIdBleAddressBytes);
+  SetIOBufferFromBytes(kModelIdBleAddressBytes);
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
@@ -864,7 +869,7 @@ TEST_F(RetroactivePairingDetectorTest,
 
   EXPECT_FALSE(retroactive_pair_found_);
 
-  fake_socket_->SetIOBufferFromBytes(kModelIdBytes);
+  SetIOBufferFromBytes(kModelIdBytes);
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
@@ -899,7 +904,7 @@ TEST_F(RetroactivePairingDetectorTest,
 
   EXPECT_FALSE(retroactive_pair_found_);
 
-  fake_socket_->SetIOBufferFromBytes(kModelIdBytes);
+  SetIOBufferFromBytes(kModelIdBytes);
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
@@ -1009,7 +1014,7 @@ TEST_F(RetroactivePairingDetectorTest,
   NotifyMessageStreamConnected(kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
 
-  fake_socket_->SetIOBufferFromBytes(kModelIdBytes);
+  SetIOBufferFromBytes(kModelIdBytes);
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
@@ -1048,7 +1053,7 @@ TEST_F(RetroactivePairingDetectorTest,
   NotifyMessageStreamConnected(kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
 
-  fake_socket_->SetIOBufferFromBytes(kModelIdBytes);
+  SetIOBufferFromBytes(kModelIdBytes);
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
@@ -1071,7 +1076,7 @@ TEST_F(RetroactivePairingDetectorTest, Notify_OptedOut_FlagDisabled) {
 
   EXPECT_FALSE(retroactive_pair_found_);
 
-  fake_socket_->SetIOBufferFromBytes(kModelIdBleAddressBytes);
+  SetIOBufferFromBytes(kModelIdBleAddressBytes);
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
@@ -1102,7 +1107,7 @@ TEST_F(RetroactivePairingDetectorTest, Notify_OptedOut_StrictFlagDisabled) {
 
   EXPECT_FALSE(retroactive_pair_found_);
 
-  fake_socket_->SetIOBufferFromBytes(kModelIdBleAddressBytes);
+  SetIOBufferFromBytes(kModelIdBleAddressBytes);
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
@@ -1130,7 +1135,7 @@ TEST_F(RetroactivePairingDetectorTest, Notify_OptedIn_FlagDisabled) {
 
   EXPECT_FALSE(retroactive_pair_found_);
 
-  fake_socket_->SetIOBufferFromBytes(kModelIdBleAddressBytes);
+  SetIOBufferFromBytes(kModelIdBleAddressBytes);
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
@@ -1160,7 +1165,7 @@ TEST_F(RetroactivePairingDetectorTest, Notify_OptedIn_StrictFlagDisabled) {
 
   EXPECT_FALSE(retroactive_pair_found_);
 
-  fake_socket_->SetIOBufferFromBytes(kModelIdBleAddressBytes);
+  SetIOBufferFromBytes(kModelIdBleAddressBytes);
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
@@ -1195,7 +1200,7 @@ TEST_F(RetroactivePairingDetectorTest, DontNotifyIfAlreadySavedToAcount) {
 
   EXPECT_FALSE(retroactive_pair_found_);
 
-  fake_socket_->SetIOBufferFromBytes(kModelIdBleAddressBytes);
+  SetIOBufferFromBytes(kModelIdBleAddressBytes);
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
@@ -1285,7 +1290,7 @@ TEST_F(RetroactivePairingDetectorTest,
   // after the timeout to trigger the check in `CheckPairingInformation`
   // which happens in the overridden observed red functions for
   // `OnModelIdMessage` and `OnBleAddressUpdateMessage`.
-  fake_socket_->SetIOBufferFromBytes(kModelIdBleAddressBytes);
+  SetIOBufferFromBytes(kModelIdBleAddressBytes);
 
   // TODO(b/263391358): Refactor `TriggerReceiveCallback` to take a
   // base::RunLoop parameter and remove `base::RunLoop().RunUntilIdle()`.

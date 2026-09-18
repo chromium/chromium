@@ -4,6 +4,8 @@
 
 #include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
 
+#include <array>
+
 #include "ash/quick_pair/common/mock_quick_pair_browser_delegate.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -20,12 +22,21 @@ namespace {
 constexpr char kFirstSavedMacAddress[] = "00:11:22:33:44";
 constexpr char kSecondSavedMacAddress[] = "AA:11:BB:33:CC";
 constexpr char kNotSavedMacAddress[] = "FF:FF:FF:FF:FF";
-const std::vector<uint8_t> kAccountKey1{0x11, 0x22, 0x33, 0x44, 0x55, 0x66,
-                                        0x77, 0x88, 0x99, 0x00, 0xAA, 0xBB,
-                                        0xCC, 0xDD, 0xEE, 0xFF};
-const std::vector<uint8_t> kAccountKey2{0x11, 0x11, 0x22, 0x22, 0x33, 0x33,
-                                        0x44, 0x44, 0x55, 0x55, 0x66, 0x66,
-                                        0x77, 0x77, 0x88, 0x88};
+
+constexpr auto kAccountKey1 = std::to_array<uint8_t>(
+    {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x00, 0xAA, 0xBB,
+     0xCC, 0xDD, 0xEE, 0xFF});
+constexpr auto kAccountKey2 = std::to_array<uint8_t>(
+    {0x11, 0x11, 0x22, 0x22, 0x33, 0x33, 0x44, 0x44, 0x55, 0x55, 0x66, 0x66,
+     0x77, 0x77, 0x88, 0x88});
+
+std::vector<uint8_t> GetAccountKey1() {
+  return std::vector<uint8_t>(kAccountKey1.begin(), kAccountKey1.end());
+}
+
+std::vector<uint8_t> GetAccountKey2() {
+  return std::vector<uint8_t>(kAccountKey2.begin(), kAccountKey2.end());
+}
 
 }  // namespace
 
@@ -79,47 +90,47 @@ class SavedDeviceRegistryTest : public testing::Test {
 
 TEST_F(SavedDeviceRegistryTest, ValidLookup) {
   bool success1 = saved_device_registry_->SaveAccountAssociation(
-      kFirstSavedMacAddress, kAccountKey1);
+      kFirstSavedMacAddress, GetAccountKey1());
   bool success2 = saved_device_registry_->SaveAccountAssociation(
-      kSecondSavedMacAddress, kAccountKey2);
+      kSecondSavedMacAddress, GetAccountKey2());
 
   auto first = saved_device_registry_->GetAccountKey(kFirstSavedMacAddress);
   auto second = saved_device_registry_->GetAccountKey(kSecondSavedMacAddress);
 
-  ASSERT_EQ(kAccountKey1, *first);
-  ASSERT_EQ(kAccountKey2, *second);
+  ASSERT_EQ(GetAccountKey1(), *first);
+  ASSERT_EQ(GetAccountKey2(), *second);
 
   EXPECT_TRUE(success1);
   EXPECT_TRUE(success2);
 
   EXPECT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey1()));
   EXPECT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey2()));
 }
 
 TEST_F(SavedDeviceRegistryTest, InvalidLookup) {
   bool success1 = saved_device_registry_->SaveAccountAssociation(
-      kFirstSavedMacAddress, kAccountKey1);
+      kFirstSavedMacAddress, GetAccountKey1());
 
   auto invalid_result =
       saved_device_registry_->GetAccountKey(kNotSavedMacAddress);
   ASSERT_EQ(std::nullopt, invalid_result);
 
   EXPECT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey1()));
   EXPECT_TRUE(success1);
   EXPECT_FALSE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey2()));
 }
 
 TEST_F(SavedDeviceRegistryTest, MissingPrefService) {
   ON_CALL(*browser_delegate_, GetActivePrefService())
       .WillByDefault(testing::Return(nullptr));
   bool failure1 = saved_device_registry_->SaveAccountAssociation(
-      kFirstSavedMacAddress, kAccountKey1);
+      kFirstSavedMacAddress, GetAccountKey1());
   bool failure2 = saved_device_registry_->SaveAccountAssociation(
-      kSecondSavedMacAddress, kAccountKey2);
+      kSecondSavedMacAddress, GetAccountKey2());
 
   auto first = saved_device_registry_->GetAccountKey(kFirstSavedMacAddress);
   auto second = saved_device_registry_->GetAccountKey(kSecondSavedMacAddress);
@@ -135,44 +146,44 @@ TEST_F(SavedDeviceRegistryTest, MissingPrefService) {
   EXPECT_FALSE(failure2);
 
   EXPECT_FALSE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey1()));
   EXPECT_FALSE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey2()));
 }
 
 TEST_F(SavedDeviceRegistryTest, DeleteAccountKey_MacAddress) {
   bool success1 = saved_device_registry_->SaveAccountAssociation(
-      kFirstSavedMacAddress, kAccountKey1);
+      kFirstSavedMacAddress, GetAccountKey1());
   bool success2 = saved_device_registry_->SaveAccountAssociation(
-      kSecondSavedMacAddress, kAccountKey2);
+      kSecondSavedMacAddress, GetAccountKey2());
 
   auto first = saved_device_registry_->GetAccountKey(kFirstSavedMacAddress);
   auto second = saved_device_registry_->GetAccountKey(kSecondSavedMacAddress);
 
-  ASSERT_EQ(kAccountKey1, *first);
-  ASSERT_EQ(kAccountKey2, *second);
+  ASSERT_EQ(GetAccountKey1(), *first);
+  ASSERT_EQ(GetAccountKey2(), *second);
 
   EXPECT_TRUE(success1);
   EXPECT_TRUE(success2);
 
   EXPECT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey1()));
   EXPECT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey2()));
 
   // Remove the first account key.
   EXPECT_TRUE(saved_device_registry_->DeleteAccountKey(kFirstSavedMacAddress));
   EXPECT_FALSE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey1()));
   EXPECT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey2()));
 
   // Remove the second account key.
   EXPECT_TRUE(saved_device_registry_->DeleteAccountKey(kSecondSavedMacAddress));
   EXPECT_FALSE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey1()));
   EXPECT_FALSE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey2()));
 
   // Removing a key that doesn't exist/is already removed should return false.
   EXPECT_FALSE(saved_device_registry_->DeleteAccountKey(kFirstSavedMacAddress));
@@ -180,40 +191,40 @@ TEST_F(SavedDeviceRegistryTest, DeleteAccountKey_MacAddress) {
 
 TEST_F(SavedDeviceRegistryTest, DeleteAccountKey_AccountKey) {
   bool success1 = saved_device_registry_->SaveAccountAssociation(
-      kFirstSavedMacAddress, kAccountKey1);
+      kFirstSavedMacAddress, GetAccountKey1());
   bool success2 = saved_device_registry_->SaveAccountAssociation(
-      kSecondSavedMacAddress, kAccountKey2);
+      kSecondSavedMacAddress, GetAccountKey2());
 
   auto first = saved_device_registry_->GetAccountKey(kFirstSavedMacAddress);
   auto second = saved_device_registry_->GetAccountKey(kSecondSavedMacAddress);
 
-  ASSERT_EQ(kAccountKey1, *first);
-  ASSERT_EQ(kAccountKey2, *second);
+  ASSERT_EQ(GetAccountKey1(), *first);
+  ASSERT_EQ(GetAccountKey2(), *second);
 
   EXPECT_TRUE(success1);
   EXPECT_TRUE(success2);
 
   EXPECT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey1()));
   EXPECT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey2()));
 
   // Remove the first account key.
-  EXPECT_TRUE(saved_device_registry_->DeleteAccountKey(kAccountKey1));
+  EXPECT_TRUE(saved_device_registry_->DeleteAccountKey(GetAccountKey1()));
   EXPECT_FALSE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey1()));
   EXPECT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey2()));
 
   // Remove the second account key.
-  EXPECT_TRUE(saved_device_registry_->DeleteAccountKey(kAccountKey2));
+  EXPECT_TRUE(saved_device_registry_->DeleteAccountKey(GetAccountKey2()));
   EXPECT_FALSE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey1()));
   EXPECT_FALSE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey2()));
 
   // Removing a key that doesn't exist/is already removed should return false.
-  EXPECT_FALSE(saved_device_registry_->DeleteAccountKey(kAccountKey1));
+  EXPECT_FALSE(saved_device_registry_->DeleteAccountKey(GetAccountKey1()));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -227,9 +238,9 @@ TEST_F(SavedDeviceRegistryTest,
        MAYBE_IsAccountKeySavedToRegistry_DeviceRemoved) {
   // Simulate a user saving devices to their account.
   bool success1 = saved_device_registry_->SaveAccountAssociation(
-      kFirstSavedMacAddress, kAccountKey1);
+      kFirstSavedMacAddress, GetAccountKey1());
   bool success2 = saved_device_registry_->SaveAccountAssociation(
-      kSecondSavedMacAddress, kAccountKey2);
+      kSecondSavedMacAddress, GetAccountKey2());
 
   EXPECT_TRUE(success1);
   EXPECT_TRUE(success2);
@@ -246,12 +257,12 @@ TEST_F(SavedDeviceRegistryTest,
   saved_device_registry_ =
       std::make_unique<SavedDeviceRegistry>(adapter_.get());
 
-  // We expect |kAccountKey1| to be removed from the registry since it is no
+  // We expect |GetAccountKey1()| to be removed from the registry since it is no
   // longer paired.
   EXPECT_FALSE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey1()));
   EXPECT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+      saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey2()));
 }
 
 }  // namespace quick_pair

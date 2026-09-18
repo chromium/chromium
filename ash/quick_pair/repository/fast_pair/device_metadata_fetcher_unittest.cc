@@ -69,12 +69,12 @@ constexpr char kValidResponseEncoded[] =
 constexpr char kEmptyResponse[] = "{}";
 constexpr char kInvalidResponse[] = "<html>404 error</html>";
 constexpr char kHexDeviceId[] = "07B";
-const int kDeviceId = 123;
-const char kDeviceMetadataFetchResult[] =
+constexpr int kDeviceId = 123;
+constexpr char kDeviceMetadataFetchResult[] =
     "Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Result";
-const char kDeviceMetadataFetchNetError[] =
+constexpr char kDeviceMetadataFetchNetError[] =
     "Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Get.NetError";
-const char kDeviceMetadataFetchHttpResponseError[] =
+constexpr char kDeviceMetadataFetchHttpResponseError[] =
     "Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Get.HttpResponseError";
 
 }  // namespace
