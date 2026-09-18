@@ -20,6 +20,7 @@
 #include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
@@ -287,7 +288,7 @@ class MEDIA_EXPORT AudioBuffer
   // For planar formats, each element in the returned span maps to one channel.
   // For interleaved formats the returned span will contain exactly one
   // element which is the interleaved data buffer.
-  base::span<const base::raw_span<uint8_t>> channels() const {
+  base::span<const base::span<uint8_t>> channels() const {
     CHECK_EQ(channel_spans_.size(), channel_data_.size());
     return channel_spans_;
   }
@@ -315,7 +316,7 @@ class MEDIA_EXPORT AudioBuffer
   // Provides spanified access to planar audio channels. Each element in the
   // returned span corresponds to one channel.
   // Disallowed on interleaved, bitstream, empty, or end-of-stream buffers.
-  base::span<const base::raw_span<uint8_t>> planar_data() const LIFETIME_BOUND {
+  base::span<const base::span<uint8_t>> planar_data() const LIFETIME_BOUND {
     CHECK(!end_of_stream_);
     CHECK(media::IsPlanar(sample_format_));
     CHECK(data_);
@@ -366,8 +367,10 @@ class MEDIA_EXPORT AudioBuffer
   // everywhere instead.
   std::vector<raw_ptr<uint8_t>> channel_data_;
 
+  // RAW_PTR_EXCLUSION: `raw_ptr` atomic operations can cause latency issues on
+  // real-time audio threads.
   // For planar data, points to each channels data.
-  std::vector<base::raw_span<uint8_t>> channel_spans_;
+  RAW_PTR_EXCLUSION std::vector<base::span<uint8_t>> channel_spans_;
 
   // Allows recycling of memory data to avoid repeated allocations.
   scoped_refptr<AudioBufferMemoryPool> pool_;

@@ -52,10 +52,9 @@ std::unique_ptr<AudioBuffer::ExternalMemory> AllocateMemory(size_t size) {
   return std::make_unique<SelfOwnedMemory>(size);
 }
 
-
 template <typename SampleTypeTraits>
 void PlanarRead(AudioBus* dest,
-                const std::vector<base::raw_span<uint8_t>>& source,
+                const std::vector<base::span<uint8_t>>& source,
                 size_t dest_offset,
                 size_t source_offset,
                 size_t frames) {

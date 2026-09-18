@@ -276,9 +276,11 @@ class MEDIA_EXPORT AudioBus {
 
   // One float pointer per channel pointing to a contiguous block of memory for
   // that channel. If the memory is owned by this instance, this will
-  // point to the memory in |data_|. Otherwise, it may point to memory provided
+  // point to the memory in `data_`. Otherwise, it may point to memory provided
   // by the client.
-  // TODO(crbug.com/385028986): Convert to `base::raw_span`
+  //
+  // RAW_PTR_EXCLUSION: `raw_ptr` atomic operations can cause latency issues on
+  // real-time audio threads.
   RAW_PTR_EXCLUSION ChannelVector channel_data_;
 
   size_t frames_ = 0u;

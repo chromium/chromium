@@ -1091,7 +1091,7 @@ TEST(AudioBufferTest, PlanarAccessors) {
   scoped_refptr<AudioBuffer> buffer = AudioBuffer::CreateBuffer(
       kSampleFormatPlanarF32, kChannelLayout, kChannels, kSampleRate, kFrames);
 
-  base::span<const base::raw_span<uint8_t>> planar_data = buffer->planar_data();
+  base::span<const base::span<uint8_t>> planar_data = buffer->planar_data();
   EXPECT_EQ(kChannels, planar_data.size());
 
   const size_t expected_channel_bytes = kFrames * sizeof(float);
