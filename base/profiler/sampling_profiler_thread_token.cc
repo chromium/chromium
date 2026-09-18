@@ -13,7 +13,8 @@
 #include "base/profiler/stack_base_address_posix.h"
 #elif BUILDFLAG(IS_WIN)
 #include <windows.h>
-#include <winternl.h>
+
+#include <processthreadsapi.h>
 
 #include "base/check.h"
 #include "base/win/scoped_handle.h"
@@ -67,15 +68,14 @@ SamplingProfilerThreadToken GetSamplingProfilerCurrentThreadToken() {
   CHECK(::DuplicateHandle(::GetCurrentProcess(), ::GetCurrentThread(),
                           ::GetCurrentProcess(), &thread, 0, FALSE,
                           DUPLICATE_SAME_ACCESS));
-  // While Microsoft's documentation notes that the TEB structure is subject to
-  // change, its first member has historically always been an NT_TIB containing
-  // the StackBase address. This preserves the existing behavior before
-  // migrating to ::GetCurrentThreadStackLimits() in a follow-up CL.
-  const auto* tib = reinterpret_cast<const NT_TIB*>(::NtCurrentTeb());
-  CHECK(tib);
-  uintptr_t stack_base = reinterpret_cast<uintptr_t>(tib->StackBase);
-  CHECK(stack_base);
-  return {id, win::ScopedHandle(thread), stack_base};
+  // On Windows, stacks grow downwards from high addresses to low addresses.
+  // Therefore, the base of the stack is its upper limit (`high_limit`):
+  // https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentthreadstacklimits
+  ULONG_PTR low_limit = 0;
+  ULONG_PTR high_limit = 0;
+  ::GetCurrentThreadStackLimits(&low_limit, &high_limit);
+  CHECK_GT(high_limit, 0u);
+  return {id, win::ScopedHandle(thread), static_cast<uintptr_t>(high_limit)};
 #else
   return {id};
 #endif
