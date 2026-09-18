@@ -224,7 +224,7 @@ void SystemShadow::OnColorProviderChanged() {
 }
 
 const gfx::ShadowValues SystemShadow::GetShadowValuesForTesting() const {
-  return shadow()->details_for_testing()->values;  // IN-TEST
+  return shadow()->details_for_testing()->spec;  // IN-TEST
 }
 
 void SystemShadow::UpdateShadowColors(const ui::ColorProvider* color_provider) {

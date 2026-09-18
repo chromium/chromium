@@ -4,6 +4,7 @@
 
 source_set("decoration") {
   sources = [
+    "decoration_details.h",
     "decoration_util.cc",
     "decoration_util.h",
     "shadow.cc",

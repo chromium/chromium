@@ -8,40 +8,34 @@
 #include <cstddef>
 
 #include "build/build_config.h"
+#include "ui/decoration/decoration_details.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/outsets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/shadow_value.h"
+
+namespace gfx {
+class Canvas;
+}  // namespace gfx
 
 namespace ui::decoration {
 
-// A struct that describes a vector of shadows and their depiction as an image
-// suitable for ninebox tiling.
-struct ShadowDetails {
-  ShadowDetails(const gfx::ShadowValues& values,
-                const gfx::ImageSkia& nine_patch_image);
+// Generator for shadow decoration rendering and insets.
+struct ShadowGenerator {
+  static gfx::Insets GetNineboxApertureInsets(
+      const gfx::ShadowValues& shadows,
+      const gfx::RoundedCornersF& rounded_corners);
 
-  ShadowDetails(const ShadowDetails& other);
-  ShadowDetails& operator=(const ShadowDetails& other);
+  static gfx::Insets GetMargins(const gfx::ShadowValues& shadows);
 
-  ShadowDetails(ShadowDetails&& other);
-  ShadowDetails& operator=(ShadowDetails&& other);
-
-  ~ShadowDetails();
-
-  bool operator==(const ShadowDetails& other) const;
-
-  // Returns a cached ShadowDetails for given corner radius and shadow values.
-  static const ShadowDetails& Get(const gfx::RoundedCornersF& rounded_corners,
-                                  const gfx::ShadowValues& values);
-
-  static size_t GetDetailsCacheSizeForTest();
-
-  // Description of the shadows.
-  gfx::ShadowValues values;
-  // Cached ninebox image based on |values|.
-  gfx::ImageSkia nine_patch_image;
+  static void Draw(gfx::Canvas* canvas,
+                   const gfx::ShadowValues& shadows,
+                   const gfx::RoundedCornersF& rounded_corners,
+                   const gfx::Rect& content_rect);
 };
+
+using ShadowDetails = DecorationDetails<gfx::ShadowValues, ShadowGenerator>;
 
 // Returns the insets required to accommodate the corner radii.
 //

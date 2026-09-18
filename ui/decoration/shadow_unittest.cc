@@ -196,8 +196,8 @@ TEST_F(ShadowTest, ConfigureBeforeInit) {
   EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
   EXPECT_EQ(GetNineboxImageSize(kElevationLarge, radii),
             shadow.details_for_testing()->nine_patch_image.size());
-  EXPECT_EQ(SK_ColorRED, shadow.details_for_testing()->values[0].color());
-  EXPECT_EQ(SK_ColorBLUE, shadow.details_for_testing()->values[1].color());
+  EXPECT_EQ(SK_ColorRED, shadow.details_for_testing()->spec[0].color());
+  EXPECT_EQ(SK_ColorBLUE, shadow.details_for_testing()->spec[1].color());
 }
 
 // Test that the elevation is reduced when the contents are too small to handle
@@ -439,7 +439,7 @@ TEST_P(ShadowColorTest, ElevationToColorsMap) {
   shadow.SetContentBounds(gfx::Rect(GetMinContentSize(kElevationLarge)));
 
   // Cache the default colors.
-  const auto& values = shadow.details_for_testing()->values;
+  const auto& values = shadow.details_for_testing()->spec;
   const SkColor default_key_color = values[0].color();
   const SkColor default_ambient_color = values[1].color();
 
@@ -457,7 +457,7 @@ TEST_P(ShadowColorTest, ElevationToColorsMap) {
 
   // A lambda to get key and ambient shadow colors.
   auto get_colors = [](const ui::Shadow& shadow) -> ElevationColors {
-    const auto& values = shadow.details_for_testing()->values;
+    const auto& values = shadow.details_for_testing()->spec;
     return ElevationColors{values[0].color(), values[1].color()};
   };
 

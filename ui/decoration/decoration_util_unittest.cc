@@ -46,7 +46,7 @@ TEST(ShadowUtilTest, ShadowDetailsKey) {
 
   // Add fifth shadow details with a different key shadow blur than the first
   // details.
-  const gfx::ShadowValues& values_1 = details[0].values;
+  const gfx::ShadowValues& values_1 = details[0].spec;
   gfx::ShadowValues new_blur_values = {
       gfx::ShadowValue(values_1[0].offset(), /*blur=*/20, values_1[0].color()),
       values_1[1]};
@@ -56,7 +56,7 @@ TEST(ShadowUtilTest, ShadowDetailsKey) {
 
   // Add sixth shadow details with a different ambient color than the second
   // details.
-  const gfx::ShadowValues& values_2 = details[1].values;
+  const gfx::ShadowValues& values_2 = details[1].spec;
   gfx::ShadowValues new_color_values = {
       gfx::ShadowValue(values_2[0].offset(), values_2[0].blur(), SK_ColorBLUE),
       values_2[1]};

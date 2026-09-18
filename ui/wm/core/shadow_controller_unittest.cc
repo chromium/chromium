@@ -279,8 +279,8 @@ TEST_F(ShadowControllerTest, SetColorsMapToShadow) {
 #if BUILDFLAG(IS_CHROMEOS)
   default_ambient_color = SkColorSetA(SK_ColorBLACK, 0x1a);
 #endif
-  EXPECT_EQ(default_details->values[0].color(), default_key_color);
-  EXPECT_EQ(default_details->values[1].color(), default_ambient_color);
+  EXPECT_EQ(default_details->spec[0].color(), default_key_color);
+  EXPECT_EQ(default_details->spec[1].color(), default_ambient_color);
 
   // Change shadow colors map.
   ui::ColorProvider color_provider;
@@ -295,14 +295,14 @@ TEST_F(ShadowControllerTest, SetColorsMapToShadow) {
 
   // After setting color map, the shadow colors will be updated.
   const auto* inactive_details = shadow->details_for_testing();
-  EXPECT_EQ(inactive_details->values[0].color(), SK_ColorYELLOW);
-  EXPECT_EQ(inactive_details->values[1].color(), SK_ColorRED);
+  EXPECT_EQ(inactive_details->spec[0].color(), SK_ColorYELLOW);
+  EXPECT_EQ(inactive_details->spec[1].color(), SK_ColorRED);
 
   // Activate window will change shadow colors.
   ActivateWindow(window.get());
   const auto* active_details = shadow->details_for_testing();
-  EXPECT_EQ(active_details->values[0].color(), SK_ColorGREEN);
-  EXPECT_EQ(active_details->values[1].color(), SK_ColorBLUE);
+  EXPECT_EQ(active_details->spec[0].color(), SK_ColorGREEN);
+  EXPECT_EQ(active_details->spec[1].color(), SK_ColorBLUE);
 }
 
 namespace {

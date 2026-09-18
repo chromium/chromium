@@ -4,149 +4,58 @@
 
 #include "ui/decoration/decoration_util.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/flat_map.h"
-#include "base/lazy_instance.h"
-#include "base/memory/ptr_util.h"
+#include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
 
 namespace ui::decoration {
-namespace {
 
-// Creates an image with the given shadows painted around a round rect with
-// the given corner radius. The image will be just large enough to paint the
-// shadows appropriately with a 1px square region reserved for "content".
-class NineboxImageSource : public gfx::CanvasImageSource {
- public:
-  NineboxImageSource(const std::vector<gfx::ShadowValue>& shadows,
-                     gfx::RoundedCornersF& rounded_corners)
-      : gfx::CanvasImageSource(CalculateSize(shadows, rounded_corners)),
-        shadows_(shadows),
-        rounded_corners_(rounded_corners) {
-    DCHECK(!shadows.empty());
-  }
-
-  NineboxImageSource(const NineboxImageSource&) = delete;
-  NineboxImageSource& operator=(const NineboxImageSource&) = delete;
-
-  ~NineboxImageSource() override = default;
-
-  // CanvasImageSource overrides:
-  void Draw(gfx::Canvas* canvas) override {
-    cc::PaintFlags flags;
-    flags.setLooper(gfx::CreateShadowDrawLooper(shadows_));
-    gfx::Insets insets = -gfx::ShadowValue::GetMargin(shadows_);
-    gfx::Rect bounds(size());
-    bounds.Inset(insets);
-
-    SkRRect r_rect = gfx::RoundedRectToSkRRect(bounds, rounded_corners_);
-
-    // Clip out the center so it's not painted with the shadow.
-    canvas->sk_canvas()->clipRRect(r_rect, SkClipOp::kDifference, true);
-    // Clipping alone is not enough --- due to anti aliasing there will still be
-    // some of the fill color in the rounded corners. We must make the fill
-    // color transparent.
-    flags.setColor(SK_ColorTRANSPARENT);
-    canvas->sk_canvas()->drawRRect(r_rect, flags);
-  }
-
- private:
-  static gfx::Size CalculateSize(const std::vector<gfx::ShadowValue>& shadows,
-                                 const gfx::RoundedCornersF& rounded_corners) {
-    // The "content" area (the middle tile in the 3x3 grid) is a single pixel.
-    gfx::Rect bounds(0, 0, 1, 1);
-
-    // Add enough space to render the full range of blur and the corner
-    // rounding.
-    bounds.Inset(-GetNineboxApertureInsetsForShadows(shadows, rounded_corners));
-    return bounds.size();
-  }
-
-  const std::vector<gfx::ShadowValue> shadows_;
-
-  const gfx::RoundedCornersF rounded_corners_;
-};
-
-// A shadow's appearance is determined by its rounded corner radius and shadow
-// values. Make these attributes as the key for shadow details.
-struct ShadowDetailsKey {
-  bool operator==(const ShadowDetailsKey& other) const {
-    return (rounded_corners == other.rounded_corners) &&
-           (values == other.values);
-  }
-
-  bool operator<(const ShadowDetailsKey& other) const {
-    if (rounded_corners != other.rounded_corners) {
-      return gfx::RoundedCornersF::Compare(rounded_corners,
-                                           other.rounded_corners);
-    }
-    return values < other.values;
-  }
-
-  gfx::RoundedCornersF rounded_corners;
-  gfx::ShadowValues values;
-};
-
-// Map from shadow details key to a cached shadow.
-using ShadowDetailsMap = base::flat_map<ShadowDetailsKey, ShadowDetails>;
-base::LazyInstance<ShadowDetailsMap>::DestructorAtExit g_shadow_cache =
-    LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
-
-ShadowDetails::ShadowDetails(const gfx::ShadowValues& values,
-                             const gfx::ImageSkia& nine_patch_image)
-    : values(values), nine_patch_image(nine_patch_image) {}
-
-ShadowDetails::ShadowDetails(const ShadowDetails& other) = default;
-ShadowDetails& ShadowDetails::operator=(const ShadowDetails& other) = default;
-
-ShadowDetails::ShadowDetails(ShadowDetails&& other) = default;
-ShadowDetails& ShadowDetails::operator=(ShadowDetails&& other) = default;
-
-ShadowDetails::~ShadowDetails() = default;
-
-bool ShadowDetails::operator==(const ShadowDetails& other) const {
-  return values == other.values &&
-         nine_patch_image.BackedBySameObjectAs(other.nine_patch_image);
+// static
+gfx::Insets ShadowGenerator::GetNineboxApertureInsets(
+    const gfx::ShadowValues& shadows,
+    const gfx::RoundedCornersF& rounded_corners) {
+  return GetNineboxApertureInsetsForShadows(shadows, rounded_corners);
 }
 
-const ShadowDetails& ShadowDetails::Get(
-    const gfx::RoundedCornersF& rounded_corners,
-    const gfx::ShadowValues& values) {
-  ShadowDetailsKey key{rounded_corners, values};
-  auto iter = g_shadow_cache.Get().find(key);
-  if (iter != g_shadow_cache.Get().end()) {
-    return iter->second;
-  }
-
-  // Evict the details whose ninebox image does not have any shadow owners.
-  base::EraseIf(g_shadow_cache.Get(), [](auto& pair) {
-    return pair.second.nine_patch_image.IsUniquelyOwned();
-  });
-
-  auto source =
-      std::make_unique<NineboxImageSource>(values, key.rounded_corners);
-  const gfx::Size image_size = source->size();
-  auto nine_patch_image = gfx::ImageSkia(std::move(source), image_size);
-  auto [inserted_iter, success] =
-      g_shadow_cache.Get().try_emplace(key, values, nine_patch_image);
-  DCHECK(success);
-  return inserted_iter->second;
+// static
+gfx::Insets ShadowGenerator::GetMargins(const gfx::ShadowValues& shadows) {
+  return gfx::ShadowValue::GetMargin(shadows);
 }
 
-size_t ShadowDetails::GetDetailsCacheSizeForTest() {
-  return g_shadow_cache.Get().size();
+// static
+void ShadowGenerator::Draw(gfx::Canvas* canvas,
+                           const gfx::ShadowValues& shadows,
+                           const gfx::RoundedCornersF& rounded_corners,
+                           const gfx::Rect& content_rect) {
+  CHECK(!shadows.empty());
+
+  gfx::ScopedCanvas scoped_canvas(canvas);
+
+  cc::PaintFlags flags;
+  flags.setLooper(gfx::CreateShadowDrawLooper(shadows));
+
+  SkRRect r_rect = gfx::RoundedRectToSkRRect(content_rect, rounded_corners);
+
+  // Clip out the center so it's not painted with the shadow.
+  canvas->sk_canvas()->clipRRect(r_rect, SkClipOp::kDifference, true);
+  // Clipping alone is not enough --- due to anti aliasing there will still be
+  // some of the fill color in the rounded corners. We must make the fill
+  // color transparent.
+  flags.setColor(SK_ColorTRANSPARENT);
+  canvas->sk_canvas()->drawRRect(r_rect, flags);
 }
 
 gfx::Insets GetNineboxApertureInsetsForShadows(
