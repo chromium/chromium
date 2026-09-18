@@ -681,6 +681,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/mojom/api_permission_id.mojom.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
@@ -3668,6 +3669,24 @@ bool ChromeContentBrowserClient::AllowWorkerWebLocks(
           Profile::FromBrowserContext(browser_context));
   return embedder_support::AllowWorkerWebLocks(url, cookie_settings.get(),
                                                storage_key);
+}
+
+bool ChromeContentBrowserClient::AllowWorkerWriteToClipboard(
+    const url::Origin& origin,
+    content::BrowserContext* browser_context) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  if (origin.scheme() != extensions::kExtensionScheme) {
+    return false;
+  }
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(browser_context)
+          ->enabled_extensions()
+          .GetByID(origin.host());
+  return extension && extension->permissions_data()->HasAPIPermission(
+                          extensions::mojom::APIPermissionID::kClipboardWrite);
+#else
+  return false;
+#endif
 }
 
 bool ChromeContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(

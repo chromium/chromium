@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
+#include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/css/font_face_set_worker.h"
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -269,6 +270,14 @@ WorkerNavigator* WorkerGlobalScope::navigator() const {
   if (!navigator_)
     navigator_ = MakeGarbageCollected<WorkerNavigator>(GetExecutionContext());
   return navigator_.Get();
+}
+
+SystemClipboard* WorkerGlobalScope::GetSystemClipboard() const {
+  if (!system_clipboard_) {
+    system_clipboard_ =
+        MakeGarbageCollected<SystemClipboard>(GetExecutionContext());
+  }
+  return system_clipboard_.Get();
 }
 
 void WorkerGlobalScope::close() {
@@ -1049,6 +1058,7 @@ WorkerGlobalScope::TakeWorkerMainScriptLoadingParametersForModules() {
 void WorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(location_);
   visitor->Trace(navigator_);
+  visitor->Trace(system_clipboard_);
   visitor->Trace(pending_error_events_);
   visitor->Trace(font_selector_);
   visitor->Trace(trusted_types_);

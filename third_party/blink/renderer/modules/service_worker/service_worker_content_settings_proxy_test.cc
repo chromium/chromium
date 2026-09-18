@@ -36,6 +36,9 @@ class MockWorkerContentSettingsProxy
   void set_allow_indexed_db(bool allow) { allow_indexed_db_ = allow; }
   void set_allow_cache_storage(bool allow) { allow_cache_storage_ = allow; }
   void set_allow_web_locks(bool allow) { allow_web_locks_ = allow; }
+  void set_allow_write_to_clipboard(bool allow) {
+    allow_write_to_clipboard_ = allow;
+  }
 
   // mojom::blink::WorkerContentSettingsProxy implementation:
   void AllowIndexedDB(AllowIndexedDBCallback callback) override {
@@ -50,12 +53,16 @@ class MockWorkerContentSettingsProxy
   void AllowFileSystem(AllowFileSystemCallback callback) override {
     std::move(callback).Run(false);
   }
+  void AllowWriteToClipboard(AllowWriteToClipboardCallback callback) override {
+    std::move(callback).Run(allow_write_to_clipboard_);
+  }
 
  private:
   mojo::Receiver<mojom::blink::WorkerContentSettingsProxy> receiver_{this};
   bool allow_indexed_db_ = true;
   bool allow_cache_storage_ = true;
   bool allow_web_locks_ = true;
+  bool allow_write_to_clipboard_ = false;
 };
 
 // Tests for ServiceWorkerContentSettingsProxy.
@@ -139,11 +146,42 @@ class ServiceWorkerContentSettingsProxyTest : public testing::Test {
     return result;
   }
 
+  bool RunAllowWriteToClipboard() {
+    bool result = false;
+    base::RunLoop loop;
+    worker_thread_->GetTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](ServiceWorkerContentSettingsProxy* proxy,
+               base::OnceCallback<void(bool)> reply_callback) {
+              std::move(reply_callback).Run(proxy->AllowWriteToClipboard());
+            },
+            proxy_.get(),
+            base::BindPostTask(
+                base::SingleThreadTaskRunner::GetCurrentDefault(),
+                base::BindOnce(
+                    [](bool* out_result, base::OnceClosure quit_closure,
+                       bool allow) {
+                      *out_result = allow;
+                      std::move(quit_closure).Run();
+                    },
+                    &result, loop.QuitClosure()))));
+    loop.Run();
+    return result;
+  }
+
   test::TaskEnvironment task_environment_;
   std::unique_ptr<NonMainThread> worker_thread_;
   std::unique_ptr<MockWorkerContentSettingsProxy> mock_proxy_;
   std::unique_ptr<ServiceWorkerContentSettingsProxy> proxy_;
 };
+
+TEST_F(ServiceWorkerContentSettingsProxyTest, AllowWriteToClipboard) {
+  mock_proxy_->set_allow_write_to_clipboard(false);
+  EXPECT_FALSE(RunAllowWriteToClipboard());
+  mock_proxy_->set_allow_write_to_clipboard(true);
+  EXPECT_TRUE(RunAllowWriteToClipboard());
+}
 
 TEST_F(ServiceWorkerContentSettingsProxyTest, AllowIndexedDB) {
   // Test IndexedDB async

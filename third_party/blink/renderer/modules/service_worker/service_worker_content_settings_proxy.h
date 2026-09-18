@@ -45,6 +45,10 @@ class MODULES_EXPORT ServiceWorkerContentSettingsProxy final
   // Blocks until the response arrives.
   bool AllowStorageAccessSync(StorageType storage_type) override;
 
+  // Asks the browser process whether this worker may write to the system
+  // clipboard. Blocks until the response arrives.
+  bool AllowWriteToClipboard() override;
+
  private:
   mojo::Remote<mojom::blink::WorkerContentSettingsProxy>& GetService();
 

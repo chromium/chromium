@@ -352,11 +352,12 @@ class ClipboardCustomFormatReader final : public ClipboardReader {
 
 // static
 ClipboardReader* ClipboardReader::Create(
+    ExecutionContext* execution_context,
     SystemClipboard* system_clipboard,
     const String& mime_type,
     ClipboardReaderResultHandler* result_handler,
     bool sanitize_html) {
-  CHECK(ClipboardItem::supports(mime_type));
+  CHECK(ClipboardItem::supports(execution_context, mime_type));
   // If this is a web custom format then read the unsanitized version.
   if (!Clipboard::ParseWebCustomFormat(mime_type).empty()) {
     // We read the custom MIME type that has the "web " prefix.

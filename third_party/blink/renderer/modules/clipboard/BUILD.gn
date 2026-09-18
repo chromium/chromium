@@ -18,6 +18,7 @@ blink_modules_sources("clipboard") {
     "clipboard_promise.h",
     "clipboard_reader.cc",
     "clipboard_reader.h",
+    "clipboard_utilities.h",
     "clipboard_writer.cc",
     "clipboard_writer.h",
   ]

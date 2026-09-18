@@ -16,7 +16,7 @@ dictionary ClipboardReadOptions {
 
 [
     SecureContext,
-    Exposed=Window
+    Exposed(Window StableBlinkFeatures, ServiceWorker ClipboardOnExtensionServiceWorker)
 ] interface Clipboard : EventTarget {
     [MeasureAs=AsyncClipboardAPIRead,
      CallWith=ScriptState,

@@ -75,6 +75,13 @@ bool ServiceWorkerContentSettingsProxy::AllowStorageAccessSync(
   return result;
 }
 
+bool ServiceWorkerContentSettingsProxy::AllowWriteToClipboard() {
+  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+  bool result = false;
+  GetService()->AllowWriteToClipboard(&result);
+  return result;
+}
+
 mojo::Remote<mojom::blink::WorkerContentSettingsProxy>&
 ServiceWorkerContentSettingsProxy::GetService() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);

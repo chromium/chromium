@@ -1253,6 +1253,12 @@
       status: "stable",
     },
     {
+      // It is only enabled in extension environment.
+      name: "ClipboardOnExtensionServiceWorker",
+      base_feature: "none",
+      public: true,
+    },
+    {
       // Fix middle-click paste (kSelection buffer) from leaking images on
       // the kStandard buffer via the image fallback in GetFragmentFromClipboard.
       // crbug.com/497251066

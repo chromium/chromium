@@ -26,4 +26,10 @@ interface WorkerContentSettingsProxy {
   // Returns whether the worker is allowed access to the file system.
   [Sync]
   AllowFileSystem() => (bool result);
+
+  // Returns whether the worker is allowed to write to the system clipboard.
+  // Only extension service workers holding the clipboardWrite API permission
+  // are allowed; everything else gets false.
+  [Sync]
+  AllowWriteToClipboard() => (bool result);
 };

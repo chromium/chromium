@@ -9,3 +9,10 @@
 ] partial interface Navigator {
   [SecureContext, SameObject] readonly attribute Clipboard clipboard;
 };
+
+[
+  Exposed(ServiceWorker ClipboardOnExtensionServiceWorker),
+  ImplementedAs=Clipboard
+] partial interface WorkerNavigator {
+  [SecureContext, SameObject] readonly attribute Clipboard? clipboard;
+};

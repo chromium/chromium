@@ -89,7 +89,8 @@ class MODULES_EXPORT ClipboardItem final
   // Checks if a particular MIME type is supported by the Async Clipboard API.
   // `type` refers to a MIME type or a custom MIME type with a "web " prefix.
   // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboarditem-supports
-  static bool supports(const String& type);
+  static bool supports(const ExecutionContext* execution_context,
+                       const String& type);
 
   const HeapVector<std::pair<String, MemberScriptPromise<V8UnionBlobOrString>>>&
   GetRepresentations() const {

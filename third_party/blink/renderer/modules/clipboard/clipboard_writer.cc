@@ -149,13 +149,14 @@ class ClipboardHtmlWriter final : public ClipboardStringWriter {
  private:
   void WriteString(String html_string) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(IsMainThread());
 
-    LocalFrame* local_frame = promise_->GetLocalFrame();
     auto* execution_context = promise_->GetExecutionContext();
     if (!execution_context) {
       return;
     }
-    const KURL& url = local_frame->GetDocument()->Url();
+    const KURL& url = execution_context->Url();
+
     DOMParser* dom_parser = DOMParser::Create(promise_->GetScriptState());
 
     const Document* doc = dom_parser->ParseFromStringWithoutTrustedTypes(
@@ -180,11 +181,18 @@ class ClipboardSvgWriter final : public ClipboardStringWriter {
  private:
   void WriteString(String svg_string) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(IsMainThread());
+
+    auto* execution_context = promise_->GetExecutionContext();
+    if (!execution_context) {
+      return;
+    }
+    execution_context->CountUse(WebFeature::kClipboardSvgWrite);
+
     DOMParser* dom_parser = DOMParser::Create(promise_->GetScriptState());
     const Document* doc = dom_parser->ParseFromStringWithoutTrustedTypes(
         std::move(svg_string),
         V8SupportedType(V8SupportedType::Enum::kImageSvgXml));
-    promise_->GetExecutionContext()->CountUse(WebFeature::kClipboardSvgWrite);
     system_clipboard()->WriteSvg(
         CreateMarkup(doc, kIncludeNode, ResolveUrls::kAll));
     promise_->CompleteWriteRepresentation();
@@ -241,7 +249,7 @@ class ClipboardCustomFormatWriter final : public ClipboardWriter {
 ClipboardWriter* ClipboardWriter::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
                                          ClipboardPromise* promise) {
-  CHECK(ClipboardItem::supports(mime_type));
+  CHECK(ClipboardItem::supports(promise->GetExecutionContext(), mime_type));
   String web_custom_format = Clipboard::ParseWebCustomFormat(mime_type);
   if (!web_custom_format.empty()) {
     // We write the custom MIME type without the "web " prefix into the web
@@ -287,7 +295,7 @@ bool ClipboardWriter::CleanupAfterFileReaderFinishedAndCheckIfCanProceed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   self_keep_alive_.Clear();
   file_reader_ = nullptr;
-  return promise_->GetLocalFrame();
+  return promise_->GetExecutionContext();
 }
 
 void ClipboardWriter::WriteString(String text) {
@@ -296,7 +304,7 @@ void ClipboardWriter::WriteString(String text) {
 
 void ClipboardWriter::WriteToSystem(V8UnionBlobOrString* clipboard_item_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(promise_->GetLocalFrame());
+  CHECK(promise_->GetExecutionContext());
   if (clipboard_item_data->IsBlob()) {
     DCHECK(!file_reader_);
     file_reader_ = MakeGarbageCollected<FileReaderLoader>(

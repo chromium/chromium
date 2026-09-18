@@ -112,7 +112,7 @@ class MODULES_EXPORT ClipboardPromise final
     return ExecutionContextLifecycleObserver::GetExecutionContext();
   }
 
-  SystemClipboard* GetSystemClipboard() const;
+  SystemClipboard* GetSystemClipboard();
 
   // Same as GetSystemClipboard(), but rejects the promise before returning
   // null, so a detached frame doesn't leave the promise unsettled.
@@ -132,8 +132,6 @@ class MODULES_EXPORT ClipboardPromise final
   void Trace(Visitor* visitor) const override;
 
  private:
-  class ClipboardItemDataPromiseFulfill;
-  class ClipboardItemDataPromiseReject;
   void HandlePromiseWrite(
       HeapVector<Member<V8UnionBlobOrString>> clipboard_item_list);
   void WriteClipboardItemData(

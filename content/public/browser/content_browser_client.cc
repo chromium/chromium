@@ -648,6 +648,12 @@ bool ContentBrowserClient::AllowWorkerWebLocks(
   return true;
 }
 
+bool ContentBrowserClient::AllowWorkerWriteToClipboard(
+    const url::Origin& origin,
+    BrowserContext* browser_context) {
+  return false;
+}
+
 bool ContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
     content::BrowserContext* browser_context,
     const url::Origin& destination_origin,

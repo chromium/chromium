@@ -50,7 +50,8 @@ class ClipboardReaderResultHandler : public GarbageCollectedMixin {
 //     ClipboardReader::NextRead().
 class ClipboardReader : public GarbageCollected<ClipboardReader> {
  public:
-  static ClipboardReader* Create(SystemClipboard* system_clipboard,
+  static ClipboardReader* Create(ExecutionContext* execution_context,
+                                 SystemClipboard* system_clipboard,
                                  const String& mime_type,
                                  ClipboardReaderResultHandler* result_handler,
                                  bool sanitize_html);

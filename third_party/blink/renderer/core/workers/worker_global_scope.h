@@ -72,6 +72,7 @@ class FontFaceSet;
 struct GlobalScopeCreationParams;
 class InstalledScriptsManager;
 class OffscreenFontSelector;
+class SystemClipboard;
 class WorkerResourceTimingNotifier;
 class TrustedTypePolicyFactory;
 class V8UnionTrustedScriptURLOrUSVString;
@@ -124,6 +125,7 @@ class CORE_EXPORT WorkerGlobalScope
   WorkerGlobalScope* self() { return this; }
   WorkerLocation* location() const;
   WorkerNavigator* navigator() const override;
+  SystemClipboard* GetSystemClipboard() const;
   void close();
 
   String origin() const;
@@ -376,6 +378,7 @@ class CORE_EXPORT WorkerGlobalScope
 
   mutable Member<WorkerLocation> location_;
   mutable Member<WorkerNavigator> navigator_;
+  mutable Member<SystemClipboard> system_clipboard_;
   mutable Member<TrustedTypePolicyFactory> trusted_types_;
 
   raw_ptr<WorkerThread, UnprotectedInRelease | DanglingUntriaged> thread_;

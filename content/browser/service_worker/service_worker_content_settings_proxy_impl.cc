@@ -97,6 +97,19 @@ void ServiceWorkerContentSettingsProxyImpl::AllowWebLocks(
       storage_key_));
 }
 
+void ServiceWorkerContentSettingsProxyImpl::AllowWriteToClipboard(
+    AllowWriteToClipboardCallback callback) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  // May be shutting down.
+  if (!context_wrapper_->browser_context()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  std::move(callback).Run(
+      GetContentClient()->browser()->AllowWorkerWriteToClipboard(
+          origin_, context_wrapper_->browser_context()));
+}
+
 void ServiceWorkerContentSettingsProxyImpl::AllowFileSystem(
     AllowFileSystemCallback callback) {
   mojo::ReportBadMessage(

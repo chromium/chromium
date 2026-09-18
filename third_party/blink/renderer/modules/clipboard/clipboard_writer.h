@@ -83,10 +83,10 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
  protected:
   ClipboardWriter(SystemClipboard* system_clipboard, ClipboardPromise* promise);
 
-  // SystemClipboard is bound to LocalFrame, so the bound LocalFrame must still
-  // be valid by the time it's used.
+  // SystemClipboard is bound to ExecutionContext, so the bound ExecutionContext
+  // must still be valid by the time it's used.
   SystemClipboard* system_clipboard() {
-    DCHECK(promise_->GetLocalFrame());
+    DCHECK(promise_->GetExecutionContext());
     return system_clipboard_.Get();
   }
 

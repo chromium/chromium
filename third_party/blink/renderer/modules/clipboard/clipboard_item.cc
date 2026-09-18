@@ -11,12 +11,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -262,8 +263,9 @@ void ClipboardItem::ReadRepresentationFromClipboardReader(
     ResolveFormatData(format, nullptr);
     return;
   }
-  ClipboardReader* clipboard_reader = ClipboardReader::Create(
-      system_clipboard, format, this, sanitize_html_for_lazy_read_);
+  ClipboardReader* clipboard_reader =
+      ClipboardReader::Create(GetExecutionContext(), system_clipboard, format,
+                              this, sanitize_html_for_lazy_read_);
   if (!clipboard_reader) {
     ResolveFormatData(format, nullptr);
     return;
@@ -322,13 +324,22 @@ void ClipboardItem::ContextDestroyed() {
 }
 
 // static
-bool ClipboardItem::supports(const String& type) {
+bool ClipboardItem::supports(const ExecutionContext* execution_context,
+                             const String& type) {
   if (type.length() >= mojom::blink::ClipboardHost::kMaxFormatSize) {
     return false;
   }
 
   if (!Clipboard::ParseWebCustomFormat(type).empty()) {
     return true;
+  }
+
+  // Writing html or svg parses the string with a DOMParser, which needs the
+  // main thread, so a worker can never produce either. Say so here instead of
+  // letting a caller build a ClipboardItem and find out when write() rejects.
+  if (execution_context && execution_context->IsWorkerGlobalScope() &&
+      (type == ui::kMimeTypeHtml || type == ui::kMimeTypeSvg)) {
+    return false;
   }
 
   // TODO(https://crbug.com/1029857): Add support for other types.

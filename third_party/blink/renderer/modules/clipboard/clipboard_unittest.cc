@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,12 +31,16 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
 #include "third_party/blink/renderer/modules/clipboard/mock_clipboard_permission_service.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
 
@@ -1397,6 +1402,45 @@ TEST_F(ClipboardTest, GlobalSelectionPasteEventReadTextRequiresPermission) {
 
   executionContext->GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::PermissionService::Name_, {});
+}
+
+// ClipboardItem::supports() reports what write() will actually accept. A worker
+// cannot write html or svg, because building either runs a DOMParser on the
+// main thread, so supports() has to say no there even though the spec says it
+// returns true for html.
+TEST_F(ClipboardTest, SupportsRejectsHtmlAndSvgInWorkers) {
+  ExecutionContext* window_context = GetFrame().DomWindow();
+  EXPECT_TRUE(ClipboardItem::supports(window_context, ui::kMimeTypeHtml));
+  EXPECT_TRUE(ClipboardItem::supports(window_context, ui::kMimeTypeSvg));
+
+  WorkerReportingProxy proxy;
+  WorkerThreadForTest worker_thread(proxy);
+  worker_thread.StartWithSourceCode(window_context->GetSecurityOrigin(),
+                                    "/* no worker script */");
+
+  scoped_refptr<base::SingleThreadTaskRunner> worker_task_runner =
+      worker_thread.GetWorkerBackingThread().BackingThread().GetTaskRunner();
+  PostCrossThreadTask(
+      *worker_task_runner, FROM_HERE,
+      CrossThreadBindOnce(
+          [](WorkerThread* worker_thread) {
+            ExecutionContext* context = worker_thread->GlobalScope();
+            EXPECT_FALSE(ClipboardItem::supports(context, ui::kMimeTypeHtml));
+            EXPECT_FALSE(ClipboardItem::supports(context, ui::kMimeTypeSvg));
+            EXPECT_TRUE(
+                ClipboardItem::supports(context, ui::kMimeTypePlainText));
+            EXPECT_TRUE(ClipboardItem::supports(context, ui::kMimeTypePng));
+          },
+          CrossThreadUnretained(&worker_thread)));
+
+  base::WaitableEvent done;
+  PostCrossThreadTask(*worker_task_runner, FROM_HERE,
+                      CrossThreadBindOnce(&base::WaitableEvent::Signal,
+                                          CrossThreadUnretained(&done)));
+  done.Wait();
+
+  worker_thread.Terminate();
+  worker_thread.WaitForShutdownForTesting();
 }
 
 }  // namespace blink

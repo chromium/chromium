@@ -7,7 +7,7 @@ typedef Promise<(DOMString or Blob)> ClipboardItemData;
 
 [
   SecureContext,
-  Exposed=Window
+  Exposed(Window StableBlinkFeatures, ServiceWorker ClipboardOnExtensionServiceWorker)
 ] interface ClipboardItem {
   [RaisesException] constructor(record<DOMString, ClipboardItemData> items);
   readonly attribute FrozenArray<DOMString> types;
@@ -17,5 +17,5 @@ typedef Promise<(DOMString or Blob)> ClipboardItemData;
     RaisesException
   ] Promise<Blob> getType(DOMString type);
 
-  [Measure] static boolean supports(DOMString type);
+  [Measure, CallWith=ExecutionContext] static boolean supports(DOMString type);
 };

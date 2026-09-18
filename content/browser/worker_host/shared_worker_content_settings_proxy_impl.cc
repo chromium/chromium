@@ -50,6 +50,13 @@ void SharedWorkerContentSettingsProxyImpl::AllowWebLocks(
   }
 }
 
+void SharedWorkerContentSettingsProxyImpl::AllowWriteToClipboard(
+    AllowWriteToClipboardCallback callback) {
+  // Clipboard write is only reachable from extension service workers, which
+  // are not shared workers.
+  std::move(callback).Run(false);
+}
+
 void SharedWorkerContentSettingsProxyImpl::AllowFileSystem(
     AllowFileSystemCallback callback) {
   if (!origin_.opaque()) {

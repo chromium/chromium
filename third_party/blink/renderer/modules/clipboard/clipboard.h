@@ -16,18 +16,18 @@
 namespace blink {
 
 class ExceptionState;
-class Navigator;
+class NavigatorBase;
 class ScriptState;
 class ClipboardReadOptions;
 
 class MODULES_EXPORT Clipboard : public EventTarget,
-                                 public Supplement<Navigator> {
+                                 public Supplement<NavigatorBase> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static const char kSupplementName[];
-  static Clipboard* clipboard(Navigator&);
-  explicit Clipboard(Navigator&);
+  static Clipboard* clipboard(NavigatorBase&);
+  explicit Clipboard(NavigatorBase&);
 
   Clipboard(const Clipboard&) = delete;
   Clipboard& operator=(const Clipboard&) = delete;

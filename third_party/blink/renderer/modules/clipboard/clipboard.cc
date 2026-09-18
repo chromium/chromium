@@ -12,10 +12,12 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
+#include "third_party/blink/renderer/modules/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -26,16 +28,29 @@ namespace blink {
 // static
 const char Clipboard::kSupplementName[] = "Clipboard";
 
-Clipboard* Clipboard::clipboard(Navigator& navigator) {
-  Clipboard* clipboard = Supplement<Navigator>::From<Clipboard>(navigator);
+Clipboard* Clipboard::clipboard(NavigatorBase& navigator) {
+  Clipboard* clipboard = Supplement<NavigatorBase>::From<Clipboard>(navigator);
   if (!clipboard) {
+    // navigator.clipboard is only initialized in a worker if it is an extension
+    // ServiceWorkerGlobalScope.
+    ExecutionContext* context = navigator.GetExecutionContext();
+    if (!context) {
+      return nullptr;
+    }
+    if (context->IsWorkerGlobalScope() &&
+        (!context->IsServiceWorkerGlobalScope() ||
+         !IsExtensionContext(context))) {
+      return nullptr;
+    }
+
     clipboard = MakeGarbageCollected<Clipboard>(navigator);
     ProvideTo(navigator, clipboard);
   }
   return clipboard;
 }
 
-Clipboard::Clipboard(Navigator& navigator) : Supplement<Navigator>(navigator) {}
+Clipboard::Clipboard(NavigatorBase& navigator)
+    : Supplement<NavigatorBase>(navigator) {}
 
 ScriptPromise<IDLSequence<ClipboardItem>> Clipboard::read(
     ScriptState* script_state,
@@ -63,15 +78,19 @@ void Clipboard::AddedEventListener(
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kClipboardChangeEventAddListener);
 
-  Navigator& navigator = *GetSupplementable();
-  LocalDOMWindow* window = navigator.DomWindow();
+  if (!GetExecutionContext() || !GetExecutionContext()->IsWindow()) {
+    return;
+  }
+
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (!window) {
     return;
   }
 
   if (!clipboard_change_event_controller_) {
     clipboard_change_event_controller_ =
-        MakeGarbageCollected<ClipboardChangeEventController>(navigator, this);
+        MakeGarbageCollected<ClipboardChangeEventController>(
+            static_cast<Navigator&>(*GetSupplementable()), this);
   }
 
   // Defer ClipboardHost bind until prerender activation; the interface is
@@ -140,7 +159,7 @@ const AtomicString& Clipboard::InterfaceName() const {
 }
 
 ExecutionContext* Clipboard::GetExecutionContext() const {
-  return GetSupplementable()->DomWindow();
+  return GetSupplementable()->GetExecutionContext();
 }
 
 // static
@@ -162,7 +181,7 @@ String Clipboard::ParseWebCustomFormat(const String& format) {
 
 void Clipboard::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
-  Supplement<Navigator>::Trace(visitor);
+  Supplement<NavigatorBase>::Trace(visitor);
   visitor->Trace(clipboard_change_event_controller_);
 }
 
