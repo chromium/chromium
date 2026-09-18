@@ -45,9 +45,10 @@ constexpr char kMediumTitleScreenshot[] =
     "ash_notification_multiline_medium_title";
 constexpr char kLongTitleScreenshot[] = "ash_notification_multiline_long_title";
 
-const ui::ImageModel test_green_icon = ui::ImageModel::FromImageSkia(
-    CreateSolidColorTestImage(gfx::Size(/*width=*/48, /*height=*/48),
-                              SK_ColorGREEN));
+ui::ImageModel GetTestGreenIcon() {
+  return ui::ImageModel::FromImageSkia(CreateSolidColorTestImage(
+      gfx::Size(/*width=*/48, /*height=*/48), SK_ColorGREEN));
+}
 }  // namespace
 
 class AshPixelTestBase : public AshTestBase {
@@ -151,7 +152,7 @@ TEST_P(AshNotificationViewPixelTest, DISABLED_CollapsedNoMessage) {
   // Create a notification with no message, and open the notification center
   // bubble to view it.
   const std::string id = test_api()->AddCustomNotification(
-      u"Notification title", u"", test_green_icon);
+      u"Notification title", u"", GetTestGreenIcon());
   test_api()->ToggleBubble();
 
   // Make sure the notification is collapsed.
@@ -405,7 +406,7 @@ TEST_P(AshNotificationViewTitlePixelTest, DISABLED_NotificationTitleTest) {
   const std::string title = GetTitle();
 
   const std::string id = test_api()->AddCustomNotification(
-      base::UTF8ToUTF16(title), u"Notification Content", test_green_icon);
+      base::UTF8ToUTF16(title), u"Notification Content", GetTestGreenIcon());
 
   test_api()->ToggleBubble();
 
@@ -469,7 +470,7 @@ TEST_P(AshNotificationViewCollapsedLongTextPixelTest,
   const std::string id = test_api()->AddCustomNotification(
       base::UTF8ToUTF16(std::string(kLongTitleString)),
       base::UTF8ToUTF16(std::string(kLongMessageString)),
-      /*icon=*/HasIcon() ? test_green_icon : ui::ImageModel(),
+      /*icon=*/HasIcon() ? GetTestGreenIcon() : ui::ImageModel(),
       /*display_source=*/u"", /*url=*/GURL(),
       /*notifier_id=*/message_center::NotifierId(), optional_fields);
   test_api()->AddNotification();

@@ -26,11 +26,11 @@ namespace ash {
 namespace {
 
 // Test constants
-const std::u16string kTestText = u"text";
-const std::u16string kTestLongText =
+constexpr char16_t kTestText[] = u"text";
+constexpr char16_t kTestLongText[] =
     u"Nudge body text should be clear, short and succint (80 characters "
     u"recommended)";
-const std::u16string kTestButtonText = u"Button";
+constexpr char16_t kTestButtonText[] = u"Button";
 const gfx::VectorIcon* kTestIcon = &kSystemMenuBusinessIcon;
 
 }  // namespace

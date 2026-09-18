@@ -37,9 +37,9 @@ AnchoredNudgeData CreateBaseNudgeData() {
 }
 
 // Nudge constants
-const std::u16string button_text = u"Button";
-const std::u16string title_text = u"Title text";
-const std::u16string long_body_text =
+constexpr char16_t button_text[] = u"Button";
+constexpr char16_t title_text[] = u"Title text";
+constexpr char16_t long_body_text[] =
     u"Nudge body text should be clear, short and succinct (80 characters "
     u"recommended)";
 

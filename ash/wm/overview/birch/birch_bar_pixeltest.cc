@@ -19,8 +19,8 @@ namespace ash {
 namespace {
 
 std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
-  static const GURL kTestURL("https://www.example.com");
-  static const GURL kTestFaviconURL("https://www.favicon.com");
+  const GURL kTestURL("https://www.example.com");
+  const GURL kTestFaviconURL("https://www.favicon.com");
 
   std::vector<std::unique_ptr<BirchItem>> items;
   switch (type) {
@@ -155,22 +155,22 @@ class BirchBarPixelTest : public AshTestBase,
   std::unique_ptr<TestImageDownloader> image_downloader_;
 };
 
-const TestParams kTestParams[] = {
-    {.types = {BirchItemType::kCalendar, BirchItemType::kAttachment,
-               BirchItemType::kFile},
-     .name = "Calendar_Attachment_File"},
-    {.types = {BirchItemType::kTab, BirchItemType::kWeather,
-               BirchItemType::kReleaseNotes, BirchItemType::kSelfShare},
-
-     .name = "Tab_Weather_ReleaseNotes_SelfShare"},
-    {.types = {BirchItemType::kMostVisited, BirchItemType::kLastActive,
-               BirchItemType::kLostMedia},
-     .name = "MostVisited_LastActive_LostMedia"}};
+std::vector<TestParams> GetTestParams() {
+  return {{.types = {BirchItemType::kCalendar, BirchItemType::kAttachment,
+                     BirchItemType::kFile},
+           .name = "Calendar_Attachment_File"},
+          {.types = {BirchItemType::kTab, BirchItemType::kWeather,
+                     BirchItemType::kReleaseNotes, BirchItemType::kSelfShare},
+           .name = "Tab_Weather_ReleaseNotes_SelfShare"},
+          {.types = {BirchItemType::kMostVisited, BirchItemType::kLastActive,
+                     BirchItemType::kLostMedia},
+           .name = "MostVisited_LastActive_LostMedia"}};
+}
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     BirchBarPixelTest,
-    testing::ValuesIn(kTestParams),
+    testing::ValuesIn(GetTestParams()),
     [](const testing::TestParamInfo<BirchBarPixelTest::ParamType>& info) {
       return info.param.name;
     });

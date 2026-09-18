@@ -27,10 +27,10 @@ namespace ash {
 
 namespace {
 
-const std::u16string kPhoneName = u"Fake Phone Name";
-const ShelfAlignment kShelfAlignments[] = {
+constexpr char16_t kPhoneName[] = u"Fake Phone Name";
+constexpr ShelfAlignment kShelfAlignments[] = {
     ShelfAlignment::kLeft, ShelfAlignment::kBottom, ShelfAlignment::kRight};
-const phonehub::FeatureStatus kFeatureStatuses[] = {
+constexpr phonehub::FeatureStatus kFeatureStatuses[] = {
     phonehub::FeatureStatus::kEnabledAndConnecting,
     phonehub::FeatureStatus::kEnabledAndConnected,
     phonehub::FeatureStatus::kEnabledButDisconnected,

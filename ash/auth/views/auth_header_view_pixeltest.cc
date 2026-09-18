@@ -26,9 +26,9 @@ namespace {
 constexpr char kUserEmail[] = "user1@gmail.com";
 constexpr GaiaId::Literal kFakeGaia("fake_gaia");
 
-const std::u16string kTitle(u"Auth header view pixeltest title");
-const std::u16string kErrorTitle(u"Auth header view pixeltest error");
-const std::u16string kDescription(u"Auth header view pixeltest description");
+constexpr char16_t kTitle[] = u"Auth header view pixeltest title";
+constexpr char16_t kErrorTitle[] = u"Auth header view pixeltest error";
+constexpr char16_t kDescription[] = u"Auth header view pixeltest description";
 
 class AuthHeaderPixelTest : public AshTestBase {
  public:
