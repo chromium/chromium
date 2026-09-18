@@ -169,7 +169,7 @@ void ReceiveMessagesExpress::StartReceivingMessages(
     mojo::PendingRemote<sharing::mojom::ReceiveMessagesSession>
         pending_remote_for_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!url_loader_);
+  CHECK(!url_loader_, base::NotFatalUntil::M160);
   CD_LOG(VERBOSE, Feature::NS)
       << "ReceiveMessagesExpress::StartReceivingMessages() called.";
 
@@ -192,7 +192,7 @@ void ReceiveMessagesExpress::DoStartReceivingMessages(
         ReceiveMessagesExpressRequest& request,
     const std::string& oauth_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(url_loader_ == nullptr);
+  CHECK(url_loader_ == nullptr, base::NotFatalUntil::M160);
 
   base::UmaHistogramBoolean(
       "Nearby.Connections.InstantMessaging.ReceiveExpress."

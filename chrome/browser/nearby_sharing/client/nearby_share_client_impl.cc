@@ -319,7 +319,8 @@ void NearbyShareClientImpl::OnAccessTokenFetched(
 
   switch (request_type) {
     case RequestType::kGet:
-      DCHECK(request_as_query_parameters && !serialized_request);
+      CHECK(request_as_query_parameters && !serialized_request,
+            base::NotFatalUntil::M160);
       api_call_flow_->StartGetRequest(
           request_url_, *request_as_query_parameters, url_loader_factory_,
           access_token_used_,
@@ -330,7 +331,8 @@ void NearbyShareClientImpl::OnAccessTokenFetched(
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     case RequestType::kPost:
-      DCHECK(serialized_request && !request_as_query_parameters);
+      CHECK(serialized_request && !request_as_query_parameters,
+            base::NotFatalUntil::M160);
       api_call_flow_->StartPostRequest(
           request_url_, *serialized_request, url_loader_factory_,
           access_token_used_,
@@ -341,7 +343,8 @@ void NearbyShareClientImpl::OnAccessTokenFetched(
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     case RequestType::kPatch:
-      DCHECK(serialized_request && !request_as_query_parameters);
+      CHECK(serialized_request && !request_as_query_parameters,
+            base::NotFatalUntil::M160);
       api_call_flow_->StartPatchRequest(
           request_url_, *serialized_request, url_loader_factory_,
           access_token_used_,

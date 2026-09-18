@@ -111,7 +111,8 @@ std::string SaltsToString(
 
 std::set<std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>>
 StringToSalts(const std::string& str) {
-  DCHECK(str.size() % (2 * kNearbyShareNumBytesMetadataEncryptionKeySalt) == 0);
+  CHECK(str.size() % (2 * kNearbyShareNumBytesMetadataEncryptionKeySalt) == 0,
+        base::NotFatalUntil::M160);
   std::vector<uint8_t> salt_bytes;
   base::HexStringToBytes(str, &salt_bytes);
   std::set<std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>>
@@ -165,7 +166,8 @@ NearbySharePrivateCertificate::NearbySharePrivateCertificate(
       unencrypted_metadata_(std::move(unencrypted_metadata)) {
   crypto::RandBytes(secret_key_);
   id_ = crypto::hash::Sha256(secret_key_);
-  DCHECK_NE(visibility, nearby_share::mojom::Visibility::kNoOne);
+  CHECK_NE(visibility, nearby_share::mojom::Visibility::kNoOne,
+           base::NotFatalUntil::M160);
 }
 
 NearbySharePrivateCertificate::NearbySharePrivateCertificate(
@@ -186,7 +188,8 @@ NearbySharePrivateCertificate::NearbySharePrivateCertificate(
       private_key_(std::move(private_key)),
       unencrypted_metadata_(std::move(unencrypted_metadata)),
       consumed_salts_(std::move(consumed_salts)) {
-  DCHECK_NE(visibility, nearby_share::mojom::Visibility::kNoOne);
+  CHECK_NE(visibility, nearby_share::mojom::Visibility::kNoOne,
+           base::NotFatalUntil::M160);
   base::span(secret_key_).copy_from(secret_key);
   base::span(id_).copy_from(id);
   base::span(metadata_encryption_key_).copy_from(metadata_encryption_key);

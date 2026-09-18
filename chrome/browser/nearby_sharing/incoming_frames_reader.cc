@@ -26,8 +26,8 @@ IncomingFramesReader::IncomingFramesReader(
     ash::nearby::NearbyProcessManager* process_manager,
     NearbyConnection* connection)
     : process_manager_(process_manager), connection_(connection) {
-  DCHECK(process_manager);
-  DCHECK(connection);
+  CHECK(process_manager, base::NotFatalUntil::M160);
+  CHECK(connection, base::NotFatalUntil::M160);
 }
 
 IncomingFramesReader::~IncomingFramesReader() = default;
@@ -36,8 +36,8 @@ void IncomingFramesReader::ReadFrame(
     base::OnceCallback<void(std::optional<sharing::mojom::V1FramePtr>)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!callback_);
-  DCHECK(!is_process_stopped_);
+  CHECK(!callback_, base::NotFatalUntil::M160);
+  CHECK(!is_process_stopped_, base::NotFatalUntil::M160);
 
   callback_ = std::move(callback);
   frame_type_ = std::nullopt;
@@ -59,8 +59,8 @@ void IncomingFramesReader::ReadFrame(
         callback,
     base::TimeDelta timeout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!callback_);
-  DCHECK(!is_process_stopped_);
+  CHECK(!callback_, base::NotFatalUntil::M160);
+  CHECK(!is_process_stopped_, base::NotFatalUntil::M160);
   if (!connection_) {
     std::move(callback).Run(std::nullopt);
     return;

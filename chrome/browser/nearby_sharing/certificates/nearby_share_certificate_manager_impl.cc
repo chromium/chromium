@@ -267,7 +267,7 @@ NearbyShareCertificateManagerImpl::Factory::Create(
     leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
     NearbyShareClientFactory* client_factory,
     const base::Clock* clock) {
-  DCHECK(clock);
+  CHECK(clock, base::NotFatalUntil::M160);
 
   if (test_factory_) {
     return test_factory_->CreateInstance(
@@ -531,7 +531,7 @@ NearbyShareCertificateManagerImpl::NextPrivateCertificateExpirationTime() {
 
   std::optional<base::Time> expiration_time =
       certificate_storage_->NextPrivateCertificateExpirationTime();
-  DCHECK(expiration_time);
+  CHECK(expiration_time, base::NotFatalUntil::M160);
 
   return *expiration_time;
 }
@@ -692,7 +692,7 @@ void NearbyShareCertificateManagerImpl::OnDownloadPublicCertificatesRequest(
     std::optional<std::string> page_token,
     size_t page_number,
     size_t certificate_count) {
-  DCHECK(!client_);
+  CHECK(!client_, base::NotFatalUntil::M160);
 
   nearby::sharing::proto::ListPublicCertificatesRequest request;
   request.set_parent(kDeviceIdPrefix + local_device_data_manager_->GetId());

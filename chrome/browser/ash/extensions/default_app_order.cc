@@ -272,7 +272,7 @@ ExternalLoader::ParsedAppOrder ExternalLoader::ReadAndParseAppOrder(
 
 ExternalLoader::ExternalLoader(std::string locale, bool async) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!loader_instance);
+  CHECK(!loader_instance, base::NotFatalUntil::M160);
   loader_instance = this;
 
   base::FilePath ordinals_file;
@@ -293,7 +293,7 @@ ExternalLoader::ExternalLoader(std::string locale, bool async) {
 
 ExternalLoader::~ExternalLoader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(loader_instance, this);
+  CHECK_EQ(loader_instance, this, base::NotFatalUntil::M160);
   loader_instance = nullptr;
 }
 

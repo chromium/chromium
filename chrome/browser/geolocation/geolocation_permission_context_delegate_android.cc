@@ -41,11 +41,11 @@ bool GeolocationPermissionContextDelegateAndroid::DecidePermission(
     permissions::GeolocationPermissionContext* context) {
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
       request_data.id.global_render_frame_host_id());
-  DCHECK(rfh);
+  CHECK(rfh, base::NotFatalUntil::M160);
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M160);
 
   if (web_contents->GetDelegate() &&
       web_contents->GetDelegate()->GetInstalledWebappGeolocationContext()) {

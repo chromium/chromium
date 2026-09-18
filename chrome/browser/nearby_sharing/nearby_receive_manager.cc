@@ -10,7 +10,7 @@
 NearbyReceiveManager::NearbyReceiveManager(
     NearbySharingService* nearby_sharing_service)
     : nearby_sharing_service_(nearby_sharing_service) {
-  DCHECK(nearby_sharing_service_);
+  CHECK(nearby_sharing_service_, base::NotFatalUntil::M160);
   nearby_sharing_service_->AddObserver(this);
 }
 

@@ -19,7 +19,7 @@ NearbyShareContactDownloader::NearbyShareContactDownloader(
 NearbyShareContactDownloader::~NearbyShareContactDownloader() = default;
 
 void NearbyShareContactDownloader::Run() {
-  DCHECK(!was_run_);
+  CHECK(!was_run_, base::NotFatalUntil::M160);
   was_run_ = true;
 
   OnRun();
@@ -28,16 +28,16 @@ void NearbyShareContactDownloader::Run() {
 void NearbyShareContactDownloader::Succeed(
     std::vector<nearby::sharing::proto::ContactRecord> contacts,
     uint32_t num_unreachable_contacts_filtered_out) {
-  DCHECK(was_run_);
-  DCHECK(success_callback_);
+  CHECK(was_run_, base::NotFatalUntil::M160);
+  CHECK(success_callback_, base::NotFatalUntil::M160);
 
   std::move(success_callback_)
       .Run(std::move(contacts), num_unreachable_contacts_filtered_out);
 }
 
 void NearbyShareContactDownloader::Fail() {
-  DCHECK(was_run_);
-  DCHECK(failure_callback_);
+  CHECK(was_run_, base::NotFatalUntil::M160);
+  CHECK(failure_callback_, base::NotFatalUntil::M160);
 
   std::move(failure_callback_).Run();
 }

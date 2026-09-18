@@ -50,7 +50,7 @@ constexpr base::TimeDelta kDeviceDataDownloadPeriod = base::Hours(12);
 std::string GetTruncatedName(std::string name, size_t overflow_length) {
   std::string ellipsis("...");
   size_t max_name_length = name.length() - overflow_length - ellipsis.length();
-  DCHECK_GT(max_name_length, 0u);
+  CHECK_GT(max_name_length, 0u, base::NotFatalUntil::M160);
   std::string truncated;
   base::TruncateUTF8ToByteSize(name, max_name_length, &truncated);
   truncated.append(ellipsis);

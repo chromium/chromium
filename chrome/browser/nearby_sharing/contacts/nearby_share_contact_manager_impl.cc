@@ -284,7 +284,7 @@ void NearbyShareContactManagerImpl::OnContactsDownloadRequested() {
   CD_LOG(VERBOSE, Feature::NS)
       << __func__ << ": Nearby Share contacts download requested.";
 
-  DCHECK(!contact_downloader_);
+  CHECK(!contact_downloader_, base::NotFatalUntil::M160);
   contact_downloader_ = NearbyShareContactDownloaderImpl::Factory::Create(
       local_device_data_manager_->GetId(), kContactDownloadRpcTimeout,
       http_client_factory_,

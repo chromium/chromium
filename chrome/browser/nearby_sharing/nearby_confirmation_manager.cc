@@ -27,25 +27,25 @@ NearbyConfirmationManager::NearbyConfirmationManager(
     NearbySharingService* nearby_service,
     ShareTarget share_target)
     : nearby_service_(nearby_service), share_target_(std::move(share_target)) {
-  DCHECK(nearby_service_);
+  CHECK(nearby_service_, base::NotFatalUntil::M160);
 }
 
 NearbyConfirmationManager::~NearbyConfirmationManager() = default;
 
 void NearbyConfirmationManager::Accept(AcceptCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   nearby_service_->Accept(share_target_,
                           ToStatusCodesCallback(std::move(callback)));
 }
 
 void NearbyConfirmationManager::Reject(RejectCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   nearby_service_->Reject(share_target_,
                           ToStatusCodesCallback(std::move(callback)));
 }
 
 void NearbyConfirmationManager::Cancel(CancelCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   nearby_service_->Cancel(share_target_,
                           ToStatusCodesCallback(std::move(callback)));
 }

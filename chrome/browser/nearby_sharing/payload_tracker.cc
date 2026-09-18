@@ -219,7 +219,8 @@ double PayloadTracker::CalculateProgressPercent() const {
 
 void PayloadTracker::EmitFinalMetrics(
     nearby::connections::mojom::PayloadStatus status) const {
-  DCHECK_NE(status, nearby::connections::mojom::PayloadStatus::kInProgress);
+  CHECK_NE(status, nearby::connections::mojom::PayloadStatus::kInProgress,
+           base::NotFatalUntil::M160);
   RecordNearbySharePayloadFinalStatusMetric(status, last_upgraded_medium_);
   RecordNearbySharePayloadMediumMetric(
       last_upgraded_medium_, share_target_.type, GetTotalTransferred());

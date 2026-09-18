@@ -21,7 +21,7 @@ NearbyConnectionsTcpSocketFactory::ConnectTask::ConnectTask(
     mojo::PendingRemote<network::mojom::SocketObserver> observer,
     CreateTCPConnectedSocketCallback callback)
     : callback_(std::move(callback)) {
-  DCHECK(network_context);
+  CHECK(network_context, base::NotFatalUntil::M160);
   task_ = base::BindOnce(
       &network::mojom::NetworkContext::CreateTCPConnectedSocket,
       base::Unretained(network_context), local_addr, remote_addr_list,
@@ -152,6 +152,6 @@ void NearbyConnectionsTcpSocketFactory::OnTcpConnectedSocketCreated(
     mojo::ScopedDataPipeProducerHandle send_stream) {
   std::move(callback).Run(result, local_addr, peer_addr,
                           std::move(receive_stream), std::move(send_stream));
-  DCHECK(connect_tasks_.contains(task_id));
+  CHECK(connect_tasks_.contains(task_id), base::NotFatalUntil::M160);
   connect_tasks_.erase(task_id);
 }

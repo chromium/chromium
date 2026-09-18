@@ -212,8 +212,8 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
   }
 
   ~FileManagerPrivateApiTest() override {
-    DCHECK(!disk_mount_manager_mock_);
-    DCHECK(!event_router_);
+    CHECK(!disk_mount_manager_mock_, base::NotFatalUntil::M160);
+    CHECK(!event_router_, base::NotFatalUntil::M160);
   }
 
   bool SetUpUserDataDirectory() override {

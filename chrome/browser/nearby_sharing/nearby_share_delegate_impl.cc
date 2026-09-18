@@ -78,7 +78,7 @@ bool NearbyShareDelegateImpl::IsHighVisibilityOn() {
 }
 
 bool NearbyShareDelegateImpl::IsOnboardingComplete() {
-  DCHECK(nearby_share_settings_);
+  CHECK(nearby_share_settings_, base::NotFatalUntil::M160);
   return nearby_share_settings_->IsOnboardingComplete();
 }
 
@@ -163,8 +163,8 @@ void NearbyShareDelegateImpl::OnAllowedContactsChanged(
 void NearbyShareDelegateImpl::OnIsOnboardingCompleteChanged(bool is_complete) {}
 
 void NearbyShareDelegateImpl::AddNearbyShareServiceObservers() {
-  DCHECK(nearby_share_service_);
-  DCHECK(!nearby_share_service_->HasObserver(this));
+  CHECK(nearby_share_service_, base::NotFatalUntil::M160);
+  CHECK(!nearby_share_service_->HasObserver(this), base::NotFatalUntil::M160);
   nearby_share_service_->AddObserver(this);
   if (nearby_share_settings_) {
     nearby_share_settings_->AddSettingsObserver(
@@ -173,8 +173,8 @@ void NearbyShareDelegateImpl::AddNearbyShareServiceObservers() {
 }
 
 void NearbyShareDelegateImpl::RemoveNearbyShareServiceObservers() {
-  DCHECK(nearby_share_service_);
-  DCHECK(nearby_share_service_->HasObserver(this));
+  CHECK(nearby_share_service_, base::NotFatalUntil::M160);
+  CHECK(nearby_share_service_->HasObserver(this), base::NotFatalUntil::M160);
   nearby_share_service_->RemoveObserver(this);
 }
 
@@ -203,7 +203,7 @@ void NearbyShareDelegateImpl::OnShutdown() {
 }
 
 void NearbyShareDelegateImpl::ShowNearbyShareSettings() const {
-  DCHECK(nearby_share_service_);
+  CHECK(nearby_share_service_, base::NotFatalUntil::M160);
 
   std::string query_param =
       nearby_share_service_->GetSettings()->IsOnboardingComplete()
@@ -213,7 +213,7 @@ void NearbyShareDelegateImpl::ShowNearbyShareSettings() const {
 }
 
 void NearbyShareDelegateImpl::ShowOnboardingPage() const {
-  DCHECK(settings_opener_);
+  CHECK(settings_opener_, base::NotFatalUntil::M160);
   settings_opener_->ShowSettingsPage(kStartOnboardingQueryParam);
 }
 
@@ -267,6 +267,6 @@ std::u16string NearbyShareDelegateImpl::GetPlaceholderFeatureName() const {
 
 void NearbyShareDelegateImpl::SetVisibility(
     ::nearby_share::mojom::Visibility visibility) {
-  DCHECK(nearby_share_settings_);
+  CHECK(nearby_share_settings_, base::NotFatalUntil::M160);
   return nearby_share_settings_->SetVisibility(visibility);
 }

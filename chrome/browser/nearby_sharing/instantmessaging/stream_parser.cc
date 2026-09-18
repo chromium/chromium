@@ -47,8 +47,8 @@ StreamParser::Append(std::string_view data) {
                                        data.size() + kReadBufferSpareCapacity);
   }
 
-  DCHECK_GE(unparsed_data_buffer_->RemainingCapacity(),
-            static_cast<int>(data.size()));
+  CHECK_GE(unparsed_data_buffer_->RemainingCapacity(),
+           static_cast<int>(data.size()), base::NotFatalUntil::M160);
   unparsed_data_buffer_->span().copy_prefix_from(base::as_byte_span(data));
   unparsed_data_buffer_->set_offset(unparsed_data_buffer_->offset() +
                                     data.size());
@@ -58,7 +58,7 @@ StreamParser::Append(std::string_view data) {
 std::vector<
     chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse>
 StreamParser::ParseStreamIfAvailable() {
-  DCHECK(unparsed_data_buffer_);
+  CHECK(unparsed_data_buffer_, base::NotFatalUntil::M160);
   std::vector<
       chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse>
       receive_messages_responses;

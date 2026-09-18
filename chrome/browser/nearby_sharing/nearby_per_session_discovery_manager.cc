@@ -293,8 +293,8 @@ void NearbyPerSessionDiscoveryManager::StopDiscovery(
 void NearbyPerSessionDiscoveryManager::SelectShareTarget(
     const base::UnguessableToken& share_target_id,
     SelectShareTargetCallback callback) {
-  DCHECK(share_target_listener_.is_bound());
-  DCHECK(!transfer_update_listener_.is_bound());
+  CHECK(share_target_listener_.is_bound(), base::NotFatalUntil::M160);
+  CHECK(!transfer_update_listener_.is_bound(), base::NotFatalUntil::M160);
 
   auto iter = discovered_share_targets_.find(share_target_id);
   bool look_up_share_target_success = iter != discovered_share_targets_.end();

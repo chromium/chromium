@@ -555,7 +555,7 @@ void XuCameraService::GetDevicePath(
     const content::GlobalRenderFrameHostId& host_id,
     base::OnceCallback<void(const std::optional<std::string>&)> callback)
     const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (id->is_dev_path()) {
     std::move(callback).Run(id->get_dev_path());

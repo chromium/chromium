@@ -94,7 +94,7 @@ void BuildLocationHint(tachyon_proto::LocationHint* location_hint,
 }
 
 void BuildId(tachyon_proto::Id* req_id, const std::string& id) {
-  DCHECK(req_id);
+  CHECK(req_id, base::NotFatalUntil::M160);
   req_id->set_id(id);
   req_id->set_app(kAppName);
   req_id->set_type(kTachyonIdType);
@@ -104,7 +104,7 @@ void BuildId(tachyon_proto::Id* req_id, const std::string& id) {
 }
 
 void BuildHeader(tachyon_proto::RequestHeader* header) {
-  DCHECK(header);
+  CHECK(header, base::NotFatalUntil::M160);
   header->set_request_id(base::UnguessableToken::Create().ToString());
   header->set_app(kAppName);
   BuildId(header->mutable_requester_id(), std::string());
@@ -150,7 +150,7 @@ void RecordTokenFetchSuccessMetric(bool token_fetch_successful) {
 
 bool IsLoaderSuccessful(const network::SimpleURLLoader* loader,
                         const std::string& request_id) {
-  DCHECK(loader);
+  CHECK(loader, base::NotFatalUntil::M160);
   ash::nearby::NearbyHttpStatus status =
       ash::nearby::NearbyHttpStatus(loader->NetError(), loader->ResponseInfo());
 

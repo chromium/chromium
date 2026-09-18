@@ -70,9 +70,9 @@ PairedKeyVerificationRunner::PairedKeyVerificationRunner(
       restrict_to_contacts_(restrict_to_contacts),
       frames_reader_(frames_reader),
       read_frame_timeout_(read_frame_timeout) {
-  DCHECK(connection);
-  DCHECK(certificate_manager);
-  DCHECK(frames_reader);
+  CHECK(connection, base::NotFatalUntil::M160);
+  CHECK(certificate_manager, base::NotFatalUntil::M160);
+  CHECK(frames_reader, base::NotFatalUntil::M160);
 
   if (share_target.is_incoming) {
     local_prefix_ = kNearbyShareReceiverVerificationPrefix;
@@ -87,7 +87,7 @@ PairedKeyVerificationRunner::~PairedKeyVerificationRunner() = default;
 
 void PairedKeyVerificationRunner::Run(
     base::OnceCallback<void(PairedKeyVerificationResult)> callback) {
-  DCHECK(!callback_);
+  CHECK(!callback_, base::NotFatalUntil::M160);
   callback_ = std::move(callback);
 
   SendPairedKeyEncryptionFrame();

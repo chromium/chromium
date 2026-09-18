@@ -602,7 +602,8 @@ std::string InputMethodAPI::GetInputMethodForXkb(const std::string& xkb_id) {
   std::string xkb_prefix =
       ash::extension_ime_util::GetInputMethodIDByEngineID(kXkbPrefix);
   size_t prefix_length = xkb_prefix.length();
-  DCHECK(xkb_id.substr(0, prefix_length) == xkb_prefix);
+  CHECK(xkb_id.substr(0, prefix_length) == xkb_prefix,
+        base::NotFatalUntil::M160);
   return xkb_id.substr(prefix_length);
 }
 

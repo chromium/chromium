@@ -403,7 +403,7 @@ class ProgressNotificationDelegate : public NearbyNotificationDelegate {
     if (!action_index)
       return;
     // Clicking on the only (cancel) button cancels the transfer.
-    DCHECK_EQ(0, *action_index);
+    CHECK_EQ(0, *action_index, base::NotFatalUntil::M160);
 
     // In the receiving case, the progress notification is showed after the
     // transfer is accepted, but before the |TransferMetadata::Status| is
@@ -616,7 +616,8 @@ class SuccessNotificationDelegate : public NearbyNotificationDelegate {
   }
 
   void CopyTextToClipboard() {
-    DCHECK_GT(share_target_.text_attachments.size(), 0u);
+    CHECK_GT(share_target_.text_attachments.size(), 0u,
+             base::NotFatalUntil::M160);
     const std::string& text = share_target_.text_attachments[0].text_body();
     ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
         .WriteText(base::UTF8ToUTF16(text));
@@ -628,7 +629,7 @@ class SuccessNotificationDelegate : public NearbyNotificationDelegate {
   }
 
   void CopyImageToClipboard() {
-    DCHECK(!image_.isNull());
+    CHECK(!image_.isNull(), base::NotFatalUntil::M160);
     ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
         .WriteImage(image_);
 
@@ -806,9 +807,9 @@ NearbyNotificationManager::NearbyNotificationManager(
       pref_service_(pref_service),
       profile_(profile),
       settings_opener_(std::make_unique<SettingsOpener>()) {
-  DCHECK(notification_display_service_);
-  DCHECK(nearby_service_);
-  DCHECK(pref_service_);
+  CHECK(notification_display_service_, base::NotFatalUntil::M160);
+  CHECK(nearby_service_, base::NotFatalUntil::M160);
+  CHECK(pref_service_, base::NotFatalUntil::M160);
   nearby_service_->AddObserver(this);
   nearby_service_->RegisterReceiveSurface(
       this, NearbySharingService::ReceiveSurfaceState::kBackground);
@@ -827,7 +828,7 @@ void NearbyNotificationManager::OnTransferUpdate(
     const TransferMetadata& transfer_metadata) {
   if (!share_target_)
     share_target_ = share_target;
-  DCHECK_EQ(share_target_->id, share_target.id);
+  CHECK_EQ(share_target_->id, share_target.id, base::NotFatalUntil::M160);
 
   if (ShouldClearNotification(last_transfer_status_,
                               transfer_metadata.status())) {
@@ -937,7 +938,7 @@ void NearbyNotificationManager::OnFastInitiationScanningStopped() {
 void NearbyNotificationManager::ShowProgress(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   message_center::Notification notification =
       CreateNearbyNotification(kNearbyInProgressNotificationId);
@@ -970,7 +971,7 @@ void NearbyNotificationManager::ShowProgress(
 void NearbyNotificationManager::ShowConnectionRequest(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   message_center::Notification notification =
       CreateNearbyNotification(kNearbyInProgressNotificationId);
@@ -1002,7 +1003,7 @@ void NearbyNotificationManager::ShowConnectionRequest(
 }
 
 void NearbyNotificationManager::ShowNearbyDeviceTryingToShare() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (!ShouldShowNearbyDeviceTryingToShareNotification(pref_service_))
     return;
 
@@ -1059,7 +1060,7 @@ void NearbyNotificationManager::ShowNearbyDeviceTryingToShare() {
 }
 
 void NearbyNotificationManager::ShowSuccess(const ShareTarget& share_target) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!share_target.is_incoming) {
     std::string notification_id =
@@ -1084,7 +1085,7 @@ void NearbyNotificationManager::ShowSuccess(const ShareTarget& share_target) {
   }
 
   // ReceivedContentType::kSingleImage means exactly one image file.
-  DCHECK_EQ(1u, share_target.file_attachments.size());
+  CHECK_EQ(1u, share_target.file_attachments.size(), base::NotFatalUntil::M160);
 
   // ReceivedImageDecoder will delete itself.
   auto* image_decoder = new ReceivedImageDecoder(
@@ -1171,7 +1172,7 @@ void NearbyNotificationManager::ShowIncomingSuccess(
 void NearbyNotificationManager::ShowFailure(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   std::string notification_id =
       CreateNotificationIdForShareTarget(share_target);
@@ -1193,7 +1194,7 @@ void NearbyNotificationManager::ShowFailure(
 }
 
 void NearbyNotificationManager::ShowCancelled(const ShareTarget& share_target) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   std::string notification_id =
       CreateNotificationIdForShareTarget(share_target);
@@ -1212,7 +1213,7 @@ void NearbyNotificationManager::ShowCancelled(const ShareTarget& share_target) {
 }
 
 void NearbyNotificationManager::ShowVisibilityReminder() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!ShouldShowNearbyVisibilityReminderNotification(pref_service_)) {
     return;

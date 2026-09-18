@@ -529,49 +529,49 @@ std::string SetAllowedPref(PrefService& local_state,
   // Special case for the preference that is stored in the "Local State"
   // profile.
   if (pref_name == arc::prefs::kEnableAdbSideloadingRequested) {
-    DCHECK(value.is_bool());
+    CHECK(value.is_bool(), base::NotFatalUntil::M160);
     local_state.Set(pref_name, value);
     return std::string();
   }
   if (pref_name == variations::prefs::kVariationsCompressedSeed ||
       pref_name == variations::prefs::kVariationsSeedSignature) {
-    DCHECK(value.is_string());
+    CHECK(value.is_string(), base::NotFatalUntil::M160);
     local_state.Set(pref_name, value);
     return std::string();
   }
   if (pref_name == chrome_urls::kInternalOnlyUisEnabled) {
-    DCHECK(value.is_bool());
+    CHECK(value.is_bool(), base::NotFatalUntil::M160);
     local_state.Set(pref_name, value);
     return std::string();
   }
 
   if (pref_name == ash::prefs::kAccessibilitySpokenFeedbackEnabled) {
-    DCHECK(value.is_bool());
+    CHECK(value.is_bool(), base::NotFatalUntil::M160);
   } else if (pref_name == ash::prefs::kAccessibilityVirtualKeyboardEnabled) {
-    DCHECK(value.is_bool());
+    CHECK(value.is_bool(), base::NotFatalUntil::M160);
   } else if (pref_name == ash::prefs::kDocumentScanAPITrustedExtensions) {
-    DCHECK(value.is_list());
+    CHECK(value.is_list(), base::NotFatalUntil::M160);
   } else if (pref_name == ash::prefs::kEnableAutoScreenLock) {
-    DCHECK(value.is_bool());
+    CHECK(value.is_bool(), base::NotFatalUntil::M160);
   } else if (pref_name == ash::prefs::kLanguagePreloadEngines) {
-    DCHECK(value.is_string());
+    CHECK(value.is_string(), base::NotFatalUntil::M160);
   } else if (pref_name == prefs::kPrintingAPIExtensionsAllowlist) {
-    DCHECK(value.is_list());
+    CHECK(value.is_list(), base::NotFatalUntil::M160);
   } else if (pref_name == quick_answers::prefs::kQuickAnswersEnabled) {
-    DCHECK(value.is_bool());
+    CHECK(value.is_bool(), base::NotFatalUntil::M160);
   } else if (pref_name ==
              quick_answers::prefs::kQuickAnswersDefinitionEnabled) {
-    DCHECK(value.is_bool());
+    CHECK(value.is_bool(), base::NotFatalUntil::M160);
   } else if (pref_name ==
              quick_answers::prefs::kQuickAnswersTranslationEnabled) {
-    DCHECK(value.is_bool());
+    CHECK(value.is_bool(), base::NotFatalUntil::M160);
   } else if (pref_name ==
              quick_answers::prefs::kQuickAnswersUnitConversionEnabled) {
-    DCHECK(value.is_bool());
+    CHECK(value.is_bool(), base::NotFatalUntil::M160);
   } else if (pref_name == quick_answers::prefs::kQuickAnswersConsentStatus) {
-    DCHECK(value.is_int());
+    CHECK(value.is_int(), base::NotFatalUntil::M160);
   } else if (pref_name == arc::prefs::kArcShowResizeLockSplashScreenLimits) {
-    DCHECK(value.is_int());
+    CHECK(value.is_int(), base::NotFatalUntil::M160);
   } else {
     return "The pref " + pref_name + " is not allowed.";
   }
@@ -815,7 +815,7 @@ ui::KeyboardCode StringToKeyCode(const std::string& str) {
       {"search", ui::VKEY_LWIN},
       {"assistant", ui::VKEY_ASSISTANT},
   };
-  DCHECK(base::IsStringASCII(str));
+  CHECK(base::IsStringASCII(str), base::NotFatalUntil::M160);
   if (str.length() == 1) {
     char c = str[0];
     if (c >= 'a' && c <= 'z') {
@@ -909,7 +909,7 @@ class DisplaySmoothnessTracker {
 
     start_time_ = base::TimeTicks::Now();
 
-    DCHECK(root_window_tracker_.windows().empty());
+    CHECK(root_window_tracker_.windows().empty(), base::NotFatalUntil::M160);
     root_window_tracker_.Add(root_window);
 
     tracker_ = root_window->layer()
@@ -953,7 +953,7 @@ class DisplaySmoothnessTracker {
       return;
     }
 
-    DCHECK_EQ(windows.size(), 1u);
+    CHECK_EQ(windows.size(), 1u, base::NotFatalUntil::M160);
     auto* root_window = windows[0].get();
     throughput_.push_back(
         root_window->GetHost()->compositor()->GetAverageThroughput());
@@ -983,7 +983,7 @@ void ForwardFrameRateDataAndReset(
     const cc::FrameSequenceMetrics::CustomReportData& frame_data) {
   auto* trackers = GetDisplaySmoothnessTrackers();
   auto it = trackers->find(display_id);
-  DCHECK(it != trackers->end());
+  CHECK(it != trackers->end(), base::NotFatalUntil::M160);
 
   auto throughput = it->second->TakeThroughput();
 
@@ -991,7 +991,7 @@ void ForwardFrameRateDataAndReset(
   // for |display_id| to start before |callback| run returns.
   // See https://crbug.com/40702167.
   auto callback = it->second->TakeCallback();
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M160);
   trackers->erase(it);
   std::move(callback).Run(frame_data, std::move(throughput));
 }
@@ -1007,8 +1007,8 @@ class WindowStateChangeObserver : public aura::WindowObserver {
                             chromeos::WindowStateType expected_type,
                             base::OnceCallback<void(bool)> callback)
       : expected_type_(expected_type), callback_(std::move(callback)) {
-    DCHECK_NE(window->GetProperty(chromeos::kWindowStateTypeKey),
-              expected_type_);
+    CHECK_NE(window->GetProperty(chromeos::kWindowStateTypeKey), expected_type_,
+             base::NotFatalUntil::M160);
     scoped_observation_.Observe(window);
   }
 
@@ -1022,7 +1022,8 @@ class WindowStateChangeObserver : public aura::WindowObserver {
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
-    DCHECK(scoped_observation_.IsObservingSource(window));
+    CHECK(scoped_observation_.IsObservingSource(window),
+          base::NotFatalUntil::M160);
     if (key == chromeos::kWindowStateTypeKey &&
         window->GetProperty(chromeos::kWindowStateTypeKey) == expected_type_) {
       scoped_observation_.Reset();
@@ -1031,7 +1032,8 @@ class WindowStateChangeObserver : public aura::WindowObserver {
   }
 
   void OnWindowDestroying(aura::Window* window) override {
-    DCHECK(scoped_observation_.IsObservingSource(window));
+    CHECK(scoped_observation_.IsObservingSource(window),
+          base::NotFatalUntil::M160);
     scoped_observation_.Reset();
     std::move(callback_).Run(/*success=*/false);
   }
@@ -1052,10 +1054,11 @@ class WindowBoundsChangeObserver : public aura::WindowObserver {
       base::OnceCallback<void(const gfx::Rect&, int64_t, bool)> callback)
       : callback_(std::move(callback)) {
     auto* state = ash::WindowState::Get(window);
-    DCHECK(state);
+    CHECK(state, base::NotFatalUntil::M160);
     wait_for_bounds_change_ = window->GetBoundsInRootWindow() != to_bounds;
     wait_for_display_change_ = state->GetDisplay().id() != display_id;
-    DCHECK(wait_for_bounds_change_ || wait_for_display_change_);
+    CHECK(wait_for_bounds_change_ || wait_for_display_change_,
+          base::NotFatalUntil::M160);
     scoped_observation_.Observe(window);
   }
   ~WindowBoundsChangeObserver() override = default;
@@ -1086,7 +1089,8 @@ class WindowBoundsChangeObserver : public aura::WindowObserver {
 
  private:
   void MaybeFinishObserving(aura::Window* window, bool success) {
-    DCHECK(scoped_observation_.IsObservingSource(window));
+    CHECK(scoped_observation_.IsObservingSource(window),
+          base::NotFatalUntil::M160);
     if (!wait_for_bounds_change_ && !wait_for_display_change_) {
       scoped_observation_.Reset();
       std::move(callback_).Run(window->GetBoundsInRootWindow(),
@@ -1158,7 +1162,7 @@ class EventGenerator {
       return;
     }
     Task* task = &tasks_.front();
-    DCHECK_EQ(task->status, Task::kNotScheduled);
+    CHECK_EQ(task->status, Task::kNotScheduled, base::NotFatalUntil::M160);
     // A task can be processed asynchronously; the next task will be scheduled
     // after the control returns to the message pump, assuming that implies the
     // processing of the current task has finished.
@@ -1234,7 +1238,8 @@ class EventGenerator {
       return;
     }
 
-    DCHECK_EQ(tasks_.front().status, Task::kScheduled);
+    CHECK_EQ(tasks_.front().status, Task::kScheduled,
+             base::NotFatalUntil::M160);
     tasks_.pop_front();
     const auto& runner = base::SequencedTaskRunner::GetCurrentDefault();
     auto closure = base::BindOnce(&EventGenerator::SendEvent,
@@ -2856,12 +2861,12 @@ AutotestPrivateGetPrinterListFunction::AutotestPrivateGetPrinterListFunction() =
 
 AutotestPrivateGetPrinterListFunction::
     ~AutotestPrivateGetPrinterListFunction() {
-  DCHECK(!printers_manager_);
+  CHECK(!printers_manager_, base::NotFatalUntil::M160);
 }
 
 ExtensionFunction::ResponseAction AutotestPrivateGetPrinterListFunction::Run() {
   // |printers_manager_| should be created on UI thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   DVLOG(1) << "AutotestPrivateGetPrinterListFunction";
 
@@ -2883,7 +2888,7 @@ ExtensionFunction::ResponseAction AutotestPrivateGetPrinterListFunction::Run() {
 
 void AutotestPrivateGetPrinterListFunction::DestroyPrintersManager() {
   // |printers_manager_| should be destroyed on UI thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!printers_manager_) {
     return;
@@ -2894,7 +2899,7 @@ void AutotestPrivateGetPrinterListFunction::DestroyPrintersManager() {
 }
 
 void AutotestPrivateGetPrinterListFunction::RespondWithTimeoutError() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (did_respond()) {
     return;
@@ -2906,7 +2911,7 @@ void AutotestPrivateGetPrinterListFunction::RespondWithTimeoutError() {
 }
 
 void AutotestPrivateGetPrinterListFunction::RespondWithSuccess() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (did_respond()) {
     return;
@@ -2919,7 +2924,7 @@ void AutotestPrivateGetPrinterListFunction::RespondWithSuccess() {
 
 void AutotestPrivateGetPrinterListFunction::OnEnterprisePrintersInitialized() {
   // |printers_manager_| should call this on UI thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   constexpr PrinterClass kClassesToFetch[] = {
       PrinterClass::kEnterprise,
@@ -3821,7 +3826,7 @@ AutotestPrivateWaitForDisplayRotationFunction::Run() {
       return RespondNow(Error(base::StrCat(
           {"Display is not found for display_id ", params->display_id})));
     }
-    DCHECK(display.is_valid());
+    CHECK(display.is_valid(), base::NotFatalUntil::M160);
     if (!display.IsInternal()) {
       return RespondNow(
           Error("RotateAny is valid only for the internal display"));
@@ -3892,7 +3897,7 @@ AutotestPrivateWaitForDisplayRotationFunction::CheckScreenRotationAnimation() {
     display::Display display;
     display::Screen::Get()->GetDisplayWithDisplayId(display_id_, &display);
     // This should never fail.
-    DCHECK(display.is_valid());
+    CHECK(display.is_valid(), base::NotFatalUntil::M160);
     return WithArguments(!target_rotation_.has_value() ||
                          display.rotation() == *target_rotation_);
   }
@@ -4042,9 +4047,10 @@ AutotestPrivateGetAppWindowListFunction::Run() {
           views::Widget::GetWidgetForNativeWindow(window);
       // All widgets for app windows in chromeos should have a frame. Non app
       // windows may not have a frame and frame mode will be NONE.
-      DCHECK(!no_frame_header_widget ||
-             no_frame_header_widget->GetNativeWindow()->GetType() !=
-                 aura::client::WINDOW_TYPE_NORMAL);
+      CHECK(!no_frame_header_widget ||
+                no_frame_header_widget->GetNativeWindow()->GetType() !=
+                    aura::client::WINDOW_TYPE_NORMAL,
+            base::NotFatalUntil::M160);
       window_info.frame_mode = api::autotest_private::FrameMode::kNone;
       window_info.is_frame_visible = false;
     }
@@ -4202,7 +4208,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
                     content::WebContents* web_contents,
                     base::OnceCallback<void()> callback)
       : callback_(std::move(callback)), app_banner_manager_(manager) {
-    DCHECK(manager);
+    CHECK(manager, base::NotFatalUntil::M160);
     observation_.Observe(manager);
     // The manager's lifetime is tied to the tab, which can be destroyed (or
     // its contents discarded) while this observer waits; detach then to
@@ -5746,7 +5752,7 @@ AutotestPrivateForceAutoThemeModeFunction::Run() {
 
   ash::DarkLightModeControllerImpl* dark_light_mode_controller =
       ash::Shell::Get()->dark_light_mode_controller();
-  DCHECK(dark_light_mode_controller);
+  CHECK(dark_light_mode_controller, base::NotFatalUntil::M160);
 
   dark_light_mode_controller->SetAutoScheduleEnabled(false);
   dark_light_mode_controller->SetDarkModeEnabledForTest(

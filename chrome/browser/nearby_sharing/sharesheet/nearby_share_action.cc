@@ -49,7 +49,7 @@ base::FilePath ResolveFileUrl(Profile* profile,
                               const apps::IntentFilePtr& file) {
   storage::FileSystemContext* fs_context =
       file_manager::util::GetFileManagerFileSystemContext(profile);
-  DCHECK(fs_context);
+  CHECK(fs_context, base::NotFatalUntil::M160);
 
   // file: type URLs are used by ARC Nearby Share.
   if (file->url.SchemeIsFile()) {
@@ -59,7 +59,7 @@ base::FilePath ResolveFileUrl(Profile* profile,
   }
 
   // filesystem: type URLs, for paths managed by file_manager (e.g. MyFiles).
-  DCHECK(file->url.SchemeIsFileSystem());
+  CHECK(file->url.SchemeIsFileSystem(), base::NotFatalUntil::M160);
   const storage::FileSystemURL fs_url =
       fs_context->CrackURLInFirstPartyContext(file->url);
   if (fs_url.is_valid()) {
@@ -195,11 +195,11 @@ void NearbyShareAction::LaunchAction(
   web_view->RequestFocus();
 
   auto* webui = web_view->GetWebContents()->GetWebUI();
-  DCHECK(webui != nullptr);
+  CHECK(webui != nullptr, base::NotFatalUntil::M160);
 
   auto* nearby_ui =
       webui->GetController()->GetAs<nearby_share::NearbyShareDialogUI>();
-  DCHECK(nearby_ui != nullptr);
+  CHECK(nearby_ui != nullptr, base::NotFatalUntil::M160);
 
   nearby_ui->SetSharesheetController(controller);
   nearby_ui->SetAttachments(

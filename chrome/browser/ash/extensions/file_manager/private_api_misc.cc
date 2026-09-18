@@ -120,7 +120,7 @@ AppWindow* GetCurrentAppWindow(ExtensionFunction* function) {
 }
 
 std::vector<ProfileInfo> GetLoggedInProfileInfoList() {
-  DCHECK(user_manager::UserManager::IsInitialized());
+  CHECK(user_manager::UserManager::IsInitialized(), base::NotFatalUntil::M160);
   const std::vector<Profile*>& profiles =
       g_browser_process->profile_manager()->GetLoadedProfiles();
   std::set<Profile*> original_profiles;

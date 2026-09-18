@@ -55,7 +55,7 @@ void InstallLimiter::DisableForTest() {
 
 void InstallLimiter::Add(const scoped_refptr<CrxInstaller>& installer,
                          const CRXFileInfo& file_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // No deferred installs when disabled for test.
   if (disabled_for_test_) {
@@ -72,7 +72,7 @@ void InstallLimiter::Add(const scoped_refptr<CrxInstaller>& installer,
 }
 
 void InstallLimiter::OnAllExternalProvidersReady() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   all_external_providers_ready_ = true;
 
   if (AllInstallsQueuedWithFileSize()) {
@@ -85,7 +85,7 @@ void InstallLimiter::OnAllExternalProvidersReady() {
 void InstallLimiter::AddWithSize(const scoped_refptr<CrxInstaller>& installer,
                                  const CRXFileInfo& file_info,
                                  std::optional<int64_t> size) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   num_installs_waiting_for_file_size_--;
 

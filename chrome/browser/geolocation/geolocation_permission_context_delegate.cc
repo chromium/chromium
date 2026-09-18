@@ -25,7 +25,7 @@ bool GeolocationPermissionContextDelegate::DecidePermission(
     const permissions::PermissionRequestData& request_data,
     permissions::BrowserPermissionCallback* callback,
     permissions::GeolocationPermissionContext* context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (std::optional<GeolocationPermissionContextExtensions::Decision>
           extension_decision = extensions_context_.DecidePermission(

@@ -157,7 +157,7 @@ void NearbyShareSettings::GetIsFastInitiationHardwareSupported(
 }
 
 void NearbyShareSettings::SetEnabled(bool enabled) {
-  DCHECK(!enabled || IsOnboardingComplete());
+  CHECK(!enabled || IsOnboardingComplete(), base::NotFatalUntil::M160);
   pref_service_->SetBoolean(prefs::kNearbySharingEnabledPrefName, enabled);
   if (enabled && GetVisibility() == nearby_share::mojom::Visibility::kUnknown) {
     CD_LOG(ERROR, Feature::NS)
@@ -223,7 +223,7 @@ void NearbyShareSettings::GetVisibility(
 
 void NearbyShareSettings::SetVisibility(
     nearby_share::mojom::Visibility visibility) {
-  DCHECK(pref_service_);
+  CHECK(pref_service_, base::NotFatalUntil::M160);
 
   pref_service_->SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
                             static_cast<int>(visibility));

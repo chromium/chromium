@@ -593,7 +593,7 @@ void RecordNearbySharePayloadFileOperationMetrics(
     const ShareTarget& share_target,
     PayloadFileOperation operation,
     const bool success) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   if (!share_target.has_attachments()) {
     return;
@@ -625,7 +625,8 @@ void RecordNearbySharePayloadFileOperationMetrics(
 void RecordNearbySharePayloadFinalStatusMetric(
     nearby::connections::mojom::PayloadStatus status,
     std::optional<nearby::connections::mojom::Medium> medium) {
-  DCHECK_NE(status, nearby::connections::mojom::PayloadStatus::kInProgress);
+  CHECK_NE(status, nearby::connections::mojom::PayloadStatus::kInProgress,
+           base::NotFatalUntil::M160);
   base::UmaHistogramEnumeration("Nearby.Share.Payload.FinalStatus",
                                 PayloadStatusToFinalStatus(status));
   base::UmaHistogramEnumeration("Nearby.Share.Payload.FinalStatus" +
@@ -672,7 +673,8 @@ void RecordNearbySharePayloadSizeMetric(
     std::optional<nearby::connections::mojom::Medium> last_upgraded_medium,
     nearby::connections::mojom::PayloadStatus status,
     uint64_t payload_size_bytes) {
-  DCHECK_NE(status, nearby::connections::mojom::PayloadStatus::kInProgress);
+  CHECK_NE(status, nearby::connections::mojom::PayloadStatus::kInProgress,
+           base::NotFatalUntil::M160);
 
   int kilobytes =
       base::saturated_cast<int>(payload_size_bytes / kBytesPerKilobyte);
@@ -697,7 +699,8 @@ void RecordNearbySharePayloadTransferRateMetric(
     nearby::connections::mojom::PayloadStatus status,
     uint64_t transferred_payload_bytes,
     base::TimeDelta time_elapsed) {
-  DCHECK_NE(status, nearby::connections::mojom::PayloadStatus::kInProgress);
+  CHECK_NE(status, nearby::connections::mojom::PayloadStatus::kInProgress,
+           base::NotFatalUntil::M160);
 
   int kilobytes_per_second = base::saturated_cast<int>(base::ClampDiv(
       base::ClampDiv(transferred_payload_bytes, time_elapsed.InSecondsF()),
@@ -745,7 +748,7 @@ void RecordNearbyShareTransferFinalStatusMetric(
     bool is_known,
     bool for_self_share,
     bool is_screen_locked) {
-  DCHECK(TransferMetadata::IsFinalStatus(status));
+  CHECK(TransferMetadata::IsFinalStatus(status), base::NotFatalUntil::M160);
 
   // Emit success/failure to Standard Feature Usage Logging if there was a
   // definitive result.

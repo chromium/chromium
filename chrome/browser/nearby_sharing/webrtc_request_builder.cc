@@ -40,7 +40,7 @@ void BuildLocationHint(
 void BuildId(chrome_browser_nearby_sharing_instantmessaging::Id* req_id,
              const std::string& id,
              ::sharing::mojom::LocationHintPtr location_hint) {
-  DCHECK(req_id);
+  CHECK(req_id, base::NotFatalUntil::M160);
   req_id->set_id(id);
   req_id->set_app(kAppName);
   req_id->set_type(
@@ -52,7 +52,7 @@ void BuildHeader(
     chrome_browser_nearby_sharing_instantmessaging::RequestHeader* header,
     const std::string& requester_id,
     ::sharing::mojom::LocationHintPtr location_hint) {
-  DCHECK(header);
+  CHECK(header, base::NotFatalUntil::M160);
   header->set_request_id(base::UnguessableToken::Create().ToString());
   header->set_app(kAppName);
   BuildId(header->mutable_requester_id(), requester_id,

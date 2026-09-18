@@ -108,7 +108,7 @@ void MeetBrowserService::OnAdaptorDisconnect() {
 void MeetBrowserService::TranslateVideoDeviceId(
     const std::string& hashed_device_id,
     TranslateVideoDeviceIdCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (host_token_.child_id == content::kInvalidChildProcessUniqueId ||
       hashed_device_id.empty()) {

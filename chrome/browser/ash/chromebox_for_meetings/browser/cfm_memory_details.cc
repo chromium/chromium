@@ -57,7 +57,8 @@ void CfmMemoryDetails::OnDetailsAvailable() {
 }
 
 void CfmMemoryDetails::CollectProcessInformation() {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M160);
 
   proc_data_list_.reserve(processes().size());
   for (const ProcessData& proc_data : processes()) {
@@ -117,7 +118,8 @@ void CfmMemoryDetails::CollectProcessInformation() {
 }
 
 void CfmMemoryDetails::CollectExtensionsInformation() {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M160);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   for (content::RenderProcessHost::iterator it(

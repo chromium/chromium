@@ -271,7 +271,8 @@ void ExtensionsPermissionsTracker::UpdateLocalState() {
       extension_safety_ratings_,
       [](const auto& key_value) { return !key_value.second; });
 
-  DCHECK(pending_forced_extensions_.empty() || any_unsafe);
+  CHECK(pending_forced_extensions_.empty() || any_unsafe,
+        base::NotFatalUntil::M160);
 
   local_state_->SetBoolean(ash::prefs::kManagedSessionUseFullLoginWarning,
                            any_unsafe);

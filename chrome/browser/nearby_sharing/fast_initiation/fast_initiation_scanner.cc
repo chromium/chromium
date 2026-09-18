@@ -63,7 +63,8 @@ void FastInitiationScanner::Factory::SetFactoryForTesting(
 FastInitiationScanner::FastInitiationScanner(
     scoped_refptr<device::BluetoothAdapter> adapter)
     : adapter_(adapter) {
-  DCHECK(adapter_ && adapter_->IsPresent() && adapter_->IsPowered());
+  CHECK(adapter_ && adapter_->IsPresent() && adapter_->IsPowered(),
+        base::NotFatalUntil::M160);
 }
 
 FastInitiationScanner::~FastInitiationScanner() = default;
