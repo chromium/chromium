@@ -13,11 +13,18 @@ android_library("callback_bind_check_test_compile_java") {
   deps = [ "//base:base_java" ]
 }
 
+android_library("no_clipped_superscript_test_compile_java") {
+  testonly = true
+  enable_errorprone = true
+  sources = [ "src/org/chromium/tools/errorprone/plugin/NoClippedSuperscriptTestCompile.java" ]
+}
+
 android_nocompile_test_suite("errorprone_plugin_tests") {
   # Depend on errorprone_plugin so that the action is re-run whenever any custom
   # errorprone check is modified.
   deps = [
     ":callback_bind_check_test_compile_java",
+    ":no_clipped_superscript_test_compile_java",
     "//tools/android/errorprone_plugin",
   ]
   tests = [
@@ -90,6 +97,14 @@ android_nocompile_test_suite("errorprone_plugin_tests") {
                       "",
                       "nocompile_gn")
       expected_compile_output_regex = "warning: .CallbackBind"
+    },
+    {
+      target = "nocompile_gn:no_clipped_superscript_test_java"
+      nocompile_sources =
+          rebase_path(no_clipped_superscript_test_nocompile_sources,
+                      "",
+                      "nocompile_gn")
+      expected_compile_output_regex = "warning: .NoClippedSuperscript"
     },
   ]
 }

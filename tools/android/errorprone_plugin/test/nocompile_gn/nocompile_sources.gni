@@ -33,3 +33,5 @@ callback_bind_check_test_5_nocompile_sources = [
 callback_bind_check_test_6_nocompile_sources = [
   "../src/org/chromium/tools/errorprone/plugin/CallbackBindCheckTest6.java",
 ]
+
+no_clipped_superscript_test_nocompile_sources = [ "../src/org/chromium/tools/errorprone/plugin/NoClippedSuperscriptNoCompileSources.java" ]

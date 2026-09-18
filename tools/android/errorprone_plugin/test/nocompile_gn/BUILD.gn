@@ -100,3 +100,12 @@ android_library("callback_bind_check_test_6_java") {
   }
   deps = [ "//base:base_java" ]
 }
+
+android_library("no_clipped_superscript_test_java") {
+  testonly = true
+  enable_errorprone = true
+  sources = [ empty_java ]
+  if (enable_android_nocompile_tests) {
+    sources += no_clipped_superscript_test_nocompile_sources
+  }
+}
