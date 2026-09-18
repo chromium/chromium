@@ -45,7 +45,7 @@ const Property* FindProperty(const char* str, unsigned int len) {
 }
 
 CSSPropertyID CssPropertyID(const ExecutionContext* execution_context,
-                            const String& string)
+                            const StringView& string)
 {
     return ResolveCSSPropertyID(UnresolvedCSSPropertyID(execution_context,
                                                         string));

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -29,6 +30,26 @@ static String CSSPropertyToKeyframeAttribute(const CSSProperty& property) {
       return "cssOffset";
     default:
       return property.GetJSPropertyName();
+  }
+}
+
+// Converts a camelCase JS keyframe property name to a hyphenated CSS property
+// name, e.g. "backgroundColor" -> "background-color", appending the result to
+// `builder`. Leaves `builder` empty if `characters` contains a hyphen
+// (disallowed for keyframe attributes).
+template <typename CharType>
+static void ConvertKeyframePropertyNameToCSSPropertyName(
+    base::span<const CharType> characters,
+    StringBuilder& builder) {
+  for (size_t i = 0; i < characters.size(); ++i) {
+    if (characters[i] == '-') {
+      builder.Clear();
+      return;
+    }
+    if (IsAsciiUpper(characters[i])) {
+      builder.Append('-');
+    }
+    builder.Append(characters[i]);
   }
 }
 
@@ -48,18 +69,18 @@ CSSPropertyID AnimationInputHelpers::KeyframeAttributeToCSSProperty(
     return CSSPropertyID::kFloat;
   if (property == "cssOffset")
     return CSSPropertyID::kOffset;
+  if (property.empty()) {
+    return CSSPropertyID::kInvalid;
+  }
 
   StringBuilder builder;
-  for (wtf_size_t i = 0; i < property.length(); ++i) {
-    // Disallow hyphenated properties.
-    if (property[i] == '-')
-      return CSSPropertyID::kInvalid;
-    if (IsAsciiUpper(property[i])) {
-      builder.Append('-');
-    }
-    builder.Append(property[i]);
+  VisitCharacters(property, [&builder](auto chars) {
+    ConvertKeyframePropertyNameToCSSPropertyName(chars, builder);
+  });
+  if (builder.empty()) {
+    return CSSPropertyID::kInvalid;
   }
-  return CssPropertyID(document.GetExecutionContext(), builder.ToString());
+  return CssPropertyID(document.GetExecutionContext(), StringView(builder));
 }
 
 scoped_refptr<TimingFunction> AnimationInputHelpers::ParseTimingFunction(

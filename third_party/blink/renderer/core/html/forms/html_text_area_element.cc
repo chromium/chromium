@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -538,21 +539,37 @@ String HTMLTextAreaElement::FilterBeforeTextInserted(const String& text) {
   return result;
 }
 
-String HTMLTextAreaElement::SanitizeUserInputValue(const String& proposed_value,
-                                                   unsigned max_length) {
+// Computes how many leading UTF-16 code units of `characters` may be kept
+// under `max_length`, collapsing CRLF pairs into a single unit as it goes.
+template <typename CharType>
+static wtf_size_t ComputeSanitizedLength(base::span<const CharType> characters,
+                                         unsigned max_length) {
   unsigned submission_length = 0;
-  unsigned i = 0;
-  for (; i < proposed_value.length(); ++i) {
-    if (proposed_value[i] == '\r' && i + 1 < proposed_value.length() &&
-        proposed_value[i + 1] == '\n')
+  wtf_size_t i = 0;
+  for (; i < characters.size(); ++i) {
+    if (characters[i] == '\r' && i + 1 < characters.size() &&
+        characters[i + 1] == '\n') {
       continue;
+    }
     ++submission_length;
     if (submission_length == max_length) {
       ++i;
       break;
     }
-    if (submission_length > max_length)
+    if (submission_length > max_length) {
       break;
+    }
+  }
+  return i;
+}
+
+String HTMLTextAreaElement::SanitizeUserInputValue(const String& proposed_value,
+                                                   unsigned max_length) {
+  wtf_size_t i = 0;
+  if (!proposed_value.empty()) {
+    i = VisitCharacters(proposed_value, [max_length](auto chars) {
+      return ComputeSanitizedLength(chars, max_length);
+    });
   }
   if (i > 0 && U16_IS_LEAD(proposed_value[i - 1]))
     --i;
