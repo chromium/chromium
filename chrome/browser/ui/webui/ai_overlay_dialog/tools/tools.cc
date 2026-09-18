@@ -151,6 +151,12 @@ void AiOverlayTools::OpenUrl(const std::string& url_string,
                              bool new_tab,
                              OpenUrlCallback callback) {
   RecordToolCallInvoked("OpenUrl");
+  GURL url(url_string);
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    std::move(callback).Run(base::unexpected("Invalid URL"));
+    return;
+  }
+
   if (tool_controller_) {
     ToolRequest request;
     request.name = "open_url";
@@ -168,12 +174,6 @@ void AiOverlayTools::OpenUrl(const std::string& url_string,
               }
             },
             std::move(callback)));
-    return;
-  }
-
-  GURL url(url_string);
-  if (!url.is_valid()) {
-    std::move(callback).Run(base::unexpected("Invalid URL"));
     return;
   }
 
@@ -784,7 +784,9 @@ void AiOverlayTools::OpenPage(const std::string& query,
   base::ListValue open_tabs_list;
   for (int i = 0; i < tab_strip->count(); ++i) {
     content::WebContents* contents = tab_strip->GetWebContentsAt(i);
-    if (!contents) continue;
+    if (!contents || !contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
 
     std::string title = base::UTF16ToUTF8(contents->GetTitle());
     std::string url_str = contents->GetVisibleURL().spec();
@@ -812,6 +814,9 @@ void AiOverlayTools::OpenPage(const std::string& query,
         bookmarks::GetBookmarksMatchingProperties(bookmark_model, query_fields, 10);
 
     for (const auto* node : matches) {
+      if (!node->url().SchemeIsHTTPOrHTTPS()) {
+        continue;
+      }
       base::DictValue bm_dict;
       bm_dict.Set("target_id", target_id_counter++);
       bm_dict.Set("title", node->GetTitle());
@@ -852,7 +857,8 @@ void AiOverlayTools::OpenPage(const std::string& query,
             int current_target_id = start_target_id;
 
             for (const history::URLResult& result : results) {
-              if (HasOpenTabWithUrl(*tab_strip, result.url())) {
+              if (!result.url().SchemeIsHTTPOrHTTPS() ||
+                  HasOpenTabWithUrl(*tab_strip, result.url())) {
                 continue;
               }
 
