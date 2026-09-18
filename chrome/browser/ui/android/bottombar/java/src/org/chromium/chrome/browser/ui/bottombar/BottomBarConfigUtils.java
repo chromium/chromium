@@ -21,6 +21,10 @@ import org.chromium.ui.base.DeviceFormFactor;
 /** Utility class for determining the configuration of the bottom bar. */
 @NullMarked
 public class BottomBarConfigUtils {
+    public static final int DEFAULT_BOTTOM_BAR_HEIGHT_DP = 60;
+    public static final int MIN_BOTTOM_BAR_HEIGHT_DP = 48;
+    public static final int MAX_BOTTOM_BAR_HEIGHT_DP = 60;
+
     private BottomBarConfigUtils() {}
 
     // LINT.IfChange(isBottomBarEnabled)
@@ -35,6 +39,16 @@ public class BottomBarConfigUtils {
     /** Whether AI Mode is enabled in the bottom bar. */
     public static boolean isAimEnabled() {
         return ChromeFeatureList.sAndroidBottomBarAim.isEnabled();
+    }
+
+    /**
+     * Returns the configured height of the bottom bar in DP (clamped to [{@link
+     * #MIN_BOTTOM_BAR_HEIGHT_DP}, {@link #MAX_BOTTOM_BAR_HEIGHT_DP}]).
+     */
+    public static int getBottomBarHeightDp() {
+        int heightDp = ChromeFeatureList.sAndroidBottomBarHeightDp.getValue();
+        if (heightDp <= 0) return DEFAULT_BOTTOM_BAR_HEIGHT_DP;
+        return Math.clamp(heightDp, MIN_BOTTOM_BAR_HEIGHT_DP, MAX_BOTTOM_BAR_HEIGHT_DP);
     }
 
     /** Whether to include the home button in the bottom bar if the flag is enabled. */

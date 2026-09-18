@@ -133,4 +133,37 @@ public class BottomBarButtonContainerUnitTest {
         // The ImageView should still keep the override tint.
         assertEquals(overrideTint, imageView.getImageTintList());
     }
+
+    @Test
+    public void testSetTargetPaddings_directChild() {
+        View child = new View(mActivity);
+        mContainer.addView(child);
+        mContainer.onFinishInflate();
+
+        mContainer.setTargetPaddings(/* hPad= */ 6, /* vPad= */ 8);
+
+        assertEquals(6, child.getPaddingStart());
+        assertEquals(8, child.getPaddingTop());
+        assertEquals(6, child.getPaddingEnd());
+        assertEquals(8, child.getPaddingBottom());
+    }
+
+    @Test
+    public void testSetTargetPaddings_beforeStubInflation() {
+        ViewStub stub = new ViewStub(mActivity);
+        stub.setLayoutResource(R.layout.bottom_bar_generic_template);
+        mContainer.addView(stub);
+        mContainer.onFinishInflate();
+
+        mContainer.setTargetPaddings(/* hPad= */ 6, /* vPad= */ 8);
+
+        mContainer.inflateStub();
+        View targetView = mContainer.getTargetView();
+        assertNotNull(targetView);
+
+        assertEquals(6, targetView.getPaddingStart());
+        assertEquals(8, targetView.getPaddingTop());
+        assertEquals(6, targetView.getPaddingEnd());
+        assertEquals(8, targetView.getPaddingBottom());
+    }
 }

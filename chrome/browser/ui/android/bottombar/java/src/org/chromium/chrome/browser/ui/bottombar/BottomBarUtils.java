@@ -16,6 +16,7 @@ import androidx.annotation.Px;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.IncognitoColors;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.ValueUtils;
 
@@ -51,7 +52,24 @@ public class BottomBarUtils {
 
     /** Gets the height of the bottom bar. */
     public static @Px int getBottomBarHeight(Context context) {
-        return context.getResources().getDimensionPixelSize(R.dimen.bottom_bar_height);
+        int heightDp = BottomBarConfigUtils.getBottomBarHeightDp();
+        return ViewUtils.dpToPx(context, heightDp);
+    }
+
+    /**
+     * Returns the vertical padding in pixels for bottom bar buttons.
+     *
+     * <p>The buttons have a fixed size at every supported bar height, so the only quantity that
+     * varies with the bar height is this padding. It centers the fixed-size background within the
+     * bar and, because the bottom bar layouts highlight with {@code boundsRespectPadding}, it is
+     * also what keeps the IPH highlight rectangle wrapped tightly around that background.
+     */
+    public static @Px int getButtonPaddingVertical(Context context) {
+        int barHeightPx = getBottomBarHeight(context);
+        int backgroundSizePx =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_bar_new_tab_background_size);
+        return Math.max(0, (barHeightPx - backgroundSizePx) / 2);
     }
 
     /**

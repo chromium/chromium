@@ -23,6 +23,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.base.TestActivity;
@@ -140,5 +142,27 @@ public class BottomBarViewBinderUnitTest {
 
         // 4: app_menu_button_container
         assertEquals(R.id.app_menu_button_container, mBottomBarView.getChildAt(4).getId());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bottom_bar_height_dp/56")
+    public void testDynamicDimensions() {
+        // At 56dp bar height and 1.0x density:
+        // - Vertical padding centers the fixed 40dp button background within the 56dp bar
+        //   and tightly wraps the boundsRespectPadding IPH highlight: (56 - 40) / 2 = 8px.
+        // - Horizontal padding is fixed at 4px (R.dimen.bottom_bar_button_padding_horizontal).
+        View newTabButton = mBottomBarView.findViewById(R.id.new_tab_button);
+        assertEquals(4, newTabButton.getPaddingStart());
+        assertEquals(8, newTabButton.getPaddingTop());
+        assertEquals(4, newTabButton.getPaddingEnd());
+        assertEquals(8, newTabButton.getPaddingBottom());
+
+        View homeButton =
+                mBottomBarView.getContainerForAction(ActionId.HOME_BUTTON).getTargetView();
+        assertNotNull(homeButton);
+        assertEquals(4, homeButton.getPaddingStart());
+        assertEquals(8, homeButton.getPaddingTop());
+        assertEquals(4, homeButton.getPaddingEnd());
+        assertEquals(8, homeButton.getPaddingBottom());
     }
 }

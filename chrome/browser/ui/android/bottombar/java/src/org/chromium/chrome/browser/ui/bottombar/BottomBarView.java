@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -47,10 +48,10 @@ public class BottomBarView extends LinearLayout {
     private @ColorInt int mNewTabRippleBackgroundColorForTesting;
     private @ColorInt int mOtherRipplesColorForTesting;
     private @ColorInt int mCachedOnSurfaceColor;
-    private int mNewTabPaddingStart;
-    private int mNewTabPaddingTop;
-    private int mNewTabPaddingEnd;
-    private int mNewTabPaddingBottom;
+    private @Px int mNewTabPaddingStart;
+    private @Px int mNewTabPaddingTop;
+    private @Px int mNewTabPaddingEnd;
+    private @Px int mNewTabPaddingBottom;
     private float mDisabledAlpha;
 
     public BottomBarView(Context context, @Nullable AttributeSet attributeSet) {
@@ -101,9 +102,34 @@ public class BottomBarView extends LinearLayout {
         mOtherRipples = new RippleDrawable[mOtherContainers.length];
 
         mNewTabPaddingStart = mNewTabButton.getPaddingStart();
-        mNewTabPaddingTop = mNewTabButton.getPaddingTop();
         mNewTabPaddingEnd = mNewTabButton.getPaddingEnd();
-        mNewTabPaddingBottom = mNewTabButton.getPaddingBottom();
+        applyDynamicDimensions(context);
+    }
+
+    /**
+     * Applies dynamic button vertical padding based on the configured bar height.
+     *
+     * <p>Only the bar height (set on {@code LayoutParams.height} in {@link BottomBarCoordinator})
+     * and the button vertical padding depend on the configuration. The new tab background, the
+     * action icons and the hover ripples all declare a fixed size in XML and center themselves
+     * within the full bounds of their view, so they need no adjustment here. The vertical padding
+     * is what keeps the {@code boundsRespectPadding} IPH highlight aligned with that fixed-size
+     * artwork.
+     */
+    private void applyDynamicDimensions(Context context) {
+        @Px int vPad = BottomBarUtils.getButtonPaddingVertical(context);
+        @Px
+        int hPad =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_bar_button_padding_horizontal);
+
+        mNewTabPaddingTop = vPad;
+        mNewTabPaddingBottom = vPad;
+        mNewTabButton.setPaddingRelative(mNewTabPaddingStart, vPad, mNewTabPaddingEnd, vPad);
+
+        for (BottomBarButtonContainer container : mOtherContainers) {
+            container.setTargetPaddings(hPad, vPad);
+        }
     }
 
     /**

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.bottombar;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -307,5 +308,49 @@ public class BottomBarConfigUtilsUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/false")
     public void testIsGlicSettingToggleParamEnabled_FalseParam() {
         assertFalse(BottomBarConfigUtils.isGlicSettingToggleParamEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testGetBottomBarHeightDp_DefaultBaseline() {
+        assertEquals(
+                BottomBarConfigUtils.DEFAULT_BOTTOM_BAR_HEIGHT_DP,
+                BottomBarConfigUtils.getBottomBarHeightDp());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bottom_bar_height_dp/56")
+    public void testGetBottomBarHeightDp_ToolbarMatch56() {
+        assertEquals(56, BottomBarConfigUtils.getBottomBarHeightDp());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bottom_bar_height_dp/48")
+    public void testGetBottomBarHeightDp_CompactAndroid48() {
+        assertEquals(48, BottomBarConfigUtils.getBottomBarHeightDp());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bottom_bar_height_dp/44")
+    public void testGetBottomBarHeightDp_ClampedBelowMin_Returns48() {
+        assertEquals(
+                BottomBarConfigUtils.MIN_BOTTOM_BAR_HEIGHT_DP,
+                BottomBarConfigUtils.getBottomBarHeightDp());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bottom_bar_height_dp/72")
+    public void testGetBottomBarHeightDp_ClampedAboveMax_Returns60() {
+        assertEquals(
+                BottomBarConfigUtils.MAX_BOTTOM_BAR_HEIGHT_DP,
+                BottomBarConfigUtils.getBottomBarHeightDp());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bottom_bar_height_dp/0")
+    public void testGetBottomBarHeightDp_ZeroFallback_ReturnsDefault60() {
+        assertEquals(
+                BottomBarConfigUtils.DEFAULT_BOTTOM_BAR_HEIGHT_DP,
+                BottomBarConfigUtils.getBottomBarHeightDp());
     }
 }

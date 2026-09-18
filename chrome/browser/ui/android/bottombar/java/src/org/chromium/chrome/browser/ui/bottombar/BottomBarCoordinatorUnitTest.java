@@ -890,4 +890,10 @@ public class BottomBarCoordinatorUnitTest {
         assertNotNull(extraContainer);
         assertEquals(View.GONE, extraContainer.getVisibility());
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bottom_bar_height_dp/48")
+    public void testBottomBarHeight() {
+        assertEquals(48, mCoordinator.getView().getLayoutParams().height);
+    }
 }
