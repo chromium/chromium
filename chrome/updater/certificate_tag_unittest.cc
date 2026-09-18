@@ -4,16 +4,15 @@
 
 #include "chrome/updater/certificate_tag.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
-#include <cstring>
 #include <functional>
 #include <memory>
 #include <optional>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
@@ -21,6 +20,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "chrome/updater/certificate_tag_internal.h"
 #include "chrome/updater/test/unit_test_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -46,8 +46,7 @@ TEST(CertificateTag, RoundTrip) {
   ASSERT_TRUE(bin2);
   std::optional<std::vector<uint8_t>> parsed_tag(bin2->tag());
   ASSERT_TRUE(parsed_tag);
-  ASSERT_EQ(parsed_tag->size(), sizeof(kTag));
-  UNSAFE_TODO(EXPECT_TRUE(memcmp(kTag, parsed_tag->data(), sizeof(kTag)) == 0));
+  EXPECT_THAT(*parsed_tag, ::testing::ElementsAreArray(kTag));
 
   // Update an existing tag.
   static constexpr uint8_t kTag2[] = {1, 2, 3, 4, 6};
@@ -58,9 +57,7 @@ TEST(CertificateTag, RoundTrip) {
   ASSERT_TRUE(bin3);
   std::optional<std::vector<uint8_t>> parsed_tag2(bin3->tag());
   ASSERT_TRUE(parsed_tag2);
-  ASSERT_EQ(parsed_tag2->size(), sizeof(kTag2));
-  UNSAFE_TODO(
-      EXPECT_TRUE(memcmp(kTag2, parsed_tag2->data(), sizeof(kTag2)) == 0));
+  EXPECT_THAT(*parsed_tag2, ::testing::ElementsAreArray(kTag2));
 
   // Updating an existing tag with a tag of the same size should not have grown
   // the binary, i.e. the old tag should have been erased first.
@@ -481,18 +478,21 @@ void Validate(const MSIBinary& bin,
   MSIDirEntry entry;
   do {
     // Fixed `kNumDirEntryBytes` directory entry size.
-    for (i = 0; i < bin.sector_format_.size / kNumDirEntryBytes; ++i) {
-      uint64_t offset =
-          dir_sector * bin.sector_format_.size + i * kNumDirEntryBytes;
-      UNSAFE_TODO(
-          std::memcpy(&entry, &bin.contents_[offset], sizeof(MSIDirEntry)));
+    for (size_t entry_index = 0;
+         entry_index < bin.sector_format_.size / kNumDirEntryBytes;
+         ++entry_index) {
+      size_t offset = dir_sector * bin.sector_format_.size +
+                      entry_index * kNumDirEntryBytes;
+      base::byte_span_from_ref(entry).copy_from_nonoverlapping(
+          base::as_byte_span(bin.contents_)
+              .subspan(offset, sizeof(MSIDirEntry)));
 
-      // Skip the mini stream and signature entries.
-      // SAFETY: byte manipulation of a C data structure.
+      // Skip the mini stream and signature entries. As in
+      // `MSIBinary::SignedDataDirFromSector()`, the name must match
+      // `kSignatureName` exactly, including its length.
       if (entry.stream_size < kMiniStreamCutoffSize ||
-          std::equal(entry.name,
-                     UNSAFE_BUFFERS(entry.name + entry.num_name_bytes),
-                     std::begin(kSignatureName))) {
+          base::as_byte_span(entry.name).first(entry.num_name_bytes) ==
+              kSignatureName) {
         continue;
       }
       uint64_t allocated_size = 0;
@@ -532,7 +532,7 @@ struct CertificateTagMsiValidateTestCase {
 class CertificateTagMsiValidateTest
     : public ::testing::TestWithParam<CertificateTagMsiValidateTestCase> {};
 
-UNSAFE_TODO(INSTANTIATE_TEST_SUITE_P(
+INSTANTIATE_TEST_SUITE_P(
     CertificateTagMsiValidateTestCases,
     CertificateTagMsiValidateTest,
     ::testing::ValuesIn(std::vector<CertificateTagMsiValidateTestCase>{
@@ -551,14 +551,16 @@ UNSAFE_TODO(INSTANTIATE_TEST_SUITE_P(
          [] {
            std::vector<uint8_t> expected_tag(8632);
            static constexpr char magic[] = "Gact2.0Omaha";
-           std::memcpy(expected_tag.data(), magic, sizeof(magic));
+           base::span(expected_tag).copy_prefix_from(base::as_byte_span(magic));
            static constexpr char tag[] =
                "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-"
                "8D3A-4EFC-6D61-AE23E3530EA2}&lang=en&browser=4&usagestats=0&"
                "appname=Google%20Chrome&needsadmin=prefers&brand=CHMB&"
                "installdataindex=defaultbrowser";
            expected_tag[sizeof(magic)] = sizeof(tag) - 1;
-           std::memcpy(&expected_tag[sizeof(magic) + 1], tag, sizeof(tag));
+           base::span(expected_tag)
+               .subspan(sizeof(magic) + 1)
+               .copy_prefix_from(base::as_byte_span(tag));
            return expected_tag;
          }(),
          [] {
@@ -569,7 +571,7 @@ UNSAFE_TODO(INSTANTIATE_TEST_SUITE_P(
            new_tag.resize(8206);
            return new_tag;
          }()},
-    })));
+    }));
 
 TEST_P(CertificateTagMsiValidateTest, TestCases) {
   base::MemoryMappedFile mapped_file;
