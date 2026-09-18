@@ -96,22 +96,18 @@ pub fn MojoReadMessage(message_pipe: &UntypedHandle) -> MojoResult<MessageHandle
 ///   a context attached).
 /// - `FailedPrecondition`: If the other end of the pipe has been closed.
 pub fn MojoWriteMessage(message_pipe: &UntypedHandle, message: MessageHandle) -> MojoResult<()> {
+    let message_raw = message.handle_value.into();
+    // Regardless of success or failure, `message` will be destroyed by
+    // MojoWriteMessage.
+    std::mem::forget(message);
     // SAFETY: the options pointer is allowed to be null;
     // The `UntypedHandle` and `MessageHandle` types guarantee that their
     // handles are live.
-    let ret = MojoError::result_from_code(unsafe {
+    MojoError::result_from_code(unsafe {
         raw_ffi::MojoWriteMessage(
             message_pipe.handle_value.into(),
-            message.handle_value.into(),
+            message_raw,
             std::ptr::null(), // This function has no options
         )
-    });
-
-    if ret.is_ok() {
-        // This message was sent, so ownership of the handle
-        // has been transferred to the recipient.
-        std::mem::forget(message);
-    };
-
-    ret
+    })
 }
