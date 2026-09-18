@@ -9968,6 +9968,24 @@
             ]
         }
     ],
+    "GlicNoWebview": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicNoWebview"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicPdfSummarizeButton": [
         {
             "platforms": [
