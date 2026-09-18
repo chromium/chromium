@@ -7,12 +7,16 @@ package org.chromium.chrome.browser.settings;
 import android.app.Activity;
 import android.content.Context;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Factory for {@link SettingsNavigation}. Can be used from chrome/browser modules. */
 @NullMarked
@@ -46,7 +50,7 @@ public final class SettingsNavigationFactory {
         }
 
         Activity activity = ContextUtils.activityFromContext(context);
-        if (activity == null) {
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
             return sInstance;
         }
 
@@ -62,5 +66,23 @@ public final class SettingsNavigationFactory {
     public static void setInstanceForTesting(SettingsNavigation instanceForTesting) {
         sInstanceForTesting = instanceForTesting;
         ResettersForTesting.register(() -> sInstanceForTesting = null);
+    }
+
+    /**
+     * Open Clear Browsing Data settings from native WebUI.
+     *
+     * @param windowAndroid The window associated with the WebContents.
+     */
+    @CalledByNative
+    public static void showClearBrowsingData(@Nullable WindowAndroid windowAndroid) {
+        if (windowAndroid == null) {
+            return;
+        }
+        Activity activity = windowAndroid.getActivity().get();
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
+            return;
+        }
+        createSettingsNavigation(activity)
+                .startSettings(activity, SettingsFragment.CLEAR_BROWSING_DATA);
     }
 }

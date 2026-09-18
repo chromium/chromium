@@ -12,6 +12,7 @@ android_library_factory("factory_java") {
     "//base:tasks_java",
     "//chrome/browser/flags:java",
     "//components/browser_ui/settings/android:java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 
   sources = [ "android/java/src/org/chromium/chrome/browser/settings/SettingsNavigationFactory.java" ]
@@ -39,7 +40,10 @@ android_library("search_java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "search/java/src/org/chromium/chrome/browser/settings/search/RecentSearchQueue.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/settings/SettingsNavigationFactory.java",
+    "search/java/src/org/chromium/chrome/browser/settings/search/RecentSearchQueue.java",
+  ]
 }
 
 android_library("internal_java") {
@@ -52,6 +56,8 @@ android_library("internal_java") {
     # Exception: depends on :chrome_java for SettingsNavigationImpl.
     "//chrome/android:chrome_java",
     "//components/browser_ui/settings/android:java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 
   sources = [ "android/java/src/org/chromium/chrome/browser/settings/SettingsNavigationFactory.java" ]

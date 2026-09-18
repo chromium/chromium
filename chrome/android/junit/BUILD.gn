@@ -1626,6 +1626,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/settings/SettingsInTabNavigationDelegateTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsInTabTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsMetricsReporterTest.java",
+      "src/org/chromium/chrome/browser/settings/SettingsNavigationFactoryTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsNavigationImplTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsPageFragmentDelegateImplTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsPageUnitTest.java",
