@@ -7,8 +7,6 @@ package org.chromium.base.supplier;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -25,7 +23,6 @@ public class SyncOneshotSupplierImplTest {
     private final AtomicInteger mValue2 = new AtomicInteger();
 
     @Test
-    @SmallTest
     public void testGet() {
         final int expectedValue = 5;
         assertNull(mSupplier.get());
@@ -34,7 +31,6 @@ public class SyncOneshotSupplierImplTest {
     }
 
     @Test
-    @SmallTest
     public void testSet() {
         final int expectedValue = 5;
         assertNull(mSupplier.onAvailable(mValue1::set));
@@ -50,7 +46,6 @@ public class SyncOneshotSupplierImplTest {
     }
 
     @Test
-    @SmallTest
     public void testSetBeforeOnAvailable() {
         final int expectedValue = 10;
         mSupplier.set(expectedValue);
@@ -63,7 +58,6 @@ public class SyncOneshotSupplierImplTest {
     }
 
     @Test
-    @SmallTest
     public void testSetInterleaved() {
         final int expectedValue = 20;
         assertNull(mSupplier.onAvailable(mValue1::set));

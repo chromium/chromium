@@ -6,8 +6,6 @@ package org.chromium.base.memory;
 
 import android.os.Looper;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -81,7 +79,6 @@ public class MemoryPurgeManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testSimple() throws Exception {
         int count = mGetCount.call();
         var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_RUNNING_ACTIVITIES);
@@ -110,7 +107,6 @@ public class MemoryPurgeManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testInitializedOnceInBackground() throws Exception {
         int count = mGetCount.call();
         var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_STOPPED_ACTIVITIES);
@@ -125,7 +121,6 @@ public class MemoryPurgeManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testDontTriggerForProcessesWithNoActivities() {
         var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_DESTROYED_ACTIVITIES);
         manager.start();
@@ -143,7 +138,6 @@ public class MemoryPurgeManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testMultiple() throws Exception {
         int count = mGetCount.call();
         var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_RUNNING_ACTIVITIES);
@@ -172,7 +166,6 @@ public class MemoryPurgeManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testNoEnoughTimeInBackground() {
         var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_RUNNING_ACTIVITIES);
         manager.start();
@@ -204,7 +197,6 @@ public class MemoryPurgeManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testSimpleSelfFreeze() throws Exception {
         int count = mGetCount.call();
         var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_RUNNING_ACTIVITIES);
@@ -229,7 +221,6 @@ public class MemoryPurgeManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testNoEnoughTimeInBackgroundForSelfFreeze() {
         var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_RUNNING_ACTIVITIES);
         manager.start();

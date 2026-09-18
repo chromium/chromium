@@ -4,8 +4,6 @@
 
 package org.chromium.base;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -115,7 +113,6 @@ public class CommandLineTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testJavaInitialization() {
         CommandLine.resetForTesting(false);
@@ -125,7 +122,6 @@ public class CommandLineTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testBufferInitialization() {
         CommandLine.resetForTesting(false);
@@ -135,7 +131,6 @@ public class CommandLineTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testArgumentTokenizer() {
         String toParse = " a\"\\bc de\\\"f g\"\\h ij    k\" \"lm";
@@ -159,7 +154,6 @@ public class CommandLineTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testUpdatingArgList() {
         CommandLine.resetForTesting(true);

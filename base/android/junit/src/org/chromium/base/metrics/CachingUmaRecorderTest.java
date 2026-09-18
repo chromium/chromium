@@ -13,8 +13,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import androidx.test.filters.MediumTest;
-
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -392,7 +390,6 @@ public final class CachingUmaRecorderTest {
     }
 
     @Test
-    @MediumTest
     @SuppressWarnings("ThreadPriorityCheck")
     public void testStressParallelHistograms() throws Exception {
         final int numThreads = 16;
@@ -508,7 +505,6 @@ public final class CachingUmaRecorderTest {
     }
 
     @Test
-    @MediumTest
     @SuppressWarnings("ThreadPriorityCheck")
     public void testStressParallelUserActions() throws Exception {
         final int numThreads = 16;

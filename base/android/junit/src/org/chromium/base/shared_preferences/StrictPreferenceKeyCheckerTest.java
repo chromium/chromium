@@ -4,8 +4,6 @@
 
 package org.chromium.base.shared_preferences;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +46,6 @@ public class StrictPreferenceKeyCheckerTest {
     }
 
     @Test
-    @SmallTest
     public void testRegularKeys_registered_noException() {
         mSubject.checkIsKeyInUse(KEY1_IN_USE);
         mSubject.checkIsKeyInUse(KEY2_IN_USE);
@@ -57,50 +54,42 @@ public class StrictPreferenceKeyCheckerTest {
     }
 
     @Test(expected = RuntimeException.class)
-    @SmallTest
     public void testRegularKeys_notRegistered_throwsException() {
         mSubject.checkIsKeyInUse(KEY3_NOT_IN_USE);
     }
 
     @Test
-    @SmallTest
     public void testPrefixedKeys_noException() {
         mSubject.checkIsKeyInUse(KEY_PREFIX1_IN_USE.createKey("restofkey"));
     }
 
     @Test
-    @SmallTest
     public void testPrefixedKeys_multipleLevels_noException() {
         mSubject.checkIsKeyInUse(
                 KEY_PREFIX2_IN_USE.createKey("ExtraLevel.DynamicallyGenerated98765"));
     }
 
     @Test(expected = RuntimeException.class)
-    @SmallTest
     public void testPrefixedKeys_noPrefixMatch_throwsException() {
         mSubject.checkIsKeyInUse(KEY_PREFIX3_NOT_IN_USE.createKey("restofkey"));
     }
 
     @Test(expected = RuntimeException.class)
-    @SmallTest
     public void testPrefixedKeys_matchOnlyPrefix_throwsException() {
         mSubject.checkIsKeyInUse(KEY_PREFIX1_IN_USE.createKey(""));
     }
 
     @Test(expected = RuntimeException.class)
-    @SmallTest
     public void testPrefixedKeys_matchPattern_throwsException() {
         mSubject.checkIsKeyInUse(KEY_PREFIX1_IN_USE.createKey("*"));
     }
 
     @Test
-    @SmallTest
     public void testPrefix_inUse_noException() {
         mSubject.checkIsPrefixInUse(KEY_PREFIX2_IN_USE);
     }
 
     @Test(expected = RuntimeException.class)
-    @SmallTest
     public void testPrefix_notInUse_throwsException() {
         mSubject.checkIsPrefixInUse(KEY_PREFIX3_NOT_IN_USE);
     }

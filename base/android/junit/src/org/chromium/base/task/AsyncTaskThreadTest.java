@@ -9,8 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -102,7 +100,6 @@ public class AsyncTaskThreadTest {
     }
 
     @Test
-    @SmallTest
     public void testCancel_ReturnsFalseOnceTaskFinishes() throws Exception {
         // This test requires robo executor service such that we can run
         // one background task.
@@ -124,7 +121,6 @@ public class AsyncTaskThreadTest {
     }
 
     @Test
-    @SmallTest
     public void testCancel_InPreExecute() throws Exception {
         // Note that background loop is paused.
         mTask.executeOnExecutor(RobolectricUtil.getPausedExecutor());
@@ -149,7 +145,6 @@ public class AsyncTaskThreadTest {
     }
 
     @Test
-    @SmallTest
     public void testCancel_CanReturnTrueEvenAfterTaskStarts() throws Exception {
         mTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -178,7 +173,6 @@ public class AsyncTaskThreadTest {
     }
 
     @Test
-    @SmallTest
     public void testCancel_MayInterrupt_ReturnsFalseOnceTaskFinishes() throws Exception {
         // This test requires robo executor service such that we can run
         // one background task.
@@ -201,7 +195,6 @@ public class AsyncTaskThreadTest {
     }
 
     @Test
-    @SmallTest
     public void testCancel_MayInterrupt_TaskIsInterrupted() throws Exception {
         mTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -233,7 +226,6 @@ public class AsyncTaskThreadTest {
     }
 
     @Test
-    @SmallTest
     public void testExecuteTwiceRaisesException() throws Exception {
         mTask.executeOnExecutor(RobolectricUtil.getPausedExecutor());
         // Note that background loop is paused.

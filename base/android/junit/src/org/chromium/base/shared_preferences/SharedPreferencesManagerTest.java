@@ -14,8 +14,6 @@ import static org.mockito.Mockito.verify;
 
 import android.content.SharedPreferences;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,7 +49,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testWriteReadInt() {
         // Verify default return values when no value is written.
         assertEquals(0, mSubject.readInt("int_key"));
@@ -75,7 +72,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testIncrementInt() {
         mSubject.writeInt("int_key", 100);
         int result = mSubject.incrementInt("int_key");
@@ -85,7 +81,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testIncrementIntDefault() {
         int result = mSubject.incrementInt("int_key");
 
@@ -94,7 +89,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testWriteReadBoolean() {
         // Verify default return values when no value is written.
         assertEquals(false, mSubject.readBoolean("bool_key", false));
@@ -119,7 +113,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testWriteReadString() {
         // Verify default return values when no value is written.
         assertEquals("default", mSubject.readString("string_key", "default"));
@@ -141,7 +134,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testWriteReadLong() {
         // Verify default return values when no value is written.
         assertEquals(0, mSubject.readLong("long_key"));
@@ -165,7 +157,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testWriteReadFloat() {
         // Verify default return values when no value is written.
         assertEquals(1.5f, mSubject.readFloat("float_key", 1.5f), 0.001f);
@@ -187,7 +178,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testWriteReadDouble() {
         // Verify default return values when no value is written.
         assertEquals(1.5d, mSubject.readDouble("double_key", 1.5d), 0.001f);
@@ -209,7 +199,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testWriteReadStringSet() {
         Set<String> defaultStringSet = new HashSet<>(Arrays.asList("a", "b", "c"));
         Set<String> exampleStringSet = new HashSet<>(Arrays.asList("d", "e"));
@@ -238,7 +227,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testAddToStringSet() {
         mSubject.writeStringSet("string_set_key", new HashSet<>(Collections.singletonList("bar")));
         mSubject.addToStringSet("string_set_key", "foo");
@@ -249,7 +237,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testAddToStringSetDefault() {
         mSubject.addToStringSet("string_set_key", "foo");
 
@@ -259,7 +246,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testRemoveFromStringSet() {
         mSubject.writeStringSet("string_set_key", new HashSet<>(Arrays.asList("foo", "bar")));
         mSubject.removeFromStringSet("string_set_key", "foo");
@@ -270,7 +256,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testRemoveFromStringSetDefault() {
         mSubject.removeFromStringSet("string_set_key", "foo");
 
@@ -278,7 +263,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    @SmallTest
     public void testReadStringSet_nonEmpty_returnsUnmodifiable() {
         Set<String> exampleStringSet = new HashSet<>(Arrays.asList("d", "e"));
         mSubject.writeStringSet("string_set_key", exampleStringSet);
@@ -290,7 +274,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testWriteIntSync() throws InterruptedException {
         // Verify default return values when no value is written.
         assertEquals(0, mSubject.readInt("int_key"));
@@ -305,7 +288,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testWriteBooleanSync() throws InterruptedException {
         // Verify default return values when no value is written.
         assertEquals(false, mSubject.readBoolean("bool_key", false));
@@ -320,7 +302,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testWriteStringSync() throws InterruptedException {
         // Verify default return values when no value is written.
         assertEquals("default", mSubject.readString("string_key", "default"));
@@ -335,7 +316,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testWriteLongSync() throws InterruptedException {
         // Verify default return values when no value is written.
         assertEquals(0, mSubject.readLong("long_key"));
@@ -350,7 +330,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testWriteFloatSync() throws InterruptedException {
         // Verify default return values when no value is written.
         assertEquals(0f, mSubject.readFloat("float_key", 0f), 0f);
@@ -365,7 +344,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testRemoveKeySync() throws InterruptedException {
         // Write a value.
         mSubject.writeInt("int_key", 123);
@@ -381,7 +359,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testRemoveKeys() {
         KeyPrefix otherPrefix = new KeyPrefix("OtherPrefix.*");
 
@@ -404,7 +381,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testRemoveKeys_2() {
         // Write some values
         mSubject.writeInt(TEST_PREFIX.createKey("infix1"), 111);
@@ -427,7 +403,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testSetStringsWithPrefix() {
         // Write some values.
         mSubject.writeString(PREFIXED_KEY_1, "first");
@@ -451,7 +426,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testReadStringsWithPrefix() {
         // Write some values.
         mSubject.writeString(PREFIXED_KEY_1, "first");
@@ -469,7 +443,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testSetIntsWithPrefix() {
         // Write some values.
         mSubject.writeInt(PREFIXED_KEY_1, 1);
@@ -492,7 +465,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testReadIntsWithPrefix() {
         // Write some values.
         mSubject.writeInt(PREFIXED_KEY_1, 1);
@@ -509,7 +481,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testSetLongsWithPrefix() {
         // Write some values.
         mSubject.writeLong(PREFIXED_KEY_1, 21474836470001L);
@@ -532,7 +503,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testReadLongsWithPrefix() {
         // Write some values.
         mSubject.writeLong(PREFIXED_KEY_1, 21474836470001L);
@@ -549,7 +519,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testSetFloatsWithPrefix() {
         // Write some values.
         mSubject.writeFloat(PREFIXED_KEY_1, 1.0f);
@@ -572,7 +541,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testReadFloatsWithPrefix() {
         // Write some values.
         mSubject.writeFloat(PREFIXED_KEY_1, 1.0f);
@@ -589,7 +557,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testSetDoublesWithPrefix() {
         // Write some values.
         mSubject.writeDouble(PREFIXED_KEY_1, 1.0);
@@ -612,7 +579,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testReadDoublesWithPrefix() {
         // Write some values.
         mSubject.writeDouble(PREFIXED_KEY_1, 1.0);
@@ -629,7 +595,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testSetBooleansWithPrefix() {
         // Write some values.
         mSubject.writeBoolean(PREFIXED_KEY_1, true);
@@ -652,7 +617,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testReadBooleansWithPrefix() {
         // Write some values.
         mSubject.writeBoolean(PREFIXED_KEY_1, true);
@@ -669,7 +633,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testCheckerIsCalled() {
         mSubject.writeInt("int_key", 123);
         verify(mChecker, times(1)).checkIsKeyInUse(eq("int_key"));
@@ -749,7 +712,6 @@ public class SharedPreferencesManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testCheckerIsCalledInEditor() {
         final SharedPreferences.Editor ed = mSubject.getEditor();
         ed.putInt("int_key", 123);

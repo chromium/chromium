@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -19,7 +17,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 public class KeyPrefixTest {
     @Test
-    @SmallTest
     public void testSuccess_validPattern() {
         KeyPrefix prefix = new KeyPrefix("Chrome.Feature.KP.*");
 
@@ -36,7 +33,6 @@ public class KeyPrefixTest {
     }
 
     @Test
-    @SmallTest
     public void testSuccess_validLegacyPattern() {
         KeyPrefix prefix = new KeyPrefix("legacy_pattern_*");
 
@@ -48,13 +44,11 @@ public class KeyPrefixTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testError_missingPeriod() {
         new KeyPrefix("Chrome.Feature.KP");
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testError_missingStar() {
         new KeyPrefix("Chrome.Feature.KP.");
     }

@@ -6,8 +6,6 @@ package org.chromium.base.library_loader;
 
 import android.os.ParcelFileDescriptor;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -81,7 +79,6 @@ public class LinkerTest {
     }
 
     @Test
-    @SmallTest
     public void testConsumer() {
         // Set up.
         Linker linker = Mockito.spy(new Linker());
@@ -100,7 +97,6 @@ public class LinkerTest {
     }
 
     @Test
-    @SmallTest
     public void testProducer() {
         // Set up.
         Linker linker = Mockito.spy(new Linker());
@@ -116,7 +112,6 @@ public class LinkerTest {
     }
 
     @Test
-    @SmallTest
     public void testConsumerReserveRandom() {
         // Set up.
         Linker linker = Mockito.spy(new Linker());
@@ -130,7 +125,6 @@ public class LinkerTest {
     }
 
     @Test
-    @SmallTest
     public void testReservingZeroFallsBackToRandom() {
         // Set up.
         Linker linker = Mockito.spy(new Linker());
@@ -144,7 +138,6 @@ public class LinkerTest {
     }
 
     @Test
-    @SmallTest
     public void testAppZygoteProducingRelro() {
         // Set up.
         Linker linker = Mockito.spy(new Linker());
@@ -163,7 +156,6 @@ public class LinkerTest {
     }
 
     @Test
-    @SmallTest
     public void testAppZygoteFailsToFindReservedAddressRange() {
         // Set up.
         Linker linker = Mockito.spy(new Linker());
@@ -180,7 +172,6 @@ public class LinkerTest {
     }
 
     @Test
-    @SmallTest
     public void testRelroSharingStatusHistogram() {
         // Set up.
         Linker linker = Mockito.spy(new Linker());
@@ -208,7 +199,6 @@ public class LinkerTest {
     }
 
     @Test
-    @SmallTest
     public void testBrowserExpectingRelroFromZygote() {
         // Set up.
         Linker linker = Mockito.spy(new Linker());
@@ -227,7 +217,6 @@ public class LinkerTest {
     }
 
     @Test
-    @SmallTest
     public void testPrivilegedProcessWithHint() {
         // Set up.
         Linker linker = Mockito.spy(new Linker());
@@ -249,7 +238,6 @@ public class LinkerTest {
     }
 
     @Test
-    @SmallTest
     public void testMultipleLibInfoFromAidlDoesNotInvalidateFd() {
         Linker.LibInfo libInfo = new Linker.LibInfo();
         libInfo.mLoadAddress = 1 << 12;

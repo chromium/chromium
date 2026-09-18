@@ -6,8 +6,6 @@ package org.chromium.base;
 
 import static org.junit.Assert.assertEquals;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +22,6 @@ public class TimeUtilsTest {
     @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
 
     @Test
-    @SmallTest
     public void testTimers() {
         UptimeMillisTimer uptimeTimer = new UptimeMillisTimer();
         ElapsedRealtimeMillisTimer realtimeTimer = new ElapsedRealtimeMillisTimer();

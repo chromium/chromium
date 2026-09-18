@@ -6,8 +6,6 @@ package org.chromium.base;
 
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,7 +31,6 @@ public class TraceEventTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testDisableEventNameFiltering() {
         TraceEvent.setEventNameFilteringEnabled(false);
@@ -41,7 +38,6 @@ public class TraceEventTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testEnableEventNameFiltering() {
         TraceEvent.setEventNameFilteringEnabled(true);
@@ -49,7 +45,6 @@ public class TraceEventTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testEventNameUnfiltered() {
         TraceEvent.setEventNameFilteringEnabled(false);
@@ -72,7 +67,6 @@ public class TraceEventTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testEventNameWithEmptyTargetNameAndNoSpace() {
         TraceEvent.setEventNameFilteringEnabled(false);
@@ -94,7 +88,6 @@ public class TraceEventTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testEventNameFiltered() {
         TraceEvent.setEventNameFilteringEnabled(true);
@@ -109,7 +102,6 @@ public class TraceEventTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testScopedTraceEventWithIntArg() {
         TraceEvent.setEnabled(true);
@@ -120,7 +112,6 @@ public class TraceEventTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testWebViewStartupTotalFactoryInit() {
         TraceEvent.setEnabled(true);
@@ -132,7 +123,6 @@ public class TraceEventTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testWebViewStartupStage1() {
         TraceEvent.setEnabled(true);
@@ -144,7 +134,6 @@ public class TraceEventTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testWebViewStartupFirstInstance() {
         TraceEvent.setEnabled(true);
@@ -157,7 +146,6 @@ public class TraceEventTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testWebViewStartupNotFirstInstance() {
         TraceEvent.setEnabled(true);

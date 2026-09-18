@@ -7,8 +7,6 @@ package org.chromium.base.memory;
 import android.content.ComponentCallbacks2;
 import android.os.Looper;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -93,7 +91,6 @@ public class MemoryPressureMonitorTest {
     }
 
     @Test
-    @SmallTest
     public void testTrimLevelTranslation() {
         Integer[][] trimLevelToPressureMap = { //
             // Levels >= TRIM_MEMORY_COMPLETE map to CRITICAL.
@@ -123,7 +120,6 @@ public class MemoryPressureMonitorTest {
     }
 
     @Test
-    @SmallTest
     public void testThrottleInterval() {
         TestPressureCallback callback = new TestPressureCallback();
         mMonitor.setReportingCallbackForTesting(callback);
@@ -154,7 +150,6 @@ public class MemoryPressureMonitorTest {
     }
 
     @Test
-    @SmallTest
     public void testChangeNotIgnored() {
         TestPressureCallback callback = new TestPressureCallback();
         mMonitor.setReportingCallbackForTesting(callback);
@@ -180,7 +175,6 @@ public class MemoryPressureMonitorTest {
     }
 
     @Test
-    @SmallTest
     public void testNoopChangeIgnored() {
         TestPressureCallback callback = new TestPressureCallback();
         mMonitor.setReportingCallbackForTesting(callback);
@@ -201,7 +195,6 @@ public class MemoryPressureMonitorTest {
     }
 
     @Test
-    @SmallTest
     public void testPollingInitiallyDisabled() {
         TestPressureSupplier pressureSupplier =
                 new TestPressureSupplier(MemoryPressureLevel.MODERATE);
@@ -216,7 +209,6 @@ public class MemoryPressureMonitorTest {
     }
 
     @Test
-    @SmallTest
     public void testEnablePollingPolls() {
         TestPressureCallback callback = new TestPressureCallback();
         mMonitor.setReportingCallbackForTesting(callback);
@@ -233,7 +225,6 @@ public class MemoryPressureMonitorTest {
     }
 
     @Test
-    @SmallTest
     public void testNullSupplierResultIgnored() {
         TestPressureCallback callback = new TestPressureCallback();
         mMonitor.setReportingCallbackForTesting(callback);
@@ -249,7 +240,6 @@ public class MemoryPressureMonitorTest {
     }
 
     @Test
-    @SmallTest
     public void testEnablePollingRespectsThrottling() {
         TestPressureSupplier pressureSupplier =
                 new TestPressureSupplier(MemoryPressureLevel.MODERATE);
@@ -265,7 +255,6 @@ public class MemoryPressureMonitorTest {
     }
 
     @Test
-    @SmallTest
     public void testPollingIfCRITICAL() {
         TestPressureCallback callback = new TestPressureCallback();
         mMonitor.setReportingCallbackForTesting(callback);
@@ -293,7 +282,6 @@ public class MemoryPressureMonitorTest {
     }
 
     @Test
-    @SmallTest
     public void testNoPollingIfNotCRITICAL() {
         TestPressureSupplier pressureSupplier = new TestPressureSupplier(MemoryPressureLevel.NONE);
         mMonitor.setCurrentPressureSupplierForTesting(pressureSupplier);
@@ -310,7 +298,6 @@ public class MemoryPressureMonitorTest {
     }
 
     @Test
-    @SmallTest
     public void testNoPollingIfChangedToCRITICAL() {
         TestPressureSupplier pressureSupplier = new TestPressureSupplier(MemoryPressureLevel.NONE);
         mMonitor.setCurrentPressureSupplierForTesting(pressureSupplier);
@@ -328,7 +315,6 @@ public class MemoryPressureMonitorTest {
     }
 
     @Test
-    @SmallTest
     public void testDisablePolling() {
         TestPressureSupplier pressureSupplier = new TestPressureSupplier(MemoryPressureLevel.NONE);
         mMonitor.setCurrentPressureSupplierForTesting(pressureSupplier);
