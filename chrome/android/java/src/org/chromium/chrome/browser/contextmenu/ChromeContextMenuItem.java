@@ -7,9 +7,6 @@ package org.chromium.chrome.browser.contextmenu;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
-import android.text.style.SuperscriptSpan;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
@@ -26,10 +23,8 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.translate.TranslateBridge;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.styles.NewLabelUtils;
 import org.chromium.components.search_engines.TemplateUrl;
-import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -315,7 +310,7 @@ class ChromeContextMenuItem {
      * @param context Requires to get the string resource related to the item.
      * @param profile The {@link Profile} associated with the current page.
      * @param item Context menu item id.
-     * @param showInProductHelp Whether the menu item should show the new superscript label.
+     * @param showInProductHelp Whether the menu item should show the "New" badge.
      * @return Returns a string for the menu item.
      */
     public static CharSequence getTitle(
@@ -384,8 +379,8 @@ class ChromeContextMenuItem {
     }
 
     /**
-     * Modify the menu title by applying span attributes or removing the 'New' label if the menu has
-     * already been selected before.
+     * Returns the menu title with a "New" badge on it, or with the badge text taken out if the item
+     * has already been used.
      */
     private static CharSequence addOrRemoveNewLabel(
             Context context, @Item int item, @Nullable String prefKey, boolean showNewLabel) {
@@ -393,16 +388,8 @@ class ChromeContextMenuItem {
         if (!showNewLabel
                 || (prefKey != null
                         && ChromeSharedPreferences.getInstance().readBoolean(prefKey, false))) {
-            return SpanApplier.removeSpanText(menuTitle, new SpanInfo("<new>", "</new>"));
+            return NewLabelUtils.withoutBadge(menuTitle);
         }
-        return SpanApplier.applySpans(
-                menuTitle,
-                new SpanInfo(
-                        "<new>",
-                        "</new>",
-                        new SuperscriptSpan(),
-                        new RelativeSizeSpan(0.75f),
-                        new ForegroundColorSpan(
-                                SemanticColorUtils.getDefaultTextColorAccent1(context))));
+        return NewLabelUtils.withBadge(context, menuTitle);
     }
 }
