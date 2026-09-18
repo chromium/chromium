@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.71"
 name = "bytemuck_derive"
-version = "1.12.0"
+version = "1.12.1"
 authors = ["Lokathor <zefria@gmail.com>"]
 build = false
 autolib = false

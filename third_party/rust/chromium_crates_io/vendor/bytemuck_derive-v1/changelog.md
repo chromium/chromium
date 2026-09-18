@@ -1,9 +1,13 @@
 
 ## `bytemuck_derive` changelog
 
+## 1.12.1
+
+* Some derives didn't properly forward `where` clauses when applied to a struct with a `where` clause.
+
 ## 1.12
 
-* Updated the `syn` version from 2 to 3. Because  `syn` is not a public
+* Updated the `syn` version from 2 to 3. Because `syn` is not a public
   dependency of the crate this should not cause any change to users of the
   crate. Please report any problems. MSRV is now 1.71
 

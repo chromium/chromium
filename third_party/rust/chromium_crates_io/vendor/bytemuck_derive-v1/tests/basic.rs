@@ -120,6 +120,14 @@ unsafe impl<T> Zeroable for MyZst<T> {}
 #[transparent(u16)]
 struct TransparentTupleWithCustomZeroSized<T>(u16, MyZst<T>);
 
+trait WhereClauseTrait {}
+
+#[derive(TransparentWrapper)]
+#[repr(transparent)]
+struct TransparentWithWhereClause<T>(T)
+where
+  T: WhereClauseTrait;
+
 #[repr(u8)]
 #[derive(Clone, Copy, Contiguous)]
 enum ContiguousWithValues {

@@ -597,6 +597,9 @@ fn derive_marker_trait_inner<Trait: Derivable>(
 ) -> Result<TokenStream> {
   let crate_name = bytemuck_crate_name(&input);
   let trait_ = Trait::ident(&input, &crate_name)?;
+  // Some traits (notably TransparentWrapper) omit extra generated bounds on the
+  // impl, but the type's own where-clause must still be forwarded.
+  let original_where_clause = input.generics.where_clause.clone();
   // If this trait allows explicit bounds, and any explicit bounds were given,
   // then use those explicit bounds. Else, apply the default bounds (bound
   // each generic type on this trait).
@@ -677,8 +680,11 @@ fn derive_marker_trait_inner<Trait: Derivable>(
     quote!()
   };
 
-  let where_clause =
-    if Trait::requires_where_clause() { where_clause } else { None };
+  let where_clause = if Trait::requires_where_clause() {
+    where_clause
+  } else {
+    original_where_clause.as_ref()
+  };
 
   Ok(quote! {
     #asserts
