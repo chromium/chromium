@@ -20,6 +20,8 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/style/platform_style.h"
+#include "ui/views/views_export.h"
 
 namespace views {
 
@@ -134,6 +136,11 @@ class VIEWS_EXPORT TabbedPane : public FlexLayoutView {
   // proposed layouts.
   bool GetIncludeHiddenViewsInLayout() const;
   void SetIncludeHiddenViewsInLayout(bool include);
+
+  // Gets/sets the focus behavior of the tabs when selected.
+  // Defaults to PlatformStyle::kDefaultFocusBehavior.
+  FocusBehavior GetTabFocusBehavior() const;
+  void SetTabFocusBehavior(FocusBehavior focus_behavior);
 
  private:
   friend class FocusTraversalTest;
@@ -340,6 +347,9 @@ class VIEWS_EXPORT TabbedPaneTabStrip : public View,
   // Sets whether a divider will be drawn underneath the Tab Strip.
   void SetDrawTabDivider(bool draw);
 
+  FocusBehavior GetTabFocusBehavior() const { return tab_focus_behavior_; }
+  void SetTabFocusBehavior(FocusBehavior focus_behavior);
+
  protected:
   // View:
   void OnPaintBorder(gfx::Canvas* canvas) override;
@@ -390,10 +400,13 @@ class VIEWS_EXPORT TabbedPaneTabStrip : public View,
   // Whether to draw the unselected divider below the tabs. Useful for when
   // the caller wants to use a custom divider instead.
   bool draw_tab_divider_ = true;
+
+  FocusBehavior tab_focus_behavior_ = PlatformStyle::kDefaultFocusBehavior;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, TabbedPane, FlexLayoutView)
 VIEW_BUILDER_PROPERTY(bool, IncludeHiddenViewsInLayout)
+VIEW_BUILDER_PROPERTY(View::FocusBehavior, TabFocusBehavior)
 VIEW_BUILDER_METHOD_ALIAS(AddTab,
                           AddTab<View>,
                           const std::u16string&,

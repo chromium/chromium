@@ -83,9 +83,28 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
+
+void SetInteractiveControlsAlwaysFocusable(views::View* view) {
+  if (!view) {
+    return;
+  }
+  if (auto* tabbed_pane = views::AsViewClass<views::TabbedPane>(view)) {
+    tabbed_pane->SetTabFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  } else if (auto* tab_strip =
+                 views::AsViewClass<views::TabbedPaneTabStrip>(view)) {
+    tab_strip->SetTabFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  } else if (view->GetFocusBehavior() ==
+             views::View::FocusBehavior::ACCESSIBLE_ONLY) {
+    view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  }
+  for (views::View* child : view->children()) {
+    SetInteractiveControlsAlwaysFocusable(child);
+  }
+}
 
 bool UseGoogleTranslateBranding() {
   // Only use Google Translate branding in Chrome branded builds.
@@ -738,6 +757,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateView() {
                                             gfx::Insets::VH(2, 0));
   }
 
+  SetInteractiveControlsAlwaysFocusable(view.get());
   return view;
 }
 
@@ -809,6 +829,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewErrorNoTitle(
   button_row->AddChildView(std::move(advanced_button));
   view->AddChildView(std::move(button_row));
 
+  SetInteractiveControlsAlwaysFocusable(view.get());
   return view;
 }
 
@@ -1044,6 +1065,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
 
   UpdateAdvancedView();
 
+  SetInteractiveControlsAlwaysFocusable(view.get());
   return view;
 }
 

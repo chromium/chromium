@@ -18,6 +18,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
@@ -541,6 +542,36 @@ TEST_F(TabbedPaneWithWidgetTest, InactiveTabsNotLaidOutOnResize) {
   tabbed_pane_->SelectTabAt(1);
   RunScheduledLayout(tabbed_pane_);
   EXPECT_EQ(400, child2->bounds().width());
+}
+
+TEST_F(TabbedPaneWithWidgetTest, TabFocusBehavior) {
+  tabbed_pane_->AddTab(u"Tab0", std::make_unique<View>());
+  tabbed_pane_->AddTab(u"Tab1", std::make_unique<View>());
+
+  // By default, selected tab has PlatformStyle::kDefaultFocusBehavior,
+  // and unselected tab has FocusBehavior::NEVER.
+  EXPECT_EQ(tabbed_pane_->GetTabFocusBehavior(),
+            PlatformStyle::kDefaultFocusBehavior);
+  EXPECT_EQ(GetTabAt(0)->GetFocusBehavior(),
+            PlatformStyle::kDefaultFocusBehavior);
+  EXPECT_EQ(GetTabAt(1)->GetFocusBehavior(), View::FocusBehavior::NEVER);
+
+  // Switching tabs updates focus behavior.
+  tabbed_pane_->SelectTabAt(1);
+  EXPECT_EQ(GetTabAt(0)->GetFocusBehavior(), View::FocusBehavior::NEVER);
+  EXPECT_EQ(GetTabAt(1)->GetFocusBehavior(),
+            PlatformStyle::kDefaultFocusBehavior);
+
+  // Setting tab focus behavior updates existing tabs.
+  tabbed_pane_->SetTabFocusBehavior(View::FocusBehavior::ALWAYS);
+  EXPECT_EQ(tabbed_pane_->GetTabFocusBehavior(), View::FocusBehavior::ALWAYS);
+  EXPECT_EQ(GetTabAt(0)->GetFocusBehavior(), View::FocusBehavior::NEVER);
+  EXPECT_EQ(GetTabAt(1)->GetFocusBehavior(), View::FocusBehavior::ALWAYS);
+
+  // Newly added tab respects the configured focus behavior when selected.
+  tabbed_pane_->AddTab(u"Tab2", std::make_unique<View>());
+  tabbed_pane_->SelectTabAt(2);
+  EXPECT_EQ(GetTabAt(2)->GetFocusBehavior(), View::FocusBehavior::ALWAYS);
 }
 
 }  // namespace views::test

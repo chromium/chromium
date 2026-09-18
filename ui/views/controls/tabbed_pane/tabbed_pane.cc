@@ -39,6 +39,7 @@
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -141,12 +142,8 @@ TabbedPaneTab::~TabbedPaneTab() = default;
 void TabbedPaneTab::SetSelected(bool selected) {
   selected_ = selected;
   SetState(selected ? State::kActive : State::kInactive);
-#if BUILDFLAG(IS_MAC)
-  SetFocusBehavior(selected ? FocusBehavior::ACCESSIBLE_ONLY
-                            : FocusBehavior::NEVER);
-#else
-  SetFocusBehavior(selected ? FocusBehavior::ALWAYS : FocusBehavior::NEVER);
-#endif
+  SetFocusBehavior(selected && tab_strip_ ? tab_strip_->GetTabFocusBehavior()
+                                          : FocusBehavior::NEVER);
 }
 
 std::u16string_view TabbedPaneTab::GetTitleText() const {
@@ -829,10 +826,21 @@ void TabbedPaneTabStrip::OnPaintBorder(gfx::Canvas* canvas) {
   }
 }
 
+void TabbedPaneTabStrip::SetTabFocusBehavior(FocusBehavior focus_behavior) {
+  if (tab_focus_behavior_ == focus_behavior) {
+    return;
+  }
+  tab_focus_behavior_ = focus_behavior;
+  if (TabbedPaneTab* selected_tab = GetSelectedTab()) {
+    selected_tab->SetFocusBehavior(focus_behavior);
+  }
+}
+
 BEGIN_METADATA(TabbedPaneTabStrip)
 ADD_READONLY_PROPERTY_METADATA(size_t, SelectedTabIndex)
 ADD_READONLY_PROPERTY_METADATA(TabbedPane::Orientation, Orientation)
 ADD_READONLY_PROPERTY_METADATA(TabbedPane::TabStripStyle, Style)
+ADD_PROPERTY_METADATA(View::FocusBehavior, TabFocusBehavior)
 END_METADATA
 
 TabbedPane::TabbedPane(TabbedPane::Orientation orientation,
@@ -1008,8 +1016,17 @@ gfx::Size TabbedPane::CalculatePreferredSize(
   return gfx::Size(size.width(), contents_->GetHeightForWidth(size.width()));
 }
 
+View::FocusBehavior TabbedPane::GetTabFocusBehavior() const {
+  return tab_strip_->GetTabFocusBehavior();
+}
+
+void TabbedPane::SetTabFocusBehavior(FocusBehavior focus_behavior) {
+  tab_strip_->SetTabFocusBehavior(focus_behavior);
+}
+
 BEGIN_METADATA(TabbedPane)
 ADD_PROPERTY_METADATA(bool, IncludeHiddenViewsInLayout)
+ADD_PROPERTY_METADATA(View::FocusBehavior, TabFocusBehavior)
 END_METADATA
 
 }  // namespace views

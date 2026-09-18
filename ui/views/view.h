@@ -37,6 +37,7 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/base_type_conversion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/base/metadata/metadata_utils.h"
@@ -2748,5 +2749,7 @@ class VIEWS_EXPORT BaseActionViewInterface : public ActionViewInterface {
 };
 
 }  // namespace views
+
+EXPORT_ENUM_CONVERTERS(views::View::FocusBehavior, VIEWS_EXPORT)
 
 #endif  // UI_VIEWS_VIEW_H_

@@ -103,6 +103,7 @@ void TranslateLanguageSearchView::CreateLanguageHoverButton(
       base::BindRepeating(&TranslateLanguageSearchView::OnLanguageButtonPressed,
                           base::Unretained(this), language_index),
       name));
+  button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   button->SetProperty(views::kMarginsKey, gfx::Insets::VH(4, 8));
 }
 
