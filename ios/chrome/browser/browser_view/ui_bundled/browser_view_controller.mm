@@ -13,6 +13,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -130,6 +131,10 @@ enum HeaderBehaviour {
 // Inset to remove from the toolbar height when in full-screen mode with the
 // dynamic island visible.
 const CGFloat kTopDynamicIslandInset = 24;
+
+// The maximum number of polling attempts for the presented view controller
+// dismissal.
+const CGFloat kMaxPollingAttemptsForDismissal = 3;
 
 // Returns true if Chrome Next IA layout and full-screen refactoring are active.
 bool IsFullscreenNextIAEnabled() {
@@ -836,8 +841,10 @@ bool IsFullscreenNextIAEnabled() {
     // Dismissed controllers will be so after a delay. Queue the completion
     // callback after that.
     if (completion) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, base::BindOnce(completion), base::Milliseconds(400));
+      [self pollUntilPresentationDismissedWithInterval:base::Milliseconds(400)
+                                           maxAttempts:
+                                               kMaxPollingAttemptsForDismissal
+                                            completion:completion];
     }
   } else if (completion) {
     // If no view controllers are presented, we should be ok with dispatching
@@ -1928,6 +1935,43 @@ bool IsFullscreenNextIAEnabled() {
                                       fromSource:gemini::FloatyUpdateSource::
                                                      ViewTransition];
   }
+}
+
+// Polls periodically until `self.presentedViewController` has been fully
+// dismissed, or until `maxAttempts` is exhausted.
+- (void)pollUntilPresentationDismissedWithInterval:(base::TimeDelta)interval
+                                       maxAttempts:(NSUInteger)maxAttempts
+                                        completion:(ProceduralBlock)completion {
+  BOOL pollingAttemptsElapsed = maxAttempts == 0;
+
+  // If already dismissed, trigger completion immediately without posting tasks.
+  if (!self.presentedViewController || pollingAttemptsElapsed) {
+    DCHECK(!pollingAttemptsElapsed)
+        << "ViewController still presented after polling attempts elapsed.";
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock delayedCompletion = ^{
+    // Decrement the attempt counter and poll again if the VC is still
+    // presented.
+    if (weakSelf.presentedViewController) {
+      [weakSelf pollUntilPresentationDismissedWithInterval:interval
+                                               maxAttempts:maxAttempts - 1
+                                                completion:completion];
+      return;
+    }
+
+    if (completion) {
+      completion();
+    }
+  };
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(delayedCompletion), interval);
 }
 
 #pragma mark - Private Methods: Tap handling
