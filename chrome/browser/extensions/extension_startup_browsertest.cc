@@ -16,6 +16,8 @@
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -43,6 +45,7 @@
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest.h"
@@ -124,6 +127,11 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
                                        paths);
       command_line->AppendSwitch(
           extensions::switches::kDisableExtensionsFileAccessCheck);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+      // Command-line loading of unpacked extensions is disabled on desktop
+      // Google Chrome branded builds.
+      unauthenticated_load_allowed_ = false;
+#endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     } else {
       // In Windows and MacOS builds, it is not possible to disable settings
@@ -403,7 +411,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsLoadMultipleTest, Test) {
 class DisableExtensionsExceptBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
-  DisableExtensionsExceptBrowserTest() = default;
+  DisableExtensionsExceptBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        extensions_features::kDisableDisableExtensionsExceptCommandLineSwitch);
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
@@ -414,6 +425,9 @@ class DisableExtensionsExceptBrowserTest
   ExtensionRegistrar* GetExtensionRegistrar() {
     return ExtensionRegistrar::Get(GetProfile());
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 void DisableExtensionsExceptBrowserTest::SetUpCommandLine(

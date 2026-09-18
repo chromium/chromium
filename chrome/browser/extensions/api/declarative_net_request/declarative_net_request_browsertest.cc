@@ -274,7 +274,8 @@ class DeclarativeNetRequestBrowserTest
         /*disabled_features=*/
         {// TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid
          // having to disable these features.
-         features::kHttpsUpgrades, features::kHttpsFirstModeIncognito});
+         features::kHttpsUpgrades, features::kHttpsFirstModeIncognito,
+         extensions_features::kDisableExtensionsOnChromeUrlsSwitch});
     net::test_server::RegisterDefaultHandlers(embedded_test_server());
   }
 

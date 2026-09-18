@@ -61,6 +61,7 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1434,6 +1435,7 @@ class SigninViewControllerInteractiveBrowserTest
   }
 
  private:
+  extensions::ScopedInstallVerifierBypassForTest install_verifier_bypass_;
   // chrome/test/data/extensions/
   base::FilePath extension_data_dir_;
 };

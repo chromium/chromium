@@ -33,6 +33,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -513,6 +514,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanGetExtensions) {
   ASSERT_FALSE(id.empty());
 
   // Load packed extension
+  extensions::ScopedInstallVerifierBypassForTest install_verifier_bypass;
   extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
   loader.set_location(extensions::mojom::ManifestLocation::kInternal);
   loader.set_pack_extension(true);

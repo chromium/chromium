@@ -33,6 +33,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/common/extension.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -150,6 +151,7 @@ class ChromeSignoutConfirmationPromptWithExtensionsPixelTest
   base::FilePath extension_data_dir() { return extension_data_dir_; }
 
  private:
+  extensions::ScopedInstallVerifierBypassForTest install_verifier_bypass_;
   // chrome/test/data/extensions/
   base::FilePath extension_data_dir_;
 };

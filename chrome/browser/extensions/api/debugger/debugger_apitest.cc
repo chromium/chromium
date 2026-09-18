@@ -163,6 +163,10 @@ using testing::Eq;
 
 class DebuggerApiTest : public ExtensionApiTest {
  protected:
+  DebuggerApiTest() {
+    feature_list_.InitAndDisableFeature(
+        extensions_features::kDisableExtensionsOnChromeUrlsSwitch);
+  }
   ~DebuggerApiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
@@ -200,6 +204,7 @@ class DebuggerApiTest : public ExtensionApiTest {
   // |extension_|.
   TestExtensionDir test_extension_dir_;
   base::SimpleTestTickClock clock_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 void DebuggerApiTest::SetUpCommandLine(base::CommandLine* command_line) {
