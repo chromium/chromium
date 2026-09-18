@@ -578,6 +578,11 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   // seen), log session metrics for the previous tree.
   if (model_.active_tree_id() != ui::AXTreeIDUnknown()) {
     RecordSessionMetricsIfShownOrRecentlyHidden();
+    // If Line Focus is still active, start a new session so subsequent
+    // interactions continue to be tracked.
+    if (IsLineFocusOn() && !model_.will_hide() && !IsHidden()) {
+      StartLineFocusSession();
+    }
   }
 
   PrepareForNewContentDistillation();
@@ -2642,6 +2647,14 @@ void ReadAnythingAppController::OnReadingModeHidden(bool tab_active) {
 void ReadAnythingAppController::OnReadingModeShown(
     read_anything::mojom::ReadAnythingOpenTrigger open_trigger) {
   model_.set_will_hide(false);
+
+  // The renderer process continues when reading mode is hidden, so the WebUI
+  // still considers its Line Focus session active and will not start a new one
+  // when Reading Mode is reopened. Since the previous session was logged and
+  // reset on hide, start a new session here if Line Focus is still on.
+  if (IsLineFocusOn() && !model_.line_focus_session_start_time().has_value()) {
+    StartLineFocusSession();
+  }
 
   if (open_trigger == read_anything::mojom::ReadAnythingOpenTrigger::
                           kListenToThisPageContextMenu) {

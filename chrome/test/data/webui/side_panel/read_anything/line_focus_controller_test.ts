@@ -310,6 +310,7 @@ suite('LineFocusController', () => {
         visualBrowserProxy.lineFocusCursorLine, /*isOn=*/ true,
         defaultContainer, defaultHeight);
     assertTrue(lineFocusController.isEnabled());
+    assertEquals(1, metrics.getCallCount('startLineFocusSession'));
 
     lineFocusController.restoreFromPrefs(
         visualBrowserProxy.lineFocusCursorLine, /*isOn=*/ false,
@@ -525,7 +526,36 @@ suite('LineFocusController', () => {
       assertTrue(lineFocusModesChanged);
       assertNotEquals(
           LineFocusType.NONE, lineFocusController.getCurrentLineFocusType());
+      assertEquals(1, metrics.getCallCount('startLineFocusSession'));
     });
+
+    test('changing style or movement while active preserves session', () => {
+      lineFocusController.toggle(true, defaultContainer, defaultHeight);
+      assertEquals(1, metrics.getCallCount('startLineFocusSession'));
+
+      lineFocusController.onStyleChange(
+          LineFocusStyle.LARGE_WINDOW, defaultContainer, defaultHeight);
+      assertEquals(1, metrics.getCallCount('startLineFocusSession'));
+
+      lineFocusController.onMovementChange(
+          LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
+      assertEquals(1, metrics.getCallCount('startLineFocusSession'));
+    });
+
+    test(
+        'changing style or movement while inactive does not start session',
+        () => {
+          assertFalse(lineFocusController.isEnabled());
+          assertEquals(0, metrics.getCallCount('startLineFocusSession'));
+
+          lineFocusController.onStyleChange(
+              LineFocusStyle.LARGE_WINDOW, defaultContainer, defaultHeight);
+          assertEquals(0, metrics.getCallCount('startLineFocusSession'));
+
+          lineFocusController.onMovementChange(
+              LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
+          assertEquals(0, metrics.getCallCount('startLineFocusSession'));
+        });
 
     test('second (true) enables previously used line focus', () => {
       const previousMode = LineFocusStyle.LARGE_WINDOW;
@@ -543,6 +573,24 @@ suite('LineFocusController', () => {
           previousMode.type, lineFocusController.getCurrentLineFocusType());
     });
 
+    test('toggling off then on again starts and logs multiple sessions', () => {
+      lineFocusController.toggle(true, defaultContainer, defaultHeight);
+      assertEquals(1, metrics.getCallCount('startLineFocusSession'));
+      assertEquals(0, metrics.getCallCount('recordLineFocusSession'));
+
+      lineFocusController.toggle(false, defaultContainer, defaultHeight);
+      assertEquals(1, metrics.getCallCount('startLineFocusSession'));
+      assertEquals(1, metrics.getCallCount('recordLineFocusSession'));
+
+      lineFocusController.toggle(true, defaultContainer, defaultHeight);
+      assertEquals(2, metrics.getCallCount('startLineFocusSession'));
+      assertEquals(1, metrics.getCallCount('recordLineFocusSession'));
+
+      lineFocusController.toggle(false, defaultContainer, defaultHeight);
+      assertEquals(2, metrics.getCallCount('startLineFocusSession'));
+      assertEquals(2, metrics.getCallCount('recordLineFocusSession'));
+    });
+
     test('(false) disables line focus', () => {
       lineFocusController.toggle(true, defaultContainer, defaultHeight);
       lineFocusModesChanged = false;
@@ -554,6 +602,18 @@ suite('LineFocusController', () => {
       assertEquals(
           LineFocusType.NONE, lineFocusController.getCurrentLineFocusType());
       assertEquals(1, metrics.getCallCount('recordLineFocusSession'));
+    });
+
+    test('(false) does nothing if already disabled', () => {
+      assertFalse(lineFocusController.isEnabled());
+      lineFocusModesChanged = false;
+
+      lineFocusController.toggle(false, defaultContainer, defaultHeight);
+
+      assertFalse(lineFocusController.isEnabled());
+      assertFalse(lineFocusModesChanged);
+      assertEquals(0, metrics.getCallCount('recordLineFocusSession'));
+      assertEquals(0, metrics.getCallCount('startLineFocusSession'));
     });
 
     test('(false) preserves custom style', () => {

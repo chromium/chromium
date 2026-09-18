@@ -3353,7 +3353,7 @@ recorded in the same way, even if they fit the naming pattern. -->
   <summary>
     Records the length of time the user spends in Reading mode with line focus
     on. This is measured from when line focus is enabled to when the user
-    disables line focus or hides Reading mode.
+    disables line focus, changes pages, or hides Reading mode.
   </summary>
 </histogram>
 

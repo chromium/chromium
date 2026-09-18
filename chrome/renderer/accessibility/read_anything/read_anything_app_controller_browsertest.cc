@@ -1318,6 +1318,32 @@ TEST_F(ReadAnythingAppControllerTest, LogLineFocusSession_ResetsSession) {
   ASSERT_EQ(model().line_focus_speech_lines(), 0);
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       TurningLineFocusOffThenClosingReadingModeLogsOneSession) {
+  EnableLineFocus();
+  base::HistogramTester histogram_tester;
+
+  auto line_focus = read_anything::mojom::LineFocus::kLineCursor;
+  EXPECT_CALL(page_handler_, OnLineFocusChanged).Times(2);
+  controller().OnLineFocusChanged(static_cast<int>(line_focus),
+                                  static_cast<int>(line_focus));
+  StartLineFocusSession();
+
+  auto line_focus_off = read_anything::mojom::LineFocus::kOff;
+  controller().OnLineFocusChanged(static_cast<int>(line_focus_off),
+                                  static_cast<int>(line_focus));
+  LogLineFocusSession();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 1);
+
+  EXPECT_CALL(page_handler_, AckReadingModeHidden()).Times(1);
+  controller().OnReadingModeHidden(/*tab_active=*/true);
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 1);
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
   auto line_spacing = read_anything::mojom::LineSpacing::kVeryLoose;
   auto letter_spacing = read_anything::mojom::LetterSpacing::kVeryWide;
@@ -3097,6 +3123,112 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
 
   EXPECT_EQ(0, model().words_heard());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnActiveAXTreeIDChanged_StartsNewLineFocusSessionIfLineFocusOn) {
+  EnableLineFocus();
+  base::HistogramTester histogram_tester;
+  model().set_line_focus_enabled(true);
+  StartLineFocusSession();
+  const int mouse_distance = 2001;
+  const int scroll_distance = 202;
+  const int keyboard_lines = 405;
+  const int speech_lines = 21;
+  model().set_line_focus_mouse_distance(mouse_distance);
+  model().set_line_focus_scroll_distance(scroll_distance);
+  model().set_line_focus_keyboard_lines(keyboard_lines);
+  model().set_line_focus_speech_lines(speech_lines);
+
+  auto const new_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(new_id, ukm::kInvalidSourceId, false);
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.LineFocusSessionMouseDistance",
+      mouse_distance, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.LineFocusSessionScrollDistance",
+      scroll_distance, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.LineFocusSessionKeyboardLines",
+      keyboard_lines, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.LineFocusSessionSpeechLines", speech_lines,
+      1);
+  EXPECT_TRUE(model().line_focus_session_start_time().has_value());
+  EXPECT_EQ(model().line_focus_mouse_distance(), 0);
+  EXPECT_EQ(model().line_focus_scroll_distance(), 0);
+  EXPECT_EQ(model().line_focus_keyboard_lines(), 0);
+  EXPECT_EQ(model().line_focus_speech_lines(), 0);
+
+  // A subsequent tree change logs the restarted session.
+  auto const third_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(third_id, ukm::kInvalidSourceId, false);
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 2);
+  EXPECT_TRUE(model().line_focus_session_start_time().has_value());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnActiveAXTreeIDChanged_DoesNotStartLineFocusSessionIfLineFocusOff) {
+  EnableLineFocus();
+  model().set_line_focus_enabled(false);
+
+  auto const new_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(new_id, ukm::kInvalidSourceId, false);
+
+  EXPECT_FALSE(model().line_focus_session_start_time().has_value());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnActiveAXTreeIDChanged_DoesNotStartLineFocusSessionWithoutFlag) {
+  model().set_line_focus_enabled(true);
+  StartLineFocusSession();
+
+  auto const new_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(new_id, ukm::kInvalidSourceId, false);
+
+  EXPECT_FALSE(model().line_focus_session_start_time().has_value());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnActiveAXTreeIDChanged_DoesNotStartLineFocusSessionIfHidden) {
+  EnableLineFocus();
+  model().set_line_focus_enabled(true);
+  model().set_active_presentation_state(
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+
+  auto const new_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(new_id, ukm::kInvalidSourceId, false);
+
+  EXPECT_FALSE(model().line_focus_session_start_time().has_value());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnActiveAXTreeIDChanged_DoesNotStartLineFocusSessionIfWillHide) {
+  EnableLineFocus();
+  model().set_line_focus_enabled(true);
+  model().set_will_hide(true);
+
+  auto const new_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(new_id, ukm::kInvalidSourceId, false);
+
+  EXPECT_FALSE(model().line_focus_session_start_time().has_value());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnActiveAXTreeIDChanged_NoPreviousTree_DoesNotStartLineFocusSession) {
+  EnableLineFocus();
+  model().set_line_focus_enabled(true);
+  model().SetRootTreeId(ui::AXTreeIDUnknown());
+
+  auto const new_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(new_id, ukm::kInvalidSourceId, false);
+
+  EXPECT_FALSE(model().line_focus_session_start_time().has_value());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -6524,6 +6656,68 @@ TEST_F(ReadAnythingAppControllerTest,
   histogram_tester.ExpectUniqueSample(
       ReadAloudAppModel::kSpeechStopSourceHistogramName,
       ReadAloudAppModel::ReadAloudStopSource::kButton, 1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeShown_StartsNewLineFocusSessionIfLineFocusOn) {
+  EnableLineFocus();
+  base::HistogramTester histogram_tester;
+  model().set_line_focus_enabled(true);
+  StartLineFocusSession();
+
+  EXPECT_CALL(page_handler_, AckReadingModeHidden()).Times(2);
+  controller().OnReadingModeHidden(true);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 1);
+  ASSERT_FALSE(model().line_focus_session_start_time().has_value());
+
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+  EXPECT_TRUE(model().line_focus_session_start_time().has_value());
+
+  // The session from the reopened Reading Mode is logged on the next hide.
+  controller().OnReadingModeHidden(true);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 2);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeShown_DoesNotStartLineFocusSessionIfLineFocusOff) {
+  EnableLineFocus();
+  model().set_line_focus_enabled(false);
+
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+
+  EXPECT_FALSE(model().line_focus_session_start_time().has_value());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeShown_PreservesExistingLineFocusSessionIfAlreadyActive) {
+  EnableLineFocus();
+  model().set_line_focus_enabled(true);
+  StartLineFocusSession();
+
+  ASSERT_TRUE(model().line_focus_session_start_time().has_value());
+  auto const initial_start_time =
+      model().line_focus_session_start_time().value();
+
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+
+  EXPECT_TRUE(model().line_focus_session_start_time().has_value());
+  EXPECT_EQ(model().line_focus_session_start_time().value(),
+            initial_start_time);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeShown_DoesNotStartLineFocusSessionWithoutFlag) {
+  model().set_line_focus_enabled(true);
+
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+
+  EXPECT_FALSE(model().line_focus_session_start_time().has_value());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
