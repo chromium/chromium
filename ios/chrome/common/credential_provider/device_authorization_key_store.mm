@@ -10,11 +10,14 @@
 #import "base/apple/foundation_util.h"
 #import "base/apple/scoped_cftyperef.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/webauthn/core/browser/device_authorization/proto/device_authorization_key.pb.h"
+#import "components/webauthn/core/browser/device_authorization/proto/device_authorization_local_storage.pb.h"
 
 namespace {
 
 using ::base::apple::CFToNSPtrCast;
 using ::base::apple::NSToCFOwnershipCast;
+using ::webauthn::CachedDeviceAuthorizationKeys;
 using ::webauthn::DeviceAuthorizationKey;
 using ::webauthn::DeviceAuthorizationKeys;
 
@@ -36,12 +39,13 @@ NSMutableDictionary* MakeBaseKeychainQuery(const std::string& gaia_id) {
 }  // namespace
 
 bool StoreDeviceAuthorizationKeys(const std::string& gaia_id,
-                                  const DeviceAuthorizationKeys& keys) {
-  if (gaia_id.empty() || keys.keys().empty()) {
+                                  const CachedDeviceAuthorizationKeys& keys) {
+  const DeviceAuthorizationKeys& keys_proto = keys.keys();
+  if (gaia_id.empty() || keys_proto.keys().empty()) {
     return false;
   }
 
-  for (const DeviceAuthorizationKey& key : keys.keys()) {
+  for (const DeviceAuthorizationKey& key : keys_proto.keys()) {
     if (key.key().empty() || key.version() < 0) {
       return false;
     }
@@ -78,7 +82,7 @@ bool StoreDeviceAuthorizationKeys(const std::string& gaia_id,
   return false;
 }
 
-std::optional<DeviceAuthorizationKeys> GetDeviceAuthorizationKeys(
+std::optional<CachedDeviceAuthorizationKeys> GetDeviceAuthorizationKeys(
     const std::string& gaia_id) {
   if (gaia_id.empty()) {
     return std::nullopt;
@@ -102,7 +106,7 @@ std::optional<DeviceAuthorizationKeys> GetDeviceAuthorizationKeys(
   }
 
   NSData* data = CFToNSPtrCast(data_ref);
-  DeviceAuthorizationKeys keys;
+  CachedDeviceAuthorizationKeys keys;
   if (!keys.ParseFromArray(data.bytes, static_cast<int>(data.length))) {
     return std::nullopt;
   }

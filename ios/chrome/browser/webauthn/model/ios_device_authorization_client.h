@@ -30,7 +30,7 @@ class IOSDeviceAuthorizationClient
   void GetCachedKeys(const GaiaId& gaia_id,
                      webauthn::GetCachedKeysCallback callback) override;
   void StoreKeys(const GaiaId& gaia_id,
-                 const webauthn::DeviceAuthorizationKeys& keys,
+                 const webauthn::CachedDeviceAuthorizationKeys& keys,
                  webauthn::StoreKeysCallback callback) override;
   void PopulatePlatformData(
       const GaiaId& gaia_id,

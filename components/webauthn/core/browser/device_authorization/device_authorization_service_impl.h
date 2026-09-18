@@ -63,9 +63,10 @@ class DeviceAuthorizationServiceImpl : public DeviceAuthorizationService {
                      FetchDeviceAuthKeysCallback callback);
 
   // Callback invoked when local cached keys have been retrieved.
-  void OnCachedKeysFetched(const GaiaId& gaia_id,
-                           FetchDeviceAuthKeysCallback callback,
-                           std::optional<DeviceAuthorizationKeys> cached_keys);
+  void OnCachedKeysFetched(
+      const GaiaId& gaia_id,
+      FetchDeviceAuthKeysCallback callback,
+      std::optional<CachedDeviceAuthorizationKeys> cached_keys);
 
   // Callback invoked when the client finishes populating platform data.
   void OnPlatformDataPopulated(

@@ -5,5 +5,8 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
-  sources = [ "device_authorization_key.proto" ]
+  sources = [
+    "device_authorization_key.proto",
+    "device_authorization_local_storage.proto",
+  ]
 }

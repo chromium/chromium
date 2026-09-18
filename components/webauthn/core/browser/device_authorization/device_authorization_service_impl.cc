@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/webauthn/core/browser/device_authorization/device_authorization_features.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -107,11 +108,13 @@ void DeviceAuthorizationServiceImpl::FetchKeysImpl(
 void DeviceAuthorizationServiceImpl::OnCachedKeysFetched(
     const GaiaId& gaia_id,
     FetchDeviceAuthKeysCallback callback,
-    std::optional<DeviceAuthorizationKeys> cached_keys) {
+    std::optional<CachedDeviceAuthorizationKeys> cached_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/405036154): Implement cache version logic invalidation.
-  if (cached_keys.has_value() && cached_keys->keys_size() > 0) {
-    std::move(callback).Run(DeviceAuthFetchResult{*std::move(cached_keys)});
+  if (cached_keys.has_value() &&
+      cached_keys->cache_version() ==
+          features::kDeviceAuthorizationKeyCacheVersion.Get() &&
+      cached_keys->keys().keys_size() > 0) {
+    std::move(callback).Run(DeviceAuthFetchResult{cached_keys->keys()});
     return;
   }
 
@@ -161,11 +164,15 @@ void DeviceAuthorizationServiceImpl::OnFetchCompleted(
     // manager's current primary account gaia_id before storing keys.
     // TODO(crbug.com/405036154): Handle key validation (e.g. expected count).
     DeviceAuthorizationKeys keys = response->device_authorization_keys();
+    CachedDeviceAuthorizationKeys cached_keys;
+    cached_keys.set_cache_version(
+        features::kDeviceAuthorizationKeyCacheVersion.Get());
+    *cached_keys.mutable_keys() = keys;
     client_->StoreKeys(
-        gaia_id, keys,
+        gaia_id, cached_keys,
         base::BindOnce(&DeviceAuthorizationServiceImpl::OnKeysStored,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       keys));
+                       std::move(keys)));
     return;
   }
 

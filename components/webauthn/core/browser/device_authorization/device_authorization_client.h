@@ -28,7 +28,7 @@ class DeviceAuthorizationClient {
   // Asynchronously persists fetched keys on the device for the given `gaia_id`.
   // Calls `callback` with true on success, false on failure.
   virtual void StoreKeys(const GaiaId& gaia_id,
-                         const DeviceAuthorizationKeys& keys,
+                         const CachedDeviceAuthorizationKeys& keys,
                          StoreKeysCallback callback) = 0;
 
   // Asynchronously populates embedder-specific platform data (e.g. device

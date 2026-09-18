@@ -71,7 +71,7 @@ void IOSDeviceAuthorizationClient::GetCachedKeys(
 
 void IOSDeviceAuthorizationClient::StoreKeys(
     const GaiaId& gaia_id,
-    const webauthn::DeviceAuthorizationKeys& keys,
+    const webauthn::CachedDeviceAuthorizationKeys& keys,
     webauthn::StoreKeysCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},

@@ -18,11 +18,9 @@
 //
 // Should not be called on the main thread, as the iOS Keychain APIs may
 // block the calling thread.
-// TODO(crbug.com/405036154): Support `cache_version` parameter and
-// invalidation.
 bool StoreDeviceAuthorizationKeys(
     const std::string& gaia_id,
-    const webauthn::DeviceAuthorizationKeys& keys);
+    const webauthn::CachedDeviceAuthorizationKeys& keys);
 
 // Synchronously retrieves all stored device authorization keys for the account
 // identified by `gaia_id` from the local iOS Keychain. Returns `std::nullopt`
@@ -30,7 +28,7 @@ bool StoreDeviceAuthorizationKeys(
 //
 // Should not be called on the main thread, as the iOS Keychain APIs may
 // block the calling thread.
-std::optional<webauthn::DeviceAuthorizationKeys> GetDeviceAuthorizationKeys(
-    const std::string& gaia_id);
+std::optional<webauthn::CachedDeviceAuthorizationKeys>
+GetDeviceAuthorizationKeys(const std::string& gaia_id);
 
 #endif  // IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_DEVICE_AUTHORIZATION_KEY_STORE_H_

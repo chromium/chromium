@@ -44,6 +44,7 @@ source_set("credential_provider") {
     "//base",
     "//components/sync/protocol",
     "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/core/browser/device_authorization/proto",
     "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
     "//ios/chrome/common/app_group",
   ]
@@ -161,6 +162,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/sync/protocol",
     "//components/webauthn/core/browser/device_authorization:types",
+    "//components/webauthn/core/browser/device_authorization/proto",
     "//net/base:registry_controlled_domains",
     "//testing/gtest",
   ]

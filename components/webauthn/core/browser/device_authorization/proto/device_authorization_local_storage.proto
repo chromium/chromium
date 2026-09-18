@@ -1,0 +1,22 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package webauthn;
+
+import "device_authorization_key.proto";
+
+// Local storage representation of cached device authorization keys.
+message CachedDeviceAuthorizationKeys {
+  // Version of the cache when keys were stored. Compared against
+  // `features::kDeviceAuthorizationKeyCacheVersion` to invalidate stale caches.
+  optional int32 cache_version = 1;
+
+  // The cached device authorization keys.
+  optional sync_pb.GetDeviceAuthorizationKeyResponse.DeviceAuthorizationKeys
+      keys = 2;
+}

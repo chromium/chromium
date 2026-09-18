@@ -102,6 +102,7 @@ source_set("unit_tests") {
     "//components/sync/service",
     "//components/webauthn/core/browser/device_authorization",
     "//components/webauthn/core/browser/device_authorization:features",
+    "//components/webauthn/core/browser/device_authorization/proto",
     "//components/webauthn/ios",
     "//google_apis",
     "//ios/chrome/browser/shared/model/profile/test",
