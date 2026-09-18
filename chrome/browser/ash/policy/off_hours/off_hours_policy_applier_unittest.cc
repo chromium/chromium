@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -32,11 +34,11 @@ constexpr auto kWeekdays = std::to_array<em::WeeklyTimeProto_DayOfWeek>({
 
 const char kUtcTimezone[] = "UTC";
 
-const int kDeviceAllowNewUsersTag = 3;
-const int kDeviceGuestModeEnabledTag = 8;
+constexpr int kDeviceAllowNewUsersTag = 3;
+constexpr int kDeviceGuestModeEnabledTag = 8;
 
-const std::vector<int> kDefaultIgnoredPolicies = {kDeviceAllowNewUsersTag,
-                                                  kDeviceGuestModeEnabledTag};
+constexpr int kDefaultIgnoredPolicies[] = {kDeviceAllowNewUsersTag,
+                                           kDeviceGuestModeEnabledTag};
 
 struct OffHoursPolicy {
   std::string timezone;
@@ -45,10 +47,10 @@ struct OffHoursPolicy {
 
   OffHoursPolicy(const std::string& timezone,
                  const std::vector<WeeklyTimeInterval>& intervals,
-                 const std::vector<int>& ignored_policy_proto_tags)
+                 base::span<const int> ignored_policy_proto_tags)
       : timezone(timezone),
         intervals(intervals),
-        ignored_policy_proto_tags(ignored_policy_proto_tags) {}
+        ignored_policy_proto_tags(base::ToVector(ignored_policy_proto_tags)) {}
 };
 
 em::WeeklyTimeIntervalProto ConvertWeeklyTimeIntervalToProto(
