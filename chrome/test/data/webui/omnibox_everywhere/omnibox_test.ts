@@ -51,7 +51,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       searchboxShowComposeEntrypoint: true,
       ntpRealboxDynamicAiModeButton: true,
       composeboxContextDragAndDropEnabled: true,
-      energyEffectAnimationEnabled: false,
+      energyEffectAnimationEnabled: true,
       searchboxCr23Theming: true,
       searchboxCr23SteadyStateShadow: false,
       contextManagementInComposeboxEnabled: false,
@@ -172,10 +172,13 @@ suite('OmniboxEverywhereOmniboxTest', () => {
                 'search-animated-glow');
         assertTrue(!!glow);
         assertEquals('OmniboxEverywhere', glow.entrypointName);
+        assertTrue(glow.energyEffectAnimationEnabled);
 
         const composeButton =
             omnibox.shadowRoot.querySelector('#composeButton');
         assertTrue(!!composeButton);
+        assertTrue(
+            composeButton.hasAttribute('energy-effect-animation-enabled'));
       });
 
   test(

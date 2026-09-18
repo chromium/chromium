@@ -424,12 +424,12 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxAnimationDisabled",
                      base::FeatureList::IsEnabled(
                          omnibox::kWebUIOmniboxAimPopupDisableAnimation));
-  // Disable the energy effect for the searchbox in Omnibox Everywhere so the
-  // AIM compose button renders the outer conic rainbow glow animation instead
-  // of the energy effect. The composebox explicitly enables energy effect for
-  // its own expanding glow animation.
-  source->AddBoolean("energyEffectEnabled", false);
-  source->AddBoolean("energyEffectAnimationEnabled", false);
+  source->AddBoolean(
+      "energyEffectEnabled",
+      base::FeatureList::IsEnabled(omnibox::kEnergyEffectInOmnibox));
+  source->AddBoolean(
+      "energyEffectAnimationEnabled",
+      base::FeatureList::IsEnabled(omnibox::kEnergyEffectInOmnibox));
   source->AddBoolean("composeboxEnergyEffectAnimationEnabled", true);
   source->AddBoolean("contextButtonShapeIsOblong",
                      omnibox::kContextButtonShapeIsOblong.Get());
