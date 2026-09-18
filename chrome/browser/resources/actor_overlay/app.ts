@@ -50,6 +50,8 @@ export class ActorOverlayAppElement extends CrLitElement {
   private loadingTimerId_: number|null = null;
   // Timer for window resize events.
   private resizeTimerId_: number|null = null;
+  // AbortController for cleaning up an in-progress click animation listener.
+  private clickAnimationAbortController_: AbortController|null = null;
 
   // Position State for Magic Cursor (Logical Pixels)
   private currentX_: number = 0;
@@ -116,6 +118,7 @@ export class ActorOverlayAppElement extends CrLitElement {
       clearTimeout(this.resizeTimerId_);
       this.resizeTimerId_ = null;
     }
+    this.cancelClickAnimation_();
   }
 
   // Prevents user scroll gestures (mouse wheel, touchpad) from moving the
@@ -164,6 +167,20 @@ export class ActorOverlayAppElement extends CrLitElement {
         `drop-shadow(0px 3px 5px ${skColorToRgba(theme.magicCursorColor)})`);
   }
 
+  private cancelClickAnimation_() {
+    if (this.clickAnimationAbortController_) {
+      this.clickAnimationAbortController_.abort();
+      this.clickAnimationAbortController_ = null;
+    }
+    const cursor = this.$.magicCursor;
+    if (cursor && cursor.classList.contains('clicking')) {
+      cursor.classList.remove('clicking');
+      // Force reflow so subsequent transform changes or re-adding 'clicking'
+      // take effect cleanly from the un-animated state.
+      void cursor.offsetWidth;
+    }
+  }
+
   private async triggerClickAnimation(): Promise<void> {
     const cursor = this.$.magicCursor;
     if (!cursor || !this.shouldShowCursor_ || !this.isCursorInitialized_) {
@@ -175,21 +192,20 @@ export class ActorOverlayAppElement extends CrLitElement {
       this.loadingTimerId_ = null;
     }
 
+    this.cancelClickAnimation_();
+
     cursor.classList.remove('loading');
     cursor.style.setProperty('--cursor-x', `${Math.round(this.currentX_)}px`);
     cursor.style.setProperty('--cursor-y', `${Math.round(this.currentY_)}px`);
 
-    return new Promise((resolve) => {
-      const onAnimationEnd = () => {
-        cursor.classList.remove('clicking');
-        this.startLoadingTimer_();
-        resolve();
-      };
-      // TODO(crbug.com/454339982): If the animationed event is never triggered,
-      // we should resolve the callback with a false signal.
-      cursor.addEventListener('animationend', onAnimationEnd, {once: true});
-      cursor.classList.add('clicking');
-    });
+    this.clickAnimationAbortController_ = new AbortController();
+    cursor.addEventListener('animationend', () => {
+      this.clickAnimationAbortController_ = null;
+      cursor.classList.remove('clicking');
+      this.startLoadingTimer_();
+    }, {once: true, signal: this.clickAnimationAbortController_.signal});
+    cursor.classList.add('clicking');
+    return Promise.resolve();
   }
 
   private moveCursorTo(point: Point): Promise<void> {
@@ -240,6 +256,8 @@ export class ActorOverlayAppElement extends CrLitElement {
       this.currentY_ = targetY;
       return Promise.resolve();
     }
+
+    this.cancelClickAnimation_();
 
     // If reduced motion is enabled, skip the movement animation and update
     // coordinates of cursor instantly to the target position.
@@ -302,6 +320,10 @@ export class ActorOverlayAppElement extends CrLitElement {
   setCursorTransform(drawX: number, drawY: number) {
     this.$.magicCursor.style.transform =
         `translate(${Math.round(drawX)}px, ${Math.round(drawY)}px)`;
+  }
+
+  getClickAnimationAbortSignal(): AbortSignal|null {
+    return this.clickAnimationAbortController_?.signal ?? null;
   }
 }
 

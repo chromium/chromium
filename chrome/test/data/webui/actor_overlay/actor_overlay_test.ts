@@ -451,19 +451,86 @@ suite('MagicCursor', function() {
     // Move the cursor first to initialize it.
     await moveCursorAndWait(100, 150);
 
-    // Trigger click animation.
-    const clickPromise = testRemote.triggerClickAnimation();
+    // Trigger click animation. It should resolve immediately without waiting
+    // for animationend to trigger.
+    await testRemote.triggerClickAnimation();
     await microtasksFinished();
 
-    // Verify the class is added and CSS variables are set.
+    // Verify the class is added, CSS variables are set, and abort signal is
+    // active while animation is still running.
     assertTrue(magicCursor.classList.contains('clicking'));
     assertEquals('100px', magicCursor.style.getPropertyValue('--cursor-x'));
     assertEquals('150px', magicCursor.style.getPropertyValue('--cursor-y'));
+    const signal = page.getClickAnimationAbortSignal();
+    assertTrue(!!signal);
+    assertFalse(signal.aborted);
 
     // Finish animation and verify cleanup.
     magicCursor.dispatchEvent(new Event('animationend'));
-    await clickPromise;
+    await microtasksFinished();
     assertFalse(magicCursor.classList.contains('clicking'));
+    assertFalse(signal.aborted);
+    assertEquals(null, page.getClickAnimationAbortSignal());
+  });
+
+  test('TriggerClickAnimation_CancelledByMoveCursor', async function() {
+    const magicCursor =
+        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
+    assertTrue(!!magicCursor);
+
+    await moveCursorAndWait(100, 150);
+
+    // Trigger click animation.
+    await testRemote.triggerClickAnimation();
+    await microtasksFinished();
+    assertTrue(magicCursor.classList.contains('clicking'));
+    const signal = page.getClickAnimationAbortSignal();
+    assertTrue(!!signal);
+    assertFalse(signal.aborted);
+
+    // Start moving cursor to a new position before click animation finishes.
+    const movePromise = testRemote.moveCursorTo({x: 200, y: 250});
+    await microtasksFinished();
+
+    // Verify clicking class is immediately removed and signal is aborted.
+    assertFalse(magicCursor.classList.contains('clicking'));
+    assertTrue(signal.aborted);
+    assertEquals(null, page.getClickAnimationAbortSignal());
+
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise;
+  });
+
+  test('TriggerClickAnimation_RestartedBySecondClick', async function() {
+    const magicCursor =
+        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
+    assertTrue(!!magicCursor);
+
+    await moveCursorAndWait(100, 150);
+
+    // Trigger first click animation.
+    await testRemote.triggerClickAnimation();
+    await microtasksFinished();
+    assertTrue(magicCursor.classList.contains('clicking'));
+    const firstSignal = page.getClickAnimationAbortSignal();
+    assertTrue(!!firstSignal);
+    assertFalse(firstSignal.aborted);
+
+    // Trigger second click animation before first finishes.
+    await testRemote.triggerClickAnimation();
+    await microtasksFinished();
+    assertTrue(magicCursor.classList.contains('clicking'));
+    assertTrue(firstSignal.aborted);
+    const secondSignal = page.getClickAnimationAbortSignal();
+    assertTrue(!!secondSignal);
+    assertFalse(secondSignal.aborted);
+
+    // Dispatching animationend once finishes the restarted animation.
+    magicCursor.dispatchEvent(new Event('animationend'));
+    await microtasksFinished();
+    assertFalse(magicCursor.classList.contains('clicking'));
+    assertFalse(secondSignal.aborted);
+    assertEquals(null, page.getClickAnimationAbortSignal());
   });
 
   test('TriggerClickAnimation_IgnoredIfUninitialized', async function() {
@@ -574,7 +641,7 @@ suite('MagicCursor', function() {
     assertFalse(magicCursor.classList.contains('loading'));
 
     // Trigger a click animation, which should kill the first loading timer.
-    const clickPromise = testRemote.triggerClickAnimation();
+    await testRemote.triggerClickAnimation();
     await flushTasks();
 
     // Wait another 200ms, total time would be 250ms. Verify that we are still
@@ -586,7 +653,7 @@ suite('MagicCursor', function() {
 
     // Finish click animation
     magicCursor.dispatchEvent(new Event('animationend'));
-    await clickPromise;
+    await flushTasks();
 
     // Wait 250ms, which should complete the new timer, verifying that we are in
     // the loading state.
@@ -666,13 +733,13 @@ suite('MagicCursor', function() {
     await moveCursorAndWait(100, 100);
 
     // Trigger Click.
-    const clickPromise = testRemote.triggerClickAnimation();
+    await testRemote.triggerClickAnimation();
     await flushTasks();
 
     // Verify click still occurs.
     assertTrue(magicCursor.classList.contains('clicking'));
     magicCursor.dispatchEvent(new Event('animationend'));
-    await clickPromise;
+    await flushTasks();
     assertFalse(magicCursor.classList.contains('clicking'));
 
     // Verify that we don't enter loading state immediately after new cursor

@@ -678,15 +678,15 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ActorOverlayMagicCursorDeviceScaleFactorTest,
                          testing::Values(0.5f, 1.0f, 1.5f));
 
-std::string WaitForCursorClickingScript() {
-  return R"(
+std::string WaitForCursorClickingScript(bool expected_clicking = true) {
+  return content::JsReplace(R"(
     (async () => {
       return new Promise(resolve => {
         const check = () => {
           const cursor = document.querySelector('actor-overlay-app')
                               ?.shadowRoot
                               ?.querySelector('#magicCursor');
-          if (cursor?.classList.contains('clicking')) {
+          if (cursor?.classList.contains('clicking') === $1) {
              resolve(true);
           } else {
              requestAnimationFrame(check);
@@ -695,7 +695,8 @@ std::string WaitForCursorClickingScript() {
         check();
       });
     })();
-  )";
+  )",
+                            expected_clicking);
 }
 
 class ActorOverlayMagicCursorTest : public ActorOverlayTest {};
@@ -737,19 +738,18 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayMagicCursorTest,
   contents_controller->OnOverlayStateChanged(true, click_state,
                                              click_future.GetCallback());
 
-  // Verify clicking animation started
-  EXPECT_EQ(content::EvalJs(overlay_contents, WaitForCursorClickingScript()),
-            true);
+  // The callback resolves immediately when the animation is initiated.
   ASSERT_TRUE(click_future.Wait());
 
-  // Verify clicking animation stopped
-  bool has_class =
-      content::EvalJs(
-          overlay_contents,
-          "document.querySelector('actor-overlay-app').shadowRoot"
-          ".querySelector('#magicCursor').classList.contains('clicking')")
-          .ExtractBool();
-  EXPECT_FALSE(has_class);
+  // Verify clicking animation started
+  EXPECT_EQ(
+      content::EvalJs(overlay_contents, WaitForCursorClickingScript(true)),
+      true);
+
+  // Verify clicking animation stops once the animation finishes
+  EXPECT_EQ(
+      content::EvalJs(overlay_contents, WaitForCursorClickingScript(false)),
+      true);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
