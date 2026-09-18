@@ -6,6 +6,7 @@
 
 #include "components/input/native_web_keyboard_event.h"
 #include "ui/content_accelerators/accelerator_util.h"
+#include "ui/events/event.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_utils.h"
@@ -37,7 +38,8 @@ bool UnhandledKeyboardEventHandler::HandleKeyboardEvent(
       [focus_manager](const ui::Accelerator& accelerator) {
         View* focused_view = focus_manager->GetFocusedView();
         return focused_view && !IsViewClass<WebView>(focused_view) &&
-               focus_manager->ShouldSkipAcceleratorProcessing(accelerator);
+               focus_manager->ShouldSkipAcceleratorProcessing(
+                   accelerator.ToKeyEvent());
       };
 
   if (event.GetType() == blink::WebInputEvent::Type::kRawKeyDown) {
