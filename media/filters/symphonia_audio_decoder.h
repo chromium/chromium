@@ -12,10 +12,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
+#include "media/base/channel_layout.h"
 #include "media/base/decoder_status.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_log.h"
@@ -68,6 +70,17 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
   // SymphoniaAudioDecoder.
   static bool IsCodecSupported(AudioCodec codec);
 
+  // Static test helper methods.
+  static base::expected<scoped_refptr<AudioBuffer>, DecoderStatus>
+  ToMediaAudioBufferForTesting(
+      SymphoniaAudioBuffer&& symphonia_buffer,
+      const ChannelLayoutConfig& layout_config,
+      base::TimeDelta timestamp = base::Microseconds(0));
+
+  static SymphoniaPacket ToSymphoniaPacketForTesting(
+      const DecoderBuffer& buffer,
+      std::optional<base::TimeDelta> first_frame_timestamp = std::nullopt);
+
  private:
   // There are four states the decoder can be in:
   //
@@ -99,11 +112,6 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
   // DecoderStatus::Codes::kOk on success, or an error code otherwise.
   // May result in zero or more calls to output_cb_.
   DecoderStatus SymphoniaDecode(const DecoderBuffer& buffer);
-
-  // Creates a media::AudioBuffer from the decoded SymphoniaAudioBuffer.
-  scoped_refptr<AudioBuffer> ToMediaAudioBuffer(
-      SymphoniaAudioBuffer&& symphonia_buffer,
-      base::TimeDelta timestamp);
 
   // Handles (re-)initializing the decoder with a (new) config.
   // Returns DecoderStatus::Codes::kOk if initialization was successful.
@@ -162,10 +170,6 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
   // Number of consecutive packet decode errors encountered.
   int consecutive_error_count_ = 0;
 };
-
-MEDIA_EXPORT SymphoniaPacket
-ToSymphoniaPacket(const DecoderBuffer& buffer,
-                  std::optional<base::TimeDelta> first_frame_timestamp);
 
 }  // namespace media
 

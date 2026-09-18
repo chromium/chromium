@@ -471,6 +471,7 @@ source_set("unit_tests") {
   # NOTE: if more rust tests that are not gated on Symphonia being enabled are
   # added to filters, this conditional can be dropped.
   if (media_use_symphonia_decoder) {
+    sources += [ "symphonia_audio_decoder_unittest.cc" ]
     deps += [ ":rust_unittests" ]
   }
   if (media_use_symphonia_demuxer) {

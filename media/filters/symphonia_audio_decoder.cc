@@ -24,6 +24,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/expected.h"
 #include "base/types/to_address.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
@@ -208,7 +209,29 @@ class RustVecMemory : public AudioBuffer::ExternalMemory {
   rust::Vec<uint8_t> vec_;
 };
 
-}  // namespace
+bool IsValidChannelLayout(ChannelLayout layout, int channel_count) {
+  return layout != CHANNEL_LAYOUT_UNSUPPORTED &&
+         layout != CHANNEL_LAYOUT_NONE &&
+         (layout == CHANNEL_LAYOUT_DISCRETE ||
+          ChannelLayoutToChannelCount(layout) == channel_count);
+}
+
+ChannelLayout ResolveChannelLayout(const SymphoniaAudioBuffer& symphonia_buffer,
+                                   const ChannelLayoutConfig& layout_config) {
+  const int channel_count = static_cast<int>(symphonia_buffer.channel_count);
+  ChannelLayout layout =
+      (channel_count == layout_config.channels())
+          ? layout_config.channel_layout()
+          : ChannelMaskToLayout(symphonia_buffer.channel_mask);
+
+  if (!IsValidChannelLayout(layout, channel_count)) {
+    layout = GuessChannelLayout(channel_count);
+    if (layout == CHANNEL_LAYOUT_UNSUPPORTED) {
+      layout = CHANNEL_LAYOUT_DISCRETE;
+    }
+  }
+  return layout;
+}
 
 SymphoniaPacket ToSymphoniaPacket(
     const DecoderBuffer& buffer,
@@ -233,6 +256,68 @@ SymphoniaPacket ToSymphoniaPacket(
   }
   return packet;
 }
+
+base::expected<scoped_refptr<AudioBuffer>, DecoderStatus> ToMediaAudioBuffer(
+    SymphoniaAudioBuffer&& symphonia_buffer,
+    const ChannelLayoutConfig& layout_config,
+    base::TimeDelta timestamp) {
+  const SampleFormat sample_format =
+      ToSampleFormat(symphonia_buffer.sample_format);
+  if (sample_format == kUnknownSampleFormat) {
+    return base::unexpected(
+        DecoderStatus(DecoderStatus::Codes::kMalformedBitstream,
+                      "Unknown sample format received from Symphonia"));
+  }
+
+  if (symphonia_buffer.channel_count == 0 ||
+      symphonia_buffer.channel_count >
+          static_cast<size_t>(limits::kMaxChannels)) {
+    return base::unexpected(
+        DecoderStatus(DecoderStatus::Codes::kMalformedBitstream,
+                      "Invalid channel count received from Symphonia"));
+  }
+  const int channel_count = static_cast<int>(symphonia_buffer.channel_count);
+
+  if (symphonia_buffer.sample_rate <
+          static_cast<uint32_t>(limits::kMinSampleRate) ||
+      symphonia_buffer.sample_rate >
+          static_cast<uint32_t>(limits::kMaxSampleRate)) {
+    return base::unexpected(
+        DecoderStatus(DecoderStatus::Codes::kMalformedBitstream,
+                      "Invalid sample rate received from Symphonia"));
+  }
+  const int sample_rate = static_cast<int>(symphonia_buffer.sample_rate);
+
+  if (symphonia_buffer.num_frames == 0 ||
+      symphonia_buffer.num_frames >
+          static_cast<size_t>(limits::kMaxSamplesPerPacket)) {
+    return base::unexpected(
+        DecoderStatus(DecoderStatus::Codes::kMalformedBitstream,
+                      "Invalid frame count received from Symphonia"));
+  }
+  const int num_frames = static_cast<int>(symphonia_buffer.num_frames);
+
+  const size_t bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
+  const size_t expected_data_size =
+      static_cast<size_t>(num_frames) * channel_count * bytes_per_channel;
+  if (symphonia_buffer.data.size() < expected_data_size) {
+    return base::unexpected(
+        DecoderStatus(DecoderStatus::Codes::kMalformedBitstream,
+                      "Decoded data size is smaller than expected"));
+  }
+
+  const ChannelLayout layout =
+      ResolveChannelLayout(symphonia_buffer, layout_config);
+
+  auto external_memory =
+      std::make_unique<RustVecMemory>(std::move(symphonia_buffer.data));
+
+  return AudioBuffer::CreateFromExternalMemory(
+      sample_format, layout, channel_count, sample_rate, num_frames, timestamp,
+      std::move(external_memory));
+}
+
+}  // namespace
 
 SymphoniaAudioDecoder::SymphoniaAudioDecoder(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -407,7 +492,7 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
   if (buffer.empty()) {
     const bool processed = discard_helper_->ProcessBuffers(
         AudioDiscardHelper::TimeInfo::FromBuffer(buffer), nullptr);
-    DCHECK(!processed);
+    CHECK(!processed);
     return DecoderStatus::Codes::kOk;
   }
 
@@ -445,8 +530,6 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
             << "Symphonia error occurred: " << result.error_str.c_str();
         return ToDecoderStatus(result);
     }
-  } else {
-    consecutive_error_count_ = 0;
   }
 
   // If 0 frames were decoded (either due to a non-fatal decode error or an
@@ -455,7 +538,7 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
   if (result.buffer.data.empty()) {
     const bool processed = discard_helper_->ProcessBuffers(
         AudioDiscardHelper::TimeInfo::FromBuffer(buffer), nullptr);
-    DCHECK(!processed);
+    CHECK(!processed);
     return DecoderStatus::Codes::kOk;
   }
   // Sanity check: if Symphonia thinks things are OK and returned a valid
@@ -469,9 +552,32 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
   // Convert the Symphonia buffer to a media::AudioBuffer, using the original
   // timestamp.
   const base::TimeDelta timestamp = buffer.timestamp();
-  scoped_refptr<AudioBuffer> decoded_audio =
-      ToMediaAudioBuffer(std::move(result.buffer), timestamp);
-  CHECK(decoded_audio);
+  auto audio_buffer_or = ToMediaAudioBuffer(
+      std::move(result.buffer), config_.channel_layout_config(), timestamp);
+  if (!audio_buffer_or.has_value()) {
+    if (++consecutive_error_count_ > 1) {
+      MEDIA_LOG(ERROR, media_log_)
+          << "Stopping playback due to consecutive audio buffer validation "
+             "failures: "
+          << audio_buffer_or.error().message() << ", at "
+          << buffer.AsHumanReadableString();
+      return audio_buffer_or.error();
+    }
+    LIMITED_MEDIA_LOG(DEBUG, media_log_, num_decode_errors_, 5)
+        << "Dropping audio buffer with invalid decoded parameters: "
+        << audio_buffer_or.error().message() << ", at "
+        << buffer.AsHumanReadableString();
+    const bool processed = discard_helper_->ProcessBuffers(
+        AudioDiscardHelper::TimeInfo::FromBuffer(buffer), nullptr);
+    CHECK(!processed);
+    return DecoderStatus::Codes::kOk;
+  }
+
+  // Reset consecutive error count now that we have a valid decoded audio
+  // buffer.
+  consecutive_error_count_ = 0;
+
+  scoped_refptr<AudioBuffer> decoded_audio = std::move(audio_buffer_or).value();
 
   // Process potential discards.
   const bool processed = discard_helper_->ProcessBuffers(
@@ -487,28 +593,21 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
   return DecoderStatus::Codes::kOk;
 }
 
-scoped_refptr<AudioBuffer> SymphoniaAudioDecoder::ToMediaAudioBuffer(
+// static
+base::expected<scoped_refptr<AudioBuffer>, DecoderStatus>
+SymphoniaAudioDecoder::ToMediaAudioBufferForTesting(
     SymphoniaAudioBuffer&& symphonia_buffer,
+    const ChannelLayoutConfig& layout_config,
     base::TimeDelta timestamp) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return ToMediaAudioBuffer(std::move(symphonia_buffer), layout_config,
+                            timestamp);
+}
 
-  const SampleFormat sample_format =
-      ToSampleFormat(symphonia_buffer.sample_format);
-  const int channel_count = symphonia_buffer.channel_count;
-  const int sample_rate = symphonia_buffer.sample_rate;
-  const int num_frames = symphonia_buffer.num_frames;
-
-  const bool count_changed = channel_count != config_.channels();
-  const auto layout = count_changed
-                          ? ChannelMaskToLayout(symphonia_buffer.channel_mask)
-                          : config_.channel_layout();
-
-  auto external_memory =
-      std::make_unique<RustVecMemory>(std::move(symphonia_buffer.data));
-
-  return AudioBuffer::CreateFromExternalMemory(
-      sample_format, layout, channel_count, sample_rate, num_frames, timestamp,
-      std::move(external_memory));
+// static
+SymphoniaPacket SymphoniaAudioDecoder::ToSymphoniaPacketForTesting(
+    const DecoderBuffer& buffer,
+    std::optional<base::TimeDelta> first_frame_timestamp) {
+  return ToSymphoniaPacket(buffer, first_frame_timestamp);
 }
 
 void SymphoniaAudioDecoder::ReleaseSymphoniaResources() {
