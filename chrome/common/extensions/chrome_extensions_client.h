@@ -40,6 +40,7 @@ class ChromeExtensionsClient : public ExtensionsClient {
       const Extension* extension,
       const APIPermissionSet& api_permissions) const override;
   bool IsScriptableURL(const GURL& url, std::string* error) const override;
+  bool IsCapturableURL(const GURL& url, std::string* error) const override;
   const GURL& GetWebstoreBaseURL() const override;
   const GURL& GetNewWebstoreBaseURL() const override;
   const GURL& GetWebstoreUpdateURL() const override;

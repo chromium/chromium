@@ -121,6 +121,10 @@ class ExtensionsClient {
   // Returns false if content scripts are forbidden from running on `url`.
   virtual bool IsScriptableURL(const GURL& url, std::string* error) const = 0;
 
+  // Returns false if extensions are forbidden from capturing the given `url`
+  // (e.g. via tabs.captureVisibleTab or pageCapture.saveAsMHTML).
+  virtual bool IsCapturableURL(const GURL& url, std::string* error) const;
+
   // Returns the base webstore URL prefix.
   virtual const GURL& GetWebstoreBaseURL() const = 0;
 

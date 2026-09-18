@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
@@ -84,6 +85,10 @@
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/webui/os_feedback_ui/url_constants.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -1157,11 +1162,27 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
     return base::unexpected(kCannotNavigateToChromeUntrusted);
   }
 
+  // Note: `extension` can be null if the call is made from non-extension
+  // contexts (e.g. WebUI pages). In that case, we allow the navigation as such
+  // contexts are trusted and do not have a concept of file access. Arguably,
+  // we should apply the same logic to the cases above, but it's been this way
+  // long enough that we can keep this as fail-closed until there's a reason to
+  // change it.
+
+  // Don't let the extension navigate directly to chrome://feedback. Feedback is
+  // more of a native surface that shouldn't be accessible to (or triggerable
+  // by) extensions.
+  if (extension && url.SchemeIs(content::kChromeUIScheme) &&
+      (url.host() == chrome::kChromeUIFeedbackHost
+#if BUILDFLAG(IS_CHROMEOS)
+       || url.host() == ash::kChromeUIOSFeedbackHost
+#endif
+       )) {
+    return base::unexpected(kCannotNavigateToInternalPage);
+  }
+
   // Don't let the extension navigate directly to file scheme pages, unless
-  // they have file access. `extension` can be null if the call is made from
-  // non-extension contexts (e.g. WebUI pages). In that case, we allow the
-  // navigation as such contexts are trusted and do not have a concept of file
-  // access.
+  // they have file access.
   if (extension && IsFileUrl(url) &&
       // PDF viewer extension can navigate to file URLs.
       extension->id() != extension_misc::kPdfExtensionId &&

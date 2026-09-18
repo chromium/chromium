@@ -9,6 +9,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -26,6 +27,10 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/webui/os_feedback_ui/url_constants.h"
+#endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -398,6 +403,35 @@ TEST_F(ChromeExtensionNavigationTest,
       kChromeUntrustedURL, extension.get(), browser_context());
   EXPECT_THAT(url, base::test::ErrorIs(
                        ExtensionTabUtil::kCannotNavigateToChromeUntrusted));
+}
+
+TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigationOnFeedback) {
+  const std::string kFeedbackURL("chrome://feedback/");
+  auto extension = ExtensionBuilder("test").Build();
+  auto url = ExtensionTabUtil::PrepareURLForNavigation(
+      kFeedbackURL, extension.get(), browser_context());
+  EXPECT_THAT(url, base::test::ErrorIs(
+                       ExtensionTabUtil::kCannotNavigateToInternalPage));
+
+  // Non-extension contexts (e.g. WebUI) should be allowed to navigate to
+  // feedback.
+  auto non_extension_url = ExtensionTabUtil::PrepareURLForNavigation(
+      kFeedbackURL, /*extension=*/nullptr, browser_context());
+  ASSERT_TRUE(non_extension_url.has_value());
+  EXPECT_EQ(GURL(kFeedbackURL), *non_extension_url);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Repeat the test for the chromeos-specific URL.
+  url = ExtensionTabUtil::PrepareURLForNavigation(
+      ash::kChromeUIOSFeedbackUrl, extension.get(), browser_context());
+  EXPECT_THAT(url, base::test::ErrorIs(
+                       ExtensionTabUtil::kCannotNavigateToInternalPage));
+
+  non_extension_url = ExtensionTabUtil::PrepareURLForNavigation(
+      ash::kChromeUIOSFeedbackUrl, /*extension=*/nullptr, browser_context());
+  ASSERT_TRUE(non_extension_url.has_value());
+  EXPECT_EQ(GURL(ash::kChromeUIOSFeedbackUrl), *non_extension_url);
+#endif
 }
 
 }  // namespace extensions

@@ -473,6 +473,11 @@ bool PermissionsData::CanCaptureVisiblePage(
   // does not.)
   url::Origin origin = url::Origin::Create(document_url);
   const GURL origin_url = origin.GetURL();
+
+  if (!ExtensionsClient::Get()->IsCapturableURL(origin_url, error)) {
+    return false;
+  }
+
   {
     base::AutoLock auto_lock(runtime_lock_);
     // Disallow capturing policy-blocked hosts. No exceptions.

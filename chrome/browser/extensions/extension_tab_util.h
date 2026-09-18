@@ -72,6 +72,8 @@ class ExtensionTabUtil {
       "You cannot create new tabs while in locked fullscreen mode.";
   static constexpr char kCannotNavigateToChromeUntrusted[] =
       "Cannot navigate to a chrome-untrusted:// page.";
+  static constexpr char kCannotNavigateToInternalPage[] =
+      "Cannot navigate to internal page.";
   static constexpr char kFileUrlsNotAllowedInExtensionNavigations[] =
       "Cannot navigate to a file URL without local file access.";
 

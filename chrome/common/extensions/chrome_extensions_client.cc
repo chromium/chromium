@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/common/chrome_resource_request_blocked_reason.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/chrome_extensions_api_provider.h"
@@ -39,6 +40,10 @@
 #include "services/network/public/mojom/cors_origin_pattern.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/webui/os_feedback_ui/url_constants.h"
+#endif
 
 namespace extensions {
 
@@ -153,6 +158,25 @@ bool ChromeExtensionsClient::IsScriptableURL(const GURL& url,
   if (extension_urls::IsWebstoreDomain(url)) {
     if (error) {
       *error = manifest_errors::kCannotScriptGallery;
+    }
+    return false;
+  }
+  return true;
+}
+
+bool ChromeExtensionsClient::IsCapturableURL(const GURL& url,
+                                             std::string* error) const {
+  // Feedback is more of a native surface that shouldn't be accessible to (or
+  // triggerable by) extensions.
+  // See also https://crbug.com/477664550.
+  if (url.SchemeIs(content::kChromeUIScheme) &&
+      (url.host() == chrome::kChromeUIFeedbackHost
+#if BUILDFLAG(IS_CHROMEOS)
+       || url.host() == ash::kChromeUIOSFeedbackHost
+#endif
+       )) {
+    if (error) {
+      *error = manifest_errors::kCannotAccessChromeUrl;
     }
     return false;
   }

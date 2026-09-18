@@ -45,8 +45,13 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/test_extension_dir.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/webui/os_feedback_ui/url_constants.h"
+#endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -373,6 +378,48 @@ TEST_F(ActiveTabTest, CapturingPagesWithActiveTab) {
         url, tab_id(), nullptr /*error*/,
         CaptureRequirement::kActiveTabOrAllUrls));
   }
+}
+
+TEST_F(ActiveTabTest, CapturingFeedbackDisallowed) {
+  const GURL kFeedbackUrl(chrome::kChromeUIFeedbackURL);
+  NavigateAndCommit(kFeedbackUrl);
+  EXPECT_EQ(kFeedbackUrl, web_contents()->GetLastCommittedURL());
+
+  // By default, capture should be disallowed.
+  std::string error;
+  EXPECT_FALSE(extension->permissions_data()->CanCaptureVisiblePage(
+      kFeedbackUrl, tab_id(), &error, CaptureRequirement::kActiveTabOrAllUrls));
+  EXPECT_EQ(manifest_errors::kCannotAccessChromeUrl, error);
+
+  // Even after granting activeTab, chrome://feedback cannot be captured because
+  // it is more of a native surface that shouldn't be accessible to (or
+  // triggerable by) extensions.
+  // See also https://crbug.com/477664550.
+  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  error.clear();
+  EXPECT_FALSE(extension->permissions_data()->CanCaptureVisiblePage(
+      kFeedbackUrl, tab_id(), &error, CaptureRequirement::kActiveTabOrAllUrls));
+  EXPECT_EQ(manifest_errors::kCannotAccessChromeUrl, error);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Repeat the test for the ChromeOS feedback URL.
+  const GURL kOSFeedbackUrl(ash::kChromeUIOSFeedbackUrl);
+  NavigateAndCommit(kOSFeedbackUrl);
+  EXPECT_EQ(kOSFeedbackUrl, web_contents()->GetLastCommittedURL());
+
+  error.clear();
+  EXPECT_FALSE(extension->permissions_data()->CanCaptureVisiblePage(
+      kOSFeedbackUrl, tab_id(), &error,
+      CaptureRequirement::kActiveTabOrAllUrls));
+  EXPECT_EQ(manifest_errors::kCannotAccessChromeUrl, error);
+
+  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  error.clear();
+  EXPECT_FALSE(extension->permissions_data()->CanCaptureVisiblePage(
+      kOSFeedbackUrl, tab_id(), &error,
+      CaptureRequirement::kActiveTabOrAllUrls));
+  EXPECT_EQ(manifest_errors::kCannotAccessChromeUrl, error);
+#endif
 }
 
 TEST_F(ActiveTabTest, Unloading) {

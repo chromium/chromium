@@ -126,6 +126,11 @@ std::optional<int> ExtensionsClient::GetExtensionExtendedErrorCode() const {
   return std::nullopt;
 }
 
+bool ExtensionsClient::IsCapturableURL(const GURL& url,
+                                       std::string* error) const {
+  return true;
+}
+
 void ExtensionsClient::DoInitialize() {
   initialize_called_ = true;
 

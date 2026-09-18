@@ -24,6 +24,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/origin.h"
@@ -368,6 +369,12 @@ bool TabCaptureRegistry::CanCaptureWebContents(
   }
 
   if (extension.permissions_data()->IsUrlBlockedByUser(origin_url)) {
+    error = tab_capture_errors::kCannotCapturePage;
+    return false;
+  }
+
+  if (!ExtensionsClient::Get()->IsCapturableURL(origin_url, &error)) {
+    // Note: override the error to preserve a consistent message.
     error = tab_capture_errors::kCannotCapturePage;
     return false;
   }
