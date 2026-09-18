@@ -189,6 +189,7 @@ public class UrlBarUnitTest {
 
         mUrlBar.setDelegate(mUrlBarDelegate);
         mUrlBar.setTextContextMenuDelegate(mTextContextMenuDelegate);
+        mUrlBar.setSelected(true);
     }
 
     private void setupUrlBarSpy() {
@@ -324,6 +325,14 @@ public class UrlBarUnitTest {
                 "Addition Text",
                 expectedAdditionalText,
                 mUrlBar.getAdditionalText() != null ? mUrlBar.getAdditionalText() : "");
+    }
+
+    private void setUpCursorVisible() {
+        doReturn(true).when(mUrlBar).isFocused();
+        doReturn(true).when(mUrlBar).hasWindowFocus();
+        mUrlBar.setSelected(true);
+        mUrlBar.setCursorVisible(true);
+        assertTrue(mUrlBar.isCursorVisible());
     }
 
     @Test
@@ -495,7 +504,7 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    public void onTouchEvent_touchDownIsIgnored() {
+    public void onTouchEvent_touchDownEmitsOnUrlBarTouchDown() {
         mUrlBar.onFocusChanged(
                 /* focused= */ true,
                 /* direction= */ View.FOCUS_DOWN,
@@ -508,6 +517,7 @@ public class UrlBarUnitTest {
                         /* x= */ 0,
                         /* y= */ 0,
                         /* metaState= */ 0));
+        verify(mUrlBarDelegate).onUrlBarTouchDown();
         verify(mUrlBarDelegate, never()).onTouchAfterFocus();
     }
 
@@ -2135,6 +2145,17 @@ public class UrlBarUnitTest {
 
         doReturn(true).when(mUrlBar).hasWindowFocus();
         mUrlBar.onWindowFocusChanged(/* hasWindowFocus= */ true);
+        assertTrue(mUrlBar.isCursorVisible());
+    }
+
+    @Test
+    public void testCursorVisibility_Selected() {
+        setUpCursorVisible();
+
+        mUrlBar.setSelected(false);
+        assertFalse(mUrlBar.isCursorVisible());
+
+        mUrlBar.setSelected(true);
         assertTrue(mUrlBar.isCursorVisible());
     }
 

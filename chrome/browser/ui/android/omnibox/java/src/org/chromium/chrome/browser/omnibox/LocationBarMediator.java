@@ -556,7 +556,6 @@ class LocationBarMediator
                     public void handleActivationEvent(KeyEvent event) {}
                 };
 
-        View urlBar = mLocationBarLayout.getUrlBar();
         mUrlBarSelectableView =
                 new SelectableView() {
                     @Override
@@ -565,9 +564,7 @@ class LocationBarMediator
                     }
 
                     @Override
-                    public void setSelected(boolean isSelected) {
-                        urlBar.setSelected(isSelected);
-                    }
+                    public void setSelected(boolean isSelected) {}
 
                     @Override
                     public void handleActivationEvent(KeyEvent event) {
@@ -614,6 +611,7 @@ class LocationBarMediator
                         wrapSelectableView(mLocationBarLayout.getMicButton()),
                         wrapSelectableView(mLocationBarLayout.getNavigateButton()));
         mSelectionController = new LocationBarSelectionController(selectableViews);
+        mSelectionController.setSelectionChangedCallback(this::onLocationBarSelectionChanged);
 
         updateShouldAnimateIconChanges();
         updateButtonVisibility();
@@ -2601,6 +2599,7 @@ class LocationBarMediator
             mSelectionController.setSelectionMode(TraversalMode.SATURATING);
             mSelectionController.reset();
         }
+        updateUrlBarSelection();
         updateShowFocusRing();
         updateReparentingState();
         updateButtonVisibility();
@@ -2821,6 +2820,18 @@ class LocationBarMediator
         updateShowFocusRing();
         updateActivationChip();
         if (windowHasFocus) maybeShowOrClearCursorInLocationBar();
+    }
+
+    private void onLocationBarSelectionChanged() {
+        updateUrlBarSelection();
+        updateShowFocusRing();
+    }
+
+    private void updateUrlBarSelection() {
+        boolean shouldSelectUrlBar =
+                mSelectionController.getSelectedView() == mUrlBarSelectableView
+                        || displayStateEquals(DisplayState.SUGGESTIONS);
+        mLocationBarLayout.getUrlBar().setSelected(shouldSelectUrlBar);
     }
 
     private void updateShowFocusRing() {
@@ -3377,6 +3388,13 @@ class LocationBarMediator
                 text,
                 TimeUtils.uptimeMillis(),
                 AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
+    }
+
+    @Override
+    public void onUrlBarTouchDown() {
+        if (mSelectionController.getSelectedView() != mUrlBarSelectableView) {
+            mSelectionController.reset();
+        }
     }
 
     @Override

@@ -234,6 +234,9 @@ public class UrlBar extends AutocompleteEditText {
         /** Called to notify that UrlBar has been touched after focus. */
         void onTouchAfterFocus();
 
+        /** Called to notify that a touch down event occurred on the UrlBar. */
+        default void onUrlBarTouchDown() {}
+
         /** Returns whether showing the keyboard should be suppressed. */
         default boolean isKeyboardSuppressed() {
             return false;
@@ -497,13 +500,20 @@ public class UrlBar extends AutocompleteEditText {
     }
 
     @Override
+    public void setSelected(boolean selected) {
+        super.setSelected(selected);
+        updateCursorVisibility();
+    }
+
+    @Override
     public void setCursorVisible(boolean visible) {
         mDesiredCursorVisible = visible;
         updateCursorVisibility();
     }
 
     private void updateCursorVisibility() {
-        super.setCursorVisible(mDesiredCursorVisible && hasWindowFocus() && isFocused());
+        super.setCursorVisible(
+                mDesiredCursorVisible && hasWindowFocus() && isFocused() && isSelected());
     }
 
     @Override
@@ -761,6 +771,9 @@ public class UrlBar extends AutocompleteEditText {
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getActionMasked();
         if (action == MotionEvent.ACTION_DOWN) {
+            if (mUrlBarDelegate != null) {
+                mUrlBarDelegate.onUrlBarTouchDown();
+            }
             if ((event.getButtonState() & MotionEvent.BUTTON_SECONDARY) != 0) {
                 if (isFocused()) {
                     selectWordAt(event.getX(), event.getY());

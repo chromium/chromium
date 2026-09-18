@@ -611,6 +611,28 @@ public class LocationBarMediatorUnitTest {
         assertDisplayState(displayState);
     }
 
+    private void setUpTabToActivationChip(@DisplayState int displayState) {
+        setUpTabToActivationChip(displayState, /* withInitialUserText= */ false);
+    }
+
+    private void setUpTabToActivationChip(
+            @DisplayState int displayState, boolean withInitialUserText) {
+        doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
+        doReturn(true).when(mKeyEvent).hasNoModifiers();
+        doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
+        doReturn(View.VISIBLE).when(mActivationChip).getVisibility();
+
+        var input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH);
+        input.setDisplayState(displayState);
+        mMediator.beginInput(input);
+        if (withInitialUserText) {
+            input.setInitialUserText(TEST_INITIAL_USER_TEXT);
+            doReturn(TEST_INITIAL_USER_TEXT).when(mUrlCoordinator).getTextWithoutAutocomplete();
+        }
+        clearInvocations(mUrlCoordinator, mUrlBar);
+    }
+
     @Test
     public void testGetVoiceRecognitionHandler_safeToCallAfterDestroy() {
         mMediator.onFinishNativeInitialization();
@@ -916,16 +938,19 @@ public class LocationBarMediatorUnitTest {
 
         var input = mSessionState.getAutocompleteInput();
         mMediator.beginInput(input);
+        clearInvocations(mUrlBar);
 
         LocationBarSelectionController selectionController =
                 mMediator.getSelectionControllerForTesting();
         assertTrue(selectionController.selectNextItem());
         verify(mActivationChip).setSelected(true);
+        verify(mUrlBar).setSelected(false);
 
-        clearInvocations(mActivationChip);
+        clearInvocations(mActivationChip, mUrlBar);
         mMediator.onUrlTextChanged("test");
 
         verify(mActivationChip, atLeastOnce()).setSelected(false);
+        verify(mUrlBar).setSelected(true);
     }
 
     /** Verifies that typing a space after text triggers site search. */
@@ -1341,7 +1366,8 @@ public class LocationBarMediatorUnitTest {
         assertTrue(mMediator.handleEscPress());
 
         // Verify focus ring is restored.
-        verify(mLocationBarLayout).setShowFocusRing(true);
+        verify(mLocationBarLayout, atLeastOnce()).setShowFocusRing(true);
+        verify(mLocationBarLayout, never()).setShowFocusRing(false);
     }
 
     @Test
@@ -4032,6 +4058,7 @@ public class LocationBarMediatorUnitTest {
     public void testStandbyEndsWithRequestTypeChanged() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
+        clearInvocations(mLocationBarLayout);
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         mMediator.beginInput(input);
         verify(mLocationBarLayout, atLeastOnce()).setShowFocusRing(true);
@@ -4042,7 +4069,8 @@ public class LocationBarMediatorUnitTest {
         input.setRequestType(AutocompleteRequestType.AI_MODE);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mLocationBarLayout).setShowFocusRing(false);
+        verify(mLocationBarLayout, atLeastOnce()).setShowFocusRing(false);
+        verify(mLocationBarLayout, never()).setShowFocusRing(true);
     }
 
     @Test
@@ -4353,24 +4381,31 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testHandleKeyNavigationEvent_tabToActivationChip() {
-        doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
-        doReturn(true).when(mKeyEvent).hasNoModifiers();
-        doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
-        doReturn(View.VISIBLE).when(mActivationChip).getVisibility();
-
-        var input = mSessionState.getAutocompleteInput();
-        input.setRequestType(AutocompleteRequestType.SEARCH);
-        input.setDisplayState(DisplayState.SUGGESTIONS);
-        mMediator.beginInput(input);
-        input.setInitialUserText("page.com");
-        doReturn("page.com").when(mUrlCoordinator).getTextWithoutAutocomplete();
-        clearInvocations(mUrlCoordinator);
+        setUpTabToActivationChip(DisplayState.SUGGESTIONS, /* withInitialUserText= */ true);
 
         // Tab from UrlBar to ActivationChip.
         assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
         verify(mActivationChip).setSelected(true);
         verify(mUrlCoordinator)
                 .setUrlBarData(any(), eq(ScrollType.NO_SCROLL), eq(TextSelection.SELECT_END));
+    }
+
+    @Test
+    public void testHandleKeyNavigationEvent_tabToActivationChip_drafting() {
+        setUpTabToActivationChip(DisplayState.DRAFTING);
+
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+        verify(mActivationChip).setSelected(true);
+        verify(mUrlBar).setSelected(false);
+    }
+
+    @Test
+    public void testHandleKeyNavigationEvent_tabToActivationChip_suggestions() {
+        setUpTabToActivationChip(DisplayState.SUGGESTIONS);
+
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+        verify(mActivationChip).setSelected(true);
+        verify(mUrlBar).setSelected(true);
     }
 
     @Test
@@ -4828,21 +4863,27 @@ public class LocationBarMediatorUnitTest {
         mProfileSupplier.set(mProfile);
         mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
 
+        clearInvocations(mLocationBarLayout);
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setAutocompleteState(AutocompleteState.STANDBY);
         mMediator.beginInput(input);
 
         // By default, window is focused (mocked in setUp) and we are in STANDBY.
         // So focus ring should be shown.
-        verify(mLocationBarLayout).setShowFocusRing(true);
+        verify(mLocationBarLayout, atLeastOnce()).setShowFocusRing(true);
+        verify(mLocationBarLayout, never()).setShowFocusRing(false);
+        clearInvocations(mLocationBarLayout);
 
         // Lose window focus -> focus ring should be hidden.
         mWindowHasFocusSupplier.set(false);
-        verify(mLocationBarLayout).setShowFocusRing(false);
+        verify(mLocationBarLayout, atLeastOnce()).setShowFocusRing(false);
+        verify(mLocationBarLayout, never()).setShowFocusRing(true);
+        clearInvocations(mLocationBarLayout);
 
         // Regain window focus -> focus ring should be shown again.
         mWindowHasFocusSupplier.set(true);
-        verify(mLocationBarLayout, times(2)).setShowFocusRing(true);
+        verify(mLocationBarLayout, atLeastOnce()).setShowFocusRing(true);
+        verify(mLocationBarLayout, never()).setShowFocusRing(false);
     }
 
     @Test
@@ -5362,6 +5403,17 @@ public class LocationBarMediatorUnitTest {
         mMediator.onActivationChipSelectionChanged(true);
 
         verify(mUrlCoordinator, never()).setUrlBarData(any(), anyInt(), any());
+    }
+
+    @Test
+    public void testTouchUrlBar_urlBarSelected() {
+        setUpTabToActivationChip(DisplayState.DRAFTING);
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+        verify(mUrlBar).setSelected(false);
+
+        clearInvocations(mUrlBar);
+        mMediator.onUrlBarTouchDown();
+        verify(mUrlBar).setSelected(true);
     }
 
     @Test
