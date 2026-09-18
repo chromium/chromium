@@ -72,6 +72,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -240,6 +241,18 @@ class WorkerTest : public ContentBrowserTest {
         base::BindOnce(&QuitUIMessageLoop, runner->QuitClosure()));
     shell()->LoadURL(url);
     runner->Run();
+  }
+
+  bool NavigateToURLWithPdf(WebContents* web_contents, const GURL& url) {
+    NavigationController::LoadURLParams params(url);
+    params.transition_type = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+    params.is_pdf = true;
+    NavigateToURLBlockUntilNavigationsComplete(
+        web_contents, params, 1,
+        /*ignore_uncommitted_navigations=*/false);
+    return IsLastCommittedEntryOfPageType(web_contents, PAGE_TYPE_NORMAL) &&
+           web_contents->GetLastCommittedURL() == url;
   }
 
   void SetSameSiteCookie(const std::string& host) {
@@ -525,14 +538,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, DedicatedWorkerBlockedForPdfProcess) {
 
   // Commit `url` as PDF content so that the resulting frame runs in a process
   // whose SiteInfo has `is_pdf` set.
-  NavigationController::LoadURLParams params(url);
-  params.transition_type = ui::PageTransitionFromInt(
-      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-  params.is_pdf = true;
-  NavigateToURLBlockUntilNavigationsComplete(
-      tab, params, 1, /*ignore_uncommitted_navigations=*/false);
-  ASSERT_TRUE(IsLastCommittedEntryOfPageType(tab, PAGE_TYPE_NORMAL));
-  ASSERT_EQ(url, tab->GetLastCommittedURL());
+  ASSERT_TRUE(NavigateToURLWithPdf(tab, url));
 
   RenderFrameHostImpl* frame = tab->GetPrimaryMainFrame();
   ASSERT_TRUE(frame->GetSiteInstance()->GetSiteInfo().is_pdf());
@@ -597,6 +603,73 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, PrivilegedWebContentsCannotUseSharedWorker) {
   ASSERT_TRUE(NavigateToURL(shell(), page_url));
   EXPECT_EQ("Worker connected.", EvalJs(shell(), kConnectSharedWorker));
   EXPECT_TRUE(GetSharedWorkerHost(worker_url));
+}
+
+class PdfWorkerTest : public WorkerTest {
+ public:
+  PdfWorkerTest() {
+    // In content_shell (content_browsertests), ContentRendererClient does not
+    // override IsDomStorageDisabled() for PDF processes (unlike Chrome). As a
+    // result, calling `new SharedWorker(...)` in JS invokes
+    // LocalDOMWindow::GetPublicURLManager(), which attempts to bind
+    // BlobURLStore and triggers a renderer kill under
+    // kEnforcePdfBlobRestrictions before SharedWorkerConnector::Connect reaches
+    // the browser process. Disable kEnforcePdfBlobRestrictions so that the
+    // SharedWorker connection request reaches SharedWorkerServiceImpl.
+    feature_list_.InitAndDisableFeature(
+        blink::features::kEnforcePdfBlobRestrictions);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verify that frames in a PDF process do not connect to or create shared
+// workers, while an ordinary WebContents at the same URL connects normally.
+IN_PROC_BROWSER_TEST_F(PdfWorkerTest, PdfCannotUseSharedWorker) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+
+  const GURL page_url = ssl_server()->GetURL("a.test", "/title1.html");
+  const GURL worker_url =
+      ssl_server()->GetURL("a.test", "/workers/messageport_worker.js");
+  static constexpr char kConnectSharedWorker[] = R"(
+    new Promise(resolve => {
+      window.worker = new SharedWorker("/workers/messageport_worker.js");
+      window.worker.onerror = (e) => resolve("Worker blocked.");
+      window.worker.port.onmessage = (e) => resolve(e.data);
+    })
+  )";
+
+  // 1. A PDF frame attempting to create a shared worker is blocked.
+  ASSERT_TRUE(NavigateToURLWithPdf(shell()->web_contents(), page_url));
+  EXPECT_TRUE(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->IsPdf());
+  EXPECT_EQ("Worker blocked.",
+            EvalJs(shell()->web_contents(), kConnectSharedWorker));
+  EXPECT_FALSE(GetSharedWorkerHost(worker_url));
+
+  // 2. Control: an ordinary WebContents at the same URL connects and creates
+  // the shared worker normally.
+  Shell* ordinary_shell = CreateBrowser();
+  ASSERT_TRUE(NavigateToURL(ordinary_shell, page_url));
+  RenderFrameHostImpl* ordinary_rfh = static_cast<RenderFrameHostImpl*>(
+      ordinary_shell->web_contents()->GetPrimaryMainFrame());
+  EXPECT_FALSE(ordinary_rfh->GetProcess()->IsPdf());
+  EXPECT_EQ("Worker connected.", EvalJs(ordinary_shell, kConnectSharedWorker));
+  SharedWorkerHost* host = GetSharedWorkerHost(worker_url);
+  ASSERT_TRUE(host);
+  EXPECT_EQ(std::vector<GlobalRenderFrameHostId>{ordinary_rfh->GetGlobalId()},
+            host->GetRenderFrameIDsForWorker());
+
+  // 3. A PDF frame is also blocked from connecting to the existing shared
+  // worker, and the existing worker host remains unaffected.
+  EXPECT_EQ("Worker blocked.",
+            EvalJs(shell()->web_contents(), kConnectSharedWorker));
+  EXPECT_EQ(host, GetSharedWorkerHost(worker_url));
+  EXPECT_EQ(std::vector<GlobalRenderFrameHostId>{ordinary_rfh->GetGlobalId()},
+            host->GetRenderFrameIDsForWorker());
 }
 
 // Create a SharedWorker from a COEP:required-corp document.

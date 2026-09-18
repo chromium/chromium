@@ -21,8 +21,12 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/embedder_isolation_info.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/url_info.h"
 #include "content/browser/worker_host/mock_shared_worker.h"
 #include "content/browser/worker_host/shared_worker_connector_impl.h"
 #include "content/common/features.h"
@@ -2097,6 +2101,69 @@ TEST_F(SharedWorkerServiceImplTest, EvictBFCachedClientsIfLastActive) {
   // evicted from BFCache because it is not in BFCache.
   EXPECT_TRUE(service->EvictBFCachedClientsIfLastActive(rfh_impl1));
   EXPECT_FALSE(rfh_impl3->is_evicted_from_back_forward_cache());
+}
+
+// Verifies that ConnectToWorker fails with OnScriptLoadFailed when the
+// requesting process does not have data access permission for the origin.
+TEST_F(SharedWorkerServiceImplTest, CanAccessDataForOriginDenied) {
+  const GURL kUrl("https://example.com/");
+  const GURL kWorkerUrl("https://example.com/worker.js");
+
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kUrl);
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
+  MockRenderProcessHost* renderer_host = render_frame_host->GetProcess();
+
+  UrlInfo pdf_url_info(UrlInfoInit(kUrl).WithEmbedderIsolationInfo(
+      EmbedderIsolationInfo::CreateForPdf()));
+  scoped_refptr<SiteInstanceImpl> pdf_site_instance =
+      SiteInstanceImpl::CreateForUrlInfo(browser_context_.get(), pdf_url_info,
+                                         /*is_guest=*/false,
+                                         /*is_fenced=*/false,
+                                         /*is_fixed_storage_partition=*/false);
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  policy->Remove(renderer_host->GetID());
+  policy->AddForTesting(renderer_host->GetID(), browser_context_.get());
+  policy->LockProcess(
+      pdf_site_instance->GetIsolationContext(), renderer_host->GetID(),
+      /*is_process_used=*/false,
+      ProcessLock::FromSiteInfo(pdf_site_instance->GetSiteInfo()));
+
+  ASSERT_FALSE(policy->CanAccessDataForOrigin(
+      renderer_host->GetID().value(),
+      render_frame_host->GetStorageKey().origin()));
+
+  auto options = blink::mojom::WorkerOptions::New();
+  options->name = "name";
+  blink::mojom::SharedWorkerInfoPtr info(blink::mojom::SharedWorkerInfo::New(
+      kWorkerUrl, std::move(options),
+      std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+      blink::mojom::FetchClientSettingsObject::New(
+          []() {
+            auto policies = blink::mojom::PolicyContainerPolicies::New();
+            policies->referrer_policy =
+                network::mojom::ReferrerPolicy::kDefault;
+            return policies;
+          }(),
+          GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+      blink::mojom::SharedWorkerSameSiteCookies::kAll,
+      /*extended_lifetime=*/false));
+
+  blink::MessagePortDescriptorPair pipe;
+  mojo::PendingRemote<blink::mojom::SharedWorkerClient> client_proxy;
+  MockSharedWorkerClient client;
+  client.Bind(client_proxy.InitWithNewPipeAndPassReceiver());
+
+  SharedWorkerServiceImpl* service = static_cast<SharedWorkerServiceImpl*>(
+      browser_context_->GetDefaultStoragePartition()->GetSharedWorkerService());
+
+  service->ConnectToWorker(
+      render_frame_host->GetGlobalId(), std::move(info),
+      std::move(client_proxy),
+      blink::mojom::SharedWorkerCreationContextType::kSecure,
+      blink::MessagePortChannel(pipe.TakePort1()), nullptr, std::nullopt);
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return client.CheckReceivedOnScriptLoadFailed(); }));
 }
 
 }  // namespace content

@@ -184,6 +184,15 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   const blink::StorageKey& storage_key =
       storage_key_override.value_or(render_frame_host->GetStorageKey());
 
+  // Ensure that the requesting process can access data for the storage key's
+  // origin before connecting to or creating a shared worker.
+  if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
+          render_frame_host->GetProcess()->GetID().value(),
+          storage_key.origin())) {
+    ScriptLoadFailed(std::move(client), /*error_message=*/"");
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(
           features::kEnforceSharedWorkerSameOriginCheck) &&
       !info->url.SchemeIs(url::kDataScheme)) {
