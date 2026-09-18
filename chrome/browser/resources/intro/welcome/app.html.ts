@@ -45,7 +45,7 @@ ${this.showMetricsOptIn_ ? html`
   <dialog id="dialog" closedby="any" aria-labelledby="dialog-title"
       aria-describedby="dialog-body">
     <div id="dialog-header">
-      <div id="dialog-title">$i18n{welcomeMetricsPopupTitle}</div>
+      <h2 id="dialog-title">$i18n{welcomeMetricsPopupTitle}</h2>
       <cr-icon-button id="dialogCloseButton" iron-icon="cr:close"
           aria-label="$i18n{welcomeMetricsPopupCloseButtonLabel}"
           @click="${this.onDialogCloseButtonClick_}">
