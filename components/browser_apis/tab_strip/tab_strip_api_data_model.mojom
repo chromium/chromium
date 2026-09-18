@@ -60,6 +60,9 @@ struct UnpinnedTabs {
 struct TabGroup {
   NodeId id;
   TabGroupVisualData data;
+  // Whether the tab group is temporary (created when focusing ungrouped tabs
+  // and ungrouped when unfocused).
+  bool is_temporary;
 };
 
 // TODO(crbug.com/425652802): This should be merged with struct

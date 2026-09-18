@@ -1715,4 +1715,23 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest,
   histogram_tester.ExpectTotalCount("Tabs.TabSearch.CloseAction2", 2);
 }
 
+IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, TemporaryTabGroupFilteredOut) {
+  AddTabWithTitle(browser1(), tab_url1_, kTabName1);
+
+  TabStripModel* tab_strip_model = browser1()->tab_strip_model();
+  tab_strip_model->AddToNewGroup({0}, /*is_temporary=*/true);
+
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            EXPECT_TRUE(profile_tabs->tab_groups.empty());
+            for (const auto& window : profile_tabs->windows) {
+              for (const auto& tab : window->tabs) {
+                EXPECT_FALSE(tab->group_id.has_value());
+              }
+            }
+          });
+  handler()->GetProfileData(std::move(callback));
+}
+
 }  // namespace

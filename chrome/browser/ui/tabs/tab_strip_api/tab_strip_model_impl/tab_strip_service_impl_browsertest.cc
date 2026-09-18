@@ -920,7 +920,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, UpdateTabGroupData) {
   tab_groups::TabGroupVisualData new_visuals(
       expected_title, tab_groups::TabGroupColorId::kRed, false);
   base::RunLoop run_loop;
-  auto tab_group = tabs_api::mojom::TabGroup::New(group_node_id, new_visuals);
+  auto tab_group = tabs_api::mojom::TabGroup::New(group_node_id, new_visuals,
+                                                  /*is_temporary=*/false);
   auto data = tabs_api::mojom::Data::NewTabGroup(std::move(tab_group));
   remote->Update(
       std::move(data), std::nullopt,

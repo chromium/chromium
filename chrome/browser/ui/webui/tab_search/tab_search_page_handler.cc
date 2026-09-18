@@ -532,20 +532,22 @@ void TabSearchPageHandler::WalkContainer(
     }
   } else if (container->data->is_tab_group()) {
     const auto& group_data = container->data->get_tab_group();
-    auto tab_group = tab_search::mojom::TabGroup::New();
-    tab_group->title = base::UTF16ToUTF8(group_data->data.title());
-    tab_group->color = group_data->data.color();
+    if (!group_data->is_temporary) {
+      auto tab_group = tab_search::mojom::TabGroup::New();
+      tab_group->title = base::UTF16ToUTF8(group_data->data.title());
+      tab_group->color = group_data->data.color();
 
-    std::optional<tabs::TabCollectionHandle> collection_handle =
-        group_data->id.ToTabCollectionHandle();
-    if (collection_handle.has_value()) {
-      const tab_groups::TabGroupId& group_id =
-          static_cast<tabs::TabGroupTabCollection*>(
-              collection_handle.value().Get())
-              ->GetTabGroupId();
-      tab_group->id = group_id.token();
-      tab_group_ids.insert(group_id);
-      profile_data->tab_groups.push_back(std::move(tab_group));
+      std::optional<tabs::TabCollectionHandle> collection_handle =
+          group_data->id.ToTabCollectionHandle();
+      if (collection_handle.has_value()) {
+        const tab_groups::TabGroupId& group_id =
+            static_cast<tabs::TabGroupTabCollection*>(
+                collection_handle.value().Get())
+                ->GetTabGroupId();
+        tab_group->id = group_id.token();
+        tab_group_ids.insert(group_id);
+        profile_data->tab_groups.push_back(std::move(tab_group));
+      }
     }
   }
 
@@ -748,8 +750,13 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   tab_mojom_data->active = tab->IsActivated();
   tab_mojom_data->visible = tab->IsVisible();
   tab_mojom_data->tab_id = tab->GetHandle().raw_value();
+  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
+  TabStripModel* tab_strip_model =
+      browser ? browser->GetTabStripModel() : nullptr;
   const std::optional<tab_groups::TabGroupId> group_id = tab->GetGroup();
-  if (group_id.has_value()) {
+  if (group_id.has_value() &&
+      (!tab_strip_model ||
+       !tab_strip_model->IsTabGroupTemporary(group_id.value()))) {
     tab_mojom_data->group_id = group_id.value().token();
   }
   tab_mojom_data->pinned = tab->IsPinned();
@@ -757,9 +764,6 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   const std::optional<split_tabs::SplitTabId> split_id = tab->GetSplit();
   if (split_id.has_value()) {
     tab_mojom_data->split_id = split_id.value().token();
-    BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
-    TabStripModel* tab_strip_model =
-        browser ? browser->GetTabStripModel() : nullptr;
     if (tab_strip_model) {
       auto* split_data = tab_strip_model->GetSplitData(split_id.value());
       if (split_data && split_data->visual_data()) {
