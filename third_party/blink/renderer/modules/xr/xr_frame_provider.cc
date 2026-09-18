@@ -772,10 +772,12 @@ void XRFrameProvider::UpdateLayerViewports(XRProjectionLayer* layer) {
 
   XRGraphicsBinding* binding = layer->binding();
 
-  bool is_shared_buffer = frame_transport_->DrawingIntoSharedBuffer();
-  float width = (is_shared_buffer || layer->textureArrayLength() <= 1)
-                    ? layer->textureWidth()
-                    : layer->textureWidth() * layer->textureArrayLength();
+  // TODO(crbug.com/359418629): Currently we have no way to submit texture
+  // arrays to the compositor, so any array textures produced by the page will
+  // be copied to a side-by-side texture prior to submission. That does mean
+  // that we need to adjust the viewports from those reported to the page,
+  // however, by altering the texture width here...
+  float width = layer->textureWidth() * layer->textureArrayLength();
   float height = layer->textureHeight();
 
   gfx::RectF left_coords;
@@ -789,8 +791,8 @@ void XRFrameProvider::UpdateLayerViewports(XRProjectionLayer* layer) {
     gfx::Rect left = binding->GetViewportForView(layer, left_view);
     gfx::Rect right = binding->GetViewportForView(layer, right_view);
 
-    // Only offset right viewport if we are using the side-by-side fallback.
-    if (!is_shared_buffer && layer->textureArrayLength() > 1) {
+    // (continued from prior comment) ...and offsetting the viewports here.
+    if (layer->textureArrayLength() > 1) {
       right.set_x(right.x() + layer->textureWidth());
     }
 

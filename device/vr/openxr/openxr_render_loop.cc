@@ -399,7 +399,7 @@ void OpenXrRenderLoop::StartRuntimeFinish(
 
   auto session = device::mojom::XRSession::New();
   session->data_provider = frame_data_receiver_.BindNewPipeAndPassRemote();
-  if (graphics_binding_->SupportsLayers()) {
+  if (openxr_->IsFeatureEnabled(mojom::XRSessionFeature::LAYERS)) {
     session->layer_manager = layer_manager_receiver_.BindNewPipeAndPassRemote();
   }
   session->submit_frame_sink = std::move(submit_frame_sink);
@@ -418,7 +418,7 @@ void OpenXrRenderLoop::StartRuntimeFinish(
   if (auto* depth = openxr_->GetDepthSensor(); depth) {
     session->device_config->depth_configuration = depth->GetDepthConfig();
   }
-  if (graphics_binding_->SupportsLayers()) {
+  if (openxr_->IsFeatureEnabled(mojom::XRSessionFeature::LAYERS)) {
     session->device_config->max_render_layers = openxr_->GetMaxRenderLayers();
   }
 
@@ -1101,9 +1101,7 @@ void OpenXrRenderLoop::CreateCompositionLayer(
     }
   };
 
-  if (!openxr_->IsFeatureEnabled(mojom::XRSessionFeature::LAYERS) &&
-      layer_data->mutable_data->layer_data->which() !=
-          mojom::XRLayerSpecificData::Tag::kProjection) {
+  if (!openxr_->IsFeatureEnabled(mojom::XRSessionFeature::LAYERS)) {
     return;
   }
   if (!context_provider_) {
@@ -1121,17 +1119,16 @@ void OpenXrRenderLoop::CreateCompositionLayer(
 void OpenXrRenderLoop::UpdateCompositionLayer(
     const LayerId& layer_id,
     mojom::XRLayerMutableDataPtr layer_data) {
+  if (!openxr_->IsFeatureEnabled(mojom::XRSessionFeature::LAYERS)) {
+    layer_manager_receiver_.ReportBadMessage("Layers feature is not enabled.");
+    return;
+  }
+
   OpenXrCompositionLayer* layer =
       graphics_binding_->GetCompositionLayer(layer_id);
 
   if (!layer) {
     layer_manager_receiver_.ReportBadMessage("Invalid layer id.");
-    return;
-  }
-
-  if (!openxr_->IsFeatureEnabled(mojom::XRSessionFeature::LAYERS) &&
-      layer->type() != OpenXrCompositionLayer::Type::kProjection) {
-    layer_manager_receiver_.ReportBadMessage("Layers feature is not enabled.");
     return;
   }
 
@@ -1153,23 +1150,8 @@ void OpenXrRenderLoop::DestroyCompositionLayer(const LayerId& layer_id) {
 void OpenXrRenderLoop::SetEnabledCompositionLayers(
     const std::vector<LayerId>& layer_ids) {
   if (!openxr_->IsFeatureEnabled(mojom::XRSessionFeature::LAYERS)) {
-    if (layer_ids.size() > 1) {
-      layer_manager_receiver_.ReportBadMessage(
-          "Multiple layers are not allowed when layers feature is not "
-          "enabled.");
-      return;
-    }
-    if (layer_ids.size() == 1) {
-      OpenXrCompositionLayer* layer =
-          graphics_binding_->GetCompositionLayer(layer_ids[0]);
-      if (!layer ||
-          layer->type() != OpenXrCompositionLayer::Type::kProjection) {
-        layer_manager_receiver_.ReportBadMessage(
-            "Non-projection layers are not allowed when layers feature is not "
-            "enabled.");
-        return;
-      }
-    }
+    layer_manager_receiver_.ReportBadMessage("Layers feature is not enabled.");
+    return;
   }
   if (!context_provider_) {
     layer_manager_receiver_.ReportBadMessage("Context was lost.");
