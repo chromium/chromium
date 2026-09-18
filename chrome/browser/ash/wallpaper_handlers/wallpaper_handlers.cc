@@ -111,7 +111,7 @@ class BackdropFetcher {
              const std::string& request_body,
              const net::NetworkTrafficAnnotationTag& traffic_annotation,
              OnFetchComplete callback) {
-    DCHECK(!simple_loader_ && callback_.is_null());
+    CHECK(!simple_loader_ && callback_.is_null(), base::NotFatalUntil::M160);
     callback_ = std::move(callback);
 
     SystemNetworkContextManager* system_network_context_manager =
@@ -173,13 +173,13 @@ class BackdropFetcher {
 };
 
 BackdropCollectionInfoFetcher::BackdropCollectionInfoFetcher() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 BackdropCollectionInfoFetcher::~BackdropCollectionInfoFetcher() = default;
 
 void BackdropCollectionInfoFetcher::Start(OnCollectionsInfoFetched callback) {
-  DCHECK(callback_.is_null());
+  CHECK(callback_.is_null(), base::NotFatalUntil::M160);
   callback_ = std::move(callback);
   ash::GetCustomizationId(
       base::BindOnce(&GetFilterFromCustomizationId)
@@ -260,13 +260,13 @@ void BackdropCollectionInfoFetcher::OnResponseFetched(
 BackdropImageInfoFetcher::BackdropImageInfoFetcher(
     const std::string& collection_id)
     : collection_id_(collection_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 BackdropImageInfoFetcher::~BackdropImageInfoFetcher() = default;
 
 void BackdropImageInfoFetcher::Start(OnImagesInfoFetched callback) {
-  DCHECK(callback_.is_null());
+  CHECK(callback_.is_null(), base::NotFatalUntil::M160);
   callback_ = std::move(callback);
   ash::GetCustomizationId(
       base::BindOnce(&GetFilterFromCustomizationId)
@@ -349,13 +349,13 @@ BackdropSurpriseMeImageFetcher::BackdropSurpriseMeImageFetcher(
     const std::string& collection_id,
     const std::string& resume_token)
     : collection_id_(collection_id), resume_token_(resume_token) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 BackdropSurpriseMeImageFetcher::~BackdropSurpriseMeImageFetcher() = default;
 
 void BackdropSurpriseMeImageFetcher::Start(OnSurpriseMeImageFetched callback) {
-  DCHECK(callback_.is_null());
+  CHECK(callback_.is_null(), base::NotFatalUntil::M160);
   callback_ = std::move(callback);
 
   ash::GetCustomizationId(

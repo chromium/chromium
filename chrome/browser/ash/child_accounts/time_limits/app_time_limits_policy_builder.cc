@@ -24,7 +24,7 @@ void AppTimeLimitsPolicyBuilder::AddAppLimit(const AppId& app_id,
   new_entry.Merge(std::move(app_limit_value));
 
   base::ListValue* list = value_.FindList(policy::kAppLimitsArray);
-  DCHECK(list);
+  CHECK(list, base::NotFatalUntil::M160);
   list->Append(std::move(new_entry));
 }
 

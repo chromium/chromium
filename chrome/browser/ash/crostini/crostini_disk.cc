@@ -202,7 +202,7 @@ GetTicks(int64_t min, int64_t current, int64_t max, int* out_default_index) {
     return {};
   }
   std::vector<int64_t> values = GetTicksForDiskSize(min, max);
-  DCHECK(!values.empty());
+  CHECK(!values.empty(), base::NotFatalUntil::M160);
 
   // If the current size isn't on one of the ticks insert an extra tick for it.
   // It's possible for the current size to be greater than the maximum tick,

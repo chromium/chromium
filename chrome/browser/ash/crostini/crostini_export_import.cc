@@ -491,20 +491,22 @@ void CrostiniExportImport::AfterDiskImageOperation(
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::GetDeleteFileCallback(it->second->path()));
-    DCHECK(it->second->status() ==
-               CrostiniExportImportStatusTracker::Status::RUNNING ||
-           it->second->status() ==
-               CrostiniExportImportStatusTracker::Status::CANCELLING);
+    CHECK(it->second->status() ==
+                  CrostiniExportImportStatusTracker::Status::RUNNING ||
+              it->second->status() ==
+                  CrostiniExportImportStatusTracker::Status::CANCELLING,
+          base::NotFatalUntil::M160);
     RemoveTracker(it)->SetStatusFailedBadImage();
   } else {
     LOG(ERROR) << "Error exporting " << static_cast<int>(result);
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::GetDeleteFileCallback(it->second->path()));
-    DCHECK(it->second->status() ==
-               CrostiniExportImportStatusTracker::Status::RUNNING ||
-           it->second->status() ==
-               CrostiniExportImportStatusTracker::Status::CANCELLING);
+    CHECK(it->second->status() ==
+                  CrostiniExportImportStatusTracker::Status::RUNNING ||
+              it->second->status() ==
+                  CrostiniExportImportStatusTracker::Status::CANCELLING,
+          base::NotFatalUntil::M160);
     RemoveTracker(it)->SetStatusFailed();
   }
 
@@ -644,15 +646,17 @@ void CrostiniExportImport::OnExportComplete(
         enum_hist_result = ExportContainerResult::kFailedVmStarted;
         break;
       default:
-        DCHECK(result == CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED);
+        CHECK(result == CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED,
+              base::NotFatalUntil::M160);
         enum_hist_result = ExportContainerResult::kFailed;
     }
     UMA_HISTOGRAM_LONG_TIMES("Crostini.BackupTimeFailed",
                              base::Time::Now() - start);
-    DCHECK(it->second->status() ==
-               CrostiniExportImportStatusTracker::Status::RUNNING ||
-           it->second->status() ==
-               CrostiniExportImportStatusTracker::Status::CANCELLING);
+    CHECK(it->second->status() ==
+                  CrostiniExportImportStatusTracker::Status::RUNNING ||
+              it->second->status() ==
+                  CrostiniExportImportStatusTracker::Status::CANCELLING,
+          base::NotFatalUntil::M160);
     RemoveTracker(it)->SetStatusFailed();
   }
   UMA_HISTOGRAM_ENUMERATION("Crostini.Backup", enum_hist_result);
@@ -764,7 +768,8 @@ void CrostiniExportImport::OnImportComplete(
         enum_hist_result = ImportContainerResult::kFailedSpace;
         break;
       default:
-        DCHECK(result == CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED);
+        CHECK(result == CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED,
+              base::NotFatalUntil::M160);
         enum_hist_result = ImportContainerResult::kFailed;
     }
     // If the operation didn't start successfully or the vm stops during the
@@ -774,8 +779,9 @@ void CrostiniExportImport::OnImportComplete(
         result == CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED_VM_STOPPED ||
         result == CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED_VM_STARTED) {
       if (it != status_trackers_.end()) {
-        DCHECK(it->second->status() ==
-               CrostiniExportImportStatusTracker::Status::RUNNING);
+        CHECK(it->second->status() ==
+                  CrostiniExportImportStatusTracker::Status::RUNNING,
+              base::NotFatalUntil::M160);
         RemoveTracker(it)->SetStatusFailed();
       } else {
         NOTREACHED() << container_id << " has no status_tracker to update";
@@ -850,7 +856,8 @@ void CrostiniExportImport::OnImportContainerProgress(
           architecture_container, architecture_device);
       break;
     case ImportContainerProgressStatus::FAILURE_SPACE:
-      DCHECK_GE(minimum_required_space, available_space);
+      CHECK_GE(minimum_required_space, available_space,
+               base::NotFatalUntil::M160);
       RemoveTracker(it)->SetStatusFailedInsufficientSpace(
           minimum_required_space - available_space);
       break;
@@ -866,7 +873,7 @@ std::string CrostiniExportImport::GetUniqueNotificationId() {
 
 std::unique_ptr<CrostiniExportImportStatusTracker>
 CrostiniExportImport::RemoveTracker(TrackerMap::iterator it) {
-  DCHECK(it != status_trackers_.end());
+  CHECK(it != status_trackers_.end(), base::NotFatalUntil::M160);
   auto status_tracker = std::move(it->second);
   status_trackers_.erase(it);
   for (auto& observer : observers_) {

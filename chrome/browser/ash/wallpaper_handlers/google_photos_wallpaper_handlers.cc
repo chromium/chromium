@@ -224,8 +224,8 @@ GooglePhotosFetcher<T>::GooglePhotosFetcher(
     : profile_(profile),
       identity_manager_(ash::IdentityManagerProvider::Get().Find(account_id)),
       traffic_annotation_(traffic_annotation) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(profile_, base::NotFatalUntil::M160);
   // These fetchers are only created for a signed-in user's profile, so the
   // AccountId resolves to an IdentityManager. CHECK rather than DCHECK
   // because Observe() below dereferences the pointer either way, and the
@@ -375,7 +375,7 @@ GooglePhotosAlbumsFetcher::GooglePhotosAlbumsFetcher(
     : GooglePhotosFetcher(profile,
                           account_id,
                           kGooglePhotosAlbumsTrafficAnnotation) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 GooglePhotosAlbumsFetcher::~GooglePhotosAlbumsFetcher() = default;
@@ -413,7 +413,7 @@ GooglePhotosAlbumsCbkArgs GooglePhotosAlbumsFetcher::ParseResponse(
   parsed_response->albums =
       std::vector<ash::personalization_app::mojom::GooglePhotosAlbumPtr>();
   for (const auto& untyped_response_album : *response_albums) {
-    DCHECK(untyped_response_album.is_dict());
+    CHECK(untyped_response_album.is_dict(), base::NotFatalUntil::M160);
     const auto& response_album = untyped_response_album.GetDict();
     const auto* album_id =
         response_album.FindStringByDottedPath("collectionId.mediaKey");
@@ -448,7 +448,7 @@ GooglePhotosSharedAlbumsFetcher::GooglePhotosSharedAlbumsFetcher(
     : GooglePhotosFetcher(profile,
                           account_id,
                           kGooglePhotosAlbumsTrafficAnnotation) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 GooglePhotosSharedAlbumsFetcher::~GooglePhotosSharedAlbumsFetcher() = default;
@@ -495,7 +495,7 @@ GooglePhotosAlbumsCbkArgs GooglePhotosSharedAlbumsFetcher::ParseResponse(
   parsed_response->albums =
       std::vector<ash::personalization_app::mojom::GooglePhotosAlbumPtr>();
   for (const auto& untyped_response_album : *response_albums) {
-    DCHECK(untyped_response_album.is_dict());
+    CHECK(untyped_response_album.is_dict(), base::NotFatalUntil::M160);
     const auto& response_album = untyped_response_album.GetDict();
     const auto* album_id =
         response_album.FindStringByDottedPath("collectionId.mediaKey");
@@ -527,7 +527,7 @@ GooglePhotosEnabledFetcher::GooglePhotosEnabledFetcher(
     : GooglePhotosFetcher(profile,
                           account_id,
                           kGooglePhotosEnabledTrafficAnnotation) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 GooglePhotosEnabledFetcher::~GooglePhotosEnabledFetcher() = default;
@@ -571,7 +571,7 @@ GooglePhotosPhotosFetcher::GooglePhotosPhotosFetcher(
     : GooglePhotosFetcher(profile,
                           account_id,
                           kGooglePhotosPhotosTrafficAnnotation) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 GooglePhotosPhotosFetcher::~GooglePhotosPhotosFetcher() = default;
@@ -596,7 +596,8 @@ void GooglePhotosPhotosFetcher::AddRequestAndStartIfNecessary(
 
   GURL service_url;
   if (item_id.has_value()) {
-    DCHECK(!album_id.has_value() && !resume_token.has_value() && !shuffle);
+    CHECK(!album_id.has_value() && !resume_token.has_value() && !shuffle,
+          base::NotFatalUntil::M160);
     service_url = net::AppendQueryParameter(GURL(kGooglePhotosPhotoUrl),
                                             "item_id", item_id.value());
   } else if (album_id.has_value()) {
@@ -607,7 +608,7 @@ void GooglePhotosPhotosFetcher::AddRequestAndStartIfNecessary(
                                   shuffle ? kGooglePhotosAlbumShuffledOrder
                                           : kGooglePhotosAlbumCollectionOrder);
   } else {
-    DCHECK(!shuffle);
+    CHECK(!shuffle, base::NotFatalUntil::M160);
     service_url = GURL(kGooglePhotosPhotosUrl);
   }
 

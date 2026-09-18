@@ -531,7 +531,8 @@ void CrostiniInstaller::OnAvailableDiskSpace(std::optional<int64_t> bytes) {
     return;
   }
 
-  DCHECK_EQ(installing_state_, InstallerState::kStart);
+  CHECK_EQ(installing_state_, InstallerState::kStart,
+           base::NotFatalUntil::M160);
 
   if (bytes.has_value()) {
     free_disk_space_ = bytes.value();
@@ -585,8 +586,8 @@ void CrostiniInstaller::OnAvailableDiskSpace(std::optional<int64_t> bytes) {
   // |restart_id| will be invalid when |CrostiniManager::RestartCrostini()|
   // decides to fail immediately and calls |OnCrostiniRestartFinished()|, which
   // subsequently set |state_| to |ERROR|.
-  DCHECK_EQ(restart_id_ == CrostiniManager::kUninitializedRestartId,
-            state_ == State::ERROR);
+  CHECK_EQ(restart_id_ == CrostiniManager::kUninitializedRestartId,
+           state_ == State::ERROR, base::NotFatalUntil::M160);
 }
 
 }  // namespace crostini

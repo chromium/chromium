@@ -103,10 +103,10 @@ FamilyUserAppMetrics::FamilyUserAppMetrics(Profile* profile)
                               ->InstanceRegistry()),
       first_report_on_current_device_(
           user_manager::UserManager::Get()->IsCurrentUserNew()) {
-  DCHECK(extension_registry_);
-  DCHECK(app_registry_);
+  CHECK(extension_registry_, base::NotFatalUntil::M160);
+  CHECK(app_registry_, base::NotFatalUntil::M160);
   app_registry_cache_observer_.Observe(app_registry_);
-  DCHECK(instance_registry_);
+  CHECK(instance_registry_, base::NotFatalUntil::M160);
 }
 
 FamilyUserAppMetrics::~FamilyUserAppMetrics() = default;
@@ -149,7 +149,7 @@ void FamilyUserAppMetrics::OnNewDay() {
 }
 
 void FamilyUserAppMetrics::OnAppTypeInitialized(apps::AppType app_type) {
-  DCHECK(!ready_app_types_.contains(app_type));
+  CHECK(!ready_app_types_.contains(app_type), base::NotFatalUntil::M160);
   // Skip the extension app type, because extensions are recorded separately,
   // and AppService only has some extensions with file browser handlers.
   if (app_type == apps::AppType::kExtension)
@@ -162,7 +162,7 @@ void FamilyUserAppMetrics::OnAppTypeInitialized(apps::AppType app_type) {
 
 void FamilyUserAppMetrics::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  DCHECK_EQ(cache, app_registry_);
+  CHECK_EQ(cache, app_registry_, base::NotFatalUntil::M160);
   app_registry_cache_observer_.Reset();
 }
 

@@ -33,7 +33,7 @@ gfx::Size GetLargestDisplaySizeLandscape() {
       largest_area = next_area;
     }
   }
-  DCHECK_GT(largest_area, 0u);
+  CHECK_GT(largest_area, 0u, base::NotFatalUntil::M160);
 
   if (largest_size.height() > largest_size.width()) {
     // Always landscape orientation.

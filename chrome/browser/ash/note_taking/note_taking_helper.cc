@@ -142,7 +142,7 @@ arc::mojom::IntentInfoPtr CreateIntentInfo(const GURL& clip_data_uri) {
 
 // Returns the name of the installed app with the given `app_id`.
 std::string GetAppName(Profile* profile, const std::string& app_id) {
-  DCHECK(!app_id.empty());
+  CHECK(!app_id.empty(), base::NotFatalUntil::M160);
   std::string name;
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
     return name;
@@ -194,9 +194,9 @@ NoteTakingHelper::LaunchResult LaunchWebAppInternal(const std::string& app_id,
                                                     Profile* profile) {
   // IsInstalledWebApp must be called before trying to launch. It also ensures
   // App Service is available.
-  DCHECK(IsInstalledWebApp(app_id, profile));
-  DCHECK(
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+  CHECK(IsInstalledWebApp(app_id, profile), base::NotFatalUntil::M160);
+  CHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile),
+        base::NotFatalUntil::M160);
   auto& cache =
       apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
 
@@ -240,38 +240,38 @@ const char NoteTakingHelper::kDefaultLaunchResultHistogramName[] =
 
 // static
 void NoteTakingHelper::Initialize() {
-  DCHECK(!g_helper);
+  CHECK(!g_helper, base::NotFatalUntil::M160);
   g_helper = new NoteTakingHelper();
 }
 
 // static
 void NoteTakingHelper::Shutdown() {
-  DCHECK(g_helper);
+  CHECK(g_helper, base::NotFatalUntil::M160);
   delete g_helper;
   g_helper = nullptr;
 }
 
 // static
 NoteTakingHelper* NoteTakingHelper::Get() {
-  DCHECK(g_helper);
+  CHECK(g_helper, base::NotFatalUntil::M160);
   return g_helper;
 }
 
 void NoteTakingHelper::AddObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(observer);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.AddObserver(observer);
 }
 
 void NoteTakingHelper::RemoveObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(observer);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.RemoveObserver(observer);
 }
 
 void NoteTakingHelper::NotifyAppUpdated(Profile* profile,
                                         const std::string& app_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (app_id == GetPreferredAppId(profile)) {
     for (Observer& observer : observers_) {
       observer.OnPreferredNoteTakingAppUpdated(profile);
@@ -281,8 +281,8 @@ void NoteTakingHelper::NotifyAppUpdated(Profile* profile,
 
 std::vector<NoteTakingAppInfo> NoteTakingHelper::GetAvailableApps(
     Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(profile, base::NotFatalUntil::M160);
   std::vector<NoteTakingAppInfo> infos;
 
   std::vector<std::string> app_ids = GetNoteTakingAppIds(profile);
@@ -317,8 +317,8 @@ std::string NoteTakingHelper::GetPreferredAppId(Profile* profile) {
 
 void NoteTakingHelper::SetPreferredApp(Profile* profile,
                                        const std::string& app_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   if (app_id == profile->GetPrefs()->GetString(ash::prefs::kNoteTakingAppId)) {
     return;
@@ -331,14 +331,14 @@ void NoteTakingHelper::SetPreferredApp(Profile* profile,
 }
 
 bool NoteTakingHelper::IsAppAvailable(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(profile, base::NotFatalUntil::M160);
   return stylus_utils::HasStylusInput() && !GetAvailableApps(profile).empty();
 }
 
 void NoteTakingHelper::LaunchAppForNewNote(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   LaunchResult result = LaunchResult::NO_APP_SPECIFIED;
   std::string app_id =
@@ -420,7 +420,7 @@ NoteTakingHelper::NoteTakingHelper()
           base::BindRepeating(&apps::LaunchPlatformAppWithAction)),
       note_taking_controller_client_(
           std::make_unique<NoteTakingControllerClient>(this)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   const std::string switch_value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -443,7 +443,7 @@ NoteTakingHelper::NoteTakingHelper()
 }
 
 NoteTakingHelper::~NoteTakingHelper() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   // ArcSessionManagerTest shuts down ARC before NoteTakingHelper.
   if (arc::ArcSessionManager::Get())
     arc::ArcSessionManager::Get()->RemoveObserver(this);
@@ -451,7 +451,7 @@ NoteTakingHelper::~NoteTakingHelper() {
 
 std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(
     Profile* profile) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
     return {};
 
@@ -466,7 +466,8 @@ std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(
       if (!std::ranges::contains(kNoteTakingAppTypes, update.AppType())) {
         return;
       }
-      DCHECK(!std::ranges::contains(app_ids, update.AppId()));
+      CHECK(!std::ranges::contains(app_ids, update.AppId()),
+            base::NotFatalUntil::M160);
       app_ids.push_back(update.AppId());
     });
   }
@@ -489,7 +490,7 @@ std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(
 }
 
 void NoteTakingHelper::UpdateAndroidApps() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   auto* helper = ARC_GET_INSTANCE_FOR_METHOD(
       arc::ArcServiceManager::Get()->arc_bridge_service()->intent_helper(),
       RequestIntentHandlerList);
@@ -517,7 +518,7 @@ arc::mojom::ActivityNamePtr AppIdToActivityName(const std::string& id) {
 
 void NoteTakingHelper::OnGotAndroidApps(
     std::vector<arc::mojom::IntentHandlerInfoPtr> handlers) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (!play_store_enabled_)
     return;
 
@@ -543,7 +544,7 @@ arc::mojom::OpenUrlsRequestPtr CreateArcNoteRequest(const std::string& app_id) {
 NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
     Profile* profile,
     const std::string& app_id) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   // Android app.
   if (LooksLikeAndroidPackageName(app_id)) {

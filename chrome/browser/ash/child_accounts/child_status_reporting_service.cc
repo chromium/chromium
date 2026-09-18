@@ -44,8 +44,9 @@ ChildStatusReportingService::ChildStatusReportingService(
   }
 
   PrefService* pref_service = profile->GetPrefs();
-  DCHECK(pref_service->GetInitializationStatus() !=
-         PrefService::INITIALIZATION_STATUS_WAITING);
+  CHECK(pref_service->GetInitializationStatus() !=
+            PrefService::INITIALIZATION_STATUS_WAITING,
+        base::NotFatalUntil::M160);
 
   // We immediately upload a status report after Time Limits policy changes.
   // Make sure we listen for those events.

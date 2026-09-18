@@ -91,7 +91,7 @@ ShellSurfaceForceCloseDelegate::~ShellSurfaceForceCloseDelegate() {
 }
 
 views::Widget* ShellSurfaceForceCloseDelegate::GetClosableWidget() {
-  DCHECK(shell_surface_->GetWidget());
+  CHECK(shell_surface_->GetWidget(), base::NotFatalUntil::M160);
   return shell_surface_->GetWidget();
 }
 
@@ -109,7 +109,7 @@ void ShellSurfaceForceCloseDelegate::Prompt() {
     Hide();
   }
 
-  DCHECK(!current_dialog_);
+  CHECK(!current_dialog_, base::NotFatalUntil::M160);
   current_dialog_ = ShowCrostiniForceCloseDialog(
       app_name_, GetClosableWidget(),
       base::BindOnce(&ShellSurfaceForceCloseDelegate::ForceClose,

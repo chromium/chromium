@@ -17,8 +17,8 @@ FamilyUserParentalControlMetrics::FamilyUserParentalControlMetrics(
     : profile_(profile),
       first_report_on_current_device_(
           user_manager::UserManager::Get()->IsCurrentUserNew()) {
-  DCHECK(profile_);
-  DCHECK(profile_->IsChild());
+  CHECK(profile_, base::NotFatalUntil::M160);
+  CHECK(profile_->IsChild(), base::NotFatalUntil::M160);
 }
 
 FamilyUserParentalControlMetrics::~FamilyUserParentalControlMetrics() = default;
@@ -27,7 +27,7 @@ void FamilyUserParentalControlMetrics::OnNewDay() {
   // Reports Family Link user time limit policy type.
   ChildUserService* child_user_service =
       ChildUserServiceFactory::GetForBrowserContext(profile_);
-  DCHECK(child_user_service);
+  CHECK(child_user_service, base::NotFatalUntil::M160);
   child_user_service->ReportTimeLimitPolicy();
 }
 

@@ -31,7 +31,7 @@ ChildPolicyObserver::~ChildPolicyObserver() = default;
 void ChildPolicyObserver::NotifyWhenPolicyReady(
     PolicyReadyCallback on_policy_ready,
     base::TimeDelta timeout) {
-  DCHECK(!on_policy_ready_);
+  CHECK(!on_policy_ready_, base::NotFatalUntil::M160);
 
   if (IsChildPolicyReady()) {
     std::move(on_policy_ready).Run(profile_.get(), refresh_result_);
@@ -60,7 +60,8 @@ bool ChildPolicyObserver::IsChildPolicyReady() const {
 
 void ChildPolicyObserver::OnPolicyReady(
     InitialPolicyRefreshResult refresh_result) {
-  DCHECK_NE(InitialPolicyRefreshResult::kUnknown, refresh_result);
+  CHECK_NE(InitialPolicyRefreshResult::kUnknown, refresh_result,
+           base::NotFatalUntil::M160);
 
   refresh_timeout_timer_.reset();
 
@@ -75,7 +76,7 @@ policy::UserCloudPolicyManagerAsh*
 ChildPolicyObserver::GetUserCloudPolicyManager() {
   policy::UserCloudPolicyManagerAsh* user_cloud_policy_manager =
       profile_->GetUserCloudPolicyManagerAsh();
-  DCHECK(user_cloud_policy_manager);
+  CHECK(user_cloud_policy_manager, base::NotFatalUntil::M160);
   return user_cloud_policy_manager;
 }
 

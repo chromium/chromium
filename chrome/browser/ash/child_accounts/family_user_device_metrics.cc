@@ -31,7 +31,7 @@ constexpr char kGaiaUsersCountHistogramName[] = "FamilyUser.GaiaUsersCount";
 
 FamilyUserDeviceMetrics::FamilyUserDeviceMetrics()
     : user_manager_(user_manager::UserManager::Get()) {
-  DCHECK(user_manager_);
+  CHECK(user_manager_, base::NotFatalUntil::M160);
   session_manager::SessionManager::Get()->AddObserver(this);
   DeviceSettingsService::Get()->AddObserver(this);
 }

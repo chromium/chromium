@@ -54,7 +54,7 @@ void CrostiniSshfs::SetSshfsMounted(const guest_os::GuestId& container,
 void CrostiniSshfs::UnmountCrostiniFiles(const guest_os::GuestId& container_id,
                                          MountCrostiniFilesCallback callback) {
   // TODO(crbug.com/40760488): Unmounting should cancel an in-progress mount.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto* vmgr = file_manager::VolumeManager::Get(profile_);
   if (vmgr) {
@@ -86,7 +86,7 @@ void CrostiniSshfs::OnRemoveSshfsCrostiniVolume(
 void CrostiniSshfs::MountCrostiniFiles(const guest_os::GuestId& container_id,
                                        MountCrostiniFilesCallback callback,
                                        bool background) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (in_progress_mount_) {
     // A run is already in progress, wait until it finishes.
     pending_requests_.emplace(container_id, std::move(callback), background);
@@ -148,7 +148,7 @@ void CrostiniSshfs::MountCrostiniFiles(const guest_os::GuestId& container_id,
 void CrostiniSshfs::OnMountEvent(
     ash::MountError error_code,
     const ash::disks::DiskMountManager::MountPoint& mount_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (error_code != ash::MountError::kSuccess) {
     LOG(ERROR) << "Error mounting crostini container: error_code=" << error_code
@@ -197,8 +197,8 @@ void CrostiniSshfs::OnMountEvent(
 }
 
 void CrostiniSshfs::Finish(CrostiniSshfsResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(in_progress_mount_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(in_progress_mount_, base::NotFatalUntil::M160);
   auto callback = std::move(in_progress_mount_->callback);
   base::UmaHistogramTimes("Crostini.Sshfs.Mount.TimeTaken",
                           base::Time::Now() - in_progress_mount_->started);

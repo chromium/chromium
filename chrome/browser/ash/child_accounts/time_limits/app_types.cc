@@ -63,7 +63,7 @@ bool CanMerge(const AppActivity::ActiveTime& t1,
 
 AppId::AppId(apps::AppType app_type, const std::string& app_id)
     : app_type_(app_type), app_id_(app_id) {
-  DCHECK(!app_id.empty());
+  CHECK(!app_id.empty(), base::NotFatalUntil::M160);
 }
 
 AppId::AppId(const AppId&) = default;
@@ -96,10 +96,12 @@ AppLimit::AppLimit(AppRestriction restriction,
     : restriction_(restriction),
       daily_limit_(daily_limit),
       last_updated_(last_updated) {
-  DCHECK_EQ(restriction_ == AppRestriction::kBlocked,
-            daily_limit_ == std::nullopt);
-  DCHECK(daily_limit_ == std::nullopt || daily_limit >= base::Hours(0));
-  DCHECK(daily_limit_ == std::nullopt || daily_limit <= base::Hours(24));
+  CHECK_EQ(restriction_ == AppRestriction::kBlocked,
+           daily_limit_ == std::nullopt, base::NotFatalUntil::M160);
+  CHECK(daily_limit_ == std::nullopt || daily_limit >= base::Hours(0),
+        base::NotFatalUntil::M160);
+  CHECK(daily_limit_ == std::nullopt || daily_limit <= base::Hours(24),
+        base::NotFatalUntil::M160);
 }
 
 AppLimit::AppLimit(const AppLimit&) = default;
@@ -131,7 +133,7 @@ const base::TimeDelta AppActivity::ActiveTime::kActiveTimeMergePrecision =
 
 AppActivity::ActiveTime::ActiveTime(base::Time start, base::Time end)
     : active_from_(start), active_to_(end) {
-  DCHECK_GT(active_to_, active_from_);
+  CHECK_GT(active_to_, active_from_, base::NotFatalUntil::M160);
 }
 
 AppActivity::ActiveTime::ActiveTime(const AppActivity::ActiveTime& rhs) =
@@ -161,12 +163,12 @@ bool AppActivity::ActiveTime::IsLaterThan(base::Time timestamp) const {
 }
 
 void AppActivity::ActiveTime::set_active_from(base::Time active_from) {
-  DCHECK_GT(active_to_, active_from);
+  CHECK_GT(active_to_, active_from, base::NotFatalUntil::M160);
   active_from_ = active_from;
 }
 
 void AppActivity::ActiveTime::set_active_to(base::Time active_to) {
-  DCHECK_GT(active_to, active_from_);
+  CHECK_GT(active_to, active_from_, base::NotFatalUntil::M160);
   active_to_ = active_to;
 }
 
@@ -194,9 +196,10 @@ void AppActivity::SetAppState(AppState app_state) {
 }
 
 void AppActivity::SetAppActive(base::Time timestamp) {
-  DCHECK(!is_active_);
-  DCHECK(app_state_ == AppState::kAvailable ||
-         app_state_ == AppState::kAlwaysAvailable);
+  CHECK(!is_active_, base::NotFatalUntil::M160);
+  CHECK(app_state_ == AppState::kAvailable ||
+            app_state_ == AppState::kAlwaysAvailable,
+        base::NotFatalUntil::M160);
   is_active_ = true;
   last_updated_time_ticks_ = base::TimeTicks::Now();
 }
@@ -239,7 +242,7 @@ void AppActivity::CaptureOngoingActivity(base::Time timestamp) {
 
   // Timestamps can be equal if SetAppInactive() is called directly after
   // SetAppState(). Happens in tests.
-  DCHECK_GE(timestamp, start_time);
+  CHECK_GE(timestamp, start_time, base::NotFatalUntil::M160);
   if (timestamp > start_time) {
     active_times_.push_back(ActiveTime(start_time, timestamp));
   }

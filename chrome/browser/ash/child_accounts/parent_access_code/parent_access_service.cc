@@ -77,7 +77,8 @@ bool ParentAccessService::IsApprovalRequired(SupervisedAction action) {
     case SupervisedAction::kAddUser:
       return IsDeviceOwnedByChild();
     case SupervisedAction::kUnlockTimeLimits:
-      DCHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
+      CHECK(user_manager::UserManager::Get()->IsUserLoggedIn(),
+            base::NotFatalUntil::M160);
       return true;
   }
 }

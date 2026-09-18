@@ -38,7 +38,7 @@ UsageTimeStateNotifier* UsageTimeStateNotifier::GetInstance() {
 
 void UsageTimeStateNotifier::AddObserver(
     UsageTimeStateNotifier::Observer* observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   if (observers_.empty()) {
     session_manager::SessionManager::Get()->AddObserver(this);
     chromeos::PowerManagerClient::Get()->AddObserver(this);
@@ -49,7 +49,7 @@ void UsageTimeStateNotifier::AddObserver(
 
 void UsageTimeStateNotifier::RemoveObserver(
     UsageTimeStateNotifier::Observer* observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.RemoveObserver(observer);
   if (observers_.empty()) {
     session_manager::SessionManager::Get()->RemoveObserver(this);

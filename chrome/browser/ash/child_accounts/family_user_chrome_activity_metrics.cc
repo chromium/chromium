@@ -40,13 +40,13 @@ void FamilyUserChromeActivityMetrics::RegisterProfilePrefs(
 FamilyUserChromeActivityMetrics::FamilyUserChromeActivityMetrics(
     Profile* profile)
     : pref_service_(profile->GetPrefs()), app_service_wrapper_(profile) {
-  DCHECK(pref_service_);
+  CHECK(pref_service_, base::NotFatalUntil::M160);
   app_service_wrapper_.AddObserver(this);
   UsageTimeStateNotifier::GetInstance()->AddObserver(this);
 }
 
 FamilyUserChromeActivityMetrics::~FamilyUserChromeActivityMetrics() {
-  DCHECK_EQ(base::Time(), active_duration_start_);
+  CHECK_EQ(base::Time(), active_duration_start_, base::NotFatalUntil::M160);
   app_service_wrapper_.RemoveObserver(this);
   UsageTimeStateNotifier::GetInstance()->RemoveObserver(this);
 }

@@ -38,8 +38,9 @@ void NoteTakingControllerClient::ActiveUserChanged(
 
 void NoteTakingControllerClient::OnProfileWillBeDestroyed(Profile* profile) {
   // Update |profile_| when exiting a session or shutting down.
-  DCHECK_EQ(profile_, profile);
-  DCHECK(profile_observation_.IsObservingSource(profile_));
+  CHECK_EQ(profile_, profile, base::NotFatalUntil::M160);
+  CHECK(profile_observation_.IsObservingSource(profile_),
+        base::NotFatalUntil::M160);
   profile_observation_.Reset();
   profile_ = nullptr;
 }

@@ -107,12 +107,12 @@ ScreenTimeController::~ScreenTimeController() {
 }
 
 void ScreenTimeController::AddObserver(Observer* observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.AddObserver(observer);
 }
 
 void ScreenTimeController::RemoveObserver(Observer* observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M160);
   observers_.RemoveObserver(observer);
 }
 
@@ -165,7 +165,7 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
 
   if (state.is_locked) {
     OnScreenLockByPolicy(state.active_policy, state.next_unlock_time);
-    DCHECK(!state.next_unlock_time.is_null());
+    CHECK(!state.next_unlock_time.is_null(), base::NotFatalUntil::M160);
     if (!session_manager::SessionManager::Get()->IsScreenLocked()) {
       ForceScreenLockByPolicy();
     }
@@ -193,7 +193,7 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
 
     std::optional<TimeLimitNotifier::LimitType> notification_type =
         ConvertPolicyType(policy_type);
-    DCHECK(notification_type);
+    CHECK(notification_type, base::NotFatalUntil::M160);
     time_limit_notifier_.ShowPolicyUpdateNotification(notification_type.value(),
                                                       lock_time);
   }
@@ -215,7 +215,8 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
 }
 
 void ScreenTimeController::ForceScreenLockByPolicy() {
-  DCHECK(!session_manager::SessionManager::Get()->IsScreenLocked());
+  CHECK(!session_manager::SessionManager::Get()->IsScreenLocked(),
+        base::NotFatalUntil::M160);
 
   // Avoid abrupt session restart that looks like a crash and happens when lock
   // screen is requested before sign in completion. It is safe, because time

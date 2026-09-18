@@ -78,7 +78,7 @@ ChildUserService::ChildUserService(content::BrowserContext* context)
           base::BindRepeating(&ChildUserService::ReportTimeLimitPolicy,
                               base::Unretained(this)))),
       website_approval_notifier_(profile_) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
   app_time_controller_->Init();
 
   pref_change_registrar_.Init(profile_->GetPrefs());
@@ -110,7 +110,7 @@ std::optional<base::TimeDelta> ChildUserService::GetTimeLimitForApp(
 app_time::AppActivityReportInterface::ReportParams
 ChildUserService::GenerateAppActivityReport(
     enterprise_management::ChildStatusReportRequest* report) {
-  DCHECK(app_time_controller_);
+  CHECK(app_time_controller_, base::NotFatalUntil::M160);
   app_time_controller_->app_registry()->GenerateHiddenApps(report);
   return app_time_controller_->app_registry()->GenerateAppActivityReport(
       report);
@@ -118,7 +118,7 @@ ChildUserService::GenerateAppActivityReport(
 
 void ChildUserService::AppActivityReportSubmitted(
     base::Time report_generation_timestamp) {
-  DCHECK(app_time_controller_);
+  CHECK(app_time_controller_, base::NotFatalUntil::M160);
   app_time_controller_->app_registry()->OnSuccessfullyReported(
       report_generation_timestamp);
 }
@@ -152,7 +152,7 @@ void ChildUserService ::ReportTimeLimitPolicy() const {
   }
 
   bool has_policy_enabled = !enabled_policies.empty();
-  DCHECK(app_time_controller_);
+  CHECK(app_time_controller_, base::NotFatalUntil::M160);
   if (app_time_controller_->HasAppTimeLimitRestriction()) {
     base::UmaHistogramEnumeration(
         /*name=*/kTimeLimitPolicyTypesHistogramName,

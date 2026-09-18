@@ -346,8 +346,8 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       const ash::personalization_app::mojom::SeaPenQueryPtr& query,
       std::unique_ptr<manta::proto::Response> response,
       manta::MantaStatus status) {
-    DCHECK(pending_fetch_thumbnails_callback_);
-    DCHECK(fetch_thumbnails_timer_.IsRunning());
+    CHECK(pending_fetch_thumbnails_callback_, base::NotFatalUntil::M160);
+    CHECK(fetch_thumbnails_timer_.IsRunning(), base::NotFatalUntil::M160);
 
     fetch_thumbnails_timer_.Stop();
 
@@ -409,7 +409,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
 
   void OnFetchThumbnailsTimeout(
       ash::personalization_app::mojom::SeaPenQuery::Tag query_tag) {
-    DCHECK(pending_fetch_thumbnails_callback_);
+    CHECK(pending_fetch_thumbnails_callback_, base::NotFatalUntil::M160);
     fetch_thumbnails_weak_ptr_factory_.InvalidateWeakPtrs();
     std::move(pending_fetch_thumbnails_callback_)
         .Run(std::nullopt, manta::MantaStatusCode::kGenericError);
@@ -422,8 +422,8 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
       std::unique_ptr<manta::proto::Response> response,
       manta::MantaStatus status) {
-    DCHECK(pending_fetch_wallpaper_callback_);
-    DCHECK(fetch_wallpaper_timer_.IsRunning());
+    CHECK(pending_fetch_wallpaper_callback_, base::NotFatalUntil::M160);
+    CHECK(fetch_wallpaper_timer_.IsRunning(), base::NotFatalUntil::M160);
 
     fetch_wallpaper_timer_.Stop();
 
@@ -481,7 +481,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
 
   void OnFetchWallpaperTimeout(
       ash::personalization_app::mojom::SeaPenQuery::Tag query_tag) {
-    DCHECK(pending_fetch_wallpaper_callback_);
+    CHECK(pending_fetch_wallpaper_callback_, base::NotFatalUntil::M160);
     fetch_wallpaper_weak_ptr_factory_.InvalidateWeakPtrs();
     RecordSeaPenTimeout(query_tag, /*hit_timeout=*/true,
                         SeaPenApiType::kWallpaper);

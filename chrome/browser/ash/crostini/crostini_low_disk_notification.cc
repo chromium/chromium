@@ -124,7 +124,7 @@ CrostiniLowDiskNotification::CreateNotification(Severity severity) {
 
   auto on_click = base::BindRepeating([](std::optional<int> button_index) {
     if (button_index) {
-      DCHECK_EQ(0, *button_index);
+      CHECK_EQ(0, *button_index, base::NotFatalUntil::M160);
       auto* session =
           session_manager::SessionManager::Get()->GetActiveSession();
       CHECK(session);

@@ -96,7 +96,7 @@ void FamilyUserSessionMetrics::RegisterProfilePrefs(
 
 FamilyUserSessionMetrics::FamilyUserSessionMetrics(PrefService* pref_service)
     : pref_service_(pref_service) {
-  DCHECK(pref_service_);
+  CHECK(pref_service_, base::NotFatalUntil::M160);
   UsageTimeStateNotifier::GetInstance()->AddObserver(this);
 }
 

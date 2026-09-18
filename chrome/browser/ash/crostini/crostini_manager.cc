@@ -211,7 +211,7 @@ void EmitTimeInStageHistogram(base::TimeDelta duration,
       name = "Crostini.RestarterTimeInState2.ConfigureContainer";
       break;
   }
-  DCHECK(!name.empty());
+  CHECK(!name.empty(), base::NotFatalUntil::M160);
   base::UmaHistogramCustomTimes(name, duration, base::Milliseconds(10),
                                 base::Hours(6), 50);
 }
@@ -451,7 +451,7 @@ CrostiniManager::CrostiniRestarter::~CrostiniRestarter() {
 }
 
 void CrostiniManager::CrostiniRestarter::Restart() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (!CrostiniFeatures::Get()->IsAllowedNow(profile_)) {
     LOG(ERROR) << "Crostini UI not allowed for profile "
                << profile_->GetProfileUserName();
@@ -481,7 +481,7 @@ void CrostiniManager::CrostiniRestarter::Restart() {
 
 void CrostiniManager::CrostiniRestarter::AddRequest(RestartRequest request) {
   // CrostiniManager doesn't add requests to aborted restarts.
-  DCHECK(abort_callbacks_.empty());
+  CHECK(abort_callbacks_.empty(), base::NotFatalUntil::M160);
 
   if (request.observer) {
     observer_list_.AddObserver(request.observer.get());
@@ -558,7 +558,7 @@ void CrostiniManager::CrostiniRestarter::CancelRequest(RestartId restart_id) {
           },
           restart_id),
       CrostiniResult::RESTART_REQUEST_CANCELLED);
-  DCHECK_LE(requests_.size(), num_requests);
+  CHECK_LE(requests_.size(), num_requests, base::NotFatalUntil::M160);
 
   if (requests_.empty()) {
     MaybeCancelCurrentOperation();
@@ -611,7 +611,7 @@ void CrostiniManager::CrostiniRestarter::OnLxdContainerStarting(
 
 void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
     CrostiniResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   CloseCrostiniUpdateFilesystemView();
   if (ReturnEarlyIfNeeded()) {
@@ -652,7 +652,8 @@ void CrostiniManager::CrostiniRestarter::StartStage(
   this->stage_ = stage;
   stage_start_ = base::TimeTicks::Now();
 
-  DCHECK(stage_timeouts_.find(stage) != stage_timeouts_.end());
+  CHECK(stage_timeouts_.find(stage) != stage_timeouts_.end(),
+        base::NotFatalUntil::M160);
   auto delay = stage_timeouts_.at(stage);
 
   if (requests_[0].options.restart_source != RestartSource::kInstaller) {
@@ -787,7 +788,7 @@ void CrostiniManager::CrostiniRestarter::CreateDiskImageFinished(
     int64_t disk_size_bytes,
     CrostiniResult result,
     const base::FilePath& result_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (result == CrostiniResult::CREATE_DISK_IMAGE_ALREADY_EXISTS &&
       is_initial_install_) {
@@ -864,7 +865,7 @@ void CrostiniManager::CrostiniRestarter::OnConfigureContainerFinished(
 }
 
 void CrostiniManager::CrostiniRestarter::StartTerminaVmFinished(bool success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   VLOG(2) << "StartTerminaVmFinished for " << container_id_;
   if (ReturnEarlyIfNeeded()) {
     return;
@@ -929,7 +930,7 @@ void CrostiniManager::CrostiniRestarter::SharePathsFinished(
 
 void CrostiniManager::CrostiniRestarter::StartLxdFinished(
     CrostiniResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (ReturnEarlyIfNeeded()) {
     return;
   }
@@ -957,7 +958,7 @@ void CrostiniManager::CrostiniRestarter::StartLxdFinished(
 
 void CrostiniManager::CrostiniRestarter::SetUpBaguetteUserFinished(
     CrostiniResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (ReturnEarlyIfNeeded()) {
     return;
   }
@@ -1017,7 +1018,7 @@ void CrostiniManager::CrostiniRestarter::WaitUntilBaguetteReady(
 
 void CrostiniManager::CrostiniRestarter::CreateLxdContainerFinished(
     CrostiniResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (ReturnEarlyIfNeeded()) {
     return;
   }
@@ -1037,7 +1038,7 @@ void CrostiniManager::CrostiniRestarter::CreateLxdContainerFinished(
 
 void CrostiniManager::CrostiniRestarter::SetUpLxdContainerUserFinished(
     bool success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (ReturnEarlyIfNeeded()) {
     return;
@@ -1079,8 +1080,8 @@ void CrostiniManager::CrostiniRestarter::FinishRestart(CrostiniResult result) {
     closure = base::DoNothing();
   }
 
-  DCHECK(requests_.empty());
-  DCHECK(observer_list_.empty());
+  CHECK(requests_.empty(), base::NotFatalUntil::M160);
+  CHECK(observer_list_.empty(), base::NotFatalUntil::M160);
 
   // CrostiniManager::RestartCompleted deletes |this|
   crostini_manager_->RestartCompleted(this, std::move(closure));
@@ -1320,7 +1321,7 @@ CrostiniManager::CrostiniManager(
   if (!scheduler_configuration_manager_) {
     CHECK_IS_TEST();
   }
-  DCHECK(!profile_->IsOffTheRecord());
+  CHECK(!profile_->IsOffTheRecord(), base::NotFatalUntil::M160);
   GetCiceroneClient()->AddObserver(this);
   GetConciergeClient()->AddVmObserver(this);
   GetConciergeClient()->AddDiskImageObserver(this);
@@ -1659,7 +1660,7 @@ void CrostiniManager::StartTerminaVm(std::string name,
     request.set_enable_audio_capture(true);
   }
   const int32_t cpus = base::SysInfo::NumberOfProcessors() - num_cores_disabled;
-  DCHECK_LT(0, cpus);
+  CHECK_LT(0, cpus, base::NotFatalUntil::M160);
   request.set_cpus(cpus);
 
   vm_tools::concierge::DiskImage* disk_image = request.add_disks();
@@ -2499,7 +2500,7 @@ CrostiniManager::RestartId CrostiniManager::RestartCrostiniWithOptions(
   } else {
     base::UmaHistogramBoolean("Crostini.Restarter.Started", true);
   }
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   // Currently, |remove_crostini_callbacks_| is only used just before running
   // guest_os::GuestOsRemover. If that changes, then we should check for a
   // currently running uninstaller in some other way.
@@ -2578,7 +2579,8 @@ void CrostiniManager::CancelRestartCrostini(
     return;
   }
   auto restarter_it = restarters_by_container_.find(container_it->second);
-  DCHECK(restarter_it != restarters_by_container_.end());
+  CHECK(restarter_it != restarters_by_container_.end(),
+        base::NotFatalUntil::M160);
   restarter_it->second->CancelRequest(restart_id);
 }
 
@@ -2751,7 +2753,8 @@ void CrostiniManager::OnStartTerminaVm(
 
   // Otherwise, record the vm start and run the callback after the VM
   // starts.
-  DCHECK_EQ(response->status(), vm_tools::concierge::VM_STATUS_STARTING);
+  CHECK_EQ(response->status(), vm_tools::concierge::VM_STATUS_STARTING,
+           base::NotFatalUntil::M160);
   bool wait_for_tremplin = running_vms_.find(vm_name) == running_vms_.end();
 
   running_vms_[vm_name] =
@@ -3917,9 +3920,10 @@ void CrostiniManager::CallRestarterStartLxdContainerFinishedForTesting(
     CrostiniManager::RestartId id,
     CrostiniResult result) {
   auto container_it = restarters_by_id_.find(id);
-  DCHECK(container_it != restarters_by_id_.end());
+  CHECK(container_it != restarters_by_id_.end(), base::NotFatalUntil::M160);
   auto restarter_it = restarters_by_container_.find(container_it->second);
-  DCHECK(restarter_it != restarters_by_container_.end());
+  CHECK(restarter_it != restarters_by_container_.end(),
+        base::NotFatalUntil::M160);
   restarter_it->second->StartLxdContainerFinished(result);
 }
 
@@ -4072,7 +4076,7 @@ void CrostiniManager::SetCreateOptionsUsed(
 
 bool CrostiniManager::FetchCreateOptions(const guest_os::GuestId& container_id,
                                          RestartOptions* options) {
-  DCHECK(options != nullptr);
+  CHECK(options != nullptr, base::NotFatalUntil::M160);
 
   const base::Value* create_options_val = guest_os::GetContainerPrefValue(
       profile_, container_id, guest_os::prefs::kContainerCreateOptions);

@@ -55,8 +55,8 @@ void ConfigSource::UpdateConfigForUser(const AccountId& account_id,
 #if DCHECK_IS_ON()
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
-  DCHECK(user);
-  DCHECK(user->IsChild());
+  CHECK(user, base::NotFatalUntil::M160);
+  CHECK(user->IsChild(), base::NotFatalUntil::M160);
 #endif  // DCHECK_IS_ON()
 
   user_manager::KnownUser known_user(&local_state_.get());

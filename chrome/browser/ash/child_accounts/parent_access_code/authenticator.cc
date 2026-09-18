@@ -62,11 +62,13 @@ AccessCodeConfig::AccessCodeConfig(const std::string& shared_secret,
     : shared_secret_(shared_secret),
       code_validity_(code_validity),
       clock_drift_tolerance_(clock_drift_tolerance) {
-  DCHECK(!shared_secret_.empty());
-  DCHECK(code_validity_ >= kMinCodeValidity);
-  DCHECK(code_validity_ <= kMaxCodeValidity);
-  DCHECK(clock_drift_tolerance_ >= kMinClockDriftTolerance);
-  DCHECK(clock_drift_tolerance_ <= kMaxClockDriftTolerance);
+  CHECK(!shared_secret_.empty(), base::NotFatalUntil::M160);
+  CHECK(code_validity_ >= kMinCodeValidity, base::NotFatalUntil::M160);
+  CHECK(code_validity_ <= kMaxCodeValidity, base::NotFatalUntil::M160);
+  CHECK(clock_drift_tolerance_ >= kMinClockDriftTolerance,
+        base::NotFatalUntil::M160);
+  CHECK(clock_drift_tolerance_ <= kMaxClockDriftTolerance,
+        base::NotFatalUntil::M160);
 }
 
 AccessCodeConfig::AccessCodeConfig(AccessCodeConfig&&) = default;
@@ -89,8 +91,8 @@ AccessCode::AccessCode(const std::string& code,
                        base::Time valid_from,
                        base::Time valid_to)
     : code_(code), valid_from_(valid_from), valid_to_(valid_to) {
-  DCHECK_EQ(6u, code_.length());
-  DCHECK_GT(valid_to_, valid_from_);
+  CHECK_EQ(6u, code_.length(), base::NotFatalUntil::M160);
+  CHECK_GT(valid_to_, valid_from_, base::NotFatalUntil::M160);
 }
 
 AccessCode::AccessCode(const AccessCode&) = default;
@@ -113,7 +115,7 @@ Authenticator::Authenticator(AccessCodeConfig config)
 Authenticator::~Authenticator() = default;
 
 std::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
-  DCHECK_LE(base::Time::UnixEpoch(), timestamp);
+  CHECK_LE(base::Time::UnixEpoch(), timestamp, base::NotFatalUntil::M160);
 
   // We find the beginning of the interval for the given timestamp and adjust by
   // the granularity.
@@ -147,7 +149,7 @@ std::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
 
 std::optional<AccessCode> Authenticator::Validate(const std::string& code,
                                                   base::Time timestamp) const {
-  DCHECK_LE(base::Time::UnixEpoch(), timestamp);
+  CHECK_LE(base::Time::UnixEpoch(), timestamp, base::NotFatalUntil::M160);
 
   base::Time valid_from = timestamp - config_.clock_drift_tolerance();
   if (valid_from < base::Time::UnixEpoch())
@@ -160,8 +162,8 @@ std::optional<AccessCode> Authenticator::ValidateInRange(
     const std::string& code,
     base::Time valid_from,
     base::Time valid_to) const {
-  DCHECK_LE(base::Time::UnixEpoch(), valid_from);
-  DCHECK_GE(valid_to, valid_from);
+  CHECK_LE(base::Time::UnixEpoch(), valid_from, base::NotFatalUntil::M160);
+  CHECK_GE(valid_to, valid_from, base::NotFatalUntil::M160);
 
   const int64_t start_interval = valid_from.InMillisecondsSinceUnixEpoch() /
                                  kAccessCodeGranularity.InMilliseconds();

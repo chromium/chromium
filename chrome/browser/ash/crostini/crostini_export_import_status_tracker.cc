@@ -18,17 +18,19 @@ CrostiniExportImportStatusTracker::CrostiniExportImportStatusTracker(
     ExportImportType type,
     base::FilePath path)
     : type_(type), path_(path) {
-  DCHECK(type == ExportImportType::EXPORT || type == ExportImportType::IMPORT ||
-         type == ExportImportType::EXPORT_DISK_IMAGE ||
-         type == ExportImportType::IMPORT_DISK_IMAGE);
+  CHECK(type == ExportImportType::EXPORT || type == ExportImportType::IMPORT ||
+            type == ExportImportType::EXPORT_DISK_IMAGE ||
+            type == ExportImportType::IMPORT_DISK_IMAGE,
+        base::NotFatalUntil::M160);
 }
 
 CrostiniExportImportStatusTracker::~CrostiniExportImportStatusTracker() =
     default;
 
 void CrostiniExportImportStatusTracker::SetStatusRunning(int progress_percent) {
-  DCHECK(status_ == Status::NONE || status_ == Status::RUNNING ||
-         status_ == Status::CANCELLING);
+  CHECK(status_ == Status::NONE || status_ == Status::RUNNING ||
+            status_ == Status::CANCELLING,
+        base::NotFatalUntil::M160);
   // Progress updates can still be received while the notification is being
   // cancelled. These should not be displayed, as the operation will eventually
   // cancel (or fail to cancel).
@@ -41,22 +43,24 @@ void CrostiniExportImportStatusTracker::SetStatusRunning(int progress_percent) {
 }
 
 void CrostiniExportImportStatusTracker::SetStatusCancelling() {
-  DCHECK(status_ == Status::RUNNING);
+  CHECK(status_ == Status::RUNNING, base::NotFatalUntil::M160);
 
   status_ = Status::CANCELLING;
   SetStatusCancellingUI();
 }
 
 void CrostiniExportImportStatusTracker::SetStatusDone() {
-  DCHECK(status_ == Status::RUNNING ||
-         (type() == ExportImportType::IMPORT && status_ == Status::CANCELLING));
+  CHECK(status_ == Status::RUNNING || (type() == ExportImportType::IMPORT &&
+                                       status_ == Status::CANCELLING),
+        base::NotFatalUntil::M160);
 
   status_ = Status::DONE;
   SetStatusDoneUI();
 }
 
 void CrostiniExportImportStatusTracker::SetStatusCancelled() {
-  DCHECK(status_ == Status::NONE || status_ == Status::CANCELLING);
+  CHECK(status_ == Status::NONE || status_ == Status::CANCELLING,
+        base::NotFatalUntil::M160);
 
   status_ = Status::CANCELLED;
   SetStatusCancelledUI();
@@ -73,8 +77,9 @@ void CrostiniExportImportStatusTracker::SetStatusFailed() {
 }
 
 void CrostiniExportImportStatusTracker::SetStatusFailedBadImage() {
-  DCHECK(type() == ExportImportType::IMPORT ||
-         type() == ExportImportType::IMPORT_DISK_IMAGE);
+  CHECK(type() == ExportImportType::IMPORT ||
+            type() == ExportImportType::IMPORT_DISK_IMAGE,
+        base::NotFatalUntil::M160);
   SetStatusFailedWithMessage(
       Status::FAILED_BAD_IMAGE,
       l10n_util::GetStringUTF16(
@@ -84,7 +89,7 @@ void CrostiniExportImportStatusTracker::SetStatusFailedBadImage() {
 void CrostiniExportImportStatusTracker::SetStatusFailedArchitectureMismatch(
     const std::string& architecture_container,
     const std::string& architecture_device) {
-  DCHECK(type() == ExportImportType::IMPORT);
+  CHECK(type() == ExportImportType::IMPORT, base::NotFatalUntil::M160);
   SetStatusFailedWithMessage(
       Status::FAILED_ARCHITECTURE_MISMATCH,
       l10n_util::GetStringFUTF16(
@@ -95,7 +100,7 @@ void CrostiniExportImportStatusTracker::SetStatusFailedArchitectureMismatch(
 
 void CrostiniExportImportStatusTracker::SetStatusFailedInsufficientSpace(
     uint64_t additional_required_space) {
-  DCHECK(type() == ExportImportType::IMPORT);
+  CHECK(type() == ExportImportType::IMPORT, base::NotFatalUntil::M160);
   SetStatusFailedWithMessage(
       Status::FAILED_INSUFFICIENT_SPACE,
       l10n_util::GetStringFUTF16(
@@ -105,8 +110,9 @@ void CrostiniExportImportStatusTracker::SetStatusFailedInsufficientSpace(
 
 void CrostiniExportImportStatusTracker::
     SetStatusFailedInsufficientSpaceUnknownAmount() {
-  DCHECK(type() == ExportImportType::IMPORT ||
-         type() == ExportImportType::IMPORT_DISK_IMAGE);
+  CHECK(type() == ExportImportType::IMPORT ||
+            type() == ExportImportType::IMPORT_DISK_IMAGE,
+        base::NotFatalUntil::M160);
   SetStatusFailedWithMessage(
       Status::FAILED_INSUFFICIENT_SPACE,
       l10n_util::GetStringUTF16(
@@ -126,7 +132,8 @@ void CrostiniExportImportStatusTracker::SetStatusFailedConcurrentOperation(
 void CrostiniExportImportStatusTracker::SetStatusFailedWithMessage(
     Status status,
     const std::u16string& message) {
-  DCHECK(status_ == Status::RUNNING || status_ == Status::CANCELLING);
+  CHECK(status_ == Status::RUNNING || status_ == Status::CANCELLING,
+        base::NotFatalUntil::M160);
   status_ = status;
   SetStatusFailedWithMessageUI(status, message);
 }

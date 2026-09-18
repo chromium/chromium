@@ -20,7 +20,7 @@ namespace ash::app_time {
 // static
 void WebTimeNavigationObserver::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M160);
   if (!base::FeatureList::IsEnabled(
           ash::features::kUnicornChromeActivityReporting)) {
     return;

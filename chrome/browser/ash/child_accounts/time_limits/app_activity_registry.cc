@@ -57,7 +57,8 @@ AppActivityRegistry::TestApi::~TestApi() = default;
 
 const std::optional<AppLimit>& AppActivityRegistry::TestApi::GetAppLimit(
     const AppId& app_id) const {
-  DCHECK(registry_->activity_registry_.contains(app_id));
+  CHECK(registry_->activity_registry_.contains(app_id),
+        base::NotFatalUntil::M160);
   return registry_->activity_registry_.at(app_id).limit;
 }
 
@@ -105,7 +106,7 @@ bool AppActivityRegistry::AppDetails::IsLimitReached() const {
     return false;
   }
 
-  DCHECK(limit->daily_limit());
+  CHECK(limit->daily_limit(), base::NotFatalUntil::M160);
   if (limit->daily_limit() > activity.RunningActiveTime()) {
     return false;
   }
@@ -148,9 +149,9 @@ AppActivityRegistry::AppActivityRegistry(
       app_service_wrapper_(app_service_wrapper),
       notification_delegate_(notification_delegate),
       save_data_to_pref_service_(base::DefaultTickClock::GetInstance()) {
-  DCHECK(app_service_wrapper_);
-  DCHECK(notification_delegate_);
-  DCHECK(pref_service_);
+  CHECK(app_service_wrapper_, base::NotFatalUntil::M160);
+  CHECK(notification_delegate_, base::NotFatalUntil::M160);
+  CHECK(pref_service_, base::NotFatalUntil::M160);
 
   if (ShouldCleanUpStoredPref()) {
     CleanRegistry(base::Time::Now() - base::Days(30));
@@ -336,28 +337,28 @@ bool AppActivityRegistry::IsAppInstalled(const AppId& app_id) const {
 }
 
 bool AppActivityRegistry::IsAppAvailable(const AppId& app_id) const {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
   auto state = GetAppState(app_id);
   return state == AppState::kAvailable || state == AppState::kAlwaysAvailable;
 }
 
 bool AppActivityRegistry::IsAppBlocked(const AppId& app_id) const {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
   return GetAppState(app_id) == AppState::kBlocked;
 }
 
 bool AppActivityRegistry::IsAppTimeLimitReached(const AppId& app_id) const {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
   return GetAppState(app_id) == AppState::kLimitReached;
 }
 
 bool AppActivityRegistry::IsAppActive(const AppId& app_id) const {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
   return activity_registry_.at(app_id).activity.is_active();
 }
 
 bool AppActivityRegistry::IsAllowlistedApp(const AppId& app_id) const {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
   return GetAppState(app_id) == AppState::kAlwaysAvailable;
 }
 
@@ -379,17 +380,18 @@ void AppActivityRegistry::SetInstalledApps(
 }
 
 base::TimeDelta AppActivityRegistry::GetActiveTime(const AppId& app_id) const {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
   return activity_registry_.at(app_id).activity.RunningActiveTime();
 }
 
 const std::optional<AppLimit>& AppActivityRegistry::GetWebTimeLimit() const {
-  DCHECK(activity_registry_.contains(GetChromeAppId()));
+  CHECK(activity_registry_.contains(GetChromeAppId()),
+        base::NotFatalUntil::M160);
   return activity_registry_.at(GetChromeAppId()).limit;
 }
 
 AppState AppActivityRegistry::GetAppState(const AppId& app_id) const {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
   return activity_registry_.at(app_id).activity.app_state();
 }
 
@@ -404,7 +406,7 @@ std::optional<base::TimeDelta> AppActivityRegistry::GetTimeLimit(
     return std::nullopt;
   }
 
-  DCHECK(limit->daily_limit());
+  CHECK(limit->daily_limit(), base::NotFatalUntil::M160);
   return limit->daily_limit();
 }
 
@@ -539,7 +541,7 @@ bool AppActivityRegistry::UpdateAppLimits(
 bool AppActivityRegistry::SetAppLimit(
     const AppId& app_id,
     const std::optional<AppLimit>& app_limit) {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
 
   // If an application is not installed but present in the registry return
   // early.
@@ -680,12 +682,13 @@ void AppActivityRegistry::SaveAppActivity() {
     for (base::Value& entry : list) {
       std::optional<AppId> app_id =
           policy::AppIdFromAppInfoDict(entry.GetIfDict());
-      DCHECK(app_id.has_value());
+      CHECK(app_id.has_value(), base::NotFatalUntil::M160);
 
       if (!activity_registry_.contains(app_id.value())) {
         std::optional<AppState> state =
             PersistedAppInfo::GetAppStateFromDict(entry.GetIfDict());
-        DCHECK(state.has_value() && state.value() == AppState::kUninstalled);
+        CHECK(state.has_value() && state.value() == AppState::kUninstalled,
+              base::NotFatalUntil::M160);
         continue;
       }
 
@@ -754,7 +757,7 @@ void AppActivityRegistry::CleanRegistry(base::Time timestamp) {
     base::Value& entry = list[index];
     std::optional<PersistedAppInfo> info =
         PersistedAppInfo::PersistedAppInfoFromDict(entry.GetIfDict(), true);
-    DCHECK(info.has_value());
+    CHECK(info.has_value(), base::NotFatalUntil::M160);
     info->RemoveActiveTimeEarlierThan(timestamp);
     info->UpdateAppActivityPreference(entry.GetDict(), /* replace */ true);
 
@@ -775,7 +778,7 @@ void AppActivityRegistry::CleanRegistry(base::Time timestamp) {
 }
 
 void AppActivityRegistry::OnAppReinstalled(const AppId& app_id) {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
   AppDetails& details = activity_registry_.at(app_id);
   if (details.IsLimitReached()) {
     SetAppState(app_id, AppState::kLimitReached);
@@ -809,7 +812,7 @@ void AppActivityRegistry::Add(const AppId& app_id) {
 }
 
 void AppActivityRegistry::SetAppState(const AppId& app_id, AppState app_state) {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
   AppDetails& app_details = activity_registry_.at(app_id);
   AppActivity& app_activity = app_details.activity;
   AppState previous_state = app_activity.app_state();
@@ -844,11 +847,12 @@ void AppActivityRegistry::SetAppState(const AppId& app_id, AppState app_state) {
 
 void AppActivityRegistry::NotifyLimitReached(const AppId& app_id,
                                              bool was_active) {
-  DCHECK(activity_registry_.contains(app_id));
-  DCHECK_EQ(GetAppState(app_id), AppState::kLimitReached);
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
+  CHECK_EQ(GetAppState(app_id), AppState::kLimitReached,
+           base::NotFatalUntil::M160);
 
   const std::optional<AppLimit>& limit = activity_registry_.at(app_id).limit;
-  DCHECK(limit->daily_limit());
+  CHECK(limit->daily_limit(), base::NotFatalUntil::M160);
   for (auto& observer : app_state_observers_) {
     observer.OnAppLimitReached(app_id, limit->daily_limit().value(),
                                was_active);
@@ -857,9 +861,9 @@ void AppActivityRegistry::NotifyLimitReached(const AppId& app_id,
 
 void AppActivityRegistry::SetAppActive(const AppId& app_id,
                                        base::Time timestamp) {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
   AppDetails& app_details = activity_registry_[app_id];
-  DCHECK(!app_details.activity.is_active());
+  CHECK(!app_details.activity.is_active(), base::NotFatalUntil::M160);
   if (ContributesToWebTimeLimit(app_id, GetAppState(app_id))) {
     app_details.activity.set_running_active_time(GetWebActiveRunningTime());
   }
@@ -871,7 +875,7 @@ void AppActivityRegistry::SetAppActive(const AppId& app_id,
 
 void AppActivityRegistry::SetAppInactive(const AppId& app_id,
                                          base::Time timestamp) {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
   auto& details = activity_registry_.at(app_id);
 
   details.activity.SetAppInactive(timestamp);
@@ -897,7 +901,7 @@ void AppActivityRegistry::SetAppInactive(const AppId& app_id,
 }
 
 void AppActivityRegistry::ScheduleTimeLimitCheckForApp(const AppId& app_id) {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
   AppDetails& app_details = activity_registry_[app_id];
 
   // If there is no time limit information, don't set the timer.
@@ -915,11 +919,11 @@ void AppActivityRegistry::ScheduleTimeLimitCheckForApp(const AppId& app_id) {
         base::DefaultTickClock::GetInstance());
   }
 
-  DCHECK(!app_details.app_limit_timer->IsRunning());
+  CHECK(!app_details.app_limit_timer->IsRunning(), base::NotFatalUntil::M160);
 
   // Check that the timer instance has been created.
   std::optional<base::TimeDelta> time_limit = GetTimeLeftForApp(app_id);
-  DCHECK(time_limit.has_value());
+  CHECK(time_limit.has_value(), base::NotFatalUntil::M160);
 
   if (time_limit > kFiveMinutes) {
     time_limit = time_limit.value() - kFiveMinutes;
@@ -943,7 +947,7 @@ void AppActivityRegistry::ScheduleTimeLimitCheckForApp(const AppId& app_id) {
 
 std::optional<base::TimeDelta> AppActivityRegistry::GetTimeLeftForApp(
     const AppId& app_id) const {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
   const AppDetails& app_details = activity_registry_.at(app_id);
 
   // If |app_details.limit| doesn't have value, the app has no restriction.
@@ -958,7 +962,7 @@ std::optional<base::TimeDelta> AppActivityRegistry::GetTimeLeftForApp(
   }
 
   // If the app has kTimeLimit restriction, DCHECK that daily limit has value.
-  DCHECK(limit.daily_limit().has_value());
+  CHECK(limit.daily_limit().has_value(), base::NotFatalUntil::M160);
 
   AppState state = app_details.activity.app_state();
   if (state == AppState::kAlwaysAvailable || state == AppState::kBlocked) {
@@ -969,7 +973,7 @@ std::optional<base::TimeDelta> AppActivityRegistry::GetTimeLeftForApp(
     return kZeroMinutes;
   }
 
-  DCHECK(state == AppState::kAvailable);
+  CHECK(state == AppState::kAvailable, base::NotFatalUntil::M160);
 
   base::TimeDelta time_limit = limit.daily_limit().value();
 
@@ -997,8 +1001,8 @@ void AppActivityRegistry::CheckTimeLimitForApp(const AppId& app_id) {
     return;
   }
 
-  DCHECK(details.limit.has_value());
-  DCHECK(details.limit->daily_limit().has_value());
+  CHECK(details.limit.has_value(), base::NotFatalUntil::M160);
+  CHECK(details.limit->daily_limit().has_value(), base::NotFatalUntil::M160);
   const base::TimeDelta time_limit = details.limit->daily_limit().value();
 
   if (time_left <= kFiveMinutes && time_left > kOneMinute &&
@@ -1121,7 +1125,7 @@ void AppActivityRegistry::WebTimeLimitReached(base::Time timestamp) {
 }
 
 void AppActivityRegistry::InitializeRegistryFromPref() {
-  DCHECK(pref_service_);
+  CHECK(pref_service_, base::NotFatalUntil::M160);
 
   int64_t last_limits_updates = pref_service_->GetInt64(
       ash::prefs::kPerAppTimeLimitsLatestLimitUpdateTime);
@@ -1142,7 +1146,8 @@ void AppActivityRegistry::InitializeAppActivities() {
           /* include_app_activity_array */ false);
 
   for (const auto& app_info : applications_info) {
-    DCHECK(!activity_registry_.contains(app_info.app_id()));
+    CHECK(!activity_registry_.contains(app_info.app_id()),
+          base::NotFatalUntil::M160);
 
     // Don't restore uninstalled application's if its running active time is
     // zero.
@@ -1158,7 +1163,7 @@ void AppActivityRegistry::InitializeAppActivities() {
 PersistedAppInfo AppActivityRegistry::GetPersistedAppInfoForApp(
     const AppId& app_id,
     base::Time timestamp) {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
 
   AppDetails& details = activity_registry_.at(app_id);
 
@@ -1198,10 +1203,10 @@ bool AppActivityRegistry::ShouldCleanUpStoredPref() {
 }
 
 void AppActivityRegistry::SendSystemNotificationsForApp(const AppId& app_id) {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
 
   AppDetails& app_details = activity_registry_.at(app_id);
-  DCHECK(app_details.received_app_installed_);
+  CHECK(app_details.received_app_installed_, base::NotFatalUntil::M160);
 
   // TODO(yilkal): Filter out the notifications to show. For example don't show
   // 5 min and 1 min left notifications at the same time here. However, time
@@ -1216,7 +1221,7 @@ void AppActivityRegistry::SendSystemNotificationsForApp(const AppId& app_id) {
 void AppActivityRegistry::MaybeShowSystemNotification(
     const AppId& app_id,
     const SystemNotification& notification) {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
 
   AppDetails& app_details = activity_registry_.at(app_id);
   app_details.activity.set_last_notification(notification.notification);
@@ -1234,7 +1239,7 @@ void AppActivityRegistry::MaybeShowSystemNotification(
 }
 
 void AppActivityRegistry::AppLimitUpdated(const AppId& app_id) {
-  DCHECK(activity_registry_.contains(app_id));
+  CHECK(activity_registry_.contains(app_id), base::NotFatalUntil::M160);
   AppDetails& details = activity_registry_.at(app_id);
 
   // Limit for the active app changed - adjust the timers.

@@ -44,7 +44,7 @@ int FamilyUserMetricsService::GetDayIdForTesting(base::Time time) {
 FamilyUserMetricsService::FamilyUserMetricsService(
     content::BrowserContext* context)
     : pref_service_(Profile::FromBrowserContext(context)->GetPrefs()) {
-  DCHECK(pref_service_);
+  CHECK(pref_service_, base::NotFatalUntil::M160);
   family_user_metrics_.push_back(
       std::make_unique<FamilyUserSessionMetrics>(pref_service_));
   Profile* profile = Profile::FromBrowserContext(context);
