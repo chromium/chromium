@@ -34,13 +34,14 @@ class TabGroupsOrganizerPageHandlerBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
-                       GetTabGroupsReturnsCreatedGroups) {
+                       GetTabGroupsSortedByMostRecentlyUsed) {
   tab_groups::TabGroupSyncService* service = sync_service();
   ASSERT_TRUE(service);
 
   base::Time now = base::Time::Now();
 
-  // Create two saved tab groups with different creation times.
+  // Group 1: Created 10 minutes ago, but interacted with most recently (1 min
+  // ago).
   base::Uuid id1 = base::Uuid::GenerateRandomV4();
   tab_groups::SavedTabGroupTab tab1(GURL("https://www.google.com"), u"Google",
                                     id1, /*position=*/0);
@@ -50,8 +51,12 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
       /*creator_cache_guid=*/std::nullopt,
       /*last_updater_cache_guid=*/std::nullopt,
       /*created_before_syncing_tab_groups=*/false,
-      /*creation_time=*/now - base::Minutes(5));
+      /*creation_time=*/now - base::Minutes(10),
+      /*update_time=*/now - base::Minutes(10));
+  group1.SetLastUserInteractionTime(now - base::Minutes(1));
 
+  // Group 2: Created 5 minutes ago, no explicit user interaction time set
+  // (falls back to update_time of 5 mins ago).
   base::Uuid id2 = base::Uuid::GenerateRandomV4();
   tab_groups::SavedTabGroupTab tab2(GURL("https://www.youtube.com"), u"YouTube",
                                     id2, /*position=*/0);
@@ -61,10 +66,27 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
       /*creator_cache_guid=*/std::nullopt,
       /*last_updater_cache_guid=*/std::nullopt,
       /*created_before_syncing_tab_groups=*/false,
-      /*creation_time=*/now);
+      /*creation_time=*/now - base::Minutes(5),
+      /*update_time=*/now - base::Minutes(5));
+
+  // Group 3: Created 2 minutes ago, interacted with 8 minutes ago (least
+  // recently used).
+  base::Uuid id3 = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab tab3(GURL("https://www.chromium.org"),
+                                    u"Chromium", id3, /*position=*/0);
+  tab_groups::SavedTabGroup group3(
+      u"Group 3", tab_groups::TabGroupColorId::kGreen, {tab3},
+      /*position=*/std::nullopt, id3, /*local_group_id=*/std::nullopt,
+      /*creator_cache_guid=*/std::nullopt,
+      /*last_updater_cache_guid=*/std::nullopt,
+      /*created_before_syncing_tab_groups=*/false,
+      /*creation_time=*/now - base::Minutes(2),
+      /*update_time=*/now - base::Minutes(2));
+  group3.SetLastUserInteractionTime(now - base::Minutes(8));
 
   service->AddGroup(group1);
   service->AddGroup(group2);
+  service->AddGroup(group3);
 
   mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
       handler_remote;
@@ -78,16 +100,20 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   const std::vector<organizer_panel::mojom::TabGroupPtr>& returned_groups =
       future.Get();
 
-  ASSERT_EQ(2u, returned_groups.size());
+  ASSERT_EQ(3u, returned_groups.size());
 
-  // Groups are returned sorted by creation time descending (most recent first).
-  EXPECT_EQ(returned_groups[0]->id, id2);
-  EXPECT_EQ(returned_groups[0]->title, "Group 2");
-  EXPECT_EQ(returned_groups[0]->color, tab_groups::TabGroupColorId::kRed);
+  // Groups are returned sorted by most recently used descending.
+  EXPECT_EQ(returned_groups[0]->id, id1);
+  EXPECT_EQ(returned_groups[0]->title, "Group 1");
+  EXPECT_EQ(returned_groups[0]->color, tab_groups::TabGroupColorId::kBlue);
 
-  EXPECT_EQ(returned_groups[1]->id, id1);
-  EXPECT_EQ(returned_groups[1]->title, "Group 1");
-  EXPECT_EQ(returned_groups[1]->color, tab_groups::TabGroupColorId::kBlue);
+  EXPECT_EQ(returned_groups[1]->id, id2);
+  EXPECT_EQ(returned_groups[1]->title, "Group 2");
+  EXPECT_EQ(returned_groups[1]->color, tab_groups::TabGroupColorId::kRed);
+
+  EXPECT_EQ(returned_groups[2]->id, id3);
+  EXPECT_EQ(returned_groups[2]->title, "Group 3");
+  EXPECT_EQ(returned_groups[2]->color, tab_groups::TabGroupColorId::kGreen);
 }
 
 }  // namespace
