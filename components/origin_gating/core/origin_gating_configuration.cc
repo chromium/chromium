@@ -39,6 +39,14 @@ bool UsesAtMostOneCustomPredicateDomain(
       });
 }
 
+bool UsesCache(base::span<const PredicateConfiguration> predicates) {
+  return std::ranges::any_of(predicates, [](const PredicateConfiguration& pc) {
+    const DecisionSource* source = std::get_if<DecisionSource>(&pc.predicate());
+    return source && (*source == DecisionSource::kCacheWithUserConfirmation ||
+                      *source == DecisionSource::kCacheWithoutUserConfirmation);
+  });
+}
+
 }  // namespace
 
 CustomPredicate::CustomPredicate(
@@ -77,7 +85,9 @@ PredicateConfiguration& PredicateConfiguration::operator=(
 OriginGatingConfiguration::OriginGatingConfiguration(
     std::initializer_list<PredicateConfiguration> predicates,
     bool use_site_keyed_cache)
-    : predicates_(predicates), use_site_keyed_cache_(use_site_keyed_cache) {
+    : predicates_(predicates),
+      use_site_keyed_cache_(use_site_keyed_cache),
+      uses_cache_(UsesCache(predicates_)) {
   CHECK(std::ranges::none_of(predicates, [](const PredicateConfiguration& pc) {
     const DecisionSource* source = std::get_if<DecisionSource>(&pc.predicate());
     return source && std::ranges::contains(kForbiddenPredicates, *source);

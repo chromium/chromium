@@ -23,6 +23,14 @@
 
 namespace origin_gating {
 
+// Evaluates origin gating decisions for navigations and page actions against a
+// configured pipeline of predicates and embedder delegate callbacks.
+//
+// NOTE: When configured with cache predicates (`kCacheWithUserConfirmation` or
+// `kCacheWithoutUserConfirmation`), this is a stateful object that caches
+// approved origins across evaluations. Its registration should therefore be
+// scoped to a single logical "task" rather than shared globally across
+// unrelated tasks.
 class OriginGatingChecker {
  public:
   // Pure virtual interface for embedder-specific checks.
@@ -97,13 +105,20 @@ class OriginGatingChecker {
                              const GURL& destination,
                              GatingDecisionCallback callback);
 
-  // Exposes mutation methods to manage allowed origins in the cache.
+  // Exposes mutation methods to manage allowed origins in the cache. No-op if
+  // `config_` does not include any predicates that consult the cache.
   void AllowNavigationTo(url::Origin origin, bool is_user_confirmed) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!config_.uses_cache()) {
+      return;
+    }
     cache_.AllowNavigationTo(std::move(origin), is_user_confirmed);
   }
   void AllowNavigationTo(const absl::flat_hash_set<url::Origin>& origins) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!config_.uses_cache()) {
+      return;
+    }
     cache_.AllowNavigationTo(origins);
   }
 

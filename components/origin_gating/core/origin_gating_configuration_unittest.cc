@@ -115,6 +115,25 @@ TEST(OriginGatingConfigurationTest, CheckFails_MultipleCustomPredicateDomains) {
       "");
 }
 
+TEST(OriginGatingConfigurationTest, UsesCache) {
+  OriginGatingConfiguration config_without_cache(
+      {{DecisionSource::kAllowSameOrigin, GateableEventSet::All()}},
+      /*use_site_keyed_cache=*/false);
+  EXPECT_FALSE(config_without_cache.uses_cache());
+
+  OriginGatingConfiguration config_with_user_confirmation_cache(
+      {{DecisionSource::kCacheWithUserConfirmation, GateableEventSet::All()}},
+      /*use_site_keyed_cache=*/false);
+  EXPECT_TRUE(config_with_user_confirmation_cache.uses_cache());
+
+  OriginGatingConfiguration config_with_unconfirmed_cache(
+      {{DecisionSource::kCacheWithoutUserConfirmation,
+        GateableEventSet::All()}},
+      /*use_site_keyed_cache=*/true);
+  EXPECT_TRUE(config_with_unconfirmed_cache.uses_cache());
+  EXPECT_TRUE(config_with_unconfirmed_cache.use_site_keyed_cache());
+}
+
 TEST(PredicateConfigurationTest, AppliesToOnlyConfiguredEvents) {
   PredicateConfiguration config(
       DecisionSource::kAllowSameOrigin,

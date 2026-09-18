@@ -102,6 +102,10 @@ class OriginGatingConfiguration {
   //
   // The following internal/fallback states are strictly forbidden:
   // - `DecisionSource::kNoVerdict`
+  //
+  // Note: `use_site_keyed_cache` is essentially useless if `predicates` does
+  // not include a cache predicate (`kCacheWithUserConfirmation` or
+  // `kCacheWithoutUserConfirmation`), since the cache will not be used at all.
   OriginGatingConfiguration(
       std::initializer_list<PredicateConfiguration> predicates,
       bool use_site_keyed_cache);
@@ -115,9 +119,15 @@ class OriginGatingConfiguration {
   }
   bool use_site_keyed_cache() const { return use_site_keyed_cache_; }
 
+  // Returns true if `predicates` includes at least one predicate that consults
+  // the cache (`kCacheWithUserConfirmation` or
+  // `kCacheWithoutUserConfirmation`).
+  bool uses_cache() const { return uses_cache_; }
+
  private:
   std::vector<PredicateConfiguration> predicates_;
   bool use_site_keyed_cache_ = false;
+  bool uses_cache_ = false;
 };
 
 }  // namespace origin_gating
