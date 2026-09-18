@@ -1,5 +1,5 @@
 /* DllSecur.c -- DLL loading security
-2023-12-03 : Igor Pavlov : Public domain */
+: Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -67,7 +67,7 @@ void LoadSecurityDlls(void)
   // at Vista (ver 6.0) : CoCreateInstance(CLSID_ShellLink, ...) doesn't work after SetDefaultDllDirectories() : Check it ???
   IF_NON_VISTA_SET_DLL_DIRS_AND_RETURN
   {
-    wchar_t buf[MAX_PATH + 100];
+    WCHAR buf[MAX_PATH + 100];
     const char *dll;
     unsigned pos = GetSystemDirectoryW(buf, MAX_PATH + 2);
     if (pos == 0 || pos > MAX_PATH)
@@ -76,7 +76,7 @@ void LoadSecurityDlls(void)
       buf[pos++] = '\\';
     for (dll = g_Dlls; *dll != 0;)
     {
-      wchar_t *dest = &buf[pos];
+      WCHAR *dest = &buf[pos];
       for (;;)
       {
         const char c = *dll++;

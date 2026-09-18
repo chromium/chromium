@@ -1,5 +1,5 @@
 /* Bcj2Enc.c -- BCJ2 Encoder converter for x86 code (Branch CALL/JUMP variant2)
-2023-04-02 : Igor Pavlov : Public domain */
+: Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -75,7 +75,10 @@ static BoolInt Bcj2_RangeEnc_ShiftLow(CBcj2Enc *p)
     p->cache = (Byte)(low >> 24);
   }
   p->cacheSize++;
-  p->low = low << 8;
+  {
+    const UInt32 low2 = low << 8;
+    p->low = low2;
+  }
   return False;
 }
 
