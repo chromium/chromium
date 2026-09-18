@@ -296,7 +296,7 @@ TEST_F(WebUIReadOnlyOmniboxTest, InputVersion) {
               toolbar_ui_api::mojom::OmniboxActionTextInput::New(
                   /*text=*/u"https://en.wikiped", /*inline_completion=*/u"",
                   /*browser_version=*/1, /*ui_version=*/10, /*unelision=*/false,
-                  gfx::Range(18))))
+                  /*paste=*/false, gfx::Range(18))))
           .has_value());
 
   // State will reflect it, including the version.
@@ -329,7 +329,7 @@ TEST_F(WebUIReadOnlyOmniboxTest, InputVersion) {
               toolbar_ui_api::mojom::OmniboxActionTextInput::New(
                   /*text=*/u"https://en.wikipedi", /*inline_completion=*/u"",
                   /*browser_version=*/1, /*ui_version=*/11, /*unelision=*/false,
-                  gfx::Range(19))))
+                  /*paste=*/false, gfx::Range(19))))
           .has_value());
   mojo_state = update_propagator_.TakeState();
   // Nothing got updated, so update_propagator_ didn't see anything.
@@ -353,7 +353,7 @@ TEST_F(WebUIReadOnlyOmniboxTest, InputVersion) {
                   /*text=*/u"https://www.example.org/a",
                   /*inline_completion=*/u"",
                   /*browser_version=*/2, /*ui_version=*/1, /*unelision=*/false,
-                  gfx::Range(25))))
+                  /*paste=*/false, gfx::Range(25))))
           .has_value());
   mojo_state = update_propagator_.TakeState();
   ASSERT_TRUE(mojo_state);
@@ -382,7 +382,7 @@ TEST_F(WebUIReadOnlyOmniboxTest, ClearInputFromWebUI) {
               toolbar_ui_api::mojom::OmniboxActionTextInput::New(
                   /*text=*/u"", /*inline_completion=*/u"",
                   /*browser_version=*/1, /*ui_version=*/10, /*unelision=*/false,
-                  gfx::Range(0))))
+                  /*paste=*/false, gfx::Range(0))))
           .has_value());
 
   // State will reflect it.
@@ -415,7 +415,7 @@ TEST_F(WebUIReadOnlyOmniboxTest, UnelideUserInputBit) {
                   /*text=*/u"https://www.example.org/",
                   /*inline_completion=*/u"",
                   /*browser_version=*/1, /*ui_version=*/1, /*unelision=*/true,
-                  gfx::Range(6))))
+                  /*paste=*/false, gfx::Range(6))))
           .has_value());
   mojo_state = update_propagator_.TakeState();
   ASSERT_TRUE(mojo_state);
@@ -435,7 +435,7 @@ TEST_F(WebUIReadOnlyOmniboxTest, UnelideUserInputBit) {
                   /*text=*/u"https://awww.example.org/",
                   /*inline_completion=*/u"",
                   /*browser_version=*/1, /*ui_version=*/2, /*unelision=*/false,
-                  gfx::Range(7))))
+                  /*paste=*/false, gfx::Range(7))))
           .has_value());
   mojo_state = update_propagator_.TakeState();
   EXPECT_THAT(mojo_state->text_pieces,
@@ -553,7 +553,7 @@ TEST_F(WebUIReadOnlyOmniboxTest, SetUserTextBumpsBrowserVersion) {
                   /*text=*/u"https://www.example.org/",
                   /*inline_completion=*/u"",
                   /*browser_version=*/1, /*ui_version=*/1, /*unelision=*/true,
-                  gfx::Range(0, 24))))
+                  /*paste=*/false, gfx::Range(0, 24))))
           .has_value());
   EXPECT_FALSE(update_propagator_.TakeState());
   EXPECT_EQ(u"Typing in the Omnibox...", omnibox_view_->GetText());

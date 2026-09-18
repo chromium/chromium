@@ -323,6 +323,59 @@ class OmniboxViewTest : public InProcessBrowserTest {
     }
   }
 
+  // Waits till text got updated on the WebUI side, if any. Should be done
+  // before sending further keystrokes expecting it to be there. The difference
+  // between this and polling GetText is that if the change came from the
+  // browser, GetText would see it even though the WebUI hasn't processed it
+  // yet. (Sometimes it's also used for convenience).
+  void WaitTillTextRendered(OmniboxView* omnibox_view,
+                            std::u16string_view expected) {
+    if (!webui_toolbar_wc_util_) {
+      EXPECT_EQ(expected, omnibox_view->GetText());
+      return;
+    }
+
+    const char kScriptTemplate[] = R"(
+      (el) => el.inputElement.value === $1
+    )";
+
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      WebContentsInteractionTestUtil::DeepQuery omnibox_input(
+          {"toolbar-app", "location-bar", "#omnibox", "cr-searchbox-input"});
+      return webui_toolbar_wc_util_
+          ->EvaluateAt(omnibox_input,
+                       content::JsReplace(kScriptTemplate, expected))
+          .GetBool();
+    }));
+  }
+
+  // If WebUILocationBar is used, wait for the WebUI-side selection to be at
+  // given value. This should be run before sending keypresses assuming that its
+  // position got changed due to browser-side operation.
+  void WaitTillSelectionRendered(OmniboxView* view, size_t start, size_t end) {
+    if (!webui_toolbar_wc_util_) {
+      EXPECT_EQ(view->GetSelectionBounds().GetMin(), start);
+      EXPECT_EQ(view->GetSelectionBounds().GetMax(), end);
+      return;
+    }
+
+    const char kScriptTemplate[] = R"(
+      (el) => el.inputElement.selectionStart === $1 &&
+              el.inputElement.selectionEnd === $2
+    )";
+
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      WebContentsInteractionTestUtil::DeepQuery omnibox_input(
+          {"toolbar-app", "location-bar", "#omnibox", "cr-searchbox-input"});
+      return webui_toolbar_wc_util_
+          ->EvaluateAt(
+              omnibox_input,
+              content::JsReplace(kScriptTemplate, static_cast<double>(start),
+                                 static_cast<double>(end)))
+          .GetBool();
+    }));
+  }
+
   static void SendKeyForBrowser(const BrowserWindowInterface* browser,
                                 ui::KeyboardCode key,
                                 int modifiers) {
@@ -842,10 +895,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, EscapeToDefaultMatch) {
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   WaitTillPopupOpen();
 
-  std::u16string old_text = omnibox_view->GetText();
+  std::u16string old_text;
 
   // Make sure inline autocomplete is triggered.
-  EXPECT_GT(old_text.length(), std::size(kInlineAutocompleteText) - 1);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    old_text = omnibox_view->GetText();
+    return old_text.length() > (std::size(kInlineAutocompleteText) - 1);
+  }));
 
   size_t old_selected_line = GetOmniboxEditModel()->GetPopupSelection().line;
   EXPECT_EQ(0U, old_selected_line);
@@ -853,20 +909,25 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, EscapeToDefaultMatch) {
   // Move to another line with different text.
   size_t size =
       GetOmniboxController()->autocomplete_controller()->result().size();
-  while (GetOmniboxEditModel()->GetPopupSelection().line < size - 1) {
+  size_t last_checked_line = old_selected_line;
+  while (last_checked_line < size - 1) {
     ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_DOWN, 0));
-    ASSERT_NE(old_selected_line,
-              GetOmniboxEditModel()->GetPopupSelection().line);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return last_checked_line !=
+             GetOmniboxEditModel()->GetPopupSelection().line;
+    }));
     if (old_text != omnibox_view->GetText()) {
       break;
     }
+    last_checked_line = GetOmniboxEditModel()->GetPopupSelection().line;
   }
 
   EXPECT_NE(old_text, omnibox_view->GetText());
 
   // Escape shall revert back to the default match item.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_ESCAPE, 0));
-  EXPECT_EQ(old_text, omnibox_view->GetText());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return old_text == omnibox_view->GetText(); }));
   EXPECT_EQ(old_selected_line, GetOmniboxEditModel()->GetPopupSelection().line);
 }
 
@@ -891,10 +952,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
   // Move to another line with different text.
   size_t size =
       GetOmniboxController()->autocomplete_controller()->result().size();
-  while (GetOmniboxEditModel()->GetPopupSelection().line < size - 1) {
+  size_t last_checked_line = old_selected_line;
+  while (last_checked_line < size - 1) {
     ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_DOWN, 0));
-    ASSERT_NE(old_selected_line,
-              GetOmniboxEditModel()->GetPopupSelection().line);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return last_checked_line !=
+             GetOmniboxEditModel()->GetPopupSelection().line;
+    }));
+    last_checked_line = GetOmniboxEditModel()->GetPopupSelection().line;
     if (old_text != omnibox_view->GetText()) {
       break;
     }
@@ -903,8 +968,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
   EXPECT_NE(old_text, omnibox_view->GetText());
 
   // Move back to the first line
-  while (GetOmniboxEditModel()->GetPopupSelection().line > 0) {
+  while (last_checked_line > 0) {
     ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_UP, 0));
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return last_checked_line !=
+             GetOmniboxEditModel()->GetPopupSelection().line;
+    }));
+    last_checked_line = GetOmniboxEditModel()->GetPopupSelection().line;
   }
 
   EXPECT_EQ(old_text, omnibox_view->GetText());
@@ -912,15 +982,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BasicTextOperations) {
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-  chrome::FocusLocationBar(browser());
-
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   std::u16string old_text = omnibox_view->GetText();
   EXPECT_EQ(url::kAboutBlankURL16, old_text);
+  WaitTillSelectionRendered(omnibox_view, 0, old_text.size());
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return omnibox_view->IsSelectAll(); }));
 
@@ -949,24 +1016,34 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BasicTextOperations) {
 
   // Insert one character at the end.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_A, 0));
-  EXPECT_EQ(old_text + u'a', omnibox_view->GetText());
+  WaitTillTextRendered(omnibox_view, old_text + u'a');
 
   // Delete one character from the end.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
-  EXPECT_EQ(old_text, omnibox_view->GetText());
+  WaitTillTextRendered(omnibox_view, old_text);
 
-  omnibox_view->SelectAll(true);
-  EXPECT_TRUE(omnibox_view->IsSelectAll());
+  if (features::IsWebUILocationBarEnabled()) {
+    // WebUI location bar doesn't allow direct control over input selection
+    // at all times.
+    ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_A, kCtrlOrCmdMask));
+  } else {
+    omnibox_view->SelectAll(true);
+  }
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return omnibox_view->IsSelectAll(); }));
   selection = omnibox_view->GetSelectionBounds();
 #if defined(TOOLKIT_VIEWS)
   // Views textfields select-all in reverse to show the leading text.
-  selection = {selection.end(), selection.start()};
+  if (!features::IsWebUILocationBarEnabled()) {
+    selection = {selection.end(), selection.start()};
+  }
 #endif
   EXPECT_EQ(0U, selection.start());
   EXPECT_EQ(old_text.size(), selection.end());
 
   // Delete the content
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_DELETE, 0));
+  WaitTillTextRendered(omnibox_view, u"");
   EXPECT_FALSE(omnibox_view->IsSelectAll());
   selection = omnibox_view->GetSelectionBounds();
   EXPECT_EQ(0U, selection.start());
@@ -977,17 +1054,25 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BasicTextOperations) {
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_A, 0));
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_B, 0));
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_C, 0));
+  WaitTillTextRendered(omnibox_view, u"abc");
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    selection = omnibox_view->GetSelectionBounds();
+    return selection.start() == 3u && selection.end() == 3u;
+  }));
 
   // Check if RevertAll() resets the text and preserves the cursor position.
   omnibox_view->RevertAll();
   EXPECT_FALSE(omnibox_view->IsSelectAll());
-  EXPECT_EQ(old_text, omnibox_view->GetText());
+
+  // RevertAll()'s effect on selection is browser-side, so it should be
+  // checked synchronously.
   selection = omnibox_view->GetSelectionBounds();
   EXPECT_EQ(3U, selection.start());
   EXPECT_EQ(3U, selection.end());
 
   // Check that reverting clamps the cursor to the bounds of the new text.
   // Move the cursor to the end.
+  WaitTillTextRendered(omnibox_view, old_text);
 #if BUILDFLAG(IS_MAC)
   // End doesn't work on Mac trybot.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_E, ui::EF_CONTROL_DOWN));
@@ -997,6 +1082,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BasicTextOperations) {
   // Add a small amount of text to push the cursor past where the text end
   // will be once we revert.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_A, 0));
+  WaitTillTextRendered(omnibox_view, old_text + u'a');
   omnibox_view->RevertAll();
   // Cursor should be no further than original text.
   selection = omnibox_view->GetSelectionBounds();
@@ -1362,16 +1448,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, UndoRedo) {
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-  chrome::FocusLocationBar(browser());
-
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   std::u16string old_text = omnibox_view->GetText();
   EXPECT_EQ(url::kAboutBlankURL16, old_text);
-  EXPECT_TRUE(omnibox_view->IsSelectAll());
+  WaitTillSelectionRendered(omnibox_view, 0, old_text.size());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return omnibox_view->IsSelectAll(); }));
 
   // Delete the text, then undo.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
@@ -1419,17 +1503,21 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, UndoRedo) {
   }));
 
   // Delete everything.
-  omnibox_view->SelectAll(true);
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_A, kCtrlOrCmdMask));
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
-  EXPECT_TRUE(omnibox_view->GetText().empty());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return omnibox_view->GetText().empty(); }));
 
   // Undo delete everything.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_Z, kCtrlOrCmdMask));
-  EXPECT_EQ(old_text.substr(0, old_text.size() - 3), omnibox_view->GetText());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return old_text.substr(0, old_text.size() - 3) == omnibox_view->GetText();
+  }));
 
   // Undo delete two characters.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_Z, kCtrlOrCmdMask));
-  EXPECT_EQ(old_text, omnibox_view->GetText());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return old_text == omnibox_view->GetText(); }));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceDeleteHalfWidthKatakana) {
@@ -1567,6 +1655,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, Paste) {
+  const size_t kSearchTextLen = std::u16string_view(kSearchText).length();
+
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
   EXPECT_FALSE(GetOmniboxController()->IsPopupOpen());
@@ -1581,29 +1671,40 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, Paste) {
 
   // Close the popup and select all.
   GetOmniboxPopupCloser()->CloseWithReason(omnibox::PopupCloseReason::kOther);
-  omnibox_view->SelectAll(false);
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_A, kCtrlOrCmdMask));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    gfx::Range selection = omnibox_view->GetSelectionBounds();
+    return selection.GetMin() == 0 && selection.GetMax() == kSearchTextLen;
+  }));
   EXPECT_FALSE(GetOmniboxController()->IsPopupOpen());
 
-  // Pasting the same text again over itself should re-open the popup.
+  // Pasting the same text again over itself should re-open the popup;
+  // it should also change the selection (so the test can notice that things
+  // actually happened).
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_V, kCtrlOrCmdMask));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    gfx::Range selection = omnibox_view->GetSelectionBounds();
+    return selection.GetMin() == kSearchTextLen &&
+           selection.GetMax() == kSearchTextLen;
+  }));
   EXPECT_EQ(kSearchText, omnibox_view->GetText());
   WaitTillPopupOpen();
   GetOmniboxPopupCloser()->CloseWithReason(omnibox::PopupCloseReason::kOther);
   EXPECT_FALSE(GetOmniboxController()->IsPopupOpen());
 
   // Pasting amid text should yield the expected text and re-open the popup.
-  omnibox_view->SetWindowTextAndCaretPos(u"abcd", 2, false, false);
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_LEFT, /*modifiers=*/0));
   SetClipboardText(u"123");
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_V, kCtrlOrCmdMask));
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return omnibox_view->GetText() == u"ab123cd"; }));
+      [&]() { return omnibox_view->GetText() == u"ab123c"; }));
   WaitTillPopupOpen();
 
   // Ctrl/Cmd+Alt+V should not paste.
   ASSERT_NO_FATAL_FAILURE(
       SendKey(ui::VKEY_V, kCtrlOrCmdMask | ui::EF_ALT_DOWN));
-  EXPECT_EQ(u"ab123cd", omnibox_view->GetText());
+  EXPECT_EQ(u"ab123c", omnibox_view->GetText());
   // TODO(msw): Test that AltGr+V does not paste.
 }
 

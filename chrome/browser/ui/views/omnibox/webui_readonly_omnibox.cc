@@ -202,7 +202,7 @@ void WebUIReadOnlyOmnibox::ClearAccessibilityLabel() {
 }
 
 std::u16string WebUIReadOnlyOmnibox::GetText() const {
-  return text_;
+  return text_ + inline_autocompletion_;
 }
 
 void WebUIReadOnlyOmnibox::SetWindowTextAndCaretPos(const std::u16string& text,
@@ -673,6 +673,11 @@ WebUIReadOnlyOmnibox::OnTextInput(
     RequestUpdateWebUI();
   } else {
     OnBeforePossibleChange();
+    // Force a Paste operation to trigger the text_changed code in
+    // OnAfterPossibleChange(), even if identical contents are pasted.
+    if (text_input.paste) {
+      state_before_change_.text.clear();
+    }
     bool keep_additional_text =
         text_ + inline_autocompletion_ ==
         text_input.text + text_input.inline_autocompletion;

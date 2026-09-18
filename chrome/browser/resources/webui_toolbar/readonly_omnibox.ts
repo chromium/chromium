@@ -550,7 +550,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       }
       // It's important this is done after updating the selection since that
       // prevents inline completion, which isn't desired for these shortcuts.
-      this.sendInputToBrowser(unelision);
+      this.sendInputToBrowser(unelision, /*paste=*/ false);
 
       this.inputDelegate_.handleFocusChange(this, {
         browserVersion: this.omniboxViewState.browserVersion,
@@ -699,7 +699,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     // Make sure we stop accepting incremental selection updates from browser
     // at this point.
     ++this.omniboxViewState.uiVersion;
-    this.sendInputToBrowser(unelision);
+    this.sendInputToBrowser(unelision, /*paste=*/ false);
 
     const zeroSuggest = isOnlyLeftButton(event) &&
         (this.selectAllOnMouseRelease_ || this.userText.length === 0);
@@ -798,7 +798,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     }
 
     ++this.omniboxViewState.uiVersion;
-    this.sendInputToBrowser(/*unelision=*/ false);
+    this.sendInputToBrowser(/*unelision=*/ false, /*paste=*/ false);
 
     const zeroSuggest = willSelectAll || this.userText.length === 0;
     this.inputDelegate_.handlePointer(this, {
@@ -909,7 +909,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
           // Otherwise just set caret.
           this.setSelection(0, 0);
         }
-        this.sendInputToBrowser(/*unelision=*/ true);
+        this.sendInputToBrowser(/*unelision=*/ true, /*paste=*/ false);
         event.preventDefault();
       }
     }
@@ -936,7 +936,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   protected onSearchboxInputTextUpdated_(): void {
     if (this.updateStateFromTextInput()) {
-      this.sendInputToBrowser(/*unelision=*/ false);
+      this.sendInputToBrowser(/*unelision=*/ false, /*paste=*/ false);
     }
   }
 
@@ -951,9 +951,10 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     const currentSelection = this.getMojoSelection();
     if (currentSelection.start !== this.omniboxViewState.selection?.start ||
         currentSelection.end !== this.omniboxViewState.selection?.end) {
+      this.omniboxViewState.selection = currentSelection;
       const unelided = this.unelideAndUpdateSelection(UnelisionGesture.OTHER);
       ++this.omniboxViewState.uiVersion;  // may be taking control of selection.
-      this.sendInputToBrowser(unelided);
+      this.sendInputToBrowser(unelided, /*paste=*/ false);
     }
   }
 
@@ -1067,7 +1068,14 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       e.preventDefault();
       const sanitizedText = sanitizeTextForPaste(rawText);
       document.execCommand('insertText', false, sanitizedText);
-      this.onSearchboxInputTextUpdated_();
+
+      let unelided = false;
+      if (!this.updateStateFromTextInput()) {
+        // In case paste changed only selection.
+        this.omniboxViewState.selection = this.getMojoSelection();
+        unelided = this.unelideAndUpdateSelection(UnelisionGesture.OTHER);
+      }
+      this.sendInputToBrowser(unelided, /*paste=*/ true);
     }
   }
 
@@ -1334,7 +1342,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     }
   }
 
-  private sendInputToBrowser(unelision: boolean): void {
+  private sendInputToBrowser(unelision: boolean, paste: boolean): void {
     this.inputDelegate_.handleTextInput(this, {
       uiVersion: this.omniboxViewState.uiVersion,
       browserVersion: this.omniboxViewState.browserVersion,
@@ -1342,6 +1350,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       inlineAutocompletion: this.omniboxViewState.inlineAutocompletion,
       selection: this.getMojoSelection(),
       unelision,
+      paste,
     });
   }
 

@@ -133,6 +133,9 @@ struct OmniboxActionTextInput {
   // viewed as actually changing the URL).
   bool unelision = false;
 
+  // If true, this change was a paste.
+  bool paste = false;
+
   gfx.mojom.Range selection;
 };
 
