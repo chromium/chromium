@@ -729,19 +729,49 @@ public class DOMUtils {
 
     /**
      * Returns click target for the DOM node specified by the rect boundaries.
+     *
      * @param webContents The WebContents in which the node lives.
-     * @param bounds The rect boundaries of a DOM node.
+     * @param bounds The rect boundaries of a DOM node, in CSS pixels relative to the layout
+     *     viewport.
      * @return the click target of the node in the form of a [ x, y ] array.
      */
     private static int[] getClickTargetForBounds(WebContents webContents, Rect bounds) {
-        // TODO(nburris): This converts from CSS pixels to physical pixels, but
-        // does not account for visual viewport offset.
         RenderCoordinatesImpl coord = ((WebContentsImpl) webContents).getRenderCoordinates();
-        int clickX = (int) coord.fromLocalCssToPix(bounds.exactCenterX());
+        double[] viewport = getViewportInfo(webContents);
+        double devicePixelRatio = viewport[0];
+        double visualViewportOffsetLeft = viewport[1];
+        double visualViewportOffsetTop = viewport[2];
+
+        double cssToPix = coord.getPageScaleFactor() * devicePixelRatio;
+        int clickX = (int) ((bounds.exactCenterX() - visualViewportOffsetLeft) * cssToPix);
         int clickY =
-                (int) coord.fromLocalCssToPix(bounds.exactCenterY())
+                (int) ((bounds.exactCenterY() - visualViewportOffsetTop) * cssToPix)
                         + getMaybeTopControlsHeight(webContents);
         return new int[] {clickX, clickY};
+    }
+
+    /**
+     * Returns {@code [devicePixelRatio, visualViewport.offsetLeft, visualViewport.offsetTop]}.
+     *
+     * <p>Both are read from the renderer because the browser side cannot derive them. {@link
+     * RenderCoordinatesImpl#getDeviceScaleFactor()} only knows the display density, so it misses
+     * browser zoom -- Desktop Android renders every page at 109% by default, see
+     * content::features::kAndroidDesktopZoomScaling. And scrolling a node into view can move the
+     * visual viewport rather than the layout viewport, leaving {@code window.scrollY} (the only
+     * scroll measured bounds are adjusted by) at 0.
+     */
+    private static double[] getViewportInfo(WebContents webContents) {
+        String json;
+        try {
+            json =
+                    JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                            webContents,
+                            "[window.devicePixelRatio, visualViewport.offsetLeft,"
+                                    + " visualViewport.offsetTop]");
+        } catch (TimeoutException e) {
+            throw new AssertionError("Failed to read the viewport info.", e);
+        }
+        return readJsonDoubleArray(json, 3);
     }
 
     private static int getMaybeTopControlsHeight(final WebContents webContents) {
@@ -784,21 +814,34 @@ public class DOMUtils {
     }
 
     private static int[] readJsonIntArray(String jsonText, int size) {
-        JsonReader jsonReader = new JsonReader(new StringReader(jsonText));
+        double[] values = readJsonDoubleArray(jsonText, size);
         int[] result = new int[size];
+        for (int i = 0; i < size; i++) {
+            // Keep the strictness of JsonReader#nextInt(), which rejects values that an int cannot
+            // represent exactly, rather than silently truncating them.
+            Assert.assertTrue(
+                    "Json array value is not an int: " + values[i] + " in " + jsonText,
+                    values[i] == Math.rint(values[i])
+                            && values[i] >= Integer.MIN_VALUE
+                            && values[i] <= Integer.MAX_VALUE);
+            result[i] = (int) values[i];
+        }
+        return result;
+    }
+
+    private static double[] readJsonDoubleArray(String jsonText, int size) {
+        double[] result = new double[size];
         int i = 0;
-        try {
+        try (JsonReader jsonReader = new JsonReader(new StringReader(jsonText))) {
             jsonReader.beginArray();
             while (jsonReader.hasNext()) {
                 if (i >= size) {
                     Assert.fail("Json array was larger than size " + size + ": " + jsonText);
                 }
-                result[i++] = jsonReader.nextInt();
+                result[i++] = jsonReader.nextDouble();
             }
             jsonReader.endArray();
             Assert.assertEquals("Json array was smaller than size " + size, size, i);
-
-            jsonReader.close();
         } catch (IOException exception) {
             Assert.fail("Failed to read json array: " + jsonText + "\n" + exception);
         }

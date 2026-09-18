@@ -23,7 +23,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -56,7 +55,9 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445755
+// "Ask Gemini" is gated on the side panel, which is enabled by default on Desktop Android. Pin it
+// off so the expected menu contents are the same on every form factor.
+@DisableFeatures(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
 public class CustomTabContextMenuTest {
 
     private static final String TEST_PATH =
