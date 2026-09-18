@@ -1569,6 +1569,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, HTTPFormActivation) {
 
 // Verifies that a search form will not be blocked.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SearchableFormActivation) {
+#if BUILDFLAG(IS_ANDROID)
+  // Prerender activation times out on Android tablets / large screens.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ||
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
+    GTEST_SKIP() << "Prerender activation times out on Android tablets and "
+                    "large screens.";
+  }
+#endif
   base::HistogramTester histogram_tester;
 
   // Navigate to an initial page.
