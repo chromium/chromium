@@ -2805,6 +2805,24 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CanDuplicateTab) {
   EXPECT_TRUE(chrome::CanDuplicateTab(browser()));
   EXPECT_TRUE(chrome::CanDuplicateTabAt(browser(), 0));
   EXPECT_TRUE(chrome::CanDuplicateTabAt(browser(), 1));
+
+  BrowserWindowInterface* app_popup_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams::CreateForAppPopup(
+          "app_name", /*trusted_source=*/true, gfx::Rect(),
+          browser()->GetProfile(), /*user_gesture=*/true));
+  AddBlankTabAndShow(app_popup_browser);
+  EXPECT_FALSE(chrome::CanDuplicateTab(app_popup_browser));
+  EXPECT_FALSE(chrome::CanDuplicateTabAt(app_popup_browser, 0));
+  EXPECT_FALSE(chrome::CanDuplicateKeyboardFocusedTab(app_popup_browser));
+  EXPECT_EQ(chrome::DuplicateTabAt(app_popup_browser, 0), nullptr);
+
+  BrowserWindowInterface* devtools_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams::CreateForDevTools(browser()->GetProfile()));
+  AddBlankTabAndShow(devtools_browser);
+  EXPECT_FALSE(chrome::CanDuplicateTab(devtools_browser));
+  EXPECT_FALSE(chrome::CanDuplicateTabAt(devtools_browser, 0));
+  EXPECT_FALSE(chrome::CanDuplicateKeyboardFocusedTab(devtools_browser));
+  EXPECT_EQ(chrome::DuplicateTabAt(devtools_browser, 0), nullptr);
 }
 
 namespace {

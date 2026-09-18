@@ -5452,6 +5452,40 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
             error);
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, CannotDuplicateAppPopupWindows) {
+  // Create app popup browser.
+  BrowserWindowInterface* app_popup_browser =
+      CreateBrowserWindowWithType(BrowserWindowInterface::Type::TYPE_APP_POPUP);
+  TabListInterface* app_popup_tab_list =
+      TabListInterface::From(app_popup_browser);
+
+  // Ensure we have a tab.
+  if (app_popup_tab_list->GetTabCount() == 0) {
+    app_popup_tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
+  }
+  ASSERT_GE(app_popup_tab_list->GetTabCount(), 1);
+  content::WebContents* web_contents =
+      app_popup_tab_list->GetTab(0)->GetContents();
+  ASSERT_NE(web_contents, nullptr);
+  int app_popup_tab_id = ExtensionTabUtil::GetTabId(web_contents);
+  ASSERT_GT(app_popup_tab_id, 0);
+
+  // Attempt to duplicate the app popup tab. This should fail as app popup tabs
+  // are not allowed to be duplicated.
+  auto function = base::MakeRefCounted<TabsDuplicateFunction>();
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test").AddAPIPermission("tabs").Build();
+  function->set_extension(extension);
+  std::string args = base::StringPrintf("[%d]", app_popup_tab_id);
+  std::string error = utils::RunFunctionAndReturnError(
+      function.get(), args, app_popup_browser->GetProfile(),
+      utils::FunctionMode::kNone);
+  EXPECT_EQ(
+      ErrorUtils::FormatErrorMessage(keys::kCannotDuplicateTab,
+                                     base::NumberToString(app_popup_tab_id)),
+      error);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
