@@ -477,7 +477,7 @@ TEST_F(MediaProgressViewTest, UpdateProgressColorsForPlaybackRateChanges) {
   media_session::MediaPosition paused_media_position(
       /*playback_rate=*/0, /*duration=*/base::Seconds(600),
       /*position=*/base::Seconds(300), /*end_of_media=*/false);
-  EXPECT_CALL(*this, OnProgressUpdated(testing::_));
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_)).Times(0);
   view()->UpdateProgress(paused_media_position);
   EXPECT_TRUE(switch_progress_colors_delay_timer()->IsRunning());
   EXPECT_FALSE(view()->use_paused_colors_for_testing());
@@ -597,9 +597,7 @@ TEST_F(MediaProgressViewTest,
       /*position=*/base::Seconds(100), /*end_of_media=*/false);
   view()->UpdateProgress(playing_media_position);
 
-  // Ensure `should_animate_waves` is true by setting animation to end state.
-  view()->slide_animation_for_testing().Reset(1.0);
-  int initial_phase = view()->phase_offset_for_testing();
+  float initial_phase = view()->phase_offset_for_testing();
 
   // Fire the timer and verify that the callback does not run.
   EXPECT_CALL(*this, OnProgressUpdated(testing::_)).Times(0);
@@ -618,12 +616,13 @@ TEST_F(MediaProgressViewTest, AnimationProgressedWhileHidden) {
   // Simulate squiggly path animation progress while hidden.
   view()->slide_animation_for_testing().Reset(0.5);
   view()->AnimationProgressed(&view()->slide_animation_for_testing());
-  EXPECT_EQ(view()->progress_amp_fraction_for_testing(), 0.5);
+  EXPECT_FLOAT_EQ(view()->progress_amp_fraction_for_testing(), 0.5f);
 
-  // Simulate thickness animation progress while hidden.
-  view()->thickness_animation_for_testing().Reset(0.5);
+  // Simulate thickness animation progress while hidden, verifying fractional
+  // subpixel stroke width interpolation.
+  view()->thickness_animation_for_testing().Reset(0.25);
   view()->AnimationProgressed(&view()->thickness_animation_for_testing());
-  EXPECT_EQ(view()->straight_progress_stroke_width_for_testing(), 3);
+  EXPECT_FLOAT_EQ(view()->straight_progress_stroke_width_for_testing(), 2.5f);
 }
 
 TEST_F(MediaProgressViewTest, UpdateProgressSchedulesPaintOnlyWhenDrawn) {
@@ -653,18 +652,43 @@ TEST_F(MediaProgressViewTest, UpdateIntervalsAreCorrectRelatively) {
   // update interval property.
   ui::ColorId id = ui::kUiColorsStart;
 
-  MediaProgressView squiggly_view(
-      /*use_squiggly_line=*/true, id, id, id, id, id, base::DoNothing(),
-      base::DoNothing(), base::DoNothing(), base::DoNothing());
+  auto straight_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* straight_view =
+      straight_widget->SetContentsView(std::make_unique<MediaProgressView>(
+          /*use_squiggly_line=*/false, id, id, id, id, id, base::DoNothing(),
+          base::DoNothing(), base::DoNothing(), base::DoNothing()));
+  straight_widget->Show();
 
-  MediaProgressView straight_view(
-      /*use_squiggly_line=*/false, id, id, id, id, id, base::DoNothing(),
-      base::DoNothing(), base::DoNothing(), base::DoNothing());
+  // Verify that when drawn, the straight progress bar is updated less
+  // frequently than the squiggly wave animation.
+  ASSERT_TRUE(view()->IsDrawn());
+  ASSERT_TRUE(straight_view->IsDrawn());
+  EXPECT_EQ(view()->GetUpdateInterval(), base::Hertz(60));
+  EXPECT_GT(straight_view->GetUpdateInterval(), view()->GetUpdateInterval());
 
-  // Verify that the straight progress bar is updated less frequently than the
-  // squiggly wave animation.
-  EXPECT_GT(straight_view.GetUpdateInterval(),
-            squiggly_view.GetUpdateInterval());
+  // When hidden, the squiggly view should drop to the lower update frequency.
+  view()->SetVisible(false);
+  ASSERT_FALSE(view()->IsDrawn());
+  EXPECT_EQ(view()->GetUpdateInterval(), straight_view->GetUpdateInterval());
+}
+
+TEST_F(MediaProgressViewTest, SquigglyWavePhaseAdvancesSmoothly) {
+  media_session::MediaPosition playing_media_position(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(100), /*end_of_media=*/false);
+
+  float initial_phase = view()->phase_offset_for_testing();
+  EXPECT_FLOAT_EQ(initial_phase, 0.0f);
+
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_));
+  view()->UpdateProgress(playing_media_position);
+
+  // At 60Hz (~16.67ms) and 28 px/s speed, phase_offset_ advances by ~0.47 px
+  // per tick (subpixel precision, non-zero).
+  float phase_after_first_tick = view()->phase_offset_for_testing();
+  EXPECT_GT(phase_after_first_tick, 0.0f);
+  EXPECT_LT(phase_after_first_tick, 1.0f);
 }
 
 }  // namespace global_media_controls

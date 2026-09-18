@@ -4,6 +4,8 @@
 
 #include "components/global_media_controls/public/views/media_progress_view.h"
 
+#include <cmath>
+
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "cc/paint/paint_flags.h"
@@ -33,22 +35,22 @@ constexpr int kStraightProgressViewHeight = 28;
 
 // The stroke width to paint the progress foreground and background lines, and
 // also the focus ring.
-constexpr int kStrokeWidth = 2;
+constexpr double kStrokeWidth = 2.0;
 
 // The stroke width to paint the straight progress line when user is dragging
 // the progress line.
-constexpr int kLargeStrokeWidth = 4;
+constexpr double kLargeStrokeWidth = 4.0;
 
 // Defines the x of where the painting of progress should start since we own the
 // OnPaint() function.
 constexpr int kWidthInset = 8;
 
 // Defines the wave size of the squiggly progress.
-constexpr int kProgressWavelength = 32;
-constexpr int kProgressAmplitude = 2;
+constexpr float kProgressWavelength = 32.0f;
+constexpr float kProgressAmplitude = 2.0f;
 
 // Squiggly progress wave speed in pixels per second.
-constexpr int kProgressPhaseSpeed = 28;
+constexpr float kProgressPhaseSpeed = 28.0f;
 
 // The size of the rounded rectangle indicator at the end of the foreground
 // squiggly or straight progress.
@@ -56,7 +58,7 @@ constexpr gfx::SizeF kSquigglyProgressIndicatorSize = gfx::SizeF(6, 14);
 constexpr gfx::SizeF kStraightProgressIndicatorSize = gfx::SizeF(4, 16);
 
 // The width of the gap between the progress indicator and the straight lines.
-constexpr int kStraightProgressIndicatorGap = 4;
+constexpr float kStraightProgressIndicatorGap = 4.0f;
 
 // Defines how long the animation for progress transitioning between squiggly
 // and straight lines will take.
@@ -66,12 +68,15 @@ constexpr base::TimeDelta kSlideAnimationDuration = base::Milliseconds(200);
 // thinner progress line.
 constexpr base::TimeDelta kThicknessAnimationDuration = base::Milliseconds(150);
 
-// Defines the interval for updating the progress for a squiggly line.
-constexpr base::TimeDelta kSquigglyProgressUpdateInterval =
-    base::Milliseconds(100);
+// Defines the interval for updating the progress when animating the squiggly
+// wave. Uses `base::Hertz(60)` (~16.67ms) to align with standard 60Hz/120Hz
+// display refresh rates and preserve microsecond precision since 1/60s is not
+// an integer millisecond.
+constexpr base::TimeDelta kWaveAnimationUpdateInterval = base::Hertz(60);
 
-// Defines the interval for updating the progress for a straight line.
-constexpr base::TimeDelta kStraightProgressUpdateInterval =
+// Defines the default interval for updating the progress when not animating the
+// squiggly wave (e.g., for a straight line or when the view is not drawn).
+constexpr base::TimeDelta kDefaultProgressUpdateInterval =
     base::Milliseconds(150);
 
 // Defines how long the progress colors should delay switching when the media
@@ -191,6 +196,15 @@ void MediaProgressView::VisibilityChanged(View* starting_from,
   // execution. This ensures the UI instantly updates to the correct position
   // without waiting for the next timer tick.
   SchedulePaint();
+
+  // If the timer is running, it may currently be waiting on the slower update
+  // interval used while hidden. Fire it immediately to compute an up-to-date
+  // media position and switch the timer to the faster drawn update interval.
+  if (update_progress_timer_->IsRunning()) {
+    update_progress_timer_->FireNow();
+    return;
+  }
+
   on_update_progress_callback_.Run(current_position_);
 
   MaybeNotifyAccessibilityValueChanged();
@@ -202,9 +216,9 @@ void MediaProgressView::AddedToWidget() {
 
 void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
   const auto* color_provider = GetColorProvider();
-  const int view_width = GetContentsBounds().width() - kWidthInset * 2;
-  const int view_height = CalculatePreferredSize({}).height();
-  const int progress_width = static_cast<int>(view_width * current_value_);
+  const float view_width = GetContentsBounds().width() - kWidthInset * 2;
+  const float view_height = CalculatePreferredSize({}).height();
+  const float progress_width = view_width * current_value_;
 
   // Create the paint flags which will be reused for painting.
   cc::PaintFlags flags;
@@ -225,14 +239,13 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
     // length and truncate it later in canvas. If the media is paused, this will
     // become a straight line.
     SkPathBuilder progress_path;
-    int current_x = -phase_offset_ - kProgressWavelength / 2;
-    int current_amp =
-        static_cast<int>(kProgressAmplitude * progress_amp_fraction_);
+    float current_x = -phase_offset_ - kProgressWavelength / 2;
+    float current_amp = kProgressAmplitude * progress_amp_fraction_;
     progress_path.moveTo(current_x, 0);
     while (current_x <= progress_width) {
-      int mid_x = current_x + kProgressWavelength / 4;
-      int next_x = current_x + kProgressWavelength / 2;
-      int next_amp = -current_amp;
+      float mid_x = current_x + kProgressWavelength / 4;
+      float next_x = current_x + kProgressWavelength / 2;
+      float next_amp = -current_amp;
       progress_path.cubicTo(mid_x, current_amp, mid_x, next_amp, next_x,
                             next_amp);
       current_x = next_x;
@@ -241,12 +254,12 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
     progress_path.offset(0, view_height / 2);
 
     // Paint the foreground squiggly progress in a clipped rect.
-    canvas->ClipRect(gfx::Rect(0, 0, progress_width, view_height));
+    canvas->ClipRect(gfx::RectF(0, 0, progress_width, view_height));
     canvas->DrawPath(progress_path.detach(), flags);
   } else {
     // Paint the foreground straight progress line with rounded corners.
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    const int foreground_progress_width =
+    const float foreground_progress_width =
         progress_width - kStraightProgressIndicatorGap -
         kStraightProgressIndicatorSize.width() / 2;
     if (foreground_progress_width > 0) {
@@ -276,14 +289,14 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
   }
 
   // Paint the background straight line with rounded corners.
-  int background_line_x =
+  const float background_line_x =
       progress_width + indicator_size.width() / 2 +
       (use_squiggly_line_ ? 0 : kStraightProgressIndicatorGap);
   if (background_line_x < view_width) {
     flags.setColor(color_provider->GetColor(
         use_paused_colors_ ? paused_background_color_id_
                            : playing_background_color_id_));
-    const int background_progress_stroke_width =
+    const float background_progress_stroke_width =
         use_squiggly_line_ ? kStrokeWidth : straight_progress_stroke_width_;
     canvas->DrawRoundRect(
         gfx::RectF(background_line_x,
@@ -302,9 +315,9 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
     border.setAntiAlias(true);
     border.setColor(color_provider->GetColor(focus_ring_color_id_));
     canvas->DrawRoundRect(
-        gfx::Rect(kStrokeWidth, kStrokeWidth,
-                  GetContentsBounds().width() - kStrokeWidth * 2,
-                  GetContentsBounds().height() - kStrokeWidth * 2),
+        gfx::RectF(kStrokeWidth, kStrokeWidth,
+                   GetContentsBounds().width() - kStrokeWidth * 2,
+                   GetContentsBounds().height() - kStrokeWidth * 2),
         kFocusRingRadius, border);
   }
 }
@@ -462,15 +475,12 @@ void MediaProgressView::UpdateProgress(
     current_value_ = new_value;
   }
 
-  const bool should_animate_waves =
-      !is_paused_ && use_squiggly_line_ && !slide_animation_.is_animating();
+  const bool should_animate_waves = !is_paused_ && use_squiggly_line_;
 
   if (should_animate_waves) {
     // Update the progress wavelength phase offset to create wave animation.
-    phase_offset_ +=
-        static_cast<int>(kSquigglyProgressUpdateInterval.InMillisecondsF() /
-                         1000 * kProgressPhaseSpeed);
-    phase_offset_ %= kProgressWavelength;
+    phase_offset_ += GetUpdateInterval().InSecondsF() * kProgressPhaseSpeed;
+    phase_offset_ = std::fmod(phase_offset_, kProgressWavelength);
   }
 
   // Always restart the timer, regardless of drawn state, to maintain background
@@ -490,10 +500,12 @@ void MediaProgressView::UpdateProgress(
     return;
   }
 
-  on_update_progress_callback_.Run(current_position_);
+  if (current_position_.InSeconds() != last_announced_position_.InSeconds()) {
+    on_update_progress_callback_.Run(current_position_);
+  }
+  MaybeNotifyAccessibilityValueChanged();
 
   if (progress_changed) {
-    MaybeNotifyAccessibilityValueChanged();
     OnPropertyChanged(&current_value_, views::PropertyEffects::kPaint);
   }
 
@@ -504,17 +516,17 @@ void MediaProgressView::UpdateProgress(
 
 base::TimeDelta MediaProgressView::GetUpdateInterval() const {
   // Performance optimization: The update interval is chosen to ensure the
-  // squiggly wave animation remains smooth, while the straight progress bar is
-  // updated less frequently to improve performance. The straight line's linear
-  // movement is less visually sensitive to a lower update rate than the wave
-  // animation.
-  return use_squiggly_line_ ? kSquigglyProgressUpdateInterval
-                            : kStraightProgressUpdateInterval;
+  // squiggly wave animation remains smooth when drawn, while the straight
+  // progress bar (or a hidden view) is updated less frequently to improve
+  // performance. The straight line's linear movement is less visually sensitive
+  // to a lower update rate than the wave animation.
+  return (IsDrawn() && use_squiggly_line_) ? kWaveAnimationUpdateInterval
+                                           : kDefaultProgressUpdateInterval;
 }
 
 void MediaProgressView::MaybeNotifyAccessibilityValueChanged() {
   if (!IsDrawn() || !GetWidget() || !GetWidget()->IsVisible() ||
-      current_position_ == last_announced_position_) {
+      current_position_.InSeconds() == last_announced_position_.InSeconds()) {
     return;
   }
   last_announced_position_ = current_position_;
@@ -621,15 +633,15 @@ double MediaProgressView::current_value_for_testing() const {
   return current_value_;
 }
 
-int MediaProgressView::phase_offset_for_testing() const {
+float MediaProgressView::phase_offset_for_testing() const {
   return phase_offset_;
 }
 
-double MediaProgressView::progress_amp_fraction_for_testing() const {
+float MediaProgressView::progress_amp_fraction_for_testing() const {
   return progress_amp_fraction_;
 }
 
-int MediaProgressView::straight_progress_stroke_width_for_testing() const {
+float MediaProgressView::straight_progress_stroke_width_for_testing() const {
   return straight_progress_stroke_width_;
 }
 
