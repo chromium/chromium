@@ -8,7 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/uuid.h"
-#include "components/sync/model/in_memory_metadata_change_list.h"
+#include "components/sync/model/empty_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
@@ -72,15 +72,16 @@ bool TabContextItemSyncBridge::UploadItem(
 std::unique_ptr<syncer::MetadataChangeList>
 TabContextItemSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<syncer::InMemoryMetadataChangeList>();
+  // The data type intentionally doesn't persist data or metadata on disk, so
+  // metadata changes are ignored.
+  return std::make_unique<syncer::EmptyMetadataChangeList>();
 }
 
 std::optional<syncer::ModelError> TabContextItemSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
-                                     std::move(entity_changes));
+  return std::nullopt;
 }
 
 std::optional<syncer::ModelError>
@@ -88,9 +89,6 @@ TabContextItemSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (metadata_change_list) {
-    metadata_change_list->DropAllChanges();
-  }
   return std::nullopt;
 }
 

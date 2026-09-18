@@ -11,9 +11,11 @@
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "components/sync/model/data_batch.h"
+#include "components/sync/model/metadata_change_list.h"
 #include "components/sync/protocol/encrypted_tab_context_item_specifics.pb.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync_tab_context/container_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,7 +48,14 @@ TEST_F(TabContextItemSyncBridgeTest, ShouldUploadItemWhenTrackingMetadata) {
   encrypted_data.set_blob("encrypted_blob");
 
   ON_CALL(mock_processor_, IsTrackingMetadata).WillByDefault(Return(true));
-  EXPECT_CALL(mock_processor_, Put);
+  EXPECT_CALL(mock_processor_, Put)
+      .WillOnce([](const std::string& storage_key,
+                   std::unique_ptr<syncer::EntityData> entity_data,
+                   syncer::MetadataChangeList* metadata_change_list) {
+        ASSERT_THAT(metadata_change_list, NotNull());
+        metadata_change_list->UpdateMetadata(storage_key,
+                                             sync_pb::EntityMetadata());
+      });
 
   EXPECT_TRUE(
       bridge_->UploadItem(container_id, item_id, std::move(encrypted_data)));
