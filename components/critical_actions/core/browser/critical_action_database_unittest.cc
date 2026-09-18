@@ -689,4 +689,40 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<SetCriticalActionsConversationIdTestCase>&
            info) { return info.param.test_name; });
 
+TEST_F(CriticalActionDatabaseTest,
+       SetCriticalActionsConversationId_OnlyUpdatesMostRecentAction) {
+  CriticalActionDatabase database(db_path_);
+  ASSERT_TRUE(database.Init());
+
+  base::Time base_time = base::Time::Now();
+  const std::string kActorTaskId = "test_task";
+  const std::string kConversationId = "test_conv";
+
+  CriticalActionEntry older_entry = CreateDefaultEntry();
+  older_entry.actor_task_id = kActorTaskId;
+  older_entry.timestamp = base_time - base::Hours(1);
+  ASSERT_TRUE(database.AddCriticalAction(older_entry));
+
+  CriticalActionEntry newer_entry = CreateDefaultEntry();
+  newer_entry.actor_task_id = kActorTaskId;
+  newer_entry.timestamp = base_time;
+  ASSERT_TRUE(database.AddCriticalAction(newer_entry));
+
+  EXPECT_TRUE(database.SetCriticalActionsConversationId({kActorTaskId},
+                                                        kConversationId));
+
+  // Only the most recent critical action for `kActorTaskId` should be updated.
+  auto retrieved_newer =
+      database.GetCriticalAction(newer_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_newer.has_value());
+  EXPECT_EQ(retrieved_newer->conversation_id, kConversationId);
+
+  auto retrieved_older =
+      database.GetCriticalAction(older_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_older.has_value());
+  EXPECT_TRUE(retrieved_older->conversation_id.empty());
+
+  database.Close();
+}
+
 }  // namespace critical_actions
