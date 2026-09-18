@@ -58,9 +58,6 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     static final String MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM =
             "Android.FontLookup.MatchLocalFontByUniqueName.Time";
 
-    @VisibleForTesting
-    static final String GMS_FONT_REQUEST_HISTOGRAM = "Android.FontLookup.GmsFontRequest.Time";
-
     private static final String GOOGLE_SANS_REGULAR = "google sans regular";
     private static final String GOOGLE_SANS_MEDIUM = "google sans medium";
     private static final String GOOGLE_SANS_BOLD = "google sans bold";
@@ -203,9 +200,8 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     /**
      * Tries to fetch the specified font from GMS Core (the Android Downloadable fonts provider).
      *
-     * This method makes a synchronous request to GMS Core and should not be called from the IO
-     * thread. This requirement may be re-evaluated based on the timing results of {@link
-     * #GMS_FONT_REQUEST_HISTOGRAM}.
+     * <p>This method makes a synchronous request to GMS Core and should not be called from the IO
+     * thread.
      *
      * @param fontUniqueName The ICU case folded unique full font name to fetch.
      * @return An opened font file descriptor, or null if the font file is not available.
@@ -240,11 +236,8 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
                         R.array.ui_com_google_android_gms_fonts_certs);
 
         try {
-            long startTimeMs = SystemClock.elapsedRealtime();
             FontFamilyResult fontFamilyResult =
                     mFontsContract.fetchFonts(mAppContext, null, request);
-            RecordHistogram.recordTimesHistogram(
-                    GMS_FONT_REQUEST_HISTOGRAM, SystemClock.elapsedRealtime() - startTimeMs);
 
             if (fontFamilyResult.getStatusCode() != FontFamilyResult.STATUS_OK) {
                 Log.d(
