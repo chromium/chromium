@@ -113,7 +113,7 @@ public class TabListRecyclerView extends RecyclerView
      *
      * @param blockTouchInput Whether the touch inputs should be blocked.
      */
-    void setBlockTouchInput(boolean blockTouchInput) {
+    public void setBlockTouchInput(boolean blockTouchInput) {
         mBlockTouchInput = blockTouchInput;
     }
 

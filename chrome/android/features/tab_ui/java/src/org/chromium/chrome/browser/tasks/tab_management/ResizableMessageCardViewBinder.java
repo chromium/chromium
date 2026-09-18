@@ -14,7 +14,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for TabGridSecondaryItem. */
 @NullMarked
-class ResizableMessageCardViewBinder {
+public class ResizableMessageCardViewBinder {
     public static void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
         if (ResizableMessageCardViewProperties.WIDTH == propertyKey) {
             View resizableView = view.findViewById(R.id.resizable_view);

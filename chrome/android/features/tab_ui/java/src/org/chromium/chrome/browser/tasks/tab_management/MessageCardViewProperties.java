@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -22,7 +23,8 @@ import java.lang.annotation.RetentionPolicy;
 
 /** List of properties used by TabGridSecondaryItem. */
 @NullMarked
-class MessageCardViewProperties {
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+public class MessageCardViewProperties {
     /** An enum interface to specify where the message card can be shown. */
     @IntDef({MessageCardScope.REGULAR, MessageCardScope.INCOGNITO, MessageCardScope.BOTH})
     @Retention(RetentionPolicy.SOURCE)

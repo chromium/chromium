@@ -14,9 +14,9 @@ found in the LICENSE file.
         android:key="tab_archive_settings_description"
         android:summary="@string/archive_settings_description_section"
         app:allowDividerBelow="false" />
-    <!-- LINT.ThenChange(/chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabArchiveSettingsFragment.java:archive_settings_description_section) -->
+    <!-- LINT.ThenChange(/chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/archived_tabs/TabArchiveSettingsFragment.java:archive_settings_description_section) -->
 
-    <org.chromium.chrome.browser.tasks.tab_management.TabArchiveTimeDeltaPreference
+    <org.chromium.chrome.browser.tasks.tab_management.archived_tabs.TabArchiveTimeDeltaPreference
         android:key="tab_archive_time_delta" />
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference

@@ -10,7 +10,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** List of properties used by TabGridSecondaryItem. */
 @NullMarked
-class ResizableMessageCardViewProperties {
+public class ResizableMessageCardViewProperties {
     public static final PropertyModel.WritableIntPropertyKey WIDTH =
             new PropertyModel.WritableIntPropertyKey();
 
