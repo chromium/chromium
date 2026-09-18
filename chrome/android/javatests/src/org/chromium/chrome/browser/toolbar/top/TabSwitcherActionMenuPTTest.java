@@ -21,6 +21,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -93,19 +94,21 @@ public class TabSwitcherActionMenuPTTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // TODO(crbug.com/536995089): Re-enable once passing
     public void testOpenNewIncognitoTabFromIncognito() {
         IncognitoNewTabPageStation incognitoNtp =
-                mCtaTestRule
-                        .startOnBlankPage()
-                        .openTabSwitcherActionMenu()
-                        .selectNewIncognitoTabOrWindow();
+                mCtaTestRule.startOnBlankPage().openNewIncognitoTabOrWindowFast();
+        ChromeTabbedActivity initialIncognitoActivity = incognitoNtp.getActivity();
 
         IncognitoNewTabPageStation page =
                 incognitoNtp.openTabSwitcherActionMenu().selectNewIncognitoTab();
 
+        ChromeTabbedActivity newPageActivity = page.getActivity();
         assertTrue(page.getTabModelSelector().isIncognitoSelected());
-        assertEquals(2, getTabCountOnUiThread(page.getActivity().getCurrentTabModel()));
+        assertEquals(initialIncognitoActivity, newPageActivity);
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            assertNotEquals(mCtaTestRule.getActivity(), newPageActivity);
+        }
+        assertEquals(2, getTabCountOnUiThread(newPageActivity.getCurrentTabModel()));
     }
 
     @Test
