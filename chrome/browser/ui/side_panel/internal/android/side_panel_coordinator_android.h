@@ -202,8 +202,11 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // animations and ensure the side panel is in a stable state.
   void EndAnimations();
 
-  // Flushes any async view detachments (e.g. from a tab switch) if the given
-  // tab's active entry is currently pending replacement.
+  // Immediately completes any pending content replacement on the Java side.
+  void CompletePendingContentReplacement();
+
+  // Immediately completes any pending content replacement on the Java side if
+  // the pending replaced entry belongs to `tab`.
   void CompletePendingContentReplacementForTab(TabAndroid* tab);
 
   bool CanShowEntryForKey(const UniqueKey& key) const;
@@ -234,13 +237,21 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // error-prone.
   SidePanelState state_ = SidePanelState::kClosed;
 
-  // Tracks the `SidePanelEntryHideReason` for the current "close side panel" or
-  // "replace side panel content" operation.
-  std::optional<SidePanelEntryHideReason> pending_hide_reason_;
+  // Tracks the `SidePanelEntryHideReason` for the current (pending) "close side
+  // panel" operation since animations make the operation async.
+  std::optional<SidePanelEntryHideReason> pending_panel_close_reason_;
 
   // Tracks the entry that is being replaced since the "replace side panel
-  // content" operation is async on the Java side.
-  raw_ptr<SidePanelEntry> pending_replaced_entry_ = nullptr;
+  // content" operation can be async.
+  // See the Java
+  // `SidePanelContainerCoordinatorImpl#startReplacingPanelContent` for
+  // details.
+  struct PendingReplacedEntry {
+    UniqueKey key;
+    raw_ptr<SidePanelEntry> entry;
+    SidePanelEntryHideReason hide_reason;
+  };
+  std::optional<PendingReplacedEntry> pending_replaced_entry_;
 
   // A weak reference to the Java `SidePanelCoordinatorAndroid`, which is
   // the sole owner of the C++ `SidePanelCoordinatorAndroid`.

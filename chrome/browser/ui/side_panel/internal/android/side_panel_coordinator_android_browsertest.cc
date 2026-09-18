@@ -3658,3 +3658,52 @@ IN_PROC_BROWSER_TEST_F(
   // Clean up.
   tab_model->RemoveObserver(&observer);
 }
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestDeferredContentReplacement_CloseTabWhileWindowScopedEntryReplacesTabScopedEntry) {
+  // Arrange: Open a new tab so closing it won't close the browser window.
+  tabs::TabInterface* new_tab =
+      tab_list_->OpenTab(GURL("about:blank"), /*index=*/1);
+
+  // Arrange: Register a tab-scoped entry on the new tab and show it.
+  auto* tab_scoped_registry = SidePanelRegistry::From(new_tab);
+  auto tab_scoped_entry_key =
+      SidePanelEntryKey(SidePanelEntryId::kTestTabScopedEntry);
+  tab_scoped_registry->Register(
+      CreateSidePanelEntry(tab_scoped_entry_key, browser_));
+  coordinator_->SidePanelUIBase::Show(tab_scoped_entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+  ASSERT_TRUE(coordinator_->SidePanelUIBase::IsSidePanelEntryShowing(
+      tab_scoped_entry_key));
+
+  // Arrange: Register a window-scoped entry.
+  auto window_scoped_entry_key =
+      SidePanelEntryKey(SidePanelEntryId::kBookmarks);
+  SidePanelRegistry::From(browser_)->Register(
+      CreateSidePanelEntry(window_scoped_entry_key, browser_));
+
+  // Act: Pause content replacement, then show the window-scoped entry to
+  // replace the new tab's tab-scoped entry.
+  coordinator_->PauseContentReplacementForTesting();
+  coordinator_->SidePanelUIBase::Show(window_scoped_entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  EXPECT_TRUE(coordinator_->HasPendingReplacedEntryForTesting());
+
+  // Act: Close the new tab before the deferred content replacement finishes.
+  tab_list_->CloseTab(new_tab->GetHandle());
+
+  // Assert:
+  //
+  // The content replacement should be completed immediately (without calling
+  // ResumeContentReplacementForTesting), since the new tab is closed.
+  EXPECT_FALSE(coordinator_->HasPendingReplacedEntryForTesting());
+  EXPECT_TRUE(coordinator_->SidePanelUIBase::IsSidePanelEntryShowing(
+      window_scoped_entry_key));
+
+  // Clean up:
+  coordinator_->ResumeContentReplacementForTesting();
+}

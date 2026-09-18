@@ -174,12 +174,13 @@ void SidePanelCoordinatorAndroid::OnPanelContentReplaced() {
   SPLOG("OnPanelContentReplaced");
 
   CHECK(pending_replaced_entry_);
-  CHECK(pending_hide_reason_);
 
-  pending_replaced_entry_->OnEntryHidden();
-  pending_replaced_entry_->OnEntryHiddenWithReason(*pending_hide_reason_);
-  pending_replaced_entry_ = nullptr;
-  pending_hide_reason_ = std::nullopt;
+  raw_ptr<SidePanelEntry> entry = pending_replaced_entry_->entry;
+  SidePanelEntryHideReason hide_reason = pending_replaced_entry_->hide_reason;
+  pending_replaced_entry_ = std::nullopt;
+
+  entry->OnEntryHidden();
+  entry->OnEntryHiddenWithReason(hide_reason);
 }
 
 void SidePanelCoordinatorAndroid::OnActiveChanged(bool active) {
@@ -308,8 +309,8 @@ void SidePanelCoordinatorAndroid::OnTabClosed(TabAndroid* tab) {
   //
   // In this case, we must _not_ delay removing tab_1's side panel View.
   // Otherwise, when `OnPanelContentReplaced()` is called, the
-  // `pending_replaced_entry_` will be an invalid pointer since tab_1 is already
-  // destroyed.
+  // `pending_replaced_entry_->entry` will be an invalid pointer since tab_1 is
+  // already destroyed.
   CompletePendingContentReplacementForTab(tab);
 }
 
@@ -575,7 +576,7 @@ void SidePanelCoordinatorAndroid::
 bool SidePanelCoordinatorAndroid::
     HasPendingReplacedEntryForTesting()  // IN-TEST
     const {
-  return pending_replaced_entry_ != nullptr;
+  return pending_replaced_entry_.has_value();
 }
 
 void SidePanelCoordinatorAndroid::Show(
@@ -641,10 +642,10 @@ void SidePanelCoordinatorAndroid::Show(
     // Also, we should invoke the entry's OnEntryHideCancelled() and skip
     // OnEntryHidden().
     //
-    // Therefore, we clear pending_hide_reason_ here so that when the closing
-    // animation ends, OnPanelClosed() won't invoke OnEntryHidden().
+    // Therefore, we clear pending_panel_close_reason_ here so that when the
+    // closing animation ends, OnPanelClosed() won't invoke OnEntryHidden().
     SPLOG("Show - Requested to show an entry that's closing");
-    pending_hide_reason_ = std::nullopt;
+    pending_panel_close_reason_ = std::nullopt;
     entry->OnEntryHideCancelled();
   }
 
@@ -741,7 +742,7 @@ void SidePanelCoordinatorAndroid::StartClosingPanel(
   state_ = SidePanelState::kClosing;
   SidePanelEntry* entry = GetEntryForCurrentKeyNonNull();
   entry->OnEntryWillHide(hide_reason);
-  pending_hide_reason_ = hide_reason;
+  pending_panel_close_reason_ = hide_reason;
 
   // We need to explicitly reset the active entry for the "close side panel"
   // case.
@@ -786,10 +787,10 @@ void SidePanelCoordinatorAndroid::FinishClosingPanel() {
 
   // Now that the animation has completed, we can update our local state to be
   // closed, and trigger the entry hidden callbacks.
-  if (pending_hide_reason_) {
+  if (pending_panel_close_reason_) {
     entry->OnEntryHidden();
-    entry->OnEntryHiddenWithReason(*pending_hide_reason_);
-    pending_hide_reason_ = std::nullopt;
+    entry->OnEntryHiddenWithReason(*pending_panel_close_reason_);
+    pending_panel_close_reason_ = std::nullopt;
 
     SidePanelMetrics::RecordSidePanelClosed(opened_timestamp());
   }
@@ -806,14 +807,11 @@ void SidePanelCoordinatorAndroid::StartReplacingPanelContent(
 
   // If there is already a pending replacement waiting for Java to finish, we
   // MUST synchronously complete it right now before we overwrite
-  // `pending_replaced_entry_`. Otherwise, Java will synchronously complete it
-  // later during this function call, but it will incorrectly invoke
+  // `pending_replaced_entry_` below. Otherwise, Java will synchronously
+  // complete it later during this function call, but it will incorrectly invoke
   // OnEntryHidden() on the NEW pending_replaced_entry_ instead of the OLD one,
   // permanently breaking state!
-  if (pending_replaced_entry_) {
-    Java_SidePanelCoordinatorAndroidBridge_completePendingContentReplacement(
-        AttachCurrentThread(), java_coordinator(), browser()->GetProfile());
-  }
+  CompletePendingContentReplacement();
 
   // Always clear the current tab's active entry before replacing the current
   // entry.
@@ -849,22 +847,24 @@ void SidePanelCoordinatorAndroid::StartReplacingPanelContent(
   }
 
   UniqueKey current_key = GetCurrentKeyNonNull();
-  CHECK(!pending_replaced_entry_) << "Another entry is waiting to be replaced";
-  pending_replaced_entry_ = GetEntryForUniqueKey(current_key);
-  CHECK(pending_replaced_entry_) << "No SidePanelEntry to replace";
+  SidePanelEntry* entry_to_replace = GetEntryForUniqueKey(current_key);
+  CHECK(entry_to_replace) << "No SidePanelEntry to replace";
 
   // The existing panel may have been loading, so we should cancel any load
   // methods as well.
   waiter()->ResetLoadingEntryIfNecessary();
 
   // The existing panel will receive a hidden event, which needs a reason.
-  pending_hide_reason_ = SidePanelEntryHideReason::kReplaced;
-
+  auto hide_reason = SidePanelEntryHideReason::kReplaced;
   if (open_trigger == SidePanelOpenTrigger::kTabChanged) {
-    pending_hide_reason_ = SidePanelEntryHideReason::kBackgrounded;
+    hide_reason = SidePanelEntryHideReason::kBackgrounded;
   }
 
-  pending_replaced_entry_->OnEntryWillHide(*pending_hide_reason_);
+  pending_replaced_entry_ = PendingReplacedEntry{.key = current_key,
+                                                 .entry = entry_to_replace,
+                                                 .hide_reason = hide_reason};
+
+  entry_to_replace->OnEntryWillHide(hide_reason);
 
   // Set key before replacing the current entry.
   SetCurrentKey(new_key);
@@ -891,14 +891,21 @@ void SidePanelCoordinatorAndroid::EndAnimations() {
       << "Side panel should be in a stable state after ending all animations.";
 }
 
+void SidePanelCoordinatorAndroid::CompletePendingContentReplacement() {
+  if (pending_replaced_entry_) {
+    Java_SidePanelCoordinatorAndroidBridge_completePendingContentReplacement(
+        AttachCurrentThread(), java_coordinator(), browser()->GetProfile());
+    CHECK(!pending_replaced_entry_)
+        << "Pending replaced entry should be cleared after completing "
+           "content replacement.";
+  }
+}
+
 void SidePanelCoordinatorAndroid::CompletePendingContentReplacementForTab(
     TabAndroid* tab) {
-  if (auto* registry = SidePanelRegistry::From(tab)) {
-    if (pending_replaced_entry_ &&
-        registry->GetActiveEntry() == pending_replaced_entry_) {
-      Java_SidePanelCoordinatorAndroidBridge_completePendingContentReplacement(
-          AttachCurrentThread(), java_coordinator(), browser()->GetProfile());
-    }
+  if (pending_replaced_entry_ &&
+      pending_replaced_entry_->key.tab_handle == tab->GetHandle()) {
+    CompletePendingContentReplacement();
   }
 }
 
