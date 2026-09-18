@@ -414,6 +414,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(pagereveal, kPagereveal)
 
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(openerchange, kOpenerchange)
+
   void RegisterEventListenerObserver(EventListenerObserver*);
 
   void FrameDestroyed();

@@ -405,6 +405,8 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.idl",
   "//third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.idl",
   "//third_party/blink/renderer/core/html/focus_options.idl",
+  "//third_party/blink/renderer/core/html/persistent_widgets/html_persistent_widget_element.idl",
+  "//third_party/blink/renderer/core/html/persistent_widgets/persistent_widget_opener.idl",
   "//third_party/blink/renderer/core/html/forms/autofill_event.idl",
   "//third_party/blink/renderer/core/html/forms/autofill_field_data.idl",
   "//third_party/blink/renderer/core/html/forms/autofill_refill_callback.idl",

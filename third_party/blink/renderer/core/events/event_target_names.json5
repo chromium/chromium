@@ -35,6 +35,7 @@
     "EventSource",
     "Performance",
     "Profiler",
+    "PersistentWidgetOpener",
     {
       name: "VisualViewport",
       ImplementedAs: "DOMVisualViewport",

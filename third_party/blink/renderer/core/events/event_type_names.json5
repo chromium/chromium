@@ -201,6 +201,7 @@
     "offline",
     "online",
     "open",
+    "openerchange",
     "orientationchange",
     "overscrollcancel",
     "overscrollchanging",

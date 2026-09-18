@@ -425,6 +425,12 @@
     },
     "param",
     {
+      name: "persistentwidget",
+      interfaceName: "HTMLPersistentWidgetElement",
+      interfaceHeaderDir: "third_party/blink/renderer/core/html/persistent_widgets",
+      runtimeEnabled: "PersistentWidgetAPI",
+    },
+    {
       name: "picture",
       interfaceName: "HTMLPictureElement",
     },

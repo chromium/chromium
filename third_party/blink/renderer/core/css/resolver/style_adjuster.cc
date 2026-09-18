@@ -1609,6 +1609,7 @@ StyleAdjuster::ElementTypeForCache StyleAdjuster::GetElementTypeCacheKey(
     case ElementType::kHTMLFrameElement:
     case ElementType::kHTMLIFrameElement:
     case ElementType::kHTMLFencedFrameElement:
+    case ElementType::kHTMLPersistentWidgetElement:
       // HTMLFrameOwnerElement descendants have special touch-action behavior.
       // There is also special handling of position and zoom, but this is moot,
       // as we exclude them anyway.

@@ -2476,6 +2476,25 @@
     ]
   },
   {
+    "prefix": "persistent-widgets",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "wpt_internal/persistent-widgets"
+    ],
+    "args": [
+      "--enable-features=PersistentWidgetAPI"
+    ],
+    "exclusive_tests": "ALL",
+    "owners": [
+      "jarhar@chromium.org"
+    ],
+    "expires": "Jul 1, 2027"
+  },
+  {
     "prefix": "port-bound-cookies",
     "platforms": [
       "Linux",

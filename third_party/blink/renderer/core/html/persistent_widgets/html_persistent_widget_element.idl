@@ -1,0 +1,14 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    Exposed=Window,
+    RuntimeEnabled=PersistentWidgetAPI
+]
+interface HTMLPersistentWidgetElement : HTMLElement {
+  [Reflect, URL, CEReactions] attribute USVString src;
+  [Reflect, CEReactions] attribute DOMString name;
+  [RaisesException] void postMessage(any message, USVString targetOrigin);
+  [RaisesException] void postMessage(any message, optional WindowPostMessageOptions options = {});
+};

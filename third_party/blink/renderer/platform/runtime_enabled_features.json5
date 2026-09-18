@@ -4792,6 +4792,18 @@
       name: "PermissionsRequestRevoke",
       status: "experimental",
     },
+    {
+      // Enables the <persistentwidget> element, which is like an <iframe> but
+      // can stay alive without reloading when its opener/embedder navigates
+      // from one same-origin document to another.
+      // There are checks for this flag in content/browser, which means that
+      // setting status to "experimental" would not actually enable this
+      // feature, it has to be "stable" in order for it to actually get enabled
+      // in the browser process. Manual and automated tests must pass the
+      // --enable-features=PersistentWidgetAPI command line flag to the
+      // browser.
+      name: "PersistentWidgetAPI",
+    },
     // This is a reverse OT used for a phased deprecation.
     // https://crbug.com/918374
     {

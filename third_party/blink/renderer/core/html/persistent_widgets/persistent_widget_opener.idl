@@ -1,0 +1,22 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    ImplementedAs=PersistentWidgetOpener,
+    Exposed=Window,
+    RuntimeEnabled=PersistentWidgetAPI
+]
+partial interface Window {
+    [SameObject] readonly attribute PersistentWidgetOpener? persistentWidgetOpener;
+};
+
+[
+    Exposed=Window,
+    RuntimeEnabled=PersistentWidgetAPI
+]
+interface PersistentWidgetOpener : EventTarget {
+  [CallWith=ScriptState, RaisesException] void postMessage(any message, USVString targetOrigin);
+  [CallWith=ScriptState, RaisesException] void postMessage(any message, optional WindowPostMessageOptions options = {});
+};
+

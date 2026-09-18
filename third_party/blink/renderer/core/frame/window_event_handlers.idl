@@ -40,6 +40,7 @@ interface mixin WindowEventHandlers {
   [RuntimeEnabled=DesktopPWAsAdditionalWindowingControlsOnMove] attribute EventHandler onmove;
   attribute EventHandler onoffline;
   attribute EventHandler ononline;
+  [RuntimeEnabled=PersistentWidgetAPI] attribute EventHandler onopenerchange;
   attribute EventHandler onpagehide;
   attribute EventHandler onpageshow;
   attribute EventHandler onpopstate;
