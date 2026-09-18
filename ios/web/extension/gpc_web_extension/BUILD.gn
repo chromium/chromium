@@ -27,7 +27,7 @@ source_set("gpc_web_extension") {
   deps = [
     ":gpc_web_extension_bundle_data",
     "//base",
-    "//ios/web/extension",
+    "//ios/web/extension:built_in_web_extension",
   ]
 
   frameworks = [

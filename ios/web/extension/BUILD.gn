@@ -4,6 +4,26 @@
 
 source_set("extension") {
   sources = [
+    "extension_controller_impl.h",
+    "extension_controller_impl.mm",
+  ]
+
+  deps = [
+    ":built_in_web_extension",
+    "//base",
+    "//ios/web/extension/gpc_web_extension",
+    "//ios/web/public",
+    "//ios/web/public/extension",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "WebKit.framework",
+  ]
+}
+
+source_set("built_in_web_extension") {
+  sources = [
     "built_in_web_extension.h",
     "built_in_web_extension.mm",
   ]
@@ -18,11 +38,39 @@ source_set("extension") {
 
 source_set("unittests") {
   testonly = true
-  sources = [ "built_in_web_extension_unittest.mm" ]
+  sources = [
+    "built_in_web_extension_unittest.mm",
+    "extension_controller_impl_unittest.mm",
+  ]
+
+  deps = [
+    ":built_in_web_extension",
+    ":extension",
+    "//base",
+    "//base/test:test_support",
+    "//ios/web/extension/gpc_web_extension",
+    "//ios/web/public/extension",
+    "//ios/web/public/test:test_fixture",
+    "//testing/gtest",
+  ]
+  frameworks = [ "WebKit.framework" ]
+}
+
+source_set("inttests") {
+  testonly = true
+  sources = [ "extension_controller_impl_inttest.mm" ]
+
   deps = [
     ":extension",
     "//base",
     "//base/test:test_support",
+    "//ios/web/public",
+    "//ios/web/public/extension",
+    "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
+    "//ios/web/public/test/fakes",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider",
+    "//net:test_support",
     "//testing/gtest",
   ]
   frameworks = [ "WebKit.framework" ]
