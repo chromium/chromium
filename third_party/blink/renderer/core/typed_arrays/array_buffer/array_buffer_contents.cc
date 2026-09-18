@@ -155,21 +155,21 @@ void ArrayBufferContents::Reset() {
 
 void ArrayBufferContents::Transfer(ArrayBufferContents& other) {
   DCHECK(!IsShared());
-  DCHECK(!other.Data());
+  DCHECK(!other.IsValid());
   other.backing_store_ = std::move(backing_store_);
 }
 
 void ArrayBufferContents::ShareWith(ArrayBufferContents& other) {
   DCHECK(IsShared());
-  DCHECK(!other.Data());
+  DCHECK(!other.IsValid());
   other.backing_store_ = backing_store_;
 }
 
 void ArrayBufferContents::ShareNonSharedForInternalUse(
     ArrayBufferContents& other) {
   DCHECK(!IsShared());
-  DCHECK(!other.Data());
-  DCHECK(Data());
+  DCHECK(!other.IsValid());
+  DCHECK(IsValid());
   other.backing_store_ = backing_store_;
 }
 
