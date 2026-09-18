@@ -246,6 +246,8 @@ should be able to be added at any place in this file.
   <variant name="_AdaptiveButtonInTopToolbarCustomization_VoiceSearch"
       summary="For AdaptiveButtonInTopToolbarCustomization voice search
                feature."/>
+  <variant name="_AdaptiveButtonPinGlicToolbarButton"
+      summary="For auto-pinning the Glic adaptive toolbar button."/>
   <variant name="_AddToHomescreenMessage"
       summary="For AddToHomescreen IPH feature."/>
   <variant name="_AddToHomescreenTextBubble"
@@ -350,11 +352,15 @@ should be able to be added at any place in this file.
       summary="For Compose MSBB Settings badge feature"/>
   <variant name="_ComposeNewBadgeFeature"
       summary="For Compose new badge feature"/>
+  <variant name="_ContextualPageActions_ActionChip"
+      summary="For Contextual Page Actions Action Chip feature."/>
   <variant name="_ContextualPageActions_PriceTracking"
       summary="For Contextual page actions price tracking feature."/>
   <variant name="_ContextualPageActions_PriceTrackingActionChip"
       summary="For action chip variant of Contextual page actions price
                tracking feature."/>
+  <variant name="_ContextualPageActions_QuietVariant"
+      summary="For Contextual Page Actions Quiet Variant feature."/>
   <variant name="_ContextualSearch" summary="For ContextualSearch feature."/>
   <variant name="_ContextualSearchInPanelHelp"
       summary="For ContextualSearchInPanelHelp feature."/>
@@ -431,8 +437,12 @@ should be able to be added at any place in this file.
   <variant name="_ExplicitBrowserSigninPreferenceRemembered"
       summary="For Explicit Browser Signin Preference Remembered feature."/>
   <variant name="_ExploreSitesTile" summary="For Explore Sites feature."/>
+  <variant name="_ExtensionsManageAppMenu"
+      summary="For managing extensions in the app menu."/>
   <variant name="_ExtensionsManageAppMenuFeature"
       summary="For managing your extensions from the app menu feature."/>
+  <variant name="_ExtensionsManageToolbar"
+      summary="For managing extensions in the toolbar."/>
   <variant name="_ExtensionsManageToolbarFeature"
       summary="For managing your extension feature in the toolbar."/>
   <variant name="_ExtensionsMenu" summary="For Extensions menu opening."/>
@@ -703,6 +713,9 @@ should be able to be added at any place in this file.
   <variant name="_LowUserEngagementDetector"
       summary="For LowUserEngagementDetector feature."/>
   <variant name="_MediaDownload" summary="For MediaDownload feature."/>
+  <variant name="_MenuAddToGroup"
+      summary="For prompting users to select the Add to group option in the
+               App 3-Dot menu."/>
   <variant name="_MicToolbar" summary="In product help for toolbar mic."/>
   <variant name="_MostVisitedTilesCustomizationPin"
       summary="In product help for MVT Customization feature to pin a
@@ -784,6 +797,8 @@ should be able to be added at any place in this file.
       summary="For ReadAloud expanded player feature."/>
   <variant name="_ReadAloudPlaybackModeFeature"
       summary="For ReadAloud playback mode feature."/>
+  <variant name="_ReaderModeDistillInApp"
+      summary="For educating users about reader mode distill in app."/>
   <variant name="_ReadingListDiscovery"
       summary="For ReadingListDiscoveryFeature feature."/>
   <variant name="_ReadingListEntryPoint"
@@ -880,10 +895,22 @@ should be able to be added at any place in this file.
   <variant name="_SupervisedUserProfileSignin"
       summary="For displaying the supervised user sign-in IPH."/>
   <variant name="_TabAudioMuting" summary="For TabAudioMuting feature."/>
+  <variant name="_TabGroupCreationDialogSyncText"
+      summary="For tab group creation dialog sync text."/>
   <variant name="_TabGroupsDragAndDrop"
       summary="For drop-to-merge in tab group."/>
+  <variant name="_TabGroupSharedNotificationBubbleOnStrip"
+      summary="For tab group shared notification bubble on tablet tab strip."/>
+  <variant name="_TabGroupShareNotice"
+      summary="For notifying users that changes to shared tab groups are
+               visible to everyone."/>
   <variant name="_TabGroupShareNotificationBubbleOnStrip"
       summary="For tab group share notification bubble on tablet tab strip."/>
+  <variant name="_TabGroupShareUpdate"
+      summary="For highlighting tab group updates on the tab switcher button."/>
+  <variant name="_TabGroupShareVersionUpdate"
+      summary="For notifying users that updating Chrome regains access to
+               shared tab groups."/>
   <variant name="_TabGroupsQuicklyComparePages"
       summary="For long press links to create tab groups."/>
   <variant name="_TabGroupsRemoteGroup" summary="For a synced tab group."/>
@@ -914,11 +941,20 @@ should be able to be added at any place in this file.
       summary="For the tab search migration to a tab strip combo button."/>
   <variant name="_TabSearchToolbarButton"
       summary="For the tab search migration to a toolbar button."/>
+  <variant name="_TabSwitcherAddToGroup"
+      summary="For prompting users to select the Add to group option in the
+               Tab Switcher 3-Dot menu."/>
   <variant name="_TabSwitcherButton" summary="For tab switcher button."/>
   <variant name="_TabSwitcherButtonSwitchIncognito"
       summary="For tab switcher button switch to incognito."/>
   <variant name="_TabSwitcherFloatingActionButton"
       summary="For tab switcher new tab floating action button."/>
+  <variant name="_TabSwitcherXR"
+      summary="For informing users about the tab switcher feature on an XR
+               device."/>
+  <variant name="_TabTearingXR"
+      summary="For informing users about the tab tearing gesture on an XR
+               device."/>
   <variant name="_ThreeDotMenuBackButton"
       summary="For the three dot menu back button."/>
   <variant name="_ToolbarManagementButton"

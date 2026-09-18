@@ -49,6 +49,9 @@ chromium-metrics-reviews@google.com.
       summary="the translate adaptive button in the top toolbar"/>
   <variant name="IPH_AdaptiveButtonInTopToolbarCustomization_VoiceSearch"
       summary="the voice search adaptive button in the top toolbar"/>
+  <variant name="IPH_AdaptiveButtonPinGlicToolbarButton"
+      summary="defines when the Glic adaptive toolbar button should be
+               auto-pinned"/>
   <variant name="IPH_AddToHomescreenMessage"
       summary="educating users about adding website shortcuts to their home
                screen (using a message UI)"/>
@@ -176,11 +179,15 @@ chromium-metrics-reviews@google.com.
       summary="Prompting users to enable MSBB to use the compose feature."/>
   <variant name="IPH_ComposeNewBadgeFeature"
       summary="New badge shows in Autofill popup entry"/>
+  <variant name="IPH_ContextualPageActions_ActionChip"
+      summary="the contextual page action chip on Android"/>
   <variant name="IPH_ContextualPageActions_PriceTracking"
       summary="contextual page price tracking action in the top toolbar"/>
   <variant name="IPH_ContextualPageActions_PriceTrackingActionChip"
       summary="action chip variant of contextual page price tracking action
                in the top toolbar"/>
+  <variant name="IPH_ContextualPageActions_QuietVariant"
+      summary="the quiet variant of contextual page actions on Android"/>
   <variant name="IPH_ContextualSearchInPanelHelp"
       summary="promoting longpress from within the panel"/>
   <variant name="IPH_ContextualSearchOptIn"
@@ -232,6 +239,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_DiscardRing" summary="Discard ring for tabs"/>
   <variant name="IPH_DownloadEsbPromo" summary="download ESB promo"/>
   <variant name="IPH_DownloadHome" summary="download home"/>
+  <variant name="IPH_DownloadIndicator"
+      summary="informing users about the download indicator"/>
   <variant name="IPH_DownloadInfobarDownloadContinuing"
       summary="download infobar informing that downloads are still in
                progress"/>
@@ -248,9 +257,15 @@ chromium-metrics-reviews@google.com.
       summary="Confirmation message that the explicit browser signin
                preference was remembered"/>
   <variant name="IPH_ExploreSitesTile" summary="Explore Sites feature"/>
+  <variant name="IPH_ExtensionsManageAppMenu"
+      summary="informing users they can manage their extensions in the app
+               menu"/>
   <variant name="IPH_ExtensionsManageAppMenuFeature"
       summary="message shown informing users they can manage their extensions
                in the app menu."/>
+  <variant name="IPH_ExtensionsManageToolbar"
+      summary="informing users they can manage their extensions in the
+               toolbar"/>
   <variant name="IPH_ExtensionsManageToolbarFeature"
       summary="message shown informing users they can manage their extensions
                in the extensions menu found in the toolbar."/>
@@ -524,6 +539,11 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_LensOverlay" summary="Lens Overlay"/>
   <variant name="IPH_LiveCaption" summary="(obsolete) Live Caption"/>
   <variant name="IPH_LongPressToolbarTip" summary="LongPress toolbar"/>
+  <variant name="IPH_LowUserEngagementDetector"
+      summary="detecting low user engagement and prompting re-engagement"/>
+  <variant name="IPH_MenuAddToGroup"
+      summary="prompting users to select the 'Add to group' option in the App
+               3-Dot menu"/>
   <variant name="IPH_MicToolbar" summary="the mic button in the toolbar"/>
   <variant name="IPH_MostVisitedTilesCustomizationPin"
       summary="informing user of context menu to pin a shortcut on MVT"/>
@@ -691,6 +711,9 @@ chromium-metrics-reviews@google.com.
                highlights"/>
   <variant name="IPH_SharingHubLinkToggle"
       summary="turning on link sharing in the Sharing Hub"/>
+  <variant name="IPH_SharingHubWebnotesStylize"
+      summary="informing users about the Webnotes Stylize feature in Sharing
+               Hub"/>
   <variant name="IPH_ShoppingCollectionFeature"
       summary="UI that is shown in the bookmark save flow when a page is
                saved to the shopping collection"/>
@@ -733,10 +756,22 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_SupervisedUserProfileSignin"
       summary="informing supervised users about parental controls"/>
   <variant name="IPH_TabAudioMuting" summary="muting tab audio"/>
+  <variant name="IPH_TabGroupCreationDialogSyncText"
+      summary="showing description text on the tab group creation dialog
+               teaching the user about tab group sync and save functionality"/>
   <variant name="IPH_TabGroupsDragAndDrop"
       summary="educating user to drop one tab on another tab to create group"/>
   <variant name="IPH_TabGroupSharedNotificationBubbleOnStrip"
       summary="For tab group share notification bubble on tablet tab strip."/>
+  <variant name="IPH_TabGroupShareNotice"
+      summary="explaining through a bottom sheet that changes to shared tab
+               groups are visible to everyone"/>
+  <variant name="IPH_TabGroupShareUpdate"
+      summary="highlighting the tab switcher button when an activity dot is
+               visible on a shared tab group"/>
+  <variant name="IPH_TabGroupShareVersionUpdate"
+      summary="notifying users that updating Chrome regains access to shared
+               tab groups"/>
   <variant name="IPH_TabGroupsQuicklyComparePages"
       summary="(obsolete) long pressing a link to open in a tab group"/>
   <variant name="IPH_TabGroupsRemoteGroup"
@@ -770,11 +805,18 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_TabSearchToolbarButton"
       summary="IPH for the first time a user opens Chrome with tab search
                moved to a toolbar button"/>
+  <variant name="IPH_TabSwitcherAddToGroup"
+      summary="prompting users to select the 'Add to group' option in the Tab
+               Switcher 3-Dot menu"/>
   <variant name="IPH_TabSwitcherButton" summary="tab switcher button"/>
   <variant name="IPH_TabSwitcherButtonSwitchIncognito"
       summary="Switch to incognito via tab switcher button"/>
   <variant name="IPH_TabSwitcherFloatingActionButton"
       summary="tab switcher floating action button"/>
+  <variant name="IPH_TabSwitcherXR"
+      summary="informing users about the tab switcher feature on an XR device"/>
+  <variant name="IPH_TabTearingXR"
+      summary="informing users about the tab tearing gesture on an XR device"/>
   <variant name="IPH_ThreeDotMenuBackButton"
       summary="tab switcher floating action button"/>
   <variant name="IPH_ToolbarManagementButton"
