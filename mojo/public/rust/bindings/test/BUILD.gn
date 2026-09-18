@@ -34,8 +34,12 @@ source_set("math_service_cpp") {
   sources = [
     "cpp/add_seven_service.cc",
     "cpp/add_seven_service.h",
+    "cpp/associated_services.cc",
+    "cpp/associated_services.h",
     "cpp/cxx_shim.cc",
     "cpp/cxx_shim.h",
+    "cpp/test_runners.cc",
+    "cpp/test_runners.h",
   ]
   deps = [
     ":bindings_unittests_cxx_generated_gen",

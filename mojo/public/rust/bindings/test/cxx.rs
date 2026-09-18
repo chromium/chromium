@@ -23,8 +23,10 @@ pub mod ffi {
     }
 
     unsafe extern "C++" {
-        include!("mojo/public/rust/bindings/test/cpp/cxx_shim.h");
         include!("mojo/public/rust/bindings/test/cpp/add_seven_service.h");
+        include!("mojo/public/rust/bindings/test/cpp/associated_services.h");
+        include!("mojo/public/rust/bindings/test/cpp/cxx_shim.h");
+        include!("mojo/public/rust/bindings/test/cpp/test_runners.h");
         include!("mojo/public/rust/system/scoped_handle_interop.h");
 
         type PlusSevenMathService;

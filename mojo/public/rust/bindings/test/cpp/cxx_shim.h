@@ -15,42 +15,36 @@ namespace bindings_unittests::mojom {
 
 std::unique_ptr<PlusSevenMathService> CreatePlusSevenMathService(
     std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> handle);
-void TestRemoteFromCpp(
-    std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> handle);
 
-// Creates a PlusSevenMathService, binds it to a new pipe, and returns both
-// the service (to keep it alive) and the remote end (wrapped for Rust)
-// via out-parameters.
+// Creates a new pipe, binds the receiver to a PlusSevenMathService (returned in
+// service_out), and returns the remote handle in remote_out.
 void CreatePlusSevenMathServiceAndRemote(
     std::unique_ptr<PlusSevenMathService>& service_out,
     std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper>& remote_out);
 
-void CreateCppAssociatedSender(
-    std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> handle);
-void CreateAssociatedSenderInteropTest(
-    std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> handle);
-
 using CxxPendingAssociatedEndpoint =
     mojo::rust::bindings::CxxPendingAssociatedEndpoint;
 
+// Wraps a mojo::Remote<AssociatedSender> and exposes methods across the CXX
+// bridge so that Rust tests can trigger C++ associated endpoint operations.
 class AssociatedSenderTestRemote {
  public:
   explicit AssociatedSenderTestRemote(
       std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> handle);
   ~AssociatedSenderTestRemote();
 
-  // Send a mojo message from this (C++) remote to get an associated
-  // remote, and return it to Rust. This function takes care of the
-  // entire sending process, including the response callback and run
-  // loop.
+  // Requests an associated remote from the receiver, waits for the response,
+  // and returns it to Rust as an adapter.
   CxxPendingAssociatedEndpoint RequestRemote();
 
+  // Sends an associated receiver adapter to the receiver.
   void SendReceiver(CxxPendingAssociatedEndpoint receiver_adapter);
 
  private:
   mojo::Remote<AssociatedSender> remote_;
 };
 
+// Creates an AssociatedSenderTestRemote wrapping handle.
 std::unique_ptr<AssociatedSenderTestRemote> CreateAssociatedSenderTestRemote(
     std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> handle);
 
