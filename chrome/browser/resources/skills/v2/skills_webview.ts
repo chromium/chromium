@@ -17,6 +17,10 @@ import type {SkillsWebviewBridgeDelegate} from './skills_webview_bridge.js';
 import {SkillsWebviewBridge} from './skills_webview_bridge.js';
 import {getChromePathForRemoteUrl, getLoadingStageHistogramName, getRemoteUrlForChromePath, HISTOGRAM_TOTAL_INIT_LATENCY, IS_SAVING_GEMINI_QUERY_PARAMETER, LoadingStage, SkillSource, SOURCE_QUERY_PARAMETER} from './skills_webview_bridge_constants.js';
 
+/** Stages that can exceed the three minute ceiling of `recordMediumTime()`. */
+const LONG_TIME_STAGES: ReadonlySet<LoadingStage> =
+    new Set([LoadingStage.HOST_LOAD, LoadingStage.HOST_DATA_FETCH]);
+
 export class SkillsWebview implements SkillsPageV2Interface {
   protected remoteUrl: string = '';
   protected handler = SkillsPageHandler.getRemote();
@@ -75,17 +79,57 @@ export class SkillsWebview implements SkillsPageV2Interface {
     this.remoteUrl = url.toString();
   }
 
-  getInitStartTimeForTesting(searchParams: URLSearchParams): number {
+  /**
+   * Resolves the measurement start onto the `performance.now()` timeline. A
+   * browser-supplied `openStartTime` predates this document, so the result is
+   * negative. Malformed values fall back to "now".
+   */
+  private resolveInitStartTime(searchParams: URLSearchParams):
+      {startTime: number, fromOpenStartTime: boolean} {
     const openStartTime = searchParams.get('openStartTime');
     if (openStartTime) {
-      return parseFloat(openStartTime) - performance.timeOrigin;
+      const openStartTimeMs = parseFloat(openStartTime);
+      if (Number.isFinite(openStartTimeMs) && openStartTimeMs > 0) {
+        return {
+          startTime: openStartTimeMs - performance.timeOrigin,
+          fromOpenStartTime: true,
+        };
+      }
     }
-    return performance.now();
+    return {startTime: performance.now(), fromOpenStartTime: false};
+  }
+
+  /**
+   * Anchors the init measurement and records the host load segment, the only
+   * stage that predates this document. A start time in the future indicates
+   * cross-process clock skew, so it anchors the total but is not reported as
+   * a host load.
+   */
+  private beginInitMeasurement(searchParams: URLSearchParams) {
+    const {startTime, fromOpenStartTime} =
+        this.resolveInitStartTime(searchParams);
+    this.initStartTime_ = startTime;
+    if (!fromOpenStartTime) {
+      return;
+    }
+
+    const hostLoadDuration = performance.now() - startTime;
+    if (hostLoadDuration < 0) {
+      return;
+    }
+    this.recordStageDuration(LoadingStage.HOST_LOAD, startTime);
+  }
+
+  getInitStartTimeForTesting(searchParams: URLSearchParams): number {
+    return this.resolveInitStartTime(searchParams).startTime;
+  }
+
+  beginInitMeasurementForTesting(searchParams: URLSearchParams) {
+    this.beginInitMeasurement(searchParams);
   }
 
   async init() {
-    this.initStartTime_ = this.getInitStartTimeForTesting(
-        new URLSearchParams(window.location.search));
+    this.beginInitMeasurement(new URLSearchParams(window.location.search));
     if (window.location.search) {
       window.history.replaceState({}, '', window.location.pathname);
     }
@@ -107,18 +151,27 @@ export class SkillsWebview implements SkillsPageV2Interface {
       return;
     }
 
-    // If we are opening an editor page, check if we have pending prompt data to
-    // send.
+    const dataFetchStartTime = performance.now();
     let pendingData: PendingEditorData|null = null;
-    if (window.location.pathname === '/editor') {
-      const {data} = await this.handler.getPendingEditorData();
-      pendingData = data;
-      if (pendingData) {
-        this.remoteUrl = pendingData.url;
+    let skills: Skill[]|null = null;
+    try {
+      // If we are opening an editor page, check if we have pending prompt data
+      // to send.
+      if (window.location.pathname === '/editor') {
+        const {data} = await this.handler.getPendingEditorData();
+        pendingData = data;
+        if (pendingData) {
+          this.remoteUrl = pendingData.url;
+        }
       }
-    }
 
-    const {skills} = await this.handler.getProvidedSkills();
+      ({skills} = await this.handler.getProvidedSkills());
+    } finally {
+      // In `finally` so a rejected fetch still reports, rather than biasing
+      // the histogram towards the ones that succeeded quickly.
+      this.recordStageDuration(
+          LoadingStage.HOST_DATA_FETCH, dataFetchStartTime);
+    }
 
     const delegate: SkillsWebviewBridgeDelegate = {
       onError: () => this.showError(ErrorType.REMOTE_AUTHORITY_UNREACHABLE),
@@ -229,13 +282,25 @@ export class SkillsWebview implements SkillsPageV2Interface {
     }
   }
 
+  /**
+   * `HOST_LOAD` and `HOST_DATA_FETCH` swap the three minute ceiling of
+   * `recordMediumTime` for one hour. Existing stages stay on medium so their
+   * series remain continuous.
+   */
+  private recordStageDuration(stage: LoadingStage, startTime: number) {
+    const name = getLoadingStageHistogramName(stage);
+    const duration = Math.floor(performance.now() - startTime);
+    if (LONG_TIME_STAGES.has(stage)) {
+      chrome.histograms.recordLongTime(name, duration);
+    } else {
+      chrome.histograms.recordMediumTime(name, duration);
+    }
+  }
+
   private async syncCookiesAndRecordMetric(): Promise<boolean> {
     const syncStart = performance.now();
     const {success} = await this.handler.syncCookies();
-    const syncDuration = performance.now() - syncStart;
-    chrome.histograms.recordMediumTime(
-        getLoadingStageHistogramName(LoadingStage.COOKIE_SYNC),
-        Math.floor(syncDuration));
+    this.recordStageDuration(LoadingStage.COOKIE_SYNC, syncStart);
     return success;
   }
 
@@ -250,10 +315,8 @@ export class SkillsWebview implements SkillsPageV2Interface {
 
   private recordInitialNavigationMetric() {
     if (this.isInitialNavigation_) {
-      const navDuration = performance.now() - this.navigationStartTime_;
-      chrome.histograms.recordMediumTime(
-          getLoadingStageHistogramName(LoadingStage.NAVIGATION),
-          Math.floor(navDuration));
+      this.recordStageDuration(
+          LoadingStage.NAVIGATION, this.navigationStartTime_);
       this.isInitialNavigation_ = false;
     }
   }

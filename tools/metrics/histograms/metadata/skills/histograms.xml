@@ -66,6 +66,11 @@ chromium-metrics-reviews@google.com.
       summary="Time to load and render initial skills data."/>
   <variant name="HANDSHAKE"
       summary="Time to establish postMessage connection."/>
+  <variant name="HOST_DATA_FETCH"
+      summary="Time spent fetching editor data (editor path only) and
+               provided skills over Mojo."/>
+  <variant name="HOST_LOAD"
+      summary="Time from browser open to the start of host page init."/>
   <variant name="NAVIGATION"
       summary="Time for webview to load and commit URL."/>
 </variants>

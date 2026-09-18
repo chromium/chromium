@@ -146,7 +146,9 @@ export function getChromePathForRemoteUrl(url: URL): string {
 /** Loading stages for the Webview UI. */
 // LINT.IfChange(LoadingStage)
 export enum LoadingStage {
+  HOST_LOAD = 'HOST_LOAD',
   COOKIE_SYNC = 'COOKIE_SYNC',
+  HOST_DATA_FETCH = 'HOST_DATA_FETCH',
   NAVIGATION = 'NAVIGATION',
   HANDSHAKE = 'HANDSHAKE',
   GUEST_FRAMEWORK = 'GUEST_FRAMEWORK',
