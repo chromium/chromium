@@ -19,6 +19,7 @@
 #include "components/grit/optimization_guide_internals_resources_map.h"
 #include "components/optimization_guide/core/delivery/prediction_manager.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"

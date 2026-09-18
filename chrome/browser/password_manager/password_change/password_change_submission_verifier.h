@@ -19,12 +19,16 @@
 class AnnotatedPageContentCapturer;
 class ModelQualityLogsUploader;
 
-namespace password_manager {
-class PasswordManagerClient;
-}
-
 namespace content {
 class WebContents;
+}
+
+namespace optimization_guide::proto {
+class PasswordChangeSubmissionLoggingData;
+}
+
+namespace password_manager {
+class PasswordManagerClient;
 }
 
 // Helper class which verifies whether password change was successful or not.

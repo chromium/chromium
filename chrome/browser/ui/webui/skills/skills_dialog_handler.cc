@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom.h"

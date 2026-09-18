@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker_android.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/common/features.h"

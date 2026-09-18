@@ -15,8 +15,8 @@
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
-#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -32,6 +32,8 @@ class IdentityManager;
 }  // namespace signin
 
 namespace optimization_guide {
+
+class ModelQualityLogEntry;
 
 // The model execution service.
 enum class ModelExecutionServiceType {

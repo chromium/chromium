@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/page_content_annotations/content/mock_page_content_services.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"

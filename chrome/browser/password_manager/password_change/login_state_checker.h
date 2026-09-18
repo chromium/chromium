@@ -12,14 +12,11 @@
 #include "base/types/strong_alias.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/proto/features/password_change_submission.pb.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class AnnotatedPageContentCapturer;
 class OptimizationGuideKeyedService;
-
-namespace optimization_guide::proto {
-class PasswordChangeSubmissionLoggingData;
-}  // namespace optimization_guide::proto
 
 namespace content {
 class NavigationHandle;

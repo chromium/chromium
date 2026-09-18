@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/strike_database/strike_database_base.h"

@@ -24,6 +24,8 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/delivery/prediction_model_override.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"

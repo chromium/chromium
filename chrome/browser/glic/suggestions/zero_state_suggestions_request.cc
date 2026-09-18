@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/suggestions/zero_state_suggestions_page_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

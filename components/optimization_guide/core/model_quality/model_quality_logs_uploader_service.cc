@@ -23,6 +23,7 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/optimization_guide_buildflags.h"
+#include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/pref_service.h"

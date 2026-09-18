@@ -30,6 +30,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"

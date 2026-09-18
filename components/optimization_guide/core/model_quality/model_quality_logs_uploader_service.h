@@ -13,7 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
-#include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"
+#include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom-forward.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "url/gurl.h"
 

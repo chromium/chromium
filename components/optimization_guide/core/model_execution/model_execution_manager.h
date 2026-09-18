@@ -30,6 +30,7 @@ class IdentityManager;
 namespace optimization_guide {
 
 class ModelExecutionFetcher;
+class ModelQualityLogsUploaderService;
 
 class ModelExecutionManager final {
  public:

@@ -23,6 +23,11 @@
 namespace content {
 class WebContents;
 }
+
+namespace optimization_guide::proto {
+class PasswordChangeSubmissionLoggingData;
+}
+
 namespace password_manager {
 class PasswordFormManager;
 class PasswordManagerClient;

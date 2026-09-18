@@ -51,6 +51,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"

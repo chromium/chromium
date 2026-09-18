@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_util.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/policy/core/common/management/management_service.h"

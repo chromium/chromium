@@ -43,6 +43,11 @@ class ImageDecoder;
 using ImageDecodedCallback = base::OnceCallback<void(const gfx::Image&)>;
 }  // namespace image_fetcher
 
+namespace optimization_guide::proto {
+class WallpaperSearchImageQuality;
+class WallpaperSearchLoggingData;
+}  // namespace optimization_guide::proto
+
 // This matches to the enum of the same name that is used by
 // the histogram "NewTabPage.WallpaperSearch.SessionSetTheme"
 // and must be kept in sync. Do not renumber.

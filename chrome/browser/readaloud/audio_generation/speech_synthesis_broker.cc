@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 
 namespace readaloud {
 
