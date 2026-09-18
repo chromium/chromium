@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
+#include "base/numerics/byte_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/audio_controller.h"
 #include "chrome/browser/ttc/app/ttc_mes_client.h"
@@ -108,7 +109,7 @@ void ConversationImpl::OnPageContextChanged() {
   NOTIMPLEMENTED();
 }
 
-void ConversationImpl::OnCapturedAudio(base::span<const int16_t> pcm_data,
+void ConversationImpl::OnCapturedAudio(const std::vector<uint8_t>& pcm_data,
                                        const media::AudioParameters& params) {
   if (!backend_) {
     return;
@@ -155,7 +156,7 @@ void ConversationImpl::OnTranscriptions(
   }
 }
 
-void ConversationImpl::OnAudioOutput(base::span<const int16_t> audio_data,
+void ConversationImpl::OnAudioOutput(const std::vector<uint8_t>& audio_data,
                                      int64_t sequence_number) {
   if (audio_controller_) {
     audio_controller_->PlayAudio(audio_data, sequence_number);

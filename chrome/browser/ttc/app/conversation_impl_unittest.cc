@@ -50,7 +50,7 @@ class MockTtcBackend : public TtcBackend {
   MOCK_METHOD(void, Connect, (), (override));
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(bool, is_connected, (), (const, override));
-  MOCK_METHOD(void, SendAudioChunk, (base::span<const int16_t>), (override));
+  MOCK_METHOD(void, SendAudioChunk, (const std::vector<uint8_t>&), (override));
   MOCK_METHOD(void, SendTextInput, (const std::string&), (override));
   MOCK_METHOD(void,
               SendContextUpdate,
@@ -173,7 +173,7 @@ TEST_F(ConversationImplTest, AudioOutputPlaysToAudioController) {
                                 std::move(audio_controller),
                                 session_controller_);
 
-  std::vector<int16_t> audio_data(1600, 0x1515);
+  std::vector<uint8_t> audio_data(3200, 0x15);
   EXPECT_FALSE(audio_controller_ptr->is_playing());
 
   conversation.OnAudioOutput(audio_data, /*sequence_number=*/1);
@@ -195,7 +195,7 @@ TEST_F(ConversationImplTest, InterruptionClearsAudioQueue) {
                                 std::move(audio_controller),
                                 session_controller_);
 
-  std::vector<int16_t> audio_data(1600, 0x2525);
+  std::vector<uint8_t> audio_data(3200, 0x25);
   conversation.OnAudioOutput(audio_data, /*sequence_number=*/2);
   EXPECT_TRUE(audio_controller_ptr->is_playing());
 
@@ -293,9 +293,11 @@ TEST_F(ConversationImplTest, CapturedAudioRoutedToBackend) {
   // Use values that have exact representations in float:
   // e.g. 4096 = 4096/32768 = 0.125f, 8192 = 0.25f, 16384 = 0.5f.
   std::vector<int16_t> samples = {4096, 8192, 16384};
+  auto sample_bytes = base::as_byte_span(samples);
+  std::vector<uint8_t> expected_bytes(sample_bytes.begin(), sample_bytes.end());
 
   base::RunLoop run_loop;
-  EXPECT_CALL(*backend_ptr, SendAudioChunk(testing::ElementsAreArray(samples)))
+  EXPECT_CALL(*backend_ptr, SendAudioChunk(expected_bytes))
       .WillOnce([&run_loop] { run_loop.Quit(); });
 
   auto bus = media::AudioBus::Create(1, samples.size());
@@ -324,7 +326,8 @@ TEST_F(ConversationImplTest, OnPlaybackCompletedReportsStatus) {
   });
 
   std::vector<int16_t> samples(100, 1000);
-  audio_controller_ptr->PlayAudio(samples, /*sequence_number=*/42);
+  audio_controller_ptr->PlayAudio(base::as_byte_span(samples),
+                                  /*sequence_number=*/42);
 
   auto bus = media::AudioBus::Create(1, 100);
   audio_controller_ptr->Render(base::TimeDelta(), base::TimeTicks::Now(), {},

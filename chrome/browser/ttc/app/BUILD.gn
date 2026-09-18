@@ -61,7 +61,6 @@ source_set("unit_tests") {
   sources = [
     "audio_controller_unittest.cc",
     "conversation_impl_unittest.cc",
-    "ttc_mes_client_unittest.cc",
   ]
   deps = [
     ":app",

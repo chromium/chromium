@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -165,20 +164,10 @@ void TtcMesClient::HandleServerFrame(
   if (frame.has_server_content()) {
     const auto& content = frame.server_content();
     if (content.has_audio_output()) {
-      // The payload length is peer-controlled so guard that it can indeed be
-      // split into 16-bit frames.
-      base::span<const uint8_t> raw_bytes =
-          base::as_byte_span(content.audio_output().audio_data());
-      if (raw_bytes.size() % sizeof(int16_t) != 0) {
-        // TODO(bokan): We should probably show an error and close down the
-        // session here.
-        VLOG(1) << "Discarding malformed audio chunk of " << raw_bytes.size()
-                << " bytes; not a whole number of PCM16 samples";
-      } else {
-        observer_->OnAudioOutput(
-            base::subtle::reinterpret_span<const int16_t>(raw_bytes),
-            content.audio_output().sequence_number());
-      }
+      const std::string& raw_bytes = content.audio_output().audio_data();
+      std::vector<uint8_t> audio_vec(raw_bytes.begin(), raw_bytes.end());
+      observer_->OnAudioOutput(audio_vec,
+                               content.audio_output().sequence_number());
     }
 
     if (!content.input_transcription().empty() ||
@@ -279,13 +268,12 @@ void TtcMesClient::OnToolExecutionComplete(const std::string& call_id,
   SendFrame(frame);
 }
 
-void TtcMesClient::SendAudioChunk(base::span<const int16_t> audio_data) {
+void TtcMesClient::SendAudioChunk(const std::vector<uint8_t>& audio_data) {
   optimization_guide::proto::TtcClientFrame frame;
   frame.set_client_timestamp_ms(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
   auto* chunk = frame.mutable_audio_input();
-  base::span<const uint8_t> audio_bytes = base::as_byte_span(audio_data);
-  chunk->set_audio_data(audio_bytes.data(), audio_bytes.size());
+  chunk->set_audio_data(audio_data.data(), audio_data.size());
   chunk->set_timestamp_ms(base::Time::Now().InMillisecondsSinceUnixEpoch());
   SendFrame(frame);
 }
