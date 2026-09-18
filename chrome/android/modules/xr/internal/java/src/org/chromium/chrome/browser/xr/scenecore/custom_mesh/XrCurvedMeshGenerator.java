@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.xr.scenecore.custom_mesh;
 
 import android.annotation.SuppressLint;
 
+import androidx.xr.runtime.math.Vector3;
 import androidx.xr.scenecore.SurfaceEntity.Shape;
 
 import org.chromium.build.annotations.NullMarked;
@@ -131,8 +132,17 @@ public abstract class XrCurvedMeshGenerator
         mConfig.setResolution(resolution);
     }
 
+    // Mirror the sphere collider along the X axis so pointer movement matches the
+    // inward-facing seamless sphere mesh geometry.
+    private static final Vector3 COLLIDER_SCALE = new Vector3(-1f, 1f, 1f);
+
     @Override
     public Shape createColliderShape() {
         return new Shape.Sphere(getRadius());
+    }
+
+    @Override
+    public Vector3 getColliderScale() {
+        return COLLIDER_SCALE;
     }
 }

@@ -13,6 +13,7 @@ import android.view.Surface;
 import androidx.xr.runtime.Session;
 import androidx.xr.runtime.math.IntSize2d;
 import androidx.xr.runtime.math.Pose;
+import androidx.xr.runtime.math.Vector3;
 import androidx.xr.scenecore.InteractableComponent;
 import androidx.xr.scenecore.Space;
 import androidx.xr.scenecore.SurfaceEntity;
@@ -57,7 +58,11 @@ public abstract class XrCustomMeshHolder<GeneratorType extends XrCustomMeshGener
         mShape = shape;
         mCustomMeshGenerator = generator;
         mColliderEntity =
-                createColliderEntity(xrSession, parentEntity, generator.createColliderShape());
+                createColliderEntity(
+                        xrSession,
+                        parentEntity,
+                        generator.createColliderShape(),
+                        generator.getColliderScale());
         mColliderEntity.addComponent(
                 InteractableComponent.create(mXrSession, mInteractableComponent::onInputEvent));
         mInteractableComponent.setChildColliderEntity(mColliderEntity);
@@ -77,6 +82,11 @@ public abstract class XrCustomMeshHolder<GeneratorType extends XrCustomMeshGener
     public GeneratorType getGenerator() {
         assertDisposed();
         return mCustomMeshGenerator;
+    }
+
+    SurfaceEntity getColliderEntityForTesting() {
+        assertDisposed();
+        return mColliderEntity;
     }
 
     public void updateMesh() {
@@ -122,10 +132,14 @@ public abstract class XrCustomMeshHolder<GeneratorType extends XrCustomMeshGener
      * @param xrSession The {@link Session} to create the collider entity in.
      * @param parentEntity The parent entity of the collider entity.
      * @param colliderShape The shape of the collider entity.
+     * @param colliderScale The local scale of the collider entity.
      * @return The collider entity.
      */
     private static SurfaceEntity createColliderEntity(
-            Session xrSession, SurfaceEntity parentEntity, Shape colliderShape) {
+            Session xrSession,
+            SurfaceEntity parentEntity,
+            Shape colliderShape,
+            Vector3 colliderScale) {
         SurfaceEntity colliderEntity =
                 SurfaceEntity.create(
                         xrSession,
@@ -136,6 +150,7 @@ public abstract class XrCustomMeshHolder<GeneratorType extends XrCustomMeshGener
                         SurfaceProtection.NONE);
         colliderEntity.setParent(parentEntity);
         colliderEntity.setPose(Pose.Identity, Space.PARENT);
+        colliderEntity.setScale(colliderScale, Space.PARENT);
         colliderEntity.setAlpha(0f);
         colliderEntity.setSurfacePixelDimensions(new IntSize2d(1, 1));
         clearSurfaceToTransparent(colliderEntity.getSurface());

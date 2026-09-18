@@ -15,13 +15,19 @@ import androidx.activity.ComponentActivity;
 import androidx.xr.runtime.Session;
 import androidx.xr.runtime.SessionCreateResult;
 import androidx.xr.runtime.SessionCreateSuccess;
+import androidx.xr.runtime.math.Vector3;
+import androidx.xr.scenecore.Space;
 import androidx.xr.scenecore.SurfaceEntity;
 import androidx.xr.scenecore.SurfaceEntity.Shape;
+import androidx.xr.scenecore.testing.FakeEntity;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.xr.scenecore.XrInteractableComponentImpl;
@@ -30,12 +36,34 @@ import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
 
 /** Tests for {@link XrCustomMeshHolder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {XrCustomMeshHolderTest.ShadowFakeEntity.class})
 @SuppressLint("RestrictedApiAndroidX")
 public class XrCustomMeshHolderTest {
+    /**
+     * Shadow for {@link FakeEntity} to allow non-positive scale values (e.g. -1 for mirrored
+     * colliders), which are supported by the real Android XR runtime but filtered out by
+     * FakeEntity.
+     */
+    @Implements(FakeEntity.class)
+    public static class ShadowFakeEntity {
+        private Vector3 mScale = new Vector3(1f, 1f, 1f);
+
+        @Implementation
+        public void setScale(Vector3 scale, int relativeTo) {
+            mScale = scale;
+        }
+
+        @Implementation
+        public Vector3 getScale(int relativeTo) {
+            return mScale;
+        }
+    }
+
     private static final float DELTA = 0.01f;
     private static final float RADIUS = 2.5f;
     private static final int TEXTURE_WIDTH = 1920;
     private static final int TEXTURE_HEIGHT = 1080;
+    private static final Vector3 EXPECTED_COLLIDER_SCALE = new Vector3(-1f, 1f, 1f);
 
     private Session mSession;
     private SurfaceEntity mParentEntity;
@@ -116,6 +144,23 @@ public class XrCustomMeshHolderTest {
         Shape.CustomMesh monoMesh = (Shape.CustomMesh) mParentEntity.getShape();
         assertNotNull(monoMesh.getLeftEye());
         assertNull(monoMesh.getRightEye());
+    }
+
+    @Test
+    public void testColliderScale_Sphere() {
+        createSphereHolder();
+        assertEquals(
+                EXPECTED_COLLIDER_SCALE,
+                mSphereHolder.getColliderEntityForTesting().getNonUniformScale(Space.PARENT));
+    }
+
+    @Test
+    public void testColliderScale_SetRadius() {
+        createSphereHolder();
+        mSphereHolder.setRadius(5.0f);
+        assertEquals(
+                EXPECTED_COLLIDER_SCALE,
+                mSphereHolder.getColliderEntityForTesting().getNonUniformScale(Space.PARENT));
     }
 
     @Test

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.xr.scenecore.custom_mesh;
 
 import android.annotation.SuppressLint;
 
+import androidx.xr.runtime.math.Vector3;
 import androidx.xr.scenecore.SurfaceEntity.Shape;
 
 import org.chromium.build.annotations.NullMarked;
@@ -126,6 +127,11 @@ public abstract class XrCustomMeshGenerator<ConfigType extends XrCustomMeshGener
 
     /** Creates the interaction {@link Shape} collider corresponding to this mesh geometry. */
     public abstract Shape createColliderShape();
+
+    /** Returns the local scale to apply to the collider entity. */
+    public Vector3 getColliderScale() {
+        return Vector3.One;
+    }
 
     /** Creates a {@link Shape.CustomMesh} instance from the current configuration. */
     public Shape.CustomMesh toCustomMesh() {
