@@ -89,6 +89,8 @@ public class TabBottomSheetWebUiUnitTest {
     @Mock private View mMockDecorView;
     @Mock private EventForwarder mEventForwarder;
     @Mock private Activity mMockActivity;
+    @Mock private CoBrowseComponentProvider mMockComponentProvider;
+    @Mock private ResizingPlaceholderCoordinator mMockPlaceholderCoordinator;
 
     private TabBottomSheetWebUi mWebUi;
 
@@ -137,7 +139,6 @@ public class TabBottomSheetWebUiUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        CoBrowseComponentProvider mockProvider = mock(CoBrowseComponentProvider.class);
         View containerView = new View(context);
         TabBottomSheetWebUi webUi =
                 new TabBottomSheetWebUi(
@@ -151,9 +152,10 @@ public class TabBottomSheetWebUiUnitTest {
                         CoBrowseContainerType.BOTTOM_SHEET,
                         null,
                         null,
-                        mockProvider);
+                        mMockComponentProvider);
         assertEquals(
-                mockProvider, webUi.getWebViewResizingHelper().getComponentProviderForTesting());
+                mMockComponentProvider,
+                webUi.getWebViewResizingHelper().getComponentProviderForTesting());
     }
 
     @Test
@@ -311,7 +313,35 @@ public class TabBottomSheetWebUiUnitTest {
         mWebUi.setWebContents(mWebContents, true);
         mWebUi.destroy();
         verify(mThinWebView).destroy();
+        verify(mWindowAndroid).removeActivityStateObserver(any());
         assertNull(mWebUi.getWebContents());
+    }
+
+    @Test
+    public void testDestroy_destroysPlaceholderCoordinator() {
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        when(mMockComponentProvider.createResizingPlaceholderCoordinator(any(), eq(Color.WHITE)))
+                .thenReturn(mMockPlaceholderCoordinator);
+        View containerView = new View(context);
+        TabBottomSheetWebUi webUi =
+                new TabBottomSheetWebUi(
+                        context,
+                        containerView,
+                        mWindowAndroid,
+                        mContextMenuPopulatorFactory,
+                        mSelectionDropdownMenuDelegate,
+                        Color.WHITE,
+                        TabBottomSheetClientType.UNKNOWN,
+                        CoBrowseContainerType.BOTTOM_SHEET,
+                        null,
+                        null,
+                        mMockComponentProvider);
+
+        webUi.destroy();
+        verify(mMockPlaceholderCoordinator).destroy();
     }
 
     @Test

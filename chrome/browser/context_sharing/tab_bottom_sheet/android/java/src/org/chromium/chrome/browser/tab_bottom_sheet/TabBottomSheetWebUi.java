@@ -311,6 +311,7 @@ public class TabBottomSheetWebUi {
 
     void destroy() {
         setWebContents(null, false);
+        mWebViewResizingHelper.destroy();
     }
 
     View getWebUiView() {

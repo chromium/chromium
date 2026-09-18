@@ -166,10 +166,10 @@ public class WebViewResizingHelper {
 
     /** Destroys the helper and releases the WebContents. */
     public void destroy() {
-        reset();
         if (mPlaceholderCoordinator != null) {
             mPlaceholderCoordinator.destroy();
         }
+        resetInternal(/* reattachPlaceholder= */ false);
         mWebContents = null;
         if (mInsetObserver != null) {
             mInsetObserver.removeWindowInsetsAnimationListener(mInsetAnimationListener);
@@ -180,11 +180,18 @@ public class WebViewResizingHelper {
 
     /** Resets the helper to its initial state without resetting the WebContents. */
     public void reset() {
+        resetInternal(/* reattachPlaceholder= */ true);
+    }
+
+    private void resetInternal(boolean reattachPlaceholder) {
         mAnimationHandler.forceFinishAnimation();
         mResizingContainer.removeAllViews();
         if (mResizingPlaceholder != null) {
-            mResizingContainer.addView(mResizingPlaceholder);
             mResizingPlaceholder.setVisibility(View.INVISIBLE);
+            mResizingPlaceholder.setAlpha(1f);
+            if (reattachPlaceholder) {
+                mResizingContainer.addView(mResizingPlaceholder);
+            }
         }
         mThinWebView = null;
         mIsViewportSizeFixed = false;

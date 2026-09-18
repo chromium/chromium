@@ -137,9 +137,17 @@ public class WebViewResizingHelperUnitTest {
 
     @Test
     public void testDestroy() {
+        View placeholder = mHelper.getPlaceholderCoordinator().getView();
+        placeholder.setVisibility(View.VISIBLE);
+        placeholder.setAlpha(0.4f);
+
         mHelper.destroy();
+
         verify(mMockInsetObserver).removeWindowInsetsAnimationListener(any());
         verify(mMockWindowAndroid).removeActivityStateObserver(any());
+        assertEquals(View.INVISIBLE, placeholder.getVisibility());
+        assertEquals(1.0f, placeholder.getAlpha(), 0.01f);
+        assertEquals(0, ((FrameLayout) mHelper.getResizingContainer()).getChildCount());
     }
 
     @Test
@@ -156,12 +164,16 @@ public class WebViewResizingHelperUnitTest {
 
     @Test
     public void testReset() {
+        View placeholder = mHelper.getPlaceholderCoordinator().getView();
+        placeholder.setVisibility(View.VISIBLE);
+        placeholder.setAlpha(0.4f);
         mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
         mHelper.reset();
 
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
         assertEquals(1, container.getChildCount());
         assertEquals(View.INVISIBLE, container.getChildAt(0).getVisibility());
+        assertEquals(1.0f, container.getChildAt(0).getAlpha(), 0.01f);
     }
 
     @Test
@@ -765,8 +777,13 @@ public class WebViewResizingHelperUnitTest {
         helper.updatePlaceholderHeight(250);
         verify(customCoordinator).updateVisibleHeight(250);
 
+        customPlaceholderView.setVisibility(View.VISIBLE);
+        customPlaceholderView.setAlpha(0.4f);
         helper.destroy();
         verify(customCoordinator).destroy();
+        assertEquals(View.INVISIBLE, customPlaceholderView.getVisibility());
+        assertEquals(1.0f, customPlaceholderView.getAlpha(), 0.01f);
+        assertEquals(0, ((FrameLayout) helper.getResizingContainer()).getChildCount());
     }
 
     @Test
