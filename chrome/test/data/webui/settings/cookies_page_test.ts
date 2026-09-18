@@ -7,7 +7,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SettingsCollapseRadioButtonElement, SettingsRadioGroupElement, SettingsCookiesPageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingsBrowserProxyImpl,ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
 import type {ControlledRadioButtonElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions, resetRouterForTesting, Router} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -167,6 +167,7 @@ suite('CookiesPageTest', function() {
 suite('UniversalOptOut', function() {
   let page: SettingsCookiesPageElement;
   let settingsPrefs: SettingsPrefsElement;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -178,11 +179,14 @@ suite('UniversalOptOut', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({showUniversalOptOutSettings: showSettings});
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
-    page.set('prefs.universal_optout.enabled.value', false);
+    page.setPrefValue('universal_optout.enabled', false);
 
+    Router.getInstance().navigateTo(routes.COOKIES);
     document.body.appendChild(page);
     flush();
   }
@@ -192,7 +196,7 @@ suite('UniversalOptOut', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('UniversalOptOutEnabled', function() {
+  test('UniversalOptOutEnabled', async function() {
     createPage(true);
     const subpage = page.shadowRoot!.querySelector('settings-subpage');
     assertTrue(!!subpage);
@@ -203,24 +207,40 @@ suite('UniversalOptOut', function() {
     assertFalse(isChildVisible(page, '#additionalProtections'));
     assertTrue(isChildVisible(page, '#universalOptOutToggle'));
 
+    const [histogramName, visible] =
+        await testMetricsBrowserProxy.whenCalled('recordBooleanHistogram');
+    assertEquals('Privacy.UniversalOptOut.SettingsVisibility', histogramName);
+    assertTrue(visible);
+
     const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
         '#universalOptOutToggle');
     assertTrue(!!toggle);
     assertEquals(page.i18n('universalOptOutLearnMoreURL'), toggle.learnMoreUrl);
     const pref = page.getPref<boolean>('universal_optout.enabled');
 
+    assertFalse(toggle.checked);
+    assertFalse(pref.value);
+
     toggle.click();
     flush();
     assertTrue(toggle.checked);
     assertTrue(pref.value);
+    assertEquals(
+        'Privacy.UniversalOptOut.SettingsToggleOn',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.reset();
 
     toggle.click();
     flush();
     assertFalse(toggle.checked);
     assertFalse(pref.value);
+    assertEquals(
+        'Privacy.UniversalOptOut.SettingsToggleOff',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.reset();
   });
 
-  test('UniversalOptOutDisabled', function() {
+  test('UniversalOptOutDisabled', async function() {
     createPage(false);
     const subpage = page.shadowRoot!.querySelector('settings-subpage');
     assertTrue(!!subpage);
@@ -229,6 +249,11 @@ suite('UniversalOptOut', function() {
     assertFalse(isChildVisible(page, '#siteRequestsHeader'));
     assertTrue(isChildVisible(page, '#additionalProtections'));
     assertFalse(isChildVisible(page, '#universalOptOutToggle'));
+
+    const [histogramName, visible] =
+        await testMetricsBrowserProxy.whenCalled('recordBooleanHistogram');
+    assertEquals('Privacy.UniversalOptOut.SettingsVisibility', histogramName);
+    assertFalse(visible);
   });
 });
 

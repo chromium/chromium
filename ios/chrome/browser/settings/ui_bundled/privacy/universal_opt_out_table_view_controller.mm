@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/universal_opt_out_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/universal_optout/prefs.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
@@ -151,6 +153,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)switchChanged:(UISwitch*)switchView {
   _universalOptOutEnabled.value = switchView.isOn;
   _universalOptOutSwitchItem.on = switchView.isOn;
+
+  if (switchView.isOn) {
+    base::RecordAction(
+        base::UserMetricsAction("Privacy.UniversalOptOut.SettingsToggleOn"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("Privacy.UniversalOptOut.SettingsToggleOff"));
+  }
   [self reconfigureCellsForItems:@[ _universalOptOutSwitchItem ]];
 }
 

@@ -268,6 +268,9 @@ signin::Tribool UniversalOptOutService::GetAccountCapabilityEligibility()
 
 void UniversalOptOutService::RecordStartupMetrics() {
   base::UmaHistogramBoolean(kProfileEligibilityStartupHistogram, IsEligible());
+  base::UmaHistogramBoolean(
+      kToggleStateStartupHistogram,
+      pref_service_->GetBoolean(prefs::kUniversalOptOutEnabled));
 
   signin::Tribool capability = GetAccountCapabilityEligibility();
   EligibilitySystem system;

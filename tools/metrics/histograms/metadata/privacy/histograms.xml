@@ -492,6 +492,28 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
+<histogram name="Privacy.UniversalOptOut.SettingsVisibility"
+    enum="BooleanVisible" expires_after="2027-08-01">
+  <owner>azamatmz@google.com</owner>
+  <owner>zalmashni@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Recorded when a user navigates to the Privacy settings page, logging whether
+    the Universal Opt-Out settings are visible.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.UniversalOptOut.ToggleState.Startup"
+    enum="BooleanToggled" expires_after="2027-08-01">
+  <owner>azamatmz@google.com</owner>
+  <owner>zalmashni@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Tracks whether the Universal Opt-Out toggle is ON or OFF at profile startup.
+    Recorded for all users when UniversalOptOutService is initialized.
+  </summary>
+</histogram>
+
 <histogram name="PrivacyGuide.CanShowNTPPromo" enum="Boolean"
     expires_after="2027-02-28">
   <owner>msramek@chromium.org</owner>

@@ -280,11 +280,18 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
             scrollToPreference(PREF_ADVANCED_PROTECTION_INFO);
         }
 
-        if (!shouldShowUniversalOptOutSettings(getProfile())) {
+        boolean universalOptOutSettingsVisible = shouldShowUniversalOptOutSettings(getProfile());
+        if (!universalOptOutSettingsVisible) {
             getPreferenceScreen().removePreference(findPreference(PREF_UNIVERSAL_OPT_OUT));
         }
+        recordUniversalOptOutSettingsVisibility(universalOptOutSettingsVisible);
 
         updatePreferences();
+    }
+
+    private void recordUniversalOptOutSettingsVisibility(boolean universalOptOutSettingsVisible) {
+        RecordHistogram.recordBooleanHistogram(
+                "Privacy.UniversalOptOut.SettingsVisibility", universalOptOutSettingsVisible);
     }
 
     private static boolean isAdvancedProtectionEnabled() {

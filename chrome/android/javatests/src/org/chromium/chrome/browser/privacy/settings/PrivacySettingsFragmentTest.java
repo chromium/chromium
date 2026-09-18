@@ -608,7 +608,12 @@ public class PrivacySettingsFragmentTest {
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, true);
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE, true);
                 });
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Privacy.UniversalOptOut.SettingsVisibility", true);
         mSettingsActivityTestRule.startSettingsActivity();
+        histogram.assertExpected();
+
         scrollToSetting(withText(R.string.universal_opt_out_title));
         onView(withText(R.string.universal_opt_out_title)).check(matches(isDisplayed()));
     }
@@ -625,7 +630,13 @@ public class PrivacySettingsFragmentTest {
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, false);
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE, true);
                 });
+
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Privacy.UniversalOptOut.SettingsVisibility", true);
         mSettingsActivityTestRule.startSettingsActivity();
+        histogram.assertExpected();
+
         scrollToSetting(withText(R.string.universal_opt_out_title));
         onView(withText(R.string.universal_opt_out_title)).check(matches(isDisplayed()));
     }
@@ -642,7 +653,12 @@ public class PrivacySettingsFragmentTest {
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, true);
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE, false);
                 });
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Privacy.UniversalOptOut.SettingsVisibility", true);
         mSettingsActivityTestRule.startSettingsActivity();
+        histogram.assertExpected();
+
         scrollToSetting(withText(R.string.universal_opt_out_title));
         onView(withText(R.string.universal_opt_out_title)).check(matches(isDisplayed()));
     }
@@ -659,7 +675,12 @@ public class PrivacySettingsFragmentTest {
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, false);
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE, false);
                 });
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Privacy.UniversalOptOut.SettingsVisibility", false);
         mSettingsActivityTestRule.startSettingsActivity();
+        histogram.assertExpected();
+
         onView(withText(R.string.universal_opt_out_title)).check(doesNotExist());
     }
 
@@ -667,7 +688,12 @@ public class PrivacySettingsFragmentTest {
     @LargeTest
     @DisableFeatures(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)
     public void testUniversalOptOutSettingsHidden_FeatureDisabled() {
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Privacy.UniversalOptOut.SettingsVisibility", false);
         mSettingsActivityTestRule.startSettingsActivity();
+        histogram.assertExpected();
+
         onView(withText(R.string.universal_opt_out_title)).check(doesNotExist());
     }
 

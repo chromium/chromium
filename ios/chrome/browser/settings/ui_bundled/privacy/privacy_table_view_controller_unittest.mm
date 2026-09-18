@@ -12,6 +12,7 @@
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/content_settings/core/common/features.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -339,6 +340,7 @@ TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutVisibility) {
   profile_->GetPrefs()->SetBoolean(
       universal_optout::prefs::kUniversalOptOutEnabled, false);
   {
+    base::HistogramTester histogram_tester;
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatures(
         /*enabled_features=*/{universal_optout::features::kUniversalOptOut,
@@ -349,6 +351,8 @@ TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutVisibility) {
     CreateController();
     CheckController();
     EXPECT_FALSE(HasUniversalOptOutItem());
+    histogram_tester.ExpectUniqueSample(
+        "Privacy.UniversalOptOut.SettingsVisibility", false, 1);
   }
 
   // Hidden when user is eligible but features are disabled.
@@ -356,6 +360,7 @@ TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutVisibility) {
   profile_->GetPrefs()->SetBoolean(
       universal_optout::prefs::kUniversalOptOutEligible, true);
   {
+    base::HistogramTester histogram_tester;
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatures(
         /*enabled_features=*/{},
@@ -366,11 +371,14 @@ TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutVisibility) {
     CreateController();
     CheckController();
     EXPECT_FALSE(HasUniversalOptOutItem());
+    histogram_tester.ExpectUniqueSample(
+        "Privacy.UniversalOptOut.SettingsVisibility", false, 1);
   }
 
   // Visible when user is eligible and features are enabled.
   ResetController();
   {
+    base::HistogramTester histogram_tester;
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatures(
         /*enabled_features=*/{universal_optout::features::kUniversalOptOut,
@@ -381,6 +389,8 @@ TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutVisibility) {
     CreateController();
     CheckController();
     EXPECT_TRUE(HasUniversalOptOutItem());
+    histogram_tester.ExpectUniqueSample(
+        "Privacy.UniversalOptOut.SettingsVisibility", true, 1);
   }
 }
 

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/universal_opt_out_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "components/prefs/pref_service.h"
 #import "components/universal_optout/prefs.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -51,6 +52,8 @@ class UniversalOptOutTableViewControllerTest
 
 // Tests that toggling the switch properly updates the preference.
 TEST_F(UniversalOptOutTableViewControllerTest, TestToggleSwitchUpdatesPref) {
+  base::UserActionTester user_action_tester;
+
   CreateController();
   CheckController();
 
@@ -80,6 +83,21 @@ TEST_F(UniversalOptOutTableViewControllerTest, TestToggleSwitchUpdatesPref) {
   EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
       universal_optout::prefs::kUniversalOptOutEnabled));
   EXPECT_TRUE(switchItem.isOn);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Privacy.UniversalOptOut.SettingsToggleOn"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "Privacy.UniversalOptOut.SettingsToggleOff"));
+
+  switchView.on = NO;
+  [switchView sendActionsForControlEvents:UIControlEventValueChanged];
+
+  EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
+      universal_optout::prefs::kUniversalOptOutEnabled));
+  EXPECT_FALSE(switchItem.isOn);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Privacy.UniversalOptOut.SettingsToggleOn"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Privacy.UniversalOptOut.SettingsToggleOff"));
 }
 
 // Tests that the footer link URL is properly set and simulating a tap on the

@@ -34,6 +34,8 @@ inline constexpr char kEligibilitySystemStartupHistogram[] =
     "Privacy.UniversalOptOut.EligibilitySystem.Startup";
 inline constexpr char kEligibilityChangedHistogram[] =
     "Privacy.UniversalOptOut.EligibilityChanged";
+inline constexpr char kToggleStateStartupHistogram[] =
+    "Privacy.UniversalOptOut.ToggleState.Startup";
 
 // Identifies which system determined eligibility and the result.
 // These values are persisted to logs. Entries should not be renumbered and

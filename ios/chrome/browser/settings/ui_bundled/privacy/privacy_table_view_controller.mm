@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -345,6 +346,10 @@ bool ShouldShowUniversalOptOutSettings(PrefService* prefs) {
     [model addItem:[self universalOptOutDetailItem]
         toSectionWithIdentifier:SectionIdentifierSiteRequests];
   }
+
+  base::UmaHistogramBoolean(
+      "Privacy.UniversalOptOut.SettingsVisibility",
+      ShouldShowUniversalOptOutSettings(_profile->GetPrefs()));
 
   [model addSectionWithIdentifier:SectionIdentifierWebServices];
   [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];
