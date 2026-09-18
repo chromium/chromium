@@ -7,6 +7,7 @@
 
 #include <bit>
 #include <cstring>
+#include <limits>
 
 #include "partition_alloc/address_pool_manager_types.h"
 #include "partition_alloc/allocation_guard.h"
@@ -103,6 +104,45 @@ void DCheckIfManagedByPartitionAllocBRPPool(uintptr_t address);
 PA_ALWAYS_INLINE void DCheckIfManagedByPartitionAllocBRPPool(
     uintptr_t address) {}
 #endif
+
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+
+// Preconditions:
+// *  `object` is a slot start
+// *  `usable_size` is appropriate for the slot
+PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE void
+SmuggleRequestedSize(void* object, size_t usable_size, size_t requested_size) {
+  PA_CHECK(
+      requested_size <
+      std::numeric_limits<internal::CheckedSpanSmuggledRequestedSize>::max());
+  unsigned char* target =
+      // SAFETY: as long as preconditions are met, this is an
+      // ordinary write into the usable space of the slot.
+      PA_UNSAFE_BUFFERS(static_cast<unsigned char*>(object) + usable_size -
+                        sizeof(internal::CheckedSpanSmuggledRequestedSize));
+  PA_CHECK(UntagPtr(target) %
+               alignof(internal::CheckedSpanSmuggledRequestedSize) ==
+           0u);
+  *reinterpret_cast<internal::CheckedSpanSmuggledRequestedSize*>(target) =
+      static_cast<internal::CheckedSpanSmuggledRequestedSize>(requested_size);
+}
+
+// Preconditions: as above.
+PA_ALWAYS_INLINE internal::CheckedSpanSmuggledRequestedSize GetSmuggledSize(
+    void* object,
+    size_t usable_size) {
+  internal::CheckedSpanSmuggledRequestedSize requested_size =
+      *reinterpret_cast<internal::CheckedSpanSmuggledRequestedSize*>(
+          // SAFETY: as long as preconditions are met, this is an
+          // ordinary read from the usable space of the slot.
+          PA_UNSAFE_BUFFERS(
+              static_cast<uint8_t*>(object) + usable_size -
+              sizeof(internal::CheckedSpanSmuggledRequestedSize)));
+  return requested_size;
+}
+
+#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+
 }  // namespace internal
 
 // AllocInternal exposed for testing.
@@ -1519,14 +1559,46 @@ PartitionRoot::AllocInternalNoHooks(size_t requested_size,
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (brp_enabled()) [[likely]] {
-    auto* ref_count =
+    [[maybe_unused]] auto* ref_count =
         new (internal::InSlotMetadata::From(raw_alloc_result->slot_and_size))
             internal::InSlotMetadata();
 #if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
     ref_count->SetRequestedSize(requested_size);
-#else
-    (void)ref_count;
 #endif
+
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+    // To provide exact bounds for Checked Span, we smuggle in the
+    // requested size at the end of the slot. This is not accounted as
+    // an "extra" in the usual sense.
+    //
+    // Exceptions:
+    // *  the slot doesn't have
+    //    `sizeof(CheckedSpanSmuggledRequestedSize)` bytes at the end.
+    // *  the slot can store its raw size (i.e. is a single-slot span).
+    //    This simplifies working around the cookie.
+    // *  the caller explicitly requested zero-fill. Checked Span
+    //    doesn't attempt to stop an attacker from reading zeroes.
+    if constexpr (!zero_fill) {
+      if (!raw_alloc_result->can_store_raw_size) {
+        // We prefer to write the smuggled size whenever we can. This
+        // has the side effect of obliterating the last few bytes of any
+        // memory being reused (e.g. a slot pulled out of the thread
+        // cache).
+        PA_UNSAFE_BUFFERS(internal::SmuggleRequestedSize(
+            object, raw_alloc_result->usable_size, requested_size));
+
+        // If the "unused" space (see "Layout inside the slot") has enough
+        // room to maintain the requested size (without being clobbered
+        // by the requester), we set the bit that tells Checked Span that
+        // it should query (and `CHECK()` for) the requested size.
+        if (requested_size +
+                sizeof(internal::CheckedSpanSmuggledRequestedSize) <=
+            raw_alloc_result->usable_size) {
+          ref_count->SetHasSmuggledSizeBit();
+        }
+      }
+    }
+#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
   }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 

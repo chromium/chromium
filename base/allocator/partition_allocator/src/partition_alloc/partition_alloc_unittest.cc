@@ -1960,6 +1960,10 @@ TEST_P(PartitionAllocTest, Realloc) {
   size_t size = SystemPageSize() - ExtraAllocSize(allocator);
   // Confirm size fills the entire slot.
   ASSERT_EQ(size, allocator.root()->AllocationCapacityFromRequestedSize(size));
+  // `size + 1` should bump the allocation up into the next slot size.
+  ASSERT_NE(SizeToIndex(size + ExtraAllocSize(allocator)),
+            SizeToIndex(size + ExtraAllocSize(allocator) + 1));
+
   ptr = allocator.root()->Alloc(size, type_name);
   PA_UNSAFE_TODO(memset(ptr, 'A', size));
   ptr2 = allocator.root()->Realloc(ptr, size + 1, type_name);
@@ -1967,6 +1971,22 @@ TEST_P(PartitionAllocTest, Realloc) {
   char* char_ptr2 = static_cast<char*>(ptr2);
   EXPECT_EQ('A', char_ptr2[0]);
   EXPECT_EQ('A', PA_UNSAFE_TODO(char_ptr2[size - 1]));
+
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+  if (allocator.root()->brp_enabled()) [[likely]] {
+    slot_span = SlotSpanMetadata::FromObjectInnerPtr(ptr2, allocator.root());
+
+    // At the new slot size forced by `size + 1`, there is ample
+    // headroom to smuggle the size.
+    EXPECT_TRUE(allocator.root()
+                    ->InSlotMetadataPointerFromObjectForTesting(ptr2)
+                    ->IsSmuggledSizeAvailable());
+    EXPECT_EQ(internal::GetSmuggledSize(
+                  ptr2, allocator.root()->GetSlotUsableSize(slot_span)),
+              size + 1);
+  }
+#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+
 #if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   EXPECT_EQ(kUninitializedByte,
             static_cast<unsigned char>(PA_UNSAFE_TODO(char_ptr2[size])));
@@ -1980,8 +2000,33 @@ TEST_P(PartitionAllocTest, Realloc) {
   char* char_ptr = static_cast<char*>(ptr);
   EXPECT_EQ('A', char_ptr[0]);
   EXPECT_EQ('A', PA_UNSAFE_TODO(char_ptr[size - 2]));
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+  if (allocator.root()->brp_enabled()) [[likely]] {
+    // `size` has 0 headroom (fills the slot) and can't smuggle the
+    // size. `size - 1` has 1 byte of headroom and also can't smuggle
+    // the size.
+    EXPECT_FALSE(allocator.root()
+                     ->InSlotMetadataPointerFromObjectForTesting(ptr)
+                     ->IsSmuggledSizeAvailable());
+  }
+#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+
 #if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
-  EXPECT_EQ(kUninitializedByte,
+  unsigned char expected_byte = kUninitializedByte;
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+  // Gory implementation detail: the size was smuggled regardless,
+  // replacing the last few bytes of the newly allocated slot with the
+  // bytes that spell out the value of `size - 1`. The `memcpy()` that
+  // moves the object into place then fills the slot with 1 byte to
+  // spare. Therefore, we will see the last byte of `size - 1`
+  // immediately before the cookie, and not `kUninitializedByte`.
+  if (allocator.root()->brp_enabled()) [[likely]] {
+    // truncate deliberately.
+    expected_byte = internal::base::byte_span_from_ref(size - 1).last<1>()[0];
+  }
+#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+
+  EXPECT_EQ(expected_byte,
             static_cast<unsigned char>(PA_UNSAFE_TODO(char_ptr[size - 1])));
 #endif
 
@@ -2003,6 +2048,14 @@ TEST_P(PartitionAllocTest, Realloc) {
   char_ptr2 = static_cast<char*>(ptr2);
   EXPECT_EQ('A', char_ptr2[0]);
   EXPECT_EQ('A', PA_UNSAFE_TODO(char_ptr2[size - 1]));
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+  if (allocator.root()->brp_enabled()) [[likely]] {
+    // Single-slot spans do not smuggle sizes.
+    EXPECT_FALSE(allocator.root()
+                     ->InSlotMetadataPointerFromObjectForTesting(ptr2)
+                     ->IsSmuggledSizeAvailable());
+  }
+#endif  // Not exclusive against the check below.
 #if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   EXPECT_EQ(kUninitializedByte,
             static_cast<unsigned char>(PA_UNSAFE_TODO(char_ptr2[size])));
@@ -6923,6 +6976,76 @@ TEST_P(PartitionAllocTest, RequestedSizeChangesOnReallocForDirectMap) {
 }
 
 #endif  // PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
+
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+
+TEST_P(PartitionAllocTest, SlotHasOrHasntSmuggledSize) {
+  // The bit denoting smuggled size presence is stored inside the
+  // `InSlotMetadata`, which is not present if BackupRefPtr is not
+  // enabled.
+  if (!allocator.root()->brp_enabled()) {
+    GTEST_SKIP();
+  }
+
+  // Arbitrarily target slot size 320. This won't fit Checked Span's
+  // smuggled size.
+  const size_t slot_size_320 = 320u - ExtraAllocSize(allocator);
+
+  // If the usable size fills the slot, by definition we cannot smuggle
+  // the size.
+  ASSERT_EQ(
+      slot_size_320,
+      allocator.root()->AllocationCapacityFromRequestedSize(slot_size_320));
+
+  // This should also target slot size 320 (see `buckets.md`). This
+  // _will_ fit Checked Span's smuggled size.
+  const size_t also_slot_size_320 =
+      slot_size_320 - sizeof(internal::CheckedSpanSmuggledRequestedSize);
+  ASSERT_EQ(SizeToIndex(slot_size_320), SizeToIndex(also_slot_size_320));
+
+  void* hasnt_smuggled_size = allocator.root()->Alloc(slot_size_320);
+  EXPECT_FALSE(
+      allocator.root()
+          ->InSlotMetadataPointerFromObjectForTesting(hasnt_smuggled_size)
+          ->IsSmuggledSizeAvailable());
+
+  void* has_smuggled_size = allocator.root()->Alloc(also_slot_size_320);
+  EXPECT_TRUE(allocator.root()
+                  ->InSlotMetadataPointerFromObjectForTesting(has_smuggled_size)
+                  ->IsSmuggledSizeAvailable());
+
+  // The external-friendly `GetUsableSize()` will show a usable size
+  // discrepancy, despite both allocations targeting the same slot size.
+  EXPECT_EQ(PartitionRoot::GetExternalUsableSize(hasnt_smuggled_size),
+            PartitionRoot::GetExternalUsableSize(has_smuggled_size) +
+                sizeof(internal::CheckedSpanSmuggledRequestedSize));
+
+  const auto* slot_span_without_smuggled_size =
+      SlotSpanMetadata::FromObjectInnerPtr(hasnt_smuggled_size,
+                                           allocator.root());
+  const auto* slot_span_with_smuggled_size =
+      SlotSpanMetadata::FromObjectInnerPtr(has_smuggled_size, allocator.root());
+  // The internal `GetSlotUsableSize()`s must report the same size,
+  // ignoring the smuggled size.
+  EXPECT_EQ(
+      allocator.root()->GetSlotUsableSize(slot_span_without_smuggled_size),
+      allocator.root()->GetSlotUsableSize(slot_span_with_smuggled_size));
+
+  // As above, but calling the overrides with `BucketSizeDetails`.
+  EXPECT_EQ(allocator.root()->GetSlotUsableSize(
+                allocator.root()->SizeToBucketSizeDetails(
+                    slot_size_320, slot_span_without_smuggled_size),
+                slot_span_without_smuggled_size),
+            allocator.root()->GetSlotUsableSize(
+                allocator.root()->SizeToBucketSizeDetails(
+                    also_slot_size_320, slot_span_with_smuggled_size),
+                slot_span_with_smuggled_size));
+
+  allocator.root()->Free(hasnt_smuggled_size);
+  allocator.root()->Free(has_smuggled_size);
+}
+
+#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
 
 }  // namespace partition_alloc::internal
 

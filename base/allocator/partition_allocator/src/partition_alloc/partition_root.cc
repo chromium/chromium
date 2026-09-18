@@ -1436,7 +1436,26 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
           static_cast<unsigned char*>(object) + GetSlotUsableSize(slot_span)));
     }
 #endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
+
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+    // By definition, slots that can store the raw size do not smuggle
+    // the requested size.
+    PA_DCHECK(!ref_count->IsSmuggledSizeAvailable());
+#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+
   }
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+  else if (brp_enabled()) {
+    if (new_size + sizeof(internal::CheckedSpanSmuggledRequestedSize) <=
+        current_usable_size) {
+      PA_UNSAFE_BUFFERS(internal::SmuggleRequestedSize(
+          object, current_usable_size, new_size));
+      ref_count->SetHasSmuggledSizeBit();
+    } else {
+      ref_count->ClearHasSmuggledSizeBit();
+    }
+  }
+#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
 
 #undef PARTITION_ALLOC_HAS_DCHECKED_BRP
 
