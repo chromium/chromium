@@ -115,7 +115,7 @@ public class LocationBarDragDropHandler implements OnDragListener {
 
             String url = uriToLoad.toString();
             if (permissions != null
-                    && ContentResolver.SCHEME_CONTENT.equals(uriToLoad.getScheme())) {
+                    && ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uriToLoad.getScheme())) {
                 tab.addObserver(new DragAndDropPermissionsReleaseObserver(tab, permissions));
                 permissions = null;
             }
@@ -159,10 +159,14 @@ public class LocationBarDragDropHandler implements OnDragListener {
     @VisibleForTesting
     @Nullable
     String getMimeType(Context context, Uri uri) {
-        if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
-            return context.getContentResolver().getType(uri);
+        if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
+            try {
+                return context.getContentResolver().getType(uri);
+            } catch (Exception e) {
+                return null;
+            }
         }
-        if (!ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+        if (!ContentResolver.SCHEME_FILE.equalsIgnoreCase(uri.getScheme())) {
             return null;
         }
         String extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
@@ -204,11 +208,25 @@ public class LocationBarDragDropHandler implements OnDragListener {
     boolean hasContentUri(ClipData clipData) {
         for (int i = 0; i < clipData.getItemCount(); i++) {
             Uri uri = clipData.getItemAt(i).getUri();
-            if (uri != null && ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+            if (uri != null && ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Checks if the URI has a content or file scheme (case-insensitive).
+     *
+     * @param uri The URI to check.
+     * @return True if the URI has a content or file scheme, false otherwise.
+     */
+    @VisibleForTesting
+    boolean isContentOrFileUri(@Nullable Uri uri) {
+        if (uri == null) return false;
+        String scheme = uri.getScheme();
+        return ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(scheme)
+                || ContentResolver.SCHEME_FILE.equalsIgnoreCase(scheme);
     }
 
     /**
@@ -240,7 +258,7 @@ public class LocationBarDragDropHandler implements OnDragListener {
             }
 
             Uri uri = item.getUri();
-            if (uri == null) continue;
+            if (uri == null || !isContentOrFileUri(uri)) continue;
 
             String mimeType = getMimeType(context, uri);
             if (mimeType == null && clipData.getItemCount() == 1 && desc != null) {

@@ -51,6 +51,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 /** Unit tests for {@link LocationBarDragDropHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -253,6 +254,21 @@ public class LocationBarDragDropHandlerUnitTest {
     }
 
     @Test
+    public void testIsContentOrFileUri() {
+        assertTrue(mHandler.isContentOrFileUri(Uri.parse("content://com.example/doc")));
+        assertTrue(mHandler.isContentOrFileUri(Uri.parse("CONTENT://com.example/doc")));
+        assertTrue(mHandler.isContentOrFileUri(Uri.parse("file:///path/to/file.txt")));
+        assertTrue(mHandler.isContentOrFileUri(Uri.parse("FILE:///path/to/file.txt")));
+        assertFalse(mHandler.isContentOrFileUri(Uri.parse("http://example.com")));
+        assertFalse(mHandler.isContentOrFileUri(Uri.parse("https://example.com")));
+        assertFalse(mHandler.isContentOrFileUri(Uri.parse("javascript:alert(1)")));
+        assertFalse(mHandler.isContentOrFileUri(Uri.parse("data:text/html,sample_data")));
+        assertFalse(mHandler.isContentOrFileUri(Uri.parse("chrome://flags")));
+        assertFalse(mHandler.isContentOrFileUri(null));
+        assertFalse(mHandler.isContentOrFileUri(Uri.EMPTY));
+    }
+
+    @Test
     public void testGetMimeType() {
         // Content URI
         Uri contentUri = Uri.parse("content://com.example.provider/doc");
@@ -430,5 +446,183 @@ public class LocationBarDragDropHandlerUnitTest {
                         new ClipData.Item(intent));
 
         assertNull(mHandler.findUriToLoad(mContext, clipData, null));
+    }
+
+    @Test
+    public void testFindUriToLoad_RejectsJavascriptUriWithFallbackMimeType() {
+        Uri uri = Uri.parse("javascript:alert(1)");
+        ClipData clipData =
+                new ClipData("url", new String[] {"text/plain"}, new ClipData.Item(uri));
+        ClipDescription desc = new ClipDescription("url", new String[] {"text/plain"});
+
+        assertNull(mHandler.findUriToLoad(mContext, clipData, desc));
+    }
+
+    @Test
+    public void testOnDrag_Drop_JavascriptUri_Rejected() {
+        Uri uri = Uri.parse("javascript:alert(1)");
+        ClipData clipData =
+                new ClipData("url", new String[] {"text/plain"}, new ClipData.Item(uri));
+
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(clipData);
+        when(mDragEvent.getClipDescription()).thenReturn(clipData.getDescription());
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+
+        assertFalse(mHandler.onDrag(new View(mContext), mDragEvent));
+        verify(mOmniboxStub, never()).loadUrl(any());
+    }
+
+    @Test
+    public void testFindUriToLoad_RejectsDataUri() {
+        Uri uri = Uri.parse("data:text/html,sample_data");
+        ClipData clipData =
+                new ClipData("data", new String[] {"text/html"}, new ClipData.Item(uri));
+        ClipDescription desc = new ClipDescription("data", new String[] {"text/html"});
+
+        assertNull(mHandler.findUriToLoad(mContext, clipData, desc));
+    }
+
+    @Test
+    public void testFindUriToLoad_RejectsChromeAndAboutSchemes() {
+        for (String urlStr :
+                List.of(
+                        "chrome://flags",
+                        "chrome-native://bookmarks",
+                        "about:blank",
+                        "about:flags")) {
+            Uri uri = Uri.parse(urlStr);
+            ClipData clipData =
+                    new ClipData("internal", new String[] {"text/plain"}, new ClipData.Item(uri));
+            ClipDescription desc = new ClipDescription("internal", new String[] {"text/plain"});
+
+            assertNull(
+                    "Scheme should be rejected: " + urlStr,
+                    mHandler.findUriToLoad(mContext, clipData, desc));
+        }
+    }
+
+    @Test
+    public void testFindUriToLoad_RejectsOtherDisallowedSchemes() {
+        for (String urlStr :
+                List.of(
+                        "jar:file:///path.jar!/file.txt",
+                        "blob:https://example.com/sample",
+                        "intent:#Intent;action=VIEW;end")) {
+            Uri uri = Uri.parse(urlStr);
+            ClipData clipData =
+                    new ClipData("disallowed", new String[] {"text/plain"}, new ClipData.Item(uri));
+            ClipDescription desc = new ClipDescription("disallowed", new String[] {"text/plain"});
+
+            assertNull(
+                    "Scheme should be rejected: " + urlStr,
+                    mHandler.findUriToLoad(mContext, clipData, desc));
+        }
+    }
+
+    @Test
+    public void testFindUriToLoad_RejectsUppercaseJavascriptUri() {
+        Uri uri = Uri.parse("JAVASCRIPT:alert(1)");
+        ClipData clipData =
+                new ClipData("url", new String[] {"text/plain"}, new ClipData.Item(uri));
+        ClipDescription desc = new ClipDescription("url", new String[] {"text/plain"});
+
+        assertNull(mHandler.findUriToLoad(mContext, clipData, desc));
+    }
+
+    @Test
+    public void testOnDrag_Drop_UppercaseContentUri_AcceptedWithPermissions() {
+        Uri contentUri = Uri.parse("CONTENT://com.example.provider/document.pdf");
+        ClipData clipData =
+                new ClipData(
+                        "doc", new String[] {"application/pdf"}, new ClipData.Item(contentUri));
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(clipData);
+        when(mDragEvent.getClipDescription()).thenReturn(clipData.getDescription());
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mActivity.requestDragAndDropPermissions(mDragEvent))
+                .thenReturn(mDragAndDropPermissions);
+
+        assertTrue(mHandler.onDrag(new View(mContext), mDragEvent));
+        verify(mTab).addObserver(any());
+        verify(mOmniboxStub).loadUrl(mLoadUrlParamsCaptor.capture());
+        assertEquals(
+                "CONTENT://com.example.provider/document.pdf", mLoadUrlParamsCaptor.getValue().url);
+    }
+
+    @Test
+    public void testOnDrag_Drop_UppercaseFileUri_Accepted() {
+        Uri fileUri = Uri.parse("FILE:///path/to/file.txt");
+        ClipData clipData =
+                new ClipData("file", new String[] {"text/plain"}, new ClipData.Item(fileUri));
+
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(clipData);
+        when(mDragEvent.getClipDescription()).thenReturn(clipData.getDescription());
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+
+        assertTrue(mHandler.onDrag(new View(mContext), mDragEvent));
+        verify(mOmniboxStub).loadUrl(mLoadUrlParamsCaptor.capture());
+        assertEquals("FILE:///path/to/file.txt", mLoadUrlParamsCaptor.getValue().url);
+    }
+
+    @Test
+    public void testOnDrag_Drop_SkipsUnsupportedUriScheme() {
+        Uri fileUri = Uri.parse("file:///path/to/file.txt");
+        ClipData clipData =
+                new ClipData(
+                        "text",
+                        new String[] {"text/plain"},
+                        new ClipData.Item(Uri.parse("javascript:alert(1)")));
+        clipData.addItem(new ClipData.Item(fileUri));
+
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(clipData);
+        when(mDragEvent.getClipDescription()).thenReturn(clipData.getDescription());
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+
+        assertTrue(mHandler.onDrag(new View(mContext), mDragEvent));
+        verify(mOmniboxStub).loadUrl(mLoadUrlParamsCaptor.capture());
+        assertEquals("file:///path/to/file.txt", mLoadUrlParamsCaptor.getValue().url);
+    }
+
+    @Test
+    public void testFindUriToLoad_FallbackMimeTypeOnlyForContentOrFile() {
+        // Content URI with null getType() -> Uses fallback -> Accepted
+        Uri contentUri = Uri.parse("content://com.example.provider/sample");
+        when(mContentProvider.getType(contentUri)).thenReturn(null);
+        ShadowContentResolver.registerProviderInternal("com.example.provider", mContentProvider);
+        ClipData contentClip =
+                new ClipData(
+                        "doc", new String[] {"application/pdf"}, new ClipData.Item(contentUri));
+        assertEquals(
+                contentUri,
+                mHandler.findUriToLoad(mContext, contentClip, contentClip.getDescription()));
+
+        // File URI with no extension -> Uses fallback -> Accepted
+        Uri fileUri = Uri.parse("file:///path/to/no_extension_file");
+        ClipData fileClip =
+                new ClipData("file", new String[] {"text/plain"}, new ClipData.Item(fileUri));
+        assertEquals(
+                fileUri, mHandler.findUriToLoad(mContext, fileClip, fileClip.getDescription()));
+
+        // Non-content/file URI with null getMimeType() -> Fallback blocked -> Rejected
+        Uri jsUri = Uri.parse("javascript:alert(1)");
+        ClipData jsClip = new ClipData("js", new String[] {"text/plain"}, new ClipData.Item(jsUri));
+        assertNull(mHandler.findUriToLoad(mContext, jsClip, jsClip.getDescription()));
+    }
+
+    @Test
+    public void testFindUriToLoad_RejectsSchemelessOrMalformedUri() {
+        for (String urlStr : List.of("//example.com", "relative/path/file.txt", "   ")) {
+            Uri uri = Uri.parse(urlStr);
+            ClipData clipData =
+                    new ClipData("malformed", new String[] {"text/plain"}, new ClipData.Item(uri));
+            ClipDescription desc = new ClipDescription("malformed", new String[] {"text/plain"});
+
+            assertNull(
+                    "Schemeless/malformed URI should be rejected: " + urlStr,
+                    mHandler.findUriToLoad(mContext, clipData, desc));
+        }
     }
 }
