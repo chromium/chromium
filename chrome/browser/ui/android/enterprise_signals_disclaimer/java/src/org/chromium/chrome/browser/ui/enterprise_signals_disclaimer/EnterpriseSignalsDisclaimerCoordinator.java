@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
-import android.content.Context;
+import static org.chromium.build.NullUtil.assertNonNull;
 
+import android.content.Context;
+import android.view.View;
+
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -23,7 +27,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 @NullMarked
 public class EnterpriseSignalsDisclaimerCoordinator
-        implements EnterpriseSignalsDisclaimerMediator.Delegate {
+        implements EnterpriseSignalsDisclaimerMediator.Delegate, View.OnAttachStateChangeListener {
     /** Delegate for the enterprise signals disclaimer. */
     public interface Delegate {
         /**
@@ -34,12 +38,18 @@ public class EnterpriseSignalsDisclaimerCoordinator
         void showInfoPage(String url);
     }
 
+    private static final long UNSET_TIME = -1;
+
     private final EnterpriseSignalsDisclaimerMediator mMediator;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
     private final EnterpriseSignalsDisclaimerHost mDisclaimerHost;
     private final Delegate mDelegate;
+    private final MetricsHelper mMetricsHelper;
+    private final EnterpriseSignalsDisclaimerView mView;
     private boolean mIsDestroyed;
     private @Nullable Runnable mOnDestroyCallback;
+    private long mShownAtUptimeMillis = UNSET_TIME;
+    private @Nullable @MetricsHelper.ShownOn Integer mShownOn;
 
     /**
      * Constructs an {@link EnterpriseSignalsDisclaimerCoordinator}.
@@ -52,6 +62,8 @@ public class EnterpriseSignalsDisclaimerCoordinator
      * @param signinManager The {@link SigninManager} for checking management status and fetching
      *     the profile picture.
      * @param delegate The {@link Delegate} for embedder interactions.
+     * @param onDestroyCallback Callback to be invoked when the coordinator is destroyed.
+     * @param metricsHelper The {@link MetricsHelper} for recording interaction metrics.
      */
     public EnterpriseSignalsDisclaimerCoordinator(
             Context context,
@@ -59,42 +71,46 @@ public class EnterpriseSignalsDisclaimerCoordinator
             ModalDialogManager modalDialogManager,
             SigninManager signinManager,
             Delegate delegate,
-            Runnable onDestroyCallback) {
+            Runnable onDestroyCallback,
+            MetricsHelper metricsHelper) {
         mOnDestroyCallback = onDestroyCallback;
         mDelegate = delegate;
+        mMetricsHelper = metricsHelper;
         final IdentityManager identityManager = signinManager.getIdentityManager();
         assert identityManager.hasPrimaryAccount();
 
-        EnterpriseSignalsDisclaimerView view;
         // For the large form factors a modal dialog will be displayed, while smaller screens will
         // get a bottom sheet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            view = EnterpriseSignalsDisclaimerView.createForModalDialog(context);
+            mView = EnterpriseSignalsDisclaimerView.createForModalDialog(context);
             mDisclaimerHost =
                     new ModalDialogDisclaimerHost(
-                            modalDialogManager, view, this::onDialogDismissed);
+                            modalDialogManager, mView, this::onDialogDismissed);
         } else {
             var sheetContent = new EnterpriseSignalsDisclaimerBottomSheetView(context);
-            view = sheetContent;
+            mView = sheetContent;
             mDisclaimerHost =
                     new BottomSheetDisclaimerHost(
                             bottomSheetController, sheetContent, this::onDialogDismissed);
         }
+
+        mView.addOnAttachStateChangeListener(this);
 
         mMediator =
                 new EnterpriseSignalsDisclaimerMediator(
                         context, identityManager, /* delegate= */ this, signinManager);
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mMediator.getModel(), view, EnterpriseSignalsDisclaimerViewBinder::bind);
+                        mMediator.getModel(), mView, EnterpriseSignalsDisclaimerViewBinder::bind);
     }
 
     /**
      * Attempts to show the enterprise signals disclaimer. If the dialog cannot be shown it will be
      * put in a queue and shown whenever possible.
      */
-    public void show() {
+    public void show(@MetricsHelper.ShownOn int shownOn) {
         assert !mIsDestroyed;
+        mShownOn = shownOn;
         mDisclaimerHost.show();
     }
 
@@ -106,8 +122,13 @@ public class EnterpriseSignalsDisclaimerCoordinator
     }
 
     private void onDialogDismissed(@DismissalCause int dismissalCause) {
+        mMetricsHelper.recordResult(dismissalCause);
         if (shouldSignOutBasedOnDismissalCause(dismissalCause)) {
             mMediator.signOutUser();
+        }
+        if (mShownAtUptimeMillis != UNSET_TIME) {
+            MetricsHelper.recordTimeToUserAction(TimeUtils.uptimeMillis() - mShownAtUptimeMillis);
+            mShownAtUptimeMillis = UNSET_TIME;
         }
         destroy();
     }
@@ -118,6 +139,7 @@ public class EnterpriseSignalsDisclaimerCoordinator
             return;
         }
         mIsDestroyed = true;
+        mView.removeOnAttachStateChangeListener(this);
         mDisclaimerHost.destroy();
         mModelChangeProcessor.destroy();
         mMediator.destroy();
@@ -142,6 +164,21 @@ public class EnterpriseSignalsDisclaimerCoordinator
     public void onDecline() {
         mDisclaimerHost.dismiss(DismissalCause.TAPPED_SIGN_OUT);
     }
+
+    // View.OnAttachStateChangeListener implementation.
+    @Override
+    public void onViewAttachedToWindow(View view) {
+        if (mIsDestroyed) {
+            return;
+        }
+
+        MetricsHelper.recordShown(assertNonNull(mShownOn));
+        mShownAtUptimeMillis = TimeUtils.uptimeMillis();
+        view.removeOnAttachStateChangeListener(this);
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(View view) {}
 
     private static boolean shouldSignOutBasedOnDismissalCause(@DismissalCause int dismissalCause) {
         // If the user taps sign out explicitly, the Mediator will already start the sign out flow.

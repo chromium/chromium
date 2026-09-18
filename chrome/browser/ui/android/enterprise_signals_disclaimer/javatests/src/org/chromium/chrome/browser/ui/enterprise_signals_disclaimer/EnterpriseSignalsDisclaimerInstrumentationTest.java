@@ -38,12 +38,16 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.HistogramBucket;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
@@ -54,6 +58,8 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerHost.DismissalCause;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.MetricsHelper.ShownOn;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -75,6 +81,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+
 /** Instrumentation tests for {@link EnterpriseSignalsDisclaimerController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Testing browser startup prevents batching")
@@ -85,6 +93,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock private ManagedBrowserUtils.Natives mManagedBrowserUtilsMock;
 
@@ -99,6 +108,12 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
                             new AccountCapabilitiesBuilder()
                                     .setIsSubjectToEnterpriseFeatures(true)
                                     .build())
+                    .build();
+
+    private final HistogramWatcher mStartupHistogramWatcher =
+            HistogramWatcher.newBuilder()
+                    .expectIntRecord(MetricsHelper.HISTOGRAM_SHOWN_REQUESTED, ShownOn.STARTUP)
+                    .expectIntRecord(MetricsHelper.HISTOGRAM_SHOWN, ShownOn.STARTUP)
                     .build();
 
     @Before
@@ -184,12 +199,35 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
                 });
     }
 
+    private boolean maybeShow(
+            EnterpriseSignalsDisclaimerController controller, @ShownOn int shownOn) {
+        return ThreadUtils.runOnUiThreadBlocking(() -> controller.maybeShow(shownOn));
+    }
+
     private EnterpriseSignalsDisclaimerController createControllerAndShowDisclaimer() {
         final EnterpriseSignalsDisclaimerController controller = createController();
         Assert.assertNotNull(controller);
-        Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(controller::maybeShow));
+        Assert.assertTrue(maybeShow(controller, ShownOn.STARTUP));
         waitForDisclaimerVisible();
         return controller;
+    }
+
+    private void dismissByTappingOutside() {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity())) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        PropertyModel model =
+                                modalDialogManager().getCurrentPresenterForTest().getDialogModel();
+                        modalDialogManager()
+                                .dismissDialog(
+                                        model, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                    });
+        } else {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () ->
+                            new BottomSheetTestSupport(bottomSheetController())
+                                    .forceClickOutsideTheSheet());
+        }
     }
 
     /** Abstraction combining fake bottom sheet and modal dialogs. */
@@ -331,6 +369,8 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
                     Assert.assertEquals(!isTablet, bottomSheetController().isSheetOpen());
                     Assert.assertEquals(isTablet, modalDialogManager().isShowing());
                 });
+
+        mStartupHistogramWatcher.assertExpected();
     }
 
     @Test
@@ -343,7 +383,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
         final EnterpriseSignalsDisclaimerController controller = createController();
         Assert.assertNotNull(controller);
-        Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(controller::maybeShow));
+        Assert.assertTrue(maybeShow(controller, ShownOn.STARTUP));
 
         // The existing dialog should still be showing.
         Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(fakeDialog::isShowing));
@@ -377,10 +417,10 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         final EnterpriseSignalsDisclaimerController controller = createController();
         Assert.assertNotNull(controller);
 
-        Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(controller::maybeShow));
+        Assert.assertTrue(maybeShow(controller, ShownOn.STARTUP));
 
         // Attempt to queue up again, should return false because the first is already in queue.
-        Assert.assertFalse(ThreadUtils.runOnUiThreadBlocking(controller::maybeShow));
+        Assert.assertFalse(maybeShow(controller, ShownOn.STARTUP));
 
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
     }
@@ -409,12 +449,22 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
         Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
 
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MetricsHelper.HISTOGRAM_RESULT, DismissalCause.TAPPED_ACCEPT)
+                        .expectIntRecord(
+                                MetricsHelper.HISTOGRAM_IMPLICIT_DISMISSALS_BEFORE_ACCEPTANCE, 0)
+                        .expectAnyRecord(MetricsHelper.HISTOGRAM_TIME_TO_USER_ACTION)
+                        .build();
+
         onView(withId(R.id.disclaimer_accept_button)).perform(scrollTo(), click());
 
         waitForDisclaimerNotShowing();
         Assert.assertNotNull(mSigninTestRule.getPrimaryAccount());
         Assert.assertTrue(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -424,12 +474,20 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         final EnterpriseSignalsDisclaimerController controller =
                 createControllerAndShowDisclaimer();
 
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MetricsHelper.HISTOGRAM_RESULT, DismissalCause.TAPPED_SIGN_OUT)
+                        .expectAnyRecord(MetricsHelper.HISTOGRAM_TIME_TO_USER_ACTION)
+                        .build();
+
         onView(withId(R.id.disclaimer_cancel_button)).perform(scrollTo(), click());
 
         waitForDisclaimerNotShowing();
         waitForSignout();
         Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -444,12 +502,22 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         // dialog.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> activity().findViewById(R.id.disclaimer_scroll_view).scrollTo(0, 0));
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MetricsHelper.HISTOGRAM_RESULT,
+                                DismissalCause.DISMISSED_BY_SWIPE_DOWN)
+                        .expectAnyRecord(MetricsHelper.HISTOGRAM_TIME_TO_USER_ACTION)
+                        .build();
+
         onView(withId(R.id.disclaimer_scroll_view)).perform(swipeDown());
 
         waitForDisclaimerNotShowing();
         waitForSignout();
         Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -460,6 +528,14 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         final EnterpriseSignalsDisclaimerController controller =
                 createControllerAndShowDisclaimer();
 
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MetricsHelper.HISTOGRAM_RESULT,
+                                DismissalCause.DISMISSED_BY_TAP_OUTSIDE)
+                        .expectAnyRecord(MetricsHelper.HISTOGRAM_TIME_TO_USER_ACTION)
+                        .build();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         new BottomSheetTestSupport(bottomSheetController())
@@ -469,6 +545,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         waitForSignout();
         Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -478,6 +555,14 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     public void clickingOutsideModalDialogSignsOutAndHidesDialog() {
         final EnterpriseSignalsDisclaimerController controller =
                 createControllerAndShowDisclaimer();
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MetricsHelper.HISTOGRAM_RESULT,
+                                DismissalCause.DISMISSED_BY_TAP_OUTSIDE)
+                        .expectAnyRecord(MetricsHelper.HISTOGRAM_TIME_TO_USER_ACTION)
+                        .build();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -492,6 +577,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         waitForSignout();
         Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -501,12 +587,75 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         final EnterpriseSignalsDisclaimerController controller =
                 createControllerAndShowDisclaimer();
 
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MetricsHelper.HISTOGRAM_RESULT,
+                                DismissalCause.DISMISSED_BY_BACK_PRESS)
+                        .expectAnyRecord(MetricsHelper.HISTOGRAM_TIME_TO_USER_ACTION)
+                        .build();
+
         Espresso.pressBack();
 
         waitForDisclaimerNotShowing();
         waitForSignout();
         Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+    public void implicitDismissalsRecordedBeforeAcceptance() {
+        final EnterpriseSignalsDisclaimerController controller =
+                createControllerAndShowDisclaimer();
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MetricsHelper.HISTOGRAM_RESULT,
+                                DismissalCause.DISMISSED_BY_BACK_PRESS)
+                        .expectIntRecord(
+                                MetricsHelper.HISTOGRAM_RESULT,
+                                DismissalCause.DISMISSED_BY_TAP_OUTSIDE)
+                        .expectIntRecord(
+                                MetricsHelper.HISTOGRAM_RESULT, DismissalCause.TAPPED_ACCEPT)
+                        .expectIntRecord(
+                                MetricsHelper.HISTOGRAM_IMPLICIT_DISMISSALS_BEFORE_ACCEPTANCE, 2)
+                        .expectAnyRecordTimes(MetricsHelper.HISTOGRAM_TIME_TO_USER_ACTION, 3)
+                        .build();
+
+        // 1. Implicitly dismiss via back press.
+        Espresso.pressBack();
+        waitForDisclaimerNotShowing();
+        waitForSignout();
+        Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
+
+        // Re-sign in and wait for the disclaimer to show again.
+        mSigninTestRule.forceSignOut();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.MANAGED_ACCOUNT);
+        waitForDisclaimerVisible();
+
+        // 2. Implicitly dismiss via tap outside.
+        dismissByTappingOutside();
+        waitForDisclaimerNotShowing();
+        waitForSignout();
+        Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
+
+        // Re-sign in and wait for the disclaimer to show again.
+        mSigninTestRule.forceSignOut();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.MANAGED_ACCOUNT);
+        waitForDisclaimerVisible();
+
+        // 3. Finally accept the disclaimer.
+        onView(withId(R.id.disclaimer_accept_button)).perform(scrollTo(), click());
+        waitForDisclaimerNotShowing();
+
+        Assert.assertNotNull(mSigninTestRule.getPrimaryAccount());
+        Assert.assertTrue(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
+        ThreadUtils.runOnUiThreadBlocking(controller::destroy);
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -516,9 +665,16 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         mSigninTestRule.forceSignOut();
         waitForSignout();
 
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(MetricsHelper.HISTOGRAM_SHOWN_REQUESTED, ShownOn.SIGN_IN)
+                        .expectIntRecord(MetricsHelper.HISTOGRAM_SHOWN, ShownOn.SIGN_IN)
+                        .build();
+
         mSigninTestRule.addAccountThenSignin(TestAccounts.MANAGED_ACCOUNT);
 
         waitForDisclaimerVisible();
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -545,6 +701,47 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         ThreadUtils.runOnUiThreadBlocking(fakeDialog::close);
 
         waitForDisclaimerVisible();
+    }
+
+    @Test
+    @LargeTest
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_STARTUP_PROMOS)
+    public void timeToUserActionNotRecordedWhileQueued() {
+        mSigninTestRule.forceSignOut();
+        waitForSignout();
+
+        final FakeDialog fakeDialog = showFakeDialog();
+        Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(fakeDialog::isShowing));
+
+        var shownWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(MetricsHelper.HISTOGRAM_TIME_TO_USER_ACTION)
+                        .build();
+
+        mSigninTestRule.addAccountThenSignin(TestAccounts.MANAGED_ACCOUNT);
+
+        // Advance time while the disclaimer is queued behind the fake dialog.
+        mFakeTimeTestRule.advanceMillis(5000);
+
+        // Close the blocking dialog so the disclaimer can be dequeued and shown.
+        ThreadUtils.runOnUiThreadBlocking(fakeDialog::close);
+
+        waitForDisclaimerVisible();
+
+        // Advance 1000ms while the disclaimer is showing and then accept the disclaimer.
+        mFakeTimeTestRule.advanceMillis(1000);
+        onView(withId(R.id.disclaimer_accept_button)).perform(scrollTo(), click());
+        waitForDisclaimerNotShowing();
+        shownWatcher.assertExpected();
+
+        // Verify that the recorded sample does not exceed the 5000ms queued time.
+        List<HistogramBucket> buckets =
+                RecordHistogram.getHistogramSamplesForTesting(
+                        MetricsHelper.HISTOGRAM_TIME_TO_USER_ACTION);
+        Assert.assertFalse("Expected histogram records", buckets.isEmpty());
+        for (HistogramBucket bucket : buckets) {
+            Assert.assertTrue(bucket.mMax <= 5000);
+        }
     }
 
     @Test

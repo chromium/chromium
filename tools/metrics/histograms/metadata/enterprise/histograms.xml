@@ -4428,6 +4428,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.SignalsDisclaimer.ExistingProfiles.ShowRequested"
+    enum="EnterpriseSignalsDisclaimerShownOn" expires_after="2027-04-01">
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records when the Enterprise Signals Disclaimer is requested to be shown on
+    Android for existing profiles, categorized by the event that triggered the
+    request. The disclaimer may be queued behind another dialog at this point,
+    and is not guaranteed to ever become visible.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.SignalsDisclaimer.ExistingProfiles.TimeToUserAction"
     units="ms" expires_after="2027-04-01">

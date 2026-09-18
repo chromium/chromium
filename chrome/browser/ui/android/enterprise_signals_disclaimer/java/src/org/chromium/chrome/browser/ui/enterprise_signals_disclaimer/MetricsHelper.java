@@ -24,6 +24,10 @@ import java.util.concurrent.TimeUnit;
 @NullMarked
 class MetricsHelper {
     @VisibleForTesting
+    static final String HISTOGRAM_SHOWN_REQUESTED =
+            "Enterprise.SignalsDisclaimer.ExistingProfiles.ShowRequested";
+
+    @VisibleForTesting
     static final String HISTOGRAM_SHOWN = "Enterprise.SignalsDisclaimer.ExistingProfiles.Shown";
 
     @VisibleForTesting
@@ -50,6 +54,11 @@ class MetricsHelper {
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseSignalsDisclaimerShownOn)
+
+    public static void recordShownRequested(@ShownOn int shownOn) {
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_SHOWN_REQUESTED, shownOn, ShownOn.COUNT);
+    }
 
     public static void recordShown(@ShownOn int shownOn) {
         RecordHistogram.recordEnumeratedHistogram(HISTOGRAM_SHOWN, shownOn, ShownOn.COUNT);

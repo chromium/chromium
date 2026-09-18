@@ -30,6 +30,28 @@ public class MetricsHelperUnitTest {
     }
 
     @Test
+    public void testRecordShownRequested_startup() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        MetricsHelper.HISTOGRAM_SHOWN_REQUESTED, ShownOn.STARTUP);
+
+        MetricsHelper.recordShownRequested(ShownOn.STARTUP);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordShownRequested_signIn() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        MetricsHelper.HISTOGRAM_SHOWN_REQUESTED, ShownOn.SIGN_IN);
+
+        MetricsHelper.recordShownRequested(ShownOn.SIGN_IN);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testRecordShown_startup() {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

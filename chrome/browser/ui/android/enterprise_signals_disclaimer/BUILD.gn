@@ -157,6 +157,7 @@ android_library("javatests") {
     ":java",
     ":java_resources",
     "//base:base_java_test_support",
+    "//base:base_java_test_support_uncommon",
     "//chrome/android:chrome_java",
     "//chrome/android/javatests:common_unit_test_deps_java",
     "//chrome/browser/flags:java",

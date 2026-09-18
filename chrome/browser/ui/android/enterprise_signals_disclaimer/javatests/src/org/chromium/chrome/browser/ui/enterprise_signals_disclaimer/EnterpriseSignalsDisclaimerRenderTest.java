@@ -192,8 +192,9 @@ public class EnterpriseSignalsDisclaimerRenderTest {
                                             activity.getModalDialogManager(),
                                             mSigninManager,
                                             (url) -> {},
-                                            () -> {});
-                            mCoordinator.show();
+                                            () -> {},
+                                            new MetricsHelper());
+                            mCoordinator.show(MetricsHelper.ShownOn.STARTUP);
                             return controller;
                         });
         BottomSheetTestSupport.waitForOpen(bottomSheetController);
@@ -220,8 +221,9 @@ public class EnterpriseSignalsDisclaimerRenderTest {
                                     activity.getModalDialogManager(),
                                     mSigninManager,
                                     (url) -> {},
-                                    () -> {});
-                    mCoordinator.show();
+                                    () -> {},
+                                    new MetricsHelper());
+                    mCoordinator.show(MetricsHelper.ShownOn.STARTUP);
                 });
         CriteriaHelper.pollUiThread(() -> activity.getModalDialogManager().isShowing());
         View dialogDecorView =

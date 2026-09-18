@@ -2876,7 +2876,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mEnterpriseSignalsDisclaimerController != null
                 && !CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
                 && !CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_STARTUP_PROMOS)
-                && mEnterpriseSignalsDisclaimerController.maybeShow()) {
+                && mEnterpriseSignalsDisclaimerController.maybeShowOnStartup()) {
             return true;
         }
 

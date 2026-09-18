@@ -39,6 +39,7 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
     private final EnterpriseSignalsDisclaimerCoordinator.Delegate mDelegate;
     private final Profile mProfile;
     private final SigninManager mSigninManager;
+    private final MetricsHelper mMetricsHelper = new MetricsHelper();
 
     private @Nullable EnterpriseSignalsDisclaimerCoordinator mCoordinator;
     private boolean mIsDestroyed;
@@ -51,7 +52,8 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
                 ModalDialogManager modalDialogManager,
                 SigninManager signinManager,
                 EnterpriseSignalsDisclaimerCoordinator.Delegate delegate,
-                Runnable onDestroyCallback);
+                Runnable onDestroyCallback,
+                MetricsHelper metricsHelper);
     }
 
     /**
@@ -133,7 +135,12 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
      *
      * @return true if the disclaimer was shown (or put in a queue), false otherwise.
      */
-    public boolean maybeShow() {
+    public boolean maybeShowOnStartup() {
+        return maybeShow(MetricsHelper.ShownOn.STARTUP);
+    }
+
+    @VisibleForTesting
+    boolean maybeShow(@MetricsHelper.ShownOn int shownOn) {
         if (mIsDestroyed) {
             return false;
         }
@@ -173,10 +180,12 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
                         mModalDialogManager,
                         mSigninManager,
                         mDelegate,
-                        this::onCoordinatorDestroyed);
+                        this::onCoordinatorDestroyed,
+                        mMetricsHelper);
         // If the dialog is not shown immediately it will be queued by the controller and shown
         // whenever possible.
-        mCoordinator.show();
+        MetricsHelper.recordShownRequested(shownOn);
+        mCoordinator.show(shownOn);
         return true;
     }
 
@@ -194,7 +203,7 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
     public void onSignedIn() {
         // TODO(b/553341908): Once the existing management disclaimer is replaced with the
         // enterprise signals disclaimer, this function should be removed.
-        maybeShow();
+        maybeShow(MetricsHelper.ShownOn.SIGN_IN);
     }
 
     @Override
