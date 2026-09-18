@@ -3878,6 +3878,39 @@ TEST_F(SearchProviderTest, CanSendRequestWithURL) {
   EXPECT_FALSE(test_lens(&http_google_template_url, client_.get()));
   EXPECT_FALSE(test_other(&http_google_template_url, client_.get()));
   EXPECT_FALSE(test_srp(&http_google_template_url, client_.get()));
+
+  // Create a Google search provider with an untrusted suggest endpoint.
+  TemplateURLData untrusted_suggest_template_url_data;
+  untrusted_suggest_template_url_data.SetShortName(u"untrusted-suggest");
+  untrusted_suggest_template_url_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  untrusted_suggest_template_url_data.suggestions_url =
+      "https://www.non-google.com/suggest?q={searchTerms}";
+  TemplateURL untrusted_suggest_template_url(
+      untrusted_suggest_template_url_data);
+
+  // Don't make Suggest requests if the suggest endpoint is not a Google domain.
+  EXPECT_FALSE(test_lens(&untrusted_suggest_template_url, client_.get()));
+  EXPECT_FALSE(test_other(&untrusted_suggest_template_url, client_.get()));
+  EXPECT_FALSE(test_srp(&untrusted_suggest_template_url, client_.get()));
+
+  // Create a Google search provider with a non-Google alternate URL.
+  TemplateURLData alternate_url_template_url_data;
+  alternate_url_template_url_data.SetShortName(u"alternate-url-google");
+  alternate_url_template_url_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  alternate_url_template_url_data.suggestions_url =
+      "https://www.google.com/suggest?q={searchTerms}";
+  alternate_url_template_url_data.alternate_urls.push_back(
+      "https://www.example.com?q={searchTerms}");
+  TemplateURL alternate_url_template_url(alternate_url_template_url_data);
+
+  // Disable personalized URL data collection.
+  client_->set_is_url_data_collection_active(false);
+
+  // Ensure non-Google alternate URLs do not qualify for the SRP exemption
+  // when URL data collection is disabled.
+  EXPECT_FALSE(test_other(&alternate_url_template_url, client_.get()));
 }
 
 TEST_F(SearchProviderTest, TestDeleteMatch) {

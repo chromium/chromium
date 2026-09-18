@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/google/core/common/google_util.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -454,6 +455,13 @@ bool BaseSearchProvider::CanSendSecureSuggestRequest(
     return false;
   }
 
+  // Make sure the suggest endpoint is also a Google domain URL.
+  if (!google_util::IsGoogleDomainUrl(suggest_url,
+                                      google_util::DISALLOW_SUBDOMAIN,
+                                      google_util::ALLOW_NON_STANDARD_PORTS)) {
+    return false;
+  }
+
   return true;
 }
 
@@ -472,8 +480,12 @@ bool BaseSearchProvider::CanSendSuggestRequestWithPageURL(
   // Forbid sending the current page URL to the suggest endpoint if
   // URL data collection is off; unless the current page is the provider's
   // Search Results Page; or for the Lens searchboxes.
-  if (!client->IsUrlDataCollectionActive() &&
-      !template_url->IsSearchURL(current_page_url, search_terms_data) &&
+  const bool is_srp =
+      google_util::IsGoogleDomainUrl(current_page_url,
+                                     google_util::DISALLOW_SUBDOMAIN,
+                                     google_util::ALLOW_NON_STANDARD_PORTS) &&
+      template_url->IsSearchURL(current_page_url, search_terms_data);
+  if (!client->IsUrlDataCollectionActive() && !is_srp &&
       !omnibox::IsLensSearchbox(page_classification)) {
     return false;
   }
