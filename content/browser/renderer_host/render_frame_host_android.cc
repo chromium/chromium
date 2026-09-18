@@ -354,6 +354,11 @@ void RenderFrameHostAndroid::ViewSource(JNIEnv* env) {
   render_frame_host()->ViewSource();
 }
 
+bool RenderFrameHostAndroid::IsCrossOriginIsolated(JNIEnv* env) const {
+  return render_frame_host_->GetWebExposedIsolationLevel() !=
+         WebExposedIsolationLevel::kNotIsolated;
+}
+
 }  // namespace content
 
 DEFINE_JNI(RenderFrameHostImpl)

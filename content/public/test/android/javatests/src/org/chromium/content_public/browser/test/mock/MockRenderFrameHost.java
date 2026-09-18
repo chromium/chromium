@@ -149,4 +149,9 @@ public class MockRenderFrameHost implements RenderFrameHost {
 
     @Override
     public void viewSource() {}
+
+    @Override
+    public boolean isCrossOriginIsolated() {
+        return false;
+    }
 }

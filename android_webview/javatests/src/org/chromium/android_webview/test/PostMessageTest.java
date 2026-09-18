@@ -7,6 +7,7 @@ package org.chromium.android_webview.test;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.util.Pair;
 import android.webkit.JavascriptInterface;
 
 import androidx.test.filters.SmallTest;
@@ -33,10 +34,13 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
+import org.chromium.content_public.browser.SharedArrayBuffer;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Set;
 import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -159,6 +163,7 @@ public class PostMessageTest extends AwParameterizedTest {
     @After
     public void tearDown() {
         mWebServer.shutdown();
+        mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of());
     }
 
     private static final String WEBVIEW_MESSAGE = "from_webview";
@@ -208,6 +213,26 @@ public class PostMessageTest extends AwParameterizedTest {
                         document.title = received;
                     }
                </script>
+            </body></html>
+            """;
+    // Concats all the data fields of the received message and makes it
+    // available as page title.
+    private static final String TITLE_FROM_POSTMESSAGE_TO_FRAME_SHARED_ARRAY_BUFFER =
+            """
+            <!DOCTYPE html><html><body>
+                <script>
+                    onmessage = function (e) {
+                        if (e.data instanceof SharedArrayBuffer) {
+                            const view = new Int32Array(e.data);
+                            document.title = view[0];
+                        } else {
+                            document.title = 'Error: Not a SharedArrayBuffer';
+                        }
+                    };
+                    onmessageerror = function(e) {
+                        document.title = 'Error: messageerror fired';
+                    };
+                </script>
             </body></html>
             """;
 
@@ -306,6 +331,61 @@ public class PostMessageTest extends AwParameterizedTest {
                                 mWebServer.getBaseUrl(),
                                 null));
         expectTitle(testString);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testPostSharedArrayBufferWithoutAllowlist() throws Throwable {
+        List<Pair<String, String>> responseHeaders =
+                List.of(new Pair<>("Document-Isolation-Policy", "isolate-and-credentialless"));
+        final String url =
+                mWebServer.setResponse(
+                        "/test.html",
+                        TITLE_FROM_POSTMESSAGE_TO_FRAME_SHARED_ARRAY_BUFFER,
+                        responseHeaders);
+        OnPageFinishedHelper onPageFinishedHelper = mContentsClient.getOnPageFinishedHelper();
+        int currentCallCount = onPageFinishedHelper.getCallCount();
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        onPageFinishedHelper.waitForCallback(currentCallCount);
+
+        SharedArrayBuffer sab = SharedArrayBuffer.allocate(null, 4);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MessagePayload payload = new MessagePayload(sab);
+
+                    Assert.assertThrows(
+                            IllegalStateException.class,
+                            () -> mAwContents.postMessageToMainFrame(payload, "*", null));
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testPostSharedArrayBufferWithoutResponseHeaders() throws Throwable {
+        mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
+        final String url =
+                mWebServer.setResponse(
+                        "/test.html",
+                        TITLE_FROM_POSTMESSAGE_TO_FRAME_SHARED_ARRAY_BUFFER,
+                        null);
+        OnPageFinishedHelper onPageFinishedHelper = mContentsClient.getOnPageFinishedHelper();
+        int currentCallCount = onPageFinishedHelper.getCallCount();
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        onPageFinishedHelper.waitForCallback(currentCallCount);
+
+        SharedArrayBuffer sab = SharedArrayBuffer.allocate(null, 4);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MessagePayload payload = new MessagePayload(sab);
+
+                    Assert.assertThrows(
+                            IllegalStateException.class,
+                            () -> mAwContents.postMessageToMainFrame(payload, "*", null));
+                });
     }
 
     @Test

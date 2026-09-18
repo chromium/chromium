@@ -119,6 +119,8 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
 
   RenderFrameHostImpl* render_frame_host() const { return render_frame_host_; }
 
+  bool IsCrossOriginIsolated(JNIEnv* env) const;
+
  private:
   const raw_ptr<RenderFrameHostImpl> render_frame_host_;
   JavaObjectWeakGlobalRef obj_;

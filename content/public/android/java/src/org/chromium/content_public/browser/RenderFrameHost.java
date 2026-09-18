@@ -278,4 +278,7 @@ public interface RenderFrameHost {
 
     /** Opens view-source tab for the document last committed in this RenderFrameHost. */
     void viewSource();
+
+    /** Returns whether this frame is cross-origin isolated. */
+    boolean isCrossOriginIsolated();
 }
