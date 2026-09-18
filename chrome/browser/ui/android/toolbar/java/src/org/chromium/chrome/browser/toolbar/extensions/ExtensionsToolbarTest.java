@@ -10,7 +10,6 @@ import static androidx.test.espresso.assertion.PositionAssertions.isLeftOf;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isActivated;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -45,8 +44,6 @@ import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -187,6 +184,7 @@ public class ExtensionsToolbarTest {
      */
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562625134
     public void testClickingOnASecondActionClosesTheFirst() throws IOException {
         String alphaId =
                 loadPopupExtension(
@@ -214,7 +212,9 @@ public class ExtensionsToolbarTest {
             assertTrue(listener.waitUntilSatisfied());
         }
         // Verify that Alpha (and only Alpha) has an active frame (i.e., popup).
-        waitForPopupReady(alphaId);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, alphaId) == 1,
+                "Alpha popup did not open");
         CriteriaHelper.pollInstrumentationThread(
                 () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, betaId) == 0,
                 "Beta popup should not be open");
@@ -227,9 +227,11 @@ public class ExtensionsToolbarTest {
         }
         // Beta (and only Beta) should have an active popup.
         CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, betaId) == 1,
+                "Beta popup did not open");
+        CriteriaHelper.pollInstrumentationThread(
                 () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, alphaId) == 0,
                 "Alpha popup should have closed");
-        waitForPopupReady(betaId);
     }
 
     @Test
@@ -599,29 +601,6 @@ public class ExtensionsToolbarTest {
                 new KeyEvent(eventTime, eventTime, KeyEvent.ACTION_UP, code, 0, metaState);
         InstrumentationRegistry.getInstrumentation().sendKeySync(downEvent);
         InstrumentationRegistry.getInstrumentation().sendKeySync(upEvent);
-    }
-
-    private void waitForPopupReady(String extensionId) {
-        CriteriaHelper.pollInstrumentationThread(
-                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId) == 1,
-                "Popup did not open");
-        ViewUtils.onViewWaiting(
-                        allOf(
-                                instanceOf(ContentView.class),
-                                hasFocus(),
-                                new TypeSafeMatcher<View>() {
-                                    @Override
-                                    public void describeTo(Description description) {
-                                        description.appendText("has window focus");
-                                    }
-
-                                    @Override
-                                    protected boolean matchesSafely(View view) {
-                                        return view.hasWindowFocus();
-                                    }
-                                }))
-                .inRoot(isPlatformPopup())
-                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -1051,6 +1030,7 @@ public class ExtensionsToolbarTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562625134
     public void testExtensionCommandClosesPopupIfOpen() throws IOException {
         String extensionId =
                 loadCommandExtension(
@@ -1065,8 +1045,10 @@ public class ExtensionsToolbarTest {
             assertTrue(listener.waitUntilSatisfied());
         }
 
-        // Ensure the popup is open and focused before sending the key event to close it.
-        waitForPopupReady(extensionId);
+        // Ensure the popup is open.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId) == 1,
+                "Popup did not open");
 
         // Send the same keypresses again.
         sendKeyEvent(KeyEvent.KEYCODE_1, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
@@ -1079,6 +1061,7 @@ public class ExtensionsToolbarTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562625134
     public void testNonExtensionCommandIsSentToApplicationWindow() throws IOException {
         String extensionId = loadPopupExtension("extension", "Extension", "Action", "popup opened");
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
@@ -1092,8 +1075,10 @@ public class ExtensionsToolbarTest {
             assertTrue(listener.waitUntilSatisfied());
         }
 
-        // Ensure the popup is open and focused before sending the key event.
-        waitForPopupReady(extensionId);
+        // Ensure the popup is open before sending the key event.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId) == 1,
+                "Popup did not open");
 
         // Send Ctrl+T.
         sendKeyEvent(KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON);

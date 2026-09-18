@@ -737,16 +737,9 @@ class ExtensionActionListMediator implements Destroyable {
                         mContextMenuPopulatorFactory,
                         mSelectionDropdownMenuDelegate,
                         mTabModelSelector,
-                        mExtensionsToolbarBridge,
                         inspectWithDevTools);
         popup.loadInitialPage();
-        popup.addOnDismissListener(
-                () -> {
-                    if (mActionState instanceof ActionState.PopupActive activeState
-                            && activeState.getPopup() == popup) {
-                        closePopup();
-                    }
-                });
+        popup.addOnDismissListener(this::closePopup);
         mActionState = new ActionState.PopupActive(popup, actionId);
     }
 

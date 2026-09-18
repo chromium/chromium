@@ -28,7 +28,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Looper;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -609,18 +608,6 @@ public class ExtensionActionListMediatorTest {
     public void testPopup_HandleKeyboardEvent_NullEvent() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         assertFalse(ExtensionActionPopup.handleKeyboardEvent(activity, null));
-    }
-
-    @Test
-    public void testPopup_HandleKeyboardEvent_ExtensionShortcut() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        KeyEvent downEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_1);
-        when(mExtensionsToolbarBridge.handleKeyDownEvent(downEvent)).thenReturn(true);
-
-        assertTrue(
-                ExtensionActionPopup.handleKeyboardEvent(
-                        activity, mExtensionsToolbarBridge, downEvent));
-        verify(mExtensionsToolbarBridge).handleKeyDownEvent(downEvent);
     }
 
     @Test

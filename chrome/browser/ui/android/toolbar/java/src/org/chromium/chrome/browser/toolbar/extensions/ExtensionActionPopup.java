@@ -23,7 +23,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
-import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
@@ -79,10 +78,6 @@ class ExtensionActionPopup implements Destroyable {
 
     private final TabModelSelector mTabModelSelector;
     private final Callback<@Nullable Tab> mCurrentTabObserver;
-    private final @Nullable ExtensionsToolbarBridge mExtensionsToolbarBridge;
-
-    private @Nullable OnDismissListener mOnDismissListener;
-    private boolean mDismissed;
 
     /**
      * Constructs an ExtensionActionPopup.
@@ -98,8 +93,6 @@ class ExtensionActionPopup implements Destroyable {
      * @param contextMenuPopulatorFactory The {@link ContextMenuPopulatorFactory} to use.
      * @param selectionDropdownMenuDelegate The {@link SelectionDropdownMenuDelegate} to use.
      * @param tabModelSelector The {@link TabModelSelector} to use.
-     * @param extensionsToolbarBridge The {@link ExtensionsToolbarBridge} for routing shortcuts.
-     * @param inspectWithDevTools Whether the popup is being inspected with DevTools.
      */
     public ExtensionActionPopup(
             Activity activity,
@@ -110,12 +103,10 @@ class ExtensionActionPopup implements Destroyable {
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
             TabModelSelector tabModelSelector,
-            @Nullable ExtensionsToolbarBridge extensionsToolbarBridge,
             boolean inspectWithDevTools) {
         mActivity = activity;
         mActionId = actionId;
         mContents = contents;
-        mExtensionsToolbarBridge = extensionsToolbarBridge;
 
         WebContents webContents = contents.getWebContents();
 
@@ -186,14 +177,13 @@ class ExtensionActionPopup implements Destroyable {
         mPopupWindow.setFocusable(!inspectWithDevTools);
 
         mTabModelSelector = tabModelSelector;
-        @Nullable Tab initialTab = tabModelSelector.getCurrentTab();
         mCurrentTabObserver =
                 tab -> {
-                    if (tab != initialTab) {
+                    if (mPopupWindow.isShowing()) {
                         // Due to inherent differences between platforms on focus handling, we
                         // explicitly observe tab changes and dismiss, matching Desktop's
                         // OnTabStripModelChanged behavior.
-                        dismiss();
+                        mPopupWindow.dismiss();
                     }
                 };
         mTabModelSelector.getCurrentTabSupplier().addSyncObserver(mCurrentTabObserver);
@@ -204,8 +194,6 @@ class ExtensionActionPopup implements Destroyable {
     /** Cleans up resources used by this popup. */
     @Override
     public void destroy() {
-        mDismissed = true;
-        mOnDismissListener = null;
         mTabModelSelector.getCurrentTabSupplier().removeObserver(mCurrentTabObserver);
         mPopupWindow.dismiss();
         mThinWebView.destroy();
@@ -225,24 +213,7 @@ class ExtensionActionPopup implements Destroyable {
 
     /** Adds a listener that will be notified when the popup window is dismissed. */
     public void addOnDismissListener(OnDismissListener listener) {
-        mOnDismissListener = listener;
-        mPopupWindow.addOnDismissListener(
-                () -> {
-                    mDismissed = true;
-                    if (mOnDismissListener != null) {
-                        mOnDismissListener.onDismiss();
-                    }
-                });
-    }
-
-    private void dismiss() {
-        if (mDismissed) return;
-        mDismissed = true;
-        if (mPopupWindow.isShowing()) {
-            mPopupWindow.dismiss();
-        } else if (mOnDismissListener != null) {
-            mOnDismissListener.onDismiss();
-        }
+        mPopupWindow.addOnDismissListener(listener);
     }
 
     private class ContentsDelegate implements ExtensionActionPopupContents.Delegate {
@@ -277,31 +248,22 @@ class ExtensionActionPopup implements Destroyable {
 
         @Override
         public boolean handleKeyboardEvent(@Nullable KeyEvent event) {
-            return ExtensionActionPopup.handleKeyboardEvent(
-                    mActivity, mExtensionsToolbarBridge, event);
+            return ExtensionActionPopup.handleKeyboardEvent(mActivity, event);
         }
 
         @Override
         public void onLoaded() {
-            if (mDismissed) return;
             mPopupWindow.show();
             mContentView.requestFocus();
         }
 
         @Override
         public void onClose() {
-            dismiss();
+            mPopupWindow.dismiss();
         }
     }
 
     static boolean handleKeyboardEvent(@Nullable Activity activity, @Nullable KeyEvent event) {
-        return handleKeyboardEvent(activity, null, event);
-    }
-
-    static boolean handleKeyboardEvent(
-            @Nullable Activity activity,
-            @Nullable ExtensionsToolbarBridge extensionsToolbarBridge,
-            @Nullable KeyEvent event) {
         if (activity == null || event == null) return false;
 
         if (activity instanceof KeyboardShortcutsDelegate) {
@@ -316,10 +278,6 @@ class ExtensionActionPopup implements Destroyable {
         // infinite loop. We prevent space and backspace events from being dispatched
         // to the Activity.
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (extensionsToolbarBridge != null
-                    && extensionsToolbarBridge.handleKeyDownEvent(event)) {
-                return true;
-            }
             return activity.onKeyDown(event.getKeyCode(), event);
         }
 
