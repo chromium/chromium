@@ -476,6 +476,11 @@ void MessageService::OpenChannelToExtension(
   ScopedExternalConnectionInfoCrashKeys info_crash_keys(info);
   debug::ScopedPortContextCrashKeys port_context_crash_keys(
       source.port_context());
+  if (channel_type == mojom::ChannelType::kNative) {
+    bad_message::ReceivedBadMessage(process,
+                                    bad_message::EMF_INVALID_CHANNEL_TYPE);
+    return;
+  }
   if (!IsValidMessagingSource(*process, info.source_endpoint.type,
                               info.source_endpoint.extension_id,
                               source.port_context()) ||
@@ -579,6 +584,13 @@ void MessageService::OpenChannelToTab(
   auto* process =
       content::RenderProcessHost::FromID(source.render_process_id());
   if (!process) {
+    return;
+  }
+  debug::ScopedPortContextCrashKeys port_context_crash_keys(
+      source.port_context());
+  if (channel_type == mojom::ChannelType::kNative) {
+    bad_message::ReceivedBadMessage(process,
+                                    bad_message::EMF_INVALID_CHANNEL_TYPE);
     return;
   }
   std::optional<ExtensionId> extension_id =
