@@ -16,6 +16,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -41,6 +42,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/core/actor_switches.h"
 #include "components/actor/core/shared_types.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
@@ -1528,6 +1530,68 @@ TEST_F(ExecutionEngineUrlGatingTest,
               RequestToShowUserConfirmationDialog(_, _, _, _))
       .Times(0);
   CheckUrl(url, /*expected_allowed=*/true);
+}
+
+TEST_F(ExecutionEngineUrlGatingTest,
+       SafetyChecksForNextAction_PromptsForSensitiveSiteFromCommandLine) {
+  const GURL url("https://c.test/");
+  const GURL sub_url("https://sub.c.test/");
+  const GURL non_matching_url("https://other.test/");
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kGlicCrossOriginNavigationGating);
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kActorSensitiveSites, "https://c.test");
+
+  // Matching URL prompts for confirmation without querying Optimization Guide.
+  EXPECT_CALL(
+      *mock_optimization_guide_keyed_service_,
+      CanApplyOptimization(
+          url, optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK,
+          testing::An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .Times(0);
+
+  EXPECT_CALL(
+      mock_actor_task_delegate(),
+      RequestToShowUserConfirmationDialog(_, url::Origin::Create(url),
+                                          /*for_blocklisted_origin=*/true, _))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          webui::mojom::UserConfirmationDialogResponse::New(
+              webui::mojom::ConfirmationRequestResult::NewPermissionGranted(
+                  true))));
+
+  CheckUrl(url, /*expected_allowed=*/true);
+
+  // Subsequent check for the same origin is allowed via cache.
+  EXPECT_CALL(mock_actor_task_delegate(),
+              RequestToShowUserConfirmationDialog(_, _, _, _))
+      .Times(0);
+  CheckUrl(url, /*expected_allowed=*/true);
+
+  // Same-site subdomain matches SchemefulSite and prompts without Optimization
+  // Guide.
+  EXPECT_CALL(
+      *mock_optimization_guide_keyed_service_,
+      CanApplyOptimization(
+          sub_url, optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK,
+          testing::An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .Times(0);
+  EXPECT_CALL(
+      mock_actor_task_delegate(),
+      RequestToShowUserConfirmationDialog(_, url::Origin::Create(sub_url),
+                                          /*for_blocklisted_origin=*/true, _))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          webui::mojom::UserConfirmationDialogResponse::New(
+              webui::mojom::ConfirmationRequestResult::NewPermissionGranted(
+                  true))));
+  CheckUrl(sub_url, /*expected_allowed=*/true);
+
+  // Non-matching URL falls back to Optimization Guide.
+  SetExpectedOptimizationGuideCall(
+      non_matching_url, optimization_guide::OptimizationGuideDecision::kTrue);
+  CheckUrl(non_matching_url, /*expected_allowed=*/true);
 }
 
 TEST_F(ExecutionEngineUrlGatingTest,

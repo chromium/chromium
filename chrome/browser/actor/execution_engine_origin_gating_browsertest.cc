@@ -3097,4 +3097,67 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
+class ExecutionEngineHardcodedSensitiveSiteBrowserTest
+    : public ExecutionEngineOriginGatingBrowserTestBase {
+ public:
+  ExecutionEngineHardcodedSensitiveSiteBrowserTest() = default;
+  ~ExecutionEngineHardcodedSensitiveSiteBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExecutionEngineOriginGatingBrowserTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kActorSensitiveSites,
+                                    "https://bar.com");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineHardcodedSensitiveSiteBrowserTest,
+                       PageActionPromptsUser) {
+  const GURL sensitive_url =
+      embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), sensitive_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
+
+  WaitTool::SetNoDelayForTesting();
+  std::unique_ptr<ToolRequest> tool_request = MakeWaitRequest(active_tab());
+  ASSERT_TRUE(tool_request->RequiresUrlCheckInCurrentTab());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(tool_request), result.GetCallback());
+  ExpectOkResult(result);
+
+  RunTestSequence(VerifyUserConfirmationDialogRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
+          url::Origin::Create(sensitive_url)))));
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineHardcodedSensitiveSiteBrowserTest,
+                       NavigatePromptsUser) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
+
+  const GURL sensitive_url =
+      embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
+  std::unique_ptr<ToolRequest> tool_request =
+      MakeNavigateRequest(*active_tab(), sensitive_url.spec());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(tool_request), result.GetCallback());
+  ExpectOkResult(result);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), sensitive_url);
+
+  RunTestSequence(VerifyUserConfirmationDialogRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
+          url::Origin::Create(sensitive_url)))));
+}
+
 }  // namespace actor

@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -26,6 +27,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
+#include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -60,6 +62,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/actor_metrics.h"
+#include "components/actor/core/actor_switches.h"
 #include "components/actor/core/actor_util.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/journal_details_builder.h"
@@ -87,6 +90,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -353,6 +357,27 @@ CustomPredicate CreateSafetyListPredicate() {
       ActorCustomPredicate::kSafetyList);
 }
 
+bool IsUrlSensitiveFromCommandLine(const GURL& url) {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kActorSensitiveSites)) {
+    return false;
+  }
+
+  net::SchemefulSite target_site(url);
+  if (target_site.opaque()) {
+    return false;
+  }
+
+  return std::ranges::any_of(
+      base::SplitStringPiece(
+          command_line->GetSwitchValueASCII(switches::kActorSensitiveSites),
+          ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY),
+      [&](std::string_view entry) {
+        return target_site == net::SchemefulSite(GURL(entry));
+      });
+}
+
 // Returns whether the given `url` is considered non-sensitive. Caches the
 // result in `context`, for future queries.
 void IsNonSensitiveUrl(Profile* profile,
@@ -362,8 +387,10 @@ void IsNonSensitiveUrl(Profile* profile,
   CHECK_NE(context, nullptr);
   auto* decision_context = static_cast<OriginGatingDecisionContext*>(context);
 
-  if (base::FeatureList::IsEnabled(kGlicActorLocalhostIsSensitive) &&
-      net::IsLocalhost(url)) {
+  const bool is_sensitive_localhost =
+      base::FeatureList::IsEnabled(kGlicActorLocalhostIsSensitive) &&
+      net::IsLocalhost(url);
+  if (is_sensitive_localhost || IsUrlSensitiveFromCommandLine(url)) {
     decision_context->destination_is_sensitive = true;
     std::move(callback).Run(/*not_sensitive=*/false);
     return;

@@ -24,4 +24,15 @@ const char kEnableActorJournalVLog[] = "enable-actor-journal-vlog";
 // File or directory path where actor traces should be recorded.
 const char kActorTracePath[] = "actor-trace-path";
 
+// Specifies a comma-separated list of SchemefulSite strings that should be
+// treated as sensitive sites by the actor execution engine (bypassing the
+// optimization guide component updater check). Useful for testing.
+// Note that these entries are site-scoped (scheme and eTLD+1), not
+// origin-scoped, so specifying a site will match all subdomains and ports on
+// that site.
+// Examples:
+//   --actor-sensitive-sites="https://example.com"
+//   --actor-sensitive-sites="https://bank.com,https://example.org"
+const char kActorSensitiveSites[] = "actor-sensitive-sites";
+
 }  // namespace actor::switches
