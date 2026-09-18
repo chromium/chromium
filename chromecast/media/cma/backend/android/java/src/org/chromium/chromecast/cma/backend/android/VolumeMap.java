@@ -68,9 +68,10 @@ public final class VolumeMap {
             Log.w(TAG, "Unsupported Android SDK version: " + Build.VERSION.SDK_INT, e);
             return 0;
         }
-    };
+    }
 
     private static final SparseIntArray MIN_VOLUME_INDEX;
+
     static {
         var array = new SparseIntArray(4);
         array.append(AudioManager.STREAM_MUSIC, getStreamMinVolume(AudioManager.STREAM_MUSIC));
