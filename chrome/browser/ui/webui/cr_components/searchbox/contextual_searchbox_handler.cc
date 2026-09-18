@@ -2207,7 +2207,14 @@ void ContextualSearchboxHandler::ProcessContextAndOpenUrl(
         active_tab ? active_tab->GetContents() : nullptr;
 
     if (ShouldOpenInLensSidePanel(active_web_contents,
-                                  new_contextual_session_handle.get())) {
+                                  new_contextual_session_handle.get()) &&
+        // Only hand the composebox URL straight to the Contextual Tasks panel
+        // for users eligible for it. Ineligible users (signed out, or signed
+        // in without the primary account in the cookie jar) cannot have the
+        // query fulfilled there and would land on an empty zero-state thread,
+        // so they fall through to OpenUrl(), which routes them to the Lens
+        // side panel.
+        contextual_tasks::EntryPointEligibilityManager::IsEligible(profile_)) {
       if (base::FeatureList::IsEnabled(
               omnibox::kContextManagementInComposebox)) {
         if (auto* ui_service =

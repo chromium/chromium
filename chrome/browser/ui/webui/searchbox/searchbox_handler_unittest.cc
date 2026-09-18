@@ -2294,8 +2294,10 @@ TEST_F(OmniboxComposeboxHandlerTest,
        ProcessContextAndOpenUrl_SingleActiveTabHandoffToSidePanel) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kContextManagementInComposebox,
-                            contextual_tasks::kContextualTasksSidePanel},
+      /*enabled_features=*/
+      {omnibox::kContextManagementInComposebox,
+       contextual_tasks::kContextualTasksSidePanel,
+       contextual_tasks::kContextualTasksForceEntryPointEligibility},
       /*disabled_features=*/{contextual_tasks::kContextualTasks});
 
   auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(

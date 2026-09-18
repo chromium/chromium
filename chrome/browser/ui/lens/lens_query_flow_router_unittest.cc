@@ -2788,6 +2788,8 @@ TEST_F(
   router.SetQueryContextualizerForTesting(std::move(mock_query_contextualizer));
 
   // Arrange: Set up the parameters.
+  router.mock_session_handle()->GetUploadedContextTokensForTesting() = {
+      base::UnguessableToken::Create()};
   base::Time query_start_time = base::Time::Now();
   std::string query_text = "test query";
   lens::LensOverlaySelectionType selection_type =
@@ -3255,9 +3257,22 @@ TEST_F(LensQueryFlowRouterTest, IsOmniboxInvocationSource) {
 }
 
 TEST_F(LensQueryFlowRouterTest, ShouldFetchActiveTabForInvocationSource) {
+  contextual_search::MockContextualSearchSessionHandle session_handle;
+  session_handle.GetUploadedContextTokensForTesting() = {
+      base::UnguessableToken::Create()};
   EXPECT_FALSE(ShouldFetchActiveTabForInvocationSource(
-      lens::LensOverlayInvocationSource::kOmniboxContextualQuery));
+      lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
+      &session_handle));
 
+  contextual_search::MockContextualSearchSessionHandle submitted_session_handle;
+  submitted_session_handle.set_submitted_context_tokens(
+      {base::UnguessableToken::Create()});
+  EXPECT_FALSE(ShouldFetchActiveTabForInvocationSource(
+      lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
+      &submitted_session_handle));
+
+  EXPECT_TRUE(ShouldFetchActiveTabForInvocationSource(
+      lens::LensOverlayInvocationSource::kOmniboxContextualQuery));
   EXPECT_TRUE(ShouldFetchActiveTabForInvocationSource(std::nullopt));
   EXPECT_TRUE(ShouldFetchActiveTabForInvocationSource(
       lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion));

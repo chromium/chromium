@@ -109,12 +109,19 @@ bool IsOmniboxInvocationSource(
 }
 
 bool ShouldFetchActiveTabForInvocationSource(
-    std::optional<lens::LensOverlayInvocationSource> invocation_source) {
-  // Omnibox contextual compose queries already handle tab context prior
-  // to submission or explicitly suppress it, so a second context fetch
-  // should not be forced.
+    std::optional<lens::LensOverlayInvocationSource> invocation_source,
+    const contextual_search::ContextualSearchSessionHandle* session_handle) {
+  // Omnibox contextual compose queries upload tab context before submission,
+  // so forcing a second fetch would be redundant. That only holds while the
+  // query is issued on the session that context was uploaded to. When the
+  // query is fulfilled on a session of its own, as happens when it is routed
+  // to the Lens side panel, the pre-uploaded context is unreachable and the
+  // active tab must still be contextualized.
   if (invocation_source ==
-      lens::LensOverlayInvocationSource::kOmniboxContextualQuery) {
+          lens::LensOverlayInvocationSource::kOmniboxContextualQuery &&
+      session_handle &&
+      (!session_handle->GetUploadedContextTokens().empty() ||
+       !session_handle->GetSubmittedContextTokens().empty())) {
     return false;
   }
   return true;
@@ -755,11 +762,13 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
     // Force contextualization of the active tab only if the overlay token was
     // never fetched and the invocation source requires tab contextualization.
     // Certain entry points (such as the Omnibox compose flow) handle tab
-    // context prior to submission or do not require a second context fetch.
+    // context prior to submission, but only when the query is issued on the
+    // session that context was uploaded to.
     std::vector<contextual_tasks::QueryContextualizer::TabId> force_tabs;
     if (!overlay_tab_context_file_token_.has_value() &&
         ShouldFetchActiveTabForInvocationSource(
-            pending_search_url_request_->invocation_source)) {
+            pending_search_url_request_->invocation_source,
+            GetContextualSearchSessionHandle())) {
       force_tabs.push_back(tab_interface()->GetHandle().raw_value());
     }
     contextual_tasks::QueryContextualizer::ContextualizeParams params;
