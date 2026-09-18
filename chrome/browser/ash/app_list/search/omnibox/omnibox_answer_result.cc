@@ -255,7 +255,7 @@ void OmniboxAnswerResult::OnFetchComplete(const GURL& url,
   if (!bitmap)
     return;
 
-  DCHECK(IsWeatherResult());
+  CHECK(IsWeatherResult(), base::NotFatalUntil::M160);
   IconInfo icon_info(ui::ImageModel::FromImageSkia(
                          gfx::ImageSkia::CreateFrom1xBitmap(*bitmap)),
                      kAnswerCardIconDimension);

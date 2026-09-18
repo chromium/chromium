@@ -61,7 +61,7 @@ GURL VirtualPathToExternalFileURL(const base::FilePath& virtual_path) {
 GURL CreateExternalFileURLFromPath(content::BrowserContext* browser_context,
                                    const base::FilePath& path,
                                    bool force) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   GURL raw_file_system_url;
   if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(

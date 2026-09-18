@@ -218,7 +218,7 @@ class ExternalFileURLLoader : public network::mojom::URLLoader {
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote)
       : resolver_(std::make_unique<ExternalFileResolver>(profile_id)) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
     receiver_.Bind(std::move(loader));
     receiver_.set_disconnect_handler(base::BindOnce(
         &ExternalFileURLLoader::OnMojoDisconnect, base::Unretained(this)));
@@ -227,7 +227,7 @@ class ExternalFileURLLoader : public network::mojom::URLLoader {
   ~ExternalFileURLLoader() override = default;
 
   void Start(const network::ResourceRequest& request) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
     head_.request_start = base::TimeTicks::Now();
 
     resolver_->ProcessHeaders(request.headers);

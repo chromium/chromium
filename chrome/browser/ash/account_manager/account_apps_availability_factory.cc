@@ -50,7 +50,7 @@ std::unique_ptr<KeyedService>
 AccountAppsAvailabilityFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   if (!IsAccountManagerAvailable(profile))
     return nullptr;
 

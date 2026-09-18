@@ -103,11 +103,11 @@ RecentArcMediaSource::RecentArcMediaSource(Profile* profile,
       profile_(profile),
       root_id_(root_id),
       relative_mount_path_(GetRelativeMountPath(root_id)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 RecentArcMediaSource::~RecentArcMediaSource() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 bool RecentArcMediaSource::MatchesFileType(FileType file_type) const {
@@ -129,8 +129,9 @@ bool RecentArcMediaSource::MatchesFileType(FileType file_type) const {
 
 void RecentArcMediaSource::GetRecentFiles(const Params& params,
                                           GetRecentFilesCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(context_map_.Lookup(params.call_id()) == nullptr);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(context_map_.Lookup(params.call_id()) == nullptr,
+        base::NotFatalUntil::M160);
 
   // If ARC file system operations will be deferred, return immediately without
   // recording UMA metrics.
@@ -189,7 +190,7 @@ void RecentArcMediaSource::OnRunnerDone(
 void RecentArcMediaSource::OnGotRecentDocuments(
     const int32_t call_id,
     std::optional<std::vector<arc::mojom::DocumentPtr>> maybe_documents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   CallContext* context = context_map_.Lookup(call_id);
   if (context == nullptr) {
@@ -225,7 +226,7 @@ void RecentArcMediaSource::OnGotRecentDocuments(
 
 void RecentArcMediaSource::ScanDirectory(const int32_t call_id,
                                          const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   // If context was cleared while we were scanning directories, just abandon
   // this effort.
   CallContext* context = context_map_.Lookup(call_id);
@@ -264,7 +265,7 @@ void RecentArcMediaSource::OnDirectoryRead(
     const base::FilePath& path,
     base::File::Error result,
     std::vector<arc::ArcDocumentsProviderRoot::ThinFileInfo> files) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   // If callback was cleared while we were scanning directories just abandon
   // this effort.
   CallContext* context = context_map_.Lookup(call_id);
@@ -298,7 +299,7 @@ void RecentArcMediaSource::OnDirectoryRead(
   }
 
   --context->num_inflight_readdirs;
-  DCHECK_LE(0, context->num_inflight_readdirs);
+  CHECK_LE(0, context->num_inflight_readdirs, base::NotFatalUntil::M160);
 
   if (context->num_inflight_readdirs == 0) {
     OnComplete(call_id);
@@ -306,7 +307,7 @@ void RecentArcMediaSource::OnDirectoryRead(
 }
 
 std::vector<RecentFile> RecentArcMediaSource::Stop(const int32_t call_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   CallContext* context = context_map_.Lookup(call_id);
   if (context == nullptr) {
@@ -329,7 +330,7 @@ std::vector<RecentFile> RecentArcMediaSource::Stop(const int32_t call_id) {
 }
 
 void RecentArcMediaSource::OnComplete(const int32_t call_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   CallContext* context = context_map_.Lookup(call_id);
   if (context == nullptr) {
@@ -341,8 +342,8 @@ void RecentArcMediaSource::OnComplete(const int32_t call_id) {
   UMA_HISTOGRAM_TIMES(kLoadHistogramName,
                       base::TimeTicks::Now() - context->build_start_time);
 
-  DCHECK_EQ(0, context->num_inflight_readdirs);
-  DCHECK(!context->callback.is_null());
+  CHECK_EQ(0, context->num_inflight_readdirs, base::NotFatalUntil::M160);
+  CHECK(!context->callback.is_null(), base::NotFatalUntil::M160);
 
   std::vector<RecentFile> files =
       ExtractFoundFiles(context->document_id_to_file);
@@ -352,7 +353,7 @@ void RecentArcMediaSource::OnComplete(const int32_t call_id) {
 }
 
 bool RecentArcMediaSource::WillArcFileSystemOperationsRunImmediately() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto* runner =
       arc::ArcFileSystemOperationRunner::GetForBrowserContext(profile_);
@@ -372,11 +373,11 @@ void RecentArcMediaSource::SetLagForTesting(const base::TimeDelta& lag) {
 storage::FileSystemURL RecentArcMediaSource::BuildDocumentsProviderUrl(
     const Params& params,
     const base::FilePath& path) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
-  DCHECK(mount_points);
+  CHECK(mount_points, base::NotFatalUntil::M160);
 
   return mount_points->CreateExternalFileSystemURL(
       blink::StorageKey::CreateFirstParty(url::Origin::Create(params.origin())),

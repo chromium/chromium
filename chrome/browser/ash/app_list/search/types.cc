@@ -20,7 +20,8 @@ CategoriesList CreateAllCategories() {
                       {.category = Category::kPlayStore},
                       {.category = Category::kSearchAndAssistant},
                       {.category = Category::kGames}});
-  DCHECK_EQ(res.size(), static_cast<size_t>(Category::kMaxValue));
+  CHECK_EQ(res.size(), static_cast<size_t>(Category::kMaxValue),
+           base::NotFatalUntil::M160);
   return res;
 }
 

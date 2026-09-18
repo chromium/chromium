@@ -66,7 +66,7 @@ FromFDCopier::FromFDCopier(
       buffer_(base::MakeRefCounted<net::IOBufferWithSize>(kBufferLen)) {}
 
 void FromFDCopier::CallRead() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
@@ -79,7 +79,7 @@ void FromFDCopier::CallRead() {
 }
 
 void FromFDCopier::OnRead(int result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   CHECK(!drainable_buffer_);
 
   if (result <= 0) {
@@ -92,7 +92,7 @@ void FromFDCopier::OnRead(int result) {
 }
 
 void FromFDCopier::CallWrite(int result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   CHECK(drainable_buffer_);
 
   while (true) {
@@ -121,7 +121,7 @@ void FromFDCopier::CallWrite(int result) {
 }
 
 void FromFDCopier::MaybeFlush(int result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if ((result >= 0) &&
       (dst_flush_policy_ == storage::FlushPolicy::FLUSH_ON_COMPLETION)) {
@@ -140,7 +140,7 @@ void FromFDCopier::MaybeFlush(int result) {
 }
 
 void FromFDCopier::Finish(int result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   std::move(callback_).Run(
       std::move(scoped_fd_), std::move(fs_writer_),
@@ -156,7 +156,7 @@ void CopyFromFileDescriptor(
     std::unique_ptr<storage::FileStreamWriter> dst_fs_writer,
     storage::FlushPolicy dst_flush_policy,
     CopyFromFileDescriptorCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!callback) {
     return;

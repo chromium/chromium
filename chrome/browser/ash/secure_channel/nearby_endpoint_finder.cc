@@ -20,7 +20,7 @@ void NearbyEndpointFinder::FindEndpoint(
     base::OnceCallback<void(::nearby::connections::mojom::Status)>
         failure_callback) {
   // Only intended to be called once.
-  DCHECK(remote_device_bluetooth_address_.empty());
+  CHECK(remote_device_bluetooth_address_.empty(), base::NotFatalUntil::M160);
 
   remote_device_bluetooth_address_ = remote_device_bluetooth_address;
   eid_ = eid;

@@ -309,7 +309,7 @@ void ShowNotificationForDevice(const std::string& guid,
         chromeos::settings::mojom::kBruschettaUsbPreferencesSubpagePath;
   }
 
-  DCHECK(vm_names_in_notification.size());
+  CHECK(vm_names_in_notification.size(), base::NotFatalUntil::M160);
   std::u16string message = l10n_util::GetStringFUTF16(
       IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION, label,
       CombineVmNames(vm_names_in_notification));
@@ -405,7 +405,7 @@ CrosUsbDetector* CrosUsbDetector::Get() {
 }
 
 CrosUsbDetector::CrosUsbDetector() {
-  DCHECK(!g_cros_usb_detector);
+  CHECK(!g_cros_usb_detector, base::NotFatalUntil::M160);
   g_cros_usb_detector = this;
 
   // If *ALL* interfaces of a device match the below list, no notification will
@@ -448,7 +448,7 @@ CrosUsbDetector::CrosUsbDetector() {
 }
 
 CrosUsbDetector::~CrosUsbDetector() {
-  DCHECK_EQ(this, g_cros_usb_detector);
+  CHECK_EQ(this, g_cros_usb_detector, base::NotFatalUntil::M160);
   disks::DiskMountManager::GetInstance()->RemoveObserver(this);
   CiceroneClient::Get()->RemoveObserver(this);
   ConciergeClient::Get()->RemoveVmObserver(this);
@@ -502,13 +502,13 @@ void CrosUsbDetector::ConnectToDeviceManager() {
     content::GetDeviceService().BindUsbDeviceManager(
         device_manager_.BindNewPipeAndPassReceiver());
   }
-  DCHECK(device_manager_);
+  CHECK(device_manager_, base::NotFatalUntil::M160);
   device_manager_.set_disconnect_handler(
       base::BindOnce(&CrosUsbDetector::OnDeviceManagerConnectionError,
                      weak_ptr_factory_.GetWeakPtr()));
 
   // Listen for added/removed device events.
-  DCHECK(!client_receiver_.is_bound());
+  CHECK(!client_receiver_.is_bound(), base::NotFatalUntil::M160);
   device_manager_->EnumerateDevicesAndSetClient(
       client_receiver_.BindNewEndpointAndPassRemote(),
       base::BindOnce(&CrosUsbDetector::OnListAttachedDevices,

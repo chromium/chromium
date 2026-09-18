@@ -132,7 +132,7 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
   message_center::RichNotificationData data;
   ash::SystemNotificationBuilder notification_builder;
 
-  DCHECK_EQ(BUTTON_MORE_INFO, data.buttons.size());
+  CHECK_EQ(BUTTON_MORE_INFO, data.buttons.size(), base::NotFatalUntil::M160);
   data.buttons.emplace_back(GetStringUTF16(IDS_LEARN_MORE));
 
   NotificationCatalogName catalog_name = NotificationCatalogName::kNone;
@@ -150,7 +150,7 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
                            : vector_icons::kBusinessOldIcon);
     catalog_name = NotificationCatalogName::kPendingEOL;
   } else {
-    DCHECK_EQ(BUTTON_DISMISS, data.buttons.size());
+    CHECK_EQ(BUTTON_DISMISS, data.buttons.size(), base::NotFatalUntil::M160);
     data.buttons.emplace_back(GetStringUTF16(IDS_EOL_DISMISS_BUTTON));
 
     // Notifies user that updates will no longer occur after this final update.

@@ -45,11 +45,11 @@ RecentDriveSource::CallContext::~CallContext() = default;
 RecentDriveSource::RecentDriveSource(Profile* profile)
     : RecentSource(extensions::api::file_manager_private::VolumeType::kDrive),
       profile_(profile) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 RecentDriveSource::~RecentDriveSource() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 std::vector<std::string> RecentDriveSource::CreateTypeFilters(
@@ -80,7 +80,7 @@ std::vector<std::string> RecentDriveSource::CreateTypeFilters(
 
 void RecentDriveSource::GetRecentFiles(const Params& params,
                                        GetRecentFilesCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto context = std::make_unique<CallContext>(std::move(callback));
   CallContext* context_ptr = context.get();
@@ -122,7 +122,7 @@ void RecentDriveSource::GetRecentFiles(const Params& params,
 }
 
 std::vector<RecentFile> RecentDriveSource::Stop(const int32_t call_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   CallContext* context = context_map_.Lookup(call_id);
   if (context == nullptr) {
     return {};
@@ -133,12 +133,12 @@ std::vector<RecentFile> RecentDriveSource::Stop(const int32_t call_id) {
 }
 
 void RecentDriveSource::OnComplete(const int32_t call_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   CallContext* context = context_map_.Lookup(call_id);
   if (context == nullptr) {
     return;
   }
-  DCHECK(!context->build_start_time.is_null());
+  CHECK(!context->build_start_time.is_null(), base::NotFatalUntil::M160);
 
   UMA_HISTOGRAM_TIMES(kLoadHistogramName,
                       base::TimeTicks::Now() - context->build_start_time);

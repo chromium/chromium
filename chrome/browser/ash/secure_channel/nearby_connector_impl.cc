@@ -128,7 +128,7 @@ void NearbyConnectorImpl::ProcessQueuedConnectionRequests() {
       file_payload_handler_pending_receiver =
           file_payload_handler_pending_remote.InitWithNewPipeAndPassReceiver();
 
-  DCHECK(!active_connection_attempt_);
+  CHECK(!active_connection_attempt_, base::NotFatalUntil::M160);
   active_connection_attempt_.emplace(
       new_broker_id,
       NearbyEndpointFinderImpl::Factory::Create(
@@ -201,7 +201,8 @@ void NearbyConnectorImpl::OnConnected(
         message_sender_pending_remote,
     mojo::PendingRemote<mojom::NearbyFilePayloadHandler>
         file_payload_handler_remote) {
-  DCHECK_EQ(active_connection_attempt_->attempt_id, id);
+  CHECK_EQ(active_connection_attempt_->attempt_id, id,
+           base::NotFatalUntil::M160);
   InvokeActiveConnectionAttemptCallback(
       std::move(message_sender_pending_remote),
       std::move(file_payload_handler_remote));

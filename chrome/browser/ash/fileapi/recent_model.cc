@@ -132,12 +132,12 @@ RecentModel::RecentModel(Profile* profile)
 
 RecentModel::RecentModel(std::vector<std::unique_ptr<RecentSource>> sources)
     : sources_(std::move(sources)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 RecentModel::~RecentModel() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(sources_.empty());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(sources_.empty(), base::NotFatalUntil::M160);
 }
 
 void RecentModel::GetRecentFiles(
@@ -146,7 +146,7 @@ void RecentModel::GetRecentFiles(
     const std::string& query,
     const RecentModelOptions& options,
     GetRecentFilesCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   const int32_t this_call_id = ++call_id_;
   SearchCriteria search_criteria = {
@@ -177,7 +177,7 @@ void RecentModel::GetRecentFiles(
       std::make_unique<CallContext>(search_criteria, std::move(callback));
   // The source list should never be empty, as this means somebody wants recent
   // files from without specifying even a single source.
-  DCHECK(!options.source_specs.empty());
+  CHECK(!options.source_specs.empty(), base::NotFatalUntil::M160);
   std::set<fmp::VolumeType> volume_filter;
   for (const RecentSourceSpec& restriction : options.source_specs) {
     volume_filter.emplace(restriction.volume_type);
@@ -237,7 +237,7 @@ void RecentModel::GetRecentFiles(
 
 void RecentModel::OnScanTimeout(const base::Time& cutoff_time,
                                 const int32_t call_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   CallContext* context = context_map_.Lookup(call_id);
   if (context == nullptr) {
     return;
@@ -251,7 +251,7 @@ void RecentModel::OnScanTimeout(const base::Time& cutoff_time,
 }
 
 void RecentModel::Shutdown() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   context_map_.Clear();
   deadline_map_.Clear();
@@ -264,7 +264,7 @@ void RecentModel::OnGotRecentFiles(RecentSource* source,
                                    const base::Time& cutoff_time,
                                    const int32_t call_id,
                                    std::vector<RecentFile> files) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   CallContext* context = context_map_.Lookup(call_id);
   if (context == nullptr) {
     return;
@@ -278,21 +278,21 @@ void RecentModel::OnGotRecentFiles(RecentSource* source,
 }
 
 void RecentModel::OnSearchCompleted(const int32_t call_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   CallContext* context = context_map_.Lookup(call_id);
   if (context == nullptr) {
     return;
   }
   deadline_map_.Remove(call_id);
 
-  DCHECK(context->active_sources.empty());
-  DCHECK(!context->callback.is_null());
-  DCHECK(!context->build_start_time.is_null());
+  CHECK(context->active_sources.empty(), base::NotFatalUntil::M160);
+  CHECK(!context->callback.is_null(), base::NotFatalUntil::M160);
+  CHECK(!context->build_start_time.is_null(), base::NotFatalUntil::M160);
 
   cached_files_ = context->accumulator.Get();
   cached_search_criteria_ = context->search_criteria;
 
-  DCHECK(cached_files_.has_value());
+  CHECK(cached_files_.has_value(), base::NotFatalUntil::M160);
 
   UMA_HISTOGRAM_TIMES(kLoadHistogramName,
                       base::TimeTicks::Now() - context->build_start_time);
@@ -307,7 +307,7 @@ void RecentModel::OnSearchCompleted(const int32_t call_id) {
 }
 
 void RecentModel::ClearCache() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   cached_files_.reset();
 }

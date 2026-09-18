@@ -45,7 +45,7 @@ PersonalizationResult::PersonalizationResult(
     const std::u16string& query,
     gfx::ImageSkia icon)
     : profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
   set_id(::ash::personalization_app::kChromeUIPersonalizationAppURL +
          result.relative_url);
   set_relevance(result.relevance_score);
@@ -182,7 +182,7 @@ void PersonalizationProvider::OnSearchDone(
     std::vector<::ash::personalization_app::mojom::SearchResultPtr> results) {
   SearchProvider::Results search_results;
   for (const auto& result : results) {
-    DCHECK(!result.is_null());
+    CHECK(!result.is_null(), base::NotFatalUntil::M160);
     search_results.push_back(std::make_unique<PersonalizationResult>(
         profile_, *result, current_query_, icon_));
   }

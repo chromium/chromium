@@ -20,7 +20,7 @@ void PrintersServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   exported_object_ = exported_object;
   auto* proxy = CupsPrintersManagerFactory::GetInstance()->GetProxy();
-  DCHECK(proxy);
+  CHECK(proxy, base::NotFatalUntil::M160);
   printers_manager_observation_.Observe(proxy);
 }
 
@@ -37,7 +37,7 @@ void PrintersServiceProvider::OnPrintersChanged(
 }
 
 void PrintersServiceProvider::EmitSignal() {
-  DCHECK(exported_object_);
+  CHECK(exported_object_, base::NotFatalUntil::M160);
 
   dbus::Signal signal(chromeos::kPrintersServiceInterface,
                       chromeos::kPrintersServicePrintersChangedSignal);

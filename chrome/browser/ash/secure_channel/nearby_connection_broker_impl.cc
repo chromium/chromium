@@ -310,12 +310,13 @@ void NearbyConnectionBrokerImpl::TransitionToDisconnectedAndInvokeCallback() {
 void NearbyConnectionBrokerImpl::OnEndpointDiscovered(
     const std::string& endpoint_id,
     DiscoveredEndpointInfoPtr info) {
-  DCHECK_EQ(ConnectionStatus::kDiscoveringEndpoint, connection_status_);
+  CHECK_EQ(ConnectionStatus::kDiscoveringEndpoint, connection_status_,
+           base::NotFatalUntil::M160);
   NotifyConnectionStateChanged(
       mojom::NearbyConnectionStep::kDiscoveringEndpointEnded,
       mojom::NearbyConnectionStepResult::kSuccess);
 
-  DCHECK(!endpoint_id.empty());
+  CHECK(!endpoint_id.empty(), base::NotFatalUntil::M160);
   remote_endpoint_id_ = endpoint_id;
   TransitionToStatus(ConnectionStatus::kRequestingConnection);
   NotifyConnectionStateChanged(
@@ -338,7 +339,8 @@ void NearbyConnectionBrokerImpl::OnEndpointDiscovered(
 }
 
 void NearbyConnectionBrokerImpl::OnDiscoveryFailure(Status status) {
-  DCHECK_EQ(ConnectionStatus::kDiscoveringEndpoint, connection_status_);
+  CHECK_EQ(ConnectionStatus::kDiscoveringEndpoint, connection_status_,
+           base::NotFatalUntil::M160);
   NotifyConnectionStateChanged(
       mojom::NearbyConnectionStep::kDiscoveringEndpointEnded,
       ConvertStatusToStepResult(status));
@@ -496,7 +498,8 @@ void NearbyConnectionBrokerImpl::OnMojoDisconnection() {
 
 void NearbyConnectionBrokerImpl::SendMessage(const std::string& message,
                                              SendMessageCallback callback) {
-  DCHECK_EQ(ConnectionStatus::kConnected, connection_status_);
+  CHECK_EQ(ConnectionStatus::kConnected, connection_status_,
+           base::NotFatalUntil::M160);
 
   std::vector<uint8_t> message_as_bytes(message.begin(), message.end());
 
@@ -587,7 +590,8 @@ void NearbyConnectionBrokerImpl::OnConnectionInitiated(
     return;
   }
 
-  DCHECK_EQ(ConnectionStatus::kRequestingConnection, connection_status_);
+  CHECK_EQ(ConnectionStatus::kRequestingConnection, connection_status_,
+           base::NotFatalUntil::M160);
   TransitionToStatus(ConnectionStatus::kAcceptingConnection);
   NotifyConnectionStateChanged(
       mojom::NearbyConnectionStep::kAcceptingConnectionStarted,
@@ -609,9 +613,11 @@ void NearbyConnectionBrokerImpl::OnConnectionAccepted(
     return;
   }
 
-  DCHECK(connection_status_ == ConnectionStatus::kAcceptingConnection ||
-         connection_status_ ==
-             ConnectionStatus::kWaitingForConnectionToBeAcceptedByRemoteDevice);
+  CHECK(
+      connection_status_ == ConnectionStatus::kAcceptingConnection ||
+          connection_status_ ==
+              ConnectionStatus::kWaitingForConnectionToBeAcceptedByRemoteDevice,
+      base::NotFatalUntil::M160);
   if (connection_status_ == ConnectionStatus::kAcceptingConnection) {
     NotifyConnectionStateChanged(
         mojom::NearbyConnectionStep::kAcceptingConnectionFinished,
@@ -708,7 +714,7 @@ void NearbyConnectionBrokerImpl::OnBandwidthChanged(
     RecordConnectionMediumMetric(ConnectionMedium::kUpgradedToWebRtc);
     NotifyConnectionStateChanged(mojom::NearbyConnectionStep::kUpgradedToWebRtc,
                                  mojom::NearbyConnectionStepResult::kSuccess);
-    DCHECK(!time_when_connection_accepted_.is_null());
+    CHECK(!time_when_connection_accepted_.is_null(), base::NotFatalUntil::M160);
     base::TimeDelta webrtc_upgrade_duration =
         base::Time::Now() - time_when_connection_accepted_;
     RecordWebRtcUpgradeDuration(webrtc_upgrade_duration);

@@ -54,7 +54,7 @@ void NearbyConnectionBroker::InvokeDisconnectedCallback() {
 }
 
 void NearbyConnectionBroker::NotifyConnected() {
-  DCHECK(on_connected_callback_);
+  CHECK(on_connected_callback_, base::NotFatalUntil::M160);
   std::move(on_connected_callback_).Run();
 }
 

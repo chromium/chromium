@@ -80,7 +80,7 @@ void NearbyConnectionsMdnsManager::StartDiscoverySession(
 
   // ServiceDiscoverySharedClient::GetInstance is thread protected, and
   // calls from unit tests will come from the MainThread, causing a CHECK crash.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   discovery_client_ =
       local_discovery::ServiceDiscoverySharedClient::GetInstance();
   auto lister = local_discovery::ServiceDiscoveryDeviceLister::Create(

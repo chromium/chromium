@@ -180,7 +180,7 @@ void FileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
   // point plus the inner mount point.
   if (id == "archive" || id == "removable") {
     std::vector<std::string> components = url.virtual_path().GetComponents();
-    DCHECK_EQ(id, components.at(0));
+    CHECK_EQ(id, components.at(0), base::NotFatalUntil::M160);
     if (components.size() < 2) {
       // Unable to access /archive and /removable directories directly. The
       // inner mount name must be specified.
@@ -339,7 +339,7 @@ storage::CopyOrMoveFileValidatorFactory*
 FileSystemBackend::GetCopyOrMoveFileValidatorFactory(
     storage::FileSystemType type,
     base::File::Error* error_code) {
-  DCHECK(error_code);
+  CHECK(error_code, base::NotFatalUntil::M160);
   *error_code = base::File::FILE_OK;
   return nullptr;
 }
@@ -350,7 +350,7 @@ FileSystemBackend::CreateFileSystemOperation(
     const storage::FileSystemURL& url,
     storage::FileSystemContext* context,
     base::File::Error* error_code) const {
-  DCHECK(url.is_valid());
+  CHECK(url.is_valid(), base::NotFatalUntil::M160);
 
   if (!IsAccessAllowed(BackendFunction::kCreateFileSystemOperation, type,
                        url)) {
@@ -377,9 +377,10 @@ FileSystemBackend::CreateFileSystemOperation(
                          .get()));
   }
 
-  DCHECK(url.type() == storage::kFileSystemTypeProvided ||
-         url.type() == storage::kFileSystemTypeArcContent ||
-         url.type() == storage::kFileSystemTypeArcDocumentsProvider);
+  CHECK(url.type() == storage::kFileSystemTypeProvided ||
+            url.type() == storage::kFileSystemTypeArcContent ||
+            url.type() == storage::kFileSystemTypeArcDocumentsProvider,
+        base::NotFatalUntil::M160);
   return std::make_unique<ObservableFileSystemOperationImpl>(
       account_id_, type, url, context,
       std::make_unique<storage::FileSystemOperationContext>(context));
@@ -423,7 +424,7 @@ FileSystemBackend::CreateFileStreamReader(
     storage::FileSystemContext* context,
     file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
         file_access) const {
-  DCHECK(url.is_valid());
+  CHECK(url.is_valid(), base::NotFatalUntil::M160);
 
   if (!IsAccessAllowed(BackendFunction::kCreateFileStreamReader,
                        storage::OperationType::kNone, url)) {
@@ -469,7 +470,7 @@ FileSystemBackend::CreateFileStreamWriter(
     const storage::FileSystemURL& url,
     int64_t offset,
     storage::FileSystemContext* context) const {
-  DCHECK(url.is_valid());
+  CHECK(url.is_valid(), base::NotFatalUntil::M160);
 
   if (!IsAccessAllowed(BackendFunction::kCreateFileStreamWriter,
                        storage::OperationType::kNone, url)) {

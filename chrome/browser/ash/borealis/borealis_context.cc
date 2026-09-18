@@ -78,7 +78,8 @@ class BorealisLifetimeObserver
   }
 
   void OnWindowManagerDeleted(BorealisWindowManager* window_manager) override {
-    DCHECK(observation_.IsObservingSource(window_manager));
+    CHECK(observation_.IsObservingSource(window_manager),
+          base::NotFatalUntil::M160);
     observation_.Reset();
   }
 

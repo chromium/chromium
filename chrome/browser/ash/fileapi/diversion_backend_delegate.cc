@@ -59,7 +59,7 @@ DiversionBackendDelegate::~DiversionBackendDelegate() = default;
 
 storage::AsyncFileUtil* DiversionBackendDelegate::GetAsyncFileUtil(
     storage::FileSystemType type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   return this;
 }
 
@@ -72,7 +72,7 @@ DiversionBackendDelegate::CreateFileStreamReader(
     storage::FileSystemContext* context) {
   // TODO: honor max_bytes_to_read. On the other hand,
   // storage::FileStreamReader::CreateForLocalFile also doesn't honor it.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   if (std::unique_ptr<storage::FileStreamReader> fs_reader =
           diversion_file_manager_->CreateDivertedFileStreamReader(url,
                                                                   offset)) {
@@ -87,7 +87,7 @@ DiversionBackendDelegate::CreateFileStreamWriter(
     const storage::FileSystemURL& url,
     int64_t offset,
     storage::FileSystemContext* context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   if (std::unique_ptr<storage::FileStreamWriter> fs_writer =
           diversion_file_manager_->CreateDivertedFileStreamWriter(url,
                                                                   offset)) {
@@ -98,7 +98,7 @@ DiversionBackendDelegate::CreateFileStreamWriter(
 
 storage::WatcherManager* DiversionBackendDelegate::GetWatcherManager(
     storage::FileSystemType type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   return wrappee_->GetWatcherManager(type);
 }
 
@@ -107,7 +107,7 @@ void DiversionBackendDelegate::CreateOrOpen(
     const storage::FileSystemURL& url,
     uint32_t file_flags,
     CreateOrOpenCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   storage::AsyncFileUtil* af_util = wrappee_->GetAsyncFileUtil(url.type());
   af_util->CreateOrOpen(std::move(context), url, file_flags,
                         std::move(callback));
@@ -117,7 +117,7 @@ void DiversionBackendDelegate::EnsureFileExists(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
     EnsureFileExistsCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   storage::AsyncFileUtil* af_util = wrappee_->GetAsyncFileUtil(url.type());
 
   if (!url.is_valid()) {
@@ -152,7 +152,8 @@ void DiversionBackendDelegate::EnsureFileExists(
              duplicated_context,
          const storage::FileSystemURL& url, EnsureFileExistsCallback callback,
          base::File::Error gfi_result, const base::File::Info& file_info) {
-        DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+        CHECK_CURRENTLY_ON(content::BrowserThread::IO,
+                           base::NotFatalUntil::M160);
         bool created = false;
         if (gfi_result == base::File::FILE_OK) {
           std::move(callback).Run(file_info.is_directory
@@ -194,7 +195,7 @@ void DiversionBackendDelegate::CreateDirectory(
     bool exclusive,
     bool recursive,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   storage::AsyncFileUtil* af_util = wrappee_->GetAsyncFileUtil(url.type());
   af_util->CreateDirectory(std::move(context), url, exclusive, recursive,
                            std::move(callback));
@@ -205,7 +206,7 @@ void DiversionBackendDelegate::GetFileInfo(
     const storage::FileSystemURL& url,
     GetMetadataFieldSet fields,
     GetFileInfoCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   if (diversion_file_manager_->IsDiverting(url)) {
     diversion_file_manager_->GetDivertedFileInfo(url, fields,
                                                  std::move(callback));
@@ -223,7 +224,7 @@ void DiversionBackendDelegate::ReadDirectory(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
     ReadDirectoryCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   storage::AsyncFileUtil* af_util = wrappee_->GetAsyncFileUtil(url.type());
   af_util->ReadDirectory(std::move(context), url, std::move(callback));
 }
@@ -234,7 +235,7 @@ void DiversionBackendDelegate::Touch(
     const base::Time& last_access_time,
     const base::Time& last_modified_time,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   if (diversion_file_manager_->IsDiverting(url)) {
     // TODO: touch the O_TMPFILE file.
   } else if (ShouldDivert(url) == Policy::kDivertIsolated) {
@@ -251,7 +252,7 @@ void DiversionBackendDelegate::Truncate(
     const storage::FileSystemURL& url,
     int64_t length,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   if (diversion_file_manager_->IsDiverting(url)) {
     diversion_file_manager_->TruncateDivertedFile(url, length,
                                                   std::move(callback));
@@ -271,7 +272,7 @@ void DiversionBackendDelegate::CopyFileLocal(
     CopyOrMoveOptionSet options,
     CopyFileProgressCallback progress_callback,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!src_url.is_valid() || !dest_url.is_valid()) {
     std::move(callback).Run(base::File::FILE_ERROR_INVALID_URL);
@@ -312,7 +313,7 @@ void DiversionBackendDelegate::MoveFileLocal(
     const storage::FileSystemURL& dest_url,
     CopyOrMoveOptionSet options,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!src_url.is_valid() || !dest_url.is_valid()) {
     std::move(callback).Run(base::File::FILE_ERROR_INVALID_URL);
@@ -349,7 +350,7 @@ void DiversionBackendDelegate::CopyInForeignFile(
     const base::FilePath& src_file_path,
     const storage::FileSystemURL& dest_url,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   storage::AsyncFileUtil* af_util = wrappee_->GetAsyncFileUtil(dest_url.type());
   af_util->CopyInForeignFile(std::move(context), src_file_path, dest_url,
                              std::move(callback));
@@ -359,7 +360,7 @@ void DiversionBackendDelegate::DeleteFile(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   if (diversion_file_manager_->IsDiverting(url)) {
     // Passing a null DiversionFileManager::Callback deletes the diversion file.
     diversion_file_manager_->FinishDiverting(url,
@@ -386,7 +387,7 @@ void DiversionBackendDelegate::DeleteDirectory(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   storage::AsyncFileUtil* af_util = wrappee_->GetAsyncFileUtil(url.type());
   af_util->DeleteDirectory(std::move(context), url, std::move(callback));
 }
@@ -395,7 +396,7 @@ void DiversionBackendDelegate::DeleteRecursively(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   // TODO: this could be tricky if a diverted-file is a descendent of the "url
   // to be deleted recursively".
   storage::AsyncFileUtil* af_util = wrappee_->GetAsyncFileUtil(url.type());
@@ -406,7 +407,7 @@ void DiversionBackendDelegate::CreateSnapshotFile(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
     CreateSnapshotFileCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   // TODO: do we need to do anything here??
   storage::AsyncFileUtil* af_util = wrappee_->GetAsyncFileUtil(url.type());
   af_util->CreateSnapshotFile(std::move(context), url, std::move(callback));
@@ -442,7 +443,7 @@ void DiversionBackendDelegate::OnDiversionFinished(
     base::ScopedFD scoped_fd,
     int64_t file_size,
     base::File::Error error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   CHECK(dest_url.is_valid());
   CHECK(src_url.is_valid());
 
@@ -486,7 +487,8 @@ void DiversionBackendDelegate::OnDiversionFinished(
          base::ScopedFD scoped_fd,
          std::unique_ptr<storage::FileStreamWriter> fs_writer,
          net::Error net_error) {
-        DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+        CHECK_CURRENTLY_ON(content::BrowserThread::IO,
+                           base::NotFatalUntil::M160);
 
         if (src_url == dest_url) {
           if (callback) {

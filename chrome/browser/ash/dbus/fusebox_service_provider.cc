@@ -29,7 +29,7 @@ template <typename T>
 void ReplyToProtoMethod(dbus::MethodCall* method_call,
                         dbus::ExportedObject::ResponseSender sender,
                         const T& proto) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
@@ -95,7 +95,7 @@ void FuseBoxServiceProvider::ServeProtoMethod(
     ServerMethodPtr<RequestProto, ResponseProto> method,
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender sender) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   dbus::MessageReader reader(method_call);
   RequestProto request_proto;
   if (!reader.PopArrayOfBytesAsProto(&request_proto)) {

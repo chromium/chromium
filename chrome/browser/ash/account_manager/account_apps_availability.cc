@@ -89,7 +89,7 @@ void CompleteGetAccountsAvailableInArc(
       result.insert(account);
   }
 
-  DCHECK_EQ(result.size(), gaia_ids_in_arc.size());
+  CHECK_EQ(result.size(), gaia_ids_in_arc.size(), base::NotFatalUntil::M160);
   if (result.size() != gaia_ids_in_arc.size()) {
     LOG(ERROR) << "Expected " << gaia_ids_in_arc.size() << " accounts, but "
                << result.size() << " accounts were found in Account Manager.";
@@ -132,7 +132,7 @@ std::optional<bool> IsAccountAvailableInArc(PrefService* prefs,
 
   std::optional<bool> is_available_in_arc =
       account_entry->FindBool(account_manager::prefs::kIsAvailableInArcKey);
-  DCHECK(is_available_in_arc);
+  CHECK(is_available_in_arc, base::NotFatalUntil::M160);
   // If there is no `is_available_in_arc` key, assume that account is available
   // in ARC.
   // TODO(crbug.com/1277453): Repair prefs if it happens.
@@ -140,7 +140,7 @@ std::optional<bool> IsAccountAvailableInArc(PrefService* prefs,
 }
 
 void RemoveAccountFromPrefs(PrefService* prefs, const GaiaId& gaia_id) {
-  DCHECK(!IsPrimaryGaiaAccount(gaia_id));
+  CHECK(!IsPrimaryGaiaAccount(gaia_id), base::NotFatalUntil::M160);
 
   ScopedDictPrefUpdate update(prefs,
                               account_manager::prefs::kAccountAppsAvailability);
@@ -153,7 +153,8 @@ void AddAccountToPrefs(PrefService* prefs,
                        const GaiaId& gaia_id,
                        bool is_available_in_arc) {
   // Account shouldn't already exist.
-  DCHECK(!IsAccountAvailableInArc(prefs, gaia_id).has_value());
+  CHECK(!IsAccountAvailableInArc(prefs, gaia_id).has_value(),
+        base::NotFatalUntil::M160);
 
   base::DictValue account_entry;
   account_entry.Set(account_manager::prefs::kIsAvailableInArcKey,
@@ -170,7 +171,7 @@ void UpdateAccountInPrefs(PrefService* prefs,
   ScopedDictPrefUpdate update(prefs,
                               account_manager::prefs::kAccountAppsAvailability);
   base::DictValue* account_entry = update->FindDict(gaia_id.ToString());
-  DCHECK(account_entry);
+  CHECK(account_entry, base::NotFatalUntil::M160);
 
   account_entry->Set(account_manager::prefs::kIsAvailableInArcKey,
                      is_available_in_arc);
@@ -228,9 +229,9 @@ AccountAppsAvailability::AccountAppsAvailability(
     : account_manager_(account_manager),
       identity_manager_(identity_manager),
       prefs_(prefs) {
-  DCHECK(account_manager_);
-  DCHECK(identity_manager_);
-  DCHECK(prefs_);
+  CHECK(account_manager_, base::NotFatalUntil::M160);
+  CHECK(identity_manager_, base::NotFatalUntil::M160);
+  CHECK(prefs_, base::NotFatalUntil::M160);
   account_manager_observation_.Observe(account_manager_.get());
   identity_manager_observation_.Observe(identity_manager_.get());
 }
@@ -257,7 +258,8 @@ void AccountAppsAvailability::SetIsAccountAvailableInArc(
     const account_manager::Account& account,
     bool is_available) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(account.key.account_type(), account_manager::AccountType::kGaia);
+  CHECK_EQ(account.key.account_type(), account_manager::AccountType::kGaia,
+           base::NotFatalUntil::M160);
 
   if (!IsInitialized()) {
     // Using base::Unretained(this) is fine because `initialization_callbacks_`
@@ -398,7 +400,7 @@ void AccountAppsAvailability::InitAccountsAvailableInArcPref(
 
   ScopedDictPrefUpdate update(prefs_,
                               account_manager::prefs::kAccountAppsAvailability);
-  DCHECK(update->empty());
+  CHECK(update->empty(), base::NotFatalUntil::M160);
 
   // See structure of `update` dictionary at the top of the file.
   for (const auto& account : accounts) {
@@ -415,7 +417,7 @@ void AccountAppsAvailability::InitAccountsAvailableInArcPref(
 
   // User type cannot be active directory, so we expect to have at least
   // primary account in the list.
-  DCHECK(!update->empty());
+  CHECK(!update->empty(), base::NotFatalUntil::M160);
 
   is_initialized_ = true;
 
@@ -432,7 +434,7 @@ void AccountAppsAvailability::ReportMetrics(
   base::UmaHistogramExactLinear(kNumAccountsInArcMetricName, num_arc_accounts,
                                 kMaxNumAccountsInArcMetric + 1);
 
-  DCHECK_GE(num_total_accounts, num_arc_accounts);
+  CHECK_GE(num_total_accounts, num_arc_accounts, base::NotFatalUntil::M160);
   const int percent_arc_accounts =
       (num_arc_accounts * 100.0) / num_total_accounts;
   base::UmaHistogramPercentage(kPercentAccountsInArcMetricName,

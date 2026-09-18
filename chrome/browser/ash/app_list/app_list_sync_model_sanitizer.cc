@@ -55,7 +55,7 @@ void AppListSyncModelSanitizer::SanitizePageBreaks(
                                                  : item->item_ordinal;
     // `AppListSyncableService::GetSortedTopLevelSyncItems()` filters out items
     // with an invalid position.
-    DCHECK(item_ordinal.IsValid());
+    CHECK(item_ordinal.IsValid(), base::NotFatalUntil::M160);
 
     if (item->item_type == sync_pb::AppListSpecifics::TYPE_PAGE_BREAK) {
       const bool implicit_page_break =
@@ -115,14 +115,15 @@ void AppListSyncModelSanitizer::SanitizePageBreaks(
       // page contains the current item.
       current_page_size = 1;
 
-      DCHECK(last_valid_position.IsValid());
+      CHECK(last_valid_position.IsValid(), base::NotFatalUntil::M160);
       // If page break should be added between items with the same ordinal,
       // deduplicate the item ordinals before calculating the new page break
       // position.
       if (last_valid_position.Equals(item_ordinal)) {
         ResolveDuplicatePositionsStartingAtIndex(
             sync_items, i, last_valid_position, &resolved_duplicate_positions);
-        DCHECK(resolved_duplicate_positions.contains(item_id));
+        CHECK(resolved_duplicate_positions.contains(item_id),
+              base::NotFatalUntil::M160);
 
         item_ordinal = resolved_duplicate_positions[item_id];
         page_breaks_to_add.push_back(
@@ -159,7 +160,7 @@ void AppListSyncModelSanitizer::ResolveDuplicatePositionsStartingAtIndex(
     size_t starting_index,
     const syncer::StringOrdinal& starting_ordinal,
     std::map<std::string, syncer::StringOrdinal>* resolved_positions) {
-  DCHECK_LT(starting_index, sync_items.size());
+  CHECK_LT(starting_index, sync_items.size(), base::NotFatalUntil::M160);
   // Find the next position distinct from `starting_ordinal`, starting at
   // `starting_index`.
   syncer::StringOrdinal next_valid_position;

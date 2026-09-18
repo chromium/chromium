@@ -137,7 +137,7 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
       if (!IsControlCategoryEnabled(profile_, ControlCategory::kWeb)) {
         continue;
       }
-      DCHECK(last_tokenized_query_.has_value());
+      CHECK(last_tokenized_query_.has_value(), base::NotFatalUntil::M160);
       new_results.emplace_back(std::make_unique<OpenTabResult>(
           profile_, list_controller_,
           CreateResult(match, controller_.get(),
@@ -177,7 +177,7 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
 
 void OmniboxProvider::OnResultChanged(AutocompleteController* controller,
                                       bool default_match_changed) {
-  DCHECK(controller == controller_.get());
+  CHECK(controller == controller_.get(), base::NotFatalUntil::M160);
 
   // Record the query latency.
   base::TimeDelta query_latency = base::TimeTicks::Now() - query_start_time_;

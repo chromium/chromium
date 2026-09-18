@@ -43,9 +43,9 @@ EduCoexistenceConsentInvalidationController::
     : profile_(profile),
       account_manager_(account_manager),
       device_account_id_(device_account_id) {
-  DCHECK(profile_);
-  DCHECK(profile_->IsChild());
-  DCHECK(IsAccountManagerAvailable(profile_));
+  CHECK(profile_, base::NotFatalUntil::M160);
+  CHECK(profile_->IsChild(), base::NotFatalUntil::M160);
+  CHECK(IsAccountManagerAvailable(profile_), base::NotFatalUntil::M160);
 }
 
 EduCoexistenceConsentInvalidationController::

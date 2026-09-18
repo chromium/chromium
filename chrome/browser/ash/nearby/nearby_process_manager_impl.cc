@@ -263,7 +263,8 @@ void NearbyProcessManagerImpl::OnMojoPipeDisconnect(
 void NearbyProcessManagerImpl::OnReferenceDeleted(
     const base::UnguessableToken& reference_id) {
   auto it = id_to_process_stopped_callback_map_.find(reference_id);
-  DCHECK(it != id_to_process_stopped_callback_map_.end());
+  CHECK(it != id_to_process_stopped_callback_map_.end(),
+        base::NotFatalUntil::M160);
 
   // Do not call the callback because its owner has already explicitly deleted
   // its reference.

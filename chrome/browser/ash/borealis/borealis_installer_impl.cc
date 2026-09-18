@@ -102,13 +102,15 @@ class BorealisInstallerImpl::Installation
   }
 
   void OnDlcInstallationProgressUpdated(double progress) {
-    DCHECK_EQ(installing_state_, InstallingState::kInstallingDlc);
+    CHECK_EQ(installing_state_, InstallingState::kInstallingDlc,
+             base::NotFatalUntil::M160);
     update_progress_callback_.Run(progress);
   }
 
   void OnDlcInstallationCompleted(
       guest_os::GuestOsDlcInstallation::Result install_result) {
-    DCHECK_EQ(installing_state_, InstallingState::kInstallingDlc);
+    CHECK_EQ(installing_state_, InstallingState::kInstallingDlc,
+             base::NotFatalUntil::M160);
 
     // If success, continue to the next state.
     if (install_result.has_value()) {
@@ -386,16 +388,16 @@ void BorealisInstallerImpl::Uninstall(
 }
 
 void BorealisInstallerImpl::AddObserver(Observer* observer) {
-  DCHECK(observer);
-  DCHECK(observers_.empty());
+  CHECK(observer, base::NotFatalUntil::M160);
+  CHECK(observers_.empty(), base::NotFatalUntil::M160);
   observers_.AddObserver(observer);
 }
 
 void BorealisInstallerImpl::RemoveObserver(Observer* observer) {
-  DCHECK(observer);
-  DCHECK(observers_.HasObserver(observer));
+  CHECK(observer, base::NotFatalUntil::M160);
+  CHECK(observers_.HasObserver(observer), base::NotFatalUntil::M160);
   observers_.RemoveObserver(observer);
-  DCHECK(observers_.empty());
+  CHECK(observers_.empty(), base::NotFatalUntil::M160);
 }
 
 void BorealisInstallerImpl::UpdateProgress(double state_progress) {
@@ -439,7 +441,8 @@ void BorealisInstallerImpl::UpdateProgress(double state_progress) {
 
 void BorealisInstallerImpl::UpdateInstallingState(
     InstallingState installing_state) {
-  DCHECK_NE(installing_state, InstallingState::kInactive);
+  CHECK_NE(installing_state, InstallingState::kInactive,
+           base::NotFatalUntil::M160);
   installing_state_ = installing_state;
   for (auto& observer : observers_) {
     observer.OnStateUpdated(installing_state_);

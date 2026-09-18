@@ -17,13 +17,14 @@ AppListModelBuilder::ScopedAppPositionInitCallbackForTest::
     ScopedAppPositionInitCallbackForTest(AppListModelBuilder* builder,
                                          AppPositionInitCallback callback)
     : builder_(builder), callback_(callback) {
-  DCHECK(!builder->position_setter_for_test_);
+  CHECK(!builder->position_setter_for_test_, base::NotFatalUntil::M160);
   builder->position_setter_for_test_ = &callback_;
 }
 
 AppListModelBuilder::ScopedAppPositionInitCallbackForTest::
     ~ScopedAppPositionInitCallbackForTest() {
-  DCHECK_EQ(builder_->position_setter_for_test_, &callback_);
+  CHECK_EQ(builder_->position_setter_for_test_, &callback_,
+           base::NotFatalUntil::M160);
   builder_->position_setter_for_test_ = nullptr;
 }
 
@@ -39,7 +40,7 @@ AppListModelBuilder::~AppListModelBuilder() = default;
 void AppListModelBuilder::Initialize(app_list::AppListSyncableService* service,
                                      Profile* profile,
                                      AppListModelUpdater* model_updater) {
-  DCHECK(!service_ && !profile_ && !model_updater_);
+  CHECK(!service_ && !profile_ && !model_updater_, base::NotFatalUntil::M160);
   service_ = service;
   profile_ = profile;
   model_updater_ = model_updater;
@@ -56,7 +57,7 @@ void AppListModelBuilder::InsertApp(std::unique_ptr<ChromeAppListItem> app) {
   // Initialize the position before adding `app`. In the product code, a new
   // app's position is initialized by `service_` if `app` does not have a
   // default position. But in tests `service_` could be null.
-  DCHECK(position_setter_for_test_);
+  CHECK(position_setter_for_test_, base::NotFatalUntil::M160);
   position_setter_for_test_->Run(app.get());
 
   model_updater_->AddItem(std::move(app));

@@ -125,8 +125,8 @@ BorealisWindowManager::~BorealisWindowManager() {
   for (auto& observer : lifetime_observers_) {
     observer.OnWindowManagerDeleted(this);
   }
-  DCHECK(anon_observers_.empty());
-  DCHECK(lifetime_observers_.empty());
+  CHECK(anon_observers_.empty(), base::NotFatalUntil::M160);
+  CHECK(lifetime_observers_.empty(), base::NotFatalUntil::M160);
 }
 
 void BorealisWindowManager::AddObserver(AnonymousAppObserver* observer) {
@@ -180,7 +180,8 @@ void BorealisWindowManager::OnInstanceUpdate(
 
 void BorealisWindowManager::OnInstanceRegistryWillBeDestroyed(
     apps::InstanceRegistry* cache) {
-  DCHECK(instance_registry_observation_.IsObservingSource(cache));
+  CHECK(instance_registry_observation_.IsObservingSource(cache),
+        base::NotFatalUntil::M160);
   instance_registry_observation_.Reset();
 }
 
@@ -194,8 +195,8 @@ void BorealisWindowManager::HandleWindowDestruction(aura::Window* window,
       std::string,
       base::flat_set<raw_ptr<aura::Window, CtnExperimental>>>::iterator iter =
       ids_to_windows_.find(app_id);
-  DCHECK(iter != ids_to_windows_.end());
-  DCHECK(iter->second.contains(window));
+  CHECK(iter != ids_to_windows_.end(), base::NotFatalUntil::M160);
+  CHECK(iter->second.contains(window), base::NotFatalUntil::M160);
   iter->second.erase(window);
   if (!iter->second.empty())
     return;

@@ -9,7 +9,8 @@
 namespace app_list {
 std::unique_ptr<ash::AppListItemMetadata> GenerateItemMetadataFromSyncItem(
     const app_list::AppListSyncableService::SyncItem& sync_item) {
-  DCHECK(sync_item.item_type != sync_pb::AppListSpecifics::TYPE_PAGE_BREAK);
+  CHECK(sync_item.item_type != sync_pb::AppListSpecifics::TYPE_PAGE_BREAK,
+        base::NotFatalUntil::M160);
 
   auto item_meta_data = std::make_unique<ash::AppListItemMetadata>();
   item_meta_data->id = sync_item.item_id;

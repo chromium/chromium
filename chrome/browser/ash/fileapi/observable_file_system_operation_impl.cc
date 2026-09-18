@@ -34,7 +34,7 @@ FileChangeService* GetFileChangeService(const AccountId& account_id) {
 void NotifyFileMovedOnUiThread(const AccountId& account_id,
                                const storage::FileSystemURL& src,
                                const storage::FileSystemURL& dst) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   FileChangeService* service = GetFileChangeService(account_id);
   if (service)
     service->NotifyFileMoved(src, dst);
@@ -45,7 +45,7 @@ void NotifyFileMovedOnUiThread(const AccountId& account_id,
 // browser UI thread.
 void NotifyFileModifiedOnUiThread(const AccountId& account_id,
                                   const storage::FileSystemURL& url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   FileChangeService* service = GetFileChangeService(account_id);
   if (service)
     service->NotifyFileModified(url);

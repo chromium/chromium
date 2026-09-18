@@ -24,7 +24,8 @@ MTPFileSystemBackendDelegate::~MTPFileSystemBackendDelegate() = default;
 
 storage::AsyncFileUtil* MTPFileSystemBackendDelegate::GetAsyncFileUtil(
     storage::FileSystemType type) {
-  DCHECK_EQ(storage::kFileSystemTypeDeviceMediaAsFileStorage, type);
+  CHECK_EQ(storage::kFileSystemTypeDeviceMediaAsFileStorage, type,
+           base::NotFatalUntil::M160);
 
   return device_media_async_file_util_.get();
 }
@@ -36,7 +37,8 @@ MTPFileSystemBackendDelegate::CreateFileStreamReader(
     int64_t max_bytes_to_read,
     const base::Time& expected_modification_time,
     storage::FileSystemContext* context) {
-  DCHECK_EQ(storage::kFileSystemTypeDeviceMediaAsFileStorage, url.type());
+  CHECK_EQ(storage::kFileSystemTypeDeviceMediaAsFileStorage, url.type(),
+           base::NotFatalUntil::M160);
 
   return device_media_async_file_util_->GetFileStreamReader(
       url, offset, expected_modification_time, context);
@@ -47,7 +49,8 @@ MTPFileSystemBackendDelegate::CreateFileStreamWriter(
     const storage::FileSystemURL& url,
     int64_t offset,
     storage::FileSystemContext* context) {
-  DCHECK_EQ(storage::kFileSystemTypeDeviceMediaAsFileStorage, url.type());
+  CHECK_EQ(storage::kFileSystemTypeDeviceMediaAsFileStorage, url.type(),
+           base::NotFatalUntil::M160);
 
   // TODO(kinaba): support writing.
   return nullptr;
@@ -55,7 +58,8 @@ MTPFileSystemBackendDelegate::CreateFileStreamWriter(
 
 storage::WatcherManager* MTPFileSystemBackendDelegate::GetWatcherManager(
     storage::FileSystemType type) {
-  DCHECK_EQ(storage::kFileSystemTypeDeviceMediaAsFileStorage, type);
+  CHECK_EQ(storage::kFileSystemTypeDeviceMediaAsFileStorage, type,
+           base::NotFatalUntil::M160);
   return mtp_watcher_manager_.get();
 }
 

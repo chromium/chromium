@@ -166,7 +166,7 @@ void ComponentUpdaterServiceProvider::UnloadComponent(
 
 void ComponentUpdaterServiceProvider::EmitInstalledSignalInternal(
     const std::string& component) {
-  DCHECK(exported_object_);
+  CHECK(exported_object_, base::NotFatalUntil::M160);
 
   dbus::Signal signal(
       chromeos::kComponentUpdaterServiceInterface,

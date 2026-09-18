@@ -73,7 +73,7 @@ constexpr net::NetworkTrafficAnnotationTag kAmbientClientNetworkTag =
 
 Profile* GetProfileForActiveUser() {
   const user_manager::User* const active_user = GetActiveUser();
-  DCHECK(active_user);
+  CHECK(active_user, base::NotFatalUntil::M160);
   return ash::ProfileHelper::Get()->GetProfileByUser(active_user);
 }
 
@@ -91,7 +91,7 @@ bool HasPrimaryAccount(const AccountId& account_id) {
 
 bool IsEmailDomainSupported(const user_manager::User* user) {
   const std::string email = user->GetAccountId().GetUserEmail();
-  DCHECK(!email.empty());
+  CHECK(!email.empty(), base::NotFatalUntil::M160);
 
   constexpr char kGmailDomain[] = "gmail.com";
   constexpr char kGooglemailDomain[] = "googlemail.com";
@@ -150,11 +150,11 @@ void AmbientClientImpl::SetAmbientModeAllowedForTesting(bool allowed) {
 
 void AmbientClientImpl::RequestAccessToken(GetAccessTokenCallback callback) {
   const user_manager::User* const active_user = GetActiveUser();
-  DCHECK(active_user);
+  CHECK(active_user, base::NotFatalUntil::M160);
 
   signin::IdentityManager* identity_manager =
       ash::IdentityManagerProvider::Get().Find(active_user->GetAccountId());
-  DCHECK(identity_manager);
+  CHECK(identity_manager, base::NotFatalUntil::M160);
 
   CoreAccountInfo account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
@@ -182,7 +182,7 @@ void AmbientClientImpl::DownloadImage(
           return;
         }
         const auto* user = GetActiveUser();
-        DCHECK(user);
+        CHECK(user, base::NotFatalUntil::M160);
         net::HttpRequestHeaders headers;
         headers.SetHeader("Authorization", "Bearer " + access_token);
         ash::ImageDownloader::Get()->Download(
@@ -195,7 +195,7 @@ void AmbientClientImpl::DownloadImage(
 scoped_refptr<network::SharedURLLoaderFactory>
 AmbientClientImpl::GetURLLoaderFactory() {
   auto* profile = GetProfileForActiveUser();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   return profile->GetURLLoaderFactory();
 }

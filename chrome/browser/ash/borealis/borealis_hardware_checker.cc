@@ -57,7 +57,7 @@ std::string GetBoardName() {
   if (pieces.size() >= 2 && pieces[1] == "borealis") {
     return pieces[0] + "-" + pieces[1];
   }
-  DCHECK(!pieces.empty());
+  CHECK(!pieces.empty(), base::NotFatalUntil::M160);
   return pieces[0];
 }
 

@@ -14,7 +14,7 @@ FileAccessPermissions::~FileAccessPermissions() = default;
 
 void FileAccessPermissions::GrantAccessPermission(const url::Origin& origin,
                                                   const base::FilePath& path) {
-  DCHECK(!path.empty());
+  CHECK(!path.empty(), base::NotFatalUntil::M160);
   base::AutoLock locker(lock_);
   path_map_[origin].insert(path);
 }

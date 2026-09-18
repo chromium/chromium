@@ -46,7 +46,7 @@ class URLHelper {
 
   URLHelper(void* profile_id, const GURL& url, HelperCallback callback)
       : callback_(std::move(callback)) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
     Lifetime lifetime(this);
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -59,7 +59,7 @@ class URLHelper {
 
  private:
   void RunOnUIThread(Lifetime lifetime, void* profile_id, const GURL& url) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     if (!g_browser_process->profile_manager()->IsValidProfile(profile_id)) {
       ReplyResult(net::ERR_FAILED);
       return;
@@ -67,11 +67,11 @@ class URLHelper {
     Profile* const profile = reinterpret_cast<Profile*>(profile_id);
     content::StoragePartition* const storage =
         profile->GetDefaultStoragePartition();
-    DCHECK(storage);
+    CHECK(storage, base::NotFatalUntil::M160);
 
     scoped_refptr<storage::FileSystemContext> context =
         storage->GetFileSystemContext();
-    DCHECK(context.get());
+    CHECK(context.get(), base::NotFatalUntil::M160);
 
     // Obtain the absolute path in the file system.
     const base::FilePath virtual_path = ExternalFileURLToVirtualPath(url);
@@ -101,7 +101,7 @@ class URLHelper {
 
   void OnGotMimeTypeOnUIThread(Lifetime lifetime,
                                const std::string& mime_type) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     mime_type_ = mime_type;
 
     if (mime_type_ == kMimeTypeForRFC822)
@@ -111,7 +111,7 @@ class URLHelper {
   }
 
   void ReplyResult(net::Error error) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -130,14 +130,14 @@ class URLHelper {
 
 ExternalFileResolver::ExternalFileResolver(void* profile_id)
     : profile_id_(profile_id), range_parse_result_(net::OK) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 }
 
 ExternalFileResolver::~ExternalFileResolver() = default;
 
 void ExternalFileResolver::ProcessHeaders(
     const net::HttpRequestHeaders& headers) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   // Read the range header if present.
   std::optional<std::string_view> range_header =
       headers.GetHeaderView(net::HttpRequestHeaders::kRange);
@@ -159,7 +159,7 @@ void ExternalFileResolver::Resolve(const std::string& method,
                                    ErrorCallback error_callback,
                                    RedirectCallback redirect_callback,
                                    StreamCallback stream_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   error_callback_ = std::move(error_callback);
   redirect_callback_ = std::move(redirect_callback);
   stream_callback_ = std::move(stream_callback);
@@ -194,14 +194,14 @@ void ExternalFileResolver::OnHelperResultObtained(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     file_manager::util::FileSystemURLAndHandle isolated_file_system,
     const std::string& mime_type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (error != net::OK) {
     std::move(error_callback_).Run(error);
     return;
   }
 
-  DCHECK(file_system_context.get());
+  CHECK(file_system_context.get(), base::NotFatalUntil::M160);
   isolated_file_system_ = std::move(isolated_file_system);
   mime_type_ = mime_type;
 
@@ -217,7 +217,7 @@ void ExternalFileResolver::OnHelperResultObtained(
 void ExternalFileResolver::OnFileInfoObtained(
     base::File::Error error,
     const base::File::Info& file_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   if (error == base::File::FILE_ERROR_NOT_FOUND) {
     std::move(error_callback_).Run(net::ERR_FILE_NOT_FOUND);
     return;
