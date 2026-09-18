@@ -408,6 +408,10 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_PersonalContext_Sources) {
   ASSERT_TRUE(entities.has_value());
   ASSERT_EQ(entities->size(), 1u);
 
+  using GmailSource =
+      EntityInstance::PersonalContextRecordTypePayload::GmailSource;
+  using PhotosSource =
+      EntityInstance::PersonalContextRecordTypePayload::PhotosSource;
   using Source = EntityInstance::PersonalContextRecordTypePayload::Source;
   using PersonalContextRecordTypePayload =
       EntityInstance::PersonalContextRecordTypePayload;
@@ -418,10 +422,10 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_PersonalContext_Sources) {
   ASSERT_TRUE(payload);
   EXPECT_EQ(*payload, (PersonalContextRecordTypePayload{
                           .sources = {
-                              {.type = Source::Type::kPhotos,
-                               .url = "https://photos.google.com/sample"},
-                              {.type = Source::Type::kGmail,
-                               .url = "https://mail.google.com/sample"},
+                              Source{.url = "https://photos.google.com/sample",
+                                     .data = PhotosSource{}},
+                              Source{.url = "https://mail.google.com/sample",
+                                     .data = GmailSource{}},
                           }}));
 }
 

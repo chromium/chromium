@@ -461,9 +461,6 @@ std::ostream& operator<<(
     const EntityInstance::PersonalContextRecordTypePayload::Source::Type& t) {
   using Type = EntityInstance::PersonalContextRecordTypePayload::Source::Type;
   switch (t) {
-    case Type::kUnspecified:
-      os << "kUnspecified";
-      break;
     case Type::kGmail:
       os << "kGmail";
       break;
@@ -477,7 +474,16 @@ std::ostream& operator<<(
 std::ostream& operator<<(
     std::ostream& os,
     const EntityInstance::PersonalContextRecordTypePayload::Source& s) {
-  os << "Source(type: " << s.type << ", url: \"" << s.url << "\")";
+  os << "Source(type: " << s.type() << ", url: \"" << s.url << "\"";
+  std::visit(absl::Overload{
+                 [&](const EntityInstance::PersonalContextRecordTypePayload::
+                         GmailSource& gmail) {
+                   os << ", title: \"" << gmail.title << "\"";
+                 },
+                 [&](const EntityInstance::PersonalContextRecordTypePayload::
+                         PhotosSource&) {}},
+             s.data);
+  os << ")";
   return os;
 }
 

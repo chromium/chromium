@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/is_required.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace sync_pb {
 class AutofillValuableSpecifics;
@@ -316,16 +317,34 @@ class EntityInstance final {
                            const WalletRecordTypePayload&) = default;
   };
   struct PersonalContextRecordTypePayload {
+    struct GmailSource {
+      std::string title;
+      friend bool operator==(const GmailSource&, const GmailSource&) = default;
+    };
+    struct PhotosSource {
+      friend bool operator==(const PhotosSource&,
+                             const PhotosSource&) = default;
+    };
+
+    using SourceData = std::variant<GmailSource, PhotosSource>;
+
     // Captures the provenance of an entity (e.g., its product source and URL).
     struct Source {
       enum class Type {
-        kUnspecified = 0,
-        kGmail = 1,
-        kPhotos = 2,
+        kGmail,
+        kPhotos,
       };
 
-      Type type = Type::kUnspecified;
       std::string url;
+      SourceData data;
+
+      // Derived from `data` so type and payload can never get out of sync.
+      Type type() const {
+        return std::visit(
+            absl::Overload{[](const GmailSource&) { return Type::kGmail; },
+                           [](const PhotosSource&) { return Type::kPhotos; }},
+            data);
+      }
 
       friend bool operator==(const Source&, const Source&) = default;
     };

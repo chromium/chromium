@@ -523,8 +523,6 @@ std::u16string PayloadSourceToAppName(SourceType source_type) {
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SOURCE_APP_PHOTOS);
     case SourceType::kGmail:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SOURCE_APP_GMAIL);
-    case SourceType::kUnspecified:
-      NOTREACHED();
   }
 }
 
@@ -535,9 +533,8 @@ base::flat_map<SourceType, std::vector<GURL>> GroupSourcesByApp(
     base::span<const EntityPayload::Source> payload_sources) {
   base::flat_map<SourceType, std::vector<GURL>> app_urls;
   for (const EntityPayload::Source& source : payload_sources) {
-    if (source.type != SourceType::kUnspecified &&
-        GURL(source.url).is_valid()) {
-      app_urls[source.type].emplace_back(source.url);
+    if (GURL(source.url).is_valid()) {
+      app_urls[source.type()].emplace_back(source.url);
     }
   }
   return app_urls;

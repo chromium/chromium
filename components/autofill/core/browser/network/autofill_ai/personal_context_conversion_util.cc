@@ -98,14 +98,20 @@ void AddStringAttribute(AttributeTypeName type,
 std::optional<EntityInstance::PersonalContextRecordTypePayload::Source>
 PersonalContextSourceReferenceToSource(
     const personal_context::proto::SourceReference& source_reference) {
+  using GmailSource =
+      EntityInstance::PersonalContextRecordTypePayload::GmailSource;
+  using PhotosSource =
+      EntityInstance::PersonalContextRecordTypePayload::PhotosSource;
   using Source = EntityInstance::PersonalContextRecordTypePayload::Source;
   switch (source_reference.source_reference_case()) {
     case personal_context::proto::SourceReference::kGmail:
-      return Source{.type = Source::Type::kGmail,
-                    .url = std::string(source_reference.gmail().message_url())};
+      return Source{
+          .url = std::string(source_reference.gmail().message_url()),
+          .data = GmailSource{
+              .title = std::string(source_reference.gmail().subject())}};
     case personal_context::proto::SourceReference::kPhotos:
-      return Source{.type = Source::Type::kPhotos,
-                    .url = std::string(source_reference.photos().photos_url())};
+      return Source{.url = std::string(source_reference.photos().photos_url()),
+                    .data = PhotosSource{}};
     case personal_context::proto::SourceReference::kDrive:
     case personal_context::proto::SourceReference::SOURCE_REFERENCE_NOT_SET:
       return std::nullopt;

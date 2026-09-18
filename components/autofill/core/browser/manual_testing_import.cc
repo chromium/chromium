@@ -61,6 +61,7 @@ constexpr std::string_view kKeyManagementUrl = "management_url";
 constexpr std::string_view kKeySources = "sources";
 constexpr std::string_view kKeySourceType = "type";
 constexpr std::string_view kKeySourceUrl = "url";
+constexpr std::string_view kKeySourceTitle = "title";
 constexpr std::string_view kKeyInitialCreatorId = "initial_creator_id";
 constexpr auto kRecordTypeMapping =
     base::MakeFixedFlatMap<std::string_view, AutofillProfile::RecordType>(
@@ -231,7 +232,22 @@ GetPersonalContextSourcesFromDict(const base::DictValue& dict) {
       LOG(ERROR) << "Invalid source type: " << *type_str << ".";
       continue;
     }
-    sources.push_back({.type = *type, .url = *url_str});
+    const std::string* title_str = src_dict.FindString(kKeySourceTitle);
+    switch (*type) {
+      case Source::Type::kGmail:
+        sources.push_back(
+            {.url = *url_str,
+             .data =
+                 EntityInstance::PersonalContextRecordTypePayload::GmailSource{
+                     .title = title_str ? *title_str : ""}});
+        break;
+      case Source::Type::kPhotos:
+        sources.push_back(
+            {.url = *url_str,
+             .data = EntityInstance::PersonalContextRecordTypePayload::
+                 PhotosSource{}});
+        break;
+    }
   }
   return sources;
 }

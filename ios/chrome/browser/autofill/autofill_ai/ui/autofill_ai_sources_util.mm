@@ -47,10 +47,7 @@ BOOL EntityHasValidSources(const autofill::EntityInstance& entity) {
     return NO;
   }
   return std::ranges::any_of(payload->sources, [](const auto& source) {
-    return source.type !=
-               autofill::EntityInstance::PersonalContextRecordTypePayload::
-                   Source::Type::kUnspecified &&
-           GURL(source.url).is_valid();
+    return GURL(source.url).is_valid();
   });
 }
 
@@ -74,17 +71,24 @@ NSArray<AutofillAiSourceGroup*>* ExtractSourcesFromEntity(
     if (!url.is_valid()) {
       continue;
     }
-    switch (source.type) {
+    switch (source.type()) {
       case autofill::EntityInstance::PersonalContextRecordTypePayload::Source::
           Type::kGmail: {
-        NSString* title = l10n_util::GetNSStringF(
-            IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_GMAIL_MESSAGE,
-            base::NumberToString16(gmail_index++));
+        const auto* gmail_data =
+            std::get_if<autofill::EntityInstance::
+                            PersonalContextRecordTypePayload::GmailSource>(
+                &source.data);
+        NSString* title =
+            (gmail_data && !gmail_data->title.empty())
+                ? base::SysUTF8ToNSString(gmail_data->title)
+                : l10n_util::GetNSStringF(
+                      IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_GMAIL_MESSAGE,
+                      base::NumberToString16(gmail_index++));
         AutofillAiSourceItem* item =
             [[AutofillAiSourceItem alloc] initWithTitle:title
                                                subtitle:nil
                                                     URL:url
-                                                   type:source.type
+                                                   type:source.type()
                                                    icon:GetGmailSourceIcon()];
         [gmail_items addObject:item];
         break;
@@ -98,14 +102,11 @@ NSArray<AutofillAiSourceGroup*>* ExtractSourcesFromEntity(
             [[AutofillAiSourceItem alloc] initWithTitle:title
                                                subtitle:nil
                                                     URL:url
-                                                   type:source.type
+                                                   type:source.type()
                                                    icon:GetPhotosSourceIcon()];
         [photos_items addObject:item];
         break;
       }
-      case autofill::EntityInstance::PersonalContextRecordTypePayload::Source::
-          Type::kUnspecified:
-        break;
     }
   }
 
