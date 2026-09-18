@@ -8,6 +8,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -166,11 +167,11 @@ public class NtpSyncedThemeBridge {
     @CalledByNative
     @VisibleForTesting
     static CustomBackgroundInfo createCustomBackgroundInfo(
-            GURL backgroundUrl,
-            String collectionId,
+            @JniType("GURL") GURL backgroundUrl,
+            @JniType("std::string") String collectionId,
             boolean isUploadedImage,
             boolean isDailyRefreshEnabled,
-            @Nullable String attribution) {
+            @JniType("std::string") String attribution) {
         return new CustomBackgroundInfo(
                 backgroundUrl, collectionId, isUploadedImage, isDailyRefreshEnabled, attribution);
     }
@@ -194,6 +195,8 @@ public class NtpSyncedThemeBridge {
         void selectLocalBackgroundImage(long nativeNtpSyncedThemeBridge);
 
         void updateCustomBackgroundPrefsWithColor(
-                long nativeNtpSyncedThemeBridge, GURL backgroundUrl, int primaryColor);
+                long nativeNtpSyncedThemeBridge,
+                @JniType("GURL") GURL backgroundUrl,
+                int primaryColor);
     }
 }

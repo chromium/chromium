@@ -42,12 +42,14 @@
 #include "chrome/browser/android/background_tab_manager.h"
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
-#include "chrome/browser/history/jni_headers/HistoryTabHelper_jni.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/feed/core/v2/public/feed_api.h"  // nogncheck crbug.com/40147906
 #include "components/feed/core/v2/public/feed_service.h"  // nogncheck crbug.com/40147906
 #include "content/public/browser/web_contents.h"
+
+// Must come after headers that provide symbols used by @JniType.
+#include "chrome/browser/history/jni_headers/HistoryTabHelper_jni.h"
 #else
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -58,7 +60,6 @@ namespace {
 using content::NavigationEntry;
 using content::WebContents;
 #if BUILDFLAG(IS_ANDROID)
-using base::android::ConvertUTF8ToJavaString;
 using chrome::android::BackgroundTabManager;
 #endif
 
@@ -729,14 +730,11 @@ static void JNI_HistoryTabHelper_SetAppIdForViewIntentNative(
   history_tab_helper->SetClearAppIdAfterFirstCommit();
   history_tab_helper->SetAppId(app_id);
 }
-static base::android::ScopedJavaLocalRef<jstring>
-JNI_HistoryTabHelper_GetAppIdForTestingNative(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& jweb_contents) {
+static std::optional<std::string> JNI_HistoryTabHelper_GetAppIdForTestingNative(
+    const jni_zero::JavaRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   auto* history_tab_helper = HistoryTabHelper::FromWebContents(web_contents);
-  auto appId = history_tab_helper->GetAppId();
-  return appId ? ConvertUTF8ToJavaString(env, *appId) : nullptr;
+  return history_tab_helper->GetAppId();
 }
 #endif
 WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryTabHelper);

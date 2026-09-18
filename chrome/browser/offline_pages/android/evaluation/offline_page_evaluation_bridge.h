@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_ANDROID_EVALUATION_OFFLINE_PAGE_EVALUATION_BRIDGE_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_ANDROID_EVALUATION_OFFLINE_PAGE_EVALUATION_BRIDGE_H_
 
+#include <cstdint>
+#include <string>
+#include <vector>
+
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
@@ -28,6 +32,7 @@ class OfflinePageEvaluationBridge : public OfflinePageModel::Observer,
                                     public OfflineEventLogger::Client {
  public:
   OfflinePageEvaluationBridge(JNIEnv* env,
+                              const base::android::JavaRef<jobject>& obj,
                               content::BrowserContext* browser_context,
                               OfflinePageModel* offline_page_model,
                               RequestCoordinator* request_coordinator);
@@ -37,7 +42,7 @@ class OfflinePageEvaluationBridge : public OfflinePageModel::Observer,
       delete;
 
   ~OfflinePageEvaluationBridge() override;
-  void Destroy(JNIEnv* env);
+  void Destroy();
 
   // OfflinePageModel::Observer implementation.
   void OfflinePageModelLoaded(OfflinePageModel* model) override;
@@ -74,12 +79,10 @@ class OfflinePageEvaluationBridge : public OfflinePageModel::Observer,
 
   // Removes the requests from the queue.
   void RemoveRequestsFromQueue(
-      JNIEnv* env,
-      const base::android::JavaRef<jlongArray>& j_request_ids,
+      const std::vector<int64_t>& request_ids,
       const base::android::JavaRef<jobject>& j_callback_obj);
 
-  void SavePageLater(JNIEnv* env,
-                     const std::string& url,
+  void SavePageLater(const std::string& url,
                      const std::string& name_space,
                      const std::string& client_id,
                      bool user_requested);

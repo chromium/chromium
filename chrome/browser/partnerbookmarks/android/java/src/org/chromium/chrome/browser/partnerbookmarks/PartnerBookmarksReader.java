@@ -439,8 +439,8 @@ public class PartnerBookmarksReader {
 
         long addPartnerBookmark(
                 long nativePartnerBookmarksReader,
-                @Nullable String url,
-                String title,
+                @JniType("std::u16string") @Nullable String url,
+                @JniType("std::u16string") String title,
                 boolean isFolder,
                 long parentId,
                 byte @Nullable [] favicon,

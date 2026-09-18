@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -38,8 +39,8 @@ class PartnerBookmarksReader {
   void Reset(JNIEnv* env);
   int64_t AddPartnerBookmark(
       JNIEnv* env,
-      const base::android::JavaRef<jstring>& jurl,
-      const base::android::JavaRef<jstring>& jtitle,
+      const std::u16string& url,
+      const std::u16string& title,
       bool is_folder,
       int64_t parent_id,
       const base::android::JavaRef<jbyteArray>& favicon,

@@ -9,14 +9,18 @@
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
-#include "chrome/browser/ntp_customization/jni_headers/NtpThemeCollectionBridge_jni.h"
 #include "chrome/browser/ntp_customization/ntp_android_background_service_factory.h"
 #include "chrome/browser/ntp_customization/ntp_android_custom_background_service.h"
 #include "chrome/browser/ntp_customization/ntp_android_custom_background_service_factory.h"
 #include "chrome/browser/ntp_customization/ntp_customization_utils.h"
 #include "components/themes/ntp_background_data.h"
 #include "components/themes/ntp_background_service.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
+#include "url/gurl.h"
+
+// Must come after headers that provide symbols used by @JniType.
+#include "chrome/browser/ntp_customization/jni_headers/NtpThemeCollectionBridge_jni.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -82,8 +86,7 @@ void NtpThemeCollectionBridge::GetBackgroundCollections(
 }
 
 void NtpThemeCollectionBridge::GetBackgroundImages(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_collection_id,
+    const std::string& collection_id,
     const JavaRef<jobject>& j_callback) {
   if (j_background_images_callback_) {
     base::android::RunObjectCallbackAndroid(j_background_images_callback_,
@@ -96,8 +99,7 @@ void NtpThemeCollectionBridge::GetBackgroundImages(
   }
 
   j_background_images_callback_.Reset(j_callback);
-  ntp_background_service_->FetchCollectionImageInfo(
-      base::android::ConvertJavaStringToUTF8(env, j_collection_id));
+  ntp_background_service_->FetchCollectionImageInfo(collection_id);
 }
 
 void NtpThemeCollectionBridge::OnCollectionInfoAvailable() {
@@ -109,17 +111,12 @@ void NtpThemeCollectionBridge::OnCollectionInfoAvailable() {
   std::vector<ScopedJavaLocalRef<jobject>> j_collections;
 
   for (const auto& collection : ntp_background_service_->collection_info()) {
-    ScopedJavaLocalRef<jstring> j_id =
-        base::android::ConvertUTF8ToJavaString(env, collection.collection_id);
-    ScopedJavaLocalRef<jstring> j_label =
-        base::android::ConvertUTF8ToJavaString(env, collection.collection_name);
-    ScopedJavaLocalRef<jobject> j_url =
-        url::GURLAndroid::FromNativeGURL(env, collection.preview_image_url);
-    int32_t j_hash =
-        static_cast<int32_t>(base::PersistentHash(collection.collection_id));
     ScopedJavaLocalRef<jobject> j_collection =
-        Java_NtpThemeCollectionBridge_createCollection(env, j_id, j_label,
-                                                       j_url, j_hash);
+        Java_NtpThemeCollectionBridge_createCollection(
+            env, collection.collection_id, collection.collection_name,
+            collection.preview_image_url,
+            static_cast<int32_t>(
+                base::PersistentHash(collection.collection_id)));
     j_collections.push_back(j_collection);
   }
 
@@ -138,21 +135,11 @@ void NtpThemeCollectionBridge::OnCollectionImagesAvailable() {
   std::vector<ScopedJavaLocalRef<jobject>> j_images;
 
   for (const auto& image : ntp_background_service_->collection_images()) {
-    ScopedJavaLocalRef<jstring> j_collection_id =
-        base::android::ConvertUTF8ToJavaString(env, image.collection_id);
-    ScopedJavaLocalRef<jobject> j_image_url =
-        url::GURLAndroid::FromNativeGURL(env, image.image_url);
-    ScopedJavaLocalRef<jobject> j_preview_image_url =
-        url::GURLAndroid::FromNativeGURL(env, image.thumbnail_image_url);
-    ScopedJavaLocalRef<jobjectArray> j_attribution =
-        base::android::ToJavaArrayOfStrings(env, image.attribution);
-    ScopedJavaLocalRef<jobject> j_attribution_url =
-        url::GURLAndroid::FromNativeGURL(env, image.attribution_action_url);
-
     ScopedJavaLocalRef<jobject> j_image =
         Java_NtpThemeCollectionBridge_createImage(
-            env, j_collection_id, j_image_url, j_preview_image_url,
-            j_attribution, j_attribution_url);
+            env, image.collection_id, image.image_url,
+            image.thumbnail_image_url, image.attribution,
+            image.attribution_action_url);
     j_images.push_back(j_image);
   }
 
@@ -180,18 +167,10 @@ ScopedJavaLocalRef<jobject> NtpThemeCollectionBridge::GetCustomBackgroundInfo(
     return nullptr;
   }
 
-  ScopedJavaLocalRef<jobject> j_url =
-      url::GURLAndroid::FromNativeGURL(env, background->custom_background_url);
-  ScopedJavaLocalRef<jstring> j_collection_id =
-      base::android::ConvertUTF8ToJavaString(env, background->collection_id);
-
-  ScopedJavaLocalRef<jstring> j_attribution =
-      base::android::ConvertUTF8ToJavaString(
-          env, ntp_customization::GetCustomBackgroundAttribution(*background));
-
   return Java_NtpThemeCollectionBridge_createCustomBackgroundInfo(
-      env, j_url, j_collection_id, background->is_uploaded_image,
-      background->daily_refresh_enabled, j_attribution);
+      env, background->custom_background_url, background->collection_id,
+      background->is_uploaded_image, background->daily_refresh_enabled,
+      ntp_customization::GetCustomBackgroundAttribution(*background));
 }
 
 void NtpThemeCollectionBridge::OnCustomBackgroundImageUpdated() {
@@ -201,29 +180,23 @@ void NtpThemeCollectionBridge::OnCustomBackgroundImageUpdated() {
 }
 
 void NtpThemeCollectionBridge::SetThemeCollectionImage(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_collection_id,
-    const JavaRef<jobject>& j_image_url,
-    const JavaRef<jobject>& j_preview_image_url,
-    const JavaRef<jstring>& j_attribution_line_1,
-    const JavaRef<jstring>& j_attribution_line_2,
-    const JavaRef<jobject>& j_attribution_url) {
+    const std::string& collection_id,
+    const GURL& image_url,
+    const GURL& preview_image_url,
+    const std::string& attribution_line_1,
+    const std::string& attribution_line_2,
+    const GURL& attribution_url) {
   if (!ntp_custom_background_service_) {
     return;
   }
 
   ntp_custom_background_service_->SetCustomBackgroundInfo(
-      url::GURLAndroid::ToNativeGURL(env, j_image_url),
-      url::GURLAndroid::ToNativeGURL(env, j_preview_image_url),
-      base::android::ConvertJavaStringToUTF8(env, j_attribution_line_1),
-      base::android::ConvertJavaStringToUTF8(env, j_attribution_line_2),
-      url::GURLAndroid::ToNativeGURL(env, j_attribution_url),
-      base::android::ConvertJavaStringToUTF8(env, j_collection_id));
+      image_url, preview_image_url, attribution_line_1, attribution_line_2,
+      attribution_url, collection_id);
 }
 
 void NtpThemeCollectionBridge::SetThemeCollectionDailyRefreshed(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_collection_id) {
+    const std::string& collection_id) {
   if (!ntp_custom_background_service_) {
     return;
   }
@@ -232,7 +205,7 @@ void NtpThemeCollectionBridge::SetThemeCollectionDailyRefreshed(
       /* background_url= */ GURL(), /* thumbnail_url= */ GURL(),
       /* attribution_line_1= */ std::string(),
       /* attribution_line_2= */ std::string(), /* action_url= */ GURL(),
-      base::android::ConvertJavaStringToUTF8(env, j_collection_id));
+      collection_id);
 }
 
 void NtpThemeCollectionBridge::FetchNextThemeCollectionImage(JNIEnv* env) {

@@ -1865,7 +1865,7 @@ public class NotificationPlatformBridge {
                 boolean incognito,
                 @JniType("std::string") String webApkPackage,
                 int actionIndex,
-                @Nullable String reply);
+                @JniType("std::optional<std::u16string>") @Nullable String reply);
 
         void onNotificationClosed(
                 long nativeNotificationPlatformBridgeAndroid,

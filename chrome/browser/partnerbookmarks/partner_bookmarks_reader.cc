@@ -27,14 +27,11 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/partnerbookmarks/jni_headers/PartnerBookmarksReader_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::CheckException;
-using base::android::ConvertJavaStringToUTF16;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using bookmarks::BookmarkNode;
@@ -124,8 +121,8 @@ void PartnerBookmarksReader::Reset(JNIEnv* env) {
 
 int64_t PartnerBookmarksReader::AddPartnerBookmark(
     JNIEnv* env,
-    const JavaRef<jstring>& jurl,
-    const JavaRef<jstring>& jtitle,
+    const std::u16string& url,
+    const std::u16string& title,
     bool is_folder,
     int64_t parent_id,
     const JavaRef<jbyteArray>& favicon,
@@ -133,14 +130,8 @@ int64_t PartnerBookmarksReader::AddPartnerBookmark(
     bool fetch_uncached_favicons_from_server,
     int32_t desired_favicon_size_px,
     const JavaRef<jobject>& j_callback) {
-  std::u16string url;
-  std::u16string title;
-  if (jurl) {
+  if (!url.empty()) {
     DCHECK(!is_folder);
-    url = ConvertJavaStringToUTF16(env, jurl);
-  }
-  if (jtitle) {
-    title = ConvertJavaStringToUTF16(env, jtitle);
   }
 
   int64_t node_id = 0;
@@ -402,7 +393,6 @@ static int64_t JNI_PartnerBookmarksReader_Init(JNIEnv* env, Profile* profile) {
 }
 
 static std::string JNI_PartnerBookmarksReader_GetNativeUrlString(
-    JNIEnv* env,
     const std::string& url) {
   return GURL(url).spec();
 }

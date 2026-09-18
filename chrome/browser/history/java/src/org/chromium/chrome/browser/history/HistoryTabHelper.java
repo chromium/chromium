@@ -92,6 +92,7 @@ public class HistoryTabHelper extends TabWebContentsUserData {
                 @JniType("std::optional<std::string>") @Nullable String appId,
                 WebContents webContents);
 
+        @JniType("std::optional<std::string>")
         @Nullable String getAppIdForTestingNative(WebContents webContents);
     }
 }

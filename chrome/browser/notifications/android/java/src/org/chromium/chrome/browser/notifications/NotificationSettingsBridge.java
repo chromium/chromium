@@ -124,6 +124,9 @@ public class NotificationSettingsBridge {
     interface Natives {
         void onGetSiteChannelsDone(long callbackId, SiteChannel[] channels);
 
-        void onChannelStateChanged(String channelId, String origin, boolean blocked);
+        void onChannelStateChanged(
+                @JniType("std::string") String channelId,
+                @JniType("std::string") String origin,
+                boolean blocked);
     }
 }

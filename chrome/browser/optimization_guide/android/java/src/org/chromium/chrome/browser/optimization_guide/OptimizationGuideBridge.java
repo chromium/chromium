@@ -149,8 +149,6 @@ public class OptimizationGuideBridge {
             return;
         }
 
-        GURL[] gurlsArray = new GURL[urls.size()];
-        urls.toArray(gurlsArray);
         int[] intOptimizationTypes = new int[optimizationTypes.size()];
         for (int i = 0; i < optimizationTypes.size(); i++) {
             intOptimizationTypes[i] = optimizationTypes.get(i).getNumber();
@@ -161,7 +159,7 @@ public class OptimizationGuideBridge {
         OptimizationGuideBridgeJni.get()
                 .canApplyOptimizationOnDemand(
                         mNativeOptimizationGuideBridge,
-                        gurlsArray,
+                        urls,
                         intOptimizationTypes,
                         requestContext.getNumber(),
                         callback,
@@ -238,7 +236,7 @@ public class OptimizationGuideBridge {
 
     /** Returns an array of all the optimization types that have cached push notifications. */
     @CalledByNative
-    private static int[] getOptTypesWithPushNotifications() {
+    private static @JniType("std::vector<int32_t>") int[] getOptTypesWithPushNotifications() {
         List<OptimizationType> cachedTypes =
                 OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications();
         int[] intCachedTypes = new int[cachedTypes.size()];
@@ -253,7 +251,8 @@ public class OptimizationGuideBridge {
      * notifications.
      */
     @CalledByNative
-    private static int[] getOptTypesThatOverflowedPushNotifications() {
+    private static @JniType("std::vector<int32_t>") int[]
+            getOptTypesThatOverflowedPushNotifications() {
         List<OptimizationType> overflows =
                 OptimizationGuidePushNotificationManager
                         .getOptTypesThatOverflowedPushNotifications();
@@ -323,7 +322,9 @@ public class OptimizationGuideBridge {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
-        void registerOptimizationTypes(long nativeOptimizationGuideBridge, int[] optimizationTypes);
+        void registerOptimizationTypes(
+                long nativeOptimizationGuideBridge,
+                @JniType("std::vector<int32_t>") int[] optimizationTypes);
 
         void canApplyOptimization(
                 long nativeOptimizationGuideBridge,
@@ -338,8 +339,8 @@ public class OptimizationGuideBridge {
 
         void canApplyOptimizationOnDemand(
                 long nativeOptimizationGuideBridge,
-                @JniType("std::vector<GURL>") GURL[] urls,
-                int[] optimizationTypes,
+                @JniType("std::vector<GURL>") List<GURL> urls,
+                @JniType("std::vector<int32_t>") int[] optimizationTypes,
                 int requestContext,
                 OnDemandOptimizationGuideCallback callback,
                 byte[] requestContextMetadata);

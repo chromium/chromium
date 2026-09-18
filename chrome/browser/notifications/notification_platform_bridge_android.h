@@ -45,8 +45,7 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
   ~NotificationPlatformBridgeAndroid() override;
 
   // Called by the Java implementation when the notification has been clicked.
-  void OnNotificationClicked(JNIEnv* env,
-                             const std::string& notification_id,
+  void OnNotificationClicked(const std::string& notification_id,
                              int32_t java_notification_type,
                              const std::string& origin,
                              const std::string& scope_url,
@@ -54,7 +53,7 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
                              bool incognito,
                              const std::string& webapk_package,
                              int32_t action_index,
-                             const jni_zero::JavaRef<jstring>& java_reply);
+                             const std::optional<std::u16string>& reply);
 
   // Called by the Java implementation when the query of WebAPK's package name
   // is done.

@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/themes/ntp_custom_background_service_observer.h"
 
+class GURL;
 class NtpAndroidCustomBackgroundService;
 
 using base::android::JavaRef;
@@ -57,10 +58,8 @@ class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
 
   // Updates the theme collection background's primary color and notifies the
   // sync bridge.
-  void UpdateCustomBackgroundPrefsWithColor(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& j_url,
-      int32_t primary_color);
+  void UpdateCustomBackgroundPrefsWithColor(const GURL& url,
+                                            int32_t primary_color);
 
   // Called when a Chrome color is synced from Chrome Sync.
   virtual void OnChromeColorSynced(int color_id);

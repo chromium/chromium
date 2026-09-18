@@ -22,17 +22,16 @@
 #include "components/optimization_guide/core/hints/optimization_guide_store.h"
 #include "components/optimization_guide/core/hints/push_notification_manager.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/optimization_guide/android/jni_headers/OptimizationGuideBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaArrayOfByteArrayToBytesVector;
 using base::android::JavaByteArrayToString;
-using base::android::JavaIntArrayToIntVector;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -68,22 +67,16 @@ void OnOptimizationGuideDecision(
       ToJavaSerializedAnyMetadata(env, metadata));
 }
 
-base::flat_set<proto::OptimizationType> JavaIntArrayToOptTypesSet(
-    JNIEnv* env,
-    const JavaRef<jintArray>& joptimization_types) {
-  std::vector<int> joptimization_types_vector;
-  JavaIntArrayToIntVector(env, joptimization_types,
-                          &joptimization_types_vector);
-  base::flat_set<optimization_guide::proto::OptimizationType>
-      optimization_types;
-  for (const int joptimization_type : joptimization_types_vector) {
+base::flat_set<proto::OptimizationType> ToOptTypesSet(
+    const std::vector<int32_t>& optimization_types) {
+  base::flat_set<optimization_guide::proto::OptimizationType> opt_types;
+  for (const int32_t optimization_type : optimization_types) {
     // Handles parsing of reserved tag numbers.
-    if (proto::OptimizationType_IsValid(joptimization_type)) {
-      optimization_types.insert(
-          static_cast<proto::OptimizationType>(joptimization_type));
+    if (proto::OptimizationType_IsValid(optimization_type)) {
+      opt_types.insert(static_cast<proto::OptimizationType>(optimization_type));
     }
   }
-  return optimization_types;
+  return opt_types;
 }
 
 void OnOnDemandOptimizationGuideDecision(
@@ -134,40 +127,17 @@ OptimizationGuideBridge::GetCachedNotifications(
 base::flat_set<proto::OptimizationType>
 OptimizationGuideBridge::GetOptTypesWithPushNotifications() {
   JNIEnv* env = AttachCurrentThread();
-  std::vector<int> cached_int_types;
-  JavaIntArrayToIntVector(
-      env, Java_OptimizationGuideBridge_getOptTypesWithPushNotifications(env),
-      &cached_int_types);
-
-  base::flat_set<proto::OptimizationType> cached_types;
-  for (int int_type : cached_int_types) {
-    // Handles parsing of reserved tag numbers.
-    if (proto::OptimizationType_IsValid(int_type)) {
-      cached_types.insert(static_cast<proto::OptimizationType>(int_type));
-    }
-  }
-  return cached_types;
+  return ToOptTypesSet(
+      Java_OptimizationGuideBridge_getOptTypesWithPushNotifications(env));
 }
 
 // static
 base::flat_set<proto::OptimizationType>
 OptimizationGuideBridge::GetOptTypesThatOverflowedPushNotifications() {
   JNIEnv* env = AttachCurrentThread();
-  std::vector<int> overflowed_int_types;
-  JavaIntArrayToIntVector(
-      env,
+  return ToOptTypesSet(
       Java_OptimizationGuideBridge_getOptTypesThatOverflowedPushNotifications(
-          env),
-      &overflowed_int_types);
-
-  base::flat_set<proto::OptimizationType> overflowed_types;
-  for (int int_type : overflowed_int_types) {
-    // Handles parsing of reserved tag numbers.
-    if (proto::OptimizationType_IsValid(int_type)) {
-      overflowed_types.insert(static_cast<proto::OptimizationType>(int_type));
-    }
-  }
-  return overflowed_types;
+          env));
 }
 
 // static
@@ -213,10 +183,9 @@ OptimizationGuideBridge::GetJavaObject() {
 }
 
 void OptimizationGuideBridge::RegisterOptimizationTypes(
-    JNIEnv* env,
-    const JavaRef<jintArray>& joptimization_types) {
+    const std::vector<int32_t>& optimization_types) {
   base::flat_set<proto::OptimizationType> opt_types_set =
-      JavaIntArrayToOptTypesSet(env, joptimization_types);
+      ToOptTypesSet(optimization_types);
   optimization_guide_keyed_service_->RegisterOptimizationTypes(
       {opt_types_set.begin(), opt_types_set.end()});
 }
@@ -254,7 +223,7 @@ OptimizationGuideBridge::CanApplyOptimizationSync(JNIEnv* env,
 void OptimizationGuideBridge::CanApplyOptimizationOnDemand(
     JNIEnv* env,
     const std::vector<GURL>& urls,
-    const JavaRef<jintArray>& optimization_types,
+    const std::vector<int32_t>& optimization_types,
     int32_t request_context,
     const JavaRef<jobject>& java_callback,
     const JavaRef<JArray<int8_t>>& request_context_metadata_serialized) {
@@ -274,7 +243,7 @@ void OptimizationGuideBridge::CanApplyOptimizationOnDemand(
   }
 
   optimization_guide_keyed_service_->CanApplyOptimizationOnDemand(
-      urls, JavaIntArrayToOptTypesSet(env, optimization_types),
+      urls, ToOptTypesSet(optimization_types),
       static_cast<proto::RequestContext>(request_context),
       base::BindRepeating(&OnOnDemandOptimizationGuideDecision,
                           ScopedJavaGlobalRef<jobject>(env, java_callback)),

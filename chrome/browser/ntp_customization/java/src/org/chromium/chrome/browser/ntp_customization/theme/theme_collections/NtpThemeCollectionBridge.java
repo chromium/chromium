@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -16,7 +17,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -125,7 +125,10 @@ public class NtpThemeCollectionBridge {
      */
     @CalledByNative
     static BackgroundCollection createCollection(
-            String id, String label, GURL previewImageUrl, int hash) {
+            @JniType("std::string") String id,
+            @JniType("std::string") String label,
+            @JniType("GURL") GURL previewImageUrl,
+            int hash) {
         return new BackgroundCollection(id, label, previewImageUrl, hash);
     }
 
@@ -141,17 +144,13 @@ public class NtpThemeCollectionBridge {
      */
     @CalledByNative
     static CollectionImage createImage(
-            String collectionId,
-            GURL imageUrl,
-            GURL previewImageUrl,
-            String[] attribution,
-            GURL attributionUrl) {
+            @JniType("std::string") String collectionId,
+            @JniType("GURL") GURL imageUrl,
+            @JniType("GURL") GURL previewImageUrl,
+            @JniType("std::vector<std::string>") List<String> attribution,
+            @JniType("GURL") GURL attributionUrl) {
         return new CollectionImage(
-                collectionId,
-                imageUrl,
-                previewImageUrl,
-                Arrays.asList(attribution),
-                attributionUrl);
+                collectionId, imageUrl, previewImageUrl, attribution, attributionUrl);
     }
 
     /**
@@ -224,11 +223,11 @@ public class NtpThemeCollectionBridge {
     @CalledByNative
     @VisibleForTesting
     static CustomBackgroundInfo createCustomBackgroundInfo(
-            GURL backgroundUrl,
-            String collectionId,
+            @JniType("GURL") GURL backgroundUrl,
+            @JniType("std::string") String collectionId,
             boolean isUploadedImage,
             boolean isDailyRefreshEnabled,
-            @Nullable String attribution) {
+            @JniType("std::string") String attribution) {
         return new CustomBackgroundInfo(
                 backgroundUrl, collectionId, isUploadedImage, isDailyRefreshEnabled, attribution);
     }
@@ -244,20 +243,20 @@ public class NtpThemeCollectionBridge {
 
         void getBackgroundImages(
                 long nativeNtpThemeCollectionBridge,
-                String collectionId,
+                @JniType("std::string") String collectionId,
                 Callback<Object[]> callback);
 
         void setThemeCollectionImage(
                 long nativeNtpThemeCollectionBridge,
-                String collectionId,
-                GURL imageUrl,
-                GURL previewImageUrl,
-                @Nullable String attributionLine1,
-                @Nullable String attributionLine2,
-                GURL attributionUrl);
+                @JniType("std::string") String collectionId,
+                @JniType("GURL") GURL imageUrl,
+                @JniType("GURL") GURL previewImageUrl,
+                @JniType("std::string") @Nullable String attributionLine1,
+                @JniType("std::string") @Nullable String attributionLine2,
+                @JniType("GURL") GURL attributionUrl);
 
         void setThemeCollectionDailyRefreshed(
-                long nativeNtpThemeCollectionBridge, String collectionId);
+                long nativeNtpThemeCollectionBridge, @JniType("std::string") String collectionId);
 
         void fetchNextThemeCollectionImage(long nativeNtpThemeCollectionBridge);
 

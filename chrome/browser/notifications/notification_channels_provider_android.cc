@@ -42,8 +42,6 @@
 #include "chrome/browser/notifications/jni_headers/NotificationSettingsBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -226,9 +224,8 @@ static void JNI_NotificationSettingsBridge_OnGetSiteChannelsDone(
 }
 
 static void JNI_NotificationSettingsBridge_OnChannelStateChanged(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_channel_id,
-    const JavaRef<jstring>& j_origin,
+    const std::string& channel_id,
+    const std::string& origin,
     bool blocked) {
   if (GetChannelStateChangedCallback().is_null()) {
     return;
@@ -238,10 +235,8 @@ static void JNI_NotificationSettingsBridge_OnChannelStateChanged(
                                          ? NotificationChannelStatus::BLOCKED
                                          : NotificationChannelStatus::ENABLED;
 
-  GetChannelStateChangedCallback().Run(NotificationChannel(
-      base::android::ConvertJavaStringToUTF8(env, j_channel_id),
-      base::android::ConvertJavaStringToUTF8(env, j_origin), base::Time::Now(),
-      status));
+  GetChannelStateChangedCallback().Run(
+      NotificationChannel(channel_id, origin, base::Time::Now(), status));
 }
 
 // static

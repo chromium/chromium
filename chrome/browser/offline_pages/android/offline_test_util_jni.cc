@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
-#include "chrome/android/test_support_jni_headers/OfflineTestUtil_jni.h"
 #include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/offline_pages/android/offline_page_bridge.h"
 #include "chrome/browser/offline_pages/android/request_coordinator_bridge.h"
@@ -25,6 +24,9 @@
 #include "components/offline_pages/core/offline_page_model.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/url_loader_interceptor.h"
+
+// Must come after headers that provide symbols used by @JniType.
+#include "chrome/android/test_support_jni_headers/OfflineTestUtil_jni.h"
 
 // Below is the native implementation of OfflineTestUtil.java.
 
@@ -226,17 +228,8 @@ static void JNI_OfflineTestUtil_ClearIntercepts() {
 }
 
 static void JNI_OfflineTestUtil_DumpRequestCoordinatorState(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_callback) {
-  auto wrap_callback = base::BindOnce(
-      [](base::android::ScopedJavaGlobalRef<jobject> j_callback,
-         std::string dump) {
-        JNIEnv* env = base::android::AttachCurrentThread();
-        base::android::RunObjectCallbackAndroid(
-            j_callback, base::android::ConvertUTF8ToJavaString(env, dump));
-      },
-      base::android::ScopedJavaGlobalRef<jobject>(env, j_callback));
-  DumpRequestCoordinatorState(std::move(wrap_callback));
+    base::OnceCallback<void(std::string)> callback) {
+  DumpRequestCoordinatorState(std::move(callback));
 }
 
 static void JNI_OfflineTestUtil_WaitForConnectivityState(

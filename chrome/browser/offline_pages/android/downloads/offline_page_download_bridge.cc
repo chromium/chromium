@@ -63,9 +63,6 @@
 #include "chrome/android/chrome_jni_headers/OfflinePageDownloadBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -303,7 +300,7 @@ OfflinePageDownloadBridge::OfflinePageDownloadBridge(
 
 OfflinePageDownloadBridge::~OfflinePageDownloadBridge() = default;
 
-void OfflinePageDownloadBridge::Destroy(JNIEnv* env) {
+void OfflinePageDownloadBridge::Destroy() {
   delete this;
 }
 

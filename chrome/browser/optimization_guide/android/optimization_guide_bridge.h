@@ -7,6 +7,7 @@
 
 #include <jni.h>
 
+#include <cstdint>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
@@ -46,8 +47,7 @@ class OptimizationGuideBridge {
   base::android::ScopedJavaLocalRef<JOptimizationGuideBridge> GetJavaObject();
 
   void RegisterOptimizationTypes(
-      JNIEnv* env,
-      const base::android::JavaRef<jintArray>& joptimization_types);
+      const std::vector<int32_t>& optimization_types);
   void CanApplyOptimization(
       JNIEnv* env,
       const GURL& url,
@@ -60,7 +60,7 @@ class OptimizationGuideBridge {
   void CanApplyOptimizationOnDemand(
       JNIEnv* env,
       const std::vector<GURL>& urls,
-      const base::android::JavaRef<jintArray>& joptimization_types,
+      const std::vector<int32_t>& optimization_types,
       int32_t request_context,
       const base::android::JavaRef<jobject>& java_callback,
       const base::android::JavaRef<JArray<int8_t>>&

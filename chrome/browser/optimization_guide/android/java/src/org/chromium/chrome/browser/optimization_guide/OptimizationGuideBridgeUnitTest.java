@@ -217,7 +217,7 @@ public class OptimizationGuideBridgeUnitTest {
         verify(mOptimizationGuideBridgeJniMock, times(1))
                 .canApplyOptimizationOnDemand(
                         eq(1L),
-                        aryEq(new GURL[] {gurl, gurl2}),
+                        eq(Arrays.asList(gurl, gurl2)),
                         aryEq(
                                 new int[] {
                                     OptimizationType.PERFORMANCE_HINTS_VALUE,

@@ -147,7 +147,7 @@ public class NtpThemeCollectionBridgeUnitTest {
         String collectionId = "collectionId";
         GURL imageUrl = JUnitTestGURLs.URL_1;
         GURL previewImageUrl = JUnitTestGURLs.URL_2;
-        String[] attribution = new String[] {"foo", "bar"};
+        List<String> attribution = List.of("foo", "bar");
         GURL attributionUrl = JUnitTestGURLs.URL_3;
         CollectionImage image =
                 NtpThemeCollectionBridge.createImage(

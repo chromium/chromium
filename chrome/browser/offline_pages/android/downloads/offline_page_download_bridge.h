@@ -28,7 +28,7 @@ class OfflinePageDownloadBridge {
 
   ~OfflinePageDownloadBridge();
 
-  void Destroy(JNIEnv* env);
+  void Destroy();
 
   static void ShowDownloadingToast();
 

@@ -208,7 +208,8 @@ public class OfflineTestUtil {
 
         void clearIntercepts();
 
-        void dumpRequestCoordinatorState(Callback<String> callback);
+        void dumpRequestCoordinatorState(
+                @JniType("base::OnceCallback<void(std::string)>") Callback<String> callback);
 
         void waitForConnectivityState(
                 boolean connected, @JniType("base::OnceClosure") Runnable callback);

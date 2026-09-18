@@ -33,10 +33,10 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
 
     @CalledByNative
     void showPasswordEditDialog(
-            String[] savedUsernames,
+            @JniType("std::vector<std::u16string>") String[] savedUsernames,
             @JniType("std::u16string") String username,
             @JniType("std::u16string") String password,
-            @Nullable String account,
+            @JniType("std::optional<std::string>") @Nullable String account,
             boolean isSavingBlockedByTrustedVaultError) {
         mDialogCoordinator.showPasswordEditDialog(
                 savedUsernames, username, password, account, isSavingBlockedByTrustedVaultError);

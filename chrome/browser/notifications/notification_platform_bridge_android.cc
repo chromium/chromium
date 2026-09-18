@@ -44,6 +44,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/persistent_notification_status.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider_manager.h"
@@ -52,15 +53,11 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/native_theme/native_theme.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/android/chrome_jni_headers/ActionInfo_jni.h"
 #include "chrome/android/chrome_jni_headers/NotificationPlatformBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF16;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -140,7 +137,6 @@ NotificationPlatformBridgeAndroid::~NotificationPlatformBridgeAndroid() {
 }
 
 void NotificationPlatformBridgeAndroid::OnNotificationClicked(
-    JNIEnv* env,
     const std::string& notification_id,
     int32_t java_notification_type,
     const std::string& java_origin_str,
@@ -149,11 +145,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
     bool incognito,
     const std::string& webapk_package,
     int32_t java_action_index,
-    const JavaRef<jstring>& java_reply) {
-  std::optional<std::u16string> reply;
-  if (java_reply)
-    reply = ConvertJavaStringToUTF16(env, java_reply);
-
+    const std::optional<std::u16string>& reply) {
   GURL origin(java_origin_str);
   GURL scope_url(scope_url_str);
   regenerated_notification_infos_[notification_id] =

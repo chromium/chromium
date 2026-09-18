@@ -73,7 +73,7 @@ public class OfflinePageEvaluationBridge {
         ThreadUtils.assertOnUiThread();
         mNativeOfflinePageEvaluationBridge =
                 OfflinePageEvaluationBridgeJni.get()
-                        .createBridgeForProfile(profile, useEvaluationScheduler);
+                        .createBridgeForProfile(this, profile, useEvaluationScheduler);
     }
 
     private static final String TAG = "OPEvalBridge";
@@ -90,8 +90,7 @@ public class OfflinePageEvaluationBridge {
     /** Destroys the native portion of the bridge. */
     public void destroy() {
         if (mNativeOfflinePageEvaluationBridge != 0) {
-            OfflinePageEvaluationBridgeJni.get()
-                    .destroy(mNativeOfflinePageEvaluationBridge, OfflinePageEvaluationBridge.this);
+            OfflinePageEvaluationBridgeJni.get().destroy(mNativeOfflinePageEvaluationBridge);
             mNativeOfflinePageEvaluationBridge = 0;
             mIsOfflinePageModelLoaded = false;
         }
@@ -250,17 +249,17 @@ public class OfflinePageEvaluationBridge {
     @CalledByNative
     private static void createOfflinePageAndAddToList(
             List<OfflinePageItem> offlinePagesList,
-            String url,
+            @JniType("std::string") String url,
             long offlineId,
-            String clientNamespace,
-            String clientId,
-            String title,
-            String filePath,
+            @JniType("std::string") String clientNamespace,
+            @JniType("std::string") String clientId,
+            @JniType("std::u16string") String title,
+            @JniType("std::string") String filePath,
             long fileSize,
             long creationTime,
             int accessCount,
             long lastAccessTimeMs,
-            String requestOrigin) {
+            @JniType("std::string") String requestOrigin) {
         offlinePagesList.add(
                 createOfflinePageItem(
                         url,
@@ -285,8 +284,17 @@ public class OfflinePageEvaluationBridge {
             long requestId,
             @JniType("std::string") String url,
             @JniType("std::string") String clientIdNamespace,
-            @JniType("std::string") String clientIdId) {
-        return SavePageRequest.create(state, requestId, url, clientIdNamespace, clientIdId);
+            @JniType("std::string") String clientIdId,
+            @JniType("std::string") String originString,
+            int autoFetchNotificationState) {
+        return SavePageRequest.create(
+                state,
+                requestId,
+                url,
+                clientIdNamespace,
+                clientIdId,
+                originString,
+                autoFetchNotificationState);
     }
 
     private static OfflinePageItem createOfflinePageItem(
@@ -318,7 +326,9 @@ public class OfflinePageEvaluationBridge {
     @NativeMethods
     interface Natives {
         long createBridgeForProfile(
-                @JniType("Profile*") Profile profile, boolean useEvaluationScheduler);
+                OfflinePageEvaluationBridge caller,
+                @JniType("Profile*") Profile profile,
+                boolean useEvaluationScheduler);
 
         void destroy(long nativeOfflinePageEvaluationBridge);
 
@@ -342,7 +352,7 @@ public class OfflinePageEvaluationBridge {
 
         void removeRequestsFromQueue(
                 long nativeOfflinePageEvaluationBridge,
-                long[] requestIds,
+                @JniType("std::vector<int64_t>") long[] requestIds,
                 Callback<Integer> callback);
     }
 }
