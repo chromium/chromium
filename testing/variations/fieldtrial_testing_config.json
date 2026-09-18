@@ -8467,6 +8467,22 @@
             ]
         }
     ],
+    "EnableTabSharingProtection": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableTabSharingProtection"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableWatermarkTimestampTimezone": [
         {
             "platforms": [
