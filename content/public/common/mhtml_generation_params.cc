@@ -13,4 +13,18 @@ namespace content {
 MHTMLGenerationParams::MHTMLGenerationParams(const base::FilePath& file_path)
     : file_path(file_path) {}
 
+MHTMLGenerationParams::MHTMLGenerationParams(
+    const MHTMLGenerationParams& other) = default;
+
+MHTMLGenerationParams& MHTMLGenerationParams::operator=(
+    const MHTMLGenerationParams& other) = default;
+
+MHTMLGenerationParams::MHTMLGenerationParams(MHTMLGenerationParams&& other) =
+    default;
+
+MHTMLGenerationParams& MHTMLGenerationParams::operator=(
+    MHTMLGenerationParams&& other) = default;
+
+MHTMLGenerationParams::~MHTMLGenerationParams() = default;
+
 }  // namespace content

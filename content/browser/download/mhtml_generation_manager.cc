@@ -4,6 +4,7 @@
 
 #include "content/browser/download/mhtml_generation_manager.h"
 
+#include <set>
 #include <tuple>
 #include <utility>
 
@@ -42,6 +43,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/mime_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -331,6 +333,10 @@ class MHTMLGenerationManager::Job {
   // The documents that still need to be processed.
   base::queue<base::WeakPtr<RenderFrameHostImpl>> pending_render_frame_hosts_;
 
+  // Set of FrameTreeNodeIds whose subtrees should be skipped during
+  // serialization (either filtered out initially or after in-place navigation).
+  absl::flat_hash_set<FrameTreeNodeId> skipped_frame_tree_node_ids_;
+
   // Identifies a frame to which we've sent through
   // MhtmlFileWriter::SerializeAsMHTML but for which we didn't yet process
   // the response via SerializeAsMHTMLResponse.
@@ -359,8 +365,6 @@ class MHTMLGenerationManager::Job {
 
   // MHTMLFileWriter instance for the frame being currently serialized.
   mojo::AssociatedRemote<mojom::MhtmlFileWriter> writer_;
-
-
 
   // Indicates whether there is currently data being streamed from the Renderer.
   // Not used when the renderer is writing directly to file.
@@ -406,6 +410,16 @@ void MHTMLGenerationManager::Job::initializeJob(WebContents* web_contents) {
       // Skip inner tree placeholder nodes.
       continue;
     }
+    if (node->parent() && skipped_frame_tree_node_ids_.contains(
+                              node->parent()->GetFrameTreeNodeId())) {
+      skipped_frame_tree_node_ids_.insert(node->frame_tree_node_id());
+      continue;
+    }
+    if (params_.frame_filter && !node->IsMainFrame() &&
+        !params_.frame_filter.Run(node->current_frame_host())) {
+      skipped_frame_tree_node_ids_.insert(node->frame_tree_node_id());
+      continue;
+    }
     pending_render_frame_hosts_.push(node->current_frame_host()->GetWeakPtr());
   }
 
@@ -416,8 +430,9 @@ void MHTMLGenerationManager::Job::initializeJob(WebContents* web_contents) {
   // Save off any extra data.
   auto* extra_parts = static_cast<MHTMLExtraPartsImpl*>(
       MHTMLExtraParts::FromWebContents(web_contents));
-  if (extra_parts)
+  if (extra_parts) {
     extra_data_parts_ = extra_parts->parts();
+  }
 
   download::GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&CreateMHTMLFile, params_.file_path),
@@ -445,10 +460,34 @@ mojom::MhtmlSaveStatus MHTMLGenerationManager::Job::SendToNextRenderFrame() {
   CHECK(browser_file_.IsValid());
   CHECK(!pending_render_frame_hosts_.empty());
 
-  RenderFrameHostImpl* rfh = pending_render_frame_hosts_.front().get();
-  pending_render_frame_hosts_.pop();
-  if (!rfh) {  // The contents went away.
-    return mojom::MhtmlSaveStatus::kFrameNoLongerExists;
+  RenderFrameHostImpl* rfh = nullptr;
+  while (!pending_render_frame_hosts_.empty()) {
+    rfh = pending_render_frame_hosts_.front().get();
+    pending_render_frame_hosts_.pop();
+    if (!rfh) {
+      // If we haven't bound |writer_| yet, the main frame went away.
+      if (!writer_) {
+        return mojom::MhtmlSaveStatus::kFrameNoLongerExists;
+      }
+      continue;
+    }
+    FrameTreeNode* node = rfh->frame_tree_node();
+    if (node->parent() && skipped_frame_tree_node_ids_.contains(
+                              node->parent()->GetFrameTreeNodeId())) {
+      skipped_frame_tree_node_ids_.insert(node->frame_tree_node_id());
+      rfh = nullptr;
+      continue;
+    }
+    if (params_.frame_filter && !node->IsMainFrame() &&
+        !params_.frame_filter.Run(rfh)) {
+      skipped_frame_tree_node_ids_.insert(node->frame_tree_node_id());
+      rfh = nullptr;
+      continue;
+    }
+    break;
+  }
+  if (!rfh) {
+    return mojom::MhtmlSaveStatus::kSuccess;
   }
 
   if (writer_) {
@@ -515,8 +554,9 @@ void MHTMLGenerationManager::Job::DoneWritingToDisk(
   // to the UI thread before it was reset in MarkAsFinished(). Since the Job
   // is still alive waiting for the file to close, the weak pointer remains
   // valid and this task will still run.
-  if (is_finished_)
+  if (is_finished_) {
     return;
+  }
 
   pipe_reader_.Reset();
   waiting_on_data_streaming_ = false;
@@ -542,8 +582,9 @@ void MHTMLGenerationManager::Job::OnFileAvailable(base::File browser_file) {
   browser_file_ = std::move(browser_file);
 
   mojom::MhtmlSaveStatus save_status = SendToNextRenderFrame();
-  if (save_status != mojom::MhtmlSaveStatus::kSuccess)
+  if (save_status != mojom::MhtmlSaveStatus::kSuccess) {
     Finalize(save_status);
+  }
 }
 
 void MHTMLGenerationManager::Job::OnFinished(
@@ -591,8 +632,9 @@ void MHTMLGenerationManager::Job::CloseFile(
 
   // Only update the status if that won't hide an earlier error.
   if (!browser_file_.IsValid() &&
-      save_status == mojom::MhtmlSaveStatus::kSuccess)
+      save_status == mojom::MhtmlSaveStatus::kSuccess) {
     save_status = mojom::MhtmlSaveStatus::kFileWritingError;
+  }
 
   // If no previous error occurred the boundary should be sent.
   download::GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
@@ -614,8 +656,9 @@ void MHTMLGenerationManager::Job::SerializeAsMHTMLResponse(
   frame_tree_node_id_of_busy_frame_ = FrameTreeNodeId();
 
   // If the renderer succeeded, update the resource digests.
-  if (save_status == mojom::MhtmlSaveStatus::kSuccess)
+  if (save_status == mojom::MhtmlSaveStatus::kSuccess) {
     RecordDigests(digests_of_uris_of_serialized_resources);
+  }
 
   MaybeSendToNextRenderFrame(save_status);
 }
@@ -746,8 +789,9 @@ std::string MHTMLGenerationManager::Job::CreateExtraDataParts(
   std::string serialized_extra_data_parts;
 
   // Don't write an extra data part if there is none.
-  if (extra_data_parts.empty())
+  if (extra_data_parts.empty()) {
     return serialized_extra_data_parts;
+  }
 
   // For each extra part, serialize that part and add to our accumulator
   // string.

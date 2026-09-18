@@ -23,8 +23,9 @@ class FilePath;
 }
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
-}
+}  // namespace content
 
 namespace extensions {
 
@@ -48,10 +49,14 @@ class PageCaptureSaveAsMHTMLFunction : public ExtensionFunction {
   ResponseAction Run() override;
   void OnResponseAck() override;
 
+  // Returns whether or not the extension has permission to capture the given
+  // frame.
+  bool CanCaptureFrame(content::RenderFrameHost* render_frame_host) const;
+
   // Returns whether or not the extension has permission to capture the current
   // page. Sets |*error| to an error value on failure.
   bool CanCaptureCurrentPage(content::WebContents& web_contents,
-                             std::string* error);
+                             std::string* error) const;
 
   // Called on the file thread.
   void CreateTemporaryFile();
@@ -67,7 +72,7 @@ class PageCaptureSaveAsMHTMLFunction : public ExtensionFunction {
   void MHTMLGenerated(int64_t mhtml_file_size);
 
   // Returns the WebContents we are associated with, NULL if it's been closed.
-  content::WebContents* GetWebContents();
+  content::WebContents* GetWebContents() const;
 
   // The document ID for the page being captured. Used to check that the page
   // hasn't navigated before the capture completes.

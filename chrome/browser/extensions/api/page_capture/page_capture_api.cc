@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/mhtml_generation_params.h"
@@ -23,7 +24,9 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "url/gurl.h"
 #include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -102,29 +105,58 @@ ExtensionFunction::ResponseAction PageCaptureSaveAsMHTMLFunction::Run() {
   return RespondLater();
 }
 
-bool PageCaptureSaveAsMHTMLFunction::CanCaptureCurrentPage(
-    WebContents& web_contents,
-    std::string* error) {
-  const url::Origin& origin =
-      web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin();
-  bool can_capture_page = false;
-  if (origin.scheme() == url::kFileScheme) {
-    // We special case file schemes, since we don't check for URL permissions
-    // in CanCaptureVisiblePage() with the pageCapture API. This ensures
-    // file:// URLs are only capturable with the proper permission.
-    can_capture_page = extensions::util::AllowFileAccess(
-        extension()->id(), web_contents.GetBrowserContext());
+bool PageCaptureSaveAsMHTMLFunction::CanCaptureFrame(
+    content::RenderFrameHost* render_frame_host) const {
+  CHECK(render_frame_host);
+  CHECK(extension());
+  auto* web_contents = WebContents::FromRenderFrameHost(render_frame_host);
+  CHECK(web_contents);
+
+  const url::Origin& origin = render_frame_host->GetLastCommittedOrigin();
+  GURL check_url;
+  const GURL& committed_url = render_frame_host->GetLastCommittedURL();
+  if (render_frame_host->IsInPrimaryMainFrame() &&
+      committed_url.SchemeIs(url::kDataScheme)) {
+    // Top-level data: URLs must be checked as data: URLs so
+    // CanCaptureVisiblePage enforces activeTab even if navigated from an
+    // http/https initiator.
+    check_url = committed_url;
+  } else if (origin.opaque()) {
+    const url::SchemeHostPort& precursor =
+        origin.GetTupleOrPrecursorTupleIfOpaque();
+    if (precursor.IsValid()) {
+      check_url = precursor.GetURL();
+    } else {
+      check_url = committed_url;
+    }
   } else {
-    std::string unused_error;
-    // TODO(tjudkins): We should change CanCaptureVisiblePage to take the
-    // url::Origin directly, as it converts the GURL to an origin itself anyway.
-    can_capture_page = extension()->permissions_data()->CanCaptureVisiblePage(
-        origin.GetURL(),
-        sessions::SessionTabHelper::IdForTab(&web_contents).id(), &unused_error,
-        extensions::CaptureRequirement::kPageCapture);
+    check_url = origin.GetURL();
   }
 
-  if (!can_capture_page) {
+  // Special case: file:// URLs. `CanCaptureVisiblePage()` checks host
+  // permissions for file:// URLs, which pageCapture does not require. Instead,
+  // check enterprise policy restrictions and whether the extension has file
+  // access enabled.
+  if (check_url.SchemeIs(url::kFileScheme)) {
+    if (extension()->location() != mojom::ManifestLocation::kComponent &&
+        extension()->permissions_data()->IsPolicyBlockedHost(check_url)) {
+      return false;
+    }
+    return extensions::util::AllowFileAccess(extension()->id(),
+                                             web_contents->GetBrowserContext());
+  }
+
+  std::string unused_error;
+  return extension()->permissions_data()->CanCaptureVisiblePage(
+      check_url, sessions::SessionTabHelper::IdForTab(web_contents).id(),
+      &unused_error, extensions::CaptureRequirement::kPageCapture);
+}
+
+bool PageCaptureSaveAsMHTMLFunction::CanCaptureCurrentPage(
+    WebContents& web_contents,
+    std::string* error) const {
+  bool can_capture_page = CanCaptureFrame(web_contents.GetPrimaryMainFrame());
+  if (!can_capture_page && error) {
     *error = kPageCaptureNotAllowed;
   }
   return can_capture_page;
@@ -196,8 +228,17 @@ void PageCaptureSaveAsMHTMLFunction::TemporaryFileCreatedOnUI(bool success) {
     return;
   }
 
+  std::string error;
+  if (!CanCaptureCurrentPage(*web_contents, &error)) {
+    ReturnFailure(error);
+    return;
+  }
+
+  content::MHTMLGenerationParams params(mhtml_path_);
+  params.frame_filter = base::BindRepeating(
+      &PageCaptureSaveAsMHTMLFunction::CanCaptureFrame, this);
   web_contents->GenerateMHTML(
-      content::MHTMLGenerationParams(mhtml_path_),
+      params,
       base::BindOnce(&PageCaptureSaveAsMHTMLFunction::MHTMLGenerated, this));
 }
 
@@ -252,7 +293,7 @@ void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int file_size) {
   Respond(WithArguments(std::move(response)));
 }
 
-WebContents* PageCaptureSaveAsMHTMLFunction::GetWebContents() {
+WebContents* PageCaptureSaveAsMHTMLFunction::GetWebContents() const {
   content::WebContents* web_contents = nullptr;
   if (!ExtensionTabUtil::GetTabById(params_->details.tab_id, browser_context(),
                                     include_incognito_information(),
