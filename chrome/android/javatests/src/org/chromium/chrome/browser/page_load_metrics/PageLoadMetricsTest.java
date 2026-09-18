@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.page_load_metrics;
 
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -15,9 +16,10 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ScalableTimeout;
@@ -29,6 +31,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -47,7 +50,9 @@ public class PageLoadMetricsTest {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    private static final long PAGE_LOAD_METRICS_TIMEOUT_MS = ScalableTimeout.scaleTimeout(20000);
+    private static final long PAGE_LOAD_METRICS_UNSCALED_TIMEOUT_MS = 20000;
+    private static final long PAGE_LOAD_METRICS_TIMEOUT_MS =
+            ScalableTimeout.scaleTimeout(PAGE_LOAD_METRICS_UNSCALED_TIMEOUT_MS);
     private static final String PAGE_PREFIX = "/chrome/test/data/android/google.html";
 
     private EmbeddedTestServer mTestServer;
@@ -59,6 +64,54 @@ public class PageLoadMetricsTest {
     private String getNextLoadUrl() {
         int i = mLoadCount++;
         return mTestServer.getURL(PAGE_PREFIX + "?q=" + i);
+    }
+
+    private void loadUrlAndWaitForPaint(String url) {
+        mActivityTestRule.loadUrl(url);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    WebContents webContents =
+                            ThreadUtils.runOnUiThreadBlocking(
+                                    () -> {
+                                        var activity = mActivityTestRule.getActivity();
+                                        Criteria.checkThat(activity, Matchers.notNullValue());
+                                        var holder = activity.getCompositorViewHolderForTesting();
+                                        Criteria.checkThat(holder, Matchers.notNullValue());
+                                        holder.requestRender();
+
+                                        var tab = activity.getActivityTab();
+                                        Criteria.checkThat(tab, Matchers.notNullValue());
+                                        WebContents wc = tab.getWebContents();
+                                        Criteria.checkThat(wc, Matchers.notNullValue());
+                                        Criteria.checkThat(wc.isDestroyed(), Matchers.is(false));
+                                        return wc;
+                                    });
+                    try {
+                        String script =
+                                "performance.getEntriesByName('first-contentful-paint').length > 0"
+                                        + " ? 'true' : (window._fcpRafPending"
+                                        + " || (window._fcpRafPending = true,"
+                                        + " requestAnimationFrame(() => {"
+                                        + " window._fcpRafPending = false;"
+                                        + " const el = document.body || document.documentElement;"
+                                        + " if (el) {"
+                                        + " el.style.opacity ="
+                                        + " (el.style.opacity === '0.99') ? '1.0' : '0.99';"
+                                        + " }"
+                                        + " })), 'false')";
+                        String hasFcp =
+                                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                        webContents,
+                                        script,
+                                        /* timeout= */ 500,
+                                        TimeUnit.MILLISECONDS);
+                        Criteria.checkThat(hasFcp, Matchers.is("\"true\""));
+                    } catch (TimeoutException e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                },
+                PAGE_LOAD_METRICS_UNSCALED_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private void addPrerender(String url) throws TimeoutException {
@@ -100,9 +153,11 @@ public class PageLoadMetricsTest {
 
     private void assertMetricsEmitted(PageLoadMetricsTestObserver observer)
             throws InterruptedException {
+        boolean navObserved = observer.waitForNavigationEvent();
         Assert.assertTrue(
                 "Navigation should be observed (navId=" + observer.getNavigationId() + ")",
-                observer.waitForNavigationEvent());
+                navObserved);
+        boolean fcpObserved = observer.waitForFirstContentfulPaintEvent();
         Assert.assertTrue(
                 "First Contentful Paint should be reported (expected navId="
                         + observer.getNavigationId()
@@ -111,7 +166,8 @@ public class PageLoadMetricsTest {
                         + ", last observed FCP ms="
                         + observer.getLastObservedFcpMs()
                         + ")",
-                observer.waitForFirstContentfulPaintEvent());
+                fcpObserved);
+        boolean loadObserved = observer.waitForLoadEventStartEvent();
         Assert.assertTrue(
                 "Load event start event should be reported (expected navId="
                         + observer.getNavigationId()
@@ -120,7 +176,7 @@ public class PageLoadMetricsTest {
                         + ", last observed load ms="
                         + observer.getLastObservedLoadEventMs()
                         + ")",
-                observer.waitForLoadEventStartEvent());
+                loadObserved);
     }
 
     /**
@@ -133,6 +189,7 @@ public class PageLoadMetricsTest {
 
         private final @Nullable WebContents mExpectedWebContents;
         private final CountDownLatch mPrerenderingNavigationLatch = new CountDownLatch(1);
+        private final CountDownLatch mPrerenderingLoadEventStartLatch = new CountDownLatch(1);
         private final CountDownLatch mActivationLatch = new CountDownLatch(1);
         private final CountDownLatch mFirstContentfulPaintLatch = new CountDownLatch(1);
         private final CountDownLatch mLoadEventStartLatch = new CountDownLatch(1);
@@ -222,7 +279,9 @@ public class PageLoadMetricsTest {
                     Assert.assertTrue(
                             "Should be registered as prerendering",
                             PageLoadMetrics.isPrerendering());
-                    if (loadEventStartMs >= 0) mLoadEventStartLatch.countDown();
+                    if (loadEventStartMs >= 0) {
+                        mPrerenderingLoadEventStartLatch.countDown();
+                    }
                 }
             }
             if (mNavigationId != navigationId) return;
@@ -236,6 +295,11 @@ public class PageLoadMetricsTest {
 
         public boolean waitForPrerenderingNavigationEvent() throws InterruptedException {
             return mPrerenderingNavigationLatch.await(
+                    PAGE_LOAD_METRICS_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        }
+
+        public boolean waitForPrerenderingLoadEventStartEvent() throws InterruptedException {
+            return mPrerenderingLoadEventStartLatch.await(
                     PAGE_LOAD_METRICS_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         }
 
@@ -278,20 +342,20 @@ public class PageLoadMetricsTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/557432970")
-    public void testPageLoadMetricEmitted() throws InterruptedException {
+    @SmallTest
+    public void testPageLoadMetricEmitted() throws Exception {
         Assert.assertFalse(
                 "Tab shouldn't be loading anything before we add observer",
                 mActivityTestRule.getActivityTab().isLoading());
         PageLoadMetricsTestObserver metricsObserver =
                 new PageLoadMetricsTestObserver(mActivityTestRule.getWebContents());
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        PageLoadMetrics.addObserver(
-                                metricsObserver, /* supportPrerendering= */ false));
 
         try {
-            mActivityTestRule.loadUrl(getNextLoadUrl());
+            ThreadUtils.runOnUiThreadBlocking(
+                    () ->
+                            PageLoadMetrics.addObserver(
+                                    metricsObserver, /* supportPrerendering= */ false));
+            loadUrlAndWaitForPaint(getNextLoadUrl());
             assertMetricsEmitted(metricsObserver);
             Assert.assertFalse("Should not have prerendering", metricsObserver.hasPrerendering());
         } finally {
@@ -303,7 +367,7 @@ public class PageLoadMetricsTest {
     @Test
     @SmallTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445205
-    public void testPageLoadMetricNavigationIdSetCorrectly() throws InterruptedException {
+    public void testPageLoadMetricNavigationIdSetCorrectly() throws Exception {
         PageLoadMetricsTestObserver metricsObserver =
                 new PageLoadMetricsTestObserver(mActivityTestRule.getWebContents());
         PageLoadMetricsTestObserver metricsObserver2 =
@@ -313,14 +377,14 @@ public class PageLoadMetricsTest {
                     () ->
                             PageLoadMetrics.addObserver(
                                     metricsObserver, /* supportPrerendering= */ false));
-            mActivityTestRule.loadUrl(getNextLoadUrl());
+            loadUrlAndWaitForPaint(getNextLoadUrl());
             assertMetricsEmitted(metricsObserver);
 
             ThreadUtils.runOnUiThreadBlocking(
                     () ->
                             PageLoadMetrics.addObserver(
                                     metricsObserver2, /* supportPrerendering= */ false));
-            mActivityTestRule.loadUrl(getNextLoadUrl());
+            loadUrlAndWaitForPaint(getNextLoadUrl());
             assertMetricsEmitted(metricsObserver2);
 
             Assert.assertNotEquals(
@@ -359,7 +423,7 @@ public class PageLoadMetricsTest {
                                     prerenderingSupportMetricsObserver,
                                     /* supportPrerendering= */ true));
 
-            mActivityTestRule.loadUrl(getNextLoadUrl());
+            loadUrlAndWaitForPaint(getNextLoadUrl());
             // Both observers should recognize primary page's metrics.
             assertMetricsEmitted(metricsObserver);
             assertMetricsEmitted(prerenderingSupportMetricsObserver);
@@ -380,8 +444,9 @@ public class PageLoadMetricsTest {
                     "Observers that support prerendering should recognize prerendering",
                     prerenderingSupportMetricsObserver.hasPrerendering());
             Assert.assertTrue(
-                    "Observers that support prerendering should recognize prerendering load event",
-                    prerenderingSupportMetricsObserver.waitForLoadEventStartEvent());
+                    "Observers that support prerendering should recognize"
+                            + " prerendering load event",
+                    prerenderingSupportMetricsObserver.waitForPrerenderingLoadEventStartEvent());
 
             // Activate the prerendered page.
             activatePrerender(prerenderingUrl);
