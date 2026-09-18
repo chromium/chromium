@@ -8,6 +8,7 @@
 #include <winerror.h>
 #include <wrl/client.h>
 
+#include <array>
 #include <optional>
 #include <string>
 #include <utility>
@@ -56,9 +57,9 @@ HRESULT RunGoogleUpdateElevatedCommand(const wchar_t* command,
 
   Microsoft::WRL::ComPtr<IAppCommandWeb> app_command =
       get_command_result.value();
-  _variant_t vargs[kMaxCommandArgs];
+  std::array<_variant_t, kMaxCommandArgs> vargs;
   for (size_t i = 0; i < args.size(); ++i) {
-    UNSAFE_TODO(vargs[i]) = args[i].c_str();
+    vargs[i] = args[i].c_str();
   }
 
   HRESULT hr =

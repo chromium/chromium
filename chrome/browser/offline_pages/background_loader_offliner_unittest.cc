@@ -272,10 +272,6 @@ class BackgroundLoaderOfflinerTest : public testing::Test {
     PumpLoop();
   }
 
-  offline_pages::RequestStats* GetRequestStats() {
-    return offliner_->GetRequestStatsForTest();
-  }
-
   std::unique_ptr<VisibleSecurityState> BaseVisibleSecurityState() {
     auto visible_security_state = std::make_unique<VisibleSecurityState>();
     visible_security_state->connection_info_initialized = true;

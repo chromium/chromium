@@ -6,11 +6,13 @@
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager_impl.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <random>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_set.h"
 #include "base/strings/string_number_conversions.h"
@@ -40,7 +42,8 @@ const char kTestContactEmailPrefix[] = "email_";
 const char kTestContactPhonePrefix[] = "phone_";
 const char kTestDefaultDeviceName[] = "Josh's Chromebook";
 const char kTestProfileUserName[] = "test@google.com";
-constexpr const char* kTestPersonNames[] = {"BBB BBB", "CCC CCC", "AAA AAA"};
+constexpr auto kTestPersonNames =
+    std::to_array<std::string_view>({"BBB BBB", "CCC CCC", "AAA AAA"});
 
 // From nearby_share_contact_manager_impl.cc.
 constexpr base::TimeDelta kContactUploadPeriod = base::Hours(24);

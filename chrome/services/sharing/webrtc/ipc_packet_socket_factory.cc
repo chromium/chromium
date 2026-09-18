@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <list>
 #include <optional>
 #include <vector>
@@ -185,7 +186,7 @@ class IpcPacketSocket : public webrtc::AsyncPacketSocket,
 
   // Current error code. Valid when state_ == IS_ERROR.
   int error_;
-  int options_[network::P2P_SOCKET_OPT_MAX];
+  std::array<int, network::P2P_SOCKET_OPT_MAX> options_;
 
   // Track the maximum and current consecutive bytes discarded due to not enough
   // send_bytes_available_.
@@ -248,8 +249,7 @@ IpcPacketSocket::IpcPacketSocket()
       packets_discarded_(0),
       total_packets_(0) {
   static_assert(kMaximumInFlightBytes > 0, "would send at zero rate");
-  std::fill_n(options_, static_cast<int>(network::P2P_SOCKET_OPT_MAX),
-              kDefaultNonSetOptionValue);
+  options_.fill(kDefaultNonSetOptionValue);
 }
 
 IpcPacketSocket::~IpcPacketSocket() {
@@ -456,7 +456,7 @@ int IpcPacketSocket::GetOption(webrtc::Socket::Option option, int* value) {
     return -1;
   }
 
-  *value = UNSAFE_TODO(options_[p2p_socket_option]);
+  *value = options_[p2p_socket_option];
   return 0;
 }
 
@@ -469,7 +469,7 @@ int IpcPacketSocket::SetOption(webrtc::Socket::Option option, int value) {
     return -1;
   }
 
-  UNSAFE_TODO(options_[p2p_socket_option]) = value;
+  options_[p2p_socket_option] = value;
 
   if (state_ == IS_OPEN) {
     // Options will be applied when state becomes IS_OPEN in OnOpen.
@@ -509,9 +509,8 @@ void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
 
   // Set all pending options if any.
   for (int i = 0; i < network::P2P_SOCKET_OPT_MAX; ++i) {
-    if (UNSAFE_TODO(options_[i]) != kDefaultNonSetOptionValue) {
-      DoSetOption(static_cast<network::P2PSocketOption>(i),
-                  UNSAFE_TODO(options_[i]));
+    if (options_[i] != kDefaultNonSetOptionValue) {
+      DoSetOption(static_cast<network::P2PSocketOption>(i), options_[i]);
     }
   }
 

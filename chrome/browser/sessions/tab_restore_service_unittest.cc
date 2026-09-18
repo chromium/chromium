@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -501,8 +502,8 @@ TEST_F(TabRestoreServiceImplTest, Basic) {
 
 TEST_F(TabRestoreServiceImplWithMockClientTest,
        TabExtraDataPresentInHistoricalTab) {
-  constexpr char kSampleKey[] = "test";
-  constexpr char kSampleValue[] = "true";
+  constexpr std::string_view kSampleKey = "test";
+  constexpr std::string_view kSampleValue = "true";
 
   std::unique_ptr<MockLiveTabContext> mock_live_tab_context_ptr(
       new ::testing::NiceMock<MockLiveTabContext>());
@@ -512,7 +513,7 @@ TEST_F(TabRestoreServiceImplWithMockClientTest,
   EXPECT_CALL(*mock_live_tab_context_ptr, GetExtraDataForTab)
       .WillOnce([kSampleKey, kSampleValue]() {
         std::map<std::string, std::string> sample_extra_data;
-        sample_extra_data[kSampleKey] = kSampleValue;
+        sample_extra_data.emplace(kSampleKey, kSampleValue);
         return sample_extra_data;
       });
   ON_CALL(*mock_tab_restore_service_client_, FindLiveTabContextForTab(_))
@@ -533,7 +534,7 @@ TEST_F(TabRestoreServiceImplWithMockClientTest,
   ASSERT_EQ(1U, tab->navigations.size());
   EXPECT_EQ(url1_, tab->navigations[0].virtual_url());
   ASSERT_EQ(1U, tab->extra_data.size());
-  ASSERT_EQ(kSampleValue, tab->extra_data[kSampleKey]);
+  ASSERT_EQ(kSampleValue, tab->extra_data[std::string(kSampleKey)]);
 }
 
 // Ensure fields are written and read from saved state.

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/offline_pages/background_loader_offliner.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -77,11 +78,6 @@ BackgroundLoaderOffliner::BackgroundLoaderOffliner(
   // crashing, adding a check here.
   if (load_termination_listener_) {
     load_termination_listener_->set_offliner(this);
-  }
-
-  for (int i = 0; i < ResourceDataType::RESOURCE_DATA_TYPE_COUNT; ++i) {
-    UNSAFE_TODO(stats_[i]).requested = 0;
-    UNSAFE_TODO(stats_[i]).completed = 0;
   }
 }
 
@@ -313,7 +309,7 @@ void BackgroundLoaderOffliner::ObserveResourceLoading(
     bool started) {
   // Add the signal to extra data, and use for tracking.
 
-  RequestStats& found_stats = UNSAFE_TODO(stats_[type]);
+  RequestStats& found_stats = stats_[type];
   if (started) {
     ++found_stats.requested;
   } else {
@@ -467,10 +463,7 @@ void BackgroundLoaderOffliner::ResetState() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(loader_));
 
-  for (int i = 0; i < ResourceDataType::RESOURCE_DATA_TYPE_COUNT; ++i) {
-    UNSAFE_TODO(stats_[i]).requested = 0;
-    UNSAFE_TODO(stats_[i]).completed = 0;
-  }
+  stats_ = {};
 }
 
 void BackgroundLoaderOffliner::ResetLoader() {

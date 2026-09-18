@@ -4,11 +4,13 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -83,14 +85,14 @@ struct TestAccountInfo {
 };
 
 // Accounts for multi profile test.
-static const TestAccountInfo kTestAccounts[] = {
+constexpr auto kTestAccounts = std::to_array<TestAccountInfo>({
     {"__dummy__@invalid.domain", GaiaId::Literal("10000"), "hashdummy",
      "Dummy Account"},
     {"alice@invalid.domain", GaiaId::Literal("10001"), "hashalice", "Alice"},
     {"bob@invalid.domain", GaiaId::Literal("10002"), "hashbobbo", "Bob"},
     {"charlie@invalid.domain", GaiaId::Literal("10003"), "hashcharl",
      "Charlie"},
-};
+});
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
@@ -1070,15 +1072,15 @@ class MultiProfileDownloadNotificationTest
     DownloadNotificationTestBase::SetUpOnMainThread();
 
     // Add all users, except the first one, which is already logged in.
-    for (size_t i = 1; i < std::size(kTestAccounts); ++i) {
-      AddUser(UNSAFE_TODO(kTestAccounts[i]));
+    for (const auto& account : base::span(kTestAccounts).subspan(1u)) {
+      AddUser(account);
     }
   }
 
   Profile* GetProfileByIndex(int index) {
     return g_browser_process->profile_manager()->GetProfileByPath(
         ash::ProfileHelper::GetProfilePathByUserIdHash(
-            UNSAFE_TODO(kTestAccounts[index]).hash));
+            kTestAccounts[index].hash));
   }
 
   // Adds a new user for testing to the current session.

@@ -14,6 +14,8 @@
 #include <stddef.h>
 #include <stdio.h>
 
+#include <array>
+
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -42,12 +44,12 @@ bool VerifyWords(const convert_dict::DicReader::WordList& org_words,
   }
   hunspell::WordIterator iter = reader.GetAllWordIterator();
 
-  int affix_ids[hunspell::BDict::MAX_AFFIXES_PER_WORD];
+  std::array<int, hunspell::BDict::MAX_AFFIXES_PER_WORD> affix_ids;
 
   static const int buf_size = 128;
   char buf[buf_size];
   for (size_t i = 0; i < org_words.size(); i++) {
-    int affix_matches = iter.Advance(buf, affix_ids);
+    int affix_matches = iter.Advance(buf, affix_ids.data());
     if (affix_matches == 0) {
       printf("Found the end before we expected\n");
       return false;
@@ -66,8 +68,7 @@ bool VerifyWords(const convert_dict::DicReader::WordList& org_words,
     // Check the individual affix indices.
     for (size_t affix_index = 0; affix_index < org_words[i].second.size();
          affix_index++) {
-      if (UNSAFE_TODO(affix_ids[affix_index]) !=
-          org_words[i].second[affix_index]) {
+      if (affix_ids[affix_index] != org_words[i].second[affix_index]) {
         UNSAFE_TODO(printf("Index doesn't match, word #%s\n", buf));
         return false;
       }

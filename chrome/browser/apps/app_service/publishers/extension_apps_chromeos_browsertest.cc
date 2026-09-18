@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -249,11 +250,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, NavigateExisting) {
   ASSERT_TRUE(extension);
 
   // Open a file twice by launching the file handler each time.
-  content::WebContents* web_contents[2];
-  for (unsigned short i = 0; i < 2; i++) {
+  std::array<content::WebContents*, 2> web_contents = {};
+  for (auto& contents : web_contents) {
     LaunchExtensionAndCatchResult(*extension);
-    UNSAFE_TODO(web_contents[i]) =
-        browser()->GetTabStripModel()->GetActiveWebContents();
+    contents = browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   // GetWindowIdOfTab() returns -1 for SessionID::InvalidValue().

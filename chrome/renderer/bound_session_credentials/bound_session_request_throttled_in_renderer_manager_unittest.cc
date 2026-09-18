@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h"
 
+#include <array>
 #include <memory>
 #include <queue>
 
@@ -66,7 +67,7 @@ class FakeBoundSessionRequestThrottledHandler
 class BoundSessionRequestThrottledInRendererManagerTest
     : public ::testing::Test {
  public:
-  const GURL kRequestGURLs[5] = {
+  const std::array<GURL, 5> kRequestGURLs = {
       GURL("https://mail.google.com"), GURL("http://www.google.com"),
       GURL("about:blank"), GURL("https://origin.test/"),
       GURL("https://example.com")};
@@ -121,7 +122,7 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest, MultipleRequests) {
       futures;
 
   for (size_t i = 0; i < futures.size(); ++i) {
-    manager()->HandleRequestBlockedOnCookie(UNSAFE_TODO(kRequestGURLs[i]),
+    manager()->HandleRequestBlockedOnCookie(kRequestGURLs[i],
                                             futures[i].GetCallback());
   }
 

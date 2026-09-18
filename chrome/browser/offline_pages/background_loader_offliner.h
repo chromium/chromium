@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_BACKGROUND_LOADER_OFFLINER_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_BACKGROUND_LOADER_OFFLINER_H_
 
+#include <array>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -139,9 +140,6 @@ class BackgroundLoaderOffliner
   Offliner::RequestStatus CanSavePageInBackground(
       content::WebContents* web_contents);
 
-  // Testing method to examine resource stats.
-  RequestStats* GetRequestStatsForTest() { return stats_; }
-
   // Called to reset the loader. Overridden in tests.
   virtual void ResetLoader();
 
@@ -197,7 +195,8 @@ class BackgroundLoaderOffliner
   CancelCallback cancel_callback_;
 
   // Holds stats for resource request status for resource types we track.
-  RequestStats stats_[ResourceDataType::RESOURCE_DATA_TYPE_COUNT];
+  std::array<RequestStats, ResourceDataType::RESOURCE_DATA_TYPE_COUNT> stats_ =
+      {};
 
   base::WeakPtrFactory<BackgroundLoaderOffliner> weak_ptr_factory_{this};
 };
