@@ -15,7 +15,7 @@ class TestCheckPresubmitResults(unittest.TestCase):
     results = {'warnings': [{'message': 'warn'}]}
     upload.check_presubmit_results(results, allow_warnings=False)
     mock_input.assert_called_once_with(
-      'There were presubmit warnings. Are you sure you wish to continue? (y/N):'
+      'Are you sure you wish to continue? (y/N): '
     )
 
   @mock.patch('sys.stdin.isatty', return_value=True)

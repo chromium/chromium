@@ -35,9 +35,7 @@ def check_presubmit_results(results: dict, allow_warnings: bool) -> None:
         'git cl presubmit had warnings.\n'
         + 'Hint: maybe you want --allow-warnings?'
       )
-    val = input(
-      'There were presubmit warnings. Are you sure you wish to continue? (y/N):'
-    )
+    val = input('Are you sure you wish to continue? (y/N): ')
     if val.strip().lower() not in ('y', 'yes'):
       exit(1)
 
