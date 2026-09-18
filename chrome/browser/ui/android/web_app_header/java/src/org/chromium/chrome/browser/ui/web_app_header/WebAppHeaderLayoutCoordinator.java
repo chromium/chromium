@@ -335,7 +335,7 @@ public class WebAppHeaderLayoutCoordinator
         }
 
         initMenuButton();
-
+        mMediator.setOnButtonBottomInsetChanged(this::onButtonBottomInsetChanged);
         // Determine width of initialized UI controls.
         mUIControlsMinWidthPx = calculateUIControlsMinWidth();
     }
@@ -436,8 +436,6 @@ public class WebAppHeaderLayoutCoordinator
                         },
                         mHistoryDelegate,
                         /* isWebApp= */ true);
-
-        mMediator.setOnButtonBottomInsetChanged(this::onButtonBottomInsetChanged);
     }
 
     private void initExtensionsToolbar() {

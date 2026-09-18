@@ -358,9 +358,12 @@ public class WebAppHeaderLayoutCoordinatorTest {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
         createCoordinator();
 
-        assertNotNull(
-                "Web app header should be inflated when in a desktop window",
-                mActivity.findViewById(R.id.web_app_header_layout));
+        View headerView = mActivity.findViewById(R.id.web_app_header_layout);
+        assertNotNull("Web app header should be inflated when in a desktop window", headerView);
+        assertEquals(
+                "Header layout height should match system caption bar height",
+                SYS_APP_HEADER_HEIGHT,
+                headerView.getLayoutParams().height);
     }
 
     @Test

@@ -63,6 +63,20 @@ public class WebAppHeaderLayout extends FrameLayout implements View.OnLayoutChan
     }
 
     /**
+     * Sets the header height and updates its layout params.
+     *
+     * @param height The new height of the header.
+     */
+    public void setHeaderHeight(int height) {
+        setMinimumHeight(height);
+        var layoutParams = getLayoutParams();
+        if (layoutParams != null && layoutParams.height != height) {
+            layoutParams.height = height;
+            setLayoutParams(layoutParams);
+        }
+    }
+
+    /**
      * Sets a callback that will be notified about width changes on the next layout pass.
      *
      * @param onWidthChanged a {@link Callback} that accepts new width.
