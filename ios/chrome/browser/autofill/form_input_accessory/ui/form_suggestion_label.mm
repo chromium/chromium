@@ -458,6 +458,7 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
     _isContextMenuEnabled = isContextMenuEnabled;
     _delegate = delegate;
 
+    [self setUserInteractionEnabled:YES];
     [self updateSubviews];
 
     [self setBackgroundColor:[self customBackgroundColor]];
@@ -466,7 +467,6 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
     }
 
     [self setClipsToBounds:YES];
-    [self setUserInteractionEnabled:YES];
     [self setIsAccessibilityElement:YES];
 
     if (ShouldShowContextMenu(suggestion)) {

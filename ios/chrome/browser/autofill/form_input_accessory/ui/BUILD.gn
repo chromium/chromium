@@ -48,6 +48,7 @@ source_set("unit_tests") {
   sources = [
     "form_input_accessory_view_controller+testing.h",
     "form_input_accessory_view_controller_unittest.mm",
+    "form_suggestion_label_unittest.mm",
   ]
   deps = [
     ":ui",
