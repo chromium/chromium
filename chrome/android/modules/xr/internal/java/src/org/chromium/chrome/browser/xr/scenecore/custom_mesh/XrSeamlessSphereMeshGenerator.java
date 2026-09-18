@@ -77,7 +77,7 @@ public class XrSeamlessSphereMeshGenerator extends XrCurvedMeshGenerator {
 
             for (int j = 0; j <= resolution; ++j) {
                 float theta = (float) j / resolution * 2.0f * (float) Math.PI;
-                float x = ringRadius * (float) Math.sin(theta);
+                float x = -ringRadius * (float) Math.sin(theta);
                 float z = ringRadius * (float) Math.cos(theta);
                 float u = uMin + ((float) j / resolution) * uRange;
 
@@ -108,8 +108,8 @@ public class XrSeamlessSphereMeshGenerator extends XrCurvedMeshGenerator {
             int ringRight = firstRingOffset + j + 1;
 
             indices.put(poleIndex);
-            indices.put(ringRight);
             indices.put(ringLeft);
+            indices.put(ringRight);
         }
 
         // Body quads (split into 2 triangles each)
@@ -124,12 +124,12 @@ public class XrSeamlessSphereMeshGenerator extends XrCurvedMeshGenerator {
                 int bottomRight = nextRingOffset + j + 1;
 
                 indices.put(topLeft);
-                indices.put(topRight);
                 indices.put(bottomLeft);
+                indices.put(topRight);
 
                 indices.put(topRight);
-                indices.put(bottomRight);
                 indices.put(bottomLeft);
+                indices.put(bottomRight);
             }
         }
 
@@ -142,8 +142,8 @@ public class XrSeamlessSphereMeshGenerator extends XrCurvedMeshGenerator {
             int poleIndex = southPoleOffset + j;
 
             indices.put(poleIndex);
-            indices.put(ringLeft);
             indices.put(ringRight);
+            indices.put(ringLeft);
         }
 
         vertexBuffer.rewind();

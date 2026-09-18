@@ -106,6 +106,19 @@ public class XrSeamlessSphereMeshGeneratorTest {
         assertEquals(0.0f, x, DELTA);
         assertEquals(0.0f, y, DELTA);
         assertEquals(-RADIUS, z, DELTA);
+
+        // Left side of video frame, U = 0.25 (lon = RESOLUTION / 4) should be at x = -radius (-X)
+        int leftLonIndex = RESOLUTION / 4;
+        int leftVertIndex = RESOLUTION + (equatorLatIndex - 1) * (RESOLUTION + 1) + leftLonIndex;
+        float leftX = posBuf.get(leftVertIndex * 3);
+        assertEquals(-RADIUS, leftX, DELTA);
+
+        // Right side of video frame, U = 0.75 (lon = RESOLUTION * 3 / 4) should be at x = +radius
+        // (+X)
+        int rightLonIndex = (RESOLUTION * 3) / 4;
+        int rightVertIndex = RESOLUTION + (equatorLatIndex - 1) * (RESOLUTION + 1) + rightLonIndex;
+        float rightX = posBuf.get(rightVertIndex * 3);
+        assertEquals(RADIUS, rightX, DELTA);
     }
 
     @Test
