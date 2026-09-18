@@ -26,6 +26,7 @@
 #include "net/http/http_stream_pool_request_info.h"
 #include "net/http/http_stream_request.h"
 #include "net/socket/next_proto.h"
+#include "net/socket/socket_pool_additional_capacity.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/stream_attempt.h"
 #include "net/socket/stream_socket_close_reason.h"
@@ -252,9 +253,23 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   void CloseIdleStreams(std::string_view net_log_close_reason_utf8);
 
-  bool ReachedMaxStreamLimit() const {
-    return TotalActiveStreamCount() >= max_stream_sockets_per_pool();
-  }
+  bool ReachedMaxStreamLimit() const;
+
+  // Updates `expandability_` before attempting to allocate a stream socket.
+  // Must be called prior to initiating a new connection attempt or before
+  // allocating a socket when the pool might be at or above capacity.
+  void UpdateExpandabilityBeforeAllocation();
+
+  // Updates `expandability_` after releasing or destroying a stream socket, or
+  // cancelling an attempt slot. May transition the pool from capped to
+  // uncapped.
+  void UpdateExpandabilityAfterRelease();
+
+  // Resets `expandability_` to `kUncapped`. Called when all streams and sockets
+  // in the pool are flushed (e.g. on network/IP address changes or pool flush).
+  void ResetExpandability();
+
+  SocketPoolExpandability expandability() const { return expandability_; }
 
   // Return true if there is a request blocked on this pool.
   bool IsPoolStalled();
@@ -338,6 +353,17 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   void set_max_stream_sockets_per_pool_for_testing(
       size_t max_stream_sockets_per_pool) {
     max_stream_sockets_per_pool_ = max_stream_sockets_per_pool;
+    additional_capacity_ =
+        SocketPoolAdditionalCapacity::Create(max_stream_sockets_per_pool_);
+    UpdateExpandabilityAfterRelease();
+  }
+
+  void SetAdditionalCapacityForTest(
+      const SocketPoolAdditionalCapacity& additional_capacity) {
+    additional_capacity_ = additional_capacity;
+  }
+  const SocketPoolAdditionalCapacity& AdditionalCapacityForTest() const {
+    return additional_capacity_;
   }
 
   void set_max_stream_sockets_per_group_for_testing(
@@ -409,6 +435,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   size_t max_stream_sockets_per_pool_;
   size_t max_stream_sockets_per_group_;
+  SocketPoolAdditionalCapacity additional_capacity_;
+  SocketPoolExpandability expandability_ = SocketPoolExpandability::kUncapped;
 
   // The total number of active streams this pool handed out across all groups.
   size_t total_handed_out_stream_count_ = 0;

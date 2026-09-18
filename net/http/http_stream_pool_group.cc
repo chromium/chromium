@@ -183,6 +183,7 @@ void HttpStreamPool::Group::ReleaseStreamSocket(
   } else {
     RecordNetLogClosingSocket(*socket, not_reusable_reason);
     socket.reset();
+    pool_->UpdateExpandabilityAfterRelease();
   }
 
   pool_->ProcessPendingRequestsInGroups();
@@ -216,6 +217,7 @@ std::unique_ptr<StreamSocket> HttpStreamPool::Group::GetIdleStreamSocket() {
       RecordNetLogClosingSocket(*it->stream_socket, usable_result.error());
       it = idle_stream_sockets_.erase(it);
       pool_->DecrementTotalIdleStreamCount();
+      pool_->UpdateExpandabilityAfterRelease();
       continue;
     }
     if (it->stream_socket->WasEverUsed()) {
@@ -240,6 +242,8 @@ std::unique_ptr<StreamSocket> HttpStreamPool::Group::GetIdleStreamSocket() {
       std::move(idle_it->stream_socket);
   idle_stream_sockets_.erase(idle_it);
   pool_->DecrementTotalIdleStreamCount();
+  // Don't call UpdateExpandabilityAfterRelease() here because the socket is
+  // immediately handed out, keeping TotalActiveStreamCount() unchanged.
 
   TRACE_EVENT_INSTANT("net.stream", "Group::GetIdleStreamSocket", track_, flow_,
                       "idle_stream_count", idle_stream_sockets_.size());
@@ -264,6 +268,7 @@ bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {
                             kExceededSocketLimits);
   idle_stream_sockets_.pop_front();
   pool_->DecrementTotalIdleStreamCount();
+  pool_->UpdateExpandabilityAfterRelease();
   // Use MaybeCompleteLater since MaybeComplete() may delete `this`, and this
   // method could be called while iterating all groups.
   MaybeCompleteLater();
@@ -412,6 +417,7 @@ void HttpStreamPool::Group::CleanupIdleStreamSockets(
       RecordNetLogClosingSocket(*it->stream_socket, net_log_close_reason_utf8);
       it = idle_stream_sockets_.erase(it);
       pool_->DecrementTotalIdleStreamCount();
+      pool_->UpdateExpandabilityAfterRelease();
     } else {
       ++it;
     }

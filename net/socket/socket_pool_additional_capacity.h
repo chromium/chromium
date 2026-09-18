@@ -61,6 +61,8 @@ class NET_EXPORT_PRIVATE SocketPoolAdditionalCapacity {
       size_t sockets_in_use,
       size_t socket_soft_cap) const;
 
+  size_t capacity() const { return capacity_; }
+
   explicit operator std::string() const {
     return base::StringPrintf(
         "SocketPoolAdditionalCapacity(base:%e,capacity:%i,minimum:%e,noise:%e)",

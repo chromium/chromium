@@ -183,7 +183,9 @@ HttpStreamPool::HttpStreamPool(HttpNetworkSession* http_network_session,
       // limit.
       max_stream_sockets_per_group_(
           std::min(kHttpStreamPoolMaxStreamPerPool.Get(),
-                   kHttpStreamPoolMaxStreamPerGroup.Get())) {
+                   kHttpStreamPoolMaxStreamPerGroup.Get())),
+      additional_capacity_(
+          SocketPoolAdditionalCapacity::Create(max_stream_sockets_per_pool_)) {
   CHECK(http_network_session_);
   if (cleanup_on_ip_address_change) {
     NetworkChangeNotifier::AddIPAddressObserver(this);
@@ -259,7 +261,8 @@ bool HttpStreamPool::EnsureTotalActiveStreamCountBelowLimit() const {
   if (limit_ignoring_job_controller_counts_ > 0) {
     return true;
   }
-  return TotalActiveStreamCount() < max_stream_sockets_per_pool_;
+  return TotalActiveStreamCount() <
+         (max_stream_sockets_per_pool_ + additional_capacity_.capacity());
 }
 
 void HttpStreamPool::IncrementTotalIdleStreamCount() {
@@ -300,7 +303,10 @@ void HttpStreamPool::IncrementTotalConnectingStreamCount() {
     NOTREACHED() << "handed_out=" << total_handed_out_stream_count_
                  << ", idle=" << total_idle_stream_count_
                  << ", connecting=" << total_connecting_stream_count_
-                 << ", limit=" << max_stream_sockets_per_pool_;
+                 << ", soft_limit=" << max_stream_sockets_per_pool_
+                 << ", hard_limit="
+                 << (max_stream_sockets_per_pool_ +
+                     additional_capacity_.capacity());
   }
   ++total_connecting_stream_count_;
   TRACE_COUNTER("net.stream", "HttpStreamPoolTotalConnectingStreams",
@@ -330,6 +336,7 @@ void HttpStreamPool::OnIPAddressChanged(
                                 StreamSocketCloseReason::kIpAddressChanged,
                                 kIpAddressChanged);
   }
+  ResetExpandability();
 }
 
 void HttpStreamPool::OnSSLConfigChanged(
@@ -379,6 +386,7 @@ void HttpStreamPool::FlushWithError(
     group.second.FlushWithError(error, attempt_cancel_reason,
                                 net_log_close_reason_utf8);
   }
+  ResetExpandability();
 }
 
 void HttpStreamPool::CloseIdleStreams(
@@ -386,6 +394,34 @@ void HttpStreamPool::CloseIdleStreams(
   for (auto& group : groups_) {
     group.second.CloseIdleStreams(net_log_close_reason_utf8);
   }
+}
+
+bool HttpStreamPool::ReachedMaxStreamLimit() const {
+  // Enforce hard/soft caps directly to guarantee deterministic behavior when
+  // randomization is disabled (capacity == 0) and for call paths that bypass
+  // UpdateExpandabilityBeforeAllocation().
+  if (TotalActiveStreamCount() >=
+      max_stream_sockets_per_pool_ + additional_capacity_.capacity()) {
+    return true;
+  }
+  if (TotalActiveStreamCount() < max_stream_sockets_per_pool_) {
+    return false;
+  }
+  return expandability_ == SocketPoolExpandability::kCapped;
+}
+
+void HttpStreamPool::UpdateExpandabilityBeforeAllocation() {
+  expandability_ = additional_capacity_.NextExpandabilityBeforeAllocation(
+      expandability_, TotalActiveStreamCount(), max_stream_sockets_per_pool_);
+}
+
+void HttpStreamPool::UpdateExpandabilityAfterRelease() {
+  expandability_ = additional_capacity_.NextExpandabilityAfterRelease(
+      expandability_, TotalActiveStreamCount(), max_stream_sockets_per_pool_);
+}
+
+void HttpStreamPool::ResetExpandability() {
+  expandability_ = SocketPoolExpandability::kUncapped;
 }
 
 bool HttpStreamPool::IsPoolStalled() {
@@ -400,7 +436,6 @@ void HttpStreamPool::ProcessPendingRequestsInGroups() {
     return;
   }
 
-  // Loop until there is nothing more to do.
   while (true) {
     Group* group = FindHighestStalledGroup();
     if (!group) {
@@ -408,7 +443,17 @@ void HttpStreamPool::ProcessPendingRequestsInGroups() {
     }
 
     if (ReachedMaxStreamLimit()) {
-      if (!CloseOneIdleStreamSocket()) {
+      while (total_idle_stream_count_ > 0) {
+        if (!CloseOneIdleStreamSocket()) {
+          return;
+        }
+        // CloseOneIdleStreamSocket() updates expandability after release.
+        // ProcessPendingRequest() will update expandability before allocation.
+        if (!ReachedMaxStreamLimit()) {
+          break;
+        }
+      }
+      if (ReachedMaxStreamLimit()) {
         return;
       }
     }
@@ -498,6 +543,11 @@ base::DictValue HttpStreamPool::GetInfoAsValue() const {
   dict.Set("max_socket_count", static_cast<int>(max_stream_sockets_per_pool_));
   dict.Set("max_sockets_per_group",
            static_cast<int>(max_stream_sockets_per_group_));
+  dict.Set("socket_soft_cap", static_cast<int>(max_stream_sockets_per_pool_));
+  dict.Set("additional_capacity", std::string(additional_capacity_));
+  dict.Set("expandability", expandability_ == SocketPoolExpandability::kUncapped
+                                ? "Uncapped"
+                                : "Capped");
 
   base::DictValue group_dicts;
   for (const auto& [key, group] : groups_) {

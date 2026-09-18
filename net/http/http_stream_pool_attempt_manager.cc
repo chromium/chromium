@@ -767,10 +767,18 @@ void HttpStreamPool::AttemptManager::OnTcpBasedAttemptComplete(
         raw_attempt->ip_endpoint());
   }
 
+  TcpBasedAttemptSlot* slot = raw_attempt->slot();
+  const bool has_other_attempt =
+      (raw_attempt == slot->ipv4_attempt() ? slot->ipv6_attempt() != nullptr
+                                           : slot->ipv4_attempt() != nullptr);
+  const bool slot_extracted = (rv != OK && !has_other_attempt);
   std::unique_ptr<TcpBasedAttempt> tcp_based_attempt =
       ExtractTcpBasedAttempt(raw_attempt, rv);
 
   if (rv != OK) {
+    if (slot_extracted) {
+      pool()->UpdateExpandabilityAfterRelease();
+    }
     HandleTcpBasedAttemptFailure(std::move(tcp_based_attempt), rv);
     return;
   }
@@ -1443,10 +1451,17 @@ void HttpStreamPool::AttemptManager::CancelTcpBasedAttemptSlot(
   if (reason.has_value()) {
     slot->SetCancelReason(*reason);
   }
+  pool()->UpdateExpandabilityAfterRelease();
 }
 
 bool HttpStreamPool::AttemptManager::IsTcpBasedAttemptReady() {
   CanAttemptResult can_attempt = CanAttemptConnection();
+  if (can_attempt == CanAttemptResult::kAttempt && ShouldRespectLimits()) {
+    pool()->UpdateExpandabilityBeforeAllocation();
+    if (pool()->ReachedMaxStreamLimit()) {
+      can_attempt = CanAttemptResult::kReachedPoolLimit;
+    }
+  }
   // TODO(crbug.com/383606724): Consider removing these trace and net log event
   // once we figure out better endpoint selection algorithm.
   TRACE_EVENT_INSTANT("net.stream", "AttemptManager::IsTcpBasedAttemptReady",
@@ -1491,9 +1506,18 @@ bool HttpStreamPool::AttemptManager::IsTcpBasedAttemptReady() {
       NotifyPreconnectsComplete(ERR_PRECONNECT_MAX_SOCKET_LIMIT);
       return false;
     case CanAttemptResult::kReachedPoolLimit:
-      // If we can't attempt connection due to the pool's limit, try to close an
-      // idle stream in the pool.
-      if (!pool()->CloseOneIdleStreamSocket()) {
+      while (pool()->TotalIdleStreamCount() > 0) {
+        if (!pool()->CloseOneIdleStreamSocket()) {
+          break;
+        }
+        // Check if a new allocation could succeed after releasing an idle
+        // socket. If not, release more idle sockets and try again.
+        pool()->UpdateExpandabilityBeforeAllocation();
+        if (!pool()->ReachedMaxStreamLimit()) {
+          break;
+        }
+      }
+      if (pool()->ReachedMaxStreamLimit()) {
         // Try to close idle SPDY sessions. SPDY sessions never release the
         // underlying sockets immediately on close, so return false anyway.
         spdy_session_pool()->CloseCurrentIdleSessions("Closing idle sessions");

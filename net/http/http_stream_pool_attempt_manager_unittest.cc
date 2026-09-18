@@ -65,6 +65,7 @@
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/socket/next_proto.h"
+#include "net/socket/socket_pool_additional_capacity.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/stream_socket_close_reason.h"
 #include "net/socket/stream_socket_handle.h"
@@ -477,7 +478,9 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             {features::kNetworkServicePerPriorityTaskQueues}) {
     FLAGS_quic_enable_http3_grease_randomness = false;
-    AddScopedFeatureList().InitAndEnableFeature(features::kHappyEyeballsV3);
+    AddScopedFeatureList().InitWithFeatures(
+        /*enabled_features=*/{features::kHappyEyeballsV3},
+        /*disabled_features=*/{features::kTcpSocketPoolLimitRandomization});
     InitializeSession();
   }
 
@@ -2072,6 +2075,251 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ReachedPoolLimit) {
   ASSERT_TRUE(request2->completed());
   ASSERT_TRUE(pool().ReachedMaxStreamLimit());
   ASSERT_FALSE(pool().IsPoolStalled());
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, ValidateAdditionalCapacity) {
+  pool().set_max_stream_sockets_per_pool_for_testing(256);
+  pool().SetAdditionalCapacityForTest(
+      SocketPoolAdditionalCapacity::CreateForTest(1.000000e-06, 256,
+                                                  1.000000e-02, 2.000000e-01));
+
+  ValidateAdditionalCapacityForSocketPool(
+      base::BindLambdaForTesting([&]() {
+        pool().UpdateExpandabilityBeforeAllocation();
+        if (pool().expandability() == SocketPoolExpandability::kUncapped) {
+          pool().IncrementTotalHandedOutStreamCount();
+        }
+        return pool().expandability();
+      }),
+      base::DoNothing(), base::BindLambdaForTesting([&]() {
+        pool().DecrementTotalHandedOutStreamCount();
+        pool().UpdateExpandabilityAfterRelease();
+        return pool().expandability();
+      }),
+      base::BindLambdaForTesting(
+          [&]() { return pool().TotalActiveStreamCount(); }));
+
+  while (pool().TotalActiveStreamCount() > 0) {
+    pool().DecrementTotalHandedOutStreamCount();
+  }
+  pool().ResetExpandability();
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, ReachedPoolLimitRandomizedWithEmpty) {
+  constexpr size_t kMaxPerGroup = 2;
+  constexpr size_t kMaxPerPool = 2;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+  pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
+  pool().SetAdditionalCapacityForTest(
+      SocketPoolAdditionalCapacity::CreateEmpty());
+
+  const HttpStreamKey key_a(
+      url::SchemeHostPort("http", "a.test", 80), PRIVACY_MODE_DISABLED,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
+
+  const HttpStreamKey key_b(
+      url::SchemeHostPort("http", "b.test", 80), PRIVACY_MODE_DISABLED,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
+
+  EXPECT_EQ(pool().expandability(), SocketPoolExpandability::kUncapped);
+  EXPECT_FALSE(pool().ReachedMaxStreamLimit());
+
+  Group& group_a = pool().GetOrCreateGroupForTesting(key_a);
+  std::unique_ptr<HttpStream> stream_a = group_a.CreateTextBasedStream(
+      std::make_unique<FakeStreamSocket>(),
+      StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
+
+  // 1 stream in use < soft cap (2): always uncapped.
+  pool().UpdateExpandabilityBeforeAllocation();
+  EXPECT_EQ(pool().expandability(), SocketPoolExpandability::kUncapped);
+  EXPECT_FALSE(pool().ReachedMaxStreamLimit());
+
+  Group& group_b = pool().GetOrCreateGroupForTesting(key_b);
+  auto fake_socket_b = std::make_unique<FakeStreamSocket>();
+  FakeStreamSocket* fake_socket_b_ptr = fake_socket_b.get();
+  std::unique_ptr<HttpStream> stream_b = group_b.CreateTextBasedStream(
+      std::move(fake_socket_b), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
+
+  // 2 streams in use == soft cap (2): with CreateEmpty(), deterministically
+  // capped.
+  pool().UpdateExpandabilityBeforeAllocation();
+  EXPECT_EQ(pool().expandability(), SocketPoolExpandability::kCapped);
+  EXPECT_TRUE(pool().ReachedMaxStreamLimit());
+
+  // Releasing stream_b transitions back to uncapped.
+  fake_socket_b_ptr->Disconnect();
+  stream_b.reset();
+  EXPECT_EQ(pool().expandability(), SocketPoolExpandability::kUncapped);
+  EXPECT_FALSE(pool().ReachedMaxStreamLimit());
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       ReachedPoolLimitRandomizedTransitions) {
+  constexpr size_t kMaxPerGroup = 4;
+  constexpr size_t kMaxPerPool = 2;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+  pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
+  // Base 0.0, capacity 2, minimum 0.5, noise 0.0 ensures 50% probability
+  // for expandability transitions between soft cap (2) and hard cap (4).
+  pool().SetAdditionalCapacityForTest(
+      SocketPoolAdditionalCapacity::CreateForTest(0.0, 2, 0.5, 0.0));
+
+  // Below soft cap (1 stream in use), always uncapped.
+  pool().IncrementTotalHandedOutStreamCount();
+  for (size_t i = 0; i < 50; ++i) {
+    pool().UpdateExpandabilityBeforeAllocation();
+    EXPECT_EQ(pool().expandability(), SocketPoolExpandability::kUncapped);
+  }
+
+  // At soft cap (2 streams in use), NextExpandabilityBeforeAllocation has 50%
+  // chance of transitioning from kUncapped to kCapped.
+  pool().IncrementTotalHandedOutStreamCount();
+  bool saw_uncapped = false;
+  bool saw_capped = false;
+  for (size_t i = 0; i < 1000; ++i) {
+    pool().ResetExpandability();
+    pool().UpdateExpandabilityBeforeAllocation();
+    if (pool().expandability() == SocketPoolExpandability::kCapped) {
+      saw_capped = true;
+    } else {
+      saw_uncapped = true;
+    }
+    if (saw_capped && saw_uncapped) {
+      break;
+    }
+  }
+  EXPECT_TRUE(saw_uncapped);
+  EXPECT_TRUE(saw_capped);
+
+  // At hard cap (4 streams in use), always capped.
+  pool().IncrementTotalHandedOutStreamCount();
+  pool().IncrementTotalHandedOutStreamCount();
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 4u);
+  for (size_t i = 0; i < 50; ++i) {
+    pool().ResetExpandability();
+    pool().UpdateExpandabilityBeforeAllocation();
+    EXPECT_EQ(pool().expandability(), SocketPoolExpandability::kCapped);
+  }
+
+  // For release transitions: with 3 streams in use, starting from kCapped,
+  // NextExpandabilityAfterRelease has 50% chance of transitioning to kUncapped.
+  pool().DecrementTotalHandedOutStreamCount();
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 3u);
+  saw_uncapped = false;
+  saw_capped = false;
+  for (size_t i = 0; i < 1000; ++i) {
+    // Reset to capped: at 4 streams, it's guaranteed capped.
+    pool().IncrementTotalHandedOutStreamCount();
+    pool().UpdateExpandabilityBeforeAllocation();
+    pool().DecrementTotalHandedOutStreamCount();
+    ASSERT_EQ(pool().expandability(), SocketPoolExpandability::kCapped);
+
+    pool().UpdateExpandabilityAfterRelease();
+    if (pool().expandability() == SocketPoolExpandability::kUncapped) {
+      saw_uncapped = true;
+    } else {
+      saw_capped = true;
+    }
+    if (saw_capped && saw_uncapped) {
+      break;
+    }
+  }
+  EXPECT_TRUE(saw_uncapped);
+  EXPECT_TRUE(saw_capped);
+
+  while (pool().TotalActiveStreamCount() > 0) {
+    pool().DecrementTotalHandedOutStreamCount();
+  }
+  pool().ResetExpandability();
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, CappedPoolPurgesIdleSockets) {
+  constexpr size_t kMaxPerGroup = 2;
+  constexpr size_t kMaxPerPool = 2;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+  pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
+  pool().SetAdditionalCapacityForTest(
+      SocketPoolAdditionalCapacity::CreateForTest(0.0, 2, 0.5, 0.0));
+
+  const HttpStreamKey key_a(
+      url::SchemeHostPort("http", "a.test", 80), PRIVACY_MODE_DISABLED,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
+
+  const HttpStreamKey key_b(
+      url::SchemeHostPort("http", "b.test", 80), PRIVACY_MODE_DISABLED,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
+
+  // Add 2 idle streams in group A.
+  Group& group_a = pool().GetOrCreateGroupForTesting(key_a);
+  for (size_t i = 0; i < kMaxPerGroup; ++i) {
+    group_a.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
+  }
+  ASSERT_EQ(group_a.IdleStreamSocketCount(), 2u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 2u);
+
+  // Ensure the pool transitions to capped state before allocating in group B.
+  while (pool().expandability() != SocketPoolExpandability::kCapped) {
+    pool().UpdateExpandabilityBeforeAllocation();
+  }
+  ASSERT_TRUE(pool().ReachedMaxStreamLimit());
+  ASSERT_EQ(pool().expandability(), SocketPoolExpandability::kCapped);
+
+  // Request a stream in group B.
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      resolver()->AddFakeRequest();
+  StreamRequester requester(key_b);
+  requester.RequestStream(pool());
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  endpoint_request->add_endpoint(
+      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  requester.WaitForResult();
+
+  // The request in group B should have purged an idle stream in group A and
+  // succeeded.
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  EXPECT_EQ(group_a.IdleStreamSocketCount(), 1u);
+  EXPECT_EQ(pool().expandability(), SocketPoolExpandability::kUncapped);
+  EXPECT_FALSE(pool().ReachedMaxStreamLimit());
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, FlushWithErrorResetsExpandability) {
+  constexpr size_t kMaxPerGroup = 2;
+  constexpr size_t kMaxPerPool = 1;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+  pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
+  pool().SetAdditionalCapacityForTest(
+      SocketPoolAdditionalCapacity::CreateEmpty());
+
+  const HttpStreamKey key(
+      url::SchemeHostPort("http", "a.test", 80), PRIVACY_MODE_DISABLED,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
+
+  Group& group = pool().GetOrCreateGroupForTesting(key);
+  std::unique_ptr<HttpStream> stream =
+      group.CreateTextBasedStream(std::make_unique<FakeStreamSocket>(),
+                                  StreamSocketHandle::SocketReuseType::kUnused,
+                                  LoadTimingInfo::ConnectTiming());
+
+  pool().UpdateExpandabilityBeforeAllocation();
+  ASSERT_EQ(pool().expandability(), SocketPoolExpandability::kCapped);
+  ASSERT_TRUE(pool().ReachedMaxStreamLimit());
+
+  pool().FlushWithError(ERR_ABORTED, StreamSocketCloseReason::kAbort, "Flush");
+
+  EXPECT_EQ(pool().expandability(), SocketPoolExpandability::kUncapped);
+  stream.reset();
+  EXPECT_FALSE(pool().ReachedMaxStreamLimit());
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest,
