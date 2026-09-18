@@ -6,9 +6,16 @@ source_set("model") {
   sources = [
     "ttc_audio_metrics.h",
     "ttc_audio_metrics.mm",
+    "ttc_audio_recorder.h",
+    "ttc_audio_recorder.mm",
+    "ttc_audio_recorder_delegate.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/web/public/thread",
+  ]
   frameworks = [
+    "AVFAudio.framework",
     "Accelerate.framework",
     "Foundation.framework",
   ]
@@ -16,11 +23,19 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ttc_audio_metrics_unittest.mm" ]
+  sources = [
+    "ttc_audio_metrics_unittest.mm",
+    "ttc_audio_recorder_unittest.mm",
+  ]
   deps = [
     ":model",
     "//base",
     "//base/test:test_support",
+    "//ios/web/public/test",
     "//testing/gtest",
+  ]
+  frameworks = [
+    "AVFAudio.framework",
+    "Foundation.framework",
   ]
 }
