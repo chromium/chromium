@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ttc/app/ttc_mes_client.h"
@@ -71,7 +72,7 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
                                const std::string& error_message) override;
   void OnTranscriptions(const std::string& input_transcription,
                         const std::string& output_transcription) override;
-  void OnAudioOutput(const std::vector<uint8_t>& audio_data,
+  void OnAudioOutput(base::span<const int16_t> audio_data,
                      int64_t sequence_number) override;
   void OnGenerationStateChanged(bool started,
                                 bool completed,

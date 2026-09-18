@@ -46,8 +46,9 @@ namespace ttc {
 class AudioController : public media::AudioCapturerSource::CaptureCallback,
                         public media::AudioRendererSink::RenderCallback {
  public:
+  // `pcm_data` holds signed 16-bit interleaved PCM samples.
   using AudioCaptureCallback =
-      base::RepeatingCallback<void(const std::vector<uint8_t>& pcm_data,
+      base::RepeatingCallback<void(base::span<const int16_t> pcm_data,
                                    const media::AudioParameters& params)>;
   using AudioEnergyCallback = base::RepeatingCallback<void(float energy)>;
   using PlaybackCompletionCallback =
@@ -89,13 +90,14 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
       PlaybackCompletionCallback callback);
 
   // --- Audio Playback (Speaker Output) ---
-  // Enqueues audio data to be rendered natively with specific parameters.
-  void PlayAudio(base::span<const uint8_t> pcm_data,
+  // Enqueues signed PCM16 audio data to be rendered natively with specific
+  // parameters.
+  void PlayAudio(base::span<const int16_t> pcm_data,
                  const media::AudioParameters& params,
                  int64_t sequence_number = 0);
 
   // Enqueues audio data using default 24kHz mono PCM16 parameters.
-  void PlayAudio(base::span<const uint8_t> pcm_data,
+  void PlayAudio(base::span<const int16_t> pcm_data,
                  int64_t sequence_number = 0);
 
   // Instantly flushes all queued playback audio (used on barge-in /
@@ -137,7 +139,7 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
   class CaptureConverter;
 
   struct QueuedAudioChunk {
-    std::vector<uint8_t> pcm_data;
+    std::vector<int16_t> pcm_data;
     size_t read_offset = 0;
     int64_t sequence_number = 0;
   };
@@ -149,7 +151,7 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
       const std::optional<media::AudioParameters>& device_params);
   // Called on the realtime capture thread.
   void DeliverCapturedAudio(const media::AudioBus& audio_bus);
-  void OnCapturedAudioOnMainThread(std::vector<uint8_t> pcm_data,
+  void OnCapturedAudioOnMainThread(std::vector<int16_t> pcm_data,
                                    media::AudioParameters params,
                                    float energy);
   void OnAudioRenderedOnMainThread(int64_t completed_sequence);
@@ -159,14 +161,14 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
   AudioSystemFactory audio_system_factory_;
   std::unique_ptr<media::AudioSystem> audio_system_;
 
-  base::RepeatingCallbackList<void(const std::vector<uint8_t>&,
+  base::RepeatingCallbackList<void(base::span<const int16_t>,
                                    const media::AudioParameters&)>
       capture_callbacks_;
   base::RepeatingCallbackList<void(float)> energy_callbacks_;
   base::RepeatingCallbackList<void(int64_t)> completion_callbacks_;
 
   base::RepeatingCallback<
-      void(std::vector<uint8_t>, media::AudioParameters, float)>
+      void(std::vector<int16_t>, media::AudioParameters, float)>
       capture_callback_runner_;
   base::RepeatingCallback<void(int64_t)> render_callback_runner_;
 

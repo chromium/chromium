@@ -56,12 +56,12 @@ class AudioControllerTest : public testing::Test {
 TEST_F(AudioControllerTest, LoopbackCaptureToPlayback) {
   AudioController controller;
 
-  std::vector<uint8_t> captured_pcm;
+  std::vector<int16_t> captured_pcm;
   base::RunLoop capture_loop;
   auto capture_sub = controller.AddAudioCaptureListener(
-      base::BindLambdaForTesting([&](const std::vector<uint8_t>& pcm_data,
+      base::BindLambdaForTesting([&](base::span<const int16_t> pcm_data,
                                      const media::AudioParameters& params) {
-        captured_pcm = pcm_data;
+        captured_pcm.assign(pcm_data.begin(), pcm_data.end());
         // Feed mic input directly into playback (loopback)
         controller.PlayAudio(pcm_data, params, /*sequence_number=*/101);
         capture_loop.Quit();
@@ -87,7 +87,7 @@ TEST_F(AudioControllerTest, LoopbackCaptureToPlayback) {
   capture_loop.Run();
 
   EXPECT_FALSE(captured_pcm.empty());
-  EXPECT_EQ(captured_pcm.size(), static_cast<size_t>(frames * sizeof(int16_t)));
+  EXPECT_EQ(captured_pcm.size(), static_cast<size_t>(frames));
   EXPECT_TRUE(controller.is_playing());
 
   // Simulate speaker render
@@ -112,14 +112,17 @@ TEST_F(AudioControllerTest, LoopbackWithDelay) {
 
   base::RunLoop capture_loop;
   auto capture_sub = controller.AddAudioCaptureListener(
-      base::BindLambdaForTesting([&](const std::vector<uint8_t>& pcm_data,
+      base::BindLambdaForTesting([&](base::span<const int16_t> pcm_data,
                                      const media::AudioParameters& params) {
+        std::vector<int16_t> pcm_copy(pcm_data.begin(), pcm_data.end());
         // Delayed loopback after 50ms
         base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
-            base::BindLambdaForTesting([&controller, pcm_data, params]() {
-              controller.PlayAudio(pcm_data, params, /*sequence_number=*/202);
-            }),
+            base::BindLambdaForTesting(
+                [&controller, pcm_copy = std::move(pcm_copy), params]() {
+                  controller.PlayAudio(pcm_copy, params,
+                                       /*sequence_number=*/202);
+                }),
             base::Milliseconds(50));
         capture_loop.Quit();
       }));
@@ -181,7 +184,7 @@ TEST_F(AudioControllerTest, AudioEnergyCalculation) {
 TEST_F(AudioControllerTest, PlaybackQueueClearing) {
   AudioController controller;
 
-  std::vector<uint8_t> pcm_chunk(3200, 0x30);
+  std::vector<int16_t> pcm_chunk(1600, 0x3030);
   controller.PlayAudio(pcm_chunk, /*sequence_number=*/1);
   EXPECT_TRUE(controller.is_playing());
 
@@ -213,7 +216,7 @@ TEST_F(AudioControllerTest, PartialFrameRendering) {
         completion_loop.Quit();
       }));
 
-  controller.PlayAudio(base::as_byte_span(samples), /*sequence_number=*/456);
+  controller.PlayAudio(samples, /*sequence_number=*/456);
 
   // Render first 400 frames
   auto bus1 = media::AudioBus::Create(1, 400);
@@ -247,7 +250,7 @@ TEST_F(AudioControllerTest, RenderMultiChannelDuplicatesMonoToAllChannels) {
   AudioController controller;
 
   std::vector<int16_t> samples(200, 15000);
-  controller.PlayAudio(base::as_byte_span(samples), /*sequence_number=*/1);
+  controller.PlayAudio(samples, /*sequence_number=*/1);
 
   // Render into stereo (2 channels)
   auto stereo_bus = media::AudioBus::Create(2, 200);
@@ -270,17 +273,18 @@ TEST_F(AudioControllerTest, RenderNullBusReturnsZero) {
 
 TEST_F(AudioControllerTest, PlayEmptyAudioChunkDoesNotQueue) {
   AudioController controller;
-  controller.PlayAudio(base::span<const uint8_t>(), /*sequence_number=*/1);
+  controller.PlayAudio(base::span<const int16_t>(), /*sequence_number=*/1);
   EXPECT_FALSE(controller.is_playing());
 }
 
 TEST_F(AudioControllerTest, PlayPlaceholderAudioChunkDoesNotQueue) {
   AudioController controller;
-  // 2 bytes (1 sample) is treated as a placeholder chunk and dropped
-  std::vector<uint8_t> tiny_chunk(2, 0);
+  // A single sample is treated as a placeholder chunk and dropped.
+  std::vector<int16_t> tiny_chunk(1, 0);
   controller.PlayAudio(tiny_chunk, /*sequence_number=*/1);
   EXPECT_FALSE(controller.is_playing());
 }
+
 TEST_F(AudioControllerTest, StartAndStopCaptureWithFakeBinder) {
   bool binder_called = false;
   auto fake_binder = base::BindLambdaForTesting(

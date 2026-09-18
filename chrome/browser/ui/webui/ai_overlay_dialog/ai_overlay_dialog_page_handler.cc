@@ -10,6 +10,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -36,6 +37,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -555,9 +557,17 @@ void AiOverlayDialogPageHandler::SendToolSetUpdate() {
 
 void AiOverlayDialogPageHandler::SendAudioChunk(mojo_base::BigBuffer pcm_data) {
   if (ttc_mes_client_ && ttc_mes_client_->is_connected()) {
-    auto span = base::span(pcm_data);
-    std::vector<uint8_t> data(span.begin(), span.end());
-    ttc_mes_client_->SendAudioChunk(data);
+    // The renderer sends signed PCM16 samples packed as little-endian bytes.
+    // The buffer length is renderer-controlled, so validate it holds a whole
+    // number of samples before reinterpreting; reinterpret_span() would
+    // otherwise CHECK-fail on a compromised renderer's input.
+    base::span<const uint8_t> bytes = base::span(pcm_data);
+    if (bytes.size() % sizeof(int16_t) != 0) {
+      mojo::ReportBadMessage("Audio chunk is not a whole number of samples");
+      return;
+    }
+    ttc_mes_client_->SendAudioChunk(
+        base::subtle::reinterpret_span<const int16_t>(bytes));
   }
 }
 
@@ -598,10 +608,10 @@ void AiOverlayDialogPageHandler::OnTranscriptions(
 }
 
 void AiOverlayDialogPageHandler::OnAudioOutput(
-    const std::vector<uint8_t>& audio_data,
+    base::span<const int16_t> audio_data,
     int64_t sequence_number) {
   if (page_.is_bound()) {
-    mojo_base::BigBuffer buffer(audio_data);
+    mojo_base::BigBuffer buffer(base::as_byte_span(audio_data));
     page_->OnAudioOutput(std::move(buffer), sequence_number);
   }
 }
