@@ -1386,10 +1386,6 @@ TEST_F(AccessibilityControllerTest, ChangingCursorColorPrefChangesCursorColor) {
 
   {
     // Set cursor color pref to inverted.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        ::features::kAccessibilityInvertedMouseCursor);
-
     prefs()->SetBoolean(prefs::kAccessibilityCursorColorEnabled, true);
     prefs()->SetInteger(prefs::kAccessibilityCursorColor,
                         kAccessibilityCursorColorInverted);

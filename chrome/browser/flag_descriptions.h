@@ -2248,12 +2248,6 @@ inline constexpr char kAccessibilityGoogleTtsAutomaticReconnectDescription[] =
     "Automatically attempt to reconnect the Google TTS engine if it "
     "disconnects.";
 
-inline constexpr char kAccessibilityInvertedMouseCursorName[] =
-    "Accessibility inverted mouse cursor";
-inline constexpr char kAccessibilityInvertedMouseCursorDescription[] =
-    "This option enables the accessibility feature to invert the colors under "
-    "the mouse cursor.";
-
 inline constexpr char kAccessibilityShakeToLocateName[] =
     "Adds shake cursor to locate feature";
 inline constexpr char kAccessibilityShakeToLocateDescription[] =

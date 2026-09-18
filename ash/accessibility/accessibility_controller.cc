@@ -3050,13 +3050,7 @@ void AccessibilityController::UpdateCursorColorFromPrefs(bool notify) {
   const SkColor cursor_color =
       active_user_prefs_->GetInteger(prefs::kAccessibilityCursorColor);
   if (enabled && cursor_color == kAccessibilityCursorColorInverted) {
-    if (::features::IsAccessibilityInvertedMouseCursorEnabled()) {
-      shell->SetCursorInverted(true);
-    } else {
-      // Use default cursor if inverted cursor is not supported.
-      shell->SetCursorInverted(false);
-      shell->SetCursorColor(ui::kDefaultCursorColor);
-    }
+    shell->SetCursorInverted(true);
   } else {
     shell->SetCursorInverted(false);
     shell->SetCursorColor(

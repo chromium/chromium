@@ -217,10 +217,6 @@ IsExperimentalAccessibilityDictationContextCheckingEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityShakeToLocate);
 AX_BASE_EXPORT bool IsAccessibilityShakeToLocateEnabled();
 
-// Controls whether the inverted mouse cursor feature is available.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityInvertedMouseCursor);
-AX_BASE_EXPORT bool IsAccessibilityInvertedMouseCursorEnabled();
-
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityManifestV3ChromeVox);
 AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForChromeVox();
 

@@ -1576,10 +1576,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddString("faceGazeLearnMoreUrl",
                          ash::external_urls::kFaceGazeLearnMoreURL);
 
-  html_source->AddBoolean(
-      "isAccessibilityInvertedMouseCursorEnabled",
-      ::features::IsAccessibilityInvertedMouseCursorEnabled());
-
   html_source->AddInteger(
       "defaultBounceKeysDelayMillis",
       kDefaultAccessibilityBounceKeysDelay.InMilliseconds());

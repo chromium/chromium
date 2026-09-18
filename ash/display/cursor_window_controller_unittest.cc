@@ -22,7 +22,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window.h"
@@ -469,17 +468,7 @@ TEST_F(CursorWindowControllerTest, RefreshRateChangeUpdatesMaxUpdateRates) {
   EXPECT_NEAR(cursor_window_controller()->max_update_rate_ms(), 22.22, 0.01f);
 }
 
-class InvertedCursorWindowControllerTest : public CursorWindowControllerTest {
- public:
-  InvertedCursorWindowControllerTest() {
-    feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityInvertedMouseCursor);
-  }
-  ~InvertedCursorWindowControllerTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+using InvertedCursorWindowControllerTest = CursorWindowControllerTest;
 
 TEST_F(InvertedCursorWindowControllerTest, InvertedCursorLayers) {
   SetCursorCompositionEnabled(true);

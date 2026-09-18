@@ -136,7 +136,7 @@ export class SettingsCursorAndTouchpadPageElement extends
         readOnly: true,
         type: Array,
         value() {
-          const options = [
+          return [
             {
               value: DEFAULT_BLACK_CURSOR_COLOR,
               name: loadTimeData.getString('cursorColorBlack'),
@@ -169,15 +169,11 @@ export class SettingsCursorAndTouchpadPageElement extends
               value: 0xf50057,  // Pink A400
               name: loadTimeData.getString('cursorColorPink'),
             },
-          ];
-          if (loadTimeData.getBoolean(
-                  'isAccessibilityInvertedMouseCursorEnabled')) {
-            options.push({
+            {
               value: INVERTED_CURSOR_COLOR,
               name: loadTimeData.getString('cursorColorInverted'),
-            });
-          }
-          return options;
+            },
+          ];
         },
       },
 
