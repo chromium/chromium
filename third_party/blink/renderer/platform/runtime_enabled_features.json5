@@ -3369,7 +3369,7 @@
       // drags not start if the "dragstart" event caused a layout shift that
       // made the mouse hit test miss the drag source.
       name: "GenerateDragOverlayBeforeDragStart",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Killswitch for the visible deprecation warning banner shown on
