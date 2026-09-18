@@ -9,28 +9,25 @@
  */
 
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import '/shared/settings/prefs/prefs.js';
-import './privacy_guide_fragment_shared.css.js';
-import './privacy_guide_fragment_shared.css.js';
 import '../../controls/settings_toggle_button.js';
 import '../../icons.html.js';
 
 import type {SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SignedInState, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {BaseMixin} from '../../base_mixin.js';
 import type {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
 import {routes} from '../../route.js';
 import type {Route} from '../../router.js';
-import {RouteObserverMixin, Router} from '../../router.js';
+import {RouteObserverMixinLit, Router} from '../../router.js';
 
 import {PrivacyGuideStep} from './constants.js';
-import {getTemplate} from './privacy_guide_history_sync_fragment.html.js';
+import {getCss as getPrivacyGuideFragmentSharedCss} from './privacy_guide_fragment_shared_lit.css.js';
+import {getHtml} from './privacy_guide_history_sync_fragment.html.js';
 
 export interface PrivacyGuideHistorySyncFragmentElement {
   $: {
@@ -38,8 +35,8 @@ export interface PrivacyGuideHistorySyncFragmentElement {
   };
 }
 
-const PrivacyGuideHistorySyncFragmentElementBase = RouteObserverMixin(
-    WebUiListenerMixin(I18nMixin(BaseMixin(PolymerElement))));
+const PrivacyGuideHistorySyncFragmentElementBase =
+    RouteObserverMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
 
 export class PrivacyGuideHistorySyncFragmentElement extends
     PrivacyGuideHistorySyncFragmentElementBase {
@@ -47,56 +44,22 @@ export class PrivacyGuideHistorySyncFragmentElement extends
     return 'privacy-guide-history-sync-fragment';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getPrivacyGuideFragmentSharedCss(),
+    ];
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /** Virtual pref to drive the settings-toggle from syncPrefs. */
-      historySyncVirtualPref_: {
-        type: Object,
-        notify: true,
-        value() {
-          return {
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: false,
-          };
-        },
-      },
+      historySyncVirtualPref_: {type: Object},
 
-      /** @private */
-      syncStatus_: Object,
-
-      /**
-       * The header for the history sync card. It changes depending on whether
-       * the user is signed in.
-       * @private
-       */
-      historySyncCardHeader_: {
-        type: String,
-        computed: 'computeHistorySyncCardHeader_(syncStatus_)',
-      },
-
-      /**
-       * The label for the history sync toggle. It changes depending on whether
-       * the user is signed in.
-       * @private
-       */
-      historySyncToggleLabel_: {
-        type: String,
-        computed: 'computeHistorySyncToggleLabel_(syncStatus_)',
-      },
-
-      /**
-       * The first line of the feature description. It changes depending on
-       * whether the user is signed in.
-       * @private
-       */
-      historySyncFeatureDescription1_: {
-        type: String,
-        computed: 'computeHistorySyncFeatureDescription1_(syncStatus_)',
-      },
+      syncStatus_: {type: Object},
     };
   }
 
@@ -108,8 +71,12 @@ export class PrivacyGuideHistorySyncFragmentElement extends
    * set with the next sync prefs update.
    */
   private syncAllCache_: boolean|null = null;
-  declare private historySyncVirtualPref_:
-      chrome.settingsPrivate.PrefObject<boolean>;
+  protected accessor historySyncVirtualPref_:
+      chrome.settingsPrivate.PrefObject<boolean> = {
+    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    value: false,
+    key: '',
+  };
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private startStateHistorySyncOn_: boolean;
@@ -120,13 +87,10 @@ export class PrivacyGuideHistorySyncFragmentElement extends
    */
   private firstSyncPrefUpdate_: boolean = true;
 
-  declare private syncStatus_: SyncStatus;
-  declare private historySyncCardHeader_: string;
-  declare private historySyncToggleLabel_: string;
-  declare private historySyncFeatureDescription1_: string;
+  protected accessor syncStatus_: SyncStatus|null = null;
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
     this.addEventListener('view-exit-finish', this.onViewExitFinish_);
 
@@ -147,7 +111,7 @@ export class PrivacyGuideHistorySyncFragmentElement extends
     // is downwards from the focus position. This allows users of screen readers
     // to continue navigating the screen reader position downwards through the
     // newly visible content.
-    this.shadowRoot!.querySelector<HTMLElement>('[focus-element]')!.focus();
+    this.shadowRoot.querySelector<HTMLElement>('[focus-element]')!.focus();
   }
 
   private onViewEnterStart_() {
@@ -204,19 +168,25 @@ export class PrivacyGuideHistorySyncFragmentElement extends
     if (!this.syncPrefs_) {
       return;
     }
+    let val: boolean;
     if (!this.syncStatus_ ||
         this.syncStatus_.signedInState === SignedInState.SIGNED_IN) {
-      const mergedToggleValue = this.syncPrefs_.typedUrlsSynced ||
-          this.syncPrefs_.tabsSynced || this.syncPrefs_.savedTabGroupsSynced;
-      this.set('historySyncVirtualPref_.value', mergedToggleValue);
+      val = this.syncPrefs_.typedUrlsSynced || this.syncPrefs_.tabsSynced ||
+          this.syncPrefs_.savedTabGroupsSynced;
     } else {
-      this.set(
-          'historySyncVirtualPref_.value',
-          this.syncPrefs_.syncAllDataTypes || this.syncPrefs_.typedUrlsSynced);
+      val = this.syncPrefs_.syncAllDataTypes || this.syncPrefs_.typedUrlsSynced;
     }
+    this.historySyncVirtualPref_ = {
+      ...this.historySyncVirtualPref_,
+      value: val,
+    };
   }
 
-  private onToggleClick_() {
+  protected onToggleChange_() {
+    this.historySyncVirtualPref_ = {
+      ...this.historySyncVirtualPref_,
+      value: this.$.historyToggle.checked,
+    };
     if (!this.syncStatus_ ||
         this.syncStatus_.signedInState === SignedInState.SIGNED_IN) {
       this.syncPrefs_.tabsSynced = this.historySyncVirtualPref_.value;
@@ -261,28 +231,43 @@ export class PrivacyGuideHistorySyncFragmentElement extends
     return true;
   }
 
-  private computeHistorySyncCardHeader_(syncStatus: SyncStatus): string {
-    if (syncStatus && syncStatus.signedInState === SignedInState.SIGNED_IN) {
+  /**
+   * The header for the history sync card. It changes depending on whether the
+   * user is signed in.
+   */
+  protected getHistorySyncCardHeader_(): string {
+    if (this.syncStatus_ &&
+        this.syncStatus_.signedInState === SignedInState.SIGNED_IN) {
       return this.i18n('privacyGuideHistoryAndTabsSyncCardHeader');
     }
     return this.i18n('privacyGuideHistorySyncCardHeader');
   }
 
-  private computeHistorySyncToggleLabel_(syncStatus: SyncStatus): string {
-    if (syncStatus && syncStatus.signedInState === SignedInState.SIGNED_IN) {
+  /**
+   * The label for the history sync toggle. It changes depending on whether the
+   * user is signed in.
+   */
+  protected getHistorySyncToggleLabel_(): string {
+    if (this.syncStatus_ &&
+        this.syncStatus_.signedInState === SignedInState.SIGNED_IN) {
       return this.i18n('privacyGuideHistoryAndTabsSyncSettingLabel');
     }
     return this.i18n('privacyGuideHistorySyncSettingLabel');
   }
 
-  private computeHistorySyncFeatureDescription1_(syncStatus: SyncStatus):
-      string {
-    if (syncStatus && syncStatus.signedInState === SignedInState.SIGNED_IN) {
+  /**
+   * The first line of the feature description. It changes depending on whether
+   * the user is signed in.
+   */
+  protected getHistorySyncFeatureDescription1_(): string {
+    if (this.syncStatus_ &&
+        this.syncStatus_.signedInState === SignedInState.SIGNED_IN) {
       return this.i18n('privacyGuideHistoryAndTabsSyncFeatureDescription1');
     }
     return this.i18n('privacyGuideHistorySyncFeatureDescription1');
   }
 }
+
 declare global {
   interface HTMLElementTagNameMap {
     'privacy-guide-history-sync-fragment':

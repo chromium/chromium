@@ -1,4 +1,3 @@
-<style include="privacy-guide-fragment-shared"></style>
 <div class="settings-fragment-header" focus-element tabindex="-1">
   <picture>
     <source
@@ -7,15 +6,15 @@
     <img alt="" src="./images/privacy_guide/history_sync_graphic_v2.svg">
   </picture>
   <h2 class="settings-fragment-header-label">
-    [[historySyncCardHeader_]]
+    ${this.getHistorySyncCardHeader_()}
   </h2>
 </div>
 <div class="fragment-content">
   <div class="embedded-setting-wrapper">
     <settings-toggle-button id="historyToggle"
-        pref="{{historySyncVirtualPref_}}"
-        on-change="onToggleClick_"
-        label="[[historySyncToggleLabel_]]">
+        .pref="${this.historySyncVirtualPref_}"
+        @change="${this.onToggleChange_}"
+        label="${this.getHistorySyncToggleLabel_()}">
     </settings-toggle-button>
   </div>
   <div class="settings-columned-section">
@@ -27,7 +26,7 @@
         <li>
           <cr-icon icon="settings20:history" aria-hidden="true"></cr-icon>
           <div class="secondary">
-            [[historySyncFeatureDescription1_]]
+            ${this.getHistorySyncFeatureDescription1_()}
           </div>
         </li>
         <li>

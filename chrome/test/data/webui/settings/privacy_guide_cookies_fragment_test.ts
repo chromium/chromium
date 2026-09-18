@@ -3,79 +3,23 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {PrivacyGuideCookiesFragmentElement, SettingsCollapseRadioButtonElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import {ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl, PrefService, PrefsBrowserProxy, PrivacyGuideSettingsStates} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // clang-format on
 
-async function assertCookieMetrics({
-  cookieStartsBlock3PIncognito,
-  changeSetting,
-  expectedMetric,
-  fragment,
-  testMetricsBrowserProxy,
-}: {
-  cookieStartsBlock3PIncognito: boolean,
-  changeSetting: boolean,
-  expectedMetric: PrivacyGuideSettingsStates,
-  fragment: PrivacyGuideCookiesFragmentElement,
-  testMetricsBrowserProxy: TestMetricsBrowserProxy,
-}) {
-  const cookieStartState = cookieStartsBlock3PIncognito ?
-      ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY :
-      ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY;
-  fragment.set(
-      'prefs.generated.third_party_cookie_blocking_setting.value',
-      cookieStartState);
-
-  // The fragment is informed that it becomes visible by a receiving
-  // a view-enter-start event.
-  fragment.dispatchEvent(
-      new CustomEvent('view-enter-start', {bubbles: true, composed: true}));
-
-  if (changeSetting) {
-    const buttonId = cookieStartsBlock3PIncognito ? '#block3pcs' : '#allow3pcs';
-    const button = fragment.shadowRoot!.querySelector<HTMLElement>(buttonId);
-    assertTrue(!!button);
-    button.click();
-    flush();
-    const actionResult =
-        await testMetricsBrowserProxy.whenCalled('recordAction');
-    assertEquals(
-        actionResult,
-        cookieStartsBlock3PIncognito ?
-            'Settings.PrivacyGuide.ChangeCookiesBlock3P' :
-            'Settings.PrivacyGuide.ChangeCookiesBlock3PIncognito');
-  }
-
-  // The fragment is informed that it becomes invisible by
-  // receiving a view-enter-finish event.
-  fragment.dispatchEvent(
-      new CustomEvent('view-exit-finish', {bubbles: true, composed: true}));
-
-  const result = await testMetricsBrowserProxy.whenCalled(
-      'recordPrivacyGuideSettingsStatesHistogram');
-  assertEquals(result, expectedMetric);
-}
-
 suite('CookiesFragment', function() {
   let fragment: PrivacyGuideCookiesFragmentElement;
-  let settingsPrefs: SettingsPrefsElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let prefService: PrefService;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
+  setup(async function() {
     assertTrue(!!window.trustedTypes);
     document.body.innerHTML = window.trustedTypes.emptyHTML;
 
@@ -83,12 +27,65 @@ suite('CookiesFragment', function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
-    fragment = document.createElement('privacy-guide-cookies-fragment');
-    fragment.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(fragment);
+    const prefsBrowserProxy = new TestPrefsBrowserProxy([{
+      key: 'generated.third_party_cookie_blocking_setting',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY,
+    }]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
-    return flushTasks();
+    fragment = document.createElement('privacy-guide-cookies-fragment');
+    document.body.appendChild(fragment);
   });
+
+  async function assertCookieMetrics({
+    cookieStartsBlock3PIncognito,
+    changeSetting,
+    expectedMetric,
+  }: {
+    cookieStartsBlock3PIncognito: boolean,
+    changeSetting: boolean,
+    expectedMetric: PrivacyGuideSettingsStates,
+  }) {
+    const cookieStartState = cookieStartsBlock3PIncognito ?
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY :
+        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY;
+    prefService.setPrefValue(
+        'generated.third_party_cookie_blocking_setting', cookieStartState);
+
+    // The fragment is informed that it becomes visible by a receiving
+    // a view-enter-start event.
+    fragment.dispatchEvent(
+        new CustomEvent('view-enter-start', {bubbles: true, composed: true}));
+
+    if (changeSetting) {
+      const buttonId =
+          cookieStartsBlock3PIncognito ? '#block3pcs' : '#allow3pcs';
+      const button = fragment.shadowRoot.querySelector<HTMLElement>(buttonId);
+      assertTrue(!!button);
+      button.click();
+      await microtasksFinished();
+      const actionResult =
+          await testMetricsBrowserProxy.whenCalled('recordAction');
+      assertEquals(
+          actionResult,
+          cookieStartsBlock3PIncognito ?
+              'Settings.PrivacyGuide.ChangeCookiesBlock3P' :
+              'Settings.PrivacyGuide.ChangeCookiesBlock3PIncognito');
+    }
+
+    // The fragment is informed that it becomes invisible by
+    // receiving a view-enter-finish event.
+    fragment.dispatchEvent(
+        new CustomEvent('view-exit-finish', {bubbles: true, composed: true}));
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideSettingsStatesHistogram');
+    assertEquals(result, expectedMetric);
+  }
 
   test('cookiesMetrics3PIncognitoTo3PIncognito', function() {
     return assertCookieMetrics({
@@ -96,8 +93,6 @@ suite('CookiesFragment', function() {
       changeSetting: false,
       expectedMetric:
           PrivacyGuideSettingsStates.BLOCK_3P_INCOGNITO_TO_3P_INCOGNITO,
-      fragment,
-      testMetricsBrowserProxy,
     });
   });
 
@@ -106,8 +101,6 @@ suite('CookiesFragment', function() {
       cookieStartsBlock3PIncognito: true,
       changeSetting: true,
       expectedMetric: PrivacyGuideSettingsStates.BLOCK_3P_INCOGNITO_TO_3P,
-      fragment,
-      testMetricsBrowserProxy,
     });
   });
 
@@ -116,8 +109,6 @@ suite('CookiesFragment', function() {
       cookieStartsBlock3PIncognito: false,
       changeSetting: true,
       expectedMetric: PrivacyGuideSettingsStates.BLOCK_3P_TO_3P_INCOGNITO,
-      fragment,
-      testMetricsBrowserProxy,
     });
   });
 
@@ -126,27 +117,27 @@ suite('CookiesFragment', function() {
       cookieStartsBlock3PIncognito: false,
       changeSetting: false,
       expectedMetric: PrivacyGuideSettingsStates.BLOCK_3P_TO_3P,
-      fragment,
-      testMetricsBrowserProxy,
     });
   });
 
-  test('fragmentUpdatesFromCookieChanges', function() {
+  test('fragmentUpdatesFromCookieChanges', async function() {
     const radioButtonGroup =
-        fragment.shadowRoot!.querySelector<SettingsRadioGroupElement>(
+        fragment.shadowRoot.querySelector<SettingsRadioGroupElement>(
             '#cookiesRadioGroup');
     assertTrue(!!radioButtonGroup);
 
-    fragment.set(
-        'prefs.generated.third_party_cookie_blocking_setting.value',
+    prefService.setPrefValue(
+        'generated.third_party_cookie_blocking_setting',
         ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
+    await microtasksFinished();
     assertEquals(
         Number(radioButtonGroup.selected),
         ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
 
-    fragment.set(
-        'prefs.generated.third_party_cookie_blocking_setting.value',
+    prefService.setPrefValue(
+        'generated.third_party_cookie_blocking_setting',
         ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
+    await microtasksFinished();
     assertEquals(
         Number(radioButtonGroup.selected),
         ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
@@ -154,7 +145,7 @@ suite('CookiesFragment', function() {
 
   test('showsAllow3pcsAndBlock3pcsLabels', function() {
     const allow3pcsLabel =
-        fragment.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
+        fragment.shadowRoot.querySelector<SettingsCollapseRadioButtonElement>(
             '#allow3pcs');
     assertTrue(!!allow3pcsLabel);
 
@@ -163,7 +154,7 @@ suite('CookiesFragment', function() {
         allow3pcsLabel.label);
 
     const block3pcsLabel =
-        fragment.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
+        fragment.shadowRoot.querySelector<SettingsCollapseRadioButtonElement>(
             '#block3pcs');
     assertTrue(!!block3pcsLabel);
     assertEquals(

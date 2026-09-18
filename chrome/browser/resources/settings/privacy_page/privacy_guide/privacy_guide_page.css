@@ -1,0 +1,109 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=../../settings_shared_lit.css.js
+ * #include=cr-shared-style-lit settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --privacy-guide-animation-duration: 900ms;
+  --privacy-guide-footer-vertical-padding: 16px;
+  --privacy-guide-footer-total-height: calc(var(--cr-button-height) +
+      2 * var(--privacy-guide-footer-vertical-padding));
+}
+
+.footer {
+  align-items: center;
+  bottom: 0;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  padding: var(--privacy-guide-footer-vertical-padding) 24px;
+  position: absolute;
+  width: 100%;
+}
+
+.managed-fragment {
+  /* Override cr-view-manager's default styling for view. */
+  bottom: initial;
+  grid-column-start: 1;
+  grid-row-start: 1;
+  left: initial;
+  position: unset;
+  right: initial;
+  top: initial;
+}
+
+#viewManager {
+  position: relative;
+}
+
+#viewManager > :not(.active) {
+  /* Restore cr-view-manager's absolute positioning for non-active elements,
+     so they overlap the active element. */
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+
+.visibility-hidden {
+  visibility: hidden;
+}
+
+#privacyGuideCard {
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: column;
+  min-height: 432px;
+  padding-bottom: var(--privacy-guide-footer-total-height);
+  position: relative;
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+#background {
+  animation: fade-in var(--privacy-guide-animation-duration);
+  height: 100px;
+  left: 50%;
+  position: absolute;
+  top: 24px;
+  transform: translateX(-50%);
+  width: 360px;
+}
+
+#background picture {
+  display: block;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+#backgroundClouds {
+  transform: translateX(calc(var(--privacy-guide-step) * -4px));
+  transition: transform 300ms cubic-bezier(.4, 0, .2, 1);
+}
+
+:host-context([dir='rtl']) #backgroundClouds {
+  transform: translateX(calc(var(--privacy-guide-step) * 4px));
+}
+
+#backgroundHills {
+  transform: translateX(calc(var(--privacy-guide-step) * -2px));
+  transition: transform 300ms cubic-bezier(.4, 0, .2, 1);
+}
+
+:host-context([dir='rtl']) #backgroundHills {
+  transform: translateX(calc(var(--privacy-guide-step) * 2px));
+}

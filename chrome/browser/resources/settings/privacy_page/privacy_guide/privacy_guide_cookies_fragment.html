@@ -1,4 +1,7 @@
-<style include="privacy-guide-fragment-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ThirdPartyCookieBlockingSetting} from '../../site_settings/site_settings_browser_proxy.js';
+#html_wrapper_imports_end -->
+
 <div class="settings-fragment-header" focus-element tabindex="-1">
   <picture>
     <source
@@ -12,14 +15,14 @@
 </div>
 <div class="fragment-content">
   <settings-radio-group id="cookiesRadioGroup"
-      pref="{{prefs.generated.third_party_cookie_blocking_setting}}"
+      pref-key="generated.third_party_cookie_blocking_setting"
       selectable-elements="settings-collapse-radio-button">
     <settings-collapse-radio-button id="allow3pcs"
-        pref="[[prefs.generated.third_party_cookie_blocking_setting]]"
-        name="[[thirdPartyCookieBlockingSettingEnum_.INCOGNITO_ONLY]]"
+        pref-key="generated.third_party_cookie_blocking_setting"
+        name="${ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY}"
         label="$i18n{privacyGuideCookiesCardBlockTpcAllowSubheader}"
         expand-aria-label="$i18n{allowThirdPartyCookiesExpandA11yLabel}"
-        on-click="onCookies3pIncognitoClick_">
+        @click="${this.onCookies3pIncognitoClick_}">
       <div slot="collapse" class="settings-columned-section">
         <div class="column">
           <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
@@ -61,11 +64,11 @@
       </div>
     </settings-collapse-radio-button>
     <settings-collapse-radio-button id="block3pcs"
-        pref="[[prefs.generated.third_party_cookie_blocking_setting]]"
-        name="[[thirdPartyCookieBlockingSettingEnum_.BLOCK_THIRD_PARTY]]"
+        pref-key="generated.third_party_cookie_blocking_setting"
+        name="${ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY}"
         label="$i18n{privacyGuideCookiesCardBlockTpcBlockSubheader}"
         expand-aria-label="$i18n{blockThirdPartyCookiesExpandA11yLabel}"
-        on-click="onCookies3pClick_">
+        @click="${this.onCookies3pClick_}">
       <div slot="collapse" class="settings-columned-section">
         <div class="column">
           <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>

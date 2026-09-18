@@ -7,10 +7,7 @@
  * 'settings-privacy-guide-page' is the settings page that helps users guide
  * various privacy settings.
  */
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import './privacy_guide_completion_fragment.js';
 import './privacy_guide_cookies_fragment.js';
@@ -22,26 +19,28 @@ import './step_indicator.js';
 
 import type {SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SignedInState, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
 import {routes} from '../../route.js';
 import type {Route} from '../../router.js';
-import {RouteObserverMixin, Router} from '../../router.js';
+import {RouteObserverMixinLit, Router} from '../../router.js';
 import {ContentSetting} from '../../site_settings/constants.js';
 import {SafeBrowsingSetting} from '../security/safe_browsing_types.js';
 
 import {PrivacyGuideStep} from './constants.js';
-import {PrivacyGuideAvailabilityMixin} from './privacy_guide_availability_mixin.js';
-import {getTemplate} from './privacy_guide_page.html.js';
+import {PrivacyGuideAvailabilityMixinLit} from './privacy_guide_availability_mixin_lit.js';
+import {getCss} from './privacy_guide_page.css.js';
+import {getHtml} from './privacy_guide_page.html.js';
 import type {StepIndicatorModel} from './step_indicator.js';
 
 interface PrivacyGuideStepComponents {
@@ -76,76 +75,41 @@ export interface SettingsPrivacyGuidePageElement {
   };
 }
 
-const PrivacyGuideBase = RouteObserverMixin(PrivacyGuideAvailabilityMixin(
-    WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement)))));
+const PrivacyGuideBase = RouteObserverMixinLit(
+    PrivacyGuideAvailabilityMixinLit(WebUiListenerMixinLit(
+        PrefServiceObserverMixinLit(I18nMixinLit(CrLitElement)))));
 
 export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   static get is() {
     return 'settings-privacy-guide-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      /**
-       * Valid privacy guide states.
-       */
-      privacyGuideStepEnum_: {
-        type: Object,
-        value: PrivacyGuideStep,
-      },
-
-      /**
-       * The current step in the privacy guide flow, or `undefined` if the flow
-       * has not yet been initialized from query parameters.
-       */
-      privacyGuideStep_: {
-        type: String,
-        value: undefined,
-      },
-
-      /**
-       * Multiplier to apply on translate distances for animations in fragments.
-       * +1 if navigating forwards LTR or backwards RTL; -1 if navigating
-       * forwards RTL or backwards LTR.
-       */
-      translateMultiplier_: {
-        type: Number,
-        value: 1,
-      },
-
-      /**
-       * Used by the 'step-indicator' element to display its dots.
-       */
-      stepIndicatorModel_: {
-        type: Object,
-        computed:
-            'computeStepIndicatorModel(privacyGuideStep_, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.generated.third_party_cookie_blocking_setting, prefs.net.network_prediction_options)',
-      },
-
-      syncStatus_: Object,
+      privacyGuideStep_: {type: String},
+      stepIndicatorModel_: {type: Object},
+      syncStatus_: {type: Object},
+      translateMultiplier_: {type: Number},
     };
   }
 
-  static get observers() {
-    return [
-      'onPrefsChanged_(prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.generated.third_party_cookie_blocking_setting, prefs.net.network_prediction_options)',
-      'exitIfNecessary(isPrivacyGuideAvailable)',
-    ];
-  }
-
-  declare private privacyGuideStep_: PrivacyGuideStep;
-  declare private stepIndicatorModel_: StepIndicatorModel;
+  protected accessor privacyGuideStep_: PrivacyGuideStep;
+  protected accessor stepIndicatorModel_: StepIndicatorModel;
   private privacyGuideStepToComponentsMap_:
       Map<PrivacyGuideStep, PrivacyGuideStepComponents>;
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
-  declare private syncStatus_: SyncStatus;
+  private accessor syncStatus_: SyncStatus;
   private animationsEnabled_: boolean = true;
-  declare private translateMultiplier_: number;
+  protected accessor translateMultiplier_: number = 1;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
@@ -156,8 +120,18 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         this.computePrivacyGuideStepToComponentsMap_();
   }
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
+
+    const prefsToObserve = [
+      'generated.cookie_default_content_setting',
+      'generated.safe_browsing',
+      'generated.third_party_cookie_blocking_setting',
+      'net.network_prediction_options',
+    ];
+    for (const pref of prefsToObserve) {
+      this.addPrefObserver(pref, () => this.onPrefsChanged_());
+    }
 
     this.addWebUiListener(
         'sync-status-changed',
@@ -166,11 +140,24 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('privacyGuideStep_')) {
+      this.stepIndicatorModel_ = this.computeStepIndicatorModel();
+    }
+    if (changedPrivateProperties.has('isPrivacyGuideAvailable')) {
+      this.exitIfNecessary();
+    }
+  }
+
   disableAnimationsForTesting() {
     this.animationsEnabled_ = false;
   }
 
-  /** RouteObserverBehavior */
+  /** RouteObserverMixinLit */
   override currentRouteChanged(newRoute: Route) {
     if (newRoute !== routes.PRIVACY_GUIDE || this.exitIfNecessary()) {
       return;
@@ -302,11 +289,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   /** Handler for when the sync state is pushed from the browser. */
   private onSyncStatusChanged_(syncStatus: SyncStatus) {
     this.syncStatus_ = syncStatus;
+    this.stepIndicatorModel_ = this.computeStepIndicatorModel();
     this.navigateForwardIfCurrentCardNoLongerAvailable();
   }
 
   /** Update the privacy guide state based on changed prefs. */
   private onPrefsChanged_() {
+    this.stepIndicatorModel_ = this.computeStepIndicatorModel();
     // If this change resulted in the user no longer being in one of the
     // available states for the given card, we need to skip it.
     this.navigateForwardIfCurrentCardNoLongerAvailable();
@@ -332,9 +321,9 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     // Tasks in the privacy guide UI and in multiple fragments rely on prefs
     // being loaded. Instead of individually delaying those tasks, await prefs
     // once when a navigation to the privacy guide happens.
-    await CrSettingsPrefs.initialized;
+    await PrefService.getInstance().whenInitialized();
     // Set the pref that the user has viewed the Privacy guide.
-    this.setPrefValue('privacy_guide.viewed', true);
+    PrefService.getInstance().setPrefValue('privacy_guide.viewed', true);
 
     const step = Router.getInstance().getQueryParameters().get('step') as
         PrivacyGuideStep;
@@ -352,7 +341,11 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     }
   }
 
-  private onNextButtonClick_() {
+  protected onNextButtonClick_() {
+    this.navigateForward_();
+  }
+
+  protected onStartButtonClick_() {
     this.navigateForward_();
   }
 
@@ -387,7 +380,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     }
   }
 
-  private onBackButtonClick_() {
+  protected onBackButtonClick_() {
     this.navigateBackward_();
   }
 
@@ -443,14 +436,14 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
 
       // On navigations within privacy guide, put the focus on the newly shown
       // fragment.
-      const elementToFocus = this.shadowRoot!.querySelector<HTMLElement>(
+      const elementToFocus = this.shadowRoot.querySelector<HTMLElement>(
           '#' + this.privacyGuideStep_);
       assert(elementToFocus);
-      afterNextRender(this, () => elementToFocus.focus());
+      elementToFocus.focus();
     }
   }
 
-  private computeBackButtonClass_(): string {
+  protected computeBackButtonClass_(): string {
     if (!this.privacyGuideStep_) {
       // Not initialized.
       return '';
@@ -496,32 +489,28 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   }
 
   private shouldShowCookiesCard_(): boolean {
-    if (!this.prefs) {
-      // Prefs are not available yet. Show the card until they become available.
-      return true;
-    }
     // Don't show the 3PC card if the user has chosen to block 1PCs.
-    return this.getPref('generated.cookie_default_content_setting').value !==
-        ContentSetting.BLOCK;
+    return PrefService.getInstance()
+               .getPref<ContentSetting>(
+                   'generated.cookie_default_content_setting')
+               .value !== ContentSetting.BLOCK;
   }
 
   private shouldShowSafeBrowsingCard_(): boolean {
-    if (!this.prefs) {
-      // Prefs are not available yet. Show the card until they become available.
-      return true;
-    }
     const currentSafeBrowsingSetting =
-        this.getPref('generated.safe_browsing').value;
+        PrefService.getInstance()
+            .getPref<SafeBrowsingSetting>('generated.safe_browsing')
+            .value;
     return currentSafeBrowsingSetting === SafeBrowsingSetting.ENHANCED ||
         currentSafeBrowsingSetting === SafeBrowsingSetting.STANDARD;
   }
 
-  private showAnySettingFragment_(): boolean {
+  protected showAnySettingFragment_(): boolean {
     return this.privacyGuideStep_ !== PrivacyGuideStep.WELCOME &&
         this.privacyGuideStep_ !== PrivacyGuideStep.COMPLETION;
   }
 
-  private onKeyDown_(event: KeyboardEvent) {
+  protected onKeydown_(event: KeyboardEvent) {
     const isLtr = loadTimeData.getString('textdirection') === 'ltr';
     switch (event.key) {
       case 'ArrowLeft':
@@ -541,6 +530,8 @@ declare global {
     'settings-privacy-guide-page': SettingsPrivacyGuidePageElement;
   }
 }
+
+export type PrivacyGuidePageElement = SettingsPrivacyGuidePageElement;
 
 customElements.define(
     SettingsPrivacyGuidePageElement.is, SettingsPrivacyGuidePageElement);

@@ -9,49 +9,41 @@
  */
 
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import '/shared/settings/prefs/prefs.js';
-import './privacy_guide_fragment_shared.css.js';
 import '../../controls/collapse_radio_button.js';
 import '../../controls/settings_radio_group.js';
 import '../../icons.html.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
 import {ThirdPartyCookieBlockingSetting} from '../../site_settings/site_settings_browser_proxy.js';
 
-import {getTemplate} from './privacy_guide_cookies_fragment.html.js';
+import {getHtml} from './privacy_guide_cookies_fragment.html.js';
+import {getCss as getPrivacyGuideFragmentSharedCss} from './privacy_guide_fragment_shared_lit.css.js';
 
-const PrivacyGuideCookiesFragmentBase = PrefsMixin(PolymerElement);
-
-export class PrivacyGuideCookiesFragmentElement extends
-    PrivacyGuideCookiesFragmentBase {
+export class PrivacyGuideCookiesFragmentElement extends CrLitElement {
   static get is() {
     return 'privacy-guide-cookies-fragment';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getPrivacyGuideFragmentSharedCss(),
+    ];
   }
 
-  static get properties() {
-    return {
-      /* Third party cookie blocking settings for use in bindings. */
-      thirdPartyCookieBlockingSettingEnum_: {
-        type: Object,
-        value: ThirdPartyCookieBlockingSetting,
-      },
-    };
+  override render() {
+    return getHtml.bind(this)();
   }
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private startStateBlock3PIncognito_: boolean;
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
     this.addEventListener('view-exit-finish', this.onViewExitFinish_);
   }
@@ -62,13 +54,14 @@ export class PrivacyGuideCookiesFragmentElement extends
     // is downwards from the focus position. This allows users of screen readers
     // to continue navigating the screen reader position downwards through the
     // newly visible content.
-    this.shadowRoot!.querySelector<HTMLElement>('[focus-element]')!.focus();
+    this.shadowRoot.querySelector<HTMLElement>('[focus-element]')!.focus();
   }
 
   private onViewEnterStart_() {
     this.startStateBlock3PIncognito_ =
-        this.getPref('generated.third_party_cookie_blocking_setting').value ===
-        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY;
+        PrefService.getInstance()
+            .getPref<number>('generated.third_party_cookie_blocking_setting')
+            .value === ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY;
     this.metricsBrowserProxy_
         .recordPrivacyGuideStepsEligibleAndReachedHistogram(
             PrivacyGuideStepsEligibleAndReached.COOKIES_REACHED);
@@ -76,8 +69,9 @@ export class PrivacyGuideCookiesFragmentElement extends
 
   private onViewExitFinish_() {
     const endStateBlock3PIncognito =
-        this.getPref('generated.third_party_cookie_blocking_setting').value ===
-        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY;
+        PrefService.getInstance()
+            .getPref<number>('generated.third_party_cookie_blocking_setting')
+            .value === ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY;
 
     let state: PrivacyGuideSettingsStates|null = null;
     if (this.startStateBlock3PIncognito_) {
@@ -92,12 +86,12 @@ export class PrivacyGuideCookiesFragmentElement extends
     this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state);
   }
 
-  private onCookies3pIncognitoClick_() {
+  protected onCookies3pIncognitoClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacyGuide.ChangeCookiesBlock3PIncognito');
   }
 
-  private onCookies3pClick_() {
+  protected onCookies3pClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacyGuide.ChangeCookiesBlock3P');
   }

@@ -7,12 +7,11 @@ import 'chrome://settings/settings.js';
 
 import type {SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
 import {PrivacyGuideStep} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideStepsEligibleAndReached, Router, routes, SignedInState, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideStepsEligibleAndReached, resetRouterForTesting, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertTrue, assertNotReached} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createPrivacyGuidePageForTest, clickNextOnWelcomeStep, setParametersForCookiesStep, setParametersForHistorySyncStep, setParametersForSafeBrowsingStep, setupPrivacyGuidePageForTest, setupSync, shouldShowCookiesCard, shouldShowHistorySyncCard, shouldShowSafeBrowsingCard} from './privacy_guide_test_util.js';
+import {clickNextOnWelcomeStep, createPrivacyGuidePageForTest, setParametersForCookiesStep, setParametersForHistorySyncStep, setParametersForSafeBrowsingStep, shouldShowCookiesCard, shouldShowHistorySyncCard, shouldShowSafeBrowsingCard} from './privacy_guide_test_util.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
@@ -47,31 +46,29 @@ const privacyGuideStepToEligibleReachedValueMap: Map<PrivacyGuideStep, {
     ]);
 
 function shouldStepBeShown(
-    page: SettingsPrivacyGuidePageElement,
     syncBrowserProxy: TestSyncBrowserProxy, step: PrivacyGuideStep): boolean {
   switch (step) {
     case PrivacyGuideStep.HISTORY_SYNC:
       return shouldShowHistorySyncCard(syncBrowserProxy);
     case PrivacyGuideStep.SAFE_BROWSING:
-      return shouldShowSafeBrowsingCard(page);
+      return shouldShowSafeBrowsingCard();
     case PrivacyGuideStep.COOKIES:
-      return shouldShowCookiesCard(page);
+      return shouldShowCookiesCard();
     default:
       assertNotReached('Unsupported step type is checking if should be shown.');
   }
 }
 
 function setParametersForStep(
-    page: SettingsPrivacyGuidePageElement,
     syncBrowserProxy: TestSyncBrowserProxy, step: PrivacyGuideStep,
     isEligible: boolean): void {
   switch (step) {
     case PrivacyGuideStep.HISTORY_SYNC:
       return setParametersForHistorySyncStep(syncBrowserProxy, isEligible);
     case PrivacyGuideStep.SAFE_BROWSING:
-      return setParametersForSafeBrowsingStep(page, isEligible);
+      return setParametersForSafeBrowsingStep(isEligible);
     case PrivacyGuideStep.COOKIES:
-      return setParametersForCookiesStep(page, isEligible);
+      return setParametersForCookiesStep(isEligible);
     default:
       assertNotReached('Unsupported step type is setting parameters.');
   }
@@ -128,7 +125,6 @@ function generateTestCases(optionalSteps: PrivacyGuideStep[]):
 
 suite('PrivacyGuideEligibleReachedMetrics', function() {
   let page: SettingsPrivacyGuidePageElement;
-  let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   const optionalSteps: PrivacyGuideStep[] = [];
@@ -137,8 +133,7 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
   optionalSteps.push(PrivacyGuideStep.COOKIES);
 
   suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
+    resetRouterForTesting();
   });
 
   setup(testSetup);
@@ -150,26 +145,17 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
-  function testSetup(): Promise<void> {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
+  async function testSetup(): Promise<void> {
     assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
 
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     syncBrowserProxy = new TestSyncBrowserProxy();
-    setupSync({
-      syncBrowserProxy: syncBrowserProxy,
-      signedInState: SignedInState.SYNCING,
-      syncAllDataTypes: true,
-      typedUrlsSynced: true,
-    });
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
-    page = createPrivacyGuidePageForTest(settingsPrefs);
-    setupPrivacyGuidePageForTest(page, syncBrowserProxy);
+    page = await createPrivacyGuidePageForTest(syncBrowserProxy);
 
-    return flushTasks();
+    return microtasksFinished();
   }
 
   for (const [stepNames, stepsEligibility] of generateTestCases(
@@ -177,8 +163,9 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
     test('recordStepsAreEligibleReached' + stepNames, async function() {
       // Setup the test based on the eligibility of optional cards.
       for (const [step, isEligible] of stepsEligibility) {
-        setParametersForStep(page, syncBrowserProxy, step, isEligible);
+        setParametersForStep(syncBrowserProxy, step, isEligible);
       }
+      await microtasksFinished();
 
       // `expectedArguments` represents what is expected to be recorded into
       // metrics. It is first filled with the cards that are eligible to be
@@ -198,7 +185,7 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
 
       // Navigate to Privacy Guide page.
       Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
-      await flushTasks();
+      await microtasksFinished();
 
       // Click through the flow and assert that each step is recorded as
       // reached.
@@ -211,12 +198,13 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
               await getPromiseArguments(testMetricsBrowserProxy)),
           'Sets differ for the step: MSBB_REACHED');
       const nextButtonElementOnMSBBStep =
-          page.shadowRoot!.querySelector<HTMLElement>('#nextButton');
+          page.shadowRoot.querySelector<HTMLElement>('#nextButton');
       assertTrue(!!nextButtonElementOnMSBBStep);
       nextButtonElementOnMSBBStep.click();
+      await microtasksFinished();
       // The next is optional steps.
       for (const step of optionalSteps) {
-        if (!shouldStepBeShown(page, syncBrowserProxy, step)) {
+        if (!shouldStepBeShown(syncBrowserProxy, step)) {
           continue;
         }
 
@@ -230,9 +218,10 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
             'Sets differ for the step: ' + step);
 
         const nextButtonElementOnStep =
-            page.shadowRoot!.querySelector<HTMLElement>('#nextButton');
+            page.shadowRoot.querySelector<HTMLElement>('#nextButton');
         assertTrue(!!nextButtonElementOnStep);
         nextButtonElementOnStep.click();
+        await microtasksFinished();
       }
       // The last is mandatory COMPLETION step.
       expectedArguments.add(

@@ -4,18 +4,57 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import type {SettingsPrivacyGuidePageElement, ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
-import {ContentSetting, CookieControlsMode, PrivacyGuideStep, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {loadTimeData, Router, routes, SignedInState, StatusAction} from 'chrome://settings/settings.js';
+import type {SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, CookieControlsMode, PrivacyGuideStep, SafeBrowsingSetting, ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
+import {loadTimeData, PrefService, PrefsBrowserProxy, Router, routes, SignedInState, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {getSyncAllPrefs} from './sync_test_util.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import type {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on
+
+export function getInitialPrivacyGuideTestPrefs() {
+  return [
+    {
+      key: 'privacy_guide.viewed',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'generated.cookie_default_content_setting',
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: ContentSetting.ALLOW,
+    },
+    {
+      key: 'profile.cookie_controls_mode',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: CookieControlsMode.INCOGNITO_ONLY,
+    },
+    {
+      key: 'generated.third_party_cookie_blocking_setting',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY,
+    },
+    {
+      key: 'generated.safe_browsing',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: SafeBrowsingSetting.STANDARD,
+    },
+    {
+      key: 'url_keyed_anonymized_data_collection.enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'net.network_prediction_options',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: 0,
+    },
+  ];
+}
 
 export function setupPrivacyRouteForTest(): void {
   // Simulates the route of the user entering the privacy guide from the S&P
@@ -35,7 +74,7 @@ export function navigateToStep(step: PrivacyGuideStep): Promise<void> {
   Router.getInstance().navigateTo(
       routes.PRIVACY_GUIDE,
       /* opt_dynamicParameters */ new URLSearchParams('step=' + step));
-  return flushTasks();
+  return microtasksFinished();
 }
 
 // Set all relevant sync status and fire a changed event and flush the UI.
@@ -70,49 +109,38 @@ export function setupSync({
   webUIListenerCallback('sync-prefs-changed', event);
 }
 
-export function setFirstPartyCookieSetting(
-    page: SettingsPrivacyGuidePageElement, setting: ContentSetting) {
-  page.set('prefs.generated.cookie_default_content_setting', {
-    type: chrome.settingsPrivate.PrefType.STRING,
-    value: setting,
-  });
+export function setFirstPartyCookieSetting(setting: ContentSetting) {
+  PrefService.getInstance().setPrefValue(
+      'generated.cookie_default_content_setting', setting);
 }
 
-export function setThirdPartyCookieSetting(
-    page: SettingsPrivacyGuidePageElement, setting: CookieControlsMode): void {
-  page.set('prefs.profile.cookie_controls_mode', {
-    type: chrome.settingsPrivate.PrefType.NUMBER,
-    value: setting,
-  });
+export function setThirdPartyCookieSetting(setting: CookieControlsMode): void {
+  PrefService.getInstance().setPrefValue(
+      'profile.cookie_controls_mode', setting);
 }
 
 export function setThirdPartyCookieBlockingSetting(
-    page: SettingsPrivacyGuidePageElement,
     setting: ThirdPartyCookieBlockingSetting): void {
-  page.set('prefs.generated.third_party_cookie_blocking_setting', {
-    type: chrome.settingsPrivate.PrefType.NUMBER,
-    value: setting,
-  });
+  PrefService.getInstance().setPrefValue(
+      'generated.third_party_cookie_blocking_setting', setting);
 }
 
-export function shouldShowCookiesCard(page: SettingsPrivacyGuidePageElement):
-    boolean {
-  return page.getPref('generated.cookie_default_content_setting').value !==
-      ContentSetting.BLOCK;
+export function shouldShowCookiesCard(): boolean {
+  return PrefService.getInstance()
+             .getPref<ContentSetting>(
+                 'generated.cookie_default_content_setting')
+             .value !== ContentSetting.BLOCK;
 }
 
 // Set the safe browsing setting for the privacy guide.
-export function setSafeBrowsingSetting(
-    page: SettingsPrivacyGuidePageElement, setting: SafeBrowsingSetting): void {
-  page.set('prefs.generated.safe_browsing', {
-    type: chrome.settingsPrivate.PrefType.NUMBER,
-    value: setting,
-  });
+export function setSafeBrowsingSetting(setting: SafeBrowsingSetting): void {
+  PrefService.getInstance().setPrefValue('generated.safe_browsing', setting);
 }
 
-export function shouldShowSafeBrowsingCard(
-    page: SettingsPrivacyGuidePageElement): boolean {
-  const setting = page.getPref('generated.safe_browsing').value;
+export function shouldShowSafeBrowsingCard(): boolean {
+  const setting = PrefService.getInstance()
+                      .getPref<SafeBrowsingSetting>('generated.safe_browsing')
+                      .value;
   return setting === SafeBrowsingSetting.ENHANCED ||
       setting === SafeBrowsingSetting.STANDARD;
 }
@@ -130,32 +158,30 @@ export function shouldShowHistorySyncCard(
 }
 
 // Bundles functionality to create the page object for tests.
-export function createPrivacyGuidePageForTest(
-    settingsPrefs: SettingsPrefsElement): SettingsPrivacyGuidePageElement {
+export async function createPrivacyGuidePageForTest(
+    syncBrowserProxy: TestSyncBrowserProxy):
+    Promise<SettingsPrivacyGuidePageElement> {
+  const prefsBrowserProxy =
+      new TestPrefsBrowserProxy(getInitialPrivacyGuideTestPrefs());
+  PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+  PrefService.resetInstanceForTesting();
+  await PrefService.getInstance().whenInitialized();
+
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
   const page = document.createElement('settings-privacy-guide-page');
   page.disableAnimationsForTesting();
-  page.prefs = settingsPrefs.prefs!;
   document.body.appendChild(page);
 
   setupPrivacyRouteForTest();
 
-  return page;
-}
-
-// Bundles frequently used functionality to configure the page object for tests.
-export function setupPrivacyGuidePageForTest(
-    page: SettingsPrivacyGuidePageElement,
-    syncBrowserProxy: TestSyncBrowserProxy): void {
-  setSafeBrowsingSetting(page, SafeBrowsingSetting.STANDARD);
-  setThirdPartyCookieSetting(page, CookieControlsMode.INCOGNITO_ONLY);
-  setFirstPartyCookieSetting(page, ContentSetting.ALLOW);
   setupSync({
     syncBrowserProxy: syncBrowserProxy,
     signedInState: SignedInState.SYNCING,
     syncAllDataTypes: true,
     typedUrlsSynced: true,
   });
+
+  return page;
 }
 
 export function setParametersForHistorySyncStep(
@@ -173,36 +199,33 @@ export function setParametersForHistorySyncStep(
       'Parameters for HistorySync are set incorrectly.');
 }
 
-export function setParametersForSafeBrowsingStep(
-    page: SettingsPrivacyGuidePageElement, isEligible: boolean): void {
-  page.setPrefValue(
-      'generated.safe_browsing',
+export function setParametersForSafeBrowsingStep(isEligible: boolean): void {
+  setSafeBrowsingSetting(
       isEligible ? SafeBrowsingSetting.STANDARD : SafeBrowsingSetting.DISABLED);
   assertEquals(
-      isEligible, shouldShowSafeBrowsingCard(page),
+      isEligible, shouldShowSafeBrowsingCard(),
       'Parameters for SafeBrowsing are set incorrectly.');
 }
 
-export function setParametersForCookiesStep(
-    page: SettingsPrivacyGuidePageElement, isEligible: boolean): void {
-  setThirdPartyCookieSetting(page, CookieControlsMode.BLOCK_THIRD_PARTY);
+export function setParametersForCookiesStep(isEligible: boolean): void {
+  setThirdPartyCookieSetting(CookieControlsMode.BLOCK_THIRD_PARTY);
   if (!isEligible) {
-    setFirstPartyCookieSetting(page, ContentSetting.BLOCK);
+    setFirstPartyCookieSetting(ContentSetting.BLOCK);
   } else {
-    setFirstPartyCookieSetting(page, ContentSetting.ALLOW);
+    setFirstPartyCookieSetting(ContentSetting.ALLOW);
   }
   assertEquals(
-      isEligible, shouldShowCookiesCard(page),
+      isEligible, shouldShowCookiesCard(),
       'Parameters for Cookies are set incorrectly.');
 }
 
 export function clickNextOnWelcomeStep(page: SettingsPrivacyGuidePageElement):
     Promise<void> {
-  const welcomeFragment = page.shadowRoot!.querySelector<HTMLElement>(
+  const welcomeFragment = page.shadowRoot.querySelector<HTMLElement>(
       '#' + PrivacyGuideStep.WELCOME);
   assertTrue(!!welcomeFragment, 'Welcome fragment is null.');
   assertTrue(isChildVisible(page, '#' + PrivacyGuideStep.WELCOME));
   welcomeFragment.dispatchEvent(
       new CustomEvent('start-button-click', {bubbles: true, composed: true}));
-  return flushTasks();
+  return microtasksFinished();
 }
