@@ -14,8 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/jni_zero/system_jni/Integer_shared_jni.h"
 
-#define EXPECT_SAME_OBJECT(a, b) \
-  EXPECT_TRUE(env->IsSameObject((a).obj(), (b).obj()))
+#define EXPECT_SAME_OBJECT(a, b) EXPECT_TRUE((a).IsSameObject(env, b))
 
 namespace base {
 namespace android {
@@ -187,6 +186,21 @@ TEST_F(ScopedJavaRefTest, Conversions) {
   const JavaRef<jstring>& str_ref = str;
   EXPECT_EQ("string", ConvertJavaStringToUTF8(str_ref));
   str.Reset();
+}
+
+TEST_F(ScopedJavaRefTest, IsSameObject) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> str1 = ConvertUTF8ToJavaString(env, "string1");
+  ScopedJavaLocalRef<jstring> str2 = ConvertUTF8ToJavaString(env, "string2");
+  ScopedJavaGlobalRef<jstring> global1(str1);
+  ScopedJavaLocalRef<jstring> null_ref;
+
+  EXPECT_TRUE(str1.IsSameObject(env, str1));
+  EXPECT_TRUE(str1.IsSameObject(env, global1));
+  EXPECT_FALSE(str1.IsSameObject(env, str2));
+  EXPECT_FALSE(str1.IsSameObject(env, nullptr));
+  EXPECT_FALSE(str1.IsSameObject(env, null_ref));
+  EXPECT_TRUE(null_ref.IsSameObject(env, nullptr));
 }
 
 TEST_F(ScopedJavaRefTest, DuplicateRefs) {
@@ -431,7 +445,7 @@ TEST_F(JArrayViewTest, InputIteratorRequirements) {
   // Dereferencing
   ScopedJavaLocalRef<JInteger> o = *(array_view.begin());
   EXPECT_SAME_OBJECT(o, object_array_members_[0]);
-  EXPECT_TRUE(env->IsSameObject(o.obj(), array_view.begin()->obj()));
+  EXPECT_TRUE(array_view.begin()->IsSameObject(env, o));
 
   // Incrementing
   It preinc = ++(array_view.begin());

@@ -464,8 +464,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
 
   // Assert:
   EXPECT_NE(nullptr, entry_ptr->CachedView().get());
-  EXPECT_TRUE(AttachCurrentThread()->IsSameObject(
-      entry_java_view.obj(), entry_ptr->CachedView()->view().obj()));
+  EXPECT_TRUE(entry_java_view.IsSameObject(AttachCurrentThread(),
+                                           entry_ptr->CachedView()->view()));
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
@@ -557,10 +557,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // Assert: Both entries should have cached views.
   JNIEnv* env = AttachCurrentThread();
-  EXPECT_TRUE(env->IsSameObject(first_java_view.obj(),
-                                first_entry_ptr->CachedView()->view().obj()));
-  EXPECT_TRUE(env->IsSameObject(second_java_view.obj(),
-                                second_entry_ptr->CachedView()->view().obj()));
+  EXPECT_TRUE(
+      first_java_view.IsSameObject(env, first_entry_ptr->CachedView()->view()));
+  EXPECT_TRUE(second_java_view.IsSameObject(
+      env, second_entry_ptr->CachedView()->view()));
 }
 
 IN_PROC_BROWSER_TEST_F(

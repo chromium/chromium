@@ -182,9 +182,7 @@ bool GinJavaBridgeDispatcherHost::FindObjectId(
   JNIEnv* env = base::android::AttachCurrentThread();
   base::AutoLock locker(objects_lock_);
   for (const auto& pair : objects_) {
-    if (env->IsSameObject(
-            object.obj(),
-            pair.second->GetLocalRef(env).obj())) {
+    if (object.IsSameObject(env, pair.second->GetLocalRef(env))) {
       *object_id = pair.first;
       return true;
     }

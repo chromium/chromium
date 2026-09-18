@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(
   base::android::ScopedJavaLocalRef<jobject> j_views_after =
       views_bridge.GetCoBrowseViews();
   ASSERT_FALSE(j_views_after.is_null());
-  EXPECT_FALSE(env->IsSameObject(j_views_before.obj(), j_views_after.obj()));
+  EXPECT_FALSE(j_views_before.IsSameObject(env, j_views_after));
 }
 
 }  // namespace context_sharing

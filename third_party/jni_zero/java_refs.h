@@ -295,6 +295,10 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JNI_ZERO_TRIVIAL_ABI JavaRef<jobject> {
   // TODO(torne): replace usage and remove this.
   bool is_null() const { return obj_ == nullptr; }
 
+  bool IsSameObject(JNIEnv* env, const JavaRef<jobject>& other) const {
+    return env->IsSameObject(obj_, other.obj_);
+  }
+
   // Create a JavaRef that is not automatically released. Used for JNI
   // parameters (which should not be released).
   static JavaRef<jobject> CreateLeaky(JNIEnv* env, jobject obj) {

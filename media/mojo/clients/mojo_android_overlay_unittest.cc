@@ -145,8 +145,8 @@ class MojoAndroidOverlayTest : public ::testing::Test {
 
     // Verify that we actually got back the right surface.
     JNIEnv* env = base::android::AttachCurrentThread();
-    ASSERT_TRUE(env->IsSameObject(surface_.j_surface().obj(),
-                                  overlay_client_->GetJavaSurface().obj()));
+    ASSERT_TRUE(surface_.j_surface().IsSameObject(
+        env, overlay_client_->GetJavaSurface()));
   }
 
   // Destroy the overlay.  This includes onSurfaceDestroyed cases.
