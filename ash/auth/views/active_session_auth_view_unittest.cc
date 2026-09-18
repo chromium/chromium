@@ -30,10 +30,10 @@ namespace ash {
 
 namespace {
 
-const char kTestAccount[] = "user@test.com";
-const GaiaId::Literal kFakeGaia("fake_gaia");
-const std::u16string title = u"title";
-const std::u16string description = u"description";
+constexpr char kTestAccount[] = "user@test.com";
+constexpr GaiaId::Literal kFakeGaia("fake_gaia");
+constexpr char16_t kTitle[] = u"title";
+constexpr char16_t kDescription[] = u"description";
 
 class ActiveSessionAuthViewUnitTest : public AshTestBase {
  public:
@@ -63,7 +63,7 @@ class ActiveSessionAuthViewUnitTest : public AshTestBase {
 
     container_view_ =
         widget_->SetContentsView(std::make_unique<ActiveSessionAuthView>(
-            account_id, title, description,
+            account_id, kTitle, kDescription,
             AuthFactorSet{AuthInputType::kPassword, AuthInputType::kPin}));
     test_api_ =
         std::make_unique<ActiveSessionAuthView::TestApi>(container_view_);

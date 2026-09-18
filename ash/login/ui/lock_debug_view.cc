@@ -83,9 +83,8 @@ constexpr const char kDebugOsVersion[] =
 constexpr const char kDebugEnterpriseInfo[] = "Asset ID: 1111";
 constexpr const char kDebugBluetoothName[] = "Bluetooth adapter";
 
+constexpr const char kDebugKioskAppEmail[] = "fake@email.com";
 constexpr const char kDebugKioskAppId[] = "asdf1234";
-const AccountId kDebugKioskAppAccountId =
-    AccountId::FromUserEmail("fake@email.com");
 constexpr const char16_t kDebugKioskAppName[] = u"Test App Name";
 
 constexpr const char kDebugDefaultLocaleCode[] = "en-GB";
@@ -576,9 +575,10 @@ class LockDebugViewDataDispatcherTransformer
   }
 
   void AddKioskApp(ShelfWidget* shelf_widget) {
-    kiosk_apps_.emplace_back(KioskAppMenuEntry::AppType::kChromeApp,
-                             kDebugKioskAppAccountId, kDebugKioskAppId,
-                             kDebugKioskAppName, gfx::ImageSkia());
+    kiosk_apps_.emplace_back(
+        KioskAppMenuEntry::AppType::kChromeApp,
+        AccountId::FromUserEmail(kDebugKioskAppEmail), kDebugKioskAppId,
+        kDebugKioskAppName, gfx::ImageSkia());
     shelf_widget->GetLoginShelfView()->SetKioskApps(kiosk_apps_);
   }
 

@@ -110,14 +110,6 @@ constexpr const int kInputRowFocusRingRadiusDp =
 // ending result will be 8dp.
 constexpr const int kHorizontalSpacingBetweenIconsAndTextfieldDp = 6;
 
-const ui::ImageModel kCapslockIconHighlighted =
-    ui::ImageModel::FromVectorIcon(kLockScreenCapsLockIcon,
-                                   cros_tokens::kCrosSysOnSurface);
-
-const ui::ImageModel kCapslockIconBlurred =
-    ui::ImageModel::FromVectorIcon(kLockScreenCapsLockIcon,
-                                   cros_tokens::kCrosSysDisabled);
-
 }  // namespace
 
 AuthInputRowView::TestApi::TestApi(AuthInputRowView* view) : view_(view) {}
@@ -431,8 +423,9 @@ void AuthInputRowView::Escape() {
 }
 
 void AuthInputRowView::SetCapsLockHighlighted(bool highlight) {
-  capslock_icon_->SetImage(highlight ? kCapslockIconHighlighted
-                                     : kCapslockIconBlurred);
+  capslock_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      kLockScreenCapsLockIcon, highlight ? cros_tokens::kCrosSysOnSurface
+                                         : cros_tokens::kCrosSysDisabled));
 }
 
 void AuthInputRowView::SetAccessibleNameOnTextfield(

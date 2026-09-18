@@ -53,30 +53,33 @@ struct InputFieldVisibility {
   bool toggle;
   bool pin_pad;
 };
-const std::map<LoginAuthUserView::InputFieldMode, InputFieldVisibility>
-    expected_visibilities = {
-        {LoginAuthUserView::InputFieldMode::kNone,
-         {/*pwd*/ false, /*pin_input*/ false, /*toggle*/ false,
-          /*pin_pad*/ false}},
-        {LoginAuthUserView::InputFieldMode::kPasswordOnly,
-         {/*pwd*/ true, /*pin_input*/ false, /*toggle*/ false,
-          /*pin_pad*/ false}},
-        {LoginAuthUserView::InputFieldMode::kPinOnlyAutosubmitOn,
-         {/*pwd*/ false, /*pin_input*/ true, /*toggle*/ false,
-          /*pin_pad*/ true}},
-        {LoginAuthUserView::InputFieldMode::kPinOnlyAutosubmitOff,
-         {/*pwd*/ true, /*pin_input*/ false, /*toggle*/ false,
-          /*pin_pad*/ true}},
-        {LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOn,
-         {/*pwd*/ false, /*pin_input*/ true, /*toggle*/ true,
-          /*pin_pad*/ true}},
-        {LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOff,
-         {/*pwd*/ true, /*pin_input*/ false, /*toggle*/ true,
-          /*pin_pad*/ true}},
-        {LoginAuthUserView::InputFieldMode::kPasswordWithToggle,
-         {/*pwd*/ true, /*pin_input*/ false, /*toggle*/ true,
-          /*pin_pad*/ false}},
-};
+
+constexpr InputFieldVisibility GetExpectedVisibility(
+    LoginAuthUserView::InputFieldMode mode) {
+  switch (mode) {
+    case LoginAuthUserView::InputFieldMode::kNone:
+      return {/*password=*/false, /*pin_input=*/false, /*toggle=*/false,
+              /*pin_pad=*/false};
+    case LoginAuthUserView::InputFieldMode::kPasswordOnly:
+      return {/*password=*/true, /*pin_input=*/false, /*toggle=*/false,
+              /*pin_pad=*/false};
+    case LoginAuthUserView::InputFieldMode::kPinOnlyAutosubmitOn:
+      return {/*password=*/false, /*pin_input=*/true, /*toggle=*/false,
+              /*pin_pad=*/true};
+    case LoginAuthUserView::InputFieldMode::kPinOnlyAutosubmitOff:
+      return {/*password=*/true, /*pin_input=*/false, /*toggle=*/false,
+              /*pin_pad=*/true};
+    case LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOn:
+      return {/*password=*/false, /*pin_input=*/true, /*toggle=*/true,
+              /*pin_pad=*/true};
+    case LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOff:
+      return {/*password=*/true, /*pin_input=*/false, /*toggle=*/true,
+              /*pin_pad=*/true};
+    case LoginAuthUserView::InputFieldMode::kPasswordWithToggle:
+      return {/*password=*/true, /*pin_input=*/false, /*toggle=*/true,
+              /*pin_pad=*/false};
+  }
+}
 
 }  // namespace
 
@@ -130,7 +133,7 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
   // Expects the given input field mode and the corresponding visibility.
   void ExpectModeVisibility(LoginAuthUserView::InputFieldMode mode) {
     EXPECT_EQ(view_->input_field_mode(), mode);
-    InputFieldVisibility visibility = expected_visibilities.at(mode);
+    InputFieldVisibility visibility = GetExpectedVisibility(mode);
     LoginAuthUserView::TestApi test(view_);
     EXPECT_EQ(test.password_view()->GetVisible(), visibility.password);
     EXPECT_EQ(test.pin_input_view()->GetVisible(), visibility.pin_input);
