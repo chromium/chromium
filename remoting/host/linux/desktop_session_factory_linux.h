@@ -27,6 +27,7 @@ namespace remoting {
 
 class DaemonProcess;
 class DesktopSession;
+class DesktopSessionLinux;
 
 // Class to create DesktopSessions and the corresponding GDM remote displays and
 // desktop processes. Each DesktopSession is associated with one GDM remote
@@ -65,8 +66,6 @@ class DesktopSessionFactoryLinux final
   DesktopSession* GetSessionByUid(uid_t uid);
 
  private:
-  class DesktopSessionLinux;
-
   void OnStartResult(Callback callback, base::expected<void, Loggable> result);
 
   void OnRemoteDisplaysFileLoaded(Callback callback,

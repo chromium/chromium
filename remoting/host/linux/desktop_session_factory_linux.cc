@@ -12,44 +12,29 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
-#include "base/base_paths.h"
-#include "base/command_line.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
-#include "base/memory/weak_ptr.h"
-#include "base/notimplemented.h"
-#include "base/path_service.h"
-#include "base/process/process.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "remoting/base/async_file_util.h"
-#include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/branding.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/source_location.h"
-#include "remoting/host/base/switches.h"
+#include "remoting/host/daemon_process.h"
 #include "remoting/host/desktop_session.h"
-#include "remoting/host/ipc_constants.h"
-#include "remoting/host/linux/linux_process_launcher_delegate.h"
+#include "remoting/host/linux/desktop_session_linux.h"
 #include "remoting/host/linux/remote_display_session_manager.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
-#include "remoting/host/pam_utils.h"
-#include "remoting/host/worker_process_ipc_delegate.h"
-#include "remoting/host/worker_process_launcher.h"
 
 namespace remoting {
 
@@ -77,381 +62,7 @@ base::FilePath GetRemoteDisplaysConfigFilePath() {
   return config_dir.Append("remote_displays.json");
 }
 
-// Returns the path to `cgroup.procs` for the given logind session. Under
-// systemd's cgroup hierarchy specification (`systemd.slice(5)` and
-// https://systemd.io/CONTROL_GROUP_INTERFACE/), a session scope unit
-// `session-<id>.scope` inside the user slice `user-<uid>.slice` maps to
-// `/sys/fs/cgroup/user.slice/user-<uid>.slice/session-<id>.scope/cgroup.procs`.
-base::FilePath GetSessionCgroupProcsPath(uid_t uid,
-                                         std::string_view session_id) {
-  // Check cgroup v2 path.
-  base::FilePath cgroup_v2_path(base::StringPrintf(
-      "/sys/fs/cgroup/user.slice/user-%u.slice/session-%s.scope/cgroup.procs",
-      uid, session_id.data()));
-  if (base::PathExists(cgroup_v2_path)) {
-    return cgroup_v2_path;
-  }
-  // Check cgroup v1 systemd hierarchy fallback.
-  return base::FilePath(base::StringPrintf(
-      "/sys/fs/cgroup/systemd/user.slice/user-%u.slice/session-%s.scope/"
-      "cgroup.procs",
-      uid, session_id.data()));
-}
-
 }  // namespace
-
-class DesktopSessionFactoryLinux::DesktopSessionLinux
-    : public DesktopSession,
-      public WorkerProcessIpcDelegate,
-      public mojom::DesktopSessionRequestHandler {
- public:
-  DesktopSessionLinux(
-      DaemonProcess* daemon_process,
-      int id,
-      std::string_view display_name,
-      std::string_view required_username,
-      std::string_view client_id,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      base::OnceClosure remove_from_factory);
-  ~DesktopSessionLinux() override;
-
-  void OnRemoteDisplaySessionChanged(
-      const RemoteDisplaySessionManager::RemoteDisplaySession& info);
-
-  // Notifies the daemon process and terminates the desktop session. Note that
-  // `this` will be deleted during the call.
-  void TerminateSession(ErrorCode error_code = ErrorCode::OK,
-                        const std::string& error_details = {},
-                        const SourceLocation& error_location = FROM_HERE);
-
-  const std::string& client_id() const { return client_id_; }
-
-  // DesktopSession implementation.
-  void SetScreenResolution(const ScreenResolution& resolution) override;
-  void ReconnectNetworkChannel(
-      const mojom::DesktopSessionOptions& options) override;
-
-  // WorkerProcessIpcDelegate implementation.
-  void OnChannelConnected(int32_t peer_pid) override;
-  void OnPermanentError(int exit_code) override;
-  void OnWorkerProcessStopped() override;
-  void OnAssociatedInterfaceRequest(
-      const std::string& interface_name,
-      mojo::ScopedInterfaceEndpointHandle handle) override;
-
-  // mojom::DesktopSessionRequestHandler implementation.
-  void ConnectDesktopChannel(
-      mojo::ScopedMessagePipeHandle desktop_pipe) override;
-  void InjectSecureAttentionSequence() override;
-  void CrashNetworkProcess() override;
-
-  base::WeakPtr<DesktopSessionLinux> GetWeakPtr();
-
- private:
-  void CrashDesktopProcess(const base::Location& location);
-
-  // Returns whether the current desktop session is allowed based on
-  // `required_username_`. If the session info is not ready yet, this method
-  // will still return true, since it will be called again once the session info
-  // is ready.
-  bool IsSessionUsernameAllowed(
-      const RemoteDisplaySessionManager::RemoteDisplaySession& session);
-
-  void AttachProcessToSession(int32_t pid);
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  std::string display_name_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::string required_username_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::string client_id_ GUARDED_BY_CONTEXT(sequence_checker_);
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  base::OnceClosure remove_from_factory_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<WorkerProcessLauncher> launcher_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  std::string current_session_id_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::optional<uid_t> current_uid_ GUARDED_BY_CONTEXT(sequence_checker_);
-  mojo::AssociatedReceiver<mojom::DesktopSessionRequestHandler>
-      desktop_session_request_handler_ GUARDED_BY_CONTEXT(sequence_checker_){
-          this};
-  mojo::AssociatedRemote<mojom::DesktopProcessControl> desktop_process_control_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  base::WeakPtrFactory<DesktopSessionLinux> weak_ptr_factory_{this};
-};
-
-DesktopSessionFactoryLinux::DesktopSessionLinux::DesktopSessionLinux(
-    DaemonProcess* daemon_process,
-    int id,
-    std::string_view display_name,
-    std::string_view required_username,
-    std::string_view client_id,
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    base::OnceClosure remove_from_factory)
-    : DesktopSession(daemon_process, id),
-      display_name_(display_name),
-      required_username_(required_username),
-      client_id_(client_id),
-      io_task_runner_(io_task_runner),
-      remove_from_factory_(std::move(remove_from_factory)) {}
-
-DesktopSessionFactoryLinux::DesktopSessionLinux::~DesktopSessionLinux() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  std::move(remove_from_factory_).Run();
-}
-
-void DesktopSessionFactoryLinux::DesktopSessionLinux::
-    OnRemoteDisplaySessionChanged(
-        const RemoteDisplaySessionManager::RemoteDisplaySession& info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!info.session_info.has_value() || !info.user_info.has_value()) {
-    // Session is not ready yet, or is detached. Kill the desktop process if
-    // it is running.
-    launcher_.reset();
-    current_session_id_.clear();
-    current_uid_.reset();
-    return;
-  }
-  current_session_id_ = info.session_info->session_id;
-  current_uid_ = info.user_info->uid;
-
-  if (!IsSessionUsernameAllowed(info)) {
-    TerminateSession(
-        ErrorCode::SESSION_REJECTED,
-        base::StringPrintf("User %s does not match the required username.",
-                           info.user_info->username),
-        FROM_HERE);
-    return;
-  }
-
-  if (!IsLocalLoginAllowed(info.user_info->username)) {
-    TerminateSession(
-        ErrorCode::SESSION_REJECTED,
-        base::StringPrintf("Local login for user %s is disallowed by PAM.",
-                           info.user_info->username),
-        FROM_HERE);
-    return;
-  }
-
-  // TODO: crbug.com/475611769 - See if we need a dedicated desktop process
-  // binary.
-  base::FilePath this_exe;
-  if (!base::PathService::Get(base::BasePathKey::FILE_EXE, &this_exe)) {
-    LOG(ERROR) << "Failed to get the current executable path.";
-    TerminateSession();
-    return;
-  }
-
-  base::CommandLine command_line(this_exe);
-  command_line.AppendSwitchASCII(kProcessTypeSwitchName, kProcessTypeDesktop);
-
-  LinuxWorkerProcessLauncherDelegate::LaunchOptions options(command_line);
-  options.new_session = true;
-  options.uid = info.user_info->uid;
-  options.gid = info.user_info->gid;
-  options.supplementary_gids = info.user_info->supplementary_gids;
-  options.working_dir = info.user_info->home_dir;
-
-  // Launch the desktop process. If there is a desktop process running for the
-  // previous desktop session, this will kill it.
-  launcher_ = std::make_unique<WorkerProcessLauncher>(
-      std::make_unique<LinuxWorkerProcessLauncherDelegate>(std::move(options),
-                                                           io_task_runner_),
-      this);
-}
-
-void DesktopSessionFactoryLinux::DesktopSessionLinux::TerminateSession(
-    ErrorCode error_code,
-    const std::string& error_details,
-    const SourceLocation& error_location) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!error_details.empty() || error_code != ErrorCode::OK) {
-    LOG(ERROR) << "Terminating session " << id()
-               << " (error code: " << ErrorCodeToString(error_code)
-               << "): " << error_details << " at " << error_location.ToString();
-  }
-
-  // The daemon process will delete `this`.
-  daemon_process()->CloseDesktopSessionWithError(id(), error_code,
-                                                 error_details, error_location);
-}
-
-void DesktopSessionFactoryLinux::DesktopSessionLinux::SetScreenResolution(
-    const ScreenResolution& resolution) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // No-op since screen resolution change is always handled by the desktop
-  // process.
-}
-
-void DesktopSessionFactoryLinux::DesktopSessionLinux::ReconnectNetworkChannel(
-    const mojom::DesktopSessionOptions& options) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (options.required_username != required_username_) {
-    TerminateSession(ErrorCode::SESSION_REJECTED,
-                     "Required username has changed.", FROM_HERE);
-    return;
-  }
-
-  if (options.client_id != client_id_) {
-    TerminateSession(ErrorCode::SESSION_REJECTED, "Client ID has changed.",
-                     FROM_HERE);
-    return;
-  }
-
-  if (desktop_process_control_.is_bound()) {
-    desktop_process_control_->ReconnectNetworkChannel();
-  }
-  // If `desktop_process_control_` is not bound, then it means the desktop
-  // process isn't launched yet. It will send the desktop pipe after it is
-  // launched anyway so we don't need to do anything.
-}
-
-void DesktopSessionFactoryLinux::DesktopSessionLinux::OnChannelConnected(
-    int32_t peer_pid) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  VLOG(1) << "IPC: daemon <- desktop (" << peer_pid << ")";
-
-  AttachProcessToSession(peer_pid);
-
-  desktop_process_control_.reset();
-  launcher_->GetRemoteAssociatedInterface(
-      desktop_process_control_.BindNewEndpointAndPassReceiver());
-}
-
-void DesktopSessionFactoryLinux::DesktopSessionLinux::OnPermanentError(
-    int exit_code) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  TerminateSession();
-}
-
-void DesktopSessionFactoryLinux::DesktopSessionLinux::OnWorkerProcessStopped() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  desktop_process_control_.reset();
-  desktop_session_request_handler_.reset();
-}
-
-void DesktopSessionFactoryLinux::DesktopSessionLinux::AttachProcessToSession(
-    int32_t pid) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (current_session_id_.empty() || !current_uid_.has_value()) {
-    LOG(WARNING) << "Cannot attach process " << pid
-                 << " to logind session: session info is not set.";
-    return;
-  }
-
-  base::FilePath cgroup_procs_path =
-      GetSessionCgroupProcsPath(*current_uid_, current_session_id_);
-  if (!base::PathExists(cgroup_procs_path)) {
-    LOG(WARNING) << "cgroup.procs path does not exist: " << cgroup_procs_path;
-    return;
-  }
-
-  HOST_LOG << "Attaching desktop process " << pid << " to session cgroup "
-           << cgroup_procs_path;
-
-  std::string pid_str = base::NumberToString(pid);
-  if (!base::WriteFile(cgroup_procs_path, pid_str)) {
-    PLOG(WARNING) << "Failed to write PID " << pid << " to "
-                  << cgroup_procs_path;
-    return;
-  }
-  HOST_LOG << "Successfully attached desktop process " << pid
-           << " to session cgroup " << cgroup_procs_path;
-}
-
-void DesktopSessionFactoryLinux::DesktopSessionLinux::
-    OnAssociatedInterfaceRequest(const std::string& interface_name,
-                                 mojo::ScopedInterfaceEndpointHandle handle) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (interface_name == mojom::DesktopSessionRequestHandler::Name_) {
-    if (desktop_session_request_handler_.is_bound()) {
-      LOG(ERROR) << "Receiver already bound for associated interface: "
-                 << mojom::DesktopSessionRequestHandler::Name_;
-      CrashDesktopProcess(FROM_HERE);
-    }
-
-    mojo::PendingAssociatedReceiver<mojom::DesktopSessionRequestHandler>
-        pending_receiver(std::move(handle));
-    desktop_session_request_handler_.Bind(std::move(pending_receiver));
-
-    // Reset the receiver on disconnect so |desktop_session_request_handler_|
-    // can be re-bound if |launcher_| spawns a new desktop process.
-    desktop_session_request_handler_.reset_on_disconnect();
-  } else {
-    LOG(ERROR) << "Unknown associated interface requested: " << interface_name
-               << ", crashing the desktop process";
-    CrashDesktopProcess(FROM_HERE);
-  }
-}
-
-void DesktopSessionFactoryLinux::DesktopSessionLinux::ConnectDesktopChannel(
-    mojo::ScopedMessagePipeHandle desktop_pipe) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!daemon_process()->OnDesktopSessionAgentAttached(
-          id(), std::move(desktop_pipe))) {
-    CrashDesktopProcess(FROM_HERE);
-  }
-}
-
-void DesktopSessionFactoryLinux::DesktopSessionLinux::
-    InjectSecureAttentionSequence() {
-  NOTIMPLEMENTED();
-}
-
-void DesktopSessionFactoryLinux::DesktopSessionLinux::CrashNetworkProcess() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  daemon_process()->CrashNetworkProcess(FROM_HERE);
-}
-
-base::WeakPtr<DesktopSessionFactoryLinux::DesktopSessionLinux>
-DesktopSessionFactoryLinux::DesktopSessionLinux::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
-void DesktopSessionFactoryLinux::DesktopSessionLinux::CrashDesktopProcess(
-    const base::Location& location) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  launcher_->Crash(location);
-}
-
-bool DesktopSessionFactoryLinux::DesktopSessionLinux::IsSessionUsernameAllowed(
-    const RemoteDisplaySessionManager::RemoteDisplaySession& info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (required_username_.empty()) {
-    return true;
-  }
-  if (!info.user_info.has_value() || !info.session_info.has_value()) {
-    // The session info is not ready yet. This method will be called again when
-    // it is ready, so we just return true here.
-    return true;
-  }
-  if (info.session_info->session_class == "greeter") {
-    HOST_LOG << "Login username check skipped for greeter session.";
-    return true;
-  }
-  if (base::EqualsCaseInsensitiveASCII(required_username_,
-                                       info.user_info->username)) {
-    return true;
-  }
-  LOG(ERROR) << "User " << info.user_info->username
-             << " does not match the required username: " << required_username_;
-  return false;
-}
-
-// DesktopSessionFactoryLinux implementation.
 
 DesktopSessionFactoryLinux::DesktopSessionFactoryLinux(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
@@ -495,10 +106,11 @@ DesktopSessionFactoryLinux::CreateDesktopSession(
   }
 
   auto desktop_session = std::make_unique<DesktopSessionLinux>(
-      daemon_process, id, display_name, options.required_username,
-      options.client_id, io_task_runner_,
+      daemon_process, id, options.required_username, options.client_id,
+      io_task_runner_,
       base::BindOnce(&DesktopSessionFactoryLinux::RemoveDesktopSession,
-                     weak_ptr_factory_.GetWeakPtr(), display_name));
+                     weak_ptr_factory_.GetWeakPtr(), display_name),
+      /*is_greeter_allowed=*/true);
 
   if (auto* info =
           remote_display_session_manager_.GetRemoteDisplayInfo(display_name)) {
@@ -509,7 +121,8 @@ DesktopSessionFactoryLinux::CreateDesktopSession(
         << "display " << display_name;
     for (const auto& [path, session] : info->sessions) {
       if (session.session_info.has_value() && session.user_info.has_value()) {
-        desktop_session->OnRemoteDisplaySessionChanged(session);
+        desktop_session->SetSessionInfo(*session.session_info,
+                                        *session.user_info);
         break;
       }
     }
@@ -632,8 +245,7 @@ void DesktopSessionFactoryLinux::OnRemoteDisplaysFileLoaded(
           // The entry may still be invalid, e.g. if the file has been tampered
           // with such that a user is associated with another user's graphical
           // session. This will be validated in
-          // DesktopSessionLinux::OnRemoteDisplaySessionChanged when the client
-          // connects.
+          // DesktopSessionLinux::SetSessionInfo when the client connects.
           recovered_displays_[client_id] = display_name;
         } else {
           LOG(WARNING) << "Ignored remote display " << display_name
@@ -705,7 +317,14 @@ void DesktopSessionFactoryLinux::OnRemoteDisplayChanged(
     if (!session) {
       return;
     }
-    session->OnRemoteDisplaySessionChanged(info.sessions.begin()->second);
+    const auto& remote_session = info.sessions.begin()->second;
+    if (remote_session.session_info.has_value() &&
+        remote_session.user_info.has_value()) {
+      session->SetSessionInfo(*remote_session.session_info,
+                              *remote_session.user_info);
+    } else {
+      session->ClearSessionInfo();
+    }
     RequestWriteRemoteDisplaysToFile();
     return;
   }
@@ -722,7 +341,7 @@ void DesktopSessionFactoryLinux::OnRemoteDisplayChanged(
     session = &greeter_it->second;
     HOST_LOG << "Terminating greeter session "
              << session->session_info->session_id
-             << "for remote display: " << display_name;
+             << " for remote display: " << display_name;
   } else {
     session = &info.sessions.begin()->second;
     LOG(WARNING) << "Cannot find greeter session. Terminating the first "
@@ -774,8 +393,8 @@ void DesktopSessionFactoryLinux::RemoveDesktopSession(
       }));
 }
 
-base::WeakPtr<DesktopSessionFactoryLinux::DesktopSessionLinux>
-DesktopSessionFactoryLinux::FindSession(std::string_view display_name) {
+base::WeakPtr<DesktopSessionLinux> DesktopSessionFactoryLinux::FindSession(
+    std::string_view display_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = desktop_sessions_.find(display_name);
