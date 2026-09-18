@@ -21,6 +21,7 @@ import type {SearchAnimatedGlowElement} from '//resources/cr_components/search/a
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {getDeepActiveElement} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {FreStage} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {FreState, PageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -38,6 +39,12 @@ import type {ComposeboxInitialState} from './omnibox_everywhere.mojom-webui.js';
 const PERMISSION_PROMPT_CSS_CLASS = 'permission-prompt-showing';
 const VOICE_IDLE_TIMEOUT_MS = 8000;
 const VOICE_QUERY_LENGTH_LIMIT = 120;
+// Duration after a window activation focus event during which a click is
+// still treated as part of the activation gesture. The activating click
+// reaches the renderer shortly after the focus event that precedes it, so
+// this only needs to absorb that delay while staying well below the
+// timescale of a deliberate follow-up interaction.
+const ACTIVATION_CLICK_WINDOW_MS = 300;
 
 export interface OmniboxEverywhereAppElement {
   $: {
@@ -168,17 +175,15 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
   private mostVisitedListenerId_: number|null = null;
   private searchboxListenerIds_: number[] = [];
   private omniboxEverywhereListenerIds_: number[] = [];
+  private wasJustActivated_ = false;
+  private activationTimeoutId_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
     this.isActive_ = document.hasFocus();
-    this.eventTracker_.add(window, 'focus', () => {
-      this.isActive_ = true;
-      this.focusActiveInput_();
-    });
-    this.eventTracker_.add(window, 'blur', () => {
-      this.isActive_ = false;
-    });
+    this.eventTracker_.add(window, 'focus', this.onWindowFocus_.bind(this));
+    this.eventTracker_.add(window, 'blur', this.onWindowBlur_.bind(this));
+    this.eventTracker_.add(window, 'click', this.onAppClick_.bind(this));
     this.eventTracker_.add(
         document.documentElement, 'visibilitychange',
         this.onVisibilitychange_.bind(this));
@@ -190,6 +195,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.clearActivationTimeout_();
     this.eventTracker_.removeAll();
     this.removeListeners_();
   }
@@ -513,6 +519,44 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       this.composebox?.focusInput();
     } else {
       this.searchbox?.focusInput();
+    }
+  }
+
+  private onWindowFocus_() {
+    this.isActive_ = true;
+    this.focusActiveInput_();
+    this.wasJustActivated_ = true;
+    if (this.activationTimeoutId_ !== null) {
+      clearTimeout(this.activationTimeoutId_);
+    }
+    this.activationTimeoutId_ = setTimeout(() => {
+      this.wasJustActivated_ = false;
+      this.activationTimeoutId_ = null;
+    }, ACTIVATION_CLICK_WINDOW_MS);
+  }
+
+  private onWindowBlur_() {
+    this.isActive_ = false;
+    this.clearActivationTimeout_();
+  }
+
+  private onAppClick_() {
+    if (!this.wasJustActivated_) {
+      return;
+    }
+    this.clearActivationTimeout_();
+    // Only restore focus if the click left nothing focused. If it landed on
+    // a focusable control, that control should keep focus.
+    if (getDeepActiveElement() === document.body) {
+      this.focusActiveInput_();
+    }
+  }
+
+  private clearActivationTimeout_() {
+    this.wasJustActivated_ = false;
+    if (this.activationTimeoutId_ !== null) {
+      clearTimeout(this.activationTimeoutId_);
+      this.activationTimeoutId_ = null;
     }
   }
 

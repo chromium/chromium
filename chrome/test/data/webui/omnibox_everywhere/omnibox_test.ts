@@ -19,11 +19,13 @@ import {GlowAnimationState} from 'chrome://resources/cr_components/search/consta
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {FreStage} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -35,6 +37,16 @@ function getInputValue(
     return (inputElement as HTMLInputElement).value;
   }
   return inputElement.innerText;
+}
+
+// `HTMLElement.click()` dispatches a click event without running the
+// browser's default focus handling, so tests that emulate a click landing on
+// non-interactive background have to drop focus themselves.
+function blurActiveElement() {
+  const activeElement = getDeepActiveElement();
+  if (activeElement instanceof HTMLElement) {
+    activeElement.blur();
+  }
 }
 
 suite('OmniboxEverywhereOmniboxTest', () => {
@@ -2224,6 +2236,203 @@ suite('OmniboxEverywhereAppTest', () => {
 
         assertFalse(focusCalled);
       });
+
+  test(
+      'click upon window activation focuses searchbox input in searchbox mode',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        assertTrue(!!searchbox);
+
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+
+        let focusCalled = false;
+        searchbox.focusInput = () => {
+          focusCalled = true;
+        };
+
+        blurActiveElement();
+        app.click();
+        await microtasksFinished();
+
+        assertTrue(focusCalled);
+      });
+
+  test(
+      'click upon window activation focuses composebox input in ' +
+          'composebox mode',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {text: '', files: [], mode: 0, model: 0},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
+        assertTrue(!!composebox);
+
+        let focusCalled = false;
+        composebox.focusInput = () => {
+          focusCalled = true;
+        };
+
+        blurActiveElement();
+        app.click();
+        await microtasksFinished();
+
+        assertTrue(focusCalled);
+      });
+
+  test(
+      'click upon activation does not steal focus from a focused control',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+
+        let focusCalled = false;
+        searchbox.focusInput = () => {
+          focusCalled = true;
+        };
+
+        // Emulate the activating click landing on an interactive control,
+        // which takes focus before the click event is dispatched.
+        const button = document.createElement('button');
+        document.body.appendChild(button);
+        button.focus();
+        button.click();
+        await microtasksFinished();
+        button.remove();
+
+        assertFalse(focusCalled);
+      });
+
+  test('click on the background outside the app refocuses input', async () => {
+    const searchbox =
+        app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+
+    window.dispatchEvent(new Event('focus'));
+    await microtasksFinished();
+
+    let focusCalled = false;
+    searchbox.focusInput = () => {
+      focusCalled = true;
+    };
+
+    // The app element does not fill the window, so an activating click
+    // can land on the body padding that accommodates the drop shadow.
+    blurActiveElement();
+    document.body.click();
+    await microtasksFinished();
+
+    assertTrue(focusCalled);
+  });
+
+  test('clicking while already active does not refocus input', async () => {
+    window.dispatchEvent(new Event('focus'));
+    await microtasksFinished();
+
+    // Consume the initial activation click.
+    app.click();
+    await microtasksFinished();
+
+    const searchbox =
+        app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+    assertTrue(!!searchbox);
+
+    let focusCalled = false;
+    searchbox.focusInput = () => {
+      focusCalled = true;
+    };
+
+    app.click();
+    await microtasksFinished();
+
+    assertFalse(focusCalled);
+  });
+
+  test(
+      'click upon activation does not focus input when voice search ' +
+          'dialog is open',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent(
+            'open-voice-search', {bubbles: true, composed: true}));
+        await microtasksFinished();
+
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+
+        let focusCalled = false;
+        searchbox.focusInput = () => {
+          focusCalled = true;
+        };
+
+        app.click();
+        await microtasksFinished();
+
+        assertFalse(focusCalled);
+      });
+
+  test(
+      'click after the activation window expires does not refocus input',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+
+        // Use a mock timer so the activation window can be elapsed without
+        // waiting on a real timeout.
+        const mockTimer = new MockTimer();
+        mockTimer.install();
+        window.dispatchEvent(new Event('focus'));
+        mockTimer.tick(500);
+        mockTimer.uninstall();
+        await microtasksFinished();
+
+        let focusCalled = false;
+        searchbox.focusInput = () => {
+          focusCalled = true;
+        };
+
+        app.click();
+        await microtasksFinished();
+
+        assertFalse(focusCalled);
+      });
+
+  test('click after window blur does not refocus input', async () => {
+    const searchbox =
+        app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+
+    window.dispatchEvent(new Event('focus'));
+    await microtasksFinished();
+
+    // Blurring discards the pending activation, so a subsequent click is no
+    // longer treated as part of an activation gesture.
+    window.dispatchEvent(new Event('blur'));
+    await microtasksFinished();
+
+    let focusCalled = false;
+    searchbox.focusInput = () => {
+      focusCalled = true;
+    };
+
+    app.click();
+    await microtasksFinished();
+
+    assertFalse(focusCalled);
+  });
 
   test('addFileContext Mojo event updates composebox thumbnail', async () => {
     const omniboxElement =
