@@ -1067,14 +1067,16 @@ class CRWWebControllerPolicyDeciderTest : public CRWWebControllerTest {
   // timed out.
   [[nodiscard]] bool VerifyDecidePolicyForNavigationAction(
       NSURLRequest* request,
-      WKNavigationActionPolicy expected_policy) {
+      WKNavigationActionPolicy expected_policy,
+      BOOL target_frame_is_main_frame = YES) {
     CRWFakeWKNavigationAction* navigation_action =
         [[CRWFakeWKNavigationAction alloc] init];
     navigation_action.request = request;
 
-    WKFrameInfo* mock_frame_info = OCMClassMock([WKFrameInfo class]);
-    OCMStub([mock_frame_info isMainFrame]).andReturn(YES);
-    navigation_action.targetFrame = mock_frame_info;
+    FakeWKFrameInfo* frame_info = [[FakeWKFrameInfo alloc] init];
+    frame_info.mainFrame = target_frame_is_main_frame;
+    frame_info.webView = mock_web_view_;
+    navigation_action.targetFrame = (WKFrameInfo*)frame_info;
 
     WKWebpagePreferences* preferences = [[WKWebpagePreferences alloc] init];
 
@@ -1117,7 +1119,8 @@ TEST_F(CRWWebControllerPolicyDeciderTest,
       [NSMutableURLRequest requestWithURL:app_url];
   app_url_request.mainDocumentURL = app_url;
   EXPECT_TRUE(VerifyDecidePolicyForNavigationAction(
-      app_url_request, WKNavigationActionPolicyAllow));
+      app_url_request, WKNavigationActionPolicyAllow,
+      /*target_frame_is_main_frame=*/NO));
 }
 
 // Tests that URL is allowed in OffTheRecord mode when the
@@ -1167,7 +1170,46 @@ TEST_F(CRWWebControllerPolicyDeciderTest,
       [NSMutableURLRequest requestWithURL:app_url];
   app_url_request.mainDocumentURL = [NSURL URLWithString:@(kTestURLString)];
   EXPECT_TRUE(VerifyDecidePolicyForNavigationAction(
-      app_url_request, WKNavigationActionPolicyCancel));
+      app_url_request, WKNavigationActionPolicyCancel,
+      /*target_frame_is_main_frame=*/NO));
+}
+
+// Tests that a subframe cannot navigate the top-level main frame to an
+// App-specific URL even if the request's `mainDocumentURL` is set to the
+// destination URL.
+TEST_F(CRWWebControllerPolicyDeciderTest,
+       DisallowAppSpecificMainFrameNavigationFromIFrame) {
+  NSURL* app_url = [NSURL URLWithString:@(kTestAppSpecificURL)];
+  NSMutableURLRequest* app_url_request =
+      [NSMutableURLRequest requestWithURL:app_url];
+  // WebKit sets `mainDocumentURL` to destination URL for main-frame requests.
+  app_url_request.mainDocumentURL = app_url;
+
+  CRWFakeWKNavigationAction* action = [[CRWFakeWKNavigationAction alloc] init];
+  action.request = app_url_request;
+
+  FakeWKFrameInfo* target_frame = [[FakeWKFrameInfo alloc] init];
+  target_frame.mainFrame = YES;
+  target_frame.webView = mock_web_view_;
+  action.targetFrame = (WKFrameInfo*)target_frame;
+
+  FakeWKFrameInfo* source_frame = [[FakeWKFrameInfo alloc] init];
+  source_frame.mainFrame = NO;
+  source_frame.webView = mock_web_view_;
+  action.sourceFrame = (WKFrameInfo*)source_frame;
+
+  __block bool callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyCancel);
+                        callback_called = true;
+                      }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
 }
 
 // Tests that blob URL navigation is allowed.

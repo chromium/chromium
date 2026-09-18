@@ -1559,9 +1559,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
            failedNavigationURL == _displayedErrorPageFailedNavigationURL;
   }
 
-  if (!action.sourceFrame.mainFrame) {
-    // AppSpecific URLs are allowed inside iframe if the main frame is also
-    // app specific page.
+  if (action.targetFrame && !action.targetFrame.mainFrame) {
+    // AppSpecific URLs are allowed inside an iframe only if the containing
+    // main document is also an app specific page.
     GURL mainDocumentURL = net::GURLWithNSURL(action.request.mainDocumentURL);
     if (web::GetWebClient()->IsAppSpecificURL(mainDocumentURL)) {
       return YES;
