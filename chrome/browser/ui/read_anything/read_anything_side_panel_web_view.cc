@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_web_view.h"
 
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_scope.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -22,7 +20,6 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_ReadAnythingUntrustedUI,
 END_METADATA
 
 ReadAnythingSidePanelWebView::ReadAnythingSidePanelWebView(
-    Profile* profile,
     SidePanelEntryScope& scope,
     std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
         contents_wrapper)

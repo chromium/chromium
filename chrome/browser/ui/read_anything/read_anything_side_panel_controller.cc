@@ -10,7 +10,6 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_contents_wrapper.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
@@ -189,7 +188,7 @@ ReadAnythingSidePanelController::CreateContainerView(
 
   std::unique_ptr<ReadAnythingSidePanelWebView> web_view =
       std::make_unique<ReadAnythingSidePanelWebView>(
-          tab_->GetBrowserWindowInterface()->GetProfile(), scope,
+          scope,
           ReadAnythingController::From(tab_)
               ->GetOrCreateWebUIWrapper(
                   ReadAnythingController::PresentationState::kInSidePanel)
@@ -293,4 +292,3 @@ void ReadAnythingSidePanelController::UpdateIphVisibility() {
         feature_engagement::kIPHReadingModeSidePanelFeature);
   }
 }
-

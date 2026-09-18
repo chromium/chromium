@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/input/native_web_keyboard_event.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

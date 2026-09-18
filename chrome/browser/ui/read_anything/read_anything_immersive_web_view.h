@@ -15,12 +15,6 @@
 
 using read_anything::mojom::ReadAnythingOpenTrigger;
 
-class Profile;
-
-namespace tabs {
-class TabInterface;
-}  // namespace tabs
-
 // This is a WebView used to house the WebUI for the Immersive Reading Mode. It
 // is owned and hosted by the ReadAnythingImmersiveOverlayView. The
 // ReadAnythingImmersiveOverlayView cannot directly host Reading Mode itself

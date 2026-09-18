@@ -24,7 +24,6 @@ class ReadAnythingSidePanelWebView
                   SidePanelWebUIViewT_ReadAnythingUntrustedUI)
  public:
   ReadAnythingSidePanelWebView(
-      Profile* profile,
       SidePanelEntryScope& scope,
       std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
           contents_wrapper);
