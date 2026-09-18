@@ -9,7 +9,9 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.graphics.Rect;
 
 import androidx.annotation.Px;
+import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
@@ -21,6 +23,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.SheetLayoutMode;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.TokenHolder;
 
 /** Coordinates the bottom sheet UI lifecycle, state transitions, and event notifications. */
 @NullMarked
@@ -50,11 +53,14 @@ class BottomSheetMediator {
 
     private final PropertyModel mModel;
     private final ObserverList<BottomSheetObserver> mObservers = new ObserverList<>();
+    private final TokenHolder mKeyboardTokenHolder = new TokenHolder(CallbackUtils.emptyRunnable());
 
     private @Nullable BottomSheetContent mSheetContent;
     private @SheetState int mCurrentState = SheetState.HIDDEN;
     private @SheetState int mTargetState = SheetState.NONE;
     private @SheetState int mScrollingStartState = SheetState.NONE;
+    private @SheetState int mStateBeforeKeyboardShown = SheetState.NONE;
+    private int mKeyboardToken = TokenHolder.INVALID_TOKEN;
     private boolean mIsSheetOpen;
 
     /**
@@ -651,6 +657,15 @@ class BottomSheetMediator {
         mModel.set(BottomSheetProperties.SHEET_WIDTH_PX, width);
     }
 
+    /**
+     * Sets the keyboard curtain height in the model.
+     *
+     * @param height The keyboard curtain height in pixels.
+     */
+    void setKeyboardCurtainHeight(@Px int height) {
+        mModel.set(BottomSheetProperties.KEYBOARD_CURTAIN_HEIGHT, height);
+    }
+
     /** Returns the ratio of the height of the screen that the hidden state is. */
     float getHiddenRatio() {
         return 0;
@@ -774,5 +789,62 @@ class BottomSheetMediator {
             return SheetState.HALF;
         }
         return SheetState.FULL;
+    }
+
+    void maybeCacheStateForImeAnimation(int typeMask, boolean isKeyboardShowing) {
+        if ((typeMask & WindowInsetsCompat.Type.ime()) == 0) return;
+        if (mStateBeforeKeyboardShown != SheetState.NONE) return;
+        // This captures the BottomSheet state prior to a layout pass, so isKeyboardShowing will
+        // still return false.
+        if (isKeyboardShowing) return;
+
+        assert mKeyboardToken == TokenHolder.INVALID_TOKEN;
+        assert !mKeyboardTokenHolder.hasTokens();
+
+        // The bottom sheet state will not have been updated yet at this point, so
+        // store for later use.
+        mStateBeforeKeyboardShown = mCurrentState;
+        mKeyboardToken = mKeyboardTokenHolder.acquireToken();
+    }
+
+    @SheetState
+    int maybeRevertStateOnLayoutChange(
+            int currentDecorHeight,
+            int previousScreenHeight,
+            boolean isKeyboardShowing,
+            boolean isFullHeightResizeContent) {
+        // If the screen height has changed, reset the cached state since it may no longer be valid.
+        if (previousScreenHeight != currentDecorHeight) {
+            resetCachedKeyboardState();
+        }
+
+        @SheetState int stateToRestore = SheetState.NONE;
+
+        if (!isKeyboardShowing
+                && mKeyboardToken != TokenHolder.INVALID_TOKEN
+                && mStateBeforeKeyboardShown != SheetState.NONE
+                && isFullHeightResizeContent) {
+            assert mKeyboardTokenHolder.hasTokens();
+            stateToRestore = mStateBeforeKeyboardShown;
+            resetCachedKeyboardState();
+        }
+        return stateToRestore;
+    }
+
+    void resetCachedKeyboardState() {
+        mStateBeforeKeyboardShown = SheetState.NONE;
+        if (mKeyboardToken != TokenHolder.INVALID_TOKEN) {
+            mKeyboardTokenHolder.releaseToken(mKeyboardToken);
+            mKeyboardToken = TokenHolder.INVALID_TOKEN;
+        }
+    }
+
+    boolean hasKeyboardTokenForTesting() {
+        return mKeyboardToken != TokenHolder.INVALID_TOKEN;
+    }
+
+    @SheetState
+    int getStateBeforeKeyboardShownForTesting() {
+        return mStateBeforeKeyboardShown;
     }
 }

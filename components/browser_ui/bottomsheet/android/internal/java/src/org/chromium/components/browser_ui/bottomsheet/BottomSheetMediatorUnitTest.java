@@ -16,6 +16,8 @@ import static org.mockito.Mockito.when;
 import android.graphics.Rect;
 import android.view.View;
 
+import androidx.core.view.WindowInsetsCompat;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -718,5 +720,65 @@ public class BottomSheetMediatorUnitTest {
                         /* maxSheetHeight= */ 150,
                         /* toolbarHeight= */ 60,
                         /* handlebarHeight= */ 16));
+    }
+
+    @Test
+    public void testKeyboardStateCaching() {
+        mMediator.setInternalCurrentState(SheetState.HALF);
+        mMediator.maybeCacheStateForImeAnimation(
+                /* typeMask= */ WindowInsetsCompat.Type.ime(), /* isKeyboardShowing= */ false);
+        assertEquals(SheetState.HALF, mMediator.getStateBeforeKeyboardShownForTesting());
+        assertTrue(mMediator.hasKeyboardTokenForTesting());
+
+        mMediator.resetCachedKeyboardState();
+        assertEquals(SheetState.NONE, mMediator.getStateBeforeKeyboardShownForTesting());
+        assertFalse(mMediator.hasKeyboardTokenForTesting());
+    }
+
+    @Test
+    public void testMaybeRevertStateOnLayoutChange() {
+        mMediator.setInternalCurrentState(SheetState.HALF);
+        mMediator.maybeCacheStateForImeAnimation(
+                /* typeMask= */ WindowInsetsCompat.Type.ime(), /* isKeyboardShowing= */ false);
+
+        // When screen height changes, cached state is reset
+        assertEquals(
+                SheetState.NONE,
+                mMediator.maybeRevertStateOnLayoutChange(
+                        /* currentDecorHeight= */ 1000,
+                        /* previousScreenHeight= */ 900,
+                        /* isKeyboardShowing= */ false,
+                        /* isFullHeightResizeContent= */ true));
+        assertFalse(mMediator.hasKeyboardTokenForTesting());
+
+        // Cache state again
+        mMediator.maybeCacheStateForImeAnimation(
+                /* typeMask= */ WindowInsetsCompat.Type.ime(), /* isKeyboardShowing= */ false);
+
+        // Keyboard still showing -> no restore
+        assertEquals(
+                SheetState.NONE,
+                mMediator.maybeRevertStateOnLayoutChange(
+                        /* currentDecorHeight= */ 1000,
+                        /* previousScreenHeight= */ 1000,
+                        /* isKeyboardShowing= */ true,
+                        /* isFullHeightResizeContent= */ true));
+        assertTrue(mMediator.hasKeyboardTokenForTesting());
+
+        // Keyboard dismissed and resize content -> restores cached state
+        assertEquals(
+                SheetState.HALF,
+                mMediator.maybeRevertStateOnLayoutChange(
+                        /* currentDecorHeight= */ 1000,
+                        /* previousScreenHeight= */ 1000,
+                        /* isKeyboardShowing= */ false,
+                        /* isFullHeightResizeContent= */ true));
+        assertFalse(mMediator.hasKeyboardTokenForTesting());
+    }
+
+    @Test
+    public void testSetKeyboardCurtainHeight() {
+        mMediator.setKeyboardCurtainHeight(350);
+        assertEquals(350, mModel.get(BottomSheetProperties.KEYBOARD_CURTAIN_HEIGHT));
     }
 }

@@ -34,7 +34,6 @@ import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
@@ -60,7 +59,6 @@ import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.util.ColorUtils;
-import org.chromium.ui.util.TokenHolder;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -120,9 +118,6 @@ class BottomSheet extends BottomSheetView
     /** The default peek height of the sheet. */
     private final @Px int mDefaultPeekHeight;
 
-    /** TokenHolder for tracking keyboard visibility. */
-    private final TokenHolder mKeyboardTokenHolder = new TokenHolder(CallbackUtils.emptyRunnable());
-
     /** For detecting scroll and fling events on the bottom sheet. */
     private final BottomSheetSwipeDetector mGestureDetector;
 
@@ -131,12 +126,6 @@ class BottomSheet extends BottomSheetView
 
     /** The view that contains the sheet. */
     private ViewGroup mSheetContainer;
-
-    /** The token for the keyboard visibility. */
-    private int mKeyboardToken = TokenHolder.INVALID_TOKEN;
-
-    /** The state of the sheet before the keyboard was shown. */
-    private @SheetState int mStateBeforeKeyboardShown = SheetState.NONE;
 
     /** The height of the screen in the previous layout pass. */
     private int mPreviousScreenHeight;
@@ -547,24 +536,19 @@ class BottomSheet extends BottomSheetView
     private void maybeRevertStateOnLayoutChange() {
         assert mWindow != null;
 
-        // If the screen height has changed, reset the cached state since it may no longer valid.
+        // If the screen height has changed, reset the cached state since it may no longer be valid.
         @Px int decorHeight = mWindow.getDecorView().getHeight();
-        if (mPreviousScreenHeight != decorHeight) {
-            resetCachedKeyboardState();
-        }
-
-        boolean keyboardVisible = isKeyboardShowing();
-        if (!keyboardVisible
-                && mKeyboardToken != TokenHolder.INVALID_TOKEN
-                && mStateBeforeKeyboardShown != SheetState.NONE
-                && isFullHeightResizeContent()) {
-            assert mKeyboardTokenHolder.hasTokens();
+        @SheetState
+        int stateToRestore =
+                mMediator.maybeRevertStateOnLayoutChange(
+                        decorHeight,
+                        mPreviousScreenHeight,
+                        isKeyboardShowing(),
+                        isFullHeightResizeContent());
+        if (stateToRestore != SheetState.NONE) {
             setInternalCurrentState(SheetState.NONE, StateChangeReason.NONE);
-            setSheetState(mStateBeforeKeyboardShown, /* animate= */ false);
-
-            resetCachedKeyboardState();
+            setSheetState(stateToRestore, /* animate= */ false);
         }
-
 
         mPreviousScreenHeight = decorHeight;
     }
@@ -574,19 +558,7 @@ class BottomSheet extends BottomSheetView
     }
 
     private void maybeCacheStateForImeAnimation(WindowInsetsAnimationCompat animation) {
-        if ((animation.getTypeMask() & WindowInsetsCompat.Type.ime()) == 0) return;
-        if (mStateBeforeKeyboardShown != SheetState.NONE) return;
-        // This captures the BottomSheet state prior to a layout pass, so isKeyboardShowing will
-        // still return false.
-        if (isKeyboardShowing()) return;
-
-        assert mKeyboardToken == TokenHolder.INVALID_TOKEN;
-        assert !mKeyboardTokenHolder.hasTokens();
-
-        // The bottom sheet state will not have been updated yet at this point, so
-        // store for later use.
-        mStateBeforeKeyboardShown = getSheetState();
-        mKeyboardToken = mKeyboardTokenHolder.acquireToken();
+        mMediator.maybeCacheStateForImeAnimation(animation.getTypeMask(), isKeyboardShowing());
     }
 
     /**
@@ -660,7 +632,7 @@ class BottomSheet extends BottomSheetView
 
     /**
      * @return The minimum sheet state that the user can swipe to. i.e. flinging down will either
-     *         close the sheet or peek it.
+     *     close the sheet or peek it.
      */
     @SheetState
     int getMinSwipableSheetState() {
@@ -1002,7 +974,9 @@ class BottomSheet extends BottomSheetView
         return content != null ? content.getToolbarView() : null;
     }
 
-    /** @return The ratio of the height of the screen that the half expanded state is. */
+    /**
+     * @return The ratio of the height of the screen that the half expanded state is.
+     */
     @VisibleForTesting
     float getHalfRatio() {
         return mMediator.getHalfRatio(mContainerHeight, isSmallScreen());
@@ -1708,7 +1682,7 @@ class BottomSheet extends BottomSheetView
     private void updateCurtainHeight() {
         assert mWindow != null;
         @Px int maxWindowHeight = mWindow.getDecorView().getHeight();
-        mModel.set(BottomSheetProperties.KEYBOARD_CURTAIN_HEIGHT, maxWindowHeight);
+        mMediator.setKeyboardCurtainHeight(maxWindowHeight);
         if (mKeyboardCurtain != null) {
             mKeyboardCurtain.setTranslationY(maxWindowHeight);
         }
@@ -1897,11 +1871,7 @@ class BottomSheet extends BottomSheetView
     }
 
     private void resetCachedKeyboardState() {
-        mStateBeforeKeyboardShown = SheetState.NONE;
-        if (mKeyboardToken != TokenHolder.INVALID_TOKEN) {
-            mKeyboardTokenHolder.releaseToken(mKeyboardToken);
-            mKeyboardToken = TokenHolder.INVALID_TOKEN;
-        }
+        mMediator.resetCachedKeyboardState();
     }
 
     /**
@@ -1956,11 +1926,11 @@ class BottomSheet extends BottomSheetView
     }
 
     boolean hasKeyboardTokenForTesting() {
-        return mKeyboardToken != TokenHolder.INVALID_TOKEN;
+        return mMediator.hasKeyboardTokenForTesting();
     }
 
     @SheetState
     int getStateBeforeKeyboardShownForTesting() {
-        return mStateBeforeKeyboardShown;
+        return mMediator.getStateBeforeKeyboardShownForTesting();
     }
 }
