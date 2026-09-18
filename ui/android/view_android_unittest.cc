@@ -427,6 +427,79 @@ TEST_F(ViewAndroidBoundsTest, RemoveAllChildrenKeepsReparentedChild) {
   view2_.RemoveObserver(&observer);
 }
 
+// Helper observer that invokes a callback on OnDetachedFromWindow().
+class ReentrantDetachObserver : public ViewAndroidObserver {
+ public:
+  explicit ReentrantDetachObserver(base::OnceClosure action)
+      : action_(std::move(action)) {}
+
+  void OnDetachedFromWindow() override {
+    if (action_) {
+      std::move(action_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure action_;
+};
+
+// Verifies RemoveAllChildren() handles a child unlinking itself during
+// OnDetachedFromWindow().
+TEST_F(ViewAndroidBoundsTest, RemoveAllChildrenSurvivesChildUnlink) {
+  ReentrantDetachObserver observer(
+      base::BindLambdaForTesting([&]() { view1_.RemoveFromParent(); }));
+  view1_.AddObserver(&observer);
+
+  bool view2_detached = false;
+  ReentrantDetachObserver view2_observer(
+      base::BindLambdaForTesting([&]() { view2_detached = true; }));
+  view2_.AddObserver(&view2_observer);
+
+  root_.AddChild(&view1_);
+  root_.AddChild(&view2_);
+
+  RemoveAllChildrenAttached(&root_);
+
+  EXPECT_TRUE(view2_detached);
+  EXPECT_EQ(0u, root_.GetChildrenCountForTesting());
+  EXPECT_EQ(nullptr, view1_.parent());
+  EXPECT_EQ(nullptr, view2_.parent());
+
+  view1_.RemoveObserver(&observer);
+  view2_.RemoveObserver(&view2_observer);
+}
+
+// Verifies RemoveAllChildren() handles a child being destroyed during
+// OnDetachedFromWindow().
+TEST_F(ViewAndroidBoundsTest, RemoveAllChildrenSurvivesChildDestruction) {
+  auto child_to_destroy =
+      std::make_unique<TestViewAndroid>(ViewAndroid::LayoutType::kNormal);
+  ReentrantDetachObserver destroy_observer(
+      base::BindLambdaForTesting([&]() { child_to_destroy.reset(); }));
+
+  bool view2_detached = false;
+  ReentrantDetachObserver view2_observer(
+      base::BindLambdaForTesting([&]() { view2_detached = true; }));
+  view2_.AddObserver(&view2_observer);
+
+  // Detaching view1_ triggers destruction of `child_to_destroy`.
+  child_to_destroy->AddChild(&view1_);
+  view1_.AddObserver(&destroy_observer);
+  root_.AddChild(child_to_destroy.get());
+  root_.AddChild(&view2_);
+
+  RemoveAllChildrenAttached(&root_);
+
+  EXPECT_FALSE(child_to_destroy);
+  EXPECT_TRUE(view2_detached);
+  EXPECT_EQ(0u, root_.GetChildrenCountForTesting());
+  EXPECT_EQ(nullptr, view1_.parent());
+  EXPECT_EQ(nullptr, view2_.parent());
+
+  view1_.RemoveObserver(&destroy_observer);
+  view2_.RemoveObserver(&view2_observer);
+}
+
 TEST(ViewAndroidTest, ChecksMultipleEventForwarders) {
   ViewAndroid parent;
   ViewAndroid child;

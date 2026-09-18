@@ -165,10 +165,10 @@ void ViewAndroid::AddChild(ViewAndroid* child) {
       << "Some view tree path will have more than one event forwarder "
          "if the child is added.";
 
-  // The new child goes to the top, which is the end of the list.
-  children_.push_back(child);
+  // Detach first since RemoveFromParent() may be reentrant.
   if (child->parent_)
     child->RemoveFromParent();
+  children_.push_back(child);
   child->parent_ = this;
 
   // Empty physical backing size need not propagating down since it can
@@ -313,15 +313,14 @@ void ViewAndroid::RemoveAllChildren(bool attached_to_window) {
     if (attached_to_window) {
       child->OnDetachedFromWindow();
     }
-    // If the callback already unlinked or reparented child, leave parent_
-    // alone.
-    if (child->parent_ == this) {
+    // If the callback destroyed, unlinked, or reparented `child`, it is no
+    // longer in `children_` and must not be dereferenced.
+    auto it = std::ranges::find(children_, child);
+    if (it != children_.end()) {
+      CHECK_EQ(child->parent_, this);
       child->parent_ = nullptr;
-      auto it = std::ranges::find(children_, child);
-      if (it != children_.end()) {
-        StepIteratorsOver(it);
-        children_.erase(it);
-      }
+      StepIteratorsOver(it);
+      children_.erase(it);
     }
   }
 }
