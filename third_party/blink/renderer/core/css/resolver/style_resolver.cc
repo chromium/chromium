@@ -558,6 +558,10 @@ void ApplyInertness(StyleResolverState& state) {
     }
   }
 
+  if (state.HasOverscrollContainerAncestor()) {
+    StyleAdjuster::AdjustOverscrollInertness(state, html_inert);
+  }
+
   if (html_inert.has_value()) {
     state.StyleBuilder().SetIsHTMLInert(html_inert.value());
     state.StyleBuilder().SetIsHTMLInertIsInherited(false);

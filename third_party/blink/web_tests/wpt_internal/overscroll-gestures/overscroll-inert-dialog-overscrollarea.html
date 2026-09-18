@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Dialog element with overscrollarea attribute escapes inertness when modal</title>
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://open-ui.org/components/overscroll-actions.explainer/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  #dialog {
+    width: 100%;
+    height: 100%;
+    right: 100%;
+  }
+</style>
+
+<div id="container" overscrollcontainer>
+  <dialog id="dialog" overscrollarea>
+    <button id="dialogbutton">Dialog Button</button>
+  </dialog>
+  <div id="content">
+    <button id="contentbutton">Content Button</button>
+  </div>
+</div>
+<button id="togglebutton" command="toggle-overscroll" commandfor="dialog">Toggle</button>
+
+<script>
+test(() => {
+  assert_false(dialog.matches(':overscroll-open'));
+
+  // modal dialog with overscrollarea attribute escapes inertness in top layer.
+  dialog.showModal();
+  assert_equals(document.activeElement, dialogbutton);
+
+  contentbutton.focus();
+  assert_equals(document.activeElement, dialogbutton);
+
+  dialog.close();
+  contentbutton.focus();
+  assert_equals(document.activeElement, contentbutton);
+}, "Modal <dialog overscrollarea> escapes closed overscrollarea inertness when showModal() is called");
+</script>

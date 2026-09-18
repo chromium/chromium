@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Modal dialog inside closed overscrollarea escapes inertness</title>
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://open-ui.org/components/overscroll-actions.explainer/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  #menu {
+    width: 100%;
+    height: 100%;
+    right: 100%;
+  }
+</style>
+
+<div id="container" overscrollcontainer>
+  <div id="menu" overscrollarea>
+    <button id="togglebutton" command="toggle-overscroll" commandfor="menu">Peaking Toggle</button>
+    <dialog id="dialog">
+      <button id="dialogbutton">Dialog Button</button>
+    </dialog>
+  </div>
+</div>
+
+<script>
+test(() => {
+  assert_false(menu.matches(':overscroll-open'));
+
+  // modal dialog inside closed area escapes inertness.
+  dialog.showModal();
+  assert_equals(document.activeElement, dialogbutton);
+
+  // peaking toggle invoker is inert while modal dialog is active.
+  togglebutton.focus();
+  assert_equals(document.activeElement, dialogbutton);
+
+  dialog.close();
+  togglebutton.focus();
+  assert_equals(document.activeElement, togglebutton);
+}, "Modal dialog inside closed overscrollarea escapes inertness while peaking toggle invoker is inerted by modal dialog");
+</script>

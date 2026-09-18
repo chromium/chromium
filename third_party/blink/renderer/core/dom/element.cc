@@ -5684,12 +5684,8 @@ StyleRecalcChange Element::RecalcOwnStyle(
   // If we have an overscroll container, but it's the wrong one or we shouldn't
   // have one, remove this element from the overscroll container (which should
   // also clear GetOverscrollContainer() on `this`).
-  bool is_valid_overscroll_area =
-      new_style && new_style->IsInternalOverscrollPositionAuto() &&
-      parent_style &&
-      parent_style->EffectiveOverscrollContainerType() !=
-          EOverscrollContainerType::kNone &&
-      GetDocument().IsOverscrollCommandTarget(*this);
+  bool is_valid_overscroll_area = OverscrollAreaTracker::IsValidOverscrollArea(
+      *this, new_style, parent_style);
   Element* parent = parentElement();
 
   if (GetOverscrollContainer() && (!new_style || !is_valid_overscroll_area ||
@@ -5706,6 +5702,15 @@ StyleRecalcChange Element::RecalcOwnStyle(
     // We need to add a ::-internal-overscroll-area-parent for this element.
     child_change =
         child_change.EnsureAtLeast(StyleRecalcChange::kUpdatePseudoElements);
+  }
+
+  if (GetOverscrollAreaTracker() && old_style && new_style &&
+      old_style->IsInert() != new_style->IsInert()) {
+    // Toggle invokers inside closed overscroll areas depend on the container's
+    // inertness via OverscrollAreaTracker::ShouldRemoveInertness(), and closed
+    // areas block independent inherited property propagation.
+    child_change =
+        child_change.EnsureAtLeast(StyleRecalcChange::kRecalcDescendants);
   }
 
   if (!new_style) {
@@ -9099,8 +9104,9 @@ void Element::ActiveViewTransitionTypeStateChanged() {
 }
 
 void Element::OverscrollTargetStateChanged() {
-  SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                                             style_change_reason::kOverscroll));
+  SetNeedsStyleRecalc(
+      kSubtreeStyleChange,
+      StyleChangeReasonForTracing::Create(style_change_reason::kOverscroll));
 }
 
 bool Element::MatchesOverscrollOpen() const {

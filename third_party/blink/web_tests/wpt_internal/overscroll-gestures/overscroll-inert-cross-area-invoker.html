@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Toggle invoker for area A inside closed area B is inert</title>
+<link rel="author" title="vmpstr" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/vmpstr/overscroll-actions">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  #area-a {
+    width: 100%;
+    height: 100%;
+    right: 100%;
+  }
+  #area-b {
+    width: 100%;
+    height: 100%;
+    left: 100%;
+  }
+  #content {
+    height: 600px;
+  }
+</style>
+
+<button id="outside-btn">Outside</button>
+<button id="toggle-a" command="toggle-overscroll" commandfor="area-a">Toggle A</button>
+<button id="toggle-b" command="toggle-overscroll" commandfor="area-b">Toggle B</button>
+
+<div id="container" overscrollcontainer>
+  <div id="area-a" overscrollarea></div>
+  <div id="area-b" overscrollarea>
+    <button id="invoker-in-b-for-a" command="toggle-overscroll" commandfor="area-a">Toggle A from B</button>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script>
+async function click(target) {
+  let event_received = new Promise(resolve => {
+    target.addEventListener("click", resolve, { once: true });
+  });
+  await Promise.all([test_driver.click(target), event_received]);
+}
+
+promise_test(async () => {
+  const outsideBtn = document.getElementById('outside-btn');
+  const toggleA = document.getElementById('toggle-a');
+  const toggleB = document.getElementById('toggle-b');
+  const areaA = document.getElementById('area-a');
+  const areaB = document.getElementById('area-b');
+  const invokerInBForA = document.getElementById('invoker-in-b-for-a');
+
+  // 1. Both areas closed: invoker inside closed area B targeting area A is inert.
+  assert_false(areaA.matches(':overscroll-open'), "area A initially closed");
+  assert_false(areaB.matches(':overscroll-open'), "area B initially closed");
+
+  outsideBtn.focus();
+  invokerInBForA.focus({ preventScroll: true });
+  assert_equals(document.activeElement, outsideBtn,
+      "Toggle invoker for area A inside closed area B is inert when both areas are closed");
+
+  // 2. Open area A while area B remains closed: invoker inside closed area B is still inert.
+  await click(toggleA);
+  assert_true(areaA.matches(':overscroll-open'), "area A opened");
+  assert_false(areaB.matches(':overscroll-open'), "area B still closed");
+
+  outsideBtn.focus();
+  invokerInBForA.focus({ preventScroll: true });
+  assert_equals(document.activeElement, outsideBtn,
+      "Toggle invoker for area A inside closed area B remains inert when area A is open");
+
+  // 3. Close area A and open area B: invoker inside open area B is now interactive.
+  await click(toggleA);
+  await click(toggleB);
+  assert_false(areaA.matches(':overscroll-open'), "area A closed");
+  assert_true(areaB.matches(':overscroll-open'), "area B opened");
+
+  outsideBtn.focus();
+  invokerInBForA.focus({ preventScroll: true });
+  assert_equals(document.activeElement, invokerInBForA,
+      "Toggle invoker for area A inside open area B is not inert");
+}, "Toggle invoker for area A inside closed area B is inert");
+</script>

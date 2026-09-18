@@ -147,6 +147,7 @@ promise_test(async () => {
   assert_equals(document.activeElement, closeBtn, "closeBtn is focused");
 
   await test_driver.send_keys(closeBtn, ' ');
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   assert_false(menu.matches(':overscroll-open'), "Menu is closed after activating closeBtn");
   assert_not_equals(document.activeElement, closeBtn, "closeBtn loses focus upon closing");
 

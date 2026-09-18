@@ -497,6 +497,18 @@
       default_value: "false",
       field_group: "*",
     },
+    // Though overscroll container properties are not themselves inherited,
+    // this flag is set on the overscroll container itself and inherited by
+    // its descendants, which participate in overscroll inertness and gesture
+    // behavior.
+    {
+      name: "IsInOverscrollContainer",
+      inherited: true,
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+      field_group: "*",
+    },
     {
       name: "IsInShrinkToFitSubtree",
       inherited: true,

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Stacking-aware overscroll inertness</title>
+<link rel="author" title="vmpstr" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/vmpstr/overscroll-actions">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  #stack-container {
+    width: 300px;
+    height: 300px;
+    margin-top: 350px;
+    overflow: auto;
+    scrollbar-width: none;
+  }
+  #area-top, #area-mid, #area-bot {
+    width: 100%;
+    bottom: 100%;
+  }
+  #area-top {
+    height: 100px;
+  }
+  #area-mid {
+    height: 200px;
+  }
+  #area-bot {
+    height: 300px;
+  }
+  #stack-content {
+    height: 600px;
+  }
+  #area-top::overscroll-backdrop,
+  #area-mid::overscroll-backdrop,
+  #area-bot::overscroll-backdrop {
+    display: none;
+  }
+</style>
+
+<button id="outside-btn">Outside</button>
+<button id="toggle-top-btn" command="toggle-overscroll" commandfor="area-top">Toggle Top</button>
+<button id="toggle-mid-btn" command="toggle-overscroll" commandfor="area-mid">Toggle Mid</button>
+<button id="toggle-bot-btn" command="toggle-overscroll" commandfor="area-bot">Toggle Bot</button>
+
+<div id="stack-container" overscrollcontainer style="overscroll-container-type: overlay;">
+  <div id="area-top" overscrollarea>
+    <button id="area-top-btn">Top Btn</button>
+  </div>
+  <div id="area-mid" overscrollarea>
+    <button id="area-mid-btn">Mid Btn</button>
+  </div>
+  <div id="area-bot" overscrollarea>
+    <button id="area-bot-btn">Bot Btn</button>
+  </div>
+  <div id="stack-content">
+    <button id="stack-content-btn">Stack Content Btn</button>
+  </div>
+</div>
+
+<script>
+async function click(target) {
+  let event_received = new Promise(resolve => {
+    target.addEventListener("click", resolve, { once: true });
+  });
+  await Promise.all([test_driver.click(target), event_received]);
+}
+
+promise_test(async () => {
+  const outsideBtn = document.getElementById('outside-btn');
+  const toggleTopBtn = document.getElementById('toggle-top-btn');
+  const toggleMidBtn = document.getElementById('toggle-mid-btn');
+  const toggleBotBtn = document.getElementById('toggle-bot-btn');
+
+  const areaTop = document.getElementById('area-top');
+  const areaMid = document.getElementById('area-mid');
+  const areaBot = document.getElementById('area-bot');
+
+  const areaTopBtn = document.getElementById('area-top-btn');
+  const areaMidBtn = document.getElementById('area-mid-btn');
+  const areaBotBtn = document.getElementById('area-bot-btn');
+  const stackContentBtn = document.getElementById('stack-content-btn');
+
+  // Stacking order:
+  // area-top (topmost) > area-mid (middle) > area-bot (bottom) > stack-content (content)
+
+  // 1. Initially all closed:
+  assert_false(areaTop.matches(':overscroll-open'));
+  assert_false(areaMid.matches(':overscroll-open'));
+  assert_false(areaBot.matches(':overscroll-open'));
+
+  // Content is interactive when all areas are closed.
+  outsideBtn.focus();
+  stackContentBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, stackContentBtn, "Content is interactive when all areas are closed");
+
+  // Closed areas are inert.
+  outsideBtn.focus();
+  areaTopBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, outsideBtn, "areaTopBtn cannot focus when closed");
+  areaMidBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, outsideBtn, "areaMidBtn cannot focus when closed");
+  areaBotBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, outsideBtn, "areaBotBtn cannot focus when closed");
+
+  // 2. Open area-bot (bottom of the stack):
+  await click(toggleBotBtn);
+  assert_true(areaBot.matches(':overscroll-open'), "area-bot opened");
+  assert_false(areaMid.matches(':overscroll-open'), "area-mid still closed");
+  assert_false(areaTop.matches(':overscroll-open'), "area-top still closed");
+
+  // area-bot is open and has nothing open above it -> NOT inert.
+  outsideBtn.focus();
+  areaBotBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, areaBotBtn, "areaBotBtn can focus when area-bot is open");
+
+  // Content is inert because area-bot is open.
+  outsideBtn.focus();
+  stackContentBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, outsideBtn, "stackContentBtn is inert when area-bot is open");
+
+  // 3. Open area-mid (middle of the stack) while area-bot is already open:
+  await click(toggleMidBtn);
+  assert_true(areaMid.matches(':overscroll-open'), "area-mid opened");
+  assert_true(areaBot.matches(':overscroll-open'), "area-bot remains open");
+
+  // area-mid is open and area-top (above it) is closed -> area-mid is NOT inert!
+  outsideBtn.focus();
+  areaMidBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, areaMidBtn, "areaMidBtn can focus (area-bot underneath does not inert area-mid)");
+
+  // area-bot is open, but area-mid (ABOVE it) is open -> area-bot IS INERT!
+  outsideBtn.focus();
+  areaBotBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, outsideBtn, "areaBotBtn cannot focus because area-mid is open above it");
+
+  // 4. Open area-top (top of the stack):
+  await click(toggleTopBtn);
+  assert_true(areaTop.matches(':overscroll-open'), "area-top opened");
+  assert_true(areaMid.matches(':overscroll-open'), "area-mid still open");
+  assert_true(areaBot.matches(':overscroll-open'), "area-bot still open");
+
+  // area-top is topmost -> NOT inert.
+  outsideBtn.focus();
+  areaTopBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, areaTopBtn, "areaTopBtn can focus (top of the stack)");
+
+  // area-mid is now covered by area-top -> INERT!
+  outsideBtn.focus();
+  areaMidBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, outsideBtn, "areaMidBtn cannot focus because area-top is open above it");
+
+  // area-bot is still covered by area-top (and area-mid) -> INERT!
+  outsideBtn.focus();
+  areaBotBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, outsideBtn, "areaBotBtn cannot focus when area-top is open");
+
+  // 5. Close area-top:
+  await click(toggleTopBtn);
+  assert_false(areaTop.matches(':overscroll-open'), "area-top closed");
+  assert_true(areaMid.matches(':overscroll-open'), "area-mid still open");
+  assert_true(areaBot.matches(':overscroll-open'), "area-bot still open");
+
+  // area-mid is uncovered -> NOT inert again!
+  outsideBtn.focus();
+  areaMidBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, areaMidBtn, "areaMidBtn can focus again after area-top closed");
+
+  // area-bot is still covered by area-mid -> INERT!
+  outsideBtn.focus();
+  areaBotBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, outsideBtn, "areaBotBtn is still inert while area-mid is open");
+
+  // 6. Close area-mid:
+  await click(toggleMidBtn);
+  assert_false(areaMid.matches(':overscroll-open'), "area-mid closed");
+  assert_true(areaBot.matches(':overscroll-open'), "area-bot still open");
+
+  // area-bot is uncovered -> NOT inert again!
+  outsideBtn.focus();
+  areaBotBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, areaBotBtn, "areaBotBtn can focus again after area-mid closed");
+
+  // 7. Close area-bot:
+  await click(toggleBotBtn);
+  assert_false(areaBot.matches(':overscroll-open'), "area-bot closed");
+
+  // All closed -> content interactive again.
+  outsideBtn.focus();
+  stackContentBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, stackContentBtn, "Content is interactive after all areas closed");
+}, "Stacking-aware overscroll inertness: open areas are only inerted by open areas above them in visual stacking order");
+</script>

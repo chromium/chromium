@@ -87,6 +87,7 @@
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_table_cell_element.h"
+#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -1344,6 +1345,15 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     builder.SetSubtreeIsSticky(true);
   }
 
+  // If this node is an overscroll container, it marks the creation of an
+  // overscroll container subtree for overscroll gestures and inertness.
+  // Descendants will inherit this bit so they can quickly identify whether
+  // they have an ancestor overscroll container.
+  if (builder.EffectiveOverscrollContainerType() !=
+      EOverscrollContainerType::kNone) {
+    builder.SetIsInOverscrollContainer(true);
+  }
+
   // If the inherited value of justify-items includes the 'legacy'
   // keyword (plus 'left', 'right' or 'center'), 'legacy' computes to
   // the the inherited value.  Otherwise, 'auto' computes to 'normal'.
@@ -1840,6 +1850,22 @@ StyleAdjuster::ElementTypeForCache StyleAdjuster::GetElementTypeCacheKey(
       // from new HTML elements, even if the StyleAdjuster does not otherwise
       // care about them.
   }
+}
+
+void StyleAdjuster::AdjustOverscrollInertness(const StyleResolverState& state,
+                                              std::optional<bool>& html_inert) {
+  DCHECK(state.HasOverscrollContainerAncestor());
+  if (!RuntimeEnabledFeatures::OverscrollGesturesEnabled() ||
+      state.IsForPseudoElement() || html_inert.has_value()) {
+    return;
+  }
+
+  Element& element = state.GetElement();
+  bool is_overscroll_area = OverscrollAreaTracker::IsValidOverscrollArea(
+      element, state.StyleBuilder(), state.ParentStyle());
+
+  OverscrollAreaTracker::AdjustInertness(element, is_overscroll_area,
+                                         html_inert);
 }
 
 }  // namespace blink

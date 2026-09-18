@@ -3715,6 +3715,11 @@ void PaintLayerScrollableArea::EnqueueOverscrollChangingEventIfNeeded() {
     overscroll_element.SetNeedsStyleRecalc(
         kLocalStyleChange,
         StyleChangeReasonForTracing::Create(style_change_reason::kPseudoClass));
+    if (overscroll_container) {
+      overscroll_container->SetNeedsStyleRecalc(
+          kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
+                                   style_change_reason::kOverscroll));
+    }
   }
 
   GetLayoutBox()->GetDocument().EnqueueOverscrollEvent(

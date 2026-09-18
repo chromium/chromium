@@ -158,6 +158,9 @@ class CORE_EXPORT StyleResolverState {
   void SetParentStyle(const ComputedStyle&);
   void EnsureParentStyle();
   const ComputedStyle* ParentStyle() const { return parent_style_; }
+  bool HasOverscrollContainerAncestor() const {
+    return parent_style_ && parent_style_->IsInOverscrollContainer();
+  }
 
   void SetLayoutParentStyle(const ComputedStyle*);
   const ComputedStyle* LayoutParentStyle() const {

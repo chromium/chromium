@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Modal dialog as direct child of overscrollcontainer escapes inertness</title>
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://open-ui.org/components/overscroll-actions.explainer/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+#container {
+  width: 200px;
+  height: 200px;
+  overflow: auto;
+}
+#menu {
+  width: 100%;
+  height: 100%;
+  right: 100%;
+}
+</style>
+
+<div id="container" overscrollcontainer>
+  <div id="menu" overscrollarea>
+    <button id="menubutton">Menu Button</button>
+  </div>
+  <dialog id="dialog">
+    <button id="dialogbutton">Dialog Button</button>
+  </dialog>
+</div>
+<button id="togglebutton" command="toggle-overscroll" commandfor="menu">Toggle</button>
+
+<script>
+async function click(target) {
+  let event_received = new Promise(resolve => {
+    target.addEventListener("click", resolve, { once: true });
+  });
+  await Promise.all([test_driver.click(target), event_received]);
+}
+
+promise_test(async () => {
+  await click(togglebutton);
+  assert_true(menu.matches(':overscroll-open'));
+
+  // modal dialog escapes container inertness and inerts open area.
+  dialog.showModal();
+  assert_equals(document.activeElement, dialogbutton);
+
+  menubutton.focus();
+  assert_equals(document.activeElement, dialogbutton);
+
+  dialog.close();
+  menubutton.focus();
+  assert_equals(document.activeElement, menubutton);
+}, "Modal dialog as direct child of overscrollcontainer escapes inertness when an area is open");
+</script>

@@ -28,32 +28,31 @@
 <div id="container" overscrollcontainer>
   <div id="menu" overscrollarea>
     <button id="menu-btn">Menu Button</button>
+    <button id="menu-toggle-btn" command="toggle-overscroll" commandfor="menu">Menu Toggle</button>
   </div>
   <div id="content">
     <button id="content-btn">Content Button</button>
+    <button id="content-toggle-btn" command="toggle-overscroll" commandfor="menu">Content Toggle</button>
   </div>
 </div>
 <button id="button" command="toggle-overscroll" commandfor="menu">Toggle</button>
 
 <script>
-function waitForRender() {
-  return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-}
-
 async function click(target) {
   let event_received = new Promise(resolve => {
     target.addEventListener("click", resolve, { once: true });
   });
   await Promise.all([test_driver.click(button), event_received]);
-  await waitForRender();
 }
 
 promise_test(async () => {
   const outsideBtn = document.getElementById('outside-btn');
   const menu = document.getElementById('menu');
   const menuBtn = document.getElementById('menu-btn');
+  const menuToggleBtn = document.getElementById('menu-toggle-btn');
   const content = document.getElementById('content');
   const contentBtn = document.getElementById('content-btn');
+  const contentToggleBtn = document.getElementById('content-toggle-btn');
 
   // --- 1. Closed state ---
   // Computed interactivity remains "auto" (inertness is a used value, not computed).
@@ -62,9 +61,13 @@ promise_test(async () => {
   assert_equals(getComputedStyle(content).interactivity, "auto", "Content computed interactivity is auto when closed");
 
   // Used inertness behavior: closed menu cannot receive focus; content can.
+  // However, a toggle-overscroll invoker inside the closed menu has inertness removed.
   outsideBtn.focus();
   menuBtn.focus();
   assert_equals(document.activeElement, outsideBtn, "menuBtn cannot receive programmatic focus when closed");
+
+  menuToggleBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, menuToggleBtn, "menuToggleBtn (toggle invoker inside closed area) can receive focus when closed");
 
   contentBtn.focus();
   assert_equals(document.activeElement, contentBtn, "contentBtn can receive programmatic focus when closed");
@@ -76,6 +79,7 @@ promise_test(async () => {
   assert_equals(getComputedStyle(content).interactivity, "auto", "Content computed interactivity is auto when open");
 
   // Used inertness behavior: open menu can receive focus; content is inert and cannot.
+  // Toggle invokers in content also remain inert.
   outsideBtn.focus();
   menuBtn.focus();
   assert_equals(document.activeElement, menuBtn, "menuBtn can receive programmatic focus when menu is open");
@@ -83,6 +87,9 @@ promise_test(async () => {
   outsideBtn.focus();
   contentBtn.focus();
   assert_equals(document.activeElement, outsideBtn, "contentBtn cannot receive programmatic focus when menu is open");
+
+  contentToggleBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, outsideBtn, "contentToggleBtn (toggle invoker in content) remains inert when menu is open");
 
   // --- 3. Re-closed state ---
   await click(button);
@@ -94,7 +101,10 @@ promise_test(async () => {
   menuBtn.focus();
   assert_equals(document.activeElement, outsideBtn, "menuBtn cannot receive focus when re-closed");
 
+  menuToggleBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, menuToggleBtn, "menuToggleBtn can receive focus when re-closed");
+
   contentBtn.focus();
   assert_equals(document.activeElement, contentBtn, "contentBtn can receive focus when re-closed");
-}, "Overscroll inertness is a used value (computed interactivity is auto); closed menu and open content are inert");
+}, "Overscroll inertness is a used value (computed interactivity is auto); closed menu and open content are inert, while closed area's toggle invoker removes inertness");
 </script>
