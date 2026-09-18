@@ -1386,6 +1386,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Periodically samples the battery capacity drained while Chrome is a
     foreground app and the device is on battery power. Sampled every 30 seconds
@@ -1417,6 +1418,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
     units="uAh" expires_after="2027-02-07">
   <owner>kraskevich@google.com</owner>
   <owner>woa-performance@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Similar to Power.ForegroundBatteryDrain.30Seconds, with additional Chrome
     usage scenario classification: {LoadingScenario} and {InputScenario}.
@@ -1432,6 +1434,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records a sample for every 0.1 milliampere-hours of battery capacity that
     are drained while Chrome is a foreground app and the device is on battery
@@ -1461,6 +1464,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
     units="uWh" expires_after="2027-03-07">
   <owner>kraskevich@google.com</owner>
   <owner>woa-performance@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Similar to Power.ForegroundBatteryDrain.30Seconds, with additional Chrome
     usage scenario classification: {LoadingScenario} and {InputScenario}, and
