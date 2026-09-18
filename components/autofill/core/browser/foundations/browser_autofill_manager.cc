@@ -1528,10 +1528,16 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   FormStructure* form_structure = form_and_field.form_structure;
   AutofillField* autofill_field = form_and_field.autofill_field;
 
+  // Cancels pending tasks from previous AskForValuesToFillImpl() calls.
+  generate_suggestions_and_maybe_show_ui_phase2_weak_ptr_factory_
+      .InvalidateWeakPtrs();
+
   auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
-      weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
-      suggestion_generation_start_time, std::move(scoped_on_after));
+      generate_suggestions_and_maybe_show_ui_phase2_weak_ptr_factory_
+          .GetWeakPtr(),
+      form, field, trigger_source, suggestion_generation_start_time,
+      std::move(scoped_on_after));
 
   // `otp_manager_` may not be instantiated on all platforms. If a focused field
   // is not classified, `autofill_field` is null but the field may be filled by
@@ -2716,6 +2722,8 @@ void BrowserAutofillManager::Reset() {
   ProcessPendingFormForUpload();
   DCHECK(!pending_form_data_);
 
+  generate_suggestions_and_maybe_show_ui_phase2_weak_ptr_factory_
+      .InvalidateWeakPtrs();
   suggestion_generators_.clear();
   four_digit_combinations_in_dom_.clear();
   last_unlocked_credit_card_cvc_.clear();

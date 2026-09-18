@@ -743,6 +743,15 @@ class BrowserAutofillManager : public AutofillManager {
   // Handles general Address on typing feature management, mainly the logic
   // behind its strike database.
   AddressOnTypingManager address_on_typing_manager_;
+
+  // Invalidated before GenerateSuggestionsAndMaybeShowUIPhase2() is called to
+  // ensure that there are never two simultaneous pending
+  // GenerateSuggestionsAndMaybeShowUIPhase2() calls.
+  // TODO(crbug.com/409962888): Remove as part of cleaning up
+  // kAutofillNewSuggestionGeneration.
+  base::WeakPtrFactory<BrowserAutofillManager>
+      generate_suggestions_and_maybe_show_ui_phase2_weak_ptr_factory_{this};
+
   base::WeakPtrFactory<BrowserAutofillManager> weak_ptr_factory_{this};
 };
 
