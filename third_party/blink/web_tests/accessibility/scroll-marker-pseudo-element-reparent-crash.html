@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Changing scroll-marker-group with a focused item does not crash</title>
+<link rel="help" href="https://crbug.com/500793607">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<style>
+#scroller {
+  overflow: auto;
+  scroll-marker-group: before;
+}
+#item::scroll-marker {
+  content: '';
+}
+</style>
+
+<div id="scroller">
+  <div id="item" tabindex="0"></div>
+</div>
+
+<script>
+test(() => {
+  assert_own_property(window, 'accessibilityController',
+                      'This test requires accessibilityController');
+
+  // Build the accessibility tree before recreating the marker group.
+  accessibilityController.rootElement;
+
+  // Focus #item so the blur below actually changes its focus state. Calling
+  // blur() on an unfocused element invalidates nothing.
+  item.focus();
+  assert_equals(document.activeElement, item,
+                'The item should be focused before changing the group');
+
+  // Ask for a different marker group. The swap happens on the next update.
+  scroller.style.scrollMarkerGroup = 'after';
+
+  // scroll-marker-group is not inherited, so the change above only marks
+  // #scroller. Blurring marks #item as needing a style update too, which is
+  // what gets its scroll marker reattached to the new group.
+  item.blur();
+
+  // Updates style, layout and accessibility. The scroll marker has to move
+  // from the old marker group to the new one without leaving a stale layout
+  // object or accessibility parent behind.
+  const accessibleItem =
+      accessibilityController.accessibleElementById('item');
+  assert_true(!!accessibleItem,
+              'The item should remain in the accessibility tree');
+  assert_true(accessibleItem.isValid,
+              'The item accessibility object should remain attached');
+}, 'Changing scroll-marker-group with a focused item does not crash');
+</script>
