@@ -3198,7 +3198,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                     getTabCreator(getCurrentTabModel().isIncognito())
                             .createNewTab(
                                     new LoadUrlParams(url),
-                                    TabLaunchType.FROM_CHROME_UI,
+                                    TabLaunchType.FROM_LINK,
                                     /* parent= */ null);
                 }
             } else {

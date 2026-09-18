@@ -634,7 +634,7 @@ public class ChromeActivityUnitTest {
 
         verify(mTabCreator)
                 .createNewTab(
-                        mLoadUrlParamsCaptor.capture(), eq(TabLaunchType.FROM_CHROME_UI), eq(null));
+                        mLoadUrlParamsCaptor.capture(), eq(TabLaunchType.FROM_LINK), eq(null));
         assertEquals(JUnitTestGURLs.URL_1.getSpec(), mLoadUrlParamsCaptor.getValue().getUrl());
         assertEquals(1, userActionTester.getActionCount("MobileMenuSelectTabFromGroup"));
     }
@@ -662,7 +662,7 @@ public class ChromeActivityUnitTest {
 
         verify(mTabCreator)
                 .createNewTab(
-                        mLoadUrlParamsCaptor.capture(), eq(TabLaunchType.FROM_CHROME_UI), eq(null));
+                        mLoadUrlParamsCaptor.capture(), eq(TabLaunchType.FROM_LINK), eq(null));
         assertEquals(JUnitTestGURLs.URL_1.getSpec(), mLoadUrlParamsCaptor.getValue().getUrl());
         assertEquals(1, userActionTester.getActionCount("MobileMenuSelectTabFromGroup"));
     }
