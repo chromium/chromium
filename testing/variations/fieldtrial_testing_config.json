@@ -22177,6 +22177,7 @@
                     },
                     "enable_features": [
                         "BypassOutdatedSurfaceActivation",
+                        "DeferSpellcheckInitialization",
                         "InitialWebUI",
                         "InitialWebUISurfaceSync",
                         "InitialWebUISyncNavStartToCommit",

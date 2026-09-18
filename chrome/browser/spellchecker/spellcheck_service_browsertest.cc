@@ -365,15 +365,25 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
       GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckUseSpellingService));
 }
 
-#if !BUILDFLAG(IS_MAC)
+// Tests spellcheck enabled state when the dictionary list is emptied.
+// On macOS, spellcheck is controlled by the OS and does not depend on the
+// user's dictionary preference, so spellcheck remains enabled. On other
+// platforms, empty dictionaries disables spellcheck.
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
-                       DisableSpellcheckIfDictionaryIsEmpty) {
+                       SpellcheckEnabledStateWhenDictionaryIsEmpty) {
   InitSpellcheck(true, "", "en-US");
   SetMultiLingualDictionaries("");
 
+  SpellcheckService* spellcheck =
+      SpellcheckServiceFactory::GetForContext(GetContext());
+#if BUILDFLAG(IS_MAC)
+  EXPECT_TRUE(GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckEnable));
+  EXPECT_TRUE(spellcheck->IsSpellcheckEnabled());
+#else
   EXPECT_FALSE(GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckEnable));
+  EXPECT_FALSE(spellcheck->IsSpellcheckEnabled());
+#endif  // BUILDFLAG(IS_MAC)
 }
-#endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Removing a spellcheck language from accept languages should not remove it

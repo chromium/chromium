@@ -634,6 +634,11 @@ SpellcheckService::GetHunspellDictionaries() {
 bool SpellcheckService::IsSpellcheckEnabled() const {
   const PrefService* prefs = user_prefs::UserPrefs::Get(context_);
 
+#if BUILDFLAG(IS_MAC)
+  // Basic spell check on macOS is controlled by the OS and does not depend on
+  // users' dictionaries preference or loaded Hunspell dictionaries.
+  return prefs->GetBoolean(spellcheck::prefs::kSpellCheckEnable);
+#else
   bool enable_if_uninitialized = false;
 #if BUILDFLAG(IS_WIN)
   if (spellcheck::UseBrowserSpellChecker()) {
@@ -647,6 +652,7 @@ bool SpellcheckService::IsSpellcheckEnabled() const {
 
   return prefs->GetBoolean(spellcheck::prefs::kSpellCheckEnable) &&
          (!hunspell_dictionaries_.empty() || enable_if_uninitialized);
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void SpellcheckService::OnRenderProcessHostCreated(
