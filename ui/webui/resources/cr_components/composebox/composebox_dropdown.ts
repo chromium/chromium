@@ -6,6 +6,7 @@ import './composebox_match.js';
 
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {RenderType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -60,6 +61,17 @@ export class ComposeboxDropdownElement extends CrLitElement {
       overrideClampLineNum: {type: Number},
       richImageSuggestionsEnabled: {type: Boolean},
     };
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('selectedMatchIndex') &&
+        this.selectedMatchIndex >= 0) {
+      const selectedMatch = this.shadowRoot.querySelector<HTMLElement>(
+          `#match${this.selectedMatchIndex}`);
+      selectedMatch?.scrollIntoView({block: 'nearest', inline: 'nearest'});
+    }
   }
 
   accessor result: AutocompleteResult|null = null;

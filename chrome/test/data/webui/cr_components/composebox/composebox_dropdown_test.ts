@@ -158,4 +158,44 @@ suite('ComposeboxDropdown', () => {
     dropdown.unselect();
     assertEquals(-1, dropdown.selectedMatchIndex);
   });
+
+  test(
+      'scrolls selected match into view when selectedMatchIndex changes',
+      async () => {
+        dropdown.richImageSuggestionsEnabled = true;
+        dropdown.result = createAutocompleteResultForTesting({
+          suggestionGroupsMap: {
+            101: {
+              header: 'Create with AI',
+              renderType: RenderType.kGrid,
+              sideType: SideType.kDefaultPrimary,
+            },
+          },
+          matches: [
+            createAutocompleteMatch({
+              contents: 'image match 1',
+              suggestionGroupId: 101,
+            }),
+            createAutocompleteMatch({
+              contents: 'image match 2',
+              suggestionGroupId: 101,
+            }),
+          ],
+        });
+        await microtasksFinished();
+
+        const match1 =
+            dropdown.shadowRoot.querySelector<HTMLElement>('#match1')!;
+        let scrollCalled = false;
+        match1.scrollIntoView = (options?: ScrollIntoViewOptions) => {
+          scrollCalled = true;
+          assertEquals('nearest', options?.block);
+          assertEquals('nearest', options?.inline);
+        };
+
+        dropdown.selectedMatchIndex = 1;
+        await microtasksFinished();
+
+        assertTrue(scrollCalled);
+      });
 });
