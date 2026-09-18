@@ -19,8 +19,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
+import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonType;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -172,27 +171,17 @@ public class FuseboxMetricsUnitTest {
     @Test
     public void testNotifyAttachmentsPopupToggled_ShowPopup_WithModelButtons() {
         PopupButtonData data1 =
-                new PopupButtonData(
-                        (data) -> {},
-                        "Pro",
-                        /* iconId= */ 0,
-                        /* enabled= */ true,
-                        /* selected= */ false,
-                        PopupButtonType.MODEL,
-                        ModelMode.MODEL_MODE_GEMINI_PRO,
-                        /* hasColor= */ false,
-                        /* tooltip= */ "");
+                new PopupButtonData.Builder()
+                        .setText("Pro")
+                        .setType(PopupButtonType.MODEL)
+                        .setProtoId(ModelMode.MODEL_MODE_GEMINI_PRO)
+                        .build();
         PopupButtonData data2 =
-                new PopupButtonData(
-                        (data) -> {},
-                        "Flash",
-                        /* iconId= */ 0,
-                        /* enabled= */ true,
-                        /* selected= */ false,
-                        PopupButtonType.MODEL,
-                        ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE,
-                        /* hasColor= */ false,
-                        /* tooltip= */ "");
+                new PopupButtonData.Builder()
+                        .setText("Flash")
+                        .setType(PopupButtonType.MODEL)
+                        .setProtoId(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
+                        .build();
         mPropertyModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, Arrays.asList(data1, data2));
 
@@ -252,38 +241,23 @@ public class FuseboxMetricsUnitTest {
     @Test
     public void testNotifyAttachmentsPopupToggled_ShowPopup_ToolButtonsVisible() {
         PopupButtonData dataAi =
-                new PopupButtonData(
-                        (data) -> {},
-                        "AI Mode",
-                        /* iconId= */ 0,
-                        /* enabled= */ true,
-                        /* selected= */ false,
-                        PopupButtonType.TOOL,
-                        ToolMode.TOOL_MODE_UNSPECIFIED,
-                        /* hasColor= */ false,
-                        /* tooltip= */ "");
+                new PopupButtonData.Builder()
+                        .setText("AI Mode")
+                        .setType(PopupButtonType.TOOL)
+                        .setProtoId(ToolMode.TOOL_MODE_UNSPECIFIED)
+                        .build();
         PopupButtonData dataImage =
-                new PopupButtonData(
-                        (data) -> {},
-                        "Create Image",
-                        /* iconId= */ 0,
-                        /* enabled= */ true,
-                        /* selected= */ false,
-                        PopupButtonType.TOOL,
-                        ToolMode.TOOL_MODE_IMAGE_GEN,
-                        /* hasColor= */ false,
-                        /* tooltip= */ "");
+                new PopupButtonData.Builder()
+                        .setText("Create Image")
+                        .setType(PopupButtonType.TOOL)
+                        .setProtoId(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .build();
         PopupButtonData dataDeep =
-                new PopupButtonData(
-                        (data) -> {},
-                        "Deep Search",
-                        /* iconId= */ 0,
-                        /* enabled= */ true,
-                        /* selected= */ false,
-                        PopupButtonType.TOOL,
-                        ToolMode.TOOL_MODE_DEEP_SEARCH,
-                        /* hasColor= */ false,
-                        /* tooltip= */ "");
+                new PopupButtonData.Builder()
+                        .setText("Deep Search")
+                        .setType(PopupButtonType.TOOL)
+                        .setProtoId(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .build();
         mPropertyModel.set(
                 FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST,
                 Arrays.asList(dataAi, dataImage, dataDeep));

@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
@@ -48,14 +47,6 @@ class FuseboxProperties {
         int TOOLBAR_MULTI_LINE = 3;
     }
 
-    @IntDef({PopupButtonType.RECENT_TAB, PopupButtonType.TOOL, PopupButtonType.MODEL})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface PopupButtonType {
-        int RECENT_TAB = 0;
-        int TOOL = 1;
-        int MODEL = 2;
-    }
-
     @IntDef({BackgroundStyle.INTERACT_ONLY_SMALL, BackgroundStyle.ALWAYS_VISIBLE_WIDE})
     @Retention(RetentionPolicy.SOURCE)
     @Target(ElementType.TYPE_USE)
@@ -64,65 +55,6 @@ class FuseboxProperties {
         int INTERACT_ONLY_SMALL = 0;
         // Wide background that is always visible.
         int ALWAYS_VISIBLE_WIDE = 1;
-    }
-
-    /** Encapsulates the state for a button in the Fusebox popup. */
-    public static class PopupButtonData {
-        public final Runnable onClicked;
-        public final String text;
-        // Either iconId (predefined vector drawable) or customIcon (bitmap favicon) is set.
-        public final /*IconResourceIds*/ int iconId;
-        public final @Nullable Bitmap customIcon;
-        public final boolean enabled;
-        public final boolean selected;
-        public final @PopupButtonType int type;
-        public final int protoId;
-        public final boolean hasColor;
-        public final String tooltip;
-
-        public PopupButtonData(
-                Callback<PopupButtonData> onClicked,
-                String text,
-                int iconId,
-                boolean enabled,
-                boolean selected,
-                @PopupButtonType int type,
-                int protoId,
-                boolean hasColor,
-                String tooltip) {
-            this.onClicked = onClicked.bind(this);
-            this.text = text;
-            this.iconId = iconId;
-            this.customIcon = null;
-            this.enabled = enabled;
-            this.selected = selected;
-            this.type = type;
-            this.protoId = protoId;
-            this.hasColor = hasColor;
-            this.tooltip = tooltip;
-        }
-
-        public PopupButtonData(
-                Callback<PopupButtonData> onClicked,
-                String text,
-                @Nullable Bitmap customIcon,
-                boolean enabled,
-                boolean selected,
-                @PopupButtonType int type,
-                int protoId,
-                boolean hasColor,
-                String tooltip) {
-            this.onClicked = onClicked.bind(this);
-            this.text = text;
-            this.iconId = 0;
-            this.customIcon = customIcon;
-            this.enabled = enabled;
-            this.selected = selected;
-            this.type = type;
-            this.protoId = protoId;
-            this.hasColor = hasColor;
-            this.tooltip = tooltip;
-        }
     }
 
     /** The adapter for the attachments RecyclerView. */

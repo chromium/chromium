@@ -111,6 +111,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxTabUtils.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxViewBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxViewHolder.java",
+    "java/src/org/chromium/chrome/browser/omnibox/fusebox/PopupButtonData.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/SuggestedTabInfo.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/consent/DriveConsentJsBridge.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/GeolocationHeader.java",
