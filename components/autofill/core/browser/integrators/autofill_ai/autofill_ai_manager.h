@@ -16,6 +16,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -24,6 +25,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/payments/wallet_reminder_notice_manager.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
@@ -218,7 +220,36 @@ class AutofillAiManager
       AutofillClient::AutofillAiImportPromptType prompt_type,
       AutofillClient::AutofillAiBubbleResult result,
       std::optional<EntityInstance> edited_entity,
-      const AutofillClient::EntityImportUIContext& ui_context);
+      const AutofillClient::EntityImportUIContext& ui_context,
+      std::optional<std::string> context_token);
+
+  // Handles the response of `GetDetailsForUpsertPass`. If the request
+  // succeeded, `ShowEntityImportBubble` is called with the retrieved legal
+  // disclosure details and `context_token`. If the request failed, the entity
+  // falls back to a local save (`EntityInstance::RecordType::kLocal`) and
+  // `ShowEntityImportBubble` is called without details.
+  void OnGetDetailsForUpsertPassResponse(
+      const FormData& form,
+      ukm::SourceId ukm_source_id,
+      AutofillClient::AutofillAiImportPromptType prompt_type,
+      EntityInstance new_entity,
+      std::optional<EntityInstance> old_entity,
+      bool is_save_synchronous,
+      base::expected<WalletPassAccessManager::GetDetailsForUpsertPassResponse,
+                     wallet::WalletHttpClient::WalletRequestError> response);
+
+  // Displays the entity import bubble on `client_`. If `public_passes_notice`
+  // is present, its legal disclosure messages will be shown in the prompt.
+  // `context_token` is forwarded to `HandlePromptResult` upon acceptance.
+  void ShowEntityImportBubble(
+      const FormData& form,
+      ukm::SourceId ukm_source_id,
+      AutofillClient::AutofillAiImportPromptType prompt_type,
+      EntityInstance new_entity,
+      std::optional<EntityInstance> old_entity,
+      bool is_save_synchronous,
+      LegalMessageLines public_passes_notice,
+      std::optional<std::string> context_token);
 
   // Handles the fallback UI and storage logic when a Wallet save is
   // accepted but the user is no longer eligible. This can happen if eligibility

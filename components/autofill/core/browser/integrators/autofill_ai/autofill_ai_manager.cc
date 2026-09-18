@@ -482,11 +482,6 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
     }
 
     prompt_shown = true;
-    AutofillClient::EntityImportPromptResultCallback prompt_result_callback =
-        base::BindOnce(&AutofillAiManager::HandlePromptResult, GetWeakPtr(),
-                       form.ToFormData(), candidate_entity, ukm_source_id,
-                       prompt_type);
-
     std::optional<EntityInstance> old_entity;
     if (prompt_type == AutofillClient::AutofillAiImportPromptType::kUpdate) {
       old_entity = *client_->GetEntityDataManager()->GetEntityInstance(
@@ -494,12 +489,25 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
     }
     const bool is_save_synchronous = !IsSaveAsynchronous(
         candidate_entity.type(), candidate_entity.record_type());
-    // TODO(crbug.com/553442816): If IsEligibleForWalletPassDisclosure() is
-    // true, implement the RPC backend code to fetch the public passes notice
-    // and pass it here in `OnGetDetailsForUpsertPassResponse`.
-    client_->ShowEntityImportBubble(
-        std::move(candidate_entity), std::move(old_entity), is_save_synchronous,
-        /*public_passes_notice=*/{}, std::move(prompt_result_callback));
+    const bool is_save_prompt =
+        prompt_type == AutofillClient::AutofillAiImportPromptType::kSave;
+    WalletPassAccessManager* const wallet_pass_access_manager =
+        client_->GetWalletPassAccessManager();
+    if (wallet_pass_access_manager &&
+        IsEligibleForWalletPassDisclosure(is_save_prompt, candidate_entity)) {
+      const EntityType entity_type = candidate_entity.type();
+      wallet_pass_access_manager->GetDetailsForUpsertPass(
+          entity_type,
+          base::BindOnce(&AutofillAiManager::OnGetDetailsForUpsertPassResponse,
+                         GetWeakPtr(), form.ToFormData(), ukm_source_id,
+                         prompt_type, std::move(candidate_entity),
+                         std::move(old_entity), is_save_synchronous));
+    } else {
+      ShowEntityImportBubble(form.ToFormData(), ukm_source_id, prompt_type,
+                             std::move(candidate_entity), std::move(old_entity),
+                             is_save_synchronous, /*public_passes_notice=*/{},
+                             /*context_token=*/std::nullopt);
+    }
   }
   return prompt_shown;
 }
@@ -527,6 +535,66 @@ bool AutofillAiManager::MaybeShowWalletReminderNotice(
   return false;
 }
 
+void AutofillAiManager::OnGetDetailsForUpsertPassResponse(
+    const FormData& form,
+    ukm::SourceId ukm_source_id,
+    AutofillClient::AutofillAiImportPromptType prompt_type,
+    EntityInstance new_entity,
+    std::optional<EntityInstance> old_entity,
+    bool is_save_synchronous,
+    base::expected<WalletPassAccessManager::GetDetailsForUpsertPassResponse,
+                   wallet::WalletHttpClient::WalletRequestError> response) {
+  LegalMessageLines public_passes_notice;
+  std::optional<std::string> context_token;
+  if (response.has_value()) {
+    public_passes_notice = std::move(response->legal_message_lines);
+    context_token = std::move(response->context_token);
+  } else {
+    // If fetching details for the upsert pass failed, fall back to saving
+    // locally.
+    new_entity =
+        new_entity.CopyWithNewRecordType(EntityInstance::RecordType::kLocal);
+    is_save_synchronous =
+        !IsSaveAsynchronous(new_entity.type(), new_entity.record_type());
+  }
+  ShowEntityImportBubble(form, ukm_source_id, prompt_type,
+                         std::move(new_entity), std::move(old_entity),
+                         is_save_synchronous, std::move(public_passes_notice),
+                         std::move(context_token));
+}
+
+void AutofillAiManager::ShowEntityImportBubble(
+    const FormData& form,
+    ukm::SourceId ukm_source_id,
+    AutofillClient::AutofillAiImportPromptType prompt_type,
+    EntityInstance new_entity,
+    std::optional<EntityInstance> old_entity,
+    bool is_save_synchronous,
+    LegalMessageLines public_passes_notice,
+    std::optional<std::string> context_token) {
+  AutofillClient::EntityImportPromptResultCallback bubble_callback =
+      base::BindOnce(
+          [](base::WeakPtr<AutofillAiManager> manager, const FormData& form,
+             EntityInstance entity, ukm::SourceId ukm_source_id,
+             AutofillClient::AutofillAiImportPromptType prompt_type,
+             std::optional<std::string> context_token,
+             AutofillClient::AutofillAiBubbleResult result,
+             std::optional<EntityInstance> edited_entity,
+             const AutofillClient::EntityImportUIContext& ui_context) {
+            if (manager) {
+              manager->HandlePromptResult(form, std::move(entity),
+                                          ukm_source_id, prompt_type, result,
+                                          std::move(edited_entity), ui_context,
+                                          std::move(context_token));
+            }
+          },
+          GetWeakPtr(), form, new_entity, ukm_source_id, prompt_type,
+          std::move(context_token));
+  client_->ShowEntityImportBubble(
+      std::move(new_entity), std::move(old_entity), is_save_synchronous,
+      std::move(public_passes_notice), std::move(bubble_callback));
+}
+
 void AutofillAiManager::HandlePromptResult(
     const FormData& form,
     EntityInstance entity,
@@ -534,7 +602,8 @@ void AutofillAiManager::HandlePromptResult(
     AutofillClient::AutofillAiImportPromptType prompt_type,
     AutofillClient::AutofillAiBubbleResult result,
     std::optional<EntityInstance> edited_entity,
-    const AutofillClient::EntityImportUIContext& ui_context) {
+    const AutofillClient::EntityImportUIContext& ui_context,
+    std::optional<std::string> context_token) {
   if (edited_entity) {
     entity = std::exchange(edited_entity, std::nullopt).value();
   }
@@ -561,7 +630,8 @@ void AutofillAiManager::HandlePromptResult(
   }
 
   if (!IsSaveAsynchronous(entity.type(), entity.record_type())) {
-    entity_manager.AddOrUpdateEntityInstance(std::move(entity));
+    entity_manager.AddOrUpdateEntityInstance(std::move(entity),
+                                             std::move(context_token));
     return;
   }
 
