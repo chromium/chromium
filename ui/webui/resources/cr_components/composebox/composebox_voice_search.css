@@ -255,9 +255,13 @@
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
-  max-height: 188px;
+  /* 20px top padding + 7 lines of 24px + 7px room for the bottom scroll fade. */
+  max-height: 195px;
   overflow-y: auto;
-  padding-bottom: 0;
+  /* Reserve 7px bottom padding for the scroll fade so it doesn't cover the
+   * bottom of the text.
+   */
+  padding-bottom: 7px;
   padding-inline-end: 20px;
   padding-inline-start: 20px;
   padding-top: 20px;
@@ -268,6 +272,10 @@
 :host([audio-wave-enabled]) #input.empty {
   max-height: 44px;
   overflow-y: hidden;
+  /* The placeholder is not scrollable and has no fade, so it does not need the
+   * padding reserved above.
+   */
+  padding-bottom: 0;
   padding-inline-end: 0;
   padding-inline-start: 0;
   padding-top: 20px;

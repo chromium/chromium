@@ -1617,8 +1617,8 @@ suite('ComposeboxVoiceSearch', () => {
         assertEquals('0px', window.getComputedStyle(input).paddingInlineStart);
 
         // When transcript is populated, max-height allows up to 7 lines
-        // (188px) and transcription text has 20px padding from start edge
-        // per Figma spec.
+        // (188px) plus room for the bottom scroll fade, and transcription text
+        // has 20px padding from start edge per Figma spec.
         const speechRes = createResults(1);
         Object.assign(
             speechRes.results[0]![0]!,
@@ -1626,7 +1626,7 @@ suite('ComposeboxVoiceSearch', () => {
         mockSpeechRecognition.onresult!(speechRes);
         await microtasksFinished();
         await voiceSearchElement.updateComplete;
-        assertEquals('188px', window.getComputedStyle(input).maxHeight);
+        assertEquals('195px', window.getComputedStyle(input).maxHeight);
         assertEquals('auto', window.getComputedStyle(input).overflowY);
         assertEquals('20px', window.getComputedStyle(input).paddingInlineStart);
         assertEquals(1, voiceSearchElement.transcriptLines);
