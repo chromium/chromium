@@ -9,18 +9,18 @@ import '//resources/cr_elements/icons.html.js';
 
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 // <if expr="not is_android">
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 // </if>
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {getCss} from './overflow_menu.css.js';
 import {getHtml} from './overflow_menu.html.js';
-import {hideUnboundedMenu, recordAction, showUnboundedMenu} from './utils.js';
+import {recordAction} from './utils.js';
 
 export interface OverflowMenuElement {
   $: {menu: CrActionMenuElement};
@@ -87,6 +87,9 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private isUnboundedMenuEnabled_: boolean =
+      loadTimeData.valueExists('contextualTasksUnboundedMenuEnabled') &&
+      loadTimeData.getBoolean('contextualTasksUnboundedMenuEnabled');
   private listenerIds_: number[] = [];
 // <if expr="not is_android">
   private helpBubbleRegistered_: boolean = false;
@@ -131,18 +134,14 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
     // </if>
   }
 
-  private get isUnboundedMenuEnabled_(): boolean {
-    return loadTimeData.valueExists('contextualTasksUnboundedMenuEnabled') &&
-        loadTimeData.getBoolean('contextualTasksUnboundedMenuEnabled');
-  }
-
-  showAt(target: HTMLElement) {
+  async showAt(target: HTMLElement) {
+    if (this.isUnboundedMenuEnabled_) {
+      await this.$.menu.setUnbounded();
+    }
     this.$.menu.showAt(target, {
       noOffset: true,
       anchorAlignmentY: AnchorAlignment.AFTER_END,
-      maxY: this.isUnboundedMenuEnabled_ ? Number.MAX_SAFE_INTEGER : undefined,
     });
-    showUnboundedMenu(this.$.menu, this.isUnboundedMenuEnabled_, 'overflow');
   }
 
   close() {
@@ -209,9 +208,6 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
   }
 
   protected onOpenChanged_(e: CustomEvent<{value: boolean}>) {
-    const menu = e.currentTarget as CrActionMenuElement;
-    hideUnboundedMenu(
-        menu, this.isUnboundedMenuEnabled_, e.detail.value, 'overflow');
     this.fire('open-changed', {value: e.detail.value});
   }
 
