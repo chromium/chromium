@@ -13,6 +13,8 @@ import tempfile
 import unittest
 from concurrent.futures import ThreadPoolExecutor
 
+import checkstyle
+
 _THIS_DIR = os.path.dirname(__file__)
 _SRC_ROOT = os.path.normpath(os.path.join(_THIS_DIR, '..', '..', '..'))
 _CHECKSTYLE_PATH = os.path.abspath(os.path.join(_THIS_DIR, 'checkstyle.py'))
@@ -795,6 +797,103 @@ class MarkImportsAsUsed<T extends @NonNull Object> {}
 """)
     def test_NonNull(self):
         self._check('Values are @NonNull by default. Use @NonNull')
+
+
+class _MockAffectedFile:
+    def __init__(self, path):
+        self._path = path
+
+    def AbsoluteLocalPath(self):
+        return self._path
+
+    def LocalPath(self):
+        return os.path.basename(self._path)
+
+
+class _MockInputApi:
+    def __init__(self, files):
+        self.os_path = os.path
+        self._files = [_MockAffectedFile(f) for f in files]
+        self.commands = []
+
+    def PresubmitLocalPath(self):
+        return _SRC_ROOT
+
+    def FilterSourceFile(self, f, files_to_skip=None):
+        return True
+
+    def AffectedSourceFiles(self, filter_fn):
+        return [f for f in self._files if filter_fn(f)]
+
+    def Command(self, name, cmd, kwargs, output_parser=None):
+        command = {
+            'name': name,
+            'cmd': cmd,
+            'kwargs': kwargs,
+            'output_parser': output_parser,
+        }
+        self.commands.append(command)
+        return command
+
+    def RunTests(self, commands):
+        results = []
+        for cmd in commands:
+            proc = subprocess.run(
+                cmd['cmd'],
+                capture_output=True,
+                text=True,
+                cwd=self.PresubmitLocalPath(),
+            )
+            results.extend(
+                cmd['output_parser'](proc.returncode, proc.stdout, proc.stderr)
+            )
+        return results
+
+
+class _MockOutputApi:
+    def PresubmitError(self, msg):
+        return ('error', msg)
+
+    def PresubmitPromptWarning(self, msg):
+        return ('warning', msg)
+
+
+class PresubmitTest(unittest.TestCase):
+    def _run_presubmit(self, java_content):
+        with tempfile.NamedTemporaryFile(
+            mode='w', encoding='utf-8', suffix='.java'
+        ) as f:
+            f.write(java_content)
+            f.flush()
+            input_api = _MockInputApi([f.name])
+            output_api = _MockOutputApi()
+            results = checkstyle.run_presubmit(input_api, output_api)
+            self.assertEqual(len(input_api.commands), 1)
+            self.assertEqual(input_api.commands[0]['name'], 'checkstyle')
+            return results
+
+    def test_presubmit_clean(self):
+        results = self._run_presubmit('class A {}\n')
+        self.assertEqual(results, [])
+
+    def test_presubmit_error(self):
+        results = self._run_presubmit('import java.util.List;\nclass A {}\n')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0][0], 'error')
+        self.assertIn('Unused import: java.util.List.', results[0][1])
+        self.assertIn('To remove unused imports:', results[0][1])
+
+    def test_presubmit_warning(self):
+        results = self._run_presubmit('class A {\n    // dummy\n}\n')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0][0], 'warning')
+        self.assertIn('Please use inclusive language', results[0][1])
+
+    def test_presubmit_syntax_error(self):
+        results = self._run_presubmit('class A { syntax error }\n')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0][0], 'error')
+        self.assertIn('This might mean you have a syntax error', results[0][1])
 
 
 if __name__ == '__main__':
