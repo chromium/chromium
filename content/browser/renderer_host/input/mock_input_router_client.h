@@ -107,7 +107,7 @@ class MockInputRouterClient : public input::InputRouterClient,
       const gfx::PointF& position_in_screen) override;
 
  private:
-  raw_ptr<input::InputRouter, DanglingUntriaged> input_router_;
+  raw_ptr<input::InputRouter> input_router_;
   int in_flight_event_count_ = 0;
 
   blink::mojom::InputEventResultState filter_state_;

@@ -352,9 +352,15 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
     return root->child_at(0);
   }
 
+  void TearDownOnMainThread() override {
+    child_view_ = nullptr;
+    root_view_ = nullptr;
+    ContentBrowserTest::TearDownOnMainThread();
+  }
+
   std::unique_ptr<base::RunLoop> run_loop_;
-  raw_ptr<RenderWidgetHostViewBase, DanglingUntriaged> child_view_ = nullptr;
-  raw_ptr<RenderWidgetHostViewBase, DanglingUntriaged> root_view_ = nullptr;
+  raw_ptr<RenderWidgetHostViewBase> child_view_ = nullptr;
+  raw_ptr<RenderWidgetHostViewBase> root_view_ = nullptr;
 };
 
 // On Mac we don't have any touchscreen/touchpad fling events (GFS/GFC).

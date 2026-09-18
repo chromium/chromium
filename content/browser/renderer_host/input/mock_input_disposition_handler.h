@@ -98,7 +98,7 @@ class MockInputDispositionHandler : public input::InputDispositionHandler {
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result);
 
-  raw_ptr<input::InputRouter, DanglingUntriaged> input_router_;
+  raw_ptr<input::InputRouter> input_router_;
 
   size_t ack_count_;
   blink::WebInputEvent::Type ack_event_type_;

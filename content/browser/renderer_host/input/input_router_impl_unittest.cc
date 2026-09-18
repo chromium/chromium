@@ -108,6 +108,16 @@ class InputRouterImplTestBase : public testing::Test {
 
   ~InputRouterImplTestBase() override {}
 
+  void DestroyInputRouter() {
+    if (client_) {
+      client_->set_input_router(nullptr);
+    }
+    if (disposition_handler_) {
+      disposition_handler_->set_input_router(nullptr);
+    }
+    input_router_.reset();
+  }
+
  protected:
   using DispatchedMessages = MockWidgetInputHandler::MessageVector;
 
@@ -152,10 +162,12 @@ class InputRouterImplTestBase : public testing::Test {
     // Process all pending tasks to avoid leaks.
     base::RunLoop().RunUntilIdle();
 
-    input_router_.reset();
+    DestroyInputRouter();
     client_.reset();
-    if (mock_view_)
-      delete mock_view_;
+    disposition_handler_.reset();
+    MockRenderWidgetHostViewForStylusWriting* view = mock_view_;
+    mock_view_ = nullptr;
+    delete view;
     widget_host_ = nullptr;
     process_host_->Cleanup();
     site_instance_group_.reset();
@@ -491,8 +503,7 @@ class InputRouterImplTestBase : public testing::Test {
   std::unique_ptr<MockInputRouterClient> client_;
   std::unique_ptr<input::InputRouterImpl> input_router_;
   std::unique_ptr<MockInputDispositionHandler> disposition_handler_;
-  raw_ptr<MockRenderWidgetHostViewForStylusWriting, DanglingUntriaged>
-      mock_view_;
+  raw_ptr<MockRenderWidgetHostViewForStylusWriting> mock_view_ = nullptr;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -2943,8 +2954,7 @@ TEST_F(InputRouterImplTest, SynchronousDestructionDuringAck) {
 
   // Set the disposition handler to destroy the input router during ACK.
   disposition_handler_->set_on_touch_event_ack_closure(base::BindOnce(
-      [](std::unique_ptr<input::InputRouterImpl>* router) { router->reset(); },
-      &input_router_));
+      &InputRouterImplTestBase::DestroyInputRouter, base::Unretained(this)));
 
   // Trigger an ACK.
   input::TouchEventWithLatencyInfo touch_event(touch);
@@ -2965,8 +2975,7 @@ TEST_F(InputRouterImplTest, SynchronousDestructionDuringGestureAck) {
 
   // Set the disposition handler to destroy the input router during ACK.
   disposition_handler_->set_on_gesture_event_ack_closure(base::BindOnce(
-      [](std::unique_ptr<input::InputRouterImpl>* router) { router->reset(); },
-      &input_router_));
+      &InputRouterImplTestBase::DestroyInputRouter, base::Unretained(this)));
 
   // Trigger an ACK.
   input::GestureEventWithLatencyInfo gesture_event(gesture);
@@ -2986,8 +2995,7 @@ TEST_F(InputRouterImplTest, SynchronousDestructionDuringWheelAck) {
 
   // Set the disposition handler to destroy the input router during ACK.
   disposition_handler_->set_on_wheel_event_ack_closure(base::BindOnce(
-      [](std::unique_ptr<input::InputRouterImpl>* router) { router->reset(); },
-      &input_router_));
+      &InputRouterImplTestBase::DestroyInputRouter, base::Unretained(this)));
 
   // Trigger an ACK.
   input::MouseWheelEventWithLatencyInfo wheel_event(wheel);
