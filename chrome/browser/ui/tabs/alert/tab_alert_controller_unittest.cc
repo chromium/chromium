@@ -16,17 +16,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
-#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_alert.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -40,16 +37,6 @@
 
 namespace tabs {
 
-class FakeBrowserWindowInterface : public MockBrowserWindowInterface {
- public:
-  ~FakeBrowserWindowInterface() override = default;
-  explicit FakeBrowserWindowInterface(Profile* profile) : profile_(profile) {}
-  Profile* GetProfile() override { return profile_; }
-
- private:
-  raw_ptr<Profile> profile_ = nullptr;
-};
-
 class MockTabAlertControllerSubscriber {
  public:
   MockTabAlertControllerSubscriber() = default;
@@ -61,47 +48,38 @@ class MockTabAlertControllerSubscriber {
 class TabAlertControllerTest : public testing::Test {
  public:
   void SetUp() override {
-    raw_ptr<TestingProfileManager> testing_profile_manager =
-        TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
-            /*profile_manager=*/true);
-    profile_ = testing_profile_manager->CreateTestingProfile("profile");
-    browser_window_interface_ =
-        std::make_unique<FakeBrowserWindowInterface>(profile_);
-    tab_strip_model_delegate_ = std::make_unique<TestTabStripModelDelegate>();
-    tab_strip_model_delegate_->SetBrowserWindowInterface(
-        browser_window_interface_.get());
-    tab_strip_model_ = std::make_unique<TabStripModel>(
-        tab_strip_model_delegate_.get(), profile_);
-    EXPECT_CALL(*browser_window_interface_, GetTabStripModel())
-        .WillRepeatedly(testing::Return(tab_strip_model_.get()));
-    EXPECT_CALL(*browser_window_interface_, GetUnownedUserDataHost())
-        .WillRepeatedly(testing::ReturnRef(user_data_host_));
-    std::unique_ptr<content::WebContents> web_contents =
-        content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
-    tab_model_ = std::make_unique<TabModel>(std::move(web_contents),
-                                            tab_strip_model_.get());
+    profile_ = std::make_unique<TestingProfile>();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), nullptr);
+    vr::VrTabHelper::CreateForWebContents(web_contents_.get());
+    RecentlyAudibleHelper::CreateForWebContents(web_contents_.get());
+
+    mock_tab_ = std::make_unique<MockTabInterface>();
+    ON_CALL(*mock_tab_, GetContents())
+        .WillByDefault(testing::Return(web_contents_.get()));
+    ON_CALL(*mock_tab_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(user_data_host_));
+
+    tab_alert_controller_ = std::make_unique<TabAlertController>(*mock_tab_);
   }
 
   void TearDown() override {
     // Explicitly reset the pointers to prevent them from causing the
     // BrowserTaskEnvironment to time out on destruction.
-    tab_model_.reset();
-    tab_strip_model_.reset();
-    tab_strip_model_delegate_.reset();
-    browser_window_interface_.reset();
-    profile_ = nullptr;
-
-    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
+    tab_alert_controller_.reset();
+    mock_tab_.reset();
+    web_contents_.reset();
+    profile_.reset();
   }
 
   TabAlertController* tab_alert_controller() {
-    return tabs::TabAlertController::From(tab_model_.get());
+    return tab_alert_controller_.get();
   }
 
-  TabInterface* tab_interface() { return tab_model_.get(); }
+  TabInterface* tab_interface() { return mock_tab_.get(); }
 
   void SimulateAudioState(bool is_playing_audio) {
-    content::WebContentsTester::For(tab_model_->GetContents())
+    content::WebContentsTester::For(web_contents_.get())
         ->SetIsCurrentlyAudible(is_playing_audio);
   }
 
@@ -115,11 +93,10 @@ class TabAlertControllerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler test_enabler_;
   ui::UnownedUserDataHost user_data_host_;
-  raw_ptr<Profile> profile_ = nullptr;
-  std::unique_ptr<FakeBrowserWindowInterface> browser_window_interface_;
-  std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
-  std::unique_ptr<TabStripModel> tab_strip_model_;
-  std::unique_ptr<TabModel> tab_model_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<MockTabInterface> mock_tab_;
+  std::unique_ptr<TabAlertController> tab_alert_controller_;
 };
 
 TEST_F(TabAlertControllerTest, NotifiedOnAlertShouldShowChanged) {
