@@ -492,6 +492,10 @@ void XMLDocumentParser::end() {
   if (parser_paused_)
     return;
 
+  // Any deferred Finish() is carried out below; reset the flag so that
+  // DoWrite() and ResumeParsing() do not call end() a second time.
+  finish_called_ = false;
+
   // StopParsing() calls InsertErrorMessageBlock() if there was a parsing
   // error. Avoid showing the error message block twice.
   // TODO(crbug.com/898775): Rationalize this.
@@ -525,10 +529,14 @@ void XMLDocumentParser::Finish() {
   if (IsDetached())
     return;
 
-  if (parser_paused_)
+  // If ParseChunk() is on the stack, ending the document now would re-enter
+  // libxml2 (see DoWrite()). Defer exactly like the paused case; DoWrite()
+  // honors finish_called_ once the current chunk has been parsed.
+  if (parser_paused_ || in_parse_chunk_) {
     finish_called_ = true;
-  else
+  } else {
     end();
+  }
 }
 
 void XMLDocumentParser::InsertErrorMessageBlock() {
@@ -976,35 +984,59 @@ void XMLDocumentParser::DoWrite(const String& parse_string) {
   // Protect the libxml context from deletion during a callback
   scoped_refptr<XMLParserContext> context = context_;
 
-  // libxml2's push parser is not re-entrant: xmlParseEndTag2 holds multiple
-  // raw pointers inside ctxt, and a nested xmlParseChunk can xmlRealloc()
-  // those buffers. Crash safely rather than corrupt the heap. (Append()
-  // routes re-entrant data to pending_src_ so this should be unreachable.)
-  CHECK(!in_parse_chunk_);
-  base::AutoReset<bool> reentrancy_guard(&in_parse_chunk_, true);
+  {
+    // libxml2's push parser is not re-entrant: xmlParseEndTag2 holds multiple
+    // raw pointers inside ctxt, and a nested xmlParseChunk can xmlRealloc()
+    // those buffers. Crash safely rather than corrupt the heap. (Append()
+    // routes re-entrant data to pending_src_ and Finish() defers to
+    // finish_called_, so this should be unreachable.)
+    CHECK(!in_parse_chunk_);
+    base::AutoReset<bool> reentrancy_guard(&in_parse_chunk_, true);
 
-  // libXML throws an error if you try to switch the encoding for an empty
-  // string.
-  if (parse_string.length()) {
-    XMLDocumentParserScope scope(GetDocument());
-    base::AutoReset<bool> encoding_scope(&is_currently_parsing8_bit_chunk_,
-                                         parse_string.Is8Bit());
-    ParseChunk(context->Context(), parse_string);
+    // libXML throws an error if you try to switch the encoding for an empty
+    // string.
+    if (parse_string.length()) {
+      XMLDocumentParserScope scope(GetDocument());
+      base::AutoReset<bool> encoding_scope(&is_currently_parsing8_bit_chunk_,
+                                           parse_string.Is8Bit());
+      ParseChunk(context->Context(), parse_string);
 
-    // JavaScript (which may be run under the parseChunk callstack) may
-    // cause the parser to be stopped or detached.
-    if (IsStopped())
-      return;
+      // JavaScript (which may be run under the parseChunk callstack) may
+      // cause the parser to be stopped or detached.
+      if (IsStopped() && !finish_called_) {
+        return;
+      }
+    }
+
+    // FIXME: Why is this here? And why is it after we process the passed
+    // source?
+    if (!IsStopped() && GetDocument()->SawDecodingError()) {
+      // If the decoder saw an error, report it as fatal (stops parsing)
+      TextPosition position(
+          OrdinalNumber::FromOneBasedInt(context->Context()->input->line),
+          OrdinalNumber::FromOneBasedInt(context->Context()->input->col));
+      HandleError(XMLErrors::kErrorTypeFatal, "Encoding error", position);
+    }
   }
 
-  // FIXME: Why is this here? And why is it after we process the passed
-  // source?
-  if (GetDocument()->SawDecodingError()) {
-    // If the decoder saw an error, report it as fatal (stops parsing)
-    TextPosition position(
-        OrdinalNumber::FromOneBasedInt(context->Context()->input->line),
-        OrdinalNumber::FromOneBasedInt(context->Context()->input->col));
-    HandleError(XMLErrors::kErrorTypeFatal, "Encoding error", position);
+  if (IsDetached() || parser_paused_) {
+    return;
+  }
+
+  // Data appended and a Finish() call received while ParseChunk() was on the
+  // stack above were deferred; take care of them now that the chunk has been
+  // parsed.
+  if (!pending_src_.IsEmpty()) {
+    SegmentedString rest = pending_src_;
+    pending_src_.Clear();
+    Append(rest.ToString());
+    if (IsDetached() || parser_paused_) {
+      return;
+    }
+  }
+
+  if (finish_called_ && pending_callbacks_.empty()) {
+    end();
   }
 }
 
@@ -1811,7 +1843,10 @@ void XMLDocumentParser::InitializeParserContext(const std::string& chunk) {
 void XMLDocumentParser::DoEnd() {
   if (!IsStopped()) {
     if (context_) {
-      // Tell libxml we're done.
+      // Tell libxml we're done. The terminating chunk may run SAX callbacks,
+      // so it needs the same re-entrancy protection as DoWrite().
+      CHECK(!in_parse_chunk_);
+      base::AutoReset<bool> reentrancy_guard(&in_parse_chunk_, true);
       {
         XMLDocumentParserScope scope(GetDocument());
         FinishParsing(Context());

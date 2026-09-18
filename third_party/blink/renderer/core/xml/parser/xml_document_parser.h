@@ -229,9 +229,9 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   bool saw_first_element_;
   bool is_xhtml_document_;
   bool parser_paused_;
-  // Re-entrancy guard for DoWrite()/xmlParseChunk(). libxml2 push-parser
-  // contexts are not re-entrant; calling xmlParseChunk while already inside
-  // a SAX callback corrupts ctxt->pushTab/nsTab.
+  // Re-entrancy guard for DoWrite()/DoEnd()/xmlParseChunk(). libxml2
+  // push-parser contexts are not re-entrant; calling xmlParseChunk while
+  // already inside a SAX callback corrupts ctxt->pushTab/nsTab.
   bool in_parse_chunk_ = false;
   bool requesting_script_;
   bool finish_called_;
