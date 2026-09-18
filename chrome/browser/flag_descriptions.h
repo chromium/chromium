@@ -5263,11 +5263,10 @@ inline constexpr char kOnDeviceModelSpeculativeDecodingName[] =
     "Speculative Decoding for Built-in AI";
 inline constexpr char kOnDeviceModelSpeculativeDecodingDescription[] =
     "Enables speculative decoding performance enhancements for Built-in AI "
-    "APIs. Also enables requisite LiteRT-LM, Gemma 4, and Sampling Mode "
-    "features. Prompt API and Summarizer API sessions automatically use "
-    "greedy decoding with speculative decoding by default, or when greedy "
-    "sampling options are specified. Non-greedy sessions run with standard "
-    "decoding.";
+    "APIs. Also enables requisite Gemma 4 and Sampling Mode features. Prompt "
+    "API and Summarizer API sessions automatically use greedy sampling with "
+    "speculative decoding by default, or when greedy sampling options are "
+    "specified. Non-greedy sessions run with standard decoding.";
 
 inline constexpr char kPromptAPIMultimodalInputName[] =
     "Prompt API Multimodal Input";
