@@ -30,7 +30,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/icu_test_util.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -144,7 +143,7 @@ class L10nUtilTest : public PlatformTest {
     if (kUseLocaleFromEnvironment) {
       env->SetVar("LANGUAGE", tag.ToLegacyICUFormat());
     } else {
-      base::i18n::SetICUDefaultLocale(tag.ToLegacyICUFormat());
+      SetIcuLocaleForTest(tag);
     }
   }
 
