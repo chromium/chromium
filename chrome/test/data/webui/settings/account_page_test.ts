@@ -251,4 +251,29 @@ suite('AccountPage', function() {
     });
     assertTrue(dashboardLink.hidden);
   });
+
+  test('ManageGoogleAccountHiddenOnError', async function() {
+    const manageGoogleAccount =
+        accountSettingsPage.shadowRoot.querySelector<HTMLElement>(
+            '#manage-google-account')!;
+
+    // Normal user without error.
+    assertFalse(manageGoogleAccount.hidden);
+
+    // Sync error.
+    await simulateSyncStatus({
+      signedInState: SignedInState.SIGNED_IN,
+      hasError: true,
+      statusAction: StatusAction.NO_ACTION,
+    });
+    assertTrue(manageGoogleAccount.hidden);
+
+    // Error cleared.
+    await simulateSyncStatus({
+      signedInState: SignedInState.SIGNED_IN,
+      hasError: false,
+      statusAction: StatusAction.NO_ACTION,
+    });
+    assertFalse(manageGoogleAccount.hidden);
+  });
 });
