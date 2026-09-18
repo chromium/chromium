@@ -2471,11 +2471,11 @@ public abstract class ChromeFeatureList {
     public static final MutableBooleanParamWithSafeDefault
             sOnDemandBackgroundTabContextCaptureCancelLoadOnDeselection =
                     sOnDemandBackgroundTabContextCaptureOptimization.newBooleanParam(
-                            "cancel_load_on_deselection", true);
+                            "cancel_load_on_deselection", false);
     public static final MutableBooleanParamWithSafeDefault
             sOnDemandBackgroundTabContextCaptureLimitConcurrentLoadIfNeeded =
                     sOnDemandBackgroundTabContextCaptureOptimization.newBooleanParam(
-                            "limit_concurrent_load_if_needed", true);
+                            "limit_concurrent_load_if_needed", false);
     public static final MutableIntParamWithSafeDefault
             sOnDemandBackgroundTabContextCaptureMaximumConcurrentLoadIfNeeded =
                     sOnDemandBackgroundTabContextCaptureOptimization.newIntParam(
@@ -2486,7 +2486,7 @@ public abstract class ChromeFeatureList {
                             "minimum_concurrent_load_if_needed", 1);
     public static final MutableBooleanParamWithSafeDefault sOnDemandBackgroundTabEnableFirstPaint =
             sOnDemandBackgroundTabContextCaptureOptimization.newBooleanParam(
-                    "enable_first_paint", true);
+                    "enable_first_paint", false);
     public static final MutableIntParamWithSafeDefault sOnDemandBackgroundTabFirstPaintDelayMs =
             sOnDemandBackgroundTabContextCaptureOptimization.newIntParam("first_paint_delay_ms", 0);
     public static final MutableIntParamWithSafeDefault sSwipeToSwitchPaneMaxDurationMs =

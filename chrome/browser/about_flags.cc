@@ -2781,6 +2781,15 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam
     kOnDemandBackgroundTabContextCaptureOptimization_CancelOnDeselection[] = {
         {"cancel_load_on_deselection", "true"}};
+// Turns on every optimization param at once, for manual end-to-end testing.
+const FeatureEntry::FeatureParam
+    kOnDemandBackgroundTabContextCaptureOptimization_All[] = {
+        {"enable_first_paint", "true"},
+        {"first_paint_delay_ms", "0"},
+        {"limit_concurrent_load_if_needed", "true"},
+        {"minimum_concurrent_load_if_needed", "1"},
+        {"maximum_concurrent_load_if_needed", "4"},
+        {"cancel_load_on_deselection", "true"}};
 
 const FeatureEntry::FeatureVariation
     kOnDemandBackgroundTabContextCaptureOptimizationVariations[] = {
@@ -2793,6 +2802,9 @@ const FeatureEntry::FeatureVariation
          nullptr},
         {"CancelLoadOnDeselection",
          kOnDemandBackgroundTabContextCaptureOptimization_CancelOnDeselection,
+         nullptr},
+        // Rendered in chrome://flags as "Enabled (all)".
+        {"(all)", kOnDemandBackgroundTabContextCaptureOptimization_All,
          nullptr}};
 
 #endif  // BUILDFLAG(IS_ANDROID)

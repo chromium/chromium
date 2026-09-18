@@ -59,6 +59,16 @@ public class TabLoadingServiceTest {
     private static final int TAB_ID_2 = 124;
     private static final int TAB_ID_3 = 125;
 
+    // The optimization params all default to false, so each test opts into the one it exercises.
+    private static final String OPTIMIZATION_LIMIT_LOADS =
+            ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+                    + ":limit_concurrent_load_if_needed/true";
+    private static final String OPTIMIZATION_FIRST_PAINT =
+            ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+                    + ":enable_first_paint/true";
+    private static final String OPTIMIZATION_FIRST_PAINT_DELAYED =
+            OPTIMIZATION_FIRST_PAINT + "/first_paint_delay_ms/500";
+
     @Before
     public void setUp() {
         when(mTab.getId()).thenReturn(TAB_ID);
@@ -193,7 +203,7 @@ public class TabLoadingServiceTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    @EnableFeatures(OPTIMIZATION_FIRST_PAINT)
     public void testDidFirstVisuallyNonEmptyPaint_FeatureEnabled() {
         when(mTab.loadIfNeeded(true)).thenReturn(true);
         when(mTab.isLoading()).thenReturn(true);
@@ -263,9 +273,7 @@ public class TabLoadingServiceTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
-                    + ":first_paint_delay_ms/500")
+    @EnableFeatures(OPTIMIZATION_FIRST_PAINT_DELAYED)
     public void testDidFirstVisuallyNonEmptyPaint_WithDelay() {
         when(mTab.loadIfNeeded(true)).thenReturn(true);
         when(mTab.isLoading()).thenReturn(true);
@@ -291,9 +299,7 @@ public class TabLoadingServiceTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
-                    + ":first_paint_delay_ms/500")
+    @EnableFeatures(OPTIMIZATION_FIRST_PAINT_DELAYED)
     public void testDidFirstVisuallyNonEmptyPaint_FailureDuringDelayDoesNotResolveSuccess() {
         when(mTab.loadIfNeeded(true)).thenReturn(true);
         when(mTab.isLoading()).thenReturn(true);
@@ -315,9 +321,7 @@ public class TabLoadingServiceTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
-                    + ":first_paint_delay_ms/500")
+    @EnableFeatures(OPTIMIZATION_FIRST_PAINT_DELAYED)
     public void testDidFirstVisuallyNonEmptyPaint_RequeuedDuringDelay_DispatchesOnlyNewLoad() {
         when(mTab.loadIfNeeded(true)).thenReturn(true);
         when(mTab.isLoading()).thenReturn(true);
@@ -350,7 +354,7 @@ public class TabLoadingServiceTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
     public void testConcurrentLoadLimit_QueuesExcessTabs() {
         configureConcurrentServiceWithMemoryGb(2);
         setupTabForLoad(mTab, TAB_ID);
@@ -368,7 +372,7 @@ public class TabLoadingServiceTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
     public void testConcurrentLoadLimit_DrainsQueueOnCompletion() {
         configureConcurrentServiceWithMemoryGb(2);
         setupTabForLoad(mTab, TAB_ID);
@@ -387,7 +391,7 @@ public class TabLoadingServiceTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
     public void testConcurrentLoadLimit_PendingTabDestroyedBeforeLoad() {
         configureConcurrentServiceWithMemoryGb(2);
         setupTabForLoad(mTab, TAB_ID);
@@ -408,7 +412,7 @@ public class TabLoadingServiceTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
     public void testCancelLoadIfNeeded_ActivelyLoadingTab() {
         configureConcurrentServiceWithMemoryGb(2);
         setupTabForLoad(mTab, TAB_ID);
@@ -429,7 +433,7 @@ public class TabLoadingServiceTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
     public void testCancelLoadIfNeeded_PendingTab() {
         configureConcurrentServiceWithMemoryGb(2);
         setupTabForLoad(mTab, TAB_ID);
@@ -451,7 +455,7 @@ public class TabLoadingServiceTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
     public void testCancelLoadIfNeeded_PendingTabRemovesObserver() {
         configureConcurrentServiceWithMemoryGb(2);
         setupTabForLoad(mTab, TAB_ID);
@@ -469,7 +473,7 @@ public class TabLoadingServiceTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
     public void testCancelLoadIfNeeded_NotifiesCallbacks() {
         configureConcurrentServiceWithMemoryGb(2);
         setupTabForLoad(mTab, TAB_ID);
@@ -482,7 +486,7 @@ public class TabLoadingServiceTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
     public void testCancelLoadIfNeeded_DestroyedTabSkipsStopLoading() {
         configureConcurrentServiceWithMemoryGb(2);
         setupTabForLoad(mTab, TAB_ID);
@@ -495,7 +499,7 @@ public class TabLoadingServiceTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
     public void testCancelLoadIfNeeded_DestroyedTabStillSchedulesPendingTab() {
         configureConcurrentServiceWithMemoryGb(2);
         setupTabForLoad(mTab, TAB_ID);
@@ -512,7 +516,7 @@ public class TabLoadingServiceTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
     public void testCancelLoadIfNeeded_DestroyedWebContentsSkipsNeedsReload() {
         configureConcurrentServiceWithMemoryGb(2);
         setupTabForLoad(mTab, TAB_ID);

@@ -71,6 +71,14 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabItemPickerCoordinatorNavigationUnitTest {
     private static final int WINDOW_ID = 5;
+
+    // cancel_load_on_deselection defaults to false, so tests that exercise cancellation opt in.
+    private static final String OPTIMIZATION_CANCEL_ON_DESELECTION =
+            ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+                    + ":cancel_load_on_deselection/true";
+    private static final String OPTIMIZATION_CANCEL_AND_FIRST_PAINT =
+            OPTIMIZATION_CANCEL_ON_DESELECTION + "/enable_first_paint/true";
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabModelSelectorImpl mTabModelSelector;
     @Mock private ChromeItemPickerActivity mActivity;
@@ -552,7 +560,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
-        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+        OPTIMIZATION_CANCEL_AND_FIRST_PAINT
     })
     public void testOffscreenRendering_StartedOnSelectionAndStoppedOnCaptureComplete() {
         OffscreenRenderingManager mockOffscreenManager =
@@ -678,7 +686,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
-        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+        OPTIMIZATION_CANCEL_ON_DESELECTION
     })
     public void testSelectionKeepsExistingThumbnail() {
         selectLoadableTab(101);
@@ -689,7 +697,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
-        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+        OPTIMIZATION_CANCEL_ON_DESELECTION
     })
     public void testDeselectionKeepsExistingThumbnail() {
         Tab tab = selectLoadableTab(101);
@@ -768,7 +776,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
-        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+        OPTIMIZATION_CANCEL_ON_DESELECTION
     })
     public void testReselectionAfterCancelReloadsTab() {
         Tab tab = selectLoadableTab(101);
