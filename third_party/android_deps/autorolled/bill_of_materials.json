@@ -1955,11 +1955,6 @@
         "version": "1.2.1"
     },
     {
-        "name": "checker-compat-qual",
-        "group": "org.checkerframework",
-        "version": "2.5.5"
-    },
-    {
         "name": "checker-qual",
         "group": "org.checkerframework",
         "version": "4.2.3"
@@ -2018,11 +2013,6 @@
         "name": "kotlin-stdlib",
         "group": "org.jetbrains.kotlin",
         "version": "2.3.21"
-    },
-    {
-        "name": "kotlin-stdlib-common",
-        "group": "org.jetbrains.kotlin",
-        "version": "2.0.20"
     },
     {
         "name": "kotlin-stdlib-jdk7",
@@ -2102,12 +2092,12 @@
     {
         "name": "kotlinx-serialization-core-jvm",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.7.2"
+        "version": "1.7.3"
     },
     {
         "name": "kotlinx-serialization-json",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.7.2"
+        "version": "1.7.3"
     },
     {
         "name": "kotlinx-serialization-json-jvm",

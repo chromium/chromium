@@ -405,7 +405,6 @@ versionCache['net.bytebuddy:byte-buddy-android'] = '1.17.6'
 versionCache['org.bouncycastle:bc-jdk18on-bom'] = '1.85'
 versionCache['org.bouncycastle:bcprov-jdk18on'] = '1.85'
 versionCache['org.ccil.cowan.tagsoup:tagsoup'] = '1.2.1'
-versionCache['org.checkerframework:checker-compat-qual'] = '2.5.5'
 versionCache['org.checkerframework:checker-qual'] = '4.2.3'
 versionCache['org.checkerframework:checker-util'] = '4.2.3'
 versionCache['org.codehaus.mojo:animal-sniffer-annotations'] = '1.28'
@@ -418,7 +417,6 @@ versionCache['org.jetbrains.kotlin:kotlin-android-extensions-runtime'] = '1.9.22
 versionCache['org.jetbrains.kotlin:kotlin-bom'] = '1.8.22'
 versionCache['org.jetbrains.kotlin:kotlin-parcelize-runtime'] = '1.9.22'
 versionCache['org.jetbrains.kotlin:kotlin-stdlib'] = '2.3.21'
-versionCache['org.jetbrains.kotlin:kotlin-stdlib-common'] = '2.0.20'
 versionCache['org.jetbrains.kotlin:kotlin-stdlib-jdk7'] = '1.9.0'
 versionCache['org.jetbrains.kotlin:kotlin-stdlib-jdk8'] = '1.8.21'
 versionCache['org.jetbrains.kotlinx:atomicfu'] = '0.28.0'
@@ -434,8 +432,8 @@ versionCache['org.jetbrains.kotlinx:kotlinx-coroutines-test'] = '1.9.0'
 versionCache['org.jetbrains.kotlinx:kotlinx-coroutines-test-jvm'] = '1.9.0'
 versionCache['org.jetbrains.kotlinx:kotlinx-serialization-bom'] = '1.7.3'
 versionCache['org.jetbrains.kotlinx:kotlinx-serialization-core'] = '1.7.3'
-versionCache['org.jetbrains.kotlinx:kotlinx-serialization-core-jvm'] = '1.7.2'
-versionCache['org.jetbrains.kotlinx:kotlinx-serialization-json'] = '1.7.2'
+versionCache['org.jetbrains.kotlinx:kotlinx-serialization-core-jvm'] = '1.7.3'
+versionCache['org.jetbrains.kotlinx:kotlinx-serialization-json'] = '1.7.3'
 versionCache['org.jetbrains.kotlinx:kotlinx-serialization-json-jvm'] = '1.7.3'
 versionCache['org.jetbrains:annotations'] = '23.0.0'
 versionCache['org.jsoup:jsoup'] = '1.15.1'
@@ -550,6 +548,11 @@ dependencies {
     supportsAndroidCompileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:+'
     supportsAndroidCompileLatest 'org.reactivestreams:reactive-streams:+'
     compileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-android:+'
+
+    // Needed by androidx and by doubledown targets. Pinned; version must
+    // match the resolveVersion overrides in ChromiumDepGraph.groovy.
+    compileLatest 'org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.7.3'
+    compileLatest 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3'
 }
 
 task setUpRepository(type: BuildConfigGenerator) {
