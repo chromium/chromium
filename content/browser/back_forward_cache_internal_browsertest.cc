@@ -2833,6 +2833,98 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 }
 
+// Tests that detaching a subframe while its page is in the back/forward cache
+// is rejected. A frozen renderer should never request frame detach for a page
+// that has acknowledged entering the cache, and the request should not be
+// applied to the primary frame tree's navigation state.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DetachSubframeInBackForwardCache) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // 1) Navigate to A(B).
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameHostImplWrapper rfh_b(rfh_a->child_at(0)->current_frame_host());
+  PageLifecycleStateManagerTestDelegate delegate(
+      rfh_b->render_view_host()->GetPageLifecycleStateManager());
+
+  // 2) Navigate to C, A(B) enters the back/forward cache.
+  ASSERT_TRUE(NavigateToURL(shell(), url_c));
+  ASSERT_TRUE(delegate.WaitForInBackForwardCacheAck());
+  ASSERT_FALSE(rfh_b.IsDestroyed());
+  ASSERT_TRUE(rfh_b->IsInBackForwardCache());
+
+  // 3) Simulate B's renderer detaching the subframe while in the back/forward
+  // cache. The request should be rejected without transitioning B to pending
+  // deletion, and B's renderer should be terminated.
+  RenderProcessHostBadIpcMessageWaiter kill_waiter(rfh_b->GetProcess());
+  rfh_b->DetachForTesting();
+  ASSERT_FALSE(rfh_b.IsDestroyed());
+  ASSERT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache,
+            rfh_b->lifecycle_state());
+  EXPECT_EQ(bad_message::RFH_DETACH_WHILE_BFCACHED, kill_waiter.Wait());
+
+  // 4) Verify that the foreground page's navigation entry was not deleted or
+  // corrupted by the subframe detach request.
+  EXPECT_EQ(url_c, shell()
+                       ->web_contents()
+                       ->GetController()
+                       .GetLastCommittedEntry()
+                       ->GetURL());
+}
+
+// Tests that detaching a remote subframe via RenderFrameProxyHost while its
+// page is in the back/forward cache is rejected. A frozen parent renderer
+// should never request proxy frame detach for a page that has acknowledged
+// entering the cache, and the caller's renderer process should be terminated.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DetachRemoteSubframeInBackForwardCache) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  // 1) Navigate to A(B).
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameHostImplWrapper rfh_b(rfh_a->child_at(0)->current_frame_host());
+  PageLifecycleStateManagerTestDelegate delegate_a(
+      rfh_a->render_view_host()->GetPageLifecycleStateManager());
+  // Obtain the proxy for B in A's SiteInstance (the parent's proxy for the
+  // subframe).
+  RenderFrameProxyHost* proxy_b =
+      rfh_b->frame_tree_node()->render_manager()->GetProxyToParent();
+  ASSERT_TRUE(proxy_b);
+  EXPECT_EQ(rfh_a->GetProcess(), proxy_b->GetProcess());
+  // 2) Navigate to C, A(B) enters the back/forward cache.
+  ASSERT_TRUE(NavigateToURL(shell(), url_c));
+  ASSERT_TRUE(delegate_a.WaitForInBackForwardCacheAck());
+  ASSERT_FALSE(rfh_a.IsDestroyed());
+  ASSERT_FALSE(rfh_b.IsDestroyed());
+  ASSERT_TRUE(rfh_b->IsInBackForwardCache());
+  // 3) Simulate A's renderer detaching the subframe proxy while in the
+  // back/forward cache. The request should be rejected without transitioning
+  // B to pending deletion, and A's renderer (the proxy's process) should be
+  // terminated.
+  RenderProcessHostBadIpcMessageWaiter kill_waiter(proxy_b->GetProcess());
+  proxy_b->Detach();
+  ASSERT_FALSE(rfh_b.IsDestroyed());
+  ASSERT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache,
+            rfh_b->lifecycle_state());
+  EXPECT_EQ(bad_message::RFH_DETACH_WHILE_BFCACHED, kill_waiter.Wait());
+  // 4) Verify that the foreground page's navigation entry was not deleted or
+  // corrupted by the proxy detach request.
+  EXPECT_EQ(url_c, shell()
+                       ->web_contents()
+                       ->GetController()
+                       .GetLastCommittedEntry()
+                       ->GetURL());
+}
+
 IN_PROC_BROWSER_TEST_F(
     HighCacheSizeBackForwardCacheBrowserTest,
     MessageReceivedOnAssociatedInterfaceForProcessWithMultipleCachedPages) {

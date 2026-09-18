@@ -509,10 +509,23 @@ void RenderFrameProxyHost::Detach() {
   if (frame_tree_node_->IsMainFrame())
     return;
 
+  RenderFrameHostImpl* current_rfh = frame_tree_node_->current_frame_host();
+  if (current_rfh->IsInBackForwardCache()) {
+    if (render_view_host_ &&
+        render_view_host_->DidReceiveBackForwardCacheAck()) {
+      bad_message::ReceivedBadMessage(GetProcess(),
+                                      bad_message::RFH_DETACH_WHILE_BFCACHED);
+    } else {
+      current_rfh->IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kDetach);
+    }
+    return;
+  }
+
   // Otherwise, a remote child frame has been removed from the frame tree.
   // Make sure that this action is mirrored to all the other renderers, so
   // the frame tree remains consistent.
-  frame_tree_node_->current_frame_host()->DetachFromProxy();
+  current_rfh->DetachFromProxy();
 }
 
 void RenderFrameProxyHost::CheckCompleted() {

@@ -5958,6 +5958,9 @@ shown properly on the user-facing crash UI.
   <int value="50" label="kDownloadUrl">
     A DownloadURL IPC arrived for an inactive frame.
   </int>
+  <int value="51" label="kDetach">
+    A request was received to detach a frame within a BFCached page.
+  </int>
 </enum>
 
 <enum name="IncidentType">
