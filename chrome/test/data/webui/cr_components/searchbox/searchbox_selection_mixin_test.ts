@@ -430,6 +430,9 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
 
     const available = element.getAvailableSelections(result);
     assertEquals(3, available.length);
+    // available[0] = line 0 (normal)
+    // available[1] = line 0 (remove button)
+    // available[2] = line 1 (normal)
 
     assertDeepEquals(
         available[2]!,
@@ -440,6 +443,73 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
         available[0]!,
         element.getNextSelection(
             result, available[2]!, SelectionDirection.kBackward,
+            SelectionStep.kWholeLine));
+
+    // Stepping backward (ArrowUp) from the remove button of line 0 should wrap
+    // to the suggestion above (line 1 normal), NOT stay on line 0 normal.
+    assertDeepEquals(
+        available[2]!,
+        element.getNextSelection(
+            result, available[1]!, SelectionDirection.kBackward,
+            SelectionStep.kWholeLine));
+
+    // Stepping forward (ArrowDown) from the remove button of line 0 should go
+    // to the suggestion below (line 1 normal).
+    assertDeepEquals(
+        available[2]!,
+        element.getNextSelection(
+            result, available[1]!, SelectionDirection.kForward,
+            SelectionStep.kWholeLine));
+
+    // Test with 3 matches where middle match has a remove button.
+    const match3 = createAutocompleteMatch();
+    const result3 = createAutocompleteResultForTesting({
+      matches: [match2, match1, match3],
+    });
+    // result3 matches:
+    // match 0 (line 0, normal)
+    // match 1 (line 1, normal + remove button)
+    // match 2 (line 2, normal)
+    const available3 = element.getAvailableSelections(result3);
+    assertEquals(4, available3.length);
+    const removeBtnLine1 = available3[2]!;
+    assertEquals(
+        SelectionLineState.kFocusedButtonRemoveSuggestion,
+        removeBtnLine1.state);
+    assertEquals(1, removeBtnLine1.line);
+
+    // ArrowUp (kBackward, kWholeLine) from remove button on line 1 should focus
+    // line 0 (suggestion above), NOT line 1.
+    assertDeepEquals(
+        available3[0]!,
+        element.getNextSelection(
+            result3, removeBtnLine1, SelectionDirection.kBackward,
+            SelectionStep.kWholeLine));
+
+    // ArrowDown (kForward, kWholeLine) from remove button on line 1 should
+    // focus line 2 (suggestion below).
+    assertDeepEquals(
+        available3[3]!,
+        element.getNextSelection(
+            result3, removeBtnLine1, SelectionDirection.kForward,
+            SelectionStep.kWholeLine));
+
+    // Single match with remove button: pressing ArrowUp or ArrowDown falls back
+    // to focusing the match itself since no other lines exist.
+    const singleMatchResult = createAutocompleteResultForTesting({
+      matches: [match1],
+    });
+    const singleAvailable = element.getAvailableSelections(singleMatchResult);
+    assertEquals(2, singleAvailable.length);
+    assertDeepEquals(
+        singleAvailable[0]!,
+        element.getNextSelection(
+            singleMatchResult, singleAvailable[1]!,
+            SelectionDirection.kBackward, SelectionStep.kWholeLine));
+    assertDeepEquals(
+        singleAvailable[0]!,
+        element.getNextSelection(
+            singleMatchResult, singleAvailable[1]!, SelectionDirection.kForward,
             SelectionStep.kWholeLine));
   });
 

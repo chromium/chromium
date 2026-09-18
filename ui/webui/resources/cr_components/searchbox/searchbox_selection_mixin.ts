@@ -269,16 +269,24 @@ export const SearchboxSelectionMixin = <
         return normalIndex < 0 ? from : selectionsList[normalIndex]!;
       }
 
+      const currentNormalIndex =
+          (from.line >= 0 &&
+           from.state !== SelectionLineState.kFocusedButtonAim) ?
+          selectionsList.findIndex(s => isNormal(s) && s.line === from.line) :
+          -1;
+      if (step === SelectionStep.kWholeLine && currentNormalIndex >= 0 &&
+          selectionsList.filter(isNormal).length === 1) {
+        return selectionsList[currentNormalIndex]!;
+      }
+      const remainder = (lhs: number, rhs: number) => ((lhs % rhs) + rhs) % rhs;
       for (let offset = 1; offset < selectionsList.length; offset++) {
         const offsetDirection =
             direction === SelectionDirection.kForward ? offset : -offset;
         const newIndex = fromIndex + offsetDirection;
-
-        const remainder = (lhs: number, rhs: number) =>
-            ((lhs % rhs) + rhs) % rhs;
         const index = remainder(newIndex, selectionsList.length);
         const selection = selectionsList[index]!;
-        if (step === SelectionStep.kStateOrLine || isNormal(selection)) {
+        if (step === SelectionStep.kStateOrLine ||
+            (isNormal(selection) && index !== currentNormalIndex)) {
           return selection;
         }
       }
