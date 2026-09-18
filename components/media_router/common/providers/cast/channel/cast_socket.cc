@@ -19,6 +19,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/media_router/common/providers/cast/channel/cast_auth_util.h"
@@ -57,24 +58,11 @@ bool IsTerminalState(ConnectionState state) {
          state == ConnectionState::TIMEOUT;
 }
 
-void OnConnected(
-    network::mojom::NetworkContext::CreateTCPConnectedSocketCallback callback,
-    int result,
-    const std::optional<net::IPEndPoint>& local_addr,
-    const std::optional<net::IPEndPoint>& peer_addr,
-    mojo::ScopedDataPipeConsumerHandle receive_stream,
-    mojo::ScopedDataPipeProducerHandle send_stream) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), result, local_addr, peer_addr,
-                     std::move(receive_stream), std::move(send_stream)));
-}
-
 void ConnectOnUIThread(
     network::NetworkContextGetter network_context_getter,
     const net::AddressList& remote_address_list,
     mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     network::mojom::NetworkContext::CreateTCPConnectedSocketCallback callback) {
   network_context_getter.Run()->CreateTCPConnectedSocket(
       std::nullopt /* local_addr */, remote_address_list,
@@ -82,7 +70,7 @@ void ConnectOnUIThread(
       net::MutableNetworkTrafficAnnotationTag(
           CastSocketImpl::GetNetworkTrafficAnnotationTag()),
       std::move(receiver), mojo::NullRemote() /* observer */,
-      base::BindOnce(OnConnected, std::move(callback)));
+      base::BindPostTask(task_runner, std::move(callback)));
 }
 
 }  // namespace
@@ -391,11 +379,13 @@ int CastSocketImpl::DoTcpConnect() {
   SetConnectState(ConnectionState::TCP_CONNECT_COMPLETE);
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(ConnectOnUIThread, network_context_getter_,
-                                net::AddressList(open_params_.ip_endpoint),
-                                tcp_socket_.BindNewPipeAndPassReceiver(),
-                                base::BindOnce(&CastSocketImpl::OnConnect,
-                                               weak_factory_.GetWeakPtr())));
+      FROM_HERE,
+      base::BindOnce(ConnectOnUIThread, network_context_getter_,
+                     net::AddressList(open_params_.ip_endpoint),
+                     tcp_socket_.BindNewPipeAndPassReceiver(),
+                     base::SingleThreadTaskRunner::GetCurrentDefault(),
+                     base::BindOnce(&CastSocketImpl::OnConnect,
+                                    weak_factory_.GetWeakPtr())));
 
   return net::ERR_IO_PENDING;
 }
