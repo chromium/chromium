@@ -267,6 +267,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/sync:test_support",
     "//chromeos/ash/components/system",
     "//chromeos/constants",
+    "//components/account_id:test_support",
     "//components/component_updater/ash:test_support",
     "//components/language/core/browser",
     "//components/policy/core/common:test_support",
@@ -289,8 +290,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

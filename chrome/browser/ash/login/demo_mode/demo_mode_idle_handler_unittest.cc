@@ -34,6 +34,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,9 +51,9 @@ namespace {
 const base::TimeDelta kReLuanchDemoAppIdleDuration = base::Seconds(90);
 const base::TimeDelta kLogoutDelayMax = base::Minutes(90);
 
-const char kUser[] = "user@gmail.com";
-const AccountId kAccountId =
-    AccountId::FromUserEmailGaiaId(kUser, GaiaId("1111"));
+constexpr char kUser[] = "user@gmail.com";
+constexpr AccountId::Literal kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kUser, GaiaId::Literal("1111"));
 constexpr SkColor kWallpaperColor = SK_ColorMAGENTA;
 
 constexpr char kDemoSessionToSNotificationId[] = "demo_session_ToS";
