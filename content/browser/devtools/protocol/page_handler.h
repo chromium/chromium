@@ -269,6 +269,11 @@ class PageHandler : public DevToolsDomainHandler,
   using ResponseOrWebContents = std::variant<Response, WebContentsImpl*>;
   ResponseOrWebContents GetWebContentsForTopLevelActiveFrame();
 
+  // Returns an error response if the client's trust level or local file access
+  // permission does not allow it to navigate the page to `url`. `host_` must
+  // not be null.
+  Response CheckNavigationAllowed(const GURL& url);
+
   const bool allow_unsafe_operations_;
   const bool is_trusted_;
   const std::optional<url::Origin> navigation_initiator_origin_;

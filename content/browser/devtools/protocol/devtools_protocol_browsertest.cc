@@ -2079,6 +2079,87 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 #endif
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       GetNavigationHistoryRedactsFileUrlsWithoutFileAccess) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL file_url = GetTestUrl("devtools", "navigation.html");
+  const GURL http_url = embedded_test_server()->GetURL("/title1.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), file_url, 1);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), http_url, 1);
+
+  // With file access, the file:// entry is exposed.
+  Attach();
+  const base::ListValue* entries =
+      SendCommandSync("Page.getNavigationHistory")->FindList("entries");
+  ASSERT_TRUE(entries);
+  ASSERT_EQ(2u, entries->size());
+  EXPECT_EQ(file_url.spec(), *(*entries)[0].GetDict().FindString("url"));
+
+  Detach();
+  SetMayReadLocalFiles(false);
+  Attach();
+
+  // Without file access, the file:// entry is redacted, but it is still listed
+  // so that the remaining entries and `currentIndex` stay meaningful.
+  entries = SendCommandSync("Page.getNavigationHistory")->FindList("entries");
+  ASSERT_TRUE(entries);
+  ASSERT_EQ(2u, entries->size());
+  const base::DictValue& file_entry = (*entries)[0].GetDict();
+  EXPECT_EQ("", *file_entry.FindString("url"));
+  EXPECT_EQ("", *file_entry.FindString("userTypedURL"));
+  EXPECT_EQ("", *file_entry.FindString("title"));
+  EXPECT_EQ(http_url.spec(), *(*entries)[1].GetDict().FindString("url"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       NavigateToHistoryEntryWithFileUrlRequiresFileAccess) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL file_url = GetTestUrl("devtools", "navigation.html");
+  const GURL first_http_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL second_http_url = embedded_test_server()->GetURL("/title2.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), file_url, 1);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), first_http_url, 1);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), second_http_url, 1);
+
+  Attach();
+  const base::ListValue* entries =
+      SendCommandSync("Page.getNavigationHistory")->FindList("entries");
+  ASSERT_TRUE(entries);
+  ASSERT_EQ(3u, entries->size());
+  const std::optional<int> file_entry_id =
+      (*entries)[0].GetDict().FindInt("id");
+  ASSERT_TRUE(file_entry_id.has_value());
+  const std::optional<int> http_entry_id =
+      (*entries)[1].GetDict().FindInt("id");
+  ASSERT_TRUE(http_entry_id.has_value());
+
+  Detach();
+  SetMayReadLocalFiles(false);
+  Attach();
+
+  // Traversing to the file:// entry is rejected, just like navigating to it
+  // with Page.navigate would be.
+  base::DictValue params;
+  params.Set("entryId", *file_entry_id);
+  ASSERT_FALSE(
+      SendCommandSync("Page.navigateToHistoryEntry", std::move(params)));
+  EXPECT_THAT(
+      error()->FindInt("code"),
+      testing::Optional(static_cast<int>(crdtp::DispatchCode::SERVER_ERROR)));
+  EXPECT_EQ(*error()->FindString("message"),
+            "Navigating to local URL is not allowed");
+  EXPECT_EQ(second_http_url, shell()->web_contents()->GetLastCommittedURL());
+
+  // Traversing to an entry the client is allowed to access still works.
+  base::DictValue allowed_params;
+  allowed_params.Set("entryId", *http_entry_id);
+  TestNavigationObserver navigation_observer(shell()->web_contents());
+  ASSERT_TRUE(SendCommandSync("Page.navigateToHistoryEntry",
+                              std::move(allowed_params)));
+  navigation_observer.Wait();
+  EXPECT_EQ(first_http_url, shell()->web_contents()->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        DOMGetFileInfoRequiresFileAccess) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();

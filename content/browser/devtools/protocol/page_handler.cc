@@ -930,6 +930,47 @@ void DispatchNavigateCallback(
 
 }  // namespace
 
+Response PageHandler::CheckNavigationAllowed(const GURL& url) {
+  CHECK(host_);
+
+  GURL inner_url = url;
+  if (url.SchemeIs(content::kViewSourceScheme)) {
+    inner_url = GURL(url.GetContent());
+  }
+
+  bool is_file = inner_url.SchemeIsFile();
+#if BUILDFLAG(IS_CHROMEOS)
+  // The "externalfile" scheme is ChromeOS-specific.
+  is_file |= inner_url.SchemeIs(content::kExternalFileScheme);
+#endif
+
+  if (is_file && !may_read_local_files_) {
+    return Response::ServerError("Navigating to local URL is not allowed");
+  }
+
+  // chrome-untrusted:// WebUIs might perform high-privileged actions on
+  // navigation, disallow navigation to them unless the client is trusted.
+  if ((inner_url.SchemeIs(kChromeUIUntrustedScheme) ||
+       inner_url.SchemeIs(kChromeDevToolsScheme)) &&
+      !is_trusted_) {
+    return Response::ServerError(
+        "Navigating to a URL with a privileged scheme is not allowed");
+  }
+
+  if (!session()->GetClient()->MayAttachToURL(url,
+                                              host_->web_ui() != nullptr)) {
+    url::Origin origin = url::Origin::Create(url);
+    if (!origin.scheme().empty() &&
+        origin.scheme() != content::kChromeUIScheme &&
+        origin.scheme() != content::kChromeUIUntrustedScheme &&
+        origin.scheme() != content::kChromeDevToolsScheme) {
+      return Response::ServerError("Not allowed");
+    }
+  }
+
+  return Response::Success();
+}
+
 void PageHandler::Navigate(const std::string& url,
                            std::optional<std::string> referrer,
                            std::optional<std::string> maybe_transition_type,
@@ -943,48 +984,15 @@ void PageHandler::Navigate(const std::string& url,
     return;
   }
 
-  GURL inner_url = gurl;
-  if (gurl.SchemeIs(content::kViewSourceScheme)) {
-    inner_url = GURL(gurl.GetContent());
-  }
-
-  bool is_file = inner_url.SchemeIsFile();
-#if BUILDFLAG(IS_CHROMEOS)
-  // The "externalfile" scheme is ChromeOS-specific.
-  is_file |= inner_url.SchemeIs(content::kExternalFileScheme);
-#endif
-
-  if (is_file && !may_read_local_files_) {
-    callback->sendFailure(
-        Response::ServerError("Navigating to local URL is not allowed"));
-    return;
-  }
-
   if (!host_) {
     callback->sendFailure(Response::InternalError());
     return;
   }
 
-  // chrome-untrusted:// WebUIs might perform high-priviledged actions on
-  // navigation, disallow navigation to them unless the client is trusted.
-  if ((inner_url.SchemeIs(kChromeUIUntrustedScheme) ||
-       inner_url.SchemeIs(kChromeDevToolsScheme)) &&
-      !is_trusted_) {
-    callback->sendFailure(Response::ServerError(
-        "Navigating to a URL with a privileged scheme is not allowed"));
+  Response response = CheckNavigationAllowed(gurl);
+  if (response.IsError()) {
+    callback->sendFailure(std::move(response));
     return;
-  }
-
-  if (!session()->GetClient()->MayAttachToURL(gurl,
-                                              host_->web_ui() != nullptr)) {
-    url::Origin origin = url::Origin::Create(gurl);
-    if (!origin.scheme().empty() &&
-        origin.scheme() != content::kChromeUIScheme &&
-        origin.scheme() != content::kChromeUIUntrustedScheme &&
-        origin.scheme() != content::kChromeDevToolsScheme) {
-      callback->sendFailure(Response::ServerError("Not allowed"));
-      return;
-    }
   }
 
   ui::PageTransition type;
@@ -1269,12 +1277,22 @@ Response PageHandler::GetNavigationHistory(
   *entries = std::make_unique<NavigationEntries>();
   for (int i = 0; i != controller.GetEntryCount(); ++i) {
     auto* entry = controller.GetEntryAtIndex(i);
+    // A client that is not allowed to navigate the page to a URL must not
+    // learn it either, so the same check gates disclosure. Redact such entries
+    // rather than omitting them, so that `currentIndex` and the entry ids keep
+    // matching the actual history. Navigating to a redacted entry is rejected
+    // by NavigateToHistoryEntry().
+    const bool may_disclose =
+        !CheckNavigationAllowed(entry->GetURL()).IsError() &&
+        !CheckNavigationAllowed(entry->GetUserTypedURL()).IsError();
     (*entries)->emplace_back(
         Page::NavigationEntry::Create()
             .SetId(entry->GetUniqueID())
-            .SetUrl(entry->GetURL().spec())
-            .SetUserTypedURL(entry->GetUserTypedURL().spec())
-            .SetTitle(base::UTF16ToUTF8(entry->GetTitle()))
+            .SetUrl(may_disclose ? entry->GetURL().spec() : std::string())
+            .SetUserTypedURL(may_disclose ? entry->GetUserTypedURL().spec()
+                                          : std::string())
+            .SetTitle(may_disclose ? base::UTF16ToUTF8(entry->GetTitle())
+                                   : std::string())
             .SetTransitionType(TransitionTypeName(entry->GetTransitionType()))
             .Build());
   }
@@ -1289,10 +1307,18 @@ Response PageHandler::NavigateToHistoryEntry(int entry_id) {
 
   NavigationController& controller = host_->frame_tree()->controller();
   for (int i = 0; i != controller.GetEntryCount(); ++i) {
-    if (controller.GetEntryAtIndex(i)->GetUniqueID() == entry_id) {
-      controller.GoToIndex(i);
-      return Response::Success();
+    NavigationEntry* entry = controller.GetEntryAtIndex(i);
+    if (entry->GetUniqueID() != entry_id) {
+      continue;
     }
+    // Traversing to an entry navigates the page to the entry's URL, so apply
+    // the same restrictions Navigate() applies.
+    response = CheckNavigationAllowed(entry->GetURL());
+    if (response.IsError()) {
+      return response;
+    }
+    controller.GoToIndex(i);
+    return Response::Success();
   }
 
   return Response::InvalidParams("No entry with passed id");
