@@ -843,6 +843,11 @@ BASE_FEATURE(kOnDeviceWebSpeech,
 // Enables on-device speech recognition using on-device Gemini Nano.
 BASE_FEATURE(kOnDeviceWebSpeechGeminiNano, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch for requiring sticky activation in SpeechRecognition.install()
+// for relaxed model downloads. See https://crbug.com/559063678.
+BASE_FEATURE(kOnDeviceWebSpeechRequiresStickyActivation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables on-device speech recognition using on-device TinyGemma.
 BASE_FEATURE(kOnDeviceWebSpeechSmallExpertModel,
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::
-                         kDownloadableWithoutUserActivation));
+                         kDownloadableWithoutTransientUserActivation));
 }
 
 IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,

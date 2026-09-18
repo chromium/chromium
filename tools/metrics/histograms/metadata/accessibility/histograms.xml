@@ -4357,14 +4357,16 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.WebSpeech.DownloadRelaxed" enum="Boolean"
-    expires_after="2027-06-01">
+<histogram name="Accessibility.WebSpeech.DownloadActivationOutcome"
+    enum="WebSpeechDownloadActivationOutcome" expires_after="2027-09-01">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
-    Recorded when Web Speech API relaxes the user activation requirement for
-    downloading a language pack because it is present in the Accept-Language
-    header.
+    Records the outcome of the user activation check in
+    SpeechRecognition.install(), when a downloadable language pack is requested
+    without transient user activation. Replaces
+    Accessibility.WebSpeech.DownloadRelaxed, which could not distinguish the
+    reasons for rejection.
   </summary>
 </histogram>
 

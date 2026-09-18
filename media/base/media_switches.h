@@ -261,6 +261,9 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaStreamAccurateDroppedFrameCount);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaTrasncriptsFlagInPageMetadata);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kOnDeviceWebSpeech);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kOnDeviceWebSpeechGeminiNano);
+// Kill switch for requiring sticky activation in SpeechRecognition.install()
+// for relaxed model downloads.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kOnDeviceWebSpeechRequiresStickyActivation);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kOnDeviceWebSpeechSmallExpertModel);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(
     kOnDeviceWebSpeechSmallExpertModelMultiLanguage);

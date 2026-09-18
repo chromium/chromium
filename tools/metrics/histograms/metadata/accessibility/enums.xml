@@ -3074,6 +3074,18 @@ Unknown properties are collapsed to zero. -->
   <int value="2144042677" label="lzsmartrec.exe"/>
 </enum>
 
+<!-- LINT.IfChange(WebSpeechDownloadActivationOutcome) -->
+
+<enum name="WebSpeechDownloadActivationOutcome">
+  <int value="0" label="Blocked: no transient user activation"/>
+  <int value="1" label="Blocked: no sticky activation"/>
+  <int value="2" label="Relaxed: allowed with sticky activation only"/>
+  <int value="3"
+      label="Allowed: no sticky activation (sticky requirement disabled)"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/speech/speech_recognition.cc:WebSpeechDownloadActivationOutcome, //third_party/blink/renderer/modules/speech/speech_recognition_test.cc:WebSpeechDownloadActivationOutcome) -->
+
 </enums>
 
 </histogram-configuration>

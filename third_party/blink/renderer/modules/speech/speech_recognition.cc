@@ -29,6 +29,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
@@ -72,10 +73,38 @@ const char kExceptionMessageCrossOriginAccess[] =
     "Access denied from cross-origin iframes.";
 const char kExceptionMessagePermissionPolicy[] =
     "Access denied because the Permission Policy is not enabled.";
+constexpr char kExceptionMessageDetachedContext[] =
+    "Execution context is detached.";
+constexpr char kExceptionMessageTransientActivationRequired[] =
+    "Requires handling a user gesture when availability is \"downloadable\".";
+constexpr char kExceptionMessageStickyActivationRequired[] =
+    "Requires sticky activation when availability is \"downloadable\".";
 constexpr char kWebSpeechErrorOccurredHistogram[] =
     "Accessibility.WebSpeech.ErrorOccurred";
 constexpr char kWebSpeechSetProcessLocallyHistogram[] =
     "Accessibility.WebSpeech.SetProcessLocally";
+constexpr char kWebSpeechDownloadActivationOutcomeHistogram[] =
+    "Accessibility.WebSpeech.DownloadActivationOutcome";
+
+// LINT.IfChange(WebSpeechDownloadActivationOutcome)
+//
+// Outcome of SpeechRecognition.install() activation check without transient
+// activation. Persisted to logs; entries must not be renumbered and values
+// must never be reused.
+enum class WebSpeechDownloadActivationOutcome {
+  // Blocked: relaxed path not authorized.
+  kBlockedNoTransientActivation = 0,
+  // Blocked: missing sticky activation.
+  kBlockedNoStickyActivation = 1,
+  // Allowed with sticky activation.
+  kRelaxed = 2,
+  // Allowed without sticky activation (requirement disabled).
+  kAllowedNoStickyActivation = 3,
+  kMaxValue = kAllowedNoStickyActivation,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:WebSpeechDownloadActivationOutcome,
+// //third_party/blink/renderer/modules/speech/speech_recognition_test.cc:WebSpeechDownloadActivationOutcome)
 
 blink::V8AvailabilityStatus AvailabilityStatusToV8(
     media::mojom::blink::AvailabilityStatus status) {
@@ -85,7 +114,7 @@ blink::V8AvailabilityStatus AvailabilityStatusToV8(
           blink::V8AvailabilityStatus::Enum::kUnavailable);
     case media::mojom::blink::AvailabilityStatus::kDownloadable:
     case media::mojom::blink::AvailabilityStatus::
-        kDownloadableWithoutUserActivation:
+        kDownloadableWithoutTransientUserActivation:
       return blink::V8AvailabilityStatus(
           blink::V8AvailabilityStatus::Enum::kDownloadable);
     case media::mojom::blink::AvailabilityStatus::kDownloading:
@@ -204,7 +233,7 @@ ScriptPromise<V8AvailabilityStatus> SpeechRecognition::available(
   auto* controller = SpeechRecognitionController::From(window);
   if (!controller || !script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Execution context is detached.");
+                                      kExceptionMessageDetachedContext);
     return EmptyPromise();
   }
 
@@ -263,7 +292,7 @@ ScriptPromise<IDLBoolean> SpeechRecognition::install(
   auto* controller = SpeechRecognitionController::From(window);
   if (!controller || !script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Execution context is detached.");
+                                      kExceptionMessageDetachedContext);
     return EmptyPromise();
   }
   if (options->langs().empty()) {
@@ -307,50 +336,73 @@ ScriptPromise<IDLBoolean> SpeechRecognition::install(
              ScriptState* script_state,
              const blink::SpeechRecognitionOptions* options,
              media::mojom::blink::AvailabilityStatus status) {
+            if (!script_state->ContextIsValid()) {
+              return;
+            }
             LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
             auto* controller = SpeechRecognitionController::From(window);
-            if (!window.IsServiceWorkerGlobalScope()) {
-              switch (status) {
-                case media::mojom::blink::AvailabilityStatus::kDownloadable: {
-                  bool has_transient_user_activation =
-                      LocalFrame::ConsumeTransientUserActivation(
-                          window.GetFrame());
-                  if (!has_transient_user_activation) {
-                    base::UmaHistogramBoolean(
-                        "Accessibility.WebSpeech.DownloadRelaxed", false);
-                    resolver->RejectWithDOMException(
-                        DOMExceptionCode::kNotAllowedError,
-                        "Requires handling a user gesture when availability is "
-                        "\"downloadable\".");
-                    return;
-                  }
-                  break;
-                }
-                case media::mojom::blink::AvailabilityStatus::
-                    kDownloadableWithoutUserActivation: {
-                  bool has_transient_user_activation =
-                      LocalFrame::HasTransientUserActivation(window.GetFrame());
-                  if (!has_transient_user_activation) {
-                    // We intentionally do not consume the transient user
-                    // activation in the relaxed flow, allowing the gesture to
-                    // be used for other APIs. We also intentionally only log
-                    // the UMA when the relaxation explicitly saved a blocked
-                    // request (i.e. when there was no transient user
-                    // activation).
-                    base::UmaHistogramBoolean(
-                        "Accessibility.WebSpeech.DownloadRelaxed", true);
-                  }
-                  break;
-                }
-                case media::mojom::blink::AvailabilityStatus::kUnavailable:
-                  resolver->Resolve(false);
+            LocalFrame* frame = window.GetFrame();
+            if (!controller || !frame) {
+              resolver->RejectWithDOMException(
+                  DOMExceptionCode::kInvalidStateError,
+                  kExceptionMessageDetachedContext);
+              return;
+            }
+            switch (status) {
+              case media::mojom::blink::AvailabilityStatus::kDownloadable: {
+                if (!LocalFrame::ConsumeTransientUserActivation(frame)) {
+                  base::UmaHistogramEnumeration(
+                      kWebSpeechDownloadActivationOutcomeHistogram,
+                      WebSpeechDownloadActivationOutcome::
+                          kBlockedNoTransientActivation);
+                  resolver->RejectWithDOMException(
+                      DOMExceptionCode::kNotAllowedError,
+                      kExceptionMessageTransientActivationRequired);
                   return;
-                case media::mojom::blink::AvailabilityStatus::kDownloading:
-                case media::mojom::blink::AvailabilityStatus::kAvailable:
-                  // These statuses don't require special user activation checks
-                  // for installation.
-                  break;
+                }
+                break;
               }
+              case media::mojom::blink::AvailabilityStatus::
+                  kDownloadableWithoutTransientUserActivation: {
+                // Do not consume transient activation in the relaxed path.
+                if (LocalFrame::HasTransientUserActivation(frame)) {
+                  break;
+                }
+                // Sticky activation is required. Outcome reflects observed
+                // activation to measure impact when disabled.
+                const bool has_sticky_activation =
+                    frame->HasStickyUserActivation();
+                const bool enforce_sticky_activation =
+                    base::FeatureList::IsEnabled(
+                        media::kOnDeviceWebSpeechRequiresStickyActivation);
+                WebSpeechDownloadActivationOutcome outcome;
+                if (has_sticky_activation) {
+                  outcome = WebSpeechDownloadActivationOutcome::kRelaxed;
+                } else if (enforce_sticky_activation) {
+                  outcome = WebSpeechDownloadActivationOutcome::
+                      kBlockedNoStickyActivation;
+                } else {
+                  outcome = WebSpeechDownloadActivationOutcome::
+                      kAllowedNoStickyActivation;
+                }
+                base::UmaHistogramEnumeration(
+                    kWebSpeechDownloadActivationOutcomeHistogram, outcome);
+                if (enforce_sticky_activation && !has_sticky_activation) {
+                  resolver->RejectWithDOMException(
+                      DOMExceptionCode::kNotAllowedError,
+                      kExceptionMessageStickyActivationRequired);
+                  return;
+                }
+                break;
+              }
+              case media::mojom::blink::AvailabilityStatus::kUnavailable:
+                resolver->Resolve(false);
+                return;
+              case media::mojom::blink::AvailabilityStatus::kDownloading:
+              case media::mojom::blink::AvailabilityStatus::kAvailable:
+                // These statuses don't require special user activation checks
+                // for installation.
+                break;
             }
 
             V8SpeechRecognitionQuality callback_quality =

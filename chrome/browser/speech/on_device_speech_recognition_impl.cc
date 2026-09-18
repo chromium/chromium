@@ -59,7 +59,8 @@ int GetPriority(media::mojom::AvailabilityStatus status) {
       return 0;
     case media::mojom::AvailabilityStatus::kDownloadable:
       return 1;
-    case media::mojom::AvailabilityStatus::kDownloadableWithoutUserActivation:
+    case media::mojom::AvailabilityStatus::
+        kDownloadableWithoutTransientUserActivation:
       return 2;
     case media::mojom::AvailabilityStatus::kDownloading:
       return 3;
@@ -124,7 +125,8 @@ media::mojom::AvailabilityStatus ApplyOriginMasking(
 
   if (availability_status == media::mojom::AvailabilityStatus::kDownloadable &&
       has_mic_and_accept_lang) {
-    return media::mojom::AvailabilityStatus::kDownloadableWithoutUserActivation;
+    return media::mojom::AvailabilityStatus::
+        kDownloadableWithoutTransientUserActivation;
   }
 
   return availability_status;
