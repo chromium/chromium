@@ -3253,7 +3253,12 @@ class TooltipMonitor : public RenderWidgetHostViewBase::TooltipObserver {
     tooltip_text_wanted_ = tooltip_text;
     if (std::ranges::contains(tooltips_received_, tooltip_text))
       return;
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
+  }
+
+  bool HasReceived(const std::u16string& tooltip_text) const {
+    return std::ranges::contains(tooltips_received_, tooltip_text);
   }
 
  private:
@@ -3360,6 +3365,56 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   }
 
   rwhv_a->SetTooltipObserverForTesting(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
+                       KeyboardTooltipBoundsInChildFrame) {
+#if BUILDFLAG(IS_MAC)
+  GTEST_SKIP() << "Tooltips are not supported from keyboard on Mac.";
+#else
+#if BUILDFLAG(IS_ANDROID)
+  // Tooltips are only supported on desktop devices up to B.
+  if (base::android::android_info::sdk_int() <=
+          base::android::android_info::SDK_VERSION_BAKLAVA &&
+      !base::android::device_info::is_desktop()) {
+    GTEST_SKIP() << "Tooltips are only supported on desktop devices up to B.";
+  }
+#endif
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* b_node = root->child_at(0);
+
+  RenderWidgetHostViewBase* rwhv_a = static_cast<RenderWidgetHostViewBase*>(
+      root->current_frame_host()->GetRenderWidgetHost()->GetView());
+  RenderWidgetHostViewBase* rwhv_b = static_cast<RenderWidgetHostViewBase*>(
+      b_node->current_frame_host()->GetRenderWidgetHost()->GetView());
+
+  TooltipMonitor tooltip_monitor(rwhv_a);
+  WaitForHitTestData(b_node->current_frame_host());
+
+  // 1. Tooltip with out-of-bounds coordinates should be rejected and not shown.
+  rwhv_b->UpdateTooltipFromKeyboard(u"sample_out_of_bounds",
+                                    gfx::Rect(-350, -530, 400, 300));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(tooltip_monitor.HasReceived(u"sample_out_of_bounds"));
+
+  // 2. Tooltip with valid bounds inside child frame should be accepted.
+  rwhv_b->UpdateTooltipFromKeyboard(u"sample_valid_tooltip",
+                                    gfx::Rect(10, 10, 50, 20));
+  tooltip_monitor.WaitUntil(u"sample_valid_tooltip");
+  EXPECT_TRUE(tooltip_monitor.HasReceived(u"sample_valid_tooltip"));
+  tooltip_monitor.Reset();
+
+  // 3. Clear keyboard-triggered tooltip.
+  rwhv_b->ClearKeyboardTriggeredTooltip();
+  tooltip_monitor.WaitUntil(std::u16string());
+  EXPECT_TRUE(tooltip_monitor.HasReceived(std::u16string()));
+
+  rwhv_a->SetTooltipObserverForTesting(nullptr);
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 #if BUILDFLAG(IS_ANDROID)

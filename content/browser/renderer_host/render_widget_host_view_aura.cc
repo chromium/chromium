@@ -1157,6 +1157,28 @@ void RenderWidgetHostViewAura::UpdateTooltip(
 void RenderWidgetHostViewAura::UpdateTooltipFromKeyboard(
     const std::u16string& tooltip_text,
     const gfx::Rect& bounds) {
+  if (!window_) {
+    return;
+  }
+
+  if (tooltip_text.empty()) {
+    ClearKeyboardTriggeredTooltip();
+    return;
+  }
+
+  gfx::Rect visible_bounds = bounds;
+  gfx::Size view_size = GetVisibleViewportSize();
+  if (view_size.IsEmpty()) {
+    view_size = window_->bounds().size();
+  }
+  if (!view_size.IsEmpty()) {
+    visible_bounds.Intersect(gfx::Rect(view_size));
+  }
+  if (visible_bounds.IsEmpty()) {
+    ClearKeyboardTriggeredTooltip();
+    return;
+  }
+
   SetTooltipText(tooltip_text);
 
   wm::TooltipClient* tooltip_client =
@@ -1164,7 +1186,7 @@ void RenderWidgetHostViewAura::UpdateTooltipFromKeyboard(
   if (tooltip_client) {
     // Content tooltips should be visible indefinitely.
     tooltip_client->SetHideTooltipTimeout(window_, {});
-    tooltip_client->UpdateTooltipFromKeyboard(bounds, window_);
+    tooltip_client->UpdateTooltipFromKeyboard(visible_bounds, window_);
   }
 }
 
@@ -1174,11 +1196,14 @@ void RenderWidgetHostViewAura::ClearKeyboardTriggeredTooltip() {
 
   wm::TooltipClient* tooltip_client =
       wm::GetTooltipClient(window_->GetRootWindow());
-  if (!tooltip_client || !tooltip_client->IsTooltipSetFromKeyboard(window_))
+  if (tooltip_client && !tooltip_client->IsTooltipSetFromKeyboard(window_)) {
     return;
+  }
 
   SetTooltipText(std::u16string());
-  tooltip_client->UpdateTooltipFromKeyboard(gfx::Rect(), window_);
+  if (tooltip_client) {
+    tooltip_client->UpdateTooltipFromKeyboard(gfx::Rect(), window_);
+  }
 }
 
 void RenderWidgetHostViewAura::CopyFromSurface(

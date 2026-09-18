@@ -17,9 +17,13 @@
 #include "build/build_config.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "components/input/child_frame_input_helper.h"
+#include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
+#include "components/viz/host/host_frame_sink_manager.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/fake_external_begin_frame_source.h"
+#include "components/viz/test/host_frame_sink_manager_test_api.h"
+#include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
@@ -245,8 +249,34 @@ class MockRenderWidgetHostView : public TestRenderWidgetHostView {
     return &selection_manager_;
   }
 
+  void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
+                                 const gfx::Rect& bounds) override {
+    last_tooltip_text_ = tooltip_text;
+    last_tooltip_bounds_ = bounds;
+  }
+
+  void ClearKeyboardTriggeredTooltip() override {
+    last_tooltip_text_.clear();
+    last_tooltip_bounds_ = gfx::Rect();
+    tooltip_cleared_ = true;
+  }
+
+  const viz::FrameSinkId& GetFrameSinkId() const override {
+    return frame_sink_id_;
+  }
+  viz::FrameSinkId GetRootFrameSinkId() override { return frame_sink_id_; }
+
+  const std::u16string& last_tooltip_text() const { return last_tooltip_text_; }
+  const gfx::Rect& last_tooltip_bounds() const { return last_tooltip_bounds_; }
+  bool tooltip_cleared() const { return tooltip_cleared_; }
+  void reset_tooltip_cleared() { tooltip_cleared_ = false; }
+
  private:
+  viz::FrameSinkId frame_sink_id_{999, 999};
   TestTouchSelectionControllerClientManager selection_manager_;
+  std::u16string last_tooltip_text_;
+  gfx::Rect last_tooltip_bounds_;
+  bool tooltip_cleared_ = false;
 };
 
 class RenderWidgetHostViewChildFrameTest
@@ -889,6 +919,138 @@ TEST_F(RenderWidgetHostViewChildFrameTest, SelectionBoundsClampedToViewBounds) {
   EXPECT_EQ(gfx::PointF(100.0f, 100.0f), end.edge_start());
   EXPECT_EQ(gfx::PointF(100.0f, 100.0f), end.edge_end());
 
+  child_view->DestroyOrDefer();
+  connector->SetRootRenderWidgetHostView(nullptr);
+}
+
+TEST_F(RenderWidgetHostViewChildFrameTest,
+       TooltipBoundsClampedToViewportIntersection) {
+  auto root_view =
+      std::make_unique<testing::NiceMock<MockRenderWidgetHostView>>(
+          widget_host_.get());
+  RenderWidgetHostViewChildFrame* child_view =
+      RenderWidgetHostViewChildFrame::Create(widget_host_.get(),
+                                             display::ScreenInfos());
+  std::unique_ptr<MockFrameConnector> connector =
+      std::make_unique<MockFrameConnector>();
+
+  connector->SetRootRenderWidgetHostView(root_view.get());
+  connector->SetView(child_view, false);
+
+  // Set child frame visible viewport intersection to [0, 0, 200, 200].
+  connector->SetViewportIntersection(
+      gfx::Rect(0, 0, 200, 200), gfx::Rect(0, 0, 200, 200),
+      gfx::Rect(0, 0, 200, 200),
+      blink::mojom::FrameOcclusionState::kGuaranteedNotOccluded);
+  connector->SetRectInParentView(gfx::Rect(0, 0, 200, 200));
+  connector->SetLocalFrameSize(gfx::Size(200, 200));
+  child_view->SetSize(gfx::Size(200, 200));
+
+  // 0. If hit-test data / transform to root view is unavailable, fail closed
+  // and clear the tooltip rather than using untransformed child coordinates.
+  root_view->reset_tooltip_cleared();
+  child_view->UpdateTooltipFromKeyboard(u"sample_no_transform",
+                                        gfx::Rect(10, 20, 30, 40));
+  EXPECT_TRUE(root_view->last_tooltip_text().empty());
+  EXPECT_TRUE(root_view->tooltip_cleared());
+
+  // Populate hit-test data so GetTransformToViewCoordSpace() succeeds.
+  std::vector<viz::AggregatedHitTestRegion> regions = {
+      {root_view->GetFrameSinkId(), viz::HitTestRegionFlags::kHitTestMine,
+       gfx::RRectF(gfx::RectF(0, 0, 400, 400)), gfx::Transform(),
+       /*child_count=*/1},
+      {child_view->GetFrameSinkId(), viz::HitTestRegionFlags::kHitTestMine,
+       gfx::RRectF(gfx::RectF(0, 0, 400, 400)), gfx::Transform(),
+       /*child_count=*/0},
+  };
+  viz::DisplayHitTestQueryMap hit_test_map;
+  auto query = std::make_unique<viz::HitTestQuery>(std::nullopt);
+  query->OnAggregatedHitTestRegionListUpdated(regions);
+  hit_test_map[root_view->GetFrameSinkId()] = std::move(query);
+  viz::HostFrameSinkManagerTestApi(GetHostFrameSinkManager())
+      .SetDisplayHitTestQuery(std::move(hit_test_map));
+
+  // 1. Elements with valid bounds within the viewport intersection should have
+  // their tooltips and bounds forwarded to the root view.
+  child_view->UpdateTooltipFromKeyboard(u"sample_tooltip",
+                                        gfx::Rect(10, 20, 30, 40));
+  EXPECT_EQ(u"sample_tooltip", root_view->last_tooltip_text());
+  EXPECT_EQ(gfx::Rect(10, 20, 30, 40), root_view->last_tooltip_bounds());
+
+  // 2. Elements with bounds extending partially outside the viewport
+  // intersection should have their bounds clamped to the intersection.
+  child_view->UpdateTooltipFromKeyboard(u"sample_tooltip_2",
+                                        gfx::Rect(150, 150, 100, 100));
+  EXPECT_EQ(u"sample_tooltip_2", root_view->last_tooltip_text());
+  EXPECT_EQ(gfx::Rect(150, 150, 50, 50), root_view->last_tooltip_bounds());
+
+  // 3. Elements with bounds completely outside the viewport intersection
+  // should not show a tooltip.
+  root_view->reset_tooltip_cleared();
+  child_view->UpdateTooltipFromKeyboard(u"sample_tooltip_3",
+                                        gfx::Rect(-350, -530, 400, 300));
+  EXPECT_TRUE(root_view->last_tooltip_text().empty());
+  EXPECT_TRUE(root_view->last_tooltip_bounds().IsEmpty());
+  EXPECT_TRUE(root_view->tooltip_cleared());
+
+  // 4. If the viewport intersection is empty (e.g. frame is scrolled out of
+  // view), no tooltip should be shown.
+  connector->SetViewportIntersection(
+      gfx::Rect(), gfx::Rect(), gfx::Rect(),
+      blink::mojom::FrameOcclusionState::kGuaranteedNotOccluded);
+  root_view->reset_tooltip_cleared();
+  child_view->UpdateTooltipFromKeyboard(u"sample_tooltip_4",
+                                        gfx::Rect(10, 20, 30, 40));
+  EXPECT_TRUE(root_view->last_tooltip_text().empty());
+  EXPECT_TRUE(root_view->last_tooltip_bounds().IsEmpty());
+
+  // 5. Passing empty tooltip text should clear any active tooltip.
+  connector->SetViewportIntersection(
+      gfx::Rect(0, 0, 200, 200), gfx::Rect(0, 0, 200, 200),
+      gfx::Rect(0, 0, 200, 200),
+      blink::mojom::FrameOcclusionState::kGuaranteedNotOccluded);
+  root_view->reset_tooltip_cleared();
+  child_view->UpdateTooltipFromKeyboard(std::u16string(),
+                                        gfx::Rect(10, 20, 30, 40));
+  EXPECT_TRUE(root_view->last_tooltip_text().empty());
+  EXPECT_TRUE(root_view->tooltip_cleared());
+
+  // 6. With DSF = 2.0, viewport_intersection is in physical pixels ([0, 0, 400,
+  // 400] for a 200x200 DIP frame), while bounds is in DIPs. Ensure clamping
+  // converts viewport_intersection to DIPs ([0, 0, 200, 200]).
+  display::ScreenInfo screen_info;
+  screen_info.device_scale_factor = 2.0f;
+  blink::FrameVisualProperties visual_properties;
+  visual_properties.screen_infos = display::ScreenInfos(screen_info);
+  visual_properties.local_frame_size = gfx::Size(400, 400);
+  connector->SynchronizeVisualProperties(visual_properties, false);
+  connector->SetViewportIntersection(
+      gfx::Rect(0, 0, 400, 400), gfx::Rect(0, 0, 400, 400),
+      gfx::Rect(0, 0, 400, 400),
+      blink::mojom::FrameOcclusionState::kGuaranteedNotOccluded);
+  child_view->UpdateTooltipFromKeyboard(u"sample_tooltip_dsf2",
+                                        gfx::Rect(150, 150, 100, 100));
+  EXPECT_EQ(u"sample_tooltip_dsf2", root_view->last_tooltip_text());
+  EXPECT_EQ(gfx::Rect(150, 150, 50, 50), root_view->last_tooltip_bounds());
+
+  // 7. With DSF = 0.5, viewport_intersection is [0, 0, 100, 100] in physical
+  // pixels for a 200x200 DIP frame. Legitimate tooltips in [100..200] DIPs
+  // must not be clipped or dropped.
+  screen_info.device_scale_factor = 0.5f;
+  visual_properties.screen_infos = display::ScreenInfos(screen_info);
+  visual_properties.local_frame_size = gfx::Size(100, 100);
+  connector->SynchronizeVisualProperties(visual_properties, false);
+  connector->SetViewportIntersection(
+      gfx::Rect(0, 0, 100, 100), gfx::Rect(0, 0, 100, 100),
+      gfx::Rect(0, 0, 100, 100),
+      blink::mojom::FrameOcclusionState::kGuaranteedNotOccluded);
+  child_view->UpdateTooltipFromKeyboard(u"sample_tooltip_dsf_half",
+                                        gfx::Rect(120, 120, 30, 40));
+  EXPECT_EQ(u"sample_tooltip_dsf_half", root_view->last_tooltip_text());
+  EXPECT_EQ(gfx::Rect(120, 120, 30, 40), root_view->last_tooltip_bounds());
+
+  viz::HostFrameSinkManagerTestApi(GetHostFrameSinkManager())
+      .SetDisplayHitTestQuery(viz::DisplayHitTestQueryMap());
   child_view->DestroyOrDefer();
   connector->SetRootRenderWidgetHostView(nullptr);
 }
