@@ -277,18 +277,21 @@ TEST_F(ProxyConfigurationProviderTest, HttpsProxyConfigurationSupported) {
 // will break traffic steering for Enterprise Secure Gateway, causing
 // corporate requests to bypass the gateway or fail to connect.
 TEST_F(ProxyConfigurationProviderTest, UndocumentedNativeMatcherBehaviors) {
-  ProxyConfigurationProvider& provider =
-      ProxyConfigurationProvider::FromBrowserState(&browser_state_);
+  if (@available(iOS 17.0, *)) {
+    ProxyConfigurationProvider& provider =
+        ProxyConfigurationProvider::FromBrowserState(&browser_state_);
 
-  provider.UpdateProxyConfiguration({
-      ProxyRuleFor("secure-proxy.corp.com", 443,
-                   {"*.apple.com", "apple.com", "192.168.1.1", "[2001:db8::1]"},
-                   net::ProxyServer::SCHEME_HTTPS),
-  });
+    provider.UpdateProxyConfiguration({
+        ProxyRuleFor(
+            "secure-proxy.corp.com", 443,
+            {"*.apple.com", "apple.com", "192.168.1.1", "[2001:db8::1]"},
+            net::ProxyServer::SCHEME_HTTPS),
+    });
 
-  VerifyNativeProxyConfigurations(
-      &browser_state_, {{.match_domains = {"*.apple.com", "apple.com",
-                                           "192.168.1.1", "[2001:db8::1]"}}});
+    VerifyNativeProxyConfigurations(
+        &browser_state_, {{.match_domains = {"*.apple.com", "apple.com",
+                                             "192.168.1.1", "[2001:db8::1]"}}});
+  }
 }
 
 }  // namespace web
