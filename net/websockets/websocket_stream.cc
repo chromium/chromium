@@ -520,13 +520,20 @@ void Delegate::OnAuthRequiredComplete(URLRequest* request,
 
 void Delegate::OnCertificateRequested(URLRequest* request,
                                       SSLCertRequestInfo* cert_request_info) {
-  // This method is called when a client certificate is requested, and the
-  // request context does not already contain a client certificate selection for
-  // the endpoint. In this case, a main frame resource request would pop-up UI
-  // to permit selection of a client certificate, but since WebSockets are
-  // sub-resources they should not pop-up UI and so there is nothing more we can
-  // do.
-  request->Cancel();
+  // A client certificate was requested by the server during TLS negotiation,
+  // but the request context does not contain a pre-selected client cert for
+  // this endpoint. Since WebSockets are subresource connections, showing a
+  // certificate selection UI is not permitted.
+  //
+  // In accordance with RFC 8446 (TLS 1.3) section 4.4.2 and RFC 5246 (TLS 1.2)
+  // section 7.4.6, when a client does not supply a certificate, it sends an
+  // empty Certificate message. If client authentication is optional for the
+  // endpoint (such as in sandbox, canary, or dev environments), the server can
+  // proceed with the handshake. If client authentication is required, the
+  // server will terminate the handshake. We continue with no certificate rather
+  // than canceling the connection here so that optional client cert requests do
+  // not fail unconditionally.
+  request->ContinueWithCertificate(nullptr, nullptr);
 }
 
 void Delegate::OnSSLCertificateError(URLRequest* request,

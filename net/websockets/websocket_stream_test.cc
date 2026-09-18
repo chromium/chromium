@@ -1821,6 +1821,59 @@ TEST_P(WebSocketStreamCreateTest, ContinueSSLRequestAfterDelete) {
   ssl_error_callbacks_->ContinueSSLRequest();
 }
 
+// When the server requests a client certificate during TLS handshake, the
+// WebSocket connection should continue with no certificate rather than
+// canceling.
+TEST_P(WebSocketStreamCreateTest,
+       ClientCertificateRequestedContinuesWithNoCert) {
+  if (stream_type_ == HTTP2_HANDSHAKE_STREAM) {
+    // This test covers the basic handshake stream where SSLClientSocket
+    // requests client cert.
+    return;
+  }
+
+  auto ssl_socket_data = std::make_unique<SSLSocketDataProvider>(
+      ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  ssl_socket_data->cert_request_info =
+      base::MakeRefCounted<SSLCertRequestInfo>();
+  url_request_context_host_.AddSSLSocketDataProvider(
+      std::move(ssl_socket_data));
+
+  // The first socket data fails during SSL handshake with client auth needed.
+  auto socket_data1 = std::make_unique<SequencedSocketData>();
+  socket_data1->set_connect_data(MockConnect(ASYNC, OK));
+  AddRawExpectations(std::move(socket_data1));
+
+  // Second SSL provider for the retry after ContinueWithCertificate(nullptr,
+  // nullptr).
+  auto ssl_socket_data2 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  ssl_socket_data2->ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "unittest.selfsigned.der");
+  ASSERT_TRUE(ssl_socket_data2->ssl_info.cert.get());
+  url_request_context_host_.AddSSLSocketDataProvider(
+      std::move(ssl_socket_data2));
+
+  // The second socket data handles the actual HTTP/WebSocket upgrade handshake.
+  std::string request = WebSocketStandardRequest(
+      "/", "www.example.org", Origin(), /*send_additional_request_headers=*/{},
+      /*extra_headers=*/{});
+  std::string response = WebSocketStandardResponse(std::string());
+  MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0, request)};
+  MockRead reads[] = {
+      MockRead(SYNCHRONOUS, 1, response),
+  };
+  std::unique_ptr<SequencedSocketData> socket_data2(
+      BuildSocketData(reads, writes));
+  socket_data2->set_connect_data(MockConnect(SYNCHRONOUS, OK));
+
+  CreateAndConnectRawExpectations("wss://www.example.org/", NoSubProtocols(),
+                                  HttpRequestHeaders(),
+                                  std::move(socket_data2));
+  WaitUntilConnectDone();
+  EXPECT_FALSE(has_failed());
+  EXPECT_TRUE(stream_);
+}
+
 TEST_P(WebSocketStreamCreateTest, HandleConnectionCloseInFirstSegment) {
   std::string request = WebSocketStandardRequest(
       "/", "www.example.org", Origin(), /*send_additional_request_headers=*/{},
