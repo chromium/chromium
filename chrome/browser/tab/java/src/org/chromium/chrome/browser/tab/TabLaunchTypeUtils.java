@@ -110,4 +110,19 @@ public final class TabLaunchTypeUtils {
             default -> false;
         };
     }
+
+    /**
+     * Returns true if the launch type represents a tab being reparented into a new window or
+     * activity (either in the foreground or background).
+     *
+     * @param type The launch type to inspect.
+     * @return True if the tab is being reparented into a window.
+     */
+    public static boolean isReparentingLaunch(@TabLaunchType int type) {
+        assertValidLaunchType(type);
+        return switch (type) {
+            case TabLaunchType.FROM_REPARENTING, TabLaunchType.FROM_REPARENTING_BACKGROUND -> true;
+            default -> false;
+        };
+    }
 }

@@ -26,6 +26,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabLaunchTypeUtils;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -172,8 +173,7 @@ class TabListEditorMediator
                         // 3) NTP at startup
                         // force hiding the selection editor.
                         if (type == TabLaunchType.FROM_RESTORE
-                                || type == TabLaunchType.FROM_REPARENTING
-                                || type == TabLaunchType.FROM_REPARENTING_BACKGROUND
+                                || TabLaunchTypeUtils.isReparentingLaunch(type)
                                 || type == TabLaunchType.FROM_STARTUP) {
                             assumeNonNull(mNavigationProvider);
                             mNavigationProvider.goBack();

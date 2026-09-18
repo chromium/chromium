@@ -53,6 +53,9 @@ public class TabLaunchTypeUtilsUnitTest {
                     TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND,
                     TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND);
 
+    private static final Set<Integer> REPARENTING_TYPES =
+            Set.of(TabLaunchType.FROM_REPARENTING, TabLaunchType.FROM_REPARENTING_BACKGROUND);
+
     @Test
     public void testEnumSizeConstant() {
         assertEquals("TabLaunchType.SIZE is expected to be 36", 36, TabLaunchType.SIZE);
@@ -77,6 +80,10 @@ public class TabLaunchTypeUtilsUnitTest {
                     "shouldOpenAdjacent mismatch for type " + type,
                     ADJACENT_TYPES.contains(type),
                     TabLaunchTypeUtils.shouldOpenAdjacent(type));
+            assertEquals(
+                    "isReparentingLaunch mismatch for type " + type,
+                    REPARENTING_TYPES.contains(type),
+                    TabLaunchTypeUtils.isReparentingLaunch(type));
         }
     }
 
@@ -101,6 +108,10 @@ public class TabLaunchTypeUtilsUnitTest {
                     "shouldOpenAdjacent should assert for invalid type " + type,
                     AssertionError.class,
                     () -> TabLaunchTypeUtils.shouldOpenAdjacent(type));
+            assertThrows(
+                    "isReparentingLaunch should assert for invalid type " + type,
+                    AssertionError.class,
+                    () -> TabLaunchTypeUtils.isReparentingLaunch(type));
         }
     }
 }
