@@ -2550,8 +2550,8 @@ crbug.com/526677153 external/wpt/intersection-observer/transformed-iframe-004-cr
 crbug.com/540322301 external/wpt/webaudio/the-audio-api/the-oscillatornode-interface/sub-sample-start.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/geolocation/getCurrentPosition-accuracyMode-cache.https.html [ Failure ]
-external/wpt/svg/render/order/z-index.tentative.svg [ Failure ]
+crbug.com/563060354 external/wpt/geolocation/getCurrentPosition-accuracyMode-cache.https.html [ Failure ]
+crbug.com/563046526 external/wpt/svg/render/order/z-index.tentative.svg [ Failure ]
 crbug.com/562543774 external/wpt/css/css-inline/text-box-trim/text-box-trim-inline-box-text-decoration-001.html?class=cap [ Failure ]
 crbug.com/562543774 external/wpt/css/css-inline/text-box-trim/text-box-trim-inline-box-text-decoration-001.html?class=ex [ Failure ]
 crbug.com/562543774 external/wpt/css/css-inline/text-box-trim/text-box-trim-inline-box-text-decoration-001.html?class=ideographic [ Failure ]
