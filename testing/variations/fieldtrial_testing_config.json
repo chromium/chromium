@@ -18006,6 +18006,22 @@
             ]
         }
     ],
+    "SearchSettingsUpdateV2": [
+        {
+            "platforms": [
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SearchSettingsUpdateV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "SegmentationPlatformURLVisitResumptionRanker": [
         {
             "platforms": [
