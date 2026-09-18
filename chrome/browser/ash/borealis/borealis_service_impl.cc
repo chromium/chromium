@@ -14,8 +14,7 @@ BorealisServiceImpl::BorealisServiceImpl(Profile* profile)
       installer_(profile_),
       launch_options_(profile_),
       shutdown_monitor_(profile_),
-      window_manager_(profile_),
-      survey_handler_(profile_, &window_manager_) {}
+      window_manager_(profile_) {}
 
 BorealisServiceImpl::~BorealisServiceImpl() = default;
 
@@ -45,10 +44,6 @@ BorealisShutdownMonitor& BorealisServiceImpl::ShutdownMonitor() {
 
 BorealisWindowManager& BorealisServiceImpl::WindowManager() {
   return window_manager_;
-}
-
-BorealisSurveyHandler& BorealisServiceImpl::SurveyHandler() {
-  return survey_handler_;
 }
 
 }  // namespace borealis

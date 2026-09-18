@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/borealis/borealis_launch_options.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_shutdown_monitor.h"
-#include "chrome/browser/ash/borealis/borealis_survey_handler.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 
 namespace borealis {
@@ -33,7 +32,6 @@ class BorealisServiceImpl : public BorealisService {
   BorealisLaunchOptions& LaunchOptions() override;
   BorealisShutdownMonitor& ShutdownMonitor() override;
   BorealisWindowManager& WindowManager() override;
-  BorealisSurveyHandler& SurveyHandler() override;
 
   const raw_ptr<Profile> profile_;
 
@@ -44,7 +42,6 @@ class BorealisServiceImpl : public BorealisService {
   BorealisLaunchOptions launch_options_;
   BorealisShutdownMonitor shutdown_monitor_;
   BorealisWindowManager window_manager_;
-  BorealisSurveyHandler survey_handler_;
 };
 
 }  // namespace borealis

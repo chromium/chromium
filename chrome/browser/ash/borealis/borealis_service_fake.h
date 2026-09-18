@@ -31,7 +31,6 @@ class BorealisServiceFake : public BorealisService {
   BorealisLaunchOptions& LaunchOptions() override;
   BorealisShutdownMonitor& ShutdownMonitor() override;
   BorealisWindowManager& WindowManager() override;
-  BorealisSurveyHandler& SurveyHandler() override;
 
   void SetAppLauncherForTesting(BorealisAppLauncher* app_launcher);
   void SetAppUninstallerForTesting(BorealisAppUninstaller* app_uninstaller);
@@ -40,7 +39,6 @@ class BorealisServiceFake : public BorealisService {
   void SetLaunchOptionsForTesting(BorealisLaunchOptions* launch_options);
   void SetShutdownMonitorForTesting(BorealisShutdownMonitor* shutdown_monitor);
   void SetWindowManagerForTesting(BorealisWindowManager* window_manager);
-  void SetSurveyHandlerForTesting(BorealisSurveyHandler* survey_handler);
 
  private:
   raw_ptr<BorealisAppLauncher> app_launcher_ = nullptr;
@@ -51,7 +49,6 @@ class BorealisServiceFake : public BorealisService {
   raw_ptr<BorealisShutdownMonitor, DanglingUntriaged> shutdown_monitor_ =
       nullptr;
   raw_ptr<BorealisWindowManager, DanglingUntriaged> window_manager_ = nullptr;
-  raw_ptr<BorealisSurveyHandler> survey_handler_ = nullptr;
 };
 
 }  // namespace borealis
