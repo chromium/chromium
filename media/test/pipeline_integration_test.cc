@@ -1853,6 +1853,12 @@ TEST_F(PipelineIntegrationTest, BasicPlayback_SilentSection_MP3) {
   EXPECT_AUDIO_HASH(kSilentSectionMp3Hash);
 }
 
+TEST_F(PipelineIntegrationTest, BasicPlayback_SynthBad_MP3) {
+  ASSERT_EQ(PIPELINE_OK, Start("synth-bad.mp3"));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+}
+
 TEST_F(PipelineIntegrationTest, BasicPlaybackHashed_FlacInMp4) {
   ASSERT_EQ(PIPELINE_OK, Start("sfx-flac.mp4", kHashed));
   Play();
@@ -3127,6 +3133,12 @@ TEST_F(SymphoniaPipelineIntegrationTest, BasicPlayback_SilentSection_MP3) {
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
   EXPECT_AUDIO_HASH(kSilentSectionMp3Hash);
+}
+
+TEST_F(SymphoniaPipelineIntegrationTest, BasicPlayback_SynthBad_MP3) {
+  ASSERT_EQ(PIPELINE_OK, Start("synth-bad.mp3"));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
 }
 
 TEST_F(SymphoniaPipelineIntegrationTest, BasicPlayback_Flac) {

@@ -24,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/hash.h"
@@ -1493,7 +1494,7 @@ TEST(SymphoniaAudioDecoderStandaloneTest, ToSymphoniaPacketNullTimestamp) {
   EXPECT_EQ(packet.timestamp_us, 0u);
 }
 
-TEST(SymphoniaAudioDecoderStandaloneTest, DecodeTruncatedBufferFails) {
+TEST(SymphoniaAudioDecoderStandaloneTest, DecodeTruncatedBufferDoesNotFail) {
   base::test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -1507,36 +1508,73 @@ TEST(SymphoniaAudioDecoderStandaloneTest, DecodeTruncatedBufferFails) {
                             ChannelLayoutConfig::Stereo(), 48000,
                             EmptyExtraData(), EncryptionScheme::kUnencrypted);
 
-  bool init_cb_called = false;
-  decoder->Initialize(config, nullptr,
-                      base::BindOnce(
-                          [](bool* init_cb_called, DecoderStatus status) {
-                            *init_cb_called = true;
-                            EXPECT_TRUE(status.is_ok());
-                          },
-                          &init_cb_called),
-                      base::DoNothing(), base::DoNothing());
-  task_environment.RunUntilIdle();
-  EXPECT_TRUE(init_cb_called);
+  bool output_cb_called = false;
+  base::test::TestFuture<DecoderStatus> init_future;
+  decoder->Initialize(
+      config, nullptr, init_future.GetCallback(),
+      base::BindRepeating(
+          [](bool* output_cb_called, scoped_refptr<AudioBuffer>) {
+            *output_cb_called = true;
+          },
+          &output_cb_called),
+      base::DoNothing());
+  EXPECT_TRUE(init_future.Get().is_ok());
 
   // Send a truncated MP3 buffer with a valid syncword but incomplete frame.
   const uint8_t truncated_mp3_data[] = {0xFF, 0xFB, 0x90, 0x00, 0x01, 0x02};
   auto buffer = DecoderBuffer::CopyFrom(truncated_mp3_data);
   buffer->set_timestamp(base::Microseconds(0));
 
-  bool decode_cb_called = false;
-  DecoderStatus decode_status = DecoderStatus::Codes::kOk;
-  decoder->Decode(std::move(buffer),
-                  base::BindOnce(
-                      [](bool* decode_cb_called, DecoderStatus* decode_status,
-                         DecoderStatus status) {
-                        *decode_cb_called = true;
-                        *decode_status = status;
-                      },
-                      &decode_cb_called, &decode_status));
-  task_environment.RunUntilIdle();
-  EXPECT_TRUE(decode_cb_called);
-  EXPECT_FALSE(decode_status.is_ok());
+  base::test::TestFuture<DecoderStatus> decode_future;
+  decoder->Decode(std::move(buffer), decode_future.GetCallback());
+  EXPECT_TRUE(decode_future.Get().is_ok());
+  EXPECT_FALSE(output_cb_called);
+
+  // An EOS buffer sent after a dropped truncated buffer should also succeed.
+  base::test::TestFuture<DecoderStatus> eos_future;
+  decoder->Decode(DecoderBuffer::CreateEOSBuffer(), eos_future.GetCallback());
+  EXPECT_TRUE(eos_future.Get().is_ok());
+}
+
+TEST(SymphoniaAudioDecoderStandaloneTest, BackToBackDecodeErrorsFail) {
+  base::test::TaskEnvironment task_environment;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kSymphoniaAudioDecoding, kSymphoniaMp3Decoding}, {});
+
+  NullMediaLog media_log;
+  auto decoder = std::make_unique<SymphoniaAudioDecoder>(
+      task_environment.GetMainThreadTaskRunner(), &media_log);
+
+  AudioDecoderConfig config(AudioCodec::kMP3, kSampleFormatF32,
+                            ChannelLayoutConfig::Stereo(), 48000,
+                            EmptyExtraData(), EncryptionScheme::kUnencrypted);
+
+  base::test::TestFuture<DecoderStatus> init_future;
+  decoder->Initialize(config, nullptr, init_future.GetCallback(),
+                      base::DoNothing(), base::DoNothing());
+  EXPECT_TRUE(init_future.Get().is_ok());
+
+  const uint8_t truncated_mp3_data[] = {0xFF, 0xFB, 0x90, 0x00, 0x01, 0x02};
+
+  // First truncated buffer should be dropped gracefully (Ok).
+  {
+    auto buffer = DecoderBuffer::CopyFrom(truncated_mp3_data);
+    buffer->set_timestamp(base::Microseconds(0));
+    base::test::TestFuture<DecoderStatus> decode_future;
+    decoder->Decode(std::move(buffer), decode_future.GetCallback());
+    EXPECT_TRUE(decode_future.Get().is_ok());
+  }
+
+  // Second consecutive truncated buffer (back-to-back) must be treated as
+  // fatal.
+  {
+    auto buffer = DecoderBuffer::CopyFrom(truncated_mp3_data);
+    buffer->set_timestamp(base::Microseconds(1000));
+    base::test::TestFuture<DecoderStatus> decode_future;
+    decoder->Decode(std::move(buffer), decode_future.GetCallback());
+    EXPECT_FALSE(decode_future.Get().is_ok());
+  }
 }
 #endif
 
