@@ -111,30 +111,15 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
                 || pages.isEmpty()) {
             return;
         }
-        Account account = fromCoreAccountInfo(coreAccountInfo);
-
         var _ =
                 Futures.transformAsync(
                         mSessionFuture,
                         session -> {
+                            GenericDocument accountDoc = toAccountDocument(coreAccountInfo);
                             var builder = new PutDocumentsRequest.Builder();
                             for (WebPage page : pages) {
-                                // `GenericDocument.fromDocumentClass` can throw "if no factory for
-                                // this document class could be found on the classpath", but that
-                                // should never happen. Call it from the top-level `transformAsync`
-                                // lambda, instead of a stream map, to ensure that if an exception
-                                // _is_ thrown, it is caught by `transformAsync`.
-                                GenericDocument webPageDoc =
-                                        GenericDocument.fromDocumentClass(page);
-                                var extendedDocBuilder =
-                                        new GenericDocument.Builder<>(webPageDoc)
-                                                .setSchemaType(CHROME_WEB_PAGE_SCHEMA_NAME);
-                                if (account != null) {
-                                    extendedDocBuilder.setPropertyDocument(
-                                            ACCOUNT_PROPERTY_NAME,
-                                            GenericDocument.fromDocumentClass(account));
-                                }
-                                builder.addGenericDocuments(extendedDocBuilder.build());
+                                builder.addGenericDocuments(
+                                        toChromeWebPageDocument(page, accountDoc));
                             }
                             ListenableFuture<AppSearchBatchResult<String, Void>> putFuture =
                                     session.putAsync(builder.build());
@@ -252,17 +237,42 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
                 .build();
     }
 
-    private static @Nullable Account fromCoreAccountInfo(
+    private static @Nullable GenericDocument toAccountDocument(
             @Nullable CoreAccountInfo coreAccountInfo) {
         if (coreAccountInfo == null) {
             return null;
         }
         String gaiaId = coreAccountInfo.getGaiaId().toString();
-        return new Account.Builder(HISTORY_NAMESPACE, gaiaId)
-                .setAccountId(gaiaId)
-                .setAccountName(coreAccountInfo.getEmail())
-                .setAccountType(ACCOUNT_TYPE_GOOGLE)
-                .build();
+        Account account =
+                new Account.Builder(HISTORY_NAMESPACE, gaiaId)
+                        .setAccountId(gaiaId)
+                        .setAccountName(coreAccountInfo.getEmail())
+                        .setAccountType(ACCOUNT_TYPE_GOOGLE)
+                        .build();
+        try {
+            return GenericDocument.fromDocumentClass(account);
+        } catch (AppSearchException e) {
+            // Should never happen as factory classes are compiled into the APK.
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static GenericDocument toChromeWebPageDocument(
+            WebPage page, @Nullable GenericDocument accountDoc) {
+        GenericDocument webPageDoc;
+        try {
+            webPageDoc = GenericDocument.fromDocumentClass(page);
+        } catch (AppSearchException e) {
+            // Should never happen as factory classes are compiled into the APK.
+            throw new RuntimeException(e);
+        }
+        var builder =
+                new GenericDocument.Builder<>(webPageDoc)
+                        .setSchemaType(CHROME_WEB_PAGE_SCHEMA_NAME);
+        if (accountDoc != null) {
+            builder.setPropertyDocument(ACCOUNT_PROPERTY_NAME, accountDoc);
+        }
+        return builder.build();
     }
 
     // Returns the list of known consumer packages for browsing data. This is statically guaranteed
