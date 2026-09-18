@@ -19,7 +19,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/i18n/rtl.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/immediate_crash.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
@@ -1657,7 +1659,10 @@ void ChromeMainDelegate::PreSandboxStartup() {
     // process. Their file descriptors and memory mapped file region are not
     // passed to child processes, and are therefore not loaded here.
 
-    base::i18n::SetICUDefaultLocale(locale);
+    base::i18n::SetDefaultIcuLocale(
+        base::i18n::DefaultIcuLocaleSetterKey(),
+        base::i18n::GetLanguageTagFromString(locale).value_or(
+            base::i18n::GetKnownLanguageTag("en-US")));
     const std::string loaded_locale = locale;
 #else
     const std::string loaded_locale =

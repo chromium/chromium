@@ -32,6 +32,7 @@ BASE_I18N_EXPORT void SetDefaultIcuLocale(DefaultIcuLocaleSetterKey key,
 }  // namespace base::i18n
 
 // Forward declarations for DefaultIcuLocaleSetterKey.
+class ChromeMainDelegate;
 class WebEngineMainDelegate;
 class WebEngineBrowserMainParts;
 
@@ -73,6 +74,7 @@ class BASE_I18N_EXPORT DefaultIcuLocaleSetterKey {
   friend void ::android_webview::InitIcuAndResourceBundleBrowserSide();
   friend class ::WebEngineMainDelegate;
   friend class ::WebEngineBrowserMainParts;
+  friend class ::ChromeMainDelegate;
   friend std::string(::l10n_util::GetApplicationLocale)(std::string_view, bool);
   friend BASE_I18N_EXPORT void SetICUDefaultLocale(std::string_view);
 
