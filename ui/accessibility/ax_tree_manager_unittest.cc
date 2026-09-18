@@ -342,4 +342,48 @@ TEST(AXTreeManagerTest, MenuPopupHideThenDeleteFiresOneEnd) {
       1, CountFiredEvents(manager, AXEventGenerator::Event::MENU_POPUP_END, 2));
 }
 
+TEST(AXTreeManagerTest, CrashOnRoleChangeToInlineText) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(2);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].role = ax::mojom::Role::kRootWebArea;
+  initial_state.nodes[0].child_ids = {2};
+
+  initial_state.nodes[1].id = 2;
+  initial_state.nodes[1].role = ax::mojom::Role::kImage;
+
+  TestSingleAXTreeManager manager(std::make_unique<AXSerializableTree>());
+  manager.Initialize(initial_state);
+
+  ui::AXTreeUpdate update;
+  update.nodes.resize(1);
+  update.nodes[0].id = 2;
+  update.nodes[0].role = ax::mojom::Role::kInlineTextBox;
+
+  EXPECT_DEATH_IF_SUPPORTED(manager.GetTree()->Unserialize(update), "");
+}
+
+TEST(AXTreeManagerTest, CrashOnRoleChangeFromInlineText) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(2);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].role = ax::mojom::Role::kRootWebArea;
+  initial_state.nodes[0].child_ids = {2};
+
+  initial_state.nodes[1].id = 2;
+  initial_state.nodes[1].role = ax::mojom::Role::kInlineTextBox;
+
+  TestSingleAXTreeManager manager(std::make_unique<AXSerializableTree>());
+  manager.Initialize(initial_state);
+
+  ui::AXTreeUpdate update;
+  update.nodes.resize(1);
+  update.nodes[0].id = 2;
+  update.nodes[0].role = ax::mojom::Role::kImage;
+
+  EXPECT_DEATH_IF_SUPPORTED(manager.GetTree()->Unserialize(update), "");
+}
+
 }  // namespace ui

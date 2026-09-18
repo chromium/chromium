@@ -11,6 +11,7 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
+#include "ui/accessibility/ax_role_properties.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "base/test/test_support_android.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
@@ -19,6 +20,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_content_client.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/one_shot_accessibility_tree_search.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
@@ -247,11 +249,18 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Add a node, possibly clearing old children.
   int node_id = num_nodes + 1;
   int parent = fdp.ConsumeIntegralInRange(1, num_nodes);
+  ui::AXNode* parent_node = manager->GetNode(parent);
 
   ui::AXTreeUpdate update;
   update.nodes.resize(2);
   update.nodes[0].id = parent;
   update.nodes[0].child_ids = {node_id};
+  // Don't change the role if browser will crash on a role change.
+  if (ui::IsRoleFinal(parent_node->GetRole())) {
+    update.nodes[0].role = parent_node->GetRole();
+  } else {
+    update.nodes[0].role = ax::mojom::Role::kNone;
+  }
   update.nodes[1].id = node_id;
   update.nodes[1].role = GetInterestingRole(fdp);
   AddStates(fdp, &update.nodes[1]);

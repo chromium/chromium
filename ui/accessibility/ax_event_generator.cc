@@ -388,8 +388,7 @@ void AXEventGenerator::OnRoleChanged(AXTree* tree,
                                      ax::mojom::Role old_role,
                                      ax::mojom::Role new_role) {
   DCHECK_EQ(tree_, tree);
-  CHECK(new_role != ax::mojom::Role::kInlineTextBox &&
-        old_role != ax::mojom::Role::kInlineTextBox);
+  CHECK(!IsRoleFinal(new_role) && !IsRoleFinal(old_role));
 
   AddEvent(node, ui::IsAlert(new_role) ? Event::ALERT : Event::ROLE_CHANGED);
 }

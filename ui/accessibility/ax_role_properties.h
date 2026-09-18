@@ -299,6 +299,9 @@ AX_BASE_EXPORT bool SupportsArrowKeysForExpandCollapse(
 // https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/#naming_with_child_content.
 AX_BASE_EXPORT bool SupportsNamingWithChildContent(const ax::mojom::Role role);
 
+// Whether an AXNode's role can change to or from this role.
+AX_BASE_EXPORT bool IsRoleFinal(const ax::mojom::Role role);
+
 }  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_AX_ROLE_PROPERTIES_H_
