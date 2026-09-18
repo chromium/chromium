@@ -185,7 +185,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc/policy:unit_tests",
     "//chrome/browser/ash/arc/session:unit_tests",
     "//chrome/browser/ash/arc/sharesheet:unit_tests",
-    "//chrome/browser/ash/arc/survey:unit_tests",
     "//chrome/browser/ash/arc/tracing:unit_tests",
     "//chrome/browser/ash/arc/tts:unit_tests",
     "//chrome/browser/ash/arc/vmm:unit_tests",
