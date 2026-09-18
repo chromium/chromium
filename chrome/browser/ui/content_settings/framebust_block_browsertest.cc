@@ -40,7 +40,6 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -514,33 +513,4 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockPrerenderTest,
   // Activate a prerendered page.
   prerender_helper_.NavigatePrimaryPage(prerender_url);
   EXPECT_FALSE(GetFramebustTabHelper()->HasBlockedUrls());
-}
-
-class FramebustBlockFencedFrameTest : public FramebustBlockBrowserTest {
- public:
-  FramebustBlockFencedFrameTest() = default;
-  ~FramebustBlockFencedFrameTest() override = default;
-
-  content::RenderFrameHost* primary_main_frame_host() {
-    return GetWebContents()->GetPrimaryMainFrame();
-  }
-
- protected:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(FramebustBlockFencedFrameTest,
-                       FramebustBlocked_FencedFrameNavigation) {
-  EXPECT_TRUE(ExecuteAndCheckBlockedRedirection());
-
-  // Create a fenced frame in the primary main page and ensure that the
-  // framebust UI persists on fenced frame navigation.
-  const GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
-  content::RenderFrameHost* fenced_frame_rfh =
-      fenced_frame_helper_.CreateFencedFrame(primary_main_frame_host(),
-                                             fenced_frame_url);
-  ASSERT_NE(nullptr, fenced_frame_rfh);
-
-  EXPECT_TRUE(GetFramebustTabHelper()->HasBlockedUrls());
 }

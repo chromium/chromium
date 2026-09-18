@@ -17,7 +17,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -163,53 +162,3 @@ IN_PROC_BROWSER_TEST_F(RemoteActorCredentialSharingDisabledBrowserTest,
                        "typeof chrome !== 'undefined' && typeof "
                        "chrome.requestAgentAuthentication !== 'undefined'"));
 }
-
-class RemoteActorCredentialSharingFencedFrameBrowserTest
-    : public RemoteActorCredentialSharingBrowserTest {
- public:
-  RemoteActorCredentialSharingFencedFrameBrowserTest() = default;
-  ~RemoteActorCredentialSharingFencedFrameBrowserTest() override = default;
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(RemoteActorCredentialSharingFencedFrameBrowserTest,
-                       ApiNotExposedInFencedFrames) {
-  // Navigate to allowed origin on the main frame.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetURLForHost(kAllowedHost, "/title1.html")));
-
-  // Create a fenced frame and navigate it to the allowed origin as well.
-  GURL fenced_frame_url = GetURLForHost(kAllowedHost, "/fenced_frames/title1.html");
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
-  ASSERT_NE(nullptr, fenced_frame_host);
-
-  // 1. Verify JS API is NOT exposed inside the fenced frame.
-  EXPECT_EQ(false, content::EvalJs(
-                       fenced_frame_host,
-                       "typeof chrome !== 'undefined' && typeof "
-                       "chrome.requestAgentAuthentication !== 'undefined'"));
-
-  // 2. Verify trying to bind from the fenced frame does NOT crash the process.
-  content::RenderProcessHostWatcher crash_observer(
-      fenced_frame_host->GetProcess(),
-      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-
-  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote;
-  password_manager::RemoteActorCredentialSharingImpl::BindReceiver(
-      remote.BindNewEndpointAndPassReceiver(), fenced_frame_host);
-
-  // Run some JS to make sure the Mojo message would have been processed.
-  EXPECT_EQ(true, content::EvalJs(fenced_frame_host, "true"));
-
-  // Process should still be alive (no crash).
-  EXPECT_TRUE(fenced_frame_host->GetProcess()->IsInitializedAndNotDead());
-}
-

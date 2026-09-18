@@ -26,7 +26,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
@@ -45,8 +44,6 @@ class RenderFrameDevToolsAgentHostBrowserTest : public ContentBrowserTest {
 
 namespace {
 
-const char kFencedFramePath[] = "/devtools/navigation.html";
-
 // A DevToolsAgentHostClient implementation doing nothing.
 class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
  public:
@@ -56,12 +53,6 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
   void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override {}
   bool MayAttachToURL(const GURL& url, bool is_webui) override {
-    // Return a false in case that the url is a fenced frame test url to detach
-    // the attached client in order to test that a fenced frame calls
-    // OnNavigationRequestWillBeSent through the outer document.
-    if (url.path().find(kFencedFramePath) != std::string_view::npos) {
-      return false;
-    }
     return true;
   }
 };

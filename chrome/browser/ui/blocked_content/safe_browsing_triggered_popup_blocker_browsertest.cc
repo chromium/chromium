@@ -47,7 +47,6 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -872,73 +871,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
-class SafeBrowsingTriggeredPopupBlockerFencedFrameBrowserTest
-    : public SafeBrowsingTriggeredPopupBlockerBrowserTest {
- public:
-  SafeBrowsingTriggeredPopupBlockerFencedFrameBrowserTest() = default;
-  ~SafeBrowsingTriggeredPopupBlockerFencedFrameBrowserTest() override = default;
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
-
- protected:
-  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
-};
-
-// The following two tests ensure that SafeBrowsingTriggeredPopupBlocker
-// isn't triggered for a fenced frame since it's treated as a subframe for
-// SafeBrowsingTriggeredPopupBlocker even though it's a main frame in a frame
-// tree.
-// This test ensures that opening a new window in a fenced frame doesn't trigger
-// the popup blocker when the primary page is not marked as abusive, even if the
-// fenced frame's URL is.
-IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerFencedFrameBrowserTest,
-                       ShouldNotTriggerPopupBlocker) {
-  auto* first_web_contents = web_contents();
-  // Load an initial page.
-  GURL initial_url(embedded_test_server()->GetURL("/simple.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-
-  // Load a fenced frame and ensure that it doesn't trigger the popup blocker.
-  GURL fenced_url(embedded_test_server()->GetURL("/fenced_frames/title1.html"));
-  // Even though `fenced_url` is marked as abusive, it doesn't affect the popup
-  // blocker.
-  ConfigureAsAbusive(fenced_url);
-
-  // Loading a fenced frame should not trigger the popup blocker.
-  auto* fenced_frame_host = fenced_frame_test_helper().CreateFencedFrame(
-      first_web_contents->GetPrimaryMainFrame(), fenced_url);
-  EXPECT_EQ(false, content::EvalJs(fenced_frame_host, "!!window.open()"));
-
-  // Check if the popup UI was shown from the previous web contents.
-  EXPECT_FALSE(PageSpecificContentSettings::GetForFrame(
-                   first_web_contents->GetPrimaryMainFrame())
-                   ->IsContentBlocked(ContentSettingsType::POPUPS));
-}
-
-// This test ensures that the primary page has the popup blocker when
-// the primary page is marked as abusive and the fenced frame tries to open a
-// new window.
-IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerFencedFrameBrowserTest,
-                       ShouldTriggerPopupBlocker) {
-  // Load an initial page.
-  GURL initial_url(embedded_test_server()->GetURL("/simple.html"));
-  ConfigureAsAbusive(initial_url);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-
-  // Load a fenced frame.
-  GURL fenced_url(embedded_test_server()->GetURL("/fenced_frames/title1.html"));
-  auto* fenced_frame_host = fenced_frame_test_helper().CreateFencedFrame(
-      web_contents()->GetPrimaryMainFrame(), fenced_url);
-  EXPECT_EQ(false, content::EvalJs(fenced_frame_host, "!!window.open()"));
-
-  // Popup UI should be shown.
-  EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
-                  web_contents()->GetPrimaryMainFrame())
-                  ->IsContentBlocked(ContentSettingsType::POPUPS));
-}
-
 INSTANTIATE_TEST_SUITE_P(All,
                          SafeBrowsingTriggeredPopupBlockerBrowserTest,
                          ::testing::Bool());
@@ -952,7 +884,3 @@ INSTANTIATE_TEST_SUITE_P(
     SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
     ::testing::Bool());
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SafeBrowsingTriggeredPopupBlockerFencedFrameBrowserTest,
-    ::testing::Bool());

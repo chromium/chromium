@@ -126,7 +126,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/slow_download_http_response.h"
@@ -1181,126 +1180,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderDownloadTest,
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_FALSE(base::PathExists(file_path));
 
-  EXPECT_TRUE(VerifyNoDownloads());
-}
-
-class FencedFrameDownloadTest : public MPArchDownloadTest {
- public:
-  FencedFrameDownloadTest() = default;
-  ~FencedFrameDownloadTest() override = default;
-  FencedFrameDownloadTest(const FencedFrameDownloadTest&) = delete;
-
-  FencedFrameDownloadTest& operator=(const FencedFrameDownloadTest&) = delete;
-
-  void SetUpOnMainThread() override {
-    MPArchDownloadTest::SetUpOnMainThread();
-    https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
-  }
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-// Verify that fenced frame downloads don't affect the DownloadRequestLimiter
-// state of the WebContents.
-IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
-                       DownloadRequestLimiterIsUnaffectedByFencedFrame) {
-  const GURL kInitialUrl =
-      embedded_test_server()->GetURL("/download_script.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
-
-  // Set the initial DownloadRequestLimiter state to prompt for downloads and
-  // deny all requests. This allows to check whether a fenced frame resets the
-  // state, since PROMPT_BEFORE_DOWNLOAD is reset by any navigation, while
-  // DOWNLOADS_NOT_ALLOWED require a cross-site navigation to be reset and
-  // those cannot be done in a fenced frame.
-  auto* web_contents = GetWebContents();
-  DownloadRequestLimiter::TabDownloadState* tab_download_state =
-      g_browser_process->download_request_limiter()->GetOrCreateDownloadState(
-          web_contents);
-  ASSERT_TRUE(tab_download_state);
-  tab_download_state->SetDownloadStatusAndNotify(
-      url::Origin::Create(kInitialUrl),
-      DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD);
-  permissions::PermissionRequestManager::FromWebContents(web_contents)
-      ->set_auto_response_for_test(
-          permissions::PermissionRequestManager::DENY_ALL);
-
-  // Create a fenced frame and load a URL.
-  const GURL kFencedFrameUrl =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetPrimaryMainFrame(), kFencedFrameUrl);
-  EXPECT_NE(nullptr, fenced_frame_host);
-
-  // Check that the tab download state wasn't reset by the  navigation on the
-  // fenced frame (a primary main frame navigation would have reset it as seen
-  // in the test DownloadRequestLimiterTest.ResetOnNavigation).
-  ASSERT_EQ(tab_download_state,
-            g_browser_process->download_request_limiter()->GetDownloadState(
-                web_contents));
-  ASSERT_EQ(tab_download_state->download_status(),
-            DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD);
-
-  // Attempt a download.
-  OnCanDownloadDecidedObserver can_download_observer;
-  g_browser_process->download_request_limiter()
-      ->SetOnCanDownloadDecidedCallbackForTesting(base::BindRepeating(
-          &OnCanDownloadDecidedObserver::OnCanDownloadDecided,
-          base::Unretained(&can_download_observer)));
-  ASSERT_EQ(true, content::EvalJs(web_contents, "startDownload();"));
-  can_download_observer.WaitForNumberOfDecisions(1);
-  EXPECT_FALSE(can_download_observer.GetDecisions().front());
-
-  // Check that the download didn't succeed.
-  const base::FilePath file(FILE_PATH_LITERAL("download-test1.lib"));
-  const base::FilePath file_path(DestinationFile(browser(), file));
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  EXPECT_FALSE(base::PathExists(file_path));
-
-  EXPECT_TRUE(VerifyNoDownloads());
-}
-
-// Fenced frame forces download sandbox flag, which should prevent downloads
-// from fenced frames.
-IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
-                       FencedFrameSandboxFlagBlockDownload) {
-  ASSERT_TRUE(https_test_server()->Start());
-  const GURL main_url = https_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-
-  const GURL fenced_frame_url =
-      https_test_server()->GetURL("a.test", "/fenced_frames/title1.html");
-  content::RenderFrameHost* fenced_frame_rfh =
-      fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
-
-  content::WebContentsConsoleObserver console_observer(GetWebContents());
-  console_observer.SetPattern("*Download is disallowed*");
-
-  // Attempt a download by clicking the anchor element with download attribute
-  // within the fenced frame.
-  constexpr char kADownloadScript[] = R"(
-      var a = document.createElement('a');
-      a.setAttribute('href', 'foo.zip');
-      a.download = '';
-      document.body.appendChild(a);
-      a.click();
-    )";
-
-  EXPECT_TRUE(ExecJs(fenced_frame_rfh, kADownloadScript));
-  EXPECT_TRUE(console_observer.Wait());
-  ASSERT_FALSE(console_observer.messages().empty());
-  EXPECT_EQ(console_observer.GetMessageAt(0),
-            "Download is disallowed. The frame initiating or instantiating the "
-            "download is sandboxed, but the flag ‘allow-downloads’ is not set. "
-            "See https://www.chromestatus.com/feature/5706745674465280 for "
-            "more details.");
   EXPECT_TRUE(VerifyNoDownloads());
 }
 

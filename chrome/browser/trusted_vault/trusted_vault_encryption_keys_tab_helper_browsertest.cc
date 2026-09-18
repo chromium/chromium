@@ -31,7 +31,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "device/fido/public/features.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -315,10 +314,6 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
     return prerender_helper_;
   }
 
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
-
   signin::ConsentLevel GetConsentLevel() const {
     return syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
                ? signin::ConsentLevel::kSignin
@@ -361,7 +356,6 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
 
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_;
-  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
@@ -775,79 +769,6 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
           browser()->GetProfile(), trusted_vault::SecurityDomainId::kChromeSync,
           FakeAccount());
   EXPECT_THAT(actual_keys, IsEmpty());
-}
-
-// Tests that chrome.setSyncEncryptionKeys() works in a fenced frame.
-IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
-                       ShouldBindSyncEncryptionKeysApiInFencedFrame) {
-  const GURL initial_url =
-      https_server()->GetURL("accounts.google.com", "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
-  // EncryptionKeysApi is created for the primary page as the origin is allowed.
-  ASSERT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
-
-  const GURL main_url = https_server()->GetURL("accounts.google.com",
-                                               "/fenced_frames/title1.html");
-  auto* fenced_frame_host = fenced_frame_test_helper().CreateFencedFrame(
-      web_contents()->GetPrimaryMainFrame(), main_url);
-  // EncryptionKeysApi is also created for a fenced frame since it's a main
-  // frame as well.
-  EXPECT_TRUE(HasEncryptionKeysApi(fenced_frame_host));
-
-  content::WebContentsConsoleObserver console_observer(web_contents());
-  console_observer.SetPattern(kConsoleSuccessMessage);
-
-  // Calling setSyncEncryptionKeys() in the fenced frame works and it gets
-  // the callback by setSyncEncryptionKeys().
-  const std::vector<uint8_t> kEncryptionKey = {7};
-  const int kEncryptionKeyVersion = 24;
-  ExecJsSetSyncEncryptionKeys(fenced_frame_host, kEncryptionKey,
-                              kEncryptionKeyVersion);
-  ASSERT_TRUE(console_observer.Wait());
-  EXPECT_EQ(1u, console_observer.messages().size());
-
-  std::vector<std::vector<uint8_t>> actual_keys =
-      FetchTrustedVaultKeysForProfile(
-          browser()->GetProfile(), trusted_vault::SecurityDomainId::kChromeSync,
-          FakeAccount());
-  EXPECT_THAT(actual_keys, ElementsAre(kEncryptionKey));
-  EXPECT_THAT(FetchLastTrustedVaultKeyVersionForProfile(
-                  browser()->GetProfile(),
-                  trusted_vault::SecurityDomainId::kChromeSync, FakeAccount()),
-              Eq(kEncryptionKeyVersion));
-}
-
-// Tests that chrome.setClientEncryptionKeys() works in a fenced frame.
-IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
-                       ShouldBindClientEncryptionKeysApiInFencedFrame) {
-  const GURL initial_url =
-      https_server()->GetURL("accounts.google.com", "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
-  // EncryptionKeysApi is created for the primary page as the origin is allowed.
-  ASSERT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
-
-  const GURL main_url = https_server()->GetURL("accounts.google.com",
-                                               "/fenced_frames/title1.html");
-  auto* fenced_frame_host = fenced_frame_test_helper().CreateFencedFrame(
-      web_contents()->GetPrimaryMainFrame(), main_url);
-  // EncryptionKeysApi is also created for a fenced frame since it's a main
-  // frame as well.
-  EXPECT_TRUE(HasEncryptionKeysApi(fenced_frame_host));
-
-  content::WebContentsConsoleObserver console_observer(web_contents());
-  console_observer.SetPattern(kConsoleSuccessMessage);
-
-  // Calling setClientEncryptionKeys() in the fenced frame works.
-  const std::vector<uint8_t> kEncryptionKey = {7};
-  ExecJsSetClientEncryptionKeys(fenced_frame_host, kEncryptionKey);
-  ASSERT_TRUE(console_observer.Wait());
-  EXPECT_EQ(1u, console_observer.messages().size());
-
-  std::vector<std::vector<uint8_t>> actual_keys =
-      FetchTrustedVaultKeysForProfile(
-          browser()->GetProfile(), trusted_vault::SecurityDomainId::kChromeSync,
-          FakeAccount());
-  EXPECT_THAT(actual_keys, ElementsAre(kEncryptionKey));
 }
 
 IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,

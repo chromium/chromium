@@ -15,14 +15,12 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -254,39 +252,6 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
     EXPECT_TRUE(cms_entries.empty());
   }
 
-  void RunSingleFrameworkDetectionTestForFencedFrames(
-      const std::string& test_url) {
-    StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
-    GURL mainframe_url = https_test_server()->GetURL("/english_page.html");
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), mainframe_url));
-
-    page_load_metrics::PageLoadMetricsTestWaiter waiter(
-        browser()->GetTabStripModel()->GetActiveWebContents());
-    waiter.AddPageExpectation(
-        page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
-    GURL subframe_url = https_test_server()->GetURL(test_url);
-    content::RenderFrameHost* subframe =
-        fenced_frame_helper_.CreateFencedFrame(browser()
-                                                   ->GetTabStripModel()
-                                                   ->GetActiveWebContents()
-                                                   ->GetPrimaryMainFrame(),
-                                               subframe_url);
-    EXPECT_NE(nullptr, subframe);
-    waiter.Wait();
-    CloseAllTabs();
-
-    // No frameworks should be detected.
-    for (std::string_view framework : all_frameworks) {
-      ExpectFrameworkMetricCountForUrl(mainframe_url, framework, 1);
-      ExpectFrameworkMetricValueForUrl(mainframe_url, framework, false);
-    }
-    // No CMSs should be detected.
-    for (std::string_view cms : all_content_management_systems) {
-      ExpectContentManagementSystemMetricCountForUrl(mainframe_url, cms, 1);
-      ExpectContentManagementSystemMetricValueForUrl(mainframe_url, cms, false);
-    }
-  }
-
  private:
   void RunFrameworkDetection(const std::vector<std::string_view>& frameworks,
                              std::string_view framework_name,
@@ -316,7 +281,6 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
   }
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
@@ -502,12 +466,6 @@ IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
                        WordPressCMSDetected) {
   RunSingleContentManagementSystemDetectionTest(
       "/page_load_metrics/wordpress_page.html", kWordPressPageLoad);
-}
-
-IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
-                       NoFrameworksDetectedInFencedFrame) {
-  RunSingleFrameworkDetectionTestForFencedFrames(
-      "/page_load_metrics/gatsby_page.html");
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,

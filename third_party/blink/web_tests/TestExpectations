@@ -6709,7 +6709,6 @@ crbug.com/432218257 [ Debug Mac13 ] jquery/event.html [ Skip Timeout ]
 crbug.com/1448021 fast/webgl/texture-color-profile.html [ Failure Pass ]
 crbug.com/1448024 external/wpt/scroll-animations/scroll-timelines/scroll-timeline-invalidation.html [ Failure Pass ]
 crbug.com/1447101 media/video-source-none-supported.html [ Failure Pass Timeout ]
-crbug.com/1434378 virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/permissions-policy-fenced-frame.https.js [ Pass Timeout ]
 
 crbug.com/1449459 [ Mac13 ] scrollbars/hidden-scrollbars-invisible.html [ Failure ]
 
@@ -9164,8 +9163,6 @@ crbug.com/554722975 [ Win11-arm64 ] external/wpt/webtransport/stats.https.any.ht
 # Gardener 2026-09-04
 crbug.com/40940279 [ Debug ] external/wpt/css/css-anchor-position/anchor-position-multicol-nested-001.html [ Crash Pass ]
 
-# Gardener 2026-09-08
-crbug.com/558562090 http/tests/inspector-protocol/fenced-frame/device-emulation-commands-fenced-frame.https.js [ Failure Pass ]
 
 # Subresource Link header preload disabled
 crbug.com/417529151 external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-header-in-subresources.tentative.https.html [ Failure Timeout ]

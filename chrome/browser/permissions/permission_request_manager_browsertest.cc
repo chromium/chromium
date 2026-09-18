@@ -65,7 +65,6 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -1688,116 +1687,6 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithPrerenderingTest,
   EXPECT_TRUE(request_2_state.cancelled);
 }
 
-class PermissionRequestManagerWithFencedFrameTest
-    : public PermissionRequestManagerBrowserTest {
- public:
-  PermissionRequestManagerWithFencedFrameTest() = default;
-  ~PermissionRequestManagerWithFencedFrameTest() override = default;
-
-  PermissionRequestManagerWithFencedFrameTest(
-      const PermissionRequestManagerWithFencedFrameTest&) = delete;
-  PermissionRequestManagerWithFencedFrameTest& operator=(
-      const PermissionRequestManagerWithFencedFrameTest&) = delete;
-
- protected:
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
-                       GetCurrentPosition) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/title1.html")));
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-
-  // Load a fenced frame.
-  GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          web_contents->GetPrimaryMainFrame(), fenced_frame_url);
-  ASSERT_TRUE(fenced_frame_host);
-
-  const char kQueryPermission[] = R"(
-      (async () => {
-        const status = await navigator.permissions.query({name: 'geolocation'});
-        return status.state;
-      })();
-    )";
-
-  // The result of query 'geolocation' permission in the fenced frame should
-  // be 'denied'.
-  EXPECT_EQ("denied", content::EvalJs(fenced_frame_host, kQueryPermission));
-
-  const char kQueryCurrentPosition[] = R"(
-      (async () => {
-        return await new Promise(resolve => {
-          navigator.geolocation.getCurrentPosition(
-              () => resolve('granted'), () => resolve('denied'));
-        });
-      })();
-    )";
-
-  bubble_factory()->set_response_type(
-      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ONCE);
-
-  // The getCurrentPosition() call in the fenced frame should be denied.
-  EXPECT_EQ("denied",
-            content::EvalJs(fenced_frame_host, kQueryCurrentPosition));
-  // The permission prompt should not be shown.
-  EXPECT_EQ(0, bubble_factory()->TotalRequestCount());
-}
-
-// Tests that the permission request for a fenced frame is blocked
-// when the permission is requested thru PermissionControllerDelegate.
-IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
-                       RequestPermissionThruDelegate) {
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.AddDefaultHandlers(GetChromeTestDataDir());
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
-  ASSERT_TRUE(https_server.Start());
-  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
-
-  GURL initial_url = https_server.GetURL("/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-
-  // Load a fenced frame.
-  GURL fenced_frame_url = https_server.GetURL("/fenced_frames/title1.html");
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          web_contents->GetPrimaryMainFrame(), fenced_frame_url);
-  ASSERT_TRUE(fenced_frame_host);
-
-  // The permission request is denied because it's from the fenced frame.
-  const char kExpectedConsolePattern[] =
-      "*blocked because it was requested inside a fenced frame*";
-  content::WebContentsConsoleObserver console_observer(web_contents);
-  console_observer.SetFilter(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         const content::WebContentsConsoleObserver::Message& message) {
-        return message.source_frame == render_frame_host;
-      },
-      fenced_frame_host));
-  console_observer.SetPattern(kExpectedConsolePattern);
-
-  EXPECT_EQ(
-      RequestPermissionFromDocumentSync(
-          fenced_frame_host, content::PermissionDescriptorUtil::
-                                 CreatePermissionDescriptorForPermissionType(
-                                     blink::PermissionType::SENSORS)),
-      content::PermissionResult(blink::mojom::PermissionStatus::DENIED,
-                                content::PermissionStatusSource::FENCED_FRAME));
-
-  ASSERT_TRUE(console_observer.Wait());
-  ASSERT_EQ(1u, console_observer.messages().size());
-}
 
 IN_PROC_BROWSER_TEST_F(
     PermissionRequestManagerWithBackForwardCacheUnblockBrowserTest,

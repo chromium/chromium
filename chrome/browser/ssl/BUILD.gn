@@ -309,7 +309,6 @@ if (!is_android) {
       "ocsp_browsertest.cc",
       "security_state_tab_helper_browsertest.cc",
       "ssl_browsertest.cc",
-      "ssl_fenced_frame_browsertest.cc",
       "ssl_prerender_browsertest.cc",
       "stateful_ssl_host_state_delegate_test.cc",
     ]

@@ -395,14 +395,4 @@ std::optional<bool> SubresourceFilterPrerenderingBrowserTest::UseV5() const {
   return GetParam();
 }
 
-SubresourceFilterFencedFrameBrowserTest::
-    SubresourceFilterFencedFrameBrowserTest() = default;
-
-SubresourceFilterFencedFrameBrowserTest::
-    ~SubresourceFilterFencedFrameBrowserTest() = default;
-
-std::optional<bool> SubresourceFilterFencedFrameBrowserTest::UseV5() const {
-  return GetParam();
-}
-
 }  // namespace subresource_filter

@@ -20,7 +20,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -94,13 +93,6 @@ class RegisterProtocolHandlerBrowserTest : public content::ContentBrowserTest {
     return web_contents()->GetBrowserContext();
   }
 
- protected:
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest, CustomHandler) {
@@ -149,36 +141,6 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
   ASSERT_FALSE(registry->IsHandledProtocol(url.GetScheme()));
 }
 
-// FencedFrames can not register to handle any protocols.
-IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest, FencedFrame) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("/custom_handlers/title1.html")));
-
-  // Create a FencedFrame.
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetPrimaryMainFrame(),
-          embedded_test_server()->GetURL("/fenced_frames/title1.html"));
-  ASSERT_TRUE(fenced_frame_host);
-
-  // Ensure the registry is currently empty.
-  GURL url("web+search:testing");
-  ProtocolHandlerRegistry* registry =
-      SimpleProtocolHandlerRegistryFactory::GetForBrowserContext(
-          browser_context(), true);
-  ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
-
-  // Attempt to add an entry.
-  ProtocolHandlerChangeWaiter waiter(registry);
-  ASSERT_TRUE(content::ExecJs(fenced_frame_host,
-                              "navigator.registerProtocolHandler('web+"
-                              "search', 'test.html?%s', 'test');"));
-  waiter.Wait();
-
-  // Ensure the registry is still empty.
-  ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
-}
 #endif
 
 // https://crbug.com/178097: Implement registerProtocolHandler on Android

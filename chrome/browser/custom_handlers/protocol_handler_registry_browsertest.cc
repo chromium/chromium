@@ -41,7 +41,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
@@ -200,13 +199,6 @@ class ChromeRegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
     ASSERT_FALSE(registry->IsHandledProtocol(protocol));
   }
 
- protected:
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
@@ -298,38 +290,6 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
 
   // Verify the handler registration is pending.
   ASSERT_TRUE(content_settings->pending_protocol_handler().IsValid());
-}
-
-// FencedFrames can not register to handle any protocols.
-IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest, FencedFrame) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/title1.html")));
-
-  // Create a FencedFrame.
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          browser()
-              ->tab_strip_model()
-              ->GetActiveWebContents()
-              ->GetPrimaryMainFrame(),
-          embedded_test_server()->GetURL("/fenced_frames/title1.html"));
-  ASSERT_TRUE(fenced_frame_host);
-
-  // Ensure the registry is currently empty.
-  GURL url("web+search:testing");
-  ProtocolHandlerRegistry* registry = GetRegistry();
-  ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
-
-  // Attempt to add an entry.
-  ProtocolHandlerChangeWaiter waiter(registry);
-  ASSERT_TRUE(content::ExecJs(fenced_frame_host,
-                              "navigator.registerProtocolHandler('web+"
-                              "search', 'test.html?%s', 'test');"));
-  waiter.Wait();
-
-  // Ensure the registry is still empty.
-  ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,

@@ -20,7 +20,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -97,16 +96,11 @@ class HapticsServiceImplBrowserTest : public ContentBrowserTest {
 
   WebContents* web_contents() { return shell()->web_contents(); }
 
-  test::FencedFrameTestHelper& fenced_frame_helper() {
-    return fenced_frame_helper_;
-  }
-
  protected:
   MockHapticsManager* mock_manager() { return mock_.get(); }
 
  private:
   base::WeakPtr<MockHapticsManager> mock_;
-  test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(HapticsServiceImplBrowserTest,
@@ -151,21 +145,6 @@ IN_PROC_BROWSER_TEST_F(HapticsServiceImplBrowserTest,
   remote->PlayHaptics(blink::mojom::HapticEffect::kHint, /*intensity=*/2.0);
   EXPECT_EQ(bad_message::HSI_PLAY_HAPTICS_INVALID_INTENSITY,
             kill_waiter.Wait());
-}
-
-IN_PROC_BROWSER_TEST_F(HapticsServiceImplBrowserTest, RejectedInFencedFrame) {
-  ASSERT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
-  RenderFrameHost* fenced_frame_rfh = fenced_frame_helper().CreateFencedFrame(
-      web_contents()->GetPrimaryMainFrame(),
-      embedded_test_server()->GetURL("/fenced_frames/basic.html"));
-  ASSERT_TRUE(fenced_frame_rfh);
-  ASSERT_TRUE(fenced_frame_rfh->IsNestedWithinFencedFrame());
-
-  RenderProcessHostBadIpcMessageWaiter kill_waiter(
-      fenced_frame_rfh->GetProcess());
-  BindHapticsService(fenced_frame_rfh);
-  EXPECT_EQ(bad_message::HSI_PLAY_HAPTICS_IN_FENCED_FRAME, kill_waiter.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(HapticsServiceImplBrowserTest,

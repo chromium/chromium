@@ -95,10 +95,6 @@ EmbeddedContentView* LayoutEmbeddedContent::GetEmbeddedContentView() const {
 const std::optional<PhysicalSize> LayoutEmbeddedContent::FrozenFrameSize()
     const {
   NOT_DESTROYED();
-  // The `<fencedframe>` element can freeze the child frame size when navigated.
-  if (const auto* fenced_frame = DynamicTo<HTMLFencedFrameElement>(GetNode()))
-    return fenced_frame->FrozenFrameSize();
-
   return std::nullopt;
 }
 

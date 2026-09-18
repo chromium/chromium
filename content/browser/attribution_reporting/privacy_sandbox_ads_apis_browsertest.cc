@@ -35,12 +35,6 @@ namespace content {
 
 namespace {
 constexpr char kBaseDataDir[] = "content/test/data/";
-
-constexpr char kAddFencedFrameScript[] = R"(
-  const fenced_frame = document.createElement('fencedframe');
-  document.body.appendChild(fenced_frame);
-)";
-
 }  // namespace
 
 class PrivacySandboxAdsAPIsBrowserTestBase : public ContentBrowserTest {
@@ -108,9 +102,8 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsM1OverrideBrowserTest,
   EXPECT_EQ(true, EvalJs(shell(), "navigator.runAdAuction !== undefined"));
   EXPECT_EQ(true,
             EvalJs(shell(), "navigator.joinAdInterestGroup !== undefined"));
-
-  EXPECT_TRUE(ExecJs(root(), kAddFencedFrameScript));
-  EXPECT_EQ(1U, root()->child_count());
+  EXPECT_EQ(true,
+            EvalJs(shell(), "window.HTMLFencedFrameElement !== undefined"));
 }
 
 class PrivacySandboxAdsAPIsM1OverrideNoFeatureBrowserTest
@@ -135,8 +128,8 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsM1OverrideNoFeatureBrowserTest,
   EXPECT_EQ(false, EvalJs(shell(),
                           "document.featurePolicy.features().includes('"
                           "browsing-topics')"));
-  EXPECT_TRUE(ExecJs(root(), kAddFencedFrameScript));
-  EXPECT_EQ(0U, root()->child_count());
+  EXPECT_EQ(false,
+            EvalJs(shell(), "window.HTMLFencedFrameElement !== undefined"));
 }
 
 }  // namespace content

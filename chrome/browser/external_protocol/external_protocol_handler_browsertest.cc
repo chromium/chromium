@@ -21,7 +21,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/page_transition_types.h"
@@ -325,87 +324,4 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
   ASSERT_EQ(1u, observer.messages().size());
   EXPECT_EQ("Not allowed to launch 'willfailtolaunch://foo'.",
             observer.GetMessageAt(0u));
-}
-
-class ExternalProtocolHandlerSandboxFencedFrameBrowserTest
-    : public ExternalProtocolHandlerSandboxBrowserTest {
- public:
-  void SetUpOnMainThread() override {
-    ExternalProtocolHandlerSandboxBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  content::RenderFrameHost* CreateFencedFrame() {
-    return fenced_frame_test_helper().CreateFencedFrame(
-        web_content()->GetPrimaryMainFrame(),
-        embedded_test_server()->GetURL("/fenced_frames/title1.html"));
-  }
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
-
-  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
-                       SandboxAllWithoutGesture) {
-  EXPECT_TRUE(AllowedBySandbox(CreateFencedFrame(), /*user-gesture=*/false));
-}
-
-IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
-                       SandboxAllWithGesture) {
-  EXPECT_TRUE(AllowedBySandbox(CreateFencedFrame(), /*user-gesture=*/true));
-}
-
-IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
-                       SandboxInFencedFrame) {
-  EXPECT_TRUE(AllowedBySandbox(CreateIFrame(CreateFencedFrame(), "")));
-}
-
-IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
-                       SandboxAllInFencedFrame) {
-  EXPECT_FALSE(AllowedBySandbox(
-      CreateIFrame(CreateFencedFrame(), "iframe.sandbox = 'allow-scripts';")));
-}
-
-IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
-                       SandboxAllowPopupsInFencedFrame) {
-  EXPECT_TRUE(AllowedBySandbox(CreateIFrame(
-      CreateFencedFrame(), "iframe.sandbox = 'allow-scripts allow-popups';")));
-}
-
-IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
-                       SandboxAllowTopNavigationInFencedFrame) {
-  EXPECT_TRUE(AllowedBySandbox(
-      CreateIFrame(CreateFencedFrame(),
-                   "iframe.sandbox = 'allow-scripts allow-top-navigation';")));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
-    SandboxAllowTopNavigationToCustomProtocolsInFencedFrame) {
-  EXPECT_TRUE(AllowedBySandbox(
-      CreateIFrame(CreateFencedFrame(),
-                   "iframe.sandbox = 'allow-scripts "
-                   "allow-top-navigation-to-custom-protocols';")));
-}
-
-IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
-                       SandboxAllowTopNavigationByUserActivationInFencedFrame) {
-  EXPECT_FALSE(AllowedBySandbox(
-      CreateIFrame(CreateFencedFrame(),
-                   "iframe.sandbox = 'allow-scripts "
-                   "allow-top-navigation-by-user-activation';"),
-      /*user-gesture=*/false));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
-    SandboxAllowTopNavigationByUserActivationWithGestureInFencedFrame) {
-  EXPECT_TRUE(AllowedBySandbox(
-      CreateIFrame(web_content()->GetPrimaryMainFrame(),
-                   "iframe.sandbox = 'allow-scripts "
-                   "allow-top-navigation-by-user-activation';"),
-      /*user-gesture=*/true));
 }

@@ -29,7 +29,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/features.h"
@@ -817,51 +816,6 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPrerenderBrowserTest,
   // Make sure the activating logs anchors correctly.
   anchor_entries = test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
   EXPECT_EQ(4u, anchor_entries.size());
-}
-
-class NavigationPredictorFencedFrameBrowserTest
-    : public NavigationPredictorMPArchBrowserTest {
- public:
-  NavigationPredictorFencedFrameBrowserTest() = default;
-  ~NavigationPredictorFencedFrameBrowserTest() override = default;
-  NavigationPredictorFencedFrameBrowserTest(
-      const NavigationPredictorFencedFrameBrowserTest&) = delete;
-
-  NavigationPredictorFencedFrameBrowserTest& operator=(
-      const NavigationPredictorFencedFrameBrowserTest&) = delete;
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(NavigationPredictorFencedFrameBrowserTest,
-                       EnsureFencedFrameDoesNotCreateNavigationPredictor) {
-  auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-  ResetUKM();
-
-  // Navigate to an initial page.
-  const GURL& url = test_server()->GetURL("/simple_page_with_anchors.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  WaitLinkEnteredViewport(1);
-
-  using AnchorEntry = ukm::builders::NavigationPredictorAnchorElementMetrics;
-  auto anchor_entries =
-      test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
-  EXPECT_EQ(2u, anchor_entries.size());
-
-  // Create a fenced frame.
-  const GURL& fenced_frame_url =
-      test_server()->GetURL("/fenced_frames/simple_page_with_anchors.html");
-  std::ignore = fenced_frame_test_helper().CreateFencedFrame(
-      web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
-
-  // Make sure the fenced frame doesn't log any anchors.
-  anchor_entries = test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
-  EXPECT_EQ(2u, anchor_entries.size());
 }
 
 }  // namespace

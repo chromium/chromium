@@ -28,7 +28,6 @@
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -482,55 +481,6 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SameProcessAMPSubframe) {
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"mainframe"),
       }));
-}
-
-class PageTextObserverFencedFrameBrowserTest
-    : public PageTextObserverBrowserTest {
- public:
-  PageTextObserverFencedFrameBrowserTest() = default;
-  ~PageTextObserverFencedFrameBrowserTest() override = default;
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(PageTextObserverFencedFrameBrowserTest,
-                       DoNotDispatchResponseOnFencedFrame) {
-  base::HistogramTester histogram_tester;
-
-  PageTextObserver::CreateForWebContents(web_contents());
-
-  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageTextDump.AbandonedRequests", 1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageTextDump.OutstandingRequests.DidFinishLoad", 1);
-
-  // Create a fenced frame.
-  GURL fenced_frame_url(
-      embedded_test_server()->GetURL("/fenced_frames/title1.html"));
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
-  ASSERT_TRUE(fenced_frame_host);
-
-  // Loading a URL in a fenced frame should not increase
-  // OptimizationGuide.PageTextDump.AbandonedRequests and
-  // OptimizationGuide.PageTextDump.OutstandingRequests.DidFinishLoad count.
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageTextDump.AbandonedRequests", 1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageTextDump.OutstandingRequests.DidFinishLoad", 1);
 }
 
 }  // namespace optimization_guide

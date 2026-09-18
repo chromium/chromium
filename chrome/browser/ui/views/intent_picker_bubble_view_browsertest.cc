@@ -34,7 +34,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -614,54 +613,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values("", "noopener", "noreferrer", "nofollow"),
         testing::Values(LinkCapturingFeatureVersion::kV2DefaultOff)),
-    GetLinkCapturingTestName);
-
-class IntentPickerIconFencedFrameBrowserTest
-    : public IntentPickerIconBrowserTest {
- public:
-  IntentPickerIconFencedFrameBrowserTest() = default;
-  ~IntentPickerIconFencedFrameBrowserTest() override = default;
-  IntentPickerIconFencedFrameBrowserTest(
-      const IntentPickerIconFencedFrameBrowserTest&) = delete;
-
-  IntentPickerIconFencedFrameBrowserTest& operator=(
-      const IntentPickerIconFencedFrameBrowserTest&) = delete;
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_P(IntentPickerIconFencedFrameBrowserTest,
-                       ShouldShowIntentPickerInFencedFrame) {
-  InstallTestWebApp();
-
-  auto intent_picker_icon = GetIntentChip(browser());
-
-  const GURL initial_url =
-      embedded_https_test_server().GetURL(GetAppUrlHost(), "/empty.html");
-  OpenNewTab(initial_url);
-  EXPECT_FALSE(intent_picker_icon.GetVisible());
-
-  const GURL fenced_frame_url = embedded_https_test_server().GetURL(
-      GetAppUrlHost(), std::string(GetAppScopePath()) + "index1.html");
-  // Create a fenced frame.
-  ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
-      GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url));
-
-  EXPECT_FALSE(intent_picker_icon.GetVisible());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    IntentPickerIconFencedFrameBrowserTest,
-    testing::Combine(
-        testing::Values("", "noopener", "noreferrer", "nofollow"),
-        testing::Values(LinkCapturingFeatureVersion::kV2DefaultOff,
-                        LinkCapturingFeatureVersion::kV2DefaultOn)),
     GetLinkCapturingTestName);
 
 class IntentPickerCrashTest : public IntentPickerBrowserTest {

@@ -19,7 +19,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -274,86 +273,6 @@ IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, Reload) {
   shell()->web_contents()->GetController().Reload(content::ReloadType::NORMAL,
                                                   false /* check_for_repost */);
   download_manager->SetDelegate(old_delegate);
-}
-
-class SavePackageFencedFrameBrowserTest : public SavePackageBrowserTest {
- public:
-  test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- protected:
-  test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-// If fenced frames become savable, this test will need to be updated.
-// See https://crbug.com/1321102
-IN_PROC_BROWSER_TEST_F(SavePackageFencedFrameBrowserTest,
-                       IgnoreFencedFrameInMHTML) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL main_url = embedded_test_server()->GetURL(kTestFile);
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  RenderFrameHost* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
-
-  // Create an iframe.
-  GURL iframe_url = embedded_test_server()->GetURL("/title2.html");
-  constexpr char kAddIframeScript[] = R"({
-      (()=>{
-          return new Promise((resolve) => {
-            const frame = document.createElement('iframe');
-            frame.addEventListener('load', () => {resolve();});
-            frame.src = $1;
-            document.body.appendChild(frame);
-          });
-      })();
-    })";
-  EXPECT_TRUE(ExecJs(main_frame, JsReplace(kAddIframeScript, iframe_url)));
-
-  // Create a fenced frame.
-  GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
-  fenced_frame_test_helper().CreateFencedFrame(
-      shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
-
-  auto* download_manager = static_cast<DownloadManagerImpl*>(
-      shell()->web_contents()->GetBrowserContext()->GetDownloadManager());
-  auto delegate = std::make_unique<TestShellDownloadManagerDelegate>(
-      SAVE_PAGE_TYPE_AS_MHTML);
-  delegate->download_dir_ = save_dir_.GetPath();
-  auto* old_delegate = download_manager->GetDelegate();
-  download_manager->SetDelegate(delegate.get());
-
-  // Save a page as the MHTML.
-  base::FilePath file_path;
-  {
-    base::RunLoop run_loop;
-    DownloadCompleteObserver observer(run_loop.QuitClosure());
-    download_manager->AddObserver(&observer);
-    scoped_refptr<SavePackage> save_package(
-        new SavePackage(web_contents_impl()->GetPrimaryPage()));
-    save_package->GetSaveInfo();
-    run_loop.Run();
-    download_manager->RemoveObserver(&observer);
-    EXPECT_TRUE(save_package->finished());
-    file_path = observer.target_file_path();
-  }
-
-  download_manager->SetDelegate(old_delegate);
-
-  // Read the saved MHTML.
-  std::string mhtml;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(base::ReadFileToString(file_path, &mhtml));
-  }
-
-  // Verify a title in the iframe's document.
-  EXPECT_THAT(mhtml, testing::HasSubstr("Title Of Awesomeness"));
-
-  // Verify the absence of the fenced frame's document.
-  EXPECT_THAT(mhtml,
-              ::testing::Not(testing::HasSubstr("This page has no title")));
 }
 
 }  // namespace content

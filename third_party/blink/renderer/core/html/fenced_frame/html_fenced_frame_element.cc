@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/frame/screen.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
-#include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_ad_sizes.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -42,7 +41,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -51,89 +49,7 @@
 
 namespace blink {
 
-namespace {
 
-PhysicalRect ToPhysicalRect(const DOMRectReadOnly& rect) {
-  return PhysicalRect(LayoutUnit::FromDoubleRound(rect.x()),
-                      LayoutUnit::FromDoubleRound(rect.y()),
-                      LayoutUnit::FromDoubleRound(rect.width()),
-                      LayoutUnit::FromDoubleRound(rect.height()));
-}
-
-String DeprecatedFencedFrameModeToString(
-    blink::FencedFrame::DeprecatedFencedFrameMode mode) {
-  switch (mode) {
-    case blink::FencedFrame::DeprecatedFencedFrameMode::kDefault:
-      return "default";
-    case blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds:
-      return "opaque-ads";
-  }
-
-  NOTREACHED();
-}
-
-// Helper function that returns whether the mode of the parent tree is different
-// than the mode given to the function. Note that this function will return
-// false if there is no mode set in the parent tree (i.e. not in a fenced frame
-// tree).
-bool ParentModeIsDifferent(
-    blink::FencedFrame::DeprecatedFencedFrameMode current_mode,
-    LocalFrame& frame) {
-  Page* ancestor_page = frame.GetPage();
-  return ancestor_page->IsMainFrameFencedFrameRoot() &&
-         ancestor_page->DeprecatedFencedFrameMode() != current_mode;
-}
-
-bool HasDifferentModeThanParent(HTMLFencedFrameElement& outer_element) {
-  return ParentModeIsDifferent(outer_element.GetDeprecatedMode(),
-                               *(outer_element.GetDocument().GetFrame()));
-}
-
-// Returns whether `requested_size` is exactly the same size as `allowed_size`.
-// `requested_size` and `allowed_size` should both be in CSS pixel units.
-bool SizeMatchesExactly(const PhysicalSize& requested_size,
-                        const gfx::Size& allowed_size) {
-  // The comparison must be performed as a `PhysicalSize`, in order to use
-  // its fixed point representation and get exact results.
-  return requested_size == PhysicalSize(allowed_size);
-}
-
-// Returns a loss score (higher is worse) comparing the fit between
-// `requested_size` and `allowed_size`.
-// Both sizes should be in CSS pixel units.
-double ComputeSizeLossFunction(const PhysicalSize& requested_size,
-                               const gfx::Size& allowed_size) {
-  const double requested_width = requested_size.width.ToDouble();
-  const double requested_height = requested_size.height.ToDouble();
-
-  const double allowed_width = allowed_size.width();
-  const double allowed_height = allowed_size.height();
-
-  const double allowed_area = allowed_width * allowed_height;
-  const double requested_area = requested_width * requested_height;
-
-  // Calculate the fraction of the outer container that is wasted when the
-  // allowed inner frame size is scaled to fit inside of it.
-  const double scale_x = allowed_width / requested_width;
-  const double scale_y = allowed_height / requested_height;
-
-  const double wasted_area =
-      scale_x < scale_y
-          ? allowed_width * (allowed_height - (scale_x * requested_height))
-          : allowed_height * (allowed_width - (scale_y * requested_width));
-
-  const double wasted_area_fraction = wasted_area / allowed_area;
-
-  // Calculate a penalty to tie-break between allowed sizes with the same
-  // aspect ratio in favor of resolutions closer to the requested one.
-  const double resolution_penalty =
-      std::abs(1 - std::min(requested_area, allowed_area) /
-                       std::max(requested_area, allowed_area));
-
-  return wasted_area_fraction + resolution_penalty;
-}
-
-}  // namespace
 
 HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
     : HTMLFrameOwnerElement(html_names::kFencedframeTag, document),
@@ -141,7 +57,6 @@ HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
   DCHECK(RuntimeEnabledFeatures::FencedFramesEnabled(GetExecutionContext()));
   Deprecation::CountDeprecation(GetExecutionContext(),
                                 WebFeature::kHTMLFencedFrameElement);
-  StartResizeObserver();
 }
 
 HTMLFencedFrameElement::~HTMLFencedFrameElement() = default;
@@ -149,7 +64,6 @@ HTMLFencedFrameElement::~HTMLFencedFrameElement() = default;
 void HTMLFencedFrameElement::Trace(Visitor* visitor) const {
   HTMLFrameOwnerElement::Trace(visitor);
   visitor->Trace(frame_delegate_);
-  visitor->Trace(resize_observer_);
   visitor->Trace(config_);
   visitor->Trace(sandbox_);
 }
@@ -315,7 +229,6 @@ void HTMLFencedFrameElement::CollectStyleForPresentationAttribute(
 
 void HTMLFencedFrameElement::Navigate(
     const KURL& url,
-    std::optional<bool> deprecated_should_freeze_initial_size,
     std::optional<gfx::Size> container_size,
     std::optional<gfx::Size> content_size) {
   TRACE_EVENT0("navigation", "HTMLFencedFrameElement::Navigate");
@@ -361,21 +274,6 @@ void HTMLFencedFrameElement::Navigate(
     return;
   }
 
-  if (HasDifferentModeThanParent(*this)) {
-    blink::FencedFrame::DeprecatedFencedFrameMode parent_mode =
-        GetDocument().GetPage()->DeprecatedFencedFrameMode();
-
-    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        StrCat({"Cannot create a fenced frame with mode '",
-                DeprecatedFencedFrameModeToString(GetDeprecatedMode()),
-                "' nested in a fenced frame with mode '",
-                DeprecatedFencedFrameModeToString(parent_mode), "'."})));
-    RecordFencedFrameCreationOutcome(
-        FencedFrameCreationOutcome::kIncompatibleMode);
-    return;
-  }
 
   // Cannot perform an embedder-initiated navigation in a fenced frame when the
   // sandbox attribute restricts any of the mandatory unsandboxed features.
@@ -408,38 +306,6 @@ void HTMLFencedFrameElement::Navigate(
   if (container_size.has_value()) {
     SetContainerSize(*container_size);
   }
-
-  // Handle size freezing.
-  // This isn't strictly correct, because the size is frozen on navigation
-  // start rather than navigation commit (i.e. if the navigation fails, the
-  // size will still be frozen). This is unavoidable in our current
-  // implementation, where the embedder freezes the size (because the embedder
-  // doesn't/shouldn't know when/if the config navigation commits). This
-  // inconsistency should be resolved when we make the browser responsible for
-  // size freezing, rather than the embedder.
-  if (content_size.has_value()) {
-    // Check if the config has a content size specified inside it. If so, we
-    // should freeze to that size rather than check the current size.
-    // It is nonsensical to ask for the old size freezing behavior (freeze the
-    // initial size) while also specifying a content size.
-    CHECK(deprecated_should_freeze_initial_size.has_value() &&
-          !deprecated_should_freeze_initial_size.value());
-    PhysicalSize converted_size(LayoutUnit(content_size->width()),
-                                LayoutUnit(content_size->height()));
-    FreezeFrameSize(converted_size, /*should_coerce_size=*/false);
-  } else {
-    if ((!deprecated_should_freeze_initial_size.has_value() &&
-         IsValidUrnUuidURL(GURL(url))) ||
-        (deprecated_should_freeze_initial_size.has_value() &&
-         *deprecated_should_freeze_initial_size)) {
-      // If we are using a urn, or if the config is still using the deprecated
-      // API, freeze the current size at navigation start (or soon after).
-      FreezeCurrentFrameSize();
-    } else {
-      // Otherwise, make sure the frame size isn't frozen.
-      UnfreezeFrameSize();
-    }
-  }
 }
 
 void HTMLFencedFrameElement::NavigateToConfig() {
@@ -460,8 +326,7 @@ void HTMLFencedFrameElement::NavigateToConfig() {
         config_
             ->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>();
   }
-  Navigate(url, config_->deprecated_should_freeze_initial_size(PassKey()),
-           config_->container_size(PassKey()),
+  Navigate(url, config_->container_size(PassKey()),
            config_->content_size(PassKey()));
 }
 
@@ -511,172 +376,6 @@ FocusableState HTMLFencedFrameElement::SupportsFocus(UpdateBehavior) const {
              : FocusableState::kNotFocusable;
 }
 
-PhysicalSize HTMLFencedFrameElement::CoerceFrameSize(
-    const PhysicalSize& requested_size) {
-  // Only top-level opaque-ads fenced frames are restricted to a list of sizes.
-  // TODO(crbug.com/1123606): Later, we will change the size restriction design
-  // such that the size is a property bound to opaque URLs, rather than the
-  // mode. When that happens, much of this function will need to change.
-  // Remember to remove the following includes:
-  // #include
-  // "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_ad_sizes.h"
-  // #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-  // #include "third_party/blink/renderer/core/frame/screen.h"
-  if (GetDeprecatedMode() !=
-          blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds ||
-      GetDocument().GetFrame()->IsInFencedFrameTree()) {
-    return requested_size;
-  }
-
-  // If the requested size is degenerate, return the first allowed ad size.
-  if (requested_size.width.ToDouble() <
-          std::numeric_limits<double>::epsilon() ||
-      requested_size.height.ToDouble() <
-          std::numeric_limits<double>::epsilon()) {
-    return PhysicalSize(kAllowedAdSizes[0]);
-  }
-
-  // If the requested size has an exact match on the allow list, allow it.
-  static_assert(kAllowedAdSizes.size() > 0UL);
-  for (const gfx::Size& allowed_size : kAllowedAdSizes) {
-    if (SizeMatchesExactly(requested_size, allowed_size)) {
-      RecordOpaqueFencedFrameSizeCoercion(false);
-      return requested_size;
-    }
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1123606): For now, only allow screen-width ads on Android.
-  // We will improve this condition in the future, to account for all cases
-  // e.g. split screen, desktop mode, WebView.
-  Document& document = GetDocument();
-  int width_for_scaling = document.domWindow() && document.domWindow()->screen()
-                              ? document.domWindow()->screen()->availWidth()
-                              : 0;
-
-  // If scaling based on screen width is allowed, check for exact matches
-  // with the list of heights and aspect ratios.
-  if (width_for_scaling > 0) {
-    static_assert(kAllowedAdHeights.size() > 0UL);
-    for (const int allowed_height : kAllowedAdHeights) {
-      if (SizeMatchesExactly(requested_size,
-                             {width_for_scaling, allowed_height})) {
-        return requested_size;
-      }
-    }
-
-    static_assert(kAllowedAdAspectRatios.size() > 0UL);
-    for (const gfx::Size& allowed_aspect_ratio : kAllowedAdAspectRatios) {
-      if (SizeMatchesExactly(
-              requested_size,
-              {width_for_scaling,
-               (width_for_scaling * allowed_aspect_ratio.height()) /
-                   allowed_aspect_ratio.width()})) {
-        return requested_size;
-      }
-    }
-  }
-#endif
-
-  // If the requested size isn't allowed, we will freeze the inner frame
-  // element with the nearest available size (the best fit according to our
-  // size loss function).
-  GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kRendering,
-      mojom::blink::ConsoleMessageLevel::kWarning,
-      "A fenced frame in opaque-ads mode attempted to load with an "
-      "unsupported size, and was therefore rounded to the nearest supported "
-      "size."));
-  RecordOpaqueFencedFrameSizeCoercion(true);
-
-  // The best size so far, and its loss. A lower loss represents
-  // a better fit, so we will find the size that minimizes it, i.e.
-  // the least bad size.
-  gfx::Size best_size = kAllowedAdSizes[0];
-  double best_size_loss = std::numeric_limits<double>::infinity();
-
-  for (const gfx::Size& allowed_size : kAllowedAdSizes) {
-    double size_loss = ComputeSizeLossFunction(requested_size, allowed_size);
-    if (size_loss < best_size_loss) {
-      best_size_loss = size_loss;
-      best_size = allowed_size;
-    }
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  if (width_for_scaling > 0) {
-    for (const int allowed_height : kAllowedAdHeights) {
-      const gfx::Size allowed_size = {width_for_scaling, allowed_height};
-      double size_loss = ComputeSizeLossFunction(requested_size, allowed_size);
-      if (size_loss < best_size_loss) {
-        best_size_loss = size_loss;
-        best_size = allowed_size;
-      }
-    }
-
-    for (const gfx::Size& allowed_aspect_ratio : kAllowedAdAspectRatios) {
-      const gfx::Size allowed_size = {
-          width_for_scaling,
-          (width_for_scaling * allowed_aspect_ratio.height()) /
-              allowed_aspect_ratio.width()};
-      double size_loss = ComputeSizeLossFunction(requested_size, allowed_size);
-      if (size_loss < best_size_loss) {
-        best_size_loss = size_loss;
-        best_size = allowed_size;
-      }
-    }
-  }
-#endif
-
-  return PhysicalSize(best_size);
-}
-
-const std::optional<PhysicalSize> HTMLFencedFrameElement::FrozenFrameSize()
-    const {
-  if (!frozen_frame_size_)
-    return std::nullopt;
-  const float ratio = GetDocument().DevicePixelRatio();
-  return PhysicalSize(
-      LayoutUnit::FromFloatRound(frozen_frame_size_->width * ratio),
-      LayoutUnit::FromFloatRound(frozen_frame_size_->height * ratio));
-}
-
-void HTMLFencedFrameElement::UnfreezeFrameSize() {
-  should_freeze_frame_size_on_next_layout_ = false;
-
-  // If the frame was already unfrozen, we don't need to do anything.
-  if (!frozen_frame_size_.has_value()) {
-    return;
-  }
-
-  // Otherwise, the frame previously had a frozen size. Unfreeze it.
-  frozen_frame_size_ = std::nullopt;
-  frame_delegate_->MarkFrozenFrameSizeStale();
-}
-
-void HTMLFencedFrameElement::FreezeCurrentFrameSize() {
-  should_freeze_frame_size_on_next_layout_ = false;
-
-  // If the inner frame size is already frozen to the current outer frame size,
-  // we don't need to do anything.
-  if (frozen_frame_size_.has_value() && content_rect_.has_value() &&
-      content_rect_->size == *frozen_frame_size_) {
-    return;
-  }
-
-  // Otherwise, we need to change the frozen size of the frame.
-  frozen_frame_size_ = std::nullopt;
-
-  // If we know the current outer frame size, freeze the inner frame to it.
-  if (content_rect_) {
-    FreezeFrameSize(content_rect_->size, /*should_coerce_size=*/true);
-    return;
-  }
-
-  // Otherwise, we need to wait for the next layout.
-  should_freeze_frame_size_on_next_layout_ = true;
-}
-
 void HTMLFencedFrameElement::SetContainerSize(const gfx::Size& size) {
   setAttribute(html_names::kWidthAttr,
                AtomicString(Format("{}px", size.width())));
@@ -684,55 +383,6 @@ void HTMLFencedFrameElement::SetContainerSize(const gfx::Size& size) {
                AtomicString(Format("{}px", size.height())));
 
   frame_delegate_->MarkContainerSizeStale();
-}
-
-void HTMLFencedFrameElement::FreezeFrameSize(const PhysicalSize& size,
-                                             bool should_coerce_size) {
-  frozen_frame_size_ = size;
-  if (should_coerce_size) {
-    frozen_frame_size_ = CoerceFrameSize(size);
-  }
-
-  frame_delegate_->MarkFrozenFrameSizeStale();
-}
-
-void HTMLFencedFrameElement::StartResizeObserver() {
-  DCHECK(!resize_observer_);
-  resize_observer_ =
-      ResizeObserver::Create(GetDocument().domWindow(),
-                             MakeGarbageCollected<ResizeObserverDelegate>());
-  resize_observer_->observe(this);
-}
-
-void HTMLFencedFrameElement::ResizeObserverDelegate::OnResize(
-    const HeapVector<Member<ResizeObserverEntry>>& entries) {
-  if (entries.empty())
-    return;
-  const Member<ResizeObserverEntry>& entry = entries.back();
-  auto* element = To<HTMLFencedFrameElement>(entry->target());
-  const DOMRectReadOnly* content_rect = entry->contentRect();
-  element->OnResize(ToPhysicalRect(*content_rect));
-}
-
-void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
-  // If we don't have a delegate, then we won't have a frame, so no reason to
-  // freeze.
-  if (!frame_delegate_)
-    return;
-  if (frozen_frame_size_.has_value() && !size_set_after_freeze_) {
-    // Only log this once per fenced frame.
-    RecordFencedFrameResizedAfterSizeFrozen();
-    size_set_after_freeze_ = true;
-  }
-  content_rect_ = content_rect;
-
-  // If we postponed freezing the frame size until the next layout (in
-  // `FreezeCurrentFrameSize`), do it now.
-  if (should_freeze_frame_size_on_next_layout_) {
-    should_freeze_frame_size_on_next_layout_ = false;
-    DCHECK(!frozen_frame_size_);
-    FreezeFrameSize(content_rect_->size, /*should_coerce_size=*/true);
-  }
 }
 
 // START HTMLFencedFrameElement::FencedFrameDelegate
@@ -825,31 +475,20 @@ HTMLFencedFrameElement::FencedFrameDelegate::FencedFrameDelegate(
       remote_(GetElement().GetDocument().GetExecutionContext()) {
   DocumentFencedFrames::GetOrCreate(GetElement().GetDocument())
       .RegisterFencedFrame(&GetElement());
-  mojo::PendingAssociatedRemote<mojom::blink::FencedFrameOwnerHost> remote;
-  mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost> receiver =
-      remote.InitWithNewEndpointAndPassReceiver();
-  auto task_runner =
-      GetElement().GetDocument().GetTaskRunner(TaskType::kInternalDefault);
-  remote_.Bind(std::move(remote), task_runner);
-
-  RemoteFrame* remote_frame =
-      GetElement().GetDocument().GetFrame()->Client()->CreateFencedFrame(
-          &GetElement(), std::move(receiver));
-  DCHECK_EQ(remote_frame, GetElement().ContentFrame());
 }
 
 void HTMLFencedFrameElement::FencedFrameDelegate::Navigate(const KURL& url) {
-  DCHECK(remote_.get());
-  const auto navigation_start_time = base::TimeTicks::Now();
-  remote_->Navigate(url, navigation_start_time);
+  // Navigation is disabled.
 }
 
 void HTMLFencedFrameElement::FencedFrameDelegate::Dispose() {
-  DCHECK(remote_.get());
-  remote_.reset();
+  if (remote_.is_bound()) {
+    remote_.reset();
+  }
   auto* fenced_frames = DocumentFencedFrames::Get(GetElement().GetDocument());
-  DCHECK(fenced_frames);
-  fenced_frames->DeregisterFencedFrame(&GetElement());
+  if (fenced_frames) {
+    fenced_frames->DeregisterFencedFrame(&GetElement());
+  }
 }
 
 void HTMLFencedFrameElement::FencedFrameDelegate::AttachLayoutTree() {
@@ -863,15 +502,7 @@ bool HTMLFencedFrameElement::FencedFrameDelegate::SupportsFocus() {
 }
 
 void HTMLFencedFrameElement::FencedFrameDelegate::MarkFrozenFrameSizeStale() {
-  RemoteFrameView* view =
-      DynamicTo<RemoteFrameView>(GetElement().OwnedEmbeddedContentView());
-  if (view) {
-    view->ResetFrozenSize();
-  }
-  if (auto* layout_object = GetElement().GetLayoutObject()) {
-    layout_object->SetNeedsLayoutAndFullPaintInvalidation(
-        "Froze fenced frame content size");
-  }
+  // Size freezing is disabled.
 }
 
 void HTMLFencedFrameElement::FencedFrameDelegate::MarkContainerSizeStale() {
@@ -883,8 +514,7 @@ void HTMLFencedFrameElement::FencedFrameDelegate::MarkContainerSizeStale() {
 
 void HTMLFencedFrameElement::FencedFrameDelegate::DidChangeFramePolicy(
     const FramePolicy& frame_policy) {
-  DCHECK(remote_.get());
-  remote_->DidChangeFramePolicy(frame_policy);
+  // Policy changes are a no-op as the frame is a stub.
 }
 
 void HTMLFencedFrameElement::FencedFrameDelegate::Trace(

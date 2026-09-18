@@ -54,7 +54,6 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
@@ -1025,75 +1024,6 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerPrerenderBrowserTest,
   EXPECT_TRUE(host_observer.was_activated());
   EXPECT_EQ(observer->state_for_testing(),
             AppBannerManager::State::FETCHING_MANIFEST);
-}
-
-class AppBannerManagerFencedFrameBrowserTest
-    : public AppBannerManagerMPArchBrowserTest {
- public:
-  AppBannerManagerFencedFrameBrowserTest() = default;
-  ~AppBannerManagerFencedFrameBrowserTest() override = default;
-  AppBannerManagerFencedFrameBrowserTest(
-      const AppBannerManagerFencedFrameBrowserTest&) = delete;
-
-  AppBannerManagerFencedFrameBrowserTest& operator=(
-      const AppBannerManagerFencedFrameBrowserTest&) = delete;
-
-  void SetUp() override {
-#if BUILDFLAG(IS_ANDROID)
-    if (base::android::device_info::is_automotive()) {
-      GTEST_SKIP() << "Skipping test on Android Automotive";
-    }
-#endif
-    AppBannerManagerMPArchBrowserTest::SetUp();
-  }
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(AppBannerManagerFencedFrameBrowserTest,
-                       FencedFrameShouldNotUpdateState) {
-  // Navigate to an initial page.
-  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
-
-  // Initialize a MockWebContentsObserver to ensure that DidUpdateManifestURL
-  // is not invoked for fenced frame.
-  testing::NiceMock<content::MockWebContentsObserver> web_contents_observer(
-      web_contents());
-
-  // Reset the AppBannerManager so that it is not running its pipeline.
-  AppBannerManager::FromWebContents(web_contents())
-      ->ResetCurrentPageDataForTesting();
-
-  auto observer = CreateAppBannerManagerObserver();
-
-  EXPECT_EQ(observer->state_for_testing(), AppBannerManager::State::INACTIVE);
-
-  // Create a fenced frame.
-  GURL fenced_frame_url = embedded_test_server()->GetURL(
-      "/banners/fenced_frames/manifest_test_page.html?manifest=/banners/"
-      "manifest.json");
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
-  EXPECT_NE(nullptr, fenced_frame_host);
-  EXPECT_EQ(observer->state_for_testing(), AppBannerManager::State::INACTIVE);
-
-  // Cross check that  DidUpdateWebManifestURL is not called for fenced frame
-  // RenderFrameHost.
-  EXPECT_CALL(web_contents_observer,
-              DidUpdateWebManifestURL(fenced_frame_host, testing::_))
-      .Times(0);
-
-  // Navigate the fenced frame.
-  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
-                                                            fenced_frame_url);
-  EXPECT_EQ(observer->state_for_testing(), AppBannerManager::State::INACTIVE);
 }
 
 // TODO(crbug.com/370270547): Many tests are failing.

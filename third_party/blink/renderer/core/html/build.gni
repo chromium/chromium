@@ -98,7 +98,6 @@ blink_core_sources_html = [
   "fenced_frame/document_fenced_frames.h",
   "fenced_frame/fence.cc",
   "fenced_frame/fence.h",
-  "fenced_frame/fenced_frame_ad_sizes.h",
   "fenced_frame/fenced_frame_config.cc",
   "fenced_frame/fenced_frame_config.h",
   "fenced_frame/html_fenced_frame_element.cc",

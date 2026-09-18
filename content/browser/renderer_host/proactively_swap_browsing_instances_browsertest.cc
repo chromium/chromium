@@ -21,7 +21,6 @@
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
@@ -1961,12 +1960,7 @@ class ProactivelySwapBrowsingInstancesOptOutTest
     return child;
   }
 
-  test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
-
  private:
-  test::FencedFrameTestHelper fenced_frame_test_helper_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -2154,25 +2148,6 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
         CreateAnchorAndNavigate(shell()->web_contents()->GetPrimaryMainFrame(),
                                 next_url,
                                 /*target_name=*/"", /*rel=*/"opener");
-      },
-      /*expect_opt_out_applies=*/false);
-}
-
-IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
-                       CannotOptOutFromFencedFrame) {
-  // _unfencedTop navigations force a browsing instance swap, which should take
-  // priority over the requested opt out.
-  RunOptOutTest(
-      [this]() {
-        const GURL fenced_frame_url(
-            embedded_test_server()->GetURL("/fenced_frames/title0.html"));
-        const GURL next_url(embedded_test_server()->GetURL("/title2.html"));
-        RenderFrameHost* ff_rfh = fenced_frame_test_helper().CreateFencedFrame(
-            shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url,
-            net::OK, blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
-        CreateAnchorAndNavigate(ff_rfh, next_url,
-                                /*target_name=*/"_unfencedTop",
-                                /*rel=*/"opener");
       },
       /*expect_opt_out_applies=*/false);
 }

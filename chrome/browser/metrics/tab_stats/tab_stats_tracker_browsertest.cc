@@ -20,7 +20,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "media/base/media_switches.h"
@@ -857,9 +856,6 @@ class TabStatsTrackerSubFrameBrowserTest : public TabStatsTrackerBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     TabStatsTrackerBrowserTest::SetUpOnMainThread();
   }
-
- protected:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
 // TODO(crbug.com/532509057): Fix the flakiness on Android and re-enable the
@@ -899,15 +895,6 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerSubFrameBrowserTest,
                          "document.body.appendChild(iframe);",
                          embedded_test_server()->GetURL("/title1.html"))));
   WaitForLoadStop(GetWebContents());
-  ::testing::Mock::VerifyAndClear(&mock_observer);
-
-  // Create a fenced frame and navigate inside the fenced frame.
-  EXPECT_CALL(mock_observer, OnPrimaryMainFrameNavigationCommitted(_)).Times(0);
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_helper_.CreateFencedFrame(
-          GetWebContents()->GetPrimaryMainFrame(),
-          embedded_test_server()->GetURL("/fenced_frames/title1.html"));
-  ASSERT_NE(nullptr, fenced_frame_host);
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   tab_stats_tracker_->RemoveObserver(&mock_observer);

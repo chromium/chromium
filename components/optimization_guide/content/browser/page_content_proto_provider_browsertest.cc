@@ -37,7 +37,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/media_start_stop_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
@@ -1389,9 +1388,6 @@ class PageContentProtoProviderBrowserTestMultiProcess
     }
   }
 
- protected:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -1580,40 +1576,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PageContentProtoProviderBrowserTestMultiProcess,
                          testing::Bool());
 
-class PageContentProtoProviderBrowserTestFencedFrame
-    : public PageContentProtoProviderBrowserTest {
- protected:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestFencedFrame,
-                       AIPageContentFencedFrame) {
-  LoadPage(https_server()->GetURL("a.com", "/fenced_frame/basic.html"),
-           nullptr);
-
-  const GURL fenced_frame_url =
-      https_server()->GetURL("b.com", "/fenced_frame/simple.html");
-  auto* fenced_frame_rfh = fenced_frame_helper_.CreateFencedFrame(
-      web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
-  ASSERT_NE(nullptr, fenced_frame_rfh);
-  LoadData();
-
-  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
-
-  const auto& b_frame = page_content().root_node().children_nodes()[0];
-  EXPECT_EQ(b_frame.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
-  const auto& b_frame_data = b_frame.content_attributes().iframe_data();
-  AssertValidOrigin(b_frame_data.frame_data().security_origin(),
-                    fenced_frame_rfh->GetLastCommittedOrigin());
-  EXPECT_FALSE(b_frame.content_attributes().is_ad_related());
-  EXPECT_EQ(b_frame.children_nodes().size(), 1);
-  AssertHasText(b_frame.children_nodes()[0], "Non empty simple page\n\n");
-  const auto& b_geometry = b_frame.content_attributes().geometry();
-  AssertRectsEqual(b_geometry.outer_bounding_box(),
-                   b_geometry.visible_bounding_box());
-}
-
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        AIPageContentInnerWebContents) {
   LoadPage(https_server()->GetURL("a.com", "/iframe.html"), nullptr);
@@ -1688,20 +1650,14 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
 
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
                        AIPageContentFrameIdentifiersTheSame) {
-  LoadPage(https_server()->GetURL("a.com", "/fenced_frame/basic.html"),
-           nullptr);
+  LoadPage(https_server()->GetURL("a.com", "/iframe_same_site.html"), nullptr);
 
-  const GURL fenced_frame_url =
-      https_server()->GetURL("b.com", "/fenced_frame/simple.html");
-  auto* fenced_frame_rfh = fenced_frame_helper_.CreateFencedFrame(
-      web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
-  ASSERT_NE(nullptr, fenced_frame_rfh);
   LoadData();
   auto document_identifiers_1 = document_identifiers();
   LoadData();
   auto document_identifiers_2 = document_identifiers();
-  EXPECT_EQ(2u, document_identifiers_1.size());
-  EXPECT_EQ(2u, document_identifiers_2.size());
+  EXPECT_EQ(3u, document_identifiers_1.size());
+  EXPECT_EQ(3u, document_identifiers_2.size());
   for (const auto& [document_identifier_key, doc_ptr] :
        document_identifiers_1) {
     EXPECT_NE(document_identifiers_2.end(),

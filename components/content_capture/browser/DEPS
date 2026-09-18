@@ -11,7 +11,4 @@ specific_include_rules = {
   "content_capture_receiver_test.cc": [
     "+content/public/common",
   ],
-  "content_capture_receiver_browsertest.cc": [
-    "+content/shell/browser",
-  ],
 }

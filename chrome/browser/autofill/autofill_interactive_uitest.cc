@@ -80,7 +80,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -2186,11 +2185,7 @@ class AutofillInteractiveIsolationTest : public AutofillInteractiveTestBase {
   }
 };
 
-enum class FrameType { kIFrame, kFencedFrame };
-
-class AutofillInteractiveFencedFrameTest
-    : public AutofillInteractiveIsolationTest,
-      public ::testing::WithParamInterface<FrameType> {
+class AutofillInteractiveIframeTest : public AutofillInteractiveIsolationTest {
  protected:
   class TestAutofillManager : public BrowserAutofillManager {
    public:
@@ -2208,46 +2203,19 @@ class AutofillInteractiveFencedFrameTest
         {AutofillManagerEvent::kFormsSeen}};
   };
 
-  AutofillInteractiveFencedFrameTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled;
-    std::vector<base::test::FeatureRef> disabled;
-    if (GetParam() != FrameType::kIFrame) {
-      enabled.push_back({network::features::kBrowsingTopics, {}});
-      enabled.push_back({blink::features::kFencedFramesAPIChanges, {}});
-      scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
-      fenced_frame_test_helper_ =
-          std::make_unique<content::test::FencedFrameTestHelper>();
-    }
-  }
-  ~AutofillInteractiveFencedFrameTest() override = default;
-
-  content::RenderFrameHost* primary_main_frame_host() {
-    return GetWebContents()->GetPrimaryMainFrame();
-  }
+  AutofillInteractiveIframeTest() = default;
+  ~AutofillInteractiveIframeTest() override = default;
 
   TestAutofillManager* autofill_manager(content::RenderFrameHost* rfh) {
     return autofill_manager_injector_[rfh];
   }
 
   content::RenderFrameHost* LoadSubFrame(std::string relative_url) {
-    GURL frame_url = https_server()->GetURL(
-        "b.com", (GetParam() == FrameType::kIFrame ? "" : "/fenced_frames") +
-                     relative_url);
-    content::RenderFrameHost* cross_frame = nullptr;
-    switch (GetParam()) {
-      case FrameType::kIFrame: {
-        EXPECT_TRUE(content::NavigateIframeToURL(GetWebContents(), "crossFrame",
-                                                 frame_url));
-        cross_frame = RenderFrameHostForName(GetWebContents(), "crossFrame");
-        break;
-      }
-      case FrameType::kFencedFrame: {
-        // Creates a <fencedframe> element in the renderer.
-        cross_frame = fenced_frame_test_helper_->CreateFencedFrame(
-            primary_main_frame_host(), frame_url);
-        break;
-      }
-    }
+    GURL frame_url = https_server()->GetURL("b.com", relative_url);
+    EXPECT_TRUE(content::NavigateIframeToURL(GetWebContents(), "crossFrame",
+                                             frame_url));
+    content::RenderFrameHost* cross_frame =
+        RenderFrameHostForName(GetWebContents(), "crossFrame");
     // Wait to make sure the cross-frame form is parsed.
     if (cross_frame) {
       if (TestAutofillManager* manager = autofill_manager(cross_frame)) {
@@ -2258,24 +2226,15 @@ class AutofillInteractiveFencedFrameTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<content::test::FencedFrameTestHelper>
-      fenced_frame_test_helper_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 
-INSTANTIATE_TEST_SUITE_P(AutofillInteractiveTest,
-                         AutofillInteractiveFencedFrameTest,
-                         ::testing::Values(FrameType::kFencedFrame,
-                                           FrameType::kIFrame));
-
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
-                       SimpleCrossSiteFill) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveIframeTest, SimpleCrossSiteFill) {
   test_delegate()->SetIgnoreBackToBackMessages(
       ObservedUiEvents::kPreviewFormData, true);
   CreateTestProfile();
 
-  // Main frame is on a.com, iframe/fenced frame is on b.com.
+  // Main frame is on a.com, iframe is on b.com.
   GURL url =
       https_server()->GetURL("a.com", "/autofill/cross_origin_iframe.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -2297,11 +2256,10 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
 }
 
 // This test verifies that credit card (payment card list) popup works when the
-// form is inside an OOPIF/Fenced Frame.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
-                       CrossSitePaymentForms) {
+// form is inside an OOPIF.
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveIframeTest, CrossSitePaymentForms) {
   CreateTestCreditCart();
-  // Main frame is on a.com, iframe/fenced frame is on b.com.
+  // Main frame is on a.com, iframe is on b.com.
   GURL url =
       https_server()->GetURL("a.com", "/autofill/cross_origin_iframe.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -2330,11 +2288,11 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
 
 // Tests that deleting the subframe that has opened the Autofill popup closes
 // the popup.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveIframeTest,
                        DeletingFrameClosesPopup) {
   CreateTestProfile();
 
-  // Main frame is on a.com, fenced frame is on b.com.
+  // Main frame is on a.com, iframe is on b.com.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_server()->GetURL("a.com", "/autofill/cross_origin_iframe.html")));
@@ -2342,13 +2300,6 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
   content::RenderFrameHost* cross_frame_host =
       LoadSubFrame("/autofill/autofill_test_form.html");
   ASSERT_TRUE(cross_frame_host);
-
-  // We need the fencedframe element to have id set to a known value
-  if (GetParam() != FrameType::kIFrame) {
-    ASSERT_TRUE(content::ExecJs(
-        GetWebContents(),
-        "document.getElementsByTagName('fencedframe')[0].id = 'crossFF';"));
-  }
 
   ContentAutofillDriver* cross_driver =
       ContentAutofillDriver::GetForRenderFrameHost(cross_frame_host);
@@ -2364,10 +2315,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
   // Do not accept the suggestion yet, to keep the pop-up shown.
   EXPECT_TRUE(IsPopupShown());
 
-  // Delete the iframe/fenced frame.
-  std::string script_delete = base::StringPrintf(
-      "document.body.removeChild(document.getElementById('%s'))",
-      GetParam() == FrameType::kIFrame ? "crossFrame" : "crossFF");
+  // Delete the iframe.
+  std::string script_delete =
+      "document.body.removeChild(document.getElementById('crossFrame'))";
   ASSERT_TRUE(content::ExecJs(GetWebContents(), script_delete));
 
   EXPECT_FALSE(IsPopupShown());

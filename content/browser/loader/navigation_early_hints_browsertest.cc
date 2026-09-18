@@ -23,7 +23,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -953,51 +952,6 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsPrerenderTest,
 
   GURL script_url = net::QuicSimpleTestServer::GetFileURL(kHintedScriptPath);
   EXPECT_TRUE(preloads.contains(script_url));
-}
-
-class NavigationEarlyHintsFencedFrameTest : public NavigationEarlyHintsTest {
- public:
-  NavigationEarlyHintsFencedFrameTest() = default;
-
-  test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
-
-  ResponseEntry CreatePageEntryWithHintedScriptInFencedFrame(
-      net::HttpStatusCode status_code) {
-    RegisterHintedScriptResource();
-
-    ResponseEntry entry(kPageWithHintedScriptPath, status_code);
-    entry.headers["supports-loading-mode"] = "fenced-frame";
-    entry.body = kPageWithHintedScriptBody;
-    HeaderField link_header = CreatePreloadLinkForScript();
-    HeaderField fenced_frame_header =
-        HeaderField("supports-loading-mode", "fenced-frame");
-    entry.AddEarlyHints(
-        {std::move(link_header), std::move(fenced_frame_header)});
-    return entry;
-  }
-
- private:
-  test::FencedFrameTestHelper fenced_frame_test_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsFencedFrameTest,
-                       DisallowPreloadInFencedFrame) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), net::QuicSimpleTestServer::GetFileURL("/title1.html")));
-
-  ResponseEntry entry =
-      CreatePageEntryWithHintedScriptInFencedFrame(net::HTTP_OK);
-  RegisterResponse(entry);
-
-  // Create a fenced frame.
-  RenderFrameHostImpl* fenced_frame_host = static_cast<RenderFrameHostImpl*>(
-      fenced_frame_test_helper().CreateFencedFrame(
-          shell()->web_contents()->GetPrimaryMainFrame(),
-          net::QuicSimpleTestServer::GetFileURL(kPageWithHintedScriptPath)));
-  EXPECT_NE(fenced_frame_host, nullptr);
-  EXPECT_EQ(fenced_frame_host->early_hints_manager(), nullptr);
 }
 
 namespace {

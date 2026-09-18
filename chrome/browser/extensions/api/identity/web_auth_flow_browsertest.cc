@@ -33,7 +33,6 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -452,66 +451,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowInBrowserTabParamBrowserTest,
   // Now we exceed our 50ms limit and expect a failure.
   EXPECT_CALL(mock(), OnAuthFlowFailure(WebAuthFlow::INTERACTION_REQUIRED));
   timeout_task_runner()->FastForwardBy(base::Milliseconds(30));
-}
-
-class WebAuthFlowFencedFrameTest
-    : public WebAuthFlowInBrowserTabParamBrowserTest {
- public:
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
-                       FencedFrameNavigationSuccess) {
-  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
-
-  // Observer for waiting until loading stops. A fenced frame will be created
-  // after load has finished.
-  WebAuthFlowTestNavigationObserver navigation_observer(auth_url);
-
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
-  StartWebAuthFlow(auth_url);
-
-  navigation_observer.WaitForWindow(web_auth_flow());
-  testing::Mock::VerifyAndClearExpectations(&mock());
-
-  // Navigation for fenced frames should not affect to call the delegate methods
-  // in the WebAuthFlow.
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url)).Times(0);
-
-  // Create a fenced frame into the inner WebContents of the WebAuthFlow.
-  ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
-      web_contents()->GetPrimaryMainFrame(),
-      embedded_test_server()->GetURL("/fenced_frames/title1.html")));
-}
-
-IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
-                       FencedFrameNavigationFailure) {
-  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
-
-  // Observer for waiting until loading stops. A fenced frame will be created
-  // after load has finished.
-  WebAuthFlowTestNavigationObserver navigation_observer(auth_url);
-
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
-  StartWebAuthFlow(auth_url);
-
-  navigation_observer.WaitForWindow(web_auth_flow());
-  testing::Mock::VerifyAndClearExpectations(&mock());
-
-  // Navigation for fenced frames should not affect to call the delegate methods
-  // in the WebAuthFlow.
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url)).Times(0);
-  EXPECT_CALL(mock(), OnAuthFlowFailure).Times(0);
-
-  // Create a fenced frame into the inner WebContents of the WebAuthFlow.
-  ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
-      web_contents()->GetPrimaryMainFrame(),
-      embedded_test_server()->GetURL("/error"), net::Error::ERR_FAILED));
 }
 
 class WebAuthFlowInfoBarBrowserTest : public WebAuthFlowBrowserTest,

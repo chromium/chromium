@@ -262,19 +262,6 @@ class GeolocationHeaderBrowserTest : public InProcessBrowserTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-class GeolocationHeaderFencedFrameBrowserTest
-    : public GeolocationHeaderBrowserTest {
- public:
-  GeolocationHeaderFencedFrameBrowserTest() {
-    feature_list_.Reset();
-    feature_list_.InitWithFeatures(
-        {omnibox::kPlatformAgnosticXGeo, blink::features::kFencedFrames,
-         features::kPrivacySandboxAdsAPIsOverride},
-        {});
-  }
-};
-
-
 // Test that the X-Geo header is correctly appended for allowed searches.
 IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, AppendsXGeoHeader) {
   base::HistogramTester histogram_tester;
@@ -550,70 +537,6 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, RedirectToSameOrigin) {
   EXPECT_TRUE(GetXGeoHeader().starts_with("w "));
   histogram_tester.ExpectBucketCount("Omnibox.Search.XGeoHeaderAttached", true,
                                      2);
-}
-
-IN_PROC_BROWSER_TEST_F(GeolocationHeaderFencedFrameBrowserTest,
-                       NoHeaderForFencedFrame) {
-  device::ScopedGeolocationOverrider overrider(
-      /*latitude=*/12.34, /*longitude=*/56.78);
-
-  Profile* profile = browser()->GetProfile();
-  GeolocationHeaderService* geo_service =
-      GeolocationHeaderServiceFactory::GetForProfile(profile);
-  ASSERT_TRUE(geo_service);
-
-  // Trigger priming by typing in the Omnibox.
-  OmniboxView* omnibox_view =
-      BrowserWindow::FromBrowser(browser())->GetLocationBar()->GetOmniboxView();
-  omnibox_view->OnBeforePossibleChange();
-  omnibox_view->SetUserText(u"test");
-  omnibox_view->OnAfterPossibleChange(true);
-
-  // Wait until the geolocation service completes the query and caches it.
-  EXPECT_TRUE(
-      base::test::RunUntil([&]() { return geo_service->HasCachedLocation(); }));
-
-  // Load a main page first to ensure service is active and primed.
-  GURL main_url = test_server_.GetURL("/search?q=main");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-
-  // Create a Fenced Frame manually via JS.
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
-
-  EXPECT_TRUE(
-      content::ExecJs(main_frame,
-                      "const ff = document.createElement('fencedframe');"
-                      "ff.id = 'my_fenced_frame';"
-                      "document.body.appendChild(ff);"));
-
-  // Find the Fenced Frame RFH.
-  content::RenderFrameHost* fenced_frame_rfh = nullptr;
-  main_frame->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
-    if (rfh->IsFencedFrameRoot()) {
-      fenced_frame_rfh = rfh;
-    }
-  });
-  ASSERT_TRUE(fenced_frame_rfh);
-
-  // Navigate the Fenced Frame manually via JS.
-  GURL fenced_frame_url = test_server_.GetURL("/search?q=fenced");
-
-  content::TestFrameNavigationObserver navigation_observer(fenced_frame_rfh);
-  EXPECT_TRUE(content::ExecJs(
-      fenced_frame_rfh, base::StringPrintf("location.href = '%s';",
-                                           fenced_frame_url.spec().c_str())));
-  navigation_observer.Wait();
-
-  // Verify that the header was NOT sent for the fenced frame request.
-  std::string captured_header;
-  {
-    base::AutoLock lock(header_lock_);
-    captured_header = xgeo_header_;
-  }
-  EXPECT_TRUE(captured_header.empty())
-      << "X-Geo header should not be sent for Fenced Frame navigations.";
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,

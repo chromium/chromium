@@ -98,7 +98,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/context_menu_interceptor.h"
 #include "content/public/test/download_test_observer.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
@@ -3505,157 +3504,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSubmitFormTest, SubmitForm) {
   run_loop->Run();
 }
 
-class PDFExtensionPrerenderAndFencedFrameTest : public PDFExtensionTest {
- public:
-  PDFExtensionPrerenderAndFencedFrameTest() = default;
-  ~PDFExtensionPrerenderAndFencedFrameTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PDFExtensionTest::SetUpCommandLine(command_line);
-    // `prerender_helper_` and `fenced_frame_helper_` has a ScopedFeatureList so
-    // we needed to delay its creation until now because PDFExtensionTest
-    // also uses a ScopedFeatureList and initialization order matters.
-    prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
-        base::BindRepeating(&PDFExtensionPrerenderTest::GetActiveWebContents,
-                            base::Unretained(this)));
-    fenced_frame_helper_ =
-        std::make_unique<content::test::FencedFrameTestHelper>();
-  }
-
-  content::test::PrerenderTestHelper& prerender_helper() {
-    return *prerender_helper_;
-  }
-
-  content::test::FencedFrameTestHelper& fenced_frame_helper() {
-    return *fenced_frame_helper_;
-  }
-
- private:
-  std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
-  std::unique_ptr<content::test::FencedFrameTestHelper> fenced_frame_helper_;
-};
-
-// TODO(crbug.com/40180674): The PDF viewer cannot currently be prerendered
-// correctly. Once this is supported, this test should be re-enabled for
-// GuestView PDF viewer and enabled for OOPIF PDF viewer.
-IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderAndFencedFrameTest,
-                       DISABLED_LoadPDFInPrerender) {
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  GURL url = embedded_test_server()->GetURL("/empty.html");
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
-
-  TestMimeHandlerViewGuest::RegisterTestGuestViewType(GetGuestViewManager());
-  // Set a 1s delay to delay MimeHandlerViewGuest's creation to ensure that the
-  // fenced frame is loaded while the PDF stream is not yet consumed.
-  const int creation_delay = TestTimeouts::tiny_timeout().InMilliseconds();
-  TestMimeHandlerViewGuest::DelayNextCreateWebContents(creation_delay);
-
-  // Load a PDF in the prerender.
-  GURL prerender_url = embedded_test_server()->GetURL("/pdf/test.pdf");
-
-  content::test::PrerenderHostRegistryObserver registry_observer(
-      *GetActiveWebContents());
-  prerender_helper().AddPrerenderAsync(prerender_url);
-  registry_observer.WaitForTrigger(prerender_url);
-
-  // Create a fenced frame.
-  const GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_helper().CreateFencedFrame(
-          GetActiveWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
-  ASSERT_TRUE(fenced_frame_host);
-
-  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
-  ASSERT_TRUE(guest_view);
-  TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
-
-  // Ensure that the fenced frame's navigation should not abort the PDF stream.
-  EXPECT_EQ(1U, GetGuestViewManager()->GetCurrentGuestCount());
-}
-
-// Test that ensures we cannot navigate a fenced frame to a PDF because PDF
-// isn't allowed by default static sandbox flags of fenced frames.
-IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderAndFencedFrameTest,
-                       LoadPdfInFencedFrame) {
-  ASSERT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(), embedded_test_server()->GetURL("/empty.html")));
-
-  // Create a fenced frame and try to navigate to a PDF.
-  EXPECT_TRUE(fenced_frame_helper().CreateFencedFrame(
-      GetActiveWebContents()->GetPrimaryMainFrame(),
-      embedded_test_server()->GetURL("/pdf/test-fenced-frame.pdf"),
-      net::Error::ERR_BLOCKED_BY_CLIENT));
-  EXPECT_EQ(CountPDFProcesses(), 0);
-}
-
-// Like `LoadPdfInFencedFrame`, but without Supports-Loading-Mode headers set.
-IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderAndFencedFrameTest,
-                       LoadPdfInFencedFrameWithoutFencedFrameOptIn) {
-  ASSERT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(), embedded_test_server()->GetURL("/empty.html")));
-
-  // Create a fenced frame and try to navigate to a PDF.
-  EXPECT_TRUE(fenced_frame_helper().CreateFencedFrame(
-      GetActiveWebContents()->GetPrimaryMainFrame(),
-      embedded_test_server()->GetURL("/pdf/test.pdf"),
-      net::Error::ERR_BLOCKED_BY_RESPONSE));
-  EXPECT_EQ(CountPDFProcesses(), 0);
-}
-
-// Test that ensures a fenced frame cannot load a document embedding a PDF
-// because PDF isn't allowed in fenced frames.
-IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderAndFencedFrameTest,
-                       LoadEmbeddedPdfInFencedFrame) {
-  ASSERT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(), embedded_test_server()->GetURL("/empty.html")));
-
-  // Create a fenced frame for loading a document with pdf embed(s).
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_helper().CreateFencedFrame(
-          GetActiveWebContents()->GetPrimaryMainFrame(),
-          embedded_test_server()->GetURL("/fenced_frames/title1.html"));
-  ASSERT_TRUE(fenced_frame_host);
-
-  const GURL pdf_url =
-      embedded_test_server()->GetURL("/pdf/test-fenced-frame.pdf");
-  // Ensure that the fenced frame cannot load a PDF embedding with <iframe>.
-  ASSERT_TRUE(content::ExecJs(
-      fenced_frame_host,
-      content::JsReplace("let e = document.createElement('iframe');"
-                         "e.src = $1;"
-                         "e.type = 'application/pdf';"
-                         "document.body.appendChild(e);",
-                         pdf_url)));
-  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
-  EXPECT_EQ(CountPDFProcesses(), 0);
-
-  // Ensure that the fenced frame cannot load a PDF embedding with <object>.
-  ASSERT_TRUE(content::ExecJs(
-      fenced_frame_host,
-      content::JsReplace("let e = document.createElement('object');"
-                         "e.data = $1;"
-                         "e.type = 'application/pdf';"
-                         "document.body.appendChild(e);",
-                         pdf_url)));
-  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
-  EXPECT_EQ(CountPDFProcesses(), 0);
-
-  // Ensure that the fenced frame cannot load a PDF embedding with <embed>.
-  ASSERT_TRUE(content::ExecJs(
-      fenced_frame_host,
-      content::JsReplace("let e = document.createElement('embed');"
-                         "e.src = $1;"
-                         "e.type = 'application/pdf';"
-                         "document.body.appendChild(e);",
-                         pdf_url)));
-  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
-  EXPECT_EQ(CountPDFProcesses(), 0);
-}
-
 // Exercise a race condition where the profile is destroyed in the middle of a
 // PDF navigation and ensure that this doesn't crash.  Specifically,
 // `PdfNavigationThrottle` intercepts PDF navigations to PDF stream URLs,
@@ -4906,8 +4754,6 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionClipboardTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionHitTestTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionPrerenderTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionSubmitFormTest);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PDFExtensionPrerenderAndFencedFrameTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionIncognitoTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionSameSiteProcessTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionZoomTest);

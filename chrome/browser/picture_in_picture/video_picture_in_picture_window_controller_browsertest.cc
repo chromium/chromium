@@ -48,7 +48,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/media_start_stop_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -1694,44 +1693,6 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerPrerenderBrowserTest,
   // Picture-in-Picture window should be closed after navigating away.
   prerender_test_helper().NavigatePrimaryPage(prerendering_page_url);
   EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
-}
-
-class PictureInPictureWindowControllerFencedFrameBrowserTest
-    : public VideoPictureInPictureWindowControllerBrowserTest {
- public:
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerFencedFrameBrowserTest,
-                       FencedFrameShouldNotCloseWindow) {
-  GURL test_page_url = embedded_test_server()->GetURL(
-      "example.com", "/media/picture-in-picture/window-size.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
-
-  content::WebContents* active_web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  ASSERT_TRUE(active_web_contents);
-
-  SetUpWindowController(active_web_contents);
-  ASSERT_TRUE(window_controller() != nullptr);
-
-  // Open Picture-in-Picture window
-  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
-  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
-
-  // Navigation to fenced frame page should not close Picture-in-Picture window.
-  GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          active_web_contents->GetPrimaryMainFrame(), fenced_frame_url);
-  EXPECT_NE(nullptr, fenced_frame_host);
-  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 }
 
 class MediaSessionVideoPictureInPictureWindowControllerBrowserTest

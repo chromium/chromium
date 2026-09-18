@@ -24,7 +24,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
@@ -523,73 +522,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
                        ScriptsExecuteWhenNoPermissionsWithheld_ExecuteScripts) {
   RunActiveScriptsTest("execute_scripts_all_hosts", ALL_HOSTS, EXECUTE_SCRIPT,
                        DONT_WITHHOLD_PERMISSIONS, DOES_NOT_REQUIRE_CONSENT);
-}
-
-class ExtensionActionRunnerFencedFrameBrowserTest
-    : public ExtensionActionRunnerBrowserTest {
- public:
-  ExtensionActionRunnerFencedFrameBrowserTest() = default;
-  ~ExtensionActionRunnerFencedFrameBrowserTest() override = default;
-
-  ExtensionActionRunnerFencedFrameBrowserTest(
-      const ExtensionActionRunnerFencedFrameBrowserTest&) = delete;
-  ExtensionActionRunnerFencedFrameBrowserTest& operator=(
-      const ExtensionActionRunnerFencedFrameBrowserTest&) = delete;
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
-    ExtensionActionRunnerBrowserTest::SetUpOnMainThread();
-  }
-
- protected:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-// Tests that a fenced frame doesn't clear active extensions.
-
-
-IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerFencedFrameBrowserTest,
-                       DoNotResetExtensionActionRunner) {
-  // Loadup an extension and navigate to test that a fenced frame doesn't reset
-  // ExtensionActionRunner's member variables.
-  const Extension* extension =
-      CreateExtension(ALL_HOSTS, CONTENT_SCRIPT, WITHHOLD_PERMISSIONS);
-  ASSERT_TRUE(extension);
-
-  content::WebContents* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  ExtensionActionRunner* action_runner =
-      ExtensionActionRunner::GetForWebContents(web_contents);
-  ASSERT_TRUE(action_runner);
-
-  ExtensionTestMessageListener inject_success_listener(kInjectSucceeded);
-  inject_success_listener.set_extension_id(extension->id());
-
-  GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(NavigateToURL(web_contents, url));
-
-  ScriptingPermissionsModifier modifier(profile(), extension);
-  modifier.SetWithholdHostPermissions(false);
-  EXPECT_TRUE(RunAllPendingInRenderer(web_contents));
-
-  // Create a fenced frame and navigate the fenced frame url.
-  GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_helper_.CreateFencedFrame(
-          web_contents->GetPrimaryMainFrame(), fenced_frame_url);
-  ASSERT_TRUE(fenced_frame_host);
-  // Fenced frame doesn't clear pending script injection requests and the
-  // scripts.
-  EXPECT_EQ(1, action_runner->num_page_requests());
-  EXPECT_EQ(1U, action_runner->pending_scripts_.size());
-
-  // Navigate again on the primary main frame. Pending script injection requests
-  // and scripts should be cleared.
-  ASSERT_TRUE(NavigateToURL(web_contents, url));
-  EXPECT_EQ(0, action_runner->num_page_requests());
-  EXPECT_EQ(0U, action_runner->pending_scripts_.size());
 }
 
 }  // namespace extensions

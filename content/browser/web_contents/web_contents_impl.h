@@ -1775,9 +1775,6 @@ class CONTENT_EXPORT WebContentsImpl
                            ForEachFrameTreeInnerContents);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
                            UserAgentOverrideDuringDeferredNavigation);
-  FRIEND_TEST_ALL_PREFIXES(FencedFrameMPArchBrowserTest, FrameIteration);
-  FRIEND_TEST_ALL_PREFIXES(FencedFrameParameterizedBrowserTest,
-                           ShouldIgnoreJsDialog);
   FRIEND_TEST_ALL_PREFIXES(FormStructureBrowserTest, HTMLFiles);
   FRIEND_TEST_ALL_PREFIXES(NavigationControllerTest, HistoryNavigate);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostManagerTest, PageDoesBackAndReload);

@@ -50,7 +50,6 @@
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -1546,61 +1545,6 @@ IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
   // prerendering URL, should be recorded.
   EXPECT_THAT(GetHistoryContents(),
               testing::ElementsAre(kRedirectedUrl, kInitialUrl));
-}
-
-// For tests which use fenced frame.
-class HistoryFencedFrameBrowserTest : public HistoryMPArchBrowserTest {
- public:
-  HistoryFencedFrameBrowserTest() = default;
-  ~HistoryFencedFrameBrowserTest() override = default;
-  HistoryFencedFrameBrowserTest(const HistoryFencedFrameBrowserTest&) = delete;
-
-  HistoryFencedFrameBrowserTest& operator=(
-      const HistoryFencedFrameBrowserTest&) = delete;
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(HistoryFencedFrameBrowserTest,
-                       FencedFrameDoesNotAffectLoadingState) {
-  HistoryTabHelper* history_tab_helper =
-      HistoryTabHelper::FromWebContents(web_contents());
-  ASSERT_TRUE(history_tab_helper);
-  base::TimeTicks last_load_completion_before_navigation =
-      history_tab_helper->last_load_completion_;
-
-  auto initial_url = embedded_https_test_server().GetURL("/empty.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-  // |last_load_completion_| should be updated after finishing the normal
-  // navigation.
-  EXPECT_NE(last_load_completion_before_navigation,
-            history_tab_helper->last_load_completion_);
-
-  // Create a fenced frame.
-  GURL fenced_frame_url =
-      embedded_https_test_server().GetURL("/fenced_frames/title1.html");
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
-
-  // Navigate the fenced frame.
-  last_load_completion_before_navigation =
-      history_tab_helper->last_load_completion_;
-  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
-                                                            fenced_frame_url);
-  // |last_load_completion_| should not be updated after finishing the
-  // navigation of the fenced frame.
-  EXPECT_EQ(last_load_completion_before_navigation,
-            history_tab_helper->last_load_completion_);
 }
 
 // For tests which enable :visited links partitioning.

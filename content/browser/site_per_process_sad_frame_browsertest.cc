@@ -12,7 +12,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/render_document_feature.h"
 #include "content/test/render_widget_host_visibility_observer.h"
@@ -259,12 +258,7 @@ class SitePerProcessBrowserTestWithSadFrameTabReload
     return web_contents()->GetPrimaryMainFrame();
   }
 
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
  private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -404,86 +398,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
     SadFrameShownObserver sad_frame_observer(grandchild);
     EXPECT_TRUE(ExecJs(
         child, "document.querySelector('iframe').style.display = 'block'"));
-    sad_frame_observer.Wait();
-
-    histograms.ExpectUniqueSample("Stability.ChildFrameCrash.Visibility",
-                                  CrashVisibility::kShownWhileAncestorIsLoading,
-                                  1);
-
-    // Ensure no new metrics are logged after the navigation completes.
-    ASSERT_TRUE(manager.WaitForNavigationFinished());
-    EXPECT_TRUE(manager.was_successful());
-    histograms.ExpectUniqueSample("Stability.ChildFrameCrash.Visibility",
-                                  CrashVisibility::kShownWhileAncestorIsLoading,
-                                  1);
-  }
-}
-
-// Verify that a sad frame shown when its parent frame is loading is logged
-// with appropriate metrics, namely as kShownWhileAncestorIsLoading rather than
-// kShownAfterCrashing. See https://crbug.com/1132938.
-IN_PROC_BROWSER_TEST_P(
-    SitePerProcessBrowserTestWithSadFrameTabReload,
-    // TODO(crbug.com/40839850): Re-enable this test
-    DISABLED_CrashedFencedframeVisibilityMetricsDuringParentLoad) {
-  GURL primary_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL child_url(
-      embedded_test_server()->GetURL("b.com", "/fenced_frames/title1.html"));
-  GURL grandchild_url(
-      embedded_test_server()->GetURL("c.com", "/fenced_frames/title1.html"));
-
-  EXPECT_TRUE(NavigateToURL(shell(), primary_url));
-  RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
-  RenderFrameHostImplWrapper child_rfh(
-      fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
-                                                   child_url));
-  // Note that height and width follows the layout function in
-  // content/test/data/cross_site_iframe_factory.html.
-  EXPECT_TRUE(ExecJs(primary_rfh.get(), R"(
-       var ff = document.querySelector('fencedframe');
-       // layoutX = gridSizeX * largestChildX + extraXPerLevel
-       ff.width = 1 * (110 + 30) + 50;
-       // layoutY = gridSizeY * largestChildY + extraYPerLevel
-       ff.height = 1 * (110 + 30) + 50
-       )"));
-  RenderFrameHostImplWrapper grandchild_rfh(
-      fenced_frame_test_helper().CreateFencedFrame(child_rfh.get(),
-                                                   grandchild_url));
-  // Note that height and width follows the layout function in
-  // content/test/data/cross_site_iframe_factory.html.
-  EXPECT_TRUE(ExecJs(child_rfh.get(), R"(
-       var ff = document.querySelector('fencedframe');
-       ff.width = 110;
-       ff.height = 110;
-       )"));
-
-  // Hide the grandchild frame.
-  RenderWidgetHostVisibilityObserver hide_observer(
-      grandchild_rfh->GetRenderWidgetHost(), false /* became_visible */);
-  EXPECT_TRUE(
-      ExecJs(child_rfh.get(),
-             "document.querySelector('fencedframe').style.display = 'none'"));
-  hide_observer.WaitUntilSatisfied();
-
-  // Kill the grandchild process.
-  CrashRendererProcess(grandchild_rfh.get());
-
-  // Start a navigation in the child frame, but don't commit.
-  GURL url_d(
-      embedded_test_server()->GetURL("d.com", "/fenced_frames/title1.html"));
-  TestNavigationManager manager(web_contents(), url_d);
-  EXPECT_TRUE(ExecJs(child_rfh.get(), JsReplace("location.href = $1", url_d)));
-  EXPECT_TRUE(manager.WaitForRequestStart());
-
-  // Make the grandchild fencedframe with the sad frame visible again.
-  // This should get logged as kShownWhileAncestorIsLoading, because its parent
-  // is currently loading.
-  {
-    base::HistogramTester histograms;
-    SadFrameShownObserver sad_frame_observer(grandchild_rfh.get());
-    EXPECT_TRUE(ExecJs(
-        child_rfh.get(),
-        "document.querySelector('fencedframe').style.display = 'block'"));
     sad_frame_observer.Wait();
 
     histograms.ExpectUniqueSample("Stability.ChildFrameCrash.Visibility",

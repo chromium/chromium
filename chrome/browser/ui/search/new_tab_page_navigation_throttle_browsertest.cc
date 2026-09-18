@@ -20,7 +20,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/page_transition_types.h"
@@ -362,47 +361,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottlePrerenderTest,
 
   // The title should be changed after navigation.
   EXPECT_NE(u"Title Of Awesomeness", web_contents()->GetTitle());
-}
-
-class NewTabPageNavigationThrottleFencedFrameTest
-    : public NewTabPageNavigationThrottleTest {
- public:
-  NewTabPageNavigationThrottleFencedFrameTest() = default;
-  ~NewTabPageNavigationThrottleFencedFrameTest() override = default;
-  NewTabPageNavigationThrottleFencedFrameTest(
-      const NewTabPageNavigationThrottleFencedFrameTest&) = delete;
-
-  NewTabPageNavigationThrottleFencedFrameTest& operator=(
-      const NewTabPageNavigationThrottleFencedFrameTest&) = delete;
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
-  content::WebContents* web_contents() {
-    return browser()->GetTabStripModel()->GetActiveWebContents();
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleFencedFrameTest,
-                       FencedFrameShouldNotAffectTitle) {
-  ASSERT_TRUE(https_test_server()->Start());
-  GURL ntp_url = https_test_server()->GetURL("/instant_extended.html");
-  SetNewTabPage(ntp_url.spec());
-
-  GURL title_url = https_test_server()->GetURL("/title2.html");
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), title_url));
-  EXPECT_EQ(u"Title Of Awesomeness", web_contents()->GetTitle());
-
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetPrimaryMainFrame(), ntp_url);
-  EXPECT_NE(nullptr, fenced_frame_host);
-  // Fenced frames should not update the title of the web contents.
-  EXPECT_EQ(u"Title Of Awesomeness", web_contents()->GetTitle());
 }
 
 }  // namespace

@@ -68,7 +68,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_mock_cert_verifier.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/render_frame_host_test_support.h"
@@ -455,7 +454,6 @@ class BtmBounceDetectorBrowserTest : public ContentBrowserTest {
     }
   }
 
-  auto* fenced_frame_test_helper() { return &fenced_frame_test_helper_; }
   auto* prerender_test_helper() { return &prerender_test_helper_; }
 
   RenderFrameHost* GetIFrame() {
@@ -515,7 +513,6 @@ class BtmBounceDetectorBrowserTest : public ContentBrowserTest {
 
  private:
   test::PrerenderTestHelper prerender_test_helper_;
-  test::FencedFrameTestHelper fenced_frame_test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ContentBrowserTestTpcBlockingBrowserClient> browser_client_;
 };

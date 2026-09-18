@@ -274,8 +274,6 @@ class DownloadRequestLimiter
                            CreateBubbleModel);
   FRIEND_TEST_ALL_PREFIXES(PrerenderDownloadTest,
                            DownloadRequestLimiterIsUnaffectedByPrerendering);
-  FRIEND_TEST_ALL_PREFIXES(FencedFrameDownloadTest,
-                           DownloadRequestLimiterIsUnaffectedByFencedFrame);
   FRIEND_TEST_ALL_PREFIXES(
       ContentSettingBubbleModelUnusedPermissionRevocationForAllSurfacesTest,
       AutomaticDownloads_LastVisited);

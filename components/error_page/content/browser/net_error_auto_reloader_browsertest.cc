@@ -22,7 +22,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
@@ -757,37 +756,6 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
     ASSERT_TRUE(navigation_observer.WaitForNavigationFinished());
     EXPECT_FALSE(handle_observer.is_download());
   }
-}
-
-class NetErrorAutoReloaderFencedFrameBrowserTest
-    : public NetErrorAutoReloaderBrowserTest {
- public:
-  ~NetErrorAutoReloaderFencedFrameBrowserTest() override = default;
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderFencedFrameBrowserTest,
-                       NoAutoReloadOnFencedFrames) {
-  const GURL main_url = embedded_test_server()->GetURL("/title1.html");
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  const GURL fenced_frame_url = embedded_test_server()->GetURL("/title2.html");
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetPrimaryMainFrame(), fenced_frame_url,
-          net::ERR_BLOCKED_BY_RESPONSE);
-
-  // The fenced frame navigation failed since it doesn't have the
-  // Supports-Loading-Mode HTTP response header "fenced-frame".
-  EXPECT_TRUE(fenced_frame_host->GetLastCommittedOrigin().opaque());
-  EXPECT_TRUE(fenced_frame_host->IsErrorDocument());
-  EXPECT_EQ(std::nullopt, GetCurrentAutoReloadDelay());
 }
 
 // Check that a manual reload stops the auto-reload timer, and when the manual

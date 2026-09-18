@@ -121,7 +121,6 @@
 #include "content/public/common/page_zoom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/theme_change_waiter.h"
@@ -1459,9 +1458,6 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     return helper()->GetXYWidthHeightRect(web_contents, kRectValueList, "rect");
   }
 
- protected:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-
  private:
   base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList no_toggle_feature_list_;
@@ -2134,77 +2130,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   // If there's no crash, the test has passed.
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
-                       DraggableRegionNotResetByFencedFrameNavigation) {
-  InstallAndLaunchWebApp();
-  ToggleWindowControlsOverlayAndWait();
 
-  BrowserView* browser_view = helper()->browser_view();
-  views::FrameView* frame_view =
-      browser_view->GetWidget()->non_client_view()->frame_view();
-
-  gfx::Point draggable_point(100, 100);
-  views::View::ConvertPointToTarget(browser_view->contents_web_view(),
-                                    frame_view, &draggable_point);
-
-  // Create a fenced frame and ensure that draggable region doesn't clear after
-  // the fenced frame navigation.
-  const GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
-  content::RenderFrameHost* fenced_frame_rfh =
-      fenced_frame_helper_.CreateFencedFrame(
-          browser_view->GetActiveWebContents()->GetPrimaryMainFrame(),
-          fenced_frame_url);
-  ASSERT_NE(nullptr, fenced_frame_rfh);
-  EXPECT_FALSE(browser_view->ShouldDescendIntoChildForEventHandling(
-      browser_view->GetWidget()->GetNativeView(), draggable_point));
-}
-
-// TODO(crbug.com/405233966): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_FencedFrame DISABLED_FencedFrame
-#else
-#define MAYBE_FencedFrame FencedFrame
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
-                       MAYBE_FencedFrame) {
-  InstallAndLaunchWebApp();
-  ToggleWindowControlsOverlayAndWait();
-
-  BrowserView* browser_view = helper()->browser_view();
-  gfx::Rect bounds = GetWindowControlOverlayBoundingClientRect();
-  EXPECT_TRUE(GetWindowControlOverlayVisibility());
-  EXPECT_FALSE(bounds.IsEmpty());
-  EXPECT_NE(0, bounds.width());
-  EXPECT_NE(0, bounds.height());
-
-  // Ensure window controls overlay values are not sent to a fenced frame.
-  const GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      fenced_frame_helper_.CreateFencedFrame(
-          browser_view->GetActiveWebContents()->GetPrimaryMainFrame(),
-          fenced_frame_url);
-  ASSERT_NE(nullptr, fenced_frame_rfh);
-
-  EXPECT_EQ(false, EvalJs(fenced_frame_rfh,
-                          "window.navigator.windowControlsOverlay.visible"));
-  EXPECT_EQ(
-      0,
-      EvalJs(fenced_frame_rfh,
-             "window.navigator.windowControlsOverlay.getTitlebarAreaRect().x"));
-  EXPECT_EQ(
-      0,
-      EvalJs(fenced_frame_rfh,
-             "window.navigator.windowControlsOverlay.getTitlebarAreaRect().y"));
-  EXPECT_EQ(0, EvalJs(fenced_frame_rfh,
-                      "window.navigator.windowControlsOverlay."
-                      "getTitlebarAreaRect().width"));
-  EXPECT_EQ(0, EvalJs(fenced_frame_rfh,
-                      "window.navigator.windowControlsOverlay."
-                      "getTitlebarAreaRect().height"));
-}
 
 // Extensions in  ChromeOS are not in the titlebar.
 #if !BUILDFLAG(IS_CHROMEOS)

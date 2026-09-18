@@ -13,7 +13,6 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -174,48 +173,6 @@ IN_PROC_BROWSER_TEST_P(AmpPageLoadMetricsBrowserTest, MAYBE_AmpSubframe) {
   GURL url =
       https_test_server()->GetURL("/page_load_metrics/amp_reader_mock.html");
   NavigateToURL(url);
-  waiter.Wait();
-  CloseAllTabs();
-  ExpectMetricCountForUrl(url, "MainFrameAmpPageLoad", 0);
-  ExpectMetricValueForUrl(url, "SubFrameAmpPageLoad", 1);
-}
-
-class AmpPageLoadMetricsFencedFrameBrowserTest
-    : public AmpPageLoadMetricsBrowserTest {
- public:
-  AmpPageLoadMetricsFencedFrameBrowserTest() = default;
-  ~AmpPageLoadMetricsFencedFrameBrowserTest() override = default;
-  AmpPageLoadMetricsFencedFrameBrowserTest(
-      const AmpPageLoadMetricsFencedFrameBrowserTest&) = delete;
-
-  AmpPageLoadMetricsFencedFrameBrowserTest& operator=(
-      const AmpPageLoadMetricsFencedFrameBrowserTest&) = delete;
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-// Currently, prerendering doesn't support FencedFrames.
-// TODO(crbug.com/40228553): Add a test with prerendering.
-IN_PROC_BROWSER_TEST_F(AmpPageLoadMetricsFencedFrameBrowserTest,
-                       AmpFencedFrame) {
-  GURL url = https_test_server()->GetURL("/english_page.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  page_load_metrics::PageLoadMetricsTestWaiter waiter(GetWebContents());
-  waiter.AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
-                                TimingField::kFirstContentfulPaint);
-  const GURL kFencedFrameUrl =
-      https_test_server()->GetURL("/page_load_metrics/amp_basic.html");
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetPrimaryMainFrame(), kFencedFrameUrl);
-  EXPECT_NE(nullptr, fenced_frame_host);
-
   waiter.Wait();
   CloseAllTabs();
   ExpectMetricCountForUrl(url, "MainFrameAmpPageLoad", 0);

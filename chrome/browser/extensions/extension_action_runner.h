@@ -144,8 +144,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   void RemoveObserver(TestObserver* observer);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ExtensionActionRunnerFencedFrameBrowserTest,
-                           DoNotResetExtensionActionRunner);
 
   struct PendingScript {
     PendingScript(content::RenderFrameHost* frame,

@@ -26,7 +26,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -620,38 +619,4 @@ IN_PROC_BROWSER_TEST_F(
 
   // Prerendering records it on DidActivatePrerenderedPage.
   histogram_tester()->ExpectTotalCount("Security.SecurityLevel.OnCommit", 2);
-}
-
-class SecurityStatePageLoadMetricsFencedFrameBrowserTest
-    : public SecurityStatePageLoadMetricsMPArchBrowserTest {
- public:
-  SecurityStatePageLoadMetricsFencedFrameBrowserTest() = default;
-  ~SecurityStatePageLoadMetricsFencedFrameBrowserTest() override = default;
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsFencedFrameBrowserTest,
-                       DoNotRecordOnCommitSecurityLevelHistogram) {
-  StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
-
-  GURL https_url = https_test_server()->GetURL("/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url));
-
-  histogram_tester()->ExpectTotalCount("Security.SecurityLevel.OnCommit", 1);
-
-  // Create a fenced frame.
-  GURL fenced_frame_url(
-      https_test_server()->GetURL("/fenced_frames/title1.html"));
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
-  ASSERT_TRUE(fenced_frame_host);
-
-  histogram_tester()->ExpectTotalCount("Security.SecurityLevel.OnCommit", 1);
 }

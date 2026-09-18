@@ -145,7 +145,6 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/find_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
@@ -7770,10 +7769,6 @@ class WebViewWithDefaultSiteInstanceTest
     WebViewTestBase::SetUpCommandLine(command_line);
   }
 
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
-
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
     const auto [mparch, site_instance_group] = info.param;
@@ -7783,7 +7778,6 @@ class WebViewWithDefaultSiteInstanceTest
   }
 
  private:
-  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -7952,99 +7946,6 @@ IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, IsolatedOrigin) {
           ->GetSecurityPrincipal()
           .GetStoragePartitionConfig(),
       starting_instance->GetSecurityPrincipal().GetStoragePartitionConfig());
-}
-
-IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, FencedFrame) {
-  TestHelper("testAddFencedFrame", "web_view/shim", NEEDS_TEST_SERVER);
-
-  auto* guest_rfh =
-      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
-  std::vector<content::RenderFrameHost*> rfhs =
-      content::CollectAllRenderFrameHosts(guest_rfh);
-  ASSERT_EQ(rfhs.size(), 2u);
-  ASSERT_EQ(rfhs[0], guest_rfh);
-  content::RenderFrameHostWrapper fenced_frame(rfhs[1]);
-  EXPECT_TRUE(fenced_frame->IsFencedFrameRoot());
-
-  content::SiteInstance* fenced_frame_site_instance =
-      fenced_frame->GetSiteInstance();
-  EXPECT_FALSE(fenced_frame->IsErrorDocument());
-  EXPECT_NE(fenced_frame_site_instance, guest_rfh->GetSiteInstance());
-  EXPECT_TRUE(fenced_frame_site_instance->GetSecurityPrincipal().IsGuest());
-  EXPECT_EQ(fenced_frame_site_instance->GetSecurityPrincipal()
-                .GetStoragePartitionConfig(),
-            guest_rfh->GetSiteInstance()
-                ->GetSecurityPrincipal()
-                .GetStoragePartitionConfig());
-  EXPECT_EQ(fenced_frame->GetProcess(), guest_rfh->GetProcess());
-}
-
-class WebViewFencedFrameTest
-    : public WebViewTestBase,
-      public testing::WithParamInterface<testing::tuple<bool, bool>> {
- public:
-  WebViewFencedFrameTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kIsolateFencedFrames, testing::get<0>(GetParam())},
-         {features::kGuestViewMPArch, testing::get<1>(GetParam())}});
-  }
-  ~WebViewFencedFrameTest() override = default;
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
-
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
-    const auto [isolate_fenced_frames, mparch] = info.param;
-    return base::StringPrintf("%s_%s",
-                              isolate_fenced_frames
-                                  ? "IsolateFencedFramesEnabled"
-                                  : "IsolateFencedFramesDisabled",
-                              mparch ? "MPArch" : "InnerWebContents");
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(WebViewTests,
-                         WebViewFencedFrameTest,
-                         testing::Combine(testing::Bool(), testing::Bool()),
-                         WebViewFencedFrameTest::DescribeParams);
-
-IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest, ZoomFencedFrame) {
-  TestHelper("testZoomFencedFrame", "web_view/shim", NEEDS_TEST_SERVER);
-
-  // Verify setup is correct.
-  auto* guest_rfh =
-      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
-  std::vector<content::RenderFrameHost*> rfhs =
-      content::CollectAllRenderFrameHosts(guest_rfh);
-  ASSERT_EQ(rfhs.size(), 2u);
-  ASSERT_EQ(rfhs[0], guest_rfh);
-  content::RenderFrameHostWrapper fenced_frame(rfhs[1]);
-  EXPECT_TRUE(fenced_frame->IsFencedFrameRoot());
-
-  // Query zoom level of FencedFrame's RenderWidgetHost, make sure it matches
-  // the expected zoom level.
-  auto* fenced_frame_rwh = fenced_frame->GetRenderWidgetHost();
-  // See Javascript fcn testZoomFencedFrame for source of the 0.95 zoom factor.
-  double expected_zoom_level = blink::ZoomFactorToZoomLevel(0.95);
-  // Guest has `expected_zoom_level`.
-  EXPECT_DOUBLE_EQ(expected_zoom_level, content::GetPendingZoomLevel(
-                                            guest_rfh->GetRenderWidgetHost()));
-  // FencedFrame has `expected_zoom_level`.
-  EXPECT_DOUBLE_EQ(expected_zoom_level,
-                   content::GetPendingZoomLevel(fenced_frame_rwh));
-
-  // Verify webview's embedder has expected zoom.
-  auto* embedder_web_contents = GetFirstAppWindowWebContents();
-  auto* embedder_rwh =
-      embedder_web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
-  EXPECT_DOUBLE_EQ(blink::ZoomFactorToZoomLevel(1.0),
-                   content::GetPendingZoomLevel(embedder_rwh));
 }
 
 class WebViewUsbTest : public WebViewTest {

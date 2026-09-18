@@ -53,7 +53,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/prerender_test_util.h"
@@ -4650,96 +4649,6 @@ IN_PROC_BROWSER_TEST_F(CSPEmbeddedEnforcementBrowserTest,
   }
 }
 
-class NavigationRequestFencedFrameBrowserTest
-    : public NavigationRequestBrowserTest {
- public:
-  NavigationRequestFencedFrameBrowserTest() = default;
-  ~NavigationRequestFencedFrameBrowserTest() override = default;
-  NavigationRequestFencedFrameBrowserTest(
-      const NavigationRequestFencedFrameBrowserTest&) = delete;
-
-  NavigationRequestFencedFrameBrowserTest& operator=(
-      const NavigationRequestFencedFrameBrowserTest&) = delete;
-
-  void SetUpOnMainThread() override {
-    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
-    net::test_server::RegisterDefaultHandlers(https_server());
-    ASSERT_TRUE(https_server()->Start());
-    NavigationRequestBrowserTest::SetUpOnMainThread();
-  }
-
-  test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
-
- private:
-  test::FencedFrameTestHelper fenced_frame_helper_;
-  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-};
-
-
-IN_PROC_BROWSER_TEST_F(
-    NavigationRequestFencedFrameBrowserTest,
-    RespectOutermostFrameCOEPParentOnInsecureContentAndChildOnSecureContent) {
-  // Navigate |untrustworthy_url| to test if a fenced frame sets the outermost
-  // main frame's COEP.
-  GURL untrustworthy_url =
-      embedded_test_server()->GetURL("a.test", "/title1.html");
-  EXPECT_TRUE(NavigateToURL(shell(), untrustworthy_url));
-
-  // Create a fenced frame on a secure content and its document should have the
-  // COEP of the outermost main frame.
-  GURL fenced_frame_url =
-      https_server()->GetURL("a.test",
-                             "/set-header?"
-                             "Supports-Loading-Mode: fenced-frame&"
-                             "Cross-Origin-Embedder-Policy: require-corp");
-  RenderFrameHostImpl* fenced_frame_host = static_cast<RenderFrameHostImpl*>(
-      fenced_frame_test_helper().CreateFencedFrame(
-          shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url));
-  ASSERT_TRUE(fenced_frame_host);
-  EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kNone,
-            fenced_frame_host->cross_origin_embedder_policy().value);
-}
-
-// Ensure that fenced frames don't enable the view source mode since navigations
-// in fenced frames to view-sources URLs are blocked.
-IN_PROC_BROWSER_TEST_F(NavigationRequestFencedFrameBrowserTest,
-                       ViewSourceNavigation_FencedFrame) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
-
-  GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
-  RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
-  EXPECT_NE(nullptr, fenced_frame_host);
-
-  GURL view_source_url(kViewSourceScheme + std::string(":") +
-                       fenced_frame_url.spec());
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-  console_observer.SetPattern("Not allowed to load local resource: " +
-                              view_source_url.spec());
-
-  // Attempt to navigate to a view source url in the fenced frame.
-  EXPECT_EQ(view_source_url.spec(),
-            EvalJs(fenced_frame_host,
-                   JsReplace(R"({location.href = $1;})", view_source_url)));
-  ASSERT_TRUE(console_observer.Wait());
-
-  // Original page shouldn't navigate away.
-  EXPECT_EQ(fenced_frame_url, fenced_frame_host->GetLastCommittedURL());
-  EXPECT_FALSE(shell()
-                   ->web_contents()
-                   ->GetController()
-                   .GetLastCommittedEntry()
-                   ->IsViewSourceMode());
-}
-
 class NavigationRequestPrerenderBrowserTest
     : public NavigationRequestBrowserTest {
  public:
@@ -4881,68 +4790,39 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestPrerenderBrowserTest,
             primary_main_frame->cross_origin_embedder_policy().value);
 }
 
-enum class TestMPArchType {
-  kPrerender,
-  kFencedFrame,
-};
-
-class NavigationRequestMPArchBrowserTest
-    : public NavigationRequestBrowserTest,
-      public testing::WithParamInterface<TestMPArchType> {
+class NavigationRequestPrerenderMPArchBrowserTest
+    : public NavigationRequestBrowserTest {
  public:
-  NavigationRequestMPArchBrowserTest() {
-    switch (GetParam()) {
-      case TestMPArchType::kPrerender:
-        prerender_helper_ =
-            std::make_unique<test::PrerenderTestHelper>(base::BindRepeating(
-                &NavigationRequestMPArchBrowserTest::web_contents,
-                base::Unretained(this)));
-        break;
-
-      case TestMPArchType::kFencedFrame:
-        fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>();
-        break;
-    }
+  NavigationRequestPrerenderMPArchBrowserTest() {
+    prerender_helper_ =
+        std::make_unique<test::PrerenderTestHelper>(base::BindRepeating(
+            &NavigationRequestPrerenderMPArchBrowserTest::web_contents,
+            base::Unretained(this)));
   }
-  ~NavigationRequestMPArchBrowserTest() override = default;
-  NavigationRequestMPArchBrowserTest(
-      const NavigationRequestMPArchBrowserTest&) = delete;
+  ~NavigationRequestPrerenderMPArchBrowserTest() override = default;
+  NavigationRequestPrerenderMPArchBrowserTest(
+      const NavigationRequestPrerenderMPArchBrowserTest&) = delete;
 
-  NavigationRequestMPArchBrowserTest& operator=(
-      const NavigationRequestMPArchBrowserTest&) = delete;
+  NavigationRequestPrerenderMPArchBrowserTest& operator=(
+      const NavigationRequestPrerenderMPArchBrowserTest&) = delete;
 
  protected:
   test::PrerenderTestHelper& prerender_helper() { return *prerender_helper_; }
 
-  test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return *fenced_frame_helper_;
-  }
-
   WebContents* web_contents() { return shell()->web_contents(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
-  std::unique_ptr<test::FencedFrameTestHelper> fenced_frame_helper_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         NavigationRequestMPArchBrowserTest,
-                         ::testing::Values(TestMPArchType::kPrerender,
-                                           TestMPArchType::kFencedFrame));
-
-IN_PROC_BROWSER_TEST_P(NavigationRequestMPArchBrowserTest,
+IN_PROC_BROWSER_TEST_F(NavigationRequestPrerenderMPArchBrowserTest,
                        ShouldNotUpdateHistory) {
   const auto get_observer = [&](WebContents* web_contents) {
     return DidFinishNavigationObserver(
         web_contents,
         base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
           DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
-                    GetParam() == TestMPArchType::kPrerender
-                        ? FrameType::kPrerenderMainFrame
-                    : GetParam() == TestMPArchType::kFencedFrame
-                        ? FrameType::kFencedFrameRoot
-                        : FrameType::kPrimaryMainFrame);
+                    FrameType::kPrerenderMainFrame);
           EXPECT_FALSE(navigation_handle->ShouldUpdateHistory());
         }));
   };
@@ -4961,24 +4841,10 @@ IN_PROC_BROWSER_TEST_P(NavigationRequestMPArchBrowserTest,
         NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   }
   {
-    switch (GetParam()) {
-      case TestMPArchType::kPrerender: {
-        const auto prerender_observer = get_observer(web_contents());
-        // Load a page in the prerender.
-        prerender_helper().AddPrerender(
-            embedded_test_server()->GetURL("/title1.html?prendering"));
-        break;
-      }
-
-      case TestMPArchType::kFencedFrame: {
-        const auto fenced_frame_observer = get_observer(web_contents());
-        // Create a fenced frame.
-        ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
-            web_contents()->GetPrimaryMainFrame(),
-            embedded_test_server()->GetURL("/fenced_frames/title1.html")));
-        break;
-      }
-    }
+    const auto prerender_observer = get_observer(web_contents());
+    // Load a page in the prerender.
+    prerender_helper().AddPrerender(
+        embedded_test_server()->GetURL("/title1.html?prendering"));
   }
 }
 

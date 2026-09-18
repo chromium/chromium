@@ -22,7 +22,6 @@
 #include "content/public/browser/surface_embed_connector.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -221,55 +220,6 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest, OriginAboutBlankFrame) {
   EXPECT_THAT(child_frame_origins,
               testing::UnorderedElementsAre(
                   main_frame_origin, IsOpaqueDerivedFrom(main_frame_origin)));
-}
-
-// TODO(crbug.com/540481427): Add more tests that exercise GetMainFrameNodes()
-// and GetPrimaryMainFrameNode() in the presence of fenced frames.
-class PerformanceManagerFencedFrameBrowserTest
-    : public PerformanceManagerBrowserTest {
- public:
-  PerformanceManagerFencedFrameBrowserTest() = default;
-  ~PerformanceManagerFencedFrameBrowserTest() override = default;
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
-  content::WebContents* GetWebContents() { return shell()->web_contents(); }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(PerformanceManagerFencedFrameBrowserTest,
-                       NoParentFrameNode) {
-  auto initial_url = embedded_test_server()->GetURL("/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
-
-  PerformanceManagerTabHelper* tab_helper =
-      PerformanceManagerTabHelper::FromWebContents(GetWebContents());
-  ASSERT_TRUE(tab_helper);
-
-  // Main frame, which is going to be the fenced frame's outer document.
-  content::RenderFrameHost* main_frame_host =
-      GetWebContents()->GetPrimaryMainFrame();
-  FrameNodeImpl* main_frame_node = tab_helper->GetFrameNode(main_frame_host);
-
-  // Load a fenced frame.
-  GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(main_frame_host,
-                                                   fenced_frame_url);
-  FrameNodeImpl* fenced_frame_node =
-      tab_helper->GetFrameNode(fenced_frame_host);
-
-  // Make sure |fenced_frame_node| does not have a parent frame node.
-  EXPECT_EQ(fenced_frame_node->parent_frame_node(), nullptr);
-
-  // The outer document of the fenced frame is available.
-  EXPECT_EQ(fenced_frame_node->parent_or_outer_document_or_embedder(),
-            main_frame_node);
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,

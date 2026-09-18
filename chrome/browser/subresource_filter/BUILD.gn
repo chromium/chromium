@@ -185,7 +185,6 @@ if (!is_android) {
       "subresource_filter_devtools_browsertest.cc",
       "subresource_filter_disabled_reason_uma_browsertest.cc",
       "subresource_filter_dns_alias_browsertest.cc",
-      "subresource_filter_fenced_frame_browsertest.cc",
       "subresource_filter_intercepting_browsertest.cc",
       "subresource_filter_popup_browsertest.cc",
       "subresource_filter_prerender_browsertest.cc",

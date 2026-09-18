@@ -54,7 +54,6 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
@@ -1218,118 +1217,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderFileSystemAccessBrowserTest,
           base::Unretained(&result)));
   // The initial page must be evicted from the back forward cache.
   deleted_observer.WaitUntilDeleted();
-}
-
-class FencedFrameFileSystemAccessBrowserTest
-    : public FileSystemAccessBrowserTest {
- public:
-  FencedFrameFileSystemAccessBrowserTest() {
-    fenced_frame_helper_ =
-        std::make_unique<content::test::FencedFrameTestHelper>();
-  }
-
-  void SetUpOnMainThread() override {
-    FileSystemAccessBrowserTest::SetUpOnMainThread();
-    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-    ASSERT_TRUE(https_server_.Start());
-  }
-
-  ~FencedFrameFileSystemAccessBrowserTest() override = default;
-
-  FencedFrameFileSystemAccessBrowserTest(
-      const FencedFrameFileSystemAccessBrowserTest&) = delete;
-  FencedFrameFileSystemAccessBrowserTest& operator=(
-      const FencedFrameFileSystemAccessBrowserTest&) = delete;
-
- protected:
-  content::RenderFrameHost* CreateFencedFrame(
-      content::RenderFrameHost* fenced_frame_parent,
-      const GURL& url) {
-    if (fenced_frame_helper_) {
-      return fenced_frame_helper_->CreateFencedFrame(fenced_frame_parent, url);
-    }
-
-    // FencedFrameTestHelper only supports the MPArch version of fenced
-    // frames. So need to maually create a fenced frame for the ShadowDOM
-    // version.
-    content::TestNavigationManager navigation(
-        browser()->GetTabStripModel()->GetActiveWebContents(), url);
-    constexpr char kAddFencedFrameScript[] = R"({
-        const fenced_frame = document.createElement('fencedframe');
-        fenced_frame.src = $1;
-        document.body.appendChild(fenced_frame);
-    })";
-    EXPECT_TRUE(ExecJs(fenced_frame_parent,
-                       content::JsReplace(kAddFencedFrameScript, url)));
-    EXPECT_TRUE(navigation.WaitForNavigationFinished());
-
-    content::RenderFrameHost* new_frame = ChildFrameAt(fenced_frame_parent, 0);
-
-    return new_frame;
-  }
-
- protected:
-  net::EmbeddedTestServer& https_server() { return https_server_; }
-
- private:
-  std::unique_ptr<content::test::FencedFrameTestHelper> fenced_frame_helper_;
-  base::test::ScopedFeatureList feature_list_;
-  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-};
-
-IN_PROC_BROWSER_TEST_F(FencedFrameFileSystemAccessBrowserTest,
-                       RequestWriteAccess) {
-  std::unique_ptr<ChromeFileSystemAccessPermissionContext> permission_context =
-      std::make_unique<ChromeFileSystemAccessPermissionContext>(
-          browser()->GetProfile());
-
-  const base::FilePath test_file = CreateTestFile("");
-
-  ui::SelectFileDialog::SetFactory(
-      std::make_unique<SelectPredeterminedFileDialogFactory>(
-          std::vector<base::FilePath>{test_file}));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/title1.html")));
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-
-  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
-      ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
-
-  EXPECT_FALSE(IsUsageIndicatorVisible(browser()));
-
-  // Load a fenced frame.
-  GURL fenced_frame_url = https_server().GetURL("/fenced_frames/title1.html");
-  content::RenderFrameHost* fenced_frame_host =
-      CreateFencedFrame(web_contents->GetPrimaryMainFrame(), fenced_frame_url);
-  ASSERT_TRUE(fenced_frame_host);
-
-  // File system access is disabled for fenced frames.
-  EXPECT_FALSE(content::ExecJs(fenced_frame_host,
-                               "(async () => {"
-                               "  let [e] = await self.showOpenFilePicker();"
-                               "  self.entry = e;"
-                               "  return e.name; })()"));
-
-  // Even read-only access should show a usage indicator.
-  EXPECT_FALSE(IsUsageIndicatorVisible(browser()));
-
-  auto grant = permission_context->GetWritePermissionGrant(
-      url::Origin::Create(fenced_frame_url), content::PathInfo(test_file),
-      content::FileSystemAccessPermissionContext::HandleType::kFile,
-      content::FileSystemAccessPermissionContext::AccessTrigger::kOpen);
-
-  base::test::TestFuture<
-      content::FileSystemAccessPermissionGrant::PermissionRequestOutcome>
-      future;
-
-  // RequestPermission() for the fenced frame must fail.
-  grant->RequestPermission(
-      fenced_frame_host->GetGlobalId(),
-      content::FileSystemAccessPermissionGrant::UserActivationState::kRequired,
-      future.GetCallback());
-  EXPECT_EQ(future.Get<>(), content::FileSystemAccessPermissionGrant::
-                                PermissionRequestOutcome::kInvalidFrame);
 }
 
 // https://crbug.com/419721056

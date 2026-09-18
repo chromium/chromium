@@ -80,8 +80,6 @@ class HistoryTabHelper
                            CreateAddPageArgsHasLiveOriginalOpenerChain);
   FRIEND_TEST_ALL_PREFIXES(HistoryTabHelperTest,
                            CreateAddPageArgsHasOpenerWebContentsNotFirstPage);
-  FRIEND_TEST_ALL_PREFIXES(HistoryFencedFrameBrowserTest,
-                           FencedFrameDoesNotAffectLoadingState);
 
   // Updates history with the specified navigation. This is called by
   // DidFinishNavigation to update history state.

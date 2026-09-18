@@ -32,7 +32,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
@@ -1067,54 +1066,6 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserPrerenderingTest,
     EXPECT_FALSE(blink::IsEmptyManifest(
         *manifest_future.Get<blink::mojom::ManifestPtr>()));
   }
-}
-
-class ManifestFencedFrameBrowserTest : public ManifestBrowserTest {
- public:
-  ManifestFencedFrameBrowserTest() = default;
-  ~ManifestFencedFrameBrowserTest() override = default;
-
- protected:
-  test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
-
- private:
-  test::FencedFrameTestHelper fenced_frame_test_helper_;
-};
-
-// Manifest fetching & parsing should work in a fenced frame.
-IN_PROC_BROWSER_TEST_F(ManifestFencedFrameBrowserTest,
-                       GetManifestInFencedFrame) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  const GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
-
-  // Add a manifest to `fenced_frame_rfh`.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh,
-                     R"( var link = document.createElement('link');
-                         link.rel = 'manifest';
-                         link.href = '../manifest/sample-manifest.json';
-                         document.head.appendChild(link);)"));
-
-  // Manifest fetches should still work in a fenced frame. It's the caller's
-  // responsibility to be discerning about which frames it gets the manifest
-  // for.
-  base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
-                         blink::mojom::ManifestPtr>
-      manifest_future;
-  fenced_frame_rfh->GetPage().GetManifest(manifest_future.GetCallback());
-  ASSERT_TRUE(manifest_future.Wait());
-  EXPECT_FALSE(manifest_future.Get<GURL>().is_empty());
-  EXPECT_FALSE(blink::IsEmptyManifest(
-      *manifest_future.Get<blink::mojom::ManifestPtr>()));
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, BadMessage_StartUrlCrossOrigin) {
