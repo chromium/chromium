@@ -32,8 +32,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -69,9 +71,12 @@ import java.util.function.Supplier;
 @DoNotBatch(reason = "This class runs tests that create new activities.")
 public class TabContextMenuItemDelegateTest {
     @Rule
-    public final FreshCtaTransitTestRule mActivityTestRule =
+    public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Runnable mContextMenuCopyLinkObserver;
     private ModalDialogManager mModalDialogManager;
     private TabContextMenuItemDelegate mContextMenuDelegate;
     private List<ChromeTabbedActivity> mExtraTabbedActivities;
@@ -254,7 +259,7 @@ public class TabContextMenuItemDelegateTest {
                                     tab,
                                     tabModelSelector,
                                     ephemeralTabCoordinatorSupplier,
-                                    CallbackUtils.emptyRunnable(),
+                                    mContextMenuCopyLinkObserver,
                                     snackbarManagerSupplier,
                                     bottomSheetControllerSupplier);
                 });

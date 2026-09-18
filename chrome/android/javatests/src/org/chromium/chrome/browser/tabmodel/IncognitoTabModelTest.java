@@ -9,6 +9,12 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
@@ -19,7 +25,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -27,7 +37,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -49,13 +58,14 @@ import java.util.concurrent.TimeoutException;
 // TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
 @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
 public class IncognitoTabModelTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
-    public final FreshCtaTransitTestRule mActivityTestRule =
+    public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    private final PayloadCallbackHelper<Tab> mTabSupplierObserver = new PayloadCallbackHelper<>();
-    private final PayloadCallbackHelper<Integer> mTabCountSupplierObserver =
-            new PayloadCallbackHelper<>();
+    @Mock Callback<Tab> mTabSupplierObserver;
+    @Mock Callback<Integer> mTabCountSupplierObserver;
 
     private TabModel mRegularTabModel;
     private TabModel mIncognitoTabModel;
@@ -209,15 +219,15 @@ public class IncognitoTabModelTest {
                 () -> {
                     mIncognitoTabModel
                             .getCurrentTabSupplier()
-                            .addSyncObserverAndPostIfNonNull(mTabSupplierObserver::notifyCalled);
+                            .addSyncObserverAndPostIfNonNull(mTabSupplierObserver);
                 });
-        assertThat(mTabSupplierObserver.getCallCount()).isEqualTo(0);
+        verifyNoInteractions(mTabSupplierObserver);
 
         createTabOnUiThread();
-        assertThat(mTabSupplierObserver.getPayloadByIndexBlocking(0)).isNotNull();
+        verify(mTabSupplierObserver).onResult(notNull());
 
         removeTabOnUiThread();
-        assertThat(mTabSupplierObserver.getPayloadByIndexBlocking(1)).isNull();
+        verify(mTabSupplierObserver).onResult(isNull());
     }
 
     @Test
@@ -228,12 +238,13 @@ public class IncognitoTabModelTest {
                 () -> {
                     mIncognitoTabModel
                             .getCurrentTabSupplier()
-                            .addSyncObserverAndPostIfNonNull(mTabSupplierObserver::notifyCalled);
+                            .addSyncObserverAndPostIfNonNull(mTabSupplierObserver);
                 });
-        assertThat(mTabSupplierObserver.getPayloadByIndexBlocking(0)).isNotNull();
+        verify(mTabSupplierObserver, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .onResult(notNull());
 
         removeTabOnUiThread();
-        assertThat(mTabSupplierObserver.getPayloadByIndexBlocking(1)).isNull();
+        verify(mTabSupplierObserver).onResult(isNull());
     }
 
     @Test
@@ -243,16 +254,16 @@ public class IncognitoTabModelTest {
                 () -> {
                     mIncognitoTabModel
                             .getTabCountSupplier()
-                            .addSyncObserverAndPostIfNonNull(
-                                    mTabCountSupplierObserver::notifyCalled);
+                            .addSyncObserverAndPostIfNonNull(mTabCountSupplierObserver);
                 });
-        assertThat(mTabCountSupplierObserver.getPayloadByIndexBlocking(0)).isEqualTo(0);
+        verify(mTabCountSupplierObserver, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .onResult(0);
 
         createTabOnUiThread();
-        assertThat(mTabCountSupplierObserver.getPayloadByIndexBlocking(1)).isEqualTo(1);
+        verify(mTabCountSupplierObserver).onResult(1);
 
         removeTabOnUiThread();
-        assertThat(mTabCountSupplierObserver.getPayloadByIndexBlocking(2)).isEqualTo(0);
+        verify(mTabCountSupplierObserver, times(2)).onResult(0);
     }
 
     @Test
@@ -263,12 +274,12 @@ public class IncognitoTabModelTest {
                 () -> {
                     mIncognitoTabModel
                             .getTabCountSupplier()
-                            .addSyncObserverAndPostIfNonNull(
-                                    mTabCountSupplierObserver::notifyCalled);
+                            .addSyncObserverAndPostIfNonNull(mTabCountSupplierObserver);
                 });
-        assertThat(mTabCountSupplierObserver.getPayloadByIndexBlocking(0)).isEqualTo(1);
+        verify(mTabCountSupplierObserver, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .onResult(1);
 
         removeTabOnUiThread();
-        assertThat(mTabCountSupplierObserver.getPayloadByIndexBlocking(1)).isEqualTo(0);
+        verify(mTabCountSupplierObserver).onResult(0);
     }
 }
