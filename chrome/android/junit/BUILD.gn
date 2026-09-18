@@ -783,7 +783,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCustomTabIphControllerUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedFeatureUtilsUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/ContentGestureListenerTest.java",
-      "src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabBaseStrategyTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabBottomSheetStrategyTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabDisplayManagerTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabFullSizeStrategyTest.java",
