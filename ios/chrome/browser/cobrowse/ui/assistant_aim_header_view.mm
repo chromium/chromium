@@ -107,11 +107,19 @@ void ApplyHeaderElementShadow(UIView* targetView) {
   // The stack view holding the trailing elements of the header, i.e. the header
   // actions and the close button.
   UIStackView* _trailingStackView;
+
+  // The current mode of the header view.
+  AssistantAIMState _mode;
+
+  // The last adjusted percentage.
+  CGFloat _percentage;
 }
 
 - (instancetype)init {
   self = [super init];
   if (self) {
+    _mode = AssistantAIMState::kThread;
+    _percentage = 1.0;
     [self setUpLogoView];
     [self setUpCloseButton];
     [self setUpHeaderActionsView];
@@ -128,7 +136,8 @@ void ApplyHeaderElementShadow(UIView* targetView) {
 }
 
 - (void)adjustForPercentage:(CGFloat)percentage {
-  _titleLabel.alpha = 1 - percentage;
+  _percentage = percentage;
+  [self updateTitleAlpha];
   _headerActionsView.alpha = percentage;
 
   // Collapse the actions out of `_trailingStackView` once they are fully
@@ -138,6 +147,8 @@ void ApplyHeaderElementShadow(UIView* targetView) {
 }
 
 - (void)setMode:(AssistantAIMState)mode {
+  _mode = mode;
+  [self updateTitleAlpha];
   switch (mode) {
     case AssistantAIMState::kZeroState:
       _logoView.hidden = NO;
@@ -173,6 +184,13 @@ void ApplyHeaderElementShadow(UIView* targetView) {
 
 #pragma mark - Private
 
+// Updates the alpha of the title label based on the current mode and
+// percentage.
+- (void)updateTitleAlpha {
+  _titleLabel.alpha =
+      (_mode == AssistantAIMState::kHistory) ? 1.0 : (1 - _percentage);
+}
+
 - (void)setUpTitleLabel {
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -181,6 +199,7 @@ void ApplyHeaderElementShadow(UIView* targetView) {
   _titleLabel.font =
       PreferredFontForTextStyle(UIFontTextStyleHeadline, UIFontWeightSemibold);
   _titleLabel.isAccessibilityElement = YES;
+  [self updateTitleAlpha];
   [self addSubview:_titleLabel];
 
   [NSLayoutConstraint activateConstraints:@[
