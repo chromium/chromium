@@ -115,9 +115,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
   // devices.
   void ApplyMACAddressRandomizationToShill();
 
-  // Applies the wake-on-wifi-allowed feature flag to WiFi devices.
-  void ApplyWakeOnWifiAllowedToShill();
-
   // Applies the current value of |usb_ethernet_mac_address_source_| to primary
   // enabled USB Ethernet device. Does nothing if MAC address source is not
   // specified yet.
@@ -186,9 +183,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
   WifiFeatureSupport mac_addr_randomization_supported_ =
       WifiFeatureSupport::NOT_REQUESTED;
   bool mac_addr_randomization_enabled_ = false;
-  WifiFeatureSupport wake_on_wifi_supported_ =
-      WifiFeatureSupport::NOT_REQUESTED;
-  bool wake_on_wifi_allowed_ = false;
 
   std::string usb_ethernet_mac_address_source_;
   std::string primary_enabled_usb_ethernet_device_path_;

@@ -8276,11 +8276,6 @@ inline constexpr char kVirtualKeyboardDisabledDescription[] =
     "Always disable virtual keyboard regardless of device mode. Workaround for "
     "virtual keyboard showing with some external keyboards.";
 
-inline constexpr char kWakeOnWifiAllowedName[] =
-    "Allow enabling wake on WiFi features";
-inline constexpr char kWakeOnWifiAllowedDescription[] =
-    "Allows wake on WiFi features in shill to be enabled.";
-
 inline constexpr char kWelcomeTourName[] = "Welcome Tour";
 inline constexpr char kWelcomeTourDescription[] =
     "Enables the Welcome Tour that walks new users through ChromeOS System UI.";

@@ -10,9 +10,6 @@
 #include <memory>
 #include <utility>
 #include <vector>
-
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -308,7 +305,6 @@ void NetworkDeviceHandlerImpl::DeviceListChanged() {
   ApplyCellularAllowRoamingToShill();
   ApplyMACAddressRandomizationToShill();
   ApplyUsbEthernetMacAddressSourceToShill();
-  ApplyWakeOnWifiAllowedToShill();
 }
 
 void NetworkDeviceHandlerImpl::DevicePropertiesUpdated(
@@ -407,15 +403,6 @@ void NetworkDeviceHandlerImpl::ApplyMACAddressRandomizationToShill() {
       mac_addr_randomization_enabled_,
       shill::kMacAddressRandomizationSupportedProperty,
       &mac_addr_randomization_supported_);
-}
-
-void NetworkDeviceHandlerImpl::ApplyWakeOnWifiAllowedToShill() {
-  // Get the setting from feature flags.
-  wake_on_wifi_allowed_ =
-      base::FeatureList::IsEnabled(features::kWakeOnWifiAllowed);
-  ApplyWifiFeatureToShillIfSupported(
-      shill::kWakeOnWiFiAllowedProperty, wake_on_wifi_allowed_,
-      shill::kWakeOnWiFiSupportedProperty, &wake_on_wifi_supported_);
 }
 
 void NetworkDeviceHandlerImpl::ApplyUsbEthernetMacAddressSourceToShill() {

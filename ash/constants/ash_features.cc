@@ -1852,9 +1852,6 @@ BASE_FEATURE(kVcTrayTitleHeader,
 // Enables or disables web API support for ChromeOS video conferencing.
 BASE_FEATURE(kVcWebApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to allow enabling wake on WiFi features in shill.
-BASE_FEATURE(kWakeOnWifiAllowed, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable "daily" refresh wallpaper to refresh every ten seconds for testing.
 BASE_FEATURE(kWallpaperFastRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 
