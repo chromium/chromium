@@ -58,6 +58,7 @@ class IndigoContext final : public gin::Wrappable<IndigoContext> {
   void Trace(cppgc::Visitor* visitor) const final {
     visitor->Trace(context_);
     visitor->Trace(content_agent_);
+    gin::Wrappable<IndigoContext>::Trace(visitor);
   }
 
   void CallInvokeCallback(v8::Isolate* isolate) {

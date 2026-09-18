@@ -32,6 +32,7 @@ NamedPropertyInterceptor* WrappableBase::GetNamedPropertyInterceptor() {
 
 void WrappableBase::Trace(cppgc::Visitor* visitor) const {
   visitor->Trace(wrapper_);
+  v8::Object::Wrappable::Trace(visitor);
 }
 
 const v8::Object::WrapperTypeInfo* WrappableBase::GetWrapperTypeInfo() const {
