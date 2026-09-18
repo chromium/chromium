@@ -33,9 +33,10 @@ class TrustedVaultThrottlingConnectionImpl
       const TrustedVaultThrottlingConnectionImpl& other) = delete;
   ~TrustedVaultThrottlingConnectionImpl() override;
 
-  bool AreRequestsThrottled(const CoreAccountInfo& account_info) override;
-  void RecordFailedRequestForThrottling(
-      const CoreAccountInfo& account_info) override;
+  bool AreRequestsThrottled(const CoreAccountInfo& account_info,
+                            SecurityDomainId domain) override;
+  void RecordFailedRequestForThrottling(const CoreAccountInfo& account_info,
+                                        SecurityDomainId domain) override;
 
   std::unique_ptr<Request> RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,

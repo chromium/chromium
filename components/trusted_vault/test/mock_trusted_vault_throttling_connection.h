@@ -75,11 +75,11 @@ class MockTrustedVaultThrottlingConnection
               (override));
   MOCK_METHOD(bool,
               AreRequestsThrottled,
-              (const CoreAccountInfo& account_info),
+              (const CoreAccountInfo& account_info, SecurityDomainId domain),
               (override));
   MOCK_METHOD(void,
               RecordFailedRequestForThrottling,
-              (const CoreAccountInfo& account_info),
+              (const CoreAccountInfo& account_info, SecurityDomainId domain),
               (override));
 };
 

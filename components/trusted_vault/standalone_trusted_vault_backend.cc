@@ -740,7 +740,8 @@ void StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered(
       // Request wasn't sent to the server, so there is no need for throttling.
       break;
     case TrustedVaultRegistrationStatus::kOtherError:
-      connection_->RecordFailedRequestForThrottling(*primary_account_);
+      connection_->RecordFailedRequestForThrottling(*primary_account_,
+                                                    security_domain_id_);
       break;
   }
   NotifyIdleForTestingIfNecessary();

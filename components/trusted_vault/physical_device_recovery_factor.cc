@@ -78,7 +78,8 @@ void PhysicalDeviceRecoveryFactor::AttemptRecovery(AttemptRecoveryCallback cb) {
     return;
   }
 
-  if (connection_->AreRequestsThrottled(primary_account_)) {
+  if (connection_->AreRequestsThrottled(primary_account_,
+                                        security_domain_id_)) {
     FulfillRecoveryWithFailure(
         TrustedVaultDownloadKeysStatusForUMA::kThrottledClientSide,
         std::move(cb));
@@ -155,7 +156,8 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(RegisterCallback cb) {
         kLocalKeysAreStale;
   }
 
-  if (connection_->AreRequestsThrottled(primary_account_)) {
+  if (connection_->AreRequestsThrottled(primary_account_,
+                                        security_domain_id_)) {
     FulfillRegistrationWithFailure(
         TrustedVaultRegistrationStatus::kRegistrationNotAttempted,
         std::move(cb));
@@ -265,7 +267,8 @@ void PhysicalDeviceRecoveryFactor::OnKeysDownloaded(
       // download. This is bad because key download attempts are triggered for
       // the case where local keys have been marked as stale, which means the
       // user is likely in an unrecoverable state.
-      connection_->RecordFailedRequestForThrottling(primary_account_);
+      connection_->RecordFailedRequestForThrottling(primary_account_,
+                                                    security_domain_id_);
       recovery_status = RecoveryStatus::kNoNewKeys;
       break;
     }
@@ -274,7 +277,8 @@ void PhysicalDeviceRecoveryFactor::OnKeysDownloaded(
       // Request wasn't sent to the server, so there is no need for throttling.
       break;
     case TrustedVaultDownloadKeysStatus::kOtherError:
-      connection_->RecordFailedRequestForThrottling(primary_account_);
+      connection_->RecordFailedRequestForThrottling(primary_account_,
+                                                    security_domain_id_);
       break;
   }
 

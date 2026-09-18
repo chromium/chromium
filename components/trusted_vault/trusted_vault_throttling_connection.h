@@ -10,6 +10,8 @@
 
 namespace trusted_vault {
 
+enum class SecurityDomainId;
+
 // Extends the `TrustedVaultConnection` interface by client side throttling.
 class TrustedVaultThrottlingConnection : public TrustedVaultConnection {
  public:
@@ -25,13 +27,14 @@ class TrustedVaultThrottlingConnection : public TrustedVaultConnection {
   // failed request). Handles the situation when last failed request time is
   // set to the future.
   //
-  // Note: It's the clients responsibility to not make any requests to this
+  // Note: It's the client's responsibility to not make any requests to this
   // connection if this method returns true. Such requests would not be blocked.
-  virtual bool AreRequestsThrottled(const CoreAccountInfo& account_info) = 0;
-  // Records request failure time, that will be used to determine whether new
-  // requests should be throttled.
+  virtual bool AreRequestsThrottled(const CoreAccountInfo& account_info,
+                                    SecurityDomainId domain) = 0;
+  // Records domain-scoped request failure time for throttling.
   virtual void RecordFailedRequestForThrottling(
-      const CoreAccountInfo& account_info) = 0;
+      const CoreAccountInfo& account_info,
+      SecurityDomainId domain) = 0;
 };
 
 }  // namespace trusted_vault

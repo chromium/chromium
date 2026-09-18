@@ -101,7 +101,8 @@ void ICloudKeychainRecoveryFactor::OnICloudKeysRetrievedForRecovery(
     return;
   }
 
-  if (connection_->AreRequestsThrottled(primary_account_)) {
+  if (connection_->AreRequestsThrottled(primary_account_,
+                                        security_domain_id_)) {
     // Keys download attempt is not possible.
     FulfillRecoveryWithFailure(
         TrustedVaultDownloadKeysStatusForUMA::kThrottledClientSide,
@@ -134,7 +135,8 @@ void ICloudKeychainRecoveryFactor::OnRecoveryFactorStateDownloadedForRecovery(
 
   if (result.state ==
       DownloadAuthenticationFactorsRegistrationStateResult::State::kError) {
-    connection_->RecordFailedRequestForThrottling(primary_account_);
+    connection_->RecordFailedRequestForThrottling(primary_account_,
+                                                  security_domain_id_);
     FulfillRecoveryWithFailure(
         TrustedVaultDownloadKeysStatusForUMA::kNetworkError, std::move(cb));
     return;
@@ -242,7 +244,8 @@ ICloudKeychainRecoveryFactor::MaybeRegister(RegisterCallback cb) {
         kLocalKeysAreStale;
   }
 
-  if (connection_->AreRequestsThrottled(primary_account_)) {
+  if (connection_->AreRequestsThrottled(primary_account_,
+                                        security_domain_id_)) {
     FulfillRegistrationWithFailure(
         TrustedVaultRegistrationStatus::kRegistrationNotAttempted,
         std::move(cb));
@@ -327,7 +330,8 @@ void ICloudKeychainRecoveryFactor::
 
   if (result.state ==
       DownloadAuthenticationFactorsRegistrationStateResult::State::kError) {
-    connection_->RecordFailedRequestForThrottling(primary_account_);
+    connection_->RecordFailedRequestForThrottling(primary_account_,
+                                                  security_domain_id_);
     FulfillRegistrationWithFailure(
         TrustedVaultRegistrationStatus::kNetworkError,
         std::move(ongoing_registration_callback_));

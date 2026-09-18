@@ -527,7 +527,8 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldThrottleKeysDownloading) {
 
   // Mimic failed key downloading, it should record a failed request for
   // throttling.
-  EXPECT_CALL(*connection(), RecordFailedRequestForThrottling);
+  EXPECT_CALL(*connection(), RecordFailedRequestForThrottling(
+                                 _, SecurityDomainId::kChromeSync));
   EXPECT_CALL(recovery_callback,
               Run(LocalRecoveryFactor::RecoveryStatus::kFailure, _, _));
   std::move(download_keys_callback)
@@ -564,7 +565,8 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   ASSERT_FALSE(download_keys_callback.is_null());
 
   // Mimic the server having no new keys.
-  EXPECT_CALL(*connection(), RecordFailedRequestForThrottling);
+  EXPECT_CALL(*connection(), RecordFailedRequestForThrottling(
+                                 _, SecurityDomainId::kChromeSync));
   std::move(download_keys_callback)
       .Run(TrustedVaultDownloadKeysStatus::kNoNewKeys,
            std::vector<std::vector<uint8_t>>(), 0);

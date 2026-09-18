@@ -136,7 +136,8 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
                               /*last_vault_key_version=*/0);
       return;
     }
-    if (connection_->AreRequestsThrottled(account_)) {
+    if (connection_->AreRequestsThrottled(account_,
+                                          SecurityDomainId::kChromeSync)) {
       std::move(callback).Run(RecoveryStatus::kFailure,
                               /*new_vault_keys=*/{},
                               /*last_vault_key_version=*/0);
@@ -176,7 +177,8 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
       return TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kLocalKeysAreStale;
     }
-    if (connection_->AreRequestsThrottled(account_)) {
+    if (connection_->AreRequestsThrottled(account_,
+                                          SecurityDomainId::kChromeSync)) {
       std::move(callback).Run(
           TrustedVaultRegistrationStatus::kRegistrationNotAttempted, 0, false);
       return TrustedVaultRecoveryFactorRegistrationStateForUMA::
@@ -1093,7 +1095,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   // Mimic transient failure.
-  EXPECT_CALL(*connection(), RecordFailedRequestForThrottling);
+  EXPECT_CALL(*connection(),
+              RecordFailedRequestForThrottling(_, security_domain_id()));
   GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectMaybeRegisterAndRunCallback(
           TrustedVaultRegistrationStatus::kOtherError, 0, true);
@@ -1102,7 +1105,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Mimic a restart to trigger recovery factor registration attempt.
   base::HistogramTester histogram_tester;
   ResetBackend();
-  EXPECT_CALL(*connection(), AreRequestsThrottled).WillOnce(Return(true));
+  EXPECT_CALL(*connection(), AreRequestsThrottled(_, security_domain_id()))
+      .WillOnce(Return(true));
   SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
   EXPECT_TRUE(
       GetOrCreateRecoveryFactor(kAccountInfo)->MaybeRegisterWasCalled());

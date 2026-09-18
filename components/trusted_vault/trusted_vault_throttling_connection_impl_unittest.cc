@@ -86,37 +86,51 @@ class TrustedVaultThrottlingConnectionImplTest : public testing::Test {
 };
 
 TEST_F(TrustedVaultThrottlingConnectionImplTest, ShouldNotThrottleByDefault) {
-  EXPECT_FALSE(throttling_connection()->AreRequestsThrottled(account_info()));
+  EXPECT_FALSE(throttling_connection()->AreRequestsThrottled(
+      account_info(), SecurityDomainId::kChromeSync));
 }
 
 TEST_F(TrustedVaultThrottlingConnectionImplTest, FailedAttemptShouldThrottle) {
-  EXPECT_FALSE(throttling_connection()->AreRequestsThrottled(account_info()));
+  EXPECT_FALSE(throttling_connection()->AreRequestsThrottled(
+      account_info(), SecurityDomainId::kChromeSync));
 
-  throttling_connection()->RecordFailedRequestForThrottling(account_info());
+  throttling_connection()->RecordFailedRequestForThrottling(
+      account_info(), SecurityDomainId::kChromeSync);
 
-  EXPECT_TRUE(throttling_connection()->AreRequestsThrottled(account_info()));
+  EXPECT_TRUE(throttling_connection()->AreRequestsThrottled(
+      account_info(), SecurityDomainId::kChromeSync));
 }
+
+// TODO(crbug.com/542895033): Add a test along the lines of
+// DomainFailureShouldNotThrottleOtherDomain once storage supports other
+// security domains.
 
 TEST_F(TrustedVaultThrottlingConnectionImplTest, ShouldRemainThrottled) {
   // Record a failed attempt at time "now".
-  throttling_connection()->RecordFailedRequestForThrottling(account_info());
-  EXPECT_TRUE(throttling_connection()->AreRequestsThrottled(account_info()));
+  throttling_connection()->RecordFailedRequestForThrottling(
+      account_info(), SecurityDomainId::kChromeSync);
+  EXPECT_TRUE(throttling_connection()->AreRequestsThrottled(
+      account_info(), SecurityDomainId::kChromeSync));
 
   // Advance time to just before the throttling duration.
   clock()->Advance(TrustedVaultThrottlingConnectionImpl::kThrottlingDuration -
                    base::Seconds(1));
-  EXPECT_TRUE(throttling_connection()->AreRequestsThrottled(account_info()));
+  EXPECT_TRUE(throttling_connection()->AreRequestsThrottled(
+      account_info(), SecurityDomainId::kChromeSync));
 }
 
 TEST_F(TrustedVaultThrottlingConnectionImplTest,
        ShouldUnthrottleAfterThrottlingDuration) {
   // Record a failed attempt at time "now".
-  throttling_connection()->RecordFailedRequestForThrottling(account_info());
-  EXPECT_TRUE(throttling_connection()->AreRequestsThrottled(account_info()));
+  throttling_connection()->RecordFailedRequestForThrottling(
+      account_info(), SecurityDomainId::kChromeSync);
+  EXPECT_TRUE(throttling_connection()->AreRequestsThrottled(
+      account_info(), SecurityDomainId::kChromeSync));
 
   // Advance time to pass the throttling duration.
   clock()->Advance(TrustedVaultThrottlingConnectionImpl::kThrottlingDuration);
-  EXPECT_FALSE(throttling_connection()->AreRequestsThrottled(account_info()));
+  EXPECT_FALSE(throttling_connection()->AreRequestsThrottled(
+      account_info(), SecurityDomainId::kChromeSync));
 }
 
 // System time can be changed to the past and if this situation not handled,
@@ -124,23 +138,29 @@ TEST_F(TrustedVaultThrottlingConnectionImplTest,
 TEST_F(TrustedVaultThrottlingConnectionImplTest,
        ShouldUnthrottleWhenTimeSetToPast) {
   // Record a failed attempt at time "now".
-  throttling_connection()->RecordFailedRequestForThrottling(account_info());
-  EXPECT_TRUE(throttling_connection()->AreRequestsThrottled(account_info()));
+  throttling_connection()->RecordFailedRequestForThrottling(
+      account_info(), SecurityDomainId::kChromeSync);
+  EXPECT_TRUE(throttling_connection()->AreRequestsThrottled(
+      account_info(), SecurityDomainId::kChromeSync));
 
   // Mimic system set to the past, which should unthrottle automatically.
   clock()->Advance(base::Seconds(-1));
-  EXPECT_FALSE(throttling_connection()->AreRequestsThrottled(account_info()));
+  EXPECT_FALSE(throttling_connection()->AreRequestsThrottled(
+      account_info(), SecurityDomainId::kChromeSync));
 }
 
 TEST_F(TrustedVaultThrottlingConnectionImplTest, ShouldRestoreThrottlingState) {
   // Record a failed attempt at time "now".
-  throttling_connection()->RecordFailedRequestForThrottling(account_info());
-  EXPECT_TRUE(throttling_connection()->AreRequestsThrottled(account_info()));
+  throttling_connection()->RecordFailedRequestForThrottling(
+      account_info(), SecurityDomainId::kChromeSync);
+  EXPECT_TRUE(throttling_connection()->AreRequestsThrottled(
+      account_info(), SecurityDomainId::kChromeSync));
 
   // Reset the connection, which restores the previously stored state.
   ResetThrottlingConnection();
 
-  EXPECT_TRUE(throttling_connection()->AreRequestsThrottled(account_info()));
+  EXPECT_TRUE(throttling_connection()->AreRequestsThrottled(
+      account_info(), SecurityDomainId::kChromeSync));
 }
 
 TEST_F(TrustedVaultThrottlingConnectionImplTest,

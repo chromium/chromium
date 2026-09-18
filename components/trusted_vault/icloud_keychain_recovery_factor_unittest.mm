@@ -507,7 +507,9 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
 
 TEST_F(ICloudKeychainRecoveryFactorTest,
        ShouldNotAttemptKeyRecoveryWhenThrottled) {
-  EXPECT_CALL(*connection(), AreRequestsThrottled).WillOnce(Return(true));
+  EXPECT_CALL(*connection(),
+              AreRequestsThrottled(_, SecurityDomainId::kChromeSync))
+      .WillOnce(Return(true));
   EXPECT_CALL(*connection(),
               DownloadAuthenticationFactorsRegistrationState(_, _, _, _))
       .Times(0);
@@ -545,7 +547,8 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
 
   // Mimic failed key downloading, it should record a failed request for
   // throttling.
-  EXPECT_CALL(*connection(), RecordFailedRequestForThrottling);
+  EXPECT_CALL(*connection(), RecordFailedRequestForThrottling(
+                                 _, SecurityDomainId::kChromeSync));
   EXPECT_CALL(recovery_callback,
               Run(LocalRecoveryFactor::RecoveryStatus::kFailure, _, _));
   AttemptRecoveryAndExpectDownloadRegistrationState(
@@ -729,7 +732,9 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
 }
 
 TEST_F(ICloudKeychainRecoveryFactorTest, ShouldNotRegisterWhenThrottled) {
-  EXPECT_CALL(*connection(), AreRequestsThrottled).WillOnce(Return(true));
+  EXPECT_CALL(*connection(),
+              AreRequestsThrottled(_, SecurityDomainId::kChromeSync))
+      .WillOnce(Return(true));
 
   MaybeRegisterAndExpectNotAttempted(
       TrustedVaultRecoveryFactorRegistrationStateForUMA::kThrottledClientSide);
@@ -757,7 +762,8 @@ TEST_F(
 
   base::MockCallback<LocalRecoveryFactor::RegisterCallback>
       registration_callback;
-  EXPECT_CALL(*connection(), RecordFailedRequestForThrottling);
+  EXPECT_CALL(*connection(), RecordFailedRequestForThrottling(
+                                 _, SecurityDomainId::kChromeSync));
   EXPECT_CALL(registration_callback,
               Run(TrustedVaultRegistrationStatus::kNetworkError, _, _));
 

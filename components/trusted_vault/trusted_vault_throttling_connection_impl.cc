@@ -12,6 +12,7 @@
 #include "base/time/default_clock.h"
 #include "components/trusted_vault/proto_time_conversion.h"
 #include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 
 namespace trusted_vault {
 
@@ -46,7 +47,10 @@ TrustedVaultThrottlingConnectionImpl::~TrustedVaultThrottlingConnectionImpl() =
     default;
 
 bool TrustedVaultThrottlingConnectionImpl::AreRequestsThrottled(
-    const CoreAccountInfo& account_info) {
+    const CoreAccountInfo& account_info,
+    SecurityDomainId domain) {
+  // TODO(crbug.com/542895033): Make request throttling generic across domains.
+  CHECK_EQ(domain, SecurityDomainId::kChromeSync);
   const int64_t last_failed_request_millis =
       storage_->GetLastFailedRequestMillis(account_info.gaia);
   if (last_failed_request_millis == 0) {
@@ -68,7 +72,10 @@ bool TrustedVaultThrottlingConnectionImpl::AreRequestsThrottled(
 }
 
 void TrustedVaultThrottlingConnectionImpl::RecordFailedRequestForThrottling(
-    const CoreAccountInfo& account_info) {
+    const CoreAccountInfo& account_info,
+    SecurityDomainId domain) {
+  // TODO(crbug.com/542895033): Make request throttling generic across domains.
+  CHECK_EQ(domain, SecurityDomainId::kChromeSync);
   storage_->SetLastFailedRequestMillis(account_info.gaia,
                                        TimeToProtoTime(clock_->Now()));
 }
