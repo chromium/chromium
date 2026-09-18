@@ -55,6 +55,7 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
       this.isFreShortcutSetupChin_() ? html`
     <fre-chin
         id="freShortcutSetupChin"
+        ?small-loomnibox="${this.smallLoomnibox_}"
         .mode="${FreChinMode.SHORTCUT_SETUP}"
         .hotkeyTokens="${this.hotkeyTokens_}"
         @show-hotkey-dropdown="${this.onFreShowHotkeyDropdown_}"
@@ -66,6 +67,7 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
       this.isFreShortcutReminderChin_() ? html`
     <fre-chin
         id="freShortcutReminderChin"
+        ?small-loomnibox="${this.smallLoomnibox_}"
         .mode="${FreChinMode.SHORTCUT_REMINDER}"
         .hotkeyTokens="${this.hotkeyTokens_}"
         @show-hotkey-dropdown="${this.onFreShowHotkeyDropdown_}"

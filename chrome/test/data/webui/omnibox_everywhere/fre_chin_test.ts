@@ -7,7 +7,7 @@ import 'chrome://omnibox-everywhere.top-chrome/fre_chin.js';
 import {FreChinMode} from 'chrome://omnibox-everywhere.top-chrome/fre_chin.js';
 import type {FreChinElement, ShowHotkeyDropdownDetail} from 'chrome://omnibox-everywhere.top-chrome/fre_chin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('FreChinTest', () => {
@@ -197,4 +197,22 @@ suite('FreChinTest', () => {
     closeBtn.click();
     await closePromise;
   });
+
+  test(
+      'reflects small-loomnibox attribute when small loomnibox is enabled',
+      async () => {
+        assertFalse(freChin.hasAttribute('small-loomnibox'));
+
+        freChin.smallLoomnibox = true;
+        await freChin.updateComplete;
+        assertTrue(freChin.hasAttribute('small-loomnibox'));
+
+        freChin.mode = FreChinMode.SHORTCUT_REMINDER;
+        await freChin.updateComplete;
+        assertTrue(freChin.hasAttribute('small-loomnibox'));
+
+        freChin.smallLoomnibox = false;
+        await freChin.updateComplete;
+        assertFalse(freChin.hasAttribute('small-loomnibox'));
+      });
 });
