@@ -4,7 +4,24 @@
 
 #include "services/device/serial/serial_io_handler_posix.h"
 
+#include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
+#include <termios.h>
+#include <unistd.h>
+
+#include <string>
+#include <vector>
+
 #include "base/compiler_specific.h"
+#include "base/files/file_path.h"
+#include "base/files/scoped_file.h"
+#include "base/posix/eintr_wrapper.h"
+#include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
@@ -19,6 +36,15 @@ class SerialIoHandlerPosixTest : public testing::Test {
   void SetUp() override {
     serial_io_handler_posix_ =
         new SerialIoHandlerPosix(base::FilePath("dummy-port"), nullptr);
+  }
+
+  void CreateHandler(const base::FilePath& port) {
+    serial_io_handler_posix_ = new SerialIoHandlerPosix(
+        port, base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
+
+  int GetFd() const {
+    return serial_io_handler_posix_->file().GetPlatformFile();
   }
 
   void Initialize(bool parity_check_enabled,
@@ -67,8 +93,64 @@ class SerialIoHandlerPosixTest : public testing::Test {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
   scoped_refptr<SerialIoHandlerPosix> serial_io_handler_posix_;
 };
+
+#if BUILDFLAG(IS_LINUX)
+// With VMIN=0 and VTIME=0 inherited from a previous opener of the tty (as
+// left behind by pyserial-based tools), read() on Linux returns 0 when no
+// data is available even on a non-blocking fd, which AttemptRead() would
+// misinterpret as DEVICE_LOST. https://crbug.com/559872992
+TEST_F(SerialIoHandlerPosixTest, InheritedVminVtimeDoesNotCauseDeviceLost) {
+  // Create a pseudoterminal pair. The slave end behaves like a serial port.
+  base::ScopedFD master(HANDLE_EINTR(posix_openpt(O_RDWR | O_NOCTTY)));
+  ASSERT_TRUE(master.is_valid());
+  ASSERT_EQ(0, grantpt(master.get()));
+  ASSERT_EQ(0, unlockpt(master.get()));
+  std::string slave_path;
+  ASSERT_EQ(0, ptsname_r(master.get(), base::WriteInto(&slave_path, 256), 256));
+  slave_path.resize(strlen(slave_path.c_str()));
+
+  // Simulate a previous opener leaving VMIN=0/VTIME=0 in the tty's termios,
+  // which persists across open/close.
+  {
+    base::ScopedFD slave(
+        HANDLE_EINTR(open(slave_path.c_str(), O_RDWR | O_NOCTTY)));
+    ASSERT_TRUE(slave.is_valid());
+    struct termios config;
+    ASSERT_EQ(0, tcgetattr(slave.get(), &config));
+    cfmakeraw(&config);
+    config.c_cc[VMIN] = 0;
+    config.c_cc[VTIME] = 0;
+    ASSERT_EQ(0, tcsetattr(slave.get(), TCSANOW, &config));
+  }
+
+  CreateHandler(base::FilePath(slave_path));
+
+  base::test::TestFuture<bool> open_future;
+  serial_io_handler_posix_->Open(mojom::SerialConnectionOptions(),
+                                 open_future.GetCallback());
+  ASSERT_TRUE(open_future.Get());
+
+  // The port configuration must not inherit VMIN=0 from the previous opener.
+  struct termios config;
+  ASSERT_EQ(0, tcgetattr(GetFd(), &config));
+  EXPECT_EQ(1, config.c_cc[VMIN]);
+  EXPECT_EQ(0, config.c_cc[VTIME]);
+
+  // A read on a silent port must wait for data instead of failing with
+  // DEVICE_LOST.
+  std::vector<uint8_t> buffer(16);
+  base::test::TestFuture<uint32_t, mojom::SerialReceiveError> read_future;
+  serial_io_handler_posix_->Read(buffer, read_future.GetCallback());
+  ASSERT_EQ(1, HANDLE_EINTR(write(master.get(), "x", 1)));
+  EXPECT_EQ(mojom::SerialReceiveError::NONE, read_future.Get<1>());
+  EXPECT_EQ(1u, read_future.Get<0>());
+  EXPECT_EQ('x', buffer[0]);
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 // 'a' 'b' 'c'
 TEST_F(SerialIoHandlerPosixTest, NoErrorReadOnce) {

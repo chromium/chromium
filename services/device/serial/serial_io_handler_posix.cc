@@ -175,6 +175,14 @@ bool SerialIoHandlerPosix::ConfigurePortImpl() {
   config.c_iflag |= PARMRK;
   config.c_oflag &= ~OPOST;
 
+  // Do not inherit non-canonical read semantics from the previous opener of
+  // this tty. With VMIN=0/VTIME=0 (as left behind by pyserial and others),
+  // Linux returns 0 from read() when no data is available even on a
+  // non-blocking fd, and AttemptRead() would misreport that as DEVICE_LOST.
+  // With VMIN=1 a non-blocking read returns EAGAIN instead.
+  config.c_cc[VMIN] = 1;
+  config.c_cc[VTIME] = 0;
+
   // CLOCAL causes the system to disregard the DCD signal state.
   // CREAD enables reading from the port.
   config.c_cflag |= (CLOCAL | CREAD);
