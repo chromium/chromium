@@ -416,6 +416,13 @@ if (_is_default_toolchain) {
       "//android_webview/nonembedded:nonembedded_java",
       "//android_webview/support_library:support_lib_glue_java",
     ]
+
+    # If we are using an unreleased Android SDK snapshot, include the downstream
+    # AconfigFlaggedApiDelegateImpl to provide implementations of flag-guarded
+    # APIs for the in-development Android version.
+    if (!public_android_sdk) {
+      deps += [ "//clank/base:flagged_apis_impl_java" ]
+    }
   }
 
   # Contains all Java dependencies used by WebView.
