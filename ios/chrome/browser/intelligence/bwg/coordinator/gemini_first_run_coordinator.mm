@@ -83,6 +83,10 @@
 
   // Whether the Live FRE outcome has already been logged.
   BOOL _outcomeLogged;
+
+  // The window whose VoiceOver modality was overridden while the FRE is shown,
+  // restored on dismissal.
+  __weak UIWindow* _voiceOverScopedWindow;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -161,6 +165,7 @@
                    if (!strongSelf) {
                      return;
                    }
+                   [strongSelf scopeVoiceOverToFirstRunSheet];
                    if (strongSelf->_firstRunType != GeminiFirstRunType::kLive) {
                      // Record the First Run was shown.
                      RecordFirstRunShown();
@@ -177,6 +182,7 @@
 
 - (void)stopWithCompletion:(ProceduralBlock)completion {
   [self logLiveFREOutcome];
+  [self unscopeVoiceOverFromFirstRunSheet];
   // Retain self to survive synchronous teardown from the completion block.
   __strong __typeof(self) strongSelf =
       IsGeminiCoordinatorTeardownFixEnabled() ? self : nil;
@@ -246,6 +252,7 @@
 // Handles the dismissal of the FRE UI.
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  [self unscopeVoiceOverFromFirstRunSheet];
   if (_firstRunType == GeminiFirstRunType::kLive) {
     [self logLiveFREOutcome];
     [_mediator disconnect];
@@ -391,12 +398,40 @@
 
 // Dismisses presented view.
 - (void)dismissPresentedViewWithCompletion:(void (^)())completion {
+  [self unscopeVoiceOverFromFirstRunSheet];
   if (self.baseViewController.presentedViewController) {
     [self.baseViewController dismissViewControllerAnimated:YES
                                                 completion:completion];
   }
 }
 
+// Restricts VoiceOver to the FRE consent sheet and moves focus onto it.
+- (void)scopeVoiceOverToFirstRunSheet {
+  UIView* sheetView = _viewController.view;
+  if (!sheetView) {
+    return;
+  }
+  sheetView.accessibilityViewIsModal = YES;
+  _viewController.presentationController.containerView
+      .accessibilityViewIsModal = YES;
+
+  UIWindow* window = sheetView.window;
+  if (window && !window.accessibilityViewIsModal) {
+    window.accessibilityViewIsModal = YES;
+    _voiceOverScopedWindow = window;
+  }
+
+  // A screen change notification is required to pull focus away from the
+  // content presented behind the sheet.
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  sheetView);
+}
+
+// Reverts the window modality applied by `scopeVoiceOverToFirstRunSheet`.
+- (void)unscopeVoiceOverFromFirstRunSheet {
+  _voiceOverScopedWindow.accessibilityViewIsModal = NO;
+  _voiceOverScopedWindow = nil;
+}
 // Returns the currently active WebState's Gemini tab helper.
 - (GeminiTabHelper*)activeWebStateGeminiTabHelper {
   web::WebState* activeWebState =
