@@ -8,6 +8,7 @@
 #include <concepts>
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -774,14 +775,14 @@ class GraphBuilderTflite final {
       const mojom::Clamp& clamp);
   base::expected<OperatorOffset, std::string> SerializeConv2d(
       const mojom::Conv2d& conv2d);
-  base::expected<OperatorOffset, std::string> SerializeConcat(
+  base::expected<std::optional<OperatorOffset>, std::string> SerializeConcat(
       const mojom::Concat& concat);
   base::expected<OperatorOffset, std::string> SerializeCumulativeSum(
       const mojom::CumulativeSum& cumulative_sum);
   base::expected<OperatorOffset, std::string> SerializeElementWiseBinary(
       const mojom::ElementWiseBinary& op);
-  base::expected<OperatorOffset, std::string> SerializeElementWiseUnary(
-      const mojom::ElementWiseUnary& op);
+  base::expected<std::optional<OperatorOffset>, std::string>
+  SerializeElementWiseUnary(const mojom::ElementWiseUnary& op);
   base::expected<OperatorOffset, std::string> SerializeElu(
       const mojom::Elu& elu);
   base::expected<OperatorOffset, std::string> SerializeErf(
@@ -823,11 +824,11 @@ class GraphBuilderTflite final {
       const mojom::HardSigmoid& hard_sigmoid);
   base::expected<OperatorOffset, std::string> SerializeHardSwish(
       const mojom::HardSwish& hard_swish);
-  // Returns Null OperatorOffset if the operation is elided, otherwise returns
-  // the OperatorOffset of the serialized operation.
-  base::expected<OperatorOffset, std::string> SerializeIdentityOperation(
-      OperandId input_operand_id,
-      OperandId output_operand_id);
+  // Returns std::nullopt if the operation is elided (no TFLite operator is
+  // created), otherwise the OperatorOffset of the serialized operation.
+  base::expected<std::optional<OperatorOffset>, std::string>
+  SerializeIdentityOperation(OperandId input_operand_id,
+                             OperandId output_operand_id);
 
   base::expected<OperatorOffset, std::string> SerializeInstanceNormalization(
       const mojom::InstanceNormalization& instance_normalization);
@@ -890,7 +891,7 @@ class GraphBuilderTflite final {
       const mojom::Resample2d& resample2d);
   base::expected<OperatorOffset, std::string> SerializeReshape(
       const mojom::Reshape& reshape);
-  base::expected<OperatorOffset, std::string> SerializeReverse(
+  base::expected<std::optional<OperatorOffset>, std::string> SerializeReverse(
       const mojom::Reverse& reverse);
   base::expected<OperatorOffset, std::string> SerializeScatterElements(
       const mojom::ScatterElements& scatter_elements);

@@ -1481,7 +1481,7 @@ void GraphBuilderTflite::FlushGraphOutputCastOperators() {
 base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     const mojom::Operation& op,
     OperationId operation_index) {
-  OperatorOffset operator_offset;
+  std::optional<OperatorOffset> operator_offset;
   switch (op.which()) {
     case mojom::Operation::Tag::kArgMinMax: {
       ASSIGN_OR_RETURN(operator_offset,
@@ -1717,8 +1717,8 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       break;
     }
   }
-  if (!operator_offset.IsNull()) {
-    operators_.emplace_back(operator_offset);
+  if (operator_offset.has_value()) {
+    operators_.emplace_back(*operator_offset);
   }
 
   FlushGraphOutputCastOperators();
@@ -4600,12 +4600,18 @@ auto GraphBuilderTflite::SerializeClamp(const mojom::Clamp& clamp)
 }
 
 auto GraphBuilderTflite::SerializeConcat(const mojom::Concat& concat)
-    -> base::expected<OperatorOffset, std::string> {
+    -> base::expected<std::optional<OperatorOffset>, std::string> {
   CHECK(std::ranges::all_of(
       concat.input_operand_ids, [&](OperandId input_operand_id) {
         return context_properties_.data_type_limits.concat_inputs.Supports(
             GetOperand(input_operand_id).descriptor);
       }));
+
+  // A concat of a single operand is an identity.
+  if (concat.input_operand_ids.size() == 1) {
+    return SerializeIdentityOperation(concat.input_operand_ids[0],
+                                      concat.output_operand_id);
+  }
 
   ASSIGN_OR_RETURN(std::optional<TensorInfo> quantized_output,
                    CanFuseQuantizeAndGetOutput(concat));
@@ -5424,7 +5430,7 @@ auto GraphBuilderTflite::SerializeElementWiseBinary(
 
 auto GraphBuilderTflite::SerializeElementWiseUnary(
     const mojom::ElementWiseUnary& op)
-    -> base::expected<OperatorOffset, std::string> {
+    -> base::expected<std::optional<OperatorOffset>, std::string> {
   // Elide identity no-ops (or use a reshape pass-through for graph outputs).
   if (op.kind == mojom::ElementWiseUnary::Kind::kIdentity) {
     CHECK(context_properties_.data_type_limits.identity_input.Supports(
@@ -7799,7 +7805,7 @@ auto GraphBuilderTflite::TransposeAndReshapeLayerNormalizationScaleBias(
 
 auto GraphBuilderTflite::SerializeIdentityOperation(OperandId input_operand_id,
                                                     OperandId output_operand_id)
-    -> base::expected<OperatorOffset, std::string> {
+    -> base::expected<std::optional<OperatorOffset>, std::string> {
   ASSIGN_OR_RETURN(
       const TensorInfo input_tensor_info,
       SerializeInputTensorInfo(input_operand_id, /*quantize_params=*/0,
@@ -7819,8 +7825,8 @@ auto GraphBuilderTflite::SerializeIdentityOperation(OperandId input_operand_id,
   // Intermediate tensors are elided by redirecting the output operand to the
   // input tensor.
   operand_to_tensor_info_map_[output_operand_id] = input_tensor_info;
-  // No TFLite operator created for intermediate Identity operations.
-  return OperatorOffset{};  // null
+  // No TFLite operator is created for an intermediate identity operation.
+  return std::nullopt;
 }
 
 auto GraphBuilderTflite::SerializeInstanceNormalization(
@@ -9855,7 +9861,7 @@ auto GraphBuilderTflite::SerializeReshape(const mojom::Reshape& reshape)
 }
 
 auto GraphBuilderTflite::SerializeReverse(const mojom::Reverse& reverse)
-    -> base::expected<OperatorOffset, std::string> {
+    -> base::expected<std::optional<OperatorOffset>, std::string> {
   // Elide no-op reverse (or use a reshape pass-through for graph outputs).
   if (reverse.axes.empty()) {
     CHECK(context_properties_.data_type_limits.reverse_input.Supports(
