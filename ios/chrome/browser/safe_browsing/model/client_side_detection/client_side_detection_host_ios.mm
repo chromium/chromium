@@ -151,6 +151,9 @@ ClientSideDetectionHostIOS::ClientSideDetectionHostIOS(
   EnsureObservingQueryManager();
   classifier_ = std::make_unique<safe_browsing::PhishingClassifier>();
   image_embedder_ = std::make_unique<safe_browsing::PhishingImageEmbedder>();
+  if (service_) {
+    scorer_observation_.Observe(service_);
+  }
 }
 
 ClientSideDetectionHostIOS::~ClientSideDetectionHostIOS() {
@@ -365,10 +368,12 @@ void ClientSideDetectionHostIOS::MaybeStartPreClassification(
 
 void ClientSideDetectionHostIOS::CancelPendingRequests() {
   weak_ptr_factory_.InvalidateWeakPtrs();
-  if (classifier_ && classifier_->is_ready()) {
+  // We cancel unconditionally since both cancel methods are idempotent and safe
+  // to call when nothing is pending.
+  if (classifier_) {
     classifier_->CancelPendingClassification();
   }
-  if (image_embedder_ && image_embedder_->is_ready()) {
+  if (image_embedder_) {
     image_embedder_->CancelPendingImageEmbedding();
   }
   is_preclassifying_ = false;
@@ -520,6 +525,7 @@ void ClientSideDetectionHostIOS::PageLoaded(
 void ClientSideDetectionHostIOS::WebStateDestroyed(web::WebState* web_state) {
   query_manager_observation_.Reset();
   metrics_helper_observation_.Reset();
+  scorer_observation_.Reset();
   CancelPendingRequests();
   stabilization_timer_.Stop();
   web_state_->RemoveObserver(this);
@@ -593,6 +599,21 @@ void ClientSideDetectionHostIOS::
     SetBypassLocalResourceCheckForTesting(  // IN-TEST
         bool bypass) {
   g_bypass_local_resource_check_for_testing = bypass;
+}
+
+#pragma mark - ClientSideDetectionService::Observer
+
+void ClientSideDetectionHostIOS::OnScorerChanged() {
+  // The previous `Scorer` is destroyed asynchronously on a background thread,
+  // unmapping its model file. Cancel in-flight requests and clear cached raw
+  // pointers to prevent use-after-free (crbug.com/561910278).
+  CancelPendingRequests();
+  if (classifier_) {
+    classifier_->set_scorer(nullptr);
+  }
+  if (image_embedder_) {
+    image_embedder_->set_scorer(nullptr);
+  }
 }
 
 #pragma mark - WebPerformanceMetricsTabHelper::Observer
