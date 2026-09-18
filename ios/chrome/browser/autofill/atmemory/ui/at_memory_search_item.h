@@ -27,6 +27,10 @@ struct Suggestion;
 // Index of the search result item.
 @property(nonatomic, assign, readonly) NSInteger index;
 
+// Whether the item is sourced from personal context rather than saved Autofill
+// data.
+@property(nonatomic, readonly) BOOL isPersonalContextSourced;
+
 // Initializes the item from an autofill `suggestion` and its `index`.
 - (instancetype)initWithSuggestion:(const autofill::Suggestion&)suggestion
                              index:(NSInteger)index NS_DESIGNATED_INITIALIZER;

@@ -66,6 +66,7 @@ std::u16string GetSubtitleFromSuggestion(const Suggestion& suggestion) {
             std::get_if<Suggestion::AtMemoryPayload>(&suggestion.payload)) {
       _icon = GetAtMemorySearchItemIcon(payload->memory_data_type,
                                         payload->is_personal_context_sourced);
+      _isPersonalContextSourced = payload->is_personal_context_sourced;
     }
     _index = index;
   }
