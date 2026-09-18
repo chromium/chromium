@@ -26,12 +26,12 @@ namespace ash {
 GnubbyNotification::GnubbyNotification()
     : update_dismiss_notification_timer_(new base::OneShotTimer()),
       weak_ptr_factory_(this) {
-  DCHECK(GnubbyClient::Get());
+  CHECK(GnubbyClient::Get(), base::NotFatalUntil::M160);
   GnubbyClient::Get()->AddObserver(this);
 }
 
 GnubbyNotification::~GnubbyNotification() {
-  DCHECK(GnubbyClient::Get());
+  CHECK(GnubbyClient::Get(), base::NotFatalUntil::M160);
   if (message_center::MessageCenter::Get()) {
     DismissNotification();
   } else {

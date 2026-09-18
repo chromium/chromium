@@ -59,7 +59,7 @@ void AppListControllerDelegate::DoShowAppInfoFlow(Profile* profile,
   auto app_type = apps::AppServiceProxyFactory::GetForProfile(profile)
                       ->AppRegistryCache()
                       .GetAppType(app_id);
-  DCHECK_NE(app_type, apps::AppType::kUnknown);
+  CHECK_NE(app_type, apps::AppType::kUnknown, base::NotFatalUntil::M160);
 
   std::string sub_page;
   std::optional<ash::SettingsAppManager::EntryPoint> entry_point;
@@ -137,6 +137,6 @@ void AppListControllerDelegate::LaunchAppWithUrl(
     const GURL& url,
     apps::LaunchSource launch_source) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-  DCHECK(proxy);
+  CHECK(proxy, base::NotFatalUntil::M160);
   proxy->LaunchAppWithUrl(app_id, event_flags, url, launch_source);
 }

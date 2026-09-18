@@ -47,17 +47,17 @@ AccessibilityDlcInstaller::Callbacks::~Callbacks() = default;
 void AccessibilityDlcInstaller::Callbacks::RunOnInstalled(
     const bool success,
     std::string root_path) {
-  DCHECK(!on_installed_.is_null());
+  CHECK(!on_installed_.is_null(), base::NotFatalUntil::M160);
   std::move(on_installed_).Run(success, root_path);
 }
 
 void AccessibilityDlcInstaller::Callbacks::RunOnProgress(double progress) {
-  DCHECK(!on_progress_.is_null());
+  CHECK(!on_progress_.is_null(), base::NotFatalUntil::M160);
   on_progress_.Run(progress);
 }
 
 void AccessibilityDlcInstaller::Callbacks::RunOnError(std::string_view error) {
-  DCHECK(!on_error_.is_null());
+  CHECK(!on_error_.is_null(), base::NotFatalUntil::M160);
   std::move(on_error_).Run(error);
 }
 

@@ -101,19 +101,19 @@ class ArcAppIcon {
   // IconType::kCompressed.
   const std::map<ui::ResourceScaleFactor, std::string>& compressed_images()
       const {
-    DCHECK_EQ(IconType::kCompressed, icon_type_);
+    CHECK_EQ(IconType::kCompressed, icon_type_, base::NotFatalUntil::M160);
     return compressed_images_;
   }
   // Returns |foreground_image_skia_| and valid if the |icon_type_| is
   // IconType::kAdaptive.
   const gfx::ImageSkia& foreground_image_skia() const {
-    DCHECK_EQ(IconType::kAdaptive, icon_type_);
+    CHECK_EQ(IconType::kAdaptive, icon_type_, base::NotFatalUntil::M160);
     return foreground_image_skia_;
   }
   // Returns |background_image_skia_| and valid if the |icon_type_| is
   // IconType::kAdaptive.
   const gfx::ImageSkia& background_image_skia() const {
-    DCHECK_EQ(IconType::kAdaptive, icon_type_);
+    CHECK_EQ(IconType::kAdaptive, icon_type_, base::NotFatalUntil::M160);
     return background_image_skia_;
   }
 

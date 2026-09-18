@@ -89,7 +89,7 @@ void ArcPaiStarter::MaybeStartPai() {
   }
 
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(profile_);
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M160);
 
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
       prefs->GetApp(kPlayStoreAppId);
@@ -107,9 +107,9 @@ void ArcPaiStarter::MaybeStartPai() {
 }
 
 void ArcPaiStarter::OnPaiDone() {
-  DCHECK(!pending_);
+  CHECK(!pending_, base::NotFatalUntil::M160);
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(profile_);
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M160);
 
   started_ = true;
   pref_service_->SetBoolean(prefs::kArcPaiStarted, true);
@@ -122,7 +122,7 @@ void ArcPaiStarter::OnPaiDone() {
 }
 
 void ArcPaiStarter::OnPaiRequested(mojom::PaiFlowState state) {
-  DCHECK(pending_);
+  CHECK(pending_, base::NotFatalUntil::M160);
   pending_ = false;
   VLOG(1) << "PAI flow state " << state;
 

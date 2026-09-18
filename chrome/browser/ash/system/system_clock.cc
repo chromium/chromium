@@ -41,7 +41,8 @@ SystemClock::~SystemClock() {
 }
 
 void SystemClock::OnProfileWillBeDestroyed(Profile* profile) {
-  DCHECK(profile_observation_.IsObservingSource(profile));
+  CHECK(profile_observation_.IsObservingSource(profile),
+        base::NotFatalUntil::M160);
   profile_observation_.Reset();
   user_pref_registrar_.reset();
 }
@@ -106,7 +107,7 @@ void SystemClock::ScopedHourClockType::UpdateClockType(
 
 SystemClock::ScopedHourClockType SystemClock::CreateScopedHourClockType(
     base::HourClockType hour_clock_type) {
-  DCHECK(!scoped_hour_clock_type_.has_value());
+  CHECK(!scoped_hour_clock_type_.has_value(), base::NotFatalUntil::M160);
   scoped_hour_clock_type_ = hour_clock_type;
   NotifySystemClockTypeChanged();
   return ScopedHourClockType(weak_ptr_factory_.GetWeakPtr());
@@ -142,7 +143,8 @@ bool SystemClock::ShouldUse24HourClockForUser(const AccountId& user_id) const {
 
     // Regular users use `system_value` on managed devices where `system_value`
     // is from device policy.
-    DCHECK_EQ(user->GetType(), user_manager::UserType::kRegular);
+    CHECK_EQ(user->GetType(), user_manager::UserType::kRegular,
+             base::NotFatalUntil::M160);
     if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
       return system_value;
     }

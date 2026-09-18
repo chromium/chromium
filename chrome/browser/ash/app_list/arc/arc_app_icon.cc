@@ -107,7 +107,7 @@ ArcAppIcon::Source::Source(const base::WeakPtr<ArcAppIcon>& host,
 ArcAppIcon::Source::~Source() = default;
 
 gfx::ImageSkiaRep ArcAppIcon::Source::GetImageForScale(float scale) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Host loads icon asynchronously, so use default icon so far.
   int resource_id;
@@ -192,7 +192,7 @@ ArcAppIcon::DecodeRequest::DecodeRequest(
 ArcAppIcon::DecodeRequest::~DecodeRequest() = default;
 
 void ArcAppIcon::DecodeRequest::OnImageDecoded(const SkBitmap& bitmap) {
-  DCHECK(!bitmap.isNull() && !bitmap.empty());
+  CHECK(!bitmap.isNull() && !bitmap.empty(), base::NotFatalUntil::M160);
 
   const int expected_dim = descriptor_.GetSizeInPixels();
 
@@ -375,10 +375,10 @@ bool ArcAppIcon::EverySupportedScaleFactorIsLoaded() {
 void ArcAppIcon::LoadForScaleFactor(ui::ResourceScaleFactor scale_factor) {
   // We provide Play Store icon from Chrome resources and it is not expected
   // that we have external load request.
-  DCHECK_NE(app_id(), arc::kPlayStoreAppId);
+  CHECK_NE(app_id(), arc::kPlayStoreAppId, base::NotFatalUntil::M160);
 
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(context_);
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M160);
 
   const ArcAppIconDescriptor descriptor(resource_size_in_dip_, scale_factor);
   std::vector<base::FilePath> paths;
@@ -430,9 +430,9 @@ void ArcAppIcon::LoadForScaleFactor(ui::ResourceScaleFactor scale_factor) {
 }
 
 void ArcAppIcon::MaybeRequestIcon(ui::ResourceScaleFactor scale_factor) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(context_);
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M160);
 
   // ArcAppListPrefs notifies the ArcAppIconLoader (which is an
   // ArcAppListPrefs::Observer) when the icon is updated, and
@@ -449,14 +449,14 @@ std::unique_ptr<ArcAppIcon::ReadResult> ArcAppIcon::ReadOnBackgroundThread(
     ui::ResourceScaleFactor scale_factor,
     const std::vector<base::FilePath>& paths,
     const std::vector<base::FilePath>& default_app_paths) {
-  DCHECK(!paths.empty());
+  CHECK(!paths.empty(), base::NotFatalUntil::M160);
 
   switch (icon_type) {
     case IconType::kUncompressed:
       // Deliberately fall through to IconType::kCompressed.
       [[fallthrough]];
     case IconType::kCompressed:
-      DCHECK_EQ(1u, paths.size());
+      CHECK_EQ(1u, paths.size(), base::NotFatalUntil::M160);
       return ArcAppIcon::ReadSingleIconFile(scale_factor, paths[0],
                                             default_app_paths[0]);
     case IconType::kAdaptive:
@@ -470,7 +470,7 @@ std::unique_ptr<ArcAppIcon::ReadResult> ArcAppIcon::ReadSingleIconFile(
     ui::ResourceScaleFactor scale_factor,
     const base::FilePath& path,
     const base::FilePath& default_app_path) {
-  DCHECK(!path.empty());
+  CHECK(!path.empty(), base::NotFatalUntil::M160);
 
   base::FilePath path_to_read;
   // Allow resizing only for default app icons.
@@ -499,7 +499,7 @@ std::unique_ptr<ArcAppIcon::ReadResult> ArcAppIcon::ReadAdaptiveIconFiles(
     ui::ResourceScaleFactor scale_factor,
     const std::vector<base::FilePath>& paths,
     const std::vector<base::FilePath>& default_app_paths) {
-  DCHECK_EQ(3u, paths.size());
+  CHECK_EQ(3u, paths.size(), base::NotFatalUntil::M160);
 
   const base::FilePath& foreground_path = paths[0];
   const base::FilePath& background_path = paths[1];
@@ -535,7 +535,7 @@ ArcAppIcon::ReadDefaultAppAdaptiveIconFiles(
     const std::vector<base::FilePath>& default_app_paths) {
   // Check the default app icon path, and read the icon files for the default
   // app if the files exist.
-  DCHECK_EQ(3u, default_app_paths.size());
+  CHECK_EQ(3u, default_app_paths.size(), base::NotFatalUntil::M160);
   const base::FilePath& default_app_foreground_path = default_app_paths[0];
   const base::FilePath& default_app_background_path = default_app_paths[1];
   if (default_app_foreground_path.empty() ||
@@ -647,7 +647,7 @@ std::unique_ptr<ArcAppIcon::ReadResult> ArcAppIcon::ReadFiles(
 
 void ArcAppIcon::OnIconRead(
     std::unique_ptr<ArcAppIcon::ReadResult> read_result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (read_result->request_to_install)
     MaybeRequestIcon(read_result->scale_factor);
@@ -659,7 +659,8 @@ void ArcAppIcon::OnIconRead(
 
   switch (icon_type_) {
     case IconType::kUncompressed: {
-      DCHECK_EQ(1u, read_result->unsafe_icon_data.size());
+      CHECK_EQ(1u, read_result->unsafe_icon_data.size(),
+               base::NotFatalUntil::M160);
       DecodeImage(std::move(read_result->unsafe_icon_data[0]),
                   ArcAppIconDescriptor(resource_size_in_dip_,
                                        read_result->scale_factor),
@@ -668,7 +669,8 @@ void ArcAppIcon::OnIconRead(
       return;
     }
     case IconType::kCompressed: {
-      DCHECK_EQ(1u, read_result->unsafe_icon_data.size());
+      CHECK_EQ(1u, read_result->unsafe_icon_data.size(),
+               base::NotFatalUntil::M160);
       UpdateCompressed(read_result->scale_factor,
                        std::move(read_result->unsafe_icon_data[0]));
       return;
@@ -687,7 +689,8 @@ void ArcAppIcon::OnIconRead(
         return;
       }
 
-      DCHECK_EQ(2u, read_result->unsafe_icon_data.size());
+      CHECK_EQ(2u, read_result->unsafe_icon_data.size(),
+               base::NotFatalUntil::M160);
       DecodeImage(std::move(read_result->unsafe_icon_data[0]),
                   ArcAppIconDescriptor(resource_size_in_dip_,
                                        read_result->scale_factor),
@@ -744,7 +747,7 @@ void ArcAppIcon::UpdateImageSkia(
     const SkBitmap& bitmap,
     gfx::ImageSkia& image_skia,
     std::map<ui::ResourceScaleFactor, base::Time>& incomplete_scale_factors) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(ui::IsScaleFactorSupported(scale_factor));
 
   gfx::ImageSkiaRep image_rep(bitmap,
@@ -759,7 +762,7 @@ void ArcAppIcon::UpdateImageSkia(
 
 void ArcAppIcon::UpdateCompressed(ui::ResourceScaleFactor scale_factor,
                                   std::string data) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   compressed_images_[scale_factor] = std::move(data);
 
   incomplete_scale_factors_.erase(scale_factor);
@@ -768,7 +771,7 @@ void ArcAppIcon::UpdateCompressed(ui::ResourceScaleFactor scale_factor,
 
 void ArcAppIcon::OnImageDecoded(DecodeRequest* request,
                                 const SkBitmap& bitmap) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   const bool is_decode_success = !bitmap.isNull() && !bitmap.empty();
 

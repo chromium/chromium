@@ -96,7 +96,7 @@ double MagnificationManager::GetSavedScreenMagnifierScale() const {
 }
 
 void MagnificationManager::OnProfileWillBeDestroyed(Profile* profile) {
-  DCHECK_EQ(profile_, profile);
+  CHECK_EQ(profile_, profile, base::NotFatalUntil::M160);
   SetProfile(nullptr);
 }
 
@@ -191,10 +191,11 @@ void MagnificationManager::SetProfileByUser(const user_manager::User* user) {
 
 void MagnificationManager::SetProfile(Profile* profile) {
   if (profile_) {
-    DCHECK(profile_observation_.IsObservingSource(profile_.get()));
+    CHECK(profile_observation_.IsObservingSource(profile_.get()),
+          base::NotFatalUntil::M160);
     profile_observation_.Reset();
   }
-  DCHECK(!profile_observation_.IsObserving());
+  CHECK(!profile_observation_.IsObserving(), base::NotFatalUntil::M160);
 
   pref_change_registrar_.reset();
 

@@ -142,8 +142,8 @@ BubbleViewParameters GetBubbleViewParameters(
     return params;
   }
 
-  DCHECK(
-      sync_service->GetUserSettings()->IsTrustedVaultRecoverabilityDegraded());
+  CHECK(sync_service->GetUserSettings()->IsTrustedVaultRecoverabilityDegraded(),
+        base::NotFatalUntil::M160);
 
   BubbleViewParameters params;
   params.title_id = IsNewSignInNonSyncingUser(sync_service)
@@ -196,7 +196,7 @@ void SyncErrorNotifier::Shutdown() {
 }
 
 void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
-  DCHECK_EQ(service, sync_service_);
+  CHECK_EQ(service, sync_service_, base::NotFatalUntil::M160);
 
   const bool should_display_notification =
       ShouldShowSyncDisabledViaDashboardError(sync_service_) ||
@@ -218,7 +218,8 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
 
   // Error state just got triggered. There shouldn't be previous notification.
   // Let's display one.
-  DCHECK(!notification_displayed_ && should_display_notification);
+  CHECK(!notification_displayed_ && should_display_notification,
+        base::NotFatalUntil::M160);
 
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,

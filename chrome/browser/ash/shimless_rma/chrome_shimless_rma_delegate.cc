@@ -67,7 +67,7 @@ void ChromeShimlessRmaDelegate::ShowDiagnosticsDialog() {
 
 void ChromeShimlessRmaDelegate::RefreshAccessibilityManagerProfile() {
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
-  DCHECK(accessibility_manager);
+  CHECK(accessibility_manager, base::NotFatalUntil::M160);
   accessibility_manager->OnShimlessRmaLaunched();
 }
 

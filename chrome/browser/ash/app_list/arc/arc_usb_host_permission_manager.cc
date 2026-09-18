@@ -31,7 +31,7 @@ constexpr char kUsbVendorId[] = "usb_vendor_id";
 
 std::string GetAppIdFromPackageName(const std::string& package_name,
                                     const ArcAppListPrefs* arc_app_list_prefs) {
-  DCHECK(arc_app_list_prefs);
+  CHECK(arc_app_list_prefs, base::NotFatalUntil::M160);
 
   // For app icon and app name in UI dialog, find a matching launchable activity
   // for the requesting package. If there are multiple launchable activities
@@ -280,7 +280,7 @@ void ArcUsbHostPermissionManager::GrantUsbAccessPermission(
   UsbDeviceEntry usb_device_entry(guid, std::u16string() /*device_name*/,
                                   std::u16string() /*serial_number*/, vendor_id,
                                   product_id);
-  DCHECK(!usb_device_entry.IsPersistent());
+  CHECK(!usb_device_entry.IsPersistent(), base::NotFatalUntil::M160);
   UpdateArcUsbAccessPermission(package_name, usb_device_entry,
                                true /*allowed*/);
 }

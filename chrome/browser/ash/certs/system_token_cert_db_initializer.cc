@@ -243,7 +243,7 @@ void SystemTokenCertDBInitializer::InitializeDatabase(
   system_token_cert_database_ = std::move(database);
 
   auto* system_token_cert_db_storage = SystemTokenCertDbStorage::Get();
-  DCHECK(system_token_cert_db_storage);
+  CHECK(system_token_cert_db_storage, base::NotFatalUntil::M160);
   system_token_cert_db_storage->SetDatabase(system_token_cert_database_.get());
 }
 

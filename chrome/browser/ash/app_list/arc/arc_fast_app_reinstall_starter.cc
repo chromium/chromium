@@ -54,7 +54,7 @@ void ArcFastAppReinstallStarter::MaybeStartFastAppReinstall() {
   }
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(context_);
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M160);
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
       prefs->GetApp(kPlayStoreAppId);
   if (!app_info || !app_info->ready) {

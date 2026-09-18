@@ -2479,7 +2479,7 @@ bool ArcAppListPrefs::IsDefaultPackage(const std::string& package_name) const {
 
 void ArcAppListPrefs::OnPackageAdded(
     arc::mojom::ArcPackageInfoPtr package_info) {
-  DCHECK(IsArcAndroidEnabledForProfile(profile_));
+  CHECK(IsArcAndroidEnabledForProfile(profile_), base::NotFatalUntil::M160);
 
   AddOrUpdatePackagePrefs(*package_info,
                           UpdatePackagePrefsReason::kOnPackageAdded);
@@ -2495,7 +2495,7 @@ void ArcAppListPrefs::OnPackageAdded(
 
 void ArcAppListPrefs::OnPackageModified(
     arc::mojom::ArcPackageInfoPtr package_info) {
-  DCHECK(IsArcAndroidEnabledForProfile(profile_));
+  CHECK(IsArcAndroidEnabledForProfile(profile_), base::NotFatalUntil::M160);
   AddOrUpdatePackagePrefs(*package_info,
                           UpdatePackagePrefsReason::kOnPackageModified);
   for (auto& observer : observer_list_)
@@ -2504,7 +2504,7 @@ void ArcAppListPrefs::OnPackageModified(
 
 void ArcAppListPrefs::OnPackageListRefreshed(
     std::vector<arc::mojom::ArcPackageInfoPtr> packages) {
-  DCHECK(IsArcAndroidEnabledForProfile(profile_));
+  CHECK(IsArcAndroidEnabledForProfile(profile_), base::NotFatalUntil::M160);
 
   const base::flat_set<std::string> old_packages(GetPackagesFromPrefs());
   std::set<std::string> current_packages;
@@ -2609,7 +2609,7 @@ void ArcAppListPrefs::InstallIcon(const std::string& app_id,
 void ArcAppListPrefs::OnIconInstalled(const std::string& app_id,
                                       const ArcAppIconDescriptor& descriptor,
                                       bool install_succeed) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (!install_succeed)
     return;
 
@@ -2763,7 +2763,7 @@ ArcAppListPrefs::AppInfo::AppInfo(
       data_size_in_bytes(data_size_in_bytes),
       app_category(app_category) {
   // If app is not launchable it also does not show in launcher.
-  DCHECK(launchable || !show_in_launcher);
+  CHECK(launchable || !show_in_launcher, base::NotFatalUntil::M160);
 }
 
 ArcAppListPrefs::AppInfo::AppInfo(AppInfo&& other) = default;

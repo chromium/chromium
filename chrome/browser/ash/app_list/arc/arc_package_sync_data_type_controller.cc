@@ -40,8 +40,8 @@ ArcPackageSyncDataTypeController::ArcPackageSyncDataTypeController(
       sync_service_(sync_service),
       profile_(profile),
       arc_prefs_(ArcAppListPrefs::Get(profile)) {
-  DCHECK(arc_prefs_);
-  DCHECK(profile_);
+  CHECK(arc_prefs_, base::NotFatalUntil::M160);
+  CHECK(profile_, base::NotFatalUntil::M160);
   DataTypeControllerDelegate* delegate =
       bridge_->change_processor()->GetControllerDelegate().get();
   auto delegate_for_full_sync_mode =
@@ -76,7 +76,7 @@ ArcPackageSyncDataTypeController::~ArcPackageSyncDataTypeController() {
 syncer::DataTypeController::PreconditionState
 ArcPackageSyncDataTypeController::GetPreconditionState(
     const PreconditionContext& context) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M160);
   if (!arc::IsArcPlayStoreEnabledForProfile(profile_)) {
     return PreconditionState::kMustStopAndClearData;
   }
@@ -92,21 +92,21 @@ ArcPackageSyncDataTypeController::GetPreconditionState(
 
 void ArcPackageSyncDataTypeController::OnArcPlayStoreEnabledChanged(
     bool enabled) {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M160);
   sync_service_->DataTypePreconditionChanged(type());
 }
 
 void ArcPackageSyncDataTypeController::OnArcInitialStart() {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M160);
   sync_service_->DataTypePreconditionChanged(type());
 }
 
 void ArcPackageSyncDataTypeController::OnPackageListInitialRefreshed() {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M160);
   sync_service_->DataTypePreconditionChanged(type());
 }
 
 void ArcPackageSyncDataTypeController::OnOsSyncFeaturePrefChanged() {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M160);
   sync_service_->DataTypePreconditionChanged(type());
 }

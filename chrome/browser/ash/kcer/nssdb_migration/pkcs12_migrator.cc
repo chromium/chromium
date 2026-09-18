@@ -42,7 +42,7 @@ void RecordUmaEvent(KcerPkcs12MigrationEvent event) {
 
 void FilterClientCerts(ListCertsCallback callback,
                        net::ScopedCERTCertificateList certs) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   net::ScopedCERTCertificateList filtered_certs;
   for (net::ScopedCERTCertificate& cert : certs) {
@@ -56,7 +56,7 @@ void FilterClientCerts(ListCertsCallback callback,
 
 void ListPublicSlotClientCertsWithDb(ListCertsCallback callback,
                                      net::NSSCertDatabase* nss_db) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   if (!nss_db) {
     return std::move(callback).Run(/*success=*/false, {});
   }
@@ -68,7 +68,7 @@ void ListPublicSlotClientCertsWithDb(ListCertsCallback callback,
 
 void ListPublicSlotClientCertsOnIOThread(NssCertDatabaseGetter database_getter,
                                          ListCertsCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   auto split_callback = base::SplitOnceCallback(
       base::BindOnce(&ListPublicSlotClientCertsWithDb, std::move(callback)));
@@ -152,7 +152,7 @@ Pkcs12Migrator::Pkcs12Migrator(content::BrowserContext* context)
 Pkcs12Migrator::~Pkcs12Migrator() = default;
 
 void Pkcs12Migrator::Start() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   RecordUmaEvent(KcerPkcs12MigrationEvent::kMigrationStarted);
   // Delay the migration a bit, so it doesn't slow down ChromeOS at the
   // beginning of a user session.
@@ -178,7 +178,7 @@ void Pkcs12Migrator::StartAfterDelay() {
 
 void Pkcs12Migrator::MigrateCerts(bool success,
                                   net::ScopedCERTCertificateList nss_certs) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!success) {
     return RecordUmaEvent(KcerPkcs12MigrationEvent::kFailedToGetNssCerts);
@@ -200,7 +200,7 @@ void Pkcs12Migrator::MigrateCertsWithKcerCerts(
     net::ScopedCERTCertificateList nss_certs,
     std::vector<scoped_refptr<const Cert>> kcer_certs,
     base::flat_map<Token, Error> kcer_errors) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!kcer_errors.empty()) {
     return RecordUmaEvent(KcerPkcs12MigrationEvent::kFailedToGetKcerCerts);
@@ -226,7 +226,7 @@ void Pkcs12Migrator::MigrateCertsWithKcerCerts(
 
 // This method is called repeatedly until `certs` is empty.
 void Pkcs12Migrator::MigrateEachCert(net::ScopedCERTCertificateList certs) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (certs.empty()) {
     if (had_failures_) {
       RecordUmaEvent(KcerPkcs12MigrationEvent::kMigrationFinishedFailure);
@@ -254,7 +254,7 @@ void Pkcs12Migrator::MigrateEachCert(net::ScopedCERTCertificateList certs) {
 
 void Pkcs12Migrator::ExportedOneCert(net::ScopedCERTCertificateList certs,
                                      Pkcs12Blob pkcs12) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (pkcs12->empty()) {
     had_failures_ = true;
@@ -278,7 +278,7 @@ void Pkcs12Migrator::ExportedOneCert(net::ScopedCERTCertificateList certs,
 
 void Pkcs12Migrator::ImportedOneCert(net::ScopedCERTCertificateList certs,
                                      base::expected<void, Error> result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!result.has_value()) {
     had_failures_ = true;

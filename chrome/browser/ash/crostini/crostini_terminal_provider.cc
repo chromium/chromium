@@ -69,7 +69,7 @@ class CrostiniStartupStatus : public crostini::CrostiniManager::RestartObserver,
         });
     const std::string& stage_string = (*kStartStrings)[stage];
     // Ensure we have a valid string for each stage.
-    DCHECK(!stage_string.empty());
+    CHECK(!stage_string.empty(), base::NotFatalUntil::M160);
     printer()->PrintStage(stage_index, stage_string);
   }
 };

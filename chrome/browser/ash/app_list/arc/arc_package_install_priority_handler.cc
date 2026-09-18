@@ -45,7 +45,7 @@ void ArcPackageInstallPriorityHandler::InstallSyncedPacakge(
     const std::string& package_name,
     arc::mojom::InstallPriority priority) {
   auto* arc_package_sync_service = ArcPackageSyncableService::Get(profile_);
-  DCHECK(arc_package_sync_service);
+  CHECK(arc_package_sync_service, base::NotFatalUntil::M160);
 
   arc_package_sync_service->InstallPendingPackage(package_name, priority);
 

@@ -48,7 +48,8 @@ SystemLiveCaptionService::SystemLiveCaptionService(Profile* profile,
           base::BindRepeating(&SystemLiveCaptionService::OpenCaptionSettings,
                               base::Unretained(this))),
       source_(source) {
-  DCHECK_EQ(ProfileManager::GetPrimaryUserProfile(), profile);
+  CHECK_EQ(ProfileManager::GetPrimaryUserProfile(), profile,
+           base::NotFatalUntil::M160);
   // The controller handles all SODA installation / languages etc. for us. We
   // just subscribe to the interface that informs us when we're ready to go.
   BindToBrowserInterface();
@@ -75,7 +76,7 @@ void SystemLiveCaptionService::OnSpeechResult(
     bool /*is_final*/,
     const std::optional<media::SpeechRecognitionResult>& result) {
   // TODO(robsc): add in the other sides stability functionality.
-  DCHECK(result.has_value());
+  CHECK(result.has_value(), base::NotFatalUntil::M160);
   if (!controller_) {
     StopRecognizing();
     // Hard and fast stop.

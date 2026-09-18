@@ -93,7 +93,7 @@ void DebugdNotificationHandler::OnButtonClick(std::optional<int> button_index) {
     return;
 
   // button_index should be 0 since there's only one button on the notification.
-  DCHECK(button_index == 0);
+  CHECK(button_index == 0, base::NotFatalUntil::M160);
 
   // Send empty argument to StopPacketCapture function to stop all on-going
   // packet capture operations.

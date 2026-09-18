@@ -42,7 +42,7 @@ std::unique_ptr<ArcSyncItem> CreateSyncItemFromSyncSpecifics(
 std::unique_ptr<ArcSyncItem> CreateSyncItemFromSyncData(
     const syncer::SyncData& sync_data) {
   const sync_pb::EntitySpecifics& entity_specifics = sync_data.GetSpecifics();
-  DCHECK(entity_specifics.has_arc_package());
+  CHECK(entity_specifics.has_arc_package(), base::NotFatalUntil::M160);
   const sync_pb::ArcPackageSpecifics& specifics =
       entity_specifics.arc_package();
 
@@ -51,8 +51,8 @@ std::unique_ptr<ArcSyncItem> CreateSyncItemFromSyncData(
 
 void UpdateSyncSpecificsFromSyncItem(const ArcSyncItem* item,
                                      sync_pb::ArcPackageSpecifics* specifics) {
-  DCHECK(item);
-  DCHECK(specifics);
+  CHECK(item, base::NotFatalUntil::M160);
+  CHECK(specifics, base::NotFatalUntil::M160);
   specifics->set_package_name(item->package_name);
   specifics->set_package_version(item->package_version);
   specifics->set_last_backup_android_id(item->last_backup_android_id);
@@ -60,7 +60,7 @@ void UpdateSyncSpecificsFromSyncItem(const ArcSyncItem* item,
 }
 
 syncer::SyncData GetSyncDataFromSyncItem(const ArcSyncItem* item) {
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M160);
   sync_pb::EntitySpecifics specifics;
   UpdateSyncSpecificsFromSyncItem(item, specifics.mutable_arc_package());
   return syncer::SyncData::CreateLocalData(item->package_name,
@@ -70,7 +70,7 @@ syncer::SyncData GetSyncDataFromSyncItem(const ArcSyncItem* item) {
 // Creates new syncItem from ArcAppListPrefs::PackageInfo
 std::unique_ptr<ArcSyncItem> CreateSyncItemFromPrefs(
     std::unique_ptr<ArcAppListPrefs::PackageInfo> package_info) {
-  DCHECK(package_info);
+  CHECK(package_info, base::NotFatalUntil::M160);
   return std::make_unique<ArcSyncItem>(
       package_info->package_name, package_info->package_version,
       package_info->last_backup_android_id, package_info->last_backup_time);
@@ -96,7 +96,7 @@ ArcPackageSyncableService::ArcPackageSyncableService(Profile* profile,
     prefs_->AddObserver(this);
 
   auto* arc_session_manager = arc::ArcSessionManager::Get();
-  DCHECK(arc_session_manager);
+  CHECK(arc_session_manager, base::NotFatalUntil::M160);
   arc_session_manager->AddObserver(this);
 }
 
@@ -130,7 +130,7 @@ bool ArcPackageSyncableService::IsPackageSyncing(
 }
 
 void ArcPackageSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {
-  DCHECK(!wait_until_ready_to_sync_cb_);
+  CHECK(!wait_until_ready_to_sync_cb_, base::NotFatalUntil::M160);
 
   if (prefs_->package_list_initial_refreshed()) {
     std::move(done).Run();
@@ -147,11 +147,11 @@ ArcPackageSyncableService::MergeDataAndStartSyncing(
     syncer::DataType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
-  DCHECK(sync_processor.get());
-  DCHECK_EQ(type, syncer::ARC_PACKAGE);
-  DCHECK(!sync_processor_.get());
-  DCHECK(!IsArcAppSyncFlowDisabled());
-  DCHECK(prefs_->package_list_initial_refreshed());
+  CHECK(sync_processor.get(), base::NotFatalUntil::M160);
+  CHECK_EQ(type, syncer::ARC_PACKAGE, base::NotFatalUntil::M160);
+  CHECK(!sync_processor_.get(), base::NotFatalUntil::M160);
+  CHECK(!IsArcAppSyncFlowDisabled(), base::NotFatalUntil::M160);
+  CHECK(prefs_->package_list_initial_refreshed(), base::NotFatalUntil::M160);
 
   sync_processor_ = std::move(sync_processor);
   metrics_helper_.SetTimeSyncStarted();
@@ -204,7 +204,7 @@ ArcPackageSyncableService::MergeDataAndStartSyncing(
 }
 
 void ArcPackageSyncableService::StopSyncing(syncer::DataType type) {
-  DCHECK_EQ(type, syncer::ARC_PACKAGE);
+  CHECK_EQ(type, syncer::ARC_PACKAGE, base::NotFatalUntil::M160);
 
   sync_processor_.reset();
   flare_.Reset();
@@ -277,7 +277,7 @@ void ArcPackageSyncableService::InstallPendingPackage(
     return;
   }
   const ArcSyncItem* pending_item = iter->second.get();
-  DCHECK(pending_item);
+  CHECK(pending_item, base::NotFatalUntil::M160);
 
   if (!prefs_) {
     VLOG(2) << "Request to install package when bridge service is not ready: "
@@ -475,7 +475,7 @@ bool ArcPackageSyncableService::DeleteSyncItemSpecifics(
 }
 
 void ArcPackageSyncableService::UninstallPackage(const ArcSyncItem* sync_item) {
-  DCHECK(sync_item);
+  CHECK(sync_item, base::NotFatalUntil::M160);
   if (!prefs_) {
     VLOG(2) << "Request to uninstall package when bridge service is not ready: "
             << sync_item->package_name << ".";

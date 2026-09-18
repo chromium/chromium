@@ -50,7 +50,7 @@ std::unique_ptr<KeyedService>
 ArcPackageSyncableServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   return ArcPackageSyncableService::Create(profile,
                                            ArcAppListPrefs::Get(profile));

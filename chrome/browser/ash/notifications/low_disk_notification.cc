@@ -42,12 +42,12 @@ namespace ash {
 
 LowDiskNotification::LowDiskNotification()
     : notification_interval_(kNotificationInterval) {
-  DCHECK(UserDataAuthClient::Get());
+  CHECK(UserDataAuthClient::Get(), base::NotFatalUntil::M160);
   UserDataAuthClient::Get()->AddObserver(this);
 }
 
 LowDiskNotification::~LowDiskNotification() {
-  DCHECK(UserDataAuthClient::Get());
+  CHECK(UserDataAuthClient::Get(), base::NotFatalUntil::M160);
   if (auto* message_center = message_center::MessageCenter::Get()) {
     message_center->RemoveNotification(kLowDiskId, /*by_user=*/false);
   } else {
@@ -59,7 +59,7 @@ LowDiskNotification::~LowDiskNotification() {
 
 void LowDiskNotification::LowDiskSpace(
     const ::user_data_auth::LowDiskSpace& status) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 
   bool show_low_disk_space_notification = true;
   if (!CrosSettings::Get()->GetBoolean(kDeviceShowLowDiskSpaceNotification,
@@ -124,7 +124,7 @@ LowDiskNotification::CreateNotification(Severity severity) {
 
   auto on_click = base::BindRepeating([](std::optional<int> button_index) {
     if (button_index) {
-      DCHECK_EQ(0, *button_index);
+      CHECK_EQ(0, *button_index, base::NotFatalUntil::M160);
       if (auto* session =
               session_manager::SessionManager::Get()->GetActiveSession()) {
         // TODO(crbug.com/447287122): Revisit here to check if there's a case

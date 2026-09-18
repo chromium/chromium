@@ -115,7 +115,7 @@ void AdbSideloadingPolicyChangeNotification::HandleNotificationClick(
   if (!button_index)
     return;
 
-  DCHECK(*button_index == 0);
+  CHECK(*button_index == 0, base::NotFatalUntil::M160);
 
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_FOR_USER,

@@ -169,7 +169,7 @@ AppListClientImpl::AppListClientImpl(PrefService* local_state,
   user_manager->AddSessionStateObserver(this);
   session_manager::SessionManager::Get()->AddObserver(this);
 
-  DCHECK(!g_app_list_client_instance);
+  CHECK(!g_app_list_client_instance, base::NotFatalUntil::M160);
   g_app_list_client_instance = this;
 
   app_list_notifier_ =
@@ -186,7 +186,7 @@ AppListClientImpl::~AppListClientImpl() {
 
   session_manager::SessionManager::Get()->RemoveObserver(this);
 
-  DCHECK_EQ(this, g_app_list_client_instance);
+  CHECK_EQ(this, g_app_list_client_instance, base::NotFatalUntil::M160);
   g_app_list_client_instance = nullptr;
 
   if (app_list_controller_) {
@@ -259,8 +259,10 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
   }
 
   auto requested_model_updater_iter = profile_model_mappings_.find(profile_id);
-  DCHECK(requested_model_updater_iter != profile_model_mappings_.end());
-  DCHECK_EQ(current_model_updater_, requested_model_updater_iter->second);
+  CHECK(requested_model_updater_iter != profile_model_mappings_.end(),
+        base::NotFatalUntil::M160);
+  CHECK_EQ(current_model_updater_, requested_model_updater_iter->second,
+           base::NotFatalUntil::M160);
 
   ChromeSearchResult* result = search_controller_->FindSearchResult(result_id);
   if (!result) {
@@ -481,7 +483,7 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
   }
 
   if (profile_) {
-    DCHECK(current_model_updater_);
+    CHECK(current_model_updater_, base::NotFatalUntil::M160);
     current_model_updater_->SetActive(false);
 
     search_controller_.reset();
@@ -571,7 +573,7 @@ void AppListClientImpl::OnSessionStateChanged() {
 }
 
 void AppListClientImpl::OnTemplateURLServiceChanged() {
-  DCHECK(current_model_updater_);
+  CHECK(current_model_updater_, base::NotFatalUntil::M160);
 
   const TemplateURL* default_provider =
       template_url_service_->GetDefaultSearchProvider();
@@ -772,7 +774,7 @@ void AppListClientImpl::RecordViewShown() {
   // TODO(crbug.com/40767698): If this bug is fixed, we might need to
   // do some changes here.
   if (!user_manager_->IsCurrentUserNew()) {
-    DCHECK(!state_for_new_user_);
+    CHECK(!state_for_new_user_, base::NotFatalUntil::M160);
     return;
   }
 
@@ -859,18 +861,19 @@ void AppListClientImpl::RecordOpenedResultFromSearchBox(
 
 void AppListClientImpl::MaybeRecordLauncherAction(
     ash::AppListLaunchedFrom launched_from) {
-  DCHECK(
+  CHECK(
       launched_from == ash::AppListLaunchedFrom::kLaunchedFromGrid ||
       launched_from == ash::AppListLaunchedFrom::kLaunchedFromRecentApps ||
       launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox ||
       launched_from == ash::AppListLaunchedFrom::kLaunchedFromContinueTask ||
       launched_from == ash::AppListLaunchedFrom::kLaunchedFromQuickAppAccess ||
       launched_from == ash::AppListLaunchedFrom::kLaunchedFromDiscoveryChip ||
-      launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBoxIcon);
+      launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBoxIcon,
+      base::NotFatalUntil::M160);
 
   // Return early if the current user is not new.
   if (!user_manager_->IsCurrentUserNew()) {
-    DCHECK(!state_for_new_user_);
+    CHECK(!state_for_new_user_, base::NotFatalUntil::M160);
     return;
   }
 
@@ -888,7 +891,8 @@ void AppListClientImpl::MaybeRecordLauncherAction(
         "Apps.NewUserFirstLauncherAction.ClamshellMode", launched_from);
   }
 
-  DCHECK(new_user_session_activation_time_.has_value());
+  CHECK(new_user_session_activation_time_.has_value(),
+        base::NotFatalUntil::M160);
   const base::TimeDelta launcher_action_duration =
       base::Time::Now() - *new_user_session_activation_time_;
   if (launcher_action_duration >= base::TimeDelta()) {

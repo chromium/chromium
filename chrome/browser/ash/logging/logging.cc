@@ -55,7 +55,7 @@ void ReinitializeLoggingForProcessHost(ProcessHost* process_host,
 void LogFileSetUp(const base::CommandLine& command_line,
                   const base::FilePath& log_path,
                   const base::FilePath& target_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // The |log_path| is the new log file after log rotation. so it shouldn't be
   // deleted even if it already exists.
@@ -99,7 +99,7 @@ void ForceLogRedirectionForTesting() {
 }
 
 void RedirectChromeLogging(const base::CommandLine& command_line) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Only redirect when on an actual device. To do otherwise conflicts with
   // --vmodule that developers may want to use.

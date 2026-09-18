@@ -28,7 +28,7 @@ ArcAppLauncher::ArcAppLauncher(content::BrowserContext* context,
       display_id_(display_id),
       launch_source_(launch_source) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(context_);
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M160);
 
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id_);
   if (!app_info ||
@@ -71,7 +71,7 @@ void ArcAppLauncher::OnAppUpdate(const apps::AppUpdate& update) {
   }
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(context_);
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M160);
 
   const std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
       prefs->GetApp(app_id_);
@@ -120,7 +120,7 @@ bool ArcAppLauncher::MaybeLaunchApp(const std::string& app_id,
   }
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(context_);
-  DCHECK(prefs && prefs->GetApp(app_id_));
+  CHECK(prefs && prefs->GetApp(app_id_), base::NotFatalUntil::M160);
   app_registry_cache_observer_.Reset();
   arc_app_list_prefs_observer_.Reset();
 

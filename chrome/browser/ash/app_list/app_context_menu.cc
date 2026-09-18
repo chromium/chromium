@@ -62,7 +62,7 @@ bool AppContextMenu::IsItemForCommandIdDynamic(int command_id) const {
 }
 
 std::u16string AppContextMenu::GetLabelForCommandId(int command_id) const {
-  DCHECK_EQ(command_id, ash::TOGGLE_PIN);
+  CHECK_EQ(command_id, ash::TOGGLE_PIN, base::NotFatalUntil::M160);
   // Return "{Pin to, Unpin from} shelf" or "Pinned by administrator".
   // Note this only exists on Ash desktops.
   if (controller_->GetPinnable(app_id()) ==
@@ -102,7 +102,7 @@ void AppContextMenu::ExecuteCommand(int command_id, int event_flags) {
 }
 
 ui::ImageModel AppContextMenu::GetIconForCommandId(int command_id) const {
-  DCHECK_EQ(command_id, ash::TOGGLE_PIN);
+  CHECK_EQ(command_id, ash::TOGGLE_PIN, base::NotFatalUntil::M160);
   const gfx::VectorIcon& icon =
       GetMenuItemVectorIcon(command_id, controller_->IsAppPinned(app_id_)
                                             ? IDS_APP_LIST_CONTEXT_MENU_UNPIN
@@ -190,8 +190,8 @@ void AppContextMenu::BuildMenu(ui::SimpleMenuModel* menu_model) {
 }
 
 void AppContextMenu::TogglePin(const std::string& shelf_app_id) {
-  DCHECK_EQ(AppListControllerDelegate::PIN_EDITABLE,
-            controller_->GetPinnable(shelf_app_id));
+  CHECK_EQ(AppListControllerDelegate::PIN_EDITABLE,
+           controller_->GetPinnable(shelf_app_id), base::NotFatalUntil::M160);
   ash::ShelfModel::ScopedUserTriggeredMutation user_triggered(
       ash::ShelfModel::Get());
   if (controller_->IsAppPinned(shelf_app_id))

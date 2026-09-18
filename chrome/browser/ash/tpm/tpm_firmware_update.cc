@@ -279,8 +279,9 @@ void GetAvailableUpdateModes(
           [](std::set<Mode> modes,
              base::OnceCallback<void(const std::set<Mode>&)> callback,
              const AvailabilityChecker::Status& status) {
-            DCHECK_LT(0U, modes.size());
-            DCHECK_EQ(0U, modes.count(Mode::kCleanup));
+            CHECK_LT(0U, modes.size(), base::NotFatalUntil::M160);
+            CHECK_EQ(0U, modes.count(Mode::kCleanup),
+                     base::NotFatalUntil::M160);
             if (status.update_available) {
               std::move(callback).Run(modes);
               return;

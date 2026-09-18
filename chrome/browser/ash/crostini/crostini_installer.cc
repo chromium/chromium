@@ -139,7 +139,7 @@ SetupResult InstallStateToCancelledSetupResult(
 crostini::mojom::InstallerError CrostiniResultToInstallerError(
     crostini::CrostiniResult result,
     InstallerState installer_state) {
-  DCHECK_NE(result, CrostiniResult::SUCCESS);
+  CHECK_NE(result, CrostiniResult::SUCCESS, base::NotFatalUntil::M160);
 
   bool offline = content::GetNetworkConnectionTracker()->IsOffline();
   if (offline) {
@@ -190,7 +190,8 @@ CrostiniInstaller::CrostiniInstaller(Profile* profile) : profile_(profile) {}
 
 CrostiniInstaller::~CrostiniInstaller() {
   // Guaranteed by |Shutdown()|.
-  DCHECK_EQ(restart_id_, CrostiniManager::kUninitializedRestartId);
+  CHECK_EQ(restart_id_, CrostiniManager::kUninitializedRestartId,
+           base::NotFatalUntil::M160);
 }
 
 void CrostiniInstaller::Shutdown() {
@@ -204,7 +205,7 @@ void CrostiniInstaller::Shutdown() {
 void CrostiniInstaller::Install(CrostiniManager::RestartOptions options,
                                 ProgressCallback progress_callback,
                                 ResultCallback result_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!CanInstall()) {
     LOG(ERROR)
@@ -239,7 +240,7 @@ void CrostiniInstaller::Install(CrostiniManager::RestartOptions options,
 }
 
 void CrostiniInstaller::Cancel(base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (state_ != State::INSTALLING) {
     LOG(ERROR) << "Tried to cancel in non-cancelable state. state_="
@@ -256,13 +257,15 @@ void CrostiniInstaller::Cancel(base::OnceClosure callback) {
 
   if (installing_state_ == InstallerState::kStart) {
     // We have not called |RestartCrostini()| yet.
-    DCHECK_EQ(restart_id_, CrostiniManager::kUninitializedRestartId);
+    CHECK_EQ(restart_id_, CrostiniManager::kUninitializedRestartId,
+             base::NotFatalUntil::M160);
     // OnAvailableDiskSpace() will take care of |cancel_callback_|.
     UpdateState(State::CANCEL_ABORT_CHECK_DISK);
     return;
   }
 
-  DCHECK_NE(restart_id_, CrostiniManager::kUninitializedRestartId);
+  CHECK_NE(restart_id_, CrostiniManager::kUninitializedRestartId,
+           base::NotFatalUntil::M160);
 
   if (free_disk_space_ != kUninitializedDiskSpace) {
     base::UmaHistogramCounts1M(kCrostiniAvailableDiskCancel,
@@ -294,7 +297,7 @@ void CrostiniInstaller::Cancel(base::OnceClosure callback) {
 }
 
 void CrostiniInstaller::CancelBeforeStart() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!CanInstall()) {
     LOG(ERROR) << "Not in pre-install state. state_="
@@ -334,8 +337,8 @@ bool CrostiniInstaller::CanInstall() {
 }
 
 void CrostiniInstaller::RunProgressCallback() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(state_, State::INSTALLING);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_EQ(state_, State::INSTALLING, base::NotFatalUntil::M160);
 
   base::TimeDelta time_in_state =
       base::Time::Now() - installing_state_start_time_;
@@ -406,8 +409,8 @@ void CrostiniInstaller::RunProgressCallback() {
 }
 
 void CrostiniInstaller::UpdateState(State new_state) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_NE(state_, new_state);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_NE(state_, new_state, base::NotFatalUntil::M160);
 
   state_ = new_state;
   if (state_ == State::INSTALLING) {
@@ -429,7 +432,7 @@ void CrostiniInstaller::UpdateState(State new_state) {
 void CrostiniInstaller::UpdateInstallingState(
     InstallerState new_installing_state,
     bool run_callback) {
-  DCHECK_EQ(state_, State::INSTALLING);
+  CHECK_EQ(state_, State::INSTALLING, base::NotFatalUntil::M160);
   installing_state_start_time_ = base::Time::Now();
   installing_state_ = new_installing_state;
 
@@ -439,8 +442,8 @@ void CrostiniInstaller::UpdateInstallingState(
 }
 
 void CrostiniInstaller::HandleError(InstallerError error) {
-  DCHECK_EQ(state_, State::INSTALLING);
-  DCHECK_NE(error, InstallerError::kNone);
+  CHECK_EQ(state_, State::INSTALLING, base::NotFatalUntil::M160);
+  CHECK_NE(error, InstallerError::kNone, base::NotFatalUntil::M160);
 
   UMA_HISTOGRAM_LONG_TIMES(kCrostiniTimeToInstallError,
                            base::TimeTicks::Now() - install_start_time_);
@@ -471,7 +474,7 @@ void CrostiniInstaller::RecordSetupResult(SetupResult result) {
 }
 
 void CrostiniInstaller::OnCrostiniRestartFinished(CrostiniResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   restart_id_ = CrostiniManager::kUninitializedRestartId;
 
   if (result == CrostiniResult::RESTART_ABORTED ||
@@ -480,7 +483,7 @@ void CrostiniInstaller::OnCrostiniRestartFinished(CrostiniResult result) {
   }
 
   if (result != CrostiniResult::SUCCESS) {
-    DCHECK_EQ(state_, State::INSTALLING);
+    CHECK_EQ(state_, State::INSTALLING, base::NotFatalUntil::M160);
     HandleError(CrostiniResultToInstallerError(result, installing_state_));
     return;
   }
@@ -518,7 +521,7 @@ void CrostiniInstaller::OnCrostiniRestartFinished(CrostiniResult result) {
 }
 
 void CrostiniInstaller::OnAvailableDiskSpace(std::optional<int64_t> bytes) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // |Cancel()| might be called immediately after |Install()|.
   if (state_ == State::CANCEL_ABORT_CHECK_DISK) {

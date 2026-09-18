@@ -393,8 +393,8 @@ void AutomaticRebootManager::Reschedule() {
 void AutomaticRebootManager::RequestReboot() {
   VLOG(1) << "Reboot requested, reason: " << reboot_reason_;
   reboot_requested_ = true;
-  DCHECK_NE(AutomaticRebootManagerObserver::REBOOT_REASON_UNKNOWN,
-            reboot_reason_);
+  CHECK_NE(AutomaticRebootManagerObserver::REBOOT_REASON_UNKNOWN,
+           reboot_reason_, base::NotFatalUntil::M160);
   for (auto& observer : observers_)
     observer.OnRebootRequested(reboot_reason_);
   MaybeReboot(false);

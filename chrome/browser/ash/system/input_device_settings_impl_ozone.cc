@@ -79,7 +79,7 @@ InputDeviceSettingsImplOzone::InputDeviceSettingsImplOzone() = default;
 
 void InputDeviceSettingsImplOzone::TouchpadExists(
     DeviceExistsCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   std::move(callback).Run(input_controller()->HasTouchpad());
 }
 
@@ -90,22 +90,26 @@ void InputDeviceSettingsImplOzone::UpdateTouchpadSettings(
 }
 
 void InputDeviceSettingsImplOzone::SetTouchpadSensitivity(int value) {
-  DCHECK_GE(value, static_cast<int>(PointerSensitivity::kLowest));
-  DCHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest));
+  CHECK_GE(value, static_cast<int>(PointerSensitivity::kLowest),
+           base::NotFatalUntil::M160);
+  CHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest),
+           base::NotFatalUntil::M160);
   current_touchpad_settings_.SetSensitivity(value);
   input_controller()->SetTouchpadSensitivity(std::nullopt, value);
 }
 
 void InputDeviceSettingsImplOzone::SetTouchpadScrollSensitivity(int value) {
-  DCHECK_GE(value, static_cast<int>(PointerSensitivity::kLowest));
-  DCHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest));
+  CHECK_GE(value, static_cast<int>(PointerSensitivity::kLowest),
+           base::NotFatalUntil::M160);
+  CHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest),
+           base::NotFatalUntil::M160);
   current_touchpad_settings_.SetScrollSensitivity(value);
   input_controller()->SetTouchpadScrollSensitivity(std::nullopt, value);
 }
 
 void InputDeviceSettingsImplOzone::HapticTouchpadExists(
     DeviceExistsCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   std::move(callback).Run(input_controller()->HasHapticTouchpad());
 }
 
@@ -142,7 +146,7 @@ void InputDeviceSettingsImplOzone::SetTapDragging(bool enabled) {
 }
 
 void InputDeviceSettingsImplOzone::MouseExists(DeviceExistsCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   std::move(callback).Run(input_controller()->HasMouse());
 }
 
@@ -153,15 +157,19 @@ void InputDeviceSettingsImplOzone::UpdateMouseSettings(
 }
 
 void InputDeviceSettingsImplOzone::SetMouseSensitivity(int value) {
-  DCHECK_GE(value, static_cast<int>(PointerSensitivity::kLowest));
-  DCHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest));
+  CHECK_GE(value, static_cast<int>(PointerSensitivity::kLowest),
+           base::NotFatalUntil::M160);
+  CHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest),
+           base::NotFatalUntil::M160);
   current_mouse_settings_.SetSensitivity(value);
   input_controller()->SetMouseSensitivity(std::nullopt, value);
 }
 
 void InputDeviceSettingsImplOzone::SetMouseScrollSensitivity(int value) {
-  DCHECK_GE(value, static_cast<int>(PointerSensitivity::kLowest));
-  DCHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest));
+  CHECK_GE(value, static_cast<int>(PointerSensitivity::kLowest),
+           base::NotFatalUntil::M160);
+  CHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest),
+           base::NotFatalUntil::M160);
   current_mouse_settings_.SetScrollSensitivity(value);
   input_controller()->SetMouseScrollSensitivity(std::nullopt, value);
 }
@@ -188,7 +196,7 @@ void InputDeviceSettingsImplOzone::SetMouseScrollAcceleration(bool enabled) {
 
 void InputDeviceSettingsImplOzone::PointingStickExists(
     DeviceExistsCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   std::move(callback).Run(input_controller()->HasPointingStick());
 }
 
@@ -199,8 +207,10 @@ void InputDeviceSettingsImplOzone::UpdatePointingStickSettings(
 }
 
 void InputDeviceSettingsImplOzone::SetPointingStickSensitivity(int value) {
-  DCHECK_GE(value, static_cast<int>(PointerSensitivity::kLowest));
-  DCHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest));
+  CHECK_GE(value, static_cast<int>(PointerSensitivity::kLowest),
+           base::NotFatalUntil::M160);
+  CHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest),
+           base::NotFatalUntil::M160);
   current_pointing_stick_settings_.SetSensitivity(value);
   input_controller()->SetPointingStickSensitivity(std::nullopt, value);
 }

@@ -115,7 +115,7 @@ void CrostiniExportImportNotificationController::SetStatusRunningUI(
         if (!button_index.has_value()) {
           return;
         }
-        DCHECK_EQ(0, *button_index);
+        CHECK_EQ(0, *button_index, base::NotFatalUntil::M160);
         CrostiniExportImportFactory::GetForProfile(profile)->CancelOperation(
             type, container_id);
       },

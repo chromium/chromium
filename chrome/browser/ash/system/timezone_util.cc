@@ -113,7 +113,7 @@ std::u16string GetTimezoneName(const icu::TimeZone& timezone) {
   UDate now = icu::Calendar::getNow();
   UErrorCode status = U_ZERO_ERROR;
   timezone.getOffset(now, false, raw_offset, dst_offset, status);
-  DCHECK(U_SUCCESS(status));
+  CHECK(U_SUCCESS(status), base::NotFatalUntil::M160);
   int offset = raw_offset + dst_offset;
   // |offset| is in msec.
   int minute_offset = std::abs(offset) / 60000;

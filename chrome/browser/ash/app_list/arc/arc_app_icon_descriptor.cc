@@ -26,9 +26,11 @@ constexpr char kBackgroundIconNameTemplate[] = "background_icon_%dp_%d.png";
 ArcAppIconDescriptor::ArcAppIconDescriptor(int dip_size,
                                            ui::ResourceScaleFactor scale_factor)
     : dip_size(dip_size), scale_factor(scale_factor) {
-  DCHECK_GT(dip_size, 0);
-  DCHECK_GT(scale_factor, ui::ResourceScaleFactor::kScaleFactorNone);
-  DCHECK_LE(scale_factor, ui::ResourceScaleFactor::k300Percent);
+  CHECK_GT(dip_size, 0, base::NotFatalUntil::M160);
+  CHECK_GT(scale_factor, ui::ResourceScaleFactor::kScaleFactorNone,
+           base::NotFatalUntil::M160);
+  CHECK_LE(scale_factor, ui::ResourceScaleFactor::k300Percent,
+           base::NotFatalUntil::M160);
 }
 
 int ArcAppIconDescriptor::GetSizeInPixels() const {

@@ -19,7 +19,7 @@ constexpr base::TimeDelta kImpressionTimer = base::Seconds(1);
 AppListNotifierImpl::AppListNotifierImpl(
     ash::AppListController* app_list_controller)
     : app_list_controller_(app_list_controller) {
-  DCHECK(app_list_controller_);
+  CHECK(app_list_controller_, base::NotFatalUntil::M160);
   app_list_controller_->AddObserver(this);
   OnAppListVisibilityWillChange(app_list_controller_->IsVisible(),
                                 display::kInvalidDisplayId);
@@ -74,7 +74,8 @@ void AppListNotifierImpl::NotifyResultsUpdated(
 void AppListNotifierImpl::NotifyContinueSectionVisibilityChanged(
     Location location,
     bool visible) {
-  DCHECK(location == Location::kContinue || location == Location::kRecentApps);
+  CHECK(location == Location::kContinue || location == Location::kRecentApps,
+        base::NotFatalUntil::M160);
 
   continue_section_visibility_[location] = visible;
   DoStateTransition(location, shown_ && query_.empty() && visible

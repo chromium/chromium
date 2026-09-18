@@ -234,7 +234,7 @@ bool IdleAppNameNotificationView::IsVisible() {
 }
 
 std::u16string IdleAppNameNotificationView::GetShownTextForTest() {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M160);
   return view_->GetViewAccessibility().GetCachedName();
 }
 
@@ -242,7 +242,7 @@ void IdleAppNameNotificationView::ShowMessage(
     int message_visibility_time_in_ms,
     int animation_time_ms,
     const extensions::Extension* extension) {
-  DCHECK(!view_);
+  CHECK(!view_, base::NotFatalUntil::M160);
 
   std::u16string app_name;
   bool error = false;

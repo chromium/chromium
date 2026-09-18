@@ -63,8 +63,9 @@ void LocaleChangeGuard::OnLogin() {
     Check();
   } else {
     if (session_observation_.IsObserving()) {
-      DCHECK(session_observation_.IsObservingSource(
-          session_manager::SessionManager::Get()));
+      CHECK(session_observation_.IsObservingSource(
+                session_manager::SessionManager::Get()),
+            base::NotFatalUntil::M160);
       return;
     }
     session_observation_.Observe(session_manager::SessionManager::Get());
@@ -95,7 +96,7 @@ void LocaleChangeGuard::OwnershipStatusChanged() {
   }
 
   PrefService* prefs = profile_->GetPrefs();
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M160);
   std::string owner_locale =
       prefs->GetString(language::prefs::kApplicationLocale);
   language::ConvertToActualUILocale(&owner_locale);

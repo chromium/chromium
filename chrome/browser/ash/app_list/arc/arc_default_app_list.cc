@@ -172,7 +172,8 @@ std::string ArcDefaultAppList::GetBoardNameForTesting(
 ArcDefaultAppList::ArcDefaultAppList(Profile* profile,
                                      base::OnceClosure ready_callback)
     : profile_(profile), ready_callback_(std::move(ready_callback)) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M160);
   arc::ArcSessionManager::Get()->AddObserver(this);
 }
 
@@ -213,7 +214,7 @@ void ArcDefaultAppList::LoadDefaultApps(std::string board_name) {
   if (!use_test_apps_directory) {
     const bool valid_path = base::PathService::Get(
         chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS, &base_path);
-    DCHECK(valid_path);
+    CHECK(valid_path, base::NotFatalUntil::M160);
     const base::FilePath base_arc_path = base_path.Append(kArcDirectory);
     sources.push_back(base_arc_path);
     if (!board_name.empty())
@@ -221,7 +222,7 @@ void ArcDefaultAppList::LoadDefaultApps(std::string board_name) {
   } else {
     const bool valid_path =
         base::PathService::Get(chrome::DIR_TEST_DATA, &base_path);
-    DCHECK(valid_path);
+    CHECK(valid_path, base::NotFatalUntil::M160);
     sources.push_back(base_path.Append(kArcTestDirectory));
     sources.push_back(base_path.Append(kArcTestBoardDirectory));
     sources.push_back(base_path.Append(kArcTestNonAdaptiveDirectory));
@@ -243,7 +244,8 @@ void ArcDefaultAppList::LoadDefaultApps(std::string board_name) {
 }
 
 void ArcDefaultAppList::OnAppsRead(std::unique_ptr<AppInfoMap> apps) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M160);
 
   const PrefService* const prefs = profile_->GetPrefs();
   for (auto& entry : *apps.get()) {

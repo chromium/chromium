@@ -282,8 +282,9 @@ int TimeZoneResolverManager::GetEffectiveAutomaticTimezoneManagementSetting(
 
   int policy_value = local_state.GetInteger(
       ash::prefs::kSystemTimezoneAutomaticDetectionPolicy);
-  DCHECK(policy_value <= enterprise_management::SystemTimezoneProto::
-                             AutomaticTimezoneDetectionType_MAX);
+  CHECK(policy_value <= enterprise_management::SystemTimezoneProto::
+                            AutomaticTimezoneDetectionType_MAX,
+        base::NotFatalUntil::M160);
 
   return policy_value;
 }

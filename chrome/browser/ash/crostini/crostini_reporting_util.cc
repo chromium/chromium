@@ -67,8 +67,9 @@ std::string GetTerminaVersion(
   // Define a UTF16 version of imageloader::kTerminaComponentName for the string
   // comparison below. Assert that it is equal to the ASCII component name.
   static constexpr char16_t kTerminaComponentName16[] = u"cros-termina";
-  DCHECK(std::ranges::equal(imageloader::kTerminaComponentName,
-                            kTerminaComponentName16));
+  CHECK(std::ranges::equal(imageloader::kTerminaComponentName,
+                           kTerminaComponentName16),
+        base::NotFatalUntil::M160);
 
   const std::vector<component_updater::ComponentInfo> component_list =
       update_service->GetComponents();

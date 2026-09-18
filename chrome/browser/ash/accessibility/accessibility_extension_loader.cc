@@ -102,8 +102,8 @@ void AccessibilityExtensionLoader::Unload() {
 void AccessibilityExtensionLoader::LoadExtension(
     content::BrowserContext* browser_context,
     base::OnceClosure done_cb) {
-  DCHECK(manifest_filename_);
-  DCHECK(guest_manifest_filename_);
+  CHECK(manifest_filename_, base::NotFatalUntil::M160);
+  CHECK(guest_manifest_filename_, base::NotFatalUntil::M160);
 
   auto* extension_registrar =
       extensions::ExtensionRegistrar::Get(browser_context);
@@ -129,7 +129,7 @@ void AccessibilityExtensionLoader::LoadExtension(
 void AccessibilityExtensionLoader::ReinstallExtensionForKiosk(
     content::BrowserContext* browser_context,
     base::OnceClosure done_cb) {
-  DCHECK(was_reset_for_kiosk_);
+  CHECK(was_reset_for_kiosk_, base::NotFatalUntil::M160);
   std::u16string error;
   extensions::ExtensionRegistrar::Get(browser_context)
       ->UninstallExtension(
