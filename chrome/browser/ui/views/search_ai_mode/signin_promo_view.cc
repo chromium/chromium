@@ -14,11 +14,9 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
-#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_controller.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/theme_resources.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -179,12 +177,8 @@ ComposeboxDriveSignInPromoView::~ComposeboxDriveSignInPromoView() = default;
 void ComposeboxDriveSignInPromoView::AddedToWidget() {
   GetBubbleFrameView()->SetProperty(views::kElementIdentifierKey,
                                     kComposeboxDriveSignInPromoFrameViewId);
-  auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      ui::ImageModel::FromResourceId(IDR_COMPOSEBOX_DRIVE_SIGNIN_PROMO_LIGHT),
-      ui::ImageModel::FromResourceId(IDR_COMPOSEBOX_DRIVE_SIGNIN_PROMO_DARK),
-      base::BindRepeating(&views::BubbleDialogDelegate::background_color,
-                          base::Unretained(this)));
-  GetBubbleFrameView()->SetHeaderView(std::move(image_view));
+  GetBubbleFrameView()->SetHeaderView(
+      CreateHeaderImageView(IDR_COMPOSEBOX_DRIVE_SIGNIN_PROMO_LOTTIE));
 }
 
 BEGIN_METADATA(ComposeboxDriveSignInPromoView)

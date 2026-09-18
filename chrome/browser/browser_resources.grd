@@ -80,6 +80,7 @@
 
         <!-- Search AI Mode Lottie resources -->
         <structure type="lottie" name="IDR_SEARCH_AI_MODE_SIGNIN_PROMO_LOTTIE" file="resources/search_ai_mode/search_ai_mode_signin_promo.json" compress="brotli" />
+        <structure type="lottie" name="IDR_COMPOSEBOX_DRIVE_SIGNIN_PROMO_LOTTIE" file="resources/search_ai_mode/composebox_drive_signin_promo.json" compress="brotli" />
 
         <!-- Send Tab to Self Lottie resources -->
         <structure type="lottie" name="IDR_INSTANT_HANDOFF_ILLUSTRATION" file="resources/send_tab_to_self/instant_handoff_illustration.json" compress="brotli" />
