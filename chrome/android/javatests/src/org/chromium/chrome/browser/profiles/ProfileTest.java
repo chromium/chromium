@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -274,15 +275,11 @@ public class ProfileTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562149786
     public void testBrowserProfileTypeFromPrimaryOtrProfile() {
-        // Open an new Incognito Tab page to create a new primary OTR profile.
-        mStartingPage.openRegularTabAppMenu().openNewIncognitoTab().loadAboutBlank();
-
+        IncognitoNewTabPageStation incognitoPage = mStartingPage.openNewIncognitoTabOrWindowFast();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile primaryOtrProfile =
-                            mRegularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true);
+                    Profile primaryOtrProfile = incognitoPage.getTab().getProfile();
                     Assert.assertEquals(
                             BrowserProfileType.INCOGNITO,
                             Profile.getBrowserProfileTypeFromProfile(primaryOtrProfile));
