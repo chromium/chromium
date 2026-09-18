@@ -52,9 +52,11 @@
 #import "ios/web/public/content_type_util.h"
 #import "ios/web/public/find_in_page/crw_find_interaction.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_client.h"
+#import "ios/web/public/web_state.h"
 #import "ios/web/security/crw_cert_verification_controller.h"
 #import "ios/web/security/crw_ssl_status_updater.h"
 #import "ios/web/util/wk_web_view_util.h"
@@ -74,6 +76,7 @@
 #import "ios/web/web_state/web_view_pass_key.h"
 #import "net/base/apple/url_conversions.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
+#import "ui/base/window_open_disposition.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 
@@ -2028,12 +2031,18 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 }
 
 - (void)loadUrlObjectsCompletion:(NSArray<NSURL*>*)objects {
-  GURL URL = net::GURLWithNSURL([objects firstObject]);
-  if (!_isBeingDestroyed && URL.is_valid() && URL.SchemeIsHTTPOrHTTPS()) {
-    web::NavigationManager::WebLoadParams params(URL);
-    params.transition_type = ui::PAGE_TRANSITION_TYPED;
-    self.webStateImpl->GetNavigationManager()->LoadURLWithParams(params);
+  if (_isBeingDestroyed || !self.webStateImpl) {
+    return;
   }
+  GURL URL = net::GURLWithNSURL([objects firstObject]);
+  if (!URL.is_valid() || !URL.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+  web::WebState::OpenURLParams params(URL, web::Referrer(),
+                                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                      ui::PAGE_TRANSITION_LINK,
+                                      /*is_renderer_initiated=*/false);
+  self.webStateImpl->OpenURL(params);
 }
 
 #pragma mark - Testing-Only Methods
