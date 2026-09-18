@@ -1093,61 +1093,6 @@ class TabVerticalViewBinder {
 
     // Gesture & Interaction Layout Helpers
 
-    /**
-     * Helper to orchestrate hover enter and exit between a parent view and an optional child
-     * button. Prevents the parent from firing a visual "exit" when the mouse moves over the child
-     * button.
-     */
-    private static void setupHoverOrchestration(
-            ViewGroup parentView,
-            @Nullable View childButton,
-            Runnable onHoverEnter,
-            Runnable onHoverExit) {
-        parentView.setOnHoverListener(
-                (View _, MotionEvent motionEvent) -> {
-                    switch (motionEvent.getAction()) {
-                        case MotionEvent.ACTION_HOVER_ENTER:
-                            onHoverEnter.run();
-                            return true;
-                        case MotionEvent.ACTION_HOVER_EXIT:
-                            float x = motionEvent.getX();
-                            float y = motionEvent.getY();
-                            if (x < 0
-                                    || x >= parentView.getWidth()
-                                    || y < 0
-                                    || y >= parentView.getHeight()) {
-                                onHoverExit.run();
-                            }
-                            return true;
-                    }
-                    return false;
-                });
-
-        if (childButton != null) {
-            childButton.setOnHoverListener(
-                    (v, motionEvent) -> {
-                        int action = motionEvent.getAction();
-                        if (action == MotionEvent.ACTION_HOVER_ENTER) {
-                            v.setHovered(true);
-                            onHoverEnter.run();
-                            return true;
-                        } else if (action == MotionEvent.ACTION_HOVER_EXIT) {
-                            v.setHovered(false);
-                            float xInView = v.getLeft() + motionEvent.getX();
-                            float yInView = v.getTop() + motionEvent.getY();
-                            if (xInView < 0
-                                    || xInView >= parentView.getWidth()
-                                    || yInView < 0
-                                    || yInView >= parentView.getHeight()) {
-                                onHoverExit.run();
-                            }
-                            return true;
-                        }
-                        return false;
-                    });
-        }
-    }
-
     private static void applyHoverBackgroundState(
             PropertyModel model,
             ViewGroup view,
@@ -1162,8 +1107,6 @@ class TabVerticalViewBinder {
         }
 
         if (isHovered) {
-            // TODO(crbug.com/533531896): Handle clearing all backgrounds before
-            // showing tab background.
             // TODO(crbug.com/527641177): Maybe show a darker background color for
             // action button when it's being hovered?
             if (!isSelected && !isMultiSelected) {
@@ -1202,33 +1145,18 @@ class TabVerticalViewBinder {
     private static void setupTabHoverListener(
             PropertyModel model, ViewGroup view, @Nullable ColorStateList defaultBackgroundColor) {
         @Nullable ImageView actionButton = view.findViewById(R.id.action_button);
+        int tabId = model.get(TabProperties.TAB_ID);
+        @Nullable TabHoverListener listener = model.get(TabProperties.TAB_HOVER_LISTENER);
 
-        Runnable onHoverEnter =
-                () -> {
-                    TabHoverListener listener = model.get(TabProperties.TAB_HOVER_LISTENER);
-                    // Blocks new tab hover backgrounds to show when context menu or scroll occurs.
-                    if (listener != null
-                            && (listener.isContextMenuShowing() || listener.isScrolling())) {
-                        return;
-                    }
-                    applyHoverBackgroundState(
-                            model, view, /* isHovered= */ true, defaultBackgroundColor);
-                    updateIcons(model, view, /* isHovered= */ true);
-                    notifyHoverChange(model, view, /* isHovered= */ true);
-                };
-
-        Runnable onHoverExit =
-                () -> {
-                    applyHoverBackgroundState(
-                            model, view, /* isHovered= */ false, defaultBackgroundColor);
-                    updateIcons(model, view, /* isHovered= */ false);
-                    notifyHoverChange(model, view, /* isHovered= */ false);
-                };
-
-        view.setTag(R.id.tab_hover_exit_listener, onHoverExit);
-        setupHoverOrchestration(view, actionButton, onHoverEnter, onHoverExit);
-
-        view.setOnFocusChangeListener((v, hasFocus) -> notifyHoverChange(model, v, hasFocus));
+        VerticalTabHoverController.setupTabHover(
+                listener,
+                tabId,
+                view,
+                actionButton,
+                (isHovered) -> {
+                    applyHoverBackgroundState(model, view, isHovered, defaultBackgroundColor);
+                    updateIcons(model, view, isHovered);
+                });
     }
 
     /**
@@ -1265,7 +1193,8 @@ class TabVerticalViewBinder {
                 };
 
         view.setTag(R.id.tab_hover_exit_listener, onHoverExit);
-        setupHoverOrchestration(view, menuButton, onHoverEnter, onHoverExit);
+        VerticalTabHoverController.setupHoverOrchestration(
+                view, menuButton, onHoverEnter, onHoverExit);
 
         view.setOnFocusChangeListener(
                 (v, hasFocus) -> notifyGroupHeaderHoverChange(model, v, hasFocus));
@@ -1278,17 +1207,6 @@ class TabVerticalViewBinder {
         View menuButton = view.findViewById(R.id.menu_button);
         if (menuButton != null) {
             menuButton.setVisibility(!isRailCollapsed && isHovered ? View.VISIBLE : View.GONE);
-        }
-    }
-
-    /**
-     * Notifies {@link TabHoverListener} of hover or keyboard focus state transitions on tab items.
-     */
-    private static void notifyHoverChange(PropertyModel model, View view, boolean isHovered) {
-        TabHoverListener listener = model.get(TabProperties.TAB_HOVER_LISTENER);
-        if (listener != null) {
-            int tabId = model.get(TabProperties.TAB_ID);
-            listener.onTabHoverStateChanged(tabId, view, isHovered);
         }
     }
 

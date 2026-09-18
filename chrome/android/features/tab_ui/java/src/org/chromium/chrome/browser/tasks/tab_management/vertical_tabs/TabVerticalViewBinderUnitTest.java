@@ -681,27 +681,42 @@ public class TabVerticalViewBinderUnitTest {
     }
 
     @Test
-    public void testTabHover_SuppressedWhenContextMenuOrScrolling() {
+    public void testTabHover_NotifiesHoverListenerAndUpdatesVisualStateCallback() {
         mModel.set(TabProperties.IS_SELECTED, false);
+        mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
         mModel.set(TabProperties.TAB_HOVER_LISTENER, mTabHoverListener);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
-
-        when(mTabHoverListener.isContextMenuShowing()).thenReturn(true);
 
         MotionEvent hoverEnterEvent =
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
         hoverEnterEvent.setSource(InputDevice.SOURCE_MOUSE);
         mItemView.dispatchGenericMotionEvent(hoverEnterEvent);
 
+        verify(mTabHoverListener)
+                .onTabHoverStateChanged(TEST_HEADER_TAB_ID, mItemView, /* isHovered= */ true);
+
+        @SuppressWarnings("unchecked")
+        Callback<Boolean> visualCallback =
+                (Callback<Boolean>) mItemView.getTag(R.id.tab_hover_state_listener);
+        assertNotNull(visualCallback);
+        visualCallback.onResult(true);
+
         ColorStateList bgTint = mItemView.getBackgroundTintList();
         assertNotNull(bgTint);
-        assertEquals(Color.TRANSPARENT, bgTint.getDefaultColor());
+        assertEquals(
+                TabUiThemeUtil.getHoveredTabContainerColor(
+                        mItemView.getContext(), /* isIncognito= */ false),
+                bgTint.getDefaultColor());
 
-        when(mTabHoverListener.isContextMenuShowing()).thenReturn(false);
-        when(mTabHoverListener.isScrolling()).thenReturn(true);
+        MotionEvent hoverExitEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, -10f, -10f, 0);
+        hoverExitEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mItemView.dispatchGenericMotionEvent(hoverExitEvent);
 
-        mItemView.dispatchGenericMotionEvent(hoverEnterEvent);
+        verify(mTabHoverListener)
+                .onTabHoverStateChanged(TEST_HEADER_TAB_ID, mItemView, /* isHovered= */ false);
 
+        visualCallback.onResult(false);
         bgTint = mItemView.getBackgroundTintList();
         assertNotNull(bgTint);
         assertEquals(Color.TRANSPARENT, bgTint.getDefaultColor());

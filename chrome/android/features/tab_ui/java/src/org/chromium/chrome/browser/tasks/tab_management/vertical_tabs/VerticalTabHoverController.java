@@ -9,12 +9,15 @@ import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -36,8 +39,6 @@ public class VerticalTabHoverController {
     private static final int SHOW_HOVER_CARD_WITHOUT_DELAY_TIME_BUFFER_MS = 300;
     private static final long INVALID_TIME = -1L;
 
-    // TODO(crbug.com/549878812): Unify hover listeners and detection logic from
-    // TabVerticalViewBinder into this controller.
     /** Interface to receive tab and tab group hover events. */
     public interface TabHoverListener {
         /**
@@ -57,6 +58,8 @@ public class VerticalTabHoverController {
          * @param view The tab group header view being hovered or focused.
          * @param isHovered True if hover or keyboard focus became active, false if both exited.
          */
+        // TODO(crbug.com/549878812): Unify tab group header hover listeners from
+        // TabVerticalViewBinder into this controller.
         void onTabGroupHoverStateChanged(
                 int groupHeaderTabId, @Nullable Token tabGroupId, View view, boolean isHovered);
 
@@ -83,7 +86,7 @@ public class VerticalTabHoverController {
             new TabHoverListener() {
                 @Override
                 public void onTabHoverStateChanged(int tabId, View view, boolean isHovered) {
-                    showOrHideTabHoverCard(tabId, view, isHovered);
+                    handleTabHoverStateChanged(tabId, view, isHovered);
                 }
 
                 @Override
@@ -112,7 +115,7 @@ public class VerticalTabHoverController {
     private long mLastHoverCardExitTime = INVALID_TIME;
     private int mCurrentHoveredTabId = Tab.INVALID_TAB_ID;
     private int mCurrentHoveredGroupHeaderTabId = Tab.INVALID_TAB_ID;
-    private @Nullable View mCurrentHoveredAnchorView;
+    private @Nullable View mCurrentHoveredView;
     private @Nullable Token mCurrentHoveredGroupId;
     private @Nullable TabHoverCardView mTabHoverCardView;
     private @Nullable TabGroupHoverCardView mTabGroupHoverCardView;
@@ -163,8 +166,130 @@ public class VerticalTabHoverController {
         return mTabHoverListener;
     }
 
+    /** Returns the currently hovered tab or group header view, or null if none. */
+    @VisibleForTesting
+    @Nullable View getCurrentHoveredView() {
+        return mCurrentHoveredView;
+    }
+
+    /**
+     * Configures mouse hover and keyboard focus listeners for a tab row view and its optional
+     * action button, orchestrating hover state transitions and visual updates.
+     *
+     * @param listener The {@link TabHoverListener} to notify of state changes, or null.
+     * @param tabId The ID of the tab item.
+     * @param view The root ViewGroup representing the tab row item.
+     * @param actionButton The optional action/close button within the row.
+     * @param onHoverVisualStateChanged Callback invoked to apply or clear visual hover state.
+     */
+    public static void setupTabHover(
+            @Nullable TabHoverListener listener,
+            int tabId,
+            ViewGroup view,
+            @Nullable View actionButton,
+            Callback<Boolean> onHoverVisualStateChanged) {
+        view.setTag(R.id.tab_hover_state_listener, onHoverVisualStateChanged);
+        view.setTag(R.id.tab_hover_exit_listener, onHoverVisualStateChanged.bind(false));
+        if (view.isHovered()) {
+            onHoverVisualStateChanged.onResult(true);
+        }
+
+        Runnable onHoverEnter =
+                () -> {
+                    if (listener != null) {
+                        listener.onTabHoverStateChanged(tabId, view, /* isHovered= */ true);
+                    } else {
+                        onHoverVisualStateChanged.onResult(true);
+                    }
+                };
+
+        Runnable onHoverExit =
+                () -> {
+                    if (listener != null) {
+                        listener.onTabHoverStateChanged(tabId, view, /* isHovered= */ false);
+                    } else {
+                        onHoverVisualStateChanged.onResult(false);
+                    }
+                };
+
+        setupHoverOrchestration(view, actionButton, onHoverEnter, onHoverExit);
+        view.setOnFocusChangeListener(
+                (v, hasFocus) -> {
+                    if (listener != null) {
+                        listener.onTabHoverStateChanged(tabId, v, hasFocus);
+                    }
+                });
+    }
+
+    /**
+     * Helper to orchestrate hover enter and exit between a parent view and an optional child
+     * button. Prevents the parent from firing a visual "exit" when the mouse moves over the child
+     * button.
+     */
+    static void setupHoverOrchestration(
+            ViewGroup parentView,
+            @Nullable View childButton,
+            Runnable onHoverEnter,
+            Runnable onHoverExit) {
+        parentView.setOnHoverListener(
+                (View _, MotionEvent motionEvent) -> {
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_HOVER_ENTER:
+                        case MotionEvent.ACTION_HOVER_MOVE:
+                            parentView.setHovered(true);
+                            onHoverEnter.run();
+                            return true;
+                        case MotionEvent.ACTION_HOVER_EXIT:
+                            float x = motionEvent.getX();
+                            float y = motionEvent.getY();
+                            if (x < 0
+                                    || x >= parentView.getWidth()
+                                    || y < 0
+                                    || y >= parentView.getHeight()) {
+                                parentView.setHovered(false);
+                                onHoverExit.run();
+                            }
+                            return true;
+                    }
+                    return false;
+                });
+
+        if (childButton != null) {
+            childButton.setOnHoverListener(
+                    (v, motionEvent) -> {
+                        int action = motionEvent.getAction();
+                        if (action == MotionEvent.ACTION_HOVER_ENTER
+                                || action == MotionEvent.ACTION_HOVER_MOVE) {
+                            v.setHovered(true);
+                            parentView.setHovered(true);
+                            onHoverEnter.run();
+                            return true;
+                        } else if (action == MotionEvent.ACTION_HOVER_EXIT) {
+                            v.setHovered(false);
+                            float xInView = v.getLeft() + motionEvent.getX();
+                            float yInView = v.getTop() + motionEvent.getY();
+                            if (xInView < 0
+                                    || xInView >= parentView.getWidth()
+                                    || yInView < 0
+                                    || yInView >= parentView.getHeight()) {
+                                parentView.setHovered(false);
+                                onHoverExit.run();
+                            }
+                            return true;
+                        }
+                        return false;
+                    });
+        }
+    }
+
     /** Immediately hides any active hover card and cancels any scheduled display. */
     void hideHoverCard() {
+        hideHoverCards();
+        clearCurrentHoveredView();
+    }
+
+    /** Immediately hides any active hover card popups and cancels any scheduled display. */
+    private void hideHoverCards() {
         cancelPendingHoverCard();
         if (isHoverCardShowing()) {
             mLastHoverCardExitTime = SystemClock.uptimeMillis();
@@ -174,18 +299,6 @@ public class VerticalTabHoverController {
         }
         if (mTabGroupHoverCardView != null) {
             mTabGroupHoverCardView.hide();
-        }
-        View anchorView = mCurrentHoveredAnchorView;
-        mCurrentHoveredAnchorView = null;
-        mCurrentHoveredTabId = Tab.INVALID_TAB_ID;
-        mCurrentHoveredGroupHeaderTabId = Tab.INVALID_TAB_ID;
-        mCurrentHoveredGroupId = null;
-
-        if (anchorView != null) {
-            Runnable onHoverExit = (Runnable) anchorView.getTag(R.id.tab_hover_exit_listener);
-            if (onHoverExit != null) {
-                onHoverExit.run();
-            }
         }
     }
 
@@ -209,7 +322,7 @@ public class VerticalTabHoverController {
             mTabGroupHoverCardView = null;
         }
         mCurrentHoveredTabId = Tab.INVALID_TAB_ID;
-        mCurrentHoveredAnchorView = null;
+        mCurrentHoveredView = null;
         mCurrentHoveredGroupHeaderTabId = Tab.INVALID_TAB_ID;
         mCurrentHoveredGroupId = null;
         mLastHoverCardExitTime = INVALID_TIME;
@@ -221,7 +334,7 @@ public class VerticalTabHoverController {
      */
     private void repositionHoverCard() {
         if (mTabHoverCardView == null || !mTabHoverCardView.isShown()) return;
-        if (mCurrentHoveredAnchorView == null || mCurrentHoveredTabId == Tab.INVALID_TAB_ID) {
+        if (mCurrentHoveredView == null || mCurrentHoveredTabId == Tab.INVALID_TAB_ID) {
             return;
         }
         Tab tab = mTabModelSelector.getTabById(mCurrentHoveredTabId);
@@ -229,7 +342,7 @@ public class VerticalTabHoverController {
 
         float[] position =
                 getHoverCardPosition(
-                        mCurrentHoveredAnchorView,
+                        mCurrentHoveredView,
                         mContainerView,
                         mTabHoverCardView,
                         tab.getIsPinned(),
@@ -239,31 +352,40 @@ public class VerticalTabHoverController {
     }
 
     /** Handles hover and keyboard focus state changes on vertical tab item views. */
-    private void showOrHideTabHoverCard(int tabId, View view, boolean isHovered) {
+    private void handleTabHoverStateChanged(int tabId, View view, boolean isHovered) {
         if (isHovered) {
             if (isContextMenuShowing() || isScrolling()) {
                 return;
             }
 
+            boolean isSameView = (mCurrentHoveredView == view);
+            if (!isSameView) {
+                clearCurrentHoveredView();
+                mCurrentHoveredView = view;
+                if (view.isHovered()) {
+                    setHoverVisualState(view, true);
+                }
+            }
             mCurrentHoveredTabId = tabId;
-            mCurrentHoveredAnchorView = view;
             mCurrentHoveredGroupHeaderTabId = Tab.INVALID_TAB_ID;
             mCurrentHoveredGroupId = null;
 
-            // Skip showing for the currently selected tab.
+            // Skip showing hover card for the currently selected tab.
             if (mTabModelSelector.getCurrentTabId() == tabId) {
-                hideHoverCard();
+                hideHoverCards();
                 return;
             }
 
-            scheduleOrShowHoverCard(view, () -> showHoverCard(tabId, view));
-        } else if (mCurrentHoveredTabId == tabId) {
-            // Only hide if the exit event belongs to the currently hovered tab. When scrubbing,
-            // Android may dispatch HOVER_ENTER on the new tab before HOVER_EXIT on the previous
+            if (!isSameView || (!isHoverCardShowing() && mPendingHoverCardRunnable == null)) {
+                scheduleOrShowHoverCard(view, () -> showHoverCard(tabId, view));
+            }
+        } else if (mCurrentHoveredView == view) {
+            // Only reset if the exit event belongs to the currently hovered view. When scrubbing,
+            // Android may dispatch HOVER_ENTER on the new view before HOVER_EXIT on the previous
             // one.
-            mCurrentHoveredTabId = Tab.INVALID_TAB_ID;
-            mCurrentHoveredAnchorView = null;
             hideHoverCard();
+        } else {
+            setHoverVisualState(view, false);
         }
     }
 
@@ -275,8 +397,11 @@ public class VerticalTabHoverController {
                 return;
             }
 
+            if (mCurrentHoveredView != view) {
+                clearCurrentHoveredView();
+                mCurrentHoveredView = view;
+            }
             mCurrentHoveredTabId = Tab.INVALID_TAB_ID;
-            mCurrentHoveredAnchorView = view;
             mCurrentHoveredGroupHeaderTabId = groupHeaderTabId;
             mCurrentHoveredGroupId = tabGroupId;
 
@@ -288,10 +413,32 @@ public class VerticalTabHoverController {
                             || (groupHeaderTabId != Tab.INVALID_TAB_ID
                                     && groupHeaderTabId == mCurrentHoveredGroupHeaderTabId);
             if (isMatchingGroup) {
-                mCurrentHoveredGroupHeaderTabId = Tab.INVALID_TAB_ID;
-                mCurrentHoveredGroupId = null;
-                mCurrentHoveredAnchorView = null;
                 hideHoverCard();
+            }
+        }
+    }
+
+    private void clearCurrentHoveredView() {
+        if (mCurrentHoveredView != null) {
+            View previousHoveredView = mCurrentHoveredView;
+            mCurrentHoveredView = null;
+            mCurrentHoveredTabId = Tab.INVALID_TAB_ID;
+            mCurrentHoveredGroupHeaderTabId = Tab.INVALID_TAB_ID;
+            mCurrentHoveredGroupId = null;
+            setHoverVisualState(previousHoveredView, false);
+        }
+    }
+
+    private static void setHoverVisualState(View view, boolean isHovered) {
+        view.setHovered(isHovered);
+        @SuppressWarnings("unchecked")
+        Callback<Boolean> callback = (Callback<Boolean>) view.getTag(R.id.tab_hover_state_listener);
+        if (callback != null) {
+            callback.onResult(isHovered);
+        } else if (!isHovered) {
+            Runnable onHoverExit = (Runnable) view.getTag(R.id.tab_hover_exit_listener);
+            if (onHoverExit != null) {
+                onHoverExit.run();
             }
         }
     }
@@ -321,7 +468,11 @@ public class VerticalTabHoverController {
         if (shouldShowHoverCardImmediately(view)) {
             showRunnable.run();
         } else {
-            mPendingHoverCardRunnable = showRunnable;
+            mPendingHoverCardRunnable =
+                    () -> {
+                        mPendingHoverCardRunnable = null;
+                        showRunnable.run();
+                    };
             mHandler.postDelayed(mPendingHoverCardRunnable, getHoverCardDelay());
         }
     }

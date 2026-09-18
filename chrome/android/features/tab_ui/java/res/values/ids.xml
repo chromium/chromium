@@ -45,4 +45,5 @@ found in the LICENSE file.
 
     <!-- Vertical Tabs Hover. -->
     <item type="id" name="tab_hover_exit_listener" />
+    <item type="id" name="tab_hover_state_listener" />
 </resources>
