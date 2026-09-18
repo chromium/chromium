@@ -77,16 +77,30 @@ def _CheckGlicApiTestRegistration(input_api, output_api):
         input_api.sys.path = old_path
 
 
+def _GlicCommonChecks(input_api, output_api):
+    old_path = input_api.sys.path[:]
+    try:
+        input_api.sys.path.insert(0, input_api.change.RepositoryRoot())
+        from chrome.browser.resources.glic.common_checks import GlicCommonChecks
+        return GlicCommonChecks(input_api, output_api)
+    finally:
+        input_api.sys.path = old_path
+
+
 def CheckChange(input_api, output_api):
     return _CheckHeaderOrdering(input_api, output_api) + \
-           _CheckGlicApiTestRegistration(input_api, output_api)
+           _CheckGlicApiTestRegistration(input_api, output_api) + \
+           _GlicCommonChecks(input_api, output_api)
 
 
 def CheckChangeOnUpload(input_api, output_api):
     return _CheckHeaderOrdering(input_api, output_api) + \
-           _CheckGlicApiTestRegistration(input_api, output_api)
+           _CheckGlicApiTestRegistration(input_api, output_api) + \
+           _GlicCommonChecks(input_api, output_api)
 
 
 def CheckChangeOnCommit(input_api, output_api):
     return _CheckHeaderOrdering(input_api, output_api) + \
-           _CheckGlicApiTestRegistration(input_api, output_api)
+           _CheckGlicApiTestRegistration(input_api, output_api) + \
+           _GlicCommonChecks(input_api, output_api)
+

@@ -346,7 +346,8 @@ class CheckGlicApiTestRegistrationTest(unittest.TestCase):
         mock_input_api.presubmit_local_path = webui_dir
         mock_input_api.InitFiles([
             PRESUBMIT_test_mocks.MockFile(
-                'chrome/test/data/webui/glic/browser_tests/browser_test_base.ts',
+                'chrome/test/data/webui/glic/browser_tests/'
+                'browser_test_base.ts',
                 ['export function testStepper() {}'],
             ),
         ])
@@ -391,6 +392,139 @@ class CheckGlicApiTestRegistrationTest(unittest.TestCase):
         results = sharing_presubmit.CheckChangeOnUpload(
             mock_input_api, mock_output_api)
         self.assertEqual(results, [])
+
+
+class CheckGlicFeaturesDefaultStateTest(unittest.TestCase):
+
+    def setUp(self):
+        self._old_sys_path = sys.path[:]
+        repo_root = PRESUBMIT_test_mocks._REPO_ROOT
+        if repo_root not in sys.path:
+            sys.path.insert(0, repo_root)
+        from chrome.browser.resources.glic import common_checks
+        common_checks.ResetCommonChecksForTesting()
+
+    def tearDown(self):
+        sys.path = self._old_sys_path
+
+    def testNoAffectedFiles(self):
+        mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+        mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+        results = PRESUBMIT.CheckChangeOnUpload(mock_input_api,
+                                                mock_output_api)
+        self.assertEqual(results, [])
+
+    def testGlicFeatureEnabledByDefaultInGlicDir(self):
+        mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input_api.InitFiles([
+            PRESUBMIT_test_mocks.MockFile(
+                'chrome/browser/glic/public/features.cc',
+                [
+                    'BASE_FEATURE(kGlicNewFeature, '
+                    'base::FEATURE_ENABLED_BY_DEFAULT);',
+                ],
+            ),
+        ])
+        mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+        results = PRESUBMIT.CheckChangeOnUpload(mock_input_api,
+                                                mock_output_api)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].type, 'error')
+        self.assertIn('kGlicNewFeature', results[0].items[0])
+        self.assertIn('FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS',
+                      results[0].message)
+
+    def testGlicFeatureWithExplicitEnabledMacros(self):
+        mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input_api.InitFiles([
+            PRESUBMIT_test_mocks.MockFile(
+                'chrome/browser/glic/public/features.cc',
+                [
+                    'BASE_FEATURE(kGlicFeature1, '
+                    'FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID);',
+                    'BASE_FEATURE(kGlicFeature2, '
+                    'FEATURE_ENABLED_BY_DEFAULT_ANDROID_ONLY);',
+                    'BASE_FEATURE(kGlicFeature3, '
+                    'FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);',
+                ],
+            ),
+        ])
+        mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+        results = PRESUBMIT.CheckChangeOnUpload(mock_input_api,
+                                                mock_output_api)
+        self.assertEqual(results, [])
+
+    def testGlicFeatureDisabledByDefaultInGlicDir(self):
+        mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input_api.InitFiles([
+            PRESUBMIT_test_mocks.MockFile(
+                'chrome/browser/glic/public/features.cc',
+                [
+                    'BASE_FEATURE(kGlicNewFeature, '
+                    'base::FEATURE_DISABLED_BY_DEFAULT);',
+                ],
+            ),
+        ])
+        mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+        results = PRESUBMIT.CheckChangeOnUpload(mock_input_api,
+                                                mock_output_api)
+        self.assertEqual(results, [])
+
+    def testGlicFeatureEnabledByDefaultInChromeCommon(self):
+        mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input_api.InitFiles([
+            PRESUBMIT_test_mocks.MockFile(
+                'chrome/common/chrome_features.cc',
+                [
+                    'BASE_FEATURE(kGlicFeatureInCommon, '
+                    'base::FEATURE_ENABLED_BY_DEFAULT);',
+                ],
+            ),
+        ])
+        mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+        results = PRESUBMIT.CheckChangeOnUpload(mock_input_api,
+                                                mock_output_api)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].type, 'error')
+        self.assertIn('kGlicFeatureInCommon', results[0].items[0])
+        self.assertIn('FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS',
+                      results[0].message)
+
+    def testNonGlicFeatureEnabledByDefaultInChromeCommon(self):
+        mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input_api.InitFiles([
+            PRESUBMIT_test_mocks.MockFile(
+                'chrome/common/chrome_features.cc',
+                [
+                    'BASE_FEATURE(kSomeOtherFeature, '
+                    'base::FEATURE_ENABLED_BY_DEFAULT);',
+                ],
+            ),
+        ])
+        mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+        results = PRESUBMIT.CheckChangeOnUpload(mock_input_api,
+                                                mock_output_api)
+        self.assertEqual(results, [])
+
+    def testUnrelatedLineChangedDoesNotTriggerError(self):
+        mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+        mock_file = PRESUBMIT_test_mocks.MockFile(
+            'chrome/browser/glic/public/features.cc',
+            [
+                '// Updated header comment',
+                'BASE_FEATURE(kGlicExistingFeature, '
+                'base::FEATURE_ENABLED_BY_DEFAULT);',
+            ],
+        )
+        # Simulate only modifying line 1 (the comment)
+        mock_file._changed_contents = [(1, '// Updated header comment')]
+        mock_input_api.InitFiles([mock_file])
+        mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+        results = PRESUBMIT.CheckChangeOnUpload(mock_input_api,
+                                                mock_output_api)
+        self.assertEqual(results, [])
+
+
 
 
 # Include tool unit tests so they execute with PRESUBMIT_test.py

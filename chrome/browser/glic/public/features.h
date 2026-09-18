@@ -12,6 +12,19 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
+// Macros to define the default state of features explicitly across platforms.
+#if BUILDFLAG(IS_ANDROID)
+#define FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID base::FEATURE_DISABLED_BY_DEFAULT
+#define FEATURE_ENABLED_BY_DEFAULT_ANDROID_ONLY base::FEATURE_ENABLED_BY_DEFAULT
+#else
+#define FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID base::FEATURE_ENABLED_BY_DEFAULT
+#define FEATURE_ENABLED_BY_DEFAULT_ANDROID_ONLY \
+  base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+
+#define FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS \
+  base::FEATURE_ENABLED_BY_DEFAULT
+
 namespace features {
 
 BASE_DECLARE_FEATURE(kGlicAndroidSidePanel);
