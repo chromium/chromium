@@ -48,10 +48,9 @@ bool Writer::EncodeCBOR(const Value& node,
     return false;
 
   switch (node.type()) {
-    case Value::Type::NONE: {
-      StartItem(Value::Type::BYTE_STRING, 0);
-      return true;
-    }
+    // Default-constructed or moved-from Values have no CBOR representation.
+    case Value::Type::NONE:
+      return false;
 
     case Value::Type::INVALID_UTF8: {
       if (!allow_invalid_utf8) {

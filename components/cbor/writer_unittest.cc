@@ -382,6 +382,19 @@ TEST(CBORWriterTest, TestWriteSimpleValue) {
   }
 }
 
+TEST(CBORWriterTest, TestWriteNoneFails) {
+  EXPECT_FALSE(Writer::Write(Value()).has_value());
+
+  Value::ArrayValue array;
+  array.emplace_back(1);
+  array.emplace_back();
+  EXPECT_FALSE(Writer::Write(Value(std::move(array))).has_value());
+
+  Value::MapValue map;
+  map[Value(1)] = Value();
+  EXPECT_FALSE(Writer::Write(Value(std::move(map))).has_value());
+}
+
 // For major type 0, 2, 3, empty CBOR array, and empty CBOR map, the nesting
 // depth is expected to be 0 since the CBOR decoder does not need to parse
 // any nested CBOR value elements.

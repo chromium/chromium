@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -354,6 +355,42 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_Success) {
   EXPECT_TRUE(out_entity.ParseFromArray(serialized_passkey_entity.data(),
                                         serialized_passkey_entity.size()));
   EXPECT_EQ(out_entity.rp_id(), std::string(kRpId));
+}
+
+// The enclave has no CBOR null, so `toCbor` crashes on one rather than sending
+// a request the enclave would reject outright. The killswitch restores the
+// legacy encoding of an empty byte string.
+TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_JsonNull) {
+  static constexpr char kJsonWithNull[] = R"({
+      "extensions":{"appid":null},
+      "rpId":"test.example"})";
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      kJsonWithNull, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(parsed_json);
+  auto json_request =
+      base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
+  auto build = [&] {
+    return BuildGetAssertionCommand(PasskeyEntity(), json_request,
+                                    kClientDataJson, /*claimed_pin=*/nullptr,
+                                    wrapped_secret(), /*secret=*/std::nullopt,
+                                    /*cmtg_device_keys=*/std::nullopt);
+  };
+
+  EXPECT_NOTREACHED_DEATH(build());
+
+  // The feature is defined in an anonymous namespace, so name it by string.
+  base::test::ScopedFeatureList killswitch;
+  killswitch.InitFromCommandLine(
+      /*enable_features=*/"",
+      /*disable_features=*/"WebAuthnEnclaveAssertNoJsonNull");
+
+  const cbor::Value command = build();
+  const cbor::Value::MapValue& request =
+      command.GetMap().find(cbor::Value("request"))->second.GetMap();
+  const cbor::Value::MapValue& extensions =
+      request.find(cbor::Value("extensions"))->second.GetMap();
+  EXPECT_THAT(extensions.find(cbor::Value("appid"))->second.GetBytestring(),
+              testing::IsEmpty());
 }
 
 TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_WithPIN) {

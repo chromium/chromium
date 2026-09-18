@@ -77,9 +77,9 @@ class CBOR_EXPORT Writer {
 
   ~Writer();
 
-  // Returns the CBOR byte string representation of |node|, unless its nesting
-  // depth is greater than |max_nesting_level|, in which case an empty optional
-  // value is returned.
+  // Returns the CBOR byte string representation of |node|, or `std::nullopt`
+  // if its nesting depth exceeds |max_nesting_level| or it contains
+  // `Value::Type::NONE`.
   static std::optional<std::vector<uint8_t>> Write(
       const Value& node,
       size_t max_nesting_level = kDefaultMaxNestingDepth);

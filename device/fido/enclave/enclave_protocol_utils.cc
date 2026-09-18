@@ -124,10 +124,26 @@ const std::vector<uint8_t>* cborFindBytestring(const cbor::Value::MapValue& map
   return &value_it->second.GetBytestring();
 }
 
+// Killswitch for the `NOTREACHED()` in `toCbor` below. Remove in or after
+// M156.
+BASE_FEATURE(kWebAuthnEnclaveAssertNoJsonNull,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 cbor::Value toCbor(const base::Value& json) {
   switch (json.type()) {
     case base::Value::Type::NONE:
-      return cbor::Value();
+      // `base::Value::Type::NONE` is JSON `null`, which the enclave cannot
+      // represent: its CBOR parser has no null, and rejecting the simple
+      // value aborts the entire request. Nothing that reaches this function
+      // produces a null today, so crash instead.
+      //
+      // TODO(crbug.com/454485901): Remove the fallback once the crash has
+      // ridden the trains. Until then, keep emitting the empty byte string
+      // that `cbor::Writer` used to encode `Type::NONE` as.
+      if (base::FeatureList::IsEnabled(kWebAuthnEnclaveAssertNoJsonNull)) {
+        NOTREACHED();
+      }
+      return cbor::Value(cbor::Value::BinaryValue());
     case base::Value::Type::BOOLEAN:
       return cbor::Value(json.GetBool());
     case base::Value::Type::INTEGER:
