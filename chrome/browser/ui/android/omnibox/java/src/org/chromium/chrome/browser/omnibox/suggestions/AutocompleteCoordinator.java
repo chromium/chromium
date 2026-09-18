@@ -141,7 +141,6 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
                                         && !uiOverrides.isForcedPhoneStyleOmnibox())
                         .with(SuggestionListProperties.SUGGESTION_MODELS, listItems)
                         .with(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED, true)
-                        .with(SuggestionListProperties.IS_MULTILINE_URL_BAR, false)
                         .build();
 
         mMediator =

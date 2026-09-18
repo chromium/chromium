@@ -183,7 +183,6 @@ class AutocompleteMediator
     private final Callback<Boolean> mOnShouldAutocompleteChanged = state -> onInputChanged();
     private final Callback<@AutocompleteState Integer> mOnAutocompleteStateChanged =
             this::onAutocompleteStateChanged;
-    private final Callback<Boolean> mOnTextWrappingChanged = this::onTextWrappingChanged;
 
     private @Nullable AutocompleteController mAutocomplete;
     private @Nullable AutocompleteResult mAutocompleteResult;
@@ -513,8 +512,8 @@ class AutocompleteMediator
 
         setAutocompleteInput(session.getAutocompleteInput());
         setAutocompleteController(session.getAutocompleteController());
-        setFuseboxSessionState(session);
-        setFuseboxAttachmentModelList(session.getFuseboxAttachmentModelList());
+        mSessionState = session;
+        setFuseboxAttachmentModelList(mSessionState.getFuseboxAttachmentModelList());
 
         if (!alreadyInInput) {
             // Propagate the information about omnibox session state change to all the processors
@@ -602,12 +601,11 @@ class AutocompleteMediator
         // Prevent any upcoming omnibox suggestions from showing once a URL is loaded (and as
         // a consequence the omnibox is unfocused).
         clearSuggestions();
-        mListPropertyModel.set(SuggestionListProperties.IS_MULTILINE_URL_BAR, false);
 
         setAutocompleteInput(null);
         setAutocompleteController(null);
 
-        setFuseboxSessionState(null);
+        mSessionState = null;
         setFuseboxAttachmentModelList(null);
     }
 
@@ -1992,9 +1990,6 @@ class AutocompleteMediator
                         && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                         && mContext.getResources().getConfiguration().screenWidthDp
                                 >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP);
-        mListPropertyModel.set(
-                SuggestionListProperties.IS_MULTILINE_URL_BAR,
-                mSessionState != null && mSessionState.isTextWrapping());
     }
 
     /** Trigger autocomplete for the given query. */
@@ -2006,16 +2001,6 @@ class AutocompleteMediator
         mAutocompleteInput.setUserText(query);
         mAutocomplete.start(
                 mSessionState.getContextualTasksWebContents(), mAutocompleteInput, -1, false);
-    }
-
-    /**
-     * Respond to text wrapping changes in the UrlBar.
-     *
-     * @param isWrapped Whether the UrlBar text is wrapped across multiple lines.
-     */
-    @VisibleForTesting
-    void onTextWrappingChanged(boolean isWrapped) {
-        mListPropertyModel.set(SuggestionListProperties.IS_MULTILINE_URL_BAR, isWrapped);
     }
 
     /**
@@ -2339,22 +2324,6 @@ class AutocompleteMediator
         // This is a best-effort action and may not always work (e.g. if Chrome gets killed or
         // swiped away before we manage to retrieve and persist the information).
         mAutocomplete.startZeroSuggest(mSessionState.getContextualTasksWebContents(), input);
-    }
-
-    private void setFuseboxSessionState(@Nullable FuseboxSessionState session) {
-        if (mSessionState != null) {
-            var supplier = mSessionState.getTextWrappingSupplier();
-            if (supplier != null) {
-                supplier.removeObserver(mOnTextWrappingChanged);
-            }
-        }
-        mSessionState = session;
-        if (mSessionState != null) {
-            var supplier = mSessionState.getTextWrappingSupplier();
-            if (supplier != null) {
-                supplier.addSyncObserverAndCallIfNonNull(mOnTextWrappingChanged);
-            }
-        }
     }
 
     private void setFuseboxAttachmentModelList(

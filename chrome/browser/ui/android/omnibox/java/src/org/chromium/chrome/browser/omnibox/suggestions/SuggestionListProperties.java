@@ -86,9 +86,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     /** Whether the suggestions are being rendered on a large screen. */
     WritableBooleanPropertyKey IS_LARGE_SCREEN = new WritableBooleanPropertyKey();
 
-    /** Whether the UrlBar is currently showing multiple lines of text. */
-    WritableBooleanPropertyKey IS_MULTILINE_URL_BAR = new WritableBooleanPropertyKey();
-
     /** The width of the left side bar margin in px. */
     WritableIntPropertyKey LEFT_SIDE_BAR_MARGIN_PX = new WritableIntPropertyKey();
 
@@ -139,7 +136,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
                 FUSEBOX_LAYOUT_MODE,
                 GESTURE_OBSERVER,
                 IS_LARGE_SCREEN,
-                IS_MULTILINE_URL_BAR,
                 LEFT_SIDE_BAR_MARGIN_PX,
                 LIST_IS_FINAL,
                 NAVIGATION_LISTENER,

@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Trave
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionListViewBinder.SuggestionListViewHolder;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
-import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -249,38 +248,5 @@ public class SuggestionListViewBinderUnitTest {
         mListModel.set(SuggestionListProperties.APPLY_VERTICAL_PADDING, true);
         assertEquals(mResourceProvider.getDropdownTopPadding(), mDropdown.getPaddingTop());
         assertEquals(mResourceProvider.getDropdownBottomPadding(), mDropdown.getPaddingBottom());
-    }
-
-    @Test
-    public void suggestionsContainer_multilineUrlBarWithDesktopExperience() {
-        List<ListItem> suggestionsList = new ArrayList<>();
-        suggestionsList.add(mDropdownItem);
-        mSuggestionModels.set(suggestionsList);
-
-        mListModel.set(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE, true);
-        mListModel.set(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED, true);
-        assertEquals(View.VISIBLE, mContainer.getVisibility());
-
-        // Multiline with desktop experience keeps container INVISIBLE.
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
-        mListModel.set(SuggestionListProperties.IS_MULTILINE_URL_BAR, true);
-        assertEquals(View.INVISIBLE, mContainer.getVisibility());
-
-        // Multiline without desktop experience allows container to remain VISIBLE.
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
-        mListModel.set(SuggestionListProperties.IS_MULTILINE_URL_BAR, false);
-        mListModel.set(SuggestionListProperties.IS_MULTILINE_URL_BAR, true);
-        assertEquals(View.VISIBLE, mContainer.getVisibility());
-
-        // Single line with desktop experience allows container to remain VISIBLE.
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
-        mListModel.set(SuggestionListProperties.IS_MULTILINE_URL_BAR, false);
-        assertEquals(View.VISIBLE, mContainer.getVisibility());
-
-        // Multiline with desktop experience, session ending -> GONE.
-        mListModel.set(SuggestionListProperties.IS_MULTILINE_URL_BAR, true);
-        assertEquals(View.INVISIBLE, mContainer.getVisibility());
-        mListModel.set(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE, false);
-        assertEquals(View.GONE, mContainer.getVisibility());
     }
 }

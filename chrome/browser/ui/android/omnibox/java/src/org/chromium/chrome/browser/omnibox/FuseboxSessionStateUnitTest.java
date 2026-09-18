@@ -40,9 +40,6 @@ import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /** Unit tests for {@link FuseboxSessionState}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FuseboxSessionStateUnitTest {
@@ -282,28 +279,5 @@ public class FuseboxSessionStateUnitTest {
 
         GURL previewMatchUrl = session.getAutocompleteInput().getPreviewMatchUrl();
         assertNull(previewMatchUrl);
-    }
-
-    @Test
-    public void testTextWrappingSupplier() {
-        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
-        session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
-        RobolectricUtil.runAllBackgroundAndUi();
-        assertTrue(session.isSessionActive());
-
-        assertFalse(session.isTextWrapping());
-        assertFalse(session.getTextWrappingSupplier().get());
-
-        List<Boolean> observedValues = new ArrayList<>();
-        session.getTextWrappingSupplier().addSyncObserverAndCallIfNonNull(observedValues::add);
-        assertEquals(List.of(false), observedValues);
-
-        session.setTextWrapping(true);
-        assertTrue(session.isTextWrapping());
-        assertEquals(List.of(false, true), observedValues);
-
-        session.deactivate();
-        assertFalse(session.isTextWrapping());
-        assertEquals(List.of(false, true, false), observedValues);
     }
 }

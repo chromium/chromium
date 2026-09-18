@@ -70,7 +70,6 @@ public class UrlBarCoordinator
     private @KeyboardState int mKeyboardState = KeyboardState.HIDDEN;
     private boolean mHasFocus;
     private boolean mTextIsWrapped;
-    private @Nullable FuseboxSessionState mSessionState;
 
     /**
      * Constructs a coordinator for the given UrlBar view.
@@ -145,15 +144,12 @@ public class UrlBarCoordinator
 
     /** Signals that the Omnibox input session has begun. */
     public void beginInput(FuseboxSessionState sessionState) {
-        mSessionState = sessionState;
-        mSessionState.setTextWrapping(mTextIsWrapped);
         mMediator.beginInput(sessionState);
     }
 
     /** Signals that the Omnibox input session has ended. */
     public void endInput() {
         mMediator.endInput();
-        mSessionState = null;
     }
 
     /** Returns whether the url bar currently contains more than a single line of text. */
@@ -181,9 +177,6 @@ public class UrlBarCoordinator
 
     private void onTextWrappingChanged(boolean isWrapped) {
         mTextIsWrapped = isWrapped;
-        if (mSessionState != null) {
-            mSessionState.setTextWrapping(isWrapped);
-        }
         for (Callback<Boolean> listener : mTextWrapListeners) {
             listener.onResult(isWrapped);
         }

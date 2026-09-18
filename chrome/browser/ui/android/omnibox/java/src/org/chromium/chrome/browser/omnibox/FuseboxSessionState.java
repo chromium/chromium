@@ -10,9 +10,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserData;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
@@ -79,9 +76,6 @@ public class FuseboxSessionState implements UserData {
      */
     private final AutocompleteInput mAutocompleteInput =
             new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP);
-
-    private final SettableNonNullObservableSupplier<Boolean> mTextWrappingSupplier =
-            ObservableSuppliers.createNonNull(false);
 
     private @Nullable FuseboxMetrics mMetrics;
     protected @Nullable Profile mProfile;
@@ -215,7 +209,6 @@ public class FuseboxSessionState implements UserData {
 
         mAutocompleteInput.reset();
         mAutocompleteInput.setAutocompleteState(AutocompleteState.DISABLED);
-        mTextWrappingSupplier.set(false);
 
         if (mProfileSupplier != null && mPendingProfileCallback != null) {
             mProfileSupplier.removeObserver(mPendingProfileCallback);
@@ -295,7 +288,6 @@ public class FuseboxSessionState implements UserData {
         mWebContents = null;
         mIsActive = false;
         mAutocompleteInput.getRequestTypeSupplier().removeObserver(mOnRequestTypeChanged);
-        mTextWrappingSupplier.destroy();
     }
 
     /** Unlinks and destroys session controllers. */
@@ -383,21 +375,6 @@ public class FuseboxSessionState implements UserData {
     /** Returns the current {@link FuseboxAttachmentModelList} for this session. */
     public @Nullable FuseboxAttachmentModelList getFuseboxAttachmentModelList() {
         return mFuseboxAttachmentModelList;
-    }
-
-    /** Returns whether the text in the UrlBar is wrapping. */
-    public boolean isTextWrapping() {
-        return mTextWrappingSupplier.get();
-    }
-
-    /** Sets whether the text in the UrlBar is wrapping. */
-    public void setTextWrapping(boolean isWrapping) {
-        mTextWrappingSupplier.set(isWrapping);
-    }
-
-    /** Returns the supplier for the text wrapping state. */
-    public NonNullObservableSupplier<Boolean> getTextWrappingSupplier() {
-        return mTextWrappingSupplier;
     }
 
     private static boolean canStripTrailingSlash(GURL url) {

@@ -260,7 +260,6 @@ class LocationBarMediator
             this::onAutocompleteRequestTypeChanged;
     private final Callback<@DisplayState Integer> mDisplayStateObserver =
             this::onDisplayStateChanged;
-    private final Callback<Boolean> mTextWrappingObserver = this::setIsTextWrapping;
     private final SettableMonotonicObservableSupplier<SearchEngineService>
             mSearchEngineServiceSupplier = ObservableSuppliers.createMonotonic();
     private final ButtonToolbarWidthConsumer mBookmarkButtonToolbarWidthConsumer;
@@ -3227,12 +3226,6 @@ class LocationBarMediator
                 .getSiteSearchDataSupplier()
                 .addSyncObserverAndCallIfNonNull(mSiteSearchDataObserver);
         mCurrentInput.getPreviewMatchUrlSupplier().addSyncObserver(mPreviewMatchUrlObserver);
-
-        var session = FuseboxSessionState.from(mLocationBarDataProvider);
-        if (session != null) {
-            session.getTextWrappingSupplier()
-                    .addSyncObserverAndCallIfNonNull(mTextWrappingObserver);
-        }
     }
 
     private void disconnectObservers(AutocompleteInput input) {
@@ -3240,11 +3233,6 @@ class LocationBarMediator
         input.getDisplayStateSupplier().removeObserver(mDisplayStateObserver);
         input.getSiteSearchDataSupplier().removeObserver(mSiteSearchDataObserver);
         input.getPreviewMatchUrlSupplier().removeObserver(mPreviewMatchUrlObserver);
-
-        var session = FuseboxSessionState.from(mLocationBarDataProvider);
-        if (session != null) {
-            session.getTextWrappingSupplier().removeObserver(mTextWrappingObserver);
-        }
     }
 
     @Override
