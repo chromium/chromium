@@ -112,6 +112,19 @@ bool AreStringsEqual(std::string_view lhs, std::string_view rhs) {
       webViewScrollViewDidScroll:self.scrollViewProxy];
 }
 
+- (void)scrollViewDidChangeAdjustedContentInset:(UIScrollView*)scrollView {
+  DCHECK_EQ(self.scrollViewProxy.underlyingScrollView, scrollView);
+  if ([self.delegateOfProxy
+          respondsToSelector:@selector(
+                                 scrollViewDidChangeAdjustedContentInset:)]) {
+    [self.delegateOfProxy
+        scrollViewDidChangeAdjustedContentInset:[self.scrollViewProxy
+                                                        asUIScrollView]];
+  }
+  [self.scrollViewProxy.observers
+      webViewScrollViewDidResetContentInset:self.scrollViewProxy];
+}
+
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
   DCHECK_EQ(self.scrollViewProxy.underlyingScrollView, scrollView);
   if ([self.delegateOfProxy

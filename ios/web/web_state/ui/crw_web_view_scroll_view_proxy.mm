@@ -314,7 +314,7 @@ static int gAnyContext = 0;
 
 + (NSArray*)scrollViewObserverKeyPaths {
   CHECK(web::features::ShouldUseBroadcasterForSmoothScrolling());
-  return @[ @"frame", @"contentSize", @"contentInset" ];
+  return @[ @"frame", @"contentSize" ];
 }
 
 + (void)startObservingScrollView:(UIScrollView*)scrollView
@@ -381,9 +381,6 @@ static int gAnyContext = 0;
 
   if ([keyPath isEqualToString:@"frame"]) {
     [_observers webViewScrollViewFrameDidChange:self];
-  }
-  if ([keyPath isEqualToString:@"contentInset"]) {
-    [_observers webViewScrollViewDidResetContentInset:self];
   }
   if ([keyPath isEqualToString:@"contentSize"]) {
     [_observers webViewScrollViewDidResetContentSize:self];

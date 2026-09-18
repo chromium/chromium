@@ -214,8 +214,7 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
 // Checks whether the content inset has been updated, notifying the updater of
 // any changes.
 - (void)checkForContentInsetAdjustment {
-  UIEdgeInsets inset = self.proxy.contentInset;
-  inset = self.proxy.adjustedContentInset;
+  UIEdgeInsets inset = self.proxy.adjustedContentInset;
   if (!UIEdgeInsetsEqualToEdgeInsets(inset, self.updater.state.contentInset)) {
     [self.updater scrollViewDidResetContentInset:inset];
   }
