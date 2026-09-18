@@ -5626,7 +5626,7 @@
       "jacobstanley@google.com",
       "koilos@google.com"
     ],
-    "expiry_milestone": 154
+    "expiry_milestone": 160
   },
   {
     "name": "glic-actor-localhost-is-sensitive",
