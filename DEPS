@@ -2265,7 +2265,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/flatbuffers.git' + '@' + 'a86afae9399bbe631d1ea0783f8816e780e236cc',
 
   'src/third_party/fontconfig/src': {
-      'url': Var('chromium_git') + '/external/fontconfig.git' + '@' + '478e7774a514244469424eda870ad2c029bf62a6',
+      'url': Var('chromium_git') + '/external/fontconfig.git' + '@' + 'bd8f7b597de96761750d0365abb49b19d2f8d5c3',
       'condition': 'checkout_linux',
   },
 

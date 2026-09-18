@@ -4,8 +4,8 @@
  *   https://www.unicode.org/terms_of_use.html
  */
 
-#define FC_NUM_CASE_FOLD	306
-#define FC_NUM_CASE_FOLD_CHARS	471
+#define FC_NUM_CASE_FOLD	316
+#define FC_NUM_CASE_FOLD_CHARS	473
 #define FC_MAX_CASE_FOLD_CHARS	6
 #define FC_MAX_CASE_FOLD_EXPAND	4
 #define FC_MIN_FOLD_CHAR	0x00000041
@@ -291,7 +291,10 @@ static const FcCaseFold    fcCaseFold[FC_NUM_CASE_FOLD] = {
     { 0x0000a7cb, FC_CASE_FOLD_RANGE,    0x0001,  23193 },
     { 0x0000a7cc, FC_CASE_FOLD_EVEN_ODD, 0x000f,      1 },
     { 0x0000a7dc, FC_CASE_FOLD_RANGE,    0x0001,  22975 },
+    { 0x0000a7dd, FC_CASE_FOLD_RANGE,    0x0001,  23194 },
+    { 0x0000a7e2, FC_CASE_FOLD_RANGE,    0x0001,  23194 },
     { 0x0000a7f5, FC_CASE_FOLD_EVEN_ODD, 0x0001,      1 },
+    { 0x0000ab6c, FC_CASE_FOLD_RANGE,    0x0002,    -33 },
     { 0x0000ab70, FC_CASE_FOLD_RANGE,    0x0050,  26672 },
     { 0x0000fb00, FC_CASE_FOLD_FULL,     0x0002,    435 },
     { 0x0000fb01, FC_CASE_FOLD_FULL,     0x0002,    437 },
@@ -317,6 +320,13 @@ static const FcCaseFold    fcCaseFold[FC_NUM_CASE_FOLD] = {
     { 0x000118a0, FC_CASE_FOLD_RANGE,    0x0020,     32 },
     { 0x00016e40, FC_CASE_FOLD_RANGE,    0x0020,     32 },
     { 0x00016ea0, FC_CASE_FOLD_RANGE,    0x0019,     27 },
+    { 0x0001df40, FC_CASE_FOLD_EVEN_ODD, 0x0001,      1 },
+    { 0x0001df48, FC_CASE_FOLD_EVEN_ODD, 0x0003,      1 },
+    { 0x0001df4d, FC_CASE_FOLD_EVEN_ODD, 0x0001,      1 },
+    { 0x0001df51, FC_CASE_FOLD_EVEN_ODD, 0x0001,      1 },
+    { 0x0001df68, FC_CASE_FOLD_EVEN_ODD, 0x0007,      1 },
+    { 0x0001df72, FC_CASE_FOLD_EVEN_ODD, 0x000d,      1 },
+    { 0x0001df95, FC_CASE_FOLD_FULL,     0x0002,    471 },
     { 0x0001e900, FC_CASE_FOLD_RANGE,    0x0022,     34 },
 };
 
@@ -350,5 +360,5 @@ static const FcChar8	fcCaseFoldChars[FC_NUM_CASE_FOLD_CHARS] = {
 0xb9,0xcf,0x8e,0xce,0xb9,0xcf,0x89,0xcd,0x82,0xcf,0x89,0xcd,0x82,0xce,0xb9,0xcf,
 0x89,0xce,0xb9,0x66,0x66,0x66,0x69,0x66,0x6c,0x66,0x66,0x69,0x66,0x66,0x6c,0x73,
 0x74,0x73,0x74,0xd5,0xb4,0xd5,0xb6,0xd5,0xb4,0xd5,0xa5,0xd5,0xb4,0xd5,0xab,0xd5,
-0xbe,0xd5,0xb6,0xd5,0xb4,0xd5,0xad
+0xbe,0xd5,0xb6,0xd5,0xb4,0xd5,0xad,0x73,0x73
 };
