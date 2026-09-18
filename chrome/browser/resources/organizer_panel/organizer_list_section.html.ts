@@ -21,17 +21,19 @@ ${this.hasNoSearchResults_() ? html`
       </organizer-list-section-item>
     `)}
     ${this.hasMoreItems_() ? html`
+      <div id="collapse" @transitionend="${this.onCollapseTransitionend_}">
+        ${this.getRemainingItems_().map(item => html`
+          <organizer-list-section-item .item="${item}" role="listitem"
+              @click="${this.onItemClick_}"
+              @action-button-click="${this.onItemActionButtonClick_}">
+          </organizer-list-section-item>
+        `)}
+      </div>
       <cr-expand-button id="expandButton" ?expanded="${this.expanded_}"
           @expanded-changed="${this.onExpandedChanged_}">
-        Show more
+        ${this.getExpandButtonLabel_()}
       </cr-expand-button>
     ` : ''}
-    ${this.getRemainingItems_().map(item => html`
-      <organizer-list-section-item .item="${item}" role="listitem"
-          @click="${this.onItemClick_}"
-          @action-button-click="${this.onItemActionButtonClick_}">
-      </organizer-list-section-item>
-    `)}
   </div>
 `}
 <!--_html_template_end_-->`;

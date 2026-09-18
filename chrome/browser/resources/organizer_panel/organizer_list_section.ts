@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import './organizer_list_section_item.js';
 
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -46,7 +47,11 @@ export class OrganizerListSectionElement extends CrLitElement implements
     return {
       delegate: {type: Object},
       items: {type: Array},
-      expanded_: {type: Boolean},
+      expanded_: {
+        type: Boolean,
+        reflect: true,
+      },
+      shouldRenderRemainingItems_: {type: Boolean},
       searchQuery: {type: String},
       filteredItems_: {type: Array},
       filteredSearchQuery_: {type: String},
@@ -56,6 +61,9 @@ export class OrganizerListSectionElement extends CrLitElement implements
   accessor delegate: OrganizerListSectionDelegate<unknown>|null = null;
   accessor items: Array<OrganizerListSectionItem<unknown>> = [];
   protected accessor expanded_: boolean = false;
+  // True while overflow items should be populated in the DOM (from when
+  // expansion starts until the collapse transition finishes).
+  private accessor shouldRenderRemainingItems_: boolean = false;
   accessor searchQuery: string = '';
   protected accessor filteredItems_:
       Array<HighlightableOrganizerListSectionItem<unknown>> = [];
@@ -117,6 +125,10 @@ export class OrganizerListSectionElement extends CrLitElement implements
         changedProperties.has('searchQuery')) {
       this.updateFilteredItems_();
     }
+
+    if (this.expanded_) {
+      this.shouldRenderRemainingItems_ = true;
+    }
   }
 
   onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>) {
@@ -161,7 +173,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
 
   protected getRemainingItems_():
       Array<HighlightableOrganizerListSectionItem<unknown>> {
-    if (!this.expanded_ || this.isSearching_()) {
+    if (!this.shouldRenderRemainingItems_ || this.isSearching_()) {
       return [];
     }
     return this.getFilteredItems_().slice(INITIAL_ITEM_COUNT);
@@ -176,8 +188,19 @@ export class OrganizerListSectionElement extends CrLitElement implements
     return this.isSearching_() && this.getFilteredItems_().length === 0;
   }
 
+  protected getExpandButtonLabel_(): string {
+    return loadTimeData.getString(this.expanded_ ? 'showLess' : 'showMore');
+  }
+
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.expanded_ = e.detail.value;
+  }
+
+  protected onCollapseTransitionend_(e: TransitionEvent) {
+    if (e.target === e.currentTarget && e.propertyName === 'height' &&
+        !this.expanded_) {
+      this.shouldRenderRemainingItems_ = false;
+    }
   }
 
   protected onItemClick_(e: Event) {

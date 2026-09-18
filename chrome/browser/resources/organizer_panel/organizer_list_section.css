@@ -27,3 +27,17 @@
   font-size: 12px;
   margin: 8px 16px;
 }
+
+#collapse {
+  height: 0;
+  interpolate-size: allow-keywords;
+  overflow: hidden;
+  transition: height 300ms ease-out, visibility 0s 300ms;
+  visibility: hidden;
+}
+
+:host([expanded_]) #collapse {
+  height: auto;
+  transition: height 300ms ease-out;
+  visibility: visible;
+}

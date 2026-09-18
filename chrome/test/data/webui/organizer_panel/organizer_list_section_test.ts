@@ -5,7 +5,7 @@
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
 import {INITIAL_ITEM_COUNT, SearchApiProxyImpl} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
-import type {OrganizerListSectionElement, OrganizerListSectionItem} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {OrganizerListSectionElement, OrganizerListSectionItem, OrganizerListSectionItemElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -89,57 +89,67 @@ suite('OrganizerListSectionTest', () => {
         listSection.delegate = new TestSectionDelegate('Open Tabs', items);
         await microtasksFinished();
 
-        // Initially only the first 3 items should be rendered.
-        let listItems = listSection.shadowRoot.querySelectorAll(
-            'organizer-list-section-item');
-        assertEquals(INITIAL_ITEM_COUNT, listItems.length);
-        assertDeepEquals(['Tab 1'], listItems[0]!.item.title);
-        assertDeepEquals(['Tab 2'], listItems[1]!.item.title);
-        assertDeepEquals(['Tab 3'], listItems[2]!.item.title);
-
-        // Below those items, cr-expand-button with text "Show more".
+        const itemsContainer = listSection.shadowRoot.querySelector('#items')!;
+        const collapse =
+            listSection.shadowRoot.querySelector<HTMLElement>('#collapse');
+        assertTrue(!!collapse);
         const expandButton =
             listSection.shadowRoot.querySelector<CrExpandButtonElement>(
                 'cr-expand-button');
         assertTrue(!!expandButton);
-        assertEquals('Show more', expandButton.textContent.trim());
-        assertFalse(expandButton.expanded);
 
-        // Verify DOM order: the expand button is positioned after the initial
-        // items.
-        const itemsContainer = listSection.shadowRoot.querySelector('#items')!;
+        const initialItems =
+            itemsContainer.querySelectorAll<OrganizerListSectionItemElement>(
+                ':scope > organizer-list-section-item');
+        assertEquals(INITIAL_ITEM_COUNT, initialItems.length);
+        assertDeepEquals(['Tab 1'], initialItems[0]!.item.title);
+        assertDeepEquals(['Tab 2'], initialItems[1]!.item.title);
+        assertDeepEquals(['Tab 3'], initialItems[2]!.item.title);
+
+        assertEquals(
+            0, collapse.querySelectorAll('organizer-list-section-item').length);
+
         const children = Array.from(itemsContainer.children);
-        assertEquals(listItems[0], children[0]);
-        assertEquals(listItems[1], children[1]);
-        assertEquals(listItems[2], children[2]);
-        assertEquals(expandButton, children[3]);
+        assertEquals(5, children.length);
+        assertEquals(initialItems[0], children[0]);
+        assertEquals(initialItems[1], children[1]);
+        assertEquals(initialItems[2], children[2]);
+        assertEquals(collapse, children[3]);
+        assertEquals(expandButton, children[4]);
 
-        // Click the expand button to reveal the rest of the items.
+        assertFalse(expandButton.expanded);
+        assertFalse(listSection.hasAttribute('expanded_'));
+        assertEquals('Show more', expandButton.textContent.trim());
+
         expandButton.click();
         await microtasksFinished();
 
         assertTrue(expandButton.expanded);
-        listItems = listSection.shadowRoot.querySelectorAll(
-            'organizer-list-section-item');
-        assertEquals(4, listItems.length);
-        assertDeepEquals(['Tab 4'], listItems[3]!.item.title);
+        assertTrue(listSection.hasAttribute('expanded_'));
+        assertEquals('Show less', expandButton.textContent.trim());
 
-        // Verify the rest of the items are rendered below the expand button.
-        const updatedChildren = Array.from(itemsContainer.children);
-        assertEquals(listItems[0], updatedChildren[0]);
-        assertEquals(listItems[1], updatedChildren[1]);
-        assertEquals(listItems[2], updatedChildren[2]);
-        assertEquals(expandButton, updatedChildren[3]);
-        assertEquals(listItems[3], updatedChildren[4]);
+        const collapsedItems =
+            collapse.querySelectorAll('organizer-list-section-item');
+        assertEquals(1, collapsedItems.length);
+        assertDeepEquals(['Tab 4'], collapsedItems[0]!.item.title);
+        assertEquals(expandButton, itemsContainer.lastElementChild);
 
-        // Clicking again should collapse the remaining items.
         expandButton.click();
         await microtasksFinished();
 
         assertFalse(expandButton.expanded);
-        listItems = listSection.shadowRoot.querySelectorAll(
-            'organizer-list-section-item');
-        assertEquals(INITIAL_ITEM_COUNT, listItems.length);
+        assertFalse(listSection.hasAttribute('expanded_'));
+        assertEquals('Show more', expandButton.textContent.trim());
+        assertEquals(
+            1, collapse.querySelectorAll('organizer-list-section-item').length);
+
+        collapse.dispatchEvent(
+            new TransitionEvent('transitionend', {propertyName: 'height'}));
+        await microtasksFinished();
+
+        assertEquals(
+            0, collapse.querySelectorAll('organizer-list-section-item').length);
+        assertEquals(expandButton, itemsContainer.lastElementChild);
       });
 
   test(
@@ -293,7 +303,7 @@ suite('OrganizerListSectionTest', () => {
         let listItems = listSection.shadowRoot.querySelectorAll(
             'organizer-list-section-item');
         assertEquals(INITIAL_ITEM_COUNT, listItems.length);
-        assertTrue(!!listSection.shadowRoot.querySelector('cr-expand-button'));
+        assertTrue(!!listSection.shadowRoot.querySelector('#expandButton'));
 
         listSection.searchQuery = 'Tab';
         await microtasksFinished();
@@ -302,7 +312,7 @@ suite('OrganizerListSectionTest', () => {
             'organizer-list-section-item');
         assertEquals(4, listItems.length);
         assertEquals(
-            null, listSection.shadowRoot.querySelector('cr-expand-button'));
+            null, listSection.shadowRoot.querySelector('#expandButton'));
 
         listSection.searchQuery = '';
         await microtasksFinished();
@@ -310,7 +320,7 @@ suite('OrganizerListSectionTest', () => {
         listItems = listSection.shadowRoot.querySelectorAll(
             'organizer-list-section-item');
         assertEquals(INITIAL_ITEM_COUNT, listItems.length);
-        assertTrue(!!listSection.shadowRoot.querySelector('cr-expand-button'));
+        assertTrue(!!listSection.shadowRoot.querySelector('#expandButton'));
       });
 
   test('highlights matching text when searching', async () => {
