@@ -21,6 +21,9 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
+#import "ui/base/device_form_factor.h"
+
 @interface NewTabPageBottomSheetViewController (Testing)
 - (void)setupSuperviewConstraints;
 - (void)handleFeedPan:(UIPanGestureRecognizer*)gesture;
@@ -30,6 +33,7 @@
               currentConstant:(CGFloat)currentConstant;
 - (void)setSheetStateForTesting:(BottomSheetSnappingState)state;
 - (BottomSheetSnappingState)sheetStateForTesting;
+- (void)updateFeedSigninPromoVisibility;
 @end
 
 @interface LifecycleTrackingChildViewController : UIViewController
@@ -625,4 +629,94 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
       content_suggestions::SearchFieldWidth(superview.bounds.size.width,
                                             view_controller_.traitCollection),
       view_controller_.view.frame.size.width);
+}
+
+// Tests that feed insets correctly expand to include feedTopSectionHeight.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestFeedInsetsWithFeedTopSection) {
+  UIViewController* promo_vc = [[UIViewController alloc] init];
+  promo_vc.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 390, 120)];
+  [promo_vc.view.heightAnchor constraintEqualToConstant:120.0].active = YES;
+  view_controller_.feedTopSectionViewController = promo_vc;
+
+  UIViewController* feed_vc = [[UIViewController alloc] init];
+  UIScrollView* scroll_view =
+      [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 390, 800)];
+  [feed_vc.view addSubview:scroll_view];
+  view_controller_.feedViewController = feed_vc;
+
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_.view layoutIfNeeded];
+
+  CGFloat promo_height = [view_controller_ feedTopSectionHeight];
+  EXPECT_GT(promo_height, 0.0);
+
+  // The top inset expands to accommodate the promo plus the 16pt inter-module
+  // spacing.
+  constexpr CGFloat kExpectedPromoSpacing = 16.0;
+  CGFloat expected_header_height = [view_controller_ headerHeight];
+  CGFloat expected_top_inset =
+      expected_header_height + promo_height + kExpectedPromoSpacing;
+  EXPECT_FLOAT_EQ(expected_top_inset, scroll_view.contentInset.top);
+
+  // When the promo view is hidden, feedTopSectionHeight is 0.
+  promo_vc.view.hidden = YES;
+  EXPECT_FLOAT_EQ(0.0, [view_controller_ feedTopSectionHeight]);
+
+  [view_controller_ updateFeedLayout];
+  EXPECT_FLOAT_EQ(expected_header_height, scroll_view.contentInset.top);
+}
+
+// Tests that handleFeedTopSectionClosed animates hidden and preserves child VC
+// hierarchy.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestHandleFeedTopSectionClosed) {
+  UIViewController* promo_vc = [[UIViewController alloc] init];
+  promo_vc.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 390, 100)];
+  [promo_vc.view.heightAnchor constraintEqualToConstant:100.0].active = YES;
+  view_controller_.feedTopSectionViewController = promo_vc;
+
+  UIViewController* feed_vc = [[UIViewController alloc] init];
+  UIScrollView* scroll_view =
+      [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 390, 800)];
+  [feed_vc.view addSubview:scroll_view];
+  view_controller_.feedViewController = feed_vc;
+
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_.view layoutIfNeeded];
+
+  EXPECT_FALSE(promo_vc.view.hidden);
+
+  [view_controller_ handleFeedTopSectionClosed];
+
+  EXPECT_TRUE(promo_vc.view.hidden);
+  // Child VC lifecycle must remain intact (not detached by dismiss animation).
+  EXPECT_EQ(promo_vc.parentViewController, feed_vc);
+}
+
+// Tests that promo visibility is not reported as YES when sheet has no window.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestFeedSigninPromoVisibilityReportingWithoutWindow) {
+  UIViewController* promo_vc = [[UIViewController alloc] init];
+  promo_vc.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 390, 100)];
+  [promo_vc.view.heightAnchor constraintEqualToConstant:100.0].active = YES;
+  view_controller_.feedTopSectionViewController = promo_vc;
+
+  UIViewController* feed_vc = [[UIViewController alloc] init];
+  UIScrollView* scroll_view =
+      [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 390, 800)];
+  [feed_vc.view addSubview:scroll_view];
+  view_controller_.feedViewController = feed_vc;
+
+  id delegate =
+      OCMProtocolMock(@protocol(NewTabPageBottomSheetViewControllerDelegate));
+  view_controller_.delegate = delegate;
+
+  [view_controller_ loadViewIfNeeded];
+
+  // Without a window, visibility should not report YES.
+  [[delegate reject] bottomSheetViewController:view_controller_
+                didChangeSigninPromoVisibility:YES];
+  [view_controller_ updateFeedSigninPromoVisibility];
+  EXPECT_OCMOCK_VERIFY(delegate);
 }

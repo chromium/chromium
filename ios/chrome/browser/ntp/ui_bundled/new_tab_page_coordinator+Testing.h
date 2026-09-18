@@ -51,6 +51,8 @@
 
 - (void)restoreNTPScrollPosition;
 
+- (void)handleChangeInModules;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_COORDINATOR_TESTING_H_

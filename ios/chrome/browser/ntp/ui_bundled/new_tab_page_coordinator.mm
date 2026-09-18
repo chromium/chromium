@@ -480,8 +480,8 @@
   self.NTPRedesignViewController = nil;
   self.feedHeaderViewController.NTPDelegate = nil;
   self.feedHeaderViewController = nil;
-  [self.feedTopSectionCoordinator stop];
-  self.feedTopSectionCoordinator = nil;
+  [_feedTopSectionCoordinator stop];
+  _feedTopSectionCoordinator = nil;
   [self stopAccountMenuCoordinator];
   [self stopSigninCoordinator];
 
@@ -823,12 +823,6 @@
              discoverFeedForBrowser:self.browser
         viewControllerConfiguration:[self feedViewControllerConfiguration]];
   }
-
-  // Feed top section visibility is based on feed visibility, so this should
-  // always be below the block that sets `feedViewController`.
-  if ([self isFeedVisible]) {
-    self.feedTopSectionCoordinator = [self createFeedTopSectionCoordinator];
-  }
 }
 
 // Configures `self.headerView`.
@@ -960,8 +954,7 @@
   NTPViewController.NTPShortcutsHandler = self;
   NTPViewController.feedVisible = [self isFeedVisible];
   NTPViewController.feedTopSectionViewController =
-      [self isFeedVisible] ? self.feedTopSectionCoordinator.viewController
-                           : nil;
+      self.feedTopSectionCoordinator.viewController;
   NTPViewController.feedWrapperViewController = self.feedWrapperViewController;
   NTPViewController.overscrollDelegate = self;
   NTPViewController.NTPContentDelegate = self;
@@ -977,6 +970,8 @@
     self.NTPRedesignViewController.NTPContentDelegate = self;
     self.NTPRedesignViewController.headerCommandsHandler = self;
     self.NTPRedesignViewController.feedViewController = self.feedViewController;
+    self.NTPRedesignViewController.feedTopSectionViewController =
+        self.feedTopSectionCoordinator.viewController;
     self.NTPRedesignViewController.magicStackViewController =
         self.contentSuggestionsCoordinator.magicStackCollectionView;
     self.NTPRedesignViewController.NTPShortcutsHandler = self;
@@ -1058,6 +1053,20 @@
     return self.incognitoViewController;
   }
   return self.containerViewController;
+}
+
+- (FeedTopSectionCoordinator*)feedTopSectionCoordinator {
+  if (![self isFeedVisible]) {
+    if (_feedTopSectionCoordinator) {
+      [_feedTopSectionCoordinator stop];
+      _feedTopSectionCoordinator = nil;
+    }
+    return nil;
+  }
+  if (!_feedTopSectionCoordinator) {
+    _feedTopSectionCoordinator = [self createFeedTopSectionCoordinator];
+  }
+  return _feedTopSectionCoordinator;
 }
 
 #pragma mark - NewTabPageHeaderCommands
@@ -1494,7 +1503,9 @@
   // relayout.
   [self.containedViewController.view setNeedsLayout];
   [self.containedViewController.view layoutIfNeeded];
-  if (!IsNTPRedesignEnabled()) {
+  if (IsNTPRedesignEnabled()) {
+    [self.NTPRedesignViewController updateFeedLayout];
+  } else {
     [self.NTPViewController updateNTPLayout];
   }
 }
@@ -1523,7 +1534,9 @@
 }
 
 - (void)handleFeedTopSectionClosed {
-  if (!IsNTPRedesignEnabled()) {
+  if (IsNTPRedesignEnabled()) {
+    [self.NTPRedesignViewController handleFeedTopSectionClosed];
+  } else {
     [self.NTPViewController updateScrollPositionForFeedTopSectionClosed];
   }
 }
@@ -1894,11 +1907,18 @@
       self.discoverFeedService->RemoveFeedViewController(
           self.feedViewController);
     }
+    [_feedTopSectionCoordinator stop];
+    _feedTopSectionCoordinator = nil;
     self.feedViewController = nil;
     if ([self.NTPMediator isFeedHeaderVisible]) {
       [self configureFeedAndHeader];
+    } else {
+      self.feedHeaderViewController = nil;
     }
     self.NTPRedesignViewController.feedViewController = self.feedViewController;
+    self.NTPRedesignViewController.feedTopSectionViewController =
+        self.feedTopSectionCoordinator.viewController;
+    [self updateFeedLayout];
     return;
   }
   DCHECK(self.NTPViewController);
@@ -1909,11 +1929,11 @@
     self.discoverFeedService->RemoveFeedViewController(self.feedViewController);
   }
 
-  [self.feedTopSectionCoordinator stop];
+  [_feedTopSectionCoordinator stop];
+  _feedTopSectionCoordinator = nil;
 
   self.feedWrapperViewController = nil;
   self.feedViewController = nil;
-  self.feedTopSectionCoordinator = nil;
 
   // Fetches feed header and conditionally fetches feed. Feed can only be
   // visible if feed header is visible.

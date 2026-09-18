@@ -79,6 +79,16 @@
 // Sets the feed view controller to embed in the redesign bottom sheet.
 - (void)setFeedViewController:(UIViewController*)feedViewController;
 
+// The feed top section view controller containing promos.
+@property(nonatomic, strong) UIViewController* feedTopSectionViewController;
+
+// Handles the feed top section (promos) being closed.
+- (void)handleFeedTopSectionClosed;
+
+// Updates the feed layout (e.g. following changes in top section promo
+// visibility).
+- (void)updateFeedLayout;
+
 // Scrolls the bottom sheet (or feed) back to the top resting position.
 - (void)scrollToTopAnimated:(BOOL)animated;
 

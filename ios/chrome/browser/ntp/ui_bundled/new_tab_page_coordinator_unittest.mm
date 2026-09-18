@@ -925,3 +925,24 @@ TEST_F(NewTabPageCoordinatorTest,
 
   EXPECT_EQ(nil, header_view.blurBackgroundView);
 }
+
+// Tests that handleChangeInModules properly handles feedTopSectionCoordinator
+// and does not leak or duplicate it when kNewTabPageRedesign is enabled.
+TEST_F(NewTabPageCoordinatorTest, TestHandleChangeInModulesWithRedesign) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kNewTabPageRedesign);
+
+  CreateCoordinator(/*off_the_record=*/false);
+  SetupCommandHandlerMocks();
+
+  [coordinator_ start];
+  EXPECT_NE(nil, coordinator_.feedTopSectionCoordinator);
+
+  // Calling handleChangeInModules should recreate feed and keep a single valid
+  // feedTopSectionCoordinator.
+  [coordinator_ handleChangeInModules];
+  EXPECT_NE(nil, coordinator_.feedTopSectionCoordinator);
+
+  [coordinator_ stop];
+  EXPECT_EQ(nil, coordinator_.feedTopSectionCoordinator);
+}

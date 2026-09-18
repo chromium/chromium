@@ -132,6 +132,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   HomeCustomizationFramingCoordinates* _framingCoordinates;
   NewTabPageBottomSheetViewController* _bottomSheetViewController;
   UIViewController* _feedViewController;
+  UIViewController* _feedTopSectionViewController;
   NSArray<NSLayoutConstraint*>* _logoConstraints;
   SearchEngineLogoState _logoState;
 
@@ -199,6 +200,8 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
       [[NewTabPageBottomSheetViewController alloc] init];
   _bottomSheetViewController.delegate = self;
   _bottomSheetViewController.feedViewController = _feedViewController;
+  _bottomSheetViewController.feedTopSectionViewController =
+      _feedTopSectionViewController;
   [self addChildViewController:_bottomSheetViewController];
   [self.view addSubview:_bottomSheetViewController.view];
   [_bottomSheetViewController didMoveToParentViewController:self];
@@ -621,6 +624,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   _mostVisitedView = nil;
   self.magicStackViewController = nil;
   [self setFeedViewController:nil];
+  self.feedTopSectionViewController = nil;
   if (_quickActionsViewController) {
     [self detachChildViewController:_quickActionsViewController];
     _quickActionsViewController = nil;
@@ -851,6 +855,12 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   }
 }
 
+- (void)bottomSheetViewController:
+            (NewTabPageBottomSheetViewController*)bottomSheetViewController
+    didChangeSigninPromoVisibility:(BOOL)visible {
+  [self.NTPContentDelegate signinPromoHasChangedVisibility:visible];
+}
+
 #pragma mark - ContentSuggestionsConsumer
 
 - (void)setMostVisitedTilesConfig:(MostVisitedTilesConfig*)config {
@@ -986,6 +996,30 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   if (_bottomSheetViewController) {
     _bottomSheetViewController.feedViewController = feedViewController;
   }
+}
+
+- (UIViewController*)feedTopSectionViewController {
+  return _feedTopSectionViewController;
+}
+
+- (void)setFeedTopSectionViewController:
+    (UIViewController*)feedTopSectionViewController {
+  if (_feedTopSectionViewController == feedTopSectionViewController) {
+    return;
+  }
+  _feedTopSectionViewController = feedTopSectionViewController;
+  if (_bottomSheetViewController) {
+    _bottomSheetViewController.feedTopSectionViewController =
+        feedTopSectionViewController;
+  }
+}
+
+- (void)handleFeedTopSectionClosed {
+  [_bottomSheetViewController handleFeedTopSectionClosed];
+}
+
+- (void)updateFeedLayout {
+  [_bottomSheetViewController updateFeedLayout];
 }
 
 - (void)setMagicStackViewController:
