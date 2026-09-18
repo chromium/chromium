@@ -83,6 +83,7 @@ source_set("unit_tests") {
     "control_transport_handler_unittest.cc",
     "transport_channel_impl_unittest.cc",
     "transport_handler_factory_registry_impl_unittest.cc",
+    "transport_handler_unittest.cc",
     "transport_session_impl_unittest.cc",
     "transport_session_registry_impl_unittest.cc",
   ]

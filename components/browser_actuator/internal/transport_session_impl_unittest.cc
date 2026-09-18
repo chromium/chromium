@@ -27,7 +27,7 @@ TEST(TransportSessionImplTest, GetSessionId) {
   EXPECT_EQ(session.GetSessionId(), "test_session");
 }
 
-TEST(TransportSessionImplTest, SendMessage) {
+TEST(TransportSessionImplTest, SendUpstreamMessage) {
   MockTransportChannel channel;
   TransportSessionImpl session("test_session", channel.GetWeakPtr());
 
@@ -37,11 +37,11 @@ TEST(TransportSessionImplTest, SendMessage) {
   EXPECT_CALL(channel,
               SendUpstreamMessage("test_session", PayloadType::kUnspecified,
                                   testing::Ref(command)));
-  EXPECT_TRUE(
-      session.SendMessage(PayloadType::kUnspecified, command).has_value());
+  EXPECT_TRUE(session.SendUpstreamMessage(PayloadType::kUnspecified, command)
+                  .has_value());
 }
 
-TEST(TransportSessionImplTest, SendMessageAfterChannelDestruction) {
+TEST(TransportSessionImplTest, SendUpstreamMessageAfterChannelDestruction) {
   auto channel = std::make_unique<MockTransportChannel>();
   TransportSessionImpl session("test_session", channel->GetWeakPtr());
 
@@ -50,10 +50,10 @@ TEST(TransportSessionImplTest, SendMessageAfterChannelDestruction) {
 
   EXPECT_CALL(*channel, SendUpstreamMessage).Times(0);
   channel.reset();
-  base::expected<void, SendMessageError> result =
-      session.SendMessage(PayloadType::kUnspecified, command);
+  base::expected<void, SendUpstreamMessageError> result =
+      session.SendUpstreamMessage(PayloadType::kUnspecified, command);
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), SendMessageError::kChannelDisconnected);
+  EXPECT_EQ(result.error(), SendUpstreamMessageError::kChannelDisconnected);
 }
 
 TEST(TransportSessionImplTest, ClientSequenceNumbers) {

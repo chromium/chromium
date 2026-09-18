@@ -26,7 +26,7 @@ class ControlTransportHandler : public TransportHandler {
   using CloseChannelCallback = base::RepeatingClosure;
   using CloseSessionCallback = base::RepeatingCallback<void(std::string_view)>;
 
-  ControlTransportHandler(std::string_view session_id,
+  ControlTransportHandler(TransportSession* session,
                           CloseChannelCallback close_channel_cb,
                           CloseSessionCallback close_session_cb);
   ~ControlTransportHandler() override;
@@ -40,7 +40,6 @@ class ControlTransportHandler : public TransportHandler {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const std::string session_id_;
   CloseChannelCallback close_channel_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   CloseSessionCallback close_session_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
 };

@@ -50,7 +50,7 @@ class TransportSessionImpl : public TransportSession {
   // TransportSession implementation.
   std::string_view GetSessionId() const override;
 
-  base::expected<void, SendMessageError> SendMessage(
+  base::expected<void, SendUpstreamMessageError> SendUpstreamMessage(
       PayloadType payload_type,
       const google::protobuf::MessageLite& message) override;
 

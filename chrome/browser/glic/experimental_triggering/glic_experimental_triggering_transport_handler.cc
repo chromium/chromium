@@ -31,11 +31,11 @@ GlicExperimentalTriggeringTransportHandler::
         Profile* profile,
         browser_actuator::TransportSession* session,
         std::unique_ptr<GlicExperimentalTriggeringCoordinator> coordinator)
-    : profile_(profile),
-      session_(session),
+    : TransportHandler(session),
+      profile_(profile),
       coordinator_(std::move(coordinator)) {
   CHECK(profile_);
-  CHECK(session_);
+  CHECK(session);
 }
 
 GlicExperimentalTriggeringTransportHandler::
@@ -54,8 +54,8 @@ void GlicExperimentalTriggeringTransportHandler::OnMessage(
       ScopedIncomingMessageResultLogger::Channel::kBrowserActuatorTransport);
 
   std::string context_id = triggering.context_id();
-  if (context_id.empty()) {
-    context_id = std::string(session_->GetSessionId());
+  if (context_id.empty() && session()) {
+    context_id = std::string(session()->GetSessionId());
   }
 
   if (!coordinator_) {
@@ -108,10 +108,10 @@ void GlicExperimentalTriggeringTransportHandler::SendResponse(
                                      "GlicExperimentalTriggering",
                                      response.context_id, triggering);
 
-  // `SendMessage` synchronously serializes the protobuf `triggering`
+  // `SendUpstreamMessage` synchronously serializes the protobuf `triggering`
   // reference, so passing the const reference is safe during this synchronous
   // call.
-  auto send_result = session_->SendMessage(
+  auto send_result = SendUpstreamMessage(
       browser_actuator::PayloadType::kExperimentalTriggering, triggering);
   if (!send_result.has_value()) {
     DLOG(ERROR) << "Failed to send experimental triggering response: "

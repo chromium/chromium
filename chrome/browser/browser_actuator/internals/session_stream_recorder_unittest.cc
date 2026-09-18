@@ -33,7 +33,7 @@ class FakeTransportSession : public TransportSession {
   ~FakeTransportSession() override = default;
 
   std::string_view GetSessionId() const override { return session_id_; }
-  base::expected<void, SendMessageError> SendMessage(
+  base::expected<void, SendUpstreamMessageError> SendUpstreamMessage(
       PayloadType payload_type,
       const google::protobuf::MessageLite& message) override {
     return {};

@@ -31,6 +31,10 @@ enum class FactoryId {
   kSessionStreamRecorder = 3,
 };
 
+enum class SendUpstreamMessageError {
+  kChannelDisconnected,
+};
+
 }  // namespace browser_actuator
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_PUBLIC_COMMON_H_

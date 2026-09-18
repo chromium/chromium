@@ -16,10 +16,6 @@ class MessageLite;
 
 namespace browser_actuator {
 
-enum class SendMessageError {
-  kChannelDisconnected,
-};
-
 // Represents an active session for a task shared between the browser and
 // server.
 class TransportSession {
@@ -29,7 +25,7 @@ class TransportSession {
   virtual std::string_view GetSessionId() const = 0;
 
   // Sends a message upstream.
-  virtual base::expected<void, SendMessageError> SendMessage(
+  virtual base::expected<void, SendUpstreamMessageError> SendUpstreamMessage(
       PayloadType payload_type,
       const google::protobuf::MessageLite& message) = 0;
 

@@ -33,7 +33,8 @@ std::string_view TransportSessionImpl::GetSessionId() const {
   return session_id_;
 }
 
-base::expected<void, SendMessageError> TransportSessionImpl::SendMessage(
+base::expected<void, SendUpstreamMessageError>
+TransportSessionImpl::SendUpstreamMessage(
     PayloadType payload_type,
     const google::protobuf::MessageLite& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -41,7 +42,7 @@ base::expected<void, SendMessageError> TransportSessionImpl::SendMessage(
     channel_->SendUpstreamMessage(session_id_, payload_type, message);
     return {};
   }
-  return base::unexpected(SendMessageError::kChannelDisconnected);
+  return base::unexpected(SendUpstreamMessageError::kChannelDisconnected);
 }
 
 void TransportSessionImpl::OnMessage(

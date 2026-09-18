@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_BROWSER_ACTUATOR_PUBLIC_TRANSPORT_HANDLER_H_
 #define COMPONENTS_BROWSER_ACTUATOR_PUBLIC_TRANSPORT_HANDLER_H_
 
-#include <string_view>
+#include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
+#include "components/browser_actuator/public/common.h"
 
 namespace google::protobuf {
 class MessageLite;
@@ -13,14 +15,31 @@ class MessageLite;
 
 namespace browser_actuator {
 
-// Interface that feature clients implement to receive messages for a specific
-// PayloadType from the TransportChannel.
+class TransportSession;
+
+// Interface that feature clients implement to receive and send messages
+// for a specific PayloadType from/to the TransportChannel.
 class TransportHandler {
  public:
-  virtual ~TransportHandler() = default;
+  explicit TransportHandler(TransportSession* session = nullptr);
+  virtual ~TransportHandler();
+
+  TransportHandler(const TransportHandler&) = delete;
+  TransportHandler& operator=(const TransportHandler&) = delete;
 
   // Process incoming downstream or wake-up message.
   virtual void OnMessage(const google::protobuf::MessageLite& message) = 0;
+
+ protected:
+  // Send message upstream to the server for this session.
+  base::expected<void, SendUpstreamMessageError> SendUpstreamMessage(
+      PayloadType payload_type,
+      const google::protobuf::MessageLite& message);
+
+  TransportSession* session() const { return session_.get(); }
+
+ private:
+  const raw_ptr<TransportSession> session_;
 };
 
 }  // namespace browser_actuator

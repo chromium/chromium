@@ -8,7 +8,8 @@
 
 namespace browser_actuator {
 
-MockTransportHandler::MockTransportHandler() = default;
+MockTransportHandler::MockTransportHandler(TransportSession* session)
+    : TransportHandler(session) {}
 MockTransportHandler::~MockTransportHandler() = default;
 
 CallbackTransportHandler::CallbackTransportHandler(

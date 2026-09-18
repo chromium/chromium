@@ -25,7 +25,7 @@ class TestTransportSession : public TransportSession {
   ~TestTransportSession() override = default;
 
   std::string_view GetSessionId() const override { return session_id_; }
-  base::expected<void, SendMessageError> SendMessage(
+  base::expected<void, SendUpstreamMessageError> SendUpstreamMessage(
       PayloadType payload_type,
       const google::protobuf::MessageLite& message) override {
     return {};
@@ -41,8 +41,9 @@ TEST(ControlTransportHandlerTest, OnMessageCloseChannel) {
   bool close_channel_called = false;
   bool close_session_called = false;
 
+  TestTransportSession session("session_1");
   ControlTransportHandler handler(
-      "session_1",
+      &session,
       base::BindLambdaForTesting([&]() { close_channel_called = true; }),
       base::BindLambdaForTesting(
           [&](std::string_view) { close_session_called = true; }));
@@ -60,8 +61,9 @@ TEST(ControlTransportHandlerTest, OnMessageCloseSession) {
   bool close_channel_called = false;
   std::string closed_session_id;
 
+  TestTransportSession session("session_1");
   ControlTransportHandler handler(
-      "session_1",
+      &session,
       base::BindLambdaForTesting([&]() { close_channel_called = true; }),
       base::BindLambdaForTesting([&](std::string_view session_id) {
         closed_session_id = session_id;
@@ -76,12 +78,32 @@ TEST(ControlTransportHandlerTest, OnMessageCloseSession) {
   EXPECT_EQ(closed_session_id, "session_1");
 }
 
-TEST(ControlTransportHandlerTest, OnMessageUnsetCommand) {
+TEST(ControlTransportHandlerTest, OnMessageCloseSessionWithNullSessionNoops) {
   bool close_channel_called = false;
   bool close_session_called = false;
 
   ControlTransportHandler handler(
-      "session_1",
+      nullptr,
+      base::BindLambdaForTesting([&]() { close_channel_called = true; }),
+      base::BindLambdaForTesting(
+          [&](std::string_view) { close_session_called = true; }));
+
+  ControlCommand command;
+  command.mutable_close_session();
+
+  handler.OnMessage(command);
+
+  EXPECT_FALSE(close_channel_called);
+  EXPECT_FALSE(close_session_called);
+}
+
+TEST(ControlTransportHandlerTest, OnMessageUnsetCommand) {
+  bool close_channel_called = false;
+  bool close_session_called = false;
+
+  TestTransportSession session("session_1");
+  ControlTransportHandler handler(
+      &session,
       base::BindLambdaForTesting([&]() { close_channel_called = true; }),
       base::BindLambdaForTesting(
           [&](std::string_view) { close_session_called = true; }));
@@ -98,8 +120,9 @@ TEST(ControlTransportHandlerTest, UnexpectedMessageTypeIsIgnored) {
   bool close_channel_called = false;
   bool close_session_called = false;
 
+  TestTransportSession session("session_1");
   ControlTransportHandler handler(
-      "session_1",
+      &session,
       base::BindLambdaForTesting([&]() { close_channel_called = true; }),
       base::BindLambdaForTesting(
           [&](std::string_view) { close_session_called = true; }));

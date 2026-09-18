@@ -19,8 +19,10 @@ namespace browser_actuator {
 
 class MockTransportHandler : public TransportHandler {
  public:
-  MockTransportHandler();
+  explicit MockTransportHandler(TransportSession* session = nullptr);
   ~MockTransportHandler() override;
+
+  using TransportHandler::SendUpstreamMessage;
 
   MOCK_METHOD(void,
               OnMessage,

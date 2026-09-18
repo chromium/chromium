@@ -48,7 +48,6 @@ class GlicExperimentalTriggeringTransportHandler
   void SendResponse(ExperimentalTriggeringResponse response);
 
   const raw_ptr<Profile> profile_;
-  const raw_ptr<browser_actuator::TransportSession> session_;
   std::unique_ptr<GlicExperimentalTriggeringCoordinator> coordinator_;
   base::WeakPtrFactory<GlicExperimentalTriggeringTransportHandler>
       weak_ptr_factory_{this};

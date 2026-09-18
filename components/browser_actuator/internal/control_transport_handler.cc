@@ -14,10 +14,10 @@
 namespace browser_actuator {
 
 ControlTransportHandler::ControlTransportHandler(
-    std::string_view session_id,
+    TransportSession* session,
     CloseChannelCallback close_channel_cb,
     CloseSessionCallback close_session_cb)
-    : session_id_(session_id),
+    : TransportHandler(session),
       close_channel_cb_(std::move(close_channel_cb)),
       close_session_cb_(std::move(close_session_cb)) {}
 
@@ -44,8 +44,9 @@ void ControlTransportHandler::OnMessage(
       break;
     }
     case ControlCommand::kCloseSession: {
-      if (close_session_cb_) {
-        close_session_cb_.Run(session_id_);
+      if (close_session_cb_ && session()) {
+        std::string session_id(session()->GetSessionId());
+        close_session_cb_.Run(session_id);
       }
       break;
     }
@@ -84,9 +85,8 @@ ControlTransportHandlerFactory::GetSupportedPayloadTypes() const {
 std::unique_ptr<TransportHandler> ControlTransportHandlerFactory::OnNewSession(
     TransportSession* session) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::string_view session_id = session ? session->GetSessionId() : "";
-  return std::make_unique<ControlTransportHandler>(
-      session_id, close_channel_cb_, close_session_cb_);
+  return std::make_unique<ControlTransportHandler>(session, close_channel_cb_,
+                                                   close_session_cb_);
 }
 
 }  // namespace browser_actuator
